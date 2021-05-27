@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "SimpleGymTracker.WinUI3": {
-      "commandName": "Project",
-      "nativeDebugging": true
-    }
-  }
-}

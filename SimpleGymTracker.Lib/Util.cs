@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SimpleGymTracker.Lib
 {
-  public static class Util
+  internal static class Util
   {
     public static ImmutableList<T> ListOf<T>(params T[] items)
     {

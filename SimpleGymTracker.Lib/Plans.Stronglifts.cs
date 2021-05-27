@@ -9,14 +9,14 @@ namespace SimpleGymTracker.Lib
 
     public static WorkoutPlan Stronglifts = new WorkoutPlan("Stronglifts 5x5", ListOf(
         new WorkoutPlanDay("Workout A", ListOf(
-          new WorkoutPlanWeightedExercise("Squat", Sets: 5, RepsPerSet: 5, KilogramsIncreaseOnSuccess: 2.5m, strongliftsRest),
-          new WorkoutPlanWeightedExercise("Bench Press", Sets: 5, RepsPerSet: 5, KilogramsIncreaseOnSuccess: 2.5m, strongliftsRest),
-          new WorkoutPlanWeightedExercise("Bentover Row", Sets: 5, RepsPerSet: 5, KilogramsIncreaseOnSuccess: 2.5m, strongliftsRest)
+          new WorkoutPlanWeightedExercise("Squat", Sets: 5, RepsPerSet: 5, InitialKilograms: 20, KilogramsIncreaseOnSuccess: 2.5m, strongliftsRest),
+          new WorkoutPlanWeightedExercise("Bench Press", Sets: 5, RepsPerSet: 5, InitialKilograms: 20, KilogramsIncreaseOnSuccess: 2.5m, strongliftsRest),
+          new WorkoutPlanWeightedExercise("Bentover Row", Sets: 5, RepsPerSet: 5, InitialKilograms: 20, KilogramsIncreaseOnSuccess: 2.5m, strongliftsRest)
         )),
         new WorkoutPlanDay("Workout B", ListOf(
-          new WorkoutPlanWeightedExercise("Squat", Sets: 5, RepsPerSet: 5, KilogramsIncreaseOnSuccess: 2.5m, strongliftsRest),
-          new WorkoutPlanWeightedExercise("Overhead Press", Sets: 5, RepsPerSet: 5, KilogramsIncreaseOnSuccess: 2.5m, strongliftsRest),
-          new WorkoutPlanWeightedExercise("Deadlift", Sets: 1, RepsPerSet: 5, KilogramsIncreaseOnSuccess: 5m, strongliftsRest)
+          new WorkoutPlanWeightedExercise("Squat", Sets: 5, RepsPerSet: 5, InitialKilograms: 20, KilogramsIncreaseOnSuccess: 2.5m, strongliftsRest),
+          new WorkoutPlanWeightedExercise("Overhead Press", Sets: 5, RepsPerSet: 5, InitialKilograms: 20, KilogramsIncreaseOnSuccess: 2.5m, strongliftsRest),
+          new WorkoutPlanWeightedExercise("Deadlift", Sets: 1, RepsPerSet: 5, InitialKilograms: 20, KilogramsIncreaseOnSuccess: 5m, strongliftsRest)
         ))
       ));
   }

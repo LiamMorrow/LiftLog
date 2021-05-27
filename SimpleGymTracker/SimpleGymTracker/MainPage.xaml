@@ -1,26 +1,13 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="SimpleGymTracker.MainPage"
-             BackgroundColor="{DynamicResource PageBackgroundColor}">
+			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			 xmlns:b="clr-namespace:Microsoft.AspNetCore.Components.WebView.Maui;assembly=Microsoft.AspNetCore.Components.WebView.Maui"
+			 xmlns:local="clr-namespace:SimpleGymTracker"
+			 x:Class="SimpleGymTracker.MainPage"
+			 BackgroundColor="{DynamicResource PageBackgroundColor}">
 
-    <ScrollView Padding="{OnPlatform iOS='30,60,30,30', Default='30'}">
-        <StackLayout>
-            <Grid RowSpacing="25" RowDefinitions="Auto,Auto,Auto,Auto,*">
-            
-                <Label Text="Current count: 0"
-                    Grid.Row="2"
-                    SemanticProperties.Hint="Counts the number of times you click"
-                    FontSize="20"
-                    FontAttributes="Bold"
-                    x:Name="CounterLabel"
-                    HorizontalOptions="Center" />
-
-                <Button Text="Click you"
-                    Grid.Row="3"
-                    SemanticProperties.Hint="Counts the number of times you clfick"
-                    Clicked="OnCounterClicked"
-                    HorizontalOptions="Center" />
-            </Grid>
-        </StackLayout>
-    </ScrollView>
+	<b:BlazorWebView HostPage="wwwroot/index.html">
+		<b:BlazorWebView.RootComponents>
+			<b:RootComponent Selector="app" ComponentType="{x:Type local:Main}" />
+		</b:BlazorWebView.RootComponents>
+	</b:BlazorWebView>
 </ContentPage>
