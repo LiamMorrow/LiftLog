@@ -1,0 +1,19 @@
+﻿.weighted-exercise {
+    display: flex;
+    flex-direction: column;
+}
+
+.weighted-exercise-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--margin-vert);
+}
+
+.weighted-exercise-list {
+    display: flex;
+    width: fit-content;
+}
+
+::deep .weighted-exercise-list .rep-count:not(:last-child) {
+    margin-right: 0.5em;
+}

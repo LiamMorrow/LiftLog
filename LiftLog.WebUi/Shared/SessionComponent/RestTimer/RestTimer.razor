@@ -1,0 +1,22 @@
+<div class="rest-timer"><span>@InstructionsText</span><span class="timer">@(TimeSinceStart.ToString(TimespanFormatStr))</span></div>
+
+@code {
+    [Parameter]
+    public Rest Rest { get; set; } = null!;
+
+    [Parameter]
+    public DateTimeOffset StartTime { get; set; }
+
+    [Parameter]
+    public bool Failed { get; set; }
+
+    private TimeSpan TimeSinceStart => DateTimeOffset.UtcNow - StartTime;
+
+    private string InstructionsText =>
+        Failed
+        ? $"Rest {Rest.FailureRest:mm\\:ss}."
+        : Rest.MinRest == Rest.SecondaryRest
+            ? $"Rest {Rest.MinRest:mm:ss}."
+            : $"Rest {Rest.MinRest:mm\\:ss} if it was easy, or {Rest.SecondaryRest:mm\\:ss} if it was hard.";
+
+}

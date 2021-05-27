@@ -1,0 +1,14 @@
+.page {
+  display: grid;
+  grid-template-rows: min-content auto;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "nav"
+    "content";
+  height: 100%;
+}
+
+.page .content {
+  grid-area: "content";
+  overflow: auto;
+}

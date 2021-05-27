@@ -1,0 +1,14 @@
+.rest-timer {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.5em;
+    background-color: gray;
+    color: white;
+    position: sticky;
+    bottom: 0;
+}
+
+.timer {
+    font-weight: 700;
+}

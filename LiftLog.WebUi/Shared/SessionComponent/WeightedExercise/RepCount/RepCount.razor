@@ -1,0 +1,16 @@
+﻿<button class=@($"rep-count {RepCountUnstartedClass} {RepCountToStartClass}") @onclick=CycleRepCount>@RepCountValue</button>
+
+@code {
+    [Parameter]
+    public int? RepCountValue { get; set; }
+
+    [Parameter]
+    public Action CycleRepCount { get; set; } = null!;
+
+    [Parameter]
+    public bool ToStartNext { get; set; }
+
+    private string? RepCountUnstartedClass => RepCountValue is null ? "unstarted-rep-count" : null;
+
+    private string? RepCountToStartClass => ToStartNext ? "to-start-rep-count" : null;
+}

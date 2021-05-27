@@ -1,0 +1,35 @@
+.rep-count {
+    width: 2em;
+    height: 2em;
+    color: white;
+    border-color: transparent;
+    border-radius: 1em;
+    background-color: var(--primary-color);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.5s;
+}
+
+.unstarted-rep-count {
+    background-color: lightgray;
+}
+
+.to-start-rep-count {
+    animation-name: to-start-rep-count;
+    animation-duration: 1.5s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes to-start-rep-count {
+    0% {
+        background-color: lightgray;
+    }
+    50% {
+        background-color: var(--primary-color);
+    }
+    100% {
+        background-color: lightgray;
+    }
+}
