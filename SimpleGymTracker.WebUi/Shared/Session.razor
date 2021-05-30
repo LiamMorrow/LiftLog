@@ -1,0 +1,16 @@
+@{
+    var nextExercise = WorkoutSession.WeightedExercises
+            .FirstOrDefault(x => x.SetRepCounts.Any(reps => reps is null));
+}
+@foreach (var (exercise, i) in WorkoutSession.WeightedExercises.IndexedTuples())
+{
+    <WeightedExercise @key=i Exercise="exercise" ToStartNext=@(nextExercise == exercise)  CycleRepCountForSet=@(set => CycleRepcountForExercise(i, set)) ></WeightedExercise>
+}
+
+@code {
+    [Parameter]
+    public WorkoutDay WorkoutSession { get; set; } = null!;
+
+    [Parameter]
+    public Action<int, int> CycleRepcountForExercise { get; set; } = null!;
+}

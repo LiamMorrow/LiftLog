@@ -29,10 +29,7 @@ namespace SimpleGymTracker.Lib
 
     public override int GetHashCode()
     {
-      unchecked
-      {
-        return Items.Aggregate(0, (agg, curr) => (agg * 397) ^ (curr != null ? curr.GetHashCode() : 0));
-      }
+      return Items.Aggregate(0, HashCode.Combine);
     }
 
     public override bool Equals(object? obj)

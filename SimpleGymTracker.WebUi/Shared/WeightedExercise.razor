@@ -6,7 +6,7 @@
     }
     @foreach (var (repCount, i) in Exercise.SetRepCounts.Select((repCount, i) => (repCount, i)))
     {
-      <RepCount @key=i CycleRepCount=@(()=>CycleRepCount(i)) RepCountValue=@repCount ToStartNext=@(ToStartNext && repToStartNext == i) />
+      <RepCount @key=i CycleRepCount=@(() => CycleRepCountForSet(i)) RepCountValue=@repCount ToStartNext=@(ToStartNext && repToStartNext == i) />
     }
   </div>
 </div>
@@ -17,10 +17,6 @@
   [Parameter]
   public bool ToStartNext { get; set; }
 
-  private void CycleRepCount(int repCountIndex)
-  {
-    Exercise = Exercise.WithCycledRepCount(repCountIndex);
-    Console.WriteLine(Exercise);
-    this.StateHasChanged();
-  }
+  [Parameter]
+  public Action<int> CycleRepCountForSet { get; set; } = null!;
 }

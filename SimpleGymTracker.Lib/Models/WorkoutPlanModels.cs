@@ -14,10 +14,10 @@ namespace SimpleGymTracker.Lib.Models
   public record WorkoutPlan(string Name, ImmutableListSequence<WorkoutPlanDay> Days)
   {
     public WorkoutDay FirstDay()
-      => new WorkoutDay(
+      => new(
           this,
-          Days[0],
-          ListOf(Days[0].Groups
+          Days[1],
+          ListOf(Days[1].Groups
             .Select(x => new WorkoutWeightedExercise(
                           x, ListOf(Enumerable.Repeat<int?>(null, x.Sets)), x.InitialKilograms))));
   }
