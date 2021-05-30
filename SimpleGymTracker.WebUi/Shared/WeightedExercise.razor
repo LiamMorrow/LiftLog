@@ -1,0 +1,26 @@
+﻿<div class="weighted-exercise">
+  <span class="exercise-header">@Exercise.PlanExercise.Name</span>
+  <div class="weighted-exercise-list">
+    @{
+      var repToStartNext = Exercise.SetRepCounts.IndexOf(null);
+    }
+    @foreach (var (repCount, i) in Exercise.SetRepCounts.Select((repCount, i) => (repCount, i)))
+    {
+      <RepCount @key=i CycleRepCount=@(()=>CycleRepCount(i)) RepCountValue=@repCount ToStartNext=@(ToStartNext && repToStartNext == i) />
+    }
+  </div>
+</div>
+@code {
+  [Parameter]
+  public WorkoutWeightedExercise Exercise { get; set; } = null!;
+
+  [Parameter]
+  public bool ToStartNext { get; set; }
+
+  private void CycleRepCount(int repCountIndex)
+  {
+    Exercise = Exercise.WithCycledRepCount(repCountIndex);
+    Console.WriteLine(Exercise);
+    this.StateHasChanged();
+  }
+}

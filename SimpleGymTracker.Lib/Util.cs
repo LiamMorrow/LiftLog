@@ -9,14 +9,14 @@ namespace SimpleGymTracker.Lib
 {
   internal static class Util
   {
-    public static ImmutableList<T> ListOf<T>(params T[] items)
+    public static ImmutableListSequence<T> ListOf<T>(params T[] items)
     {
-      return ImmutableList.Create(items);
+      return new ImmutableListSequence<T>(ImmutableList.Create(items));
     }
 
-    public static ImmutableList<T> ListOf<T>(IEnumerable<T> items)
+    public static ImmutableListSequence<T> ListOf<T>(IEnumerable<T> items)
     {
-      return ImmutableList.CreateRange(items);
+      return new ImmutableListSequence<T>(ImmutableList.CreateRange(items));
     }
   }
 }

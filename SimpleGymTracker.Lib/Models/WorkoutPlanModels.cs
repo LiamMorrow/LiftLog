@@ -9,17 +9,16 @@ namespace SimpleGymTracker.Lib.Models
 
   public record WorkoutPlanWeightedExercise(string Name, int Sets, int RepsPerSet, decimal InitialKilograms, decimal KilogramsIncreaseOnSuccess, Rest RestBetweenSets);
 
-  public record WorkoutPlanDay(string Name, ImmutableList<WorkoutPlanWeightedExercise> Groups);
+  public record WorkoutPlanDay(string Name, ImmutableListSequence<WorkoutPlanWeightedExercise> Groups);
 
-  public record WorkoutPlan(string Name, ImmutableList<WorkoutPlanDay> Days)
+  public record WorkoutPlan(string Name, ImmutableListSequence<WorkoutPlanDay> Days)
   {
     public WorkoutDay FirstDay()
       => new WorkoutDay(
-          this, 
-          Days[0], 
-          Days[0].Groups
+          this,
+          Days[0],
+          ListOf(Days[0].Groups
             .Select(x => new WorkoutWeightedExercise(
-                          x, ListOf(Enumerable.Repeat<int?>(null, x.Sets)), x.InitialKilograms))
-            .ToImmutableList());
+                          x, ListOf(Enumerable.Repeat<int?>(null, x.Sets)), x.InitialKilograms))));
   }
 }
