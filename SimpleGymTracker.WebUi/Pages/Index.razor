@@ -1,5 +1,9 @@
-﻿@page "/"
+﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+@page "/"
 
-<h1>Hello, world!</h1>
+<h1>Workouts:</h1>
 
-Welcome to your new app.
+@foreach (var (workoutPlan, i) in WorkoutSettingsState.Value.Plans.IndexedTuples())
+{
+    <AppButton @key=i @onclick=@(() => SelectWorkoutPlan(workoutPlan))>@workoutPlan.Name</AppButton>
+}

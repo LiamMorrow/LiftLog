@@ -1,6 +1,6 @@
 using Fluxor;
 using Microsoft.AspNetCore.Components;
-using SimpleGymTracker.WebUi.Store.Workout;
+using SimpleGymTracker.WebUi.Store.WorkoutSession;
 
 namespace SimpleGymTracker.WebUi.Pages
 {

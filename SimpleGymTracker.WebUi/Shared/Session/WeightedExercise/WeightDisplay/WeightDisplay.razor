@@ -1,0 +1,8 @@
+<button class="weight-display">@(Exercise.PlanExercise.Sets)x@(Exercise.PlanExercise.RepsPerSet)&nbsp
+    <WeightFormat Kilograms=Exercise.Weight />
+</button>
+
+@code {
+    [Parameter]
+    public WorkoutWeightedExercise Exercise { get; set; } = null!;
+}

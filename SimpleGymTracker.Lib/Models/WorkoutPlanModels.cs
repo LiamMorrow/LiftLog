@@ -5,7 +5,7 @@ using static SimpleGymTracker.Lib.Util;
 
 namespace SimpleGymTracker.Lib.Models
 {
-  public record Rest(int MinRest, int SecondaryRest, int FailureRest);
+  public record Rest(TimeSpan MinRest, TimeSpan SecondaryRest, TimeSpan FailureRest);
 
   public record WorkoutPlanWeightedExercise(string Name, int Sets, int RepsPerSet, decimal InitialKilograms, decimal KilogramsIncreaseOnSuccess, Rest RestBetweenSets);
 
@@ -16,9 +16,9 @@ namespace SimpleGymTracker.Lib.Models
     public WorkoutDay FirstDay()
       => new(
           this,
-          Days[1],
-          ListOf(Days[1].Groups
-            .Select(x => new WorkoutWeightedExercise(
-                          x, ListOf(Enumerable.Repeat<int?>(null, x.Sets)), x.InitialKilograms))));
+          Days[0],
+          ListOf(Days[0].Groups
+            .Select(plan => new WorkoutWeightedExercise(
+                          plan, ListOf(Enumerable.Repeat<int?>(null, plan.Sets)), plan.InitialKilograms))));
   }
 }

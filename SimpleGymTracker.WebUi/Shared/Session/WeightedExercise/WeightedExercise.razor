@@ -1,5 +1,8 @@
 ﻿<div class="weighted-exercise">
-  <span class="exercise-header">@Exercise.PlanExercise.Name</span>
+  <div class="weighted-exercise-header">
+    <span class="exercise-header">@Exercise.PlanExercise.Name</span>
+    <WeightDisplay Exercise=Exercise />
+  </div>
   <div class="weighted-exercise-list">
     @{
       var repToStartNext = Exercise.SetRepCounts.IndexOf(null);

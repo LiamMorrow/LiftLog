@@ -1,17 +1,18 @@
-﻿using SimpleGymTracker.Lib.Models;
+﻿using System;
+using SimpleGymTracker.Lib.Models;
 using static SimpleGymTracker.Lib.Util;
 
 namespace SimpleGymTracker.Lib
 {
   public static partial class Plans
   {
-    private static readonly Rest s_strongliftsRest = new(90, 180, 300);
+    private static readonly Rest s_strongliftsRest = new(TimeSpan.FromSeconds(90), TimeSpan.FromSeconds(180), TimeSpan.FromSeconds(300));
 
-    public static WorkoutPlan Stronglifts { get; } = new WorkoutPlan("Stronglifts 5x5", ListOf(
+    private static readonly WorkoutPlan s_stronglifts = new("Stronglifts 5x5", ListOf(
         new WorkoutPlanDay("Workout A", ListOf(
           new WorkoutPlanWeightedExercise("Squat", Sets: 5, RepsPerSet: 5, InitialKilograms: 20, KilogramsIncreaseOnSuccess: 2.5m, s_strongliftsRest),
           new WorkoutPlanWeightedExercise("Bench Press", Sets: 5, RepsPerSet: 5, InitialKilograms: 20, KilogramsIncreaseOnSuccess: 2.5m, s_strongliftsRest),
-          new WorkoutPlanWeightedExercise("Bentover Row", Sets: 5, RepsPerSet: 5, InitialKilograms: 20, KilogramsIncreaseOnSuccess: 2.5m, s_strongliftsRest)
+          new WorkoutPlanWeightedExercise("Barbell Row", Sets: 5, RepsPerSet: 5, InitialKilograms: 20, KilogramsIncreaseOnSuccess: 2.5m, s_strongliftsRest)
         )),
         new WorkoutPlanDay("Workout B", ListOf(
           new WorkoutPlanWeightedExercise("Squat", Sets: 5, RepsPerSet: 5, InitialKilograms: 20, KilogramsIncreaseOnSuccess: 2.5m, s_strongliftsRest),

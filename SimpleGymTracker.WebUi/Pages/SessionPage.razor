@@ -1,4 +1,12 @@
 ﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 @page "/session"
+@inject NavigationManager NavigationManager;
 
-<Session CycleRepcountForExercise=@CycleRepcountForExercise WorkoutSession=@(WorkoutSessionState.Value.Day)></Session>
+@if (WorkoutSessionState.Value.Day is null)
+{
+    NavigationManager.NavigateTo("/");
+}
+else
+{
+    <Session CycleRepcountForExercise=@CycleRepcountForExercise WorkoutSession=@(WorkoutSessionState.Value.Day) LastSetFinishedAt=WorkoutSessionState.Value.RestTimerStart ></Session>
+}

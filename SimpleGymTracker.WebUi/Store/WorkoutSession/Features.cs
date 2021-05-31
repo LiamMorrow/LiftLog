@@ -1,12 +1,12 @@
 using Fluxor;
-using SimpleGymTracker.Lib;
+using SimpleGymTracker.Lib.Models;
 
-namespace SimpleGymTracker.WebUi.Store.Workout
+namespace SimpleGymTracker.WebUi.Store.WorkoutSession
 {
   public class Feature : Feature<WorkoutSessionState>
   {
     public override string GetName() => "WorkoutSession";
     protected override WorkoutSessionState GetInitialState() =>
-        new(Plans.Stronglifts.FirstDay());
+        new(null, null);
   }
 }

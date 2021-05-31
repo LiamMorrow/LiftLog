@@ -1,0 +1,8 @@
+<button @onclick=onclick class="ui-button">@ChildContent</button>
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> onclick { get; set; }
+}
