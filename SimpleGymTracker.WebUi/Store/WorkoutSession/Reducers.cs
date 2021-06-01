@@ -9,25 +9,29 @@ namespace SimpleGymTracker.WebUi.Store.WorkoutSession
     [ReducerMethod]
     public static WorkoutSessionState CycleExerciseReps(WorkoutSessionState state, CycleExerciseRepsAction action)
     {
-      if (state.Day is null)
+      if (state.DayDao is null)
       {
         throw new Exception();
       }
+      var day = state.DayDao.Day;
 
       return state with
       {
-        Day = state.Day with
+        DayDao = state.DayDao with
         {
-          WeightedExercises = state.Day
+          Day = day with
+          {
+            WeightedExercises = day
               .WeightedExercises.SetItem(
                   action.ExerciseIndex,
-                  state.Day.WeightedExercises[action.ExerciseIndex].WithCycledRepCount(action.SetIndex))
+                  day.WeightedExercises[action.ExerciseIndex].WithCycledRepCount(action.SetIndex))
+          }
         }
       };
     }
 
     [ReducerMethod]
     public static WorkoutSessionState SetWorkoutDay(WorkoutSessionState state, SetWorkoutDayAction action)
-        => state with { Day = action.Day };
+        => state with { DayDao = action.Day };
   }
 }

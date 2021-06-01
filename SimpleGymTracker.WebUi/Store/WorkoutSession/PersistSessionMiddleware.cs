@@ -20,19 +20,19 @@ namespace SimpleGymTracker.WebUi.Store.WorkoutSession
     {
       this._store = store;
       var currentDay = await _progressStore.GetCurrentDayAsync();
-      if (currentDay is not null)
+      if (currentDay?.Day is not null)
       {
         store.Features["WorkoutSession"].RestoreState(new WorkoutSessionState(currentDay));
-        store.Dispatch(new RehydrateSessionAction());
       }
+      store.Dispatch(new RehydrateSessionAction());
     }
 
     public override void AfterDispatch(object action)
     {
       var currentState = (WorkoutSessionState?)_store?.Features["WorkoutSession"].GetState();
-      if (currentState?.Day is not null)
+      if (currentState?.DayDao is not null)
       {
-        _progressStore.SaveCurrentDayAsync(currentState.Day);
+        _progressStore.SaveCurrentDayAsync(currentState.DayDao);
       }
     }
   }

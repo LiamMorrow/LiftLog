@@ -7,9 +7,9 @@ namespace SimpleGymTracker.Lib.Store
 {
   public interface IProgressStore
   {
-    ValueTask<WorkoutDay?> GetCurrentDayAsync();
+    ValueTask<WorkoutDayDao?> GetCurrentDayAsync();
 
-    ValueTask SaveCurrentDayAsync(WorkoutDay day);
+    ValueTask SaveCurrentDayAsync(WorkoutDayDao day);
 
     IAsyncEnumerable<WorkoutDayDao> GetAllWorkoutDaysAsync();
 

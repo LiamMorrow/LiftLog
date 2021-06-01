@@ -8,11 +8,11 @@
 
     <AppButton onclick=@(() => {})>Finish</AppButton>
 
-    @if (WorkoutSession.NextExercise is not null && WorkoutSession.LastExercise?.LastSetTime is not null)
+    @if (WorkoutSession.NextExercise is not null && WorkoutSession.LastExercise?.LastSet is not null)
     {
-        var lastSetFailed = WorkoutSession.LastExercise.SetRepCounts.Last(x => x is not null) < WorkoutSession.LastExercise.PlanExercise.RepsPerSet;
+        var lastSetFailed = WorkoutSession.LastExercise.LastSet.RepsCompleted < WorkoutSession.LastExercise.PlanExercise.RepsPerSet;
 
-        <RestTimer Rest=WorkoutSession.NextExercise.PlanExercise.RestBetweenSets StartTime=WorkoutSession.LastExercise.LastSetTime.Value Failed=lastSetFailed />
+        <RestTimer Rest=WorkoutSession.NextExercise.PlanExercise.RestBetweenSets StartTime=WorkoutSession.LastExercise.LastSet.CompletionTime Failed=lastSetFailed />
     }
 </div>
 @code {

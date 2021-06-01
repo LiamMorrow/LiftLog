@@ -4,25 +4,27 @@ using System.Linq;
 
 namespace SimpleGymTracker.Lib.Models
 {
-  public record WorkoutWeightedExercise(WorkoutPlanWeightedExercise PlanExercise, ImmutableListSequence<int?> SetRepCounts, decimal Weight, DateTimeOffset? LastSetTime)
+  public record WorkoutSet(int RepsCompleted, DateTimeOffset CompletionTime);
+
+  public record WorkoutWeightedExercise(WorkoutPlanWeightedExercise PlanExercise, ImmutableListSequence<WorkoutSet?> Sets, decimal Weight)
   {
+    public WorkoutSet? LastSet => Sets?.LastOrDefault(x => x is not null);
     public WorkoutWeightedExercise WithCycledRepCount(int repCountIndex)
     {
-      var repCounts = SetRepCounts;
+      var sets = Sets;
       // We cycle down from the goal sets, or back to null to reset it after 0
-      var repCount = repCounts[repCountIndex] switch
+      var repCount = sets[repCountIndex] switch
       {
-        null => PlanExercise.RepsPerSet,
-        0 => (int?)null,
-        int reps => reps - 1
+        null => new WorkoutSet(PlanExercise.RepsPerSet, DateTimeOffset.UtcNow),
+        { RepsCompleted: 0 } => (WorkoutSet?)null,
+        var reps => new WorkoutSet(reps.RepsCompleted - 1, DateTimeOffset.UtcNow)
       };
 
-      repCounts = repCounts.SetItem(repCountIndex, repCount);
+      sets = sets.SetItem(repCountIndex, repCount);
 
       return this with
       {
-        SetRepCounts = repCounts,
-        LastSetTime = DateTimeOffset.UtcNow
+        Sets = sets,
       };
     }
   }
@@ -35,13 +37,13 @@ namespace SimpleGymTracker.Lib.Models
   {
     public WorkoutWeightedExercise? NextExercise
         => WeightedExercises
-            .FirstOrDefault(x => x.SetRepCounts.Any(reps => reps is null)
-                             && !x.SetRepCounts.All(reps => reps is null));
+            .FirstOrDefault(x => x.Sets.Any(set => set is null)
+                              && !x.Sets.All(reps => reps is null));
 
     public WorkoutWeightedExercise? LastExercise
         => WeightedExercises
-            .LastOrDefault(x => x.SetRepCounts.Any(reps => reps is not null)
-                            && !x.SetRepCounts.All(reps => reps is not null));
+            .LastOrDefault(x => x.Sets.Any(set => set is not null)
+                              && !x.Sets.All(reps => reps is not null));
   }
 
   public record WorkoutDayDao(

@@ -12,7 +12,7 @@ namespace SimpleGymTracker.WebUi.Services
   public class LocalStorageProgressStore : IProgressStore
   {
     private bool _initialised;
-    private WorkoutDay? _currentDay;
+    private WorkoutDayDao? _currentDay;
     private readonly ConcurrentDictionary<Guid, WorkoutDay> _storedSessions = new();
     private readonly ILocalStorageService _localStorage;
 
@@ -32,7 +32,7 @@ namespace SimpleGymTracker.WebUi.Services
       }
     }
 
-    public async ValueTask<WorkoutDay?> GetCurrentDayAsync()
+    public async ValueTask<WorkoutDayDao?> GetCurrentDayAsync()
     {
       await InitialiseAsync();
       return _currentDay;
@@ -47,7 +47,7 @@ namespace SimpleGymTracker.WebUi.Services
       return PersistAsync();
     }
 
-    public ValueTask SaveCurrentDayAsync(WorkoutDay day)
+    public ValueTask SaveCurrentDayAsync(WorkoutDayDao day)
     {
       _currentDay = day;
       return PersistAsync();
@@ -76,6 +76,6 @@ namespace SimpleGymTracker.WebUi.Services
       return _localStorage.SetItemAsync("Progress", new StorageDao(_currentDay, _storedSessions.Select(x => new WorkoutDayDao(x.Key, x.Value)).ToList()));
     }
 
-    private record StorageDao(WorkoutDay? CurrentDay, List<WorkoutDayDao> CompletedSessions);
+    private record StorageDao(WorkoutDayDao? CurrentDay, List<WorkoutDayDao> CompletedSessions);
   }
 }

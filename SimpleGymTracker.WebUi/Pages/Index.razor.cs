@@ -1,3 +1,4 @@
+using System;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
 using SimpleGymTracker.Lib.Models;
@@ -20,7 +21,7 @@ namespace SimpleGymTracker.WebUi.Pages
     private void SelectWorkoutPlan(WorkoutPlan plan)
     {
       Dispatcher.Dispatch(new SelectPlanAction(plan));
-      Dispatcher.Dispatch(new SetWorkoutDayAction(plan.FirstDay()));
+      Dispatcher.Dispatch(new SetWorkoutDayAction(new WorkoutDayDao(Guid.NewGuid(), plan.FirstDay())));
       NavigationManager.NavigateTo("/session");
     }
   }

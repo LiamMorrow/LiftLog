@@ -5,11 +5,11 @@
   </div>
   <div class="weighted-exercise-list">
     @{
-      var repToStartNext = Exercise.SetRepCounts.IndexOf(null);
+      var repToStartNext = Exercise.Sets.IndexOf(null);
     }
-    @foreach (var (repCount, i) in Exercise.SetRepCounts.Select((repCount, i) => (repCount, i)))
+    @foreach (var (set, i) in Exercise.Sets.Select((set, i) => (set, i)))
     {
-      <RepCount @key=i CycleRepCount=@(() => CycleRepCountForSet(i)) RepCountValue=@repCount ToStartNext=@(ToStartNext && repToStartNext == i) />
+      <RepCount @key=i CycleRepCount=@(() => CycleRepCountForSet(i)) RepCountValue=@set?.RepsCompleted ToStartNext=@(ToStartNext && repToStartNext == i) />
     }
   </div>
 </div>

@@ -20,9 +20,8 @@ namespace SimpleGymTracker.Lib.Models
           ListOf(Days[0].Groups
             .Select(plan => new WorkoutWeightedExercise(
                           PlanExercise: plan,
-                          SetRepCounts: ListOf(Enumerable.Repeat<int?>(null, plan.Sets)),
-                          Weight: plan.InitialKilograms,
-                          LastSetTime: null))),
+                          Sets: ListOf(Enumerable.Repeat<WorkoutSet?>(null, plan.Sets)),
+                          Weight: plan.InitialKilograms))),
           DateTimeOffset.UtcNow);
   }
 }

@@ -4,14 +4,14 @@
 
 @{
   this.SubscribeToAction<SimpleGymTracker.WebUi.Store.WorkoutSession.RehydrateSessionAction>(state=>{
-      if(WorkoutSessionState.Value.Day is null)
+      if(WorkoutSessionState.Value.DayDao is null)
       {
         NavigationManager.NavigateTo("/");
       }
   });
 }
 
-@if(WorkoutSessionState.Value.Day is not null)
+@if(WorkoutSessionState.Value.DayDao is not null)
 {
-    <Session CycleRepcountForExercise=@CycleRepcountForExercise WorkoutSession=@(WorkoutSessionState.Value.Day) />
+    <Session CycleRepcountForExercise=@CycleRepcountForExercise WorkoutSession=@(WorkoutSessionState.Value.DayDao.Day) />
 }
