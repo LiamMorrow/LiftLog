@@ -11,6 +11,8 @@ namespace SimpleGymTracker.Lib.Store
 
     ValueTask SaveCurrentDayAsync(WorkoutDayDao day);
 
+    ValueTask ClearCurrentDayAsync();
+
     IAsyncEnumerable<WorkoutDayDao> GetAllWorkoutDaysAsync();
 
     IAsyncEnumerable<WorkoutDayDao> GetWorkoutDaysForPlanAsync(WorkoutPlan plan);

@@ -13,5 +13,8 @@
 
 @if(WorkoutSessionState.Value.DayDao is not null)
 {
-    <Session CycleRepcountForExercise=@CycleRepcountForExercise WorkoutSession=@(WorkoutSessionState.Value.DayDao.Day) />
+    <Session
+        CycleRepcountForExercise=CycleRepcountForExercise
+        WorkoutSession=@(WorkoutSessionState.Value.DayDao.Day)
+        SaveSession=SaveSession />
 }

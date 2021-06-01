@@ -53,6 +53,12 @@ namespace SimpleGymTracker.WebUi.Services
       return PersistAsync();
     }
 
+    public ValueTask ClearCurrentDayAsync()
+    {
+      _currentDay = null;
+      return PersistAsync();
+    }
+
     private async ValueTask InitialiseAsync()
     {
       if (!_initialised)
