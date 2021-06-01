@@ -1,5 +1,8 @@
-<div class="card">@ChildContent</div>
+<div class="card" @onclick=onclick>@ChildContent</div>
 @code {
   [Parameter]
   public RenderFragment ChildContent { get; set; } = null!;
+
+  [Parameter]
+  public EventCallback<MouseEventArgs> onclick { get; set; }
 }

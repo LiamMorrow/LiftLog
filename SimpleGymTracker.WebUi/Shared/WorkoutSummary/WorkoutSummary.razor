@@ -1,0 +1,22 @@
+<Card onclick=onclick >
+    <div class="workout-summary">
+        <h3>@(WorkoutDay.Date.ToString("ddd, dd MMM"))</h3>
+        @foreach (var (exercise, i) in WorkoutDay.WeightedExercises.IndexedTuples())
+        {
+            <span class="exercise-summary" @key=i>
+                <span class="exercise-summary-short-name">@exercise.PlanExercise.Name</span>
+                <span class="exercise-summary-completed">@(exercise.Sets.Count)x@(exercise.Sets.Count(x => x is not null))
+                    <WeightFormat Kilograms=@exercise.Weight />
+                </span>
+            </span>
+        }
+    </div>
+</Card>
+
+@code {
+    [Parameter]
+    public WorkoutDay WorkoutDay { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> onclick { get; set; }
+}

@@ -1,0 +1,4 @@
+.workout-summary {
+    display: flex;
+    flex-direction: column;
+}

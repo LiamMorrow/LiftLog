@@ -7,3 +7,8 @@
 {
     <AppButton @key=i @onclick=@(() => SelectWorkoutPlan(workoutPlan))>@workoutPlan.Name</AppButton>
 }
+
+@foreach (var (workoutDay, i) in _workouts.IndexedTuples())
+{
+    <WorkoutSummary WorkoutDay=workoutDay.Day @onclick=@(()=>SelectSession(workoutDay)) />
+}
