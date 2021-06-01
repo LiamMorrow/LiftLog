@@ -3,17 +3,25 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text.Json.Serialization;
+using SimpleGymTracker.Lib.Serialization;
 
 namespace SimpleGymTracker.Lib
 {
   /**
   * An implementation of immutable list with value semantics.
   */
+  [JsonConverter(typeof(ImmutableListSequenceJsonConverter))]
   public sealed class ImmutableListSequence<T> : IImmutableList<T>
   {
     public ImmutableListSequence(ImmutableList<T> items)
     {
       Items = items;
+    }
+
+    public ImmutableListSequence(List<T> items)
+    {
+      Items = items.ToImmutableList();
     }
 
     private ImmutableList<T> Items { get; }

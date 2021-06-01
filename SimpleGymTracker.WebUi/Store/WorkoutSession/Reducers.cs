@@ -22,8 +22,7 @@ namespace SimpleGymTracker.WebUi.Store.WorkoutSession
               .WeightedExercises.SetItem(
                   action.ExerciseIndex,
                   state.Day.WeightedExercises[action.ExerciseIndex].WithCycledRepCount(action.SetIndex))
-        },
-        RestTimerStart = DateTimeOffset.UtcNow
+        }
       };
     }
 

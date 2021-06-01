@@ -7,6 +7,6 @@ namespace SimpleGymTracker.WebUi.Store.WorkoutSession
   {
     public override string GetName() => "WorkoutSession";
     protected override WorkoutSessionState GetInitialState() =>
-        new(null, null);
+        new(null);
   }
 }

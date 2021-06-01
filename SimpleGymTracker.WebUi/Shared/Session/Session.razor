@@ -2,38 +2,26 @@
     @foreach (var (exercise, i) in WorkoutSession.WeightedExercises.IndexedTuples())
     {
         <Card>
-            <WeightedExercise @key=i Exercise="exercise" ToStartNext=@(NextExercise == exercise) CycleRepCountForSet=CycleRepCountForExerciseSet(i) />
+            <WeightedExercise @key=i Exercise="exercise" ToStartNext=@(WorkoutSession.NextExercise == exercise) CycleRepCountForSet=CycleRepCountForExerciseSet(i) />
         </Card>
     }
 
-    @if (NextExercise is not null && LastSetFinishedAt is not null && LastExercise is not null)
-    {
-        var lastSetFailed = LastExercise.SetRepCounts.Last(x => x is not null) < LastExercise.PlanExercise.RepsPerSet;
-        <RestTimer Rest=NextExercise.PlanExercise.RestBetweenSets StartTime=LastSetFinishedAt.Value Failed=lastSetFailed />
-    }
-
     <AppButton onclick=@(() => {})>Finish</AppButton>
+
+    @if (WorkoutSession.NextExercise is not null && WorkoutSession.LastExercise?.LastSetTime is not null)
+    {
+        var lastSetFailed = WorkoutSession.LastExercise.SetRepCounts.Last(x => x is not null) < WorkoutSession.LastExercise.PlanExercise.RepsPerSet;
+
+        <RestTimer Rest=WorkoutSession.NextExercise.PlanExercise.RestBetweenSets StartTime=WorkoutSession.LastExercise.LastSetTime.Value Failed=lastSetFailed />
+    }
 </div>
 @code {
     [Parameter]
     public WorkoutDay WorkoutSession { get; set; } = null!;
 
     [Parameter]
-    public DateTimeOffset? LastSetFinishedAt { get; set; }
-
-    [Parameter]
     public Action<int, int> CycleRepcountForExercise { get; set; } = null!;
 
     private Action<int> CycleRepCountForExerciseSet(int exerciseIndex)
         => (int set) => CycleRepcountForExercise(exerciseIndex, set);
-
-    private WorkoutWeightedExercise? NextExercise
-        => WorkoutSession.WeightedExercises
-            .FirstOrDefault(x => x.SetRepCounts.Any(reps => reps is null)
-                             && !x.SetRepCounts.All(reps => reps is null));
-
-    private WorkoutWeightedExercise? LastExercise
-        => WorkoutSession.WeightedExercises
-            .LastOrDefault(x => x.SetRepCounts.Any(reps => reps is not null)
-                            && !x.SetRepCounts.All(reps => reps is not null));
 }

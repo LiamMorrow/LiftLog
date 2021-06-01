@@ -2,11 +2,16 @@
 @page "/session"
 @inject NavigationManager NavigationManager;
 
-@if (WorkoutSessionState.Value.Day is null)
-{
-    NavigationManager.NavigateTo("/");
+@{
+  this.SubscribeToAction<SimpleGymTracker.WebUi.Store.WorkoutSession.RehydrateSessionAction>(state=>{
+      if(WorkoutSessionState.Value.Day is null)
+      {
+        NavigationManager.NavigateTo("/");
+      }
+  });
 }
-else
+
+@if(WorkoutSessionState.Value.Day is not null)
 {
-    <Session CycleRepcountForExercise=@CycleRepcountForExercise WorkoutSession=@(WorkoutSessionState.Value.Day) LastSetFinishedAt=WorkoutSessionState.Value.RestTimerStart ></Session>
+    <Session CycleRepcountForExercise=@CycleRepcountForExercise WorkoutSession=@(WorkoutSessionState.Value.Day) />
 }
