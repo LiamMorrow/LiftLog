@@ -6,7 +6,7 @@ namespace SimpleGymTracker.WebUi.Shared.Session.RestTimer
 {
   public partial class RestTimer : IDisposable
   {
-    private const string timespanFormatStr = @"mm\:ss";
+    private const string TimespanFormatStr = @"mm\:ss";
     private readonly CancellationTokenSource _destroyedSource = new();
     private bool _disposedValue;
 

@@ -17,7 +17,7 @@ namespace SimpleGymTracker.Lib.Models
       {
         null => new WorkoutSet(PlanExercise.RepsPerSet, DateTimeOffset.UtcNow),
         { RepsCompleted: 0 } => (WorkoutSet?)null,
-        var reps => new WorkoutSet(reps.RepsCompleted - 1, DateTimeOffset.UtcNow)
+        var reps => reps with { RepsCompleted = reps.RepsCompleted - 1 }
       };
 
       sets = sets.SetItem(repCountIndex, repCount);
