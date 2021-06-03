@@ -1,0 +1,49 @@
+<div class="workout-history">
+    <div class="next-workout">
+        @if (NextWorkoutDay != null)
+        {
+            <WorkoutSummary
+                WorkoutDay=NextWorkoutDay
+                @onclick=@(() => SelectSession(new WorkoutDayDao(Guid.NewGuid(), NextWorkoutDay)))
+                IsPreview=true />
+        }
+    </div>
+    <div class="workout-summaries">
+        @foreach (var (workoutDay, i) in Workouts.IndexedTuples())
+        {
+            <WorkoutSummary
+                WorkoutDay=workoutDay.Day
+                @onclick=@(()=>SelectSession(workoutDay)) />
+        }
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public IEnumerable<WorkoutDayDao> Workouts { get;set; } = null!;
+
+    [Parameter]
+    public WorkoutPlan WorkoutPlan { get;set; } = null!;
+
+    [Parameter]
+    public IReadOnlyDictionary<WorkoutPlanWeightedExercise, WorkoutWeightedExercise> PreviousExercises { get;set; } = null!;
+
+    [Parameter]
+    public Action<WorkoutDayDao> SelectSession { get;set; } = null!;
+
+    private WorkoutDay NextWorkoutDay
+    {
+        get
+        {
+            var lastDay = Workouts.FirstOrDefault()?.Day;
+            var (plan, nextDayPlan) = lastDay switch
+            {
+                null => (WorkoutPlan, WorkoutPlan.Days[0]),
+                _ => (WorkoutPlan, WorkoutPlan.GetDayAfter(lastDay.PlanDay))
+            };
+            return nextDayPlan.GetNextWorkout(plan, PreviousExercises);
+        }
+    }
+
+}

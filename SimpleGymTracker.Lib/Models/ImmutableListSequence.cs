@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using SimpleGymTracker.Lib.Serialization;
 
 namespace SimpleGymTracker.Lib
@@ -24,7 +25,13 @@ namespace SimpleGymTracker.Lib
       Items = items.ToImmutableList();
     }
 
-    private ImmutableList<T> Items { get; }
+    // Note - This allows for setting internally.
+    // It can be set during an Equals check when 2 lists are equal by sequence, but not by reference
+    // When they are equal by sequence, we set this.Items = second.Items
+    // Therefore, next call, we will not need to enumerate for equality
+    private ImmutableList<T> Items { get; set; }
+
+    private int? _precomputedHashcode;
 
     public int Count => ((IReadOnlyCollection<T>)Items).Count;
 
@@ -37,14 +44,36 @@ namespace SimpleGymTracker.Lib
 
     public override int GetHashCode()
     {
-      return Items.Aggregate(0, HashCode.Combine);
+      if (_precomputedHashcode != null)
+      {
+        return _precomputedHashcode.Value;
+      }
+
+      _precomputedHashcode = Items.Aggregate(0, HashCode.Combine);
+      return _precomputedHashcode.Value;
     }
 
     public override bool Equals(object? obj)
     {
+      if (ReferenceEquals(this, obj))
+      {
+        return true;
+      }
+
       if (obj is ImmutableListSequence<T> second)
       {
-        return Items.SequenceEqual(second.Items);
+        if (ReferenceEquals(second.Items, Items))
+        {
+          return true;
+        }
+
+        var equalsBySequence = Items.SequenceEqual(second.Items);
+        if (equalsBySequence)
+        {
+          // Reduces future unnecessary sequenceEquals calls - see Items definition
+          Items = second.Items;
+          return equalsBySequence;
+        }
       }
 
       return false;

@@ -8,18 +8,8 @@
     <AppButton @key=i @onclick=@(() => SelectWorkoutPlan(workoutPlan))>@workoutPlan.Name</AppButton>
 }
 
-<div class="next-workout">
-    @if (NextWorkoutDay != null)
-    {
-        <WorkoutSummary
-            WorkoutDay=NextWorkoutDay
-            @onclick=@(() => SelectSession(new WorkoutDayDao(Guid.NewGuid(),NextWorkoutDay)))
-            IsPreview=true />
-    }
-</div>
-<div class="workout-summaries">
-    @foreach (var (workoutDay, i) in _workouts.IndexedTuples())
-    {
-        <WorkoutSummary WorkoutDay=workoutDay.Day @onclick=@(()=>SelectSession(workoutDay)) />
-    }
-</div>
+<WorkoutHistoryList
+    WorkoutPlan=WorkoutSettingsState.Value.SelectedPlan
+    Workouts=@(_workouts.Where(x=>x.Day.Plan == WorkoutSettingsState.Value.SelectedPlan))
+    PreviousExercises=_previousExercises
+    SelectSession=SelectSession />

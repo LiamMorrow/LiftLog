@@ -16,6 +16,15 @@ namespace SimpleGymTracker.Lib
 
     public static ImmutableListSequence<T> ListOf<T>(IEnumerable<T> items)
     {
+      if (items is ImmutableListSequence<T> ims)
+      {
+        return ims;
+      }
+      if (items is ImmutableList<T> il)
+      {
+        return new ImmutableListSequence<T>(il);
+      }
+
       return new ImmutableListSequence<T>(ImmutableList.CreateRange(items));
     }
   }

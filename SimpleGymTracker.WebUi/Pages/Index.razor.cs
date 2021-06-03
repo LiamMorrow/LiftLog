@@ -29,26 +29,11 @@ namespace SimpleGymTracker.WebUi.Pages
     private readonly List<WorkoutDayDao> _workouts = new();
     private readonly Dictionary<WorkoutPlanWeightedExercise, WorkoutWeightedExercise> _previousExercises = new();
 
-    private WorkoutDay NextWorkoutDay
-    {
-      get
-      {
-        var lastDay = _workouts.FirstOrDefault()?.Day;
-        var (plan, nextDayPlan) = lastDay switch
-        {
-          null => (WorkoutSettingsState.Value.SelectedPlan, Plans.BuiltInPlans[0].Days[0]),
-          _ => (lastDay.Plan, lastDay.Plan.GetDayAfter(lastDay.PlanDay))
-        };
-        return nextDayPlan.GetNextWorkout(plan, _previousExercises);
-      }
-    }
-
     protected override async Task OnInitializedAsync()
     {
       await base.OnInitializedAsync();
-      Console.WriteLine("Init");
 
-      await foreach (var workoutDao in ProgressStore.GetAllWorkoutDaysAsync())
+      await foreach (var workoutDao in ProgressStore.GetAllWorkoutDaysAsync().Take(50))
       {
         _workouts.Add(workoutDao);
         foreach (var exercise in workoutDao.Day.WeightedExercises)
