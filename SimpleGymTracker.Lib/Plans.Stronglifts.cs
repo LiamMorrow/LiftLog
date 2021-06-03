@@ -20,5 +20,17 @@ namespace SimpleGymTracker.Lib
           new WorkoutPlanWeightedExercise("Deadlift", Sets: 1, RepsPerSet: 5, InitialKilograms: 20, KilogramsIncreaseOnSuccess: 5m, s_strongliftsRest)
         ))
       ));
+    private static readonly WorkoutPlan s_strongliftss = new("Stronglifts 2x5", ListOf(
+        new WorkoutPlanDay("Workout A", ListOf(
+          new WorkoutPlanWeightedExercise("Squat", Sets: 2, RepsPerSet: 2, InitialKilograms: 20, KilogramsIncreaseOnSuccess: 2.2m, s_strongliftsRest),
+          new WorkoutPlanWeightedExercise("Bench Press", Sets: 2, RepsPerSet: 2, InitialKilograms: 20, KilogramsIncreaseOnSuccess: 2.2m, s_strongliftsRest),
+          new WorkoutPlanWeightedExercise("Barbell Row", Sets: 2, RepsPerSet: 2, InitialKilograms: 20, KilogramsIncreaseOnSuccess: 2.2m, s_strongliftsRest)
+        )),
+        new WorkoutPlanDay("Workout B", ListOf(
+          new WorkoutPlanWeightedExercise("Squat", Sets: 2, RepsPerSet: 2, InitialKilograms: 20, KilogramsIncreaseOnSuccess: 2.2m, s_strongliftsRest),
+          new WorkoutPlanWeightedExercise("Overhead Press", Sets: 2, RepsPerSet: 2, InitialKilograms: 20, KilogramsIncreaseOnSuccess: 2.2m, s_strongliftsRest),
+          new WorkoutPlanWeightedExercise("Deadlift", Sets: 1, RepsPerSet: 2, InitialKilograms: 20, KilogramsIncreaseOnSuccess: 2m, s_strongliftsRest)
+        ))
+      ));
   }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace SimpleGymTracker.Lib.Models
@@ -27,6 +26,8 @@ namespace SimpleGymTracker.Lib.Models
         Sets = sets,
       };
     }
+
+    public bool SucceededAllSets => Sets.All(x => x?.RepsCompleted >= PlanExercise.RepsPerSet);
   }
 
   public record WorkoutDay(

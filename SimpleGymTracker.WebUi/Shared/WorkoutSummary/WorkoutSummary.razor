@@ -1,13 +1,12 @@
-<Card onclick=onclick >
+<Card onclick=onclick>
     <div class="workout-summary">
-        <h3>@(WorkoutDay.Date.ToString("ddd, dd MMM"))</h3>
+        <h3>@Title</h3>
         @foreach (var (exercise, i) in WorkoutDay.WeightedExercises.IndexedTuples())
         {
             <span class="exercise-summary" @key=i>
                 <span class="exercise-summary-short-name">@exercise.PlanExercise.Name</span>
-                <span class="exercise-summary-completed">@(exercise.Sets.Count)x@(exercise.Sets.Count(x => x is not null))
-                    <WeightFormat Kilograms=@exercise.Weight />
-                </span>
+                <WeightFormat Kilograms=@exercise.Weight />
+                <span class="exercise-summary-completed">@GetRepCounts(exercise)</span>
             </span>
         }
     </div>
@@ -19,4 +18,21 @@
 
     [Parameter]
     public EventCallback<MouseEventArgs> onclick { get; set; }
+
+    [Parameter]
+    public bool IsPreview { get; set; }
+
+    private string Title => IsPreview ? "Next" : WorkoutDay.Date.ToString("ddd, dd MMM");
+
+    private string GetRepCounts(WorkoutWeightedExercise exercise)
+    {
+        if (IsPreview)
+        {
+            return $"{exercise.PlanExercise.Sets}x{exercise.PlanExercise.RepsPerSet}";
+        }
+
+        var counts = exercise.Sets
+            .GroupBy(x => x?.RepsCompleted ?? 0, (completedReps, sets) => (completedReps, count: sets.Count()));
+        return string.Join(", ", counts.Select(x => $"{x.count}x{x.completedReps}"));
+    }
 }

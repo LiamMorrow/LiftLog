@@ -5,6 +5,6 @@ namespace SimpleGymTracker.Lib
 {
   public static partial class Plans
   {
-    public static ImmutableListSequence<WorkoutPlan> BuiltInPlans => ListOf(s_stronglifts);
+    public static ImmutableListSequence<WorkoutPlan> BuiltInPlans => ListOf(s_stronglifts, s_strongliftss);
   }
 }
