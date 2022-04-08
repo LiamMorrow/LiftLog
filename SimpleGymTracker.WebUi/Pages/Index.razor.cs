@@ -12,49 +12,51 @@ using SimpleGymTracker.WebUi.Store.WorkoutSettings;
 
 namespace SimpleGymTracker.WebUi.Pages
 {
-  public partial class Index
-  {
-    [Inject]
-    private IState<WorkoutSettingsState> WorkoutSettingsState { get; set; } = null!;
-
-    [Inject]
-    public IDispatcher Dispatcher { get; set; } = null!;
-
-    [Inject]
-    public IProgressStore ProgressStore { get; set; } = null!;
-
-    [Inject]
-    public NavigationManager NavigationManager { get; set; } = null!;
-
-    private readonly List<WorkoutDayDao> _workouts = new();
-    private readonly Dictionary<WorkoutPlanWeightedExercise, WorkoutWeightedExercise> _previousExercises = new();
-
-    protected override async Task OnInitializedAsync()
+    public partial class Index
     {
-      await base.OnInitializedAsync();
+        [Inject]
+        private IState<WorkoutSettingsState> WorkoutSettingsState { get; set; } = null!;
 
-      await foreach (var workoutDao in ProgressStore.GetAllWorkoutDaysAsync().Take(50))
-      {
-        _workouts.Add(workoutDao);
-        foreach (var exercise in workoutDao.Day.WeightedExercises)
+        [Inject]
+        public IDispatcher Dispatcher { get; set; } = null!;
+
+        [Inject]
+        public IProgressStore ProgressStore { get; set; } = null!;
+
+        [Inject]
+        public NavigationManager NavigationManager { get; set; } = null!;
+
+        private readonly List<WorkoutDayDao> _workouts = new();
+        private readonly Dictionary<
+            WorkoutPlanWeightedExercise,
+            WorkoutWeightedExercise
+        > _previousExercises = new();
+
+        protected override async Task OnInitializedAsync()
         {
-          _previousExercises.TryAdd(exercise.PlanExercise, exercise);
+            await base.OnInitializedAsync();
+
+            await foreach (var workoutDao in ProgressStore.GetAllWorkoutDaysAsync().Take(50))
+            {
+                _workouts.Add(workoutDao);
+                foreach (var exercise in workoutDao.Day.WeightedExercises)
+                {
+                    _previousExercises.TryAdd(exercise.PlanExercise, exercise);
+                }
+                StateHasChanged();
+            }
         }
-        StateHasChanged();
-      }
 
-    }
+        private void SelectSession(WorkoutDayDao day)
+        {
+            Dispatcher.Dispatch(new SelectPlanAction(day.Day.Plan));
+            Dispatcher.Dispatch(new SetWorkoutDayAction(day));
+            NavigationManager.NavigateTo("/session");
+        }
 
-    private void SelectSession(WorkoutDayDao day)
-    {
-      Dispatcher.Dispatch(new SelectPlanAction(day.Day.Plan));
-      Dispatcher.Dispatch(new SetWorkoutDayAction(day));
-      NavigationManager.NavigateTo("/session");
+        private void SelectWorkoutPlan(WorkoutPlan plan)
+        {
+            Dispatcher.Dispatch(new SelectPlanAction(plan));
+        }
     }
-
-    private void SelectWorkoutPlan(WorkoutPlan plan)
-    {
-      Dispatcher.Dispatch(new SelectPlanAction(plan));
-    }
-  }
 }

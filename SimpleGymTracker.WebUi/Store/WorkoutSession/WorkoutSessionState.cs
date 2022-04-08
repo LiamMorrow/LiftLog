@@ -3,5 +3,5 @@ using SimpleGymTracker.Lib.Models;
 
 namespace SimpleGymTracker.WebUi.Store.WorkoutSession
 {
-  public record WorkoutSessionState(WorkoutDayDao? DayDao);
+    public record WorkoutSessionState(WorkoutDayDao? DayDao);
 }

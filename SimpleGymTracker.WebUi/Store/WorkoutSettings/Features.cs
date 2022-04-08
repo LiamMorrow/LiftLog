@@ -3,10 +3,11 @@ using SimpleGymTracker.Lib;
 
 namespace SimpleGymTracker.WebUi.Store.WorkoutSettings
 {
-  public class Feature : Feature<WorkoutSettingsState>
-  {
-    public override string GetName() => "WorkoutSettings";
-    protected override WorkoutSettingsState GetInitialState() =>
-        new(Plans.BuiltInPlans, Plans.BuiltInPlans[0]);
-  }
+    public class Feature : Feature<WorkoutSettingsState>
+    {
+        public override string GetName() => "WorkoutSettings";
+
+        protected override WorkoutSettingsState GetInitialState() =>
+            new(Plans.BuiltInPlans, Plans.BuiltInPlans[0]);
+    }
 }

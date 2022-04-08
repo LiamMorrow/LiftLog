@@ -9,171 +9,188 @@ using SimpleGymTracker.Lib.Serialization;
 
 namespace SimpleGymTracker.Lib
 {
-  /**
+    /**
   * An implementation of immutable list with value semantics.
   */
-  [JsonConverter(typeof(ImmutableListSequenceJsonConverter))]
-  public sealed class ImmutableListSequence<T> : IImmutableList<T>
-  {
-    public ImmutableListSequence(ImmutableList<T> items)
+    [JsonConverter(typeof(ImmutableListSequenceJsonConverter))]
+    public sealed class ImmutableListSequence<T> : IImmutableList<T>
     {
-      Items = items;
-    }
-
-    public ImmutableListSequence(List<T> items)
-    {
-      Items = items.ToImmutableList();
-    }
-
-    // Note - This allows for setting internally.
-    // It can be set during an Equals check when 2 lists are equal by sequence, but not by reference
-    // When they are equal by sequence, we set this.Items = second.Items
-    // Therefore, next call, we will not need to enumerate for equality
-    private ImmutableList<T> Items { get; set; }
-
-    private int? _precomputedHashcode;
-
-    public int Count => ((IReadOnlyCollection<T>)Items).Count;
-
-    public T this[int index] => ((IReadOnlyList<T>)Items)[index];
-
-    public static implicit operator ImmutableListSequence<T>(ImmutableList<T> source)
-    {
-      return new ImmutableListSequence<T>(source);
-    }
-
-    public override int GetHashCode()
-    {
-      if (_precomputedHashcode != null)
-      {
-        return _precomputedHashcode.Value;
-      }
-
-      _precomputedHashcode = Items.Aggregate(0, HashCode.Combine);
-      return _precomputedHashcode.Value;
-    }
-
-    public override bool Equals(object? obj)
-    {
-      if (ReferenceEquals(this, obj))
-      {
-        return true;
-      }
-
-      if (obj is ImmutableListSequence<T> second)
-      {
-        if (ReferenceEquals(second.Items, Items))
+        public ImmutableListSequence(ImmutableList<T> items)
         {
-          return true;
+            Items = items;
         }
 
-        var equalsBySequence = Items.SequenceEqual(second.Items);
-        if (equalsBySequence)
+        public ImmutableListSequence(List<T> items)
         {
-          // Reduces future unnecessary sequenceEquals calls - see Items definition
-          Items = second.Items;
-          return equalsBySequence;
+            Items = items.ToImmutableList();
         }
-      }
 
-      return false;
-    }
+        // Note - This allows for setting internally.
+        // It can be set during an Equals check when 2 lists are equal by sequence, but not by reference
+        // When they are equal by sequence, we set this.Items = second.Items
+        // Therefore, next call, we will not need to enumerate for equality
+        private ImmutableList<T> Items { get; set; }
 
-    public override string ToString()
-    {
-      return $"[{string.Join(",", Items.Select(x => x?.ToString() ?? "null"))}]";
-    }
+        private int? _precomputedHashcode;
 
-    /// <inheritdoc/>
-    public int IndexOf(T value)
-    {
-      return Items.IndexOf(value);
-    }
+        public int Count => ((IReadOnlyCollection<T>)Items).Count;
 
-    /// <inheritdoc/>
-    public ImmutableList<T> SetItem(int index, T value)
-    {
-      return Items.SetItem(index, value);
-    }
+        public T this[int index] => ((IReadOnlyList<T>)Items)[index];
 
-    IImmutableList<T> IImmutableList<T>.Add(T value)
-    {
-      return ((IImmutableList<T>)Items).Add(value);
-    }
+        public static implicit operator ImmutableListSequence<T>(ImmutableList<T> source)
+        {
+            return new ImmutableListSequence<T>(source);
+        }
 
-    IImmutableList<T> IImmutableList<T>.AddRange(IEnumerable<T> items)
-    {
-      return ((IImmutableList<T>)Items).AddRange(items);
-    }
+        public override int GetHashCode()
+        {
+            if (_precomputedHashcode != null)
+            {
+                return _precomputedHashcode.Value;
+            }
 
-    IImmutableList<T> IImmutableList<T>.Clear()
-    {
-      return ((IImmutableList<T>)Items).Clear();
-    }
+            _precomputedHashcode = Items.Aggregate(0, HashCode.Combine);
+            return _precomputedHashcode.Value;
+        }
 
-    int IImmutableList<T>.IndexOf(T item, int index, int count, IEqualityComparer<T>? equalityComparer)
-    {
-      return ((IImmutableList<T>)Items).IndexOf(item, index, count, equalityComparer);
-    }
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
 
-    IImmutableList<T> IImmutableList<T>.Insert(int index, T element)
-    {
-      return ((IImmutableList<T>)Items).Insert(index, element);
-    }
+            if (obj is ImmutableListSequence<T> second)
+            {
+                if (ReferenceEquals(second.Items, Items))
+                {
+                    return true;
+                }
 
-    IImmutableList<T> IImmutableList<T>.InsertRange(int index, IEnumerable<T> items)
-    {
-      return ((IImmutableList<T>)Items).InsertRange(index, items);
-    }
+                var equalsBySequence = Items.SequenceEqual(second.Items);
+                if (equalsBySequence)
+                {
+                    // Reduces future unnecessary sequenceEquals calls - see Items definition
+                    Items = second.Items;
+                    return equalsBySequence;
+                }
+            }
 
-    int IImmutableList<T>.LastIndexOf(T item, int index, int count, IEqualityComparer<T>? equalityComparer)
-    {
-      return ((IImmutableList<T>)Items).LastIndexOf(item, index, count, equalityComparer);
-    }
+            return false;
+        }
 
-    IImmutableList<T> IImmutableList<T>.Remove(T value, IEqualityComparer<T>? equalityComparer)
-    {
-      return ((IImmutableList<T>)Items).Remove(value, equalityComparer);
-    }
+        public override string ToString()
+        {
+            return $"[{string.Join(",", Items.Select(x => x?.ToString() ?? "null"))}]";
+        }
 
-    IImmutableList<T> IImmutableList<T>.RemoveAll(Predicate<T> match)
-    {
-      return ((IImmutableList<T>)Items).RemoveAll(match);
-    }
+        /// <inheritdoc/>
+        public int IndexOf(T value)
+        {
+            return Items.IndexOf(value);
+        }
 
-    IImmutableList<T> IImmutableList<T>.RemoveAt(int index)
-    {
-      return ((IImmutableList<T>)Items).RemoveAt(index);
-    }
+        /// <inheritdoc/>
+        public ImmutableList<T> SetItem(int index, T value)
+        {
+            return Items.SetItem(index, value);
+        }
 
-    IImmutableList<T> IImmutableList<T>.RemoveRange(IEnumerable<T> items, IEqualityComparer<T>? equalityComparer)
-    {
-      return ((IImmutableList<T>)Items).RemoveRange(items, equalityComparer);
-    }
+        IImmutableList<T> IImmutableList<T>.Add(T value)
+        {
+            return ((IImmutableList<T>)Items).Add(value);
+        }
 
-    IImmutableList<T> IImmutableList<T>.RemoveRange(int index, int count)
-    {
-      return ((IImmutableList<T>)Items).RemoveRange(index, count);
-    }
+        IImmutableList<T> IImmutableList<T>.AddRange(IEnumerable<T> items)
+        {
+            return ((IImmutableList<T>)Items).AddRange(items);
+        }
 
-    IImmutableList<T> IImmutableList<T>.Replace(T oldValue, T newValue, IEqualityComparer<T>? equalityComparer)
-    {
-      return ((IImmutableList<T>)Items).Replace(oldValue, newValue, equalityComparer);
-    }
+        IImmutableList<T> IImmutableList<T>.Clear()
+        {
+            return ((IImmutableList<T>)Items).Clear();
+        }
 
-    IImmutableList<T> IImmutableList<T>.SetItem(int index, T value)
-    {
-      return ((IImmutableList<T>)Items).SetItem(index, value);
-    }
+        int IImmutableList<T>.IndexOf(
+            T item,
+            int index,
+            int count,
+            IEqualityComparer<T>? equalityComparer
+        )
+        {
+            return ((IImmutableList<T>)Items).IndexOf(item, index, count, equalityComparer);
+        }
 
-    public IEnumerator<T> GetEnumerator()
-    {
-      return ((IEnumerable<T>)Items).GetEnumerator();
-    }
+        IImmutableList<T> IImmutableList<T>.Insert(int index, T element)
+        {
+            return ((IImmutableList<T>)Items).Insert(index, element);
+        }
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-      return ((IEnumerable)Items).GetEnumerator();
+        IImmutableList<T> IImmutableList<T>.InsertRange(int index, IEnumerable<T> items)
+        {
+            return ((IImmutableList<T>)Items).InsertRange(index, items);
+        }
+
+        int IImmutableList<T>.LastIndexOf(
+            T item,
+            int index,
+            int count,
+            IEqualityComparer<T>? equalityComparer
+        )
+        {
+            return ((IImmutableList<T>)Items).LastIndexOf(item, index, count, equalityComparer);
+        }
+
+        IImmutableList<T> IImmutableList<T>.Remove(T value, IEqualityComparer<T>? equalityComparer)
+        {
+            return ((IImmutableList<T>)Items).Remove(value, equalityComparer);
+        }
+
+        IImmutableList<T> IImmutableList<T>.RemoveAll(Predicate<T> match)
+        {
+            return ((IImmutableList<T>)Items).RemoveAll(match);
+        }
+
+        IImmutableList<T> IImmutableList<T>.RemoveAt(int index)
+        {
+            return ((IImmutableList<T>)Items).RemoveAt(index);
+        }
+
+        IImmutableList<T> IImmutableList<T>.RemoveRange(
+            IEnumerable<T> items,
+            IEqualityComparer<T>? equalityComparer
+        )
+        {
+            return ((IImmutableList<T>)Items).RemoveRange(items, equalityComparer);
+        }
+
+        IImmutableList<T> IImmutableList<T>.RemoveRange(int index, int count)
+        {
+            return ((IImmutableList<T>)Items).RemoveRange(index, count);
+        }
+
+        IImmutableList<T> IImmutableList<T>.Replace(
+            T oldValue,
+            T newValue,
+            IEqualityComparer<T>? equalityComparer
+        )
+        {
+            return ((IImmutableList<T>)Items).Replace(oldValue, newValue, equalityComparer);
+        }
+
+        IImmutableList<T> IImmutableList<T>.SetItem(int index, T value)
+        {
+            return ((IImmutableList<T>)Items).SetItem(index, value);
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return ((IEnumerable<T>)Items).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)Items).GetEnumerator();
+        }
     }
-  }
 }

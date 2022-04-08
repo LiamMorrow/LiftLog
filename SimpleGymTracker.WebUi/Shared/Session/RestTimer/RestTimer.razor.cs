@@ -4,48 +4,50 @@ using System.Threading.Tasks;
 
 namespace SimpleGymTracker.WebUi.Shared.Session.RestTimer
 {
-  public partial class RestTimer : IDisposable
-  {
-    private const string TimespanFormatStr = @"mm\:ss";
-    private readonly CancellationTokenSource _destroyedSource = new();
-    private bool _disposedValue;
-
-    protected override void OnAfterRender(bool firstRender)
+    public partial class RestTimer : IDisposable
     {
-      base.OnAfterRender(firstRender);
-      if (firstRender)
-      {
-        Task.Run(async () =>
-        {
-          while (!_destroyedSource.IsCancellationRequested)
-          {
-            StateHasChanged();
-            await Task.Delay(200);
-          }
-        });
-      }
-    }
+        private const string TimespanFormatStr = @"mm\:ss";
+        private readonly CancellationTokenSource _destroyedSource = new();
+        private bool _disposedValue;
 
-    protected virtual void Dispose(bool disposing)
-    {
-      if (!_disposedValue)
-      {
-        if (disposing)
+        protected override void OnAfterRender(bool firstRender)
         {
-          _destroyedSource.Cancel();
+            base.OnAfterRender(firstRender);
+            if (firstRender)
+            {
+                Task.Run(
+                    async () =>
+                    {
+                        while (!_destroyedSource.IsCancellationRequested)
+                        {
+                            StateHasChanged();
+                            await Task.Delay(200);
+                        }
+                    }
+                );
+            }
         }
 
-        // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-        // TODO: set large fields to null
-        _disposedValue = true;
-      }
-    }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    _destroyedSource.Cancel();
+                }
 
-    public void Dispose()
-    {
-      // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-      Dispose(disposing: true);
-      GC.SuppressFinalize(this);
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                _disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
-  }
 }

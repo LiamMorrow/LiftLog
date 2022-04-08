@@ -3,7 +3,8 @@ using SimpleGymTracker.Lib.Models;
 
 namespace SimpleGymTracker.WebUi.Store.WorkoutSettings
 {
-  public record WorkoutSettingsState(
-    ImmutableListSequence<WorkoutPlan> Plans,
-    WorkoutPlan SelectedPlan);
+    public record WorkoutSettingsState(
+        ImmutableListSequence<WorkoutPlan> Plans,
+        WorkoutPlan SelectedPlan
+    );
 }

@@ -4,34 +4,41 @@ using Fluxor;
 
 namespace SimpleGymTracker.WebUi.Store.WorkoutSession
 {
-  public static class Reducers
-  {
-    [ReducerMethod]
-    public static WorkoutSessionState CycleExerciseReps(WorkoutSessionState state, CycleExerciseRepsAction action)
+    public static class Reducers
     {
-      if (state.DayDao is null)
-      {
-        throw new Exception();
-      }
-      var day = state.DayDao.Day;
-
-      return state with
-      {
-        DayDao = state.DayDao with
+        [ReducerMethod]
+        public static WorkoutSessionState CycleExerciseReps(
+            WorkoutSessionState state,
+            CycleExerciseRepsAction action
+        )
         {
-          Day = day with
-          {
-            WeightedExercises = day
-              .WeightedExercises.SetItem(
-                  action.ExerciseIndex,
-                  day.WeightedExercises[action.ExerciseIndex].WithCycledRepCount(action.SetIndex))
-          }
-        }
-      };
-    }
+            if (state.DayDao is null)
+            {
+                throw new Exception();
+            }
+            var day = state.DayDao.Day;
 
-    [ReducerMethod]
-    public static WorkoutSessionState SetWorkoutDay(WorkoutSessionState state, SetWorkoutDayAction action)
-        => state with { DayDao = action.Day };
-  }
+            return state with
+            {
+                DayDao = state.DayDao with
+                {
+                    Day = day with
+                    {
+                        WeightedExercises = day.WeightedExercises.SetItem(
+                            action.ExerciseIndex,
+                            day.WeightedExercises[action.ExerciseIndex].WithCycledRepCount(
+                                action.SetIndex
+                            )
+                        )
+                    }
+                }
+            };
+        }
+
+        [ReducerMethod]
+        public static WorkoutSessionState SetWorkoutDay(
+            WorkoutSessionState state,
+            SetWorkoutDayAction action
+        ) => state with { DayDao = action.Day };
+    }
 }

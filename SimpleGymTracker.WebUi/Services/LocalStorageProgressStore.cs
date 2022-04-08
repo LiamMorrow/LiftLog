@@ -9,79 +9,87 @@ using SimpleGymTracker.Lib.Store;
 
 namespace SimpleGymTracker.WebUi.Services
 {
-  public class LocalStorageProgressStore : IProgressStore
-  {
-    private bool _initialised;
-    private WorkoutDayDao? _currentDay;
-    private readonly ConcurrentDictionary<Guid, WorkoutDay> _storedSessions = new();
-    private readonly ILocalStorageService _localStorage;
-
-    public LocalStorageProgressStore(ILocalStorageService localStorage)
+    public class LocalStorageProgressStore : IProgressStore
     {
-      _localStorage = localStorage;
-    }
+        private bool _initialised;
+        private WorkoutDayDao? _currentDay;
+        private readonly ConcurrentDictionary<Guid, WorkoutDay> _storedSessions = new();
+        private readonly ILocalStorageService _localStorage;
 
-    public async IAsyncEnumerable<WorkoutDayDao> GetAllWorkoutDaysAsync()
-    {
-      await InitialiseAsync();
-      foreach (var session in _storedSessions
-        .Select(day => new WorkoutDayDao(day.Key, day.Value))
-        .OrderByDescending(x => x.Day.Date))
-      {
-        yield return session;
-      }
-    }
-
-    public async ValueTask<WorkoutDayDao?> GetCurrentDayAsync()
-    {
-      await InitialiseAsync();
-      return _currentDay;
-    }
-
-    public IAsyncEnumerable<WorkoutDayDao> GetWorkoutDaysForPlanAsync(WorkoutPlan plan)
-      => GetAllWorkoutDaysAsync().Where(x => x.Day.Plan == plan);
-
-    public ValueTask SaveCompletedDayAsync(WorkoutDayDao dao)
-    {
-      _storedSessions[dao.Id] = dao.Day;
-      return PersistAsync();
-    }
-
-    public ValueTask SaveCurrentDayAsync(WorkoutDayDao day)
-    {
-      _currentDay = day;
-      return PersistAsync();
-    }
-
-    public ValueTask ClearCurrentDayAsync()
-    {
-      _currentDay = null;
-      return PersistAsync();
-    }
-
-    private async ValueTask InitialiseAsync()
-    {
-      if (!_initialised)
-      {
-        // TODO fix race
-        var storedData = await _localStorage.GetItemAsync<StorageDao?>("Progress");
-        if (storedData is not null)
+        public LocalStorageProgressStore(ILocalStorageService localStorage)
         {
-          foreach (var session in storedData.CompletedSessions)
-          {
-            _storedSessions[session.Id] = session.Day;
-          }
-          _currentDay = storedData.CurrentDay;
+            _localStorage = localStorage;
         }
-        _initialised = true;
-      }
-    }
 
-    private ValueTask PersistAsync()
-    {
-      return _localStorage.SetItemAsync("Progress", new StorageDao(_currentDay, _storedSessions.Select(x => new WorkoutDayDao(x.Key, x.Value)).ToList()));
-    }
+        public async IAsyncEnumerable<WorkoutDayDao> GetAllWorkoutDaysAsync()
+        {
+            await InitialiseAsync();
+            foreach (
+                var session in _storedSessions
+                    .Select(day => new WorkoutDayDao(day.Key, day.Value))
+                    .OrderByDescending(x => x.Day.Date)
+            )
+            {
+                yield return session;
+            }
+        }
 
-    private record StorageDao(WorkoutDayDao? CurrentDay, List<WorkoutDayDao> CompletedSessions);
-  }
+        public async ValueTask<WorkoutDayDao?> GetCurrentDayAsync()
+        {
+            await InitialiseAsync();
+            return _currentDay;
+        }
+
+        public IAsyncEnumerable<WorkoutDayDao> GetWorkoutDaysForPlanAsync(WorkoutPlan plan) =>
+            GetAllWorkoutDaysAsync().Where(x => x.Day.Plan == plan);
+
+        public ValueTask SaveCompletedDayAsync(WorkoutDayDao dao)
+        {
+            _storedSessions[dao.Id] = dao.Day;
+            return PersistAsync();
+        }
+
+        public ValueTask SaveCurrentDayAsync(WorkoutDayDao day)
+        {
+            _currentDay = day;
+            return PersistAsync();
+        }
+
+        public ValueTask ClearCurrentDayAsync()
+        {
+            _currentDay = null;
+            return PersistAsync();
+        }
+
+        private async ValueTask InitialiseAsync()
+        {
+            if (!_initialised)
+            {
+                // TODO fix race
+                var storedData = await _localStorage.GetItemAsync<StorageDao?>("Progress");
+                if (storedData is not null)
+                {
+                    foreach (var session in storedData.CompletedSessions)
+                    {
+                        _storedSessions[session.Id] = session.Day;
+                    }
+                    _currentDay = storedData.CurrentDay;
+                }
+                _initialised = true;
+            }
+        }
+
+        private ValueTask PersistAsync()
+        {
+            return _localStorage.SetItemAsync(
+                "Progress",
+                new StorageDao(
+                    _currentDay,
+                    _storedSessions.Select(x => new WorkoutDayDao(x.Key, x.Value)).ToList()
+                )
+            );
+        }
+
+        private record StorageDao(WorkoutDayDao? CurrentDay, List<WorkoutDayDao> CompletedSessions);
+    }
 }
