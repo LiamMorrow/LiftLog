@@ -1,7 +1,7 @@
-<button class="weight-display">@(Exercise.PlanExercise.Sets)x@(Exercise.PlanExercise.RepsPerSet)&nbsp
+<button class="weight-display" @onclick=OnOpenClick>@(Exercise.PlanExercise.Sets)x@(Exercise.PlanExercise.RepsPerSet)&nbsp
     <WeightFormat Kilograms=Exercise.Weight />
 </button>
-
+<div class=@($"weight-display-popup {(PopupActive ? "active" :"")}")></div>
 @code {
     [Parameter]
     public WorkoutWeightedExercise Exercise { get; set; } = null!;

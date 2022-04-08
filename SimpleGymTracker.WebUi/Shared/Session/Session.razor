@@ -2,24 +2,20 @@
     @foreach (var (exercise, i) in WorkoutSession.WeightedExercises.IndexedTuples())
     {
         <Card>
-            <WeightedExercise
-                @key=i
-                Exercise="exercise"
-                ToStartNext=@(WorkoutSession.NextExercise == exercise)
-                CycleRepCountForSet=CycleRepCountForExerciseSet(i) />
+            <WeightedExercise @key=i Exercise="exercise" ToStartNext=@(WorkoutSession.NextExercise == exercise)
+            CycleRepCountForSet=CycleRepCountForExerciseSet(i) />
         </Card>
     }
 
     <AppButton onclick=SaveSession>Finish</AppButton>
+    <AppButton onclick=CloseSession>Close</AppButton>
 
     @if (WorkoutSession.NextExercise is not null && WorkoutSession.LastExercise?.LastSet is not null)
     {
         var lastSetFailed = WorkoutSession.LastExercise.LastSet.RepsCompleted <
         WorkoutSession.LastExercise.PlanExercise.RepsPerSet;
-        <RestTimer
-            Rest=WorkoutSession.NextExercise.PlanExercise.RestBetweenSets
-            StartTime=WorkoutSession.LastExercise.LastSet.CompletionTime
-            Failed=lastSetFailed />
+        <RestTimer Rest=WorkoutSession.NextExercise.PlanExercise.RestBetweenSets
+        StartTime=WorkoutSession.LastExercise.LastSet.CompletionTime Failed=lastSetFailed />
     }
 </div>
 @code {
@@ -31,6 +27,9 @@
 
     [Parameter]
     public Action SaveSession { get; set; } = null!;
+
+    [Parameter]
+    public Action CloseSession { get; set; } = null!;
 
     private Action<int> CycleRepCountForExerciseSet(int exerciseIndex)
     => (int set) => CycleRepcountForExercise(exerciseIndex, set);

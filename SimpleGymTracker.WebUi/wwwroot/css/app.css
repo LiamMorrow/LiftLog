@@ -6,6 +6,8 @@
 :root {
     --margin-vert: 0.5em;
     --margin-hor: 0.5em;
+    --popup-z-index: 1;
+
     /* Default theme */
     --primary-color: red;
     --primary-foreground-text-color: white;
