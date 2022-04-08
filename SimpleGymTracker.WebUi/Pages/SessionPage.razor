@@ -3,18 +3,17 @@
 @inject NavigationManager NavigationManager;
 
 @{
-  this.SubscribeToAction<SimpleGymTracker.WebUi.Store.WorkoutSession.RehydrateSessionAction>(state=>{
-      if(WorkoutSessionState.Value.DayDao is null)
-      {
-        NavigationManager.NavigateTo("/");
-      }
-  });
+    this.SubscribeToAction<SimpleGymTracker.WebUi.Store.WorkoutSession.RehydrateSessionAction>(state =>
+            {
+                if (WorkoutSessionState.Value.DayDao is null)
+                {
+                    NavigationManager.NavigateTo("/");
+                }
+            });
 }
 
-@if(WorkoutSessionState.Value.DayDao is not null)
+@if (WorkoutSessionState.Value.DayDao is not null)
 {
-    <Session
-        CycleRepcountForExercise=CycleRepcountForExercise
-        WorkoutSession=@(WorkoutSessionState.Value.DayDao.Day)
-        SaveSession=SaveSession />
+    <Session CycleRepcountForExercise=CycleRepcountForExercise WorkoutSession=@(WorkoutSessionState.Value.DayDao.Day)
+    SaveSession=SaveSession CloseSession=CloseSession />
 }
