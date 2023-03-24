@@ -1,8 +1,35 @@
 <button class="weight-display" @onclick=OnOpenClick>@(Exercise.PlanExercise.Sets)x@(Exercise.PlanExercise.RepsPerSet)&nbsp
     <WeightFormat Kilograms=Exercise.Weight />
 </button>
-<div class=@($"weight-display-popup {(PopupActive ? "active" :"")}")></div>
+<div class=@($"weight-display-popup {(PopupActive ? "active" :"")}")>
+    <div class="weight-display-popup-content">
+        <div class="weight-display-popup-header">
+            <h3>@(Exercise.PlanExercise.Name)</h3>
+        </div>
+        <div class="weight-display-popup-body">
+            <div class="weight-display-popup-row">
+                <div class="weight-display-popup-label">Weight</div>
+            </div>
+            <div class="weight-display-popup-row">
+                <InputNumber @bind-Value=EditorWeight step=2.5 />
+            </div>
+            <div class="weight-display-popup-row">
+                <div class="weight-display-weight-increment-buttons-grid">
+                    <button class="weight-display-weight-increment-button" @onclick=OnWeightDecrementClick><WeightFormat Kilograms=-2.5m /></button>
+                    <button class="weight-display-weight-increment-button" @onclick=OnWeightIncrementClick>+<WeightFormat Kilograms=2.5m /></button>
+                </div>
+            </div>
+            <div class="weight-display-button-row">
+                <AppButton onclick=OnCloseClick Type=AppButtonType.Secondary>Close</AppButton>
+                <AppButton onclick=OnSaveClick>Save</AppButton>
+            </div>
+        </div>
+    </div>
+</div>
 @code {
     [Parameter]
     public WorkoutWeightedExercise Exercise { get; set; } = null!;
+
+    [Parameter]
+    public Action<decimal> UpdateWeightForExercise {get;set;} = null!;
 }

@@ -3,7 +3,8 @@
     {
         <Card>
             <WeightedExercise @key=i Exercise="exercise" ToStartNext=@(WorkoutSession.NextExercise == exercise)
-            CycleRepCountForSet=CycleRepCountForExerciseSet(i) />
+            CycleRepCountForSet=CycleRepCountForExerciseSet(i)
+            UpdateWeightForExercise=UpdateWeightForExerciseWrapper(i) />
         </Card>
     }
 
@@ -26,6 +27,9 @@
     public Action<int, int> CycleRepcountForExercise { get; set; } = null!;
 
     [Parameter]
+    public Action<int, decimal> UpdateWeightForExercise { get;set; }=null!;
+
+    [Parameter]
     public Action SaveSession { get; set; } = null!;
 
     [Parameter]
@@ -33,4 +37,7 @@
 
     private Action<int> CycleRepCountForExerciseSet(int exerciseIndex)
     => (int set) => CycleRepcountForExercise(exerciseIndex, set);
+
+    private Action<decimal> UpdateWeightForExerciseWrapper(int exerciseIndex)
+    => (decimal weight) => UpdateWeightForExercise(exerciseIndex, weight);
 }

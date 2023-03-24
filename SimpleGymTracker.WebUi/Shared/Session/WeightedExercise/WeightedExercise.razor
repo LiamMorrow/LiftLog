@@ -1,7 +1,7 @@
 ﻿<div class="weighted-exercise">
   <div class="weighted-exercise-header">
     <span class="exercise-header">@Exercise.PlanExercise.Name</span>
-    <WeightDisplay Exercise=Exercise />
+    <WeightDisplay Exercise=Exercise UpdateWeightForExercise=UpdateWeightForExercise/>
   </div>
   <div class="weighted-exercise-list">
     @{
@@ -22,4 +22,7 @@
 
   [Parameter]
   public Action<int> CycleRepCountForSet { get; set; } = null!;
+
+  [Parameter]
+  public Action<decimal> UpdateWeightForExercise { get; set; } = null!;
 }

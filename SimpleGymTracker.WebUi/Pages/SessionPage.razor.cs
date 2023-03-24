@@ -22,6 +22,11 @@ namespace SimpleGymTracker.WebUi.Pages
             Dispatcher.Dispatch(new CycleExerciseRepsAction(exerciseIndex, setIndex));
         }
 
+        private void UpdateWeightForExercise(int exerciseIndex, decimal weight)
+        {
+            Dispatcher.Dispatch(new UpdateExerciseWeightAction(exerciseIndex, weight));
+        }
+
         private async void SaveSession()
         {
             if (WorkoutSessionState.Value.DayDao is not null)

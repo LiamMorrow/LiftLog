@@ -36,6 +36,35 @@ namespace SimpleGymTracker.WebUi.Store.WorkoutSession
         }
 
         [ReducerMethod]
+        public static WorkoutSessionState UpdateExerciseWeight(
+            WorkoutSessionState state,
+            UpdateExerciseWeightAction action
+        )
+        {
+            if (state.DayDao is null)
+            {
+                throw new Exception();
+            }
+            var day = state.DayDao.Day;
+
+            return state with
+            {
+                DayDao = state.DayDao with
+                {
+                    Day = day with
+                    {
+                        WeightedExercises = day.WeightedExercises.SetItem(
+                            action.ExerciseIndex,
+                            day.WeightedExercises[action.ExerciseIndex] with {
+                                Weight = action.Weight
+                            }
+                        )
+                    }
+                }
+            };
+        }
+
+        [ReducerMethod]
         public static WorkoutSessionState SetWorkoutDay(
             WorkoutSessionState state,
             SetWorkoutDayAction action
