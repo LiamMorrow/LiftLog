@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Components;
-using Newtonsoft.Json.Bson;
-
 namespace SimpleGymTracker.WebUi.Shared.Session.WeightedExercise.WeightDisplay;
 
 public partial class WeightDisplay
@@ -14,10 +11,12 @@ public partial class WeightDisplay
         EditorWeight = Exercise.Weight;
         PopupActive = true;
     }
+
     public void OnCloseClick()
     {
         PopupActive = false;
     }
+
     public void OnSaveClick()
     {
         UpdateWeightForExercise(EditorWeight);
@@ -26,11 +25,11 @@ public partial class WeightDisplay
 
     public void OnWeightIncrementClick()
     {
-        EditorWeight += 2.5m;
+        EditorWeight += Exercise.PlanExercise.KilogramsIncreaseOnSuccess;
     }
 
     public void OnWeightDecrementClick()
     {
-        EditorWeight -= 2.5m;
+        EditorWeight -= Exercise.PlanExercise.KilogramsIncreaseOnSuccess;
     }
 }

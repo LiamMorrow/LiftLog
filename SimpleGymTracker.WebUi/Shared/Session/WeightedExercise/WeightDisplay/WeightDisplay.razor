@@ -15,8 +15,8 @@
             </div>
             <div class="weight-display-popup-row">
                 <div class="weight-display-weight-increment-buttons-grid">
-                    <button class="weight-display-weight-increment-button" @onclick=OnWeightDecrementClick><WeightFormat Kilograms=-2.5m /></button>
-                    <button class="weight-display-weight-increment-button" @onclick=OnWeightIncrementClick>+<WeightFormat Kilograms=2.5m /></button>
+                    <button class="weight-display-weight-increment-button" @onclick=OnWeightDecrementClick><WeightFormat Kilograms=-(Exercise.PlanExercise.KilogramsIncreaseOnSuccess) /></button>
+                    <button class="weight-display-weight-increment-button" @onclick=OnWeightIncrementClick>+<WeightFormat Kilograms=(Exercise.PlanExercise.KilogramsIncreaseOnSuccess) /></button>
                 </div>
             </div>
             <div class="weight-display-button-row">
