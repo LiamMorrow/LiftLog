@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluxor;
+using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
 using SimpleGymTracker.Lib;
 using SimpleGymTracker.Lib.Models;
@@ -12,7 +13,7 @@ using SimpleGymTracker.WebUi.Store.WorkoutSettings;
 
 namespace SimpleGymTracker.WebUi.Pages
 {
-    public partial class Index
+    public partial class Index : FluxorComponent
     {
         [Inject]
         private IState<WorkoutSettingsState> WorkoutSettingsState { get; set; } = null!;

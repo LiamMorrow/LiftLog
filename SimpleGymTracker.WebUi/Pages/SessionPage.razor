@@ -4,14 +4,13 @@
 
 @{
     this.SubscribeToAction<SimpleGymTracker.WebUi.Store.WorkoutSession.RehydrateSessionAction>(state =>
+        {
+            if (WorkoutSessionState.Value.DayDao is null)
             {
-                if (WorkoutSessionState.Value.DayDao is null)
-                {
-                    NavigationManager.NavigateTo("/");
-                }
-            });
+                NavigationManager.NavigateTo("/");
+            }
+        });
 }
-
 @if (WorkoutSessionState.Value.DayDao is not null)
 {
     <Session

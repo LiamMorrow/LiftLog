@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
+using SimpleGymTracker.Lib.Models;
 using SimpleGymTracker.Lib.Store;
 using SimpleGymTracker.WebUi.Store.WorkoutSession;
 

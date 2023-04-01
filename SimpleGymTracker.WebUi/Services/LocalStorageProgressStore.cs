@@ -61,6 +61,15 @@ namespace SimpleGymTracker.WebUi.Services
             return PersistAsync();
         }
 
+        public ValueTask<WorkoutDay?> GetWorkoutDayAsync(Guid id)
+        {
+            if (_storedSessions.TryGetValue(id, out var day))
+            {
+                return ValueTask.FromResult<WorkoutDay?>(day);
+            }
+            return ValueTask.FromResult<WorkoutDay?>(null);
+        }
+
         private async ValueTask InitialiseAsync()
         {
             if (!_initialised)
