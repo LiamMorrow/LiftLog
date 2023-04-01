@@ -1,0 +1,22 @@
+﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+@page "/session"
+@inject NavigationManager NavigationManager;
+
+@{
+    this.SubscribeToAction<LiftLog.WebUi.Store.WorkoutSession.RehydrateSessionAction>(state =>
+        {
+            if (WorkoutSessionState.Value.DayDao is null)
+            {
+                NavigationManager.NavigateTo("/");
+            }
+        });
+}
+@if (WorkoutSessionState.Value.DayDao is not null)
+{
+    <Session
+        CycleRepcountForExercise=CycleRepcountForExercise
+        UpdateWeightForExercise=UpdateWeightForExercise
+        WorkoutSession=@(WorkoutSessionState.Value.DayDao.Day)
+        SaveSession=SaveSession
+        CloseSession=CloseSession />
+}
