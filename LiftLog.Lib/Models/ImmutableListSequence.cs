@@ -15,6 +15,11 @@ namespace LiftLog.Lib
     [JsonConverter(typeof(ImmutableListSequenceJsonConverter))]
     public sealed class ImmutableListSequence<T> : IImmutableList<T>
     {
+        public ImmutableListSequence()
+        {
+            Items = ImmutableList<T>.Empty;
+        }
+
         public ImmutableListSequence(ImmutableList<T> items)
         {
             Items = items;
