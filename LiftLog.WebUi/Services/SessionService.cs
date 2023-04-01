@@ -77,8 +77,7 @@ public class SessionService
                         => lastExercise.Kilograms + e.KilogramsIncreaseOnSuccess,
                     _ => lastExercise.Kilograms
                 },
-                Enumerable.Range(0, e.Sets).Select(_ => (RecordedSet?)null).ToImmutableList(),
-                false
+                Enumerable.Range(0, e.Sets).Select(_ => (RecordedSet?)null).ToImmutableList()
             );
         }
 

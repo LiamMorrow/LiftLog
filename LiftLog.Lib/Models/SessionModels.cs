@@ -23,10 +23,12 @@ public record Session(
 public record RecordedExercise(
     ExerciseBlueprint Blueprint,
     decimal Kilograms,
-    ImmutableListSequence<RecordedSet?> RecordedSets,
-    bool SucceededAllSets
+    ImmutableListSequence<RecordedSet?> RecordedSets
 )
 {
+    public bool SucceededAllSets =>
+        RecordedSets.All(x => x is not null && x.RepsCompleted == Blueprint.RepsPerSet);
+
     public RecordedSet? LastRecordedSet => RecordedSets.LastOrDefault(x => x is not null);
 }
 
