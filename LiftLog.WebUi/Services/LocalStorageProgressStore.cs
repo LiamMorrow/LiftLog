@@ -12,8 +12,8 @@ namespace LiftLog.WebUi.Services
     public class LocalStorageProgressStore : IProgressStore
     {
         private bool _initialised;
-        private WorkoutDayDao? _currentDay;
-        private readonly ConcurrentDictionary<Guid, WorkoutDay> _storedSessions = new();
+        private Session? _currentSession;
+        private readonly ConcurrentDictionary<Guid, Session> _storedSessions = new();
         private readonly ILocalStorageService _localStorage;
 
         public LocalStorageProgressStore(ILocalStorageService localStorage)
@@ -21,53 +21,41 @@ namespace LiftLog.WebUi.Services
             _localStorage = localStorage;
         }
 
-        public async IAsyncEnumerable<WorkoutDayDao> GetAllWorkoutDaysAsync()
+        public async IAsyncEnumerable<Session> GetOrderedSessions()
         {
             await InitialiseAsync();
             foreach (
                 var session in _storedSessions
-                    .Select(day => new WorkoutDayDao(day.Key, day.Value))
-                    .OrderByDescending(x => x.Day.Date)
+                    .Select(day => day.Value)
+                    .OrderByDescending(x => x.Date)
             )
             {
                 yield return session;
             }
         }
 
-        public async ValueTask<WorkoutDayDao?> GetCurrentDayAsync()
+        public async ValueTask<Session?> GetCurrentSessionAsync()
         {
             await InitialiseAsync();
-            return _currentDay;
+            return _currentSession;
         }
 
-        public IAsyncEnumerable<WorkoutDayDao> GetWorkoutDaysForPlanAsync(WorkoutPlan plan) =>
-            GetAllWorkoutDaysAsync().Where(x => x.Day.Plan == plan);
-
-        public ValueTask SaveCompletedDayAsync(WorkoutDayDao dao)
+        public ValueTask SaveCompletedSessionAsync(Session session)
         {
-            _storedSessions[dao.Id] = dao.Day;
+            _storedSessions[session.Id] = session;
             return PersistAsync();
         }
 
-        public ValueTask SaveCurrentDayAsync(WorkoutDayDao day)
+        public ValueTask SaveCurrentSessionAsync(Session session)
         {
-            _currentDay = day;
+            _currentSession = session;
             return PersistAsync();
         }
 
-        public ValueTask ClearCurrentDayAsync()
+        public ValueTask ClearCurrentSessionAsync()
         {
-            _currentDay = null;
+            _currentSession = null;
             return PersistAsync();
-        }
-
-        public ValueTask<WorkoutDay?> GetWorkoutDayAsync(Guid id)
-        {
-            if (_storedSessions.TryGetValue(id, out var day))
-            {
-                return ValueTask.FromResult<WorkoutDay?>(day);
-            }
-            return ValueTask.FromResult<WorkoutDay?>(null);
         }
 
         private async ValueTask InitialiseAsync()
@@ -80,9 +68,9 @@ namespace LiftLog.WebUi.Services
                 {
                     foreach (var session in storedData.CompletedSessions)
                     {
-                        _storedSessions[session.Id] = session.Day;
+                        _storedSessions[session.Id] = session;
                     }
-                    _currentDay = storedData.CurrentDay;
+                    _currentSession = storedData.CurrentSession;
                 }
                 _initialised = true;
             }
@@ -92,13 +80,10 @@ namespace LiftLog.WebUi.Services
         {
             return _localStorage.SetItemAsync(
                 "Progress",
-                new StorageDao(
-                    _currentDay,
-                    _storedSessions.Select(x => new WorkoutDayDao(x.Key, x.Value)).ToList()
-                )
+                new StorageDao(_currentSession, _storedSessions.Values.ToList())
             );
         }
 
-        private record StorageDao(WorkoutDayDao? CurrentDay, List<WorkoutDayDao> CompletedSessions);
+        private record StorageDao(Session? CurrentSession, List<Session> CompletedSessions);
     }
 }

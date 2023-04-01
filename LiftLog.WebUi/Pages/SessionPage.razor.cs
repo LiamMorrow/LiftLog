@@ -3,7 +3,7 @@ using Fluxor;
 using Microsoft.AspNetCore.Components;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Store;
-using LiftLog.WebUi.Store.WorkoutSession;
+using LiftLog.WebUi.Store.CurrentSession;
 
 namespace LiftLog.WebUi.Pages
 {

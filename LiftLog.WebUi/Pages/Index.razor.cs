@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Components;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Store;
-using LiftLog.WebUi.Store.WorkoutSession;
+using LiftLog.WebUi.Store.CurrentSession;
 using LiftLog.WebUi.Store.WorkoutSettings;
 
 namespace LiftLog.WebUi.Pages

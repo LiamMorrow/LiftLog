@@ -3,7 +3,7 @@
 @inject NavigationManager NavigationManager;
 
 @{
-    this.SubscribeToAction<LiftLog.WebUi.Store.WorkoutSession.RehydrateSessionAction>(state =>
+    this.SubscribeToAction<LiftLog.WebUi.Store.CurrentSession.RehydrateSessionAction>(state =>
         {
             if (WorkoutSessionState.Value.DayDao is null)
             {

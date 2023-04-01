@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Fluxor;
 using LiftLog.Lib.Store;
-using LiftLog.WebUi.Store.WorkoutSession;
+using LiftLog.WebUi.Store.CurrentSession;
 using Blazored.LocalStorage;
 using LiftLog.WebUi.Services;
 using LiftLog.WebUi;

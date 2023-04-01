@@ -7,18 +7,10 @@ namespace LiftLog.Lib.Store
 {
     public interface IProgressStore
     {
-        ValueTask<WorkoutDayDao?> GetCurrentDayAsync();
-
-        ValueTask SaveCurrentDayAsync(WorkoutDayDao day);
-
-        ValueTask ClearCurrentDayAsync();
-
-        IAsyncEnumerable<WorkoutDayDao> GetAllWorkoutDaysAsync();
-
-        ValueTask<WorkoutDay?> GetWorkoutDayAsync(Guid id);
-
-        IAsyncEnumerable<WorkoutDayDao> GetWorkoutDaysForPlanAsync(WorkoutPlan plan);
-
-        ValueTask SaveCompletedDayAsync(WorkoutDayDao dao);
+        ValueTask ClearCurrentSessionAsync();
+        ValueTask<Session?> GetCurrentSessionAsync();
+        IAsyncEnumerable<Session> GetOrderedSessions();
+        ValueTask SaveCompletedSessionAsync(Session session);
+        ValueTask SaveCurrentSessionAsync(Session session);
     }
 }
