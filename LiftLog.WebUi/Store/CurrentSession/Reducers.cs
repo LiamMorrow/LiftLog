@@ -11,34 +11,31 @@ public static class Reducers
         CycleExerciseRepsAction action
     )
     {
-        if (state.SessionAndBlueprint is null)
+        if (state.Session is null)
         {
             throw new Exception();
         }
-        var session = state.SessionAndBlueprint.Session;
+        var session = state.Session;
         var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
-        var exerciseBlueprint = state.SessionAndBlueprint.Blueprint.Exercises[action.ExerciseIndex];
+        var exerciseBlueprint = state.Session.Blueprint.Exercises[action.ExerciseIndex];
 
         return state with
         {
-            SessionAndBlueprint = state.SessionAndBlueprint with
+            Session = session with
             {
-                Session = session with
-                {
-                    RecordedExercises = session.RecordedExercises.SetItem(
-                        action.ExerciseIndex,
-                        exerciseAtIndex with
-                        {
-                            RecordedSets = exerciseAtIndex.RecordedSets.SetItem(
-                                action.SetIndex,
-                                GetCycledRepCount(
-                                    exerciseAtIndex.RecordedSets[action.SetIndex],
-                                    exerciseBlueprint
-                                )
+                RecordedExercises = session.RecordedExercises.SetItem(
+                    action.ExerciseIndex,
+                    exerciseAtIndex with
+                    {
+                        RecordedSets = exerciseAtIndex.RecordedSets.SetItem(
+                            action.SetIndex,
+                            GetCycledRepCount(
+                                exerciseAtIndex.RecordedSets[action.SetIndex],
+                                exerciseBlueprint
                             )
-                        }
-                    )
-                }
+                        )
+                    }
+                )
             }
         };
     }
@@ -49,27 +46,24 @@ public static class Reducers
         UpdateExerciseWeightAction action
     )
     {
-        if (state.SessionAndBlueprint is null)
+        if (state.Session is null)
         {
             throw new Exception();
         }
-        var session = state.SessionAndBlueprint.Session;
+        var session = state.Session;
         var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
 
         return state with
         {
-            SessionAndBlueprint = state.SessionAndBlueprint with
+            Session = session with
             {
-                Session = session with
-                {
-                    RecordedExercises = session.RecordedExercises.SetItem(
-                        action.ExerciseIndex,
-                        exerciseAtIndex with
-                        {
-                            Weight = action.Weight
-                        }
-                    )
-                }
+                RecordedExercises = session.RecordedExercises.SetItem(
+                    action.ExerciseIndex,
+                    exerciseAtIndex with
+                    {
+                        Weight = action.Weight
+                    }
+                )
             }
         };
     }
@@ -78,7 +72,7 @@ public static class Reducers
     public static CurrentSessionState SetCurrentSession(
         CurrentSessionState state,
         SetCurrentSessionAction action
-    ) => state with { SessionAndBlueprint = action.SessionAndBlueprint };
+    ) => state with { Session = action.Session };
 
     private static RecordedSet? GetCycledRepCount(
         RecordedSet? recordedSet,

@@ -1,8 +1,10 @@
 <div class="session">
-    @foreach (var (exercise, i) in WorkoutSession.WeightedExercises.IndexedTuples())
+    @foreach (var (exercise, i) in Session.RecordedExercises.IndexedTuples())
     {
         <Card>
-            <WeightedExercise @key=i Exercise="exercise" ToStartNext=@(WorkoutSession.NextExercise == exercise)
+            <WeightedExercise @key=i
+            RecordedExercise="exercise"
+            ToStartNext=@(Session.NextExercise == exercise)
             CycleRepCountForSet=CycleRepCountForExerciseSet(i)
             UpdateWeightForExercise=UpdateWeightForExerciseWrapper(i) />
         </Card>
@@ -11,17 +13,18 @@
     <AppButton onclick=SaveSession>Finish</AppButton>
     <AppButton onclick=CloseSession>Close</AppButton>
 
-    @if (WorkoutSession.NextExercise is not null && WorkoutSession.LastExercise?.LastSet is not null)
+    @if (Session.NextExercise is not null && Session.LastExercise?.LastRecordedSet is not null)
     {
-        var lastSetFailed = WorkoutSession.LastExercise.LastSet.RepsCompleted <
-        WorkoutSession.LastExercise.PlanExercise.RepsPerSet;
-        <RestTimer Rest=WorkoutSession.NextExercise.PlanExercise.RestBetweenSets
-        StartTime=WorkoutSession.LastExercise.LastSet.CompletionTime Failed=lastSetFailed />
+        var lastSetFailed = Session.LastExercise.LastRecordedSet.RepsCompleted < Session.LastExercise.Blueprint.RepsPerSet;
+        <RestTimer
+            Rest=Session.NextExercise.Blueprint.RestBetweenSets
+            StartTime=Session.LastExercise.LastRecordedSet.CompletionTime
+            Failed=lastSetFailed />
     }
 </div>
 @code {
     [Parameter]
-    public WorkoutDay WorkoutSession { get; set; } = null!;
+    public Session Session { get; set; } = null!;
 
     [Parameter]
     public Action<int, int> CycleRepcountForExercise { get; set; } = null!;

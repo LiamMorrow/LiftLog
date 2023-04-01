@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LiftLog.WebUi.Shared.Session.RestTimer
+namespace LiftLog.WebUi.Shared.SessionComponent.RestTimer
 {
     public partial class RestTimer : IDisposable
     {
@@ -15,16 +15,14 @@ namespace LiftLog.WebUi.Shared.Session.RestTimer
             base.OnAfterRender(firstRender);
             if (firstRender)
             {
-                Task.Run(
-                    async () =>
+                Task.Run(async () =>
+                {
+                    while (!_destroyedSource.IsCancellationRequested)
                     {
-                        while (!_destroyedSource.IsCancellationRequested)
-                        {
-                            StateHasChanged();
-                            await Task.Delay(200);
-                        }
+                        StateHasChanged();
+                        await Task.Delay(200);
                     }
-                );
+                });
             }
         }
 

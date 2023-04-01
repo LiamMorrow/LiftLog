@@ -6,7 +6,7 @@ namespace LiftLog.WebUi.Store.CurrentSession
 
     public record UpdateExerciseWeightAction(int ExerciseIndex, decimal Weight);
 
-    public record SetCurrentSessionAction(SessionAndBlueprint? SessionAndBlueprint);
+    public record SetCurrentSessionAction(Session? Session);
 
     public record RehydrateSessionAction();
 }

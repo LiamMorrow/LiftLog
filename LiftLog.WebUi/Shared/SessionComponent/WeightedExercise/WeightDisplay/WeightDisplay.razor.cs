@@ -1,4 +1,4 @@
-namespace LiftLog.WebUi.Shared.Session.WeightedExercise.WeightDisplay;
+namespace LiftLog.WebUi.Shared.SessionComponent.WeightedExercise.WeightDisplay;
 
 public partial class WeightDisplay
 {
@@ -25,11 +25,11 @@ public partial class WeightDisplay
 
     public void OnWeightIncrementClick()
     {
-        EditorWeight += Exercise.PlanExercise.KilogramsIncreaseOnSuccess;
+        EditorWeight += Exercise.Blueprint.KilogramsIncreaseOnSuccess;
     }
 
     public void OnWeightDecrementClick()
     {
-        EditorWeight -= Exercise.PlanExercise.KilogramsIncreaseOnSuccess;
+        EditorWeight -= Exercise.Blueprint.KilogramsIncreaseOnSuccess;
     }
 }

@@ -1,10 +1,10 @@
-<button class="weight-display" @onclick=OnOpenClick>@(Exercise.PlanExercise.Sets)x@(Exercise.PlanExercise.RepsPerSet)&nbsp
+<button class="weight-display" @onclick=OnOpenClick>@(Exercise.Blueprint.Sets)x@(Exercise.Blueprint.RepsPerSet)&nbsp
     <WeightFormat Kilograms=Exercise.Weight />
 </button>
 <div class=@($"weight-display-popup {(PopupActive ? "active" :"")}")>
     <div class="weight-display-popup-content">
         <div class="weight-display-popup-header">
-            <h3>@(Exercise.PlanExercise.Name)</h3>
+            <h3>@(Exercise.Blueprint.Name)</h3>
         </div>
         <div class="weight-display-popup-body">
             <div class="weight-display-popup-row">
@@ -15,8 +15,8 @@
             </div>
             <div class="weight-display-popup-row">
                 <div class="weight-display-weight-increment-buttons-grid">
-                    <button class="weight-display-weight-increment-button" @onclick=OnWeightDecrementClick><WeightFormat Kilograms=-(Exercise.PlanExercise.KilogramsIncreaseOnSuccess) /></button>
-                    <button class="weight-display-weight-increment-button" @onclick=OnWeightIncrementClick>+<WeightFormat Kilograms=(Exercise.PlanExercise.KilogramsIncreaseOnSuccess) /></button>
+                    <button class="weight-display-weight-increment-button" @onclick=OnWeightDecrementClick><WeightFormat Kilograms=-(Exercise.Blueprint.KilogramsIncreaseOnSuccess) /></button>
+                    <button class="weight-display-weight-increment-button" @onclick=OnWeightIncrementClick>+<WeightFormat Kilograms=(Exercise.Blueprint.KilogramsIncreaseOnSuccess) /></button>
                 </div>
             </div>
             <div class="weight-display-button-row">
@@ -28,8 +28,9 @@
 </div>
 @code {
     [Parameter]
-    public WorkoutWeightedExercise Exercise { get; set; } = null!;
+    public RecordedExercise Exercise { get; set; } = null!;
 
     [Parameter]
-    public Action<decimal> UpdateWeightForExercise {get;set;} = null!;
+    public Action<decimal> UpdateWeightForExercise { get;set; } = null!;
+
 }

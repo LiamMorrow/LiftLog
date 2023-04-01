@@ -10,7 +10,7 @@ namespace LiftLog.WebUi.Pages
     public partial class SessionPage
     {
         [Inject]
-        private IState<WorkoutSessionState> WorkoutSessionState { get; set; } = null!;
+        private IState<CurrentSessionState> CurrentSessionState { get; set; } = null!;
 
         [Inject]
         public IDispatcher Dispatcher { get; set; } = null!;
@@ -30,22 +30,22 @@ namespace LiftLog.WebUi.Pages
 
         private async void SaveSession()
         {
-            if (WorkoutSessionState.Value.DayDao is not null)
+            if (CurrentSessionState.Value.Session is not null)
             {
-                await ProgressStore.SaveCompletedDayAsync(WorkoutSessionState.Value.DayDao);
+                await ProgressStore.SaveCompletedSessionAsync(CurrentSessionState.Value.Session);
             }
 
-            await ProgressStore.ClearCurrentDayAsync();
+            await ProgressStore.ClearCurrentSessionAsync();
 
-            Dispatcher.Dispatch(new SetWorkoutDayAction(null));
+            Dispatcher.Dispatch(new SetCurrentSessionAction(null));
             NavigationManager.NavigateTo("/");
         }
 
         private async void CloseSession()
         {
-            await ProgressStore.ClearCurrentDayAsync();
+            await ProgressStore.ClearCurrentSessionAsync();
 
-            Dispatcher.Dispatch(new SetWorkoutDayAction(null));
+            Dispatcher.Dispatch(new SetCurrentSessionAction(null));
             NavigationManager.NavigateTo("/");
         }
     }

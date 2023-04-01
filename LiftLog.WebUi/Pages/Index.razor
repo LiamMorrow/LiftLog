@@ -1,15 +1,4 @@
 ﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 @page "/"
 
-<h1>Workouts:</h1>
-
-@foreach (var (workoutPlan, i) in WorkoutSettingsState.Value.Plans.IndexedTuples())
-{
-    <AppButton @key=i @onclick=@(() => SelectWorkoutPlan(workoutPlan))>@workoutPlan.Name</AppButton>
-}
-
-<WorkoutHistoryList
-    WorkoutPlan=WorkoutSettingsState.Value.SelectedPlan
-    Workouts=@(_workouts.Where(x=>x.Day.Plan == WorkoutSettingsState.Value.SelectedPlan))
-    PreviousExercises=_previousExercises
-    SelectSession=SelectSession />
+<h1>Upcoming Workouts:</h1>

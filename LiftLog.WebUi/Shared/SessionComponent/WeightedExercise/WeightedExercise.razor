@@ -1,13 +1,15 @@
 ﻿<div class="weighted-exercise">
   <div class="weighted-exercise-header">
-    <span class="exercise-header">@Exercise.PlanExercise.Name</span>
-    <WeightDisplay Exercise=Exercise UpdateWeightForExercise=UpdateWeightForExercise/>
+    <span class="exercise-header">@RecordedExercise.Blueprint.Name</span>
+    <WeightDisplay
+        Exercise=RecordedExercise
+        UpdateWeightForExercise=UpdateWeightForExercise/>
   </div>
   <div class="weighted-exercise-list">
     @{
-      var repToStartNext = Exercise.Sets.IndexOf(null);
+      var repToStartNext = RecordedExercise.RecordedSets.IndexOf(null);
     }
-    @foreach (var (set, i) in Exercise.Sets.Select((set, i) => (set, i)))
+    @foreach (var (set, i) in RecordedExercise.RecordedSets.IndexedTuples())
     {
       <RepCount @key=i CycleRepCount=@(() => CycleRepCountForSet(i)) RepCountValue=@set?.RepsCompleted ToStartNext=@(ToStartNext && repToStartNext == i) />
     }
@@ -15,7 +17,8 @@
 </div>
 @code {
   [Parameter]
-  public WorkoutWeightedExercise Exercise { get; set; } = null!;
+  public RecordedExercise RecordedExercise { get; set; } = null!;
+
 
   [Parameter]
   public bool ToStartNext { get; set; }

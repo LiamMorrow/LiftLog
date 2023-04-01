@@ -5,18 +5,18 @@
 @{
     this.SubscribeToAction<LiftLog.WebUi.Store.CurrentSession.RehydrateSessionAction>(state =>
         {
-            if (WorkoutSessionState.Value.DayDao is null)
+            if (CurrentSessionState.Value.Session is null)
             {
                 NavigationManager.NavigateTo("/");
             }
         });
 }
-@if (WorkoutSessionState.Value.DayDao is not null)
+@if (CurrentSessionState.Value.Session is not null)
 {
-    <Session
+    <SessionComponent
         CycleRepcountForExercise=CycleRepcountForExercise
         UpdateWeightForExercise=UpdateWeightForExercise
-        WorkoutSession=@(WorkoutSessionState.Value.DayDao.Day)
+        Session=@(CurrentSessionState.Value.Session)
         SaveSession=SaveSession
         CloseSession=CloseSession />
 }
