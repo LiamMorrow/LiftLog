@@ -1,0 +1,20 @@
+<Project>
+    <PropertyGroup>
+        <TailwindBuild>true</TailwindBuild>
+    </PropertyGroup>
+    <Target Name="NpmInstallCheck" BeforeTargets="TailwindCSS" Inputs="./package.json" Outputs="./node_modules/.package-lock.json">
+        <Message Text="NpmInstallCheck Starting..." Importance="high"></Message>
+        <Exec Command="npm -v" ContinueOnError="true" StandardOutputImportance="low">
+            <Output TaskParameter="ExitCode" PropertyName="error" />
+        </Exec>
+        <Error Condition="'$(error)' != '0'" Text="install node.js please !" />
+        <Exec Command="npm install" />
+        <Message Text="NpmInstallCheck Finished !" Importance="high"></Message>
+    </Target>
+    <Target Name="TailwindCSS" AfterTargets="AfterBuild" Condition="'$(TailwindBuild)' == 'true'">
+        <Message Text="TailwindCSS Starting..." Importance="high"></Message>
+        <Exec Command="npm run build" Condition="'$(Configuration)' == 'Debug'"/>
+        <Exec Command="npm run publish" Condition="'$(Configuration)' == 'Release'"/>
+        <Message Text="TailwindCSS Finished !" Importance="high"></Message>
+    </Target>
+</Project>
