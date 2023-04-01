@@ -1,0 +1,12 @@
+{
+  "name": "liftlog",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "npx tailwindcss --config tailwind.config.js -i ./Styles/app.css -o ./wwwroot/app.min.css",
+    "watch": "npx tailwindcss --config tailwind.config.js -i ./Styles/app.css -o ./wwwroot/app.min.css --watch",
+    "publish": "npx tailwindcss --config tailwind.config.js -i ./Styles/app.css -o ./wwwroot/app.min.css --minify"
+  },
+  "author": "",
+  "license": "ISC"
+}
