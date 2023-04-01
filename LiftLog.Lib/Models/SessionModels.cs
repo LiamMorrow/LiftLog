@@ -22,7 +22,7 @@ public record Session(
 
 public record RecordedExercise(
     ExerciseBlueprint Blueprint,
-    decimal Weight,
+    decimal Kilograms,
     ImmutableListSequence<RecordedSet?> RecordedSets,
     bool SucceededAllSets
 )

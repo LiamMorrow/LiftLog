@@ -42,46 +42,50 @@ public class SessionService
             ),
         };
 
-    public async Task<Session> GetCurrentOrNextSession()
+    public async Task<Session> GetCurrentOrNextSessionAsync()
     {
         var currentSession = await progressStore.GetCurrentSessionAsync();
         if (currentSession != null)
             return currentSession;
 
-        var latestSession = await progressStore.GetOrderedSessions().FirstOrDefaultAsync();
+        var latestSession = (await progressStore.GetOrderedSessions()).FirstOrDefault();
         if (latestSession == null)
         {
-            return CreateNewSession(defaultSessionBlueprints[0]);
+            return await CreateNewSessionAsync(defaultSessionBlueprints[0]);
         }
 
         // We need the blueprint that comes after this session
         var lastBlueprint = latestSession.Blueprint;
         var lastBlueprintIndex = defaultSessionBlueprints.IndexOf(lastBlueprint);
-        return CreateNewSession(
+        return await CreateNewSessionAsync(
             defaultSessionBlueprints[(lastBlueprintIndex + 1) % defaultSessionBlueprints.Count]
         );
     }
 
-    private Session CreateNewSession(SessionBlueprint sessionBlueprint)
+    private async Task<Session> CreateNewSessionAsync(SessionBlueprint sessionBlueprint)
     {
-        var latestRecordedExcercises = new Dictionary<ExerciseBlueprint, RecordedExercise>();
+        var latestRecordedExcercises = await progressStore.GetLatestRecordedExercisesAsync();
+        RecordedExercise getNextExercise(ExerciseBlueprint e)
+        {
+            var lastExercise = latestRecordedExcercises.GetValueOrDefault(e);
+            return new RecordedExercise(
+                e,
+                lastExercise switch
+                {
+                    null => e.InitialKilograms,
+                    { SucceededAllSets: true }
+                        => lastExercise.Kilograms + e.KilogramsIncreaseOnSuccess,
+                    _ => lastExercise.Kilograms
+                },
+                Enumerable.Range(0, e.Sets).Select(_ => (RecordedSet?)null).ToImmutableList(),
+                false
+            );
+        }
+
         return new Session(
             Guid.NewGuid(),
             sessionBlueprint,
-            sessionBlueprint.Exercises
-                .Select(
-                    e =>
-                        new RecordedExercise(
-                            e,
-                            e.InitialKilograms,
-                            Enumerable
-                                .Range(0, e.Sets)
-                                .Select(_ => (RecordedSet?)null)
-                                .ToImmutableList(),
-                            false
-                        )
-                )
-                .ToImmutableList(),
+            sessionBlueprint.Exercises.Select(getNextExercise).ToImmutableList(),
             DateTimeOffset.Now
         );
     }

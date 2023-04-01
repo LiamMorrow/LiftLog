@@ -1,8 +1,4 @@
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Store;
@@ -21,17 +17,11 @@ namespace LiftLog.WebUi.Services
             _localStorage = localStorage;
         }
 
-        public async IAsyncEnumerable<Session> GetOrderedSessions()
+        public async ValueTask<List<Session>> GetOrderedSessions()
         {
             await InitialiseAsync();
-            foreach (
-                var session in _storedSessions
-                    .Select(day => day.Value)
-                    .OrderByDescending(x => x.Date)
-            )
-            {
-                yield return session;
-            }
+
+            return _storedSessions.Select(day => day.Value).OrderByDescending(x => x.Date).ToList();
         }
 
         public async ValueTask<Session?> GetCurrentSessionAsync()
@@ -82,6 +72,16 @@ namespace LiftLog.WebUi.Services
                 "Progress",
                 new StorageDao(_currentSession, _storedSessions.Values.ToList())
             );
+        }
+
+        public async ValueTask<
+            Dictionary<ExerciseBlueprint, RecordedExercise>
+        > GetLatestRecordedExercisesAsync()
+        {
+            return (await GetOrderedSessions())
+                .SelectMany(x => x.RecordedExercises)
+                .GroupBy(x => x.Blueprint)
+                .ToDictionary(x => x.Key, x => x.First());
         }
 
         private record StorageDao(Session? CurrentSession, List<Session> CompletedSessions);

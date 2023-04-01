@@ -33,7 +33,7 @@ namespace LiftLog.WebUi.Pages
 
         private async void StartSession()
         {
-            SelectSession(await SessionService.GetCurrentOrNextSession());
+            SelectSession(await SessionService.GetCurrentOrNextSessionAsync());
         }
 
         private void SelectSession(Session session)

@@ -1,5 +1,5 @@
 <button class="weight-display" @onclick=OnOpenClick>@(Exercise.Blueprint.Sets)x@(Exercise.Blueprint.RepsPerSet)&nbsp
-    <WeightFormat Kilograms=Exercise.Weight />
+    <WeightFormat Kilograms=Exercise.Kilograms />
 </button>
 <div class=@($"weight-display-popup {(PopupActive ? "active" :"")}")>
     <div class="weight-display-popup-content">
