@@ -1,5 +1,7 @@
 ﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 @page "/"
 
-<h1 class="text-blue-400">Upcoming Workouts s:</h1>
-<button @onclick="StartSession">Start Session</button>
+<div class="bg-black py-11 px-5 flex items-center">
+    <span class="text-3xl text-white m-0">Upcoming Workouts</span>
+</div>
+<button style="background-color: red; color: white; padding: 30px;" @onclick="StartSession">Start Session</button>
