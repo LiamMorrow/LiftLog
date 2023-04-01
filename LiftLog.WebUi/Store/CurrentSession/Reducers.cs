@@ -61,7 +61,7 @@ public static class Reducers
                     action.ExerciseIndex,
                     exerciseAtIndex with
                     {
-                        Weight = action.Weight
+                        Kilograms = action.Kilograms
                     }
                 )
             }

@@ -23,9 +23,9 @@ namespace LiftLog.WebUi.Pages
             Dispatcher.Dispatch(new CycleExerciseRepsAction(exerciseIndex, setIndex));
         }
 
-        private void UpdateWeightForExercise(int exerciseIndex, decimal weight)
+        private void UpdateWeightForExercise(int exerciseIndex, decimal kilograms)
         {
-            Dispatcher.Dispatch(new UpdateExerciseWeightAction(exerciseIndex, weight));
+            Dispatcher.Dispatch(new UpdateExerciseWeightAction(exerciseIndex, kilograms));
         }
 
         private async void SaveSession()

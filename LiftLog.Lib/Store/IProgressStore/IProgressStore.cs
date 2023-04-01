@@ -9,7 +9,11 @@ namespace LiftLog.Lib.Store
     {
         ValueTask ClearCurrentSessionAsync();
         ValueTask<Session?> GetCurrentSessionAsync();
-        IAsyncEnumerable<Session> GetOrderedSessions();
+
+        ValueTask<
+            Dictionary<ExerciseBlueprint, RecordedExercise>
+        > GetLatestRecordedExercisesAsync();
+        ValueTask<List<Session>> GetOrderedSessions();
         ValueTask SaveCompletedSessionAsync(Session session);
         ValueTask SaveCurrentSessionAsync(Session session);
     }

@@ -8,7 +8,7 @@ public partial class WeightDisplay
 
     public void OnOpenClick()
     {
-        EditorWeight = Exercise.Weight;
+        EditorWeight = Exercise.Kilograms;
         PopupActive = true;
     }
 
