@@ -11,6 +11,7 @@ using LiftLog.Lib.Store;
 using LiftLog.WebUi.Store.CurrentSession;
 using System.Runtime.InteropServices;
 using System.Collections.Immutable;
+using LiftLog.WebUi.Services;
 
 namespace LiftLog.WebUi.Pages
 {
@@ -22,36 +23,17 @@ namespace LiftLog.WebUi.Pages
         [Inject]
         public NavigationManager NavigationManager { get; set; } = null!;
 
+        [Inject]
+        public SessionService SessionService { get; set; } = null!;
+
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
         }
 
-        private void StartSession()
+        private async void StartSession()
         {
-            var bench = new ExerciseBlueprint(
-                "Bench Press",
-                5,
-                5,
-                20,
-                2.5m,
-                new Rest(TimeSpan.FromSeconds(90), TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(5))
-            );
-            SelectSession(
-                new Session(
-                    Guid.NewGuid(),
-                    new SessionBlueprint("Test", ImmutableList.Create(bench)),
-                    ImmutableList.Create(
-                        new RecordedExercise(
-                            bench,
-                            20m,
-                            ImmutableList.Create<RecordedSet?>(null, null, null, null, null),
-                            false
-                        )
-                    ),
-                    DateTime.Now
-                )
-            );
+            SelectSession(await SessionService.GetCurrentOrNextSession());
         }
 
         private void SelectSession(Session session)
