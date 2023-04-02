@@ -23,5 +23,4 @@ builder.Services.AddFluxor(
 );
 builder.Services.AddScoped<IProgressStore, LocalStorageProgressStore>();
 builder.Services.AddScoped<SessionService>();
-
 await builder.Build().RunAsync();
