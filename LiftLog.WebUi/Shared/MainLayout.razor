@@ -1,23 +1,24 @@
 @inherits LayoutComponentBase
+@inject IJSRuntime js
+
 <div class="page">
     <section class="content">
         @Body
     </section>
 </div>
 
-@RenderTailwindForDebug()
 
 @code {
 
-    /// <summary>
-    /// Render the Tailwind CSS CDN for debug builds only
-    /// </summary>
-    RenderFragment? RenderTailwindForDebug()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-    #if DEBUG
-        return @<script suppress-error="BL9992" src="https://cdn.tailwindcss.com"></script>;
-    #else
-        return null;
-    #endif
+        #if DEBUG
+        if (firstRender)
+        {
+             await js.InvokeAsync<IJSObjectReference>("import", "./tailwind.js");
+        }
+        #else
+        await base.OnAfterRenderAsync(firstRender);
+        #endif
     }
 }

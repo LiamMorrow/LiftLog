@@ -1,6 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
-  <Import Project="tailwindcss.targets" />
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
