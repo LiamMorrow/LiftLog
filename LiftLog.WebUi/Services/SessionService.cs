@@ -42,32 +42,54 @@ public class SessionService
             ),
         };
 
-    public async Task<Session> GetCurrentOrNextSessionAsync()
+    public ValueTask<Session> GetCurrentOrNextSessionAsync()
     {
+        return GetUpcomingSessionsAsync().FirstAsync();
+    }
+
+    public async IAsyncEnumerable<Session> GetUpcomingSessionsAsync()
+    {
+        var latestRecordedExercises = await progressStore.GetLatestRecordedExercisesAsync();
         var currentSession = await progressStore.GetCurrentSessionAsync();
         if (currentSession != null)
-            return currentSession;
+            yield return currentSession;
 
         var latestSession = (await progressStore.GetOrderedSessions()).FirstOrDefault();
         if (latestSession == null)
         {
-            return await CreateNewSessionAsync(defaultSessionBlueprints[0]);
+            latestSession = CreateNewSession(defaultSessionBlueprints[0], latestRecordedExercises);
+            yield return latestSession;
         }
 
         // We need the blueprint that comes after this session
-        var lastBlueprint = latestSession.Blueprint;
+        while (true)
+        {
+            latestSession = GetNextSession(latestSession, latestRecordedExercises);
+            yield return latestSession;
+        }
+    }
+
+    private Session GetNextSession(
+        Session previousSession,
+        Dictionary<ExerciseBlueprint, RecordedExercise> latestRecordedExercises
+    )
+    {
+        var lastBlueprint = previousSession.Blueprint;
         var lastBlueprintIndex = defaultSessionBlueprints.IndexOf(lastBlueprint);
-        return await CreateNewSessionAsync(
-            defaultSessionBlueprints[(lastBlueprintIndex + 1) % defaultSessionBlueprints.Count]
+        return CreateNewSession(
+            defaultSessionBlueprints[(lastBlueprintIndex + 1) % defaultSessionBlueprints.Count],
+            latestRecordedExercises
         );
     }
 
-    private async Task<Session> CreateNewSessionAsync(SessionBlueprint sessionBlueprint)
+    private Session CreateNewSession(
+        SessionBlueprint sessionBlueprint,
+        Dictionary<ExerciseBlueprint, RecordedExercise> latestRecordedExercises
+    )
     {
-        var latestRecordedExcercises = await progressStore.GetLatestRecordedExercisesAsync();
         RecordedExercise getNextExercise(ExerciseBlueprint e)
         {
-            var lastExercise = latestRecordedExcercises.GetValueOrDefault(e);
+            var lastExercise = latestRecordedExercises.GetValueOrDefault(e);
             return new RecordedExercise(
                 e,
                 lastExercise switch
