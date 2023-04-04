@@ -47,6 +47,10 @@ public class SessionService
         return GetUpcomingSessionsAsync().FirstAsync();
     }
 
+    /// <summary>
+    /// Returns all future sessions in order, including the current session if there is one.
+    /// This enumerable is infinite, so ensure to limit output when consuming.
+    /// </summary>
     public async IAsyncEnumerable<Session> GetUpcomingSessionsAsync()
     {
         var latestRecordedExercises = await progressStore.GetLatestRecordedExercisesAsync();
