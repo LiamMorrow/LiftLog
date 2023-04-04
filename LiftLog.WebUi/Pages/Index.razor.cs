@@ -26,8 +26,14 @@ namespace LiftLog.WebUi.Pages
         [Inject]
         public SessionService SessionService { get; set; } = null!;
 
+        private IReadOnlyList<Session> upcomingSessions = null!;
+
         protected override async Task OnInitializedAsync()
         {
+            this.upcomingSessions = await SessionService
+                .GetUpcomingSessionsAsync()
+                .Take(3)
+                .ToListAsync();
             await base.OnInitializedAsync();
         }
 

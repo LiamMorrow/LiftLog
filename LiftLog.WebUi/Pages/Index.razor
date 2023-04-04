@@ -5,3 +5,10 @@
     <span class="text-3xl text-white m-0">Upcoming Workouts</span>
 </div>
 <button style="background-color: red; color: white; padding: 30px;" @onclick="StartSession">Start Session</button>
+
+@foreach (var upcomingSession in upcomingSessions)
+{
+    <Card @onclick=@(() => SelectSession(upcomingSession))>
+        <p>@upcomingSession.Blueprint.Name</p>
+    </Card>
+}
