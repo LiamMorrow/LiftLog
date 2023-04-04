@@ -1,14 +1,20 @@
 ﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 @page "/"
+<div class=" flex flex-col">
+    <div class="bg-black py-11 px-5 flex items-center">
+        <span class="text-3xl text-white m-0">Upcoming Workouts</span>
+    </div>
 
-<div class="bg-black py-11 px-5 flex items-center">
-    <span class="text-3xl text-white m-0">Upcoming Workouts</span>
+    @foreach (var upcomingSession in upcomingSessions)
+    {
+        <Card @onclick=@(() => SelectSession(upcomingSession))>
+            <p>@upcomingSession.Blueprint.Name</p>
+        </Card>
+    }
 </div>
-<button style="background-color: red; color: white; padding: 30px;" @onclick="StartSession">Start Session</button>
 
-@foreach (var upcomingSession in upcomingSessions)
-{
-    <Card @onclick=@(() => SelectSession(upcomingSession))>
-        <p>@upcomingSession.Blueprint.Name</p>
-    </Card>
-}
+<nav class="absolute bottom-0 left-0 right-0 flex bg-slate-300 overflow-visible">
+    <button class="flex-grow self-end mb-4">History</button>
+    <button class="bg-orange-200 h-20 rounded-full w-20 -mt-6" @onclick=StartSession>Start</button>
+    <button class="flex-grow self-end mb-4">Settings</button>
+</nav>
