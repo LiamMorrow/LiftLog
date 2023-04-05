@@ -1,8 +1,8 @@
 ﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 @page "/"
-<div class=" flex flex-col">
-    <div class="bg-black py-11 px-5 flex items-center">
-        <span class="text-3xl text-white m-0">Upcoming Workouts</span>
+<div class="flex flex-col ">
+    <div class="flex items-center px-5 bg-black py-11">
+        <span class="m-0 text-3xl text-white">Upcoming Workouts</span>
     </div>
 
     @foreach (var upcomingSession in upcomingSessions)
@@ -13,8 +13,8 @@
     }
 </div>
 
-<nav class="absolute bottom-0  left-0 right-0 flex bg-slate-300 overflow-visible">
-    <button class="flex-1 self-end mb-4">History</button>
-    <button class="bg-orange-200 h-20 rounded-full w-20 -mt-6" @onclick=StartSession>Start</button>
-    <button class="flex-1 self-end mb-4">Settings</button>
+<nav class="absolute bottom-0 left-0 right-0 flex overflow-visible bg-slate-300">
+    <button class="self-end flex-1 mb-4">History</button>
+    <button class="w-20 h-20 -mt-6 bg-orange-200 rounded-full" @onclick=StartSession>Start</button>
+    <button class="self-end flex-1 mb-4">Settings</button>
 </nav>
