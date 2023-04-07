@@ -8,13 +8,20 @@
     @foreach (var upcomingSession in upcomingSessions)
     {
         <Card @onclick=@(() => SelectSession(upcomingSession))>
-            <p>@upcomingSession.Blueprint.Name</p>
+            <span class="text-xl">@upcomingSession.Blueprint.Name</span>
+            @foreach (var exercise in upcomingSession.RecordedExercises)
+            {
+                <div class="flex justify-between w-full">
+                <span>@exercise.Blueprint.Name</span>
+                <span> @exercise.Blueprint.Sets x @exercise.Blueprint.RepsPerSet</span>
+                </div>
+            }
         </Card>
     }
 </div>
 
 <nav class="absolute bottom-0 left-0 right-0 flex overflow-visible bg-slate-300">
     <button class="self-end flex-1 mb-4">History</button>
-    <button class="w-20 h-20 -mt-6 bg-orange-200 rounded-full" @onclick=StartSession>Start</button>
+    <button class="w-20 h-20 px-4 py-2 -mt-6 font-bold text-white bg-orange-500 border-2 rounded-full hover:bg-orange-600" @onclick=StartSession>Start</button>
     <button class="self-end flex-1 mb-4">Settings</button>
 </nav>

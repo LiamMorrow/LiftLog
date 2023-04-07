@@ -29,7 +29,7 @@ public class SessionService
                 ImmutableList.Create(
                     new ExerciseBlueprint("Squat", 5, 5, 20, 2.5m, DefaultRest),
                     new ExerciseBlueprint("Bench press", 5, 5, 20, 2.5m, DefaultRest),
-                    new ExerciseBlueprint("Bent over row", 1, 5, 20, 2.5m, DefaultRest)
+                    new ExerciseBlueprint("Bent over row", 5, 5, 20, 2.5m, DefaultRest)
                 )
             ),
             new SessionBlueprint(

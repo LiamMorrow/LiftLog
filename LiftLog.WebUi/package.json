@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "npx tailwindcss --config tailwind.config.js -i ./Styles/app.css -o ./wwwroot/app.min.css",
-    "watch": "npx tailwindcss --config tailwind.config.js -i ./Styles/app.css -o ./wwwroot/app.min.css --watch",
-    "publish": "npx tailwindcss --config tailwind.config.js -i ./Styles/app.css -o ./wwwroot/app.min.css --minify"
+    "build": "tailwindcss --config tailwind.config.js -i ./Styles/app.css -o ./wwwroot/app.min.css",
+    "watch": "tailwindcss --config tailwind.config.js -i ./Styles/app.css -o ./wwwroot/app.min.css --watch",
+    "publish": "tailwindcss --config tailwind.config.js -i ./Styles/app.css -o ./wwwroot/app.min.css --minify"
   },
-  "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "tailwindcss": "^3.3.1"
+  }
 }
