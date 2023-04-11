@@ -8,5 +8,7 @@ namespace LiftLog.WebUi.Store.CurrentSession
 
     public record SetCurrentSessionAction(Session? Session);
 
+    public record PersistCurrentSessionAction();
+
     public record RehydrateSessionAction();
 }
