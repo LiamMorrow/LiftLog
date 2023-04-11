@@ -31,6 +31,7 @@ namespace LiftLog.WebUi.Store.CurrentSession
             var currentState = (CurrentSessionState?)_store?.Features["CurrentSession"].GetState();
             if (currentState?.Session is null)
             {
+                _progressStore.ClearCurrentSessionAsync();
                 return;
             }
 

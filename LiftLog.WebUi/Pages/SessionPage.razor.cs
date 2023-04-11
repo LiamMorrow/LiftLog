@@ -15,9 +15,6 @@ namespace LiftLog.WebUi.Pages
         [Inject]
         public IDispatcher Dispatcher { get; set; } = null!;
 
-        [Inject]
-        public IProgressStore ProgressStore { get; set; } = null!;
-
         private void CycleRepcountForExercise(int exerciseIndex, int setIndex)
         {
             Dispatcher.Dispatch(new CycleExerciseRepsAction(exerciseIndex, setIndex));
@@ -28,24 +25,16 @@ namespace LiftLog.WebUi.Pages
             Dispatcher.Dispatch(new UpdateExerciseWeightAction(exerciseIndex, kilograms));
         }
 
-        private async void SaveSession()
+        private void SaveSession()
         {
-            if (CurrentSessionState.Value.Session is not null)
-            {
-                await ProgressStore.SaveCompletedSessionAsync(CurrentSessionState.Value.Session);
-            }
-
-            await ProgressStore.ClearCurrentSessionAsync();
-
+            Dispatcher.Dispatch(new PersistCurrentSessionAction());
             Dispatcher.Dispatch(new SetCurrentSessionAction(null));
+            
             NavigationManager.NavigateTo("/");
         }
 
-        private async void CloseSession()
+        private void CloseSession()
         {
-            await ProgressStore.ClearCurrentSessionAsync();
-
-            Dispatcher.Dispatch(new SetCurrentSessionAction(null));
             NavigationManager.NavigateTo("/");
         }
     }
