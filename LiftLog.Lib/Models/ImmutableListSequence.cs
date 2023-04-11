@@ -46,6 +46,11 @@ namespace LiftLog.Lib
         {
             return new ImmutableListSequence<T>(source);
         }
+        
+        public static implicit operator ImmutableList<T>(ImmutableListSequence<T> source)
+        {
+            return source.Items;
+        }
 
         public override int GetHashCode()
         {

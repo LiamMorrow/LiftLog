@@ -5,6 +5,7 @@ using LiftLog.WebUi.Store.CurrentSession;
 using Blazored.LocalStorage;
 using LiftLog.WebUi.Services;
 using LiftLog.WebUi;
+using LiftLog.WebUi.Store.Program;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<WebApplication>("#app");
@@ -19,9 +20,11 @@ builder.Services.AddFluxor(
     o =>
         o.ScanAssemblies(typeof(Program).Assembly)
             .AddMiddleware<PersistSessionMiddleware>()
+            .AddMiddleware<PersistProgramMiddleware>()
             .UseReduxDevTools()
 );
 builder.Services.AddScoped<IProgressStore, LocalStorageProgressStore>();
+builder.Services.AddScoped<IProgramStore, LocalStorageProgramStore>();
 builder.Services.AddScoped<SessionService>();
 
 await builder.Build().RunAsync();
