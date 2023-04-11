@@ -1,6 +1,8 @@
 @page "/settings"
 @inject NavigationManager NavigationManager
-<h1>Settings</h1>
+<div class="flex">
+    <button @onclick="BackToIndex" class="m-1">&lt;</button><h3>Settings</h3>
+</div>
 <section class="flex flex-col w-full px-5">
     <div class="flex w-full justify-between">
         <span>Units of Weight</span>
@@ -18,5 +20,10 @@
     private void NavigateToManage()
     {
         NavigationManager.NavigateTo("/manage-workouts");
+    }
+
+    private void BackToIndex()
+    {
+        NavigationManager.NavigateTo("/");
     }
 }
