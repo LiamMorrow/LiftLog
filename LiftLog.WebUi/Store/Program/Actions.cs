@@ -6,3 +6,7 @@ namespace LiftLog.WebUi.Store.Program;
 public record UpdateProgramAction(ImmutableListSequence<SessionBlueprint> SessionBlueprints);
 
 public record RehydrateProgramAction();
+
+public record MoveSessionBlueprintUpInProgramAction(SessionBlueprint SessionBlueprint);
+
+public record MoveSessionBlueprintDownInProgramAction(SessionBlueprint SessionBlueprint);
