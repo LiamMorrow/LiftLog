@@ -46,7 +46,7 @@ namespace LiftLog.Lib
         {
             return new ImmutableListSequence<T>(source);
         }
-        
+
         public static implicit operator ImmutableList<T>(ImmutableListSequence<T> source)
         {
             return source.Items;
@@ -109,6 +109,11 @@ namespace LiftLog.Lib
         IImmutableList<T> IImmutableList<T>.Add(T value)
         {
             return ((IImmutableList<T>)Items).Add(value);
+        }
+
+        public ImmutableListSequence<T> Add(T value)
+        {
+            return new ImmutableListSequence<T>(Items.Add(value));
         }
 
         IImmutableList<T> IImmutableList<T>.AddRange(IEnumerable<T> items)

@@ -1,20 +1,24 @@
-@page "/manage-workouts"
-@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 @using Fluxor
 @using LiftLog.WebUi.Store.Program
+@using LiftLog.WebUi.Store.SessionEditor
+
+@page "/manage-workouts"
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
 @inject IState<ProgramState> ProgramState
 @inject NavigationManager NavigationManager
 @inject IDispatcher Dispatcher
 
 <div class="flex">
-    <button @onclick="BackToSettings" class="m-1">&lt;</button><h3>Manage Workouts</h3>
+    <button @onclick="BackToSettings" class="m-1">&lt;</button>
+    <h3>Manage Workouts</h3>
 </div>
-@foreach (var session in ProgramState.Value.SessionBlueprints)
+@foreach (var (session, index) in ProgramState.Value.SessionBlueprints.IndexedTuples())
 {
-    <Card>
+    <Card @onclick=@(() => SelectSession(session, index))>
         <span class="text-xl">@session.Name</span>
-        <button @onclick=@(()=>MoveSessionUp(session)) class="bg-slate-300 m-1">^</button>
-        <button @onclick=@(()=>MoveSessionDown(session)) class="bg-slate-300 m-1">V</button>
+        <button @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick=@(() => MoveSessionUp(session)) class="bg-slate-300 m-1">^</button>
+        <button @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick=@(() => MoveSessionDown(session)) class="bg-slate-300 m-1">V</button>
         @foreach (var exercise in session.Exercises)
         {
             <div class="flex justify-between w-full">
@@ -25,13 +29,15 @@
     </Card>
 }
 
+<AppButton @onclick=AddSession>Add Session</AppButton>
+
 @code {
 
     void MoveSessionUp(SessionBlueprint sessionBlueprint)
     {
         Dispatcher.Dispatch(new MoveSessionBlueprintUpInProgramAction(sessionBlueprint));
     }
-    
+
     void MoveSessionDown(SessionBlueprint sessionBlueprint)
     {
         Dispatcher.Dispatch(new MoveSessionBlueprintDownInProgramAction(sessionBlueprint));
@@ -41,4 +47,18 @@
     {
         NavigationManager.NavigateTo("/settings");
     }
+
+    void SelectSession(SessionBlueprint sessionBlueprint, int index)
+    {
+        Dispatcher.Dispatch(new SetEditingSessionAction(sessionBlueprint));
+        NavigationManager.NavigateTo($"/manage-session/{index}");
+    }
+
+    void AddSession()
+    {
+        Dispatcher.Dispatch(
+            new AddProgramSessionAction(
+                new SessionBlueprint($"Session {ProgramState.Value.SessionBlueprints.Count + 1}", new ImmutableListSequence<ExerciseBlueprint>())));
+    }
+
 }

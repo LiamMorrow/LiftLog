@@ -3,7 +3,9 @@ using LiftLog.Lib.Models;
 
 namespace LiftLog.WebUi.Store.Program;
 
-public record UpdateProgramAction(ImmutableListSequence<SessionBlueprint> SessionBlueprints);
+public record SetProgramSessionAction(int SessionIndex, SessionBlueprint SessionBlueprint);
+
+public record AddProgramSessionAction(SessionBlueprint SessionBlueprint);
 
 public record RehydrateProgramAction();
 
