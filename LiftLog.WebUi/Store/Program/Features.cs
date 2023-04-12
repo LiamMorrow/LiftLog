@@ -9,5 +9,6 @@ public class ProgramFeature : Feature<ProgramState>
 {
     public override string GetName() => nameof(ProgramFeature);
 
-    protected override ProgramState GetInitialState() => new(ImmutableList.Create<SessionBlueprint>());
+    protected override ProgramState GetInitialState() =>
+        new(ImmutableList.Create<SessionBlueprint>());
 }

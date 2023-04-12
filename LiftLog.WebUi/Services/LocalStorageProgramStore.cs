@@ -11,7 +11,8 @@ public class LocalStorageProgramStore : IProgramStore
     private const string StorageKey = "Program";
     private bool _initialised;
     private readonly ILocalStorageService _localStorage;
-    private ImmutableListSequence<SessionBlueprint> _sessions = ImmutableList.Create<SessionBlueprint>();
+    private ImmutableListSequence<SessionBlueprint> _sessions =
+        ImmutableList.Create<SessionBlueprint>();
 
     private static readonly Rest DefaultRest =
         new(TimeSpan.FromSeconds(90), TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(5));
@@ -53,7 +54,6 @@ public class LocalStorageProgramStore : IProgramStore
         _sessions = sessions.ToImmutableList();
         await _localStorage.SetItemAsync(StorageKey, new StorageDao(_sessions));
     }
-
 
     private async ValueTask InitialiseAsync()
     {

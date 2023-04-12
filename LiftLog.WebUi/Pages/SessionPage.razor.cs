@@ -29,7 +29,7 @@ namespace LiftLog.WebUi.Pages
         {
             Dispatcher.Dispatch(new PersistCurrentSessionAction());
             Dispatcher.Dispatch(new SetCurrentSessionAction(null));
-            
+
             NavigationManager.NavigateTo("/");
         }
 

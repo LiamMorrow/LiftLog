@@ -41,7 +41,11 @@ public class SessionService
         // We need the blueprint that comes after this session
         while (true)
         {
-            latestSession = GetNextSession(latestSession, sessionBluePrints, latestRecordedExercises);
+            latestSession = GetNextSession(
+                latestSession,
+                sessionBluePrints,
+                latestRecordedExercises
+            );
             yield return latestSession;
         }
     }

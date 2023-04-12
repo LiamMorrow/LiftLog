@@ -4,17 +4,36 @@ using LiftLog.Lib.Models;
 
 namespace LiftLog.WebUi.Store.Program;
 
-public class Reducers
+public static class Reducers
 {
     [ReducerMethod]
-    public ProgramState UpdateProgram(ProgramState state, UpdateProgramAction action) => state with
+    public static ProgramState SetProgramSession(ProgramState state, SetProgramSessionAction action)
     {
-        SessionBlueprints = action.SessionBlueprints
-    };
+        if (action.SessionIndex < 0 || action.SessionIndex >= state.SessionBlueprints.Count)
+        {
+            return state;
+        }
+
+        return state with
+        {
+            SessionBlueprints = state.SessionBlueprints.SetItem(
+                action.SessionIndex,
+                action.SessionBlueprint
+            )
+        };
+    }
 
     [ReducerMethod]
-    public ProgramState MoveSessionBlueprintUpInProgram(ProgramState state,
-        MoveSessionBlueprintUpInProgramAction action)
+    public static ProgramState AddProgramSession(
+        ProgramState state,
+        AddProgramSessionAction action
+    ) => state with { SessionBlueprints = state.SessionBlueprints.Add(action.SessionBlueprint) };
+
+    [ReducerMethod]
+    public static ProgramState MoveSessionBlueprintUpInProgram(
+        ProgramState state,
+        MoveSessionBlueprintUpInProgramAction action
+    )
     {
         var index = state.SessionBlueprints.IndexOf(action.SessionBlueprint);
         if (index <= 0)
@@ -26,15 +45,20 @@ public class Reducers
 
         return state with
         {
-            SessionBlueprints = state.SessionBlueprints.SetItem(index, toSwap)
+            SessionBlueprints = state.SessionBlueprints
+                .SetItem(index, toSwap)
                 .SetItem(index - 1, action.SessionBlueprint)
         };
     }
+
     [ReducerMethod]
-    public ProgramState MoveSessionBlueprintDownInProgram(ProgramState state, MoveSessionBlueprintDownInProgramAction action)
+    public static ProgramState MoveSessionBlueprintDownInProgram(
+        ProgramState state,
+        MoveSessionBlueprintDownInProgramAction action
+    )
     {
         var index = state.SessionBlueprints.IndexOf(action.SessionBlueprint);
-        if (index < 0 || index == state.SessionBlueprints.Count -1)
+        if (index < 0 || index == state.SessionBlueprints.Count - 1)
         {
             return state;
         }
@@ -43,7 +67,8 @@ public class Reducers
 
         return state with
         {
-            SessionBlueprints = state.SessionBlueprints.SetItem(index, toSwap)
+            SessionBlueprints = state.SessionBlueprints
+                .SetItem(index, toSwap)
                 .SetItem(index + 1, action.SessionBlueprint)
         };
     }
