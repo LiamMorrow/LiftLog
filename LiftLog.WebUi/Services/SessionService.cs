@@ -31,7 +31,7 @@ public class SessionService
         if (currentSession != null)
             yield return currentSession;
 
-        var latestSession = (await _progressStore.GetOrderedSessions()).FirstOrDefault();
+        var latestSession = currentSession ?? (await _progressStore.GetOrderedSessions()).FirstOrDefault();
         if (latestSession == null)
         {
             latestSession = CreateNewSession(sessionBluePrints[0], latestRecordedExercises);
