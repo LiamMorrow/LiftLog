@@ -72,4 +72,8 @@ public static class Reducers
                 .SetItem(index + 1, action.SessionBlueprint)
         };
     }
+
+    [ReducerMethod]
+    public static ProgramState RemoveSessionFromProgram(ProgramState state, RemoveSessionFromProgramAction action) =>
+        state with { SessionBlueprints = state.SessionBlueprints.Remove(action.SessionBlueprint) };
 }

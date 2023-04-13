@@ -15,6 +15,8 @@ public record MoveExerciseDownAction(ExerciseBlueprint ExerciseBlueprint);
 
 public record AddExerciseAction(ExerciseBlueprint ExerciseBlueprint);
 
+public record RemoveExerciseAction(ExerciseBlueprint ExerciseBlueprint);
+
 public record SetExerciseInitialWeightAction(int ExerciseIndex, decimal InitialKilograms);
 
 public record IncrementExerciseSetsAction(int ExerciseIndex);
