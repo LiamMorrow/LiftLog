@@ -116,6 +116,11 @@ namespace LiftLog.Lib
             return new ImmutableListSequence<T>(Items.Add(value));
         }
 
+        public ImmutableListSequence<T> Remove(T value)
+        {
+            return new ImmutableListSequence<T>(Items.Remove(value));
+        }
+
         IImmutableList<T> IImmutableList<T>.AddRange(IEnumerable<T> items)
         {
             return ((IImmutableList<T>)Items).AddRange(items);

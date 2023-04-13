@@ -35,8 +35,9 @@ else
         <Card >
             <label>Name:</label>
             <input type="text" value="@exercise.Name" @onchange="@((e) => SetExerciseName(index, e.Value))"/>
-            <button @onclick=@(() => MoveExerciseUp(exercise)) class="bg-slate-300 m-1">^</button>
-            <button @onclick=@(() => MoveExerciseDown(exercise)) class="bg-slate-300 m-1">V</button>
+            <button @onclick=@(() => MoveExerciseUp(exercise)) class="bg-slate-300 m-1">⬆️</button>
+            <button @onclick=@(() => MoveExerciseDown(exercise)) class="bg-slate-300 m-1">⬇️</button>
+            <button @onclick=@(() => RemoveExercise(exercise)) class="bg-slate-300 m-1">🗑️</button>
             <div class="w-full flex-col">
                 <div class="flex">
                     <button @onclick=@(() => DecrementExerciseSets(index))>-</button><span>@exercise.Sets Sets</span><button @onclick=@(() => IncrementExerciseSets(index))>+</button>
@@ -65,6 +66,8 @@ else
     void MoveExerciseUp(ExerciseBlueprint exerciseBlueprint) => Dispatcher.Dispatch(new MoveExerciseUpAction(exerciseBlueprint));
 
     void MoveExerciseDown(ExerciseBlueprint exerciseBlueprint) => Dispatcher.Dispatch(new MoveExerciseDownAction(exerciseBlueprint));
+    
+    void RemoveExercise(ExerciseBlueprint exerciseBlueprint) => Dispatcher.Dispatch(new RemoveExerciseAction(exerciseBlueprint));
 
     void SaveSession()
     {

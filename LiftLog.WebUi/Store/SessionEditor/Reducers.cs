@@ -41,6 +41,20 @@ public static class Reducers
         );
 
     [ReducerMethod]
+    public static SessionEditorState RemoveExerciseAction(
+        SessionEditorState state,
+        RemoveExerciseAction action
+    ) =>
+        new SessionEditorState(
+            state.SessionBlueprint == null
+                ? null
+                : state.SessionBlueprint with
+                {
+                    Exercises = state.SessionBlueprint.Exercises.Remove(action.ExerciseBlueprint)
+                }
+        );
+
+    [ReducerMethod]
     public static SessionEditorState MoveExerciseUp(
         SessionEditorState state,
         MoveExerciseUpAction action

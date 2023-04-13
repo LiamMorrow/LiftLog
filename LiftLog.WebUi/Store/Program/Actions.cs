@@ -12,3 +12,5 @@ public record RehydrateProgramAction();
 public record MoveSessionBlueprintUpInProgramAction(SessionBlueprint SessionBlueprint);
 
 public record MoveSessionBlueprintDownInProgramAction(SessionBlueprint SessionBlueprint);
+
+public record RemoveSessionFromProgramAction(SessionBlueprint SessionBlueprint);

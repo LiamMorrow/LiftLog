@@ -17,8 +17,9 @@
 {
     <Card @onclick=@(() => SelectSession(session, index))>
         <span class="text-xl">@session.Name</span>
-        <button @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick=@(() => MoveSessionUp(session)) class="bg-slate-300 m-1">^</button>
-        <button @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick=@(() => MoveSessionDown(session)) class="bg-slate-300 m-1">V</button>
+        <button @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick=@(() => MoveSessionUp(session)) class="bg-slate-300 m-1">⬆️</button>
+        <button @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick=@(() => MoveSessionDown(session)) class="bg-slate-300 m-1">⬇️</button>
+        <button @onclick:stopPropagation="true" @onclick:preventDefault="true"  @onclick=@(() => RemoveSession(session)) class="bg-slate-300 m-1">🗑️</button>
         @foreach (var exercise in session.Exercises)
         {
             <div class="flex justify-between w-full">
@@ -33,20 +34,13 @@
 
 @code {
 
-    void MoveSessionUp(SessionBlueprint sessionBlueprint)
-    {
-        Dispatcher.Dispatch(new MoveSessionBlueprintUpInProgramAction(sessionBlueprint));
-    }
+    void MoveSessionUp(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new MoveSessionBlueprintUpInProgramAction(sessionBlueprint));
 
-    void MoveSessionDown(SessionBlueprint sessionBlueprint)
-    {
-        Dispatcher.Dispatch(new MoveSessionBlueprintDownInProgramAction(sessionBlueprint));
-    }
+    void MoveSessionDown(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new MoveSessionBlueprintDownInProgramAction(sessionBlueprint));
+    
+    void RemoveSession(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new RemoveSessionFromProgramAction(sessionBlueprint));
 
-    void BackToSettings()
-    {
-        NavigationManager.NavigateTo("/settings");
-    }
+    void BackToSettings() => NavigationManager.NavigateTo("/settings");
 
     void SelectSession(SessionBlueprint sessionBlueprint, int index)
     {
@@ -54,11 +48,8 @@
         NavigationManager.NavigateTo($"/manage-session/{index}");
     }
 
-    void AddSession()
-    {
-        Dispatcher.Dispatch(
-            new AddProgramSessionAction(
-                new SessionBlueprint($"Session {ProgramState.Value.SessionBlueprints.Count + 1}", new ImmutableListSequence<ExerciseBlueprint>())));
-    }
+    void AddSession() => Dispatcher.Dispatch(
+        new AddProgramSessionAction(
+            new SessionBlueprint($"Session {ProgramState.Value.SessionBlueprints.Count + 1}", new ImmutableListSequence<ExerciseBlueprint>())));
 
 }
