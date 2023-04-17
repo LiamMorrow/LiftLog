@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Append.Blazor.Notifications" Version="1.1.0" />
     <PackageReference Include="Blazored.LocalStorage" Version="4.3.0" />
     <PackageReference Include="Fluxor" Version="5.7.0" />
     <PackageReference Include="Fluxor.Blazor.Web" Version="5.7.0" />

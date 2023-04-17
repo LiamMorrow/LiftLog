@@ -1,6 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using LiftLog.Lib.Services;
+using Microsoft.AspNetCore.Components;
 
 namespace LiftLog.WebUi.Shared.SessionComponent.RestTimer
 {

@@ -1,5 +1,6 @@
 using Fluxor;
 using LiftLog.Lib.Models;
+using LiftLog.Lib.Services;
 
 namespace LiftLog.WebUi.Store.CurrentSession;
 
@@ -74,6 +75,10 @@ public static class Reducers
         SetCurrentSessionAction action
     ) => state with { Session = action.Session };
 
+    [ReducerMethod]
+    public static CurrentSessionState SetNotificationHandle(CurrentSessionState state,
+        SetNotificationHandleAction action) => state with { SetTimerNotificationHandle = action.Handle };
+    
     private static RecordedSet? GetCycledRepCount(
         RecordedSet? recordedSet,
         ExerciseBlueprint exerciseBlueprint
@@ -89,4 +94,5 @@ public static class Reducers
             var reps => reps with { RepsCompleted = reps.RepsCompleted - 1 }
         };
     }
+    
 }

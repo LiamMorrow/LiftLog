@@ -18,6 +18,7 @@ namespace LiftLog.WebUi.Pages
         private void CycleRepcountForExercise(int exerciseIndex, int setIndex)
         {
             Dispatcher.Dispatch(new CycleExerciseRepsAction(exerciseIndex, setIndex));
+            Dispatcher.Dispatch(new NotifySetTimerAction());
         }
 
         private void UpdateWeightForExercise(int exerciseIndex, decimal kilograms)

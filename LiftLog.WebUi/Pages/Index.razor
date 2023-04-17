@@ -1,24 +1,23 @@
 ﻿@page "/"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
-
-<div class="flex flex-col ">
+<div class="flex flex-col h-full " style="background: rgb(255,233,139);
+                                                   background: radial-gradient(circle, rgba(255,233,139,1) 0%, rgba(255,212,136,1) 35%, rgba(255,243,206,1) 100%);">
     <div class="flex items-center px-5 bg-black py-11">
         <span class="m-0 text-3xl text-white">Upcoming Workouts</span>
     </div>
-
-    @foreach (var upcomingSession in _upcomingSessions)
-    {
-        <Card @onclick=@(() => SelectSession(upcomingSession))>
-            <span class="text-xl">@upcomingSession.Blueprint.Name</span>
-            @foreach (var exercise in upcomingSession.RecordedExercises)
-            {
-                <div class="flex justify-between w-full">
-                <span>@exercise.Blueprint.Name</span>
-                <span> @exercise.Blueprint.Sets x @exercise.Blueprint.RepsPerSet</span>
-                </div>
-            }
-        </Card>
-    }
+        @foreach (var upcomingSession in _upcomingSessions)
+        {
+            <Card @onclick=@(() => SelectSession(upcomingSession))>
+                <span class="text-xl">@upcomingSession.Blueprint.Name</span>
+                @foreach (var exercise in upcomingSession.RecordedExercises)
+                {
+                    <div class="flex justify-between w-full">
+                        <span>@exercise.Blueprint.Name</span>
+                        <span> @exercise.Blueprint.Sets x @exercise.Blueprint.RepsPerSet</span>
+                    </div>
+                }
+            </Card>
+        }
 </div>
 
 
