@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 using Fluxor;
-using LiftLog.Lib.Models;
+// ReSharper disable UnusedMember.Global
 
 namespace LiftLog.WebUi.Store.Program;
 

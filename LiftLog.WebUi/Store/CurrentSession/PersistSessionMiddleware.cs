@@ -20,7 +20,7 @@ namespace LiftLog.WebUi.Store.CurrentSession
             if (currentSession is not null)
             {
                 store.Features["CurrentSession"].RestoreState(
-                    new CurrentSessionState(currentSession)
+                    new CurrentSessionState(currentSession, null)
                 );
             }
             dispatch.Dispatch(new RehydrateSessionAction());

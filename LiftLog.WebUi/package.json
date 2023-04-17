@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tailwindcss --config tailwind.config.js -i ./Styles/app.css -o ./wwwroot/app.min.css",
     "watch": "tailwindcss --config tailwind.config.js -i ./Styles/app.css -o ./wwwroot/app.min.css --watch",
-    "publish": "tailwindcss --config tailwind.config.js -i ./Styles/app.css -o ./wwwroot/app.min.css --minify"
+    "deploy": "./deploy.sh"
   },
   "dependencies": {
     "tailwindcss": "^3.3.1"
