@@ -1,6 +1,8 @@
-<button class="weight-display" @onclick=OnOpenClick>@(Exercise.Blueprint.Sets)x@(Exercise.Blueprint.RepsPerSet)&nbsp
-    <WeightFormat Kilograms=Exercise.Kilograms />
-</button>
+<div>
+    <span>@(Exercise.Blueprint.Sets)x@(Exercise.Blueprint.RepsPerSet)</span>
+    <AppButton Type="AppButtonType.OutlineSecondary" @onclick="OnOpenClick"><WeightFormat Kilograms=Exercise.Kilograms/>
+    </AppButton>
+</div>
 <div class=@($"weight-display-popup {(PopupActive ? "active" :"")}")>
     <div class="weight-display-popup-content">
         <div class="weight-display-popup-header">
@@ -15,8 +17,8 @@
             </div>
             <div class="weight-display-popup-row">
                 <div class="weight-display-weight-increment-buttons-grid">
-                    <button class="weight-display-weight-increment-button" @onclick=OnWeightDecrementClick><WeightFormat Kilograms=-(Exercise.Blueprint.KilogramsIncreaseOnSuccess) /></button>
-                    <button class="weight-display-weight-increment-button" @onclick=OnWeightIncrementClick>+<WeightFormat Kilograms=(Exercise.Blueprint.KilogramsIncreaseOnSuccess) /></button>
+                    <AppButton Type=AppButtonType.OutlineSecondary @onclick=OnWeightDecrementClick><WeightFormat Kilograms="-Exercise.Blueprint.KilogramsIncreaseOnSuccess"  /></AppButton>
+                    <AppButton Type=AppButtonType.OutlineSecondary @onclick=OnWeightIncrementClick>+<WeightFormat Kilograms="Exercise.Blueprint.KilogramsIncreaseOnSuccess" /></AppButton>
                 </div>
             </div>
             <div class="weight-display-button-row">

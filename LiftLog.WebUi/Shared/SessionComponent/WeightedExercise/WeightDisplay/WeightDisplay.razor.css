@@ -1,7 +1,3 @@
-.weight-display {
-  border: none;
-  background-color: transparent;
-}
 .weight-display-popup {
   display: none;
 }
@@ -72,7 +68,4 @@
   grid-template-rows: repeat(1, 1fr);
   gap: 10px;
   width: 100%;
-}
-
-.weight-display-weight-increment-button {
 }

@@ -1,4 +1,23 @@
-<button @onclick=onclick class="ui-button @Type">@ChildContent</button>
+@*Source: https://flowbite.com/docs/components/buttons/#default-button*@
+@switch (Type)
+{
+    case AppButtonType.Primary:
+        <button @onclick:stopPropagation="true" @onclick:preventDefault="true"  class="px-5 py-2.5 font-medium bg-blue-50 hover:bg-blue-100 hover:text-blue-600 text-blue-500 rounded-lg text-sm" @onclick="onclick">
+            @ChildContent
+        </button>
+        break;
+    case AppButtonType.Secondary:
+        <button @onclick:stopPropagation="true" @onclick:preventDefault="true"  class="px-5 py-2.5 font-medium bg-gray-50 hover:bg-gray-100 hover:text-gray-600 text-gray-500 rounded-lg text-sm"  @onclick="onclick">
+            @ChildContent
+        </button> break;
+    case AppButtonType.OutlineSecondary:
+        <button @onclick:stopPropagation="true" @onclick:preventDefault="true"  class="px-5 py-2.5 border border-gray-200 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:shadow-none text-gray-600 rounded-lg text-sm"  @onclick="onclick">
+            @ChildContent
+        </button> 
+        break;
+    default:
+        throw new ArgumentOutOfRangeException();
+}
 @code {
     [Parameter]
     public RenderFragment ChildContent { get; set; } = null!;
@@ -7,5 +26,5 @@
     public EventCallback<MouseEventArgs> onclick { get; set; }
 
     [Parameter]
-    public AppButtonType Type {get;set;} = AppButtonType.Primary;
+    public AppButtonType Type { get;set;} = AppButtonType.Primary;
 }

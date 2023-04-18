@@ -26,4 +26,8 @@
     <_ContentIncludedByDefault Remove="Shared\NavBar\NavBar.razor" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\tailwind.config.js" />
+  </ItemGroup>
+
 </Project>

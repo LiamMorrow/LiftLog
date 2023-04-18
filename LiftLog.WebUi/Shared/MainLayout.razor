@@ -15,7 +15,7 @@
         #if DEBUG
         if (firstRender)
         {
-             await js.InvokeAsync<IJSObjectReference>("import", "./tailwind.js");
+            await js.InvokeAsync<IJSObjectReference>("import", "./load-tailwind.js");
         }
         #else
         await base.OnAfterRenderAsync(firstRender);
