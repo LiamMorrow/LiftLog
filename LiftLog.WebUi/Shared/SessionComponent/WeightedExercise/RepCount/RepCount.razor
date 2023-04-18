@@ -1,6 +1,13 @@
-﻿<button class=@($"rep-count {RepCountUnstartedClass} {RepCountToStartClass}") @onclick=CycleRepCount>@RepCountValue</button>
+﻿<button class="w-12 h-12 text-white bg-red-500 rounded-xl text-center flex justify-center align-middle transition-colors duration-75 items-center @RepCountUnstartedClass @RepCountToStartClass" @onclick="CycleRepCount">
+    <span class="font-bold">@(RepCountValue?.ToString()??"-")</span>
+    <span class="text-xs inline align-text-top">/@MaxReps</span>
+</button>
 
 @code {
+
+    [Parameter]
+    public int MaxReps { get; set; }
+
     [Parameter]
     public int? RepCountValue { get; set; }
 

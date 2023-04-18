@@ -2,16 +2,16 @@
   <div class="weighted-exercise-header">
     <span class="exercise-header">@RecordedExercise.Blueprint.Name</span>
     <WeightDisplay
-        Exercise=RecordedExercise
-        UpdateWeightForExercise=UpdateWeightForExercise/>
+        Exercise="RecordedExercise"
+        UpdateWeightForExercise="UpdateWeightForExercise"/>
   </div>
-  <div class="weighted-exercise-list">
+  <div class="flex gap-2">
     @{
       var repToStartNext = RecordedExercise.RecordedSets.IndexOf(null);
     }
     @foreach (var (set, i) in RecordedExercise.RecordedSets.IndexedTuples())
     {
-      <RepCount @key=i CycleRepCount=@(() => CycleRepCountForSet(i)) RepCountValue=@set?.RepsCompleted ToStartNext=@(ToStartNext && repToStartNext == i) />
+      <RepCount @key=i MaxReps="RecordedExercise.Blueprint.RepsPerSet" CycleRepCount=@(() => CycleRepCountForSet(i)) RepCountValue=@set?.RepsCompleted ToStartNext=@(ToStartNext && repToStartNext == i) />
     }
   </div>
 </div>
