@@ -12,7 +12,7 @@
 
 <div class="flex">
     <button @onclick="BackToManageWorkouts" class="m-1">&lt;</button>
-    <h3>@SessionEditorState.Value.SessionBlueprint?.Name</h3>
+    <h3>Back</h3>
 </div>
 
 @if (SessionEditorState.Value.SessionBlueprint is null)
@@ -28,23 +28,20 @@
 }
 else
 {
-    <label>Name:</label>
     <input type="text" value="@SessionEditorState.Value.SessionBlueprint.Name" @onchange="@((e) => SetName(e.Value))"/>
     foreach (var (exercise, index) in SessionEditorState.Value.SessionBlueprint.Exercises.IndexedTuples())
     {
         <Card >
             
-            <div class="flex justify-between">
-                <div>
-                    <input type="text" class="text-xl " value="@exercise.Name" @onchange="@((e) => SetExerciseName(index, e.Value))"/>
-                </div>
+            <div class="flex justify-between mb-4 border-b-2 pb-2">
+                    <input type="text" class="text-xl w-6/12" value="@exercise.Name" @onchange="@((e) => SetExerciseName(index, e.Value))"/>
                 <div >
                     <AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => MoveExerciseUp(exercise))>⬆️</AppButton>
                     <AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => MoveExerciseDown(exercise))>⬇️</AppButton>
                     <AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => RemoveExercise(exercise))>🗑️</AppButton>
                 </div>
             </div>
-            <div class="w-full flex gap-1 flex-wrap">
+            <div class="w-full flex gap-1 flex-wrap justify-around">
                 <div class="flex flex-col gap-1">
                     <div>
                         <AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => DecrementExerciseSets(index))>➖</AppButton><span class="inline-block w-20 mx-2 text-center">@exercise.Sets Sets</span><AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => IncrementExerciseSets(index))>➕</AppButton>
@@ -55,9 +52,9 @@ else
                 </div>
                 <div class="flex flex-col gap-2 justify-between">
                     <label class="text-lg text-center">Initial Weight</label>
-                    <div>
+                    <div class="flex justify-center">
                         <AppButton Type=AppButtonType.OutlineSecondary @onclick=@(() => OnWeightDecrementClick(exercise, index))><WeightFormat Kilograms="-exercise.KilogramsIncreaseOnSuccess"/></AppButton>
-                        <input class="text-lg w-8 text-center" type="text" inputmode="numeric" step="0.01" value=@exercise.InitialKilograms @onchange=@((e) => SetExerciseInitialWeight(index, e.Value))/>
+                        <input class="text-lg w-20 text-center" type="text" inputmode="numeric" value=@exercise.InitialKilograms @onchange=@((e) => SetExerciseInitialWeight(index, e.Value))/>
                         <AppButton Type=AppButtonType.OutlineSecondary @onclick=@(() => OnWeightIncrementClick(exercise, index))>+<WeightFormat Kilograms="exercise.KilogramsIncreaseOnSuccess"/></AppButton>
                     </div>
                 </div>

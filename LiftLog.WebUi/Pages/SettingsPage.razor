@@ -5,16 +5,9 @@
     <button @onclick="BackToIndex" class="m-1">&lt;</button><h3>Settings</h3>
 </div>
 <section class="flex flex-col w-full px-5">
-    <div class="flex w-full justify-between">
-        <span>Units of Weight</span>
-        <select>
-            <option>Kilograms</option>
-            <option>Pounds</option>
-        </select>
-    </div>
-    <button class="flex w-full bg-amber-300" @onclick=NavigateToManage>
+    <AppButton  @onclick=NavigateToManage>
         <h4>Manage Workouts</h4>
-    </button>
+    </AppButton>
 </section>
 @code {
 
