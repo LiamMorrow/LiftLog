@@ -1,16 +1,3 @@
-.rep-count {
-  width: 3em;
-  height: 3em;
-  color: white;
-  border-color: transparent;
-  border-radius: 1em;
-  background-color: var(--primary-color);
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.5s;
-}
 
 .unstarted-rep-count {
   background-color: lightgray;

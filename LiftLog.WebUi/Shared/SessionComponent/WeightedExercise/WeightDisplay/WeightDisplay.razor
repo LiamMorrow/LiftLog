@@ -1,9 +1,9 @@
 <div>
-    <span>@(Exercise.Blueprint.Sets)x@(Exercise.Blueprint.RepsPerSet)</span>
-    <AppButton Type="AppButtonType.OutlineSecondary" @onclick="OnOpenClick"><WeightFormat Kilograms=Exercise.Kilograms/>
+    <AppButton Type="AppButtonType.OutlineSecondary" @onclick="OnOpenClick">
+        <WeightFormat Kilograms="Exercise.Kilograms"/>
     </AppButton>
 </div>
-<div class=@($"weight-display-popup {(PopupActive ? "active" :"")}")>
+<div class="weight-display-popup @(PopupActive ? "active" :"")" >
     <div class="weight-display-popup-content">
         <div class="weight-display-popup-header">
             <h3>@(Exercise.Blueprint.Name)</h3>
