@@ -5,5 +5,6 @@ public partial class AppButton { }
 public enum AppButtonType
 {
     Primary,
-    Secondary
+    Secondary,
+    OutlineSecondary
 }

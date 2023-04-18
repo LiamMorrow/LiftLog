@@ -17,9 +17,9 @@
 {
     <Card @onclick=@(() => SelectSession(session, index))>
         <span class="text-xl">@session.Name</span>
-        <button @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick=@(() => MoveSessionUp(session)) class="bg-slate-300 m-1">⬆️</button>
-        <button @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick=@(() => MoveSessionDown(session)) class="bg-slate-300 m-1">⬇️</button>
-        <button @onclick:stopPropagation="true" @onclick:preventDefault="true"  @onclick=@(() => RemoveSession(session)) class="bg-slate-300 m-1">🗑️</button>
+        <AppButton Type="AppButtonType.OutlineSecondary" onclick=@(() => MoveSessionUp(session))>⬆️</AppButton>
+        <AppButton Type="AppButtonType.OutlineSecondary" onclick=@(() => MoveSessionDown(session))>⬇️</AppButton>
+        <AppButton Type="AppButtonType.OutlineSecondary" onclick=@(() => RemoveSession(session))>🗑️</AppButton>
         @foreach (var exercise in session.Exercises)
         {
             <div class="flex justify-between w-full">
@@ -30,7 +30,7 @@
     </Card>
 }
 
-<AppButton @onclick=AddSession>Add Session</AppButton>
+<AppButton Type="AppButtonType.OutlineSecondary" onclick="AddSession">Add Session</AppButton>
 
 @code {
 
