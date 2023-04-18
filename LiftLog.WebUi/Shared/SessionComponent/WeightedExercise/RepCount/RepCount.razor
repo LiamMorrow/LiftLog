@@ -1,4 +1,4 @@
-﻿<button class="w-12 h-12 text-white bg-red-500 rounded-xl text-center flex justify-center align-middle transition-colors duration-75 items-center @RepCountUnstartedClass @RepCountToStartClass" @onclick="CycleRepCount">
+﻿<button class="w-12 h-12 text-white rounded-xl text-center flex justify-center align-middle transition-colors duration-75 items-center @BgClass @RepCountToStartClass" @onclick="CycleRepCount">
     <span class="font-bold">@(RepCountValue?.ToString()??"-")</span>
     <span class="text-xs inline align-text-top">/@MaxReps</span>
 </button>
@@ -17,7 +17,7 @@
     [Parameter]
     public bool ToStartNext { get; set; }
 
-    private string? RepCountUnstartedClass => RepCountValue is null ? "unstarted-rep-count" : null;
+    private string? BgClass => ToStartNext || RepCountValue is not null ? "bg-red-500" : "bg-gray-200";
 
-    private string? RepCountToStartClass => ToStartNext ? "to-start-rep-count" : null;
+    private string? RepCountToStartClass => ToStartNext ? "animate-pulse" : null;
 }
