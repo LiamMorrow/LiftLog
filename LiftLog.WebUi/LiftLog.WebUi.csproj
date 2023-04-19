@@ -22,8 +22,5 @@
     <ProjectReference Include="..\LiftLog.Lib\LiftLog.Lib.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Shared\NavBar\NavBar.razor" />
-  </ItemGroup>
 
 </Project>
