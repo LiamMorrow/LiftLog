@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="LiftLog.App.Views.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://schemas.microsoft.com/dotnet/2021/maui/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:LiftLog.App"
+    Title="LiftLog.App"
+    mc:Ignorable="d">
+    <ContentPage.Content>
+        <ScrollView>
+            <StackLayout Padding="30" Spacing="25">
+
+                <Label
+                    FontSize="32"
+                    HorizontalOptions="Center"
+                    SemanticProperties.HeadingLevel="Level1"
+                    Style="{StaticResource MauiLabel}"
+                    Text="Hello, World!" />
+
+                <Label
+                    FontSize="18"
+                    HorizontalOptions="Center"
+                    SemanticProperties.Description="Welcome to dot net Multi platform App U I"
+                    SemanticProperties.HeadingLevel="Level1"
+                    Style="{StaticResource MauiLabel}"
+                    Text="Welcome to .NET Multi-platform App UI" />
+
+                <Label
+                    x:Name="CounterLabel"
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    HorizontalOptions="Center"
+                    Style="{StaticResource MauiLabel}"
+                    Text="Current count: 0" />
+
+                <Button
+                    Clicked="OnCounterClicked"
+                    HorizontalOptions="Center"
+                    SemanticProperties.Hint="Counts the number of times you click"
+                    Style="{StaticResource PrimaryAction}"
+                    Text="Click me" />
+
+                <Image
+                    HeightRequest="310"
+                    HorizontalOptions="Center"
+                    SemanticProperties.Description="Cute dot net bot waving hi to you!"
+                    Source="dotnet_bot.png"
+                    WidthRequest="250" />
+
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>
