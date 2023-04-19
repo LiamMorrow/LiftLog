@@ -29,26 +29,20 @@ public class CurrentSessionEffects
     [EffectMethod]
     public async Task NotifySetTimer(NotifySetTimerAction _, IDispatcher dispatcher)
     {
-        var notificationHandle = _state.Value.SetTimerNotificationHandle;
-        if (notificationHandle is null)
-        {
-            notificationHandle = new NotificationHandle(Guid.NewGuid());
-            dispatcher.Dispatch(new SetNotificationHandleAction(notificationHandle));
-        }
-
+        var notificationHandle = new NotificationHandle(Guid.NewGuid());
         if (_state.Value.Session?.NextExercise is not null)
         {
-            var message = _state.Value.Session?.NextExercise switch
+            var rest = _state.Value.Session.NextExercise switch
             {
                 { LastRecordedSet: not null } exercise => exercise.LastRecordedSet?.RepsCompleted ==
                                                           exercise.Blueprint.RepsPerSet
-                    ? $"Rest {exercise.Blueprint.RestBetweenSets.MinRest} if it was easy, or {exercise.Blueprint.RestBetweenSets.SecondaryRest} if it was hard"
-                    : $"Rest {exercise.Blueprint.RestBetweenSets.FailureRest}",
-                _ => null,
+                    ? exercise.Blueprint.RestBetweenSets.MinRest
+                    : exercise.Blueprint.RestBetweenSets.FailureRest,
+                _ => TimeSpan.Zero,
             };
-            if (message != null)
+            if (rest != TimeSpan.Zero)
             {
-                await _notificationService.UpdateNotificationAsync(notificationHandle, "Rest", message);
+                await _notificationService.ScheduleNotificationAsync(notificationHandle, DateTimeOffset.Now.Add(rest) , "Rest Over", "Start your next set now!");
             }
         }
     }
