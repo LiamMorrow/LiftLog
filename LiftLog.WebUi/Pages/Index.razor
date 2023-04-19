@@ -1,9 +1,10 @@
 ﻿@page "/"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
-<div class="flex flex-col h-full " >
+<div class=" grid grid-cols-1 h-full grid-rows-[2fr_8fr_3.5rem]" >
     <div class="flex items-center px-5 bg-black py-11">
         <span class="m-0 text-3xl text-white">Upcoming Workouts</span>
     </div>
+    <div class="overflow-auto">
         @foreach (var upcomingSession in _upcomingSessions)
         {
             <Card @onclick=@(() => SelectSession(upcomingSession))>
@@ -17,11 +18,12 @@
                 }
             </Card>
         }
-</div>
-
-
-<nav class="absolute bottom-0 left-0 right-0 flex overflow-visible bg-slate-300">
+    </div>
+    
+<nav class="flex h-14 bg-slate-300">
     <button class="self-end flex-1 mb-4">History</button>
     <button class="w-20 h-20 px-4 py-2 -mt-6 font-bold text-white bg-orange-500 border-2 rounded-full hover:bg-orange-600" @onclick=StartSession>Start</button>
     <button class="self-end flex-1 mb-4" @onclick=NavigateToSettings>Settings</button>
 </nav>
+</div>
+
