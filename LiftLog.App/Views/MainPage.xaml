@@ -6,50 +6,15 @@
     xmlns:d="http://schemas.microsoft.com/dotnet/2021/maui/design"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:LiftLog.App"
+    xmlns:webUi="clr-namespace:LiftLog.WebUi;assembly=LiftLog.WebUi"
     Title="LiftLog.App"
     mc:Ignorable="d">
     <ContentPage.Content>
-        <ScrollView>
-            <StackLayout Padding="30" Spacing="25">
-
-                <Label
-                    FontSize="32"
-                    HorizontalOptions="Center"
-                    SemanticProperties.HeadingLevel="Level1"
-                    Style="{StaticResource MauiLabel}"
-                    Text="Hello, World!" />
-
-                <Label
-                    FontSize="18"
-                    HorizontalOptions="Center"
-                    SemanticProperties.Description="Welcome to dot net Multi platform App U I"
-                    SemanticProperties.HeadingLevel="Level1"
-                    Style="{StaticResource MauiLabel}"
-                    Text="Welcome to .NET Multi-platform App UI" />
-
-                <Label
-                    x:Name="CounterLabel"
-                    FontAttributes="Bold"
-                    FontSize="18"
-                    HorizontalOptions="Center"
-                    Style="{StaticResource MauiLabel}"
-                    Text="Current count: 0" />
-
-                <Button
-                    Clicked="OnCounterClicked"
-                    HorizontalOptions="Center"
-                    SemanticProperties.Hint="Counts the number of times you click"
-                    Style="{StaticResource PrimaryAction}"
-                    Text="Click me" />
-
-                <Image
-                    HeightRequest="310"
-                    HorizontalOptions="Center"
-                    SemanticProperties.Description="Cute dot net bot waving hi to you!"
-                    Source="dotnet_bot.png"
-                    WidthRequest="250" />
-
-            </StackLayout>
-        </ScrollView>
+       
+        <BlazorWebView x:Name="blazorWebView" HostPage="wwwroot/index.html">
+            <BlazorWebView.RootComponents>
+                <RootComponent Selector="#app" ComponentType="{x:Type webUi:WebApplication}" />
+            </BlazorWebView.RootComponents>
+        </BlazorWebView>
     </ContentPage.Content>
 </ContentPage>

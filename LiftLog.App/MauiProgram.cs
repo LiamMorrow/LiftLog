@@ -13,6 +13,7 @@ namespace LiftLog.App
                        fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                        fonts.AddFont("OpenSans-SemiBold.ttf", "OpenSansSemiBold");
                    });
+            builder.Services.AddMauiBlazorWebView();
 
 #if DEBUG
             builder.Logging.AddDebug();

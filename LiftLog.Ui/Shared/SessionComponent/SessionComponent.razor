@@ -1,0 +1,49 @@
+@using LiftLog.Ui.Util
+<div class="session h-full flex flex-col justify-between">
+    <div>
+    @foreach (var (exercise, i) in Session.RecordedExercises.IndexedTuples())
+    {
+        <Card>
+            <WeightedExercise @key=i
+                              RecordedExercise="exercise"
+                              ToStartNext=@(Session.NextExercise == exercise)
+                              CycleRepCountForSet=CycleRepCountForExerciseSet(i)
+                              UpdateWeightForExercise=UpdateWeightForExerciseWrapper(i) />
+        </Card>
+    }
+</div>
+    <div class="flex justify-end gap-1 m-1">
+        <AppButton onclick=CloseSession Type="AppButtonType.Secondary">Close</AppButton>
+        <AppButton onclick=SaveSession>Save</AppButton>
+    </div>
+    @if (Session.NextExercise is not null && Session.LastExercise?.LastRecordedSet is not null)
+    {
+        var lastSetFailed = Session.LastExercise.LastRecordedSet.RepsCompleted < Session.LastExercise.Blueprint.RepsPerSet;
+        <RestTimer
+            Rest=Session.NextExercise.Blueprint.RestBetweenSets
+            StartTime=Session.LastExercise.LastRecordedSet.CompletionTime
+            Failed=lastSetFailed/>
+    }
+</div>
+@code {
+    [Parameter]
+    public Session Session { get; set; } = null!;
+
+    [Parameter]
+    public Action<int, int> CycleRepcountForExercise { get; set; } = null!;
+
+    [Parameter]
+    public Action<int, decimal> UpdateWeightForExercise { get;set; }=null!;
+
+    [Parameter]
+    public Action SaveSession { get; set; } = null!;
+
+    [Parameter]
+    public Action CloseSession { get; set; } = null!;
+
+    private Action<int> CycleRepCountForExerciseSet(int exerciseIndex)
+    => (int set) => CycleRepcountForExercise(exerciseIndex, set);
+
+    private Action<decimal> UpdateWeightForExerciseWrapper(int exerciseIndex)
+    => (decimal kilograms) => UpdateWeightForExercise(exerciseIndex, kilograms);
+}
