@@ -4,8 +4,7 @@
   "description": "",
   "scripts": {
     "build": "tailwindcss --config tailwind.config.js -i ./Styles/app.css -o ./wwwroot/app.min.css",
-    "watch": "tailwindcss --config tailwind.config.js -i ./Styles/app.css -o ./wwwroot/app.min.css --watch",
-    "deploy": "./deploy.sh"
+    "watch": "tailwindcss --config tailwind.config.js -i ./Styles/app.css -o ./wwwroot/app.min.css --watch"
   },
   "dependencies": {
     "tailwindcss": "^3.3.1"
