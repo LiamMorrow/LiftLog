@@ -22,11 +22,6 @@ public static class MauiProgram
             .UseMauiApp<App>()
             .ConfigureFonts(fonts => { fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"); });
 
-        builder.Services.AddScoped<IProgramStore, KeyValueProgramStore>();
-        builder.Services.AddScoped<IProgressStore, KeyValueProgressStore>();
-        builder.Services.AddSingleton<IKeyValueStore, SecureStorageKeyValueStore>();
-        builder.Services.AddScoped<INotificationService, WebNotificationService>();
-        builder.Services.AddScoped<SessionService>();
         builder.Services.AddMauiBlazorWebView();
         
 
@@ -44,6 +39,11 @@ public static class MauiProgram
         );
 
 
+        builder.Services.AddScoped<IProgramStore, KeyValueProgramStore>();
+        builder.Services.AddScoped<IProgressStore, KeyValueProgressStore>();
+        builder.Services.AddSingleton<IKeyValueStore, SecureStorageKeyValueStore>();
+        builder.Services.AddScoped<INotificationService, WebNotificationService>();
+        builder.Services.AddScoped<SessionService>();
         return builder.Build();
     }
 }
