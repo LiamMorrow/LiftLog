@@ -12,7 +12,7 @@
         protected override Window CreateWindow(IActivationState? activationState)
         {
             var window = base.CreateWindow(activationState);
-            window.Title = "LiftLog.App";
+            window.Title = "LiftLog";
             return window;
         }
     }

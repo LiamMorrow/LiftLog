@@ -2,18 +2,19 @@ using Append.Blazor.Notifications;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Fluxor;
 using LiftLog.Lib.Store;
-using LiftLog.WebUi.Store.CurrentSession;
 using Blazored.LocalStorage;
+using LiftLog.Ui;
+using LiftLog.Ui.Services;
+using LiftLog.Ui.Store.CurrentSession;
+using LiftLog.Ui.Store.Program;
 using LiftLog.WebUi.Services;
-using LiftLog.WebUi;
-using LiftLog.WebUi.Store.Program;
 using INotificationService = LiftLog.Lib.Services.INotificationService;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<WebApplication>("#app");
 
 builder.Services.AddScoped(
-    sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) }
+    _ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) }
 );
 
 builder.Services.AddBlazoredLocalStorage();

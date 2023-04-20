@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.3" />
+    <PackageReference Include="Fluxor" Version="5.7.0" />
+    <PackageReference Include="Fluxor.Blazor.Web" Version="5.7.0" />
+    <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="5.7.0" />
+    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\background.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\exampleJsInterop.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Pages\Index.razor" />
+    <AdditionalFiles Include="Pages\ManageSessionPage.razor" />
+    <AdditionalFiles Include="Pages\ManageWorkoutsPage.razor" />
+    <AdditionalFiles Include="Pages\SessionPage.razor" />
+    <AdditionalFiles Include="Pages\SettingsPage.razor" />
+    <AdditionalFiles Include="Shared\AppButton\AppButton.razor" />
+    <AdditionalFiles Include="Shared\Card\Card.razor" />
+    <AdditionalFiles Include="Shared\MainLayout.razor" />
+    <AdditionalFiles Include="Shared\SessionComponent\RestTimer\RestTimer.razor" />
+    <AdditionalFiles Include="Shared\SessionComponent\SessionComponent.razor" />
+    <AdditionalFiles Include="Shared\SessionComponent\WeightedExercise\RepCount\RepCount.razor" />
+    <AdditionalFiles Include="Shared\SessionComponent\WeightedExercise\WeightDisplay\WeightDisplay.razor" />
+    <AdditionalFiles Include="Shared\SessionComponent\WeightedExercise\WeightedExercise.razor" />
+    <AdditionalFiles Include="Shared\WeightFormat\WeightFormat.razor" />
+    <AdditionalFiles Include="WebApplication.razor" />
+    <AdditionalFiles Include="_Imports.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LiftLog.Lib\LiftLog.Lib.csproj" />
+  </ItemGroup>
+
+</Project>
