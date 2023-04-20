@@ -1,20 +1,26 @@
 using System.Collections.Concurrent;
-using Blazored.LocalStorage;
+using System.Text.Json;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Store;
+using LiftLog.Ui.Services;
+using LiftLog.Ui.Util;
 
-namespace LiftLog.WebUi.Services
+namespace LiftLog.Ui.Services
 {
-    public class LocalStorageProgressStore : IProgressStore
+    public class KeyValueProgressStore : IProgressStore
     {
+        private const string StorageKey = "Progress";
         private bool _initialised;
         private Session? _currentSession;
         private readonly ConcurrentDictionary<Guid, Session> _storedSessions = new();
-        private readonly ILocalStorageService _localStorage;
+        private readonly IKeyValueStore _keyValueStore;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public LocalStorageProgressStore(ILocalStorageService localStorage)
+        public KeyValueProgressStore(IKeyValueStore keyValueStore)
         {
-            _localStorage = localStorage;
+            _keyValueStore = keyValueStore;
+            _jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerOptions.Default);
+            _jsonSerializerOptions.Converters.Add(new TimespanJsonConverter());
         }
 
         public async ValueTask<List<Session>> GetOrderedSessions()
@@ -53,7 +59,8 @@ namespace LiftLog.WebUi.Services
             if (!_initialised)
             {
                 // TODO fix race
-                var storedData = await _localStorage.GetItemAsync<StorageDao?>("Progress");
+                var storedDataJson = await _keyValueStore.GetItemAsync(StorageKey);
+                var storedData = JsonSerializer.Deserialize<StorageDao?>(storedDataJson ?? "null", _jsonSerializerOptions);
                 if (storedData is not null)
                 {
                     foreach (var session in storedData.CompletedSessions)
@@ -68,9 +75,9 @@ namespace LiftLog.WebUi.Services
 
         private ValueTask PersistAsync()
         {
-            return _localStorage.SetItemAsync(
-                "Progress",
-                new StorageDao(_currentSession, _storedSessions.Values.ToList())
+            return _keyValueStore.SetItemAsync(
+                StorageKey,
+                JsonSerializer.Serialize(new StorageDao(_currentSession, _storedSessions.Values.ToList()), _jsonSerializerOptions)
             );
         }
 
