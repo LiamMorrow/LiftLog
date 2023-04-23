@@ -19,36 +19,39 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .ConfigureFonts(fonts => { fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"); });
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+            });
 
         builder.Services.AddMauiBlazorWebView();
-        
+
         builder.UseLocalNotification(notificationBuilder =>
         {
             notificationBuilder.AddAndroid(android =>
             {
                 android.AddChannel(
-                new NotificationChannelRequest()
-                {
-                    Id = MauiNotificationService.NextSetNotificationChannelId,
-                    Description = "Notifications which remind you when your next set should be done",
-                    Importance = AndroidImportance.High,
-                    Name = "Set Timers",
-                    EnableSound = true,
-                    EnableVibration = true,
-                    ShowBadge = true,
-                    LockScreenVisibility = AndroidVisibilityType.Public,
-                    CanBypassDnd = false
-                });
+                    new NotificationChannelRequest()
+                    {
+                        Id = MauiNotificationService.NextSetNotificationChannelId,
+                        Description =
+                            "Notifications which remind you when your next set should be started",
+                        Importance = AndroidImportance.High,
+                        Name = "Set Timers",
+                        EnableSound = true,
+                        EnableVibration = true,
+                        ShowBadge = true,
+                        LockScreenVisibility = AndroidVisibilityType.Public,
+                        CanBypassDnd = false
+                    }
+                );
             });
         });
-        
 
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
 #endif
-        
         builder.Services.AddFluxor(
             o =>
                 o.ScanAssemblies(typeof(Program).Assembly)
@@ -56,7 +59,6 @@ public static class MauiProgram
                     .AddMiddleware<PersistProgramMiddleware>()
                     .UseReduxDevTools()
         );
-
 
         builder.Services.AddScoped<IProgramStore, KeyValueProgramStore>();
         builder.Services.AddScoped<IProgressStore, KeyValueProgressStore>();

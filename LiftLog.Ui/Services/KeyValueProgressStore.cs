@@ -59,7 +59,10 @@ namespace LiftLog.Ui.Services
             {
                 // TODO fix race
                 var storedDataJson = await _keyValueStore.GetItemAsync(StorageKey);
-                var storedData = JsonSerializer.Deserialize<StorageDao?>(storedDataJson ?? "null", _jsonSerializerOptions);
+                var storedData = JsonSerializer.Deserialize<StorageDao?>(
+                    storedDataJson ?? "null",
+                    _jsonSerializerOptions
+                );
                 if (storedData is not null)
                 {
                     foreach (var session in storedData.CompletedSessions)
@@ -76,7 +79,10 @@ namespace LiftLog.Ui.Services
         {
             return _keyValueStore.SetItemAsync(
                 StorageKey,
-                JsonSerializer.Serialize(new StorageDao(_currentSession, _storedSessions.Values.ToList()), _jsonSerializerOptions)
+                JsonSerializer.Serialize(
+                    new StorageDao(_currentSession, _storedSessions.Values.ToList()),
+                    _jsonSerializerOptions
+                )
             );
         }
 

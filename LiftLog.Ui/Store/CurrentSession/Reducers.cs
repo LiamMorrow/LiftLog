@@ -89,5 +89,4 @@ public static class Reducers
             var reps => reps with { RepsCompleted = reps.RepsCompleted - 1 }
         };
     }
-    
 }

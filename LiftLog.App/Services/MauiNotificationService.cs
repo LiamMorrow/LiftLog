@@ -10,23 +10,24 @@ namespace LiftLog.App.Services;
 public class MauiNotificationService : INotificationService
 {
     private readonly ILocalNotificationService _notificationService;
-    private static readonly NotificationHandle NextSetNotificationHandle = new (1000);
+    private static readonly NotificationHandle NextSetNotificationHandle = new(1000);
     public const string NextSetNotificationChannelId = "Set Timers";
 
     public MauiNotificationService(ILocalNotificationService notificationService)
     {
         _notificationService = notificationService;
     }
+
     public async Task ScheduleNextSetNotificationAsync(RecordedExercise exercise)
     {
         await _notificationService.RequestNotificationPermission();
         _notificationService.Clear(NextSetNotificationHandle.Id);
         var rest = exercise switch
         {
-            { LastRecordedSet: not null } => exercise.LastRecordedSet?.RepsCompleted ==
-                                                      exercise.Blueprint.RepsPerSet
-                ? exercise.Blueprint.RestBetweenSets.MinRest
-                : exercise.Blueprint.RestBetweenSets.FailureRest,
+            { LastRecordedSet: not null }
+                => exercise.LastRecordedSet?.RepsCompleted == exercise.Blueprint.RepsPerSet
+                    ? exercise.Blueprint.RestBetweenSets.MinRest
+                    : exercise.Blueprint.RestBetweenSets.FailureRest,
             _ => TimeSpan.Zero,
         };
         if (rest != TimeSpan.Zero)
@@ -36,10 +37,7 @@ public class MauiNotificationService : INotificationService
                 NotificationId = NextSetNotificationHandle.Id,
                 Title = "Rest Over",
                 Description = "Rest over - start your next set!",
-                Android = new AndroidOptions()
-                {
-                    ChannelId = NextSetNotificationChannelId
-                },
+                Android = new AndroidOptions() { ChannelId = NextSetNotificationChannelId },
                 Schedule = new NotificationRequestSchedule()
                 {
                     NotifyTime = DateTime.Now.Add(rest),
@@ -55,6 +53,6 @@ public class MauiNotificationService : INotificationService
         _notificationService.Clear(NextSetNotificationHandle.Id);
         return Task.CompletedTask;
     }
-    
+
     private record NotificationHandle(int Id);
 }
