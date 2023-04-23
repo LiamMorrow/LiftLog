@@ -2,8 +2,6 @@
 @using LiftLog.Ui.Store.CurrentSession
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-@inject NavigationManager NavigationManager;
-
 @{
     this.SubscribeToAction<RehydrateSessionAction>(state =>
         {

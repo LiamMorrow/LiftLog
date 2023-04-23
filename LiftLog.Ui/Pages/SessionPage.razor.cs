@@ -12,6 +12,9 @@ namespace LiftLog.Ui.Pages
         [Inject]
         public IDispatcher Dispatcher { get; set; } = null!;
 
+        [Inject]
+        public NavigationManager NavigationManager { get; set; } = null!;
+
         private void CycleRepcountForExercise(int exerciseIndex, int setIndex)
         {
             Dispatcher.Dispatch(new CycleExerciseRepsAction(exerciseIndex, setIndex));

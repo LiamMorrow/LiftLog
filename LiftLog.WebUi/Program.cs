@@ -10,6 +10,7 @@ using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.CurrentSession;
 using LiftLog.Ui.Store.Program;
 using LiftLog.WebUi.Services;
+using Microsoft.Extensions.FileProviders;
 using INotificationService = LiftLog.Lib.Services.INotificationService;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -35,5 +36,4 @@ builder.Services.AddScoped<SessionService>();
 
 builder.Services.AddNotifications();
 builder.Services.AddScoped<INotificationService, WebNotificationService>();
-
 await builder.Build().RunAsync();
