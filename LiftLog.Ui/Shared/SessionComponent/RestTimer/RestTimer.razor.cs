@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace LiftLog.Ui.Shared.SessionComponent.RestTimer
 {
-    public partial class RestTimer : ComponentBase, IDisposable
+    public partial class RestTimer : IDisposable
     {
         private const string TimespanFormatStr = @"mm\:ss";
         private readonly CancellationTokenSource _destroyedSource = new();
@@ -17,7 +17,7 @@ namespace LiftLog.Ui.Shared.SessionComponent.RestTimer
                 {
                     while (!_destroyedSource.IsCancellationRequested)
                     {
-                        StateHasChanged();
+                        await InvokeAsync(StateHasChanged);
                         await Task.Delay(200);
                     }
                 });
