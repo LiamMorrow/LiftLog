@@ -13,8 +13,6 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
-LiftLog.Ui/wwwroot/app.min.css
-
 # Mono auto generated files
 mono_crash.*
 
@@ -364,4 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-LiftLog.WebUi/wwwroot/app.min.css
+**/app.min.css
