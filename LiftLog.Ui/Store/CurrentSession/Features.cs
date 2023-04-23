@@ -6,6 +6,6 @@ namespace LiftLog.Ui.Store.CurrentSession
     {
         public override string GetName() => "CurrentSession";
 
-        protected override CurrentSessionState GetInitialState() => new(null, null);
+        protected override CurrentSessionState GetInitialState() => new(null);
     }
 }

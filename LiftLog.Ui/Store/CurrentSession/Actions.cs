@@ -1,5 +1,4 @@
 using LiftLog.Lib.Models;
-using LiftLog.Lib.Services;
 
 namespace LiftLog.Ui.Store.CurrentSession;
 
@@ -14,5 +13,3 @@ public record PersistCurrentSessionAction();
 public record RehydrateSessionAction();
 
 public record NotifySetTimerAction();
-
-public  record  SetNotificationHandleAction(NotificationHandle? Handle);

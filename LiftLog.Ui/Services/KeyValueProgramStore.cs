@@ -3,7 +3,6 @@ using System.Text.Json;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Store;
-using LiftLog.Ui.Services;
 using LiftLog.Ui.Util;
 
 namespace LiftLog.Ui.Services;

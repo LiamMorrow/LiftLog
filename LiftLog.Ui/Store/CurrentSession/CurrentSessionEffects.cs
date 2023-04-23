@@ -23,26 +23,16 @@ public class CurrentSessionEffects
     {
         if (_state.Value.Session is not null)
             await _progressStore.SaveCompletedSessionAsync(_state.Value.Session);
+        else
+            await _notificationService.CancelNextSetNotificationAsync();
     }
 
     [EffectMethod]
     public async Task NotifySetTimer(NotifySetTimerAction _, IDispatcher dispatcher)
     {
-        var notificationHandle = new NotificationHandle(Guid.NewGuid());
         if (_state.Value.Session?.NextExercise is not null)
         {
-            var rest = _state.Value.Session.NextExercise switch
-            {
-                { LastRecordedSet: not null } exercise => exercise.LastRecordedSet?.RepsCompleted ==
-                                                          exercise.Blueprint.RepsPerSet
-                    ? exercise.Blueprint.RestBetweenSets.MinRest
-                    : exercise.Blueprint.RestBetweenSets.FailureRest,
-                _ => TimeSpan.Zero,
-            };
-            if (rest != TimeSpan.Zero)
-            {
-                await _notificationService.ScheduleNotificationAsync(notificationHandle, DateTimeOffset.Now.Add(rest) , "Rest Over", "Start your next set now!");
-            }
+            await _notificationService.ScheduleNextSetNotificationAsync(_state.Value.Session.NextExercise);
         }
     }
 }

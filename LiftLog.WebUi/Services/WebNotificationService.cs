@@ -1,12 +1,13 @@
 using System.Collections.Concurrent;
 using Append.Blazor.Notifications;
-using LiftLog.Lib.Services;
+using LiftLog.Lib.Models;
 using INotificationService = LiftLog.Lib.Services.INotificationService;
 
 namespace LiftLog.WebUi.Services;
 
 public class WebNotificationService : INotificationService
 {
+    private static readonly NotificationHandle NextSetNotificationHandle = new NotificationHandle("NEXT_SET");
     private readonly Append.Blazor.Notifications.INotificationService _notificationService;
 
     private readonly ConcurrentDictionary<NotificationHandle, CancellationTokenSource> _scheduledNotifications = new ();
@@ -17,28 +18,38 @@ public class WebNotificationService : INotificationService
     }
 
 
-    public async Task UpdateNotificationAsync(NotificationHandle handle, string title, string message)
+    public async Task ScheduleNextSetNotificationAsync(RecordedExercise exercise)
+    {
+        var rest = exercise switch
+        {
+            { LastRecordedSet: not null } => exercise.LastRecordedSet?.RepsCompleted ==
+                                                      exercise.Blueprint.RepsPerSet
+                ? exercise.Blueprint.RestBetweenSets.MinRest
+                : exercise.Blueprint.RestBetweenSets.FailureRest,
+            _ => TimeSpan.Zero,
+        };
+        if (rest != TimeSpan.Zero)
+        {
+            await ScheduleNotificationAsync(NextSetNotificationHandle, DateTimeOffset.Now.Add(rest) , "Rest Over", "Start your next set now!");
+        }
+    }
+
+    public Task CancelNextSetNotificationAsync()
+    {
+        return ClearNotificationAsync(NextSetNotificationHandle);
+    }
+
+    private async Task UpdateNotificationAsync(NotificationHandle handle, string title, string message)
     { 
-        if (!await _notificationService.IsSupportedByBrowserAsync())
-        {
-            return;
-        }
-        if (_notificationService.PermissionStatus != PermissionType.Granted)
-        {
-            if (await _notificationService.RequestPermissionAsync() != PermissionType.Granted)
-            {
-                return;
-            }
-        }
         await _notificationService.CreateAsync(title, new NotificationOptions()
         {
-            Tag = handle.Id.ToString(),
+            Tag = handle.Id,
             Body = message,
             Renotify = false
         });
     }
 
-    public Task ClearNotificationAsync(NotificationHandle handle)
+    private Task ClearNotificationAsync(NotificationHandle handle)
     {
         if (_scheduledNotifications.TryGetValue(handle, out var cancellation))
         {
@@ -47,7 +58,7 @@ public class WebNotificationService : INotificationService
         return Task.CompletedTask;
     }
 
-    public async Task ScheduleNotificationAsync(NotificationHandle handle, DateTimeOffset scheduledFor, string title,
+    private async Task ScheduleNotificationAsync(NotificationHandle handle, DateTimeOffset scheduledFor, string title,
         string message)
     {
         if (!await _notificationService.IsSupportedByBrowserAsync())
@@ -75,4 +86,6 @@ public class WebNotificationService : INotificationService
             });
         }
     }
+
+    private record NotificationHandle(string Id);
 }

@@ -1,44 +1,60 @@
-using System.Collections.Concurrent;
-using LiftLog.Lib.Services;
+using System.Diagnostics.Metrics;
+using LiftLog.Lib.Models;
 using INotificationService = LiftLog.Lib.Services.INotificationService;
+using ILocalNotificationService = Plugin.LocalNotification.INotificationService;
 using Plugin.LocalNotification;
+using Plugin.LocalNotification.AndroidOption;
 
 namespace LiftLog.App.Services;
 
 public class MauiNotificationService : INotificationService
 {
-    public async Task UpdateNotificationAsync(NotificationHandle handle, string title, string message)
-    { 
-        await LocalNotificationCenter.Current.RequestNotificationPermission();
-        var request = new NotificationRequest {
-            NotificationId = handle.Id.GetHashCode(),
-            Title = title,
-            Subtitle = message,
+    private readonly ILocalNotificationService _notificationService;
+    private static readonly NotificationHandle NextSetNotificationHandle = new (1000);
+    public const string NextSetNotificationChannelId = "Set Timers";
+
+    public MauiNotificationService(ILocalNotificationService notificationService)
+    {
+        _notificationService = notificationService;
+    }
+    public async Task ScheduleNextSetNotificationAsync(RecordedExercise exercise)
+    {
+        await _notificationService.RequestNotificationPermission();
+        _notificationService.Clear(NextSetNotificationHandle.Id);
+        var rest = exercise switch
+        {
+            { LastRecordedSet: not null } => exercise.LastRecordedSet?.RepsCompleted ==
+                                                      exercise.Blueprint.RepsPerSet
+                ? exercise.Blueprint.RestBetweenSets.MinRest
+                : exercise.Blueprint.RestBetweenSets.FailureRest,
+            _ => TimeSpan.Zero,
         };
-        await LocalNotificationCenter.Current.Show(request);
+        if (rest != TimeSpan.Zero)
+        {
+            var request = new NotificationRequest
+            {
+                NotificationId = NextSetNotificationHandle.Id,
+                Title = "Rest Over",
+                Description = "Rest over - start your next set!",
+                Android = new AndroidOptions()
+                {
+                    ChannelId = NextSetNotificationChannelId
+                },
+                Schedule = new NotificationRequestSchedule()
+                {
+                    NotifyTime = DateTime.Now.Add(rest),
+                    RepeatType = NotificationRepeat.No,
+                },
+            };
+            await _notificationService.Show(request);
+        }
     }
 
-    public Task ClearNotificationAsync(NotificationHandle handle)
+    public Task CancelNextSetNotificationAsync()
     {
-        LocalNotificationCenter.Current.Clear(handle.Id.GetHashCode());
+        _notificationService.Clear(NextSetNotificationHandle.Id);
         return Task.CompletedTask;
     }
-
-    public async Task ScheduleNotificationAsync(NotificationHandle handle, DateTimeOffset scheduledFor, string title,
-        string message)
-    {
-        await LocalNotificationCenter.Current.RequestNotificationPermission();
-        var request = new NotificationRequest {
-            NotificationId = handle.Id.GetHashCode(),
-            Title = title,
-            Subtitle = message,
-            Schedule = new NotificationRequestSchedule()
-            {
-                NotifyTime = scheduledFor.DateTime,
-                RepeatType = NotificationRepeat.No,
-            }
-        };
-        await LocalNotificationCenter.Current.Show(request);
-        
-    }
+    
+    private record NotificationHandle(int Id);
 }

@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using LiftLog.Lib.Models;
 
 namespace LiftLog.Lib.Store
