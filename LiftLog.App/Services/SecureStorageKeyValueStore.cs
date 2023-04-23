@@ -1,5 +1,4 @@
 using LiftLog.Ui.Services;
-using Microsoft.Maui.Controls.Internals;
 
 namespace LiftLog.App.Services;
 

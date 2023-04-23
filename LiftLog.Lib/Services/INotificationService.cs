@@ -1,12 +1,10 @@
+using LiftLog.Lib.Models;
+
 namespace LiftLog.Lib.Services;
 
 public interface INotificationService
 {
-    Task UpdateNotificationAsync(NotificationHandle handle, string title, string message);
+    Task ScheduleNextSetNotificationAsync(RecordedExercise exercise);
 
-    Task ClearNotificationAsync(NotificationHandle handle);
-
-    Task ScheduleNotificationAsync(NotificationHandle handle, DateTimeOffset scheduledFor, string title, string message);
+    Task CancelNextSetNotificationAsync();
 }
-
-public record NotificationHandle(Guid Id);

@@ -74,10 +74,6 @@ public static class Reducers
         SetCurrentSessionAction action
     ) => state with { Session = action.Session };
 
-    [ReducerMethod]
-    public static CurrentSessionState SetNotificationHandle(CurrentSessionState state,
-        SetNotificationHandleAction action) => state with { SetTimerNotificationHandle = action.Handle };
-    
     private static RecordedSet? GetCycledRepCount(
         RecordedSet? recordedSet,
         ExerciseBlueprint exerciseBlueprint
