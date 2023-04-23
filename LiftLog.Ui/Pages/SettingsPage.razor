@@ -4,11 +4,24 @@
 <div class="flex">
     <button @onclick="BackToIndex" class="m-1">&lt;</button><h3>Settings</h3>
 </div>
-<section class="flex flex-col w-full px-5">
+<div class="flex flex-col p-2 ">
+<section class="flex flex-col px-5 py-2 border-b-2 border-gray-200 my-2">
+    <span class="text-lg text-center">Data Management</span>
+    <div class="flex justify-around">
+    <AppButton @onclick=ImportData Type="AppButtonType.OutlineSecondary">
+        Import Data
+    </AppButton>
+    <AppButton @onclick=ExportData Type="AppButtonType.OutlineSecondary">
+        Export Data
+    </AppButton>
+    </div>
+</section>
+<section class="flex flex-col px-5 my-2">
     <AppButton  @onclick=NavigateToManage>
-        <h4>Manage Workouts</h4>
+        Manage Workouts
     </AppButton>
 </section>
+</div>
 @code {
 
     private void NavigateToManage()
@@ -17,6 +30,16 @@
     }
 
     private void BackToIndex()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    private void ImportData()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    private void ExportData()
     {
         NavigationManager.NavigateTo("/");
     }

@@ -47,5 +47,4 @@
     <_ContentIncludedByDefault Remove="Shared\WeightFormat\WeightFormat.razor" />
   </ItemGroup>
 
-
 </Project>

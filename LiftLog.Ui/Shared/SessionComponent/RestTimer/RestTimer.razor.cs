@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Components;
+
 namespace LiftLog.Ui.Shared.SessionComponent.RestTimer
 {
-    public partial class RestTimer : IDisposable
+    public partial class RestTimer : ComponentBase,  IDisposable
     {
         private const string TimespanFormatStr = @"mm\:ss";
         private readonly CancellationTokenSource _destroyedSource = new();
