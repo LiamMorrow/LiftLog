@@ -5,7 +5,7 @@ namespace LiftLog.Ui.Shared.SessionComponent.RestTimer
     public partial class RestTimer : IDisposable
     {
         private const string TimespanFormatStr = @"mm\:ss";
-        private readonly CancellationTokenSource _destroyedSource = new();
+        private Timer? _timer;
         private bool _disposedValue;
 
         protected override void OnAfterRender(bool firstRender)
@@ -13,14 +13,15 @@ namespace LiftLog.Ui.Shared.SessionComponent.RestTimer
             base.OnAfterRender(firstRender);
             if (firstRender)
             {
-                Task.Run(async () =>
-                {
-                    while (!_destroyedSource.IsCancellationRequested)
+                _timer = new Timer(
+                    _ =>
                     {
-                        await InvokeAsync(StateHasChanged);
-                        await Task.Delay(200);
-                    }
-                });
+                        InvokeAsync(StateHasChanged);
+                    },
+                    null,
+                    TimeSpan.FromMilliseconds(200),
+                    TimeSpan.FromMilliseconds(200)
+                );
             }
         }
 
@@ -30,7 +31,7 @@ namespace LiftLog.Ui.Shared.SessionComponent.RestTimer
             {
                 if (disposing)
                 {
-                    _destroyedSource.Cancel();
+                    _timer?.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer
