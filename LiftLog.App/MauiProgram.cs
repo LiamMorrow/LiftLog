@@ -9,7 +9,7 @@ using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.CurrentSession;
 using LiftLog.Ui.Store.Program;
 using LiftLog.Ui.Util;
-using LiftLog.WebUi.Services;
+using LiftLog.App.Services;
 
 namespace LiftLog.App;
 
@@ -42,7 +42,7 @@ public static class MauiProgram
         builder.Services.AddScoped<IProgramStore, KeyValueProgramStore>();
         builder.Services.AddScoped<IProgressStore, KeyValueProgressStore>();
         builder.Services.AddSingleton<IKeyValueStore, SecureStorageKeyValueStore>();
-        builder.Services.AddScoped<INotificationService, WebNotificationService>();
+        builder.Services.AddScoped<INotificationService, MauiNotificationService>();
         builder.Services.AddScoped<SessionService>();
         return builder.Build();
     }
