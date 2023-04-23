@@ -16,7 +16,11 @@ public class TimespanJsonConverter : JsonConverter<TimeSpan>
     /// </summary>
     public const string TimeSpanFormatString = @"d\.hh\:mm\:ss\:FFF";
 
-    public override TimeSpan Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override TimeSpan Read(
+        ref Utf8JsonReader reader,
+        Type typeToConvert,
+        JsonSerializerOptions options
+    )
     {
         var s = reader.GetString();
         if (string.IsNullOrWhiteSpace(s))
@@ -26,7 +30,9 @@ public class TimespanJsonConverter : JsonConverter<TimeSpan>
 
         if (!TimeSpan.TryParseExact(s, TimeSpanFormatString, null, out var parsedTimeSpan))
         {
-            throw new FormatException($"Input timespan is not in an expected format : expected {Regex.Unescape(TimeSpanFormatString)}. Please retrieve this key as a string and parse manually.");
+            throw new FormatException(
+                $"Input timespan is not in an expected format : expected {Regex.Unescape(TimeSpanFormatString)}. Please retrieve this key as a string and parse manually."
+            );
         }
 
         return parsedTimeSpan;
@@ -37,5 +43,4 @@ public class TimespanJsonConverter : JsonConverter<TimeSpan>
         var timespanFormatted = $"{value.ToString(TimeSpanFormatString)}";
         writer.WriteStringValue(timespanFormatted);
     }
-
 }

@@ -10,8 +10,11 @@ public class CurrentSessionEffects
     private readonly IState<CurrentSessionState> _state;
     private readonly INotificationService _notificationService;
 
-    public CurrentSessionEffects(IProgressStore progressStore, IState<CurrentSessionState> state,
-        INotificationService notificationService)
+    public CurrentSessionEffects(
+        IProgressStore progressStore,
+        IState<CurrentSessionState> state,
+        INotificationService notificationService
+    )
     {
         _progressStore = progressStore;
         _state = state;
@@ -32,7 +35,9 @@ public class CurrentSessionEffects
     {
         if (_state.Value.Session?.NextExercise is not null)
         {
-            await _notificationService.ScheduleNextSetNotificationAsync(_state.Value.Session.NextExercise);
+            await _notificationService.ScheduleNextSetNotificationAsync(
+                _state.Value.Session.NextExercise
+            );
         }
     }
 }

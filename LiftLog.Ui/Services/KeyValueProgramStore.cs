@@ -57,7 +57,10 @@ public class KeyValueProgramStore : IProgramStore
     {
         await InitialiseAsync();
         _sessions = sessions.ToImmutableList();
-        await _keyValueStore.SetItemAsync(StorageKey, JsonSerializer.Serialize(new StorageDao(_sessions), _jsonSerializerOptions));
+        await _keyValueStore.SetItemAsync(
+            StorageKey,
+            JsonSerializer.Serialize(new StorageDao(_sessions), _jsonSerializerOptions)
+        );
     }
 
     private async ValueTask InitialiseAsync()
@@ -66,7 +69,10 @@ public class KeyValueProgramStore : IProgramStore
         {
             // TODO fix race
             var storedDataJson = await _keyValueStore.GetItemAsync(StorageKey);
-            var storedData = JsonSerializer.Deserialize<StorageDao?>(storedDataJson ?? "null", _jsonSerializerOptions);
+            var storedData = JsonSerializer.Deserialize<StorageDao?>(
+                storedDataJson ?? "null",
+                _jsonSerializerOptions
+            );
             _sessions = storedData?.SessionBlueprints ?? _defaultSessionBlueprints;
             _initialised = true;
         }

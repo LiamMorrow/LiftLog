@@ -1,5 +1,3 @@
-
-
 // ReSharper disable UnusedMember.Global
 
 using Fluxor;
@@ -76,6 +74,8 @@ public static class Reducers
     }
 
     [ReducerMethod]
-    public static ProgramState RemoveSessionFromProgram(ProgramState state, RemoveSessionFromProgramAction action) =>
-        state with { SessionBlueprints = state.SessionBlueprints.Remove(action.SessionBlueprint) };
+    public static ProgramState RemoveSessionFromProgram(
+        ProgramState state,
+        RemoveSessionFromProgramAction action
+    ) => state with { SessionBlueprints = state.SessionBlueprints.Remove(action.SessionBlueprint) };
 }
