@@ -7,11 +7,6 @@ namespace LiftLog.App.Services;
 
 public class MauiNotificationService : INotificationService
 {
-
-    private readonly ConcurrentDictionary<NotificationHandle, CancellationTokenSource> _scheduledNotifications = new ();
-
-
-
     public async Task UpdateNotificationAsync(NotificationHandle handle, string title, string message)
     { 
         await LocalNotificationCenter.Current.RequestNotificationPermission();
