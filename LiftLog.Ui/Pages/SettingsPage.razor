@@ -8,16 +8,16 @@
 <section class="flex flex-col px-5 py-2 my-2">
     <span class="text-lg text-center mb-4">Data Management</span>
     <div class="flex justify-around">
-    <AppButton @onclick=ImportData Type="AppButtonType.OutlineSecondary">
+    <AppButton @onclick="ImportData" Type="AppButtonType.OutlineSecondary">
         Import Data
     </AppButton>
-    <AppButton @onclick=ExportData Type="AppButtonType.OutlineSecondary">
+    <AppButton @onclick="ExportData" Type="AppButtonType.OutlineSecondary">
         Export Data
     </AppButton>
     </div>
 </section>
 <section class="flex flex-col px-5">
-    <AppButton  @onclick=NavigateToManage>
+    <AppButton  @onclick="NavigateToManage">
         Manage Workouts
     </AppButton>
 </section>
@@ -36,11 +36,9 @@
 
     private void ImportData()
     {
-        NavigationManager.NavigateTo("/");
     }
 
     private void ExportData()
     {
-        NavigationManager.NavigateTo("/");
     }
 }

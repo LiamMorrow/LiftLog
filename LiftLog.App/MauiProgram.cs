@@ -8,8 +8,6 @@ using LiftLog.Lib.Store;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.CurrentSession;
 using LiftLog.Ui.Store.Program;
-using LiftLog.Ui.Util;
-using LiftLog.App.Services;
 
 namespace LiftLog.App;
 

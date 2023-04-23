@@ -14,10 +14,10 @@
         <EnableDefaultCssItems>false</EnableDefaultCssItems>
 
         <!-- Display name -->
-        <ApplicationTitle>LiftLog.App</ApplicationTitle>
+        <ApplicationTitle>LiftLog</ApplicationTitle>
 
         <!-- App Identifier -->
-        <ApplicationId>com.companyname.liftlog.app</ApplicationId>
+        <ApplicationId>com.limajuice.liftlog</ApplicationId>
         <ApplicationIdGuid>71733E37-6FDD-4EEF-A0BF-DE32634D58EC</ApplicationIdGuid>
 
         <!-- Versions -->
@@ -31,6 +31,11 @@
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
         <Nullable>enable</Nullable>
+        <PackageId>LiftLog</PackageId>
+        <Title>LiftLog</Title>
+        <Authors>Liam Morrow</Authors>
+        <Company>LiftLog</Company>
+        <Product>LiftLog</Product>
     </PropertyGroup>
 
     <ItemGroup>
