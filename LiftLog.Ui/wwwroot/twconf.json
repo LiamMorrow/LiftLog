@@ -4,8 +4,12 @@
     "extend": {
       "colors": {
         "primary": "rgb(var(--color-primary) / <alpha-value>)",
-        "text-on-primary": "rgb(var(--color-text-on-primary) / <alpha-value>)",
-        "secondary": "rgb(var(--color-secondary) / <alpha-value>)"
+        "on-primary": "rgb(var(--color-on-primary) / <alpha-value>)",
+        "secondary": "rgb(var(--color-secondary) / <alpha-value>)",
+        "background": "rgb(var(--color-background) / <alpha-value>)",
+        "on-background": "rgb(var(--color-on-background) / <alpha-value>)",
+        "surface": "rgb(var(--color-surface) / <alpha-value>)",
+        "on-surface": "rgb(var(--color-on-surface) / <alpha-value>)"
       },
       "borderRadius": {
         "card": "20px"

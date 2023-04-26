@@ -8,7 +8,7 @@
 
     <BlazorWebView x:Name="blazorWebView" HostPage="wwwroot/index.html">
         <BlazorWebView.RootComponents>
-            <RootComponent Selector="#app" ComponentType="{x:Type ui:WebApplication}" />
+            <RootComponent Selector="#app" ComponentType="{x:Type local:ThemedWebApplication}" />
         </BlazorWebView.RootComponents>
     </BlazorWebView>
 

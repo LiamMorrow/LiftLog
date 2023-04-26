@@ -1,0 +1,41 @@
+@implements IDisposable
+@using LiftLog.App.Services
+@inject ThemeColorUpdateService MaterialColorService
+<LiftLog.Ui.WebApplication/>
+
+<style>
+    :root{
+        --color-primary: @GetColorStr(MaterialColorService.SchemeMaui.Primary);
+        --color-background: @GetColorStr(MaterialColorService.SchemeMaui.Background);
+        --color-on-background: @GetColorStr(MaterialColorService.SchemeMaui.OnBackground);
+        --color-surface: @GetColorStr(MaterialColorService.SchemeMaui.Surface);
+        --color-on-surface: @GetColorStr(MaterialColorService.SchemeMaui.OnSurface);
+        --color-on-primary: @GetColorStr(MaterialColorService.SchemeMaui.OnPrimary);
+        --color-secondary: @GetColorStr(MaterialColorService.SchemeMaui.Secondary);
+    }
+</style>
+
+@code {
+
+    string GetColorStr(Color color) => $"{color.Red*255} {color.Green*255} {color.Blue*255}";
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            MaterialColorService.SeedChanged += HandleThemeChange;
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+    public void Dispose()
+    {
+        MaterialColorService.SeedChanged -= HandleThemeChange;
+    }
+
+    private void HandleThemeChange(object? sender, object? args)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+}
