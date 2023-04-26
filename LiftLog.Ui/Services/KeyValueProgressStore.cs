@@ -41,6 +41,16 @@ namespace LiftLog.Ui.Services
             return PersistAsync();
         }
 
+        public ValueTask SaveCompletedSessionsAsync(IEnumerable<Session> sessions)
+        {
+            foreach (var session in sessions)
+            {
+                _storedSessions[session.Id] = session;
+            }
+
+            return PersistAsync();
+        }
+
         public ValueTask SaveCurrentSessionAsync(Session session)
         {
             _currentSession = session;

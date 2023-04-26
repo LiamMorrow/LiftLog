@@ -7,6 +7,10 @@ namespace LiftLog.Ui.Store.Program;
 public static class Reducers
 {
     [ReducerMethod]
+    public static ProgramState SetProgramSessions(ProgramState state, SetProgramSessionsAction action) =>
+        state with { SessionBlueprints = action.SessionBlueprints };
+    
+    [ReducerMethod]
     public static ProgramState SetProgramSession(ProgramState state, SetProgramSessionAction action)
     {
         if (action.SessionIndex < 0 || action.SessionIndex >= state.SessionBlueprints.Count)

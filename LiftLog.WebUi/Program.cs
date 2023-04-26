@@ -1,4 +1,5 @@
 using Append.Blazor.Notifications;
+using BlazorDownloadFile;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Fluxor;
 using LiftLog.Lib.Store;
@@ -32,5 +33,8 @@ builder.Services.AddScoped<IProgramStore, KeyValueProgramStore>();
 builder.Services.AddScoped<SessionService>();
 
 builder.Services.AddNotifications();
+
+builder.Services.AddBlazorDownloadFile();
+builder.Services.AddScoped<ITextExporter, WebClipboardTextExporter>();
 builder.Services.AddScoped<INotificationService, WebNotificationService>();
 await builder.Build().RunAsync();

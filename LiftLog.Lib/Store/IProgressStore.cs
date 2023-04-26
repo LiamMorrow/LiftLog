@@ -12,6 +12,7 @@ namespace LiftLog.Lib.Store
         > GetLatestRecordedExercisesAsync();
         ValueTask<List<Session>> GetOrderedSessions();
         ValueTask SaveCompletedSessionAsync(Session session);
+        ValueTask SaveCompletedSessionsAsync(IEnumerable<Session> sessions);
         ValueTask SaveCurrentSessionAsync(Session session);
     }
 }

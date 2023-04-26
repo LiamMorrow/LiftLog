@@ -2,4 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-
+@layer base {
+  :root {
+    --color-primary: 255 115 179;
+    --color-text-on-primary: 255 255 255;
+    --color-secondary: 111 114 185;
+  }
+}
