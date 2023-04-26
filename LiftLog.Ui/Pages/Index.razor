@@ -1,8 +1,8 @@
 ﻿@page "/"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 <div class=" grid grid-cols-1 h-full grid-rows-[2fr_8fr_min-content]" >
-    <div class="flex items-center px-5 bg-black py-11">
-        <span class="m-0 text-3xl text-white ">Upcoming Workouts</span>
+    <div class="flex items-center px-5 bg-surface-container py-11">
+        <span class="m-0 text-3xl text-on-surface ">Upcoming Workouts</span>
     </div>
     <div class="overflow-auto">
         @foreach (var upcomingSession in _upcomingSessions)
