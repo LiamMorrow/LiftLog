@@ -17,7 +17,7 @@
     [Parameter]
     public bool ToStartNext { get; set; }
 
-    private string ColorClass => ToStartNext || RepCountValue is not null ? "bg-primary text-text-on-primary" : "bg-gray-200 text-gray-500";
+    private string ColorClass => ToStartNext || RepCountValue is not null ? "bg-primary text-on-primary" : "bg-gray-200 text-gray-500";
 
     private string? RepCountToStartClass => ToStartNext ? "animate-pulse" : null;
 }

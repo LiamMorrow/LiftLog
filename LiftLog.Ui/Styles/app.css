@@ -4,8 +4,12 @@
 
 @layer base {
   :root {
-    --color-primary: 255 115 179;
-    --color-text-on-primary: 255 255 255;
+    --color-primary: 244 67 54;
+    --color-on-primary: 255 255 255;
     --color-secondary: 111 114 185;
+    --color-background: 255 255 255;
+    --color-on-background: 0 0 0;
+    --color-surface: 255 255 255;
+    --color-on-surface: 0 0 0;
   }
 }

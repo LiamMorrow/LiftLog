@@ -6,6 +6,7 @@ using LiftLog.Lib.Store;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.CurrentSession;
 using LiftLog.Ui.Store.Program;
+using MaterialColorUtilities.Maui;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
 using INotificationService = LiftLog.Lib.Services.INotificationService;
@@ -65,8 +66,11 @@ public static class MauiProgram
         builder.Services.AddSingleton<IKeyValueStore, SecureStorageKeyValueStore>();
         builder.Services.AddScoped<INotificationService, MauiNotificationService>();
         builder.Services.AddScoped<ITextExporter, MauiShareTextExporter>();
+        
         builder.Services.AddSingleton(Share.Default);
         builder.Services.AddScoped<SessionService>();
+
+        builder.UseMaterialColors<ThemeColorUpdateService>();
         return builder.Build();
     }
 }
