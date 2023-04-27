@@ -7,6 +7,7 @@
     "watch": "tailwindcss --config tailwind.config.js -i ./Styles/app.css -o ./wwwroot/app.min.css --watch"
   },
   "dependencies": {
+    "@material-tailwind/html": "^2.0.0",
     "tailwindcss": "^3.3.1"
   }
 }
