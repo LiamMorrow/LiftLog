@@ -1,0 +1,49 @@
+@implements IDisposable
+@using LiftLog.Ui.Services
+@using MaterialColorUtilities.Utils
+@inject IThemeProvider ThemeProvider
+<LiftLog.Ui.WebApplication/>
+
+<style>
+    :root{
+        --color-primary: @GetColorStr(ThemeProvider.GetColorScheme().Primary);
+        --color-on-primary: @GetColorStr(ThemeProvider.GetColorScheme().OnPrimary);
+        --color-secondary: @GetColorStr(ThemeProvider.GetColorScheme().Secondary);
+        --color-on-secondary: @GetColorStr(ThemeProvider.GetColorScheme().OnSecondary);
+        --color-secondary-container: @GetColorStr(ThemeProvider.GetColorScheme().SecondaryContainer);
+        --color-on-secondary-container: @GetColorStr(ThemeProvider.GetColorScheme().OnSecondaryContainer);
+        --color-background: @GetColorStr(ThemeProvider.GetColorScheme().Background);
+        --color-on-background: @GetColorStr(ThemeProvider.GetColorScheme().OnBackground);
+        --color-surface: @GetColorStr(ThemeProvider.GetColorScheme().Surface);
+        --color-on-surface: @GetColorStr(ThemeProvider.GetColorScheme().OnSurface);
+        --color-surface-container: @GetColorStr(ThemeProvider.GetColorScheme().SurfaceContainer);
+        --color-surface-container-low: @GetColorStr(ThemeProvider.GetColorScheme().SurfaceContainerLow);
+        --color-outline: @GetColorStr(ThemeProvider.GetColorScheme().Outline);
+        --color-outline-variant: @GetColorStr(ThemeProvider.GetColorScheme().OutlineVariant);
+    }
+</style>
+
+@code {
+
+    string GetColorStr(uint color) => $"{ColorUtils.RedFromArgb(color)} {ColorUtils.GreenFromArgb(color)} {ColorUtils.BlueFromArgb(color)}";
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            ThemeProvider.SeedChanged += HandleThemeChange;
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+    public void Dispose()
+    {
+        ThemeProvider.SeedChanged -= HandleThemeChange;
+    }
+
+    private void HandleThemeChange(object? sender, object? args)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+}

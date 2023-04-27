@@ -14,13 +14,11 @@ namespace LiftLog.Ui.Store.Settings;
 
 public class SettingsEffects
 {
-
     private readonly IProgressStore _progressStore;
     private readonly IProgramStore _programStore;
     private readonly ITextExporter _textExporter;
     private readonly ILogger<SettingsEffects> _logger;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
-
 
     public SettingsEffects(
         IProgressStore progressStore,
@@ -44,11 +42,8 @@ public class SettingsEffects
         var program = await _programStore.GetSessionsInProgramAsync();
 
         await _textExporter.ExportTextAsync(
-            JsonSerializer.Serialize(new SerializedData(
-                    sessions,
-                    program
-                ),
-                _jsonSerializerOptions));
+            JsonSerializer.Serialize(new SerializedData(sessions, program), _jsonSerializerOptions)
+        );
     }
 
     [EffectMethod]
@@ -56,7 +51,10 @@ public class SettingsEffects
     {
         try
         {
-            var deserialized = JsonSerializer.Deserialize<SerializedData>(action.DataJson, _jsonSerializerOptions);
+            var deserialized = JsonSerializer.Deserialize<SerializedData>(
+                action.DataJson,
+                _jsonSerializerOptions
+            );
             if (deserialized != null)
             {
                 await _progressStore.SaveCompletedSessionsAsync(deserialized.Sessions);
@@ -73,5 +71,8 @@ public class SettingsEffects
         }
     }
 
-    private record SerializedData(List<Session> Sessions, ImmutableListSequence<SessionBlueprint> Program);
+    private record SerializedData(
+        List<Session> Sessions,
+        ImmutableListSequence<SessionBlueprint> Program
+    );
 }

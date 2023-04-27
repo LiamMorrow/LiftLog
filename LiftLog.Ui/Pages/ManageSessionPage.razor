@@ -33,7 +33,7 @@ else
     {
         <Card >
             
-            <div class="flex justify-between mb-4 border-b-2 pb-2">
+            <div class="flex justify-between mb-4 border-b border-outline-variant pb-2">
                     <input type="text" class="text-xl w-6/12" value="@exercise.Name" @onchange="@((e) => SetExerciseName(index, e.Value))"/>
                 <div >
                     <AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => MoveExerciseUp(exercise))>⬆️</AppButton>
@@ -53,9 +53,23 @@ else
                 <div class="flex flex-col gap-2 justify-between">
                     <label class="text-lg text-center">Initial Weight</label>
                     <div class="flex justify-center">
-                        <AppButton Type=AppButtonType.OutlineSecondary @onclick=@(() => OnWeightDecrementClick(exercise, index))><WeightFormat Kilograms="-exercise.KilogramsIncreaseOnSuccess"/></AppButton>
+                        <AppButton Type=AppButtonType.OutlineSecondary @onclick=@(() => OnInitialWeightDecrementClick(exercise, index))><WeightFormat Kilograms="-exercise.KilogramsIncreaseOnSuccess"/></AppButton>
                         <input class="text-lg w-20 text-center" type="text" inputmode="numeric" value=@exercise.InitialKilograms @onchange=@((e) => SetExerciseInitialWeight(index, e.Value))/>
-                        <AppButton Type=AppButtonType.OutlineSecondary @onclick=@(() => OnWeightIncrementClick(exercise, index))>+<WeightFormat Kilograms="exercise.KilogramsIncreaseOnSuccess"/></AppButton>
+                        <AppButton Type=AppButtonType.OutlineSecondary @onclick=@(() => OnInitialWeightIncrementClick(exercise, index))>+<WeightFormat Kilograms="exercise.KilogramsIncreaseOnSuccess"/></AppButton>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 justify-between">
+                    <label class="text-lg text-center">Success Weight Increase</label>
+                    <div class="flex justify-center">
+                        <AppButton Type=AppButtonType.OutlineSecondary @onclick=@(() => OnSuccessWeightDecrementClick(exercise, index))><WeightFormat Kilograms="-0.1m"/></AppButton>
+                        <input class="text-lg w-20 text-center" type="text" inputmode="numeric" value=@exercise.KilogramsIncreaseOnSuccess @onchange=@((e) => SetExerciseSuccessWeight(index, e.Value))/>
+                        <AppButton Type=AppButtonType.OutlineSecondary @onclick=@(() => OnSuccessWeightIncrementClick(exercise, index))>+<WeightFormat Kilograms="0.1m"/></AppButton>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 justify-between">
+                    <label class="text-lg text-center">First Rest</label>
+                    <div class="flex justify-center">
+                        <RestEditor  Rest="exercise.RestBetweenSets.MinRest" OnRestUpdated="span => { }"></RestEditor>
                     </div>
                 </div>
             </div>
@@ -121,14 +135,25 @@ else
         }
     }
 
-    void OnWeightIncrementClick(ExerciseBlueprint exerciseBlueprint, int index)
+
+    void OnInitialWeightIncrementClick(ExerciseBlueprint exerciseBlueprint, int index) 
+        => Dispatcher.Dispatch(new SetExerciseInitialWeightAction(index, exerciseBlueprint.InitialKilograms + exerciseBlueprint.KilogramsIncreaseOnSuccess));
+
+    void OnInitialWeightDecrementClick(ExerciseBlueprint exerciseBlueprint, int index) 
+        => Dispatcher.Dispatch(new SetExerciseInitialWeightAction(index, exerciseBlueprint.InitialKilograms - exerciseBlueprint.KilogramsIncreaseOnSuccess));
+
+    void SetExerciseSuccessWeight(int exerciseIndex, object? kilogramsObj)
     {
-        Dispatcher.Dispatch(new SetExerciseInitialWeightAction(index, exerciseBlueprint.InitialKilograms + exerciseBlueprint.KilogramsIncreaseOnSuccess));
+        if (kilogramsObj is string successKilogramsStr && decimal.TryParse(successKilogramsStr, out var successKilograms))
+        {
+            Dispatcher.Dispatch(new SetExerciseKilogramsIncreaseOnSuccessAction(exerciseIndex, successKilograms));
+        }
     }
 
-    void OnWeightDecrementClick(ExerciseBlueprint exerciseBlueprint, int index)
-    {
-        Dispatcher.Dispatch(new SetExerciseInitialWeightAction(index, exerciseBlueprint.InitialKilograms - exerciseBlueprint.KilogramsIncreaseOnSuccess));
-    }
+    void OnSuccessWeightIncrementClick(ExerciseBlueprint exerciseBlueprint, int index)
+        => Dispatcher.Dispatch(new SetExerciseKilogramsIncreaseOnSuccessAction(index, exerciseBlueprint.KilogramsIncreaseOnSuccess + 0.1m));
+
+    void OnSuccessWeightDecrementClick(ExerciseBlueprint exerciseBlueprint, int index)
+        => Dispatcher.Dispatch(new SetExerciseKilogramsIncreaseOnSuccessAction(index, exerciseBlueprint.KilogramsIncreaseOnSuccess - 0.1m));
 
 }

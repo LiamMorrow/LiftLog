@@ -1,4 +1,4 @@
-#if ANDROID 
+#if ANDROID
 using Android.App;
 using AndroidX.Core.View;
 #endif
@@ -13,10 +13,12 @@ public class ThemeColorUpdateService : MaterialColorService
 {
     private readonly WeakEventManager _weakEventManager = new();
 
-    public ThemeColorUpdateService(IOptions<MaterialColorOptions> options, IDynamicColorService dynamicColorService,
-        IPreferences preferences) : base(options, dynamicColorService, preferences)
-    {
-    }
+    public ThemeColorUpdateService(
+        IOptions<MaterialColorOptions> options,
+        IDynamicColorService dynamicColorService,
+        IPreferences preferences
+    )
+        : base(options, dynamicColorService, preferences) { }
 
     public event EventHandler SeedChanged
     {
@@ -44,5 +46,4 @@ public class ThemeColorUpdateService : MaterialColorService
         };
 #endif
     }
-
 }

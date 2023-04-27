@@ -1,12 +1,12 @@
 ﻿@using LiftLog.Ui.Util
 <div class="weighted-exercise">
-  <div class="weighted-exercise-header">
+  <div class="weighted-exercise-header mb-2">
     <span class="exercise-header">@RecordedExercise.Blueprint.Name</span>
     <WeightDisplay
         Exercise="RecordedExercise"
         UpdateWeightForExercise="UpdateWeightForExercise"/>
   </div>
-  <div class="flex justify-around gap-2">
+  <div class="flex gap-4">
     @{
       var repToStartNext = RecordedExercise.RecordedSets.IndexOf(null);
     }

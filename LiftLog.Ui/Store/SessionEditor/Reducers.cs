@@ -1,6 +1,8 @@
 using Fluxor;
 using LiftLog.Lib.Models;
 
+// ReSharper disable UnusedMember.Global
+
 namespace LiftLog.Ui.Store.SessionEditor;
 
 public static class Reducers
@@ -120,6 +122,21 @@ public static class Reducers
             state,
             action.ExerciseIndex,
             blueprint => blueprint with { InitialKilograms = action.InitialKilograms }
+        );
+
+    [ReducerMethod]
+    public static SessionEditorState SetExerciseKilogramsIncreaseOnSuccess(
+        SessionEditorState state,
+        SetExerciseKilogramsIncreaseOnSuccessAction action
+    ) =>
+        UpdateExerciseIfCan(
+            state,
+            action.ExerciseIndex,
+            blueprint =>
+                blueprint with
+                {
+                    KilogramsIncreaseOnSuccess = action.KilogramsIncreaseOnSuccess
+                }
         );
 
     [ReducerMethod]
