@@ -22,6 +22,7 @@ public class MauiNotificationService : INotificationService
     {
         await _notificationService.RequestNotificationPermission();
         _notificationService.Clear(NextSetNotificationHandle.Id);
+        _notificationService.Cancel(NextSetNotificationHandle.Id);
         var rest = exercise switch
         {
             { LastRecordedSet: not null }
@@ -50,6 +51,7 @@ public class MauiNotificationService : INotificationService
 
     public Task CancelNextSetNotificationAsync()
     {
+        _notificationService.Cancel(NextSetNotificationHandle.Id);
         _notificationService.Clear(NextSetNotificationHandle.Id);
         return Task.CompletedTask;
     }

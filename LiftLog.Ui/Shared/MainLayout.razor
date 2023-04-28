@@ -45,7 +45,7 @@
         var scrollTop = await Js.InvokeAsync<double>("AppUtils.getScrollTop", _contentElementRef);
 Console.WriteLine(scrollTop);
         _gridRows = scrollTop switch {
-            (<4) => "grid-rows-[2fr_8fr_min-content]",
+            (<10) => "grid-rows-[2fr_8fr_min-content]",
             _ => "grid-rows-[0.5fr_8fr_min-content]"
             };
         await InvokeAsync(StateHasChanged);
