@@ -2,6 +2,7 @@ using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Services;
+using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.CurrentSession;
 using Microsoft.AspNetCore.Components;
 
@@ -22,21 +23,12 @@ namespace LiftLog.Ui.Pages
 
         protected override async Task OnInitializedAsync()
         {
+            Dispatcher.Dispatch(new SetPageTitleAction("Upcoming Workouts"));
             this._upcomingSessions = await SessionService
                 .GetUpcomingSessionsAsync()
                 .Take(3)
                 .ToListAsync();
             await base.OnInitializedAsync();
-        }
-
-        private void StartSession()
-        {
-            SelectSession(_upcomingSessions[0]);
-        }
-
-        private void NavigateToSettings()
-        {
-            NavigationManager.NavigateTo("/settings");
         }
 
         private void SelectSession(Session session)

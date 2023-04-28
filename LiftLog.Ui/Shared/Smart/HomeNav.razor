@@ -1,0 +1,52 @@
+@using System.Text.RegularExpressions
+@implements IDisposable
+@inject NavigationManager NavigationManager
+<nav class="flex justify-around bg-surface-container text-on-surface">
+   <NavButton IsActive=@IsRouteMatch("/settings(/?.*)") Navigate="NavigateToSettings">Settings</NavButton>
+   <NavButton IsActive=@IsRouteMatch("(/$|^$|/session/?)") Navigate="NavigateToWorkout">Workout</NavButton>
+   <NavButton IsActive=@IsRouteMatch("/history(/?.*)") Navigate="NavigateToHistory">History</NavButton>
+</nav>
+@code {
+
+    protected override void OnInitialized()
+    {
+
+        NavigationManager.LocationChanged += LocationChanged;
+    }
+
+    private bool IsRouteMatch(string routeMatchRegex)
+    {
+        var reg = new Regex(routeMatchRegex);
+        var absPath = new Uri(NavigationManager.Uri).AbsolutePath;
+        return reg.IsMatch(absPath);
+    }
+
+    private void NavigateToWorkout()
+    {
+        NavigationManager.NavigateTo("/");
+        StateHasChanged();
+    }
+    
+    private void NavigateToSettings()
+    {
+        NavigationManager.NavigateTo("/settings");
+        StateHasChanged();
+    }
+    
+    private void NavigateToHistory()
+    {
+        NavigationManager.NavigateTo("/history");
+        StateHasChanged();
+    }
+
+    private void LocationChanged(object? sender, LocationChangedEventArgs locationChangedEventArgs)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= LocationChanged;
+    }
+
+}

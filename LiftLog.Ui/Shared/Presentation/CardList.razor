@@ -1,0 +1,19 @@
+@typeparam TItem
+@foreach (var item in Items)
+{
+    <Card OnClick=@(() => OnClick?.Invoke(item))>
+        @ChildContent(item)
+    </Card>
+}
+
+@code
+{
+    [Parameter]
+    public IEnumerable<TItem> Items { get; set; } = null!;
+
+    [Parameter]
+    public RenderFragment<TItem> ChildContent { get; set; } = null!;
+
+    [Parameter]
+    public Action<TItem>? OnClick { get; set; }
+}

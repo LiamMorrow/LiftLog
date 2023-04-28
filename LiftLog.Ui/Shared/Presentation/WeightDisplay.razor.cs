@@ -1,7 +1,7 @@
 using LiftLog.Lib.Models;
 using Microsoft.AspNetCore.Components;
 
-namespace LiftLog.Ui.Shared.SessionComponent.WeightedExercise.WeightDisplay;
+namespace LiftLog.Ui.Shared.Presentation;
 
 public partial class WeightDisplay
 {
