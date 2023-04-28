@@ -1,4 +1,4 @@
-namespace LiftLog.Ui.Shared.AppButton;
+namespace LiftLog.Ui.Shared.Presentation;
 
 public partial class AppButton { }
 

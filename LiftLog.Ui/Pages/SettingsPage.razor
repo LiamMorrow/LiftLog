@@ -1,13 +1,11 @@
 @page "/settings"
 @using Fluxor
+@using LiftLog.Ui.Services
+@using LiftLog.Ui.Store.App
 @using LiftLog.Ui.Store.Settings
 @inject NavigationManager NavigationManager
 @inject IDispatcher Dispatcher
-
-<div class="flex">
-    <button @onclick="BackToIndex" class="m-1">&lt;</button><h3>Settings</h3>
-</div>
-<div class="flex flex-col p-2">
+<div class="flex flex-col p-2 h-full overflow-auto bg-surface">
     <section class="flex flex-col px-5 py-2 my-2">
         <span class="text-lg text-center mb-4">Data Management</span>
         <div class="flex justify-around">
@@ -25,8 +23,6 @@
         </AppButton>
     </section>
 </div>
-
-
 <div class="import-popup @(ImportPopupActive ? "active" :"")" >
     <div class="import-popup-content">
         <div class="flex flex-col">
@@ -47,14 +43,16 @@
 
     private string ImportJson { get; set; } = "";
 
+    
+    protected override void OnInitialized()
+    {
+        Dispatcher.Dispatch(new SetPageTitleAction("Settings"));
+        base.OnInitialized();
+    }
+    
     private void NavigateToManage()
     {
-        NavigationManager.NavigateTo("/manage-workouts");
-    }
-
-    private void BackToIndex()
-    {
-        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/settings/manage-workouts");
     }
 
     private void OpenImportPopup()

@@ -25,4 +25,14 @@
     <ProjectReference Include="..\LiftLog.Lib\LiftLog.Lib.csproj" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Shared\RestEditor\RestEditor.razor" />
+    <_ContentIncludedByDefault Remove="Shared\SessionSummary\SessionSummary.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Presentation\SessionComponent\WeightedExercise\RepCount\RepCount.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Presentation\SessionComponent\WeightedExercise\WeightDisplay\WeightDisplay.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Presentation\SessionComponent\WeightedExercise\WeightedExercise.razor" />
+    <_ContentIncludedByDefault Remove="Shared\Presentation\WeightedExercise\RepCount\RepCount.razor" />
+  </ItemGroup>
+
 </Project>

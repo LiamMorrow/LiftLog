@@ -1,24 +1,54 @@
-@inherits LayoutComponentBase
-@inject IJSRuntime js
+@using Fluxor
+@using LiftLog.Ui.Store.App
+@inherits Fluxor.Blazor.Web.Components.FluxorLayout
+@inject IJSRuntime Js
+@inject IState<AppState> AppState
 
-<div class="h-full page bg-surface text-on-background">
+<div class="h-full page">
     <section class="relative h-full content">
-        @Body
+        <div class="grid grid-cols-1 h-full @(_gridRows) transition-all">
+            <div class="flex items-center px-5 bg-surface-container py-11">
+                <span class="m-0 text-3xl text-on-surface ">@AppState.Value.Title</span>
+            </div>
+            <div @ref="_contentElementRef" class="overflow-auto bg-surface" @onscroll="OnContentScroll">
+                @Body
+            </div>
+            <HomeNav></HomeNav>
+        </div>
     </section>
 </div>
 
+<HeadContent>
+    <title>@AppState.Value.Title</title>
+</HeadContent>
 
 @code {
 
+    private ElementReference _contentElementRef;
+
+    private string _gridRows = "grid-rows-[2fr_8fr_min-content]";
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        #if DEBUG
+#if DEBUG
         if (firstRender)
         {
-            await js.InvokeAsync<IJSObjectReference>("import", "/_content/LiftLog.Ui/load-tailwind.js");
+            await Js.InvokeAsync<IJSObjectReference>("import", "/_content/LiftLog.Ui/load-tailwind.js");
         }
-        #else
+#else
         await base.OnAfterRenderAsync(firstRender);
-        #endif
+#endif
     }
+
+    private async void OnContentScroll()
+    {
+        var scrollTop = await Js.InvokeAsync<double>("AppUtils.getScrollTop", _contentElementRef);
+Console.WriteLine(scrollTop);
+        _gridRows = scrollTop switch {
+            (<4) => "grid-rows-[2fr_8fr_min-content]",
+            _ => "grid-rows-[0.5fr_8fr_min-content]"
+            };
+        await InvokeAsync(StateHasChanged);
+    }
+
 }

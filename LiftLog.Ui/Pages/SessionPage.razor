@@ -1,5 +1,6 @@
 ﻿@page "/session"
 @using LiftLog.Ui.Store.CurrentSession
+@using LiftLog.Ui.Store.App
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @{
@@ -19,4 +20,15 @@
         Session=@(CurrentSessionState.Value.Session)
         SaveSession=SaveSession
         CloseSession=CloseSession />
+}
+
+
+@code
+{
+    
+    protected override void OnInitialized()
+    {
+        Dispatcher.Dispatch(new SetPageTitleAction("Session"));
+        base.OnInitialized();
+    }
 }

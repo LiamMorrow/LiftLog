@@ -1,0 +1,16 @@
+﻿@page "/history"
+@using Fluxor
+@using LiftLog.Ui.Store.App
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+@inject IDispatcher Dispatcher
+
+@code
+{
+    
+    protected override void OnInitialized()
+    {
+        Dispatcher.Dispatch(new SetPageTitleAction("History"));
+        base.OnInitialized();
+    }
+}

@@ -1,18 +1,15 @@
 @using Fluxor
+@using LiftLog.Ui.Store.App
 @using LiftLog.Ui.Store.Program
 @using LiftLog.Ui.Store.SessionEditor
 
-@page "/manage-workouts"
+@page "/settings/manage-workouts"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @inject IState<ProgramState> ProgramState
 @inject NavigationManager NavigationManager
 @inject IDispatcher Dispatcher
 
-<div class="flex">
-    <button @onclick="BackToSettings" class="m-1">&lt;</button>
-    <h3>Manage Workouts</h3>
-</div>
 @foreach (var (session, index) in ProgramState.Value.SessionBlueprints.IndexedTuples())
 {
     <Card @onclick=@(() => SelectSession(session, index))>
@@ -45,11 +42,21 @@
     void SelectSession(SessionBlueprint sessionBlueprint, int index)
     {
         Dispatcher.Dispatch(new SetEditingSessionAction(sessionBlueprint));
-        NavigationManager.NavigateTo($"/manage-session/{index}");
+        NavigationManager.NavigateTo($"/settings/manage-workouts/manage-session/{index}");
     }
 
     void AddSession() => Dispatcher.Dispatch(
         new AddProgramSessionAction(
             new SessionBlueprint($"Session {ProgramState.Value.SessionBlueprints.Count + 1}", new ImmutableListSequence<ExerciseBlueprint>())));
+
+@code
+{
+    
+    protected override void OnInitialized()
+    {
+        Dispatcher.Dispatch(new SetPageTitleAction("Manage Workouts"));
+        base.OnInitialized();
+    }
+}
 
 }

@@ -1,29 +1,8 @@
 ﻿@page "/"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
-<div class=" grid grid-cols-1 h-full grid-rows-[2fr_8fr_min-content]" >
-    <div class="flex items-center px-5 bg-surface-container py-11">
-        <span class="m-0 text-3xl text-on-surface ">Upcoming Workouts</span>
-    </div>
-    <div class="overflow-auto">
-        @foreach (var upcomingSession in _upcomingSessions)
-        {
-            <Card @onclick=@(() => SelectSession(upcomingSession))>
-                <span class="text-xl">@upcomingSession.Blueprint.Name</span>
-                @foreach (var exercise in upcomingSession.RecordedExercises)
-                {
-                    <div class="flex justify-between w-full">
-                        <span>@exercise.Blueprint.Name</span>
-                        <span>@exercise.Blueprint.Sets x @exercise.Blueprint.RepsPerSet</span>
-                    </div>
-                }
-            </Card>
-        }
-    </div>
-    
-<nav class="flex bg-slate-300">
-    <button class="self-end flex-1 mb-4">History</button>
-    <button class="w-20 h-20 px-4 py-2 -mt-6 font-bold text-white bg-orange-500 border-2 rounded-full hover:bg-orange-600" @onclick=StartSession>Start</button>
-    <button class="self-end flex-1 mb-4" @onclick=NavigateToSettings>Settings</button>
-</nav>
-</div>
+<CardList Items="_upcomingSessions" OnClick="SelectSession">
+       <SessionSummary Session="@context" ></SessionSummary>
+</CardList>
 
+
+   

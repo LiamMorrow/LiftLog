@@ -1,0 +1,14 @@
+<span class="text-xl">@Session.Blueprint.Name</span>
+@foreach (var exercise in Session.RecordedExercises)
+{
+    <div class="flex justify-between w-full">
+        <span>@exercise.Blueprint.Name</span>
+        <span>@exercise.Blueprint.Sets x @exercise.Blueprint.RepsPerSet</span>
+    </div>
+}
+
+@code
+{
+    [Parameter]
+    public Session Session { get; set; } = null!;
+}

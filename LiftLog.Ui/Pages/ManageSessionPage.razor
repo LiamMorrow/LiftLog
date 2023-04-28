@@ -2,18 +2,13 @@
 @using LiftLog.Ui.Store.Program
 @using LiftLog.Ui.Store.SessionEditor
 
-@page "/manage-session/{sessionIndex:int}"
+@page "/settings/manage-workouts/manage-session/{sessionIndex:int}"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @inject NavigationManager NavigationManager
 @inject IState<SessionEditorState> SessionEditorState
 @inject IState<ProgramState> ProgramState
 @inject IDispatcher Dispatcher
-
-<div class="flex">
-    <button @onclick="BackToManageWorkouts" class="m-1">&lt;</button>
-    <h3>Back</h3>
-</div>
 
 @if (SessionEditorState.Value.SessionBlueprint is null)
 {
@@ -28,20 +23,21 @@
 }
 else
 {
+    <div class="overflow-auto bg-surface">
     <input type="text" value="@SessionEditorState.Value.SessionBlueprint.Name" @onchange="@((e) => SetName(e.Value))"/>
-    foreach (var (exercise, index) in SessionEditorState.Value.SessionBlueprint.Exercises.IndexedTuples())
+    @foreach (var (exercise, index) in SessionEditorState.Value.SessionBlueprint.Exercises.IndexedTuples())
     {
         <Card >
-            
-            <div class="flex justify-between mb-4 border-b border-outline-variant pb-2">
-                    <input type="text" class="text-xl w-6/12" value="@exercise.Name" @onchange="@((e) => SetExerciseName(index, e.Value))"/>
+
+            <div class="flex justify-between pb-2 mb-4 border-b border-outline-variant">
+                    <input type="text" class="w-6/12 text-xl" value="@exercise.Name" @onchange="@((e) => SetExerciseName(index, e.Value))"/>
                 <div >
                     <AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => MoveExerciseUp(exercise))>⬆️</AppButton>
                     <AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => MoveExerciseDown(exercise))>⬇️</AppButton>
                     <AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => RemoveExercise(exercise))>🗑️</AppButton>
                 </div>
             </div>
-            <div class="w-full flex gap-1 flex-wrap justify-around">
+            <div class="flex flex-wrap justify-around w-full gap-1">
                 <div class="flex flex-col gap-1">
                     <div>
                         <AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => DecrementExerciseSets(index))>➖</AppButton><span class="inline-block w-20 mx-2 text-center">@exercise.Sets Sets</span><AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => IncrementExerciseSets(index))>➕</AppButton>
@@ -50,23 +46,23 @@ else
                         <AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => DecrementExerciseRepsPerSet(index))>➖</AppButton><span class="inline-block w-20 mx-2 text-center">@exercise.RepsPerSet Reps</span><AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => IncrementExerciseRepsPerSet(index))>➕</AppButton>
                     </div>
                 </div>
-                <div class="flex flex-col gap-2 justify-between">
+                <div class="flex flex-col justify-between gap-2">
                     <label class="text-lg text-center">Initial Weight</label>
                     <div class="flex justify-center">
                         <AppButton Type=AppButtonType.OutlineSecondary @onclick=@(() => OnInitialWeightDecrementClick(exercise, index))><WeightFormat Kilograms="-exercise.KilogramsIncreaseOnSuccess"/></AppButton>
-                        <input class="text-lg w-20 text-center" type="text" inputmode="numeric" value=@exercise.InitialKilograms @onchange=@((e) => SetExerciseInitialWeight(index, e.Value))/>
+                        <input class="w-20 text-lg text-center" type="text" inputmode="numeric" value=@exercise.InitialKilograms @onchange=@((e) => SetExerciseInitialWeight(index, e.Value))/>
                         <AppButton Type=AppButtonType.OutlineSecondary @onclick=@(() => OnInitialWeightIncrementClick(exercise, index))>+<WeightFormat Kilograms="exercise.KilogramsIncreaseOnSuccess"/></AppButton>
                     </div>
                 </div>
-                <div class="flex flex-col gap-2 justify-between">
+                <div class="flex flex-col justify-between gap-2">
                     <label class="text-lg text-center">Success Weight Increase</label>
                     <div class="flex justify-center">
                         <AppButton Type=AppButtonType.OutlineSecondary @onclick=@(() => OnSuccessWeightDecrementClick(exercise, index))><WeightFormat Kilograms="-0.1m"/></AppButton>
-                        <input class="text-lg w-20 text-center" type="text" inputmode="numeric" value=@exercise.KilogramsIncreaseOnSuccess @onchange=@((e) => SetExerciseSuccessWeight(index, e.Value))/>
+                        <input class="w-20 text-lg text-center" type="text" inputmode="numeric" value=@exercise.KilogramsIncreaseOnSuccess @onchange=@((e) => SetExerciseSuccessWeight(index, e.Value))/>
                         <AppButton Type=AppButtonType.OutlineSecondary @onclick=@(() => OnSuccessWeightIncrementClick(exercise, index))>+<WeightFormat Kilograms="0.1m"/></AppButton>
                     </div>
                 </div>
-                <div class="flex flex-col gap-2 justify-between">
+                <div class="flex flex-col justify-between gap-2">
                     <label class="text-lg text-center">First Rest</label>
                     <div class="flex justify-center">
                         <RestEditor  Rest="exercise.RestBetweenSets.MinRest" OnRestUpdated="span => { }"></RestEditor>
@@ -75,17 +71,19 @@ else
             </div>
         </Card>
     }
+    </div>
+    <div>
     <AppButton Type="AppButtonType.Secondary" @onclick=AddExercise>Add Exercise</AppButton>
 
     <AppButton @onclick=SaveSession>Save</AppButton>
+    </div>
 }
-
 @code {
 
     [Parameter]
     public int SessionIndex { get; set; }
 
-    void BackToManageWorkouts() => NavigationManager.NavigateTo("/manage-workouts");
+    void BackToManageWorkouts() => NavigationManager.NavigateTo("/settings/manage-workouts");
 
     void MoveExerciseUp(ExerciseBlueprint exerciseBlueprint) => Dispatcher.Dispatch(new MoveExerciseUpAction(exerciseBlueprint));
 
@@ -136,10 +134,10 @@ else
     }
 
 
-    void OnInitialWeightIncrementClick(ExerciseBlueprint exerciseBlueprint, int index) 
+    void OnInitialWeightIncrementClick(ExerciseBlueprint exerciseBlueprint, int index)
         => Dispatcher.Dispatch(new SetExerciseInitialWeightAction(index, exerciseBlueprint.InitialKilograms + exerciseBlueprint.KilogramsIncreaseOnSuccess));
 
-    void OnInitialWeightDecrementClick(ExerciseBlueprint exerciseBlueprint, int index) 
+    void OnInitialWeightDecrementClick(ExerciseBlueprint exerciseBlueprint, int index)
         => Dispatcher.Dispatch(new SetExerciseInitialWeightAction(index, exerciseBlueprint.InitialKilograms - exerciseBlueprint.KilogramsIncreaseOnSuccess));
 
     void SetExerciseSuccessWeight(int exerciseIndex, object? kilogramsObj)

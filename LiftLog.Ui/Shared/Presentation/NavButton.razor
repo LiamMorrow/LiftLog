@@ -1,0 +1,20 @@
+<div class="transition-all ease-in-out">
+    <button class="self-end flex-1 my-4 rounded-full p-2 text-on-surface @ClassForActiveRoute" @onclick="Navigate">@ChildContent</button>
+</div>
+
+@code
+{
+    [Parameter]
+    public bool IsActive { get; set; }
+
+    [Parameter]
+    public Action Navigate { get; set; } = null!;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = null!;
+
+    private string ClassForActiveRoute => IsActive
+        ? "bg-secondary-container"
+        : "";
+
+}
