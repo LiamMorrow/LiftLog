@@ -14,6 +14,8 @@
     --color-on-background: 0 0 0;
     --color-surface: 255 255 255;
     --color-on-surface: 0 0 0;
+    --color-inverse-surface: 255 255 255;
+    --color-inverse-on-surface: 0 0 0;
     --color-surface-container: 255 255 255;
     --color-surface-container-low: 255 255 255;
     --color-outline: 0 0 0;

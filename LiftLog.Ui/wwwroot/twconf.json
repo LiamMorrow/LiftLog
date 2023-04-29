@@ -37,6 +37,8 @@
         "on-background": "rgb(var(--color-on-background) / <alpha-value>)",
         "surface": "rgb(var(--color-surface) / <alpha-value>)",
         "on-surface": "rgb(var(--color-on-surface) / <alpha-value>)",
+        "inverse-surface": "rgb(var(--color-inverse-surface) / <alpha-value>)",
+        "inverse-on-surface": "rgb(var(--color-inverse-on-surface) / <alpha-value>)",
         "surface-container": "rgb(var(--color-surface-container) / <alpha-value>)",
         "surface-container-low": "rgb(var(--color-surface-container-low) / <alpha-value>)",
         "outline": "rgb(var(--color-outline) / <alpha-value>)",
