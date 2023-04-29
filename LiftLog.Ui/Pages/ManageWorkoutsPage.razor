@@ -10,31 +10,34 @@
 @inject NavigationManager NavigationManager
 @inject IDispatcher Dispatcher
 
-@foreach (var (session, index) in ProgramState.Value.SessionBlueprints.IndexedTuples())
-{
-    <Card @onclick=@(() => SelectSession(session, index))>
-        <span class="text-xl">@session.Name</span>
-        <AppButton Type="AppButtonType.OutlineSecondary" onclick=@(() => MoveSessionUp(session))>⬆️</AppButton>
-        <AppButton Type="AppButtonType.OutlineSecondary" onclick=@(() => MoveSessionDown(session))>⬇️</AppButton>
-        <AppButton Type="AppButtonType.OutlineSecondary" onclick=@(() => RemoveSession(session))>🗑️</AppButton>
-        @foreach (var exercise in session.Exercises)
-        {
-            <div class="flex justify-between w-full">
-                <span>@exercise.Name</span>
-                <span> @exercise.Sets x @exercise.RepsPerSet</span>
-            </div>
-        }
-    </Card>
-}
+<CardList Items="ProgramState.Value.SessionBlueprints.IndexedTuples()" OnClick="(item)=>SelectSession(item.Item, item.Index)">
+    @{
+        var session = context.Item;
+        var index = context.Index;
+    }
+    <span class="text-xl">@session.Name</span>
+    <AppButton Type="AppButtonType.OutlineSecondary" onclick=@(() => MoveSessionUp(session))>⬆️</AppButton>
+    <AppButton Type="AppButtonType.OutlineSecondary" onclick=@(() => MoveSessionDown(session))>⬇️</AppButton>
+    <AppButton Type="AppButtonType.OutlineSecondary" onclick=@(() => RemoveSession(session))>🗑️</AppButton>
+    @foreach (var exercise in session.Exercises)
+    {
+        <div class="flex justify-between w-full">
+            <span>@exercise.Name</span>
+            <span> @exercise.Sets x @exercise.RepsPerSet</span>
+        </div>
+    }
+</CardList>
 
-<AppButton Type="AppButtonType.OutlineSecondary" onclick="AddSession">Add Session</AppButton>
+<div class="flex justify-center mt-2">
+    <AppButton Type="AppButtonType.Primary" onclick="AddSession">Add Session</AppButton>
+</div>
 
 @code {
 
     void MoveSessionUp(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new MoveSessionBlueprintUpInProgramAction(sessionBlueprint));
 
     void MoveSessionDown(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new MoveSessionBlueprintDownInProgramAction(sessionBlueprint));
-    
+
     void RemoveSession(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new RemoveSessionFromProgramAction(sessionBlueprint));
 
     void BackToSettings() => NavigationManager.NavigateTo("/settings");
@@ -49,14 +52,9 @@
         new AddProgramSessionAction(
             new SessionBlueprint($"Session {ProgramState.Value.SessionBlueprints.Count + 1}", new ImmutableListSequence<ExerciseBlueprint>())));
 
-@code
-{
-    
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Manage Workouts"));
         base.OnInitialized();
     }
-}
-
 }

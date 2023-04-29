@@ -1,4 +1,5 @@
 @using Fluxor
+@using LiftLog.Ui.Store.App
 @using LiftLog.Ui.Store.Program
 @using LiftLog.Ui.Store.SessionEditor
 
@@ -24,13 +25,14 @@
 else
 {
     <div class="overflow-auto bg-surface">
-    <input type="text" value="@SessionEditorState.Value.SessionBlueprint.Name" @onchange="@((e) => SetName(e.Value))"/>
-    @foreach (var (exercise, index) in SessionEditorState.Value.SessionBlueprint.Exercises.IndexedTuples())
-    {
-        <Card >
-
+        <input type="text" value="@SessionEditorState.Value.SessionBlueprint.Name" @onchange="@((e) => SetName(e.Value))"/>
+        <CardList Items="SessionEditorState.Value.SessionBlueprint.Exercises.IndexedTuples()">
+            @{
+                var exercise = context.Item;
+                var index = context.Index;
+            }
             <div class="flex justify-between pb-2 mb-4 border-b border-outline-variant">
-                    <input type="text" class="w-6/12 text-xl" value="@exercise.Name" @onchange="@((e) => SetExerciseName(index, e.Value))"/>
+                <input type="text" class="w-6/12 text-xl" value="@exercise.Name" @onchange="@((e) => SetExerciseName(index, e.Value))"/>
                 <div >
                     <AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => MoveExerciseUp(exercise))>⬆️</AppButton>
                     <AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => MoveExerciseDown(exercise))>⬇️</AppButton>
@@ -65,12 +67,11 @@ else
                 <div class="flex flex-col justify-between gap-2">
                     <label class="text-lg text-center">First Rest</label>
                     <div class="flex justify-center">
-                        <RestEditor  Rest="exercise.RestBetweenSets.MinRest" OnRestUpdated="span => { }"></RestEditor>
+                        <RestEditor Rest="exercise.RestBetweenSets.MinRest" OnRestUpdated="span => { }"></RestEditor>
                     </div>
                 </div>
             </div>
-        </Card>
-    }
+        </CardList>
     </div>
     <div>
     <AppButton Type="AppButtonType.Secondary" @onclick=AddExercise>Add Exercise</AppButton>
@@ -154,4 +155,9 @@ else
     void OnSuccessWeightDecrementClick(ExerciseBlueprint exerciseBlueprint, int index)
         => Dispatcher.Dispatch(new SetExerciseKilogramsIncreaseOnSuccessAction(index, exerciseBlueprint.KilogramsIncreaseOnSuccess - 0.1m));
 
+    protected override void OnInitialized()
+    {
+        Dispatcher.Dispatch(new SetPageTitleAction("Manage Session"));
+        base.OnInitialized();
+    }
 }

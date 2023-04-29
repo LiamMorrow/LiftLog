@@ -4,13 +4,13 @@
 @inject IJSRuntime Js
 @inject IState<AppState> AppState
 
-<div class="h-full page">
+<div class="h-full page bg-surface">
     <section class="relative h-full content">
-        <div class="grid grid-cols-1 h-full @(_gridRows) transition-all">
-            <div class="flex items-center px-5 bg-surface-container py-11">
-                <span class="m-0 text-3xl text-on-surface ">@AppState.Value.Title</span>
+        <div class="grid grid-cols-1 h-full grid-rows-[3rem_8fr_min-content] transition-all">
+            <div class="z-10 flex items-center px-5 overflow-visible bg-surface-container @_topNavSizeClass transition-all ease-out">
+                <span class="m-0 text-on-surface ">@AppState.Value.Title</span>
             </div>
-            <div @ref="_contentElementRef" class="overflow-auto bg-surface" @onscroll="OnContentScroll">
+            <div @ref="_contentElementRef" class="px-2 pt-12 pb-2 overflow-auto bg-surface" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
                 @Body
             </div>
             <HomeNav></HomeNav>
@@ -26,7 +26,7 @@
 
     private ElementReference _contentElementRef;
 
-    private string _gridRows = "grid-rows-[2fr_8fr_min-content]";
+    private string _topNavSizeClass = "py-11 text-3xl";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -43,10 +43,10 @@
     private async void OnContentScroll()
     {
         var scrollTop = await Js.InvokeAsync<double>("AppUtils.getScrollTop", _contentElementRef);
-Console.WriteLine(scrollTop);
-        _gridRows = scrollTop switch {
-            (<10) => "grid-rows-[2fr_8fr_min-content]",
-            _ => "grid-rows-[0.5fr_8fr_min-content]"
+        _topNavSizeClass = scrollTop switch {
+            // make it smaller after scrolling past 3rem (48px)
+            (<=48) => "py-11 text-3xl",
+            _ => "py-4 text-xl"
             };
         await InvokeAsync(StateHasChanged);
     }
