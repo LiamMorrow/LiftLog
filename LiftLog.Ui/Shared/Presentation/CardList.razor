@@ -1,10 +1,12 @@
 @typeparam TItem
+<div class="flex flex-col gap-2">
 @foreach (var item in Items)
 {
     <Card OnClick=@(() => OnClick?.Invoke(item))>
         @ChildContent(item)
     </Card>
 }
+</div>
 
 @code
 {
