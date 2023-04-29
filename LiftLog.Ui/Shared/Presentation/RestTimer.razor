@@ -1,4 +1,4 @@
-<div class="rest-timer"><span>@InstructionsText</span><span class="timer">@(TimeSinceStart.ToString(TimespanFormatStr))</span></div>
+<div class="sticky bottom-0 flex justify-between bg-inverse-surface text-inverse-on-surface p-2 rounded-md items-center"><span>@InstructionsText</span><span class="font-bold">@(TimeSinceStart.ToString(TimespanFormatStr))</span></div>
 
 @code {
     [Parameter]
