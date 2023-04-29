@@ -1,4 +1,15 @@
-<div class="sticky bottom-0 flex justify-between bg-inverse-surface text-inverse-on-surface p-2 rounded-md items-center"><span>@InstructionsText</span><span class="font-bold">@(TimeSinceStart.ToString(TimespanFormatStr))</span></div>
+<div class="sticky bottom-0 flex items-center justify-between p-4 rounded-md shadow-md bg-inverse-surface text-inverse-on-surface">
+    @if (Failed)
+    {
+        <span>Rest <span class="font-bold">@(Rest.FailureRest.ToString(TimespanFormatStr))</span></span>
+    }
+    else
+    {
+
+        <span>Rest between <span class="font-bold">@(Rest.MinRest.ToString(TimespanFormatStr))</span> and <span class="font-bold">@(Rest.SecondaryRest.ToString(TimespanFormatStr))</span></span>
+    }
+    <span class="font-bold">@(TimeSinceStart.ToString(TimespanFormatStr))</span>
+</div>
 
 @code {
     [Parameter]
@@ -14,9 +25,9 @@
 
     private string InstructionsText =>
         Failed
-        ? $"Rest {Rest.FailureRest:mm\\:ss}."
+        ? $"Rest {Rest.FailureRest:m\\:ss}."
         : Rest.MinRest == Rest.SecondaryRest
-            ? $"Rest {Rest.MinRest:mm:ss}."
-            : $"Rest {Rest.MinRest:mm\\:ss} if it was easy, or {Rest.SecondaryRest:mm\\:ss} if it was hard.";
+            ? $"Rest {Rest.MinRest:m:ss}"
+            : $"Rest between {Rest.MinRest:m\\:ss} and {Rest.SecondaryRest:m\\:ss}";
 
 }

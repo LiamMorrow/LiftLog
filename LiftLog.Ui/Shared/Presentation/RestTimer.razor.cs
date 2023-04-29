@@ -2,7 +2,7 @@ namespace LiftLog.Ui.Shared.Presentation;
 
 public partial class RestTimer : IDisposable
 {
-    private const string TimespanFormatStr = @"mm\:ss";
+    private const string TimespanFormatStr = @"m\:ss";
     private Timer? _timer;
     private bool _disposedValue;
 
