@@ -13,6 +13,7 @@
 
 body{
   height: 100dvh;
+  -webkit-tap-highlight-color:transparent
 }
 
 #blazor-error-ui .dismiss {
