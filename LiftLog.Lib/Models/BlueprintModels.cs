@@ -9,7 +9,20 @@
         decimal InitialKilograms,
         decimal KilogramsIncreaseOnSuccess,
         Rest RestBetweenSets
-    );
+    )
+    {
+        public virtual bool Equals(ExerciseBlueprint? other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Name == other.Name && Sets == other.Sets && RepsPerSet == other.RepsPerSet;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name, Sets, RepsPerSet);
+        }
+    }
 
     public record Rest(TimeSpan MinRest, TimeSpan SecondaryRest, TimeSpan FailureRest);
 }
