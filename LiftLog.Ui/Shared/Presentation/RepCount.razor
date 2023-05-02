@@ -1,19 +1,24 @@
-﻿<button class="w-12 h-12 rounded-xl text-center flex justify-center align-middle transition-colors duration-75 items-center @ColorClass @RepCountToStartClass" @onclick="CycleRepCount">
+﻿<button class="w-12 h-12 rounded-xl text-center flex justify-center align-middle transition-colors duration-75 items-center @ColorClass @RepCountToStartClass" 
+         @onclick="CycleRepCount">
     <span class="font-bold">@(RepCountValue?.ToString()??"-")</span>
     <span class="inline text-xs align-text-top">/@MaxReps</span>
 </button>
 
 @code {
 
+    [EditorRequired]
     [Parameter]
     public int MaxReps { get; set; }
 
+    [EditorRequired]
     [Parameter]
     public int? RepCountValue { get; set; }
 
+    [EditorRequired]
     [Parameter]
     public Action CycleRepCount { get; set; } = null!;
 
+    [EditorRequired]
     [Parameter]
     public bool ToStartNext { get; set; }
 

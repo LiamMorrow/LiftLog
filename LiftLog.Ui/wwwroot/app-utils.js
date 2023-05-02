@@ -1,4 +1,8 @@
-var AppUtils = AppUtils || {};
+export const AppUtils = {};
 AppUtils.getScrollTop = function (element) {
     return element.scrollTop
 };
+
+AppUtils.createRipple = function (element, event)
+{
+}

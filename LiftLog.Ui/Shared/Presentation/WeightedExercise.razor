@@ -17,15 +17,19 @@
   </div>
 </div>
 @code {
+  [EditorRequired]
   [Parameter]
   public RecordedExercise RecordedExercise { get; set; } = null!;
 
+  [EditorRequired]
   [Parameter]
   public bool ToStartNext { get; set; }
 
+  [EditorRequired]
   [Parameter]
   public Action<int> CycleRepCountForSet { get; set; } = null!;
 
+  [EditorRequired]
   [Parameter]
   public Action<decimal> UpdateWeightForExercise { get; set; } = null!;
 }

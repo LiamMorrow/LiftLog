@@ -34,34 +34,34 @@ else
             <div class="flex justify-between pb-2 mb-4 border-b border-outline-variant">
                 <input type="text" class="w-6/12 text-xl" value="@exercise.Name" @onchange="@((e) => SetExerciseName(index, e.Value))"/>
                 <div >
-                    <AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => MoveExerciseUp(exercise))>⬆️</AppButton>
-                    <AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => MoveExerciseDown(exercise))>⬇️</AppButton>
-                    <AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => RemoveExercise(exercise))>🗑️</AppButton>
+                    <AppButton Type="AppButtonType.OutlineSecondary" OnClick=@(() => MoveExerciseUp(exercise))>⬆️</AppButton>
+                    <AppButton Type="AppButtonType.OutlineSecondary"  OnClick=@(() => MoveExerciseDown(exercise))>⬇️</AppButton>
+                    <AppButton Type="AppButtonType.OutlineSecondary" OnClick=@(() => RemoveExercise(exercise))>🗑️</AppButton>
                 </div>
             </div>
             <div class="flex flex-wrap justify-around w-full gap-1">
                 <div class="flex flex-col gap-1">
                     <div>
-                        <AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => DecrementExerciseSets(index))>➖</AppButton><span class="inline-block w-20 mx-2 text-center">@exercise.Sets Sets</span><AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => IncrementExerciseSets(index))>➕</AppButton>
+                        <AppButton Type="AppButtonType.OutlineSecondary" OnClick=@(() => DecrementExerciseSets(index))>➖</AppButton><span class="inline-block w-20 mx-2 text-center">@exercise.Sets Sets</span><AppButton Type="AppButtonType.OutlineSecondary" OnClick=@(() => IncrementExerciseSets(index))>➕</AppButton>
                     </div>
                     <div>
-                        <AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => DecrementExerciseRepsPerSet(index))>➖</AppButton><span class="inline-block w-20 mx-2 text-center">@exercise.RepsPerSet Reps</span><AppButton Type="AppButtonType.OutlineSecondary" @onclick=@(() => IncrementExerciseRepsPerSet(index))>➕</AppButton>
+                        <AppButton Type="AppButtonType.OutlineSecondary" OnClick=@(() => DecrementExerciseRepsPerSet(index))>➖</AppButton><span class="inline-block w-20 mx-2 text-center">@exercise.RepsPerSet Reps</span><AppButton Type="AppButtonType.OutlineSecondary" OnClick=@(() => IncrementExerciseRepsPerSet(index))>➕</AppButton>
                     </div>
                 </div>
                 <div class="flex flex-col justify-between gap-2">
                     <label class="text-lg text-center">Initial Weight</label>
                     <div class="flex justify-center">
-                        <AppButton Type=AppButtonType.OutlineSecondary @onclick=@(() => OnInitialWeightDecrementClick(exercise, index))><WeightFormat Kilograms="-exercise.KilogramsIncreaseOnSuccess"/></AppButton>
+                        <AppButton Type=AppButtonType.OutlineSecondary OnClick=@(() => OnInitialWeightDecrementClick(exercise, index))><WeightFormat Kilograms="-exercise.KilogramsIncreaseOnSuccess"/></AppButton>
                         <input class="w-20 text-lg text-center" type="text" inputmode="numeric" value=@exercise.InitialKilograms @onchange=@((e) => SetExerciseInitialWeight(index, e.Value))/>
-                        <AppButton Type=AppButtonType.OutlineSecondary @onclick=@(() => OnInitialWeightIncrementClick(exercise, index))>+<WeightFormat Kilograms="exercise.KilogramsIncreaseOnSuccess"/></AppButton>
+                        <AppButton Type=AppButtonType.OutlineSecondary OnClick=@(() => OnInitialWeightIncrementClick(exercise, index))>+<WeightFormat Kilograms="exercise.KilogramsIncreaseOnSuccess"/></AppButton>
                     </div>
                 </div>
                 <div class="flex flex-col justify-between gap-2">
                     <label class="text-lg text-center">Success Weight Increase</label>
                     <div class="flex justify-center">
-                        <AppButton Type=AppButtonType.OutlineSecondary @onclick=@(() => OnSuccessWeightDecrementClick(exercise, index))><WeightFormat Kilograms="-0.1m"/></AppButton>
+                        <AppButton Type=AppButtonType.OutlineSecondary OnClick=@(() => OnSuccessWeightDecrementClick(exercise, index))><WeightFormat Kilograms="-0.1m"/></AppButton>
                         <input class="w-20 text-lg text-center" type="text" inputmode="numeric" value=@exercise.KilogramsIncreaseOnSuccess @onchange=@((e) => SetExerciseSuccessWeight(index, e.Value))/>
-                        <AppButton Type=AppButtonType.OutlineSecondary @onclick=@(() => OnSuccessWeightIncrementClick(exercise, index))>+<WeightFormat Kilograms="0.1m"/></AppButton>
+                        <AppButton Type=AppButtonType.OutlineSecondary OnClick=@(() => OnSuccessWeightIncrementClick(exercise, index))>+<WeightFormat Kilograms="0.1m"/></AppButton>
                     </div>
                 </div>
                 <div class="flex flex-col justify-between gap-2">
@@ -74,9 +74,9 @@ else
         </CardList>
     </div>
     <div>
-    <AppButton Type="AppButtonType.Secondary" @onclick=AddExercise>Add Exercise</AppButton>
+    <AppButton Type="AppButtonType.Secondary" OnClick=AddExercise>Add Exercise</AppButton>
 
-    <AppButton @onclick=SaveSession>Save</AppButton>
+    <AppButton OnClick=SaveSession>Save</AppButton>
     </div>
 }
 @code {

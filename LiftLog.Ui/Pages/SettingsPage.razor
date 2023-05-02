@@ -9,16 +9,16 @@
     <section class="flex flex-col px-5 py-2 my-2">
         <span class="text-lg text-center mb-4">Data Management</span>
         <div class="flex justify-around">
-            <AppButton @onclick="OpenImportPopup" Type="AppButtonType.OutlineSecondary">
+            <AppButton OnClick="OpenImportPopup" Type="AppButtonType.OutlineSecondary">
                 Import Data
             </AppButton>
-            <AppButton @onclick="ExportData" Type="AppButtonType.OutlineSecondary">
+            <AppButton OnClick="ExportData" Type="AppButtonType.OutlineSecondary">
                 Export Data
             </AppButton>
         </div>
     </section>
     <section class="flex flex-col px-5">
-        <AppButton  @onclick="NavigateToManage">
+        <AppButton  OnClick="NavigateToManage">
             Manage Workouts
         </AppButton>
     </section>
@@ -29,8 +29,8 @@
             <span>Paste Export Below</span>
             <InputTextArea @bind-Value="ImportJson"  />
             <div class="my-2 flex justify-between">
-                <AppButton Type="AppButtonType.Secondary" onclick="CloseImportPopup">Close</AppButton>
-                <AppButton Type="AppButtonType.Primary" onclick="ImportData">Import</AppButton>
+                <AppButton Type="AppButtonType.Secondary" OnClick="CloseImportPopup">Close</AppButton>
+                <AppButton Type="AppButtonType.Primary" OnClick="ImportData">Import</AppButton>
             </div>
         </div>
     </div>

@@ -16,9 +16,9 @@
         var index = context.Index;
     }
     <span class="text-xl">@session.Name</span>
-    <AppButton Type="AppButtonType.OutlineSecondary" onclick=@(() => MoveSessionUp(session))>⬆️</AppButton>
-    <AppButton Type="AppButtonType.OutlineSecondary" onclick=@(() => MoveSessionDown(session))>⬇️</AppButton>
-    <AppButton Type="AppButtonType.OutlineSecondary" onclick=@(() => RemoveSession(session))>🗑️</AppButton>
+    <AppButton Type="AppButtonType.OutlineSecondary" OnClick=@(() => MoveSessionUp(session))>⬆️</AppButton>
+    <AppButton Type="AppButtonType.OutlineSecondary" OnClick=@(() => MoveSessionDown(session))>⬇️</AppButton>
+    <AppButton Type="AppButtonType.OutlineSecondary" OnClick=@(() => RemoveSession(session))>🗑️</AppButton>
     @foreach (var exercise in session.Exercises)
     {
         <div class="flex justify-between w-full">
@@ -29,7 +29,7 @@
 </CardList>
 
 <div class="flex justify-center mt-2">
-    <AppButton Type="AppButtonType.Primary" onclick="AddSession">Add Session</AppButton>
+    <AppButton Type="AppButtonType.Primary" OnClick="AddSession">Add Session</AppButton>
 </div>
 
 @code {
