@@ -1,5 +1,5 @@
 <div>
-    <AppButton Type="AppButtonType.OutlineSecondary" @onclick="OnOpenClick">
+    <AppButton Type="AppButtonType.OutlineSecondary" OnClick="OnOpenClick">
         <WeightFormat Kilograms="Exercise.Kilograms"/>
     </AppButton>
 </div>
@@ -14,14 +14,57 @@
             </div>
             <div class="weight-display-popup-row">
                 <div class="weight-display-weight-increment-buttons-grid">
-                    <AppButton Type=AppButtonType.OutlineSecondary @onclick=OnWeightDecrementClick><WeightFormat Kilograms="-Exercise.Blueprint.KilogramsIncreaseOnSuccess"  /></AppButton>
-                    <AppButton Type=AppButtonType.OutlineSecondary @onclick=OnWeightIncrementClick>+<WeightFormat Kilograms="Exercise.Blueprint.KilogramsIncreaseOnSuccess" /></AppButton>
+                    <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightDecrementClick><WeightFormat Kilograms="-Exercise.Blueprint.KilogramsIncreaseOnSuccess"  /></AppButton>
+                    <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightIncrementClick>+<WeightFormat Kilograms="Exercise.Blueprint.KilogramsIncreaseOnSuccess" /></AppButton>
                 </div>
             </div>
             <div class="weight-display-button-row">
-                <AppButton onclick=OnCloseClick Type=AppButtonType.Secondary>Close</AppButton>
-                <AppButton onclick=OnSaveClick>Save</AppButton>
+                <AppButton OnClick=OnCloseClick Type=AppButtonType.Secondary>Close</AppButton>
+                <AppButton OnClick=OnSaveClick>Save</AppButton>
             </div>
         </div>
     </div>
 </div>
+
+@code {
+  
+
+    [EditorRequired]
+    [Parameter]
+    public RecordedExercise Exercise { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
+    public Action<decimal> UpdateWeightForExercise { get; set; } = null!;
+
+    private bool PopupActive { get; set; }
+
+    private decimal EditorWeight { get; set; }
+
+    private void OnOpenClick()
+    {
+        EditorWeight = Exercise.Kilograms;
+        PopupActive = true;
+    }
+
+    private void OnCloseClick()
+    {
+        PopupActive = false;
+    }
+
+    private void OnSaveClick()
+    {
+        UpdateWeightForExercise(EditorWeight);
+        PopupActive = false;
+    }
+
+    private void OnWeightIncrementClick()
+    {
+        EditorWeight += Exercise.Blueprint.KilogramsIncreaseOnSuccess;
+    }
+
+    private void OnWeightDecrementClick()
+    {
+        EditorWeight -= Exercise.Blueprint.KilogramsIncreaseOnSuccess;
+    }
+}

@@ -2,7 +2,7 @@
 <div class="flex flex-col gap-2">
 @foreach (var item in Items)
 {
-    <Card OnClick=@(() => OnClick?.Invoke(item))>
+    <Card OnClick=@(OnClick != null ? _=> OnClick(item) : null)>
         @ChildContent(item)
     </Card>
 }
@@ -10,6 +10,7 @@
 
 @code
 {
+    [EditorRequired]
     [Parameter]
     public IEnumerable<TItem> Items { get; set; } = null!;
 

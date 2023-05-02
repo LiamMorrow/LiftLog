@@ -3,9 +3,11 @@
 
 @code {
 
+    [EditorRequired]
     [Parameter]
     public Action<TimeSpan> OnRestUpdated { get; set; } = null!;
 
+    [EditorRequired]
     [Parameter]
     public TimeSpan Rest { get; set; }
 

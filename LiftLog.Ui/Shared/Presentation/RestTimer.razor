@@ -12,12 +12,15 @@
 </div>
 
 @code {
+    [EditorRequired]
     [Parameter]
     public Rest Rest { get; set; } = null!;
 
+    [EditorRequired]
     [Parameter]
     public DateTimeOffset StartTime { get; set; }
 
+    [EditorRequired]
     [Parameter]
     public bool Failed { get; set; }
 

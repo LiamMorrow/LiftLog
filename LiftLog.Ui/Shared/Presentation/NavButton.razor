@@ -4,12 +4,15 @@
 
 @code
 {
+    [EditorRequired]
     [Parameter]
     public bool IsActive { get; set; }
 
+    [EditorRequired]
     [Parameter]
     public Action Navigate { get; set; } = null!;
 
+    [EditorRequired]
     [Parameter]
     public RenderFragment ChildContent { get; set; } = null!;
 

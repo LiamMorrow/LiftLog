@@ -8,8 +8,8 @@
 </CardList>
 
 <div class="flex justify-end gap-1 m-1 ">
-    <AppButton onclick=CloseSession Type="AppButtonType.Secondary">Close</AppButton>
-    <AppButton onclick=SaveSession>Save</AppButton>
+    <AppButton OnClick=CloseSession Type="AppButtonType.Secondary">Close</AppButton>
+    <AppButton OnClick=SaveSession>Save</AppButton>
 </div>
 @if (Session.NextExercise is not null && Session.LastExercise?.LastRecordedSet is not null)
 {
@@ -22,18 +22,23 @@
 
 @code {
 
+    [EditorRequired]
     [Parameter]
     public Session Session { get; set; } = null!;
 
+    [EditorRequired]
     [Parameter]
     public Action<int, int> CycleRepcountForExercise { get; set; } = null!;
 
+    [EditorRequired]
     [Parameter]
     public Action<int, decimal> UpdateWeightForExercise { get; set; } = null!;
 
+    [EditorRequired]
     [Parameter]
     public Action SaveSession { get; set; } = null!;
 
+    [EditorRequired]
     [Parameter]
     public Action CloseSession { get; set; } = null!;
 
