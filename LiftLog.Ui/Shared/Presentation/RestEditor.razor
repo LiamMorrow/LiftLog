@@ -1,5 +1,5 @@
-<AppInput Type="text" Inputmode="numeric" Value="@Rest.Minutes" OnChange="OnMinutesChange"/>
-<AppInput Type="text" Inputmode="numeric" Value="@Rest.Seconds" OnChange="OnSecondsChange"/>
+<input type="text" inputmode="numeric" class="w-20 text-center" value="@Rest.Minutes" @onchange="OnMinutesChange"/><span class="self-center text-xl font-bold text-on-secondary-container">:</span>
+<input type="text" inputmode="numeric" class="w-20 text-center" value=@(Rest.Seconds.ToString("00")) @onchange="OnSecondsChange"/>
 
 @code {
 

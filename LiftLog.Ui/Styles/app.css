@@ -2,23 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --color-primary: 244 67 54;
-    --color-on-primary: 255 255 255;
-    --color-secondary: 111 114 185;
-    --color-on-secondary: 0 0 0;
-    --color-secondary-container: 111 114 185;
-    --color-on-secondary-container: 0 0 0;
-    --color-background: 255 255 255;
-    --color-on-background: 0 0 0;
-    --color-surface: 255 255 255;
-    --color-on-surface: 0 0 0;
-    --color-inverse-surface: 255 255 255;
-    --color-inverse-on-surface: 0 0 0;
-    --color-surface-container: 255 255 255;
-    --color-surface-container-low: 255 255 255;
-    --color-outline: 0 0 0;
-    --color-outline-variant: 0 0 0;
-  }
+input[type="text"],
+input[type="number"]{
+  @apply p-2 border-b rounded-sm caret-primary bg-surface-container-highest text-on-surface border-on-surface-variant focus:border-primary focus:outline-none;
 }

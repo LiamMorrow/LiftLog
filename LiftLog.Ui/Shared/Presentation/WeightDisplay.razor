@@ -3,8 +3,8 @@
         <WeightFormat Kilograms="Exercise.Kilograms"/>
     </AppButton>
 </div>
-<div class="weight-display-popup @(PopupActive ? "active" :"")" >
-    <div class="weight-display-popup-content">
+<div class="weight-display-popup @(PopupActive ? "active" :"")" @onclick="() => { PopupActive = false; }" >
+    <div class="weight-display-popup-content text-on-surface bg-surface-container p-6 rounded-card" @onclick:stopPropagation="true">
         <div class="weight-display-popup-body">
             <div class="weight-display-popup-row">
                 <div class="weight-display-popup-label">Weight</div>
