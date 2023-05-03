@@ -151,6 +151,42 @@ public static class Reducers
         );
 
     [ReducerMethod]
+    public static SessionEditorState SetMinRest(
+        SessionEditorState state,
+        SetMinRestAction action
+    ) =>
+        UpdateExerciseIfCan(
+            state,
+            action.ExerciseIndex,
+            blueprint => blueprint with { RestBetweenSets = blueprint.RestBetweenSets with { MinRest = action.Rest } }
+        );
+
+    [ReducerMethod]
+    public static SessionEditorState SetMaxRest(
+        SessionEditorState state,
+        SetMaxRestAction action
+    ) =>
+        UpdateExerciseIfCan(
+            state,
+            action.ExerciseIndex,
+            blueprint => blueprint with { RestBetweenSets = blueprint.RestBetweenSets with { SecondaryRest = action.Rest } }
+        );
+
+    [ReducerMethod]
+    public static SessionEditorState SetFailureRest(
+        SessionEditorState state,
+        SetFailureRestAction action
+    ) =>
+        UpdateExerciseIfCan(
+            state,
+            action.ExerciseIndex,
+            blueprint => blueprint with
+            {
+                RestBetweenSets = blueprint.RestBetweenSets with { FailureRest = action.Rest }
+            }
+        );
+
+    [ReducerMethod]
     public static SessionEditorState IncrementExerciseSets(
         SessionEditorState state,
         IncrementExerciseSetsAction action

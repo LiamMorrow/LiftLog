@@ -15,10 +15,14 @@
         var session = context.Item;
         var index = context.Index;
     }
-    <span class="text-xl">@session.Name</span>
+    <div class="flex justify-between mb-2">
+        <span class="text-xl">@session.Name</span>
+        <div>
     <AppButton Type="AppButtonType.OutlineSecondary" OnClick=@(() => MoveSessionUp(session))>⬆️</AppButton>
     <AppButton Type="AppButtonType.OutlineSecondary" OnClick=@(() => MoveSessionDown(session))>⬇️</AppButton>
-    <AppButton Type="AppButtonType.OutlineSecondary" OnClick=@(() => RemoveSession(session))>🗑️</AppButton>
+            <AppButton Type="AppButtonType.OutlineSecondary" OnClick=@(() => RemoveSession(session))>🗑️</AppButton>
+            </div>
+    </div>
     @foreach (var exercise in session.Exercises)
     {
         <div class="flex justify-between w-full">

@@ -1,7 +1,7 @@
 ﻿@using LiftLog.Ui.Util
-<div class="weighted-exercise">
-  <div class="weighted-exercise-header mb-2">
-    <span class="exercise-header">@RecordedExercise.Blueprint.Name</span>
+<div class="flex flex-col gap-2">
+  <div class="flex justify-between">
+    <span class="text-xl">@RecordedExercise.Blueprint.Name</span>
     <WeightDisplay
         Exercise="RecordedExercise"
         UpdateWeightForExercise="UpdateWeightForExercise"/>

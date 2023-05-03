@@ -24,15 +24,15 @@ public class CurrentSessionEffects
     [EffectMethod]
     public async Task PersistCurrentSession(PersistCurrentSessionAction _, IDispatcher dispatcher)
     {
+        await _notificationService.CancelNextSetNotificationAsync();
         if (_state.Value.Session is not null)
             await _progressStore.SaveCompletedSessionAsync(_state.Value.Session);
-        else
-            await _notificationService.CancelNextSetNotificationAsync();
     }
 
     [EffectMethod]
     public async Task NotifySetTimer(NotifySetTimerAction _, IDispatcher dispatcher)
     {
+        await _notificationService.CancelNextSetNotificationAsync();
         if (_state.Value.Session?.NextExercise is not null)
         {
             await _notificationService.ScheduleNextSetNotificationAsync(
