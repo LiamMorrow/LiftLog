@@ -15,21 +15,23 @@
         var session = context.Item;
         var index = context.Index;
     }
-    <div class="flex justify-between mb-2">
-        <span class="text-xl">@session.Name</span>
-        <div>
-    <AppButton Type="AppButtonType.OutlineSecondary" OnClick=@(() => MoveSessionUp(session))>⬆️</AppButton>
-    <AppButton Type="AppButtonType.OutlineSecondary" OnClick=@(() => MoveSessionDown(session))>⬇️</AppButton>
-            <AppButton Type="AppButtonType.OutlineSecondary" OnClick=@(() => RemoveSession(session))>🗑️</AppButton>
-            </div>
-    </div>
-    @foreach (var exercise in session.Exercises)
-    {
-        <div class="flex justify-between w-full">
-            <span>@exercise.Name</span>
-            <span> @exercise.Sets x @exercise.RepsPerSet</span>
+    <div class="grid grid-cols-[1fr,_min-content] grid-rows-1">
+        <div class="flex flex-col mr-4 justify-between pr-4 border-outline-variant border-r ">
+            <span class="text-xl">@session.Name</span>
+            @foreach (var exercise in session.Exercises)
+            {
+                <div class="flex justify-between w-full">
+                    <span >@exercise.Name</span>
+                    <span> @exercise.Sets x @exercise.RepsPerSet</span>
+                </div>
+            }
         </div>
-    }
+        <div class="flex flex-col justify-around h-min gap-2">
+                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => RemoveSession(session))><span class="material-symbols-outlined">delete</span></AppButton>
+                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => MoveSessionUp(session))><span class="material-symbols-outlined">arrow_upward</span>️</AppButton>
+                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => MoveSessionDown(session))><span class="material-symbols-outlined">arrow_downward</span></AppButton>
+        </div>
+    </div>
 </CardList>
 
 <div class="flex justify-center mt-2">

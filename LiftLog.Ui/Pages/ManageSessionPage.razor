@@ -31,53 +31,55 @@ else
                 var exercise = context.Item;
                 var index = context.Index;
             }
-            <div class="flex justify-between pb-2 mb-4">
-                <input type="text" class="w-6/12 text-xl" value="@exercise.Name" @onchange="@((e) => SetExerciseName(index, e.Value))"/>
-                <div >
-                    <AppButton Type="AppButtonType.OutlineSecondary" OnClick=@(() => MoveExerciseUp(exercise))>⬆️</AppButton>
-                    <AppButton Type="AppButtonType.OutlineSecondary"  OnClick=@(() => MoveExerciseDown(exercise))>⬇️</AppButton>
-                    <AppButton Type="AppButtonType.OutlineSecondary" OnClick=@(() => RemoveExercise(exercise))>🗑️</AppButton>
-                </div>
-            </div>
-            <div class="flex flex-wrap justify-around w-full gap-1">
-                <div class="flex flex-col gap-1">
-                    <div>
-                        <AppButton Type="AppButtonType.Secondary" OnClick=@(() => DecrementExerciseSets(index))>➖</AppButton><span class="inline-block w-20 mx-2 text-center">@exercise.Sets Sets</span><AppButton Type="AppButtonType.Secondary" OnClick=@(() => IncrementExerciseSets(index))>➕</AppButton>
-                    </div>
-                    <div>
-                        <AppButton Type="AppButtonType.Secondary" OnClick=@(() => DecrementExerciseRepsPerSet(index))>➖</AppButton><span class="inline-block w-20 mx-2 text-center">@exercise.RepsPerSet Reps</span><AppButton Type="AppButtonType.Secondary" OnClick=@(() => IncrementExerciseRepsPerSet(index))>➕</AppButton>
-                    </div>
-                </div>
-                <div class="flex flex-col justify-between gap-2">
-                    <label class="text-lg text-center">Initial Weight</label>
-                    <div class="flex justify-center gap-1">
-                        <AppButton Type=AppButtonType.Secondary OnClick=@(() => OnInitialWeightDecrementClick(exercise, index))><WeightFormat Kilograms="-exercise.KilogramsIncreaseOnSuccess"/></AppButton>
-                        <input class="w-20 text-lg text-center" type="text" inputmode="numeric" value=@exercise.InitialKilograms @onchange=@((e) => SetExerciseInitialWeight(index, e.Value))/>
-                        <AppButton Type=AppButtonType.Secondary OnClick=@(() => OnInitialWeightIncrementClick(exercise, index))>+<WeightFormat Kilograms="exercise.KilogramsIncreaseOnSuccess"/></AppButton>
-                    </div>
-                </div>
-                <div class="flex flex-col justify-between gap-2">
-                    <label class="text-lg text-center">Success Weight Increase</label>
-                    <div class="flex justify-center gap-1">
-                        <AppButton Type=AppButtonType.Secondary OnClick=@(() => OnSuccessWeightDecrementClick(exercise, index))><WeightFormat Kilograms="-0.1m"/></AppButton>
-                        <input class="w-20 text-lg text-center" type="text" inputmode="numeric" value=@exercise.KilogramsIncreaseOnSuccess @onchange=@((e) => SetExerciseSuccessWeight(index, e.Value))/>
-                        <AppButton Type=AppButtonType.Secondary OnClick=@(() => OnSuccessWeightIncrementClick(exercise, index))>+<WeightFormat Kilograms="0.1m"/></AppButton>
-                    </div>
-                </div>
-                <div class="flex flex-col justify-between gap-2">
-                    <label class="text-lg text-center">Min Rest</label>
-                    <div class="flex justify-center gap-2">
-                        <RestEditor Rest="exercise.RestBetweenSets.MinRest" OnRestUpdated="rest => OnMinRestUpdated(index, rest)"></RestEditor>
-                    </div>
-                    <label class="text-lg text-center">Max Rest</label>
-                    <div class="flex justify-center gap-2">
-                        <RestEditor Rest="exercise.RestBetweenSets.SecondaryRest" OnRestUpdated="rest => OnMaxRestUpdated(index, rest)"></RestEditor>
-                    </div>
-                    <label class="text-lg text-center">Failure Rest</label>
-                    <div class="flex justify-center gap-2">
-                        <RestEditor Rest="exercise.RestBetweenSets.FailureRest" OnRestUpdated="rest => OnFailureRestUpdated(index, rest)"></RestEditor>
+            <div class="grid grid-cols-[1fr,_min-content] grid-rows-1">
+                <div class="flex flex-col justify-between pr-4 mr-4 border-r border-outline-variant ">
+                    <input type="text" class="w-full mb-2 text-xl" value="@exercise.Name" @onchange="e => SetExerciseName(index, e.Value)"/>
+                    <div class="flex flex-wrap justify-around w-full gap-1">
+                        <div class="flex flex-col gap-1">
+                            <div>
+                                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => DecrementExerciseSets(index))><span class="material-symbols-outlined">remove</span></AppButton><span class="inline-block w-20 mx-2 text-center">@exercise.Sets Sets</span><AppButton Type="AppButtonType.Secondary" OnClick=@(() => IncrementExerciseSets(index))><span class="material-symbols-outlined">add</span></AppButton>
+                            </div>
+                            <div>
+                                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => DecrementExerciseRepsPerSet(index))><span class="material-symbols-outlined">remove</span></AppButton><span class="inline-block w-20 mx-2 text-center">@exercise.RepsPerSet Reps</span><AppButton Type="AppButtonType.Secondary" OnClick=@(() => IncrementExerciseRepsPerSet(index))><span class="material-symbols-outlined">add</span></AppButton>
+                            </div>
+                        </div>
+                        <div class="flex flex-col justify-between gap-2">
+                            <label class="text-lg text-center">Initial Weight</label>
+                            <div class="flex justify-center gap-1">
+                                <AppButton Type=AppButtonType.Secondary OnClick=@(() => OnInitialWeightDecrementClick(exercise, index))><WeightFormat Kilograms="-exercise.KilogramsIncreaseOnSuccess"/></AppButton>
+                                <input class="w-20 text-lg text-center" type="text" inputmode="numeric" value=@exercise.InitialKilograms @onchange=@((e) => SetExerciseInitialWeight(index, e.Value))/>
+                                <AppButton Type=AppButtonType.Secondary OnClick=@(() => OnInitialWeightIncrementClick(exercise, index))>+<WeightFormat Kilograms="exercise.KilogramsIncreaseOnSuccess"/></AppButton>
+                            </div>
+                        </div>
+                        <div class="flex flex-col justify-between gap-2">
+                            <label class="text-lg text-center">Success Weight Increase</label>
+                            <div class="flex justify-center gap-1">
+                                <AppButton Type=AppButtonType.Secondary OnClick=@(() => OnSuccessWeightDecrementClick(exercise, index))><WeightFormat Kilograms="-0.1m"/></AppButton>
+                                <input class="w-20 text-lg text-center" type="text" inputmode="numeric" value=@exercise.KilogramsIncreaseOnSuccess @onchange=@((e) => SetExerciseSuccessWeight(index, e.Value))/>
+                                <AppButton Type=AppButtonType.Secondary OnClick=@(() => OnSuccessWeightIncrementClick(exercise, index))>+<WeightFormat Kilograms="0.1m"/></AppButton>
+                            </div>
+                        </div>
+                        <div class="flex flex-col justify-between gap-2">
+                            <label class="text-lg text-center">Min Rest</label>
+                            <div class="flex justify-center gap-2">
+                                <RestEditor Rest="exercise.RestBetweenSets.MinRest" OnRestUpdated="rest => OnMinRestUpdated(index, rest)"></RestEditor>
+                            </div>
+                            <label class="text-lg text-center">Max Rest</label>
+                            <div class="flex justify-center gap-2">
+                                <RestEditor Rest="exercise.RestBetweenSets.SecondaryRest" OnRestUpdated="rest => OnMaxRestUpdated(index, rest)"></RestEditor>
+                            </div>
+                            <label class="text-lg text-center">Failure Rest</label>
+                            <div class="flex justify-center gap-2">
+                                <RestEditor Rest="exercise.RestBetweenSets.FailureRest" OnRestUpdated="rest => OnFailureRestUpdated(index, rest)"></RestEditor>
+                            </div>
+                        </div>
                     </div>
                 </div>
+        <div class="flex flex-col justify-around gap-2 h-min">
+                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => RemoveExercise(exercise))><span class="material-symbols-outlined">delete</span></AppButton>
+                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => MoveExerciseUp(exercise))><span class="material-symbols-outlined">arrow_upward</span>️</AppButton>
+                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => MoveExerciseDown(exercise))><span class="material-symbols-outlined">arrow_downward</span></AppButton>
+        </div>
             </div>
         </CardList>
     </div>
@@ -85,7 +87,7 @@ else
         <AppButton Type="AppButtonType.Secondary" OnClick=AddExercise>Add Exercise</AppButton>
     </div>
     <div class="sticky bottom-0 flex justify-end w-full pr-4">
-        <AppButton Type="AppButtonType.FloatingPrimary" OnClick=SaveSession><span class="my-2 material-symbols-outlined">save</span></AppButton>
+        <AppButton FullRound="true" Type="AppButtonType.FloatingPrimary" OnClick=SaveSession><span class="my-2 material-symbols-outlined">save</span></AppButton>
     </div>
 }
 @code {

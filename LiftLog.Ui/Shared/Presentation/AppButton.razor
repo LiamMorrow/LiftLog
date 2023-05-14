@@ -2,21 +2,21 @@
 @switch (Type)
 {
     case AppButtonType.FloatingPrimary:
-        <button @onclick:stopPropagation="true" @onclick:preventDefault="true"  class="ripple-on-click px-5 py-2.5 font-medium bg-primary shadow-sm hover:shadow-md transition-all text-on-primary rounded-full text-sm" @onclick="OnClick">
+        <button @onclick:stopPropagation="true" @onclick:preventDefault="true"  class="ripple-on-click px-5 py-2.5 font-medium bg-primary shadow-sm hover:shadow-md transition-all text-on-primary @Rounding text-sm" @onclick="OnClick">
             @ChildContent
         </button>
         break;
     case AppButtonType.Primary:
-        <button @onclick:stopPropagation="true" @onclick:preventDefault="true"  class="ripple-on-click px-5 py-2.5 font-medium bg-primary hover:shadow-sm transition-all text-on-primary rounded-md text-sm" @onclick="OnClick">
+        <button @onclick:stopPropagation="true" @onclick:preventDefault="true"  class="ripple-on-click px-5 py-2.5 font-medium bg-primary hover:shadow-sm transition-all text-on-primary @Rounding text-sm" @onclick="OnClick">
             @ChildContent
         </button>
         break;
     case AppButtonType.Secondary:
-        <button  @onclick:stopPropagation="true" @onclick:preventDefault="true"  class="ripple-on-click px-5 py-2.5 font-medium bg-secondary-container hover:shadow-sm transition-all text-on-secondary-container rounded-md text-sm"  @onclick="OnClick">
+        <button  @onclick:stopPropagation="true" @onclick:preventDefault="true"  class="ripple-on-click px-5 py-2.5 font-medium bg-secondary-container hover:shadow-sm transition-all text-on-secondary-container @Rounding text-sm"  @onclick="OnClick">
             @ChildContent
         </button> break;
     case AppButtonType.OutlineSecondary:
-        <button  @onclick:stopPropagation="true" @onclick:preventDefault="true"  class="ripple-on-click px-5 py-2.5 border border-outline rounded-md bg-surface-container font-medium  text-on-surface hover:bg-surface-container-highest focus:outline-none focus:shadow-none text-sm"  @onclick="OnClick">
+        <button  @onclick:stopPropagation="true" @onclick:preventDefault="true"  class="ripple-on-click px-5 py-2.5 border border-outline @Rounding bg-surface-container font-medium  text-on-surface hover:bg-surface-container-highest focus:outline-none focus:shadow-none text-sm"  @onclick="OnClick">
             @ChildContent
         </button>
         break;
@@ -35,4 +35,9 @@
 
     [Parameter]
     public AppButtonType Type { get; set; } = AppButtonType.Primary;
+    
+    [Parameter]
+    public bool FullRound { get; set; }
+
+    private string Rounding => FullRound ? "rounded-full" : "rounded-md";
 }
