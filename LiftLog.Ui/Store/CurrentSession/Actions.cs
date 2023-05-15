@@ -13,3 +13,5 @@ public record PersistCurrentSessionAction();
 public record RehydrateSessionAction();
 
 public record NotifySetTimerAction();
+
+public record DeleteSessionAction(Session Session);
