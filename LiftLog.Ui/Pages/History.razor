@@ -1,16 +1,49 @@
 ﻿@page "/history"
 @using Fluxor
+@using LiftLog.Ui.Services
 @using LiftLog.Ui.Store.App
+@using LiftLog.Ui.Store.CurrentSession
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
+@inject SessionService SessionService
+@inject NavigationManager NavigationManager
+@inject IState<CurrentSessionState> CurrentSessionState
 @inject IDispatcher Dispatcher
+
+<CardList Items="_latestSessions" OnClick="HandleSessionClick">
+    <SessionSummary IsFilled="true" Session="context"></SessionSummary>
+</CardList>
 
 @code
 {
+
+    private IReadOnlyList<Session> _latestSessions = new List<Session>();
+
+    private void HandleSessionClick(Session session)
+    {
+        if (CurrentSessionState.Value.Session != null)
+        {
+            // TODO - confirm ensure current session is saved
+            Dispatcher.Dispatch(new PersistCurrentSessionAction());
+        }
+        Dispatcher.Dispatch(new SetCurrentSessionAction(session));
+        NavigationManager.NavigateTo("/session");
+    }
     
+    protected override async Task OnInitializedAsync()
+    {
+        Dispatcher.Dispatch(new SetPageTitleAction("Upcoming Workouts"));
+        this._latestSessions = await SessionService
+            .GetLatestSessionsAsync()
+            .ToListAsync();
+        await base.OnInitializedAsync();
+    }
+
+
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("History"));
+        
         base.OnInitialized();
     }
 }

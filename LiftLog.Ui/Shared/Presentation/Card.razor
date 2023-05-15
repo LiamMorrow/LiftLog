@@ -1,18 +1,25 @@
 @inject IJSRuntime JsRuntime
 
-<div 
-     class="p-5 border border-outline-variant rounded-card bg-surface-container-low text-on-surface" 
-     @onclick="HandleOnClick" 
-     >@ChildContent</div>
+<div
+    class="p-5 border @(IsHighlighted ? "border-primary bg-surface-container-high" : "border-outline-variant bg-surface-container-low") rounded-card text-on-surface"
+    @onclick="HandleOnClick">
+    @ChildContent
+</div>
+
 @code {
-  [Parameter]
-  public RenderFragment ChildContent { get; set; } = null!;
 
-  [Parameter]
-  public Action<MouseEventArgs>? OnClick { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = null!;
 
-  private void HandleOnClick(MouseEventArgs args)
-  {
-    OnClick?.Invoke(args);
-  }
+    [Parameter]
+    public Action<MouseEventArgs>? OnClick { get; set; }
+
+    [Parameter]
+    public bool IsHighlighted { get; set; }
+
+    private void HandleOnClick(MouseEventArgs args)
+    {
+        OnClick?.Invoke(args);
+    }
+
 }

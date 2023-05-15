@@ -22,11 +22,15 @@ namespace LiftLog.Ui.Services
             _jsonSerializerOptions.Converters.Add(new TimespanJsonConverter());
         }
 
-        public async ValueTask<List<Session>> GetOrderedSessions()
+        public async IAsyncEnumerable<Session> GetOrderedSessions()
         {
             await InitialiseAsync();
 
-            return _storedSessions.Select(day => day.Value).OrderByDescending(x => x.Date).ToList();
+            foreach (var session in _storedSessions.Select(day => day.Value)
+                         .OrderByDescending(x => x.Date))
+            {
+                yield return session;
+            }
         }
 
         public async ValueTask<Session?> GetCurrentSessionAsync()
@@ -100,10 +104,10 @@ namespace LiftLog.Ui.Services
             Dictionary<ExerciseBlueprint, RecordedExercise>
         > GetLatestRecordedExercisesAsync()
         {
-            return (await GetOrderedSessions())
-                .SelectMany(x => x.RecordedExercises)
+            return await GetOrderedSessions()
+                .SelectMany(x => x.RecordedExercises.ToAsyncEnumerable())
                 .GroupBy(x => x.Blueprint)
-                .ToDictionary(x => x.Key, x => x.First());
+                .ToDictionaryAwaitAsync(x => ValueTask.FromResult(x.Key), x => x.FirstAsync());
         }
 
         private record StorageDao(Session? CurrentSession, List<Session> CompletedSessions);

@@ -18,6 +18,8 @@ public record Session(
                 x.RecordedSets.Any(set => set is not null)
                 && !x.RecordedSets.All(reps => reps is not null)
         );
+
+    public bool IsStarted => RecordedExercises.Any(x => x.RecordedSets.Any(s => s != null));
 }
 
 public record RecordedExercise(

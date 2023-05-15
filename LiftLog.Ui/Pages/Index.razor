@@ -1,7 +1,7 @@
 ﻿@page "/"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
-<CardList Items="_upcomingSessions" OnClick="SelectSession">
-       <SessionSummary Session="@context" ></SessionSummary>
+<CardList Items="_upcomingSessions" OnClick="SelectSession" ShouldHighlight="session => session.IsStarted">
+       <SessionSummary IsFilled="context.IsStarted" Session="context" ></SessionSummary>
 </CardList>
 
 
