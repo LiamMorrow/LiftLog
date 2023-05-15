@@ -11,7 +11,15 @@
 @inject IDispatcher Dispatcher
 
 <CardList Items="_latestSessions" OnClick="HandleSessionClick">
-    <SessionSummary IsFilled="true" Session="context"></SessionSummary>
+    <div class="grid grid-cols-[1fr,_min-content] grid-rows-1">
+        <div class="mr-4 pr-4 border-outline-variant border-r ">
+            <SessionSummary IsFilled="true" Session="context"></SessionSummary>
+        </div>
+
+        <div class="flex flex-col justify-around h-min gap-2">
+            <AppButton Type="AppButtonType.Secondary" OnClick=@(() => DeleteSession(context))><span class="material-symbols-outlined">delete</span>️</AppButton>
+        </div>
+    </div>
 </CardList>
 
 @code
@@ -19,31 +27,31 @@
 
     private IReadOnlyList<Session> _latestSessions = new List<Session>();
 
+    private async void DeleteSession(Session session)
+    {
+        Dispatcher.Dispatch(new DeleteSessionAction(session));
+        this._latestSessions = await SessionService
+            .GetLatestSessionsAsync()
+            .ToListAsync();
+    }
+
     private void HandleSessionClick(Session session)
     {
         if (CurrentSessionState.Value.Session != null)
         {
-            // TODO - confirm ensure current session is saved
+    // TODO - confirm ensure current session is saved
             Dispatcher.Dispatch(new PersistCurrentSessionAction());
         }
         Dispatcher.Dispatch(new SetCurrentSessionAction(session));
         NavigationManager.NavigateTo("/session");
     }
-    
+
     protected override async Task OnInitializedAsync()
     {
-        Dispatcher.Dispatch(new SetPageTitleAction("Upcoming Workouts"));
+        Dispatcher.Dispatch(new SetPageTitleAction("History"));
         this._latestSessions = await SessionService
             .GetLatestSessionsAsync()
             .ToListAsync();
         await base.OnInitializedAsync();
-    }
-
-
-    protected override void OnInitialized()
-    {
-        Dispatcher.Dispatch(new SetPageTitleAction("History"));
-        
-        base.OnInitialized();
     }
 }

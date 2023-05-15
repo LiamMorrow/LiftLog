@@ -40,4 +40,10 @@ public class CurrentSessionEffects
             );
         }
     }
+
+    [EffectMethod]
+    public async Task DeleteSession(DeleteSessionAction action, IDispatcher dispatcher)
+    {
+        await _progressStore.DeleteSessionAsync(action.Session);
+    }
 }

@@ -61,6 +61,12 @@ namespace LiftLog.Ui.Services
             return PersistAsync();
         }
 
+        public ValueTask DeleteSessionAsync(Session session)
+        {
+            _storedSessions.Remove(session.Id, out _);
+            return PersistAsync();
+        }
+
         public ValueTask ClearCurrentSessionAsync()
         {
             _currentSession = null;

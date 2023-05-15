@@ -2,6 +2,7 @@
 @using LiftLog.Ui.Store.App
 @using LiftLog.Ui.Store.Program
 @using LiftLog.Ui.Store.SessionEditor
+@using System.Text.RegularExpressions
 
 @page "/settings/manage-workouts"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
@@ -10,7 +11,7 @@
 @inject NavigationManager NavigationManager
 @inject IDispatcher Dispatcher
 
-<CardList Items="ProgramState.Value.SessionBlueprints.IndexedTuples()" OnClick="(item)=>SelectSession(item.Item, item.Index)">
+<CardList Items="ProgramState.Value.SessionBlueprints.IndexedTuples()" OnClick="(item) => SelectSession(item.Item, item.Index)">
     @{
         var session = context.Item;
         var index = context.Index;
@@ -27,9 +28,23 @@
             }
         </div>
         <div class="flex flex-col justify-around h-min gap-2">
-                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => RemoveSession(session))><span class="material-symbols-outlined">delete</span></AppButton>
-                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => MoveSessionUp(session))><span class="material-symbols-outlined">arrow_upward</span>️</AppButton>
-                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => MoveSessionDown(session))><span class="material-symbols-outlined">arrow_downward</span></AppButton>
+            <AppButton Type="AppButtonType.Secondary" OnClick=@(() => MoveSessionUp(session))><span class="material-symbols-outlined">arrow_upward</span>️</AppButton>
+            <AppButton Type="AppButtonType.Secondary" OnClick=@(() => MoveSessionDown(session))>
+                <span class="material-symbols-outlined">arrow_downward</span>
+            </AppButton>
+            <AppButton Type="AppButtonType.Secondary" OnClick=@(() => OverflowSession(index))>
+                <div class="relative">
+                    <span class="material-symbols-outlined">more_horiz</span>
+                    <div class="@(index == _overFlowedSessionIndex ? "" : "hidden")">
+                        <div class="fixed top-0 bottom-0 left-0 right-0" @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick="() => _overFlowedSessionIndex = null"></div>
+                        <ul @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick="() => _overFlowedSessionIndex = null" class="absolute top-0 right-0 bg-surface-container text-on-surface px-2 py-2 rounded-md shadow-md flex flex-col text-left gap-2">
+                            <li @onclick="() => RemoveSession(session)" class="flex gap-2 py-2"><span class="material-symbols-outlined">delete</span>Remove</li>
+                            <li @onclick="() => DuplicateSession(session)" class="flex gap-2 py-2"><span class="material-symbols-outlined">content_copy</span>Duplicate</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </AppButton>
         </div>
     </div>
 </CardList>
@@ -40,11 +55,18 @@
 
 @code {
 
+    private int? _overFlowedSessionIndex;
+
     void MoveSessionUp(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new MoveSessionBlueprintUpInProgramAction(sessionBlueprint));
 
     void MoveSessionDown(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new MoveSessionBlueprintDownInProgramAction(sessionBlueprint));
 
     void RemoveSession(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new RemoveSessionFromProgramAction(sessionBlueprint));
+
+    void OverflowSession(int index)
+    {
+        _overFlowedSessionIndex = index;
+    }
 
     void BackToSettings() => NavigationManager.NavigateTo("/settings");
 
@@ -58,9 +80,17 @@
         new AddProgramSessionAction(
             new SessionBlueprint($"Session {ProgramState.Value.SessionBlueprints.Count + 1}", new ImmutableListSequence<ExerciseBlueprint>())));
 
+    void DuplicateSession(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(
+        new AddProgramSessionAction(
+            sessionBlueprint with {
+                Name = $"Session {ProgramState.Value.SessionBlueprints.Count + 1}"}
+            )
+        );
+
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Manage Workouts"));
         base.OnInitialized();
     }
+
 }
