@@ -1,4 +1,11 @@
-<span class="text-xl">@Session.Blueprint.Name</span>
+<div class="flex justify-between mb-4">
+    <span class="text-xl">@Session.Blueprint.Name</span>
+    @if (IsFilled)
+    {
+        <span class="text-lg">@Session.Date.ToString("M")</span>   
+    }
+</div>
+
 @foreach (var exercise in Session.RecordedExercises)
 {
     <div class="flex justify-between w-full">
@@ -12,4 +19,7 @@
     [EditorRequired]
     [Parameter]
     public Session Session { get; set; } = null!;
+    
+    [Parameter]
+    public bool IsFilled { get; set; }
 }

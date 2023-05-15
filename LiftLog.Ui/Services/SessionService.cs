@@ -32,7 +32,7 @@ public class SessionService
             yield return currentSession;
 
         var latestSession =
-            currentSession ?? (await _progressStore.GetOrderedSessions()).FirstOrDefault();
+            currentSession ?? await _progressStore.GetOrderedSessions().FirstOrDefaultAsync();
         if (latestSession == null)
         {
             latestSession = CreateNewSession(sessionBluePrints[0], latestRecordedExercises);
@@ -49,6 +49,12 @@ public class SessionService
             );
             yield return latestSession;
         }
+    }
+    
+    
+    public  IAsyncEnumerable<Session> GetLatestSessionsAsync()
+    {
+        return _progressStore.GetOrderedSessions();
     }
 
     private Session GetNextSession(
@@ -93,4 +99,5 @@ public class SessionService
             DateTimeOffset.Now
         );
     }
+
 }

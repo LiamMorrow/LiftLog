@@ -2,7 +2,7 @@
 <div class="flex flex-col gap-2">
 @foreach (var item in Items)
 {
-    <Card OnClick=@(OnClick != null ? _=> OnClick(item) : null)>
+    <Card IsHighlighted="ShouldHighlight?.Invoke(item) ?? false" OnClick=@(OnClick != null ? _=> OnClick(item) : null)>
         @ChildContent(item)
     </Card>
 }
@@ -19,4 +19,7 @@
 
     [Parameter]
     public Action<TItem>? OnClick { get; set; }
+    
+    [Parameter]
+    public Func<TItem, bool>? ShouldHighlight { get; set; }
 }

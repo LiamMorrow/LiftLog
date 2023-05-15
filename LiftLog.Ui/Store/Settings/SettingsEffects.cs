@@ -38,7 +38,7 @@ public class SettingsEffects
     [EffectMethod]
     public async Task ExportData(ExportDataAction _, IDispatcher __)
     {
-        var sessions = await _progressStore.GetOrderedSessions();
+        var sessions = await _progressStore.GetOrderedSessions().ToListAsync();
         var program = await _programStore.GetSessionsInProgramAsync();
 
         await _textExporter.ExportTextAsync(
