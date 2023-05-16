@@ -23,7 +23,8 @@ input[type="number"]{
   line-height: 1;
   letter-spacing: normal;
   text-transform: none;
-  display: block;
+  display: inline-block;
+  vertical-align:bottom;
   white-space: nowrap;
   word-wrap: normal;
   direction: ltr;

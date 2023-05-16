@@ -29,9 +29,7 @@
         </div>
         <div class="flex flex-col justify-around h-min gap-2">
             <AppButton Type="AppButtonType.Secondary" OnClick=@(() => MoveSessionUp(session))><span class="material-symbols-outlined">arrow_upward</span>️</AppButton>
-            <AppButton Type="AppButtonType.Secondary" OnClick=@(() => MoveSessionDown(session))>
-                <span class="material-symbols-outlined">arrow_downward</span>
-            </AppButton>
+            <AppButton Type="AppButtonType.Secondary" OnClick=@(() => MoveSessionDown(session))><span class="material-symbols-outlined">arrow_downward</span></AppButton>
             <AppButton Type="AppButtonType.Secondary" OnClick=@(() => OverflowSession(index))>
                 <div class="relative">
                     <span class="material-symbols-outlined">more_horiz</span>
