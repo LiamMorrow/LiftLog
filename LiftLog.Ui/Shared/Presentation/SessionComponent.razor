@@ -6,8 +6,8 @@
                       CycleRepCountForSet=CycleRepCountForExerciseSet(context.Index)
                       UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index) />
 </CardList>
-
-    <div class="sticky my-2 bottom-0 flex justify-end w-full pr-4">
+<div class="sticky bottom-0 flex flex-col">
+    <div class=" mt-2 mb-4 flex justify-end w-full pr-4">
         <AppButton FullRound="true" Type="AppButtonType.FloatingPrimary" OnClick=SaveSession><span class="my-2 material-symbols-outlined">save</span></AppButton>
     </div>
 @if (Session.NextExercise is not null && Session.LastExercise?.LastRecordedSet is not null)
@@ -18,7 +18,7 @@
         StartTime=Session.LastExercise.LastRecordedSet.CompletionTime
         Failed=lastSetFailed/>
 }
-
+</div>
 @code {
 
     [EditorRequired]
