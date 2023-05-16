@@ -29,18 +29,18 @@
         </div>
         <div class="flex flex-col justify-around h-min gap-2">
             <AppButton Type="AppButtonType.Secondary" OnClick=@(() => MoveSessionUp(session))><span class="material-symbols-outlined">arrow_upward</span>️</AppButton>
-            <AppButton Type="AppButtonType.Secondary" OnClick=@(() => MoveSessionDown(session))><span class="material-symbols-outlined">arrow_downward</span></AppButton>
+            <AppButton Type="AppButtonType.Secondary" OnClick=@(() => MoveSessionDown(session))>
+                <span class="material-symbols-outlined">arrow_downward</span>
+            </AppButton>
             <AppButton Type="AppButtonType.Secondary" OnClick=@(() => OverflowSession(index))>
                 <div class="relative">
                     <span class="material-symbols-outlined">more_horiz</span>
-                    <div class="@(index == _overFlowedSessionIndex ? "" : "hidden")">
-                        <div class="fixed top-0 bottom-0 left-0 right-0" @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick="() => _overFlowedSessionIndex = null"></div>
-                        <ul @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick="() => _overFlowedSessionIndex = null" class="absolute top-0 right-0 bg-surface-container text-on-surface px-2 py-2 rounded-md shadow-md flex flex-col text-left gap-2">
-                            <li @onclick="() => RemoveSession(session)" class="flex gap-2 py-2"><span class="material-symbols-outlined">delete</span>Remove</li>
-                            <li @onclick="() => DuplicateSession(session)" class="flex gap-2 py-2"><span class="material-symbols-outlined">content_copy</span>Duplicate</li>
-                        </ul>
-                    </div>
-
+                    <div class="fixed cursor-default @(index == _overFlowedSessionIndex ? "right-0 top-0 bottom-0 left-0" : "")" @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick="() => _overFlowedSessionIndex = null"></div>
+                    <ul @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick="() => _overFlowedSessionIndex = null"
+                        class="absolute top-0 right-0 bg-surface-container text-on-surface px-2 py-2 rounded-md shadow-md flex flex-col text-left gap-2 transition-all origin-top-right @GetOverflowStyle(index)">
+                        <li @onclick="() => RemoveSession(session)" class="flex gap-2 py-2"><span class="material-symbols-outlined">delete</span>Remove</li>
+                        <li @onclick="() => DuplicateSession(session)" class="flex gap-2 py-2"><span class="material-symbols-outlined">content_copy</span>Duplicate</li>
+                    </ul>
                 </div>
             </AppButton>
         </div>
@@ -84,6 +84,10 @@
                 Name = $"Session {ProgramState.Value.SessionBlueprints.Count + 1}"}
             )
         );
+
+    string GetOverflowStyle(int index) => _overFlowedSessionIndex == index
+        ? "scale-100"
+        : "scale-0";
 
     protected override void OnInitialized()
     {
