@@ -1,10 +1,10 @@
 @using System.Text.RegularExpressions
 @implements IDisposable
 @inject NavigationManager NavigationManager
-<nav class="flex justify-around bg-surface-container text-on-surface">
-   <NavButton IsActive=@IsRouteMatch("/settings(/?.*)") Navigate="NavigateToSettings">Settings</NavButton>
-   <NavButton IsActive=@IsRouteMatch("(/$|^$|/session/?)") Navigate="NavigateToWorkout">Workout</NavButton>
-   <NavButton IsActive=@IsRouteMatch("/history(/?.*)") Navigate="NavigateToHistory">History</NavButton>
+<nav class="flex justify-around bg-surface-container text-on-surface pt-2 pb-3">
+   <NavButton IsActive=@IsRouteMatch("/settings(/?.*)") Navigate="NavigateToSettings" Icon="settings" Text="Settings"></NavButton>
+   <NavButton IsActive=@IsRouteMatch("(/$|^$|/session/?)") Navigate="NavigateToWorkout" Icon="fitness_center" Text="Workout"></NavButton>
+   <NavButton IsActive=@IsRouteMatch("/history(/?.*)") Navigate="NavigateToHistory" Icon="history" Text="History" ></NavButton>
 </nav>
 @code {
 

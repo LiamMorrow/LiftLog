@@ -1,6 +1,4 @@
-<div class="transition-all ease-in-out">
-    <button class="self-end flex-1 my-4 rounded-full p-2 text-on-surface @ClassForActiveRoute" @onclick="Navigate">@ChildContent</button>
-</div>
+<button class="flex flex-col items-center" @onclick="Navigate"><span class="transition-all bg-[length:200px_100px] material-symbols-outlined w-16 py-1 rounded-full @ClassForActiveRouteIcon">@Icon</span><span class="@ClassForActiveRouteText">@Text</span></button>
 
 @code
 {
@@ -11,13 +9,23 @@
     [EditorRequired]
     [Parameter]
     public Action Navigate { get; set; } = null!;
-
+    
+    
     [EditorRequired]
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = null!;
+    public string Text { get; set; } = null!;
+    
+    [EditorRequired]
+    [Parameter]
+    public string Icon { get; set; } = null!;
 
-    private string ClassForActiveRoute => IsActive
-        ? "bg-secondary-container"
-        : "";
+
+    private string ClassForActiveRouteIcon => IsActive
+        ? "bg-secondary-container text-on-secondary-container"
+        : "text-on-surface-variant";
+    
+    private string ClassForActiveRouteText => IsActive
+        ? "text-on-surface"
+        : "text-on-surface-variant";
 
 }
