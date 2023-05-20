@@ -14,10 +14,10 @@
 
   <ItemGroup>
     <PackageReference Include="MaterialColorUtilities" Version="0.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.3" />
-    <PackageReference Include="Fluxor" Version="5.7.0" />
-    <PackageReference Include="Fluxor.Blazor.Web" Version="5.7.0" />
-    <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="5.7.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.5" />
+    <PackageReference Include="Fluxor" Version="5.8.0" />
+    <PackageReference Include="Fluxor.Blazor.Web" Version="5.8.0" />
+    <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="5.8.0" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
   </ItemGroup>
 
