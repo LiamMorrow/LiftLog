@@ -64,7 +64,7 @@ public static class MauiProgram
         builder.Services.AddScoped<IProgramStore, KeyValueProgramStore>();
         builder.Services.AddScoped<IProgressStore, KeyValueProgressStore>();
         builder.Services.AddSingleton<IKeyValueStore, SecureStorageKeyValueStore>();
-        builder.Services.AddScoped<INotificationService, MauiNotificationService>();
+        builder.Services.AddSingleton<INotificationService, MauiNotificationService>();
         builder.Services.AddScoped<ITextExporter, MauiShareTextExporter>();
 
         builder.Services.AddSingleton<IThemeProvider, AppThemeProvider>();
