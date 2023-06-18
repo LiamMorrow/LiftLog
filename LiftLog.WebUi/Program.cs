@@ -32,6 +32,8 @@ builder.Services.AddScoped<IProgressStore, KeyValueProgressStore>();
 builder.Services.AddScoped<IProgramStore, KeyValueProgramStore>();
 builder.Services.AddScoped<SessionService>();
 
+builder.Services.AddSingleton<IAiWorkoutPlanner, GptAiWorkoutPlanner>();
+
 builder.Services.AddSingleton<IThemeProvider, WebThemeProvider>();
 
 builder.Services.AddNotifications();

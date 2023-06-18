@@ -2,11 +2,12 @@
 
 <h2 class="text-2xl">How old are you?</h2>
 <div class="overflow-hidden">
-    <ol @ref=_scrollContainer @onscroll="OnScroll" class="h-full overflow-auto text-5xl snap-mandatory snap-y"  style="mask:linear-gradient(rgba(0, 0, 0, 0) 5%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 95%, rgba(0, 0, 0, 0) 0)">
+    <ol @ref=_scrollContainer @onscroll="OnScroll" class="w-full h-full overflow-auto text-5xl select-none snap-mandatory snap-y"  style="mask:linear-gradient(rgba(0, 0, 0, 0) 5%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 95%, rgba(0, 0, 0, 0) 0)">
         <div class="h-[45%]"></div>
         @for (var age = 12; age <= 120; age ++)
         {
-            <li class="snap-center transition-transform @(_age==age ? "text-primary scale-110":"")" data-age="@age">@age</li>
+            var ageString = age.ToString();
+            <li @onclick="()=>OnClick(ageString)" class="snap-center transition-transform @(_age==age ? "text-primary scale-110":"")" data-age="@age">@age</li>
         }
         <div class="h-[45%]"></div>
     </ol>
@@ -24,6 +25,11 @@
         _age = int.Parse(await Js.InvokeAsync<string>("AppUtils.getMiddleElementAttribute", _scrollContainer, "data-age"));
         OnAgeSelect(_age);
         StateHasChanged();
+    }
+
+    private async Task OnClick(string age)
+    {
+        await Js.InvokeVoidAsync("AppUtils.scrollElementToMiddle", $"[data-age='{age}']");
     }
 
 }
