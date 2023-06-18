@@ -24,5 +24,11 @@ AppUtils.setMiddleElementAttribute = function (element, attribute, value) {
     elementAtMiddle?.setAttribute(attribute, value);
 }
 
-AppUtils.createRipple = function (element, event) {
+
+AppUtils.scrollElementToMiddle = function (elementSelector) {
+    document.querySelector(elementSelector).scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'center'
+    });
 }

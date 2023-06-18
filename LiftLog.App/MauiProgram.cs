@@ -67,6 +67,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<INotificationService, MauiNotificationService>();
         builder.Services.AddScoped<ITextExporter, MauiShareTextExporter>();
 
+        builder.Services.AddSingleton<IAiWorkoutPlanner, GptAiWorkoutPlanner>();
+
         builder.Services.AddSingleton<IThemeProvider, AppThemeProvider>();
 
         builder.Services.AddSingleton(Share.Default);

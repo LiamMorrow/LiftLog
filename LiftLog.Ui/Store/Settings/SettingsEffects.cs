@@ -77,8 +77,22 @@ public class SettingsEffects
     [EffectMethod]
     public async Task GenerateAiPlan(GenerateAiPlanAction action, IDispatcher dispatcher)
     {
-        var program = await aiWorkoutPlanner.GenerateWorkoutPlanAsync(action.Attributes);
-        dispatcher.Dispatch(new SetProgramSessionsAction(program));
+        dispatcher.Dispatch(new SetAiPlanAttributesAction(action.Attributes));
+        dispatcher.Dispatch(new SetIsGeneratingAiPlanAction(true));
+        dispatcher.Dispatch(new SetAiPlanErrorAction(null));
+        try
+        {
+            var program = await aiWorkoutPlanner.GenerateWorkoutPlanAsync(action.Attributes);
+            dispatcher.Dispatch(new SetAiPlanAction(program));
+        }
+        catch (Exception ex)
+        {
+            dispatcher.Dispatch(new SetAiPlanErrorAction(ex.Message));
+        }
+        finally
+        {
+            dispatcher.Dispatch(new SetIsGeneratingAiPlanAction(false));
+        }
     }
 
     private record SerializedData(
