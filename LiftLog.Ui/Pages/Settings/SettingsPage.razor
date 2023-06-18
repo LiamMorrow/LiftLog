@@ -5,9 +5,9 @@
 @using LiftLog.Ui.Store.Settings
 @inject NavigationManager NavigationManager
 @inject IDispatcher Dispatcher
-<div class="flex flex-col p-2 h-full overflow-auto bg-surface text-on-surface">
-    <section class="flex flex-col px-5 py-2 my-2">
-        <span class="text-lg text-center mb-4">Data Management</span>
+<div class="flex flex-col h-full gap-4 p-2 overflow-auto bg-surface text-on-surface">
+    <section class="flex flex-col px-5">
+        <span class="mb-4 text-lg text-center">Data Management</span>
         <div class="flex justify-around">
             <AppButton OnClick="OpenImportPopup" Type="AppButtonType.OutlineSecondary">
                 Import Data
@@ -18,8 +18,15 @@
         </div>
     </section>
     <section class="flex flex-col px-5">
-        <AppButton  OnClick="NavigateToManage">
+        <AppButton  OnClick="NavigateToManage" >
+            <span class="align-middle material-symbols-outlined">construction</span>
             Manage Workouts
+        </AppButton>
+    </section>
+    <section class="flex flex-col px-5">
+        <AppButton Type="AppButtonType.Secondary" OnClick="NavigateToAiPlanner">
+            <span class="align-middle material-symbols-outlined">auto_awesome</span>
+            AI Planner
         </AppButton>
     </section>
 </div>
@@ -28,7 +35,7 @@
         <div class="flex flex-col">
             <span>Paste Export Below</span>
             <InputTextArea @bind-Value="ImportJson"  />
-            <div class="my-2 flex justify-between">
+            <div class="flex justify-between my-2">
                 <AppButton Type="AppButtonType.Secondary" OnClick="CloseImportPopup">Close</AppButton>
                 <AppButton Type="AppButtonType.Primary" OnClick="ImportData">Import</AppButton>
             </div>
@@ -43,16 +50,21 @@
 
     private string ImportJson { get; set; } = "";
 
-    
+
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Settings"));
         base.OnInitialized();
     }
-    
+
     private void NavigateToManage()
     {
         NavigationManager.NavigateTo("/settings/manage-workouts");
+    }
+
+    private void NavigateToAiPlanner()
+    {
+        NavigationManager.NavigateTo("/settings/ai-planner");
     }
 
     private void OpenImportPopup()
