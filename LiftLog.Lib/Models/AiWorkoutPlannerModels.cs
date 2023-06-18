@@ -21,7 +21,5 @@ public record AiWorkoutAttributes(
     string WeightRange,
     int Age,
     int DaysPerWeek,
-    string Goals,
-    Experience Experience,
-    string Equipment,
-    string Injuries);
+    ImmutableListSequence<string> Goals,
+    Experience Experience);

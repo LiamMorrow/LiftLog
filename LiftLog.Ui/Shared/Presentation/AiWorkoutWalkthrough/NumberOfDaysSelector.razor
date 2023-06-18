@@ -1,0 +1,33 @@
+<div class="flex flex-col justify-around h-full">
+  <h2 class="text-2xl">How many days per week?</h2>
+  <div  class="grid grid-cols-3 gap-4 px-4" >
+    <AppButton FullSquare="true" Type="AppButtonType.OutlineSecondary" OnClick="()=>OnNumberOfDaysSelect(1)">
+        <div class="flex flex-col gap-2"><span class="text-lg">One</span></div>
+    </AppButton>
+    <AppButton FullSquare="true" Type="AppButtonType.OutlineSecondary" OnClick="()=>OnNumberOfDaysSelect(2)">
+        <div class="flex flex-col gap-2"><span class="text-lg">Two</span></div>
+    </AppButton>
+    <AppButton FullSquare="true" Type="AppButtonType.OutlineSecondary" OnClick="()=>OnNumberOfDaysSelect(3)">
+        <div class="flex flex-col gap-2"><span class="text-lg">Three</span></div>
+    </AppButton>
+    <AppButton FullSquare="true" Type="AppButtonType.OutlineSecondary" OnClick="()=>OnNumberOfDaysSelect(4)">
+        <div class="flex flex-col gap-2"><span class="text-lg">Four</span></div>
+    </AppButton>
+    <AppButton FullSquare="true" Type="AppButtonType.OutlineSecondary" OnClick="()=>OnNumberOfDaysSelect(5)">
+        <div class="flex flex-col gap-2"><span class="text-lg">Five</span></div>
+    </AppButton>
+    <AppButton FullSquare="true" Type="AppButtonType.OutlineSecondary" OnClick="()=>OnNumberOfDaysSelect(6)">
+        <div class="flex flex-col gap-2"><span class="text-lg">Six</span></div>
+    </AppButton>
+    <div></div>
+    <AppButton FullSquare="true" Type="AppButtonType.OutlineSecondary" OnClick="()=>OnNumberOfDaysSelect(7)">
+        <div class="flex flex-col gap-2"><span class="text-lg">Seven</span></div>
+    </AppButton>
+  </div>
+</div>
+
+@code {
+    [EditorRequired]
+    [Parameter]
+    public Action<int> OnNumberOfDaysSelect { get; set; } = null!;
+}
