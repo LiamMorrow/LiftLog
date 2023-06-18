@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 **/app.min.css
+/LiftLog.Ui/wwwroot/bundle.js

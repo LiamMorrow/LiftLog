@@ -1,0 +1,55 @@
+<div class="flex flex-col justify-between h-full text-on-surface">
+    @switch (step)
+    {
+        case 1:
+          <GenderSelector OnGenderSelect="OnGenderSelect" />
+            break;
+        case 2:
+          <WeightSelector OnWeightSelect="OnWeightSelect" />
+            break;
+        case 3:
+          <AgeSelector OnAgeSelect="OnAgeSelect" />
+            break;
+    }
+    @if (step is not 1)
+    {
+      <div class="flex justify-between p-4">
+        <AppButton Type="AppButtonType.Secondary" OnClick="()=>{step--;}"
+          ><span class="material-symbols-outlined">arrow_left</span></AppButton
+        >
+        <span class="self-center">Step @step of 3</span>
+        <AppButton Type="AppButtonType.Secondary" OnClick="()=>{step++;}"
+          ><span class="material-symbols-outlined">arrow_right</span></AppButton
+        >
+      </div>
+    }
+</div>
+
+@code {
+    private int step = 1;
+    private AiWorkoutAttributes attributes = new AiWorkoutAttributes(Gender.PreferNotToSay,"", 0, 0, "", Experience.Beginner, "", "");
+    [Parameter][EditorRequired] public Action<AiWorkoutAttributes> OnAttributesSelected { get; set; } = null!;
+
+        private void OnNext(){
+            if(step is 3){
+                OnAttributesSelected(attributes);
+                return;
+            }
+        }
+
+    private void OnGenderSelect(Gender gender)
+    {
+        step = 2;
+        attributes = attributes with { Gender = gender };
+        StateHasChanged();
+    }
+    private void OnWeightSelect(string weightRange)
+    {
+        attributes = attributes with { WeightRange = weightRange };
+    }
+
+    private void OnAgeSelect(int age)
+    {
+        attributes = attributes with { Age = age };
+    }
+}

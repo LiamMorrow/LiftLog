@@ -1,10 +1,8 @@
 {
-  "content": [
-    "../**/*.{razor,html,cshtml}"
-  ],
+  "content": ["../**/*.{razor,html,cshtml}"],
   "theme": {
     "//": "This has come from running withMT https://github.com/creativetimofficial/material-tailwind",
-    "boxShadow":{
+    "boxShadow": {
       "sm": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
       "DEFAULT": "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
       "md": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
@@ -33,6 +31,10 @@
         "on-secondary": "rgb(var(--color-on-secondary) / <alpha-value>)",
         "secondary-container": "rgb(var(--color-secondary-container) / <alpha-value>)",
         "on-secondary-container": "rgb(var(--color-on-secondary-container) / <alpha-value>)",
+        "tertiary": "rgb(var(--color-tertiary) / <alpha-value>)",
+        "on-tertiary": "rgb(var(--color-on-tertiary) / <alpha-value>)",
+        "tertiary-container": "rgb(var(--color-tertiary-container) / <alpha-value>)",
+        "on-tertiary-container": "rgb(var(--color-on-tertiary-container) / <alpha-value>)",
         "background": "rgb(var(--color-background) / <alpha-value>)",
         "on-background": "rgb(var(--color-on-background) / <alpha-value>)",
         "surface": "rgb(var(--color-surface) / <alpha-value>)",

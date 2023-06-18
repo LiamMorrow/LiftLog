@@ -1,0 +1,23 @@
+<div class="flex flex-col justify-around h-full">
+  <h2 class="text-2xl">What is your gender?</h2>
+  <div  class="grid grid-cols-2 grid-rows-2 gap-4 px-4" >
+    <AppButton FullSquare="true" Type="AppButtonType.OutlineSecondary" OnClick="()=>OnGenderSelect(Gender.Female)">
+        <div class="flex flex-col gap-2"><span class="text-4xl material-symbols-outlined">female</span><span class="text-lg">Female</span></div>
+    </AppButton>
+    <AppButton FullSquare="true" Type="AppButtonType.OutlineSecondary" OnClick="()=>OnGenderSelect(Gender.Male)">
+        <div class="flex flex-col gap-2"><span class="text-4xl material-symbols-outlined">male</span><span class="text-lg">Male</span></div>
+    </AppButton>
+    <AppButton FullSquare="true" Type="AppButtonType.OutlineSecondary" OnClick="()=>OnGenderSelect(Gender.Other)">
+        <div class="flex flex-col gap-2"><span class="text-4xl material-symbols-outlined">transgender</span><span class="text-lg">Other</span></div>
+    </AppButton>
+    <AppButton FullSquare="true" Type="AppButtonType.OutlineSecondary" OnClick="()=>OnGenderSelect(Gender.PreferNotToSay)">
+        <div class="flex flex-col gap-2"><span class="text-4xl material-symbols-outlined">horizontal_rule</span><span class="text-lg">Prefer Not To Say</span></div>
+    </AppButton>
+  </div>
+</div>
+
+@code {
+    [EditorRequired]
+    [Parameter]
+    public Action<Gender> OnGenderSelect { get; set; } = null!;
+}

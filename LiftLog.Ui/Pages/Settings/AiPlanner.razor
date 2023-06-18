@@ -1,0 +1,18 @@
+@page "/settings/ai-planner"
+@using Fluxor
+@using LiftLog.Ui.Services
+@using LiftLog.Ui.Store.App
+@using LiftLog.Ui.Store.Settings
+@inject NavigationManager NavigationManager
+@inject IDispatcher Dispatcher
+
+<AiWorkoutWalkthrough OnAttributesSelected="_=>{}"></AiWorkoutWalkthrough>
+
+@code{
+    protected override void OnInitialized()
+    {
+        Dispatcher.Dispatch(new SetPageTitleAction("AI Planner"));
+        base.OnInitialized();
+    }
+
+}

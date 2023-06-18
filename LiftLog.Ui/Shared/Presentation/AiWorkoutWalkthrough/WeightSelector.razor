@@ -1,0 +1,30 @@
+@inject IJSRuntime Js
+
+<h2 class="text-2xl">How many kilograms do you weigh?</h2>
+<div class="overflow-hidden">
+    <ol @ref=_scrollContainer @onscroll="OnScroll" class="h-full overflow-auto text-5xl snap-mandatory snap-y"  style="mask:linear-gradient(rgba(0, 0, 0, 0) 5%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 95%, rgba(0, 0, 0, 0) 0)">
+        <div class="h-[45%]"></div>
+        @for (var weight = 20m; weight < 300; weight += 5)
+        {
+            var weightRange = $"{weight}-{weight + 5}";
+            <li class="snap-center transition-transform  @(_weightRange==weightRange ? "text-primary scale-110":"")" data-weight="@weightRange">@weightRange</li>
+        }
+        <div class="h-[45%]"></div>
+    </ol>
+</div>
+@code {
+
+
+    [Parameter][EditorRequired] public Action<string> OnWeightSelect { get; set; } = null!;
+    private string _weightRange = "20-25";
+
+    private ElementReference _scrollContainer;
+
+    private async void OnScroll()
+    {
+        _weightRange = await Js.InvokeAsync<string>("AppUtils.getMiddleElementAttribute", _scrollContainer, "data-weight");
+        OnWeightSelect(_weightRange);
+        StateHasChanged();
+    }
+
+}
