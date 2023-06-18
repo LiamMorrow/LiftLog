@@ -6,7 +6,7 @@
 @inject NavigationManager NavigationManager
 @inject IDispatcher Dispatcher
 
-<AiWorkoutWalkthrough OnAttributesSelected="_=>{}"></AiWorkoutWalkthrough>
+<AiWorkoutWalkthrough OnAttributesSelected="attributes=>Dispatcher.Dispatch(new GenerateAiPlanAction(attributes))"></AiWorkoutWalkthrough>
 
 @code{
     protected override void OnInitialized()

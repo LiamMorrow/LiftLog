@@ -17,6 +17,7 @@ public class SettingsEffects
     private readonly IProgressStore _progressStore;
     private readonly IProgramStore _programStore;
     private readonly ITextExporter _textExporter;
+    private readonly IAiWorkoutPlanner aiWorkoutPlanner;
     private readonly ILogger<SettingsEffects> _logger;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
@@ -24,12 +25,14 @@ public class SettingsEffects
         IProgressStore progressStore,
         IProgramStore programStore,
         ITextExporter textExporter,
+        IAiWorkoutPlanner aiWorkoutPlanner,
         ILogger<SettingsEffects> logger
     )
     {
         _progressStore = progressStore;
         _programStore = programStore;
         _textExporter = textExporter;
+        this.aiWorkoutPlanner = aiWorkoutPlanner;
         _logger = logger;
         _jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerOptions.Default);
         _jsonSerializerOptions.Converters.Add(new TimespanJsonConverter());
@@ -69,6 +72,13 @@ public class SettingsEffects
         {
             _logger.LogError(ex, "Error importing");
         }
+    }
+
+    [EffectMethod]
+    public async Task GenerateAiPlan(GenerateAiPlanAction action, IDispatcher dispatcher)
+    {
+        var program = await aiWorkoutPlanner.GenerateWorkoutPlanAsync(action.Attributes);
+        dispatcher.Dispatch(new SetProgramSessionsAction(program));
     }
 
     private record SerializedData(
