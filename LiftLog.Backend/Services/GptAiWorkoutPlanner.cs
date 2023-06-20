@@ -1,14 +1,10 @@
+namespace LiftLog.Backend.Services;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
-using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
 using OpenAI;
 using OpenAI.Chat;
-using OpenAI.Models;
-
-namespace LiftLog.Backend.Services;
 
 public class GptAiWorkoutPlanner : IAiWorkoutPlanner
 {
@@ -23,15 +19,16 @@ public class GptAiWorkoutPlanner : IAiWorkoutPlanner
         var jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerOptions.Default);
         jsonSerializerOptions.Converters.Add(new TimespanJsonConverter());
 
-        string GenderText = attributes.Gender switch
+        var genderText = attributes.Gender switch
         {
             Gender.Male => " male",
             Gender.Female => " female",
             Gender.Other => " with a gender other than male or female",
+            Gender.PreferNotToSay => "",
             _ => ""
         };
 
-        string GoalsText = String.Join(" and ", attributes.Goals);
+        var goalsText = string.Join(" and ", attributes.Goals);
 
         var functions = new List<Function>
 {
@@ -140,7 +137,7 @@ public class GptAiWorkoutPlanner : IAiWorkoutPlanner
         {
             new Message(Role.System, "You only cater to requests to create gym plans."),
             new Message(Role.User, $"""
-            I am a {attributes.Age} year old {GenderText} who weighs {attributes.WeightRange} kilograms. I would like to work on {GoalsText}.
+            I am a {attributes.Age} year old {genderText} who weighs {attributes.WeightRange} kilograms. I would like to work on {goalsText}.
             I would like to work out {attributes.DaysPerWeek} days per week.
             My skill level with weight training is {attributes.Experience}.
             Please make me a workout plan.

@@ -31,7 +31,7 @@ public partial class TimespanJsonConverter : JsonConverter<TimeSpan>
         if (RegexForHumanReadable().IsMatch(s))
         {
             var match = RegexForExtractingHumanReadable().Match(s);
-            var number = int.Parse(match.Groups[1].Value);
+            var number = double.Parse(match.Groups[1].Value);
             var unit = match.Groups[2].Value;
             return unit switch
             {
@@ -55,8 +55,8 @@ public partial class TimespanJsonConverter : JsonConverter<TimeSpan>
         writer.WriteStringValue(timespanFormatted);
     }
 
-    [GeneratedRegex("^\\d+\\s\\w+$")]
+    [GeneratedRegex(@"^\d?\.?\d+\s\w+$")]
     private static partial Regex RegexForHumanReadable();
-    [GeneratedRegex("^(\\d+)\\s(\\w+)$")]
+    [GeneratedRegex(@"^(\d?\.?\d+)\s(\w+)$")]
     private static partial Regex RegexForExtractingHumanReadable();
 }
