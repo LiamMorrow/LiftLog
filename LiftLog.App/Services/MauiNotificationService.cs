@@ -27,7 +27,7 @@ public class MauiNotificationService : INotificationService
             { LastRecordedSet: not null }
                 => exercise.LastRecordedSet?.RepsCompleted == exercise.Blueprint.RepsPerSet
                     ? exercise.Blueprint.RestBetweenSets.MinRest
-                    : exercise.Blueprint.RestBetweenSets.Failure,
+                    : exercise.Blueprint.RestBetweenSets.FailureRest,
             _ => TimeSpan.Zero,
         };
         if (rest != TimeSpan.Zero)

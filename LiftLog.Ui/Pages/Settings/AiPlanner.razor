@@ -2,6 +2,7 @@
 @using Fluxor
 @using LiftLog.Ui.Services
 @using LiftLog.Ui.Store.App
+@using LiftLog.Ui.Store.Program
 @using LiftLog.Ui.Store.Settings
 @using System.Text.Json
 
@@ -26,12 +27,18 @@
     <CardList Items="SettingsState.Value.AiPlan.Sessions">
         <SessionBlueprintSummary SessionBlueprint="context" />
     </CardList>
-    <AppButton OnClick="()=>Dispatcher.Dispatch(new GenerateAiPlanAction(SettingsState.Value.AiWorkoutAttributes!))" ><span class="material-symbols-outlined">refresh</span>Regenerate</AppButton>
-
+        <div class="flex justify-around">
+            <AppButton OnClick="()=>Dispatcher.Dispatch(new GenerateAiPlanAction(SettingsState.Value.AiWorkoutAttributes!))" ><span class="material-symbols-outlined">refresh</span>Regenerate</AppButton>
+            <AppButton OnClick="()=>AcceptAiPlan(SettingsState.Value.AiPlan)" ><span class="material-symbols-outlined">done</span>Accept</AppButton>
+        </div>
 } else if( SettingsState.Value.AiPlanError != null)
 {
-    <p class="text-on-surface">@SettingsState.Value.AiPlanError</p>
-    <AppButton OnClick="()=>Dispatcher.Dispatch(new GenerateAiPlanAction(SettingsState.Value.AiWorkoutAttributes!))" ><span class="material-symbols-outlined">refresh</span>Regenerate</AppButton>
+    <div class="flex flex-col gap-2">
+        <p class="text-on-surface">@SettingsState.Value.AiPlanError</p>
+        <div class="flex justify-around">
+            <AppButton OnClick="()=>Dispatcher.Dispatch(new GenerateAiPlanAction(SettingsState.Value.AiWorkoutAttributes!))" ><span class="material-symbols-outlined">refresh</span>Retry</AppButton>
+        </div>
+    </div>
 }else
 {
     <AiWorkoutWalkthrough OnAttributesSelected="attributes=>Dispatcher.Dispatch(new GenerateAiPlanAction(attributes))"></AiWorkoutWalkthrough>
@@ -44,4 +51,8 @@
         base.OnInitialized();
     }
 
+    private void AcceptAiPlan(AiWorkoutPlan plan){
+        Dispatcher.Dispatch(new SetProgramSessionsAction(plan.Sessions));
+        NavigationManager.NavigateTo("/");
+    }
 }
