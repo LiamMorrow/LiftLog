@@ -9,7 +9,7 @@ public record ImportDataAction(string DataJson);
 
 public record GenerateAiPlanAction(AiWorkoutAttributes Attributes);
 
-public record SetAiPlanAction(ImmutableListSequence<SessionBlueprint>? SessionBlueprints);
+public record SetAiPlanAction(AiWorkoutPlan? Plan);
 
 public record SetAiPlanAttributesAction(AiWorkoutAttributes? Attributes);
 

@@ -7,4 +7,4 @@ public record SettingsState(
     AiWorkoutAttributes? AiWorkoutAttributes,
     bool IsGeneratingAiPlan,
     string? AiPlanError,
-    ImmutableListSequence<SessionBlueprint>? AiPlan);
+    AiWorkoutPlan? AiPlan);

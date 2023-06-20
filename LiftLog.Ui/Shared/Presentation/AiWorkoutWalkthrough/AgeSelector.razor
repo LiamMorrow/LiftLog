@@ -7,7 +7,7 @@
         @for (var age = 12; age <= 120; age ++)
         {
             var ageString = age.ToString();
-            <li @onclick="()=>OnClick(ageString)" class="snap-center transition-transform @(_age==age ? "text-primary scale-110":"")" data-age="@age">@age</li>
+            <li @onclick="()=>OnClick(ageString)" class="snap-center @(_age==age ? "text-primary":"")" data-age="@age">@age</li>
         }
         <div class="h-[45%]"></div>
     </ol>

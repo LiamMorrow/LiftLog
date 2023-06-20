@@ -3,6 +3,7 @@
 @using LiftLog.Ui.Services
 @using LiftLog.Ui.Store.App
 @using LiftLog.Ui.Store.Settings
+@using System.Text.Json
 
 @page "/settings/ai-planner"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
@@ -19,12 +20,21 @@
     </svg>
     <span class="sr-only">Loading...</span>
 </div>
-}else if(SettingsState.Value.AiPlan != null){
-}else if( SettingsState.Value.AiPlanError != null){
-    <p>@SettingsState.Value.AiPlanError</p>
-}else{
+} else if(SettingsState.Value.AiPlan != null)
+{
+    <p class="text-on-surface">@SettingsState.Value.AiPlan.Description</p>
+    <CardList Items="SettingsState.Value.AiPlan.Sessions">
+        <SessionBlueprintSummary SessionBlueprint="context" />
+    </CardList>
+    <AppButton OnClick="()=>Dispatcher.Dispatch(new GenerateAiPlanAction(SettingsState.Value.AiWorkoutAttributes!))" ><span class="material-symbols-outlined">refresh</span>Regenerate</AppButton>
 
-<AiWorkoutWalkthrough OnAttributesSelected="attributes=>Dispatcher.Dispatch(new GenerateAiPlanAction(attributes))"></AiWorkoutWalkthrough>
+} else if( SettingsState.Value.AiPlanError != null)
+{
+    <p class="text-on-surface">@SettingsState.Value.AiPlanError</p>
+    <AppButton OnClick="()=>Dispatcher.Dispatch(new GenerateAiPlanAction(SettingsState.Value.AiWorkoutAttributes!))" ><span class="material-symbols-outlined">refresh</span>Regenerate</AppButton>
+}else
+{
+    <AiWorkoutWalkthrough OnAttributesSelected="attributes=>Dispatcher.Dispatch(new GenerateAiPlanAction(attributes))"></AiWorkoutWalkthrough>
 }
 
 @code{
