@@ -23,3 +23,9 @@ public record AiWorkoutAttributes(
     int DaysPerWeek,
     ImmutableListSequence<string> Goals,
     Experience Experience);
+
+
+public record AiWorkoutPlan(
+    string Description,
+    ImmutableListSequence<SessionBlueprint> Sessions
+);

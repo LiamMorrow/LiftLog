@@ -9,6 +9,7 @@ using LiftLog.Ui.Store.Program;
 using MaterialColorUtilities.Maui;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
+using LiftLog.Backend.Services;
 using INotificationService = LiftLog.Lib.Services.INotificationService;
 
 namespace LiftLog.App;

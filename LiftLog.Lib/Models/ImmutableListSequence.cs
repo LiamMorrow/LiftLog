@@ -5,6 +5,13 @@ using LiftLog.Lib.Serialization;
 
 namespace LiftLog.Lib
 {
+    public static class ImmutableListSequence
+    {
+        public static ImmutableListSequence<T> Of<T>(params T[] items)
+        {
+            return new ImmutableListSequence<T>(items.ToImmutableList());
+        }
+    }
     /**
   * An implementation of immutable list with value semantics.
   */

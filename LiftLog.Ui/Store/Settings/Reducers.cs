@@ -22,7 +22,7 @@ public static class SettingsReducers
     public static SettingsState SetAiPlan(
         SettingsState state,
         SetAiPlanAction action
-    ) => state with { AiPlan = action.SessionBlueprints };
+    ) => state with { AiPlan = action.Plan };
 
     [ReducerMethod]
     public static SettingsState SetAiPlanAttributes(

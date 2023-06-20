@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Text.Json;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
+using LiftLog.Lib.Serialization;
 using LiftLog.Lib.Store;
 using LiftLog.Ui.Util;
 

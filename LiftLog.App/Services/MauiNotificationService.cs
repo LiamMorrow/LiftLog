@@ -1,9 +1,9 @@
 using System.Diagnostics.Metrics;
 using LiftLog.Lib.Models;
-using INotificationService = LiftLog.Lib.Services.INotificationService;
-using ILocalNotificationService = Plugin.LocalNotification.INotificationService;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
+using ILocalNotificationService = Plugin.LocalNotification.INotificationService;
+using INotificationService = LiftLog.Lib.Services.INotificationService;
 
 namespace LiftLog.App.Services;
 
@@ -27,7 +27,7 @@ public class MauiNotificationService : INotificationService
             { LastRecordedSet: not null }
                 => exercise.LastRecordedSet?.RepsCompleted == exercise.Blueprint.RepsPerSet
                     ? exercise.Blueprint.RestBetweenSets.MinRest
-                    : exercise.Blueprint.RestBetweenSets.FailureRest,
+                    : exercise.Blueprint.RestBetweenSets.Failure,
             _ => TimeSpan.Zero,
         };
         if (rest != TimeSpan.Zero)
