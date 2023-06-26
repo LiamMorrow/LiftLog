@@ -4,6 +4,7 @@ using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
 using LiftLog.Lib.Store;
+using LiftLog.Ui.Models.SessionBlueprintDao;
 using LiftLog.Ui.Util;
 
 namespace LiftLog.Ui.Services;
@@ -55,9 +56,10 @@ public class KeyValueProgramStore : IProgramStore
     {
         await InitialiseAsync();
         _sessions = sessions.ToImmutableList();
+        await _keyValueStore.SetItemAsync($"{StorageKey}-Version", "1");
         await _keyValueStore.SetItemAsync(
             StorageKey,
-            JsonSerializer.Serialize(new StorageDao(_sessions), JsonSerializerSettings.LiftLog)
+            JsonSerializer.Serialize(SessionBlueprintContainerDaoV1.FromModel(_sessions), JsonSerializerSettings.LiftLog)
         );
     }
 
@@ -65,16 +67,23 @@ public class KeyValueProgramStore : IProgramStore
     {
         if (!_initialised)
         {
-            // TODO fix race
+            var version = await _keyValueStore.GetItemAsync($"{StorageKey}-Version");
+            if (version is null)
+            {
+                version = "1";
+                await _keyValueStore.SetItemAsync($"{StorageKey}-Version", "1");
+            }
             var storedDataJson = await _keyValueStore.GetItemAsync(StorageKey);
-            var storedData = JsonSerializer.Deserialize<StorageDao?>(
-                storedDataJson ?? "null",
-                JsonSerializerSettings.LiftLog
-            );
-            _sessions = storedData?.SessionBlueprints ?? _defaultSessionBlueprints;
+            var storedData = version switch
+            {
+                "1" => JsonSerializer.Deserialize<SessionBlueprintContainerDaoV1?>(
+                    storedDataJson ?? "null",
+                    JsonSerializerSettings.LiftLog
+                )?.ToModel(),
+                _ => throw new Exception($"Unknown version {version} of {StorageKey}"),
+            };
+            _sessions = storedData ?? _defaultSessionBlueprints;
             _initialised = true;
         }
     }
-
-    private record StorageDao(ImmutableListSequence<SessionBlueprint> SessionBlueprints);
 }
