@@ -2,16 +2,16 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": ".NET Meteor Debugger",
-      "type": "dotnet-meteor.debugger",
-      "request": "launch",
-      "preLaunchTask": "dotnet-meteor: Build"
-    },
-    {
       "name": "Launch and Debug Standalone Blazor WebAssembly App",
       "type": "blazorwasm",
       "request": "launch",
       "cwd": "${workspaceFolder}/LiftLog.WebUi"
+    },
+    {
+      "name": "Attach to .NET Functions",
+      "type": "coreclr",
+      "request": "attach",
+      "processId": "${command:azureFunctions.pickProcess}"
     }
   ]
 }

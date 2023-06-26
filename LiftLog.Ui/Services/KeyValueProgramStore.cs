@@ -13,7 +13,6 @@ public class KeyValueProgramStore : IProgramStore
     private const string StorageKey = "Program";
     private bool _initialised;
     private readonly IKeyValueStore _keyValueStore;
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     private ImmutableListSequence<SessionBlueprint> _sessions =
         ImmutableList.Create<SessionBlueprint>();
@@ -44,8 +43,6 @@ public class KeyValueProgramStore : IProgramStore
     public KeyValueProgramStore(IKeyValueStore keyValueStore)
     {
         _keyValueStore = keyValueStore;
-        _jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerOptions.Default);
-        _jsonSerializerOptions.Converters.Add(new TimespanJsonConverter());
     }
 
     public async ValueTask<ImmutableListSequence<SessionBlueprint>> GetSessionsInProgramAsync()
@@ -60,7 +57,7 @@ public class KeyValueProgramStore : IProgramStore
         _sessions = sessions.ToImmutableList();
         await _keyValueStore.SetItemAsync(
             StorageKey,
-            JsonSerializer.Serialize(new StorageDao(_sessions), _jsonSerializerOptions)
+            JsonSerializer.Serialize(new StorageDao(_sessions), JsonSerializerSettings.LiftLog)
         );
     }
 
@@ -72,7 +69,7 @@ public class KeyValueProgramStore : IProgramStore
             var storedDataJson = await _keyValueStore.GetItemAsync(StorageKey);
             var storedData = JsonSerializer.Deserialize<StorageDao?>(
                 storedDataJson ?? "null",
-                _jsonSerializerOptions
+                JsonSerializerSettings.LiftLog
             );
             _sessions = storedData?.SessionBlueprints ?? _defaultSessionBlueprints;
             _initialised = true;

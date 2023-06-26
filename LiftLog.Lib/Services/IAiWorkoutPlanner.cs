@@ -1,7 +1,7 @@
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 
-namespace LiftLog.Backend.Services;
+namespace LiftLog.Lib.Services;
 
 public interface IAiWorkoutPlanner
 {

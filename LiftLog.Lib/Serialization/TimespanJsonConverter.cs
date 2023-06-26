@@ -22,7 +22,7 @@ public partial class TimespanJsonConverter : JsonConverter<TimeSpan>
         JsonSerializerOptions options
     )
     {
-        var s = reader.GetString();
+        var s = reader.GetString()?.Trim();
         if (string.IsNullOrWhiteSpace(s))
         {
             return TimeSpan.Zero;
