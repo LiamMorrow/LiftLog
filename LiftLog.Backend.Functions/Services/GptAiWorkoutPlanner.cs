@@ -102,7 +102,7 @@ public class GptAiWorkoutPlanner : IAiWorkoutPlanner
                                             {
                                                 ["type"] = "object",
                                                 ["description"] = "The rest time to use for the exercise.",
-                                                ["required"]= new JsonArray{"MinRest","SecondaryRest", "FailureRest"},
+                                                ["required"]= new JsonArray{"MinRest","MaxRest", "FailureRest"},
                                                 ["properties"] = new JsonObject
                                                 {
                                                     ["MinRest"] = new JsonObject
@@ -111,7 +111,7 @@ public class GptAiWorkoutPlanner : IAiWorkoutPlanner
                                                         ["type"] = "string",
                                                         ["description"] = "The minimum rest time to use for the exercise on successful completion of all reps."
                                                     },
-                                                    ["SecondaryRest"] = new JsonObject
+                                                    ["MaxRest"] = new JsonObject
                                                     {
                                                         ["format"] = "duration",
                                                         ["type"] = "string",
@@ -121,7 +121,7 @@ public class GptAiWorkoutPlanner : IAiWorkoutPlanner
                                                     {
                                                         ["format"] = "duration",
                                                         ["type"] = "string",
-                                                        ["description"] = "The rest time to use for the exercise on failure to complete all reps in the set."
+                                                        ["description"] = "The rest time to use for the exercise on failure to complete all reps in the set.  This must always be greater or equal to MaxRest."
                                                     }
                                                 }
                                             }

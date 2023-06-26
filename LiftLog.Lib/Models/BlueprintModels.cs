@@ -24,5 +24,5 @@
         }
     }
 
-    public record Rest(TimeSpan MinRest, TimeSpan SecondaryRest, TimeSpan FailureRest);
+    public record Rest(TimeSpan MinRest, TimeSpan MaxRest, TimeSpan FailureRest);
 }
