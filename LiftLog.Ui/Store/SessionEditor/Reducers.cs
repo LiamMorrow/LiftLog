@@ -169,7 +169,7 @@ public static class Reducers
         UpdateExerciseIfCan(
             state,
             action.ExerciseIndex,
-            blueprint => blueprint with { RestBetweenSets = blueprint.RestBetweenSets with { SecondaryRest = action.Rest } }
+            blueprint => blueprint with { RestBetweenSets = blueprint.RestBetweenSets with { MaxRest = action.Rest } }
         );
 
     [ReducerMethod]

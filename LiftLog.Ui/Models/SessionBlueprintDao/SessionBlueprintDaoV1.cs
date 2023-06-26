@@ -78,7 +78,7 @@ internal record RestDaoV1(
     internal static RestDaoV1 FromModel(Lib.Models.Rest restBetweenSets)
         => new(
             restBetweenSets.MinRest,
-            restBetweenSets.SecondaryRest,
+            restBetweenSets.MaxRest,
             restBetweenSets.FailureRest
         );
 

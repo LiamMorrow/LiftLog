@@ -50,13 +50,13 @@
                 "RestBetweenSets": {
                   "type": "object",
                   "description": "The rest time to use for the exercise.",
-                  "required": ["MinRest", "SecondaryRest", "FailureRest"],
+                  "required": ["MinRest", "MaxRest", "FailureRest"],
                   "properties": {
                     "MinRest": {
                       "type": "string",
                       "description": "The minimum rest time to use for the exercise on successful completion of all reps. It must be expressed ISO-8601 format"
                     },
-                    "SecondaryRest": {
+                    "MaxRest": {
                       "type": "string",
                       "description": "The maximum rest time to use for the exercise on successful completion of all reps. It must be expressed ISO-8601 format"
                     },

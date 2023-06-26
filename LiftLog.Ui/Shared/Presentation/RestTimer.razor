@@ -6,7 +6,7 @@
     else
     {
 
-        <span>Rest between <span class="font-bold">@(Rest.MinRest.ToString(TimespanFormatStr))</span> and <span class="font-bold">@(Rest.SecondaryRest.ToString(TimespanFormatStr))</span></span>
+        <span>Rest between <span class="font-bold">@(Rest.MinRest.ToString(TimespanFormatStr))</span> and <span class="font-bold">@(Rest.MaxRest.ToString(TimespanFormatStr))</span></span>
     }
     <span class="font-bold">@(TimeSinceStart.ToString(TimespanFormatStr))</span>
 </div>
@@ -29,8 +29,8 @@
     private string InstructionsText =>
         Failed
         ? $"Rest {Rest.FailureRest:m\\:ss}."
-        : Rest.MinRest == Rest.SecondaryRest
+        : Rest.MinRest == Rest.MaxRest
             ? $"Rest {Rest.MinRest:m:ss}"
-            : $"Rest between {Rest.MinRest:m\\:ss} and {Rest.SecondaryRest:m\\:ss}";
+            : $"Rest between {Rest.MinRest:m\\:ss} and {Rest.MaxRest:m\\:ss}";
 
 }
