@@ -1,5 +1,6 @@
 namespace LiftLog.Backend.Services;
 
+using LiftLog.Lib.Services;
 using Microsoft.Extensions.DependencyInjection;
 using OpenAI;
 

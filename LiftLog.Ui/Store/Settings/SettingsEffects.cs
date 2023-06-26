@@ -6,6 +6,7 @@ using LiftLog.Backend.Services;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
+using LiftLog.Lib.Services;
 using LiftLog.Lib.Store;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.Program;
@@ -21,7 +22,6 @@ public class SettingsEffects
     private readonly ITextExporter _textExporter;
     private readonly IAiWorkoutPlanner aiWorkoutPlanner;
     private readonly ILogger<SettingsEffects> _logger;
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     public SettingsEffects(
         IProgressStore progressStore,
@@ -36,8 +36,6 @@ public class SettingsEffects
         _textExporter = textExporter;
         this.aiWorkoutPlanner = aiWorkoutPlanner;
         _logger = logger;
-        _jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerOptions.Default);
-        _jsonSerializerOptions.Converters.Add(new TimespanJsonConverter());
     }
 
     [EffectMethod]
@@ -47,7 +45,7 @@ public class SettingsEffects
         var program = await _programStore.GetSessionsInProgramAsync();
 
         await _textExporter.ExportTextAsync(
-            JsonSerializer.Serialize(new SerializedData(sessions, program), _jsonSerializerOptions)
+            JsonSerializer.Serialize(new SerializedData(sessions, program), JsonSerializerSettings.LiftLog)
         );
     }
 
@@ -58,7 +56,7 @@ public class SettingsEffects
         {
             var deserialized = JsonSerializer.Deserialize<SerializedData>(
                 action.DataJson,
-                _jsonSerializerOptions
+                JsonSerializerSettings.LiftLog
             );
             if (deserialized != null)
             {

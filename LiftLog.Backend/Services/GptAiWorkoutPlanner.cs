@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
+using LiftLog.Lib.Services;
 using OpenAI;
 using OpenAI.Chat;
 
@@ -16,8 +17,6 @@ public class GptAiWorkoutPlanner : IAiWorkoutPlanner
     }
     public async Task<AiWorkoutPlan> GenerateWorkoutPlanAsync(AiWorkoutAttributes attributes)
     {
-        var jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerOptions.Default);
-        jsonSerializerOptions.Converters.Add(new TimespanJsonConverter());
 
         var genderText = attributes.Gender switch
         {
@@ -108,18 +107,21 @@ public class GptAiWorkoutPlanner : IAiWorkoutPlanner
                                                 {
                                                     ["MinRest"] = new JsonObject
                                                     {
+                                                        ["format"] = "duration",
                                                         ["type"] = "string",
-                                                        ["description"] = "The minimum rest time to use for the exercise on successful completion of all reps. It must be expressed ISO-8601 format"
+                                                        ["description"] = "The minimum rest time to use for the exercise on successful completion of all reps."
                                                     },
                                                     ["SecondaryRest"] = new JsonObject
                                                     {
+                                                        ["format"] = "duration",
                                                         ["type"] = "string",
-                                                        ["description"] = "The maximum rest time to use for the exercise on successful completion of all reps. It must be expressed ISO-8601 format"
+                                                        ["description"] = "The maximum rest time to use for the exercise on successful completion of all reps. This must be equal or greater to MinRest."
                                                     },
                                                     ["FailureRest"] = new JsonObject
                                                     {
+                                                        ["format"] = "duration",
                                                         ["type"] = "string",
-                                                        ["description"] = "The rest time to use for the exercise on failure to complete all reps in the set. It must be expressed ISO-8601 format"
+                                                        ["description"] = "The rest time to use for the exercise on failure to complete all reps in the set."
                                                     }
                                                 }
                                             }
@@ -147,7 +149,7 @@ public class GptAiWorkoutPlanner : IAiWorkoutPlanner
         var result = await openAiClient.ChatEndpoint.GetCompletionAsync(chatRequest);
         try
         {
-            return JsonSerializer.Deserialize<AiWorkoutPlan>(result.FirstChoice.Message.Function.Arguments.ToString(), jsonSerializerOptions)!;
+            return JsonSerializer.Deserialize<AiWorkoutPlan>(result.FirstChoice.Message.Function.Arguments.ToString(), JsonSerializerSettings.LiftLog)!;
         }
         catch (Exception e)
         {
