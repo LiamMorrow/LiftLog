@@ -25,7 +25,6 @@
     <Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LiftLog.Backend\LiftLog.Backend.csproj" />
     <ProjectReference Include="..\LiftLog.Lib\LiftLog.Lib.csproj" />
   </ItemGroup>
 </Project>

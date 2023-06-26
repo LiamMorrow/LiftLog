@@ -10,7 +10,7 @@ using LiftLog.Ui.Store.CurrentSession;
 using LiftLog.Ui.Store.Program;
 using LiftLog.WebUi.Services;
 using INotificationService = LiftLog.Lib.Services.INotificationService;
-using LiftLog.Backend.Services;
+using LiftLog.Lib.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<ThemedWebApplication>("#app");
@@ -33,7 +33,7 @@ builder.Services.AddScoped<IProgressStore, KeyValueProgressStore>();
 builder.Services.AddScoped<IProgramStore, KeyValueProgramStore>();
 builder.Services.AddScoped<SessionService>();
 
-builder.Services.RegisterGptAiWorkoutPlanner("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");
+builder.Services.AddSingleton<IAiWorkoutPlanner, ApiBasedAiWorkoutPlanner>();
 
 builder.Services.AddSingleton<IThemeProvider, WebThemeProvider>();
 
