@@ -1,9 +1,9 @@
 using System.Diagnostics.Metrics;
 using LiftLog.Lib.Models;
-using INotificationService = LiftLog.Lib.Services.INotificationService;
-using ILocalNotificationService = Plugin.LocalNotification.INotificationService;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
+using ILocalNotificationService = Plugin.LocalNotification.INotificationService;
+using INotificationService = LiftLog.Lib.Services.INotificationService;
 
 namespace LiftLog.App.Services;
 

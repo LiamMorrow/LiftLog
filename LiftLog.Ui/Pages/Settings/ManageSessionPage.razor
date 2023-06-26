@@ -62,15 +62,15 @@ else
                         <div class="flex flex-col justify-between gap-2">
                             <label class="text-lg text-center">Min Rest</label>
                             <div class="flex justify-center gap-2">
-                                <RestEditor Rest="exercise.RestBetweenSets.MinRest" OnRestUpdated="rest => OnMinRestUpdated(index, rest)"></RestEditor>
+                                <RestEditor Rest="exercise.RestBetweenSets.MinRest" OnRestUpdated="rest => OnMinUpdated(index, rest)"></RestEditor>
                             </div>
                             <label class="text-lg text-center">Max Rest</label>
                             <div class="flex justify-center gap-2">
-                                <RestEditor Rest="exercise.RestBetweenSets.SecondaryRest" OnRestUpdated="rest => OnMaxRestUpdated(index, rest)"></RestEditor>
+                                <RestEditor Rest="exercise.RestBetweenSets.SecondaryRest" OnRestUpdated="rest => OnMaxUpdated(index, rest)"></RestEditor>
                             </div>
                             <label class="text-lg text-center">Failure Rest</label>
                             <div class="flex justify-center gap-2">
-                                <RestEditor Rest="exercise.RestBetweenSets.FailureRest" OnRestUpdated="rest => OnFailureRestUpdated(index, rest)"></RestEditor>
+                                <RestEditor Rest="exercise.RestBetweenSets.FailureRest" OnRestUpdated="rest => OnFailureUpdated(index, rest)"></RestEditor>
                             </div>
                         </div>
                     </div>
@@ -166,9 +166,9 @@ else
     void OnSuccessWeightDecrementClick(ExerciseBlueprint exerciseBlueprint, int index)
         => Dispatcher.Dispatch(new SetExerciseKilogramsIncreaseOnSuccessAction(index, exerciseBlueprint.KilogramsIncreaseOnSuccess - 0.1m));
 
-    void OnMinRestUpdated(int exerciseIndex, TimeSpan rest) => Dispatcher.Dispatch(new SetMinRestAction(exerciseIndex, rest));
-    void OnMaxRestUpdated(int exerciseIndex, TimeSpan rest) => Dispatcher.Dispatch(new SetMaxRestAction(exerciseIndex, rest));
-    void OnFailureRestUpdated(int exerciseIndex, TimeSpan rest) => Dispatcher.Dispatch(new SetFailureRestAction(exerciseIndex, rest));
+    void OnMinUpdated(int exerciseIndex, TimeSpan rest) => Dispatcher.Dispatch(new SetMinAction(exerciseIndex, rest));
+    void OnMaxUpdated(int exerciseIndex, TimeSpan rest) => Dispatcher.Dispatch(new SetMaxAction(exerciseIndex, rest));
+    void OnFailureUpdated(int exerciseIndex, TimeSpan rest) => Dispatcher.Dispatch(new SetFailureAction(exerciseIndex, rest));
 
     protected override void OnInitialized()
     {

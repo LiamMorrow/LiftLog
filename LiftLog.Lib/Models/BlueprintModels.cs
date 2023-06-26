@@ -13,7 +13,7 @@
     {
         public virtual bool Equals(ExerciseBlueprint? other)
         {
-            if (ReferenceEquals(null, other)) return false;
+            if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
             return Name == other.Name && Sets == other.Sets && RepsPerSet == other.RepsPerSet;
         }

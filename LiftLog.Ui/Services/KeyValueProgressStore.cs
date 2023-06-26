@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
 using LiftLog.Lib.Models;
+using LiftLog.Lib.Serialization;
 using LiftLog.Lib.Store;
 using LiftLog.Ui.Util;
 
@@ -13,13 +14,10 @@ namespace LiftLog.Ui.Services
         private Session? _currentSession;
         private readonly ConcurrentDictionary<Guid, Session> _storedSessions = new();
         private readonly IKeyValueStore _keyValueStore;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public KeyValueProgressStore(IKeyValueStore keyValueStore)
         {
             _keyValueStore = keyValueStore;
-            _jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerOptions.Default);
-            _jsonSerializerOptions.Converters.Add(new TimespanJsonConverter());
         }
 
         public async IAsyncEnumerable<Session> GetOrderedSessions()
@@ -81,7 +79,7 @@ namespace LiftLog.Ui.Services
                 var storedDataJson = await _keyValueStore.GetItemAsync(StorageKey);
                 var storedData = JsonSerializer.Deserialize<StorageDao?>(
                     storedDataJson ?? "null",
-                    _jsonSerializerOptions
+                    JsonSerializerSettings.LiftLog
                 );
                 if (storedData is not null)
                 {
@@ -101,7 +99,7 @@ namespace LiftLog.Ui.Services
                 StorageKey,
                 JsonSerializer.Serialize(
                     new StorageDao(_currentSession, _storedSessions.Values.ToList()),
-                    _jsonSerializerOptions
+                    JsonSerializerSettings.LiftLog
                 )
             );
         }

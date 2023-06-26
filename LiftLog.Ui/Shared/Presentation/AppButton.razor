@@ -2,20 +2,21 @@
 @switch (Type)
 {
     case AppButtonType.FloatingPrimary:
-        <button @onclick:stopPropagation="true" @onclick:preventDefault="true" class="ripple-on-click @Padding font-medium bg-primary shadow-sm hover:shadow-md transition-all text-on-primary @Rounding text-sm" @onclick="OnClick">@ChildContent</button>
+        <button disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" class="@Aspect @Padding font-medium bg-primary shadow-sm hover:shadow-md transition-all text-on-primary @Rounding text-sm" @onclick="OnClick">@ChildContent</button>
         break;
     case AppButtonType.Primary:
-        <button @onclick:stopPropagation="true" @onclick:preventDefault="true" class="ripple-on-click @Padding font-medium bg-primary hover:shadow-sm transition-all text-on-primary @Rounding text-sm" @onclick="OnClick">@ChildContent</button>
+        <button disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" class="@Aspect @Padding font-medium bg-primary hover:shadow-sm transition-all text-on-primary @Rounding text-sm" @onclick="OnClick">@ChildContent</button>
         break;
     case AppButtonType.Secondary:
-        <button @onclick:stopPropagation="true" @onclick:preventDefault="true" class="ripple-on-click @Padding font-medium bg-secondary-container hover:shadow-sm transition-all text-on-secondary-container @Rounding text-sm" @onclick="OnClick">@ChildContent</button>
+        <button disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" class="@Aspect @Padding font-medium bg-secondary-container hover:shadow-sm transition-all text-on-secondary-container @Rounding text-sm" @onclick="OnClick">@ChildContent</button>
         break;
     case AppButtonType.OutlineSecondary:
-        <button @onclick:stopPropagation="true" @onclick:preventDefault="true" class="ripple-on-click @Padding border border-outline @Rounding bg-surface-container font-medium  text-on-surface hover:bg-surface-container-highest focus:outline-none focus:shadow-none text-sm" @onclick="OnClick">@ChildContent</button>
+        <button disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" class="@Aspect @Padding border border-outline @Rounding bg-surface-container font-medium  text-on-surface hover:bg-surface-container-highest focus:outline-none focus:shadow-none text-sm" @onclick="OnClick">@ChildContent</button>
         break;
     default:
         throw new ArgumentOutOfRangeException();
 }
+
 
 @code {
 
@@ -32,10 +33,18 @@
 
     [Parameter]
     public bool FullRound { get; set; }
-    
+
+    [Parameter]
+    public bool FullSquare { get; set; }
+
     [Parameter]
     public bool NoPadding { get; set; }
 
+    [Parameter]
+    public bool Disabled { get; set; }
+
     private string Rounding => FullRound ? "rounded-full aspect-square" : "rounded-md";
+
+    private string Aspect => FullSquare ? "aspect-square" : "";
     private string Padding => NoPadding ? "" : "px-5 py-2.5";
 }

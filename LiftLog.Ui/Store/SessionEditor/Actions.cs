@@ -23,16 +23,16 @@ public record SetExerciseKilogramsIncreaseOnSuccessAction(
     decimal KilogramsIncreaseOnSuccess
 );
 
-public record SetMinRestAction(
+public record SetMinAction(
     int ExerciseIndex,
     TimeSpan Rest
 );
-public record SetMaxRestAction(
+public record SetMaxAction(
     int ExerciseIndex,
     TimeSpan Rest
 );
 
-public record SetFailureRestAction(
+public record SetFailureAction(
     int ExerciseIndex,
     TimeSpan Rest
 );

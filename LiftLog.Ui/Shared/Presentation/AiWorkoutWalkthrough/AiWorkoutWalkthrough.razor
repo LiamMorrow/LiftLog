@@ -1,0 +1,112 @@
+@{
+    var canNext = true;
+    var canPrevious = true;
+}
+
+<div class="flex flex-col justify-between h-full text-on-surface">
+    @switch (step)
+    {
+        case 1:
+            <GenderSelector OnGenderSelect="OnGenderSelect" />
+            canPrevious = false;
+            canNext = false;
+            break;
+        case 2:
+            <WeightSelector OnWeightSelect="OnWeightSelect" />
+            break;
+        case 3:
+            <AgeSelector OnAgeSelect="OnAgeSelect" />
+            break;
+        case 4:
+            <NumberOfDaysSelector OnNumberOfDaysSelect="OnNumberOfDaysSelect" />
+            break;
+        case 5:
+            <GoalsSelector OnGoalsSelected="OnGoalsSelected" />
+            canNext = attributes.Goals.Any();
+            break;
+        case 6:
+            <ExperienceLevelSelector OnExperienceSelect="OnExperienceSelect" />
+            canNext = false;
+            break;
+        case 7:
+            <Summary OnConfirm="OnSummaryConfirm" Attributes="attributes"/>
+            break;
+    }
+    @if(step != 7)
+    {
+        <div class="flex justify-between p-4">
+            <AppButton Disabled=@(!canPrevious) Type="AppButtonType.Secondary" OnClick="OnPrevious">
+                <span class="material-symbols-outlined">arrow_left</span>
+            </AppButton>
+            <span class="self-center">Step @step of 6</span>
+            <AppButton Disabled=@(!canNext) Type="AppButtonType.Secondary" OnClick="OnNext">
+                <span class="material-symbols-outlined">arrow_right</span>
+            </AppButton>
+        </div>
+        }
+</div>
+
+@code {
+    private int step = 1;
+    private AiWorkoutAttributes attributes = new AiWorkoutAttributes(Gender.PreferNotToSay,"", 0, 0, new ImmutableListSequence<string>(), Experience.Beginner);
+    [Parameter][EditorRequired] public Action<AiWorkoutAttributes> OnAttributesSelected { get; set; } = null!;
+
+    private void OnPrevious()
+    {
+        if(step is 1){
+            return;
+        }
+        step--;
+    }
+
+    private void OnNext()
+    {
+        step++;
+    }
+
+    private void OnGenderSelect(Gender gender)
+    {
+        step = 2;
+        attributes = attributes with { Gender = gender };
+        StateHasChanged();
+    }
+    private void OnWeightSelect(string weightRange)
+    {
+        attributes = attributes with { WeightRange = weightRange };
+    }
+
+    private void OnAgeSelect(int age)
+    {
+        attributes = attributes with { Age = age };
+    }
+    private void OnNumberOfDaysSelect(int numberOfDays)
+    {
+        attributes = attributes with { DaysPerWeek = numberOfDays };
+        step = 5;
+        StateHasChanged();
+    }
+
+    private void OnGoalsSelected(ImmutableListSequence<string> goals)
+    {
+        attributes = attributes with { Goals = goals };
+        StateHasChanged();
+    }
+
+    private void OnExperienceSelect(Experience experience)
+    {
+        attributes = attributes with { Experience = experience };
+        step = 7;
+        StateHasChanged();
+    }
+
+    private void OnSummaryConfirm(bool confirmed){
+        if (confirmed)
+        {
+            OnAttributesSelected(attributes);
+        } else
+        {
+            step--;
+        }
+        StateHasChanged();
+    }
+}

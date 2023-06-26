@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.Ui", "LiftLog.Ui\Li
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.App", "LiftLog.App\LiftLog.App.csproj", "{08D7B5DB-F7A2-4ECA-BE13-81128AB252B1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog_Backend_Functions", "LiftLog.Backend.Functions\LiftLog_Backend_Functions.csproj", "{79483AE0-DBB9-469A-A3A1-7334C2D594B9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -156,6 +158,22 @@ Global
 		{08D7B5DB-F7A2-4ECA-BE13-81128AB252B1}.Release|x64.Build.0 = Release|Any CPU
 		{08D7B5DB-F7A2-4ECA-BE13-81128AB252B1}.Release|x86.ActiveCfg = Release|Any CPU
 		{08D7B5DB-F7A2-4ECA-BE13-81128AB252B1}.Release|x86.Build.0 = Release|Any CPU
+		{79483AE0-DBB9-469A-A3A1-7334C2D594B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79483AE0-DBB9-469A-A3A1-7334C2D594B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79483AE0-DBB9-469A-A3A1-7334C2D594B9}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{79483AE0-DBB9-469A-A3A1-7334C2D594B9}.Debug|arm64.Build.0 = Debug|Any CPU
+		{79483AE0-DBB9-469A-A3A1-7334C2D594B9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{79483AE0-DBB9-469A-A3A1-7334C2D594B9}.Debug|x64.Build.0 = Debug|Any CPU
+		{79483AE0-DBB9-469A-A3A1-7334C2D594B9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{79483AE0-DBB9-469A-A3A1-7334C2D594B9}.Debug|x86.Build.0 = Debug|Any CPU
+		{79483AE0-DBB9-469A-A3A1-7334C2D594B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79483AE0-DBB9-469A-A3A1-7334C2D594B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79483AE0-DBB9-469A-A3A1-7334C2D594B9}.Release|arm64.ActiveCfg = Release|Any CPU
+		{79483AE0-DBB9-469A-A3A1-7334C2D594B9}.Release|arm64.Build.0 = Release|Any CPU
+		{79483AE0-DBB9-469A-A3A1-7334C2D594B9}.Release|x64.ActiveCfg = Release|Any CPU
+		{79483AE0-DBB9-469A-A3A1-7334C2D594B9}.Release|x64.Build.0 = Release|Any CPU
+		{79483AE0-DBB9-469A-A3A1-7334C2D594B9}.Release|x86.ActiveCfg = Release|Any CPU
+		{79483AE0-DBB9-469A-A3A1-7334C2D594B9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

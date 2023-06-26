@@ -4,6 +4,8 @@ using System.Text.Json;
 using Fluxor;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
+using LiftLog.Lib.Serialization;
+using LiftLog.Lib.Services;
 using LiftLog.Lib.Store;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.Program;
@@ -17,22 +19,22 @@ public class SettingsEffects
     private readonly IProgressStore _progressStore;
     private readonly IProgramStore _programStore;
     private readonly ITextExporter _textExporter;
+    private readonly IAiWorkoutPlanner aiWorkoutPlanner;
     private readonly ILogger<SettingsEffects> _logger;
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     public SettingsEffects(
         IProgressStore progressStore,
         IProgramStore programStore,
         ITextExporter textExporter,
+        IAiWorkoutPlanner aiWorkoutPlanner,
         ILogger<SettingsEffects> logger
     )
     {
         _progressStore = progressStore;
         _programStore = programStore;
         _textExporter = textExporter;
+        this.aiWorkoutPlanner = aiWorkoutPlanner;
         _logger = logger;
-        _jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerOptions.Default);
-        _jsonSerializerOptions.Converters.Add(new TimespanJsonConverter());
     }
 
     [EffectMethod]
@@ -42,7 +44,7 @@ public class SettingsEffects
         var program = await _programStore.GetSessionsInProgramAsync();
 
         await _textExporter.ExportTextAsync(
-            JsonSerializer.Serialize(new SerializedData(sessions, program), _jsonSerializerOptions)
+            JsonSerializer.Serialize(new SerializedData(sessions, program), JsonSerializerSettings.LiftLog)
         );
     }
 
@@ -53,7 +55,7 @@ public class SettingsEffects
         {
             var deserialized = JsonSerializer.Deserialize<SerializedData>(
                 action.DataJson,
-                _jsonSerializerOptions
+                JsonSerializerSettings.LiftLog
             );
             if (deserialized != null)
             {
@@ -68,6 +70,27 @@ public class SettingsEffects
         catch (JsonException ex)
         {
             _logger.LogError(ex, "Error importing");
+        }
+    }
+
+    [EffectMethod]
+    public async Task GenerateAiPlan(GenerateAiPlanAction action, IDispatcher dispatcher)
+    {
+        dispatcher.Dispatch(new SetAiPlanAttributesAction(action.Attributes));
+        dispatcher.Dispatch(new SetIsGeneratingAiPlanAction(true));
+        dispatcher.Dispatch(new SetAiPlanErrorAction(null));
+        try
+        {
+            var program = await aiWorkoutPlanner.GenerateWorkoutPlanAsync(action.Attributes);
+            dispatcher.Dispatch(new SetAiPlanAction(program));
+        }
+        catch (Exception ex)
+        {
+            dispatcher.Dispatch(new SetAiPlanErrorAction(ex.Message));
+        }
+        finally
+        {
+            dispatcher.Dispatch(new SetIsGeneratingAiPlanAction(false));
         }
     }
 

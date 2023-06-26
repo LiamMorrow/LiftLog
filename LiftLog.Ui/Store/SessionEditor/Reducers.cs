@@ -151,9 +151,9 @@ public static class Reducers
         );
 
     [ReducerMethod]
-    public static SessionEditorState SetMinRest(
+    public static SessionEditorState SetMin(
         SessionEditorState state,
-        SetMinRestAction action
+        SetMinAction action
     ) =>
         UpdateExerciseIfCan(
             state,
@@ -162,9 +162,9 @@ public static class Reducers
         );
 
     [ReducerMethod]
-    public static SessionEditorState SetMaxRest(
+    public static SessionEditorState SetMax(
         SessionEditorState state,
-        SetMaxRestAction action
+        SetMaxAction action
     ) =>
         UpdateExerciseIfCan(
             state,
@@ -173,9 +173,9 @@ public static class Reducers
         );
 
     [ReducerMethod]
-    public static SessionEditorState SetFailureRest(
+    public static SessionEditorState SetFailure(
         SessionEditorState state,
-        SetFailureRestAction action
+        SetFailureAction action
     ) =>
         UpdateExerciseIfCan(
             state,
