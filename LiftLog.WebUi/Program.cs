@@ -33,7 +33,7 @@ builder.Services.AddScoped<IProgressStore, KeyValueProgressStore>();
 builder.Services.AddScoped<IProgramStore, KeyValueProgramStore>();
 builder.Services.AddScoped<SessionService>();
 
-builder.Services.AddSingleton<IAiWorkoutPlanner, ApiBasedAiWorkoutPlanner>();
+builder.Services.AddScoped<IAiWorkoutPlanner, ApiBasedAiWorkoutPlanner>();
 
 builder.Services.AddSingleton<IThemeProvider, WebThemeProvider>();
 

@@ -30,8 +30,8 @@ namespace LiftLog.Backend.Functions
             var request = await JsonSerializer.DeserializeAsync<GenerateAiWorkoutPlanRequest>(req.Body, JsonSerializerSettings.LiftLog);
             if (request == null)
             {
-                response.StatusCode = HttpStatusCode.BadRequest;
                 await response.WriteAsJsonAsync(new { error = new[] { "Invalid request" } });
+                response.StatusCode = HttpStatusCode.BadRequest;
                 return response;
             }
 
@@ -39,8 +39,8 @@ namespace LiftLog.Backend.Functions
             var validationResult = requestValidator.Validate(request);
             if (!validationResult.IsValid)
             {
-                response.StatusCode = HttpStatusCode.BadRequest;
                 await response.WriteAsJsonAsync(new { error = validationResult.Errors });
+                response.StatusCode = HttpStatusCode.BadRequest;
                 return response;
             }
 
