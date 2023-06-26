@@ -64,7 +64,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\LiftLog.Ui\LiftLog.Ui.csproj" />
-      <ProjectReference Include="..\LiftLog.Backend\LiftLog.Backend.csproj" />
     </ItemGroup>
 
 </Project>

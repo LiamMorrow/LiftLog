@@ -2,7 +2,6 @@
 
 using System.Text.Json;
 using Fluxor;
-using LiftLog.Backend.Services;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;

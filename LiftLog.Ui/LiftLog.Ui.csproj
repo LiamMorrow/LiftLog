@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LiftLog.Lib\LiftLog.Lib.csproj" />
-    <ProjectReference Include="..\LiftLog.Backend\LiftLog.Backend.csproj" />
   </ItemGroup>
 
 </Project>
