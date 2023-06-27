@@ -27,26 +27,8 @@ public partial class TimespanJsonConverter : JsonConverter<TimeSpan>
         {
             return TimeSpan.Zero;
         }
-        // parse when the string value is in the format 2 minutes
-        if (RegexForHumanReadable().IsMatch(s))
-        {
-            var match = RegexForExtractingHumanReadable().Match(s);
-            var number = double.Parse(match.Groups[1].Value);
-            var unit = match.Groups[2].Value;
-            return unit switch
-            {
-                "days" or "day" => TimeSpan.FromDays(number),
-                "hours" or "hour" => TimeSpan.FromHours(number),
-                "minutes" or "minute" => TimeSpan.FromMinutes(number),
-                "seconds" or "second" => TimeSpan.FromSeconds(number),
-                "milliseconds" or "millisecond" => TimeSpan.FromMilliseconds(number),
-                _ => TimeSpan.ParseExact(s, TimeSpanFormatString, null)
-            };
-        }
-        else
-        {
-            return TimeSpan.ParseExact(s, TimeSpanFormatString, null);
-        }
+
+        return TimeSpan.ParseExact(s, TimeSpanFormatString, null);
     }
 
     public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)
@@ -54,9 +36,4 @@ public partial class TimespanJsonConverter : JsonConverter<TimeSpan>
         var timespanFormatted = $"{value.ToString(TimeSpanFormatString)}";
         writer.WriteStringValue(timespanFormatted);
     }
-
-    [GeneratedRegex(@"^\d?\.?\d+\s\w+$")]
-    private static partial Regex RegexForHumanReadable();
-    [GeneratedRegex(@"^(\d?\.?\d+)\s(\w+)$")]
-    private static partial Regex RegexForExtractingHumanReadable();
 }
