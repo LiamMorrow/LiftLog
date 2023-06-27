@@ -1,4 +1,5 @@
 {
+  "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "description": "An object containing a description of the plan, with recommendations for their skill level and goals. Should give guidance related to their skill level, age weight, and potential nutrients.  Should also say whether this plan will be suitable for them, and if not, why not.",
   "required": ["Description", "Sessions"],
@@ -52,17 +53,17 @@
                   "description": "The rest time to use for the exercise.",
                   "required": ["MinRest", "MaxRest", "FailureRest"],
                   "properties": {
-                    "MinRest": {
-                      "type": "string",
-                      "description": "The minimum rest time to use for the exercise on successful completion of all reps. It must be expressed ISO-8601 format"
+                    "MinRestSeconds": {
+                      "type": "integer",
+                      "description": "The minimum rest time to use for the exercise on successful completion of all reps"
                     },
-                    "MaxRest": {
-                      "type": "string",
-                      "description": "The maximum rest time to use for the exercise on successful completion of all reps. It must be expressed ISO-8601 format"
+                    "MaxRestSeconds": {
+                      "type": "integer",
+                      "description": "The maximum rest time to use for the exercise on successful completion of all reps.  It MUST be greater than MinRest"
                     },
-                    "FailureRest": {
-                      "type": "string",
-                      "description": "The rest time to use for the exercise on failure to complete all reps in the set. It must be expressed ISO-8601 format"
+                    "FailureRestSeconds": {
+                      "type": "integer",
+                      "description": "The rest time to use for the exercise on failure to complete all reps in the set. It MUST be greater than MaxRest"
                     }
                   }
                 }
