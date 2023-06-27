@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="MaterialColorUtilities" Version="0.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.8" />
     <PackageReference Include="Fluxor" Version="5.8.0" />
     <PackageReference Include="Fluxor.Blazor.Web" Version="5.8.0" />
     <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="5.8.0" />
