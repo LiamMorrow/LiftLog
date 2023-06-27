@@ -36,7 +36,7 @@ jobs:
         run: dotnet publish -f net7.0-android -c Release -p:AndroidKeyStore=true -p:AndroidSigningKeyStore=liftlog.keystore -p:AndroidSigningKeyAlias=liftlog -p:AndroidSigningKeyPass=env:KEYSTORE_PASS -p:AndroidSigningStorePass=env:KEYSTORE_PASS
         working-directory: ./LiftLog.App
         env:
-          KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}]
+          KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
