@@ -1,16 +1,16 @@
 <div class="flex flex-col justify-around h-full">
   <h2 class="text-2xl">What is your experience level?</h2>
-  <div  class="grid grid-cols-2 grid-rows-2 gap-4 px-4" >
-    <AppButton FullSquare="true" Type="AppButtonType.OutlineSecondary" OnClick="()=>OnExperienceSelect(Experience.Beginner)">
+  <div  class="grid grid-cols-2 grid-rows-2 gap-4 px-4  flex-grow max-h-[70%]" >
+    <AppButton FullHeight="true" Type="AppButtonType.OutlineSecondary" OnClick="()=>OnExperienceSelect(Experience.Beginner)">
         <div class="flex flex-col gap-2"><span class="text-4xl material-symbols-outlined">check_box_outline_blank</span><span class="text-lg">Beginner</span></div>
     </AppButton>
-    <AppButton FullSquare="true" Type="AppButtonType.OutlineSecondary" OnClick="()=>OnExperienceSelect(Experience.Intermediate)">
+    <AppButton FullHeight="true" Type="AppButtonType.OutlineSecondary" OnClick="()=>OnExperienceSelect(Experience.Intermediate)">
         <div class="flex flex-col gap-2"><span class="text-4xl material-symbols-outlined">done</span><span class="text-lg">Intermediate</span></div>
     </AppButton>
-    <AppButton FullSquare="true" Type="AppButtonType.OutlineSecondary" OnClick="()=>OnExperienceSelect(Experience.Advanced)">
+    <AppButton FullHeight="true" Type="AppButtonType.OutlineSecondary" OnClick="()=>OnExperienceSelect(Experience.Advanced)">
         <div class="flex flex-col gap-2"><span class="text-4xl material-symbols-outlined">done_all</span><span class="text-lg">Advanced</span></div>
     </AppButton>
-    <AppButton FullSquare="true" Type="AppButtonType.OutlineSecondary" OnClick="()=>OnExperienceSelect(Experience.Professional)">
+    <AppButton FullHeight="true" Type="AppButtonType.OutlineSecondary" OnClick="()=>OnExperienceSelect(Experience.Professional)">
         <div class="flex flex-col gap-2"><span class="text-4xl material-symbols-outlined">social_leaderboard</span><span class="text-lg">Professional</span></div>
     </AppButton>
   </div>
