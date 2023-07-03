@@ -1,16 +1,16 @@
 <div class="flex flex-col justify-around h-full">
   <h2 class="text-2xl">What are your goals?</h2>
-  <div  class="grid grid-cols-2 gap-4 px-4" >
-    <AppButton FullSquare="true" Type=@(GetButtonType("Strength")) OnClick=@(()=>ToggleGoal("Strength"))>
+  <div  class="grid grid-cols-2 gap-4 px-4  flex-grow max-h-[70%]" >
+    <AppButton  FullHeight="true" Type="AppButtonType.OutlineSecondary" FilledWithPrimary=@(GetIsFilled("Strength")) OnClick=@(()=>ToggleGoal("Strength"))>
         <div class="flex flex-col gap-2"><span class="text-4xl material-symbols-outlined">heart_plus</span><span class="text-lg">Strength</span></div>
     </AppButton>
-    <AppButton FullSquare="true" Type=@(GetButtonType("Gaining Muscle")) OnClick=@(()=>ToggleGoal("Gaining Muscle"))>
+    <AppButton  FullHeight="true" Type="AppButtonType.OutlineSecondary" FilledWithPrimary=@(GetIsFilled("Gaining Muscle")) OnClick=@(()=>ToggleGoal("Gaining Muscle"))>
         <div class="flex flex-col gap-2"><span class="text-4xl material-symbols-outlined">exercise</span><span class="text-lg">Gaining Muscle</span></div>
     </AppButton>
-    <AppButton FullSquare="true" Type=@(GetButtonType("Losing Weight")) OnClick=@(()=>ToggleGoal("Losing Weight"))>
+    <AppButton  FullHeight="true" Type="AppButtonType.OutlineSecondary" FilledWithPrimary=@(GetIsFilled("Losing Weight")) OnClick=@(()=>ToggleGoal("Losing Weight"))>
         <div class="flex flex-col gap-2"><span class="text-4xl material-symbols-outlined">monitor_weight</span><span class="text-lg">Losing Weight</span></div>
     </AppButton>
-    <AppButton FullSquare="true" Type=@(GetButtonType("Toning")) OnClick=@(()=>ToggleGoal("Toning"))>
+    <AppButton  FullHeight="true" Type="AppButtonType.OutlineSecondary" FilledWithPrimary=@(GetIsFilled("Toning")) OnClick=@(()=>ToggleGoal("Toning"))>
         <div class="flex flex-col gap-2"><span class="text-4xl material-symbols-outlined">body_system</span><span class="text-lg">Toning</span></div>
     </AppButton>
   </div>
@@ -24,9 +24,9 @@
     [Parameter]
     public Action<ImmutableListSequence<string>> OnGoalsSelected { get; set; } = null!;
 
-    private AppButtonType GetButtonType(string goal)
+    private bool GetIsFilled(string goal)
     {
-        return _goals.Contains(goal) ? AppButtonType.Primary : AppButtonType.OutlineSecondary;
+        return _goals.Contains(goal);
     }
 
     private void ToggleGoal(string goal)

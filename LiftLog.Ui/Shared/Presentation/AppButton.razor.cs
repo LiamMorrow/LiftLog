@@ -5,5 +5,5 @@ public enum AppButtonType
     FloatingPrimary,
     Primary,
     Secondary,
-    OutlineSecondary
+    OutlineSecondary,
 }
