@@ -43,4 +43,4 @@ jobs:
         with:
           name: android-build
           path: |
-            LiftLog.App/bin/Release/net7.0-android/com.limajuice.liftlog-Signed.aab
+            LiftLog.App/bin/Release/net7.0-android/com.limajuice.liftlog-Signed.*
