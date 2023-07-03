@@ -1,10 +1,10 @@
-﻿<button class="w-12 h-12 rounded-xl relative text-center flex justify-center align-middle transition-colors duration-75 items-center @ColorClass @RepCountToStartClass"
+﻿<button class="w-16 h-16 rounded-xl relative text-center text-xl flex justify-center align-middle transition-colors duration-75 items-center @ColorClass @RepCountToStartClass"
         @onclick="CycleRepCount">
     <span class="font-bold">@(RepCountValue?.ToString() ?? "-")</span>
-    <span class="inline text-xs align-text-top">/@MaxReps</span>
+    <span class="inline text-sm align-text-top">/@MaxReps</span>
 </button>
 @code {
-    
+
 
     [EditorRequired]
     [Parameter]
