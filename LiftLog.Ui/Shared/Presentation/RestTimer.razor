@@ -29,7 +29,7 @@
     private string InstructionsText =>
         Failed
         ? $"Rest {Rest.FailureRest:m\\:ss}."
-        : Rest.MinRest == Rest.MaxRest
+        : Rest.MinRest >= Rest.MaxRest
             ? $"Rest {Rest.MinRest:m:ss}"
             : $"Rest between {Rest.MinRest:m\\:ss} and {Rest.MaxRest:m\\:ss}";
 
