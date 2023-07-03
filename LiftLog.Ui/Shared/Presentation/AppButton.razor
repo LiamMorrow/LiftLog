@@ -41,9 +41,12 @@
     public bool NoPadding { get; set; }
 
     [Parameter]
+    public bool LargeRound { get; set; }
+
+    [Parameter]
     public bool Disabled { get; set; }
 
-    private string Rounding => FullRound ? "rounded-full aspect-square" : "rounded-md";
+    private string Rounding => FullRound ? "rounded-full aspect-square" : LargeRound ? "rounded-xl": "rounded-md";
 
     private string Aspect => FullSquare ? "aspect-square" : "";
     private string Padding => NoPadding ? "" : "px-5 py-2.5";

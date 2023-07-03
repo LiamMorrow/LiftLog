@@ -1,4 +1,5 @@
 using Fluxor;
+using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.CurrentSession;
 using Microsoft.AspNetCore.Components;
 
