@@ -3,6 +3,10 @@
     {
         <span>Rest <span class="font-bold">@(Rest.FailureRest.ToString(TimespanFormatStr))</span></span>
     }
+    else if(Rest.MinRest >= Rest.MaxRest)
+    {
+        <span>Rest <span class="font-bold">@(Rest.MinRest.ToString(TimespanFormatStr))</span></span>
+    }
     else
     {
 
@@ -25,12 +29,4 @@
     public bool Failed { get; set; }
 
     private TimeSpan TimeSinceStart => DateTimeOffset.UtcNow - StartTime;
-
-    private string InstructionsText =>
-        Failed
-        ? $"Rest {Rest.FailureRest:m\\:ss}."
-        : Rest.MinRest >= Rest.MaxRest
-            ? $"Rest {Rest.MinRest:m:ss}"
-            : $"Rest between {Rest.MinRest:m\\:ss} and {Rest.MaxRest:m\\:ss}";
-
 }
