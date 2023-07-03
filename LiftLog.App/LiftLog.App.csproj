@@ -60,7 +60,7 @@
         <PackageReference Include="MaterialColorUtilities.Maui" Version="0.3.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
-        <PackageReference Include="Plugin.LocalNotification" Version="10.1.7" />
+        <PackageReference Include="Plugin.LocalNotification" Version="10.1.8" />
     </ItemGroup>
 
     <ItemGroup>
