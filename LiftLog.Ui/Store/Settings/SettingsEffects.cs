@@ -1,5 +1,6 @@
 // ReSharper disable UnusedMember.Global
 
+using System.Collections.Immutable;
 using System.Text.Json;
 using Fluxor;
 using LiftLog.Lib;
@@ -7,6 +8,8 @@ using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
 using LiftLog.Lib.Services;
 using LiftLog.Lib.Store;
+using LiftLog.Ui.Models.SessionBlueprintDao;
+using LiftLog.Ui.Models.SessionHistoryDao;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.Program;
 using LiftLog.Ui.Util;
@@ -44,7 +47,7 @@ public class SettingsEffects
         var program = await _programStore.GetSessionsInProgramAsync();
 
         await _textExporter.ExportTextAsync(
-            JsonSerializer.Serialize(new SerializedData(sessions, program), JsonSerializerSettings.LiftLog)
+            JsonSerializer.Serialize(new SerializedData(sessions.Select(SessionDaoV1.FromModel).ToList(), program.Select(SessionBlueprintDaoV1.FromModel).ToImmutableList()), JsonSerializerSettings.LiftLog)
         );
     }
 
@@ -59,8 +62,8 @@ public class SettingsEffects
             );
             if (deserialized != null)
             {
-                await _progressStore.SaveCompletedSessionsAsync(deserialized.Sessions);
-                dispatcher.Dispatch(new SetProgramSessionsAction(deserialized.Program));
+                await _progressStore.SaveCompletedSessionsAsync(deserialized.Sessions.Select(x => x.ToModel()));
+                dispatcher.Dispatch(new SetProgramSessionsAction(deserialized.Program.Select(x => x.ToModel()).ToImmutableList()));
             }
             else
             {
@@ -95,7 +98,7 @@ public class SettingsEffects
     }
 
     private record SerializedData(
-        List<Session> Sessions,
-        ImmutableListSequence<SessionBlueprint> Program
+        List<SessionDaoV1> Sessions,
+        ImmutableListSequence<SessionBlueprintDaoV1> Program
     );
 }
