@@ -1,7 +1,7 @@
 @inject IJSRuntime JsRuntime
 
 <div
-    class="p-5 border @(IsHighlighted ? "border-primary bg-surface-container-high" : "border-outline-variant bg-surface-container-low") rounded-card text-on-surface"
+    class="p-5 relative border @(IsHighlighted ? "border-primary bg-surface-container-high" : "border-outline-variant bg-surface-container-low") rounded-card text-on-surface"
     @onclick="HandleOnClick">
     @ChildContent
 </div>
