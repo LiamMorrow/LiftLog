@@ -46,4 +46,5 @@ jobs:
           packageName: com.limajuice.liftlog
           releaseFiles: LiftLog.App/bin/Release/net7.0-android/publish/com.limajuice.liftlog-Signed.aab
           track: alpha
+          status: draft
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
