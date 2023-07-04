@@ -36,6 +36,7 @@
         <Authors>Liam Morrow</Authors>
         <Company>LiftLog</Company>
         <Product>LiftLog</Product>
+        <Version>1.0.1</Version>
     </PropertyGroup>
 
     <ItemGroup>
