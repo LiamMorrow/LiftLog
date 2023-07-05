@@ -10,6 +10,8 @@ public enum SessionTarget
 
 public record CycleExerciseRepsAction(SessionTarget Target, int ExerciseIndex, int SetIndex);
 
+public record ClearExerciseRepsAction(SessionTarget Target, int ExerciseIndex, int SetIndex);
+
 public record UpdateExerciseWeightAction(SessionTarget Target, int ExerciseIndex, decimal Kilograms);
 
 public record SetCurrentSessionAction(SessionTarget Target, Session? Session);

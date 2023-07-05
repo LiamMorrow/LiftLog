@@ -37,6 +37,30 @@ public static class Reducers
     }
 
     [ReducerMethod]
+    public static CurrentSessionState ClearExerciseReps(
+        CurrentSessionState state,
+        ClearExerciseRepsAction action
+    )
+    {
+        var session = ActiveSession(state, action.Target) ?? throw new Exception();
+        var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
+
+        return WithActiveSession(
+            state,
+            action.Target,
+            session with
+            {
+                RecordedExercises = session.RecordedExercises.SetItem(
+                    action.ExerciseIndex,
+                    exerciseAtIndex with
+                    {
+                        RecordedSets = exerciseAtIndex.RecordedSets.SetItem(action.SetIndex, null)
+                    }
+                )
+            });
+    }
+
+    [ReducerMethod]
     public static CurrentSessionState UpdateExerciseWeight(
         CurrentSessionState state,
         UpdateExerciseWeightAction action
