@@ -21,6 +21,7 @@
 {
     <SessionComponent
         CycleRepcountForExercise=CycleRepcountForExercise
+        ClearRepCountForExercise="ClearRepCountForExercise"
         UpdateWeightForExercise=UpdateWeightForExercise
         Session=@(CurrentSessionState.Value.WorkoutSession)
         SaveSession=SaveSession
@@ -30,6 +31,12 @@
 
 @code
 {
+    private void ClearRepCountForExercise(int exerciseIndex, int setIndex)
+    {
+        Dispatcher.Dispatch(new ClearExerciseRepsAction(SessionTarget.WorkoutSession, exerciseIndex, setIndex));
+        Dispatcher.Dispatch(new NotifySetTimerAction(SessionTarget.WorkoutSession));
+    }
+
     private void CycleRepcountForExercise(int exerciseIndex, int setIndex)
     {
         Dispatcher.Dispatch(new CycleExerciseRepsAction(SessionTarget.WorkoutSession, exerciseIndex, setIndex));

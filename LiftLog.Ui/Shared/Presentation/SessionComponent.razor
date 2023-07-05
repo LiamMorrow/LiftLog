@@ -4,6 +4,7 @@
                       RecordedExercise="context.Item"
                       ToStartNext=@(Session.NextExercise == context.Item)
                       CycleRepCountForSet=CycleRepCountForExerciseSet(context.Index)
+                      ClearRepCountForSet=ClearRepCountForExerciseSet(context.Index)
                       UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index) />
 </CardList>
 <div class="sticky bottom-0 flex flex-col pointer-events-none">
@@ -31,6 +32,10 @@
 
     [EditorRequired]
     [Parameter]
+    public Action<int, int> ClearRepCountForExercise { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
     public Action<int, decimal> UpdateWeightForExercise { get; set; } = null!;
 
     [EditorRequired]
@@ -43,6 +48,10 @@
 
     private Action<int> CycleRepCountForExerciseSet(int exerciseIndex)
         => (int set) => CycleRepcountForExercise(exerciseIndex, set);
+
+
+    private Action<int> ClearRepCountForExerciseSet(int exerciseIndex)
+        => (int set) => ClearRepCountForExercise(exerciseIndex, set);
 
     private Action<decimal> UpdateWeightForExerciseWrapper(int exerciseIndex)
         => (decimal kilograms) => UpdateWeightForExercise(exerciseIndex, kilograms);
