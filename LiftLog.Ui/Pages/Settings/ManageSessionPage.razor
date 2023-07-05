@@ -35,28 +35,32 @@ else
                 <div class="flex flex-col justify-between pr-4 mr-4 border-r border-outline-variant ">
                     <input type="text" class="w-full mb-2 text-xl" value="@exercise.Name" @onchange="e => SetExerciseName(index, e.Value)"/>
                     <div class="flex flex-wrap justify-around w-full gap-1">
-                        <div class="flex flex-col gap-1">
-                            <div>
-                                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => DecrementExerciseSets(index))><span class="material-symbols-outlined">remove</span></AppButton><span class="inline-block w-20 mx-2 text-center">@exercise.Sets Sets</span><AppButton Type="AppButtonType.Secondary" OnClick=@(() => IncrementExerciseSets(index))><span class="material-symbols-outlined">add</span></AppButton>
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="flex items-center">
+                                <IconButton Type="IconButtonType.Outlined" OnClick=@(() => DecrementExerciseSets(index))><md-icon>remove</md-icon></IconButton>
+                                <span class="inline-block w-20 mx-2 text-center">@exercise.Sets Sets</span>
+                                <IconButton Type="IconButtonType.Outlined" OnClick=@(() => IncrementExerciseSets(index))><md-icon>add</md-icon></IconButton>
                             </div>
-                            <div>
-                                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => DecrementExerciseRepsPerSet(index))><span class="material-symbols-outlined">remove</span></AppButton><span class="inline-block w-20 mx-2 text-center">@exercise.RepsPerSet Reps</span><AppButton Type="AppButtonType.Secondary" OnClick=@(() => IncrementExerciseRepsPerSet(index))><span class="material-symbols-outlined">add</span></AppButton>
+                            <div class="flex items-center">
+                                <IconButton Type="IconButtonType.Outlined" OnClick=@(() => DecrementExerciseRepsPerSet(index))><md-icon>remove</md-icon></IconButton>
+                                <span class="inline-block w-20 mx-2 text-center">@exercise.RepsPerSet Reps</span>
+                                <IconButton Type="IconButtonType.Outlined" OnClick=@(() => IncrementExerciseRepsPerSet(index))><md-icon>add</md-icon></IconButton>
                             </div>
                         </div>
                         <div class="flex flex-col justify-between gap-2">
                             <label class="text-lg text-center">Initial Weight</label>
                             <div class="flex justify-center gap-1">
-                                <AppButton Type=AppButtonType.Secondary OnClick=@(() => OnInitialWeightDecrementClick(exercise, index))><WeightFormat Kilograms="-exercise.KilogramsIncreaseOnSuccess"/></AppButton>
+                                <IconButton Type=IconButtonType.Outlined OnClick=@(() => OnInitialWeightDecrementClick(exercise, index))><md-icon>remove</md-icon></IconButton>
                                 <input class="w-20 text-lg text-center" type="text" inputmode="numeric" value=@exercise.InitialKilograms @onchange=@((e) => SetExerciseInitialWeight(index, e.Value))/>
-                                <AppButton Type=AppButtonType.Secondary OnClick=@(() => OnInitialWeightIncrementClick(exercise, index))>+<WeightFormat Kilograms="exercise.KilogramsIncreaseOnSuccess"/></AppButton>
+                                <IconButton Type=IconButtonType.Outlined OnClick=@(() => OnInitialWeightIncrementClick(exercise, index))><md-icon>add</md-icon></IconButton>
                             </div>
                         </div>
                         <div class="flex flex-col justify-between gap-2">
                             <label class="text-lg text-center">Success Weight Increase</label>
                             <div class="flex justify-center gap-1">
-                                <AppButton Type=AppButtonType.Secondary OnClick=@(() => OnSuccessWeightDecrementClick(exercise, index))><WeightFormat Kilograms="-0.1m"/></AppButton>
+                                <IconButton Type=IconButtonType.Outlined OnClick=@(() => OnSuccessWeightDecrementClick(exercise, index))><md-icon>remove</md-icon></IconButton>
                                 <input class="w-20 text-lg text-center" type="text" inputmode="numeric" value=@exercise.KilogramsIncreaseOnSuccess @onchange=@((e) => SetExerciseSuccessWeight(index, e.Value))/>
-                                <AppButton Type=AppButtonType.Secondary OnClick=@(() => OnSuccessWeightIncrementClick(exercise, index))>+<WeightFormat Kilograms="0.1m"/></AppButton>
+                                <IconButton Type=IconButtonType.Outlined OnClick=@(() => OnSuccessWeightIncrementClick(exercise, index))><md-icon>add</md-icon></IconButton>
                             </div>
                         </div>
                         <div class="flex flex-col justify-between gap-2">
@@ -76,9 +80,9 @@ else
                     </div>
                 </div>
         <div class="flex flex-col justify-around gap-2 h-min">
-                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => RemoveExercise(exercise))><span class="material-symbols-outlined">delete</span></AppButton>
-                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => MoveExerciseUp(exercise))><span class="material-symbols-outlined">arrow_upward</span>️</AppButton>
-                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => MoveExerciseDown(exercise))><span class="material-symbols-outlined">arrow_downward</span></AppButton>
+            <IconButton Type="IconButtonType.FilledTonal" OnClick=@(() => RemoveExercise(exercise))><md-icon>delete</md-icon></IconButton>
+            <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveExerciseUp(exercise))><md-icon>arrow_upward</md-icon>️</IconButton>
+            <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveExerciseDown(exercise))><md-icon>arrow_downward</md-icon></IconButton>
         </div>
             </div>
         </CardList>
@@ -87,7 +91,7 @@ else
         <AppButton Type="AppButtonType.Secondary" OnClick=AddExercise>Add Exercise</AppButton>
     </div>
     <div class="sticky bottom-0 flex justify-end w-full">
-        <AppButton LargeRound="true" Type="AppButtonType.FloatingPrimary" OnClick=SaveSession><span class="mr-1 material-symbols-outlined">save</span><span>Save</span></AppButton>
+        <AppButton Type="AppButtonType.FloatingPrimary" OnClick=SaveSession>Save<md-icon slot="icon">save</md-icon></AppButton>
     </div>
 }
 @code {

@@ -19,6 +19,7 @@
 }
 @if (CurrentSessionState.Value.HistorySession is not null)
 {
+    Init(CurrentSessionState.Value.HistorySession);
     <SessionComponent
         CycleRepcountForExercise=CycleRepcountForExercise
         ClearRepCountForExercise="ClearRepCountForExercise"
@@ -30,6 +31,14 @@
 
 @code
 {
+    private bool initted = false;
+    private void Init(Session session)
+    {
+        if(!initted){
+            initted = true;
+            Dispatcher.Dispatch(new SetPageTitleAction(session.Blueprint.Name));
+        }
+    }
     private void ClearRepCountForExercise(int exerciseIndex, int setIndex)
     {
         Dispatcher.Dispatch(new ClearExerciseRepsAction(SessionTarget.HistorySession, exerciseIndex, setIndex));
