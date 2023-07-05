@@ -11,17 +11,14 @@ public static class Reducers
         CycleExerciseRepsAction action
     )
     {
-        if (state.Session is null)
-        {
-            throw new Exception();
-        }
-        var session = state.Session;
+        var session = ActiveSession(state, action.Target) ?? throw new Exception();
         var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
-        var exerciseBlueprint = state.Session.Blueprint.Exercises[action.ExerciseIndex];
+        var exerciseBlueprint = session.Blueprint.Exercises[action.ExerciseIndex];
 
-        return state with
-        {
-            Session = session with
+        return WithActiveSession(
+            state,
+            action.Target,
+            session with
             {
                 RecordedExercises = session.RecordedExercises.SetItem(
                     action.ExerciseIndex,
@@ -36,8 +33,7 @@ public static class Reducers
                         )
                     }
                 )
-            }
-        };
+            });
     }
 
     [ReducerMethod]
@@ -46,33 +42,29 @@ public static class Reducers
         UpdateExerciseWeightAction action
     )
     {
-        if (state.Session is null)
-        {
-            throw new Exception();
-        }
-        var session = state.Session;
+        var session = ActiveSession(state, action.Target) ?? throw new Exception();
         var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
-
-        return state with
-        {
-            Session = session with
-            {
-                RecordedExercises = session.RecordedExercises.SetItem(
-                    action.ExerciseIndex,
-                    exerciseAtIndex with
-                    {
-                        Kilograms = action.Kilograms
-                    }
-                )
-            }
-        };
+        return WithActiveSession(
+                  state,
+                  action.Target,
+                  session with
+                  {
+                      RecordedExercises = session.RecordedExercises.SetItem(
+                          action.ExerciseIndex,
+                          exerciseAtIndex with
+                          {
+                              Kilograms = action.Kilograms
+                          }
+                      )
+                  }
+        );
     }
 
     [ReducerMethod]
     public static CurrentSessionState SetCurrentSession(
         CurrentSessionState state,
         SetCurrentSessionAction action
-    ) => state with { Session = action.Session };
+    ) => WithActiveSession(state, action.Target, action.Session);
 
     private static RecordedSet? GetCycledRepCount(
         RecordedSet? recordedSet,
@@ -89,4 +81,23 @@ public static class Reducers
             var reps => reps with { RepsCompleted = reps.RepsCompleted - 1 }
         };
     }
+
+    private static CurrentSessionState WithActiveSession(
+        this CurrentSessionState state,
+        SessionTarget target,
+        Session? session
+    ) => target switch
+    {
+        SessionTarget.WorkoutSession => state with { WorkoutSession = session },
+        SessionTarget.HistorySession => state with { HistorySession = session },
+        _ => throw new Exception()
+    };
+
+    private static Session? ActiveSession(this CurrentSessionState state, SessionTarget target) =>
+        target switch
+        {
+            SessionTarget.WorkoutSession => state.WorkoutSession,
+            SessionTarget.HistorySession => state.HistorySession,
+            _ => throw new Exception()
+        };
 }

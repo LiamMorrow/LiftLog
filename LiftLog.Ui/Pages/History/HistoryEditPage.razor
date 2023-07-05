@@ -1,4 +1,4 @@
-﻿@page "/session"
+﻿@page "/history/edit"
 @using LiftLog.Ui.Store.CurrentSession
 @using LiftLog.Ui.Store.App
 @using Fluxor;
@@ -11,47 +11,46 @@
 @{
     this.SubscribeToAction<RehydrateSessionAction>(state =>
         {
-            if (CurrentSessionState.Value.WorkoutSession is null)
+            if (CurrentSessionState.Value.HistorySession is null)
             {
-                NavigationManager.NavigateTo("/");
+                NavigationManager.NavigateTo("/history");
             }
         });
 }
-@if (CurrentSessionState.Value.WorkoutSession is not null)
+@if (CurrentSessionState.Value.HistorySession is not null)
 {
     <SessionComponent
         CycleRepcountForExercise=CycleRepcountForExercise
         UpdateWeightForExercise=UpdateWeightForExercise
-        Session=@(CurrentSessionState.Value.WorkoutSession)
+        Session=@(CurrentSessionState.Value.HistorySession)
         SaveSession=SaveSession
         CloseSession=CloseSession/>
 }
-
 
 @code
 {
     private void CycleRepcountForExercise(int exerciseIndex, int setIndex)
     {
-        Dispatcher.Dispatch(new CycleExerciseRepsAction(SessionTarget.WorkoutSession, exerciseIndex, setIndex));
-        Dispatcher.Dispatch(new NotifySetTimerAction(SessionTarget.WorkoutSession));
+        Dispatcher.Dispatch(new CycleExerciseRepsAction(SessionTarget.HistorySession, exerciseIndex, setIndex));
+        Dispatcher.Dispatch(new NotifySetTimerAction(SessionTarget.HistorySession));
     }
 
     private void UpdateWeightForExercise(int exerciseIndex, decimal kilograms)
     {
-        Dispatcher.Dispatch(new UpdateExerciseWeightAction(SessionTarget.WorkoutSession, exerciseIndex, kilograms));
+        Dispatcher.Dispatch(new UpdateExerciseWeightAction(SessionTarget.HistorySession, exerciseIndex, kilograms));
     }
 
     private void SaveSession()
     {
-        Dispatcher.Dispatch(new PersistCurrentSessionAction(SessionTarget.WorkoutSession));
-        Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, null));
+        Dispatcher.Dispatch(new PersistCurrentSessionAction(SessionTarget.HistorySession));
+        Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.HistorySession, null));
 
         NavigationManager.NavigateTo("/");
     }
 
     private void CloseSession()
     {
-        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/history");
     }
     protected override void OnInitialized()
     {

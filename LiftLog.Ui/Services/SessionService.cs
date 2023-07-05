@@ -1,17 +1,21 @@
 using System.Collections.Immutable;
+using Fluxor;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Store;
+using LiftLog.Ui.Store.CurrentSession;
 
 namespace LiftLog.Ui.Services;
 
 public class SessionService
 {
+    private readonly IState<CurrentSessionState> _currentSessionState;
     private readonly IProgressStore _progressStore;
     private readonly IProgramStore _programStore;
 
-    public SessionService(IProgressStore progressStore, IProgramStore programStore)
+    public SessionService(IState<CurrentSessionState> currentSessionState, IProgressStore progressStore, IProgramStore programStore)
     {
-        this._progressStore = progressStore;
+        _currentSessionState = currentSessionState;
+        _progressStore = progressStore;
         _programStore = programStore;
     }
 
@@ -27,7 +31,7 @@ public class SessionService
             yield break;
         }
         var latestRecordedExercises = await _progressStore.GetLatestRecordedExercisesAsync();
-        var currentSession = await _progressStore.GetCurrentSessionAsync();
+        var currentSession = _currentSessionState.Value.WorkoutSession;
         if (currentSession != null)
             yield return currentSession;
 
@@ -50,9 +54,9 @@ public class SessionService
             yield return latestSession;
         }
     }
-    
-    
-    public  IAsyncEnumerable<Session> GetLatestSessionsAsync()
+
+
+    public IAsyncEnumerable<Session> GetLatestSessionsAsync()
     {
         return _progressStore.GetOrderedSessions();
     }

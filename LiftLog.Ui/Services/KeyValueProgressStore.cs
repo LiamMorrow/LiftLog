@@ -13,7 +13,6 @@ namespace LiftLog.Ui.Services
     {
         private const string StorageKey = "Progress";
         private bool _initialised;
-        private Session? _currentSession;
         private readonly ConcurrentDictionary<Guid, Session> _storedSessions = new();
         private readonly IKeyValueStore _keyValueStore;
 
@@ -33,12 +32,6 @@ namespace LiftLog.Ui.Services
             }
         }
 
-        public async ValueTask<Session?> GetCurrentSessionAsync()
-        {
-            await InitialiseAsync();
-            return _currentSession;
-        }
-
         public ValueTask SaveCompletedSessionAsync(Session session)
         {
             _storedSessions[session.Id] = session;
@@ -55,11 +48,6 @@ namespace LiftLog.Ui.Services
             return PersistAsync();
         }
 
-        public ValueTask SaveCurrentSessionAsync(Session session)
-        {
-            _currentSession = session;
-            return PersistAsync();
-        }
 
         public ValueTask DeleteSessionAsync(Session session)
         {
@@ -67,16 +55,12 @@ namespace LiftLog.Ui.Services
             return PersistAsync();
         }
 
-        public ValueTask ClearCurrentSessionAsync()
-        {
-            _currentSession = null;
-            return PersistAsync();
-        }
 
         private async ValueTask InitialiseAsync()
         {
             if (!_initialised)
             {
+                _initialised = true;
                 var version = await _keyValueStore.GetItemAsync($"{StorageKey}-Version");
                 if (version is null)
                 {
@@ -96,11 +80,9 @@ namespace LiftLog.Ui.Services
                 {
                     foreach (var session in storedData.CompletedSessions)
                     {
-                        _storedSessions[session.Id] = session;
+                        _storedSessions[session.Key] = session.Value;
                     }
-                    _currentSession = storedData.CurrentSession;
                 }
-                _initialised = true;
             }
         }
 
@@ -110,7 +92,7 @@ namespace LiftLog.Ui.Services
             await _keyValueStore.SetItemAsync(
                 StorageKey,
                 JsonSerializer.Serialize(
-                    SessionHistoryDaoV1.FromModel(new(_currentSession, _storedSessions.Values.ToImmutableList())),
+                    SessionHistoryDaoV1.FromModel(new(_storedSessions.ToImmutableDictionary())),
                     JsonSerializerSettings.LiftLog
                 )
             );
