@@ -28,21 +28,21 @@
             }
         </div>
         <div class="flex flex-col justify-around gap-2 h-min">
-            <AppButton Type="AppButtonType.Secondary" OnClick=@(() => MoveSessionUp(session))><span class="material-symbols-outlined">arrow_upward</span>️</AppButton>
-            <AppButton Type="AppButtonType.Secondary" OnClick=@(() => MoveSessionDown(session))>
-                <span class="material-symbols-outlined">arrow_downward</span>
-            </AppButton>
-            <AppButton Type="AppButtonType.Secondary" OnClick=@(() => OverflowSession(index))>
-                <div class="relative">
-                    <span class="material-symbols-outlined">more_horiz</span>
-                    <div class="fixed cursor-default @(index == _overFlowedSessionIndex ? "right-0 top-0 bottom-0 left-0" : "")" @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick="() => _overFlowedSessionIndex = null"></div>
-                    <ul @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick="() => _overFlowedSessionIndex = null"
-                        class="absolute top-0 right-0 bg-surface-container text-on-surface px-2 py-2 rounded-md shadow-md flex flex-col text-left gap-2 transition-all origin-top-right @GetOverflowStyle(index)">
-                        <li @onclick="() => RemoveSession(session)" class="flex gap-2 py-2"><span class="material-symbols-outlined">delete</span>Remove</li>
-                        <li @onclick="() => DuplicateSession(session)" class="flex gap-2 py-2"><span class="material-symbols-outlined">content_copy</span>Duplicate</li>
-                    </ul>
-                </div>
-            </AppButton>
+            <IconButton Type="IconButtonType.FilledTonal" OnClick=@(() => OverflowSession(index))>
+                    <md-icon>more_horiz</md-icon>
+            </IconButton>
+            <div class="relative z-10 -my-1">
+                <div class="fixed cursor-default @(index == _overFlowedSessionIndex ? "right-0 top-0 bottom-0 left-0" : "")" @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick="() => _overFlowedSessionIndex = null"></div>
+                <ul @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick="() => _overFlowedSessionIndex = null"
+                    class="absolute top-0 right-0 bg-surface-container text-on-surface px-2 py-2 rounded-md shadow-md flex flex-col text-left gap-2 transition-all origin-top-right @GetOverflowStyle(index)">
+                    <li @onclick="() => RemoveSession(session)" class="flex gap-2 py-2"><md-icon>delete</md-icon>Remove</li>
+                    <li @onclick="() => DuplicateSession(session)" class="flex gap-2 py-2"><md-icon>content_copy</md-icon>Duplicate</li>
+                </ul>
+            </div>
+            <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveSessionUp(session))><md-icon>arrow_upward</md-icon>️</IconButton>
+            <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveSessionDown(session))>
+                <md-icon>arrow_downward</md-icon>
+            </IconButton>
         </div>
     </div>
 </CardList>

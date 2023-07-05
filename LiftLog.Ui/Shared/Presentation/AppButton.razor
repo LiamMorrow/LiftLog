@@ -1,17 +1,21 @@
-@*Source: https://flowbite.com/docs/components/buttons/#default-button*@
 @switch (Type)
 {
     case AppButtonType.FloatingPrimary:
-        <md-filled-button class="block pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=" @FullHeightStyle @RoundingStyle">@ChildContent</md-filled-button>
+        <md-filled-button
+            class="block pointer-events-auto"
+            @onclick="OnClick"
+            disabled=@Disabled
+            @onclick:stopPropagation="true" @onclick:preventDefault="true"
+            style="@FilledWithPrimaryStyle --md-filled-button-container-shape: 0.75rem; border-radius: 0.75rem; --md-filled-button-container-elevation: 3; @FullHeightStyle">@ChildContent</md-filled-button>
         break;
     case AppButtonType.Primary:
-        <md-filled-button class="block pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=" @FullHeightStyle @RoundingStyle">@ChildContent</md-filled-button>
+        <md-filled-button class="block pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=" @FullHeightStyle">@ChildContent</md-filled-button>
         break;
     case AppButtonType.Secondary:
-        <md-tonal-button class="block pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=" @FullHeightStyle @RoundingStyle">@ChildContent</md-tonal-button>
+        <md-tonal-button class="block pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=" @FullHeightStyle">@ChildContent</md-tonal-button>
         break;
     case AppButtonType.OutlineSecondary:
-        <md-outlined-button class="block pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@FilledWithPrimaryStyle @FullHeightStyle @RoundingStyle">@ChildContent</md-outlined-button>
+        <md-outlined-button class="block pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@FilledWithPrimaryStyle @FullHeightStyle">@ChildContent</md-outlined-button>
         break;
     default:
         throw new ArgumentOutOfRangeException();
@@ -35,19 +39,25 @@
     public bool FullHeight { get; set; }
 
     [Parameter]
-    public bool LargeRound { get; set; }
-    [Parameter]
     public bool FilledWithPrimary { get; set; }
 
     [Parameter]
     public bool Disabled { get; set; }
 
-    private string Rounding => LargeRound ? "rounded-xl": "rounded-md";
-
-    private string RoundingStyle => $"--md-{MdButtonStyle}-button-container-shape: {(LargeRound ? "0.75rem" : "0.375rem" )}; border-radius: {(LargeRound ? "0.75rem" : "0.375rem" )}";
     private string FullHeightStyle => FullHeight ? $"--md-{MdButtonStyle}-button-container-height:100%;": "";
 
-    private string FilledWithPrimaryStyle => FilledWithPrimary ? $"background-color: var(--md-sys-color-primary);--md-{MdButtonStyle}-button-focus-label-text-color:var(--md-sys-color-on-primary); --md-{MdButtonStyle}-button-with-icon-pressed-icon-color: var(--md-sys-color-on-primary); --md-{MdButtonStyle}-button-pressed-label-text-color: var(--md-sys-color-on-primary); --md-{MdButtonStyle}-button-hover-label-text-color: var(--md-sys-color-on-primary); --md-{MdButtonStyle}-button-label-text-color: var(--md-sys-color-on-primary);" : "";
+    private string FilledWithPrimaryStyle => FilledWithPrimary
+    ? $""""
+        {(Type == AppButtonType.OutlineSecondary ?"background-color" : $"--md-{MdButtonStyle}-button-container-color")}: var(--md-sys-color-primary);
+        --md-{MdButtonStyle}-button-focus-label-text-color:var(--md-sys-color-on-primary);
+        --md-{MdButtonStyle}-button-with-icon-icon-color: var(--md-sys-color-on-primary);
+        --md-{MdButtonStyle}-button-with-icon-pressed-icon-color: var(--md-sys-color-on-primary);
+        --md-{MdButtonStyle}-button-with-icon-hover-icon-color: var(--md-sys-color-on-primary);
+        --md-{MdButtonStyle}-button-pressed-label-text-color: var(--md-sys-color-on-primary);
+        --md-{MdButtonStyle}-button-hover-label-text-color: var(--md-sys-color-on-primary);
+        --md-{MdButtonStyle}-button-label-text-color: var(--md-sys-color-on-primary);
+        """"
+    : "";
 
     private string Aspect => FullHeight ? "aspect-square" : "";
 

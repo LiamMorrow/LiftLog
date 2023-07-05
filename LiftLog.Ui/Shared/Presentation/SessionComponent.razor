@@ -9,7 +9,7 @@
 </CardList>
 <div class="sticky bottom-0 flex flex-col pointer-events-none">
     <div class="flex justify-end w-full mt-2 mb-2">
-        <AppButton LargeRound="true" Type="AppButtonType.FloatingPrimary" OnClick=SaveSession><span class="mr-1 material-symbols-outlined">save</span><span>Save</span></AppButton>
+        <AppButton Type="AppButtonType.FloatingPrimary" OnClick=SaveSession><md-icon slot="icon">save</md-icon>Save</AppButton>
     </div>
     @if (Session.NextExercise is not null && Session.LastExercise?.LastRecordedSet is not null)
     {
