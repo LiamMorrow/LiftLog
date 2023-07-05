@@ -1,5 +1,6 @@
 namespace LiftLog.Ui.Models.SessionHistoryDao;
 
+using System.Collections.Immutable;
 using LiftLog.Lib;
 
-internal record SessionHistoryDaoContainer(Lib.Models.Session? CurrentSession, ImmutableListSequence<Lib.Models.Session> CompletedSessions);
+internal record SessionHistoryDaoContainer(ImmutableDictionary<Guid, Lib.Models.Session> CompletedSessions);

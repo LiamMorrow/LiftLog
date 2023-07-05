@@ -2,5 +2,5 @@ using LiftLog.Lib.Models;
 
 namespace LiftLog.Ui.Store.CurrentSession
 {
-    public record CurrentSessionState(Session? Session);
+    public record CurrentSessionState(Session? WorkoutSession, Session? HistorySession);
 }

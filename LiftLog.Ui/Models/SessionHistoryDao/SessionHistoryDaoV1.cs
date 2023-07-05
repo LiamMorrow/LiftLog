@@ -15,15 +15,12 @@ internal record SessionHistoryDaoV1(
 {
     public static SessionHistoryDaoV1 FromModel(SessionHistoryDaoContainer model)
         => new(
-            model.CurrentSession is null ? null : SessionDaoV1.FromModel(model.CurrentSession),
-            model.CompletedSessions.Select(SessionDaoV1.FromModel).ToImmutableList()
+            null,
+            model.CompletedSessions.Values.Select(SessionDaoV1.FromModel).ToImmutableList()
         );
 
     public SessionHistoryDaoContainer ToModel()
-        => new(
-            CurrentSession?.ToModel(),
-            CompletedSessions.Select(x => x.ToModel()).ToImmutableList()
-        );
+        => new(CompletedSessions.ToImmutableDictionary(x => x.Id, x => x.ToModel()));
 }
 
 internal record SessionDaoV1(

@@ -22,22 +22,32 @@ public class CurrentSessionEffects
     }
 
     [EffectMethod]
-    public async Task PersistCurrentSession(PersistCurrentSessionAction _, IDispatcher dispatcher)
+    public async Task PersistCurrentSession(PersistCurrentSessionAction action, IDispatcher dispatcher)
     {
         await _notificationService.CancelNextSetNotificationAsync();
-        if (_state.Value.Session is not null)
-            await _progressStore.SaveCompletedSessionAsync(_state.Value.Session);
+        var session = action.Target switch
+        {
+            SessionTarget.WorkoutSession => _state.Value.WorkoutSession,
+            SessionTarget.HistorySession => _state.Value.HistorySession,
+            _ => throw new Exception()
+        };
+        if (session is not null)
+            await _progressStore.SaveCompletedSessionAsync(session);
     }
 
     [EffectMethod]
-    public async Task NotifySetTimer(NotifySetTimerAction _, IDispatcher dispatcher)
+    public async Task NotifySetTimer(NotifySetTimerAction action, IDispatcher dispatcher)
     {
         await _notificationService.CancelNextSetNotificationAsync();
-        if (_state.Value.Session?.NextExercise is not null)
+        var session = action.Target switch
         {
-            await _notificationService.ScheduleNextSetNotificationAsync(
-                _state.Value.Session.NextExercise
-            );
+            SessionTarget.WorkoutSession => _state.Value.WorkoutSession,
+            SessionTarget.HistorySession => _state.Value.HistorySession,
+            _ => throw new Exception()
+        };
+        if (session?.NextExercise is not null)
+        {
+            await _notificationService.ScheduleNextSetNotificationAsync(session.NextExercise);
         }
     }
 

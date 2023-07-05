@@ -33,7 +33,7 @@ namespace LiftLog.Ui.Pages
 
         private void SelectSession(Session session)
         {
-            Dispatcher.Dispatch(new SetCurrentSessionAction(session));
+            Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, session));
             NavigationManager.NavigateTo("/session");
         }
     }

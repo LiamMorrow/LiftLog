@@ -1,27 +1,29 @@
+using System.Text.Json;
 using Fluxor;
-using LiftLog.Lib.Store;
+using LiftLog.Lib.Serialization;
+using LiftLog.Ui.Services;
 
 namespace LiftLog.Ui.Store.CurrentSession
 {
     public class PersistSessionMiddleware : Middleware
     {
-        private readonly IProgressStore _progressStore;
+        private const string Key = "CurrentSessionState";
         private IStore? _store;
+        private readonly IKeyValueStore keyValueStore;
 
-        public PersistSessionMiddleware(IProgressStore progressStore)
+        public PersistSessionMiddleware(IKeyValueStore _keyValueStore)
         {
-            _progressStore = progressStore;
+            keyValueStore = _keyValueStore;
         }
 
         public override async Task InitializeAsync(IDispatcher dispatch, IStore store)
         {
             _store = store;
-            var currentSession = await _progressStore.GetCurrentSessionAsync();
-            if (currentSession is not null)
+            var currentSessionStateJson = await keyValueStore.GetItemAsync(Key);
+            var currentSessionState = currentSessionStateJson != null ? JsonSerializer.Deserialize<CurrentSessionState>(currentSessionStateJson, JsonSerializerSettings.LiftLog) : null;
+            if (currentSessionState is not null)
             {
-                store.Features["CurrentSession"].RestoreState(
-                    new CurrentSessionState(currentSession)
-                );
+                store.Features["CurrentSession"].RestoreState(currentSessionState);
             }
             dispatch.Dispatch(new RehydrateSessionAction());
         }
@@ -29,13 +31,8 @@ namespace LiftLog.Ui.Store.CurrentSession
         public override void AfterDispatch(object action)
         {
             var currentState = (CurrentSessionState?)_store?.Features["CurrentSession"].GetState();
-            if (currentState?.Session is null)
-            {
-                _progressStore.ClearCurrentSessionAsync();
-                return;
-            }
-
-            _progressStore.SaveCurrentSessionAsync(currentState.Session);
+            var currentSessionState = JsonSerializer.Serialize(currentState, JsonSerializerSettings.LiftLog);
+            keyValueStore.SetItemAsync(Key, currentSessionState);
         }
     }
 }
