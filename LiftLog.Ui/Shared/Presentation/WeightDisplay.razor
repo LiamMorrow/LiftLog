@@ -4,7 +4,7 @@
     </AppButton>
 </div>
 <div class="weight-display-popup @(PopupActive ? "active" :"")" @onclick="() => { PopupActive = false; }" >
-    <div class="weight-display-popup-content text-on-surface bg-surface-container p-6 rounded-card" @onclick:stopPropagation="true">
+    <div class="p-6 weight-display-popup-content text-on-surface bg-surface-container rounded-card" @onclick:stopPropagation="true">
         <div class="weight-display-popup-body">
             <div class="weight-display-popup-row">
                 <div class="weight-display-popup-label">Weight</div>
@@ -14,8 +14,8 @@
             </div>
             <div class="weight-display-popup-row">
                 <div class="weight-display-weight-increment-buttons-grid">
-                    <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightDecrementClick><WeightFormat Kilograms="-Exercise.Blueprint.KilogramsIncreaseOnSuccess"  /></AppButton>
-                    <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightIncrementClick>+<WeightFormat Kilograms="Exercise.Blueprint.KilogramsIncreaseOnSuccess" /></AppButton>
+                    <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightDecrementClick><WeightFormat Kilograms="-Increment"  /></AppButton>
+                    <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightIncrementClick>+<WeightFormat Kilograms="Increment" /></AppButton>
                 </div>
             </div>
             <div class="weight-display-button-row">
@@ -27,7 +27,7 @@
 </div>
 
 @code {
-  
+
 
     [EditorRequired]
     [Parameter]
@@ -36,6 +36,8 @@
     [EditorRequired]
     [Parameter]
     public Action<decimal> UpdateWeightForExercise { get; set; } = null!;
+
+    private decimal Increment => Exercise.Blueprint.KilogramsIncreaseOnSuccess == 0 ? 2.5m : Exercise.Blueprint.KilogramsIncreaseOnSuccess;
 
     private bool PopupActive { get; set; }
 
