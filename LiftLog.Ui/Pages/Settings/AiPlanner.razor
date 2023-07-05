@@ -53,6 +53,7 @@
 
     private void AcceptAiPlan(AiWorkoutPlan plan){
         Dispatcher.Dispatch(new SetProgramSessionsAction(plan.Sessions));
+        Dispatcher.Dispatch(new SetAiPlanAction(null));
         NavigationManager.NavigateTo("/");
     }
 }
