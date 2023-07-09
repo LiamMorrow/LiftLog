@@ -3,9 +3,12 @@
   <div class="flex justify-between">
     <span class="text-xl">@RecordedExercise.Blueprint.Name</span>
     <div class="flex gap-1">
-        <IconButton Type="IconButtonType.FilledTonal" OnClick="()=>{}">
-            <md-icon>history</md-icon>
-        </IconButton>
+        @if(PreviousRecordedExercise != null)
+        {
+            <IconButton Type="IconButtonType.FilledTonal" OnClick="()=>{}" OnStartHold="()=> _holdingPrevious=true" OnEndHold="()=>_holdingPrevious = false">
+                <md-icon>history</md-icon>
+            </IconButton>
+        }
         <WeightDisplay
             Exercise="RecordedExercise"
             UpdateWeightForExercise="UpdateWeightForExercise"/>
@@ -13,13 +16,18 @@
   </div>
   <div class="flex flex-wrap justify-center gap-4">
     @{
-      var repToStartNext = RecordedExercise.RecordedSets.IndexOf(null);
+        var (displayedExercise, repToStartNext) = (_holdingPrevious, PreviousRecordedExercise) switch
+        {
+            (true, null) => (RecordedExercise, -1),
+            (true, _) => (PreviousRecordedExercise!, -1),
+            (false, _) => (RecordedExercise, RecordedExercise.RecordedSets.IndexOf(null))
+        };
     }
-    @foreach (var (set, i) in RecordedExercise.RecordedSets.IndexedTuples())
+    @foreach (var (set, i) in displayedExercise.RecordedSets.IndexedTuples())
     {
       <RepCount
         @key=i
-        MaxReps="RecordedExercise.Blueprint.RepsPerSet"
+        MaxReps="displayedExercise.Blueprint.RepsPerSet"
         CycleRepCount=@(() => CycleRepCountForSet(i))
         ClearRepCount=@(() => ClearRepCountForSet(i))
         RepCountValue=@set?.RepsCompleted
@@ -28,9 +36,15 @@
   </div>
 </div>
 @code {
+    private bool _holdingPrevious = false;
+
   [EditorRequired]
   [Parameter]
   public RecordedExercise RecordedExercise { get; set; } = null!;
+
+  [EditorRequired]
+  [Parameter]
+  public RecordedExercise? PreviousRecordedExercise { get; set; }
 
   [EditorRequired]
   [Parameter]
@@ -47,4 +61,5 @@
   [EditorRequired]
   [Parameter]
   public Action<decimal> UpdateWeightForExercise { get; set; } = null!;
+
 }

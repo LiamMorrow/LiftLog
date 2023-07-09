@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using LiftLog.Lib.Models;
 
 namespace LiftLog.Lib.Store
@@ -6,7 +7,7 @@ namespace LiftLog.Lib.Store
     {
 
         ValueTask<
-            Dictionary<ExerciseBlueprint, RecordedExercise>
+            ImmutableDictionary<ExerciseBlueprint, RecordedExercise>
         > GetLatestRecordedExercisesAsync();
         IAsyncEnumerable<Session> GetOrderedSessions();
         ValueTask SaveCompletedSessionAsync(Session session);
