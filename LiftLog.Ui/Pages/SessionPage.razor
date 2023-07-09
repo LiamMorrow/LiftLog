@@ -1,10 +1,12 @@
 ﻿@page "/session"
 @using LiftLog.Ui.Store.CurrentSession
 @using LiftLog.Ui.Store.App
+@using LiftLog.Lib.Store
 @using Fluxor;
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @inject IState<CurrentSessionState> CurrentSessionState
+@inject IProgressStore ProgressStore
 @inject IDispatcher Dispatcher
 @inject NavigationManager NavigationManager
 
@@ -19,24 +21,29 @@
 }
 @if (CurrentSessionState.Value.WorkoutSession is not null)
 {
-    Init(CurrentSessionState.Value.WorkoutSession);
+    InvokeAsync(()=>Init(CurrentSessionState.Value.WorkoutSession));
     <SessionComponent
         CycleRepcountForExercise=CycleRepcountForExercise
         ClearRepCountForExercise="ClearRepCountForExercise"
         UpdateWeightForExercise=UpdateWeightForExercise
         Session=@(CurrentSessionState.Value.WorkoutSession)
         SaveSession=SaveSession
-        CloseSession=CloseSession/>
+        CloseSession=CloseSession
+        PreviouslyCompleted=@(previouslyCompleted)
+        />
 }
 
 
 @code
 {
+    private ImmutableDictionary<ExerciseBlueprint, RecordedExercise> previouslyCompleted = ImmutableDictionary<ExerciseBlueprint, RecordedExercise>.Empty;
     private bool initted = false;
-    private void Init(Session session)
+    private async Task Init(Session session)
     {
-        if(!initted){
+        if(!initted)
+        {
             initted = true;
+            previouslyCompleted = await ProgressStore.GetLatestRecordedExercisesAsync();
             Dispatcher.Dispatch(new SetPageTitleAction(session.Blueprint.Name));
         }
     }

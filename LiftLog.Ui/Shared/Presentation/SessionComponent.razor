@@ -5,7 +5,8 @@
                       ToStartNext=@(Session.NextExercise == context.Item)
                       CycleRepCountForSet=CycleRepCountForExerciseSet(context.Index)
                       ClearRepCountForSet=ClearRepCountForExerciseSet(context.Index)
-                      UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index) />
+                      UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index)
+                      PreviousRecordedExercise="PreviouslyCompleted.GetValueOrDefault(context.Item.Blueprint)" />
 </CardList>
 <div class="sticky bottom-0 flex flex-col pointer-events-none">
     <div class="flex justify-end w-full mt-2 mb-2">
@@ -25,6 +26,10 @@
     [EditorRequired]
     [Parameter]
     public Session Session { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
+    public ImmutableDictionary<ExerciseBlueprint, RecordedExercise> PreviouslyCompleted { get; set; } = null!;
 
     [EditorRequired]
     [Parameter]

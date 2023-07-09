@@ -1,10 +1,12 @@
 ﻿@page "/history/edit"
 @using LiftLog.Ui.Store.CurrentSession
 @using LiftLog.Ui.Store.App
+@using LiftLog.Lib.Store
 @using Fluxor;
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @inject IState<CurrentSessionState> CurrentSessionState
+@inject IProgressStore ProgressStore
 @inject IDispatcher Dispatcher
 @inject NavigationManager NavigationManager
 
@@ -26,15 +28,18 @@
         UpdateWeightForExercise=UpdateWeightForExercise
         Session=@(CurrentSessionState.Value.HistorySession)
         SaveSession=SaveSession
-        CloseSession=CloseSession/>
+        CloseSession=CloseSession
+        PreviouslyCompleted=previouslyCompleted/>
 }
 
 @code
 {
+    private ImmutableDictionary<ExerciseBlueprint, RecordedExercise> previouslyCompleted = ImmutableDictionary<ExerciseBlueprint, RecordedExercise>.Empty;
     private bool initted = false;
     private void Init(Session session)
     {
-        if(!initted){
+        if(!initted)
+        {
             initted = true;
             Dispatcher.Dispatch(new SetPageTitleAction(session.Blueprint.Name));
         }

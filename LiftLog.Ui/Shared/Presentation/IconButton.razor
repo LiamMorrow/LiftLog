@@ -1,16 +1,28 @@
 @switch (Type)
 {
     case IconButtonType.Standard:
-        <md-standard-icon-button class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">@ChildContent</md-standard-icon-button>
+        <md-standard-icon-button
+            @onpointerdown="OnPointerDown"
+            @onpointerleave="OnPointerLeave"
+            @onpointerup="OnPointerUp" class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">@ChildContent</md-standard-icon-button>
         break;
     case IconButtonType.Filled:
-        <md-filled-icon-button class="pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">@ChildContent</md-filled-icon-button>
+        <md-filled-icon-button
+            @onpointerdown="OnPointerDown"
+            @onpointerleave="OnPointerLeave"
+            @onpointerup="OnPointerUp" class="pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">@ChildContent</md-filled-icon-button>
         break;
     case IconButtonType.FilledTonal:
-        <md-filled-tonal-icon-button class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">@ChildContent</md-filled-tonal-icon-button>
+        <md-filled-tonal-icon-button
+            @onpointerdown="OnPointerDown"
+            @onpointerleave="OnPointerLeave"
+            @onpointerup="OnPointerUp" class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">@ChildContent</md-filled-tonal-icon-button>
         break;
     case IconButtonType.Outlined:
-        <md-outlined-icon-button class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">@ChildContent</md-outlined-icon-button>
+        <md-outlined-icon-button
+            @onpointerdown="OnPointerDown"
+            @onpointerleave="OnPointerLeave"
+            @onpointerup="OnPointerUp" class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">@ChildContent</md-outlined-icon-button>
         break;
     default:
         throw new ArgumentOutOfRangeException();
@@ -28,8 +40,30 @@
     public EventCallback<MouseEventArgs> OnClick { get; set; }
 
     [Parameter]
+    public EventCallback<PointerEventArgs> OnStartHold { get; set; }
+
+    [Parameter]
+    public EventCallback<PointerEventArgs> OnEndHold { get; set; }
+
+    [Parameter]
     public IconButtonType Type { get; set; } = IconButtonType.Filled;
 
     [Parameter]
     public bool Disabled { get; set; }
+
+
+    private void OnPointerDown(PointerEventArgs args)
+    {
+        OnStartHold.InvokeAsync(args);
+    }
+
+    private void OnPointerLeave(PointerEventArgs args)
+    {
+        OnEndHold.InvokeAsync(args);
+    }
+
+    private void OnPointerUp(PointerEventArgs args)
+    {
+        OnEndHold.InvokeAsync(args);
+    }
 }
