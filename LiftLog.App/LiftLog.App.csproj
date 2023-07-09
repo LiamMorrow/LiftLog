@@ -21,8 +21,8 @@
         <ApplicationIdGuid>71733E37-6FDD-4EEF-A0BF-DE32634D58EC</ApplicationIdGuid>
 
         <!-- Versions -->
-        <ApplicationDisplayVersion>1.0.3</ApplicationDisplayVersion>
-        <ApplicationVersion>4</ApplicationVersion>
+        <ApplicationDisplayVersion>1.0.4</ApplicationDisplayVersion>
+        <ApplicationVersion>5</ApplicationVersion>
 
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
@@ -36,7 +36,7 @@
         <Authors>Liam Morrow</Authors>
         <Company>LiftLog</Company>
         <Product>LiftLog</Product>
-        <Version>1.0.3</Version>
+        <Version>1.0.4</Version>
     </PropertyGroup>
 
     <ItemGroup>
