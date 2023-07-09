@@ -1,12 +1,17 @@
 ﻿@using LiftLog.Ui.Util
-<div class="flex flex-col gap-2">
+<div class="flex flex-col gap-4">
   <div class="flex justify-between">
     <span class="text-xl">@RecordedExercise.Blueprint.Name</span>
-    <WeightDisplay
-        Exercise="RecordedExercise"
-        UpdateWeightForExercise="UpdateWeightForExercise"/>
+    <div class="flex gap-1">
+        <IconButton Type="IconButtonType.FilledTonal" OnClick="()=>{}">
+            <md-icon>history</md-icon>
+        </IconButton>
+        <WeightDisplay
+            Exercise="RecordedExercise"
+            UpdateWeightForExercise="UpdateWeightForExercise"/>
+        </div>
   </div>
-  <div class="flex flex-wrap gap-4">
+  <div class="flex flex-wrap justify-center gap-4">
     @{
       var repToStartNext = RecordedExercise.RecordedSets.IndexOf(null);
     }
