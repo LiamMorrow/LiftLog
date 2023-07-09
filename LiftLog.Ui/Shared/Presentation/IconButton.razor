@@ -1,16 +1,16 @@
 @switch (Type)
 {
     case IconButtonType.Standard:
-        <md-standard-icon-button class="pointer-events-auto" @oncontextmenu:preventDefault="true" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">@ChildContent</md-standard-icon-button>
+        <md-standard-icon-button class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">@ChildContent</md-standard-icon-button>
         break;
     case IconButtonType.Filled:
-        <md-filled-icon-button class="pointer-events-auto"  @oncontextmenu:preventDefault="true" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">@ChildContent</md-filled-icon-button>
+        <md-filled-icon-button class="pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">@ChildContent</md-filled-icon-button>
         break;
     case IconButtonType.FilledTonal:
-        <md-filled-tonal-icon-button class="pointer-events-auto"  @oncontextmenu:preventDefault="true" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">@ChildContent</md-filled-tonal-icon-button>
+        <md-filled-tonal-icon-button class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">@ChildContent</md-filled-tonal-icon-button>
         break;
     case IconButtonType.Outlined:
-        <md-outlined-icon-button class="pointer-events-auto" @oncontextmenu:preventDefault="true" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">@ChildContent</md-outlined-icon-button>
+        <md-outlined-icon-button class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">@ChildContent</md-outlined-icon-button>
         break;
     default:
         throw new ArgumentOutOfRangeException();
