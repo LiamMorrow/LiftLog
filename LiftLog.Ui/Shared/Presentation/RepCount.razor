@@ -1,15 +1,15 @@
 ﻿<button class="w-16 h-16 rounded-xl relative text-center text-xl flex justify-center align-middle transition-colors duration-75 items-center @ColorClass @RepCountToStartClass"
-        @onclick="CycleRepCount"
         @onpointerdown="OnPointerDown"
         @onpointerleave="OnPointerLeave"
         @onpointerup="OnPointerUp">
-    <md-ripple></md-ripple>
+    <md-ripple style="--md-ripple-pressed-color: var(--md-sys-color-on-primary-container)" ></md-ripple>
     <span class="font-bold">@(RepCountValue?.ToString() ?? "-")</span>
     <span class="inline text-sm align-text-top">/@MaxReps</span>
 </button>
 @code {
 
     private DateTime? _lastPointerDownTime;
+    private DateTime? _clearRepCountTime;
 
     [EditorRequired]
     [Parameter]
@@ -39,6 +39,7 @@
         _lastPointerDownTime = DateTime.Now;
         Task.Delay(500).ContinueWith(_ => {
             if (_lastPointerDownTime is null || _lastPointerDownTime.Value.AddMilliseconds(500) > DateTime.Now) return;
+            _clearRepCountTime = DateTime.Now;
             ClearRepCount();
         });
     }
@@ -48,6 +49,10 @@
     }
 
     private void OnPointerUp(PointerEventArgs args){
+        if(_clearRepCountTime is null){
+            CycleRepCount();
+        }
+        _clearRepCountTime = null;
         _lastPointerDownTime = null;
     }
 
