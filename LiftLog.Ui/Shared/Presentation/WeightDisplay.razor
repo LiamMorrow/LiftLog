@@ -1,33 +1,30 @@
+@inject IJSRuntime JSRuntime
 <div>
     <AppButton Type="AppButtonType.OutlineSecondary" OnClick="OnOpenClick">
         <WeightFormat Kilograms="Exercise.Kilograms"/>
     </AppButton>
 </div>
-<div class="weight-display-popup @(PopupActive ? "active" :"")" @onclick="() => { PopupActive = false; }" >
-    <div class="p-6 weight-display-popup-content text-on-surface bg-surface-container rounded-card" @onclick:stopPropagation="true">
-        <div class="weight-display-popup-body">
-            <div class="weight-display-popup-row">
-                <div class="weight-display-popup-label">Weight</div>
-            </div>
-            <div class="weight-display-popup-row">
-                <InputNumber @bind-Value=EditorWeight step=2.5 />
-            </div>
-            <div class="weight-display-popup-row">
-                <div class="weight-display-weight-increment-buttons-grid">
-                    <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightDecrementClick><WeightFormat Kilograms="-Increment"  /></AppButton>
-                    <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightIncrementClick>+<WeightFormat Kilograms="Increment" /></AppButton>
-                </div>
-            </div>
-            <div class="weight-display-button-row">
-                <AppButton OnClick=OnCloseClick Type=AppButtonType.Secondary>Close</AppButton>
-                <AppButton OnClick=OnSaveClick>Save</AppButton>
+    <md-dialog
+        @ref="dialog"
+        style="--md-dialog-container-max-block-size: 500px;"
+    >
+        <span slot="header">Weight</span>
+        <div class="flex flex-col gap-2 p-1">
+            <InputNumber @bind-Value=EditorWeight step=2.5 />
+            <div class="flex justify-between">
+                <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightDecrementClick><WeightFormat Kilograms="-Increment"  /></AppButton>
+                <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightIncrementClick>+<WeightFormat Kilograms="Increment" /></AppButton>
             </div>
         </div>
-    </div>
-</div>
+        <div slot="footer" class="flex gap-1" >
+            <AppButton dialog-action="close" OnClick=OnCloseClick Type=AppButtonType.Text>Close</AppButton>
+            <AppButton dialog-action="save" dialog-focus OnClick=OnSaveClick Type=AppButtonType.Text>Save</AppButton>
+        </div>
+      </md-dialog>
 
 @code {
 
+    private ElementReference dialog;
 
     [EditorRequired]
     [Parameter]
@@ -39,25 +36,23 @@
 
     private decimal Increment => Exercise.Blueprint.KilogramsIncreaseOnSuccess == 0 ? 2.5m : Exercise.Blueprint.KilogramsIncreaseOnSuccess;
 
-    private bool PopupActive { get; set; }
-
     private decimal EditorWeight { get; set; }
 
     private void OnOpenClick()
     {
         EditorWeight = Exercise.Kilograms;
-        PopupActive = true;
+        JSRuntime.InvokeVoidAsync("AppUtils.showMdPopup", dialog);
     }
 
     private void OnCloseClick()
     {
-        PopupActive = false;
+        JSRuntime.InvokeVoidAsync("AppUtils.hideMdPopup", dialog);
     }
 
     private void OnSaveClick()
     {
         UpdateWeightForExercise(EditorWeight);
-        PopupActive = false;
+        JSRuntime.InvokeVoidAsync("AppUtils.hideMdPopup", dialog);
     }
 
     private void OnWeightIncrementClick()
