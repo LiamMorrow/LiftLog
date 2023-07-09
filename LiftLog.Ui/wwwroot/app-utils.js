@@ -24,6 +24,13 @@ AppUtils.setMiddleElementAttribute = function (element, attribute, value) {
     elementAtMiddle?.setAttribute(attribute, value);
 }
 
+AppUtils.showMdPopup = function (element) {
+    return element.show();
+};
+
+AppUtils.hideMdPopup = function (element) {
+    return element.close();
+};
 
 AppUtils.scrollElementToMiddle = function (elementSelector) {
     document.querySelector(elementSelector).scrollIntoView({

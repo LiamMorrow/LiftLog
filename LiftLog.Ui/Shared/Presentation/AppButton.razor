@@ -2,6 +2,7 @@
 {
     case AppButtonType.FloatingPrimary:
         <md-filled-button
+            @attributes="AdditionalAttributes"
             class="block pointer-events-auto"
             @onclick="OnClick"
             disabled=@Disabled
@@ -9,13 +10,20 @@
             style="@FilledWithPrimaryStyle --md-filled-button-container-shape: 0.75rem; border-radius: 0.75rem; --md-filled-button-container-elevation: 3; @FullHeightStyle">@ChildContent</md-filled-button>
         break;
     case AppButtonType.Primary:
-        <md-filled-button class="block pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=" @FullHeightStyle">@ChildContent</md-filled-button>
+        <md-filled-button
+            @attributes="AdditionalAttributes" class="block pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=" @FullHeightStyle">@ChildContent</md-filled-button>
         break;
     case AppButtonType.Secondary:
-        <md-tonal-button class="block pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=" @FullHeightStyle">@ChildContent</md-tonal-button>
+        <md-tonal-button
+            @attributes="AdditionalAttributes" class="block pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=" @FullHeightStyle">@ChildContent</md-tonal-button>
         break;
     case AppButtonType.OutlineSecondary:
-        <md-outlined-button class="block pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@FilledWithPrimaryStyle @FullHeightStyle">@ChildContent</md-outlined-button>
+        <md-outlined-button
+            @attributes="AdditionalAttributes" class="block pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@FilledWithPrimaryStyle @FullHeightStyle">@ChildContent</md-outlined-button>
+        break;
+    case AppButtonType.Text:
+        <md-text-button
+            @attributes="AdditionalAttributes" class="block pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=" @FullHeightStyle">@ChildContent</md-text-button>
         break;
     default:
         throw new ArgumentOutOfRangeException();
@@ -28,7 +36,6 @@
     [Parameter]
     public RenderFragment ChildContent { get; set; } = null!;
 
-    [EditorRequired]
     [Parameter]
     public EventCallback<MouseEventArgs> OnClick { get; set; }
 
@@ -43,6 +50,9 @@
 
     [Parameter]
     public bool Disabled { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     private string FullHeightStyle => FullHeight ? $"--md-{MdButtonStyle}-button-container-height:100%;": "";
 
@@ -66,6 +76,7 @@
         AppButtonType.Primary => "filled",
         AppButtonType.Secondary => "tonal",
         AppButtonType.OutlineSecondary => "outlined",
+        AppButtonType.Text => "text",
         _ => throw new ArgumentOutOfRangeException()
     };
 }
