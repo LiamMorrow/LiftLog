@@ -45,6 +45,7 @@
             initted = true;
             previouslyCompleted = await ProgressStore.GetLatestRecordedExercisesAsync();
             Dispatcher.Dispatch(new SetPageTitleAction(session.Blueprint.Name));
+            await InvokeAsync(StateHasChanged);
         }
     }
     private void ClearRepCountForExercise(int exerciseIndex, int setIndex)
