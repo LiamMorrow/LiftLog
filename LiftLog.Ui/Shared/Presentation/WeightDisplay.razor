@@ -3,6 +3,7 @@
     <AppButton Type="AppButtonType.OutlineSecondary" OnClick="OnOpenClick">
         <WeightFormat Kilograms="Exercise.Kilograms"/>
     </AppButton>
+</div>
     <md-dialog
         @ref="dialog"
         style="--md-dialog-container-max-block-size: 500px;"
@@ -20,7 +21,7 @@
             <AppButton dialog-action="save" dialog-focus OnClick=OnSaveClick Type=AppButtonType.Text>Save</AppButton>
         </div>
       </md-dialog>
-</div>
+
 @code {
 
     private ElementReference dialog;
