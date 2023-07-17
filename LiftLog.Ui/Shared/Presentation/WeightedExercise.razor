@@ -1,28 +1,28 @@
 ﻿@using LiftLog.Ui.Util
+@{
+    var (displayedExercise, repToStartNext) = (_holdingPrevious, PreviousRecordedExercise) switch
+    {
+        (true, null) => (RecordedExercise, -1),
+        (true, _) => (PreviousRecordedExercise!, -1),
+        (false, _) => (RecordedExercise, RecordedExercise.RecordedSets.IndexOf(null))
+    };
+}
 <div class="flex flex-col gap-4">
-  <div class="flex justify-between">
-    <span class="text-xl">@RecordedExercise.Blueprint.Name</span>
-    <div class="flex gap-1">
+    <div class="flex justify-between">
+        <span class="text-xl">@RecordedExercise.Blueprint.Name</span>
+        <div class="flex gap-1 justify-end transition-all @(_holdingPrevious ? "mb-20" : "mb-0")">
+        <WeightDisplay
+            Exercise="displayedExercise"
+            UpdateWeightForExercise="UpdateWeightForExercise"/>
         @if(PreviousRecordedExercise != null)
         {
             <IconButton Type="IconButtonType.FilledTonal" OnClick="()=>{}" OnStartHold="()=> _holdingPrevious=true" OnEndHold="()=>_holdingPrevious = false">
                 <md-icon>history</md-icon>
             </IconButton>
         }
-        <WeightDisplay
-            Exercise="RecordedExercise"
-            UpdateWeightForExercise="UpdateWeightForExercise"/>
         </div>
-  </div>
-  <div class="flex flex-wrap justify-center gap-4">
-    @{
-        var (displayedExercise, repToStartNext) = (_holdingPrevious, PreviousRecordedExercise) switch
-        {
-            (true, null) => (RecordedExercise, -1),
-            (true, _) => (PreviousRecordedExercise!, -1),
-            (false, _) => (RecordedExercise, RecordedExercise.RecordedSets.IndexOf(null))
-        };
-    }
+    </div>
+    <div class="flex flex-wrap justify-center gap-4">
     @foreach (var (set, i) in displayedExercise.RecordedSets.IndexedTuples())
     {
       <RepCount
