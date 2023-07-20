@@ -1,7 +1,8 @@
 using System.Collections.Concurrent;
 using Append.Blazor.Notifications;
 using LiftLog.Lib.Models;
-using INotificationService = LiftLog.Lib.Services.INotificationService;
+using LiftLog.Ui.Store.CurrentSession;
+using INotificationService = LiftLog.Ui.Services.INotificationService;
 
 namespace LiftLog.WebUi.Services;
 
@@ -24,7 +25,7 @@ public class WebNotificationService : INotificationService
         _notificationService = notificationService;
     }
 
-    public async Task ScheduleNextSetNotificationAsync(RecordedExercise exercise)
+    public async Task ScheduleNextSetNotificationAsync(SessionTarget target, RecordedExercise exercise)
     {
         var rest = exercise switch
         {

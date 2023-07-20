@@ -9,7 +9,7 @@ using LiftLog.Ui.Store.Program;
 using MaterialColorUtilities.Maui;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
-using INotificationService = LiftLog.Lib.Services.INotificationService;
+using INotificationService = LiftLog.Ui.Services.INotificationService;
 using LiftLog.Lib.Services;
 
 namespace LiftLog.App;
@@ -30,6 +30,20 @@ public static class MauiProgram
 
         builder.UseLocalNotification(notificationBuilder =>
         {
+            notificationBuilder.AddCategory(new NotificationCategory(NotificationCategoryType.Status)
+            {
+                ActionList = new HashSet<NotificationAction>()
+                {
+                    new NotificationAction(100)
+                    {
+                        Title = "Complete Set",
+                        Android =
+                        {
+                            LaunchAppWhenTapped = false,
+                        }
+                    },
+                }
+            });
             notificationBuilder.AddAndroid(android =>
             {
                 android.AddChannel(
@@ -44,7 +58,7 @@ public static class MauiProgram
                         EnableVibration = true,
                         ShowBadge = true,
                         LockScreenVisibility = AndroidVisibilityType.Public,
-                        CanBypassDnd = false
+                        CanBypassDnd = false,
                     }
                 );
             });
@@ -65,7 +79,7 @@ public static class MauiProgram
         builder.Services.AddScoped<IProgramStore, KeyValueProgramStore>();
         builder.Services.AddScoped<IProgressStore, KeyValueProgressStore>();
         builder.Services.AddSingleton<IKeyValueStore, SecureStorageKeyValueStore>();
-        builder.Services.AddSingleton<INotificationService, MauiNotificationService>();
+        builder.Services.AddScoped<INotificationService, MauiNotificationService>();
         builder.Services.AddScoped<ITextExporter, MauiShareTextExporter>();
 
         builder.Services.AddSingleton<HttpClient>(new HttpClient());
