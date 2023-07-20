@@ -22,4 +22,6 @@ public record RehydrateSessionAction();
 
 public record NotifySetTimerAction(SessionTarget Target);
 
+public record CompleteSetFromNotificationAction(SessionTarget Target);
+
 public record DeleteSessionAction(Session Session);

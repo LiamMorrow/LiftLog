@@ -9,7 +9,7 @@ using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.CurrentSession;
 using LiftLog.Ui.Store.Program;
 using LiftLog.WebUi.Services;
-using INotificationService = LiftLog.Lib.Services.INotificationService;
+using INotificationService = LiftLog.Ui.Services.INotificationService;
 using LiftLog.Lib.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
