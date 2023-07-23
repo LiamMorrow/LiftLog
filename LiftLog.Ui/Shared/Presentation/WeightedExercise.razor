@@ -8,9 +8,9 @@
     };
 }
 <div class="flex flex-col gap-4">
-    <div class="flex justify-between">
+    <div class="flex justify-between  transition-all ease-out-back @(_holdingPrevious ? "mb-20" : "mb-0")">
         <span class="text-xl">@RecordedExercise.Blueprint.Name</span>
-        <div class="flex gap-1 justify-end transition-all @(_holdingPrevious ? "mb-20" : "mb-0")">
+        <div class="flex justify-end gap-1">
         <WeightDisplay
             Exercise="displayedExercise"
             UpdateWeightForExercise="UpdateWeightForExercise"/>
