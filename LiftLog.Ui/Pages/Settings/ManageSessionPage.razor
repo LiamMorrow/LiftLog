@@ -31,21 +31,23 @@ else
                 var exercise = context.Item;
                 var index = context.Index;
             }
-            <div class="grid grid-cols-[1fr,_min-content] grid-rows-1">
-                <div class="flex flex-col justify-between pr-4 mr-4 border-r border-outline-variant ">
+            <SplitCardControl>
+                <MainContent>
                     <input type="text" class="w-full mb-2 text-xl" value="@exercise.Name" @onchange="e => SetExerciseName(index, e.Value)"/>
                     <div class="flex flex-wrap justify-around w-full gap-1">
                         <div class="flex flex-col items-center gap-1">
-                            <div class="flex items-center">
-                                <IconButton Type="IconButtonType.Outlined" OnClick=@(() => DecrementExerciseSets(index))><md-icon>remove</md-icon></IconButton>
-                                <span class="inline-block w-20 mx-2 text-center">@exercise.Sets Sets</span>
-                                <IconButton Type="IconButtonType.Outlined" OnClick=@(() => IncrementExerciseSets(index))><md-icon>add</md-icon></IconButton>
-                            </div>
-                            <div class="flex items-center">
-                                <IconButton Type="IconButtonType.Outlined" OnClick=@(() => DecrementExerciseRepsPerSet(index))><md-icon>remove</md-icon></IconButton>
-                                <span class="inline-block w-20 mx-2 text-center">@exercise.RepsPerSet Reps</span>
-                                <IconButton Type="IconButtonType.Outlined" OnClick=@(() => IncrementExerciseRepsPerSet(index))><md-icon>add</md-icon></IconButton>
-                            </div>
+                            <FixedIncrementer
+                                Value="exercise.Sets"
+                                Increment="() => IncrementExerciseSets(index)"
+                                Decrement="() => DecrementExerciseSets(index)"
+                                Label="Sets"
+                            />
+                            <FixedIncrementer
+                                Value="exercise.RepsPerSet"
+                                Increment="() => IncrementExerciseRepsPerSet(index)"
+                                Decrement="() => DecrementExerciseRepsPerSet(index)"
+                                Label="Reps"
+                            />
                         </div>
                         <div class="flex flex-col justify-between gap-2">
                             <label class="text-lg text-center">Initial Weight</label>
@@ -78,13 +80,13 @@ else
                             </div>
                         </div>
                     </div>
-                </div>
-        <div class="flex flex-col justify-around gap-2 h-min">
-            <IconButton Type="IconButtonType.FilledTonal" OnClick=@(() => RemoveExercise(exercise))><md-icon>delete</md-icon></IconButton>
-            <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveExerciseUp(exercise))><md-icon>arrow_upward</md-icon>️</IconButton>
-            <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveExerciseDown(exercise))><md-icon>arrow_downward</md-icon></IconButton>
-        </div>
-            </div>
+                </MainContent>
+                <SideContent>
+                    <IconButton Type="IconButtonType.FilledTonal" OnClick=@(() => RemoveExercise(exercise))><md-icon>delete</md-icon></IconButton>
+                    <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveExerciseUp(exercise))><md-icon>arrow_upward</md-icon>️</IconButton>
+                    <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveExerciseDown(exercise))><md-icon>arrow_downward</md-icon></IconButton>
+                </SideContent>
+            </SplitCardControl>
         </CardList>
     </div>
     <div class="flex justify-center w-full">
