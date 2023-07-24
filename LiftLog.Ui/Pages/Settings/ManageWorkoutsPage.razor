@@ -18,14 +18,7 @@
     }
     <SplitCardControl>
         <MainContent>
-            <span class="text-xl">@session.Name</span>
-            @foreach (var exercise in session.Exercises)
-            {
-                <div class="flex justify-between w-full">
-                    <span >@exercise.Name</span>
-                    <span> @exercise.Sets x @exercise.RepsPerSet</span>
-                </div>
-            }
+            <SessionSummary Session="context.Item.GetEmptySession()"></SessionSummary>
         </MainContent>
         <SideContent>
             <IconButton Type="IconButtonType.FilledTonal" OnClick=@(() => OverflowSession(index))>

@@ -1,6 +1,28 @@
-﻿namespace LiftLog.Lib.Models;
+﻿using System.Collections.Immutable;
 
-public record SessionBlueprint(string Name, ImmutableListSequence<ExerciseBlueprint> Exercises);
+namespace LiftLog.Lib.Models;
+
+public record SessionBlueprint(string Name, ImmutableListSequence<ExerciseBlueprint> Exercises)
+{
+    public Session GetEmptySession()
+    {
+        RecordedExercise GetNextExercise(ExerciseBlueprint e)
+        {
+            return new RecordedExercise(
+                e,
+                e.InitialKilograms,
+                Enumerable.Range(0, e.Sets).Select(_ => (RecordedSet?)null).ToImmutableList()
+            );
+        }
+
+        return new Session(
+            Guid.NewGuid(),
+            this,
+            Exercises.Select(GetNextExercise).ToImmutableList(),
+            DateTimeOffset.Now
+        );
+    }
+}
 
 public record ExerciseBlueprint(
     string Name,
