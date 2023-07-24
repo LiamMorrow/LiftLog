@@ -1,0 +1,15 @@
+<div class="grid grid-cols-[1fr,_min-content] grid-rows-1">
+    <div class="flex flex-col justify-between pr-4 mr-4 border-r border-outline-variant ">
+        @MainContent
+    </div>
+
+    <div class="flex flex-col justify-around gap-2 h-min">
+        @SideContent
+    </div>
+</div>
+
+@code
+{
+    [Parameter] public RenderFragment? MainContent { get; set; }
+    [Parameter] public RenderFragment? SideContent { get; set; }
+}

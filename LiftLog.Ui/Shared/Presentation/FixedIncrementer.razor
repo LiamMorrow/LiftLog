@@ -1,0 +1,26 @@
+@typeparam T
+
+<div class="flex items-center">
+    <IconButton Type="IconButtonType.Outlined" OnClick="Decrement"><md-icon>remove</md-icon></IconButton>
+    <span class="inline-block w-20 mx-2 text-center">@Value @Label</span>
+    <IconButton Type="IconButtonType.Outlined" OnClick="Increment"><md-icon>add</md-icon></IconButton>
+</div>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public T Value { get; set; } = default!;
+
+    [Parameter]
+    [EditorRequired]
+    public string Label { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public Action Increment { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public Action Decrement { get; set; } = null!;
+}
