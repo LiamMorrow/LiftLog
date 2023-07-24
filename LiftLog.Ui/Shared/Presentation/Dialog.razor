@@ -1,0 +1,26 @@
+@inject IJSRuntime JSRuntime
+<md-dialog
+    @attributes="AdditionalAttributes"
+    @ref="dialog">
+    @ChildContent
+</md-dialog>
+@code
+{
+    private ElementReference dialog;
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    public async void Open()
+    {
+        await JSRuntime.InvokeVoidAsync("AppUtils.showMdPopup", dialog);
+    }
+
+    public async void Close()
+    {
+        await JSRuntime.InvokeVoidAsync("AppUtils.hideMdPopup", dialog);
+    }
+}
