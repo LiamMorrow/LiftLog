@@ -13,3 +13,5 @@ import '@material/web/iconbutton/filled-tonal-icon-button.js';
 import '@material/web/dialog/dialog.js';
 import '@material/web/menu/menu.js';
 import '@material/web/menu/menu-item.js';
+import '@material/web/textfield/filled-text-field.js';
+import '@material/web/textfield/outlined-text-field.js';

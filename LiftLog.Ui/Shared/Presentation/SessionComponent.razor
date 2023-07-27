@@ -1,12 +1,14 @@
 @using LiftLog.Ui.Util
 <CardList Items="Session.RecordedExercises.IndexedTuples()">
-    <WeightedExercise @key=context.Index
-                      RecordedExercise="context.Item"
-                      ToStartNext=@(Session.NextExercise == context.Item)
-                      CycleRepCountForSet=CycleRepCountForExerciseSet(context.Index)
-                      ClearRepCountForSet=ClearRepCountForExerciseSet(context.Index)
-                      UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index)
-                      PreviousRecordedExercise="PreviouslyCompleted.GetValueOrDefault(context.Item.Blueprint)" />
+    <WeightedExercise
+        @key=context.Index
+        RecordedExercise="context.Item"
+        ToStartNext=@(Session.NextExercise == context.Item)
+        CycleRepCountForSet=CycleRepCountForExerciseSet(context.Index)
+        ClearRepCountForSet=ClearRepCountForExerciseSet(context.Index)
+        UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index)
+        PreviousRecordedExercise="PreviouslyCompleted.GetValueOrDefault(context.Item.Blueprint)"
+        OnEditExercise="() => BeginEditExercise(context.Index)" />
 </CardList>
 
 <div class="sticky bottom-0 flex flex-col pointer-events-none">
@@ -22,7 +24,18 @@
             Failed=lastSetFailed/>
     }
 </div>
+<Dialog @ref="_editExerciseDialog"  >
+    <span slot="headline">Edit Exercise</span>
+    <AppButton Type="AppButtonType.Text" slot="footer">Save</AppButton>
+    @if(_exerciseToEdit != null)
+    {
+
+    }
+</Dialog>
 @code {
+
+    private ExerciseBlueprint? _exerciseToEdit;
+    private Dialog? _editExerciseDialog;
 
     [EditorRequired]
     [Parameter]
@@ -61,5 +74,15 @@
 
     private Action<decimal> UpdateWeightForExerciseWrapper(int exerciseIndex)
         => (decimal kilograms) => UpdateWeightForExercise(exerciseIndex, kilograms);
+
+
+    private void BeginEditExercise(int index)
+    {
+        var exercise = Session.RecordedExercises[index];
+        _exerciseToEdit = exercise.Blueprint;
+        _editExerciseDialog?.Open();
+    }
+
+
 
 }

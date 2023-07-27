@@ -1,6 +1,10 @@
-<input type="text" inputmode="numeric" class="w-20 text-center" value="@Rest.Minutes" @onchange="OnMinutesChange"/><span class="self-center text-xl font-bold text-on-secondary-container">:</span>
-<input type="text" inputmode="numeric" class="w-20 text-center" value=@(Rest.Seconds.ToString("00")) @onchange="OnSecondsChange"/>
 
+<label class="text-lg text-center">@Label</label>
+<div class="flex justify-center gap-2">
+    <md-outlined-text-field type="text" inputmode="numeric" class="w-20 text-center" value="@Rest.Minutes" @onchange="OnMinutesChange"/>
+    <span class="self-center text-xl font-bold text-on-secondary-container">:</span>
+    <md-outlined-text-field type="text" inputmode="numeric" class="w-20 text-center" value=@(Rest.Seconds.ToString("00")) @onchange="OnSecondsChange"/>
+</div>
 @code {
 
     [EditorRequired]
@@ -10,6 +14,10 @@
     [EditorRequired]
     [Parameter]
     public TimeSpan Rest { get; set; }
+
+    [EditorRequired]
+    [Parameter]
+    public string Label { get; set; } = null!;
 
     private string? MinutesError { get; set; }
     private string? SecondsError { get; set; }

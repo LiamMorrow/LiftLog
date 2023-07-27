@@ -1,4 +1,9 @@
-<button class="flex flex-col items-center" @onclick="Navigate"><span class="transition-all bg-[length:200px_100px] material-symbols-outlined w-16 py-1 rounded-full @ClassForActiveRouteIcon">@Icon</span><span class="@ClassForActiveRouteText text-sm">@Text</span></button>
+<button class="flex flex-col items-center" @onclick="Navigate">
+    <span class="transition-all bg-[length:200px_100px] w-16 pt-1 rounded-full @ClassForActiveRouteIcon">
+        <md-icon filled="@IsActive">@Icon</md-icon>
+    </span>
+    <span class="@ClassForActiveRouteText text-sm">@Text</span>
+</button>
 
 @code
 {
@@ -9,12 +14,12 @@
     [EditorRequired]
     [Parameter]
     public Action Navigate { get; set; } = null!;
-    
-    
+
+
     [EditorRequired]
     [Parameter]
     public string Text { get; set; } = null!;
-    
+
     [EditorRequired]
     [Parameter]
     public string Icon { get; set; } = null!;
@@ -23,7 +28,7 @@
     private string ClassForActiveRouteIcon => IsActive
         ? "bg-secondary-container text-on-secondary-container"
         : "text-on-surface-variant";
-    
+
     private string ClassForActiveRouteText => IsActive
         ? "text-on-surface"
         : "text-on-surface-variant";
