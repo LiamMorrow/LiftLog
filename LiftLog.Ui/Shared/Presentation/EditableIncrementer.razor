@@ -1,0 +1,43 @@
+@typeparam T where T : System.Numerics.INumber<T>
+
+
+<div class="flex flex-col gap-2">
+    <label class="text-lg text-center">@Label</label>
+    <div class="flex items-center justify-center gap-2">
+        <IconButton Type=IconButtonType.Outlined OnClick=Decrement><md-icon>remove</md-icon></IconButton>
+        <md-outlined-text-field class="w-20" type="text" inputmode="numeric" value=@Value @onchange=@((e) => OnChanged(e.Value))></md-outlined-text-field>
+        <IconButton Type=IconButtonType.Outlined OnClick=Increment><md-icon>add</md-icon></IconButton>
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    [EditorRequired]
+    public T Value { get; set; } = default!;
+
+    [Parameter]
+    [EditorRequired]
+    public string Label { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public Action Increment { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public Action Decrement { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public Action<T> OnChange { get; set; } = null!;
+
+    private void OnChanged(object? value)
+    {
+        if (value is string valueStr
+            && T.TryParse(valueStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.CurrentCulture, out var result))
+        {
+            OnChange(result);
+        }
+    }
+}
