@@ -7,22 +7,16 @@
         (false, _) => (RecordedExercise, RecordedExercise.RecordedSets.IndexOf(null))
     };
 }
+<SplitCardControl>
+    <MainContent>
 <div class="flex flex-col gap-4">
-    <div class="flex justify-between  transition-all ease-out-back @(_holdingPrevious ? "mb-20" : "mb-0")">
-        <AppButton Type="AppButtonType.Text" OnClick="OnEditExercise">@RecordedExercise.Blueprint.Name <md-icon slot="icon">edit</md-icon></AppButton>
-        <div class="flex justify-end gap-1">
+    <div class="flex justify-between">
+        <span class="text-xl">@RecordedExercise.Blueprint.Name</span>
             <WeightDisplay
             Exercise="displayedExercise"
             UpdateWeightForExercise="UpdateWeightForExercise"/>
-            @if(PreviousRecordedExercise != null)
-            {
-                <IconButton Type="IconButtonType.FilledTonal" OnClick="()=>{}" OnStartHold="()=> _holdingPrevious=true" OnEndHold="()=>_holdingPrevious = false">
-                    <md-icon>history</md-icon>
-                </IconButton>
-            }
-        </div>
     </div>
-    <div class="flex flex-wrap justify-center gap-4">
+    <div class="flex flex-wrap justify-center gap-2">
     @foreach (var (set, i) in displayedExercise.RecordedSets.IndexedTuples())
     {
       <RepCount
@@ -35,8 +29,18 @@
     }
   </div>
 </div>
+</MainContent>
+<SideContent>
+    @if(PreviousRecordedExercise != null)
+    {
+        <IconButton Type="IconButtonType.FilledTonal" OnClick="()=>{}" OnStartHold="()=> _holdingPrevious=true" OnEndHold="()=>_holdingPrevious = false">
+            <md-icon>history</md-icon>
+        </IconButton>
+    }
+</SideContent>
+</SplitCardControl>
 @code {
-    private bool _holdingPrevious = false;
+  private bool _holdingPrevious = false;
 
   [EditorRequired]
   [Parameter]
