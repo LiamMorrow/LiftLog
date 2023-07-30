@@ -64,9 +64,7 @@ else
                             OnChange="e => SetExerciseSuccessWeight(index, e)"/>
                         <div class="flex flex-col justify-between gap-2">
                             <RestEditor Label="Min Rest" Rest="exercise.RestBetweenSets.MinRest" OnRestUpdated="rest => OnMinUpdated(index, rest)"></RestEditor>
-
                             <RestEditor Label="Max Rest" Rest="exercise.RestBetweenSets.MaxRest" OnRestUpdated="rest => OnMaxUpdated(index, rest)"></RestEditor>
-
                             <RestEditor Label="Failure Rest" Rest="exercise.RestBetweenSets.FailureRest" OnRestUpdated="rest => OnFailureUpdated(index, rest)"></RestEditor>
                         </div>
                     </div>
