@@ -32,6 +32,10 @@ AppUtils.hideMdPopup = function (element) {
     return element.close();
 };
 
+AppUtils.setValue = function (element, value) {
+    element.value = value;
+}
+
 AppUtils.scrollElementToMiddle = function (elementSelector) {
     document.querySelector(elementSelector).scrollIntoView({
         behavior: 'smooth',

@@ -7,8 +7,8 @@
         CycleRepCountForSet=CycleRepCountForExerciseSet(context.Index)
         ClearRepCountForSet=ClearRepCountForExerciseSet(context.Index)
         UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index)
-        PreviousRecordedExercise="PreviouslyCompleted.GetValueOrDefault(context.Item.Blueprint)"
-        OnEditExercise="() => BeginEditExercise(context.Index)" />
+        PreviousRecordedExercise=PreviouslyCompleted.GetValueOrDefault(context.Item.Blueprint)
+        OnEditExercise=@(() => BeginEditExercise(context.Index)) />
 </CardList>
 
 <div class="sticky bottom-0 flex flex-col pointer-events-none">

@@ -2,7 +2,7 @@
     <span class="text-xl">@Session.Blueprint.Name</span>
     @if (IsFilled)
     {
-        <span class="text-lg">@Session.Date.ToString("M")</span>   
+        <span class="text-lg">@Session.Date.ToString("M")</span>
     }
 </div>
 
@@ -19,7 +19,7 @@
     [EditorRequired]
     [Parameter]
     public Session Session { get; set; } = null!;
-    
+
     [Parameter]
     public bool IsFilled { get; set; }
 }

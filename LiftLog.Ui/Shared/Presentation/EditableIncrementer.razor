@@ -1,3 +1,4 @@
+@inject IJSRuntime JSRuntime
 @typeparam T where T : System.Numerics.INumber<T>
 
 
@@ -5,13 +6,15 @@
     <label class="text-lg text-center">@Label</label>
     <div class="flex items-center justify-center gap-2">
         <IconButton Type=IconButtonType.Outlined OnClick=Decrement><md-icon>remove</md-icon></IconButton>
-        <md-outlined-text-field class="w-20" type="text" inputmode="numeric" value=@Value @onchange=@((e) => OnChanged(e.Value))></md-outlined-text-field>
+        <md-outlined-text-field @ref="_textField" class="w-20" type="text" inputmode="numeric" value=@Value @onchange=@((e) => OnChanged(e.Value))></md-outlined-text-field>
         <IconButton Type=IconButtonType.Outlined OnClick=Increment><md-icon>add</md-icon></IconButton>
     </div>
 </div>
 
 @code
 {
+    private ElementReference _textField;
+
     [Parameter]
     [EditorRequired]
     public T Value { get; set; } = default!;
@@ -32,10 +35,17 @@
     [EditorRequired]
     public Action<T> OnChange { get; set; } = null!;
 
-    private void OnChanged(object? value)
+        protected override async Task OnParametersSetAsync()
+        {
+            await JSRuntime.InvokeVoidAsync("AppUtils.setValue", _textField, Value);
+            await  base.OnParametersSetAsync();
+        }
+
+        private void OnChanged(object? value)
     {
         if (value is string valueStr
-            && T.TryParse(valueStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.CurrentCulture, out var result))
+            && T.TryParse(valueStr, System.Globalization.NumberStyles.Any,
+             System.Globalization.CultureInfo.CurrentCulture, out var result))
         {
             OnChange(result);
         }
