@@ -48,6 +48,10 @@ public static class Reducers
             action.Target,
             session with
             {
+                Blueprint = session.Blueprint with
+                {
+                    Exercises = session.Blueprint.Exercises.RemoveAt(action.ExerciseIndex)
+                },
                 RecordedExercises = session.RecordedExercises.RemoveAt(action.ExerciseIndex)
             });
     }
