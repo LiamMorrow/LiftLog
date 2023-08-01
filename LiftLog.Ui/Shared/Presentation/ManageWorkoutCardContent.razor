@@ -1,0 +1,43 @@
+<SplitCardControl>
+    <MainContent>
+        <SessionSummary Session="SessionBlueprint.GetEmptySession()"></SessionSummary>
+    </MainContent>
+    <SideContent>
+        <IconButton Type="IconButtonType.FilledTonal" OnClick=@(() => _menu?.Open())>
+            <md-icon>more_horiz</md-icon>
+        </IconButton>
+        <Menu @ref="_menu">
+            <MenuItem Icon="delete" Label="Remove" OnClick="()=>OnRemoveSession()" />
+            <MenuItem Icon="content_copy" Label="Duplicate" OnClick="()=>OnDuplicateSession()" />
+        </Menu>
+        <IconButton Type="IconButtonType.Outlined" OnClick=@(() => OnMoveSessionUp())>
+            <md-icon>arrow_upward</md-icon>
+        </IconButton>
+        <IconButton Type="IconButtonType.Outlined" OnClick=@(() => OnMoveSessionDown())>
+            <md-icon>arrow_downward</md-icon>
+        </IconButton>
+    </SideContent>
+</SplitCardControl>
+
+@code {
+    private Menu? _menu;
+    [Parameter]
+    [EditorRequired]
+    public SessionBlueprint SessionBlueprint { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public Action OnMoveSessionUp { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public Action OnMoveSessionDown { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public Action OnRemoveSession { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public Action OnDuplicateSession { get; set; } = null!;
+}

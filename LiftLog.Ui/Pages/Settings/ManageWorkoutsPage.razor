@@ -16,25 +16,13 @@
         var session = context.Item;
         var index = context.Index;
     }
-    <SplitCardControl>
-        <MainContent>
-            <SessionSummary Session="context.Item.GetEmptySession()"></SessionSummary>
-        </MainContent>
-        <SideContent>
-
-            <IconButton Type="IconButtonType.FilledTonal" OnClick=@(() => OverflowSession(index))>
-                <md-icon>more_horiz</md-icon>
-            </IconButton>
-            <Menu @ref="_menus[index]">
-                <MenuItem Icon="delete" Label="Remove" OnClick="()=>RemoveSession(session)" />
-                <MenuItem Icon="content_copy" Label="Duplicate" OnClick="()=>DuplicateSession(session)" />
-            </Menu>
-            <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveSessionUp(session))><md-icon>arrow_upward</md-icon>️</IconButton>
-            <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveSessionDown(session))>
-                <md-icon>arrow_downward</md-icon>
-            </IconButton>
-        </SideContent>
-    </SplitCardControl>
+    <ManageWorkoutCardContent
+        SessionBlueprint="session"
+        OnMoveSessionUp="() => MoveSessionUp(session)"
+        OnMoveSessionDown="() => MoveSessionDown(session)"
+        OnRemoveSession="() => RemoveSession(session)"
+        OnDuplicateSession="() => DuplicateSession(session)"
+    />
 </CardList>
 
 <div class="flex justify-center mt-2">
@@ -42,19 +30,11 @@
 </div>
 
 @code {
-
-    private Dictionary<int, Menu> _menus = new();
-
     void MoveSessionUp(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new MoveSessionBlueprintUpInProgramAction(sessionBlueprint));
 
     void MoveSessionDown(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new MoveSessionBlueprintDownInProgramAction(sessionBlueprint));
 
     void RemoveSession(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new RemoveSessionFromProgramAction(sessionBlueprint));
-
-    void OverflowSession(int index)
-    {
-        _menus.GetValueOrDefault(index)?.Open();
-    }
 
     void BackToSettings() => NavigationManager.NavigateTo("/settings");
 
