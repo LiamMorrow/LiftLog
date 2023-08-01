@@ -5,9 +5,9 @@
 <div class="flex flex-col gap-2">
     <label class="text-lg text-center">@Label</label>
     <div class="flex items-center justify-center gap-2">
-        <IconButton Type=IconButtonType.Outlined OnClick=Decrement><md-icon>remove</md-icon></IconButton>
+        <IconButton Type=IconButtonType.Outlined OnClick=Decrement Icon="remove" />
         <md-outlined-text-field @ref="_textField" class="w-20" type="text" inputmode="numeric" value=@Value @onchange=@((e) => OnChanged(e.Value))></md-outlined-text-field>
-        <IconButton Type=IconButtonType.Outlined OnClick=Increment><md-icon>add</md-icon></IconButton>
+        <IconButton Type=IconButtonType.Outlined OnClick=Increment Icon="add" />
     </div>
 </div>
 

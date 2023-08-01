@@ -8,7 +8,8 @@
         ClearRepCountForSet=ClearRepCountForExerciseSet(context.Index)
         UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index)
         PreviousRecordedExercise=PreviouslyCompleted.GetValueOrDefault(context.Item.Blueprint)
-        OnEditExercise=@(() => BeginEditExercise(context.Index)) />
+        OnEditExercise=@(() => BeginEditExercise(context.Index))
+        OnRemoveExercise=@(()=> BeginRemoveExercise(context.Index)) />
 </CardList>
 
 <div class="sticky bottom-0 flex flex-col pointer-events-none">
@@ -32,10 +33,18 @@
 
     }
 </Dialog>
+<Dialog @ref="_removeExerciseDialog">
+    <span slot="header">Remove Exercise?</span>
+    <span class="block text-left">Exercise will be removed from the current session, future sessions will not be impacted.</span>
+    <AppButton Type="AppButtonType.Text" slot="footer" OnClick="()=>{_removeExerciseDialog?.Close();}">Cancel</AppButton>
+    <AppButton Type="AppButtonType.Text" slot="footer" OnClick="RemoveExerciseHandler">Remove</AppButton>
+</Dialog>
 @code {
 
     private ExerciseBlueprint? _exerciseToEdit;
+    private int? _exerciseToRemoveIndex;
     private Dialog? _editExerciseDialog;
+    private Dialog? _removeExerciseDialog;
 
     [EditorRequired]
     [Parameter]
@@ -59,6 +68,10 @@
 
     [EditorRequired]
     [Parameter]
+    public Action<int> RemoveExercise { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
     public Action SaveSession { get; set; } = null!;
 
     [EditorRequired]
@@ -75,6 +88,16 @@
     private Action<decimal> UpdateWeightForExerciseWrapper(int exerciseIndex)
         => (decimal kilograms) => UpdateWeightForExercise(exerciseIndex, kilograms);
 
+    private void RemoveExerciseHandler()
+    {
+        if (_exerciseToRemoveIndex is not null)
+        {
+            RemoveExercise(_exerciseToRemoveIndex.Value);
+            _exerciseToRemoveIndex = null;
+        }
+        _removeExerciseDialog?.Close();
+    }
+
 
     private void BeginEditExercise(int index)
     {
@@ -82,7 +105,9 @@
         _exerciseToEdit = exercise.Blueprint;
         _editExerciseDialog?.Open();
     }
-
-
-
+    private void BeginRemoveExercise(int index)
+    {
+        _exerciseToRemoveIndex = index;
+        _removeExerciseDialog?.Open();
+    }
 }

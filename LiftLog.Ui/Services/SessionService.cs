@@ -3,6 +3,7 @@ using Fluxor;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Store;
 using LiftLog.Ui.Store.CurrentSession;
+using LiftLog.Ui.Util;
 
 namespace LiftLog.Ui.Services;
 
@@ -68,7 +69,7 @@ public class SessionService
     )
     {
         var lastBlueprint = previousSession.Blueprint;
-        var lastBlueprintIndex = sessionBlueprints.IndexOf(lastBlueprint);
+        var lastBlueprintIndex = sessionBlueprints.IndexedTuples().First(x => x.Item.Name == lastBlueprint.Name).Index;
         return CreateNewSession(
             sessionBlueprints[(lastBlueprintIndex + 1) % sessionBlueprints.Count],
             latestRecordedExercises

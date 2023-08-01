@@ -37,6 +37,22 @@ public static class Reducers
     }
 
     [ReducerMethod]
+    public static CurrentSessionState RemoveExerciseFromActiveSession(
+        CurrentSessionState state,
+        RemoveExerciseFromActiveSessionAction action
+    )
+    {
+        var session = ActiveSession(state, action.Target) ?? throw new Exception();
+        return WithActiveSession(
+            state,
+            action.Target,
+            session with
+            {
+                RecordedExercises = session.RecordedExercises.RemoveAt(action.ExerciseIndex)
+            });
+    }
+
+    [ReducerMethod]
     public static CurrentSessionState ClearExerciseReps(
         CurrentSessionState state,
         ClearExerciseRepsAction action
