@@ -9,35 +9,38 @@
 }
 <SplitCardControl>
     <MainContent>
-<div class="flex flex-col gap-4">
-    <div class="flex justify-between">
-        <span class="text-xl">@RecordedExercise.Blueprint.Name</span>
-            <WeightDisplay
-            Exercise="displayedExercise"
-            UpdateWeightForExercise="UpdateWeightForExercise"/>
-    </div>
-    <div class="flex flex-wrap justify-center gap-2">
-    @foreach (var (set, i) in displayedExercise.RecordedSets.IndexedTuples())
-    {
-      <RepCount
-        @key=i
-        MaxReps="displayedExercise.Blueprint.RepsPerSet"
-        CycleRepCount=@(() => CycleRepCountForSet(i))
-        ClearRepCount=@(() => ClearRepCountForSet(i))
-        RepCountValue=@set?.RepsCompleted
-        ToStartNext=@(ToStartNext && repToStartNext == i) />
-    }
-  </div>
-</div>
-</MainContent>
-<SideContent>
-    @if(PreviousRecordedExercise != null)
-    {
-        <IconButton Type="IconButtonType.FilledTonal" OnClick="()=>{}" OnStartHold="()=> _holdingPrevious=true" OnEndHold="()=>_holdingPrevious = false">
-            <md-icon>history</md-icon>
+        <div class="flex flex-col gap-4">
+            <div class="flex justify-between">
+                <span class="text-xl">@RecordedExercise.Blueprint.Name</span>
+                    <WeightDisplay
+                    Exercise="displayedExercise"
+                    UpdateWeightForExercise="UpdateWeightForExercise"/>
+            </div>
+            <div class="flex flex-wrap justify-center gap-2">
+                @foreach (var (set, i) in displayedExercise.RecordedSets.IndexedTuples())
+                {
+                <RepCount
+                    @key=i
+                    MaxReps="displayedExercise.Blueprint.RepsPerSet"
+                    CycleRepCount=@(() => CycleRepCountForSet(i))
+                    ClearRepCount=@(() => ClearRepCountForSet(i))
+                    RepCountValue=@set?.RepsCompleted
+                    ToStartNext=@(ToStartNext && repToStartNext == i) />
+                }
+            </div>
+        </div>
+    </MainContent>
+    <SideContent>
+        <IconButton Type="IconButtonType.FilledTonal" OnClick="OnEditExercise" >
+            <md-icon>edit</md-icon>
         </IconButton>
-    }
-</SideContent>
+        @if(PreviousRecordedExercise != null)
+        {
+            <IconButton Type="IconButtonType.FilledTonal" OnClick="()=>{}" OnStartHold="()=> _holdingPrevious=true" OnEndHold="()=>_holdingPrevious = false">
+                <md-icon>history</md-icon>
+            </IconButton>
+        }
+    </SideContent>
 </SplitCardControl>
 @code {
   private bool _holdingPrevious = false;
