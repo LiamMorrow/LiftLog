@@ -70,9 +70,9 @@ else
                     </div>
                 </MainContent>
                 <SideContent>
-                    <IconButton Type="IconButtonType.FilledTonal" OnClick=@(() => RemoveExercise(exercise))><md-icon>delete</md-icon></IconButton>
-                    <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveExerciseUp(exercise))><md-icon>arrow_upward</md-icon>️</IconButton>
-                    <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveExerciseDown(exercise))><md-icon>arrow_downward</md-icon></IconButton>
+                    <IconButton Type="IconButtonType.FilledTonal" OnClick=@(() => RemoveExercise(exercise)) Icon="delete" />
+                    <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveExerciseUp(exercise)) Icon="arrow_upward" />
+                    <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveExerciseDown(exercise)) Icon="arrow_downward" />
                 </SideContent>
             </SplitCardControl>
         </CardList>

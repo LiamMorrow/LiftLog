@@ -29,7 +29,8 @@
         Session=@(CurrentSessionState.Value.HistorySession)
         SaveSession=SaveSession
         CloseSession=CloseSession
-        PreviouslyCompleted=previouslyCompleted/>
+        PreviouslyCompleted=previouslyCompleted
+        RemoveExercise=RemoveExercise />
 }
 
 @code
@@ -61,6 +62,10 @@
         Dispatcher.Dispatch(new UpdateExerciseWeightAction(SessionTarget.HistorySession, exerciseIndex, kilograms));
     }
 
+    private void RemoveExercise(int exerciseIndex)
+    {
+        Dispatcher.Dispatch(new RemoveExerciseFromActiveSessionAction(SessionTarget.HistorySession, exerciseIndex));
+    }
     private void SaveSession()
     {
         Dispatcher.Dispatch(new PersistCurrentSessionAction(SessionTarget.HistorySession));

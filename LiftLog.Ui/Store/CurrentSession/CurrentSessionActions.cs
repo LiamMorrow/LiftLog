@@ -14,6 +14,8 @@ public record ClearExerciseRepsAction(SessionTarget Target, int ExerciseIndex, i
 
 public record UpdateExerciseWeightAction(SessionTarget Target, int ExerciseIndex, decimal Kilograms);
 
+public record RemoveExerciseFromActiveSessionAction(SessionTarget Target, int ExerciseIndex);
+
 public record SetCurrentSessionAction(SessionTarget Target, Session? Session);
 
 public record PersistCurrentSessionAction(SessionTarget Target);

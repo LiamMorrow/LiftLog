@@ -10,7 +10,7 @@
 <SplitCardControl>
     <MainContent>
         <div class="flex flex-col gap-4">
-            <div class="flex justify-between">
+            <div class="flex justify-between gap-2">
                 <span class="text-xl">@RecordedExercise.Blueprint.Name</span>
                     <WeightDisplay
                     Exercise="displayedExercise"
@@ -19,31 +19,32 @@
             <div class="flex flex-wrap justify-center gap-2">
                 @foreach (var (set, i) in displayedExercise.RecordedSets.IndexedTuples())
                 {
-                <RepCount
-                    @key=i
-                    MaxReps="displayedExercise.Blueprint.RepsPerSet"
-                    CycleRepCount=@(() => CycleRepCountForSet(i))
-                    ClearRepCount=@(() => ClearRepCountForSet(i))
-                    RepCountValue=@set?.RepsCompleted
-                    ToStartNext=@(ToStartNext && repToStartNext == i) />
+                    <RepCount
+                        @key=i
+                        MaxReps="displayedExercise.Blueprint.RepsPerSet"
+                        CycleRepCount=@(() => CycleRepCountForSet(i))
+                        ClearRepCount=@(() => ClearRepCountForSet(i))
+                        RepCountValue=@set?.RepsCompleted
+                        ToStartNext=@(ToStartNext && repToStartNext == i) />
                 }
             </div>
         </div>
     </MainContent>
     <SideContent>
-        <IconButton Type="IconButtonType.FilledTonal" OnClick="OnEditExercise" >
-            <md-icon>edit</md-icon>
-        </IconButton>
+        <IconButton Type="IconButtonType.FilledTonal" OnClick="()=>{_menu?.Open();}" Icon="more_horiz" />
+        <Menu @ref="_menu">
+            <MenuItem Label="Edit" Icon="edit" OnClick="OnEditExercise" />
+            <MenuItem Label="Remove" Icon="delete" OnClick="OnRemoveExercise" />
+        </Menu>
         @if(PreviousRecordedExercise != null)
         {
-            <IconButton Type="IconButtonType.FilledTonal" OnClick="()=>{}" OnStartHold="()=> _holdingPrevious=true" OnEndHold="()=>_holdingPrevious = false">
-                <md-icon>history</md-icon>
-            </IconButton>
+            <IconButton Type="IconButtonType.FilledTonal" Icon="history" OnClick="()=>{}" OnStartHold="()=> _holdingPrevious=true" OnEndHold="()=>_holdingPrevious = false" />
         }
     </SideContent>
 </SplitCardControl>
 @code {
   private bool _holdingPrevious = false;
+  private Menu? _menu;
 
   [EditorRequired]
   [Parameter]
@@ -72,4 +73,8 @@
   [EditorRequired]
   [Parameter]
   public Action OnEditExercise { get; set; } = null!;
+
+  [EditorRequired]
+  [Parameter]
+  public Action OnRemoveExercise { get; set; } = null!;
 }

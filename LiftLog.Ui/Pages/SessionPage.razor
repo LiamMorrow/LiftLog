@@ -30,6 +30,7 @@
         SaveSession=SaveSession
         CloseSession=CloseSession
         PreviouslyCompleted=@(previouslyCompleted)
+        RemoveExercise=RemoveExercise
         />
 }
 
@@ -63,6 +64,11 @@
     private void UpdateWeightForExercise(int exerciseIndex, decimal kilograms)
     {
         Dispatcher.Dispatch(new UpdateExerciseWeightAction(SessionTarget.WorkoutSession, exerciseIndex, kilograms));
+    }
+
+    private void RemoveExercise(int exerciseIndex)
+    {
+        Dispatcher.Dispatch(new RemoveExerciseFromActiveSessionAction(SessionTarget.WorkoutSession, exerciseIndex));
     }
 
     private void SaveSession()
