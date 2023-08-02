@@ -13,8 +13,8 @@
             <div class="flex justify-between gap-2">
                 <span class="text-xl">@RecordedExercise.Blueprint.Name</span>
                     <WeightDisplay
-                    Exercise="displayedExercise"
-                    UpdateWeightForExercise="UpdateWeightForExercise"/>
+                        Exercise="displayedExercise"
+                        UpdateWeightForExercise="UpdateWeightForExercise"/>
             </div>
             <div class="flex flex-wrap justify-center gap-2">
                 @foreach (var (set, i) in displayedExercise.RecordedSets.IndexedTuples())

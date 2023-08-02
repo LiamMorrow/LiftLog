@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Fluxor;
 using LiftLog.Lib.Models;
 
@@ -53,6 +54,47 @@ public static class Reducers
                     Exercises = session.Blueprint.Exercises.RemoveAt(action.ExerciseIndex)
                 },
                 RecordedExercises = session.RecordedExercises.RemoveAt(action.ExerciseIndex)
+            });
+    }
+
+    [ReducerMethod]
+    public static CurrentSessionState EditExerciseInActiveSession(
+        CurrentSessionState state,
+        EditExerciseInActiveSessionAction action
+    )
+    {
+        var session = ActiveSession(state, action.Target) ?? throw new Exception();
+        var newExerciseBlueprint = session.Blueprint.Exercises[action.ExerciseIndex] with
+        {
+            Name = action.Exercise.Name,
+            Sets = action.Exercise.Sets,
+            RepsPerSet = action.Exercise.Reps
+        };
+        var existingExercise = session.RecordedExercises[action.ExerciseIndex];
+        var newExercise = existingExercise with
+        {
+            Blueprint = newExerciseBlueprint,
+            Kilograms = action.Exercise.Kilograms,
+            RecordedSets = Enumerable.Range(0, newExerciseBlueprint.Sets)
+                .Select(index => existingExercise.RecordedSets.ElementAtOrDefault(index))
+                .ToImmutableList()
+        };
+        return WithActiveSession(
+            state,
+            action.Target,
+            session with
+            {
+                Blueprint = session.Blueprint with
+                {
+                    Exercises = session.Blueprint.Exercises.SetItem(
+                        action.ExerciseIndex,
+                        newExerciseBlueprint
+                    )
+                },
+                RecordedExercises = session.RecordedExercises.SetItem(
+                    action.ExerciseIndex,
+                    newExercise
+                )
             });
     }
 

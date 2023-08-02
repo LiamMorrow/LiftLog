@@ -31,6 +31,7 @@
         CloseSession=CloseSession
         PreviouslyCompleted=@(previouslyCompleted)
         RemoveExercise=RemoveExercise
+        EditExercise="EditExercise"
         />
 }
 
@@ -64,6 +65,11 @@
     private void UpdateWeightForExercise(int exerciseIndex, decimal kilograms)
     {
         Dispatcher.Dispatch(new UpdateExerciseWeightAction(SessionTarget.WorkoutSession, exerciseIndex, kilograms));
+    }
+
+    private void EditExercise(int exerciseIndex, SessionExerciseEditModel exercise)
+    {
+        Dispatcher.Dispatch(new EditExerciseInActiveSessionAction(SessionTarget.WorkoutSession, exerciseIndex, exercise));
     }
 
     private void RemoveExercise(int exerciseIndex)

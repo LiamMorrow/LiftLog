@@ -1,0 +1,35 @@
+@inject IJSRuntime JSRuntime
+
+@switch(TextFieldType){
+    case TextFieldType.Outline:
+        <md-outlined-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange((string)e.Value!))></md-outlined-text-field>
+        break;
+    case TextFieldType.Filled:
+        <md-filled-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange((string)e.Value!))></md-filled-text-field>
+        break;
+}
+@code {
+
+    private ElementReference _textField;
+
+    [Parameter]
+    [EditorRequired]
+    public string Value { get; set; } = "";
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public Action<string?> OnChange { get; set; } = null!;
+
+    [Parameter]
+    public TextFieldType TextFieldType {get;set;} = TextFieldType.Outline;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("AppUtils.setValue", _textField, Value);
+        await  base.OnParametersSetAsync();
+    }
+
+}

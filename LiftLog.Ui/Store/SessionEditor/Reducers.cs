@@ -256,7 +256,7 @@ public static class Reducers
                 Exercises = state.SessionBlueprint.Exercises.SetItem(
                     index,
                     updator(state.SessionBlueprint.Exercises[index])
-                )
+                ),
             }
         );
     }
