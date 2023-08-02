@@ -11,7 +11,9 @@
         OnEditExercise=@(() => BeginEditExercise(context.Index))
         OnRemoveExercise=@(()=> BeginRemoveExercise(context.Index)) />
 </CardList>
-
+<div class="flex flex-col items-center mt-6">
+<AppButton OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon> Add Exercise</AppButton>
+</div>
 <div class="sticky bottom-0 flex flex-col pointer-events-none">
     <div class="flex justify-end w-full mt-2 mb-2">
         <AppButton Type="AppButtonType.FloatingPrimary" OnClick=SaveSession><md-icon slot="icon">save</md-icon>Save</AppButton>
@@ -25,8 +27,8 @@
             Failed=lastSetFailed/>
     }
 </div>
-<Dialog @ref="_editExerciseDialog"  >
-    <span slot="headline">Edit Exercise</span>
+<Dialog @ref="_editExerciseDialog" OnClose=@(()=> _exerciseToEditIndex = null) >
+    <span slot="headline">@(_exerciseToEditIndex is null ? "Add" : "Edit") Exercise</span>
     @if(_editingExercise != null)
     {
         <SessionExerciseEditor
@@ -76,6 +78,10 @@
 
     [EditorRequired]
     [Parameter]
+    public Action<SessionExerciseEditModel> AddExercise { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
     public Action<int> RemoveExercise { get; set; } = null!;
 
     [EditorRequired]
@@ -98,10 +104,15 @@
 
     private void EditExerciseHandler()
     {
-        if (_editingExercise is not null && _exerciseToEditIndex is not null)
+        if (_editingExercise is not null)
         {
-            EditExercise(_exerciseToEditIndex.Value, _editingExercise);
-            _exerciseToEditIndex = null;
+            if(_exerciseToEditIndex is not null)
+            {
+                EditExercise(_exerciseToEditIndex.Value, _editingExercise);
+                _exerciseToEditIndex = null;
+            } else {
+                AddExercise(_editingExercise);
+            }
         }
         _editExerciseDialog?.Close();
     }
@@ -115,6 +126,16 @@
         _removeExerciseDialog?.Close();
     }
 
+    private void BeginAddExercise()
+    {
+        _editingExercise = new SessionExerciseEditModel(
+            Name: "",
+            Sets: 3,
+            Reps: 10,
+            Kilograms: 0
+        );
+        _editExerciseDialog?.Open();
+    }
 
     private void BeginEditExercise(int index)
     {
