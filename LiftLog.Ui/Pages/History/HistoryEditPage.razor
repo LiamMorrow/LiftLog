@@ -30,7 +30,8 @@
         SaveSession=SaveSession
         CloseSession=CloseSession
         PreviouslyCompleted=previouslyCompleted
-        RemoveExercise=RemoveExercise />
+        RemoveExercise=RemoveExercise
+        EditExercise="EditExercise"/>
 }
 
 @code
@@ -45,6 +46,7 @@
             Dispatcher.Dispatch(new SetPageTitleAction(session.Blueprint.Name));
         }
     }
+
     private void ClearRepCountForExercise(int exerciseIndex, int setIndex)
     {
         Dispatcher.Dispatch(new ClearExerciseRepsAction(SessionTarget.HistorySession, exerciseIndex, setIndex));
@@ -62,10 +64,16 @@
         Dispatcher.Dispatch(new UpdateExerciseWeightAction(SessionTarget.HistorySession, exerciseIndex, kilograms));
     }
 
+    private void EditExercise(int exerciseIndex, SessionExerciseEditModel exercise)
+    {
+        Dispatcher.Dispatch(new EditExerciseInActiveSessionAction(SessionTarget.HistorySession, exerciseIndex, exercise));
+    }
+
     private void RemoveExercise(int exerciseIndex)
     {
         Dispatcher.Dispatch(new RemoveExerciseFromActiveSessionAction(SessionTarget.HistorySession, exerciseIndex));
     }
+
     private void SaveSession()
     {
         Dispatcher.Dispatch(new PersistCurrentSessionAction(SessionTarget.HistorySession));

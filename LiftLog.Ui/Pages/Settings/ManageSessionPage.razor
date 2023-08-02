@@ -25,7 +25,12 @@
 else
 {
     <div class="mb-2 overflow-auto bg-surface">
-        <md-filled-text-field type="text" class="w-full mb-4" value="@SessionEditorState.Value.SessionBlueprint.Name" @onchange="@((e) => SetName(e.Value))"></md-filled-text-field>
+        <TextField
+            TextFieldType="TextFieldType.Filled"
+            class="w-full mb-4"
+            Label="Session Name"
+            Value="@SessionEditorState.Value.SessionBlueprint.Name"
+            OnChange="@((val) => SetName(val))"></TextField>
         <CardList Items="SessionEditorState.Value.SessionBlueprint.Exercises.IndexedTuples()">
             @{
                 var exercise = context.Item;
@@ -33,7 +38,12 @@ else
             }
             <SplitCardControl>
                 <MainContent>
-                    <md-filled-text-field type="text" class="w-full mb-2 text-xl" value="@exercise.Name" @onchange="e => SetExerciseName(index, e.Value)"></md-filled-text-field>
+                    <TextField
+                        TextFieldType="TextFieldType.Filled"
+                        class="w-full mb-2 text-xl"
+                        Label="Exercise Name"
+                        Value="@exercise.Name"
+                        OnChange="val => SetExerciseName(index, val)" />
                     <div class="flex flex-wrap justify-around w-full gap-1">
                         <div class="flex flex-col items-center gap-1">
                             <FixedIncrementer
@@ -50,15 +60,13 @@ else
                             />
                         </div>
                         <EditableIncrementer
-                            Increment="() => OnInitialWeightIncrementClick(exercise, index)"
-                            Decrement="() => OnInitialWeightDecrementClick(exercise, index)"
+                            Increment=@exercise.KilogramsIncreaseOnSuccess
                             Label="Initial Weight"
-                            Value="exercise.InitialKilograms"
+                            Value=@exercise.InitialKilograms
                             OnChange="e => SetExerciseInitialWeight(index, e)"
                         />
                         <EditableIncrementer
-                            Increment="() => OnSuccessWeightIncrementClick(exercise, index)"
-                            Decrement="() => OnSuccessWeightDecrementClick(exercise, index)"
+                            Increment="0.1m"
                             Label="Success Weight Increase"
                             Value="exercise.KilogramsIncreaseOnSuccess"
                             OnChange="e => SetExerciseSuccessWeight(index, e)"/>
@@ -119,35 +127,21 @@ else
 
     void IncrementExerciseRepsPerSet(int exerciseIndex) => Dispatcher.Dispatch(new IncrementExerciseRepsPerSetAction(exerciseIndex));
 
-    void SetExerciseName(int exerciseIndex, object? nameObj)
+    void SetExerciseName(int exerciseIndex, string name)
     {
-        if (nameObj is string name)
-            Dispatcher.Dispatch(new SetExerciseNameAction(exerciseIndex, name));
+        Dispatcher.Dispatch(new SetExerciseNameAction(exerciseIndex, name));
     }
 
-    void SetName(object? nameObj)
+    void SetName(string name)
     {
-        if (nameObj is string name)
-            Dispatcher.Dispatch(new SetEditingSessionNameAction(name));
+        Dispatcher.Dispatch(new SetEditingSessionNameAction(name));
     }
 
     void SetExerciseInitialWeight(int exerciseIndex, decimal initialKilograms)
         => Dispatcher.Dispatch(new SetExerciseInitialWeightAction(exerciseIndex, initialKilograms));
 
-    void OnInitialWeightIncrementClick(ExerciseBlueprint exerciseBlueprint, int index)
-        => Dispatcher.Dispatch(new SetExerciseInitialWeightAction(index, exerciseBlueprint.InitialKilograms + exerciseBlueprint.KilogramsIncreaseOnSuccess));
-
-    void OnInitialWeightDecrementClick(ExerciseBlueprint exerciseBlueprint, int index)
-        => Dispatcher.Dispatch(new SetExerciseInitialWeightAction(index, exerciseBlueprint.InitialKilograms - exerciseBlueprint.KilogramsIncreaseOnSuccess));
-
     void SetExerciseSuccessWeight(int exerciseIndex, decimal kilograms)
-        => Dispatcher.Dispatch(new SetExerciseKilogramsIncreaseOnSuccessAction(exerciseIndex, kilograms));
-
-    void OnSuccessWeightIncrementClick(ExerciseBlueprint exerciseBlueprint, int index)
-        => Dispatcher.Dispatch(new SetExerciseKilogramsIncreaseOnSuccessAction(index, exerciseBlueprint.KilogramsIncreaseOnSuccess + 0.1m));
-
-    void OnSuccessWeightDecrementClick(ExerciseBlueprint exerciseBlueprint, int index)
-        => Dispatcher.Dispatch(new SetExerciseKilogramsIncreaseOnSuccessAction(index, exerciseBlueprint.KilogramsIncreaseOnSuccess - 0.1m));
+        => Dispatcher.Dispatch(new SetExerciseKilogramsIncreaseOnSuccessAction(exerciseIndex, Math.Max(kilograms, 0)));
 
     void OnMinUpdated(int exerciseIndex, TimeSpan rest) => Dispatcher.Dispatch(new SetMinAction(exerciseIndex, rest));
     void OnMaxUpdated(int exerciseIndex, TimeSpan rest) => Dispatcher.Dispatch(new SetMaxAction(exerciseIndex, rest));

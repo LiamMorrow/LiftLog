@@ -1,6 +1,6 @@
 @typeparam T
 
-<div class="flex items-center">
+<div @attributes=@AdditionalAttributes class="flex items-center @(AdditionalAttributes?.GetValueOrDefault("class"))">
     <IconButton Type="IconButtonType.Outlined" OnClick="Decrement" Icon="remove" />
     <span class="inline-block w-20 mx-2 text-center">@Value @Label</span>
     <IconButton Type="IconButtonType.Outlined" OnClick="Increment" Icon="add" />
@@ -23,4 +23,7 @@
     [Parameter]
     [EditorRequired]
     public Action Decrement { get; set; } = null!;
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; } = null!;
 }

@@ -1,19 +1,16 @@
-@inject IJSRuntime JSRuntime
 @typeparam T where T : System.Numerics.INumber<T>
 
-
-<div class="flex flex-col gap-2">
+<div @attributes="AdditionalAttributes" class="flex flex-col gap-2 @(AdditionalAttributes?.GetValueOrDefault("class"))">
     <label class="text-lg text-center">@Label</label>
     <div class="flex items-center justify-center gap-2">
-        <IconButton Type=IconButtonType.Outlined OnClick=Decrement Icon="remove" />
-        <md-outlined-text-field @ref="_textField" class="w-20" type="text" inputmode="numeric" value=@Value @onchange=@((e) => OnChanged(e.Value))></md-outlined-text-field>
-        <IconButton Type=IconButtonType.Outlined OnClick=Increment Icon="add" />
+        <IconButton Type=IconButtonType.Outlined OnClick=@(()=>{OnChange(Value - Increment);})  Icon="remove" />
+        <TextField class="w-20" type="text" inputmode="numeric" Value=@(Value.ToString()) OnChange=@(value => OnChanged(value)) />
+        <IconButton Type=IconButtonType.Outlined OnClick=@(()=>{OnChange(Value + Increment);}) Icon="add" />
     </div>
 </div>
 
 @code
 {
-    private ElementReference _textField;
 
     [Parameter]
     [EditorRequired]
@@ -21,27 +18,20 @@
 
     [Parameter]
     [EditorRequired]
+    public T Increment { get; set; } = default!;
+
+    [Parameter]
+    [EditorRequired]
     public string Label { get; set; } = null!;
-
-    [Parameter]
-    [EditorRequired]
-    public Action Increment { get; set; } = null!;
-
-    [Parameter]
-    [EditorRequired]
-    public Action Decrement { get; set; } = null!;
 
     [Parameter]
     [EditorRequired]
     public Action<T> OnChange { get; set; } = null!;
 
-        protected override async Task OnParametersSetAsync()
-        {
-            await JSRuntime.InvokeVoidAsync("AppUtils.setValue", _textField, Value);
-            await  base.OnParametersSetAsync();
-        }
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-        private void OnChanged(object? value)
+    private void OnChanged(string value)
     {
         if (value is string valueStr
             && T.TryParse(valueStr, System.Globalization.NumberStyles.Any,

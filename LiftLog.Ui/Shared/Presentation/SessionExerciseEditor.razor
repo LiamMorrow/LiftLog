@@ -1,0 +1,32 @@
+<div class="flex flex-col items-center gap-2 py-2">
+    <TextField
+        TextFieldType="TextFieldType.Outline"
+        Value=@(Exercise.Name)
+        label="Exercise Name"
+        required
+        OnChange="value => OnExerciseUpdate(Exercise with { Name = value })"/>
+    <EditableIncrementer
+        Label="Weight"
+        Value="Exercise.Kilograms"
+        Increment="2.5m"
+        OnChange="(val) => OnExerciseUpdate(Exercise with {Kilograms = val })" />
+    <FixedIncrementer
+        Label="Sets"
+        Increment="() => OnExerciseUpdate(Exercise with {Sets = Exercise.Sets + 1})"
+        Decrement="() => OnExerciseUpdate(Exercise with {Sets = Math.Max(Exercise.Sets - 1, 1)})"
+        Value="Exercise.Sets" />
+    <FixedIncrementer
+        Label="Reps"
+        Increment="() => OnExerciseUpdate(Exercise with {Reps = Exercise.Reps + 1})"
+        Decrement="() => OnExerciseUpdate(Exercise with {Reps = Math.Max(Exercise.Reps - 1, 1)})"
+        Value="Exercise.Reps" />
+</div>
+@code {
+    [Parameter]
+    [EditorRequired]
+    public SessionExerciseEditModel Exercise { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public Action<SessionExerciseEditModel> OnExerciseUpdate { get; set; } = null!;
+}
