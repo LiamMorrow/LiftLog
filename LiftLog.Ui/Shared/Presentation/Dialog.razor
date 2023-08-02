@@ -1,5 +1,6 @@
 @inject IJSRuntime JSRuntime
 <md-dialog
+    @ondialog-close="()=>OnClose?.Invoke()"
     @attributes="AdditionalAttributes"
     @ref="dialog">
     @ChildContent
@@ -12,8 +13,18 @@
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     [Parameter]
+    public Action? OnClose { get; set; }
+
+    [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
+    override protected async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("AppUtils.onCloseMdPopup", dialog);
+        }
+    }
     public async void Open()
     {
         await JSRuntime.InvokeVoidAsync("AppUtils.showMdPopup", dialog);

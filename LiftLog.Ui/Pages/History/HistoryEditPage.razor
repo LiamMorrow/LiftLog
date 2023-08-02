@@ -31,7 +31,8 @@
         CloseSession=CloseSession
         PreviouslyCompleted=previouslyCompleted
         RemoveExercise=RemoveExercise
-        EditExercise="EditExercise"/>
+        EditExercise="EditExercise"
+        AddExercise="AddExercise"/>
 }
 
 @code
@@ -67,6 +68,11 @@
     private void EditExercise(int exerciseIndex, SessionExerciseEditModel exercise)
     {
         Dispatcher.Dispatch(new EditExerciseInActiveSessionAction(SessionTarget.HistorySession, exerciseIndex, exercise));
+    }
+
+    private void AddExercise(SessionExerciseEditModel exercise)
+    {
+        Dispatcher.Dispatch(new AddExerciseToActiveSessionAction(SessionTarget.HistorySession, exercise));
     }
 
     private void RemoveExercise(int exerciseIndex)

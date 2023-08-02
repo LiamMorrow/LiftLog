@@ -46,4 +46,7 @@ public record ExerciseBlueprint(
     }
 }
 
-public record Rest(TimeSpan MinRest, TimeSpan MaxRest, TimeSpan FailureRest);
+public record Rest(TimeSpan MinRest, TimeSpan MaxRest, TimeSpan FailureRest)
+{
+    public static Rest Medium => new(TimeSpan.FromSeconds(90), TimeSpan.FromSeconds(180), TimeSpan.FromSeconds(300));
+}

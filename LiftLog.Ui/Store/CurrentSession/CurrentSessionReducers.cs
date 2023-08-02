@@ -99,6 +99,41 @@ public static class Reducers
     }
 
     [ReducerMethod]
+    public static CurrentSessionState AddExerciseToActiveSession(
+        CurrentSessionState state,
+        AddExerciseToActiveSessionAction action
+    )
+    {
+        var session = ActiveSession(state, action.Target) ?? throw new Exception();
+        var newExerciseBlueprint = new ExerciseBlueprint(
+            Name: action.Exercise.Name,
+            Sets: action.Exercise.Sets,
+            RepsPerSet: action.Exercise.Reps,
+            InitialKilograms: action.Exercise.Kilograms,
+            KilogramsIncreaseOnSuccess: 0,
+            RestBetweenSets: Rest.Medium
+        );
+        var newExercise = new RecordedExercise(
+            newExerciseBlueprint,
+            action.Exercise.Kilograms,
+            Enumerable.Range(0, newExerciseBlueprint.Sets)
+                .Select(_ => (RecordedSet?)null)
+                .ToImmutableList()
+        );
+        return WithActiveSession(
+            state,
+            action.Target,
+            session with
+            {
+                Blueprint = session.Blueprint with
+                {
+                    Exercises = session.Blueprint.Exercises.Add(newExerciseBlueprint)
+                },
+                RecordedExercises = session.RecordedExercises.Add(newExercise)
+            });
+    }
+
+    [ReducerMethod]
     public static CurrentSessionState ClearExerciseReps(
         CurrentSessionState state,
         ClearExerciseRepsAction action

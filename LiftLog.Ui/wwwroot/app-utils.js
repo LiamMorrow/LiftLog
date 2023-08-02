@@ -28,6 +28,20 @@ AppUtils.showMdPopup = function (element) {
     return element.show();
 };
 
+/**
+ * Creates a new event for the dialog close event.
+ * This new event has bubbles, which allows blazor components to intercept it
+ * @param {HTMLElement} element
+ */
+AppUtils.onCloseMdPopup = function (element) {
+    element.addEventListener('close', () => {
+        element.dispatchEvent(new Event('dialog-close', {
+            bubbles: true,
+            cancelable: true,
+        }))
+    });
+};
+
 AppUtils.hideMdPopup = function (element) {
     return element.close();
 };
