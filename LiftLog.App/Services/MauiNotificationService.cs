@@ -6,6 +6,7 @@ using Plugin.LocalNotification.EventArgs;
 using ILocalNotificationService = Plugin.LocalNotification.INotificationService;
 using INotificationService = LiftLog.Ui.Services.INotificationService;
 using IDispatcher = Fluxor.IDispatcher;
+using Fluxor;
 
 namespace LiftLog.App.Services;
 
@@ -13,17 +14,21 @@ public class MauiNotificationService : INotificationService
 {
     private readonly ILocalNotificationService _notificationService;
     private readonly IDispatcher _dispatcher;
+    private readonly IState<CurrentSessionState> _state;
     private static readonly NotificationHandle NextSetNotificationHandle = new(1000);
     public const string NextSetNotificationChannelId = "Set Timers";
 
-    public MauiNotificationService(ILocalNotificationService notificationService, IDispatcher dispatcher)
+    public MauiNotificationService(ILocalNotificationService notificationService, IDispatcher dispatcher, IState<CurrentSessionState> state)
     {
         _notificationService = notificationService;
         _dispatcher = dispatcher;
+        _state = state;
     }
 
     public async Task ScheduleNextSetNotificationAsync(SessionTarget target, RecordedExercise exercise)
     {
+        var id = Guid.NewGuid();
+        _dispatcher.Dispatch(new SetLatestSetTimerNotificationIdAction(id));
         await _notificationService.RequestNotificationPermission();
         _notificationService.Cancel(NextSetNotificationHandle.Id);
         var rest = exercise switch
@@ -37,10 +42,15 @@ public class MauiNotificationService : INotificationService
         if (rest != TimeSpan.Zero)
         {
             _notificationService.NotificationActionTapped += Current_NotificationActionTapped;
+
             void Current_NotificationActionTapped(NotificationActionEventArgs e)
             {
-                _notificationService.Cancel(NextSetNotificationHandle.Id);
                 _notificationService.NotificationActionTapped -= Current_NotificationActionTapped;
+                if (_state.Value.LatestSetTimerNotificationId != id)
+                {
+                    return;
+                }
+                _notificationService.Cancel(NextSetNotificationHandle.Id);
                 switch (e.ActionId)
                 {
                     case 100:

@@ -105,6 +105,12 @@ public static class Reducers
     }
 
     [ReducerMethod]
+    public static CurrentSessionState SetLatestSetTimerNotificationId(
+        CurrentSessionState state,
+        SetLatestSetTimerNotificationIdAction action
+    ) => state with { LatestSetTimerNotificationId = action.Id };
+
+    [ReducerMethod]
     public static CurrentSessionState SetCurrentSession(
         CurrentSessionState state,
         SetCurrentSessionAction action
