@@ -22,10 +22,10 @@
     deepmerge "^4.2.2"
     material-ripple-effects "^2.0.1"
 
-"@material/web@1.0.0-pre.12":
-  version "1.0.0-pre.12"
-  resolved "https://registry.yarnpkg.com/@material/web/-/web-1.0.0-pre.12.tgz#036c45ebf2a862cb67b91eb2fb97682ab72135c1"
-  integrity sha512-hqbb1dZx3Un3q8y6/teC19pPGARfGxVXVvtns/tw77XgdNafgStPbR0oQ8hOlEDWmCEUSW94O0y6k3kG0lD8lg==
+"@material/web@1.0.0-pre.14":
+  version "1.0.0-pre.14"
+  resolved "https://registry.yarnpkg.com/@material/web/-/web-1.0.0-pre.14.tgz#f16fed0aa47f5512675bced243a95dc6a60b10e1"
+  integrity sha512-nR5argPpzkGNaIoPARgo23uVAmwYRHjZdnlZQJkIe+H8jA4AVdjcEAAgMOHnaT/ByhDShob8mwdf4+bgmA9mgw==
   dependencies:
     lit "^2.7.4"
     safevalues "^0.4.3"
