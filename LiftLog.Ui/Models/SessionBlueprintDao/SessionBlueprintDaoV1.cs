@@ -7,19 +7,19 @@ namespace LiftLog.Ui.Models.SessionBlueprintDao;
 
 internal record SessionBlueprintContainerDaoV1(
     [property: JsonPropertyName("SessionBlueprints")]
-    ImmutableListSequence<SessionBlueprintDaoV1> SessionBlueprints
+    ImmutableListValue<SessionBlueprintDaoV1> SessionBlueprints
 )
 {
-    public static SessionBlueprintContainerDaoV1 FromModel(ImmutableListSequence<Lib.Models.SessionBlueprint> model) =>
+    public static SessionBlueprintContainerDaoV1 FromModel(ImmutableListValue<Lib.Models.SessionBlueprint> model) =>
         new(model.Select(SessionBlueprintDaoV1.FromModel).ToImmutableList());
 
-    public ImmutableListSequence<Lib.Models.SessionBlueprint> ToModel()
+    public ImmutableListValue<Lib.Models.SessionBlueprint> ToModel()
         => SessionBlueprints.Select(x => x.ToModel()).ToImmutableList();
 }
 
 internal record SessionBlueprintDaoV1(
     [property: JsonPropertyName("Name")] string Name,
-    [property: JsonPropertyName("Exercises")] ImmutableListSequence<ExerciseBlueprintDaoV1> Exercises
+    [property: JsonPropertyName("Exercises")] ImmutableListValue<ExerciseBlueprintDaoV1> Exercises
 )
 {
     internal static SessionBlueprintDaoV1 FromModel(Lib.Models.SessionBlueprint blueprint)

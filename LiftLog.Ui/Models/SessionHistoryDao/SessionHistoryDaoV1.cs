@@ -10,7 +10,7 @@ internal record SessionHistoryDaoV1(
     [property: JsonPropertyName("CurrentSession")]
     SessionDaoV1? CurrentSession,
     [property: JsonPropertyName("CompletedSessions")]
-    ImmutableListSequence<SessionDaoV1> CompletedSessions
+    ImmutableListValue<SessionDaoV1> CompletedSessions
 )
 {
     public static SessionHistoryDaoV1 FromModel(SessionHistoryDaoContainer model)
@@ -30,7 +30,7 @@ internal record SessionDaoV1(
     [property: JsonPropertyName("Blueprint")]
     SessionBlueprintDaoV1 Blueprint,
     [property: JsonPropertyName("RecordedExercises")]
-    ImmutableListSequence<RecordedExerciseDaoV1> RecordedExercises,
+    ImmutableListValue<RecordedExerciseDaoV1> RecordedExercises,
     [property: JsonPropertyName("Date")]
     DateTimeOffset Date
 )
@@ -59,7 +59,7 @@ internal record RecordedExerciseDaoV1(
     [property: JsonPropertyName("Kilograms")]
     decimal Kilograms,
     [property: JsonPropertyName("RecordedSets")]
-    ImmutableListSequence<RecordedSetDaoV1?> RecordedSets
+    ImmutableListValue<RecordedSetDaoV1?> RecordedSets
 )
 {
     public static RecordedExerciseDaoV1 FromModel(Lib.Models.RecordedExercise model)

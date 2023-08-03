@@ -4,6 +4,6 @@ namespace LiftLog.Lib.Store;
 
 public interface IProgramStore
 {
-    ValueTask<ImmutableListSequence<SessionBlueprint>> GetSessionsInProgramAsync();
+    ValueTask<ImmutableListValue<SessionBlueprint>> GetSessionsInProgramAsync();
     ValueTask PersistSessionsInProgramAsync(IReadOnlyList<SessionBlueprint> sessions);
 }

@@ -93,11 +93,11 @@ public class GptAiWorkoutPlanner : IAiWorkoutPlanner
 
     private record GptWorkoutPlan(
         string Description,
-        ImmutableListSequence<GptSessionBlueprint> Sessions
+        ImmutableListValue<GptSessionBlueprint> Sessions
     );
 
 
-    private record GptSessionBlueprint(string Name, ImmutableListSequence<GptExerciseBlueprint> Exercises);
+    private record GptSessionBlueprint(string Name, ImmutableListValue<GptExerciseBlueprint> Exercises);
 
     private record GptExerciseBlueprint(
         string Name,

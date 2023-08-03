@@ -21,11 +21,11 @@ public record AiWorkoutAttributes(
     string WeightRange,
     int Age,
     int DaysPerWeek,
-    ImmutableListSequence<string> Goals,
+    ImmutableListValue<string> Goals,
     Experience Experience);
 
 
 public record AiWorkoutPlan(
     string Description,
-    ImmutableListSequence<SessionBlueprint> Sessions
+    ImmutableListValue<SessionBlueprint> Sessions
 );

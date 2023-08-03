@@ -99,6 +99,6 @@ public class SettingsEffects
 
     private record SerializedData(
         List<SessionDaoV1> Sessions,
-        ImmutableListSequence<SessionBlueprintDaoV1> Program
+        ImmutableListValue<SessionBlueprintDaoV1> Program
     );
 }

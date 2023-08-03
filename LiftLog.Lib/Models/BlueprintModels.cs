@@ -2,7 +2,7 @@
 
 namespace LiftLog.Lib.Models;
 
-public record SessionBlueprint(string Name, ImmutableListSequence<ExerciseBlueprint> Exercises)
+public record SessionBlueprint(string Name, ImmutableListValue<ExerciseBlueprint> Exercises)
 {
     public Session GetEmptySession()
     {

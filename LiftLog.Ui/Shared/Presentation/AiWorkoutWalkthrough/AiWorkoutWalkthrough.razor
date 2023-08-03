@@ -49,7 +49,7 @@
 
 @code {
     private int step = 1;
-    private AiWorkoutAttributes attributes = new AiWorkoutAttributes(Gender.PreferNotToSay,"", 0, 0, new ImmutableListSequence<string>(), Experience.Beginner);
+    private AiWorkoutAttributes attributes = new AiWorkoutAttributes(Gender.PreferNotToSay,"", 0, 0, new ImmutableListValue<string>(), Experience.Beginner);
     [Parameter][EditorRequired] public Action<AiWorkoutAttributes> OnAttributesSelected { get; set; } = null!;
 
     private void OnPrevious()
@@ -87,7 +87,7 @@
         StateHasChanged();
     }
 
-    private void OnGoalsSelected(ImmutableListSequence<string> goals)
+    private void OnGoalsSelected(ImmutableListValue<string> goals)
     {
         attributes = attributes with { Goals = goals };
         StateHasChanged();
