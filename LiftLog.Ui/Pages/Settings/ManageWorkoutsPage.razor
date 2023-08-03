@@ -46,7 +46,7 @@
 
     void AddSession() => Dispatcher.Dispatch(
         new AddProgramSessionAction(
-            new SessionBlueprint($"Session {ProgramState.Value.SessionBlueprints.Count + 1}", new ImmutableListSequence<ExerciseBlueprint>())));
+            new SessionBlueprint($"Session {ProgramState.Value.SessionBlueprints.Count + 1}", new ImmutableListValue<ExerciseBlueprint>())));
 
     void DuplicateSession(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(
         new AddProgramSessionAction(

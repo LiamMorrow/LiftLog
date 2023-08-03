@@ -15,13 +15,13 @@ public class KeyValueProgramStore : IProgramStore
     private bool _initialised;
     private readonly IKeyValueStore _keyValueStore;
 
-    private ImmutableListSequence<SessionBlueprint> _sessions =
+    private ImmutableListValue<SessionBlueprint> _sessions =
         ImmutableList.Create<SessionBlueprint>();
 
     private static readonly Rest DefaultRest =
         new(TimeSpan.FromSeconds(90), TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(5));
 
-    private readonly ImmutableListSequence<SessionBlueprint> _defaultSessionBlueprints =
+    private readonly ImmutableListValue<SessionBlueprint> _defaultSessionBlueprints =
         ImmutableList.Create(
             new SessionBlueprint(
                 "Workout A",
@@ -46,7 +46,7 @@ public class KeyValueProgramStore : IProgramStore
         _keyValueStore = keyValueStore;
     }
 
-    public async ValueTask<ImmutableListSequence<SessionBlueprint>> GetSessionsInProgramAsync()
+    public async ValueTask<ImmutableListValue<SessionBlueprint>> GetSessionsInProgramAsync()
     {
         await InitialiseAsync();
         return _sessions;

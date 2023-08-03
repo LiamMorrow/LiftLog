@@ -4,7 +4,7 @@ using static LiftLog.Lib.Util;
 
 namespace LiftLog.Lib.Serialization
 {
-    public class ImmutableListSequenceJsonConverter : JsonConverterFactory
+    public class ImmutableListValueJsonConverter : JsonConverterFactory
     {
         public override bool CanConvert(Type typeToConvert)
         {
@@ -13,7 +13,7 @@ namespace LiftLog.Lib.Serialization
                 return false;
             }
 
-            if (typeToConvert.GetGenericTypeDefinition() != typeof(ImmutableListSequence<>))
+            if (typeToConvert.GetGenericTypeDefinition() != typeof(ImmutableListValue<>))
             {
                 return false;
             }
@@ -23,23 +23,23 @@ namespace LiftLog.Lib.Serialization
 
         public override JsonConverter? CreateConverter(Type type, JsonSerializerOptions options)
         {
-            var converterType = typeof(ImmutableListSequenceJsonConverterInner<>).MakeGenericType(
+            var converterType = typeof(ImmutableListValueJsonConverterInner<>).MakeGenericType(
                 new[] { type.GetGenericArguments()[0] }
             );
             return (JsonConverter?)Activator.CreateInstance(converterType, new[] { options });
         }
 
-        private class ImmutableListSequenceJsonConverterInner<T>
-            : JsonConverter<ImmutableListSequence<T>>
+        private class ImmutableListValueJsonConverterInner<T>
+            : JsonConverter<ImmutableListValue<T>>
         {
             private readonly JsonConverter<List<T>> _jsonConverter;
 
-            public ImmutableListSequenceJsonConverterInner(JsonSerializerOptions options)
+            public ImmutableListValueJsonConverterInner(JsonSerializerOptions options)
             {
                 _jsonConverter = (JsonConverter<List<T>>)options.GetConverter(typeof(List<T>));
             }
 
-            public override ImmutableListSequence<T>? Read(
+            public override ImmutableListValue<T>? Read(
                 ref Utf8JsonReader reader,
                 Type typeToConvert,
                 JsonSerializerOptions options
@@ -55,7 +55,7 @@ namespace LiftLog.Lib.Serialization
 
             public override void Write(
                 Utf8JsonWriter writer,
-                ImmutableListSequence<T> value,
+                ImmutableListValue<T> value,
                 JsonSerializerOptions options
             )
             {

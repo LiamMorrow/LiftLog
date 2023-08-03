@@ -18,11 +18,11 @@
 
 @code {
 
-    private ImmutableListSequence<string> _goals = new ImmutableListSequence<string>();
+    private ImmutableListValue<string> _goals = new ImmutableListValue<string>();
 
     [EditorRequired]
     [Parameter]
-    public Action<ImmutableListSequence<string>> OnGoalsSelected { get; set; } = null!;
+    public Action<ImmutableListValue<string>> OnGoalsSelected { get; set; } = null!;
 
     private bool GetIsFilled(string goal)
     {

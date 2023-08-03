@@ -5,30 +5,30 @@ using LiftLog.Lib.Serialization;
 
 namespace LiftLog.Lib
 {
-    public static class ImmutableListSequence
+    public static class ImmutableListValue
     {
-        public static ImmutableListSequence<T> Of<T>(params T[] items)
+        public static ImmutableListValue<T> Of<T>(params T[] items)
         {
-            return new ImmutableListSequence<T>(items.ToImmutableList());
+            return new ImmutableListValue<T>(items.ToImmutableList());
         }
     }
     /**
   * An implementation of immutable list with value semantics.
   */
-    [JsonConverter(typeof(ImmutableListSequenceJsonConverter))]
-    public sealed class ImmutableListSequence<T> : IImmutableList<T>
+    [JsonConverter(typeof(ImmutableListValueJsonConverter))]
+    public sealed class ImmutableListValue<T> : IImmutableList<T>
     {
-        public ImmutableListSequence()
+        public ImmutableListValue()
         {
             Items = ImmutableList<T>.Empty;
         }
 
-        public ImmutableListSequence(ImmutableList<T> items)
+        public ImmutableListValue(ImmutableList<T> items)
         {
             Items = items;
         }
 
-        public ImmutableListSequence(List<T> items)
+        public ImmutableListValue(List<T> items)
         {
             Items = items.ToImmutableList();
         }
@@ -45,12 +45,12 @@ namespace LiftLog.Lib
 
         public T this[int index] => ((IReadOnlyList<T>)Items)[index];
 
-        public static implicit operator ImmutableListSequence<T>(ImmutableList<T> source)
+        public static implicit operator ImmutableListValue<T>(ImmutableList<T> source)
         {
-            return new ImmutableListSequence<T>(source);
+            return new ImmutableListValue<T>(source);
         }
 
-        public static implicit operator ImmutableList<T>(ImmutableListSequence<T> source)
+        public static implicit operator ImmutableList<T>(ImmutableListValue<T> source)
         {
             return source.Items;
         }
@@ -73,7 +73,7 @@ namespace LiftLog.Lib
                 return true;
             }
 
-            if (obj is ImmutableListSequence<T> second)
+            if (obj is ImmutableListValue<T> second)
             {
                 if (ReferenceEquals(second.Items, Items))
                 {
@@ -114,19 +114,19 @@ namespace LiftLog.Lib
             return ((IImmutableList<T>)Items).Add(value);
         }
 
-        public ImmutableListSequence<T> Add(T value)
+        public ImmutableListValue<T> Add(T value)
         {
-            return new ImmutableListSequence<T>(Items.Add(value));
+            return new ImmutableListValue<T>(Items.Add(value));
         }
 
-        public ImmutableListSequence<T> Remove(T value)
+        public ImmutableListValue<T> Remove(T value)
         {
-            return new ImmutableListSequence<T>(Items.Remove(value));
+            return new ImmutableListValue<T>(Items.Remove(value));
         }
 
-        public ImmutableListSequence<T> RemoveAt(int index)
+        public ImmutableListValue<T> RemoveAt(int index)
         {
-            return new ImmutableListSequence<T>(Items.RemoveAt(index));
+            return new ImmutableListValue<T>(Items.RemoveAt(index));
         }
 
         IImmutableList<T> IImmutableList<T>.AddRange(IEnumerable<T> items)

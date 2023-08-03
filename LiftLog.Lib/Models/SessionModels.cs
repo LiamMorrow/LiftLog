@@ -3,7 +3,7 @@
 public record Session(
     Guid Id,
     SessionBlueprint Blueprint,
-    ImmutableListSequence<RecordedExercise> RecordedExercises,
+    ImmutableListValue<RecordedExercise> RecordedExercises,
     DateTimeOffset Date
 )
 {
@@ -25,7 +25,7 @@ public record Session(
 public record RecordedExercise(
     ExerciseBlueprint Blueprint,
     decimal Kilograms,
-    ImmutableListSequence<RecordedSet?> RecordedSets
+    ImmutableListValue<RecordedSet?> RecordedSets
 )
 {
     public bool SucceededAllSets =>
