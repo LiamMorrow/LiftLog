@@ -18,8 +18,9 @@
     @onpointerdown="OnPointerDown"
     @onpointerleave="OnPointerLeave"
     @onpointerup="OnPointerUp"
-    style="box-shadow: @BoxShadow">
+    style="box-shadow: inset 0 0 0 @BoxShadowFill var(--md-sys-color-secondary-container); @Elevation">
     <md-ripple style="--md-ripple-pressed-color: var(--md-sys-color-on-primary-container)" ></md-ripple>
+    <md-elevation ></md-elevation>
     <span class="font-bold">@(RepCountValue?.ToString() ?? "-")</span>
     <span class="inline text-sm align-text-top">/@MaxReps</span>
 </button>
@@ -48,11 +49,13 @@
     [Parameter]
     public bool ToStartNext { get; set; }
 
-    private string BoxShadow => RepCountValue is not null  ? "inset 0 0 0 0 var(--md-sys-color-secondary-container)" : "inset 0 0 0 2rem var(--md-sys-color-secondary-container)";
+    private string BoxShadowFill => RepCountValue is not null  ? "0" : "2rem";
 
     private string ColorClass => ToStartNext ? "bg-primary" : RepCountValue is not null ? "text-on-primary" : "text-on-secondary-container";
 
     private string? RepCountToStartClass => ToStartNext ? "animate-pulse" : null;
+
+    private string Elevation => $"--md-elevation-level:{(ToStartNext ? "3" : "0")}";
 
     private void OnPointerDown(PointerEventArgs args){
         _lastPointerDownTime = DateTime.Now;

@@ -1,14 +1,5 @@
 @switch (Type)
 {
-    case AppButtonType.FloatingPrimary:
-        <md-filled-button
-            @attributes="AdditionalAttributes"
-            class="block pointer-events-auto"
-            @onclick="OnClick"
-            disabled=@Disabled
-            @onclick:stopPropagation="true" @onclick:preventDefault="true"
-            style="@FilledWithPrimaryStyle --md-filled-button-container-shape: 0.75rem; border-radius: 0.75rem; --md-filled-button-container-elevation: 3; @FullHeightStyle">@ChildContent</md-filled-button>
-        break;
     case AppButtonType.Primary:
         <md-filled-button
             @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class")) block pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@LessRoundedStyle @FullHeightStyle">@ChildContent</md-filled-button>
@@ -76,7 +67,6 @@
     : "";
 
     private string MdButtonStyle => Type switch {
-        AppButtonType.FloatingPrimary => "filled",
         AppButtonType.Primary => "filled",
         AppButtonType.Secondary => "tonal",
         AppButtonType.OutlineSecondary => "outlined",

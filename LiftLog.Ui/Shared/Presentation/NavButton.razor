@@ -1,6 +1,20 @@
-<button class="flex flex-col items-center" @onclick="Navigate">
-    <span class="transition-all bg-[length:200px_100px] w-16 pt-1 rounded-full @ClassForActiveRouteIcon">
-        <md-icon filled="@IsActive">@Icon</md-icon>
+<button class="relative flex flex-col items-center" @onclick="Navigate">
+    <span class="w-16 pt-1 rounded-full @ClassForActiveRouteIcon relative">
+        <span class="relative z-10"><md-icon filled="@IsActive">@Icon</md-icon></span>
+        <span class="
+            absolute
+            @ClassForActiveRoutePill
+            rounded-full
+            bg-secondary-container
+            z-0
+            duration-300
+            top-0
+            left-0
+            w-[100%]
+            h-[100%]
+            transition-all" ></span>
+
+        <md-ripple></md-ripple>
     </span>
     <span class="@ClassForActiveRouteText text-sm">@Text</span>
 </button>
@@ -26,8 +40,12 @@
 
 
     private string ClassForActiveRouteIcon => IsActive
-        ? "bg-secondary-container text-on-secondary-container"
+        ? "text-on-secondary-container"
         : "text-on-surface-variant";
+
+    private string ClassForActiveRoutePill => IsActive
+        ? "scale-x-100"
+        : "scale-x-0";
 
     private string ClassForActiveRouteText => IsActive
         ? "text-on-surface"

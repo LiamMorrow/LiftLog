@@ -17,19 +17,34 @@
         </MainContent>
 
         <SideContent>
-            <IconButton Type="IconButtonType.FilledTonal" OnClick=@(() => DeleteSession(context)) Icon="delete" />
+            <IconButton Type="IconButtonType.FilledTonal" OnClick=@(() => {_selectedSession = context; _deleteDialog?.Open();}) Icon="delete" />
         </SideContent>
     </SplitCardControl>
 </CardList>
+
+<Dialog @ref="_deleteDialog">
+    <span slot="header">Delete Session?</span>
+    <span class="block text-left">Session will be deleted from history, this cannot be undone.</span>
+    <AppButton Type="AppButtonType.Text" slot="footer" OnClick="()=>{_deleteDialog?.Close();}">Cancel</AppButton>
+    <AppButton Type="AppButtonType.Text" slot="footer" OnClick="DeleteSession">Delete</AppButton>
+</Dialog>
 
 @code
 {
 
     private IReadOnlyList<Session> _latestSessions = new List<Session>();
+    private Session? _selectedSession;
+    private Dialog? _deleteDialog;
 
-    private async void DeleteSession(Session session)
+    private async void DeleteSession()
     {
-        Dispatcher.Dispatch(new DeleteSessionAction(session));
+        if (_selectedSession == null)
+        {
+            return;
+        }
+        Dispatcher.Dispatch(new DeleteSessionAction(_selectedSession));
+        _selectedSession = null;
+        _deleteDialog?.Close();
         this._latestSessions = await SessionService
             .GetLatestSessionsAsync()
             .ToListAsync();
