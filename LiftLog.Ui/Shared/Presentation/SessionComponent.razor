@@ -17,7 +17,7 @@
 </div>
 <div class="sticky bottom-0 flex flex-col pointer-events-none">
     <div class="flex justify-end w-full mt-2 mb-2">
-        <AppButton Type="AppButtonType.FloatingPrimary" OnClick=SaveSession><md-icon slot="icon">save</md-icon>Save</AppButton>
+        <FloatingButton variant="secondary" has-icon OnClick=SaveSession><md-icon slot="icon">save</md-icon></FloatingButton>
     </div>
     @if (ShowRestTimer && Session.NextExercise is not null && Session.LastExercise?.LastRecordedSet is not null)
     {
@@ -30,12 +30,9 @@
 </div>
 <Dialog @ref="_editExerciseDialog" OnClose=@(()=> _exerciseToEditIndex = null) >
     <span slot="headline">@(_exerciseToEditIndex is null ? "Add" : "Edit") Exercise</span>
-    @if(_editingExercise != null)
-    {
-        <SessionExerciseEditor
-            Exercise=_editingExercise
-            OnExerciseUpdate=@((e) => {_editingExercise = e; StateHasChanged();} ) />
-    }
+    <SessionExerciseEditor
+        Exercise=_editingExercise
+        OnExerciseUpdate=@((e) => {_editingExercise = e; StateHasChanged();} ) />
     <AppButton Type="AppButtonType.Text" slot="footer" OnClick="()=>{_editExerciseDialog?.Close(); }">Cancel</AppButton>
     <AppButton Type="AppButtonType.Text" slot="footer" OnClick="EditExerciseHandler" >Save</AppButton>
 </Dialog>
@@ -47,7 +44,12 @@
 </Dialog>
 @code {
 
-    private SessionExerciseEditModel? _editingExercise;
+    private SessionExerciseEditModel _editingExercise = new SessionExerciseEditModel(
+        Name: "",
+        Sets: 3,
+        Reps: 10,
+        Kilograms: 0
+    );
     private int? _exerciseToEditIndex;
     private int? _exerciseToRemoveIndex;
     private Dialog? _editExerciseDialog;

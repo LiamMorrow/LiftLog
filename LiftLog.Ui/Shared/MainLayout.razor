@@ -6,11 +6,11 @@
 
 <div class="h-full page bg-surface">
     <section class="relative h-full content">
-        <div class="grid grid-cols-1 h-full grid-rows-[3rem_8fr_min-content] transition-all">
-            <div class="z-10 flex items-center px-5 overflow-visible bg-surface-container @_topNavSizeClass transition-all ease-out">
-                <span class="m-0 text-on-surface ">@AppState.Value.Title</span>
+        <div class="grid grid-cols-1 h-full grid-rows-[min-content_1fr_min-content]">
+            <div class="z-10 flex items-center justify-center py-4 text-2xl overflow-visible @_topNavColorClass transition-[background-color]">
+                <span class="m-0 text-on-surface">@AppState.Value.Title</span>
             </div>
-            <div @ref="_contentElementRef" class="px-2 pt-12 pb-2 overflow-auto bg-surface" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
+            <div @ref="_contentElementRef" class="px-2 pb-2 overflow-auto bg-surface" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
                 @Body
             </div>
             <HomeNav></HomeNav>
@@ -26,7 +26,7 @@
 
     private ElementReference _contentElementRef;
 
-    private string _topNavSizeClass = "py-11 text-3xl";
+    private string _topNavColorClass = "bg-surface";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -43,10 +43,10 @@
     private async void OnContentScroll()
     {
         var scrollTop = await Js.InvokeAsync<double>("AppUtils.getScrollTop", _contentElementRef);
-        _topNavSizeClass = scrollTop switch {
-            // make it smaller after scrolling past 3rem (48px)
-            (<=48) => "py-11 text-3xl",
-            _ => "py-4 text-xl"
+        _topNavColorClass = scrollTop switch {
+            // make it coloured after scrolling past 2px
+            (<=2) => "bg-surface",
+            _ => "bg-surface-container"
             };
         await InvokeAsync(StateHasChanged);
     }
