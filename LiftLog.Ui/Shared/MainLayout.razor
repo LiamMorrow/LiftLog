@@ -3,11 +3,12 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorLayout
 @inject IJSRuntime Js
 @inject IState<AppState> AppState
+@inject LiftLog.Ui.Services.IUserScrollListener UserScrollListener
 
 <div class="h-full page bg-surface">
     <section class="relative h-full content">
         <div class="grid grid-cols-1 h-full grid-rows-[min-content_1fr_min-content]">
-            <div class="z-10 flex items-center justify-center py-4 text-2xl overflow-visible @_topNavColorClass transition-[background-color]">
+            <div class="z-10 flex items-center justify-center py-4 text-2xl overflow-visible @_topNavColorClass">
                 <span class="m-0 text-on-surface">@AppState.Value.Title</span>
             </div>
             <div @ref="_contentElementRef" class="px-2 pb-2 overflow-auto bg-surface" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
@@ -43,12 +44,21 @@
     private async void OnContentScroll()
     {
         var scrollTop = await Js.InvokeAsync<double>("AppUtils.getScrollTop", _contentElementRef);
+        var previousTopNavColorClass = _topNavColorClass;
         _topNavColorClass = scrollTop switch {
             // make it coloured after scrolling past 2px
             (<=2) => "bg-surface",
             _ => "bg-surface-container"
             };
-        await InvokeAsync(StateHasChanged);
+            if(previousTopNavColorClass != _topNavColorClass)
+            {
+                await InvokeAsync(async ()=>
+                {
+                    StateHasChanged();
+                    await Task.Yield();
+                    await UserScrollListener.ScrollHasChangedAsync(scrollTop > 2);
+                });
+            }
     }
 
 }
