@@ -4,7 +4,6 @@ using AndroidX.Core.View;
 #endif
 using MaterialColorUtilities.Maui;
 using Microsoft.Extensions.Options;
-using Microsoft.JSInterop;
 using Microsoft.Maui.Platform;
 
 namespace LiftLog.App.Services;
@@ -34,9 +33,10 @@ public class ThemeColorUpdateService : MaterialColorService
         Activity activity = await Platform.WaitForActivityAsync();
 
         // Update status/navigation bar background color
-        Android.Graphics.Color androidColor = SchemeMaui.Surface2.ToPlatform();
-        activity.Window!.SetNavigationBarColor(androidColor);
-        activity.Window!.SetStatusBarColor(androidColor);
+        Android.Graphics.Color navColor = SchemeMaui.SurfaceContainer.ToPlatform();
+        activity.Window!.SetNavigationBarColor(navColor);
+        Android.Graphics.Color statusColor = SchemeMaui.Surface.ToPlatform();
+        activity.Window!.SetStatusBarColor(statusColor);
 
         // Update status/navigation bar text/icon color
         _ = new WindowInsetsControllerCompat(activity.Window, activity.Window.DecorView)
