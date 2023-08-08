@@ -1,0 +1,61 @@
+
+<div class="flex flex-col gap-2">
+    <span class="text-lg text-center" >Rest</span>
+    <div class="flex flex-wrap justify-center gap-2">
+        <FilterChip OnSelectedChange="HandleSelectedChanged(Rest.Short)" Label="Short" Selected=@(!_isCustom && Rest == Rest.Short)/>
+        <FilterChip OnSelectedChange="HandleSelectedChanged(Rest.Medium)" Label="Medium" Selected=@(!_isCustom && Rest == Rest.Medium)/>
+        <FilterChip OnSelectedChange="HandleSelectedChanged(Rest.Long)" Label="Long" Selected=@(!_isCustom && Rest == Rest.Long)/>
+        <FilterChip OnSelectedChange="HandleCustomSelectedChanged" Label="Custom" Selected=@(_isCustom)/>
+    </div>
+    @if(_isCustom)
+    {
+        <div class="flex flex-col justify-between gap-2">
+            <RestEditor Label="Min Rest" Rest="Rest.MinRest" OnRestUpdated="rest => OnRestUpdated(Rest with { MinRest = rest })"></RestEditor>
+            <RestEditor Label="Max Rest" Rest="Rest.MaxRest" OnRestUpdated="rest => OnRestUpdated(Rest with { MaxRest = rest })"></RestEditor>
+            <RestEditor Label="Failure Rest" Rest="Rest.FailureRest" OnRestUpdated="rest => OnRestUpdated(Rest with { FailureRest = rest })"></RestEditor>
+        </div>
+    }else {
+        <div class="flex flex-col justify-between gap-2">
+            <div class="flex flex-col items-start">
+                <div class="flex justify-between w-full"><span>Success:</span><span>@Rest.MinRest.ToString("m\\:ss") - @Rest.MaxRest.ToString("m\\:ss")</span></div>
+                <div class="flex justify-between w-full"><span>Failure:</span><span>@Rest.FailureRest.ToString("m\\:ss")</span></div>
+            </div>
+        </div>
+    }
+</div>
+@code {
+
+    private bool _isCustom;
+
+    [EditorRequired]
+    [Parameter]
+    public Action<Rest> OnRestUpdated { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
+    public Rest Rest { get; set; } = null!;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if(firstRender)
+        {
+            _isCustom = Rest != Rest.Short && Rest != Rest.Medium && Rest != Rest.Long;
+            StateHasChanged();
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+    private Action HandleSelectedChanged(Rest rest)
+    {
+        return () =>{
+            _isCustom = false;
+            OnRestUpdated?.Invoke(rest);
+        };
+    }
+
+    private void HandleCustomSelectedChanged()
+    {
+        _isCustom = true;
+        StateHasChanged();
+    }
+}
