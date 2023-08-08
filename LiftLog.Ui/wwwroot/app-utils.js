@@ -50,6 +50,14 @@ AppUtils.setValue = function (element, value) {
     element.value = value;
 }
 
+AppUtils.setSelected = function (element, selected) {
+    element.selected = selected;
+}
+
+AppUtils.getSelected = function (element) {
+    return element.selected;
+}
+
 AppUtils.scrollElementToMiddle = function (elementSelector) {
     document.querySelector(elementSelector).scrollIntoView({
         behavior: 'smooth',

@@ -70,11 +70,7 @@ else
                             Label="Success Weight Increase"
                             Value="exercise.KilogramsIncreaseOnSuccess"
                             OnChange="e => SetExerciseSuccessWeight(index, e)"/>
-                        <div class="flex flex-col justify-between gap-2">
-                            <RestEditor Label="Min Rest" Rest="exercise.RestBetweenSets.MinRest" OnRestUpdated="rest => OnMinUpdated(index, rest)"></RestEditor>
-                            <RestEditor Label="Max Rest" Rest="exercise.RestBetweenSets.MaxRest" OnRestUpdated="rest => OnMaxUpdated(index, rest)"></RestEditor>
-                            <RestEditor Label="Failure Rest" Rest="exercise.RestBetweenSets.FailureRest" OnRestUpdated="rest => OnFailureUpdated(index, rest)"></RestEditor>
-                        </div>
+                        <RestEditorGroup Rest="exercise.RestBetweenSets" OnRestUpdated="rest => OnRestUpdated(index, rest)"/>
                     </div>
                 </MainContent>
                 <SideContent>
@@ -143,9 +139,7 @@ else
     void SetExerciseSuccessWeight(int exerciseIndex, decimal kilograms)
         => Dispatcher.Dispatch(new SetExerciseKilogramsIncreaseOnSuccessAction(exerciseIndex, Math.Max(kilograms, 0)));
 
-    void OnMinUpdated(int exerciseIndex, TimeSpan rest) => Dispatcher.Dispatch(new SetMinAction(exerciseIndex, rest));
-    void OnMaxUpdated(int exerciseIndex, TimeSpan rest) => Dispatcher.Dispatch(new SetMaxAction(exerciseIndex, rest));
-    void OnFailureUpdated(int exerciseIndex, TimeSpan rest) => Dispatcher.Dispatch(new SetFailureAction(exerciseIndex, rest));
+    void OnRestUpdated(int exerciseIndex, Rest rest) => Dispatcher.Dispatch(new SetRestAction(exerciseIndex, rest));
 
     protected override void OnInitialized()
     {
