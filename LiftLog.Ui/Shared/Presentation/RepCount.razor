@@ -13,14 +13,13 @@
         transition-[box-shadow]
         duration-75
         items-center
-        @ColorClass
-        @RepCountToStartClass"
+        @ColorClass"
     @onpointerdown="OnPointerDown"
     @onpointerleave="OnPointerLeave"
     @onpointerup="OnPointerUp"
     style="box-shadow: inset 0 0 0 @BoxShadowFill var(--md-sys-color-secondary-container); @Elevation">
     <md-ripple style="--md-ripple-pressed-color: var(--md-sys-color-on-primary-container)" ></md-ripple>
-    <md-elevation ></md-elevation>
+    <md-elevation class="@RepCountToStartClass" ></md-elevation>
     <span class="font-bold">@(RepCountValue?.ToString() ?? "-")</span>
     <span class="inline text-sm align-text-top">/@MaxReps</span>
 </button>
