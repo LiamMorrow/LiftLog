@@ -7,7 +7,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/LiftLog.WebUi/LiftLog.WebUi.csproj",
+        "${workspaceFolder}/LiftLog.Web/LiftLog.Web.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -19,7 +19,7 @@
       "type": "process",
       "args": [
         "publish",
-        "${workspaceFolder}/LiftLog.WebUi/LiftLog.WebUi.csproj",
+        "${workspaceFolder}/LiftLog.Web/LiftLog.Web.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -32,7 +32,7 @@
       "args": [
         "watch",
         "run",
-        "${workspaceFolder}/LiftLog.WebUi/LiftLog.WebUi.csproj",
+        "${workspaceFolder}/LiftLog.Web/LiftLog.Web.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],

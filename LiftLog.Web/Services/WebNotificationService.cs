@@ -4,7 +4,7 @@ using LiftLog.Lib.Models;
 using LiftLog.Ui.Store.CurrentSession;
 using INotificationService = LiftLog.Ui.Services.INotificationService;
 
-namespace LiftLog.WebUi.Services;
+namespace LiftLog.Web.Services;
 
 public class WebNotificationService : INotificationService
 {

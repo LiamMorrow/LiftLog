@@ -1,6 +1,6 @@
 using LiftLog.Ui.Services;
 
-namespace LiftLog.WebUi.Services;
+namespace LiftLog.Web.Services;
 
 public class DummyUserScrollListener : IUserScrollListener
 {

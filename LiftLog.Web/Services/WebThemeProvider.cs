@@ -5,7 +5,7 @@ using Microsoft.JSInterop;
 using RealGoodApps.BlazorJavascript.Interop;
 using RealGoodApps.BlazorJavascript.Interop.Extensions;
 
-namespace LiftLog.WebUi.Services;
+namespace LiftLog.Web.Services;
 
 public class WebThemeProvider : IThemeProvider
 {

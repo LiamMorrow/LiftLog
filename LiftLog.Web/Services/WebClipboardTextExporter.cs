@@ -2,7 +2,7 @@ using System.Text;
 using BlazorDownloadFile;
 using LiftLog.Ui.Services;
 
-namespace LiftLog.WebUi.Services;
+namespace LiftLog.Web.Services;
 
 public class WebClipboardTextExporter : ITextExporter
 {
