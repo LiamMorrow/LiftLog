@@ -12,6 +12,8 @@
         <SingleProject>true</SingleProject>
         <ImplicitUsings>enable</ImplicitUsings>
         <EnableDefaultCssItems>false</EnableDefaultCssItems>
+        <!-- Logging has a conflict so we need to be explicit -->
+        <NoWarn>NETSDK1023;</NoWarn>
 
         <!-- Display name -->
         <ApplicationTitle>LiftLog</ApplicationTitle>

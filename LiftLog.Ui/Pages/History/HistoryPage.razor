@@ -62,10 +62,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
         Dispatcher.Dispatch(new SetPageTitleAction("History"));
         this._latestSessions = await SessionService
             .GetLatestSessionsAsync()
             .ToListAsync();
         await base.OnInitializedAsync();
+        sw.Stop();
+        Console.WriteLine($"History page initialized in {sw.ElapsedMilliseconds} ms");
     }
 }
