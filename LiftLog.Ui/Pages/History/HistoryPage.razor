@@ -52,10 +52,6 @@
 
     private void HandleSessionClick(Session session)
     {
-        if (CurrentSessionState.Value.HistorySession != null)
-        {
-            Dispatcher.Dispatch(new PersistCurrentSessionAction(SessionTarget.HistorySession));
-        }
         Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.HistorySession, session));
         NavigationManager.NavigateTo("/history/edit");
     }
@@ -69,6 +65,6 @@
             .ToListAsync();
         await base.OnInitializedAsync();
         sw.Stop();
-        Console.WriteLine($"History page initialized in {sw.ElapsedMilliseconds} ms");
+        Console.WriteLine($"History page initialized in {sw.ElapsedMilliseconds} ms, {_latestSessions[0].Date}");
     }
 }

@@ -61,6 +61,7 @@ namespace LiftLog.Ui.Services
             if (!_initialised)
             {
                 _initialised = true;
+                Console.WriteLine("Initialising progress repository");
                 var version = await _keyValueStore.GetItemAsync($"{StorageKey}-Version");
                 if (version is null)
                 {

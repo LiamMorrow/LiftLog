@@ -6,6 +6,18 @@ namespace LiftLog.Ui.Store.CurrentSession;
 
 public static class Reducers
 {
+
+    [ReducerMethod]
+    public static CurrentSessionState SetActiveSessionDate(
+        CurrentSessionState state,
+        SetActiveSessionDateAction action
+    )
+    {
+        var session = ActiveSession(state, action.Target) ?? throw new Exception();
+
+        return WithActiveSession(state, action.Target, session with { Date = action.Date });
+    }
+
     [ReducerMethod]
     public static CurrentSessionState CycleExerciseReps(
         CurrentSessionState state,
@@ -18,7 +30,7 @@ public static class Reducers
         var sessionDate = session.Date;
         if (!session.IsStarted)
         {
-            sessionDate = DateTimeOffset.UtcNow;
+            sessionDate = DateOnly.FromDateTime(DateTime.Now);
         }
 
         return WithActiveSession(

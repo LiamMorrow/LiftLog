@@ -20,10 +20,17 @@ namespace LiftLog.Ui.Store.CurrentSession
         {
             _store = store;
             var currentSessionStateJson = await keyValueStore.GetItemAsync(Key);
-            var currentSessionState = currentSessionStateJson != null ? JsonSerializer.Deserialize<CurrentSessionState>(currentSessionStateJson, JsonSerializerSettings.LiftLog) : null;
-            if (currentSessionState is not null)
+            try
             {
-                store.Features["CurrentSession"].RestoreState(currentSessionState);
+                var currentSessionState = currentSessionStateJson != null ? JsonSerializer.Deserialize<CurrentSessionState>(currentSessionStateJson, JsonSerializerSettings.LiftLog) : null;
+                if (currentSessionState is not null)
+                {
+                    store.Features["CurrentSession"].RestoreState(currentSessionState);
+                }
+            }
+            catch (JsonException e)
+            {
+                Console.WriteLine("Failed to deserialize current session state", e);
             }
             dispatch.Dispatch(new RehydrateSessionAction());
         }
