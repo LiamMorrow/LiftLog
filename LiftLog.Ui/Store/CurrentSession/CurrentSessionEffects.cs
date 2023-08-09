@@ -1,6 +1,6 @@
 using System.IO.Compression;
 using Fluxor;
-using LiftLog.Lib.Store;
+using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Util;
 
@@ -8,17 +8,17 @@ namespace LiftLog.Ui.Store.CurrentSession;
 
 public class CurrentSessionEffects
 {
-    private readonly IProgressStore _progressStore;
+    private readonly IProgressRepository _ProgressRepository;
     private readonly IState<CurrentSessionState> _state;
     private readonly INotificationService _notificationService;
 
     public CurrentSessionEffects(
-        IProgressStore progressStore,
+        IProgressRepository ProgressRepository,
         IState<CurrentSessionState> state,
         INotificationService notificationService
     )
     {
-        _progressStore = progressStore;
+        _ProgressRepository = ProgressRepository;
         _state = state;
         _notificationService = notificationService;
     }
@@ -34,7 +34,7 @@ public class CurrentSessionEffects
             _ => throw new Exception()
         };
         if (session is not null)
-            await _progressStore.SaveCompletedSessionAsync(session);
+            await _ProgressRepository.SaveCompletedSessionAsync(session);
     }
 
     [EffectMethod]
@@ -82,6 +82,6 @@ public class CurrentSessionEffects
     [EffectMethod]
     public async Task DeleteSession(DeleteSessionAction action, IDispatcher dispatcher)
     {
-        await _progressStore.DeleteSessionAsync(action.Session);
+        await _ProgressRepository.DeleteSessionAsync(action.Session);
     }
 }

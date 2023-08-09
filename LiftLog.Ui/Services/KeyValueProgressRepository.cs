@@ -3,20 +3,20 @@ using System.Collections.Immutable;
 using System.Text.Json;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
-using LiftLog.Lib.Store;
+using LiftLog.Ui.Repository;
 using LiftLog.Ui.Models.SessionHistoryDao;
 using LiftLog.Ui.Util;
 
 namespace LiftLog.Ui.Services
 {
-    public class KeyValueProgressStore : IProgressStore
+    public class KeyValueProgressRepository : IProgressRepository
     {
         private const string StorageKey = "Progress";
         private bool _initialised;
         private readonly ConcurrentDictionary<Guid, Session> _storedSessions = new();
         private readonly IKeyValueStore _keyValueStore;
 
-        public KeyValueProgressStore(IKeyValueStore keyValueStore)
+        public KeyValueProgressRepository(IKeyValueStore keyValueStore)
         {
             _keyValueStore = keyValueStore;
         }

@@ -1,9 +1,9 @@
 using System.Collections.Immutable;
 using LiftLog.Lib.Models;
 
-namespace LiftLog.Lib.Store
+namespace LiftLog.Ui.Repository
 {
-    public interface IProgressStore
+    public interface IProgressRepository
     {
 
         ValueTask<

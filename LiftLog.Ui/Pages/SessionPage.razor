@@ -1,12 +1,12 @@
 ﻿@page "/session"
 @using LiftLog.Ui.Store.CurrentSession
 @using LiftLog.Ui.Store.App
-@using LiftLog.Lib.Store
+@using LiftLog.Ui.Repository
 @using Fluxor;
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @inject IState<CurrentSessionState> CurrentSessionState
-@inject IProgressStore ProgressStore
+@inject IProgressRepository ProgressRepository
 @inject IDispatcher Dispatcher
 @inject NavigationManager NavigationManager
 
@@ -46,7 +46,7 @@
         if(!initted)
         {
             initted = true;
-            previouslyCompleted = await ProgressStore.GetLatestRecordedExercisesAsync();
+            previouslyCompleted = await ProgressRepository.GetLatestRecordedExercisesAsync();
             Dispatcher.Dispatch(new SetPageTitleAction(session.Blueprint.Name));
             await InvokeAsync(StateHasChanged);
         }

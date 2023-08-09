@@ -1,22 +1,22 @@
 using Fluxor;
-using LiftLog.Lib.Store;
+using LiftLog.Ui.Repository;
 
 namespace LiftLog.Ui.Store.Program;
 
 public class PersistProgramMiddleware : Middleware
 {
-    private readonly IProgramStore _programStore;
+    private readonly IProgramRepository _ProgramRepository;
     private IStore? _store;
 
-    public PersistProgramMiddleware(IProgramStore programStore)
+    public PersistProgramMiddleware(IProgramRepository ProgramRepository)
     {
-        _programStore = programStore;
+        _ProgramRepository = ProgramRepository;
     }
 
     public override async Task InitializeAsync(IDispatcher dispatch, IStore store)
     {
         _store = store;
-        var programs = await _programStore.GetSessionsInProgramAsync();
+        var programs = await _ProgramRepository.GetSessionsInProgramAsync();
         store.Features[nameof(ProgramFeature)].RestoreState(new ProgramState(programs));
 
         dispatch.Dispatch(new RehydrateProgramAction());
@@ -30,6 +30,6 @@ public class PersistProgramMiddleware : Middleware
             return;
         }
 
-        _programStore.PersistSessionsInProgramAsync(currentState.SessionBlueprints);
+        _ProgramRepository.PersistSessionsInProgramAsync(currentState.SessionBlueprints);
     }
 }

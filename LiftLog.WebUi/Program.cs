@@ -2,7 +2,7 @@ using Append.Blazor.Notifications;
 using BlazorDownloadFile;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Fluxor;
-using LiftLog.Lib.Store;
+using LiftLog.Ui.Repository;
 using Blazored.LocalStorage;
 using LiftLog.Ui;
 using LiftLog.Ui.Services;
@@ -29,8 +29,8 @@ builder.Services.AddFluxor(
 );
 
 builder.Services.AddScoped<IKeyValueStore, LocalStorageKeyValueStore>();
-builder.Services.AddScoped<IProgressStore, KeyValueProgressStore>();
-builder.Services.AddScoped<IProgramStore, KeyValueProgramStore>();
+builder.Services.AddScoped<IProgressRepository, KeyValueProgressRepository>();
+builder.Services.AddScoped<IProgramRepository, KeyValueProgramRepository>();
 builder.Services.AddScoped<SessionService>();
 
 builder.Services.AddScoped<IAiWorkoutPlanner, ApiBasedAiWorkoutPlanner>();

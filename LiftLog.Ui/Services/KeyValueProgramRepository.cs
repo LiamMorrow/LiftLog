@@ -3,13 +3,13 @@ using System.Text.Json;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
-using LiftLog.Lib.Store;
+using LiftLog.Ui.Repository;
 using LiftLog.Ui.Models.SessionBlueprintDao;
 using LiftLog.Ui.Util;
 
 namespace LiftLog.Ui.Services;
 
-public class KeyValueProgramStore : IProgramStore
+public class KeyValueProgramRepository : IProgramRepository
 {
     private const string StorageKey = "Program";
     private bool _initialised;
@@ -18,30 +18,27 @@ public class KeyValueProgramStore : IProgramStore
     private ImmutableListValue<SessionBlueprint> _sessions =
         ImmutableList.Create<SessionBlueprint>();
 
-    private static readonly Rest DefaultRest =
-        new(TimeSpan.FromSeconds(90), TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(5));
-
     private readonly ImmutableListValue<SessionBlueprint> _defaultSessionBlueprints =
         ImmutableList.Create(
             new SessionBlueprint(
                 "Workout A",
                 ImmutableList.Create(
-                    new ExerciseBlueprint("Squat", 5, 5, 20, 2.5m, DefaultRest),
-                    new ExerciseBlueprint("Bench press", 5, 5, 20, 2.5m, DefaultRest),
-                    new ExerciseBlueprint("Bent over row", 5, 5, 20, 2.5m, DefaultRest)
+                    new ExerciseBlueprint("Squat", 5, 5, 20, 2.5m, Rest.Medium),
+                    new ExerciseBlueprint("Bench press", 5, 5, 20, 2.5m, Rest.Medium),
+                    new ExerciseBlueprint("Bent over row", 5, 5, 20, 2.5m, Rest.Medium)
                 )
             ),
             new SessionBlueprint(
                 "Workout B",
                 ImmutableList.Create(
-                    new ExerciseBlueprint("Squat", 5, 5, 20, 2.5m, DefaultRest),
-                    new ExerciseBlueprint("Overhead press", 5, 5, 20, 2.5m, DefaultRest),
-                    new ExerciseBlueprint("Dead lift", 1, 5, 20, 5m, DefaultRest)
+                    new ExerciseBlueprint("Squat", 5, 5, 20, 2.5m, Rest.Medium),
+                    new ExerciseBlueprint("Overhead press", 5, 5, 20, 2.5m, Rest.Medium),
+                    new ExerciseBlueprint("Dead lift", 1, 5, 20, 5m, Rest.Medium)
                 )
             )
         );
 
-    public KeyValueProgramStore(IKeyValueStore keyValueStore)
+    public KeyValueProgramRepository(IKeyValueStore keyValueStore)
     {
         _keyValueStore = keyValueStore;
     }
