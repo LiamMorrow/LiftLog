@@ -13,13 +13,13 @@
         transition-[box-shadow]
         duration-75
         items-center
-        @ColorClass"
+        @ColorClass
+        @RepCountToStartClass"
     @onpointerdown="OnPointerDown"
     @onpointerleave="OnPointerLeave"
     @onpointerup="OnPointerUp"
-    style="box-shadow: inset 0 0 0 @BoxShadowFill var(--md-sys-color-secondary-container); @Elevation">
+    style="box-shadow: inset 0 0 0 @BoxShadowFill var(--md-sys-color-secondary-container);">
     <md-ripple style="--md-ripple-pressed-color: var(--md-sys-color-on-primary-container)" ></md-ripple>
-    <md-elevation class="@RepCountToStartClass" ></md-elevation>
     <span class="font-bold">@(RepCountValue?.ToString() ?? "-")</span>
     <span class="inline text-sm align-text-top">/@MaxReps</span>
 </button>
@@ -53,8 +53,6 @@
     private string ColorClass => ToStartNext ? "bg-primary" : RepCountValue is not null ? "text-on-primary" : "text-on-secondary-container";
 
     private string? RepCountToStartClass => ToStartNext ? "animate-pulse" : null;
-
-    private string Elevation => $"--md-elevation-level:{(ToStartNext ? "3" : "0")}";
 
     private void OnPointerDown(PointerEventArgs args){
         _lastPointerDownTime = DateTime.Now;

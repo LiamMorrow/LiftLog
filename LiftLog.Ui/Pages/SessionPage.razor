@@ -45,10 +45,13 @@
     {
         if(!initted)
         {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
             initted = true;
             previouslyCompleted = await ProgressRepository.GetLatestRecordedExercisesAsync();
             Dispatcher.Dispatch(new SetPageTitleAction(session.Blueprint.Name));
             await InvokeAsync(StateHasChanged);
+            sw.Stop();
+            Console.WriteLine($"Session init initialized completed in {sw.ElapsedMilliseconds}ms");
         }
     }
     private void ClearRepCountForExercise(int exerciseIndex, int setIndex)
@@ -97,7 +100,10 @@
     }
     protected override void OnInitialized()
     {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
         Dispatcher.Dispatch(new SetPageTitleAction("Session"));
         base.OnInitialized();
+        sw.Stop();
+        Console.WriteLine($"Session page initialized in {sw.ElapsedMilliseconds}ms");
     }
 }

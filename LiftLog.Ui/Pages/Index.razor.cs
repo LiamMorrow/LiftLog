@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using LiftLog.Lib.Models;
@@ -23,12 +24,15 @@ namespace LiftLog.Ui.Pages
 
         protected override async Task OnInitializedAsync()
         {
+            var sw = Stopwatch.StartNew();
             Dispatcher.Dispatch(new SetPageTitleAction("Upcoming Workouts"));
             this._upcomingSessions = await SessionService
                 .GetUpcomingSessionsAsync()
                 .Take(3)
                 .ToListAsync();
             await base.OnInitializedAsync();
+            sw.Stop();
+            Console.WriteLine($"Index.OnInitializedAsync took {sw.ElapsedMilliseconds}ms");
         }
 
         private void SelectSession(Session session)
