@@ -2,7 +2,7 @@
 using Fluxor;
 using Microsoft.Extensions.Logging;
 using LiftLog.App.Services;
-using LiftLog.Lib.Store;
+using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.CurrentSession;
 using LiftLog.Ui.Store.Program;
@@ -76,8 +76,8 @@ public static class MauiProgram
                     .UseReduxDevTools()
         );
 
-        builder.Services.AddScoped<IProgramStore, KeyValueProgramStore>();
-        builder.Services.AddScoped<IProgressStore, KeyValueProgressStore>();
+        builder.Services.AddScoped<IProgramRepository, KeyValueProgramRepository>();
+        builder.Services.AddScoped<IProgressRepository, KeyValueProgressRepository>();
         builder.Services.AddSingleton<IKeyValueStore, SecureStorageKeyValueStore>();
         builder.Services.AddScoped<INotificationService, MauiNotificationService>();
         builder.Services.AddScoped<ITextExporter, MauiShareTextExporter>();

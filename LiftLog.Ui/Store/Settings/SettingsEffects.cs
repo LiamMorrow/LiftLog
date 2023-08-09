@@ -7,7 +7,7 @@ using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
 using LiftLog.Lib.Services;
-using LiftLog.Lib.Store;
+using LiftLog.Ui.Repository;
 using LiftLog.Ui.Models.SessionBlueprintDao;
 using LiftLog.Ui.Models.SessionHistoryDao;
 using LiftLog.Ui.Services;
@@ -19,22 +19,22 @@ namespace LiftLog.Ui.Store.Settings;
 
 public class SettingsEffects
 {
-    private readonly IProgressStore _progressStore;
-    private readonly IProgramStore _programStore;
+    private readonly IProgressRepository _ProgressRepository;
+    private readonly IProgramRepository _ProgramRepository;
     private readonly ITextExporter _textExporter;
     private readonly IAiWorkoutPlanner aiWorkoutPlanner;
     private readonly ILogger<SettingsEffects> _logger;
 
     public SettingsEffects(
-        IProgressStore progressStore,
-        IProgramStore programStore,
+        IProgressRepository ProgressRepository,
+        IProgramRepository ProgramRepository,
         ITextExporter textExporter,
         IAiWorkoutPlanner aiWorkoutPlanner,
         ILogger<SettingsEffects> logger
     )
     {
-        _progressStore = progressStore;
-        _programStore = programStore;
+        _ProgressRepository = ProgressRepository;
+        _ProgramRepository = ProgramRepository;
         _textExporter = textExporter;
         this.aiWorkoutPlanner = aiWorkoutPlanner;
         _logger = logger;
@@ -43,8 +43,8 @@ public class SettingsEffects
     [EffectMethod]
     public async Task ExportData(ExportDataAction _, IDispatcher __)
     {
-        var sessions = await _progressStore.GetOrderedSessions().ToListAsync();
-        var program = await _programStore.GetSessionsInProgramAsync();
+        var sessions = await _ProgressRepository.GetOrderedSessions().ToListAsync();
+        var program = await _ProgramRepository.GetSessionsInProgramAsync();
 
         await _textExporter.ExportTextAsync(
             JsonSerializer.Serialize(new SerializedData(sessions.Select(SessionDaoV1.FromModel).ToList(), program.Select(SessionBlueprintDaoV1.FromModel).ToImmutableList()), JsonSerializerSettings.LiftLog)
@@ -62,7 +62,7 @@ public class SettingsEffects
             );
             if (deserialized != null)
             {
-                await _progressStore.SaveCompletedSessionsAsync(deserialized.Sessions.Select(x => x.ToModel()));
+                await _ProgressRepository.SaveCompletedSessionsAsync(deserialized.Sessions.Select(x => x.ToModel()));
                 dispatcher.Dispatch(new SetProgramSessionsAction(deserialized.Program.Select(x => x.ToModel()).ToImmutableList()));
             }
             else

@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using Fluxor;
 using LiftLog.Lib.Models;
-using LiftLog.Lib.Store;
+using LiftLog.Ui.Repository;
 using LiftLog.Ui.Store.CurrentSession;
 using LiftLog.Ui.Util;
 
@@ -10,14 +10,14 @@ namespace LiftLog.Ui.Services;
 public class SessionService
 {
     private readonly IState<CurrentSessionState> _currentSessionState;
-    private readonly IProgressStore _progressStore;
-    private readonly IProgramStore _programStore;
+    private readonly IProgressRepository _ProgressRepository;
+    private readonly IProgramRepository _ProgramRepository;
 
-    public SessionService(IState<CurrentSessionState> currentSessionState, IProgressStore progressStore, IProgramStore programStore)
+    public SessionService(IState<CurrentSessionState> currentSessionState, IProgressRepository ProgressRepository, IProgramRepository ProgramRepository)
     {
         _currentSessionState = currentSessionState;
-        _progressStore = progressStore;
-        _programStore = programStore;
+        _ProgressRepository = ProgressRepository;
+        _ProgramRepository = ProgramRepository;
     }
 
     /// <summary>
@@ -26,18 +26,18 @@ public class SessionService
     /// </summary>
     public async IAsyncEnumerable<Session> GetUpcomingSessionsAsync()
     {
-        var sessionBluePrints = await _programStore.GetSessionsInProgramAsync();
+        var sessionBluePrints = await _ProgramRepository.GetSessionsInProgramAsync();
         if (!sessionBluePrints.Any())
         {
             yield break;
         }
-        var latestRecordedExercises = await _progressStore.GetLatestRecordedExercisesAsync();
+        var latestRecordedExercises = await _ProgressRepository.GetLatestRecordedExercisesAsync();
         var currentSession = _currentSessionState.Value.WorkoutSession;
         if (currentSession != null)
             yield return currentSession;
 
         var latestSession =
-            currentSession ?? await _progressStore.GetOrderedSessions().FirstOrDefaultAsync();
+            currentSession ?? await _ProgressRepository.GetOrderedSessions().FirstOrDefaultAsync();
         if (latestSession == null)
         {
             latestSession = CreateNewSession(sessionBluePrints[0], latestRecordedExercises);
@@ -59,7 +59,7 @@ public class SessionService
 
     public IAsyncEnumerable<Session> GetLatestSessionsAsync()
     {
-        return _progressStore.GetOrderedSessions();
+        return _ProgressRepository.GetOrderedSessions();
     }
 
     private Session GetNextSession(

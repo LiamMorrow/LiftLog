@@ -1,12 +1,12 @@
 ﻿@page "/history/edit"
 @using LiftLog.Ui.Store.CurrentSession
 @using LiftLog.Ui.Store.App
-@using LiftLog.Lib.Store
+@using LiftLog.Ui.Repository
 @using Fluxor;
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @inject IState<CurrentSessionState> CurrentSessionState
-@inject IProgressStore ProgressStore
+@inject IProgressRepository ProgressRepository
 @inject IDispatcher Dispatcher
 @inject NavigationManager NavigationManager
 
