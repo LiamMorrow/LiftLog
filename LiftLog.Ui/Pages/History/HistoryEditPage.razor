@@ -21,6 +21,16 @@
 }
 @if (CurrentSessionState.Value.HistorySession is not null)
 {
+    <div class="flex w-full my-2">
+    <TextField
+        Label="Date"
+        class="w-full"
+        TextFieldType="TextFieldType.Filled"
+        Value=@(CurrentSessionState.Value.HistorySession.Date.ToString("o"))
+        OnChange=SetSessionDate
+        type="date" />
+        </div>
+
     Init(CurrentSessionState.Value.HistorySession);
     <SessionComponent
         ShowRestTimer=false
@@ -49,42 +59,38 @@
         }
     }
 
-    private void ClearRepCountForExercise(int exerciseIndex, int setIndex)
+    private void SetSessionDate(string dateString)
     {
-        Dispatcher.Dispatch(new ClearExerciseRepsAction(SessionTarget.HistorySession, exerciseIndex, setIndex));
+        if(DateOnly.TryParse(dateString, out var date))
+            Dispatcher.Dispatch(
+                new SetActiveSessionDateAction(SessionTarget.HistorySession, DateOnly.Parse(dateString))
+            );
     }
+
+    private void ClearRepCountForExercise(int exerciseIndex, int setIndex)
+        => Dispatcher.Dispatch(new ClearExerciseRepsAction(SessionTarget.HistorySession, exerciseIndex, setIndex));
 
     private void CycleRepcountForExercise(int exerciseIndex, int setIndex)
-    {
-        Dispatcher.Dispatch(new CycleExerciseRepsAction(SessionTarget.HistorySession, exerciseIndex, setIndex));
-    }
+        => Dispatcher.Dispatch(new CycleExerciseRepsAction(SessionTarget.HistorySession, exerciseIndex, setIndex));
 
     private void UpdateWeightForExercise(int exerciseIndex, decimal kilograms)
-    {
-        Dispatcher.Dispatch(new UpdateExerciseWeightAction(SessionTarget.HistorySession, exerciseIndex, kilograms));
-    }
+        => Dispatcher.Dispatch(new UpdateExerciseWeightAction(SessionTarget.HistorySession, exerciseIndex, kilograms));
 
     private void EditExercise(int exerciseIndex, SessionExerciseEditModel exercise)
-    {
-        Dispatcher.Dispatch(new EditExerciseInActiveSessionAction(SessionTarget.HistorySession, exerciseIndex, exercise));
-    }
+        => Dispatcher.Dispatch(new EditExerciseInActiveSessionAction(SessionTarget.HistorySession, exerciseIndex, exercise));
 
     private void AddExercise(SessionExerciseEditModel exercise)
-    {
-        Dispatcher.Dispatch(new AddExerciseToActiveSessionAction(SessionTarget.HistorySession, exercise));
-    }
+        => Dispatcher.Dispatch(new AddExerciseToActiveSessionAction(SessionTarget.HistorySession, exercise));
 
     private void RemoveExercise(int exerciseIndex)
-    {
-        Dispatcher.Dispatch(new RemoveExerciseFromActiveSessionAction(SessionTarget.HistorySession, exerciseIndex));
-    }
+        => Dispatcher.Dispatch(new RemoveExerciseFromActiveSessionAction(SessionTarget.HistorySession, exerciseIndex));
 
     private void SaveSession()
     {
         Dispatcher.Dispatch(new PersistCurrentSessionAction(SessionTarget.HistorySession));
         Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.HistorySession, null));
 
-        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/history");
     }
 
     private void CloseSession()

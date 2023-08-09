@@ -9,6 +9,8 @@ public enum SessionTarget
     HistorySession
 }
 
+public record SetActiveSessionDateAction(SessionTarget Target, DateOnly Date);
+
 public record CycleExerciseRepsAction(SessionTarget Target, int ExerciseIndex, int SetIndex);
 
 public record ClearExerciseRepsAction(SessionTarget Target, int ExerciseIndex, int SetIndex);

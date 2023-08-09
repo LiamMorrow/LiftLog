@@ -40,7 +40,7 @@ internal record SessionDaoV1(
             model.Id,
             SessionBlueprintDaoV1.FromModel(model.Blueprint),
             model.RecordedExercises.Select(RecordedExerciseDaoV1.FromModel).ToImmutableList(),
-            model.Date
+            new DateTimeOffset(model.Date.Year, model.Date.Month, model.Date.Day, 0, 0, 0, TimeSpan.Zero)
         );
 
     public Lib.Models.Session ToModel()
@@ -48,7 +48,7 @@ internal record SessionDaoV1(
             Id,
             Blueprint.ToModel(),
             RecordedExercises.Select(x => x.ToModel()).ToImmutableList(),
-            Date
+            new DateOnly(Date.Year, Date.Month, Date.Day)
         );
 }
 
