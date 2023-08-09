@@ -1,8 +1,40 @@
-﻿@page "/"
+﻿@using Fluxor;
+@using LiftLog.Ui.Store.App;
+@using LiftLog.Ui.Store.CurrentSession;
+@using System.Diagnostics;
+@using LiftLog.Ui.Services;
+
+@page "/"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+@inject IDispatcher Dispatcher
+@inject NavigationManager NavigationManager
+@inject SessionService SessionService
+
 <CardList Items="_upcomingSessions.IndexedTuples()" OnClick="x=>SelectSession(x.Item)" ShouldHighlight="session => session.Index == 0">
        <SessionSummary IsFilled="context.Item.IsStarted" Session="context.Item" ></SessionSummary>
 </CardList>
 
+@code {
 
-   
+    private IReadOnlyList<Session> _upcomingSessions = new List<Session>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var sw = Stopwatch.StartNew();
+        Dispatcher.Dispatch(new SetPageTitleAction("Upcoming Workouts"));
+        this._upcomingSessions = await SessionService
+            .GetUpcomingSessionsAsync()
+            .Take(3)
+            .ToListAsync();
+        await base.OnInitializedAsync();
+        sw.Stop();
+        Console.WriteLine($"Index.OnInitializedAsync took {sw.ElapsedMilliseconds}ms");
+    }
+
+    private void SelectSession(Session session)
+    {
+        Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, session));
+        NavigationManager.NavigateTo("/session");
+    }
+}
