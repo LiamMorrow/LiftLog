@@ -15,12 +15,18 @@ public static class Reducers
         var session = ActiveSession(state, action.Target) ?? throw new Exception();
         var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
         var exerciseBlueprint = session.Blueprint.Exercises[action.ExerciseIndex];
+        var sessionDate = session.Date;
+        if (!session.IsStarted)
+        {
+            sessionDate = DateTimeOffset.UtcNow;
+        }
 
         return WithActiveSession(
             state,
             action.Target,
             session with
             {
+                Date = sessionDate,
                 RecordedExercises = session.RecordedExercises.SetItem(
                     action.ExerciseIndex,
                     exerciseAtIndex with
