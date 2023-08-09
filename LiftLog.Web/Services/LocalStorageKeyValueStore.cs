@@ -1,7 +1,7 @@
 using Blazored.LocalStorage;
 using LiftLog.Ui.Services;
 
-namespace LiftLog.WebUi.Services;
+namespace LiftLog.Web.Services;
 
 public class LocalStorageKeyValueStore : IKeyValueStore
 {
