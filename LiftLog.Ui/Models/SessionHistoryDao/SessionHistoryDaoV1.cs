@@ -6,16 +6,12 @@ using LiftLog.Ui.Models.SessionBlueprintDao;
 namespace LiftLog.Ui.Models.SessionHistoryDao;
 
 internal record SessionHistoryDaoV1(
-
-    [property: JsonPropertyName("CurrentSession")]
-    SessionDaoV1? CurrentSession,
     [property: JsonPropertyName("CompletedSessions")]
     ImmutableListValue<SessionDaoV1> CompletedSessions
 )
 {
     public static SessionHistoryDaoV1 FromModel(SessionHistoryDaoContainer model)
         => new(
-            null,
             model.CompletedSessions.Values.Select(SessionDaoV1.FromModel).ToImmutableList()
         );
 
