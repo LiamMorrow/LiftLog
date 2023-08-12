@@ -58,6 +58,10 @@ AppUtils.getSelected = function (element) {
     return element.selected;
 }
 
+AppUtils.callOn = function (element, funcName) {
+    element[funcName]();
+}
+
 AppUtils.scrollElementToMiddle = function (elementSelector) {
     document.querySelector(elementSelector).scrollIntoView({
         behavior: 'smooth',
