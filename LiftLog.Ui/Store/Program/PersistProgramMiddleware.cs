@@ -5,18 +5,18 @@ namespace LiftLog.Ui.Store.Program;
 
 public class PersistProgramMiddleware : Middleware
 {
-    private readonly IProgramRepository _ProgramRepository;
+    private readonly IProgramRepository _programRepository;
     private IStore? _store;
 
-    public PersistProgramMiddleware(IProgramRepository ProgramRepository)
+    public PersistProgramMiddleware(IProgramRepository programRepository)
     {
-        _ProgramRepository = ProgramRepository;
+        _programRepository = programRepository;
     }
 
     public override async Task InitializeAsync(IDispatcher dispatch, IStore store)
     {
         _store = store;
-        var programs = await _ProgramRepository.GetSessionsInProgramAsync();
+        var programs = await _programRepository.GetSessionsInProgramAsync();
         store.Features[nameof(ProgramFeature)].RestoreState(new ProgramState(programs));
 
         dispatch.Dispatch(new RehydrateProgramAction());
@@ -30,6 +30,6 @@ public class PersistProgramMiddleware : Middleware
             return;
         }
 
-        _ProgramRepository.PersistSessionsInProgramAsync(currentState.SessionBlueprints);
+        _programRepository.PersistSessionsInProgramAsync(currentState.SessionBlueprints);
     }
 }
