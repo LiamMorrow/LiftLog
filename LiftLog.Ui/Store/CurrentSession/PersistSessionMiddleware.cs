@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using Fluxor;
 using LiftLog.Lib.Serialization;
@@ -37,9 +38,12 @@ namespace LiftLog.Ui.Store.CurrentSession
 
         public override void AfterDispatch(object action)
         {
+            var sw = Stopwatch.StartNew();
             var currentState = (CurrentSessionState?)_store?.Features["CurrentSession"].GetState();
             var currentSessionState = JsonSerializer.Serialize(currentState, JsonSerializerSettings.LiftLog);
             keyValueStore.SetItemAsync(Key, currentSessionState);
+            sw.Stop();
+            Console.WriteLine($"Persisted current session state in {sw.ElapsedMilliseconds}ms");
         }
     }
 }
