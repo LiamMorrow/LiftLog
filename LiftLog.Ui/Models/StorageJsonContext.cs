@@ -23,6 +23,6 @@ using LiftLog.Ui.Store.CurrentSession;
 internal partial class StorageJsonContext : JsonSerializerContext
 {
 
-    public static StorageJsonContext Context => new StorageJsonContext(JsonSerializerSettings.LiftLog);
+    public static readonly StorageJsonContext Context = new StorageJsonContext(JsonSerializerSettings.LiftLog);
 
 }

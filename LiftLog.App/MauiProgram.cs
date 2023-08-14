@@ -73,12 +73,14 @@ public static class MauiProgram
                 o.ScanAssemblies(typeof(Program).Assembly)
                     .AddMiddleware<PersistSessionMiddleware>()
                     .AddMiddleware<PersistProgramMiddleware>()
+#if DEBUG
                     .UseReduxDevTools()
+#endif
         );
 
         builder.Services.AddScoped<IProgramRepository, KeyValueProgramRepository>();
         builder.Services.AddScoped<IProgressRepository, KeyValueProgressRepository>();
-        builder.Services.AddSingleton<IKeyValueStore, SecureStorageKeyValueStore>();
+        builder.Services.AddSingleton<IKeyValueStore, AppDataFileStorageKeyValueStore>();
         builder.Services.AddScoped<INotificationService, MauiNotificationService>();
         builder.Services.AddScoped<ITextExporter, MauiShareTextExporter>();
 
