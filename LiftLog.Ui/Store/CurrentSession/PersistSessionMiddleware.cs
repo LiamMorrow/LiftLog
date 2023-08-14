@@ -23,7 +23,11 @@ namespace LiftLog.Ui.Store.CurrentSession
             var currentSessionStateJson = await keyValueStore.GetItemAsync(Key);
             try
             {
-                var currentSessionState = currentSessionStateJson != null ? JsonSerializer.Deserialize<CurrentSessionState>(currentSessionStateJson, JsonSerializerSettings.LiftLog) : null;
+                var currentSessionState = currentSessionStateJson != null
+                    ? JsonSerializer.Deserialize<CurrentSessionState>(
+                        currentSessionStateJson,
+                        StorageJsonContext.Context.CurrentSessionState)
+                    : null;
                 if (currentSessionState is not null)
                 {
                     store.Features["CurrentSession"].RestoreState(currentSessionState);
@@ -40,10 +44,13 @@ namespace LiftLog.Ui.Store.CurrentSession
         {
             var sw = Stopwatch.StartNew();
             var currentState = (CurrentSessionState?)_store?.Features["CurrentSession"].GetState();
-            var currentSessionState = JsonSerializer.Serialize(currentState, JsonSerializerSettings.LiftLog);
-            keyValueStore.SetItemAsync(Key, currentSessionState);
-            sw.Stop();
-            Console.WriteLine($"Persisted current session state in {sw.ElapsedMilliseconds}ms");
+            if (currentState != null)
+            {
+                var currentSessionState = JsonSerializer.Serialize(currentState, StorageJsonContext.Context.CurrentSessionState);
+                keyValueStore.SetItemAsync(Key, currentSessionState);
+                sw.Stop();
+                Console.WriteLine($"Persisted current session state in {sw.ElapsedMilliseconds}ms");
+            }
         }
     }
 }

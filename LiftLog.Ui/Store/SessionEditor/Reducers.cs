@@ -96,7 +96,7 @@ public static class Reducers
         }
 
         var index = state.SessionBlueprint.Exercises.IndexOf(action.ExerciseBlueprint);
-        if (index < 0 || index >= state.SessionBlueprint.Exercises.Count)
+        if (index < 0 || index >= state.SessionBlueprint.Exercises.Count - 1)
         {
             return state;
         }

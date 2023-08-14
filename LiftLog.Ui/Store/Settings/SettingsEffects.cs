@@ -14,6 +14,7 @@ using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.Program;
 using LiftLog.Ui.Util;
 using Microsoft.Extensions.Logging;
+using LiftLog.Ui.Models.SettingsStorageDao;
 
 namespace LiftLog.Ui.Store.Settings;
 
@@ -47,7 +48,11 @@ public class SettingsEffects
         var program = await _ProgramRepository.GetSessionsInProgramAsync();
 
         await _textExporter.ExportTextAsync(
-            JsonSerializer.Serialize(new SerializedData(sessions.Select(SessionDaoV1.FromModel).ToList(), program.Select(SessionBlueprintDaoV1.FromModel).ToImmutableList()), JsonSerializerSettings.LiftLog)
+            JsonSerializer.Serialize(
+                new SettingsStorageDaoV1(
+                    sessions.Select(SessionDaoV1.FromModel).ToList(),
+                    program.Select(SessionBlueprintDaoV1.FromModel).ToImmutableList()),
+                StorageJsonContext.Context.SettingsStorageDaoV1)
         );
     }
 
@@ -56,9 +61,9 @@ public class SettingsEffects
     {
         try
         {
-            var deserialized = JsonSerializer.Deserialize<SerializedData>(
+            var deserialized = JsonSerializer.Deserialize<SettingsStorageDaoV1>(
                 action.DataJson,
-                JsonSerializerSettings.LiftLog
+                StorageJsonContext.Context.SettingsStorageDaoV1
             );
             if (deserialized != null)
             {
@@ -96,9 +101,4 @@ public class SettingsEffects
             dispatcher.Dispatch(new SetIsGeneratingAiPlanAction(false));
         }
     }
-
-    private record SerializedData(
-        List<SessionDaoV1> Sessions,
-        ImmutableListValue<SessionBlueprintDaoV1> Program
-    );
 }

@@ -69,7 +69,7 @@ public class SessionService
     )
     {
         var lastBlueprint = previousSession.Blueprint;
-        var lastBlueprintIndex = sessionBlueprints.IndexedTuples().First(x => x.Item.Name == lastBlueprint.Name).Index;
+        var lastBlueprintIndex = sessionBlueprints.IndexedTuples().FirstOrDefault(x => x.Item.Name == lastBlueprint.Name).Index;
         return CreateNewSession(
             sessionBlueprints[(lastBlueprintIndex + 1) % sessionBlueprints.Count],
             latestRecordedExercises

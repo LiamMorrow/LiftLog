@@ -56,7 +56,7 @@ public class KeyValueProgramRepository : IProgramRepository
         await _keyValueStore.SetItemAsync($"{StorageKey}-Version", "1");
         await _keyValueStore.SetItemAsync(
             StorageKey,
-            JsonSerializer.Serialize(SessionBlueprintContainerDaoV1.FromModel(_sessions), JsonSerializerSettings.LiftLog)
+            JsonSerializer.Serialize(SessionBlueprintContainerDaoV1.FromModel(_sessions), StorageJsonContext.Context.SessionBlueprintContainerDaoV1)
         );
     }
 
@@ -73,9 +73,9 @@ public class KeyValueProgramRepository : IProgramRepository
             var storedDataJson = await _keyValueStore.GetItemAsync(StorageKey);
             var storedData = version switch
             {
-                "1" => JsonSerializer.Deserialize<SessionBlueprintContainerDaoV1?>(
+                "1" => JsonSerializer.Deserialize<SessionBlueprintContainerDaoV1>(
                     storedDataJson ?? "null",
-                    JsonSerializerSettings.LiftLog
+                    StorageJsonContext.Context.SessionBlueprintContainerDaoV1
                 )?.ToModel(),
                 _ => throw new Exception($"Unknown version {version} of {StorageKey}"),
             };
