@@ -40,16 +40,17 @@ namespace LiftLog.Ui.Store.CurrentSession
             dispatch.Dispatch(new RehydrateSessionAction());
         }
 
-        public override void AfterDispatch(object action)
+        public override async void AfterDispatch(object action)
         {
             var sw = Stopwatch.StartNew();
             var currentState = (CurrentSessionState?)_store?.Features["CurrentSession"].GetState();
             if (currentState != null)
             {
                 var currentSessionState = JsonSerializer.Serialize(currentState, StorageJsonContext.Context.CurrentSessionState);
-                keyValueStore.SetItemAsync(Key, currentSessionState);
+                var serializationTime = sw.ElapsedMilliseconds;
+                await keyValueStore.SetItemAsync(Key, currentSessionState);
                 sw.Stop();
-                Console.WriteLine($"Persisted current session state in {sw.ElapsedMilliseconds}ms");
+                Console.WriteLine($"Persisted current session state in {sw.ElapsedMilliseconds}ms (serialization: {serializationTime}ms)");
             }
         }
     }
