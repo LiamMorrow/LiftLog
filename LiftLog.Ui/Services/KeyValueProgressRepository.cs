@@ -71,9 +71,9 @@ namespace LiftLog.Ui.Services
                 var storedDataJson = await _keyValueStore.GetItemAsync(StorageKey);
                 var storedData = version switch
                 {
-                    "1" => JsonSerializer.Deserialize<SessionHistoryDaoV1?>(
+                    "1" => JsonSerializer.Deserialize<SessionHistoryDaoV1>(
                         storedDataJson ?? "null",
-                        JsonSerializerSettings.LiftLog
+                        StorageJsonContext.Context.SessionHistoryDaoV1
                     )?.ToModel(),
                     _ => throw new Exception($"Unknown version {version} of {StorageKey}"),
                 };
@@ -94,7 +94,7 @@ namespace LiftLog.Ui.Services
                 StorageKey,
                 JsonSerializer.Serialize(
                     SessionHistoryDaoV1.FromModel(new(_storedSessions.ToImmutableDictionary())),
-                    JsonSerializerSettings.LiftLog
+                    StorageJsonContext.Context.SessionHistoryDaoV1
                 )
             );
         }
