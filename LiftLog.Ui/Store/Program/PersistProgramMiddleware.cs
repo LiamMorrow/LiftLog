@@ -30,6 +30,7 @@ public class PersistProgramMiddleware : Middleware
             return;
         }
 
+
         _programRepository.PersistSessionsInProgramAsync(currentState.SessionBlueprints);
     }
 }
