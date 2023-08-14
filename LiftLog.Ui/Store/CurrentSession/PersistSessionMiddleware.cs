@@ -11,6 +11,7 @@ namespace LiftLog.Ui.Store.CurrentSession
         private const string Key = "CurrentSessionState";
         private IStore? _store;
         private readonly IKeyValueStore keyValueStore;
+        private CurrentSessionState? previousState;
 
         public PersistSessionMiddleware(IKeyValueStore _keyValueStore)
         {
@@ -20,7 +21,10 @@ namespace LiftLog.Ui.Store.CurrentSession
         public override async Task InitializeAsync(IDispatcher dispatch, IStore store)
         {
             _store = store;
+            var sw = Stopwatch.StartNew();
             var currentSessionStateJson = await keyValueStore.GetItemAsync(Key);
+            var storageTime = sw.ElapsedMilliseconds;
+            sw.Restart();
             try
             {
                 var currentSessionState = currentSessionStateJson != null
@@ -28,6 +32,9 @@ namespace LiftLog.Ui.Store.CurrentSession
                         currentSessionStateJson,
                         StorageJsonContext.Context.CurrentSessionState)
                     : null;
+                var deserializationTime = sw.ElapsedMilliseconds;
+                sw.Stop();
+                Console.WriteLine($"Deserialized current session state in (storage: {storageTime}ms | deserialization: {deserializationTime}ms | total: {storageTime + deserializationTime}ms)");
                 if (currentSessionState is not null)
                 {
                     store.Features["CurrentSession"].RestoreState(currentSessionState);
@@ -44,13 +51,17 @@ namespace LiftLog.Ui.Store.CurrentSession
         {
             var sw = Stopwatch.StartNew();
             var currentState = (CurrentSessionState?)_store?.Features["CurrentSession"].GetState();
-            if (currentState != null)
+            var currentStateTime = sw.ElapsedMilliseconds;
+            sw.Restart();
+            if (currentState != null && previousState != currentState)
             {
+                previousState = currentState;
                 var currentSessionState = JsonSerializer.Serialize(currentState, StorageJsonContext.Context.CurrentSessionState);
                 var serializationTime = sw.ElapsedMilliseconds;
+                sw.Restart();
                 await keyValueStore.SetItemAsync(Key, currentSessionState);
                 sw.Stop();
-                Console.WriteLine($"Persisted current session state in {sw.ElapsedMilliseconds}ms (serialization: {serializationTime}ms)");
+                Console.WriteLine($"Persisted current session state in (serialization: {serializationTime}ms |currentState {currentStateTime}ms | storage: {sw.ElapsedMilliseconds}ms | total: {currentStateTime + serializationTime + sw.ElapsedMilliseconds}ms)");
             }
         }
     }
