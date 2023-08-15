@@ -46,6 +46,12 @@
       <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+      <RunAOTCompilation>true</RunAOTCompilation>
+      <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+      <EnableLLVM>true</EnableLLVM>
+    </PropertyGroup>
+
     <ItemGroup>
         <!-- App Icon -->
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" ForegroundScale="0.50" Color="#233233" />
