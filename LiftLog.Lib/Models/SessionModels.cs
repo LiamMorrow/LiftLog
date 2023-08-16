@@ -8,14 +8,17 @@ public record Session(
 )
 {
     public RecordedExercise? NextExercise =>
-        RecordedExercises.FirstOrDefault(
+        RecordedExercises.Where(
             x => x.RecordedSets.Any(set => set is null)
-        );
+        ).OrderByDescending(x => x.LastRecordedSet?.CompletionTime)
+        .FirstOrDefault();
 
     public RecordedExercise? LastExercise =>
-        RecordedExercises.LastOrDefault(
+        RecordedExercises.Where(
             x => x.RecordedSets.Any(set => set is not null)
-        );
+        )
+        .OrderByDescending(x => x.LastRecordedSet?.CompletionTime)
+        .FirstOrDefault();
 
     public bool IsStarted => RecordedExercises.Any(x => x.RecordedSets.Any(s => s is not null));
 }
