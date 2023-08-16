@@ -31,7 +31,9 @@ public record RecordedExercise(
     public bool SucceededAllSets =>
         RecordedSets.All(x => x is not null && x.RepsCompleted == Blueprint.RepsPerSet);
 
-    public RecordedSet? LastRecordedSet => RecordedSets.LastOrDefault(x => x is not null);
+    public RecordedSet? LastRecordedSet => RecordedSets
+        .OrderByDescending(x => x?.CompletionTime)
+        .FirstOrDefault(x => x is not null);
 }
 
 public record RecordedSet(int RepsCompleted, DateTimeOffset CompletionTime);
