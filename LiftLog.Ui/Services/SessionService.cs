@@ -33,11 +33,14 @@ public class SessionService
         }
         var latestRecordedExercises = await _progressRepository.GetLatestRecordedExercisesAsync();
         var currentSession = _currentSessionState.Value.WorkoutSession;
-        if (currentSession != null)
+        if (currentSession?.IsStarted == true)
             yield return currentSession;
 
-        var latestSession =
-            currentSession ?? await _progressRepository.GetOrderedSessions().FirstOrDefaultAsync();
+        var latestSession = currentSession switch
+        {
+            { IsStarted: true } => currentSession,
+            _ => await _progressRepository.GetOrderedSessions().FirstOrDefaultAsync()
+        };
         if (latestSession == null)
         {
             latestSession = CreateNewSession(sessionBluePrints[0], latestRecordedExercises);

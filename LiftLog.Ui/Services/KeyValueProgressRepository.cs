@@ -27,7 +27,8 @@ namespace LiftLog.Ui.Services
             await InitialiseAsync();
 
             foreach (var session in _storedSessions.Select(day => day.Value)
-                         .OrderByDescending(x => x.Date))
+                         .OrderByDescending(x => x.Date)
+                         .ThenByDescending(x => x.LastExercise?.LastRecordedSet?.CompletionTime))
             {
                 yield return session;
             }
