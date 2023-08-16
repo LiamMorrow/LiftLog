@@ -12,9 +12,11 @@
         OnEditExercise=@(() => BeginEditExercise(context.Index))
         OnRemoveExercise=@(()=> BeginRemoveExercise(context.Index)) />
 </CardList>
+
 <div class="flex flex-col items-center mt-6">
 <AppButton OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon> Add Exercise</AppButton>
 </div>
+
 <div class="sticky bottom-0 flex flex-col pointer-events-none">
     <div class="flex justify-end w-full mt-2 mb-2">
         <FloatingButton variant="secondary" has-icon OnClick=SaveSession><md-icon slot="icon">save</md-icon></FloatingButton>
@@ -28,6 +30,7 @@
             Failed=lastSetFailed/>
     }
 </div>
+
 <Dialog @ref="_editExerciseDialog" OnClose=@(()=> _exerciseToEditIndex = null) >
     <span slot="headline">@(_exerciseToEditIndex is null ? "Add" : "Edit") Exercise</span>
     <SessionExerciseEditor
@@ -36,12 +39,14 @@
     <AppButton Type="AppButtonType.Text" slot="footer" OnClick="()=>{_editExerciseDialog?.Close(); }">Cancel</AppButton>
     <AppButton Type="AppButtonType.Text" slot="footer" OnClick="EditExerciseHandler" >Save</AppButton>
 </Dialog>
+
 <Dialog @ref="_removeExerciseDialog">
     <span slot="header">Remove Exercise?</span>
     <span class="block text-left">Exercise will be removed from the current session, future sessions will not be impacted.</span>
     <AppButton Type="AppButtonType.Text" slot="footer" OnClick="()=>{_removeExerciseDialog?.Close();}">Cancel</AppButton>
     <AppButton Type="AppButtonType.Text" slot="footer" OnClick="RemoveExerciseHandler">Remove</AppButton>
 </Dialog>
+
 @code {
 
     private SessionExerciseEditModel _editingExercise = new SessionExerciseEditModel(
