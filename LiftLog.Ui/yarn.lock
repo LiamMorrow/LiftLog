@@ -64,13 +64,12 @@
     deepmerge "^4.2.2"
     material-ripple-effects "^2.0.1"
 
-"@material/web@1.0.0-pre.14":
-  version "1.0.0-pre.14"
-  resolved "https://registry.yarnpkg.com/@material/web/-/web-1.0.0-pre.14.tgz#f16fed0aa47f5512675bced243a95dc6a60b10e1"
-  integrity sha512-nR5argPpzkGNaIoPARgo23uVAmwYRHjZdnlZQJkIe+H8jA4AVdjcEAAgMOHnaT/ByhDShob8mwdf4+bgmA9mgw==
+"@material/web@1.0.0-pre.15":
+  version "1.0.0-pre.15"
+  resolved "https://registry.yarnpkg.com/@material/web/-/web-1.0.0-pre.15.tgz#c2e2df4dad2b229f2e62001c2d08b64f44b2419b"
+  integrity sha512-AuGOfuREI6b0u0qYhWrOT+IwrbXtsVNDtPHyFRaiABD3OIs9gRtkOUh+uSjMesbDT8BzMhbXDdCMbK+O4XOlLQ==
   dependencies:
     lit "^2.7.4"
-    safevalues "^0.4.3"
     tslib "^2.4.0"
 
 "@nodelib/fs.scandir@2.1.5":
@@ -592,11 +591,6 @@ run-parallel@^1.1.9:
   integrity sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==
   dependencies:
     queue-microtask "^1.2.2"
-
-safevalues@^0.4.3:
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/safevalues/-/safevalues-0.4.3.tgz#b1969cd3199c01a0295dadac54b6162da3944d22"
-  integrity sha512-pNCNTkx3xs7G5YJ/9CoeZZVUSPRjH0SEPM0QI5Z1FZRlLBviTFWlNKPs8PTvZvERV0gO7ie/t/Zc0S96JS4Xew==
 
 source-map-js@^1.0.2:
   version "1.0.2"
