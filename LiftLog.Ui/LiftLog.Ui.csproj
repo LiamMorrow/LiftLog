@@ -25,6 +25,13 @@
       <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="5.9.0" />
     </ItemGroup>
 
+    <ItemGroup Condition=" '$(Configuration)' != 'Debug' ">
+      <Content Remove="wwwroot\load-tailwind.js" />
+      <Content Remove="wwwroot\tailwind.js" />
+      <Content Remove="wwwroot\twconf.json" />
+    </ItemGroup>
+
+
 
   <ItemGroup>
     <ProjectReference Include="..\LiftLog.Lib\LiftLog.Lib.csproj" />
