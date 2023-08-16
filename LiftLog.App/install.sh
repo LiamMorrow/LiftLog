@@ -1,3 +1,3 @@
 #! /bin/bash
 
-dotnet build -t:Run -c Debug #-p:AndroidEnableProfiler=true
+dotnet build -t:Run -c Release #-p:AndroidEnableProfiler=true

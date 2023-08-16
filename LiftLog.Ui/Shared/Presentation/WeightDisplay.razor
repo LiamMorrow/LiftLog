@@ -7,12 +7,12 @@
         @ref="dialog"
         style="--md-dialog-container-max-block-size: 500px;"
     >
-        <span slot="header">Weight</span>
+        <span slot="headline">Weight</span>
         <div class="flex flex-col gap-2 p-1">
-            <InputNumber @bind-Value=EditorWeight step=2.5 />
+            <TextField label="Weight" required suffix-text="kg" TextFieldType="TextFieldType.Outline" Value=@(EditorWeight.ToString()) OnChange="HandleInputChange" type="numeric" step="@Increment" />
             <div class="flex justify-between">
-                <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightDecrementClick><WeightFormat Kilograms="-Increment"  /></AppButton>
-                <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightIncrementClick>+<WeightFormat Kilograms="Increment" /></AppButton>
+                <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightDecrementClick><md-icon slot="icon">remove</md-icon><WeightFormat Kilograms="Increment"  /></AppButton>
+                <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightIncrementClick><md-icon slot="icon">add</md-icon><WeightFormat Kilograms="Increment" /></AppButton>
             </div>
         </div>
         <div slot="footer" class="flex gap-1" >
@@ -63,5 +63,12 @@
     private void OnWeightDecrementClick()
     {
         EditorWeight -= Increment;
+    }
+
+    private void HandleInputChange(string? value){
+        if (decimal.TryParse(value, out var result))
+        {
+            EditorWeight = result;
+        }
     }
 }
