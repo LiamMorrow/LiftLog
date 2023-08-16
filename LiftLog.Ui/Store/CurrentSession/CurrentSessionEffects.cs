@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using Fluxor;
+using LiftLog.Lib.Models;
 using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Util;
@@ -47,9 +48,9 @@ public class CurrentSessionEffects
             SessionTarget.HistorySession => _state.Value.HistorySession,
             _ => throw new Exception()
         };
-        if (session?.NextExercise is not null)
+        if (session?.NextExercise is RecordedExercise nextExercise)
         {
-            await _notificationService.ScheduleNextSetNotificationAsync(action.Target, session.NextExercise);
+            await _notificationService.ScheduleNextSetNotificationAsync(action.Target, nextExercise);
         }
     }
 

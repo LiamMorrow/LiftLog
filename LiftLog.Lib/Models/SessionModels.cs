@@ -9,17 +9,15 @@ public record Session(
 {
     public RecordedExercise? NextExercise =>
         RecordedExercises.FirstOrDefault(
-            x => x.RecordedSets.Any(set => set is null) && !x.RecordedSets.All(reps => reps is null)
+            x => x.RecordedSets.Any(set => set is null)
         );
 
     public RecordedExercise? LastExercise =>
         RecordedExercises.LastOrDefault(
-            x =>
-                x.RecordedSets.Any(set => set is not null)
-                && !x.RecordedSets.All(reps => reps is not null)
+            x => x.RecordedSets.Any(set => set is not null)
         );
 
-    public bool IsStarted => RecordedExercises.Any(x => x.RecordedSets.Any(s => s != null));
+    public bool IsStarted => RecordedExercises.Any(x => x.RecordedSets.Any(s => s is not null));
 }
 
 public record RecordedExercise(
