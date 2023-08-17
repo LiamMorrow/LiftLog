@@ -3,32 +3,44 @@
 @using LiftLog.Ui.Services
 @using LiftLog.Ui.Store.App
 @using LiftLog.Ui.Store.Settings
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
 @inject NavigationManager NavigationManager
 @inject IDispatcher Dispatcher
+@inject IAppPurchaseService AppPurchaseService
+@inject IState<AppState> AppState
+
 <div class="flex flex-col h-full gap-4 p-2 overflow-auto bg-surface text-on-surface">
-    <section class="flex flex-col px-5">
-        <span class="mb-4 text-lg text-center">Data Management</span>
-        <div class="flex justify-around">
-            <AppButton OnClick="OpenImportPopup" Type="AppButtonType.OutlineSecondary">
-                Import Data
-            </AppButton>
-            <AppButton OnClick="ExportData" Type="AppButtonType.OutlineSecondary">
-                Export Data
+    <Card>
+        <div class="flex flex-col gap-4">
+            <span class="self-start text-lg">Data Management</span>
+            <div class="flex justify-between">
+                <AppButton OnClick="OpenImportPopup" Type="AppButtonType.OutlineSecondary">
+                    <md-icon slot="icon">download</md-icon>Import Data
+                </AppButton>
+                <AppButton OnClick="ExportData" Type="AppButtonType.OutlineSecondary">
+                    <md-icon slot="icon">upload</md-icon>Export Data
+                </AppButton>
+            </div>
+            <AppButton OnClick="NavigateToManage" >
+                <md-icon slot="icon">construction</md-icon>
+                Manage Workouts
             </AppButton>
         </div>
-    </section>
-    <section class="flex flex-col px-5">
-        <AppButton  OnClick="NavigateToManage" >
-            <span class="align-middle material-symbols-outlined">construction</span>
-            Manage Workouts
-        </AppButton>
-    </section>
-    <section class="flex flex-col px-5">
-        <AppButton Type="AppButtonType.Secondary" OnClick="NavigateToAiPlanner">
-            <span class="align-middle material-symbols-outlined">auto_awesome</span>
+    </Card>
+    <Card>
+        <div class="flex flex-col gap-4">
+        <div class="flex justify-between">
+            <span class="mb-4 text-lg text-center">Pro Features</span>
+            @RenderLockedPro()
+         </div>
+        <AppButton Disabled=!AppState.Value.ProState.IsPro Type="AppButtonType.Secondary" OnClick="NavigateToAiPlanner">
+            <md-icon slot="icon">auto_awesome</md-icon>
             AI Planner
         </AppButton>
-    </section>
+        </div>
+    </Card>
 </div>
 <Dialog @ref="importPopup">
     <span slot="header">Paste Export Below</span>
@@ -39,16 +51,42 @@
     </div>
 </Dialog>
 
+<Dialog @ref="upgradeDialog">
+    <span slot="header">Upgrade to Pro</span>
+    <span class="block text-left">This will unlock the AI planner, which will generate a plan tailored specifically to you and your goals. <br/>This is a one time purchase.</span>
+    <div class="flex gap-1" slot="footer">
+        <AppButton Type="AppButtonType.Text" OnClick="()=>upgradeDialog?.Close()">Close</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="UpgradeToPro">Upgrade</AppButton>
+    </div>
+
+</Dialog>
+
+
 @code {
     private string ImportJson { get; set; } = "";
 
     private Dialog? importPopup;
+
+    private Dialog? upgradeDialog;
 
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Settings"));
         base.OnInitialized();
     }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    private RenderFragment? RenderLockedPro(){
+        if(AppState.Value.ProState.IsPro){
+            return @<md-icon>verified</md-icon>;
+        }
+       return @<AppButton OnClick="()=>{upgradeDialog?.Open();}" ><md-icon slot="icon">lock</md-icon>Unlock</AppButton>;
+    }
+
 
     private void NavigateToManage()
     {
@@ -79,6 +117,15 @@
             CloseImportPopup();
         }
 
+    }
+
+    private async void UpgradeToPro()
+    {
+        var proKey = await AppPurchaseService.GetProKeyAsync();
+        if(proKey != null){
+            Dispatcher.Dispatch(new SetProTokenAction(proKey));
+        }
+        await InvokeAsync(()=>upgradeDialog?.Close());
     }
 
     private void ExportData() => Dispatcher.Dispatch(new ExportDataAction());

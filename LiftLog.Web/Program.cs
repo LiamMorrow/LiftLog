@@ -11,6 +11,7 @@ using LiftLog.Ui.Store.Program;
 using LiftLog.Web.Services;
 using INotificationService = LiftLog.Ui.Services.INotificationService;
 using LiftLog.Lib.Services;
+using LiftLog.Ui.Store.App;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<ThemedWebApplication>("#app");
@@ -25,6 +26,7 @@ builder.Services.AddFluxor(
         o.ScanAssemblies(typeof(Program).Assembly)
             .AddMiddleware<PersistSessionMiddleware>()
             .AddMiddleware<PersistProgramMiddleware>()
+            .AddMiddleware<AppStatInitMiddleware>()
             .UseReduxDevTools()
 );
 

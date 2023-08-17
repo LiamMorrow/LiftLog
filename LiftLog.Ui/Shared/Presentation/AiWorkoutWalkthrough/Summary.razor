@@ -8,8 +8,8 @@ Your skill level with weight training is <span class="font-bold text-primary">@A
 </span>
 <p>Is this correct?</p>
 <div class="flex justify-around">
-    <AppButton FullHeight="true" OnClick="() => OnConfirm(false)"><div class="flex flex-col gap-1"><md-icon>close</md-icon>No</div></AppButton>
-    <AppButton FullHeight="true" OnClick="() => OnConfirm(true)"><div class="flex flex-col gap-1"><md-icon>auto_awesome</md-icon>Yes</div></AppButton>
+    <AppButton  OnClick="() => OnConfirm(false)"><md-icon slot="icon">close</md-icon>No</AppButton>
+    <AppButton  OnClick="() => OnConfirm(true)"><md-icon slot="icon">auto_awesome</md-icon>Yes</AppButton>
 </div>
 </div>
 @code {
