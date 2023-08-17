@@ -81,7 +81,10 @@ public static class MauiProgram
 
         builder.Services.AddScoped<IProgramRepository, KeyValueProgramRepository>();
         builder.Services.AddScoped<IProgressRepository, KeyValueProgressRepository>();
+        builder.Services.AddScoped<ProTokenRepository>();
+
         builder.Services.AddSingleton<IKeyValueStore, AppDataFileStorageKeyValueStore>();
+        builder.Services.AddSingleton<IPreferenceStore, SecureStoragePreferenceStore>();
         builder.Services.AddScoped<INotificationService, MauiNotificationService>();
         builder.Services.AddScoped<ITextExporter, MauiShareTextExporter>();
 
@@ -93,6 +96,8 @@ public static class MauiProgram
 
         builder.Services.AddSingleton(Share.Default);
         builder.Services.AddScoped<SessionService>();
+
+        builder.Services.AddScoped<IAppPurchaseService, AppPurchaseService>();
 
 
         builder.UseMaterialColors<ThemeColorUpdateService>();

@@ -29,8 +29,12 @@ builder.Services.AddFluxor(
 );
 
 builder.Services.AddScoped<IKeyValueStore, LocalStorageKeyValueStore>();
+builder.Services.AddScoped<IPreferenceStore, LocalStorageKeyValueStore>();
+
 builder.Services.AddScoped<IProgressRepository, KeyValueProgressRepository>();
 builder.Services.AddScoped<IProgramRepository, KeyValueProgramRepository>();
+builder.Services.AddScoped<ProTokenRepository>();
+
 builder.Services.AddScoped<SessionService>();
 
 builder.Services.AddScoped<IAiWorkoutPlanner, ApiBasedAiWorkoutPlanner>();
@@ -43,4 +47,7 @@ builder.Services.AddNotifications();
 builder.Services.AddBlazorDownloadFile();
 builder.Services.AddScoped<ITextExporter, WebClipboardTextExporter>();
 builder.Services.AddScoped<INotificationService, WebNotificationService>();
+
+builder.Services.AddScoped<IAppPurchaseService, WebAppProService>();
+
 await builder.Build().RunAsync();
