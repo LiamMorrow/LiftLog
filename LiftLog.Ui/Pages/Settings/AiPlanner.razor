@@ -31,6 +31,7 @@
     <div class="flex flex-col gap-2">
         <p class="text-on-surface">@SettingsState.Value.AiPlanError</p>
         <div class="flex justify-around">
+            <AppButton OnClick="()=>Dispatcher.Dispatch(new SetAiPlanErrorAction(null))" ><md-icon slot="icon">close</md-icon>Cancel</AppButton>
             <AppButton OnClick="()=>Dispatcher.Dispatch(new GenerateAiPlanAction(SettingsState.Value.AiWorkoutAttributes!))" ><md-icon slot="icon">refresh</md-icon>Retry</AppButton>
         </div>
     </div>

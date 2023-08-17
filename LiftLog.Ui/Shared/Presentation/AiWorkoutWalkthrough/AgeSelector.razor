@@ -20,6 +20,12 @@
 
     private ElementReference _scrollContainer;
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if(firstRender) { OnAgeSelect(_age); }
+        base.OnAfterRender(firstRender);
+    }
+
     private async void OnScroll()
     {
         _age = int.Parse(await Js.InvokeAsync<string>("AppUtils.getMiddleElementAttribute", _scrollContainer, "data-age"));
