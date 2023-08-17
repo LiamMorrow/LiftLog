@@ -3,7 +3,7 @@ using LiftLog.Ui.Services;
 
 namespace LiftLog.Web.Services;
 
-public class LocalStorageKeyValueStore : IKeyValueStore
+public class LocalStorageKeyValueStore : IKeyValueStore, IPreferenceStore
 {
     private readonly ILocalStorageService _localStorageService;
 

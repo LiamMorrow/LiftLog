@@ -2,7 +2,7 @@ using LiftLog.Ui.Services;
 
 namespace LiftLog.App.Services;
 
-public class SecureStorageKeyValueStore : IKeyValueStore
+public class SecureStoragePreferenceStore : IPreferenceStore
 {
     public async ValueTask<string?> GetItemAsync(string key)
     {
