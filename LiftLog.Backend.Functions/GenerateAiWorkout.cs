@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using LiftLog.Backend.Functions.Services;
 using LiftLog.Backend.Functions.Validators;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
@@ -14,11 +15,13 @@ namespace LiftLog.Backend.Functions
     {
         private readonly ILogger _logger;
         private readonly IAiWorkoutPlanner aiWorkoutPlanner;
+        private readonly RateLimitService rateLimitService;
 
-        public GenerateAiWorkout(IAiWorkoutPlanner aiWorkoutPlanner, ILoggerFactory loggerFactory)
+        public GenerateAiWorkout(IAiWorkoutPlanner aiWorkoutPlanner, RateLimitService rateLimitService, ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<GenerateAiWorkout>();
             this.aiWorkoutPlanner = aiWorkoutPlanner;
+            this.rateLimitService = rateLimitService;
         }
 
         [Function("GenerateAiWorkout")]
@@ -27,6 +30,23 @@ namespace LiftLog.Backend.Functions
             _logger.LogInformation("C# HTTP trigger function processed a request.");
 
             var response = req.CreateResponse(HttpStatusCode.OK);
+
+
+            if (!req.Headers.TryGetValues("X-Forwarded-For", out var xForwardedFor))
+            {
+                await response.WriteAsJsonAsync(new { error = new[] { "Invalid request" } });
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
+
+            var rateLimitResult = await rateLimitService.GetRateLimitAsync(xForwardedFor.First());
+            if (rateLimitResult.IsRateLimited)
+            {
+                response.Headers.Add("Retry-After", rateLimitResult.RetryAfter.ToString("R"));
+                response.StatusCode = HttpStatusCode.TooManyRequests;
+                return response;
+            }
+
             var request = await JsonSerializer.DeserializeAsync<GenerateAiWorkoutPlanRequest>(req.Body, JsonSerializerSettings.LiftLog);
             if (request == null)
             {
