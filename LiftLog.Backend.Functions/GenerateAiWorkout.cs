@@ -39,7 +39,7 @@ namespace LiftLog.Backend.Functions
                 return response;
             }
 
-            var rateLimitResult = await rateLimitService.GetRateLimitAsync(xForwardedFor.First());
+            var rateLimitResult = await rateLimitService.GetRateLimitAsync(xForwardedFor.First().Split(":").First());
             if (rateLimitResult.IsRateLimited)
             {
                 response.Headers.Add("Retry-After", rateLimitResult.RetryAfter.ToString("R"));
