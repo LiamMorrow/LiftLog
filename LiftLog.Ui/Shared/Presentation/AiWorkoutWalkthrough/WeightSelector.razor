@@ -20,6 +20,12 @@
 
     private ElementReference _scrollContainer;
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if(firstRender) { OnWeightSelect(_weightRange); }
+        base.OnAfterRender(firstRender);
+    }
+
     private async void OnScroll()
     {
         _weightRange = await Js.InvokeAsync<string>("AppUtils.getMiddleElementAttribute", _scrollContainer, "data-weight");
