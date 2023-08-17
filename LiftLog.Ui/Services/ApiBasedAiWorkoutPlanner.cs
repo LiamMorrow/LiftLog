@@ -12,11 +12,13 @@ public class ApiBasedAiWorkoutPlanner : IAiWorkoutPlanner
 {
     private readonly HttpClient httpClient;
     private readonly IState<AppState> appState;
+    private readonly IAppPurchaseService appPurchaseService;
 
-    public ApiBasedAiWorkoutPlanner(HttpClient httpClient, IState<AppState> appState)
+    public ApiBasedAiWorkoutPlanner(HttpClient httpClient, IState<AppState> appState, IAppPurchaseService appPurchaseService)
     {
         this.httpClient = httpClient;
         this.appState = appState;
+        this.appPurchaseService = appPurchaseService;
     }
     public async Task<AiWorkoutPlan> GenerateWorkoutPlanAsync(AiWorkoutAttributes attributes)
     {
@@ -27,7 +29,7 @@ public class ApiBasedAiWorkoutPlanner : IAiWorkoutPlanner
         }
 
         var request = new HttpRequestMessage(HttpMethod.Post, "https://liftlog.azurewebsites.net/api/GenerateAiWorkout?");
-        request.Headers.Add("Authorization", $"{proToken}");
+        request.Headers.Add("Authorization", $"{appPurchaseService.GetAppStore()} {proToken}");
         request.Content = new StringContent(JsonSerializer.Serialize(new GenerateAiWorkoutPlanRequest(attributes), JsonSerializerSettings.LiftLog), Encoding.UTF8, "application/json");
 
         var response = await httpClient.SendAsync(request);

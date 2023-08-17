@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Java.Text;
+using LiftLog.Lib.Models;
 using LiftLog.Ui.Services;
 using Plugin.InAppBilling;
 
@@ -8,6 +9,16 @@ namespace LiftLog.App.Services;
 
 public class AppPurchaseService : IAppPurchaseService
 {
+    public AppStore GetAppStore()
+    {
+        var platform = DeviceInfo.Platform;
+        if (platform == DevicePlatform.Android)
+            return AppStore.Google;
+        else if (platform == DevicePlatform.iOS)
+            return AppStore.Apple;
+        else
+            return AppStore.Web;
+    }
 
     public async Task<string?> GetProKeyAsync()
     {

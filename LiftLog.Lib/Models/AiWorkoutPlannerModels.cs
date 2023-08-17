@@ -1,5 +1,12 @@
 namespace LiftLog.Lib.Models;
 
+public enum AppStore
+{
+    Web,
+    Google,
+    Apple,
+}
+
 public enum Gender
 {
     Male,
