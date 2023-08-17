@@ -24,12 +24,7 @@ public class AppPurchaseService : IAppPurchaseService
             else if (purchase.State == PurchaseState.Purchased)
             {
                 // only need to finalize if on Android unless you turn off auto finalize on iOS
-                var ack = (await CrossInAppBilling.Current.FinalizePurchaseAsync(purchase.TransactionIdentifier)).ToList();
-
-                if (ack is [(_, false)])
-                {
-                    return null;
-                }
+                await CrossInAppBilling.Current.FinalizePurchaseAsync(purchase.TransactionIdentifier);
             }
 
             return purchase.PurchaseToken;

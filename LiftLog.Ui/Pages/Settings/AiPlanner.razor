@@ -22,6 +22,7 @@
         <SessionBlueprintSummary SessionBlueprint="context" />
     </CardList>
     <div class="flex justify-around mt-2">
+        <AppButton OnClick="()=>Dispatcher.Dispatch(new SetAiPlanAction(null))" ><md-icon slot="icon">close</md-icon>Cancel</AppButton>
         <AppButton OnClick="()=>Dispatcher.Dispatch(new GenerateAiPlanAction(SettingsState.Value.AiWorkoutAttributes!))" ><md-icon slot="icon">refresh</md-icon>Regenerate</AppButton>
         <AppButton OnClick="()=>AcceptAiPlan(SettingsState.Value.AiPlan)" ><md-icon slot="icon">done</md-icon>Accept</AppButton>
     </div>

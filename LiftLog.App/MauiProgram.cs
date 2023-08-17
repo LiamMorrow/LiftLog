@@ -74,6 +74,7 @@ public static class MauiProgram
                 o.ScanAssemblies(typeof(Program).Assembly)
                     .AddMiddleware<PersistSessionMiddleware>()
                     .AddMiddleware<PersistProgramMiddleware>()
+                    .AddMiddleware<AppStatInitMiddleware>()
 #if DEBUG
                     .UseReduxDevTools()
 #endif

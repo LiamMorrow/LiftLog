@@ -7,6 +7,6 @@ public class WebAppProService : IAppPurchaseService
 
     public Task<string?> GetProKeyAsync()
     {
-        return Task.FromResult<string?>(null);
+        return Task.FromResult<string?>("null");
     }
 }

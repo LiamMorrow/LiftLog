@@ -14,9 +14,10 @@ public class ProTokenRepository
         return await preferenceStore.GetItemAsync("proToken");
     }
 
-    public async Task SetProTokenAsync(string token)
+    public async Task SetProTokenAsync(string? token)
     {
-        await preferenceStore.SetItemAsync("proToken", token);
+        if (token is not null)
+            await preferenceStore.SetItemAsync("proToken", token);
     }
 
 }

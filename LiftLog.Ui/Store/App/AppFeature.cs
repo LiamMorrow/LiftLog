@@ -9,5 +9,5 @@ public class AppFeature : Feature<AppState>
 {
     public override string GetName() => nameof(AppFeature);
 
-    protected override AppState GetInitialState() => new("LiftLog");
+    protected override AppState GetInitialState() => new("LiftLog", new ProState(null));
 }
