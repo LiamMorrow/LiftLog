@@ -14,24 +14,34 @@
 @inject IState<SettingsState> SettingsState
 
 @if(SettingsState.Value.IsGeneratingAiPlan){
-    <md-circular-progress aria-label="Ai planning progress" indeterminate four-color></md-circular-progress>
+    <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
+    <div><md-circular-progress aria-label="Ai planning progress" indeterminate four-color></md-circular-progress></div>
+    <span>
+        <p>Generating AI plan...</p>
+        <p class="text-xs">This may take up to 3 minutes</p>
+    </span>
+    </div>
 } else if(SettingsState.Value.AiPlan != null)
 {
-    <p class="text-on-surface">@SettingsState.Value.AiPlan.Description</p>
-    <CardList Items="SettingsState.Value.AiPlan.Sessions">
-        <SessionBlueprintSummary SessionBlueprint="context" />
-    </CardList>
-    <div class="flex justify-around mt-2">
-        <AppButton OnClick="()=>Dispatcher.Dispatch(new SetAiPlanAction(null))" ><md-icon slot="icon">close</md-icon>Cancel</AppButton>
-        <AppButton OnClick="()=>Dispatcher.Dispatch(new GenerateAiPlanAction(SettingsState.Value.AiWorkoutAttributes!))" ><md-icon slot="icon">refresh</md-icon>Regenerate</AppButton>
-        <AppButton OnClick="()=>AcceptAiPlan(SettingsState.Value.AiPlan)" ><md-icon slot="icon">done</md-icon>Accept</AppButton>
+    <div class="flex flex-col gap-2">
+        <CardList Items="SettingsState.Value.AiPlan.Sessions">
+            <SessionBlueprintSummary SessionBlueprint="context" />
+        </CardList>
+        <p class="text-on-surface">Note: you can tweak this plan after you accept it.  Just head to the settings page.</p>
+        <div class="flex flex-col gap-2 mt-2">
+            <AppButton OnClick="()=>AcceptAiPlan(SettingsState.Value.AiPlan)" ><md-icon slot="icon">done</md-icon>Accept</AppButton>
+            <div class="grid grid-cols-2 grid-rows-1 gap-2">
+                <AppButton Type="AppButtonType.Secondary" OnClick="()=>Dispatcher.Dispatch(new SetAiPlanAction(null))" ><md-icon slot="icon">close</md-icon>Cancel</AppButton>
+                <AppButton Type="AppButtonType.Secondary" OnClick="()=>Dispatcher.Dispatch(new GenerateAiPlanAction(SettingsState.Value.AiWorkoutAttributes!))" ><md-icon slot="icon">refresh</md-icon>Regenerate</AppButton>
+            </div>
+        </div>
     </div>
 } else if( SettingsState.Value.AiPlanError != null)
 {
     <div class="flex flex-col gap-2">
         <p class="text-on-surface">@SettingsState.Value.AiPlanError</p>
-        <div class="flex justify-around">
-            <AppButton OnClick="()=>Dispatcher.Dispatch(new SetAiPlanErrorAction(null))" ><md-icon slot="icon">close</md-icon>Cancel</AppButton>
+        <div class="grid grid-cols-2 grid-rows-1 gap-2">
+            <AppButton Type="AppButtonType.Secondary" OnClick="()=>Dispatcher.Dispatch(new SetAiPlanErrorAction(null))" ><md-icon slot="icon">close</md-icon>Cancel</AppButton>
             <AppButton OnClick="()=>Dispatcher.Dispatch(new GenerateAiPlanAction(SettingsState.Value.AiWorkoutAttributes!))" ><md-icon slot="icon">refresh</md-icon>Retry</AppButton>
         </div>
     </div>

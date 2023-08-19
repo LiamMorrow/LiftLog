@@ -7,10 +7,14 @@ namespace LiftLog.Backend.Functions.Services;
 public class PurchaseVerificationService
 {
     private readonly GooglePlayPurchaseVerificationService googlePlayPurchaseVerificationService;
+    private readonly WebAuthPurchaseVerificationService webAuthPurchaseVerificationService;
 
-    public PurchaseVerificationService(GooglePlayPurchaseVerificationService googlePlayPurchaseVerificationService)
+    public PurchaseVerificationService(
+        GooglePlayPurchaseVerificationService googlePlayPurchaseVerificationService,
+        WebAuthPurchaseVerificationService webAuthPurchaseVerificationService)
     {
         this.googlePlayPurchaseVerificationService = googlePlayPurchaseVerificationService;
+        this.webAuthPurchaseVerificationService = webAuthPurchaseVerificationService;
     }
 
     public Task<bool> IsValidPurchaseToken(AppStore appStore, string proToken)
@@ -19,7 +23,7 @@ public class PurchaseVerificationService
         {
             AppStore.Google => googlePlayPurchaseVerificationService.IsValidPurchaseToken(proToken),
             AppStore.Apple => throw new NotImplementedException(),
-            AppStore.Web => throw new NotSupportedException(),
+            AppStore.Web => webAuthPurchaseVerificationService.IsValidPurchaseToken(proToken),
             _ => throw new NotSupportedException(),
         };
     }

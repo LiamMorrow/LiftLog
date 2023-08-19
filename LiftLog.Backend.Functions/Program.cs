@@ -26,6 +26,12 @@ var host = new HostBuilder()
 
         services.AddSingleton((service) =>
         {
+            var webAuthKey = context.Configuration.GetValue<string?>("WebAuthApiKey");
+            return new WebAuthPurchaseVerificationService(webAuthKey);
+        });
+
+        services.AddSingleton((service) =>
+        {
             var certificateBase64 = context.Configuration.GetValue<string>("GooglePlayServiceAccountKeyBase64");
             var serviceAccountEmail = context.Configuration.GetValue<string>("GooglePlayServiceAccountEmail");
             var certificateBytes = Convert.FromBase64String(certificateBase64);

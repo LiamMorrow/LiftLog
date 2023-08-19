@@ -12,6 +12,8 @@ using LiftLog.Web.Services;
 using INotificationService = LiftLog.Ui.Services.INotificationService;
 using LiftLog.Lib.Services;
 using LiftLog.Ui.Store.App;
+using System.Text.Json;
+using LiftLog.Lib.Serialization;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<ThemedWebApplication>("#app");
@@ -27,7 +29,10 @@ builder.Services.AddFluxor(
             .AddMiddleware<PersistSessionMiddleware>()
             .AddMiddleware<PersistProgramMiddleware>()
             .AddMiddleware<AppStateInitMiddleware>()
-            .UseReduxDevTools()
+            .UseReduxDevTools(options =>
+            {
+                options.UseSystemTextJson(_ => JsonSerializerSettings.LiftLog);
+            })
 );
 
 builder.Services.AddScoped<IKeyValueStore, LocalStorageKeyValueStore>();
