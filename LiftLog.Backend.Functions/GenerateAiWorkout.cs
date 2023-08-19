@@ -16,12 +16,18 @@ namespace LiftLog.Backend.Functions
         private readonly ILogger _logger;
         private readonly IAiWorkoutPlanner aiWorkoutPlanner;
         private readonly RateLimitService rateLimitService;
+        private readonly PurchaseVerificationService purchaseVerificationService;
 
-        public GenerateAiWorkout(IAiWorkoutPlanner aiWorkoutPlanner, RateLimitService rateLimitService, ILoggerFactory loggerFactory)
+        public GenerateAiWorkout(
+            IAiWorkoutPlanner aiWorkoutPlanner,
+            RateLimitService rateLimitService,
+            PurchaseVerificationService purchaseVerificationService,
+            ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<GenerateAiWorkout>();
             this.aiWorkoutPlanner = aiWorkoutPlanner;
             this.rateLimitService = rateLimitService;
+            this.purchaseVerificationService = purchaseVerificationService;
         }
 
         [Function("GenerateAiWorkout")]
@@ -31,15 +37,32 @@ namespace LiftLog.Backend.Functions
 
             var response = req.CreateResponse(HttpStatusCode.OK);
 
-
-            if (!req.Headers.TryGetValues("X-Forwarded-For", out var xForwardedFor))
+            if (!req.Headers.TryGetValues("authorization", out var authorization))
             {
-                await response.WriteAsJsonAsync(new { error = new[] { "Invalid request" } });
-                response.StatusCode = HttpStatusCode.BadRequest;
+                await response.WriteAsJsonAsync(new { error = new[] { "Invalid request. Missing Authorization" } });
+                response.StatusCode = HttpStatusCode.Forbidden;
                 return response;
             }
 
-            var rateLimitResult = await rateLimitService.GetRateLimitAsync(xForwardedFor.First().Split(":").First());
+            var authorizationParts = authorization.First().Split(" ");
+            if (authorizationParts.Length != 2)
+            {
+                await response.WriteAsJsonAsync(new { error = new[] { "Invalid request Incorrect authorization format" } });
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+
+            var appStore = JsonSerializer.Deserialize<AppStore>($"\"{authorizationParts[0]}\"", JsonSerializerSettings.LiftLog);
+            var proToken = authorizationParts[1];
+
+            if (!await purchaseVerificationService.IsValidPurchaseToken(appStore, proToken))
+            {
+                await response.WriteAsJsonAsync(new { error = new[] { "Invalid request. Bad Auth." } });
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+
+            var rateLimitResult = await rateLimitService.GetRateLimitAsync(proToken);
             if (rateLimitResult.IsRateLimited)
             {
                 response.Headers.Add("Retry-After", rateLimitResult.RetryAfter.ToString("R"));

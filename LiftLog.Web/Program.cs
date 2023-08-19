@@ -26,7 +26,7 @@ builder.Services.AddFluxor(
         o.ScanAssemblies(typeof(Program).Assembly)
             .AddMiddleware<PersistSessionMiddleware>()
             .AddMiddleware<PersistProgramMiddleware>()
-            .AddMiddleware<AppStatInitMiddleware>()
+            .AddMiddleware<AppStateInitMiddleware>()
             .UseReduxDevTools()
 );
 

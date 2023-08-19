@@ -14,7 +14,10 @@
 <div class="flex flex-col h-full gap-4 p-2 overflow-auto bg-surface text-on-surface">
     <Card>
         <div class="flex flex-col gap-4">
-            <span class="self-start text-lg">Data Management</span>
+            <div class="flex justify-between">
+                <span class="self-start text-lg">Data Management</span>
+                <md-icon>description</md-icon>
+            </div>
             <div class="flex justify-between">
                 <AppButton OnClick="OpenImportPopup" Type="AppButtonType.OutlineSecondary">
                     <md-icon slot="icon">download</md-icon>Import Data

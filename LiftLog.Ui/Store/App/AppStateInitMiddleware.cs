@@ -3,11 +3,11 @@ using LiftLog.Ui.Services;
 
 namespace LiftLog.Ui.Store.App;
 
-public class AppStatInitMiddleware : Middleware
+public class AppStateInitMiddleware : Middleware
 {
     private readonly ProTokenRepository proTokenRepository;
 
-    public AppStatInitMiddleware(ProTokenRepository proTokenRepository)
+    public AppStateInitMiddleware(ProTokenRepository proTokenRepository)
     {
         this.proTokenRepository = proTokenRepository;
     }
