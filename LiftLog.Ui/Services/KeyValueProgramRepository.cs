@@ -18,26 +18,6 @@ public class KeyValueProgramRepository : IProgramRepository
     private ImmutableListValue<SessionBlueprint> _sessions =
         ImmutableList.Create<SessionBlueprint>();
 
-    private readonly ImmutableListValue<SessionBlueprint> _defaultSessionBlueprints =
-        ImmutableList.Create(
-            new SessionBlueprint(
-                "Workout A",
-                ImmutableList.Create(
-                    new ExerciseBlueprint("Squat", 5, 5, 20, 2.5m, Rest.Medium),
-                    new ExerciseBlueprint("Bench press", 5, 5, 20, 2.5m, Rest.Medium),
-                    new ExerciseBlueprint("Bent over row", 5, 5, 20, 2.5m, Rest.Medium)
-                )
-            ),
-            new SessionBlueprint(
-                "Workout B",
-                ImmutableList.Create(
-                    new ExerciseBlueprint("Squat", 5, 5, 20, 2.5m, Rest.Medium),
-                    new ExerciseBlueprint("Overhead press", 5, 5, 20, 2.5m, Rest.Medium),
-                    new ExerciseBlueprint("Dead lift", 1, 5, 20, 5m, Rest.Medium)
-                )
-            )
-        );
-
     public KeyValueProgramRepository(IKeyValueStore keyValueStore)
     {
         _keyValueStore = keyValueStore;
@@ -79,7 +59,7 @@ public class KeyValueProgramRepository : IProgramRepository
                 )?.ToModel(),
                 _ => throw new Exception($"Unknown version {version} of {StorageKey}"),
             };
-            _sessions = storedData ?? _defaultSessionBlueprints;
+            _sessions = storedData ?? ImmutableList.Create<SessionBlueprint>();
             _initialised = true;
         }
     }

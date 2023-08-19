@@ -11,9 +11,19 @@
 @inject NavigationManager NavigationManager
 @inject SessionService SessionService
 
+@if(_upcomingSessions.Count == 0)
+{
+    <div class="flex flex-col justify-center h-full gap-2 text-on-surface">
+        <span>No plan created yet!</span>
+        <div class="flex justify-center">
+            <AppButton OnClick=@(()=>NavigationManager.NavigateTo("/settings"))><md-icon slot="icon">add</md-icon>Create Plan</AppButton>
+        </div>
+    </div>
+}else{
 <CardList Items="_upcomingSessions.IndexedTuples()" OnClick="x=>SelectSession(x.Item)" ShouldHighlight="session => session.Index == 0">
        <SessionSummary IsFilled="context.Item.IsStarted" Session="context.Item" ></SessionSummary>
 </CardList>
+}
 
 @code {
 
