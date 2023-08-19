@@ -11,6 +11,7 @@ using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
 using INotificationService = LiftLog.Ui.Services.INotificationService;
 using LiftLog.Lib.Services;
+using LiftLog.Ui.Store.App;
 
 namespace LiftLog.App;
 
@@ -74,7 +75,7 @@ public static class MauiProgram
                 o.ScanAssemblies(typeof(Program).Assembly)
                     .AddMiddleware<PersistSessionMiddleware>()
                     .AddMiddleware<PersistProgramMiddleware>()
-                    .AddMiddleware<AppStatInitMiddleware>()
+                    .AddMiddleware<AppStateInitMiddleware>()
 #if DEBUG
                     .UseReduxDevTools()
 #endif

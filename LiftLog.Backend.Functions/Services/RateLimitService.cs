@@ -1,6 +1,9 @@
 using System.Text.Json;
 using Azure;
 using Azure.Data.Tables;
+using System.Security.Cryptography;
+using System.Runtime.Intrinsics.Arm;
+using System.Text;
 
 namespace LiftLog.Backend.Functions.Services;
 
@@ -13,13 +16,18 @@ public class RateLimitService
         this.tableClient = tableClient;
     }
 
-    public async Task<RateLimitResult> GetRateLimitAsync(string ipAddress)
+    public async Task<RateLimitResult> GetRateLimitAsync(string rateLimitKey)
     {
-        var response = (await tableClient.GetEntityIfExistsAsync<RateLimitEntity>(ipAddress, ipAddress));
+        var hasher = SHA256.Create();
+        hasher.Initialize();
+        var hash = hasher.ComputeHash(Encoding.UTF8.GetBytes(rateLimitKey));
+        rateLimitKey = Convert.ToHexString(hash);
+
+        var response = (await tableClient.GetEntityIfExistsAsync<RateLimitEntity>(rateLimitKey, rateLimitKey));
         RateLimitEntity entity;
         if (!response.HasValue)
         {
-            entity = new RateLimitEntity { RowKey = ipAddress, PartitionKey = ipAddress, Requests = "[]" };
+            entity = new RateLimitEntity { RowKey = rateLimitKey, PartitionKey = rateLimitKey, Requests = "[]" };
             await tableClient.AddEntityAsync(entity);
         }
         else
