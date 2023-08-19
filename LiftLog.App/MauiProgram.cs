@@ -76,9 +76,6 @@ public static class MauiProgram
                     .AddMiddleware<PersistSessionMiddleware>()
                     .AddMiddleware<PersistProgramMiddleware>()
                     .AddMiddleware<AppStateInitMiddleware>()
-#if DEBUG
-                    .UseReduxDevTools()
-#endif
         );
 
         builder.Services.AddScoped<IProgramRepository, KeyValueProgramRepository>();
