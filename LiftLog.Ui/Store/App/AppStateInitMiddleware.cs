@@ -14,8 +14,12 @@ public class AppStateInitMiddleware : Middleware
 
     public override async Task InitializeAsync(IDispatcher dispatch, IStore store)
     {
+#if TEST_MODE
+        await Task.Yield();
+#else
         var proToken = await proTokenRepository.GetProTokenAsync();
 
         dispatch.Dispatch(new SetProTokenAction(proToken));
+#endif
     }
 }

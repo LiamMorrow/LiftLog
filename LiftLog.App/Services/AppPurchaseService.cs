@@ -30,6 +30,7 @@ public class AppPurchaseService : IAppPurchaseService
                 return null;
 
             var purchase = await billing.PurchaseAsync("pro", ItemType.InAppPurchase);
+            Console.WriteLine("LOOK_HERE: {0}", purchase);
             if (purchase == null)
                 return null;
             else if (purchase.State == PurchaseState.Purchased)
@@ -42,14 +43,23 @@ public class AppPurchaseService : IAppPurchaseService
         }
         catch (InAppBillingPurchaseException purchaseEx)
         {
+            if (purchaseEx.PurchaseError == PurchaseError.AlreadyOwned)
+            {
+                var purchases = await billing.GetPurchasesAsync(ItemType.InAppPurchase);
+                var proPurchase = purchases.FirstOrDefault(p => p.ProductId == "pro");
+                if (proPurchase?.State == PurchaseState.Purchased)
+                {
+                    return proPurchase.PurchaseToken;
+                }
+            }
             //Billing Exception handle this based on the type
-            Debug.WriteLine("Error: " + purchaseEx);
+            Console.WriteLine("Error: " + purchaseEx);
             return null;
         }
         catch (Exception ex)
         {
             //Something else has gone wrong, log it
-            Debug.WriteLine("Issue connecting: " + ex);
+            Console.WriteLine("Issue connecting: " + ex);
             return null;
         }
         finally
