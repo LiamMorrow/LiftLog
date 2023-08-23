@@ -21,14 +21,14 @@ namespace LiftLog.Ui.Store.Settings;
 public class SettingsEffects
 {
     private readonly IProgressRepository _ProgressRepository;
-    private readonly IProgramRepository _ProgramRepository;
+    private readonly ICurrentProgramRepository _ProgramRepository;
     private readonly ITextExporter _textExporter;
     private readonly IAiWorkoutPlanner aiWorkoutPlanner;
     private readonly ILogger<SettingsEffects> _logger;
 
     public SettingsEffects(
         IProgressRepository ProgressRepository,
-        IProgramRepository ProgramRepository,
+        ICurrentProgramRepository ProgramRepository,
         ITextExporter textExporter,
         IAiWorkoutPlanner aiWorkoutPlanner,
         ILogger<SettingsEffects> logger

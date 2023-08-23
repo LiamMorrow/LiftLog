@@ -11,9 +11,9 @@ public class SessionService
 {
     private readonly IState<CurrentSessionState> _currentSessionState;
     private readonly IProgressRepository _progressRepository;
-    private readonly IProgramRepository _programRepository;
+    private readonly ICurrentProgramRepository _programRepository;
 
-    public SessionService(IState<CurrentSessionState> currentSessionState, IProgressRepository progressRepository, IProgramRepository programRepository)
+    public SessionService(IState<CurrentSessionState> currentSessionState, IProgressRepository progressRepository, ICurrentProgramRepository programRepository)
     {
         _currentSessionState = currentSessionState;
         _progressRepository = progressRepository;

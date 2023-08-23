@@ -39,7 +39,7 @@ builder.Services.AddScoped<IKeyValueStore, LocalStorageKeyValueStore>();
 builder.Services.AddScoped<IPreferenceStore, LocalStorageKeyValueStore>();
 
 builder.Services.AddScoped<IProgressRepository, KeyValueProgressRepository>();
-builder.Services.AddScoped<IProgramRepository, KeyValueProgramRepository>();
+builder.Services.AddScoped<ICurrentProgramRepository, KeyValueCurrentProgramRepository>();
 builder.Services.AddScoped<ProTokenRepository>();
 
 builder.Services.AddScoped<SessionService>();
