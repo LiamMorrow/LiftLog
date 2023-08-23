@@ -3,7 +3,7 @@ using LiftLog.Lib.Models;
 
 namespace LiftLog.Ui.Repository;
 
-public interface IProgramRepository
+public interface ICurrentProgramRepository
 {
     ValueTask<ImmutableListValue<SessionBlueprint>> GetSessionsInProgramAsync();
     ValueTask PersistSessionsInProgramAsync(IReadOnlyList<SessionBlueprint> sessions);

@@ -9,7 +9,7 @@ using LiftLog.Ui.Util;
 
 namespace LiftLog.Ui.Services;
 
-public class KeyValueProgramRepository : IProgramRepository
+public class KeyValueCurrentProgramRepository : ICurrentProgramRepository
 {
     private const string StorageKey = "Program";
     private bool _initialised;
@@ -18,7 +18,7 @@ public class KeyValueProgramRepository : IProgramRepository
     private ImmutableListValue<SessionBlueprint> _sessions =
         ImmutableList.Create<SessionBlueprint>();
 
-    public KeyValueProgramRepository(IKeyValueStore keyValueStore)
+    public KeyValueCurrentProgramRepository(IKeyValueStore keyValueStore)
     {
         _keyValueStore = keyValueStore;
     }

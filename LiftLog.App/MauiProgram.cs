@@ -78,7 +78,7 @@ public static class MauiProgram
                     .AddMiddleware<AppStateInitMiddleware>()
         );
 
-        builder.Services.AddScoped<IProgramRepository, KeyValueProgramRepository>();
+        builder.Services.AddScoped<ICurrentProgramRepository, KeyValueCurrentProgramRepository>();
         builder.Services.AddScoped<IProgressRepository, KeyValueProgressRepository>();
         builder.Services.AddScoped<ProTokenRepository>();
 

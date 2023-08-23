@@ -2,6 +2,13 @@
 
 namespace LiftLog.Lib.Models;
 
+public record ProgramBlueprint(
+    string Name,
+    Experience? ExperienceLevel,
+    string? Tag,
+    ImmutableListValue<SessionBlueprint> Sessions
+);
+
 public record SessionBlueprint(string Name, ImmutableListValue<ExerciseBlueprint> Exercises)
 {
     public Session GetEmptySession()

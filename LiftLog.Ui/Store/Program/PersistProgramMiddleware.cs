@@ -5,10 +5,10 @@ namespace LiftLog.Ui.Store.Program;
 
 public class PersistProgramMiddleware : Middleware
 {
-    private readonly IProgramRepository _programRepository;
+    private readonly ICurrentProgramRepository _programRepository;
     private IStore? _store;
 
-    public PersistProgramMiddleware(IProgramRepository programRepository)
+    public PersistProgramMiddleware(ICurrentProgramRepository programRepository)
     {
         _programRepository = programRepository;
     }
