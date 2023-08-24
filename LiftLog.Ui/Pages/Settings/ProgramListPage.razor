@@ -1,0 +1,62 @@
+@using Fluxor;
+@using LiftLog.Ui.Store.App;
+@using LiftLog.Ui.Store.Settings;
+@using LiftLog.Ui.Services;
+
+@page "/settings/program-list"
+
+@inject NavigationManager NavigationManager;
+@inject IDispatcher Dispatcher;
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+@* TODO: Section for Saved Programs *@
+
+<section class="text-left text-on-surface">
+    <h2 class="pl-4 text-xl">Built in Programs</h2>
+    <md-list>
+        @foreach (var program in BuiltInProgramService.BuiltInPrograms)
+        {
+            <ProgramListItem ProgramBlueprint="@program" OnClick=@(()=> BeginSelectProgram(program)) />
+            @if(program != BuiltInProgramService.BuiltInPrograms.Last())
+            {
+                <md-divider></md-divider>
+            }
+        }
+    </md-list>
+</section>
+
+<Dialog @ref=selectedProgramDialog>
+    <span slot="headline">Select Program</span>
+    @if(selectedProgram != null)
+    {
+
+        <span slot="content" class="block text-left">Would you like to use the program <strong>@selectedProgram.Name</strong>?<br/>This will replace the existing program.</span>
+        <div class="flex gap-1" slot="actions">
+            <AppButton Type="AppButtonType.Text" OnClick="()=>selectedProgramDialog?.Close()">Close</AppButton>
+            <AppButton Type="AppButtonType.Text" OnClick="SelectProgram">Select</AppButton>
+        </div>
+    }
+</Dialog>
+
+@code {
+    private ProgramBlueprint? selectedProgram;
+    private Dialog? selectedProgramDialog;
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Dispatcher.Dispatch(new SetPageTitleAction("Programs"));
+        Dispatcher.Dispatch(new FetchSavedProgramsAction());
+    }
+
+    private void BeginSelectProgram(ProgramBlueprint program)
+    {
+        selectedProgram = program;
+        selectedProgramDialog?.Open();
+    }
+
+    private void SelectProgram()
+    {
+        selectedProgramDialog?.Close();
+        NavigationManager.NavigateTo("/");
+    }
+}

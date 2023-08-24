@@ -11,7 +11,15 @@
 @inject NavigationManager NavigationManager
 @inject SessionService SessionService
 
-@if(_upcomingSessions.Count == 0)
+@if(_isLoading)
+{
+    <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
+        <div><md-circular-progress aria-label="Ai planning progress" indeterminate four-color></md-circular-progress></div>
+        <span>
+            <p>Loading Sessions...</p>
+        </span>
+    </div>
+} else if(_upcomingSessions.Count == 0)
 {
     <div class="flex flex-col justify-center h-full gap-2 text-on-surface">
         <span>No plan created yet!</span>
@@ -19,14 +27,15 @@
             <AppButton OnClick=@(()=>NavigationManager.NavigateTo("/settings"))><md-icon slot="icon">add</md-icon>Create Plan</AppButton>
         </div>
     </div>
-}else{
-<CardList Items="_upcomingSessions.IndexedTuples()" OnClick="x=>SelectSession(x.Item)" ShouldHighlight="session => session.Index == 0">
-       <SessionSummary IsFilled="context.Item.IsStarted" Session="context.Item" ></SessionSummary>
-</CardList>
+} else
+{
+    <CardList Items="_upcomingSessions.IndexedTuples()" OnClick="x=>SelectSession(x.Item)" ShouldHighlight="session => session.Index == 0">
+        <SessionSummary IsFilled="context.Item.IsStarted" Session="context.Item" ></SessionSummary>
+    </CardList>
 }
 
 @code {
-
+    private bool _isLoading = true;
     private IReadOnlyList<Session> _upcomingSessions = new List<Session>();
 
     protected override async Task OnInitializedAsync()
@@ -37,6 +46,7 @@
             .GetUpcomingSessionsAsync()
             .Take(3)
             .ToListAsync();
+        _isLoading = false;
         await base.OnInitializedAsync();
         sw.Stop();
         Console.WriteLine($"Index.OnInitializedAsync took {sw.ElapsedMilliseconds}ms");

@@ -6,6 +6,7 @@ public record ProgramBlueprint(
     string Name,
     Experience? ExperienceLevel,
     string? Tag,
+    int DaysPerWeek,
     ImmutableListValue<SessionBlueprint> Sessions
 );
 
@@ -13,7 +14,7 @@ public record SessionBlueprint(string Name, ImmutableListValue<ExerciseBlueprint
 {
     public Session GetEmptySession()
     {
-        RecordedExercise GetNextExercise(ExerciseBlueprint e)
+        static RecordedExercise GetNextExercise(ExerciseBlueprint e)
         {
             return new RecordedExercise(
                 e,
@@ -58,6 +59,4 @@ public record Rest(TimeSpan MinRest, TimeSpan MaxRest, TimeSpan FailureRest)
     public static readonly Rest Short = new(TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(90), TimeSpan.FromSeconds(180));
     public static readonly Rest Medium = new(TimeSpan.FromSeconds(90), TimeSpan.FromSeconds(180), TimeSpan.FromSeconds(300));
     public static readonly Rest Long = new(TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(8));
-
-    public bool IsCustom => this != Short && this != Medium && this != Long;
 }
