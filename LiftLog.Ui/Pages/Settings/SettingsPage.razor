@@ -84,7 +84,7 @@
         await base.OnInitializedAsync();
     }
 
-    private RenderFragment? RenderLockedPro(){
+    private RenderFragment RenderLockedPro(){
         if(AppState.Value.ProState.IsPro){
             return @<md-icon>verified</md-icon>;
         }

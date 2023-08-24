@@ -1,0 +1,8 @@
+<div class="flex items-center justify-between p-4 rounded-md shadow-md pointer-events-auto bg-inverse-surface text-inverse-on-surface">
+@ChildContent
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
+```

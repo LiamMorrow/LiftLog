@@ -21,14 +21,7 @@
     <div class="flex justify-end w-full mt-2 mb-2">
         <FloatingButton variant="secondary" has-icon OnClick=SaveSession><md-icon slot="icon">save</md-icon></FloatingButton>
     </div>
-    @if (ShowRestTimer && Session.NextExercise is not null && Session.LastExercise?.LastRecordedSet is not null)
-    {
-        var lastSetFailed = Session.LastExercise.LastRecordedSet.RepsCompleted < Session.LastExercise.Blueprint.RepsPerSet;
-        <RestTimer
-            Rest=Session.NextExercise.Blueprint.RestBetweenSets
-            StartTime=Session.LastExercise.LastRecordedSet.CompletionTime
-            Failed=lastSetFailed/>
-    }
+    @RenderSnackBar()
 </div>
 
 <Dialog @ref="_editExerciseDialog" OnClose=@(()=> _exerciseToEditIndex = null) >
@@ -172,4 +165,22 @@
         _exerciseToRemoveIndex = index;
         _removeExerciseDialog?.Open();
     }
+
+    private RenderFragment? RenderSnackBar(){
+
+        if (ShowRestTimer && Session.NextExercise is not null && Session.LastExercise?.LastRecordedSet is not null)
+        {
+            var lastSetFailed = Session.LastExercise.LastRecordedSet.RepsCompleted < Session.LastExercise.Blueprint.RepsPerSet;
+            return @<RestTimer
+                Rest=Session.NextExercise.Blueprint.RestBetweenSets
+                StartTime=Session.LastExercise.LastRecordedSet.CompletionTime
+                Failed=lastSetFailed/>;
+        }
+        else if (Session.IsComplete)
+        {
+            return @<SnackBar><span>You lifted </span><span class="font-bold"><WeightFormat Kilograms="Session.TotalKilogramsLifted"/></span></SnackBar>;
+        }
+        return null;
+    }
+
 }
