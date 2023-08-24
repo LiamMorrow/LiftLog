@@ -20,6 +20,11 @@ public record Session(
             .FirstOrDefault();
 
     public bool IsStarted => RecordedExercises.Any(x => x.LastRecordedSet is not null);
+
+    public bool IsComplete => RecordedExercises.All(x => x.RecordedSets.All(set => set is not null));
+
+    public decimal TotalKilogramsLifted => RecordedExercises
+        .Sum(ex => ex.Kilograms * ex.RecordedSets.Sum(set => set?.RepsCompleted ?? 0));
 }
 
 public record RecordedExercise(
