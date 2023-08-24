@@ -62,6 +62,20 @@ AppUtils.callOn = function (element, funcName) {
     element[funcName]();
 }
 
+/**
+ * Creates a new event for the list item clicked event.
+ * This new event has bubbles, which allows blazor components to intercept it
+ * @param {HTMLElement} element
+ */
+AppUtils.onClickedListItem = function (element, func) {
+    element.addEventListener('click', () => {
+        element.dispatchEvent(new Event('list-item-click', {
+            bubbles: true,
+            cancelable: true,
+        }))
+    });
+}
+
 AppUtils.scrollElementToMiddle = function (elementSelector) {
     document.querySelector(elementSelector).scrollIntoView({
         behavior: 'smooth',

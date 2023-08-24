@@ -23,10 +23,12 @@
 </CardList>
 
 <Dialog @ref="_deleteDialog">
-    <span slot="header">Delete Session?</span>
-    <span class="block text-left">Session will be deleted from history, this cannot be undone.</span>
-    <AppButton Type="AppButtonType.Text" slot="footer" OnClick="()=>{_deleteDialog?.Close();}">Cancel</AppButton>
-    <AppButton Type="AppButtonType.Text" slot="footer" OnClick="DeleteSession">Delete</AppButton>
+    <span slot="headline">Delete Session?</span>
+    <span slot="content" class="block text-left">Session will be deleted from history, this cannot be undone.</span>
+<div slot="actions">
+    <AppButton Type="AppButtonType.Text"  OnClick="()=>{_deleteDialog?.Close();}">Cancel</AppButton>
+    <AppButton Type="AppButtonType.Text"  OnClick="DeleteSession">Delete</AppButton>
+    </div>
 </Dialog>
 
 @code

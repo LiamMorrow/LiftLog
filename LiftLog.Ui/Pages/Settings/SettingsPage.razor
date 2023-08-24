@@ -47,18 +47,18 @@
 </div>
 
 <Dialog @ref="importPopup">
-    <span slot="header">Paste Export Below</span>
-    <InputTextArea @bind-Value="ImportJson"/>
-    <div class="flex gap-1" slot="footer">
+    <span slot="headline">Paste Export Below</span>
+    <InputTextArea slot="content" @bind-Value="ImportJson"/>
+    <div slot="actions">
         <AppButton Type="AppButtonType.Text" OnClick="CloseImportPopup">Close</AppButton>
         <AppButton Type="AppButtonType.Text" OnClick="ImportData">Import</AppButton>
     </div>
 </Dialog>
 
 <Dialog @ref="upgradeDialog">
-    <span slot="header">Upgrade to Pro</span>
-    <span class="block text-left">This will unlock the AI planner, which will generate a plan tailored specifically to you and your goals. <br/>This is a one time purchase.</span>
-    <div class="flex gap-1" slot="footer">
+    <span slot="headline">Upgrade to Pro</span>
+    <span slot="content" class="block text-left">This will unlock the AI planner, which will generate a plan tailored specifically to you and your goals. <br/>This is a one time purchase.</span>
+    <div slot="actions">
         <AppButton Type="AppButtonType.Text" OnClick="()=>upgradeDialog?.Close()">Close</AppButton>
         <AppButton Type="AppButtonType.Text" OnClick="UpgradeToPro">Upgrade</AppButton>
     </div>

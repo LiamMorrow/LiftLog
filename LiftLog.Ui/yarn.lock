@@ -64,10 +64,10 @@
     deepmerge "^4.2.2"
     material-ripple-effects "^2.0.1"
 
-"@material/web@1.0.0-pre.15":
-  version "1.0.0-pre.15"
-  resolved "https://registry.yarnpkg.com/@material/web/-/web-1.0.0-pre.15.tgz#c2e2df4dad2b229f2e62001c2d08b64f44b2419b"
-  integrity sha512-AuGOfuREI6b0u0qYhWrOT+IwrbXtsVNDtPHyFRaiABD3OIs9gRtkOUh+uSjMesbDT8BzMhbXDdCMbK+O4XOlLQ==
+"@material/web@1.0.0-pre.16":
+  version "1.0.0-pre.16"
+  resolved "https://registry.yarnpkg.com/@material/web/-/web-1.0.0-pre.16.tgz#4383055d44e9f796ae27b2072d7a5a070b89ae64"
+  integrity sha512-BDrwtY7WkbGhh2jxupbRdh1/wEiy69h6XzjgCxISJNNQVyn6rbOv1U57+d9J24Z5DvSTKv8NHrNyXT6iwmG2KQ==
   dependencies:
     lit "^2.7.4"
     tslib "^2.4.0"

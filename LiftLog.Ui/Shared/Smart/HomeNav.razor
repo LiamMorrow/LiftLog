@@ -1,7 +1,7 @@
 @using System.Text.RegularExpressions
 @implements IDisposable
 @inject NavigationManager NavigationManager
-<nav class="flex justify-around bg-surface-container text-on-surface py-3">
+<nav class="flex justify-around py-3 bg-surface-container text-on-surface">
    <NavButton IsActive=@IsRouteMatch("/settings(/?.*)") Navigate="NavigateToSettings" Icon="settings" Text="Settings"></NavButton>
    <NavButton IsActive=@IsRouteMatch("(/$|^$|/session/?)") Navigate="NavigateToWorkout" Icon="fitness_center" Text="Workout"></NavButton>
    <NavButton IsActive=@IsRouteMatch("/history(/?.*)") Navigate="NavigateToHistory" Icon="history" Text="History" ></NavButton>
@@ -26,13 +26,13 @@
         NavigationManager.NavigateTo("/");
         StateHasChanged();
     }
-    
+
     private void NavigateToSettings()
     {
-        NavigationManager.NavigateTo("/settings");
+        NavigationManager.NavigateTo("/settings/program-list");
         StateHasChanged();
     }
-    
+
     private void NavigateToHistory()
     {
         NavigationManager.NavigateTo("/history");

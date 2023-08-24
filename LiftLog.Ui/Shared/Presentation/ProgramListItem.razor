@@ -1,0 +1,45 @@
+@inject IJSRuntime JSRuntime
+
+<md-list-item @ref="_listItem"  class="text-left"
+    headline=@ProgramBlueprint.Name
+    supporting-text="@SupportingText"
+    trailing-supporting-text="@TrailingSupportingText"
+    multi-line-supporting-text
+    @onlist-item-click="OnClick"
+    >
+</md-list-item>
+
+
+@code {
+
+    private ElementReference _listItem;
+
+    override protected async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("AppUtils.onClickedListItem", _listItem);
+        }
+    }
+
+    [Parameter]
+    [EditorRequired]
+    public ProgramBlueprint ProgramBlueprint { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback OnClick { get; set; }
+
+    private string SupportingText => $"{ProgramBlueprint.Tag} - {ExperienceLevelText}";
+    private string TrailingSupportingText => $"{ProgramBlueprint.DaysPerWeek} days";
+
+    private string ExperienceLevelText
+    => ProgramBlueprint.ExperienceLevel switch
+    {
+        Experience.Beginner => "Recommended for beginner lifters",
+        Experience.Intermediate => "Recommended for intermediate lifters",
+        Experience.Advanced => "Recommended for advanced lifters",
+        Experience.Professional => "Recommended for professional lifters",
+        _ => ""
+    };
+}

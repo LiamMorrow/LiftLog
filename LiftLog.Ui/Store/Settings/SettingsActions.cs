@@ -16,3 +16,5 @@ public record SetAiPlanAttributesAction(AiWorkoutAttributes? Attributes);
 public record SetIsGeneratingAiPlanAction(bool IsGeneratingAiPlan);
 
 public record SetAiPlanErrorAction(string? AiPlanError);
+
+public record FetchSavedProgramsAction();

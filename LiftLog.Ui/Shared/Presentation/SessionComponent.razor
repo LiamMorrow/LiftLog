@@ -33,18 +33,24 @@
 
 <Dialog @ref="_editExerciseDialog" OnClose=@(()=> _exerciseToEditIndex = null) >
     <span slot="headline">@(_exerciseToEditIndex is null ? "Add" : "Edit") Exercise</span>
-    <SessionExerciseEditor
-        Exercise=_editingExercise
-        OnExerciseUpdate=@((e) => {_editingExercise = e; StateHasChanged();} ) />
-    <AppButton Type="AppButtonType.Text" slot="footer" OnClick="()=>{_editExerciseDialog?.Close(); }">Cancel</AppButton>
-    <AppButton Type="AppButtonType.Text" slot="footer" OnClick="EditExerciseHandler" >Save</AppButton>
+    <div slot="content">
+        <SessionExerciseEditor
+            Exercise=_editingExercise
+            OnExerciseUpdate=@((e) => {_editingExercise = e; StateHasChanged();} ) />
+    </div>
+    <div slot="actions">
+        <AppButton Type="AppButtonType.Text" OnClick="()=>{_editExerciseDialog?.Close(); }">Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="EditExerciseHandler" >Save</AppButton>
+    </div>
 </Dialog>
 
 <Dialog @ref="_removeExerciseDialog">
-    <span slot="header">Remove Exercise?</span>
-    <span class="block text-left">Exercise will be removed from the current session, future sessions will not be impacted.</span>
-    <AppButton Type="AppButtonType.Text" slot="footer" OnClick="()=>{_removeExerciseDialog?.Close();}">Cancel</AppButton>
-    <AppButton Type="AppButtonType.Text" slot="footer" OnClick="RemoveExerciseHandler">Remove</AppButton>
+    <span slot="headline">Remove Exercise?</span>
+    <span slot="content" class="block text-left">Exercise will be removed from the current session, future sessions will not be impacted.</span>
+    <div slot="actions">
+        <AppButton Type="AppButtonType.Text" slot="footer" OnClick="()=>{_removeExerciseDialog?.Close();}">Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" slot="footer" OnClick="RemoveExerciseHandler">Remove</AppButton>
+    </div>
 </Dialog>
 
 @code {

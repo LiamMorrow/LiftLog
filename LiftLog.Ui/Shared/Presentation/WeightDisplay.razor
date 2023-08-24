@@ -8,14 +8,14 @@
         style="--md-dialog-container-max-block-size: 500px;"
     >
         <span slot="headline">Weight</span>
-        <div class="flex flex-col gap-2 p-1">
+        <div  slot="content" class="flex flex-col gap-2 p-1">
             <TextField label="Weight" required suffix-text="kg" TextFieldType="TextFieldType.Outline" Value=@(EditorWeight.ToString()) OnChange="HandleInputChange" type="numeric" step="@Increment" />
             <div class="flex justify-between">
                 <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightDecrementClick><md-icon slot="icon">remove</md-icon><WeightFormat Kilograms="Increment"  /></AppButton>
                 <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightIncrementClick><md-icon slot="icon">add</md-icon><WeightFormat Kilograms="Increment" /></AppButton>
             </div>
         </div>
-        <div slot="footer" class="flex gap-1" >
+        <div slot="actions" class="flex gap-1" >
             <AppButton dialog-action="close" OnClick=OnCloseClick Type=AppButtonType.Text>Close</AppButton>
             <AppButton dialog-action="save" dialog-focus OnClick=OnSaveClick Type=AppButtonType.Text>Save</AppButton>
         </div>
