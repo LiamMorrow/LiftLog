@@ -5,10 +5,6 @@
         label="Exercise Name"
         required
         OnChange="value => OnExerciseUpdate(Exercise with { Name = value })">
-        @foreach (var name in ExerciseNames)
-        {
-            <option @key="name" slot="option" value=@(name)></option>
-        }
     </TextField>
     <EditableIncrementer
         Label="Weight"
