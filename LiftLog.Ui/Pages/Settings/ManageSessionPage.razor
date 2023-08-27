@@ -44,10 +44,6 @@ else
                         Label="Exercise Name"
                         Value="@exercise.Name"
                         OnChange="val => SetExerciseName(index, val)" >
-                        @foreach (var name in ProgramState.Value.ExerciseNames)
-                        {
-                            <option @key="name" slot="option" value=@(name)></option>
-                        }
                     </TextField>
                     <div class="flex flex-wrap justify-around w-full gap-1">
                         <div class="flex flex-col items-center gap-1">
