@@ -38,7 +38,7 @@
     }
 </Dialog>
 
-@code {
+    @code {
     private ProgramBlueprint? selectedProgram;
     private Dialog? selectedProgramDialog;
     protected override void OnInitialized()
@@ -57,6 +57,12 @@
     private void SelectProgram()
     {
         selectedProgramDialog?.Close();
+        if(selectedProgram == null)
+        {
+            return;
+        }
+        Dispatcher.Dispatch(new Ui.Store.Program.SetProgramSessionsAction(selectedProgram.Sessions));
+        Dispatcher.Dispatch(new Ui.Store.CurrentSession.SetCurrentSessionAction(Ui.Store.CurrentSession.SessionTarget.WorkoutSession, null));
         NavigationManager.NavigateTo("/");
     }
 }

@@ -3,6 +3,10 @@ using LiftLog.Lib.Models;
 
 namespace LiftLog.Ui.Store.Program;
 
+public record FetchUpcomingSessionsAction();
+
+public record SetUpcomingSessionsAction(ImmutableListValue<Session> UpcomingSessions);
+
 public record SetProgramSessionsAction(ImmutableListValue<SessionBlueprint> SessionBlueprints);
 
 public record SetProgramSessionAction(int SessionIndex, SessionBlueprint SessionBlueprint);

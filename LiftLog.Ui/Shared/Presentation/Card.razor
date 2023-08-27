@@ -1,7 +1,7 @@
 @inject IJSRuntime JsRuntime
 
 <div
-    class="p-5 relative border @(IsHighlighted ? "border-primary bg-surface-container-high" : "border-outline-variant bg-surface-container-low") rounded-card text-on-surface"
+    class="@(AdditionalAttributes?.GetValueOrDefault("class")) p-5 relative border @(IsHighlighted ? "border-primary bg-surface-container-high" : "border-outline-variant bg-surface-container-low") rounded-card text-on-surface"
     @onclick="HandleOnClick">
     @if(OnClick != null)
     {
@@ -11,6 +11,9 @@
 </div>
 
 @code {
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     [Parameter]
     public RenderFragment ChildContent { get; set; } = null!;
