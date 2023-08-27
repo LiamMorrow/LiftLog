@@ -1,0 +1,101 @@
+diff --git a/node_modules/@material/web/textfield/internal/text-field.js b/node_modules/@material/web/textfield/internal/text-field.js
+index 5c6582e..85633d3 100644
+--- a/node_modules/@material/web/textfield/internal/text-field.js
++++ b/node_modules/@material/web/textfield/internal/text-field.js
+@@ -416,7 +416,7 @@ export class TextField extends LitElement {
+             'error': !this.disabled && this.hasError,
+             'textarea': this.type === 'textarea',
+         };
+-        return html `
++        return html`
+        <span class="text-field ${classMap(classes)}">
+          ${this.renderField()}
+        </span>
+@@ -439,7 +439,7 @@ export class TextField extends LitElement {
+         this.syncValidity();
+     }
+     renderField() {
+-        return staticHtml `<${this.fieldTag}
++        return staticHtml`<${this.fieldTag}
+       class="field"
+       count=${this.value.length}
+       ?disabled=${this.disabled}
+@@ -458,17 +458,17 @@ export class TextField extends LitElement {
+       ${this.renderInputOrTextarea()}
+       ${this.renderTrailingIcon()}
+       <div id="description" slot="aria-describedby"></div>
+-    </${this.fieldTag}>`;
++    </${this.fieldTag}>${html`<slot name="option"></slot>`}`;
+     }
+     renderLeadingIcon() {
+-        return html `
++        return html`
+        <span class="icon leading" slot="start">
+          <slot name="leadingicon" @slotchange=${this.handleIconChange}></slot>
+        </span>
+      `;
+     }
+     renderTrailingIcon() {
+-        return html `
++        return html`
+        <span class="icon trailing" slot="end">
+          <slot name="trailingicon" @slotchange=${this.handleIconChange}></slot>
+        </span>
+@@ -478,7 +478,7 @@ export class TextField extends LitElement {
+         const style = { direction: this.textDirection };
+         const ariaLabel = this.ariaLabel || this.label || nothing;
+         if (this.type === 'textarea') {
+-            return html `
++            return html`
+         <textarea
+           class="input"
+           style=${styleMap(style)}
+@@ -499,17 +499,22 @@ export class TextField extends LitElement {
+         ></textarea>
+       `;
+         }
++
++        const datalist = this.options.length > 0
++            ? html`<datalist id="datalist" style="display:none">${this.options.map(x => html`<option value=${x.value}></option>`)}</datalist>`
++            : nothing;
+         const prefix = this.renderPrefix();
+         const suffix = this.renderSuffix();
+         // TODO(b/243805848): remove `as unknown as number` and `as any` once lit
+         // analyzer is fixed
+         // tslint:disable-next-line:no-any
+         const inputMode = this.inputMode;
+-        return html `
++        return html`
+       <div class="input-wrapper">
+         ${prefix}
+         <input
+           class="input"
++          list="datalist"
+           style=${styleMap(style)}
+           aria-describedby="description"
+           aria-invalid=${this.hasError}
+@@ -532,6 +537,7 @@ export class TextField extends LitElement {
+           @select=${this.redispatchEvent}
+         >
+         ${suffix}
++        ${datalist}
+       </div>
+     `;
+     }
+@@ -549,7 +555,7 @@ export class TextField extends LitElement {
+             'suffix': isSuffix,
+             'prefix': !isSuffix,
+         };
+-        return html `<span class="${classMap(classes)}">${text}</span>`;
++        return html`<span class="${classMap(classes)}">${text}</span>`;
+     }
+     getErrorText() {
+         return this.error ? this.errorText : this.nativeErrorText;
+@@ -727,4 +733,7 @@ __decorate([
+ __decorate([
+     queryAssignedElements({ slot: 'trailingicon' })
+ ], TextField.prototype, "trailingIcons", void 0);
++__decorate([
++    queryAssignedElements({ slot: 'option' })
++], TextField.prototype, "options", void 0);
+ //# sourceMappingURL=text-field.js.map

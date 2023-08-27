@@ -65,7 +65,7 @@
 
     [EditorRequired]
     [Parameter]
-    public ImmutableDictionary<ExerciseBlueprint, RecordedExercise> PreviouslyCompleted { get; set; } = null!;
+    public ImmutableDictionary<KeyedExerciseBlueprint, RecordedExercise> PreviouslyCompleted { get; set; } = null!;
 
     [Parameter]
     public bool ShowRestTimer { get; set; } = true;

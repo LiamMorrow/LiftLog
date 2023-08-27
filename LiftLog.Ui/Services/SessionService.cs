@@ -68,7 +68,7 @@ public class SessionService
     private Session GetNextSession(
         Session previousSession,
         ImmutableList<SessionBlueprint> sessionBlueprints,
-        IReadOnlyDictionary<ExerciseBlueprint, RecordedExercise> latestRecordedExercises
+        IReadOnlyDictionary<KeyedExerciseBlueprint, RecordedExercise> latestRecordedExercises
     )
     {
         var lastBlueprint = previousSession.Blueprint;
@@ -81,7 +81,7 @@ public class SessionService
 
     private Session CreateNewSession(
         SessionBlueprint sessionBlueprint,
-        IReadOnlyDictionary<ExerciseBlueprint, RecordedExercise> latestRecordedExercises
+        IReadOnlyDictionary<KeyedExerciseBlueprint, RecordedExercise> latestRecordedExercises
     )
     {
         RecordedExercise GetNextExercise(ExerciseBlueprint e)

@@ -4,12 +4,15 @@
   "description": "",
   "scripts": {
     "build": "tailwindcss --config tailwind.config.js -i ./Styles/app.css -o ./wwwroot/app.min.css && rollup -p @rollup/plugin-node-resolve index.js > ./wwwroot/bundle.js",
-    "watch": "tailwindcss --config tailwind.config.js -i ./Styles/app.css -o ./wwwroot/app.min.css --watch"
+    "watch": "tailwindcss --config tailwind.config.js -i ./Styles/app.css -o ./wwwroot/app.min.css --watch",
+    "patch": "patch-package",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@material-tailwind/html": "^2.0.0",
     "@material/web": "1.0.0-pre.16",
     "@rollup/plugin-node-resolve": "^15.0.2",
+    "patch-package": "^8.0.0",
     "rollup": "^3.26.2",
     "tailwindcss": "^3.3.1"
   }

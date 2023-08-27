@@ -2,15 +2,22 @@
 
 @switch(TextFieldType){
     case TextFieldType.Outline:
-        <md-outlined-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange((string)e.Value!))></md-outlined-text-field>
+        <md-outlined-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange((string)e.Value!))>
+            @ChildContent
+        </md-outlined-text-field>
         break;
     case TextFieldType.Filled:
-        <md-filled-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange((string)e.Value!))></md-filled-text-field>
+        <md-filled-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange((string)e.Value!))>
+            @ChildContent
+        </md-filled-text-field>
         break;
 }
 @code {
 
     private ElementReference _textField;
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
 
     [Parameter]
     [EditorRequired]

@@ -48,7 +48,7 @@
 
 @code
 {
-    private ImmutableDictionary<ExerciseBlueprint, RecordedExercise> previouslyCompleted = ImmutableDictionary<ExerciseBlueprint, RecordedExercise>.Empty;
+    private ImmutableDictionary<KeyedExerciseBlueprint, RecordedExercise> previouslyCompleted = ImmutableDictionary<KeyedExerciseBlueprint, RecordedExercise>.Empty;
     private bool initted = false;
     private void Init(Session session)
     {
