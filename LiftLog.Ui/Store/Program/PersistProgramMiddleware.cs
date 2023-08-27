@@ -1,4 +1,6 @@
 using Fluxor;
+using LiftLog.Lib;
+using LiftLog.Lib.Models;
 using LiftLog.Ui.Repository;
 
 namespace LiftLog.Ui.Store.Program;
@@ -17,7 +19,11 @@ public class PersistProgramMiddleware : Middleware
     {
         _store = store;
         var programs = await _programRepository.GetSessionsInProgramAsync();
-        store.Features[nameof(ProgramFeature)].RestoreState(new ProgramState(programs));
+        store.Features[nameof(ProgramFeature)].RestoreState(
+            new ProgramState(
+                programs,
+                ImmutableListValue.Of<Session>(),
+                false));
 
         dispatch.Dispatch(new RehydrateProgramAction());
     }

@@ -1,0 +1,60 @@
+
+@using Fluxor
+@using LiftLog.Ui.Services
+@using LiftLog.Ui.Store.App
+@using LiftLog.Ui.Store.Settings
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+@inject NavigationManager NavigationManager
+@inject IAppPurchaseService AppPurchaseService
+@inject IState<AppState> AppState
+@inject IDispatcher Dispatcher
+
+<Card class="flex flex-col gap-4">
+    <div class="flex justify-between">
+        <span class="text-lg text-center">Pro Features</span>
+        @RenderLockedPro()
+    </div>
+    <AppButton Disabled=!AppState.Value.ProState.IsPro Type="AppButtonType.Secondary" OnClick="NavigateToAiPlanner">
+        <md-icon slot="icon">auto_awesome</md-icon>
+        AI planner
+    </AppButton>
+</Card>
+
+<Dialog @ref="upgradeDialog">
+    <span slot="headline">Upgrade to Pro</span>
+    <span slot="content" class="block text-left">This will unlock the AI planner, which will generate a plan tailored specifically to you and your goals. <br/>This is a one time purchase.</span>
+    <div slot="actions">
+        <AppButton Type="AppButtonType.Text" OnClick="()=>upgradeDialog?.Close()">Close</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="UpgradeToPro">Upgrade</AppButton>
+    </div>
+
+</Dialog>
+@code{
+
+    private Dialog? upgradeDialog;
+
+    private RenderFragment RenderLockedPro(){
+        if(AppState.Value.ProState.IsPro){
+            return @<md-icon>verified</md-icon>;
+        }
+       return @<AppButton OnClick="()=>{upgradeDialog?.Open();}" ><md-icon slot="icon">lock</md-icon>Unlock</AppButton>;
+    }
+
+    private void NavigateToAiPlanner()
+    {
+        NavigationManager.NavigateTo("/settings/ai-planner");
+    }
+
+
+    private async void UpgradeToPro()
+    {
+        var proKey = await AppPurchaseService.GetProKeyAsync();
+        if(proKey != null){
+            Dispatcher.Dispatch(new SetProTokenAction(proKey));
+        }
+        await InvokeAsync(()=>upgradeDialog?.Close());
+    }
+
+    }

@@ -1,17 +1,17 @@
 ﻿@using Fluxor;
 @using LiftLog.Ui.Store.App;
 @using LiftLog.Ui.Store.CurrentSession;
-@using System.Diagnostics;
-@using LiftLog.Ui.Services;
+@using LiftLog.Ui.Store.Program;
 
 @page "/"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
+@inject IState<ProgramState> ProgramState
+@inject IState<CurrentSessionState> CurrentSessionState
 @inject IDispatcher Dispatcher
 @inject NavigationManager NavigationManager
-@inject SessionService SessionService
 
-@if(_isLoading)
+@if(ProgramState.Value.IsLoading)
 {
     <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
         <div><md-circular-progress aria-label="Ai planning progress" indeterminate four-color></md-circular-progress></div>
@@ -19,42 +19,67 @@
             <p>Loading Sessions...</p>
         </span>
     </div>
-} else if(_upcomingSessions.Count == 0)
+} else if(ProgramState.Value.UpcomingSessions.Count == 0)
 {
-    <div class="flex flex-col justify-center h-full gap-2 text-on-surface">
-        <span>No plan created yet!</span>
-        <div class="flex justify-center">
-            <AppButton OnClick=@(()=>NavigationManager.NavigateTo("/settings"))><md-icon slot="icon">add</md-icon>Create Plan</AppButton>
-        </div>
+    <div class="flex flex-col gap-2">
+        <Card class="flex flex-col gap-8">
+            <div class="flex justify-between">
+                <span class="text-lg">No plan created yet!</span>
+                <md-icon>info</md-icon>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <AppButton Type="AppButtonType.Secondary" OnClick=@(()=>NavigationManager.NavigateTo("/settings"))><md-icon slot="icon">add</md-icon>Create</AppButton>
+                <AppButton OnClick=@(()=>NavigationManager.NavigateTo("/settings/program-list"))><md-icon slot="icon">assignment</md-icon>Use ours</AppButton>
+            </div>
+        </Card>
+        <ProFeatureCard/>
     </div>
 } else
 {
-    <CardList Items="_upcomingSessions.IndexedTuples()" OnClick="x=>SelectSession(x.Item)" ShouldHighlight="session => session.Index == 0">
+    <CardList Items="ProgramState.Value.UpcomingSessions.IndexedTuples()" OnClick="x=>SelectSession(x.Item)" ShouldHighlight="session => session.Index == 0">
         <SessionSummary IsFilled="context.Item.IsStarted" Session="context.Item" ></SessionSummary>
     </CardList>
 }
 
-@code {
-    private bool _isLoading = true;
-    private IReadOnlyList<Session> _upcomingSessions = new List<Session>();
+<Dialog @ref=replaceCurrentSesisonDialog>
+    <span slot="headline">Replace current session</span>
+    <span slot="content" class="block text-left">There is already a current session in progress, start a new one without saving?</span>
+    <div slot="actions">
+        <AppButton Type="AppButtonType.Text" OnClick=@(()=>replaceCurrentSesisonDialog?.Close())>Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick=ReplaceSession>Replace</AppButton>
+    </div>
+</Dialog>
 
+@code {
+
+    private Dialog? replaceCurrentSesisonDialog;
+    private Session? selectedSession;
     protected override async Task OnInitializedAsync()
     {
-        var sw = Stopwatch.StartNew();
         Dispatcher.Dispatch(new SetPageTitleAction("Upcoming Workouts"));
-        this._upcomingSessions = await SessionService
-            .GetUpcomingSessionsAsync()
-            .Take(3)
-            .ToListAsync();
-        _isLoading = false;
+        Dispatcher.Dispatch(new FetchUpcomingSessionsAction());
         await base.OnInitializedAsync();
-        sw.Stop();
-        Console.WriteLine($"Index.OnInitializedAsync took {sw.ElapsedMilliseconds}ms");
     }
 
     private void SelectSession(Session session)
     {
-        Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, session));
+            selectedSession = session;
+        if(CurrentSessionState.Value.WorkoutSession is {IsStarted: true} && CurrentSessionState.Value.WorkoutSession != session)
+        {
+            replaceCurrentSesisonDialog?.Open();
+        } else
+        {
+            ReplaceSession();
+        }
+    }
+
+    private void ReplaceSession()
+    {
+        if(selectedSession is null)
+        {
+            return;
+        }
+        Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, selectedSession));
         NavigationManager.NavigateTo("/session");
     }
 }
