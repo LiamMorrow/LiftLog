@@ -4,7 +4,12 @@
         Value=@(Exercise.Name)
         label="Exercise Name"
         required
-        OnChange="value => OnExerciseUpdate(Exercise with { Name = value })"/>
+        OnChange="value => OnExerciseUpdate(Exercise with { Name = value })">
+        @foreach (var name in ExerciseNames)
+        {
+            <option @key="name" slot="option" value=@(name)></option>
+        }
+    </TextField>
     <EditableIncrementer
         Label="Weight"
         Value="Exercise.Kilograms"
@@ -25,6 +30,10 @@
     [Parameter]
     [EditorRequired]
     public SessionExerciseEditModel Exercise { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public ImmutableListValue<string> ExerciseNames { get; set; } = null!;
 
     [Parameter]
     [EditorRequired]

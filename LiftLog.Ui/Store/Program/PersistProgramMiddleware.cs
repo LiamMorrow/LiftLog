@@ -23,7 +23,8 @@ public class PersistProgramMiddleware : Middleware
             new ProgramState(
                 programs,
                 ImmutableListValue.Of<Session>(),
-                false));
+                false,
+                ImmutableListValue<string>.Empty));
 
         dispatch.Dispatch(new RehydrateProgramAction());
     }

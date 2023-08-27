@@ -29,6 +29,7 @@
     <div slot="content">
         <SessionExerciseEditor
             Exercise=_editingExercise
+            ExerciseNames="ExerciseNames"
             OnExerciseUpdate=@((e) => {_editingExercise = e; StateHasChanged();} ) />
     </div>
     <div slot="actions">
@@ -101,6 +102,10 @@
     [EditorRequired]
     [Parameter]
     public Action CloseSession { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public ImmutableListValue<string> ExerciseNames { get; set; } = null!;
 
     private Action<int> CycleRepCountForExerciseSet(int exerciseIndex)
         => (int set) => CycleRepcountForExercise(exerciseIndex, set);

@@ -1,11 +1,13 @@
 ﻿@page "/history/edit"
 @using LiftLog.Ui.Store.CurrentSession
 @using LiftLog.Ui.Store.App
+@using LiftLog.Ui.Store.Program
 @using LiftLog.Ui.Repository
 @using Fluxor;
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @inject IState<CurrentSessionState> CurrentSessionState
+@inject IState<ProgramState> ProgramState
 @inject IProgressRepository ProgressRepository
 @inject IDispatcher Dispatcher
 @inject NavigationManager NavigationManager
@@ -43,7 +45,8 @@
         PreviouslyCompleted=previouslyCompleted
         RemoveExercise=RemoveExercise
         EditExercise="EditExercise"
-        AddExercise="AddExercise"/>
+        AddExercise="AddExercise"
+        ExerciseNames="ProgramState.Value.ExerciseNames"/>
 }
 
 @code
@@ -101,6 +104,7 @@
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Session"));
+        Dispatcher.Dispatch(new FetchExerciseNamesAction());
         base.OnInitialized();
     }
 }

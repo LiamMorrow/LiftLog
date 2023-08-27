@@ -6,4 +6,5 @@ namespace LiftLog.Ui.Store.Program;
 public record ProgramState(
     ImmutableListValue<SessionBlueprint> SessionBlueprints,
     ImmutableListValue<Session> UpcomingSessions,
-    bool IsLoading);
+    bool IsLoadingUpcomingSessions,
+    ImmutableListValue<string> ExerciseNames);
