@@ -8,7 +8,7 @@
 <div class="h-full page bg-surface">
     <section class="relative h-full content">
         <div class="grid grid-cols-1 h-full grid-rows-[min-content_1fr_min-content]">
-            <div class="z-10 flex items-center justify-center py-4 text-2xl overflow-visible @_topNavColorClass">
+            <div class="flex items-center justify-center py-4 text-2xl @_topNavColorClass">
                 <span class="m-0 text-on-surface">@AppState.Value.Title</span>
             </div>
             <div @ref="_contentElementRef" class="px-2 pb-2 overflow-auto bg-surface" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
