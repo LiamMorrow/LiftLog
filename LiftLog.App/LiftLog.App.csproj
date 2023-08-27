@@ -34,7 +34,7 @@
         <Authors>Liam Morrow</Authors>
         <Company>LiftLog</Company>
         <Product>LiftLog</Product>
-        <Version>$(ApplicationDisplayVersion)</Version>
+        <Version>1.4.1</Version>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
