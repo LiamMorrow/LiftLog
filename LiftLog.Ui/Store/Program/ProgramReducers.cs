@@ -6,16 +6,21 @@ namespace LiftLog.Ui.Store.Program;
 
 public static class ProgramReducers
 {
+    [ReducerMethod]
+    public static ProgramState SetExerciseNames(
+        ProgramState state,
+        SetExerciseNamesAction action
+    ) => state with { ExerciseNames = action.ExerciseNames };
 
     [ReducerMethod]
     public static ProgramState FetchUpcomingSessions(ProgramState state, FetchUpcomingSessionsAction _) =>
-        state with { IsLoading = true };
+        state with { IsLoadingUpcomingSessions = true };
 
     [ReducerMethod]
     public static ProgramState SetUpcomingSessions(
         ProgramState state,
         SetUpcomingSessionsAction action
-    ) => state with { UpcomingSessions = action.UpcomingSessions, IsLoading = false };
+    ) => state with { UpcomingSessions = action.UpcomingSessions, IsLoadingUpcomingSessions = false };
 
     [ReducerMethod]
     public static ProgramState SetProgramSessions(

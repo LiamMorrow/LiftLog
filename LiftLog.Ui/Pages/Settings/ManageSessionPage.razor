@@ -43,7 +43,12 @@ else
                         class="w-full mb-2 text-xl"
                         Label="Exercise Name"
                         Value="@exercise.Name"
-                        OnChange="val => SetExerciseName(index, val)" />
+                        OnChange="val => SetExerciseName(index, val)" >
+                        @foreach (var name in ProgramState.Value.ExerciseNames)
+                        {
+                            <option @key="name" slot="option" value=@(name)></option>
+                        }
+                    </TextField>
                     <div class="flex flex-wrap justify-around w-full gap-1">
                         <div class="flex flex-col items-center gap-1">
                             <FixedIncrementer
@@ -144,6 +149,7 @@ else
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Manage Session"));
+        Dispatcher.Dispatch(new FetchExerciseNamesAction());
         base.OnInitialized();
     }
 }

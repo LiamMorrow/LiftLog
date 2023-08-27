@@ -11,6 +11,11 @@ namespace LiftLog.Lib
         {
             return new ImmutableListValue<T>(items.ToImmutableList());
         }
+
+        public static ImmutableListValue<T> Of<T>(IEnumerable<T> items)
+        {
+            return new ImmutableListValue<T>(items.ToImmutableList());
+        }
     }
     /**
   * An implementation of immutable list with value semantics.
@@ -32,6 +37,8 @@ namespace LiftLog.Lib
         {
             Items = items.ToImmutableList();
         }
+
+        public static readonly ImmutableListValue<T> Empty = new();
 
         // Note - This allows for setting internally.
         // It can be set during an Equals check when 2 lists are equal by sequence, but not by reference

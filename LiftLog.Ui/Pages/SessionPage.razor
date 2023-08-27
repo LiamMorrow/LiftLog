@@ -2,10 +2,12 @@
 @using LiftLog.Ui.Store.CurrentSession
 @using LiftLog.Ui.Store.App
 @using LiftLog.Ui.Repository
+@using LiftLog.Ui.Store.Program
 @using Fluxor;
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @inject IState<CurrentSessionState> CurrentSessionState
+@inject IState<ProgramState> ProgramState
 @inject IProgressRepository ProgressRepository
 @inject IDispatcher Dispatcher
 @inject NavigationManager NavigationManager
@@ -33,6 +35,7 @@
         RemoveExercise=RemoveExercise
         EditExercise="EditExercise"
         AddExercise="AddExercise"
+        ExerciseNames="ProgramState.Value.ExerciseNames"
         />
 }
 
@@ -100,10 +103,8 @@
     }
     protected override void OnInitialized()
     {
-        var sw = System.Diagnostics.Stopwatch.StartNew();
         Dispatcher.Dispatch(new SetPageTitleAction("Session"));
+        Dispatcher.Dispatch(new FetchExerciseNamesAction());
         base.OnInitialized();
-        sw.Stop();
-        Console.WriteLine($"Session page initialized in {sw.ElapsedMilliseconds}ms");
     }
 }
