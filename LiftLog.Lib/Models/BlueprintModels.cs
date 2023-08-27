@@ -41,17 +41,14 @@ public record ExerciseBlueprint(
     Rest RestBetweenSets
 )
 {
-    public virtual bool Equals(ExerciseBlueprint? other)
-    {
-        if (other is null) return false;
-        if (ReferenceEquals(this, other)) return true;
-        return Name == other.Name && Sets == other.Sets && RepsPerSet == other.RepsPerSet;
-    }
+}
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Name, Sets, RepsPerSet);
-    }
+public record KeyedExerciseBlueprint(
+    string Name,
+    int Sets,
+    int RepsPerSet)
+{
+    public static implicit operator KeyedExerciseBlueprint(ExerciseBlueprint e) => new(e.Name, e.Sets, e.RepsPerSet);
 }
 
 public record Rest(TimeSpan MinRest, TimeSpan MaxRest, TimeSpan FailureRest)

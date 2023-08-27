@@ -108,11 +108,11 @@ namespace LiftLog.Ui.Services
             );
         }
 
-        public ValueTask<ImmutableDictionary<ExerciseBlueprint, RecordedExercise>> GetLatestRecordedExercisesAsync()
+        public ValueTask<ImmutableDictionary<KeyedExerciseBlueprint, RecordedExercise>> GetLatestRecordedExercisesAsync()
         {
             return GetOrderedSessions()
                 .SelectMany(x => x.RecordedExercises.ToAsyncEnumerable())
-                .GroupBy(x => x.Blueprint)
+                .GroupBy(x => (KeyedExerciseBlueprint)x.Blueprint)
                 .ToImmutableDictionaryAwaitAsync(x => ValueTask.FromResult(x.Key), x => x.FirstAsync());
         }
     }
