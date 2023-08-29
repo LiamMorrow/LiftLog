@@ -1,0 +1,77 @@
+@page "/stats"
+@using LiftLog.Ui.Services;
+@using Fluxor;
+@using LiftLog.Ui.Store.App;
+
+@inject SessionService SessionService;
+@inject IDispatcher Dispatcher;
+
+@if(_recordedExercises.Count == 0)
+{
+    <p>No recorded exercises</p>
+}
+else
+{
+    <CardList Items=_recordedExercises OnClick=HandleCardClick>
+        <StatGraphCardContent ExerciseStatistics="context"/>
+    </CardList>
+}
+<Dialog @ref=dialog>
+    @if(_selectedExercise is not null)
+    {
+        <span slot="headline">@(_selectedExercise.Name)</span>
+        <div slot="content" class="flex flex-col">
+            <span class="flex justify-between text-on-surface"><span>Current: </span><WeightFormat Kilograms=@(_selectedExercise.CurrentKilograms)/></span>
+            <span class="flex justify-between text-on-surface"><span>Max: </span><WeightFormat Kilograms=@(_selectedExercise.MaxKilograms)/></span>
+            <span class="flex justify-between text-on-surface"><span>One Rep Max: </span><WeightFormat Kilograms=@(_selectedExercise.OneRepMax)/></span>
+            <span class="flex justify-between text-on-surface"><span>Total Lifted: </span><WeightFormat Kilograms=@(_selectedExercise.TotalKilograms)/></span>
+        </div>
+    <div slot="actions">
+        <AppButton Type=AppButtonType.Text OnClick=@(()=>dialog?.Close())>Close</AppButton>
+    </div>
+    }
+</Dialog>
+@code {
+    private Dialog? dialog;
+    private List<ExerciseStatistics> _recordedExercises = new();
+    private ExerciseStatistics? _selectedExercise;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Dispatcher.Dispatch(new SetPageTitleAction("Statistics"));
+        _recordedExercises = await SessionService.GetLatestSessionsAsync()
+            .SelectMany(x=>x.RecordedExercises.ToAsyncEnumerable())
+            .GroupBy(x=>NormalizeName(x.Blueprint.Name))
+            .SelectAwait(x=>x.ToListAsync())
+            .Where(x=>x.Count > 0)
+            .Select(exercises=>new ExerciseStatistics(
+                Name: exercises.First().Blueprint.Name,
+                CurrentKilograms: exercises.First().Kilograms,
+                MaxKilograms: exercises.Max(x=>x.Kilograms),
+                OneRepMax: exercises.First().OneRepMax,
+                TotalKilograms: exercises.Sum(x=>x.Kilograms),
+                RecordedExercises: exercises.ToImmutableList()
+            ))
+            .ToListAsync();
+    }
+
+    private void HandleCardClick(ExerciseStatistics exerciseStatistics)
+    {
+        _selectedExercise = exerciseStatistics;
+        StateHasChanged();
+        dialog?.Open();
+    }
+
+    private string NormalizeName(string name)
+    {
+        var lowerName= name.ToLower().Trim().Replace("flies", "flys");
+        var withoutPlural = lowerName switch
+        {
+            string s when s.EndsWith("es") => s.Substring(0, s.Length - 2),
+            string s when s.EndsWith("s") => s.Substring(0, s.Length - 1),
+            _ => lowerName
+        };
+
+        return withoutPlural;
+    }
+}
