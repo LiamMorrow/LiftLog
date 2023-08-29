@@ -25,7 +25,7 @@ public class WebThemeProvider : IThemeProvider
 
         BlazorJavascriptInitialization.Initialize(jsInProcessRuntime);
         var window = jsInProcessRuntime.GetWindow()!;
-        _scheme = window.matchMedia(jsInProcessRuntime.CreateString("(prefers-color-scheme: dark)")).matches
+        _scheme = !window.matchMedia(jsInProcessRuntime.CreateString("(prefers-color-scheme: dark)")).matches
             .ConvertToValue<bool>()
             ? new DarkSchemeMapper().Map(_corePalette)
             : new LightSchemeMapper().Map(_corePalette);

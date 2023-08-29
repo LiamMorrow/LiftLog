@@ -2,9 +2,10 @@
 @implements IDisposable
 @inject NavigationManager NavigationManager
 <nav class="flex justify-around py-3 bg-surface-container text-on-surface">
-   <NavButton IsActive=@IsRouteMatch("/settings(/?.*)") Navigate="NavigateToSettings" Icon="settings" Text="Settings"></NavButton>
-   <NavButton IsActive=@IsRouteMatch("(/$|^$|/session/?)") Navigate="NavigateToWorkout" Icon="fitness_center" Text="Workout"></NavButton>
-   <NavButton IsActive=@IsRouteMatch("/history(/?.*)") Navigate="NavigateToHistory" Icon="history" Text="History" ></NavButton>
+    <NavButton IsActive=@IsRouteMatch("(/$|^$|/session/?)") Navigate="NavigateToWorkout" Icon="fitness_center" Text="Workout"></NavButton>
+    <NavButton IsActive=@IsRouteMatch("/history(/?.*)") Navigate="NavigateToHistory" Icon="history" Text="History" ></NavButton>
+    <NavButton IsActive=@IsRouteMatch("/stats(/?.*)") Navigate="NavigateToStats" Icon="show_chart" Text="Stats" ></NavButton>
+    <NavButton IsActive=@IsRouteMatch("/settings(/?.*)") Navigate="NavigateToSettings" Icon="settings" Text="Settings"></NavButton>
 </nav>
 @code {
 
@@ -36,6 +37,12 @@
     private void NavigateToHistory()
     {
         NavigationManager.NavigateTo("/history");
+        StateHasChanged();
+    }
+
+    private void NavigateToStats()
+    {
+        NavigationManager.NavigateTo("/stats");
         StateHasChanged();
     }
 

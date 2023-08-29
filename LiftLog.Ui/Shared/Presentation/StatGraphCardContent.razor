@@ -1,0 +1,92 @@
+@using ApexCharts;
+@using LiftLog.Ui.Services;
+@using MaterialColorUtilities.Utils;
+
+@inject IThemeProvider ThemeProvider
+
+<h2 class="text-xl text-on-surface">@(ExerciseStatistics.Name)</h2>
+<ApexChart
+    TItem="RecordedExercise"
+    Title=""
+    Options="options"
+    XAxisType="XAxisType.Datetime">
+
+    <ApexPointSeries TItem="RecordedExercise"
+                        Items="ExerciseStatistics.RecordedExercises.Where(x=>x.LastRecordedSet != null)"
+                        Name="Gross Value"
+                        SeriesType="SeriesType.Line"
+                        XValue="@(e => e.LastRecordedSet!.CompletionTime)"
+                        YAggregate="@(e => e.Average(e => e.Kilograms))"
+                        OrderByDescending="e=>e.X" />
+</ApexChart>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public ExerciseStatistics ExerciseStatistics { get; set; } = null!;
+
+
+    private ApexChartOptions<RecordedExercise> options = null!;
+
+    protected override void OnInitialized()
+    {
+        options = new ApexChartOptions<RecordedExercise>
+            {
+                Chart = new Chart
+                {
+                    Toolbar = new Toolbar
+                    {
+                        Show = false
+                    },
+                    Selection = new(){
+                        Enabled = false,
+                    },
+                    Zoom = new(){
+                        Enabled = false,
+                    },
+
+                },
+                Stroke = new Stroke
+                {
+                    Curve = Curve.Smooth,
+                    Width = 4
+                },
+                Colors = new() {GetColorString(ThemeProvider.GetColorScheme().Primary)},
+                Title = new(){
+                    Style = new (){
+                        Color = GetColorString(ThemeProvider.GetColorScheme().OnSurface),
+                    }
+                },
+                Xaxis = new(){
+                    Labels = new(){
+                        Style = new(){
+                            Colors = new Color(GetColorString(ThemeProvider.GetColorScheme().OnSurface)),
+                        }
+                    },
+                    AxisBorder = new(){
+                        Color = GetColorString(ThemeProvider.GetColorScheme().OutlineVariant),
+                    },
+                },
+                Yaxis = new(){
+                      new(){
+                        Labels = new(){
+                            Style = new(){
+                                Colors = new Color(GetColorString(ThemeProvider.GetColorScheme().OnSurface)),
+                            },
+                        },
+                      }
+                },
+                Tooltip = new(){
+                    Enabled =false
+                },
+                Grid = new(){
+                    BorderColor = GetColorString(ThemeProvider.GetColorScheme().OutlineVariant),
+                },
+                Markers = new(){
+                    Size = 2
+                }
+            };
+    }
+
+    private string GetColorString(uint color) => "#"+color.ToString("X").Substring(2,6);
+}

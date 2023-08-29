@@ -3,7 +3,7 @@
 @foreach (var item in Items)
 {
     <Card IsHighlighted="ShouldHighlight?.Invoke(item) ?? false" OnClick=@(OnClick != null ? _=> OnClick(item) : null)>
-        @ChildContent(item)
+        @ChildContent?.Invoke(item)
     </Card>
 }
 </div>
@@ -15,7 +15,7 @@
     public IEnumerable<TItem> Items { get; set; } = null!;
 
     [Parameter]
-    public RenderFragment<TItem> ChildContent { get; set; } = null!;
+    public RenderFragment<TItem>? ChildContent { get; set; } = null!;
 
     [Parameter]
     public Action<TItem>? OnClick { get; set; }

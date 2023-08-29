@@ -39,6 +39,8 @@ public record RecordedExercise(
     public RecordedSet? LastRecordedSet => RecordedSets
         .OrderByDescending(x => x?.CompletionTime)
         .FirstOrDefault(x => x is not null);
+
+    public decimal OneRepMax => Math.Floor(Kilograms / (1.0278m - (0.0278m * Blueprint.RepsPerSet)));
 }
 
 public record RecordedSet(int RepsCompleted, DateTimeOffset CompletionTime);
