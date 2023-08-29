@@ -5,7 +5,7 @@ namespace LiftLog.Ui.Store.Settings;
 
 public record ExportDataAction();
 
-public record ImportDataAction(string DataJson);
+public record ImportDataAction();
 
 public record GenerateAiPlanAction(AiWorkoutAttributes Attributes);
 

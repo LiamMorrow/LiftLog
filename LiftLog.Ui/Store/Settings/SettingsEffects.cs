@@ -61,8 +61,9 @@ public class SettingsEffects
     {
         try
         {
+            var importText = await _textExporter.ImportTextAsync();
             var deserialized = JsonSerializer.Deserialize<SettingsStorageDaoV1>(
-                action.DataJson,
+                importText,
                 StorageJsonContext.Context.SettingsStorageDaoV1
             );
             if (deserialized != null)
@@ -72,7 +73,7 @@ public class SettingsEffects
             }
             else
             {
-                _logger.LogWarning("Could not deserialize data for import {data}", action.DataJson);
+                _logger.LogWarning("Could not deserialize data for import {data}", importText);
             }
         }
         catch (JsonException ex)

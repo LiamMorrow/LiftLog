@@ -23,4 +23,10 @@ public class WebClipboardTextExporter : ITextExporter
             encoderShouldEmitIdentifier: false
         );
     }
+
+    public Task<string> ImportTextAsync()
+    {
+        // Blazor does not support clipboard access
+        return Task.FromResult("");
+    }
 }
