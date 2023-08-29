@@ -19,7 +19,7 @@
             <md-icon>description</md-icon>
         </div>
         <div class="flex justify-between">
-            <AppButton OnClick="OpenImportPopup" Type="AppButtonType.OutlineSecondary">
+            <AppButton OnClick="ImportData" Type="AppButtonType.OutlineSecondary">
                 <md-icon slot="icon">download</md-icon>Import data
             </AppButton>
             <AppButton OnClick="ExportData" Type="AppButtonType.OutlineSecondary">
@@ -38,21 +38,8 @@
     <ProFeatureCard/>
 </div>
 
-<Dialog @ref="importPopup">
-    <span slot="headline">Paste Export Below</span>
-    <InputTextArea slot="content" @bind-Value="ImportJson"/>
-    <div slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick="CloseImportPopup">Close</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="ImportData">Import</AppButton>
-    </div>
-</Dialog>
-
-
-
 @code {
     private string ImportJson { get; set; } = "";
-
-    private Dialog? importPopup;
 
     protected override void OnInitialized()
     {
@@ -75,25 +62,9 @@
         NavigationManager.NavigateTo("/settings/program-list");
     }
 
-    private void OpenImportPopup()
-    {
-        importPopup?.Open();
-    }
-
-    private void CloseImportPopup()
-    {
-        importPopup?.Close();
-        ImportJson = "";
-    }
-
     private void ImportData()
     {
-        if (ImportJson != "")
-        {
-            Dispatcher.Dispatch(new ImportDataAction(ImportJson));
-            CloseImportPopup();
-        }
-
+        Dispatcher.Dispatch(new ImportDataAction());
     }
 
     private void ExportData() => Dispatcher.Dispatch(new ExportDataAction());

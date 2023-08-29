@@ -94,6 +94,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IUserScrollListener, NotificationBarColorUpdateUserScrollListener>();
 
         builder.Services.AddSingleton(Share.Default);
+        builder.Services.AddSingleton(FilePicker.Default);
         builder.Services.AddScoped<SessionService>();
 
         builder.Services.AddScoped<IAppPurchaseService, AppPurchaseService>();
