@@ -6,7 +6,7 @@ namespace LiftLog.Ui.Services;
 
 public static class BuiltInProgramService
 {
-    public static readonly ImmutableListValue<ProgramBlueprint> BuiltInPrograms = ImmutableListValue.Of<ProgramBlueprint>(
+    public static readonly ImmutableListValue<ProgramBlueprint> BuiltInPrograms = ImmutableListValue.Of(
         new ProgramBlueprint(
             "Starting Strength",
             Experience.Beginner,
@@ -105,6 +105,55 @@ public static class BuiltInProgramService
                     new("Leg Extension", 3, 10, 20, 2.5m, Rest.Medium),
                     new("Leg Curl", 3, 10, 20, 2.5m, Rest.Medium),
                     new("Calf Raise", 3, 10, 20, 2.5m, Rest.Medium)
+                ))
+            )
+        ),
+        new ProgramBlueprint(
+            "Light Calisthenics",
+            Experience.Beginner,
+            "Toning",
+            3,
+            ImmutableListValue.Of<SessionBlueprint>(
+                new("Push", ImmutableListValue.Of<ExerciseBlueprint>(
+                    new("Pushups", 3, 10, 20, 0m, Rest.Medium),
+                    new("Dips", 3, 10, 20, 0m, Rest.Medium),
+                    new("Handstand Pushups", 3, 10, 20, 0m, Rest.Medium)
+                )),
+                new("Pull", ImmutableListValue.Of<ExerciseBlueprint>(
+                    new("Pullups", 3, 10, 20, 0m, Rest.Medium),
+                    new("Chinups", 3, 10, 20, 0m, Rest.Medium),
+                    new("Inverted Rows", 3, 10, 20, 0m, Rest.Medium)
+                )),
+                new("Legs", ImmutableListValue.Of<ExerciseBlueprint>(
+                    new("Squats", 3, 10, 20, 0m, Rest.Medium),
+                    new("Lunges", 3, 10, 20, 0m, Rest.Medium),
+                    new("Calf Raises", 3, 10, 20, 0m, Rest.Medium)
+                ))
+            )
+        ),
+        new ProgramBlueprint(
+            "Heavy Calisthenics",
+            Experience.Intermediate,
+            "Toning",
+            3,
+            ImmutableListValue.Of<SessionBlueprint>(
+                new("Push", ImmutableListValue.Of<ExerciseBlueprint>(
+                    new("Pushups", 3, 10, 20, 0m, Rest.Medium),
+                    new("Dips", 3, 10, 20, 0m, Rest.Medium),
+                    new("Handstand Pushups", 3, 10, 20, 0m, Rest.Medium),
+                    new("Planche Pushups", 3, 10, 20, 0m, Rest.Medium)
+                )),
+                new("Pull", ImmutableListValue.Of<ExerciseBlueprint>(
+                    new("Pullups", 3, 10, 20, 0m, Rest.Medium),
+                    new("Chinups", 3, 10, 20, 0m, Rest.Medium),
+                    new("Inverted Rows", 3, 10, 20, 0m, Rest.Medium),
+                    new("Muscle Ups", 3, 10, 20, 0m, Rest.Medium)
+                )),
+                new("Legs", ImmutableListValue.Of<ExerciseBlueprint>(
+                    new("Squats", 3, 10, 20, 0m, Rest.Medium),
+                    new("Lunges", 3, 10, 20, 0m, Rest.Medium),
+                    new("Calf Raises", 3, 10, 20, 0m, Rest.Medium),
+                    new("Pistol Squats", 3, 10, 20, 0m, Rest.Medium)
                 ))
             )
         )
