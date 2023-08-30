@@ -46,6 +46,7 @@
         base.OnInitialized();
         Dispatcher.Dispatch(new SetPageTitleAction("Programs"));
         Dispatcher.Dispatch(new FetchSavedProgramsAction());
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
     }
 
     private void BeginSelectProgram(ProgramBlueprint program)

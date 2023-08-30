@@ -4,11 +4,14 @@
 @inject IJSRuntime Js
 @inject IState<AppState> AppState
 @inject LiftLog.Ui.Services.IUserScrollListener UserScrollListener
+@inject IThemeProvider ThemeProvider
+@inject NavigationManager NavigationManager
 
 <div class="h-full page bg-surface">
     <section class="relative h-full content">
         <div class="grid grid-cols-1 h-full grid-rows-[min-content_1fr_min-content]">
-            <div class="flex items-center justify-center py-4 text-2xl @_topNavColorClass">
+            <div class="flex items-center @Justify @Padding gap-2 text-2xl @_topNavColorClass transition-colors">
+                @RenderBackButton()
                 <span class="m-0 text-on-surface">@AppState.Value.Title</span>
             </div>
             <div @ref="_contentElementRef" class="px-2 pb-2 overflow-auto bg-surface" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
@@ -59,6 +62,27 @@
                     await UserScrollListener.ScrollHasChangedAsync(scrollTop > 2);
                 });
             }
+    }
+
+    private string Padding =>  (ThemeProvider.IsAndroid,AppState.Value.BackNavigationUrl) switch
+    {
+        (true, null) => "p-4 pt-6",
+        (true, _) => "p-3 pt-5",
+        (false, null) => "p-4",
+        (false, _) => "p-3"
+    };
+
+    private string Justify => AppState.Value.BackNavigationUrl is null ? "justify-center" : "justify-start";
+
+    private RenderFragment? RenderBackButton()
+    {
+        var backButtonUrl = AppState.Value.BackNavigationUrl;
+        if (backButtonUrl is null)
+        {
+            return null;
+        }
+
+        return @<IconButton Icon="arrow_back" Type=IconButtonType.Standard OnClick="() => NavigationManager.NavigateTo(backButtonUrl)" />;
     }
 
 }

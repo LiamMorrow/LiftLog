@@ -106,6 +106,7 @@
         Dispatcher.Dispatch(new SetPageTitleAction("Session"));
         Dispatcher.Dispatch(new FetchExerciseNamesAction());
         Dispatcher.Dispatch(new SetReopenCurrentSessionAction(true));
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/"));
         base.OnInitialized();
     }
 }

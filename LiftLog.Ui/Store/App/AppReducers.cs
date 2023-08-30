@@ -13,4 +13,7 @@ public static class AppReducers
 
     [ReducerMethod]
     public static AppState SetReopenCurrentSession(AppState state, SetReopenCurrentSessionAction action) => state with { ReopenCurrentSession = action.ReopenCurrentSession };
+
+    [ReducerMethod]
+    public static AppState SetBackNavigationUrl(AppState state, SetBackNavigationUrlAction action) => state with { BackNavigationUrl = action.BackNavigationUrl };
 }

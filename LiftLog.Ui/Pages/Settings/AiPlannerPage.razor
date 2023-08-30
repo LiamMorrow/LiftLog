@@ -54,6 +54,7 @@
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("AI Planner"));
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
         base.OnInitialized();
     }
 

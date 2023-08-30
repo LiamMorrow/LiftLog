@@ -12,6 +12,8 @@ public class AppThemeProvider : IThemeProvider
         _colorUpdateService = colorUpdateService;
     }
 
+    public bool IsAndroid => DeviceInfo.Platform == DevicePlatform.Android;
+
     public Scheme<uint> GetColorScheme() => _colorUpdateService.SchemeInt;
 
     public event EventHandler SeedChanged
