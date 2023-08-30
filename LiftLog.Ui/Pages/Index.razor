@@ -58,6 +58,7 @@
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Upcoming Workouts"));
         Dispatcher.Dispatch(new FetchUpcomingSessionsAction());
+        Dispatcher.Dispatch(new SetReopenCurrentSessionAction(false));
         await base.OnInitializedAsync();
     }
 
