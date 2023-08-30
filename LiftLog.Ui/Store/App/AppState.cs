@@ -4,7 +4,7 @@ using LiftLog.Lib.Models;
 
 namespace LiftLog.Ui.Store.App;
 
-public record AppState(string Title, ProState ProState, bool ReopenCurrentSession);
+public record AppState(string Title, ProState ProState, bool ReopenCurrentSession, string? BackNavigationUrl);
 
 public record ProState(string? ProToken)
 {

@@ -44,6 +44,7 @@
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Settings"));
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
         base.OnInitialized();
     }
 
@@ -57,6 +58,7 @@
     {
         NavigationManager.NavigateTo("/settings/manage-workouts");
     }
+
     private void NavigateToProgramList()
     {
         NavigationManager.NavigateTo("/settings/program-list");

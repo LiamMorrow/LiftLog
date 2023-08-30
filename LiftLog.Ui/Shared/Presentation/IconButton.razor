@@ -1,10 +1,10 @@
 @switch (Type)
 {
     case IconButtonType.Standard:
-        <md-standard-icon-button
+        <md-icon-button
             @onpointerdown="OnPointerDown"
             @onpointerleave="OnPointerLeave"
-            @onpointerup="OnPointerUp" class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=""><md-icon>@Icon</md-icon></md-standard-icon-button>
+            @onpointerup="OnPointerUp" class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=""><md-icon>@Icon</md-icon></md-icon-button>
         break;
     case IconButtonType.Filled:
         <md-filled-icon-button

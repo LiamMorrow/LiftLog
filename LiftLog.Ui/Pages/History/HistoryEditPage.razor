@@ -105,6 +105,7 @@
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Session"));
         Dispatcher.Dispatch(new FetchExerciseNamesAction());
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/history"));
         base.OnInitialized();
     }
 }

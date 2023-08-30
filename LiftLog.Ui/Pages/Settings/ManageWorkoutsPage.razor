@@ -58,6 +58,7 @@
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Manage Workouts"));
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
         base.OnInitialized();
     }
 

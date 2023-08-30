@@ -146,6 +146,7 @@ else
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Manage Session"));
         Dispatcher.Dispatch(new FetchExerciseNamesAction());
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings/manage-workouts"));
         base.OnInitialized();
     }
 }
