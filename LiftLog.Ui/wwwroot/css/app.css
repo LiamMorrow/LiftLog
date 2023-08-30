@@ -45,7 +45,6 @@ body {
   content: "An error has occurred.";
 }
 
-/* fallback */
 @font-face {
   font-family: "Material Symbols Outlined";
   font-style: normal;

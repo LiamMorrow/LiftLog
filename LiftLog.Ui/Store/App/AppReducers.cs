@@ -10,4 +10,7 @@ public static class AppReducers
 
     [ReducerMethod]
     public static AppState SetProToken(AppState state, SetProTokenAction action) => state with { ProState = new(action.ProToken) };
+
+    [ReducerMethod]
+    public static AppState SetReopenCurrentSession(AppState state, SetReopenCurrentSessionAction action) => state with { ReopenCurrentSession = action.ReopenCurrentSession };
 }
