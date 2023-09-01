@@ -4,12 +4,15 @@
 @inject IState<CurrentSessionState> CurrentSessionState
 @inject IState<AppState> AppState
 
-<nav class="flex justify-around py-3 bg-surface-container text-on-surface">
-    <NavButton IsActive=@IsRouteMatch("(/$|^$|/session/?)") Navigate="NavigateToWorkout" Icon="fitness_center" Text="Workout"></NavButton>
-    <NavButton IsActive=@IsRouteMatch("/history(/?.*)") Navigate="NavigateToHistory" Icon="history" Text="History" ></NavButton>
-    <NavButton IsActive=@IsRouteMatch("/stats(/?.*)") Navigate="NavigateToStats" Icon="show_chart" Text="Stats" ></NavButton>
-    <NavButton IsActive=@IsRouteMatch("/settings(/?.*)") Navigate="NavigateToSettings" Icon="settings" Text="Settings"></NavButton>
-</nav>
+<nav class="flex flex-col bg-surface-container text-on-surface">
+    <div class="flex justify-around py-3">
+        <NavButton IsActive=@IsRouteMatch("(/$|^$|/session/?)") Navigate="NavigateToWorkout" Icon="fitness_center" Text="Workout"></NavButton>
+        <NavButton IsActive=@IsRouteMatch("/history(/?.*)") Navigate="NavigateToHistory" Icon="history" Text="History" ></NavButton>
+        <NavButton IsActive=@IsRouteMatch("/stats(/?.*)") Navigate="NavigateToStats" Icon="show_chart" Text="Stats" ></NavButton>
+        <NavButton IsActive=@IsRouteMatch("/settings(/?.*)") Navigate="NavigateToSettings" Icon="settings" Text="Settings"></NavButton>
+    </div>
+    <div class="h-[@SystemBottomHeight]"></div>
+   </nav>
 @code {
 
     protected override void OnInitialized()
@@ -65,5 +68,7 @@
     {
         NavigationManager.LocationChanged -= LocationChanged;
     }
+
+    private string SystemBottomHeight =>  "env(safe-area-inset-top, 0px)";
 
 }

@@ -3,16 +3,20 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorLayout
 @inject IJSRuntime Js
 @inject IState<AppState> AppState
-@inject LiftLog.Ui.Services.IUserScrollListener UserScrollListener
 @inject IThemeProvider ThemeProvider
 @inject NavigationManager NavigationManager
 
 <div class="h-full page bg-surface">
     <section class="relative h-full content">
         <div class="grid grid-cols-1 h-full grid-rows-[min-content_1fr_min-content]">
-            <div class="flex items-center @Justify @Padding gap-2 text-2xl @_topNavColorClass transition-colors">
-                @RenderBackButton()
-                <span class="m-0 text-on-surface">@AppState.Value.Title</span>
+            <div class="flex flex-col @_topNavColorClass transition-colors">
+                <div class="h-[@SystemTopHeight]"></div>
+                <div class="flex items-center px-4 py-4 gap-2 text-2xl @Justify ">
+                    @RenderBackButton()
+                    <div class="h-[40px] flex items-center">
+                        <span class="m-0 text-on-surface">@AppState.Value.Title</span>
+                    </div>
+                </div>
             </div>
             <div @ref="_contentElementRef" class="px-2 pb-2 overflow-auto bg-surface" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
                 @Body
@@ -59,18 +63,9 @@
                 {
                     StateHasChanged();
                     await Task.Yield();
-                    await UserScrollListener.ScrollHasChangedAsync(scrollTop > 2);
                 });
             }
     }
-
-    private string Padding =>  (ThemeProvider.IsAndroid,AppState.Value.BackNavigationUrl) switch
-    {
-        (true, null) => "p-4 pt-6",
-        (true, _) => "p-3 pt-5",
-        (false, null) => "p-4",
-        (false, _) => "p-3"
-    };
 
     private string Justify => AppState.Value.BackNavigationUrl is null ? "justify-center" : "justify-start";
 
@@ -84,5 +79,7 @@
 
         return @<IconButton Icon="arrow_back" Type=IconButtonType.Standard OnClick="() => NavigationManager.NavigateTo(backButtonUrl)" />;
     }
+
+    private string SystemTopHeight => "env(safe-area-inset-top, 0px)";
 
 }

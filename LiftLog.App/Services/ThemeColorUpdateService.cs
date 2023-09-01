@@ -33,9 +33,9 @@ public class ThemeColorUpdateService : MaterialColorService
         Activity activity = await Platform.WaitForActivityAsync();
 
         // Update status/navigation bar background color
-        Android.Graphics.Color navColor = SchemeMaui.SurfaceContainer.ToPlatform();
+        Android.Graphics.Color navColor = Android.Graphics.Color.Transparent;
         activity.Window!.SetNavigationBarColor(navColor);
-        Android.Graphics.Color statusColor = SchemeMaui.Surface.ToPlatform();
+        Android.Graphics.Color statusColor = Android.Graphics.Color.Transparent;
         activity.Window!.SetStatusBarColor(statusColor);
 
         // Update status/navigation bar text/icon color
