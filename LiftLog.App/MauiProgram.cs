@@ -91,7 +91,6 @@ public static class MauiProgram
         builder.Services.AddScoped<IAiWorkoutPlanner, ApiBasedAiWorkoutPlanner>();
 
         builder.Services.AddSingleton<IThemeProvider, AppThemeProvider>();
-        builder.Services.AddSingleton<IUserScrollListener, NotificationBarColorUpdateUserScrollListener>();
 
         builder.Services.AddSingleton(Share.Default);
         builder.Services.AddSingleton(FilePicker.Default);

@@ -12,8 +12,6 @@ public class WebThemeProvider : IThemeProvider
     private readonly CorePalette _corePalette;
     private readonly Scheme<uint> _scheme;
 
-    public bool IsAndroid => false;
-
     public WebThemeProvider(IJSRuntime jsRuntime)
     {
         _corePalette = new();

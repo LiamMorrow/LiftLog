@@ -6,7 +6,5 @@ public interface IThemeProvider
 {
     Scheme<uint> GetColorScheme();
 
-    bool IsAndroid { get; }
-
     event EventHandler SeedChanged;
 }
