@@ -30,7 +30,6 @@ public class AppPurchaseService : IAppPurchaseService
                 return null;
 
             var purchase = await billing.PurchaseAsync("pro", ItemType.InAppPurchase);
-            Console.WriteLine("LOOK_HERE: {0}", purchase);
             if (purchase == null)
                 return null;
             else if (purchase.State == PurchaseState.Purchased)

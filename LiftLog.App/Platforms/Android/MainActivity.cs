@@ -50,7 +50,6 @@ public class MainActivity : MauiAppCompatActivity
             _themeProvider.SystemSafeInsetTop = $"{top}px";
             _themeProvider.SystemSafeInsetBottom = $"{bottom}px";
             _themeProvider.NotifyInsetsChanged();
-            Console.WriteLine($"Top: {top}:{insets.SystemWindowInsetTop}, Bottom: {bottom}:{insets.SystemWindowInsetBottom}");
             return insets;
         }
     }

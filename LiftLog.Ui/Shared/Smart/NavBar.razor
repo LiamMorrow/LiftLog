@@ -12,7 +12,7 @@
         <NavButton IsActive=@IsRouteMatch("/stats(/?.*)") Navigate="NavigateToStats" Icon="show_chart" Text="Stats" ></NavButton>
         <NavButton IsActive=@IsRouteMatch("/settings(/?.*)") Navigate="NavigateToSettings" Icon="settings" Text="Settings"></NavButton>
     </div>
-    <div class="h-[@SystemBottomHeight]"></div>
+    <div style="height: @ThemeProvider.SystemSafeInsetBottom"></div>
    </nav>
 @code {
 
@@ -74,7 +74,4 @@
     {
         NavigationManager.LocationChanged -= LocationChanged;
     }
-
-    private string SystemBottomHeight => ThemeProvider.SystemSafeInsetBottom;
-
 }
