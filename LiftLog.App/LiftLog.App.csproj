@@ -38,7 +38,8 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+      <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+      <AndroidFastDeploymentType>Assemblies</AndroidFastDeploymentType>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
