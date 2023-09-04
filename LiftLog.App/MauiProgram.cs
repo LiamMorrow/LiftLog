@@ -90,7 +90,8 @@ public static class MauiProgram
         builder.Services.AddSingleton(new HttpClient());
         builder.Services.AddScoped<IAiWorkoutPlanner, ApiBasedAiWorkoutPlanner>();
 
-        builder.Services.AddSingleton<IThemeProvider, AppThemeProvider>();
+        builder.Services.AddSingleton<AppThemeProvider>();
+        builder.Services.AddSingleton<IThemeProvider>(sp => sp.GetRequiredService<AppThemeProvider>());
 
         builder.Services.AddSingleton(Share.Default);
         builder.Services.AddSingleton(FilePicker.Default);

@@ -36,7 +36,16 @@
 
     private string _topNavColorClass = "bg-surface";
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+
+    protected override void OnInitialized()
+    {
+        ThemeProvider.InsetsChanged += (_,_)=>
+        {
+            InvokeAsync(StateHasChanged);
+        };
+        base.OnInitialized();
+    }
+        protected override async Task OnAfterRenderAsync(bool firstRender)
     {
 #if DEBUG
         if (firstRender)
@@ -80,6 +89,6 @@
         return @<IconButton Icon="arrow_back" Type=IconButtonType.Standard OnClick="() => NavigationManager.NavigateTo(backButtonUrl)" />;
     }
 
-    private string SystemTopHeight => "env(safe-area-inset-top, 0px)";
+    private string SystemTopHeight => ThemeProvider.SystemSafeInsetTop;
 
 }
