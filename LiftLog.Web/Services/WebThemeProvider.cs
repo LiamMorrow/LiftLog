@@ -38,4 +38,13 @@ public class WebThemeProvider : IThemeProvider
         add { }
         remove { }
     }
+    public event EventHandler InsetsChanged
+    {
+        add { }
+        remove { }
+    }
+
+    public string SystemSafeInsetTop => "0px";
+
+    public string SystemSafeInsetBottom => "0px";
 }

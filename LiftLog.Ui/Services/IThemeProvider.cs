@@ -7,4 +7,10 @@ public interface IThemeProvider
     Scheme<uint> GetColorScheme();
 
     event EventHandler SeedChanged;
+
+    event EventHandler InsetsChanged;
+
+    string SystemSafeInsetTop { get; }
+
+    string SystemSafeInsetBottom { get; }
 }
