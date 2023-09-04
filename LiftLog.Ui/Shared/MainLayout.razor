@@ -10,7 +10,7 @@
     <section class="relative h-full content">
         <div class="grid grid-cols-1 h-full grid-rows-[min-content_1fr_min-content]">
             <div class="flex flex-col @_topNavColorClass transition-colors">
-                <div class="h-[@SystemTopHeight]"></div>
+                <div style="height: @ThemeProvider.SystemSafeInsetTop"></div>
                 <div class="flex items-center px-4 py-4 gap-2 text-2xl @Justify ">
                     @RenderBackButton()
                     <div class="h-[40px] flex items-center">
@@ -52,9 +52,8 @@
         {
             await Js.InvokeAsync<IJSObjectReference>("import", "/_content/LiftLog.Ui/load-tailwind.js");
         }
-#else
-        await base.OnAfterRenderAsync(firstRender);
 #endif
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     private async void OnContentScroll()
@@ -88,7 +87,5 @@
 
         return @<IconButton Icon="arrow_back" Type=IconButtonType.Standard OnClick="() => NavigationManager.NavigateTo(backButtonUrl)" />;
     }
-
-    private string SystemTopHeight => ThemeProvider.SystemSafeInsetTop;
 
 }
