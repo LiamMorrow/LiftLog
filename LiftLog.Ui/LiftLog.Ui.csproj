@@ -19,15 +19,15 @@
   <ItemGroup>
     <PackageReference Include="Blazor-ApexCharts" Version="0.9.22-beta" />
     <PackageReference Include="MaterialColorUtilities" Version="0.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.10" />
-    <PackageReference Include="Fluxor" Version="5.9.0" />
-    <PackageReference Include="Fluxor.Blazor.Web" Version="5.9.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.11" />
+    <PackageReference Include="Fluxor" Version="5.9.1" />
+    <PackageReference Include="Fluxor.Blazor.Web" Version="5.9.1" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
   </ItemGroup>
 
 
     <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="5.9.0" />
+      <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="5.9.1" />
     </ItemGroup>
 
     <ItemGroup Condition=" '$(Configuration)' != 'Debug' ">
