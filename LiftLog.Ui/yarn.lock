@@ -64,12 +64,12 @@
     deepmerge "^4.2.2"
     material-ripple-effects "^2.0.1"
 
-"@material/web@1.0.0-pre.16":
-  version "1.0.0-pre.16"
-  resolved "https://registry.yarnpkg.com/@material/web/-/web-1.0.0-pre.16.tgz#4383055d44e9f796ae27b2072d7a5a070b89ae64"
-  integrity sha512-BDrwtY7WkbGhh2jxupbRdh1/wEiy69h6XzjgCxISJNNQVyn6rbOv1U57+d9J24Z5DvSTKv8NHrNyXT6iwmG2KQ==
+"@material/web@1.0.0-pre.17":
+  version "1.0.0-pre.17"
+  resolved "https://registry.yarnpkg.com/@material/web/-/web-1.0.0-pre.17.tgz#d2c62211901d2c72d483e4ad4b5b5d01bff9cd99"
+  integrity sha512-8iqrMudWxAUTXfnkf3GraxgLv/3cLbvRBkp6Al9/sxgwO+aTEzKC2BP6sDTqINAubsgOOOuIul/1emyjvq2ipg==
   dependencies:
-    lit "^2.7.4"
+    lit "^2.7.4 || ^3.0.0"
     tslib "^2.4.0"
 
 "@nodelib/fs.scandir@2.1.5":
@@ -527,14 +527,21 @@ lit-html@^2.7.0:
   dependencies:
     "@types/trusted-types" "^2.0.2"
 
-lit@^2.7.4:
-  version "2.7.6"
-  resolved "https://registry.yarnpkg.com/lit/-/lit-2.7.6.tgz#810007b876ed43e0c70124de91831921598b1665"
-  integrity sha512-1amFHA7t4VaaDe+vdQejSVBklwtH9svGoG6/dZi9JhxtJBBlqY5D1RV7iLUYY0trCqQc4NfhYYZilZiVHt7Hxg==
+lit-html@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-2.8.0.tgz#96456a4bb4ee717b9a7d2f94562a16509d39bffa"
+  integrity sha512-o9t+MQM3P4y7M7yNzqAyjp7z+mQGa4NS4CxiyLqFPyFWyc4O+nodLrkrxSaCTrla6M5YOLaT3RpbbqjszB5g3Q==
+  dependencies:
+    "@types/trusted-types" "^2.0.2"
+
+"lit@^2.7.4 || ^3.0.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/lit/-/lit-2.8.0.tgz#4d838ae03059bf9cafa06e5c61d8acc0081e974e"
+  integrity sha512-4Sc3OFX9QHOJaHbmTMk28SYgVxLN3ePDjg7hofEft2zWlehFL3LiAuapWc4U/kYwMYJSh2hTCPZ6/LIC7ii0MA==
   dependencies:
     "@lit/reactive-element" "^1.6.0"
     lit-element "^3.3.0"
-    lit-html "^2.7.0"
+    lit-html "^2.8.0"
 
 lru-cache@^6.0.0:
   version "6.0.0"
@@ -781,9 +788,9 @@ rimraf@^2.6.3:
     glob "^7.1.3"
 
 rollup@^3.26.2:
-  version "3.28.1"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-3.28.1.tgz#fb44aa6d5e65c7e13fd5bcfff266d0c4ea9ba433"
-  integrity sha512-R9OMQmIHJm9znrU3m3cpE8uhN0fGdXiawME7aZIpQqvpS/85+Vt1Hq1/yVIcYfOmaQiHjvXkQAoJukvLpau6Yw==
+  version "3.29.2"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-3.29.2.tgz#cbc76cd5b03b9f9e93be991d23a1dff9c6d5b740"
+  integrity sha512-CJouHoZ27v6siztc21eEQGo0kIcE5D1gVPA571ez0mMYb25LGYGKnVNXpEj5MGlepmDWGXNjDB5q7uNiPHC11A==
   optionalDependencies:
     fsevents "~2.3.2"
 

@@ -72,7 +72,7 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
         <PackageReference Include="Plugin.InAppBilling" Version="7.0.5" />
         <PackageReference Include="Plugin.LocalNotification" Version="10.1.8" />
-        <PackageReference Include="Xamarin.AndroidX.Annotation" Version="1.6.0.4" />
+        <PackageReference Include="Xamarin.AndroidX.Annotation" Version="1.7.0.1" />
     </ItemGroup>
 
     <ItemGroup>
