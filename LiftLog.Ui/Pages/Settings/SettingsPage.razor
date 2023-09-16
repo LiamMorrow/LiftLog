@@ -19,23 +19,23 @@
             <md-icon>description</md-icon>
         </div>
         <div class="flex justify-between">
-            <AppButton OnClick="ImportData" Type="AppButtonType.OutlineSecondary">
-                <md-icon slot="icon">download</md-icon>Import data
-            </AppButton>
             <AppButton OnClick="ExportData" Type="AppButtonType.OutlineSecondary">
-                <md-icon slot="icon">upload</md-icon>Export data
+                <md-icon slot="icon">upload</md-icon>Backup
+            </AppButton>
+            <AppButton OnClick="ImportData" Type="AppButtonType.OutlineSecondary">
+                <md-icon slot="icon">download</md-icon>Restore
             </AppButton>
         </div>
-        <AppButton OnClick="NavigateToManage" >
+        <AppButton OnClick="NavigateToManage">
             <md-icon slot="icon">construction</md-icon>
             Manage workouts
         </AppButton>
-        <AppButton Type=AppButtonType.Secondary OnClick="NavigateToProgramList" >
+        <AppButton Type=AppButtonType.Secondary OnClick="NavigateToProgramList">
             <md-icon slot="icon">assignment</md-icon>
             Select a plan
         </AppButton>
     </Card>
-    <ProFeatureCard/>
+    <ProFeatureCard />
 </div>
 
 @code {
