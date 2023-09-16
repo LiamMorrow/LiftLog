@@ -17,7 +17,7 @@
         @foreach (var program in BuiltInProgramService.BuiltInPrograms)
         {
             <ProgramListItem ProgramBlueprint="@program" OnClick=@(()=> BeginSelectProgram(program)) />
-            @if(program != BuiltInProgramService.BuiltInPrograms.Last())
+            @if (program != BuiltInProgramService.BuiltInPrograms.Last())
             {
                 <md-divider></md-divider>
             }
@@ -27,16 +27,17 @@
 
 <Dialog @ref=selectedProgramDialog>
     <span slot="headline">Select Program</span>
-    @if(selectedProgram != null)
+    @if (selectedProgram != null)
     {
 
-        <span slot="content" class="block text-left">Would you like to use the program <strong>@selectedProgram.Name</strong>?<br/>This will replace the existing program.</span>
+        <span slot="content" class="block text-left">Would you like to use the program
+            <strong>@selectedProgram.Name</strong>?<br />This will replace the existing program.</span>
         <div class="flex gap-1" slot="actions">
-            <AppButton Type="AppButtonType.Text" OnClick="()=>selectedProgramDialog?.Close()">Close</AppButton>
-            <AppButton Type="AppButtonType.Text" OnClick="SelectProgram">Select</AppButton>
-        </div>
+        <AppButton Type="AppButtonType.Text" OnClick="()=>selectedProgramDialog?.Close()">Close</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="SelectProgram">Select</AppButton>
+    </div>
     }
-</Dialog>
+    </Dialog>
 
     @code {
     private ProgramBlueprint? selectedProgram;
@@ -58,12 +59,12 @@
     private void SelectProgram()
     {
         selectedProgramDialog?.Close();
-        if(selectedProgram == null)
+        if (selectedProgram == null)
         {
             return;
         }
-        Dispatcher.Dispatch(new Ui.Store.Program.SetProgramSessionsAction(selectedProgram.Sessions));
-        Dispatcher.Dispatch(new Ui.Store.CurrentSession.SetCurrentSessionAction(Ui.Store.CurrentSession.SessionTarget.WorkoutSession, null));
+        Dispatcher.Dispatch(new SetProgramSessionsAction(selectedProgram.Sessions));
+        Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, null));
         NavigationManager.NavigateTo("/");
     }
 }

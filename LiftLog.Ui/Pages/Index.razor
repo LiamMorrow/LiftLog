@@ -11,39 +11,45 @@
 @inject IDispatcher Dispatcher
 @inject NavigationManager NavigationManager
 
-@if(ProgramState.Value.IsLoadingUpcomingSessions)
+@if (ProgramState.Value.IsLoadingUpcomingSessions)
 {
     <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
-        <div><md-circular-progress aria-label="Ai planning progress" indeterminate four-color></md-circular-progress></div>
-        <span>
-            <p>Loading Sessions...</p>
-        </span>
-    </div>
-} else if(ProgramState.Value.UpcomingSessions.Count == 0)
+    <div><md-circular-progress aria-label="Ai planning progress" indeterminate four-color></md-circular-progress></div>
+    <span>
+        <p>Loading Sessions...</p>
+    </span>
+</div>
+}
+else if (ProgramState.Value.UpcomingSessions.Count == 0)
 {
     <div class="flex flex-col gap-2">
-        <Card class="flex flex-col gap-4">
-            <div class="flex justify-between">
-                <span class="text-lg">No plan created yet!</span>
-                <md-icon>info</md-icon>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-                <AppButton Type="AppButtonType.Secondary" OnClick=@(()=>NavigationManager.NavigateTo("/settings"))><md-icon slot="icon">add</md-icon>Create</AppButton>
-                <AppButton OnClick=@(()=>NavigationManager.NavigateTo("/settings/program-list"))><md-icon slot="icon">assignment</md-icon>Use ours</AppButton>
-            </div>
-        </Card>
-        <ProFeatureCard/>
-    </div>
-} else
+    <Card class="flex flex-col gap-4">
+        <div class="flex justify-between">
+            <span class="text-lg">No plan created yet!</span>
+            <md-icon>info</md-icon>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+            <AppButton Type="AppButtonType.Secondary" OnClick=@(()=>NavigationManager.NavigateTo("/settings"))><md-icon
+                    slot="icon">add</md-icon>Create</AppButton>
+            <AppButton OnClick=@(()=>NavigationManager.NavigateTo("/settings/program-list"))><md-icon
+                    slot="icon">assignment</md-icon>Use ours</AppButton>
+        </div>
+    </Card>
+    <ProFeatureCard />
+</div>
+}
+else
 {
-    <CardList Items="ProgramState.Value.UpcomingSessions.IndexedTuples()" OnClick="x=>SelectSession(x.Item)" ShouldHighlight="session => session.Index == 0">
-        <SessionSummary IsFilled="context.Item.IsStarted" Session="context.Item" ></SessionSummary>
-    </CardList>
+    <CardList Items="ProgramState.Value.UpcomingSessions.IndexedTuples()" OnClick="x=>SelectSession(x.Item)"
+    ShouldHighlight="session => session.Index == 0">
+    <SessionSummary IsFilled="context.Item.IsStarted" Session="context.Item"></SessionSummary>
+</CardList>
 }
 
 <Dialog @ref=replaceCurrentSesisonDialog>
     <span slot="headline">Replace current session</span>
-    <span slot="content" class="block text-left">There is already a current session in progress, start a new one without saving?</span>
+    <span slot="content" class="block text-left">There is already a current session in progress, start a new one without
+        saving?</span>
     <div slot="actions">
         <AppButton Type="AppButtonType.Text" OnClick=@(()=>replaceCurrentSesisonDialog?.Close())>Cancel</AppButton>
         <AppButton Type="AppButtonType.Text" OnClick=ReplaceSession>Replace</AppButton>
@@ -65,11 +71,13 @@
 
     private void SelectSession(Session session)
     {
-            selectedSession = session;
-        if(CurrentSessionState.Value.WorkoutSession is {IsStarted: true} && CurrentSessionState.Value.WorkoutSession != session)
+        selectedSession = session;
+        if (CurrentSessionState.Value.WorkoutSession is { IsStarted: true } && CurrentSessionState.Value.WorkoutSession !=
+        session)
         {
             replaceCurrentSesisonDialog?.Open();
-        } else
+        }
+        else
         {
             ReplaceSession();
         }
@@ -77,7 +85,7 @@
 
     private void ReplaceSession()
     {
-        if(selectedSession is null)
+        if (selectedSession is null)
         {
             return;
         }
