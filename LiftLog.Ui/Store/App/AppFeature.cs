@@ -9,9 +9,11 @@ public class AppFeature : Feature<AppState>
 {
     public override string GetName() => nameof(AppFeature);
 
-    protected override AppState GetInitialState() => new(
-        Title: "LiftLog",
-        ProState: new ProState(null),
-        ReopenCurrentSession: true,
-        BackNavigationUrl: null);
+    protected override AppState GetInitialState() =>
+        new(
+            Title: "LiftLog",
+            ProState: new ProState("102bc25a-f46b-4423-9149-b0fa39b32f1e"),
+            ReopenCurrentSession: true,
+            BackNavigationUrl: null
+        );
 }
