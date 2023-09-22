@@ -366,3 +366,7 @@ FodyWeavers.xsd
 
 **/app.min.css
 /LiftLog.Ui/wwwroot/bundle.js
+
+
+ios-install-local.sh
+ios-install.sh

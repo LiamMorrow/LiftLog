@@ -13,7 +13,7 @@ public class AppPurchaseService : IAppPurchaseService
         if (platform == DevicePlatform.Android)
             return AppStore.Google;
         else if (platform == DevicePlatform.iOS)
-            return AppStore.Apple;
+            return AppStore.Web;
         else
             return AppStore.Web;
     }
