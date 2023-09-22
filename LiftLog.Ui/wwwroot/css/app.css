@@ -20,6 +20,11 @@ body {
   height: 100dvh;
   -webkit-tap-highlight-color: transparent;
   font-family: "Roboto";
+  overscroll-behavior: none;
+}
+html,
+body {
+  overscroll-behavior-y: none;
 }
 
 * {

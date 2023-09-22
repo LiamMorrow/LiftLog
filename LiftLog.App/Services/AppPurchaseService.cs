@@ -1,11 +1,9 @@
 using System.Diagnostics;
-using Java.Text;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Services;
 using Plugin.InAppBilling;
 
 namespace LiftLog.App.Services;
-
 
 public class AppPurchaseService : IAppPurchaseService
 {
@@ -35,7 +33,9 @@ public class AppPurchaseService : IAppPurchaseService
             else if (purchase.State == PurchaseState.Purchased)
             {
                 // only need to finalize if on Android unless you turn off auto finalize on iOS
-                await CrossInAppBilling.Current.FinalizePurchaseAsync(purchase.TransactionIdentifier);
+                await CrossInAppBilling.Current.FinalizePurchaseAsync(
+                    purchase.TransactionIdentifier
+                );
             }
 
             return purchase.PurchaseToken;
