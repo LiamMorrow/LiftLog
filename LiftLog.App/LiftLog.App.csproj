@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
-        <TargetFramework>net7.0-android</TargetFramework>
+        <TargetFramework>net7.0-ios</TargetFramework>
         <TargetFrameworks>net7.0-android;</TargetFrameworks>
         <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx'))">$(TargetFrameworks);net7.0-ios;</TargetFrameworks>
         <!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
@@ -72,7 +72,7 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
         <PackageReference Include="Plugin.InAppBilling" Version="7.0.5" />
         <PackageReference Include="Plugin.LocalNotification" Version="10.1.8" />
-        <PackageReference Include="Xamarin.AndroidX.Annotation" Version="1.7.0.1" />
+        <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Annotation" Version="1.7.0.1" />
     </ItemGroup>
 
     <ItemGroup>

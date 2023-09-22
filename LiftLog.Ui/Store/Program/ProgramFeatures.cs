@@ -13,6 +13,7 @@ public class ProgramFeature : Feature<ProgramState>
         new(
             ImmutableList.Create<SessionBlueprint>(),
             ImmutableListValue.Of<Session>(),
-            false,
-            ImmutableListValue<string>.Empty);
+            true,
+            ImmutableListValue<string>.Empty
+        );
 }

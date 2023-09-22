@@ -1,6 +1,5 @@
-﻿using Android.Renderscripts;
+﻿using Microsoft.Extensions.Logging;
 using Fluxor;
-using Microsoft.Extensions.Logging;
 using LiftLog.App.Services;
 using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
@@ -32,20 +31,19 @@ public static class MauiProgram
         builder.UseLocalNotification(notificationBuilder =>
         {
             notificationBuilder.SetSerializer(new NotificationSerializer());
-            notificationBuilder.AddCategory(new NotificationCategory(NotificationCategoryType.Status)
-            {
-                ActionList = new HashSet<NotificationAction>()
+            notificationBuilder.AddCategory(
+                new NotificationCategory(NotificationCategoryType.Status)
                 {
-                    new NotificationAction(100)
+                    ActionList = new HashSet<NotificationAction>()
                     {
-                        Title = "Complete Set",
-                        Android =
+                        new NotificationAction(100)
                         {
-                            LaunchAppWhenTapped = false,
-                        }
-                    },
+                            Title = "Complete Set",
+                            Android = { LaunchAppWhenTapped = false, }
+                        },
+                    }
                 }
-            });
+            );
             notificationBuilder.AddAndroid(android =>
             {
                 android.AddChannel(
@@ -91,14 +89,15 @@ public static class MauiProgram
         builder.Services.AddScoped<IAiWorkoutPlanner, ApiBasedAiWorkoutPlanner>();
 
         builder.Services.AddSingleton<AppThemeProvider>();
-        builder.Services.AddSingleton<IThemeProvider>(sp => sp.GetRequiredService<AppThemeProvider>());
+        builder.Services.AddSingleton<IThemeProvider>(
+            sp => sp.GetRequiredService<AppThemeProvider>()
+        );
 
         builder.Services.AddSingleton(Share.Default);
         builder.Services.AddSingleton(FilePicker.Default);
         builder.Services.AddScoped<SessionService>();
 
         builder.Services.AddScoped<IAppPurchaseService, AppPurchaseService>();
-
 
         builder.UseMaterialColors<ThemeColorUpdateService>();
         return builder.Build();
