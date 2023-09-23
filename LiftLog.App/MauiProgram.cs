@@ -70,7 +70,7 @@ public static class MauiProgram
 #endif
         builder.Services.AddFluxor(
             o =>
-                o.ScanAssemblies(typeof(Program).Assembly)
+                o.ScanAssemblies(typeof(MauiProgram).Assembly)
                     .AddMiddleware<PersistSessionMiddleware>()
                     .AddMiddleware<PersistProgramMiddleware>()
                     .AddMiddleware<AppStateInitMiddleware>()
