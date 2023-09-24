@@ -18,8 +18,6 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 7.0.x
-      - name: Setup MAUI
-        run: dotnet workload install maui
       - name: Put distribution cert
         env: # Or as an environment variable
           APPLE_DISTRIBUTION_CERT_P12_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERT_P12_BASE64 }}
@@ -37,6 +35,8 @@ jobs:
           api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
           profile-type: IOS_APP_STORE
+      - name: Setup MAUI
+        run: dotnet workload install maui
       - name: Build Tailwind
         run: yarn && yarn build
         working-directory: ./LiftLog.Ui
