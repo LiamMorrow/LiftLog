@@ -14,7 +14,10 @@ namespace LiftLog.Ui.Services
     {
         private const string StorageKey = "Progress";
         private bool _initialised;
-        private ImmutableDictionary<Guid, Session> _storedSessions = ImmutableDictionary<Guid, Session>.Empty;
+        private ImmutableDictionary<Guid, Session> _storedSessions = ImmutableDictionary<
+            Guid,
+            Session
+        >.Empty;
         private readonly IKeyValueStore _keyValueStore;
 
         public KeyValueProgressRepository(IKeyValueStore keyValueStore)
@@ -26,9 +29,12 @@ namespace LiftLog.Ui.Services
         {
             await InitialiseAsync();
 
-            foreach (var session in _storedSessions.Select(day => day.Value)
-                         .OrderByDescending(x => x.Date)
-                         .ThenByDescending(x => x.LastExercise?.LastRecordedSet?.CompletionTime))
+            foreach (
+                var session in _storedSessions
+                    .Select(day => day.Value)
+                    .OrderByDescending(x => x.Date)
+                    .ThenByDescending(x => x.LastExercise?.LastRecordedSet?.CompletionTime)
+            )
             {
                 yield return session;
             }
@@ -42,18 +48,18 @@ namespace LiftLog.Ui.Services
 
         public ValueTask SaveCompletedSessionsAsync(IEnumerable<Session> sessions)
         {
-            _storedSessions = _storedSessions.SetItems(sessions.Select(x => new KeyValuePair<Guid, Session>(x.Id, x)));
+            _storedSessions = _storedSessions.SetItems(
+                sessions.Select(x => new KeyValuePair<Guid, Session>(x.Id, x))
+            );
 
             return PersistAsync();
         }
-
 
         public ValueTask DeleteSessionAsync(Session session)
         {
             _storedSessions = _storedSessions.Remove(session.Id);
             return PersistAsync();
         }
-
 
         private async ValueTask InitialiseAsync()
         {
@@ -76,10 +82,13 @@ namespace LiftLog.Ui.Services
 
                 SessionHistoryDaoContainer? storedData = version switch
                 {
-                    "1" => JsonSerializer.Deserialize<SessionHistoryDaoV1>(
-                        storedDataJson ?? "null",
-                        StorageJsonContext.Context.SessionHistoryDaoV1
-                    )?.ToModel(),
+                    "1"
+                        => JsonSerializer
+                            .Deserialize<SessionHistoryDaoV1>(
+                                storedDataJson ?? "null",
+                                StorageJsonContext.Context.SessionHistoryDaoV1
+                            )
+                            ?.ToModel(),
                     _ => throw new Exception($"Unknown version {version} of {StorageKey}"),
                 };
                 var deserialiseTime = sw.ElapsedMilliseconds;
@@ -90,7 +99,9 @@ namespace LiftLog.Ui.Services
                 }
                 var convertTime = sw.ElapsedMilliseconds;
                 sw.Stop();
-                Console.WriteLine($"Initialised progress repository in ({versionCheckTime}ms, {getStoredTime}ms, {deserialiseTime}ms, {convertTime}ms))");
+                Console.WriteLine(
+                    $"Initialised progress repository in ({versionCheckTime}ms, {getStoredTime}ms, {deserialiseTime}ms, {convertTime}ms))"
+                );
             }
         }
 
@@ -98,22 +109,29 @@ namespace LiftLog.Ui.Services
         {
             await Task.WhenAll(
                 _keyValueStore.SetItemAsync($"{StorageKey}-Version", "1").AsTask(),
-                _keyValueStore.SetItemAsync(
-                    StorageKey,
-                    JsonSerializer.Serialize(
-                        SessionHistoryDaoV1.FromModel(new(_storedSessions)),
-                        StorageJsonContext.Context.SessionHistoryDaoV1
+                _keyValueStore
+                    .SetItemAsync(
+                        StorageKey,
+                        JsonSerializer.Serialize(
+                            SessionHistoryDaoV1.FromModel(new(_storedSessions)),
+                            StorageJsonContext.Context.SessionHistoryDaoV1
+                        )
                     )
-                ).AsTask()
+                    .AsTask()
             );
         }
 
-        public ValueTask<ImmutableDictionary<KeyedExerciseBlueprint, RecordedExercise>> GetLatestRecordedExercisesAsync()
+        public ValueTask<
+            ImmutableDictionary<KeyedExerciseBlueprint, RecordedExercise>
+        > GetLatestRecordedExercisesAsync()
         {
             return GetOrderedSessions()
                 .SelectMany(x => x.RecordedExercises.ToAsyncEnumerable())
                 .GroupBy(x => (KeyedExerciseBlueprint)x.Blueprint)
-                .ToImmutableDictionaryAwaitAsync(x => ValueTask.FromResult(x.Key), x => x.FirstAsync());
+                .ToImmutableDictionaryAwaitAsync(
+                    x => ValueTask.FromResult(x.Key),
+                    x => x.FirstAsync()
+                );
         }
     }
 }
