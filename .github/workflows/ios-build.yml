@@ -40,7 +40,7 @@ jobs:
         run: yarn && yarn build
         working-directory: ./LiftLog.Ui
       - name: Build
-        run: dotnet publish -c Release -f:net7.0-ios /p:ArchiveOnBuild=true
+        run: dotnet publish -c Release -f:net7.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64
         working-directory: ./LiftLog.App
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.0.0
