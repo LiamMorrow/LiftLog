@@ -28,20 +28,20 @@ jobs:
           p12-filepath: "liftlog.p12"
           p12-password: ${{ secrets.APPLE_DISTRIBUTION_CERT_PASS }}
       - name: Download Apple Provisioning Profiles
+        id: provision
         uses: Apple-Actions/download-provisioning-profiles@v1
         with:
           bundle-id: "com.limajuice.liftlog"
           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
           api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
-          profile-type: IOS_APP_STORE
       - name: Setup MAUI
         run: dotnet workload install maui
       - name: Build Tailwind
         run: yarn && yarn build
         working-directory: ./LiftLog.Ui
       - name: Build
-        run: dotnet publish -c Release -f:net7.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64
+        run: dotnet publish -c Release -f:net7.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignProvision='${{ steps.provision.outputs.profiles[0].name }}' \
         working-directory: ./LiftLog.App
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.0.0
