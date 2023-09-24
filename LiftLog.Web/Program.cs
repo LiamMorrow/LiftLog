@@ -54,6 +54,6 @@ builder.Services.AddBlazorDownloadFile();
 builder.Services.AddScoped<ITextExporter, WebClipboardTextExporter>();
 builder.Services.AddScoped<INotificationService, WebNotificationService>();
 
-builder.Services.AddScoped<IAppPurchaseService, WebAppProService>();
+builder.Services.AddScoped<IAppPurchaseService, WebAppPurchaseService>();
 
 await builder.Build().RunAsync();

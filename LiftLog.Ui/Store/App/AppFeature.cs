@@ -12,7 +12,7 @@ public class AppFeature : Feature<AppState>
     protected override AppState GetInitialState() =>
         new(
             Title: "LiftLog",
-            ProState: new ProState("102bc25a-f46b-4423-9149-b0fa39b32f1e"),
+            ProState: new ProState(null),
             ReopenCurrentSession: true,
             BackNavigationUrl: null
         );

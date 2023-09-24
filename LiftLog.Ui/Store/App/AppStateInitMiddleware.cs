@@ -19,7 +19,7 @@ public class AppStateInitMiddleware : Middleware
 #else
         var proToken = await proTokenRepository.GetProTokenAsync();
 
-        dispatch.Dispatch(new SetProTokenAction("102bc25a-f46b-4423-9149-b0fa39b32f1e"));
+        dispatch.Dispatch(new SetProTokenAction(proToken));
 #endif
     }
 }
