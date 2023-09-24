@@ -41,7 +41,7 @@ jobs:
         run: yarn && yarn build
         working-directory: ./LiftLog.Ui
       - name: Build
-        run: 'dotnet publish -c Release -f:net7.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="Apple Distribution: Liam Morrow (U8Q4NXKYES)" -p:CodesignProvision="LiftLog"'
+        run: 'dotnet publish -c Release -f:net7.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}" -p:CodesignProvision="LiftLog"'
         working-directory: ./LiftLog.App
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.0.0
