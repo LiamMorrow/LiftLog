@@ -39,21 +39,20 @@ public record ExerciseBlueprint(
     decimal InitialKilograms,
     decimal KilogramsIncreaseOnSuccess,
     Rest RestBetweenSets
-)
-{
-}
+);
 
-public record KeyedExerciseBlueprint(
-    string Name,
-    int Sets,
-    int RepsPerSet)
+public record KeyedExerciseBlueprint(string Name, int Sets, int RepsPerSet)
 {
-    public static implicit operator KeyedExerciseBlueprint(ExerciseBlueprint e) => new(e.Name, e.Sets, e.RepsPerSet);
+    public static implicit operator KeyedExerciseBlueprint(ExerciseBlueprint e) =>
+        new(e.Name, e.Sets, e.RepsPerSet);
 }
 
 public record Rest(TimeSpan MinRest, TimeSpan MaxRest, TimeSpan FailureRest)
 {
-    public static readonly Rest Short = new(TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(90), TimeSpan.FromSeconds(180));
-    public static readonly Rest Medium = new(TimeSpan.FromSeconds(90), TimeSpan.FromSeconds(180), TimeSpan.FromSeconds(300));
-    public static readonly Rest Long = new(TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(8));
+    public static readonly Rest Short =
+        new(TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(90), TimeSpan.FromSeconds(180));
+    public static readonly Rest Medium =
+        new(TimeSpan.FromSeconds(90), TimeSpan.FromSeconds(180), TimeSpan.FromSeconds(300));
+    public static readonly Rest Long =
+        new(TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(8));
 }
