@@ -12,6 +12,9 @@ using INotificationService = LiftLog.Ui.Services.INotificationService;
 using LiftLog.Lib.Services;
 using LiftLog.Ui.Store.App;
 using Sentry.Extensions.Logging.Extensions.DependencyInjection;
+using ApexCharts;
+using LiftLog.Lib.Models;
+using System.Runtime.CompilerServices;
 
 namespace LiftLog.App;
 
@@ -120,5 +123,15 @@ public static class MauiProgram
 
         builder.UseMaterialColors<ThemeColorUpdateService>();
         return builder.Build();
+    }
+
+    // A dependency uses a generic that fails to run in ios AOT mode
+    // This is a workaround to ensure the generic is used somewhere
+    // so that it is not stripped out by the linker
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void KeepToEnsureAOTGenericsWork()
+    {
+        ApexPointSeries<RecordedExercise> series = new();
+        series.Items = new List<RecordedExercise>().AsEnumerable();
     }
 }
