@@ -22,8 +22,8 @@
         <ApplicationIdGuid>71733E37-6FDD-4EEF-A0BF-DE32634D58EC</ApplicationIdGuid>
 
         <!-- Versions -->
-        <ApplicationDisplayVersion>1.5.1</ApplicationDisplayVersion>
-        <ApplicationVersion>15</ApplicationVersion>
+        <ApplicationDisplayVersion>1.5.2</ApplicationDisplayVersion>
+        <ApplicationVersion>16</ApplicationVersion>
 
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
@@ -33,7 +33,7 @@
         <Authors>Liam Morrow</Authors>
         <Company>LiftLog</Company>
         <Product>LiftLog</Product>
-        <Version>1.5.1</Version>
+        <Version>1.5.2</Version>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -45,6 +45,10 @@
       <RunAOTCompilation>true</RunAOTCompilation>
       <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
       <EnableLLVM>true</EnableLLVM>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Release'">
+        <MtouchInterpreter>-all</MtouchInterpreter>
     </PropertyGroup>
 
     <ItemGroup>
