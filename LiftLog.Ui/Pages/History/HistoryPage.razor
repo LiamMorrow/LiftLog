@@ -9,6 +9,7 @@
 @inject NavigationManager NavigationManager
 @inject IState<CurrentSessionState> CurrentSessionState
 @inject IDispatcher Dispatcher
+@inject ILogger<HistoryPage> logger
 
 <CardList Items="_latestSessions" OnClick="HandleSessionClick">
     <SplitCardControl>
@@ -17,7 +18,8 @@
         </MainContent>
 
         <SideContent>
-            <IconButton Type="IconButtonType.FilledTonal" OnClick=@(() => {_selectedSession = context; _deleteDialog?.Open();}) Icon="delete" />
+            <IconButton Type="IconButtonType.FilledTonal" OnClick=@(() => {_selectedSession = context;
+                _deleteDialog?.Open();}) Icon="delete" />
         </SideContent>
     </SplitCardControl>
 </CardList>
@@ -25,9 +27,9 @@
 <Dialog @ref="_deleteDialog">
     <span slot="headline">Delete Session?</span>
     <span slot="content" class="block text-left">Session will be deleted from history, this cannot be undone.</span>
-<div slot="actions">
-    <AppButton Type="AppButtonType.Text"  OnClick="()=>{_deleteDialog?.Close();}">Cancel</AppButton>
-    <AppButton Type="AppButtonType.Text"  OnClick="DeleteSession">Delete</AppButton>
+    <div slot="actions">
+        <AppButton Type="AppButtonType.Text" OnClick="()=>{_deleteDialog?.Close();}">Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="DeleteSession">Delete</AppButton>
     </div>
 </Dialog>
 
@@ -48,8 +50,8 @@
         _selectedSession = null;
         _deleteDialog?.Close();
         this._latestSessions = await SessionService
-            .GetLatestSessionsAsync()
-            .ToListAsync();
+        .GetLatestSessionsAsync()
+        .ToListAsync();
     }
 
     private void HandleSessionClick(Session session)
@@ -64,10 +66,10 @@
         Dispatcher.Dispatch(new SetPageTitleAction("History"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
         this._latestSessions = await SessionService
-            .GetLatestSessionsAsync()
-            .ToListAsync();
+        .GetLatestSessionsAsync()
+        .ToListAsync();
         await base.OnInitializedAsync();
         sw.Stop();
-        Console.WriteLine($"History page initialized in {sw.ElapsedMilliseconds} ms");
+        logger.LogInformation($"History page initialized in {sw.ElapsedMilliseconds} ms");
     }
 }
