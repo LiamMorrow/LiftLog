@@ -29,7 +29,7 @@ jobs:
           p12-password: ${{ secrets.APPLE_DISTRIBUTION_CERT_PASS }}
       - name: Download Apple Provisioning Profiles
         id: provision
-        uses: Apple-Actions/download-provisioning-profiles@v1
+        uses: Apple-Actions/download-provisioning-profiles@v2
         with:
           bundle-id: "com.limajuice.liftlog"
           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
