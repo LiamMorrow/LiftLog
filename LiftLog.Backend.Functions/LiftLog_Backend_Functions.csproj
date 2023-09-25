@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Azure.Data.Tables" Version="12.8.1" />
     <PackageReference Include="FluentValidation" Version="11.7.1" />
-    <PackageReference Include="Google.Apis.AndroidPublisher.v3" Version="1.62.0.3170" />
+    <PackageReference Include="Google.Apis.AndroidPublisher.v3" Version="1.62.0.3184" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.19.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.1.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.14.1" />
