@@ -1,10 +1,9 @@
-@typeparam T where T : System.Numerics.INumber<T>
-
 <div @attributes="AdditionalAttributes" class="flex flex-col gap-2 @(AdditionalAttributes?.GetValueOrDefault("class"))">
     <label class="text-lg text-center">@Label</label>
     <div class="flex items-center justify-center gap-2">
-        <IconButton Type=IconButtonType.Outlined OnClick=@(()=>{OnChange(Value - Increment);})  Icon="remove" />
-        <TextField class="w-20" type="text" inputmode="numeric" Value=@(Value.ToString()) OnChange=@(value => OnChanged(value)) />
+        <IconButton Type=IconButtonType.Outlined OnClick=@(()=>{OnChange(Value - Increment);}) Icon="remove" />
+        <TextField class="w-20" type="text" inputmode="numeric" Value=@(Value.ToString()) OnChange=@(value =>
+            OnChanged(value)) />
         <IconButton Type=IconButtonType.Outlined OnClick=@(()=>{OnChange(Value + Increment);}) Icon="add" />
     </div>
 </div>
@@ -14,11 +13,11 @@
 
     [Parameter]
     [EditorRequired]
-    public T Value { get; set; } = default!;
+    public decimal Value { get; set; } = default!;
 
     [Parameter]
     [EditorRequired]
-    public T Increment { get; set; } = default!;
+    public decimal Increment { get; set; } = default!;
 
     [Parameter]
     [EditorRequired]
@@ -26,7 +25,7 @@
 
     [Parameter]
     [EditorRequired]
-    public Action<T> OnChange { get; set; } = null!;
+    public Action<decimal> OnChange { get; set; } = null!;
 
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
@@ -34,8 +33,8 @@
     private void OnChanged(string value)
     {
         if (value is string valueStr
-            && T.TryParse(valueStr, System.Globalization.NumberStyles.Any,
-             System.Globalization.CultureInfo.CurrentCulture, out var result))
+        && decimal.TryParse(valueStr, System.Globalization.NumberStyles.Any,
+        System.Globalization.CultureInfo.CurrentCulture, out var result))
         {
             OnChange(result);
         }
