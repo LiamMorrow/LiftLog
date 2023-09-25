@@ -41,7 +41,7 @@ jobs:
       - name: Upload Android Release to Play Store
         # You may pin to the exact commit or the version.
         # uses: r0adkll/upload-google-play@70c7397e868b00eccd390222f492ab3e30520d09
-        uses: r0adkll/upload-google-play@v1.1.1
+        uses: r0adkll/upload-google-play@v1.1.2
         with:
           packageName: com.limajuice.liftlog
           releaseFiles: LiftLog.App/bin/Release/net7.0-android/publish/com.limajuice.liftlog-Signed.aab
