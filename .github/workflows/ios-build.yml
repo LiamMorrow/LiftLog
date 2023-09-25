@@ -44,6 +44,6 @@ jobs:
         run: 'dotnet publish -c Release -f:net7.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}" -p:CodesignProvision="LiftLog"'
         working-directory: ./LiftLog.App
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v3.0.0
+        uses: actions/upload-artifact@v3.1.3
         with:
           path: "**/*.ipa"
