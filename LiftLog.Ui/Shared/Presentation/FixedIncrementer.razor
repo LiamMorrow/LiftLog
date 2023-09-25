@@ -1,3 +1,5 @@
+@typeparam T
+
 <div @attributes=@AdditionalAttributes class="flex items-center @(AdditionalAttributes?.GetValueOrDefault("class"))">
     <IconButton Type="IconButtonType.Outlined" OnClick="Decrement" Icon="remove" />
     <span class="inline-block w-20 mx-2 text-center">@Value @Label</span>
@@ -8,7 +10,7 @@
 {
     [Parameter]
     [EditorRequired]
-    public int Value { get; set; } = default!;
+    public T Value { get; set; } = default!;
 
     [Parameter]
     [EditorRequired]
