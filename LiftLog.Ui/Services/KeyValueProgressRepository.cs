@@ -7,6 +7,7 @@ using LiftLog.Ui.Repository;
 using LiftLog.Ui.Models.SessionHistoryDao;
 using LiftLog.Ui.Util;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Ui.Services
 {
@@ -19,10 +20,15 @@ namespace LiftLog.Ui.Services
             Session
         >.Empty;
         private readonly IKeyValueStore _keyValueStore;
+        private readonly ILogger<KeyValueProgressRepository> logger;
 
-        public KeyValueProgressRepository(IKeyValueStore keyValueStore)
+        public KeyValueProgressRepository(
+            IKeyValueStore keyValueStore,
+            ILogger<KeyValueProgressRepository> logger
+        )
         {
             _keyValueStore = keyValueStore;
+            this.logger = logger;
         }
 
         public async IAsyncEnumerable<Session> GetOrderedSessions()
@@ -67,7 +73,7 @@ namespace LiftLog.Ui.Services
             {
                 _initialised = true;
                 var sw = Stopwatch.StartNew();
-                Console.WriteLine("Initialising progress repository");
+                logger.LogInformation("Initialising progress repository");
                 var version = await _keyValueStore.GetItemAsync($"{StorageKey}-Version");
                 if (version is null)
                 {
@@ -99,7 +105,7 @@ namespace LiftLog.Ui.Services
                 }
                 var convertTime = sw.ElapsedMilliseconds;
                 sw.Stop();
-                Console.WriteLine(
+                logger.LogInformation(
                     $"Initialised progress repository in ({versionCheckTime}ms, {getStoredTime}ms, {deserialiseTime}ms, {convertTime}ms))"
                 );
             }

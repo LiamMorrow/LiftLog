@@ -1,12 +1,20 @@
 using System.Diagnostics;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Services;
+using Microsoft.Extensions.Logging;
 using Plugin.InAppBilling;
 
 namespace LiftLog.App.Services;
 
 public class AppPurchaseService : IAppPurchaseService
 {
+    private readonly ILogger<AppPurchaseService> logger;
+
+    public AppPurchaseService(ILogger<AppPurchaseService> logger)
+    {
+        this.logger = logger;
+    }
+
     public AppStore GetAppStore()
     {
         var platform = DeviceInfo.Platform;
@@ -52,13 +60,13 @@ public class AppPurchaseService : IAppPurchaseService
                 }
             }
             //Billing Exception handle this based on the type
-            Console.WriteLine("Error: " + purchaseEx);
+            logger.LogError(purchaseEx, "Error purchasing pro");
             return null;
         }
         catch (Exception ex)
         {
             //Something else has gone wrong, log it
-            Console.WriteLine("Issue connecting: " + ex);
+            logger.LogError(ex, "Error connectiong");
             return null;
         }
         finally

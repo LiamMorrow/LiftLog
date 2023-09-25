@@ -11,42 +11,36 @@
 @inject IProgressRepository ProgressRepository
 @inject IDispatcher Dispatcher
 @inject NavigationManager NavigationManager
+@inject ILogger<SessionPage> logger
 
 @{
     this.SubscribeToAction<RehydrateSessionAction>(state =>
+    {
+        if (CurrentSessionState.Value.WorkoutSession is null)
         {
-            if (CurrentSessionState.Value.WorkoutSession is null)
-            {
-                NavigationManager.NavigateTo("/");
-            }
-        });
+            NavigationManager.NavigateTo("/");
+        }
+    });
 }
 @if (CurrentSessionState.Value.WorkoutSession is not null)
 {
-    InvokeAsync(()=>Init(CurrentSessionState.Value.WorkoutSession));
-    <SessionComponent
-        CycleRepcountForExercise=CycleRepcountForExercise
-        ClearRepCountForExercise="ClearRepCountForExercise"
-        UpdateWeightForExercise=UpdateWeightForExercise
-        Session=@(CurrentSessionState.Value.WorkoutSession)
-        SaveSession=SaveSession
-        CloseSession=CloseSession
-        PreviouslyCompleted=@(previouslyCompleted)
-        RemoveExercise=RemoveExercise
-        EditExercise="EditExercise"
-        AddExercise="AddExercise"
-        ExerciseNames="ProgramState.Value.ExerciseNames"
-        />
+    InvokeAsync(() => Init(CurrentSessionState.Value.WorkoutSession));
+    <SessionComponent CycleRepcountForExercise=CycleRepcountForExercise ClearRepCountForExercise="ClearRepCountForExercise"
+    UpdateWeightForExercise=UpdateWeightForExercise Session=@(CurrentSessionState.Value.WorkoutSession)
+    SaveSession=SaveSession CloseSession=CloseSession PreviouslyCompleted=@(previouslyCompleted)
+    RemoveExercise=RemoveExercise EditExercise="EditExercise" AddExercise="AddExercise"
+    ExerciseNames="ProgramState.Value.ExerciseNames" />
 }
 
 
 @code
 {
-    private ImmutableDictionary<KeyedExerciseBlueprint, RecordedExercise> previouslyCompleted = ImmutableDictionary<KeyedExerciseBlueprint, RecordedExercise>.Empty;
+    private ImmutableDictionary<KeyedExerciseBlueprint, RecordedExercise> previouslyCompleted =
+    ImmutableDictionary<KeyedExerciseBlueprint, RecordedExercise>.Empty;
     private bool initted = false;
     private async Task Init(Session session)
     {
-        if(!initted)
+        if (!initted)
         {
             var sw = System.Diagnostics.Stopwatch.StartNew();
             initted = true;
@@ -54,7 +48,7 @@
             Dispatcher.Dispatch(new SetPageTitleAction(session.Blueprint.Name));
             await InvokeAsync(StateHasChanged);
             sw.Stop();
-            Console.WriteLine($"Session init initialized completed in {sw.ElapsedMilliseconds}ms");
+            logger.LogInformation($"Session init initialized completed in {sw.ElapsedMilliseconds}ms");
         }
     }
     private void ClearRepCountForExercise(int exerciseIndex, int setIndex)
