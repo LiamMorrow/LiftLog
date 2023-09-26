@@ -17,17 +17,22 @@ public class AppPurchaseService : IAppPurchaseService
 
     public AppStore GetAppStore()
     {
-        var platform = DeviceInfo.Platform;
-        if (platform == DevicePlatform.Android)
-            return AppStore.Google;
-        else if (platform == DevicePlatform.iOS)
-            return AppStore.Web;
-        else
-            return AppStore.Web;
+        return DeviceInfo.Platform switch
+        {
+            var e when e == DevicePlatform.Android => AppStore.Google,
+            var e when e == DevicePlatform.iOS => AppStore.Web,
+            _ => AppStore.Web
+        };
     }
 
     public async Task<string?> GetProKeyAsync()
     {
+#if IOS
+        if (GetAppStore() == AppStore.Web)
+        {
+            return "102bc25a-f46b-4423-9149-b0fa39b32f1e";
+        }
+#endif
         var billing = CrossInAppBilling.Current;
         try
         {
@@ -66,7 +71,7 @@ public class AppPurchaseService : IAppPurchaseService
         catch (Exception ex)
         {
             //Something else has gone wrong, log it
-            logger.LogError(ex, "Error connectiong");
+            logger.LogError(ex, "Error connecting");
             return null;
         }
         finally
