@@ -43,7 +43,7 @@ AppUtils.onCloseMdPopup = function (element) {
 };
 
 AppUtils.hideMdPopup = function (element) {
-    return element.close();
+    return element?.close();
 };
 
 AppUtils.setValue = function (element, value) {
