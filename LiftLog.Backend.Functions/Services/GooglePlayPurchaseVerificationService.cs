@@ -9,14 +9,13 @@ namespace LiftLog.Backend.Services;
 
 public class GooglePlayPurchaseVerificationService
 {
-
     private readonly AndroidPublisherService androidPublisherService;
     private readonly ILogger<GooglePlayPurchaseVerificationService> logger;
 
     public GooglePlayPurchaseVerificationService(
         AndroidPublisherService androidPublisherService,
         ILogger<GooglePlayPurchaseVerificationService> logger
-        )
+    )
     {
         this.androidPublisherService = androidPublisherService;
         this.logger = logger;
@@ -24,8 +23,11 @@ public class GooglePlayPurchaseVerificationService
 
     public async Task<bool> IsValidPurchaseToken(string proToken)
     {
-        var getRequest = androidPublisherService.Purchases.Products
-            .Get("com.limajuice.liftlog", "pro", proToken);
+        var getRequest = androidPublisherService.Purchases.Products.Get(
+            "com.limajuice.liftlog",
+            "pro",
+            proToken
+        );
         try
         {
             var purchaseResult = await getRequest.ExecuteAsync();
@@ -35,12 +37,16 @@ public class GooglePlayPurchaseVerificationService
         {
             if (e.HttpStatusCode is HttpStatusCode.NotFound or HttpStatusCode.BadRequest)
             {
-                logger.LogWarning(e, "Google API returned {HttpStatusCode} for proToken {ProToken}", e.HttpStatusCode, proToken, e);
+                logger.LogWarning(
+                    e,
+                    "Google API returned {HttpStatusCode} for proToken {ProToken}",
+                    e.HttpStatusCode,
+                    proToken
+                );
                 return false;
             }
             throw;
         }
-
     }
 
     const int Purchased = 0;

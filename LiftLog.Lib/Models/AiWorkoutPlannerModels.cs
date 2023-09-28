@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+
 namespace LiftLog.Lib.Models;
 
 public enum AppStore
@@ -29,10 +31,13 @@ public record AiWorkoutAttributes(
     int Age,
     int DaysPerWeek,
     ImmutableListValue<string> Goals,
-    Experience Experience);
+    Experience Experience
+);
 
+public record AiWorkoutPlan(string Description, ImmutableListValue<SessionBlueprint> Sessions);
 
-public record AiWorkoutPlan(
-    string Description,
-    ImmutableListValue<SessionBlueprint> Sessions
+public record AiSessionAttributes(
+    ImmutableListValue<string> AreasToWorkout,
+    int Volume,
+    ImmutableDictionary<string, decimal> ExerciseToKilograms
 );

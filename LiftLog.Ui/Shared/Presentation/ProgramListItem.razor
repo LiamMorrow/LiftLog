@@ -1,12 +1,9 @@
 @inject IJSRuntime JSRuntime
 
-<md-list-item @ref="_listItem"  class="text-left"
-    headline=@ProgramBlueprint.Name
-    supporting-text="@SupportingText"
-    trailing-supporting-text="@TrailingSupportingText"
-    multi-line-supporting-text
-    @onlist-item-click="OnClick"
-    >
+<md-list-item @ref="_listItem" class="text-left" multi-line-supporting-text @onlist-item-click="OnClick">
+    <span slot="headline">@ProgramBlueprint.Name</span>
+    <span slot="supporting-text">@SupportingText</span>
+    <span slot="trailing-supporting-text">@TrailingSupportingText</span>
 </md-list-item>
 
 

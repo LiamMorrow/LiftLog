@@ -1,14 +1,16 @@
-<div class="flex justify-between mb-4">
-    <span class="text-xl">@SessionBlueprint.Name</span>
-</div>
-
-@foreach (var exercise in SessionBlueprint.Exercises)
-{
-    <div class="flex justify-between w-full">
-        <span>@exercise.Name</span>
-        <span>@exercise.Sets x @exercise.RepsPerSet</span>
+<div>
+    <div class="flex justify-between mb-4">
+        <span class="text-xl">@SessionBlueprint.Name</span>
     </div>
-}
+
+    @foreach (var exercise in SessionBlueprint.Exercises)
+    {
+        <div class="flex justify-between w-full">
+            <span>@exercise.Name</span>
+            <span>@exercise.Sets x @exercise.RepsPerSet</span>
+        </div>
+    }
+</div>
 
 @code
 {

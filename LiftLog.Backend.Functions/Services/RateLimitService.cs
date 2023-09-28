@@ -4,6 +4,7 @@ using Azure.Data.Tables;
 using System.Security.Cryptography;
 using System.Runtime.Intrinsics.Arm;
 using System.Text;
+using LiftLog.Lib.Models;
 
 namespace LiftLog.Backend.Functions.Services;
 
@@ -16,18 +17,29 @@ public class RateLimitService
         this.tableClient = tableClient;
     }
 
-    public async Task<RateLimitResult> GetRateLimitAsync(string rateLimitKey)
+    public async Task<RateLimitResult> GetRateLimitAsync(AppStore appStore, string rateLimitKey)
     {
+        if (System.Environment.GetEnvironmentVariable("TEST_MODE") == "True")
+        {
+            return new RateLimitResult(false, DateTimeOffset.UtcNow);
+        }
         var hasher = SHA256.Create();
         hasher.Initialize();
         var hash = hasher.ComputeHash(Encoding.UTF8.GetBytes(rateLimitKey));
         rateLimitKey = Convert.ToHexString(hash);
 
-        var response = (await tableClient.GetEntityIfExistsAsync<RateLimitEntity>(rateLimitKey, rateLimitKey));
+        var response = (
+            await tableClient.GetEntityIfExistsAsync<RateLimitEntity>(rateLimitKey, rateLimitKey)
+        );
         RateLimitEntity entity;
         if (!response.HasValue)
         {
-            entity = new RateLimitEntity { RowKey = rateLimitKey, PartitionKey = rateLimitKey, Requests = "[]" };
+            entity = new RateLimitEntity
+            {
+                RowKey = rateLimitKey,
+                PartitionKey = rateLimitKey,
+                Requests = "[]"
+            };
             await tableClient.AddEntityAsync(entity);
         }
         else
@@ -35,17 +47,28 @@ public class RateLimitService
             entity = response.Value;
         }
 
-        var requests = JsonSerializer.Deserialize<List<DateTimeOffset>>(entity.Requests) ?? new List<DateTimeOffset>();
+        var requests =
+            JsonSerializer.Deserialize<List<DateTimeOffset>>(entity.Requests)
+            ?? new List<DateTimeOffset>();
         var requestsInLastDay = requests.Where(r => r > DateTimeOffset.UtcNow.AddDays(-1)).ToList();
 
-        if (requestsInLastDay.Count < 10)
+        var limit = appStore switch
+        {
+            AppStore.Web => 100,
+            _ => 20
+        };
+
+        if (requestsInLastDay.Count < limit)
         {
             requestsInLastDay.Add(DateTimeOffset.UtcNow);
             entity.Requests = JsonSerializer.Serialize(requestsInLastDay);
             await tableClient.UpdateEntityAsync(entity, ETag.All);
         }
 
-        return new RateLimitResult(requestsInLastDay.Count >= 10, requestsInLastDay.Min() + TimeSpan.FromDays(1));
+        return new RateLimitResult(
+            requestsInLastDay.Count >= limit,
+            requestsInLastDay.Min() + TimeSpan.FromDays(1)
+        );
     }
 }
 
