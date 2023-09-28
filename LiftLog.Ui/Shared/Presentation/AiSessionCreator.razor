@@ -1,0 +1,57 @@
+<div class="flex flex-col gap-2">
+    <span class="text-lg text-center">Which areas would you like to workout?</span>
+    <div class="flex flex-wrap justify-center gap-2">
+        @RenderFilterChip("Arms")
+        @RenderFilterChip("Chest")
+        @RenderFilterChip("Back")
+        @RenderFilterChip("Legs")
+        @RenderFilterChip("Triceps")
+        @RenderFilterChip("Biceps")
+        @RenderFilterChip("Quads")
+        @RenderFilterChip("Hamstrings")
+        @RenderFilterChip("Calves")
+    </div>
+</div>
+<div class="flex flex-col gap-2">
+    <span class="text-lg text-center">How much volume?</span>
+    <Slider Min="0" Max="100" Value="Value.Volume" ValueChanged="i=>OnChange.InvokeAsync(Value with {Volume = i})"
+        Label="@VolumeLabel"></Slider>
+</div>
+
+@code {
+
+    [EditorRequired]
+    [Parameter]
+    public EventCallback<AiSessionCreatorModel> OnChange { get; set; }
+
+    [EditorRequired]
+    [Parameter]
+    public AiSessionCreatorModel Value { get; set; } = null!;
+
+    private string VolumeLabel
+        => Value.Volume switch
+        {
+            <= 30 => "Light",
+            <= 60 => "Medium",
+            _ => "Heavy",
+        };
+
+
+    private void HandleSelectedChanged(string label, bool currentlySelected)
+    {
+        OnChange.InvokeAsync(Value with
+                        {
+                            AreasToWorkout = currentlySelected switch
+                            {
+                                true => Value.AreasToWorkout.Remove(label),
+                                false => Value.AreasToWorkout.Add(label)
+                            }
+                        });
+    }
+
+    private RenderFragment RenderFilterChip(string label)
+    {
+        return @<FilterChip OnSelectedChange=@((selected)=> HandleSelectedChanged(label,selected)) Label=@label
+        Selected=@(Value.AreasToWorkout.Contains(label)) />;
+    }
+}
