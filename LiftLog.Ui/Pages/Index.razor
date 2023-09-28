@@ -40,12 +40,10 @@ else if (ProgramState.Value.UpcomingSessions.Count == 0)
 }
 else
 {
-    <CardList
-        Items="ProgramState.Value.UpcomingSessions.IndexedTuples()"
-        OnClick="x=>SelectSession(x.Item)"
-        ShouldHighlight="session => session.Index == 0">
-        <SessionSummary IsFilled="context.Item.IsStarted" Session="context.Item"></SessionSummary>
-    </CardList>
+    <CardList Items="ProgramState.Value.UpcomingSessions.IndexedTuples()" OnClick="x=>SelectSession(x.Item)"
+    ShouldHighlight="session => session.Index == 0">
+    <SessionSummary IsFilled="context.Item.IsStarted" Session="context.Item"></SessionSummary>
+</CardList>
 }
 
 <Dialog @ref=replaceCurrentSesisonDialog>

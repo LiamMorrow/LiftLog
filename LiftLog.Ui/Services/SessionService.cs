@@ -13,7 +13,11 @@ public class SessionService
     private readonly IProgressRepository _progressRepository;
     private readonly ICurrentProgramRepository _programRepository;
 
-    public SessionService(IState<CurrentSessionState> currentSessionState, IProgressRepository progressRepository, ICurrentProgramRepository programRepository)
+    public SessionService(
+        IState<CurrentSessionState> currentSessionState,
+        IProgressRepository progressRepository,
+        ICurrentProgramRepository programRepository
+    )
     {
         _currentSessionState = currentSessionState;
         _progressRepository = progressRepository;
@@ -59,10 +63,15 @@ public class SessionService
         }
     }
 
-
     public IAsyncEnumerable<Session> GetLatestSessionsAsync()
     {
         return _progressRepository.GetOrderedSessions();
+    }
+
+    public async Task<Session> HydrateSessionFromBlueprint(SessionBlueprint sessionBlueprint)
+    {
+        var latestRecordedExercises = await _progressRepository.GetLatestRecordedExercisesAsync();
+        return CreateNewSession(sessionBlueprint, latestRecordedExercises);
     }
 
     private Session GetNextSession(
@@ -107,5 +116,4 @@ public class SessionService
             DateOnly.FromDateTime(DateTime.Now)
         );
     }
-
 }

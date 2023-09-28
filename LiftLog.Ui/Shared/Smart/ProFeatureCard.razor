@@ -1,4 +1,3 @@
-
 @using Fluxor
 @using LiftLog.Ui.Services
 @using LiftLog.Ui.Store.App
@@ -16,45 +15,61 @@
         <span class="text-lg text-center">Pro Features</span>
         @RenderLockedPro()
     </div>
-    <AppButton Disabled=!AppState.Value.ProState.IsPro Type="AppButtonType.Secondary" OnClick="NavigateToAiPlanner">
+    <AppButton Disabled=!AppState.Value.ProState.IsPro Type="AppButtonType.Primary" OnClick="NavigateToAiPlanner">
         <md-icon slot="icon">auto_awesome</md-icon>
-        AI planner
+        AI Program Planner
+    </AppButton>
+    <AppButton Disabled=!AppState.Value.ProState.IsPro Type="AppButtonType.Secondary"
+        OnClick="NavigateToAiSessionCreator">
+        <md-icon slot="icon">auto_awesome</md-icon>
+        AI Session Creator
     </AppButton>
 </Card>
 
 <Dialog @ref="upgradeDialog">
     <span slot="headline">Upgrade to Pro</span>
-    <span slot="content" class="block text-left">This will unlock the AI planner, which will generate a plan tailored specifically to you and your goals. <br/>This is a one time purchase.</span>
+    <span slot="content" class="block text-left">This will unlock the AI planner, which will generate a plan tailored
+        specifically to you and your goals. <br />This is a one time purchase.</span>
     <div slot="actions">
         <AppButton Type="AppButtonType.Text" OnClick="()=>upgradeDialog?.Close()">Close</AppButton>
         <AppButton Type="AppButtonType.Text" OnClick="UpgradeToPro">Upgrade</AppButton>
     </div>
 
 </Dialog>
-@code{
+@code {
 
     private Dialog? upgradeDialog;
 
-    private RenderFragment RenderLockedPro(){
-        if(AppState.Value.ProState.IsPro){
+    private RenderFragment RenderLockedPro()
+    {
+        if (AppState.Value.ProState.IsPro)
+        {
             return @<md-icon>verified</md-icon>;
         }
-       return @<AppButton OnClick="()=>{upgradeDialog?.Open();}" ><md-icon slot="icon">lock</md-icon>Unlock</AppButton>;
+        return @<AppButton OnClick="()=>{upgradeDialog?.Open();}"><md-icon slot="icon">lock</md-icon>Unlock</AppButton>;
     }
 
     private void NavigateToAiPlanner()
     {
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction(NavigationManager.Uri));
         NavigationManager.NavigateTo("/settings/ai-planner");
+    }
+
+    private void NavigateToAiSessionCreator()
+    {
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction(NavigationManager.Uri));
+        NavigationManager.NavigateTo("/settings/ai-session-creator");
     }
 
 
     private async void UpgradeToPro()
     {
         var proKey = await AppPurchaseService.GetProKeyAsync();
-        if(proKey != null){
+        if (proKey != null)
+        {
             Dispatcher.Dispatch(new SetProTokenAction(proKey));
         }
-        await InvokeAsync(()=>upgradeDialog?.Close());
+        await InvokeAsync(() => upgradeDialog?.Close());
     }
 
-    }
+}

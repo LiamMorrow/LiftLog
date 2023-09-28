@@ -25,7 +25,7 @@ AppUtils.setMiddleElementAttribute = function (element, attribute, value) {
 }
 
 AppUtils.showMdPopup = function (element) {
-    return element.show();
+    return element?.show();
 };
 
 /**
@@ -34,8 +34,8 @@ AppUtils.showMdPopup = function (element) {
  * @param {HTMLElement} element
  */
 AppUtils.onCloseMdPopup = function (element) {
-    element.addEventListener('close', () => {
-        element.dispatchEvent(new Event('dialog-close', {
+    element?.addEventListener('close', () => {
+        element?.dispatchEvent(new Event('dialog-close', {
             bubbles: true,
             cancelable: true,
         }))
@@ -67,12 +67,27 @@ AppUtils.callOn = function (element, funcName) {
  * This new event has bubbles, which allows blazor components to intercept it
  * @param {HTMLElement} element
  */
-AppUtils.onClickedListItem = function (element, func) {
-    element.addEventListener('click', () => {
-        element.dispatchEvent(new Event('list-item-click', {
+AppUtils.onClickedListItem = function (element) {
+    element?.addEventListener('click', () => {
+        element?.dispatchEvent(new Event('list-item-click', {
             bubbles: true,
             cancelable: true,
         }))
+    });
+}
+/**
+ * Creates a new event for the slider changed event.
+ * This new event just emits a number directly, as the value is incompatible with blazor ChangeEventArgs
+ * @param {HTMLElement} element
+ */
+AppUtils.onSliderChange = function (element) {
+    element?.addEventListener('input', () => {
+        const event = new Event('slider-change', {
+            bubbles: true,
+            cancelable: true,
+        });
+        event.value = element.value;
+        element?.dispatchEvent(event);
     });
 }
 

@@ -9,23 +9,29 @@ namespace LiftLog.Ui.Store.CurrentSession;
 
 public class CurrentSessionEffects
 {
-    private readonly IProgressRepository _ProgressRepository;
+    private readonly IProgressRepository _progressRepository;
     private readonly IState<CurrentSessionState> _state;
     private readonly INotificationService _notificationService;
+    private readonly SessionService sessionService;
 
     public CurrentSessionEffects(
-        IProgressRepository ProgressRepository,
+        IProgressRepository progressRepository,
         IState<CurrentSessionState> state,
-        INotificationService notificationService
+        INotificationService notificationService,
+        SessionService sessionService
     )
     {
-        _ProgressRepository = ProgressRepository;
+        _progressRepository = progressRepository;
         _state = state;
         _notificationService = notificationService;
+        this.sessionService = sessionService;
     }
 
     [EffectMethod]
-    public async Task PersistCurrentSession(PersistCurrentSessionAction action, IDispatcher dispatcher)
+    public async Task PersistCurrentSession(
+        PersistCurrentSessionAction action,
+        IDispatcher dispatcher
+    )
     {
         await _notificationService.CancelNextSetNotificationAsync();
         var session = action.Target switch
@@ -35,7 +41,7 @@ public class CurrentSessionEffects
             _ => throw new Exception()
         };
         if (session is not null)
-            await _ProgressRepository.SaveCompletedSessionAsync(session);
+            await _progressRepository.SaveCompletedSessionAsync(session);
     }
 
     [EffectMethod]
@@ -50,12 +56,18 @@ public class CurrentSessionEffects
         };
         if (session?.NextExercise is RecordedExercise nextExercise)
         {
-            await _notificationService.ScheduleNextSetNotificationAsync(action.Target, nextExercise);
+            await _notificationService.ScheduleNextSetNotificationAsync(
+                action.Target,
+                nextExercise
+            );
         }
     }
 
     [EffectMethod]
-    public async Task CompleteSetFromNotification(CompleteSetFromNotificationAction action, IDispatcher dispatcher)
+    public async Task CompleteSetFromNotification(
+        CompleteSetFromNotificationAction action,
+        IDispatcher dispatcher
+    )
     {
         await _notificationService.CancelNextSetNotificationAsync();
         var session = action.Target switch
@@ -67,14 +79,17 @@ public class CurrentSessionEffects
         if (session?.NextExercise is not null)
         {
             var exerciseIndex = session.RecordedExercises.IndexOf(session.NextExercise);
-            var setIndex = session.NextExercise.RecordedSets.IndexedTuples()
+            var setIndex = session.NextExercise.RecordedSets
+                .IndexedTuples()
                 .Where(x => x.Item is null)
                 .Select(x => x.Index as int?)
                 .DefaultIfEmpty(null)
                 .First();
             if (setIndex is not null)
             {
-                dispatcher.Dispatch(new CycleExerciseRepsAction(action.Target, exerciseIndex, setIndex.Value));
+                dispatcher.Dispatch(
+                    new CycleExerciseRepsAction(action.Target, exerciseIndex, setIndex.Value)
+                );
                 dispatcher.Dispatch(new NotifySetTimerAction(action.Target));
             }
         }
@@ -83,6 +98,16 @@ public class CurrentSessionEffects
     [EffectMethod]
     public async Task DeleteSession(DeleteSessionAction action, IDispatcher dispatcher)
     {
-        await _ProgressRepository.DeleteSessionAsync(action.Session);
+        await _progressRepository.DeleteSessionAsync(action.Session);
+    }
+
+    [EffectMethod]
+    public async Task SetCurrentSessionFromBlueprint(
+        SetCurrentSessionFromBlueprintAction action,
+        IDispatcher dispatcher
+    )
+    {
+        var session = await sessionService.HydrateSessionFromBlueprint(action.Blueprint);
+        dispatcher.Dispatch(new SetCurrentSessionAction(action.Target, session));
     }
 }

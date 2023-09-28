@@ -15,15 +15,31 @@ public record CycleExerciseRepsAction(SessionTarget Target, int ExerciseIndex, i
 
 public record ClearExerciseRepsAction(SessionTarget Target, int ExerciseIndex, int SetIndex);
 
-public record UpdateExerciseWeightAction(SessionTarget Target, int ExerciseIndex, decimal Kilograms);
+public record UpdateExerciseWeightAction(
+    SessionTarget Target,
+    int ExerciseIndex,
+    decimal Kilograms
+);
 
-public record EditExerciseInActiveSessionAction(SessionTarget Target, int ExerciseIndex, SessionExerciseEditModel Exercise);
+public record EditExerciseInActiveSessionAction(
+    SessionTarget Target,
+    int ExerciseIndex,
+    SessionExerciseEditModel Exercise
+);
 
-public record AddExerciseToActiveSessionAction(SessionTarget Target, SessionExerciseEditModel Exercise);
+public record AddExerciseToActiveSessionAction(
+    SessionTarget Target,
+    SessionExerciseEditModel Exercise
+);
 
 public record RemoveExerciseFromActiveSessionAction(SessionTarget Target, int ExerciseIndex);
 
 public record SetCurrentSessionAction(SessionTarget Target, Session? Session);
+
+public record SetCurrentSessionFromBlueprintAction(
+    SessionTarget Target,
+    SessionBlueprint Blueprint
+);
 
 public record PersistCurrentSessionAction(SessionTarget Target);
 
