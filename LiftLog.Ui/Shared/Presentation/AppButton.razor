@@ -2,20 +2,20 @@
 {
     case AppButtonType.Primary:
         <md-filled-button
-            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class")) block pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@LessRoundedStyle @FullHeightStyle">@ChildContent</md-filled-button>
+            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class")) block pointer-events-auto"  @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@LessRoundedStyle @FullHeightStyle">@ChildContent</md-filled-button>
         break;
     case AppButtonType.Secondary:
         <md-filled-tonal-button
-            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class")) block pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@LessRoundedStyle @FullHeightStyle">@ChildContent</md-filled-tonal-button>
+            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class")) block pointer-events-auto"  @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@LessRoundedStyle @FullHeightStyle">@ChildContent</md-filled-tonal-button>
         break;
     case AppButtonType.OutlineSecondary:
         <md-outlined-button
-            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class")) block pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true"
+            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class")) block pointer-events-auto"  @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true"
             style="@LessRoundedStyle @FilledWithPrimaryStyle @FullHeightStyle">@ChildContent</md-outlined-button>
         break;
     case AppButtonType.Text:
         <md-text-button
-            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class")) block pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@LessRoundedStyle @FullHeightStyle">@ChildContent</md-text-button>
+            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class")) block pointer-events-auto"  @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@LessRoundedStyle @FullHeightStyle">@ChildContent</md-text-button>
         break;
     default:
         throw new ArgumentOutOfRangeException();
@@ -75,4 +75,9 @@
     };
 
     private string LessRoundedStyle => LessRounded ? $"--md-{MdButtonStyle}-button-container-shape: 0.75rem;" : "";
+
+    private void Clicked(){
+        if(Disabled) return;
+        OnClick.InvokeAsync(null);
+    }
 }
