@@ -1,0 +1,115 @@
+@page "/settings/ai-session-creator"
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+@using LiftLog.Lib.Services;
+@using LiftLog.Ui.Repository;
+
+@inject NavigationManager NavigationManager
+@inject IDispatcher Dispatcher
+@inject IState<AiSessionCreatorState> AiSessionCreatorState
+
+@if (AiSessionCreatorState.Value.IsLoading)
+{
+    <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
+    <div><md-circular-progress aria-label="Ai planning progress" indeterminate four-color></md-circular-progress></div>
+    <span>
+        <p>Generating Session...</p>
+    </span>
+</div>
+}
+else if (AiSessionCreatorState.Value.ErrorMessage is not null)
+{
+    <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
+    <div><md-icon>error</md-icon></div>
+    <span>
+        <p>@AiSessionCreatorState.Value.ErrorMessage</p>
+        </span>
+        <div class="grid grid-cols-2 gap-2">
+            <AppButton Type=AppButtonType.Text OnClick=@HandleCancel>Back</AppButton>
+            <AppButton Type=AppButtonType.Text OnClick=@HandleGenerateSession>Retry</AppButton>
+        </div>
+    </div>
+}
+else if (AiSessionCreatorState.Value.GeneratedSession is not null)
+{
+    <div class="flex flex-col gap-5 text-on-surface h-full">
+    <Card class="flex flex-col gap-2">
+        <SessionBlueprintSummary SessionBlueprint="AiSessionCreatorState.Value.GeneratedSession" />
+        <div class="grid  gap-2">
+            <AppButton Type=AppButtonType.Text OnClick=@HandleGenerateSession>Regenerate</AppButton>
+        </div>
+    </Card>
+    <div class="flex flex-col gap-2 justify-end h-full">
+        <div class="grid grid-cols-2 gap-2">
+            <AppButton Type=AppButtonType.Secondary OnClick=@AddToPlan><md-icon slot="icon">assignment_add</md-icon>Add
+                To Plan
+            </AppButton>
+            <AppButton OnClick=@StartSession><md-icon slot="icon">fitness_center</md-icon>Start</AppButton>
+        </div>
+    </div>
+</div>
+}
+else
+{
+    <div class="flex flex-col gap-5 text-on-surface h-full">
+    <AiSessionCreator Value="Model" OnChange="(v)=>Model =v" />
+    @if (ValidationError is not null)
+        {
+            <span class="flex items-center justify-center gap-2"><md-icon>info</md-icon>@ValidationError</span>
+        }
+        <div class="flex flex-col justify-end h-full">
+            <AppButton OnClick=@HandleGenerateSession Disabled=@(ValidationError != null)><md-icon
+                    slot="icon">auto_awesome</md-icon>Generate
+            </AppButton>
+        </div>
+    </div>
+}
+
+@code {
+
+    private AiSessionCreatorModel Model { get; set; } = new AiSessionCreatorModel(ImmutableListValue<string>.Empty, 50);
+
+    private string? ValidationError => Model switch
+    {
+        var m when m.AreasToWorkout.Count == 0 => "Please select at least one area to workout",
+        _ => null
+    };
+
+    protected override void OnInitialized()
+    {
+        Dispatcher.Dispatch(new SetPageTitleAction("AI Session Creator"));
+        base.OnInitialized();
+    }
+
+    private void HandleGenerateSession()
+    {
+        Dispatcher.Dispatch(new GenerateAiSessionAction(Model));
+    }
+
+    private void HandleCancel()
+    {
+        Dispatcher.Dispatch(new ClearAiGeneratedSessionStateAction());
+    }
+
+    private void AddToPlan()
+    {
+        if (AiSessionCreatorState.Value.GeneratedSession is null)
+        {
+            return;
+        }
+        Dispatcher.Dispatch(new AddProgramSessionAction(AiSessionCreatorState.Value.GeneratedSession));
+        NavigationManager.NavigateTo("/settings/manage-workouts");
+        Dispatcher.Dispatch(new ClearAiGeneratedSessionStateAction());
+    }
+
+    private void StartSession()
+    {
+        if (AiSessionCreatorState.Value.GeneratedSession is null)
+        {
+            return;
+        }
+        Dispatcher.Dispatch(new SetCurrentSessionFromBlueprintAction(SessionTarget.WorkoutSession,
+        AiSessionCreatorState.Value.GeneratedSession));
+        NavigationManager.NavigateTo("/session");
+        Dispatcher.Dispatch(new ClearAiGeneratedSessionStateAction());
+    }
+}
