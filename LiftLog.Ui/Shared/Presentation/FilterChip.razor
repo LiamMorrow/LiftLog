@@ -26,6 +26,7 @@
 
     private async Task OnFilterChipClicked()
     {
+        await Task.Yield();
         var selected = await JSRuntime.InvokeAsync<bool>("AppUtils.getSelected", _filterChipRef);
         await OnSelectedChange.InvokeAsync(selected);
     }
