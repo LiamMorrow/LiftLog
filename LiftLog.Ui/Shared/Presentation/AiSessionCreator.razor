@@ -40,18 +40,17 @@
     private void HandleSelectedChanged(string label, bool currentlySelected)
     {
         OnChange.InvokeAsync(Value with
-                        {
-                            AreasToWorkout = currentlySelected switch
-                            {
-                                true => Value.AreasToWorkout.Remove(label),
-                                false => Value.AreasToWorkout.Add(label)
-                            }
-                        });
+            {
+                AreasToWorkout = currentlySelected switch
+                {
+                    true => Value.AreasToWorkout.Add(label),
+                    false => Value.AreasToWorkout.Remove(label)
+                }
+            });
     }
 
     private RenderFragment RenderFilterChip(string label)
     {
-        return @<FilterChip OnSelectedChange=@((selected)=> HandleSelectedChanged(label,selected)) Label=@label
-        Selected=@(Value.AreasToWorkout.Contains(label)) />;
+        return @<FilterChip OnSelectedChange=@((selected)=> HandleSelectedChanged(label,selected)) Label=@label Selected=@(Value.AreasToWorkout.Contains(label)) />;
     }
 }
