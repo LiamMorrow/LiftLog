@@ -6,13 +6,16 @@ namespace LiftLog.Lib.Serialization;
 
 public static class JsonSerializerSettings
 {
-    public static JsonSerializerOptions LiftLog => new(JsonSerializerOptions.Default)
-    {
-        AllowTrailingCommas = true,
-        PropertyNameCaseInsensitive = true,
-        Converters = {
-            new JsonStringEnumConverter(),
-            new TimespanJsonConverter()
-        },
-    };
+    public static JsonSerializerOptions LiftLog =>
+        new(JsonSerializerOptions.Default)
+        {
+            AllowTrailingCommas = true,
+            PropertyNameCaseInsensitive = true,
+            Converters =
+            {
+                new JsonStringEnumConverter(),
+                new TimespanJsonConverter(),
+                new ImmutableDictionaryJsonConverter(),
+            },
+        };
 }
