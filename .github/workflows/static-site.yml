@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "site/**"
 jobs:
   upload:
     runs-on: ubuntu-latest
