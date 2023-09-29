@@ -1,0 +1,13 @@
+{
+  "name": "site",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "tailwindcss": "^3.3.3"
+  },
+  "scripts": {
+    "build": "tailwindcss --config tailwind.config.js -i ./css/app.css -o ./css/app.min.css",
+    "watch": "tailwindcss --config tailwind.config.js -i ./css/app.css -o ./css/app.min.css --watch"
+  }
+}
