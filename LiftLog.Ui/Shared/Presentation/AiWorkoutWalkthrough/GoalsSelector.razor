@@ -1,5 +1,5 @@
 <div class="flex flex-col justify-around h-full">
-  <h2 class="text-2xl">What are your goals?</h2>
+  <h2 class="text-2xl">What are your goals? You can select more than one.</h2>
   <div  class="grid grid-cols-2 gap-4 px-4  flex-grow max-h-[70%]" >
     <AppButton LessRounded="true" FullHeight="true" Type="AppButtonType.OutlineSecondary" FilledWithPrimary=@(GetIsFilled("Strength")) OnClick=@(()=>ToggleGoal("Strength"))>
         <div class="flex flex-col gap-2"><span class="text-4xl material-symbols-outlined">heart_plus</span><span class="text-lg">Strength</span></div>

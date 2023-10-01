@@ -18,14 +18,21 @@ public class MauiNotificationService : INotificationService
     private static readonly NotificationHandle NextSetNotificationHandle = new(1000);
     public const string NextSetNotificationChannelId = "Set Timers";
 
-    public MauiNotificationService(ILocalNotificationService notificationService, IDispatcher dispatcher, IState<CurrentSessionState> state)
+    public MauiNotificationService(
+        ILocalNotificationService notificationService,
+        IDispatcher dispatcher,
+        IState<CurrentSessionState> state
+    )
     {
         _notificationService = notificationService;
         _dispatcher = dispatcher;
         _state = state;
     }
 
-    public async Task ScheduleNextSetNotificationAsync(SessionTarget target, RecordedExercise exercise)
+    public async Task ScheduleNextSetNotificationAsync(
+        SessionTarget target,
+        RecordedExercise exercise
+    )
     {
         var id = Guid.NewGuid();
         _dispatcher.Dispatch(new SetLatestSetTimerNotificationIdAction(id));
