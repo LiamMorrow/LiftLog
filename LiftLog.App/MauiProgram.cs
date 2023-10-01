@@ -20,12 +20,7 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
-        builder
-            .UseMauiApp<App>()
-            .ConfigureFonts(fonts =>
-            {
-                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-            });
+        builder.UseMauiApp<App>();
 
         builder.Services.AddMauiBlazorWebView();
 
@@ -118,7 +113,7 @@ public static class MauiProgram
 
         builder.Services.AddScoped<IAppPurchaseService, AppPurchaseService>();
 
-        builder.UseMaterialColors<ThemeColorUpdateService>();
+        builder.UseMaterialColors<ThemeColorUpdateService>(0xF44336);
         return builder.Build();
     }
 }
