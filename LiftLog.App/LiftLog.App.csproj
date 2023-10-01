@@ -4,8 +4,7 @@
         <TargetFrameworks>net7.0-android;</TargetFrameworks>
         <TargetFramework>net7.0</TargetFramework>
         <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx'))">$(TargetFrameworks);net7.0-ios;</TargetFrameworks>
-        <!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
-        <!-- <TargetFrameworks>$(TargetFrameworks);net7.0-tizen</TargetFrameworks> -->
+
         <OutputType>Exe</OutputType>
         <RootNamespace>LiftLog.App</RootNamespace>
         <UseMaui>true</UseMaui>
