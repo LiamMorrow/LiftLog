@@ -38,7 +38,8 @@ public record ExerciseBlueprint(
     int RepsPerSet,
     decimal InitialKilograms,
     decimal KilogramsIncreaseOnSuccess,
-    Rest RestBetweenSets
+    Rest RestBetweenSets,
+    bool SupersetWithNext
 );
 
 public record KeyedExerciseBlueprint(string Name, int Sets, int RepsPerSet)

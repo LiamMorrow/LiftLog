@@ -2,8 +2,8 @@ namespace LiftLog.Tests;
 
 public class UnitTest1
 {
-    [Fact]
-    public void Test1()
+    [Theory()]
+    public void TestNextExercises(Session session, RecordedExercise)
     {
 
     }

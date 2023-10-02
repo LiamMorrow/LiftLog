@@ -112,9 +112,16 @@ else
     }
 
     void AddExercise()
-    {
-        Dispatcher.Dispatch(new AddExerciseAction(new ExerciseBlueprint($"Exercise {SessionEditorState.Value.SessionBlueprint?.Exercises.Count + 1}", 3, 10, 20, 2.5m, new Rest(TimeSpan.FromSeconds(90), TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(5)))));
-    }
+    => Dispatcher.Dispatch(
+            new AddExerciseAction(
+                new ExerciseBlueprint(
+                    $"Exercise {SessionEditorState.Value.SessionBlueprint?.Exercises.Count + 1}",
+                    3,
+                    10,
+                    20,
+                    2.5m,
+                    new Rest(TimeSpan.FromSeconds(90), TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(5)),
+                    false)));
 
     void DecrementExerciseSets(int exerciseIndex) => Dispatcher.Dispatch(new DecrementExerciseSetsAction(exerciseIndex));
 
