@@ -28,6 +28,17 @@ public static class SessionEditorReducers
         );
 
     [ReducerMethod]
+    public static SessionEditorState SetExercisesSupersetsNext(
+        SessionEditorState state,
+        SetExercisesSupersetsNextAction action
+    ) =>
+        UpdateExerciseIfCan(
+            state,
+            action.ExerciseIndex,
+            blueprint => blueprint with { SupersetWithNext = action.Supersets }
+        );
+
+    [ReducerMethod]
     public static SessionEditorState AddExerciseAction(
         SessionEditorState state,
         AddExerciseAction action

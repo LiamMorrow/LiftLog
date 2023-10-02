@@ -32,3 +32,5 @@ public record DecrementExerciseSetsAction(int ExerciseIndex);
 public record IncrementExerciseRepsPerSetAction(int ExerciseIndex);
 
 public record DecrementExerciseRepsPerSetAction(int ExerciseIndex);
+
+public record SetExercisesSupersetsNextAction(int ExerciseIndex, bool Supersets);

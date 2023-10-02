@@ -1,0 +1,23 @@
+@inject IJSRuntime JSRuntime
+<md-switch @ref=_switchRef @oninput=HandleInput selected=@Value ></md-switch>
+
+@code{
+    private ElementReference _switchRef;
+    [EditorRequired]
+    [Parameter]
+    public string Label {get;set;} = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public bool Value {get;set;}
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback<bool> OnSwitched {get;set;}
+
+    private async Task HandleInput(){
+        await Task.Yield();
+        var selected = await JSRuntime.InvokeAsync<bool>("AppUtils.getSelected", _switchRef);
+        await OnSwitched.InvokeAsync(selected);
+    }
+}

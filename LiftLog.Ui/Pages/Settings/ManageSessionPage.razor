@@ -72,6 +72,7 @@ else
                             Value="exercise.KilogramsIncreaseOnSuccess"
                             OnChange="e => SetExerciseSuccessWeight(index, e)"/>
                         <RestEditorGroup Rest="exercise.RestBetweenSets" OnRestUpdated="rest => OnRestUpdated(index, rest)"/>
+                        <Switch Label="Superset Next" Value=exercise.SupersetWithNext OnSwitched="supersets=>SetExerciseSupersetsNext(index, supersets)"/>
                     </div>
                 </MainContent>
                 <SideContent>
@@ -135,6 +136,9 @@ else
     {
         Dispatcher.Dispatch(new SetExerciseNameAction(exerciseIndex, name));
     }
+
+    void SetExerciseSupersetsNext(int exerciseIndex, bool supersets)
+    => Dispatcher.Dispatch(new SetExercisesSupersetsNextAction(exerciseIndex, supersets));
 
     void SetName(string name)
     {
