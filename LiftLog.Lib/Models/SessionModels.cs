@@ -13,6 +13,7 @@ public record Session(
         {
             var latestExerciseIndex = RecordedExercises
                 .IndexedTuples()
+                .Where(x => x.Item.LastRecordedSet is not null)
                 .OrderByDescending(x => x.Item.LastRecordedSet?.CompletionTime)
                 .Select(x => x.Index)
                 .FirstOrDefault(-1);
@@ -42,7 +43,7 @@ public record Session(
                 return RecordedExercises[latestExerciseIndex - 1];
             }
             return RecordedExercises
-                .Where(x => x.RecordedSets.Any(set => set is null))
+                .Where(x => x.HasRemainingSets)
                 .OrderByDescending(x => x.LastRecordedSet?.CompletionTime)
                 .FirstOrDefault();
         }

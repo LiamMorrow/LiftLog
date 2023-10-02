@@ -54,11 +54,11 @@ public class CurrentSessionEffects
             SessionTarget.HistorySession => _state.Value.HistorySession,
             _ => throw new Exception()
         };
-        if (session?.NextExercise is RecordedExercise nextExercise)
+        if (session?.NextExercise is not null && session.LastExercise is not null)
         {
             await _notificationService.ScheduleNextSetNotificationAsync(
                 action.Target,
-                nextExercise
+                session.LastExercise
             );
         }
     }

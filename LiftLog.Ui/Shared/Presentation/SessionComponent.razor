@@ -231,8 +231,11 @@
         if (ShowRestTimer && Session.NextExercise is not null && Session.LastExercise?.LastRecordedSet is not null)
         {
             var lastSetFailed = Session.LastExercise.LastRecordedSet.RepsCompleted < Session.LastExercise.Blueprint.RepsPerSet;
-            return @<RestTimer Rest=Session.NextExercise.Blueprint.RestBetweenSets
-        StartTime=Session.LastExercise.LastRecordedSet.CompletionTime Failed=lastSetFailed />;
+
+            return @<RestTimer
+                Rest=Session.LastExercise.Blueprint.RestBetweenSets
+                StartTime=Session.LastExercise.LastRecordedSet.CompletionTime
+                Failed=lastSetFailed />;
         }
         else if (Session.IsComplete)
         {
