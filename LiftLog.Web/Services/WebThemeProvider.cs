@@ -17,7 +17,6 @@ public class WebThemeProvider : IThemeProvider
         _corePalette = new();
         _corePalette.Fill(0xF44336);
 
-
         if (jsRuntime is not IJSInProcessRuntime jsInProcessRuntime)
         {
             throw new InvalidCastException("The JS runtime must be in-process.");
@@ -25,8 +24,9 @@ public class WebThemeProvider : IThemeProvider
 
         BlazorJavascriptInitialization.Initialize(jsInProcessRuntime);
         var window = jsInProcessRuntime.GetWindow()!;
-        _scheme = !window.matchMedia(jsInProcessRuntime.CreateString("(prefers-color-scheme: dark)")).matches
-            .ConvertToValue<bool>()
+        _scheme = window
+            .matchMedia(jsInProcessRuntime.CreateString("(prefers-color-scheme: dark)"))
+            .matches.ConvertToValue<bool>()
             ? new DarkSchemeMapper().Map(_corePalette)
             : new LightSchemeMapper().Map(_corePalette);
     }
