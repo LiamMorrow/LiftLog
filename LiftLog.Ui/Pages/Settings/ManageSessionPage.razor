@@ -45,7 +45,7 @@ else
                         Value="@exercise.Name"
                         OnChange="val => SetExerciseName(index, val)" >
                     </TextField>
-                    <div class="flex flex-wrap justify-around w-full gap-1">
+                    <div class="flex flex-wrap justify-around w-full gap-4">
                         <div class="flex flex-col items-center gap-1">
                             <FixedIncrementer
                                 Value="exercise.Sets"
@@ -71,8 +71,10 @@ else
                             Label="Success Weight Increase"
                             Value="exercise.KilogramsIncreaseOnSuccess"
                             OnChange="e => SetExerciseSuccessWeight(index, e)"/>
+
+                        <Switch Label="Superset With Next Exercise" Value=exercise.SupersetWithNext OnSwitched="supersets=>SetExerciseSupersetsNext(index, supersets)"/>
+
                         <RestEditorGroup Rest="exercise.RestBetweenSets" OnRestUpdated="rest => OnRestUpdated(index, rest)"/>
-                        <Switch Label="Superset Next" Value=exercise.SupersetWithNext OnSwitched="supersets=>SetExerciseSupersetsNext(index, supersets)"/>
                     </div>
                 </MainContent>
                 <SideContent>

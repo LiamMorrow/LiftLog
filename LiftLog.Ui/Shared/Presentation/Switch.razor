@@ -1,6 +1,7 @@
 @inject IJSRuntime JSRuntime
+<label class="flex justify-between gap-3 items-center"> @Label
 <md-switch @ref=_switchRef @oninput=HandleInput selected=@Value ></md-switch>
-
+</label>
 @code{
     private ElementReference _switchRef;
     [EditorRequired]
