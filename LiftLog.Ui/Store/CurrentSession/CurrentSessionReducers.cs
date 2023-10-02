@@ -6,7 +6,6 @@ namespace LiftLog.Ui.Store.CurrentSession;
 
 public static class Reducers
 {
-
     [ReducerMethod]
     public static CurrentSessionState SetActiveSessionDate(
         CurrentSessionState state,
@@ -52,7 +51,8 @@ public static class Reducers
                         )
                     }
                 )
-            });
+            }
+        );
     }
 
     [ReducerMethod]
@@ -72,7 +72,8 @@ public static class Reducers
                     Exercises = session.Blueprint.Exercises.RemoveAt(action.ExerciseIndex)
                 },
                 RecordedExercises = session.RecordedExercises.RemoveAt(action.ExerciseIndex)
-            });
+            }
+        );
     }
 
     [ReducerMethod]
@@ -93,7 +94,8 @@ public static class Reducers
         {
             Blueprint = newExerciseBlueprint,
             Kilograms = action.Exercise.Kilograms,
-            RecordedSets = Enumerable.Range(0, newExerciseBlueprint.Sets)
+            RecordedSets = Enumerable
+                .Range(0, newExerciseBlueprint.Sets)
                 .Select(index => existingExercise.RecordedSets.ElementAtOrDefault(index))
                 .ToImmutableList()
         };
@@ -113,7 +115,8 @@ public static class Reducers
                     action.ExerciseIndex,
                     newExercise
                 )
-            });
+            }
+        );
     }
 
     [ReducerMethod]
@@ -129,12 +132,14 @@ public static class Reducers
             RepsPerSet: action.Exercise.Reps,
             InitialKilograms: action.Exercise.Kilograms,
             KilogramsIncreaseOnSuccess: 0,
-            RestBetweenSets: Rest.Medium
+            RestBetweenSets: Rest.Medium,
+            false
         );
         var newExercise = new RecordedExercise(
             newExerciseBlueprint,
             action.Exercise.Kilograms,
-            Enumerable.Range(0, newExerciseBlueprint.Sets)
+            Enumerable
+                .Range(0, newExerciseBlueprint.Sets)
                 .Select(_ => (RecordedSet?)null)
                 .ToImmutableList()
         );
@@ -148,7 +153,8 @@ public static class Reducers
                     Exercises = session.Blueprint.Exercises.Add(newExerciseBlueprint)
                 },
                 RecordedExercises = session.RecordedExercises.Add(newExercise)
-            });
+            }
+        );
     }
 
     [ReducerMethod]
@@ -172,7 +178,8 @@ public static class Reducers
                         RecordedSets = exerciseAtIndex.RecordedSets.SetItem(action.SetIndex, null)
                     }
                 )
-            });
+            }
+        );
     }
 
     [ReducerMethod]
@@ -184,18 +191,18 @@ public static class Reducers
         var session = ActiveSession(state, action.Target) ?? throw new Exception();
         var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
         return WithActiveSession(
-                  state,
-                  action.Target,
-                  session with
-                  {
-                      RecordedExercises = session.RecordedExercises.SetItem(
-                          action.ExerciseIndex,
-                          exerciseAtIndex with
-                          {
-                              Kilograms = action.Kilograms
-                          }
-                      )
-                  }
+            state,
+            action.Target,
+            session with
+            {
+                RecordedExercises = session.RecordedExercises.SetItem(
+                    action.ExerciseIndex,
+                    exerciseAtIndex with
+                    {
+                        Kilograms = action.Kilograms
+                    }
+                )
+            }
         );
     }
 
@@ -231,12 +238,13 @@ public static class Reducers
         this CurrentSessionState state,
         SessionTarget target,
         Session? session
-    ) => target switch
-    {
-        SessionTarget.WorkoutSession => state with { WorkoutSession = session },
-        SessionTarget.HistorySession => state with { HistorySession = session },
-        _ => throw new Exception()
-    };
+    ) =>
+        target switch
+        {
+            SessionTarget.WorkoutSession => state with { WorkoutSession = session },
+            SessionTarget.HistorySession => state with { HistorySession = session },
+            _ => throw new Exception()
+        };
 
     private static Session? ActiveSession(this CurrentSessionState state, SessionTarget target) =>
         target switch
