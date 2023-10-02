@@ -38,7 +38,8 @@ internal record ExerciseBlueprintDaoV1(
     [property: JsonPropertyName("RepsPerSet")] int RepsPerSet,
     [property: JsonPropertyName("InitialKilograms")] decimal InitialKilograms,
     [property: JsonPropertyName("KilogramsIncreaseOnSuccess")] decimal KilogramsIncreaseOnSuccess,
-    [property: JsonPropertyName("RestBetweenSets")] RestDaoV1 RestBetweenSets
+    [property: JsonPropertyName("RestBetweenSets")] RestDaoV1 RestBetweenSets,
+    [property: JsonPropertyName("SupersetWithNext")] bool SupersetWithNext
 )
 {
     internal static ExerciseBlueprintDaoV1 FromModel(Lib.Models.ExerciseBlueprint blueprint) =>
@@ -48,7 +49,8 @@ internal record ExerciseBlueprintDaoV1(
             blueprint.RepsPerSet,
             blueprint.InitialKilograms,
             blueprint.KilogramsIncreaseOnSuccess,
-            RestDaoV1.FromModel(blueprint.RestBetweenSets)
+            RestDaoV1.FromModel(blueprint.RestBetweenSets),
+            blueprint.SupersetWithNext
         );
 
     internal Lib.Models.ExerciseBlueprint ToModel() =>
@@ -59,7 +61,7 @@ internal record ExerciseBlueprintDaoV1(
             InitialKilograms,
             KilogramsIncreaseOnSuccess,
             RestBetweenSets.ToModel(),
-            false
+            SupersetWithNext
         );
 }
 
