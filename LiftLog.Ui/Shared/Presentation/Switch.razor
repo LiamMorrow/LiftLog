@@ -18,16 +18,13 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        Console.WriteLine("SETT" + Value);
         await JSRuntime.InvokeVoidAsync("AppUtils.setSelected", _switchRef, Value);
         await base.OnParametersSetAsync();
     }
 
         private async Task HandleInput(){
-        Console.WriteLine("GETT");
         await Task.Yield();
         var selected = await JSRuntime.InvokeAsync<bool>("AppUtils.getSelected", _switchRef);
-        Console.WriteLine("GETTYIELD" + selected);
         await OnSwitched.InvokeAsync(selected);
     }
 }
