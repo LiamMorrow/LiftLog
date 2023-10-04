@@ -1,6 +1,6 @@
 @inject IJSRuntime JSRuntime
 <label class="flex justify-between gap-3 items-center"> @Label
-<md-switch @ref=_switchRef @oninput=HandleInput selected=@Value ></md-switch>
+<md-switch @ref=_switchRef @onchange=HandleInput ></md-switch>
 </label>
 @code{
     private ElementReference _switchRef;
@@ -16,9 +16,18 @@
     [EditorRequired]
     public EventCallback<bool> OnSwitched {get;set;}
 
-    private async Task HandleInput(){
+    protected override async Task OnParametersSetAsync()
+    {
+        Console.WriteLine("SETT" + Value);
+        await JSRuntime.InvokeVoidAsync("AppUtils.setSelected", _switchRef, Value);
+        await base.OnParametersSetAsync();
+    }
+
+        private async Task HandleInput(){
+        Console.WriteLine("GETT");
         await Task.Yield();
         var selected = await JSRuntime.InvokeAsync<bool>("AppUtils.getSelected", _switchRef);
+        Console.WriteLine("GETTYIELD" + selected);
         await OnSwitched.InvokeAsync(selected);
     }
 }

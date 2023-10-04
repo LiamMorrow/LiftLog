@@ -9,7 +9,6 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@material-tailwind/html": "^2.0.0",
     "@material/web": "1.0.0",
     "@rollup/plugin-node-resolve": "^15.2.1",
     "patch-package": "^8.0.0",
