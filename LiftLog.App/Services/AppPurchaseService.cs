@@ -17,17 +17,21 @@ public class AppPurchaseService : IAppPurchaseService
 
     public AppStore GetAppStore()
     {
+#if TEST_MODE
+        return AppStore.Web;
+#else
         return DeviceInfo.Platform switch
         {
             var e when e == DevicePlatform.Android => AppStore.Google,
-            var e when e == DevicePlatform.iOS => AppStore.Web,
+            var e when e == DevicePlatform.iOS => AppStore.Apple,
             _ => AppStore.Web
         };
+#endif
     }
 
     public async Task<string?> GetProKeyAsync()
     {
-#if IOS
+#if TEST_MODE
         if (GetAppStore() == AppStore.Web)
         {
             return "102bc25a-f46b-4423-9149-b0fa39b32f1e";
