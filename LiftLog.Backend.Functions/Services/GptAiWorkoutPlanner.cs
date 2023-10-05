@@ -101,7 +101,8 @@ public class GptAiWorkoutPlanner : IAiWorkoutPlanner
                                                     TimeSpan.FromSeconds(
                                                         e.RestBetweenSets.FailureRestSeconds
                                                     )
-                                                )
+                                                ),
+                                                false
                                             )
                                     )
                                     .ToImmutableList()
@@ -192,7 +193,8 @@ public class GptAiWorkoutPlanner : IAiWorkoutPlanner
                                     TimeSpan.FromSeconds(e.RestBetweenSets.MinRestSeconds),
                                     TimeSpan.FromSeconds(e.RestBetweenSets.MaxRestSeconds),
                                     TimeSpan.FromSeconds(e.RestBetweenSets.FailureRestSeconds)
-                                )
+                                ),
+                                false
                             )
                     )
                     .ToImmutableList()
