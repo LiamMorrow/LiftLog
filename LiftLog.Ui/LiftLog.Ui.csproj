@@ -36,6 +36,10 @@
       <Content Remove="wwwroot\twconf.json" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Remove="package.json" />
+    </ItemGroup>
+
 
 
   <ItemGroup>
