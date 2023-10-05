@@ -370,3 +370,6 @@ FodyWeavers.xsd
 
 ios-install-local.sh
 ios-install.sh
+
+# Mac OS
+.DS_Store
