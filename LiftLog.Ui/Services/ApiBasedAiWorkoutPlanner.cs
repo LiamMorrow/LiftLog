@@ -37,10 +37,12 @@ public class ApiBasedAiWorkoutPlanner : IAiWorkoutPlanner
             HttpMethod.Post,
             "https://liftlog.azurewebsites.net/api/GenerateAiWorkout?"
         );
-        request.Headers.Add("Authorization", $"{appPurchaseService.GetAppStore()} {proToken}");
         request.Content = new StringContent(
             JsonSerializer.Serialize(
-                new GenerateAiWorkoutPlanRequest(attributes),
+                new GenerateAiWorkoutPlanRequest(
+                    attributes,
+                    $"{appPurchaseService.GetAppStore()} {proToken}"
+                ),
                 JsonSerializerSettings.LiftLog
             ),
             Encoding.UTF8,
@@ -75,10 +77,12 @@ public class ApiBasedAiWorkoutPlanner : IAiWorkoutPlanner
             HttpMethod.Post,
             "https://liftlog.azurewebsites.net/api/GenerateAiSession?"
         );
-        request.Headers.Add("Authorization", $"{appPurchaseService.GetAppStore()} {proToken}");
         request.Content = new StringContent(
             JsonSerializer.Serialize(
-                new GenerateAiSessionRequest(attributes),
+                new GenerateAiSessionRequest(
+                    attributes,
+                    $"{appPurchaseService.GetAppStore()} {proToken}"
+                ),
                 JsonSerializerSettings.LiftLog
             ),
             Encoding.UTF8,

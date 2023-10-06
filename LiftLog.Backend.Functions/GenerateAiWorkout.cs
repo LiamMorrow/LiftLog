@@ -39,16 +39,15 @@ public class GenerateAiWorkout
     {
         _logger.LogInformation("C# HTTP trigger function processed a request.");
 
-        var authResponse = await GetAuthErrorAsync(req);
-        if (authResponse is not null)
-        {
-            return authResponse;
-        }
-
         var request = await JsonSerializer.DeserializeAsync<GenerateAiWorkoutPlanRequest>(
             req.Body,
             JsonSerializerSettings.LiftLog
         );
+        var authResponse = await GetAuthErrorAsync(req, request?.Auth);
+        if (authResponse is not null)
+        {
+            return authResponse;
+        }
         if (request == null)
         {
             var response = req.CreateResponse(HttpStatusCode.BadRequest);
@@ -84,16 +83,16 @@ public class GenerateAiWorkout
     {
         _logger.LogInformation("C# HTTP trigger function processed a request.");
 
-        var authResponse = await GetAuthErrorAsync(req);
+        var request = await JsonSerializer.DeserializeAsync<GenerateAiSessionRequest>(
+            req.Body,
+            JsonSerializerSettings.LiftLog
+        );
+        var authResponse = await GetAuthErrorAsync(req, request?.Auth);
         if (authResponse is not null)
         {
             return authResponse;
         }
 
-        var request = await JsonSerializer.DeserializeAsync<GenerateAiSessionRequest>(
-            req.Body,
-            JsonSerializerSettings.LiftLog
-        );
         if (request == null)
         {
             var response = req.CreateResponse(HttpStatusCode.BadRequest);
@@ -122,9 +121,9 @@ public class GenerateAiWorkout
         return okResponse;
     }
 
-    private async Task<HttpResponseData?> GetAuthErrorAsync(HttpRequestData req)
+    private async Task<HttpResponseData?> GetAuthErrorAsync(HttpRequestData req, string? bodyAuth)
     {
-        if (!req.Headers.TryGetValues("authorization", out var authorization))
+        if (!req.Headers.TryGetValues("authorization", out var authorization) && bodyAuth is null)
         {
             var response = req.CreateResponse(HttpStatusCode.Forbidden);
             await response.WriteAsJsonAsync(
@@ -134,7 +133,7 @@ public class GenerateAiWorkout
             return response;
         }
 
-        var authorizationParts = authorization.First().Split(" ");
+        var authorizationParts = (bodyAuth ?? authorization?.First())!.Split(" ");
         if (authorizationParts.Length != 2)
         {
             var response = req.CreateResponse(HttpStatusCode.Forbidden);
