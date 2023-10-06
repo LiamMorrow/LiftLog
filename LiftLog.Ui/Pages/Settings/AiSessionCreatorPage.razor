@@ -82,6 +82,7 @@ else
 
     private void HandleGenerateSession()
     {
+        Dispatcher.Dispatch(new SetAiSessionErrorMessageAction(null));
         Dispatcher.Dispatch(new GenerateAiSessionAction(Model));
     }
 
