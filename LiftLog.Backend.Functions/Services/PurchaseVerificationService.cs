@@ -8,14 +8,17 @@ public class PurchaseVerificationService
 {
     private readonly GooglePlayPurchaseVerificationService googlePlayPurchaseVerificationService;
     private readonly WebAuthPurchaseVerificationService webAuthPurchaseVerificationService;
+    private readonly AppleAppStorePurchaseVerificationService appleAppStorePurchaseVerificationService;
 
     public PurchaseVerificationService(
         GooglePlayPurchaseVerificationService googlePlayPurchaseVerificationService,
-        WebAuthPurchaseVerificationService webAuthPurchaseVerificationService
+        WebAuthPurchaseVerificationService webAuthPurchaseVerificationService,
+        AppleAppStorePurchaseVerificationService appleAppStorePurchaseVerificationService
     )
     {
         this.googlePlayPurchaseVerificationService = googlePlayPurchaseVerificationService;
         this.webAuthPurchaseVerificationService = webAuthPurchaseVerificationService;
+        this.appleAppStorePurchaseVerificationService = appleAppStorePurchaseVerificationService;
     }
 
     public Task<bool> IsValidPurchaseToken(AppStore appStore, string proToken)
@@ -23,9 +26,8 @@ public class PurchaseVerificationService
         return appStore switch
         {
             AppStore.Google => googlePlayPurchaseVerificationService.IsValidPurchaseToken(proToken),
-            // TODO: Implement Apple purchase verification, for now just trust it
             AppStore.Apple
-                => Task.FromResult(true),
+                => appleAppStorePurchaseVerificationService.IsValidPurchaseToken(proToken),
             AppStore.Web => webAuthPurchaseVerificationService.IsValidPurchaseToken(proToken),
             _ => throw new NotSupportedException(),
         };
