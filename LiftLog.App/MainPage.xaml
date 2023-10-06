@@ -5,7 +5,6 @@
              xmlns:local="clr-namespace:LiftLog.App"
              xmlns:ui="clr-namespace:LiftLog.Ui;assembly=LiftLog.Ui"
              x:Class="LiftLog.App.MainPage"
-             BackgroundColor="#000000"
              ios:Page.UseSafeArea="False"
              Shell.NavBarIsVisible="False">
 
