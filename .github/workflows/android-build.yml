@@ -19,6 +19,10 @@ jobs:
           dotnet-version: 7.0.x
       - name: Setup MAUI
         run: dotnet workload restore
+      - name: Setup MAUI
+        run: dotnet workload install maui
+      - name: Setup MAUI
+        run: dotnet workload install android
       - name: Restore dependencies
         run: dotnet restore
       - name: Put keystore
@@ -33,10 +37,6 @@ jobs:
       - name: Build Tailwind
         run: yarn && yarn build
         working-directory: ./LiftLog.Ui
-      - name: Setup MAUI
-        run: dotnet workload install maui
-      - name: Setup MAUI
-        run: dotnet workload install android
       - name: Build
         run: dotnet publish -f net7.0-android -c Release -p:AndroidKeyStore=true -p:AndroidSigningKeyStore=liftlog.keystore -p:AndroidSigningKeyAlias=liftlog -p:AndroidSigningKeyPass=env:KEYSTORE_PASS -p:AndroidSigningStorePass=env:KEYSTORE_PASS
         working-directory: ./LiftLog.App
