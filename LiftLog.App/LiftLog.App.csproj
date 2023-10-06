@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFrameworks>net7.0-android;</TargetFrameworks>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net7.0-android</TargetFramework>
         <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx'))">$(TargetFrameworks);net7.0-ios;</TargetFrameworks>
 
         <OutputType>Exe</OutputType>
