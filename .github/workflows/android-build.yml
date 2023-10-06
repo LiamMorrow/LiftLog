@@ -20,8 +20,6 @@ jobs:
       - name: Setup MAUI
         run: dotnet workload restore
       - name: Setup MAUI
-        run: dotnet workload install maui
-      - name: Setup MAUI
         run: dotnet workload install android
       - name: Restore dependencies
         run: dotnet restore
