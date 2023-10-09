@@ -6,7 +6,7 @@
 @inject SessionService SessionService;
 @inject IDispatcher Dispatcher;
 
-@if(_recordedExercises.Count == 0)
+@if(_exerciseStats.Count == 0)
 {
 <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
     <md-icon>info</md-icon>
@@ -17,7 +17,7 @@
 }
 else
 {
-    <CardList Items=_recordedExercises OnClick=HandleCardClick>
+    <CardList Items=_exerciseStats OnClick=HandleCardClick>
         <StatGraphCardContent ExerciseStatistics="context"/>
     </CardList>
 }
@@ -38,18 +38,31 @@ else
 </Dialog>
 @code {
     private Dialog? dialog;
-    private List<ExerciseStatistics> _recordedExercises = new();
+    private List<ExerciseStatistics> _exerciseStats = new();
     private ExerciseStatistics? _selectedExercise;
 
     protected override async Task OnInitializedAsync()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Statistics"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
+        var sessions=  await SessionService.GetLatestSessionsAsync().Where(x=>x.RecordedExercises.Any()).ToListAsync();
 
-        _recordedExercises = await SessionService.GetLatestSessionsAsync()
-            .SelectMany(x=>x.RecordedExercises.ToAsyncEnumerable())
+        _exerciseStats = sessions.GroupBy(x=>x.Blueprint.Name).Select(sessions => new ExerciseStatistics(
+                Name: sessions.Key,
+                CurrentKilograms: 0,
+                MaxKilograms: 0,
+                OneRepMax: 0,
+                TotalKilograms: sessions.Sum(x=>x.TotalKilogramsLifted),
+                RecordedExercises: sessions.Select(x=>new RecordedExercise(
+                    Blueprint: x.RecordedExercises.First().Blueprint,
+                    Kilograms: x.TotalKilogramsLifted,
+                    RecordedSets: ImmutableListValue.Of<RecordedSet?>(new RecordedSet(1, new DateTimeOffset(x.Date.ToDateTime(TimeOnly.MinValue))))))
+                        .ToImmutableList(),
+                ExpandOnClick: false))
+            .Concat(sessions
+            .SelectMany(x=>x.RecordedExercises)
             .GroupBy(x=>NormalizeName(x.Blueprint.Name))
-            .SelectAwait(x=>x.ToListAsync())
+            .Select(x=>x.ToList())
             .Where(x=>x.Count > 0)
             .Select(exercises=>new ExerciseStatistics(
                 Name: exercises.First().Blueprint.Name,
@@ -57,13 +70,15 @@ else
                 MaxKilograms: exercises.Max(x=>x.Kilograms),
                 OneRepMax: exercises.First().OneRepMax,
                 TotalKilograms: exercises.Sum(x=>x.Kilograms),
-                RecordedExercises: exercises.ToImmutableList()
-            ))
-            .ToListAsync();
+                RecordedExercises: exercises.ToImmutableList(),
+                ExpandOnClick: true
+            )))
+            .ToList();
     }
 
     private void HandleCardClick(ExerciseStatistics exerciseStatistics)
     {
+        if(!exerciseStatistics.ExpandOnClick) return;
         _selectedExercise = exerciseStatistics;
         StateHasChanged();
         dialog?.Open();

@@ -9,5 +9,6 @@ public record ExerciseStatistics(
     decimal MaxKilograms,
     decimal OneRepMax,
     decimal TotalKilograms,
-    ImmutableListValue<RecordedExercise> RecordedExercises
+    ImmutableListValue<RecordedExercise> RecordedExercises,
+    bool ExpandOnClick
 );
