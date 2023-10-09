@@ -374,3 +374,4 @@ ios-install.sh
 # Mac OS
 .DS_Store
 SubscriptionKey_*.p8
+my.secrets
