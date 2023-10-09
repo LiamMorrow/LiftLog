@@ -31,7 +31,7 @@ jobs:
       - name: Setup Android SDK Tools
         # You may pin to the exact commit or the version.
         # uses: android-actions/setup-android@72fdd2e74f58fb338a2743720c0847b8becf1589
-        uses: android-actions/setup-android@v3.0.0
+        uses: android-actions/setup-android@v2.0.10
       - name: Build Tailwind
         run: yarn && yarn build
         working-directory: ./LiftLog.Ui
