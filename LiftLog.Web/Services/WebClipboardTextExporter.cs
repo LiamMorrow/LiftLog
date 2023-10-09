@@ -7,10 +7,15 @@ namespace LiftLog.Web.Services;
 public class WebClipboardTextExporter : ITextExporter
 {
     private readonly IBlazorDownloadFileService _downloadFileService;
+    private readonly HttpClient httpClient;
 
-    public WebClipboardTextExporter(IBlazorDownloadFileService downloadFileService)
+    public WebClipboardTextExporter(
+        IBlazorDownloadFileService downloadFileService,
+        HttpClient httpClient
+    )
     {
         _downloadFileService = downloadFileService;
+        this.httpClient = httpClient;
     }
 
     public async Task ExportTextAsync(string text)
@@ -24,9 +29,9 @@ public class WebClipboardTextExporter : ITextExporter
         );
     }
 
-    public Task<string> ImportTextAsync()
+    public async Task<string> ImportTextAsync()
     {
-        // Blazor does not support clipboard access
-        return Task.FromResult("");
+        var imported = await httpClient.GetAsync("/liftlog-export.json");
+        return await imported.Content.ReadAsStringAsync();
     }
 }
