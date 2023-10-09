@@ -29,7 +29,7 @@
 <Dialog @ref="upgradeDialog">
     <span slot="headline">Upgrade to Pro</span>
     <span slot="content" class="block text-left">This will unlock the AI planner, which will generate a plan tailored
-        specifically to you and your goals. <br />This is a one time purchase.</span>
+        specifically to you and your goals. <br />This is a one time purchase of @(price?.LocalizedPrice) @(price?.Currency).</span>
     <div slot="actions">
         <AppButton Type="AppButtonType.Text" OnClick="()=>upgradeDialog?.Close()">Close</AppButton>
         <AppButton Type="AppButtonType.Text" OnClick="UpgradeToPro">Upgrade</AppButton>
@@ -37,8 +37,14 @@
 
 </Dialog>
 @code {
-
+    private Price? price;
     private Dialog? upgradeDialog;
+
+    protected override async Task OnInitializedAsync()
+    {
+        price = await AppPurchaseService.GetProPriceAsync();
+        await base.OnInitializedAsync();
+    }
 
     private RenderFragment RenderLockedPro()
     {

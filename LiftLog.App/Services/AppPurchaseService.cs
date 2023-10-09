@@ -59,6 +59,10 @@ public class AppPurchaseService : IAppPurchaseService
         }
         catch (InAppBillingPurchaseException purchaseEx)
         {
+            if (purchaseEx.PurchaseError == PurchaseError.UserCancelled)
+            {
+                return null;
+            }
             if (purchaseEx.PurchaseError == PurchaseError.AlreadyOwned)
             {
                 var purchases = await billing.GetPurchasesAsync(ItemType.InAppPurchase);
@@ -77,6 +81,37 @@ public class AppPurchaseService : IAppPurchaseService
             //Something else has gone wrong, log it
             logger.LogError(ex, "Error connecting");
             return null;
+        }
+        finally
+        {
+            await billing.DisconnectAsync();
+        }
+    }
+
+    public async Task<Price> GetProPriceAsync()
+    {
+        var billing = CrossInAppBilling.Current;
+        try
+        {
+            var connected = await billing.ConnectAsync();
+            if (!connected || !billing.CanMakePayments)
+                return new("USD", "$0.00");
+
+            var products = await billing.GetProductInfoAsync(
+                ItemType.InAppPurchase,
+                new[] { "pro" }
+            );
+            var proProduct = products.FirstOrDefault(p => p.ProductId == "pro");
+            if (proProduct == null)
+                return new("USD", "$0.00");
+
+            return new("USD", proProduct.LocalizedPrice);
+        }
+        catch (Exception ex)
+        {
+            //Something else has gone wrong, log it
+            logger.LogError(ex, "Error connecting");
+            return new("USD", "$0.00");
         }
         finally
         {
