@@ -14,4 +14,9 @@ public class WebAppPurchaseService : IAppPurchaseService
     {
         return AppStore.Web;
     }
+
+    public Task<string> GetProPriceAsync()
+    {
+        return Task.FromResult("USD", "$15.00");
+    }
 }
