@@ -11,6 +11,8 @@ on:
 jobs:
   build:
     runs-on: macos-latest
+    env:
+      KEYCHAIN: job-${{ github.job }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
 
     steps:
       - uses: actions/checkout@v3
@@ -27,6 +29,7 @@ jobs:
         with:
           p12-filepath: "liftlog.p12"
           p12-password: ${{ secrets.APPLE_DISTRIBUTION_CERT_PASS }}
+          keychain: ${{ env.KEYCHAIN }}
       - name: Download Apple Provisioning Profiles
         id: provision
         uses: Apple-Actions/download-provisioning-profiles@v2
@@ -43,8 +46,9 @@ jobs:
       - name: Build
         run: 'dotnet publish -c Release -f:net7.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}" -p:CodesignProvision="LiftLog"'
         working-directory: ./LiftLog.App
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v3.1.3
-        with:
-          path: "LiftLog.App/bin/Release/net7.0-ios/ios-arm64/publish/LiftLog.App.ipa"
-          retention-days: 1
+      - name: Upload with altool
+        run: xcrun altool --upload-app -f LiftLog.App/bin/Release/net7.0-ios/ios-arm64/publish/LiftLog.App.ipa -t ios -p '${{secrets.APPLE_UPLOAD_PASS}}' -u ${{secrets.APPLE_UPLOAD_USER}}
+      - name: Delete keychain
+        if: always() # Always run this step to ensure the keychain is properly disposed of for self hosted runners
+        run: |
+          security delete-keychain "${{ env.KEYCHAIN }}".keychain
