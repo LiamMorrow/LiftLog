@@ -17,32 +17,32 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 7.0.x
+      - name: Setup MAUI android
+        run: dotnet workload install android
+        # When running on a self hosted mac runner, the ios workload needs to be installed due to csproj configuration
+      - name: Setup MAUI iOS
+        if: ${{ runner.os == 'macOS' }}
+        run: dotnet workload install ios
       - name: Setup MAUI
         run: dotnet workload restore
-      - name: Setup MAUI
-        run: dotnet workload install android
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore -p:TargetFramework=net7.0-android
       - name: Put keystore
-        env: # Or as an environment variable
+        env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: echo "${ANDROID_KEYSTORE_BASE64}" | base64 -d > liftlog.keystore
         working-directory: ./LiftLog.App
       - name: Setup Android SDK Tools
-        # You may pin to the exact commit or the version.
-        # uses: android-actions/setup-android@72fdd2e74f58fb338a2743720c0847b8becf1589
         uses: android-actions/setup-android@v2.0.10
       - name: Build Tailwind
         run: yarn && yarn build
         working-directory: ./LiftLog.Ui
       - name: Build
-        run: dotnet publish -f net7.0-android -c Release -p:AndroidKeyStore=true -p:AndroidSigningKeyStore=liftlog.keystore -p:AndroidSigningKeyAlias=liftlog -p:AndroidSigningKeyPass=env:KEYSTORE_PASS -p:AndroidSigningStorePass=env:KEYSTORE_PASS
+        run: dotnet publish -p:TargetFramework=net7.0-android -f net7.0-android -c Release -p:AndroidKeyStore=true -p:AndroidSigningKeyStore=liftlog.keystore -p:AndroidSigningKeyAlias=liftlog -p:AndroidSigningKeyPass=env:KEYSTORE_PASS -p:AndroidSigningStorePass=env:KEYSTORE_PASS
         working-directory: ./LiftLog.App
         env:
           KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
       - name: Upload Android Release to Play Store
-        # You may pin to the exact commit or the version.
-        # uses: r0adkll/upload-google-play@70c7397e868b00eccd390222f492ab3e30520d09
         uses: r0adkll/upload-google-play@v1.1.2
         with:
           packageName: com.limajuice.liftlog
