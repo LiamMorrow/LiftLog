@@ -51,8 +51,10 @@ public class SettingsEffects
             JsonSerializer.Serialize(
                 new SettingsStorageDaoV1(
                     sessions.Select(SessionDaoV1.FromModel).ToList(),
-                    program.Select(SessionBlueprintDaoV1.FromModel).ToImmutableList()),
-                StorageJsonContext.Context.SettingsStorageDaoV1)
+                    program.Select(SessionBlueprintDaoV1.FromModel).ToImmutableList()
+                ),
+                StorageJsonContext.Context.SettingsStorageDaoV1
+            )
         );
     }
 
@@ -62,14 +64,22 @@ public class SettingsEffects
         try
         {
             var importText = await _textExporter.ImportTextAsync();
+            if (string.IsNullOrEmpty(importText))
+                return;
             var deserialized = JsonSerializer.Deserialize<SettingsStorageDaoV1>(
                 importText,
                 StorageJsonContext.Context.SettingsStorageDaoV1
             );
             if (deserialized != null)
             {
-                await _ProgressRepository.SaveCompletedSessionsAsync(deserialized.Sessions.Select(x => x.ToModel()));
-                dispatcher.Dispatch(new SetProgramSessionsAction(deserialized.Program.Select(x => x.ToModel()).ToImmutableList()));
+                await _ProgressRepository.SaveCompletedSessionsAsync(
+                    deserialized.Sessions.Select(x => x.ToModel())
+                );
+                dispatcher.Dispatch(
+                    new SetProgramSessionsAction(
+                        deserialized.Program.Select(x => x.ToModel()).ToImmutableList()
+                    )
+                );
             }
             else
             {

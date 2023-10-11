@@ -107,6 +107,11 @@ public class AppPurchaseService : IAppPurchaseService
 
             return new("USD", proProduct.LocalizedPrice);
         }
+        catch (TaskCanceledException ex)
+        {
+            logger.LogWarning(ex, "Getting price cancelled");
+            return new("USD", "ERROR GETTING PRICE");
+        }
         catch (Exception ex)
         {
             //Something else has gone wrong, log it
