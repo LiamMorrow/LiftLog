@@ -76,6 +76,11 @@ public class AppPurchaseService : IAppPurchaseService
             logger.LogError(purchaseEx, "Error purchasing pro");
             return null;
         }
+        catch (TaskCanceledException ex)
+        {
+            logger.LogWarning(ex, "Getting pro key cancelled");
+            return null;
+        }
         catch (Exception ex)
         {
             //Something else has gone wrong, log it
