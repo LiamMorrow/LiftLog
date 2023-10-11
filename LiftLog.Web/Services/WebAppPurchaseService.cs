@@ -15,8 +15,9 @@ public class WebAppPurchaseService : IAppPurchaseService
         return AppStore.Web;
     }
 
-    public Task<Price> GetProPriceAsync()
+    public async Task<Price> GetProPriceAsync()
     {
-        return Task.FromResult<Price>(new("USD", "$15.00"));
+        await Task.Delay(4000);
+        return new("USD", "$15.00");
     }
 }
