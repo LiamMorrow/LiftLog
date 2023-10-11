@@ -95,7 +95,7 @@ public class AppPurchaseService : IAppPurchaseService
         {
             var connected = await billing.ConnectAsync();
             if (!connected || !billing.CanMakePayments)
-                return new("USD", "$0.00");
+                return new("USD", "ERROR GETTING PRICE");
 
             var products = await billing.GetProductInfoAsync(
                 ItemType.InAppPurchase,
@@ -103,7 +103,7 @@ public class AppPurchaseService : IAppPurchaseService
             );
             var proProduct = products.FirstOrDefault(p => p.ProductId == "pro");
             if (proProduct == null)
-                return new("USD", "$0.00");
+                return new("USD", "ERROR GETTING PRICE");
 
             return new("USD", proProduct.LocalizedPrice);
         }
@@ -111,7 +111,7 @@ public class AppPurchaseService : IAppPurchaseService
         {
             //Something else has gone wrong, log it
             logger.LogError(ex, "Error connecting");
-            return new("USD", "$0.00");
+            return new("USD", "ERROR GETTING PRICE");
         }
         finally
         {
