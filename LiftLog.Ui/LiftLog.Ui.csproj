@@ -19,7 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Blazor-ApexCharts" Version="1.2.1" />
     <PackageReference Include="MaterialColorUtilities" Version="0.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.12" />
     <PackageReference Include="Fluxor" Version="5.9.1" />
     <PackageReference Include="Fluxor.Blazor.Web" Version="5.9.1" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
