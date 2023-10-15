@@ -23,8 +23,10 @@ public class PersistProgramMiddleware : Middleware
             new ProgramState(
                 programs,
                 ImmutableListValue.Of<Session>(),
-                false,
-                ImmutableListValue<string>.Empty));
+                true,
+                ImmutableListValue<string>.Empty
+            )
+        );
 
         dispatch.Dispatch(new RehydrateProgramAction());
     }
@@ -36,7 +38,6 @@ public class PersistProgramMiddleware : Middleware
         {
             return;
         }
-
 
         _programRepository.PersistSessionsInProgramAsync(currentState.SessionBlueprints);
     }
