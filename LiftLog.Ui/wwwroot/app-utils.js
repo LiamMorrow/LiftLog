@@ -42,6 +42,7 @@ AppUtils.onCloseMdPopup = function (element) {
     });
 };
 
+
 AppUtils.hideMdPopup = function (element) {
     return element?.close();
 };
@@ -56,6 +57,10 @@ AppUtils.setSelected = function (element, selected) {
 
 AppUtils.getSelected = function (element) {
     return element.selected;
+}
+
+AppUtils.selectAllText = function (element) {
+    element?.setSelectionRange(0, element?.value.length)
 }
 
 AppUtils.callOn = function (element, funcName) {

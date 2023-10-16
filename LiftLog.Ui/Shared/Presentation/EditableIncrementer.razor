@@ -4,7 +4,7 @@
     <label class="text-lg text-center">@Label</label>
     <div class="flex items-center justify-center gap-2">
         <IconButton Type=IconButtonType.Outlined OnClick=@(()=>{OnChange(Value - Increment);})  Icon="remove" />
-        <TextField class="w-20" type="text" inputmode="numeric" Value=@(Value.ToString()) OnChange=@(value => OnChanged(value)) />
+        <TextField class="w-20" type="text" inputmode="decimal" Value=@(Value.ToString()) OnChange=@(value => OnChanged(value)) />
         <IconButton Type=IconButtonType.Outlined OnClick=@(()=>{OnChange(Value + Increment);}) Icon="add" />
     </div>
 </div>
