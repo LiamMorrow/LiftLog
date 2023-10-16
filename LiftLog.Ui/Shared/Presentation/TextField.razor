@@ -2,12 +2,12 @@
 
 @switch(TextFieldType){
     case TextFieldType.Outline:
-        <md-outlined-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange((string)e.Value!))>
+        <md-outlined-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange((string)e.Value!)) @onfocusin=SelectOnFocus>
             @ChildContent
         </md-outlined-text-field>
         break;
     case TextFieldType.Filled:
-        <md-filled-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange((string)e.Value!))>
+        <md-filled-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange((string)e.Value!)) @onfocusin=SelectOnFocus >
             @ChildContent
         </md-filled-text-field>
         break;
@@ -37,6 +37,11 @@
     {
         await JSRuntime.InvokeVoidAsync("AppUtils.setValue", _textField, Value);
         await  base.OnParametersSetAsync();
+    }
+
+    private async Task SelectOnFocus(FocusEventArgs args)
+    {
+        await JSRuntime.InvokeVoidAsync("AppUtils.selectAllText", _textField);
     }
 
 }
