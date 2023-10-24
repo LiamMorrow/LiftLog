@@ -17,8 +17,8 @@
 }
 else
 {
-    <CardList Items=_exerciseStats OnClick=HandleCardClick>
-        <StatGraphCardContent ExerciseStatistics="context"/>
+    <CardList Items="@(_exerciseStats.IndexedTuples())" OnClick=@HandleCardClick>
+        <StatGraphCardContent ExerciseStatistics="context.Item" RenderDelay="TimeSpan.FromMilliseconds(context.Index*200)"/>
     </CardList>
 }
 <Dialog @ref=dialog>
@@ -76,10 +76,10 @@ else
             .ToList();
     }
 
-    private void HandleCardClick(ExerciseStatistics exerciseStatistics)
+    private void HandleCardClick((ExerciseStatistics  exerciseStatistics, int Index) item)
     {
-        if(!exerciseStatistics.ExpandOnClick) return;
-        _selectedExercise = exerciseStatistics;
+        if(!item.exerciseStatistics.ExpandOnClick) return;
+        _selectedExercise = item.exerciseStatistics;
         StateHasChanged();
         dialog?.Open();
     }
