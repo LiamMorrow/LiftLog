@@ -21,10 +21,10 @@
 
     <ApexPointSeries TItem="RecordedExercise"
                         Items="ExerciseStatistics.RecordedExercises.Where(x=>x.LastRecordedSet != null)"
-                        Name="Gross Value"
+                        Name="Weight"
                         SeriesType="SeriesType.Line"
                         XValue="@(e => e.LastRecordedSet!.CompletionTime)"
-                        YAggregate="@(e => e.Average(e => e.Kilograms))"
+                        YAggregate="@(e => e.Max(e => e.Kilograms))"
                         OrderByDescending="e=>e.X" />
 </ApexChart>
 }
@@ -89,7 +89,7 @@
                             Style = new(){
                                 Colors = new Color(GetColorString(ThemeProvider.GetColorScheme().OnSurface)),
                             },
-                            Formatter = "(value)=>parseFloat(value) + ' kg'",
+                            Formatter = "(value)=>parseFloat(parseFloat(value).toFixed(3)) + ' kg'",
                         },
                       }
                 },
