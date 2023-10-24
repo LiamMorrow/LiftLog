@@ -5,6 +5,14 @@
 @inject IThemeProvider ThemeProvider
 
 <h2 class="text-xl text-on-surface">@(ExerciseStatistics.Name)</h2>
+@if(IsLoading){
+<div class="flex flex-col justify-center h-full gap-4 text-on-surface">
+    <div><md-circular-progress aria-label="Stats progress" indeterminate four-color></md-circular-progress></div>
+    <span>
+        <p>Loading...</p>
+    </span>
+</div>
+}else{
 <ApexChart
     TItem="RecordedExercise"
     Title=""
@@ -19,17 +27,25 @@
                         YAggregate="@(e => e.Average(e => e.Kilograms))"
                         OrderByDescending="e=>e.X" />
 </ApexChart>
-
+}
 @code {
     [Parameter]
     [EditorRequired]
     public ExerciseStatistics ExerciseStatistics { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    // Loading lots of graphs at once can be slow, so we can delay the rendering of this graph
+    public TimeSpan RenderDelay { get; set; }
+
+    private bool IsLoading { get; set; } = true;
 
 
     private ApexChartOptions<RecordedExercise> options = null!;
 
     protected override void OnInitialized()
     {
+        Task.Delay(RenderDelay).ContinueWith(_ => {IsLoading = false; InvokeAsync(StateHasChanged);});
         options = new ApexChartOptions<RecordedExercise>
             {
                 Chart = new Chart
