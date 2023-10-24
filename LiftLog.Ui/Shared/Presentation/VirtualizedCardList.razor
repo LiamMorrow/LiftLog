@@ -1,6 +1,6 @@
 @typeparam TItem
 <div @attributes="AdditionalAttributes" class=" @(AdditionalAttributes?.GetValueOrDefault("class")) flex flex-col gap-2">
-    <Virtualize Items="Items" Context="item">
+    <Virtualize Items="Items" Context="item" ItemSize="250">
         @RenderCard(item)
     </Virtualize>
 </div>
