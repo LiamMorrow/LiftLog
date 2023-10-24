@@ -26,8 +26,8 @@
 @if (Session.RecordedExercises.Any())
 {
     <div class="sticky bottom-0 flex flex-col pointer-events-none">
-    <div class="flex justify-end w-full mt-2 mb-2">
-        <FloatingButton variant="secondary" has-icon OnClick=SaveSession><md-icon slot="icon">save</md-icon>
+    <div class="flex justify-end w-full">
+        <FloatingButton variant="secondary" has-icon OnClick=SaveSession Label="Save"><md-icon slot="icon">save</md-icon>
         </FloatingButton>
     </div>
     @RenderSnackBar()
