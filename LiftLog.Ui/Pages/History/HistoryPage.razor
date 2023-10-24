@@ -21,7 +21,7 @@
 </div>
 }
 else{
-<CardList Items="_latestSessions" OnClick="HandleSessionClick">
+<VirtualizedCardList Items="_latestSessions" OnClick="HandleSessionClick">
     <SplitCardControl>
         <MainContent>
             <SessionSummary IsFilled="true" Session="context"></SessionSummary>
@@ -32,8 +32,7 @@ else{
                 _deleteDialog?.Open();}) Icon="delete" />
         </SideContent>
     </SplitCardControl>
-</CardList>
-
+</VirtualizedCardList>
 }
 
 <Dialog @ref="_deleteDialog">
@@ -48,7 +47,7 @@ else{
 @code
 {
 
-    private IReadOnlyList<Session> _latestSessions = new List<Session>();
+    private ICollection<Session> _latestSessions = new List<Session>();
     private Session? _selectedSession;
     private Dialog? _deleteDialog;
 
@@ -62,8 +61,8 @@ else{
         _selectedSession = null;
         _deleteDialog?.Close();
         this._latestSessions = await SessionService
-        .GetLatestSessionsAsync()
-        .ToListAsync();
+            .GetLatestSessionsAsync()
+            .ToListAsync();
     }
 
     private void HandleSessionClick(Session session)
