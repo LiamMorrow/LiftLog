@@ -61,7 +61,7 @@ else
                             />
                         </div>
                         <EditableIncrementer
-                            Increment=@exercise.KilogramsIncreaseOnSuccess
+                            Increment=@Math.Max(exercise.KilogramsIncreaseOnSuccess, 0.1m)
                             Label="Initial Weight"
                             Value=@exercise.InitialKilograms
                             OnChange="e => SetExerciseInitialWeight(index, e)"
