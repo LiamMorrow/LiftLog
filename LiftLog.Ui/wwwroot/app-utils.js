@@ -60,7 +60,11 @@ AppUtils.getSelected = function (element) {
 }
 
 AppUtils.selectAllText = function (element) {
-    element?.setSelectionRange(0, element?.value.length)
+    try {
+        element?.setSelectionRange(0, element?.value.length)
+    } catch {
+        // quick n dirty, not all inputs support selecting: e.g. date
+    }
 }
 
 AppUtils.callOn = function (element, funcName) {
