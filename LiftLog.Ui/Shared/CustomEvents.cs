@@ -16,13 +16,8 @@ namespace LiftLog.Ui.Shared;
 )]
 [EventHandler(
     "onslider-change",
-    typeof(SliderChangeEventArgs),
+    typeof(object),
     enableStopPropagation: false,
     enablePreventDefault: false
 )]
 public static class EventHandlers { }
-
-public class SliderChangeEventArgs : EventArgs
-{
-    public int Value { get; set; }
-}
