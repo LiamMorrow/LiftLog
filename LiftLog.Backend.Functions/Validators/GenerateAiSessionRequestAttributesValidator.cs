@@ -16,7 +16,7 @@ public class GenerateAiSessionRequestAttributesValidator : AbstractValidator<AiS
         RuleFor(x => x.AreasToWorkout).NotNull().ForEach(goal => goal.Length(3, 15));
 
         RuleFor(x => x.ExerciseToKilograms.Count)
-            .InclusiveBetween(0, 20)
+            .InclusiveBetween(0, 100)
             .When(x => x.ExerciseToKilograms != null);
         RuleFor(x => x.ExerciseToKilograms)
             .NotNull()
