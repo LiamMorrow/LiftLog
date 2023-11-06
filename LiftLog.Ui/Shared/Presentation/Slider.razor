@@ -1,7 +1,7 @@
 @inject IJSRuntime JSRuntime
 
 <md-slider @ref="slider" step=@Step min=@Min max=@Max value=@Value labeled=@(Label != null) value-label=@Label
-    @onslider-change="e=>ValueChanged.InvokeAsync(e.Value)"></md-slider>
+    @onslider-change="OnSliderChange"></md-slider>
 
 
 @code {
@@ -35,5 +35,12 @@
         {
             await JSRuntime.InvokeVoidAsync("AppUtils.onSliderChange", slider);
         }
+    }
+
+    private async  Task OnSliderChange()
+    {
+        await Task.Yield();
+        var value = await JSRuntime.InvokeAsync<int>("AppUtils.getValue",slider);
+        await ValueChanged.InvokeAsync(value);
     }
 }

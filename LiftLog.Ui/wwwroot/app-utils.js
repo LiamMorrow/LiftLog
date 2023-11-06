@@ -51,6 +51,10 @@ AppUtils.setValue = function (element, value) {
     element.value = value;
 }
 
+AppUtils.getValue = function (element) {
+    return element.value;
+}
+
 AppUtils.setSelected = function (element, selected) {
     element.selected = selected;
 }
@@ -94,8 +98,8 @@ AppUtils.onSliderChange = function (element) {
         const event = new Event('slider-change', {
             bubbles: true,
             cancelable: true,
+            composed: true
         });
-        event.value = element.value;
         element?.dispatchEvent(event);
     });
 }

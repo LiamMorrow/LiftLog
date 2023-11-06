@@ -95,6 +95,12 @@ public class AppPurchaseService : IAppPurchaseService
 
     public async Task<Price> GetProPriceAsync()
     {
+#if TEST_MODE
+        if (GetAppStore() == AppStore.Web)
+        {
+            return new("USD", "0.99");
+        }
+#endif
         var billing = CrossInAppBilling.Current;
         try
         {
