@@ -25,11 +25,10 @@ var host = new HostBuilder()
                 )
             );
 
-            services.AddHttpClient();
+            services.AddHttpClient<AppleAppStorePurchaseVerificationService>();
             services.AddSingleton<RateLimitService>();
             services.AddSingleton<PurchaseVerificationService>();
             services.AddSingleton<GooglePlayPurchaseVerificationService>();
-            services.AddSingleton<AppleAppStorePurchaseVerificationService>();
 
             services.AddSingleton(
                 (service) =>
