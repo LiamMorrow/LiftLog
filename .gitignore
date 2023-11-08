@@ -375,3 +375,5 @@ ios-install.sh
 .DS_Store
 SubscriptionKey_*.p8
 my.secrets
+
+purchaseToken.txt
