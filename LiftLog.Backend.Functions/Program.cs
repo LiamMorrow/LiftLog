@@ -24,6 +24,8 @@ var host = new HostBuilder()
                     "RateLimitByIp"
                 )
             );
+
+            services.AddHttpClient();
             services.AddSingleton<RateLimitService>();
             services.AddSingleton<PurchaseVerificationService>();
             services.AddSingleton<GooglePlayPurchaseVerificationService>();
