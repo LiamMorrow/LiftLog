@@ -36,5 +36,5 @@ jobs:
         run: yarn && yarn build
         working-directory: ./LiftLog.Ui
       - name: Build
-        run: "dotnet build -f:net7.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64"
+        run: 'dotnet build -f:net7.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}"'
         working-directory: ./LiftLog.App
