@@ -4,15 +4,12 @@ using LiftLog.Ui.Services;
 
 namespace LiftLog.Web.Services;
 
-public class WebClipboardTextExporter : ITextExporter
+public class WebTextExporter : ITextExporter
 {
     private readonly IBlazorDownloadFileService _downloadFileService;
     private readonly HttpClient httpClient;
 
-    public WebClipboardTextExporter(
-        IBlazorDownloadFileService downloadFileService,
-        HttpClient httpClient
-    )
+    public WebTextExporter(IBlazorDownloadFileService downloadFileService, HttpClient httpClient)
     {
         _downloadFileService = downloadFileService;
         this.httpClient = httpClient;

@@ -51,9 +51,15 @@ builder.Services.AddSingleton<IThemeProvider, WebThemeProvider>();
 builder.Services.AddNotifications();
 
 builder.Services.AddBlazorDownloadFile();
-builder.Services.AddScoped<ITextExporter, WebClipboardTextExporter>();
+builder.Services.AddScoped<ITextExporter, WebTextExporter>();
 builder.Services.AddScoped<INotificationService, WebNotificationService>();
 
-builder.Services.AddScoped<IAppPurchaseService, WebAppPurchaseService>();
+builder.Services.AddScoped<IAppPurchaseService>(
+    svc =>
+        new WebAppPurchaseService(
+            svc.GetRequiredService<IConfiguration>().GetValue<string>("WebAuthApiKey")
+                ?? throw new Exception("WebAuthApiKey configuration is not set.")
+        )
+);
 
 await builder.Build().RunAsync();
