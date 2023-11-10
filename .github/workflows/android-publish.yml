@@ -1,12 +1,10 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: Build Android
+name: Release Android
 
 on:
-  push:
-    branches-ignore: [main]
-
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,11 +25,26 @@ jobs:
         run: dotnet workload restore
       - name: Restore dependencies
         run: dotnet restore -p:TargetFramework=net7.0-android
+      - name: Put keystore
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: echo "${ANDROID_KEYSTORE_BASE64}" | base64 -d > liftlog.keystore
+        working-directory: ./LiftLog.App
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v2.0.10
       - name: Build Tailwind
         run: yarn && yarn build
         working-directory: ./LiftLog.Ui
       - name: Build
-        run: dotnet build -p:TargetFramework=net7.0-android -f net7.0-android
+        run: dotnet publish -p:TargetFramework=net7.0-android -f net7.0-android -c Release -p:AndroidKeyStore=true -p:AndroidSigningKeyStore=liftlog.keystore -p:AndroidSigningKeyAlias=liftlog -p:AndroidSigningKeyPass=env:KEYSTORE_PASS -p:AndroidSigningStorePass=env:KEYSTORE_PASS
         working-directory: ./LiftLog.App
+        env:
+          KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+      - name: Upload Android Release to Play Store
+        uses: r0adkll/upload-google-play@v1.1.2
+        with:
+          packageName: com.limajuice.liftlog
+          releaseFiles: LiftLog.App/bin/Release/net7.0-android/publish/com.limajuice.liftlog-Signed.aab
+          track: internal
+          status: draft
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
