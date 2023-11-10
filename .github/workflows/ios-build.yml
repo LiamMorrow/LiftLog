@@ -30,11 +30,23 @@ jobs:
           p12-filepath: "liftlog.p12"
           p12-password: ${{ secrets.APPLE_DISTRIBUTION_CERT_PASS }}
           keychain: ${{ env.KEYCHAIN }}
+      - name: Download Apple Provisioning Profiles
+        id: provision
+        uses: Apple-Actions/download-provisioning-profiles@v2
+        with:
+          bundle-id: "com.limajuice.liftlog"
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
       - name: Setup MAUI
         run: dotnet workload install maui
       - name: Build Tailwind
         run: yarn && yarn build
         working-directory: ./LiftLog.Ui
       - name: Build
-        run: 'dotnet build -f:net7.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}"'
+        run: 'dotnet build -f:net7.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}" -p:CodesignProvision="LiftLog"'
         working-directory: ./LiftLog.App
+      - name: Delete keychain
+        if: always() # Always run this step to ensure the keychain is properly disposed of for self hosted runners
+        run: |
+          security delete-keychain "${{ env.KEYCHAIN }}".keychain
