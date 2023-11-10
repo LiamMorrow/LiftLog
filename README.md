@@ -57,3 +57,7 @@ This is the application which is published to the relevant app store.
 #### [LiftLog.Backend.Functions](./LiftLog.Backend.Functions/)
 
 The backend is driven by azure functions. It's pretty light, used right now to service requests to create gym plans using GPT.
+
+### Site
+
+The site folder contains the source for the website at liftlog.online, along with the privacy policy etc. It needs some love.
