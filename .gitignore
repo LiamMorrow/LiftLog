@@ -377,3 +377,5 @@ SubscriptionKey_*.p8
 my.secrets
 
 purchaseToken.txt
+
+appsettings.development.json

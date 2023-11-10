@@ -5,9 +5,16 @@ namespace LiftLog.Web.Services;
 
 public class WebAppPurchaseService : IAppPurchaseService
 {
+    private readonly string webProKey;
+
+    public WebAppPurchaseService(string webAuthKey)
+    {
+        this.webProKey = webAuthKey;
+    }
+
     public Task<string?> GetProKeyAsync()
     {
-        return Task.FromResult<string?>("102bc25a-f46b-4423-9149-b0fa39b32f1e");
+        return Task.FromResult<string?>(webProKey);
     }
 
     public AppStore GetAppStore()
