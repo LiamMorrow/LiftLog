@@ -44,7 +44,7 @@ jobs:
         run: yarn && yarn build
         working-directory: ./LiftLog.Ui
       - name: Build
-        run: 'dotnet build -f:net7.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}" -p:CodesignProvision="LiftLog"'
+        run: 'dotnet build -f:net7.0-ios -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}" -p:CodesignProvision="LiftLog"'
         working-directory: ./LiftLog.App
       - name: Delete keychain
         if: always() # Always run this step to ensure the keychain is properly disposed of for self hosted runners
