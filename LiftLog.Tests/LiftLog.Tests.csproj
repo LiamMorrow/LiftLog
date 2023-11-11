@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LiftLog.Backend.Functions\LiftLog_Backend_Functions.csproj" />
+    <ProjectReference Include="..\LiftLog.Ui\LiftLog.Ui.csproj" />
   </ItemGroup>
 
 </Project>
