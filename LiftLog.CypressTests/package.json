@@ -7,8 +7,9 @@
     "cypress-ci": "cypress run",
     "cypress-open": "cypress open",
     "server": "DOTNET_WATCH_SUPPRESS_LAUNCH_BROWSER=1 dotnet watch --no-hot-reload --project ../LiftLog.Web",
+    "server-ci": "dotnet run --project ../LiftLog.Web",
     "test": "run-p -r server cypress-open",
-    "test-ci": "run-p -r server cypress-ci"
+    "test-ci": "run-p -r server-ci cypress-ci"
   },
   "devDependencies": {
     "browser-sync": "^2.29.3",
