@@ -1,0 +1,34 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Test UI
+
+on:
+  push:
+    branches-ignore: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: ./LiftLog.Web
+      - name: Build Tailwind
+        run: yarn && yarn build
+        working-directory: ./LiftLog.Ui
+      - name: Dependencies
+        run: yarn
+        working-directory: ./LiftLog.CypressTests
+      - name: Test
+        uses: cypress-io/github-action@v6
+        with:
+          start: yarn server-ci
+          wait-on: http://localhost:5000
+          working-directory: ./LiftLog.CypressTests
