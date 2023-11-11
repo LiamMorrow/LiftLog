@@ -12,6 +12,12 @@ Built into it is an AI planner which will tailor a specific gym plan to your goa
 
 ## Quickstart
 
+### Prerequisites
+
+Ensure the dotnet sdk is installed and on the latest version.  You can do that by following the instructions [here](https://dotnet.microsoft.com/en-us/download).
+[Yarn](https://classic.yarnpkg.com/lang/en/docs/install/) is also required to build some of the web assets.
+
+### Running
 Before running, you must build the web assets once, after they are built it is rare to need to build them again.
 
 ```bash
