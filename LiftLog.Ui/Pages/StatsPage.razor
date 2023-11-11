@@ -56,8 +56,8 @@ else
                 RecordedExercises: sessions.Select(x=>new RecordedExercise(
                     Blueprint: x.RecordedExercises.First().Blueprint,
                     Kilograms: x.TotalKilogramsLifted,
-                    RecordedSets: ImmutableListValue.Of<RecordedSet?>(new RecordedSet(1, new DateTimeOffset(x.Date.ToDateTime(TimeOnly.MinValue))))))
-                        .ToImmutableList(),
+                    RecordedSets: ImmutableListValue.Of<RecordedSet?>(new RecordedSet(1, TimeOnly.MinValue))
+                    )).ToImmutableList(),
                 ExpandOnClick: false))
             .Concat(sessions
             .SelectMany(x=>x.RecordedExercises)

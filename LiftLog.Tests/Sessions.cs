@@ -41,7 +41,7 @@ public static class Sessions
                                 0
                                     => new RecordedSet(
                                         RepsCompleted: exerciseBlueprint.RepsPerSet,
-                                        CompletionTime: DateTime.Parse("2021-04-05T14:32:00")
+                                        CompletionTime: TimeOnly.Parse("14:32:00")
                                     ),
                                 _ => null
                             }
