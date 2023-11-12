@@ -2,7 +2,7 @@
     <span class="text-xl">@Session.Blueprint.Name</span>
     @if (IsFilled)
     {
-        <span class="text-lg">@Session.Date.ToString("M")</span>
+        <span class="text-lg">@FormattedDate</span>
     }
 </div>
 
@@ -22,4 +22,8 @@
 
     [Parameter]
     public bool IsFilled { get; set; }
+
+    private string FormattedDate => Session.Date.Year == DateTime.Now.Year
+        ? Session.Date.ToString("M")
+        : Session.Date.ToString("M") + " " + Session.Date.Year;
 }

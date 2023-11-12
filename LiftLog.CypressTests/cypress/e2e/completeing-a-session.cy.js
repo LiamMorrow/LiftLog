@@ -15,7 +15,7 @@ describe('Completing a session', () => {
 
 
     describe('and selects a workout', () => {
-      it('can complete a workout', () => {
+      it('can complete a workout and update its date', () => {
         cy.contains('Workout A').click()
         cy.contains('Rest between').should('not.exist')
         cy.get('.repcount').first().click()
@@ -33,12 +33,17 @@ describe('Completing a session', () => {
         cy.get('.cardlist .card').first().should('contain.text', 'Workout B')
 
         // Ensure persisted
-        cy.reload()
+        // cy.reload()
 
         cy.get('nav').contains('History').click()
 
+        cy.get('.cardlist .card').first('.card').should('contain.text', 'Workout A').click()
 
-        cy.get('.cardlist .card').first('.card').should('contain.text', 'Workout A')
+        cy.get('md-filled-text-field[type=date]').get('input', { includeShadowDom: true }).first().click().type('2020-12-13')
+
+        cy.get('md-fab').click()
+
+        cy.get('.cardlist .card').first().should('contain.text', 'Workout A').should('contain.text', '13 December 2020')
       })
     })
   })
