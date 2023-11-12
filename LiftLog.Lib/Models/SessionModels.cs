@@ -84,4 +84,4 @@ public record RecordedExercise(
     public bool HasRemainingSets => RecordedSets.Any(x => x is null);
 }
 
-public record RecordedSet(int RepsCompleted, DateTimeOffset CompletionTime);
+public record RecordedSet(int RepsCompleted, TimeOnly CompletionTime);

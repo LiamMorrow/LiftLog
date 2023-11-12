@@ -25,7 +25,10 @@ public class WebNotificationService : INotificationService
         _notificationService = notificationService;
     }
 
-    public async Task ScheduleNextSetNotificationAsync(SessionTarget target, RecordedExercise exercise)
+    public async Task ScheduleNextSetNotificationAsync(
+        SessionTarget target,
+        RecordedExercise exercise
+    )
     {
         var rest = exercise switch
         {
@@ -39,7 +42,7 @@ public class WebNotificationService : INotificationService
         {
             await ScheduleNotificationAsync(
                 NextSetNotificationHandle,
-                DateTimeOffset.Now.Add(rest),
+                DateTime.Now.Add(rest),
                 "Rest Over",
                 "Start your next set now!"
             );
@@ -79,7 +82,7 @@ public class WebNotificationService : INotificationService
 
     private async Task ScheduleNotificationAsync(
         NotificationHandle handle,
-        DateTimeOffset scheduledFor,
+        DateTime scheduledFor,
         string title,
         string message
     )
@@ -99,7 +102,7 @@ public class WebNotificationService : INotificationService
         var source = new CancellationTokenSource();
         if (_scheduledNotifications.TryAdd(handle, source))
         {
-            var timeToWait = new[] { scheduledFor - DateTimeOffset.Now, TimeSpan.Zero }.Max();
+            var timeToWait = new[] { scheduledFor - DateTime.Now, TimeSpan.Zero }.Max();
             _ = Task.Delay(timeToWait, source.Token)
                 .ContinueWith(
                     (result) =>

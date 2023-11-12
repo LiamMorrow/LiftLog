@@ -22,11 +22,11 @@
 
     [EditorRequired]
     [Parameter]
-    public DateTimeOffset StartTime { get; set; }
+    public TimeOnly StartTime { get; set; }
 
     [EditorRequired]
     [Parameter]
     public bool Failed { get; set; }
 
-    private TimeSpan TimeSinceStart => DateTimeOffset.UtcNow - StartTime;
+    private TimeSpan TimeSinceStart => TimeOnly.FromDateTime(DateTime.Now) - StartTime;
 }

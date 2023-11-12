@@ -226,7 +226,11 @@ public static class Reducers
         return recordedSet switch
         {
             // When unset - we say the user completed all reps
-            null => new RecordedSet(exerciseBlueprint.RepsPerSet, DateTimeOffset.UtcNow),
+            null
+                => new RecordedSet(
+                    exerciseBlueprint.RepsPerSet,
+                    TimeOnly.FromDateTime(DateTime.Now)
+                ),
             // When they completed no reps, we transition back to unset
             { RepsCompleted: 0 } => null,
             // Otherwise, just decrement from the current

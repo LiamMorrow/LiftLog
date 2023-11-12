@@ -27,7 +27,7 @@ public record SessionBlueprint(string Name, ImmutableListValue<ExerciseBlueprint
             Guid.NewGuid(),
             this,
             Exercises.Select(GetNextExercise).ToImmutableList(),
-            DateOnly.FromDateTime(DateTimeOffset.Now.LocalDateTime)
+            DateOnly.FromDateTime(DateTime.Now)
         );
     }
 }
