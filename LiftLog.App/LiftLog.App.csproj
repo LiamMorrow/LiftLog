@@ -22,8 +22,8 @@
         <ApplicationIdGuid>71733E37-6FDD-4EEF-A0BF-DE32634D58EC</ApplicationIdGuid>
 
         <!-- Versions -->
-        <ApplicationDisplayVersion>1.8.5</ApplicationDisplayVersion>
-        <ApplicationVersion>31</ApplicationVersion>
+        <ApplicationDisplayVersion>1.8.6</ApplicationDisplayVersion>
+        <ApplicationVersion>32</ApplicationVersion>
 
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
@@ -33,7 +33,7 @@
         <Authors>Liam Morrow</Authors>
         <Company>LiftLog</Company>
         <Product>LiftLog</Product>
-        <Version>1.8.5</Version>
+        <Version>1.8.6</Version>
 
     <DefineConstants Condition=" '$(ExtraDefineConstants)' != '' ">$(DefineConstants);$(ExtraDefineConstants)</DefineConstants>
     </PropertyGroup>
