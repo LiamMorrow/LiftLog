@@ -14,17 +14,17 @@
 </div>
 }else{
 <ApexChart
-    TItem="RecordedExercise"
+    TItem="DatedRecordedExercise"
     Title=""
     Options="options"
     XAxisType="XAxisType.Datetime">
 
-    <ApexPointSeries TItem="RecordedExercise"
-                        Items="ExerciseStatistics.RecordedExercises.Where(x=>x.LastRecordedSet != null)"
+    <ApexPointSeries TItem="DatedRecordedExercise"
+                        Items="ExerciseStatistics.RecordedExercises.Where(x=>x.Exercise.LastRecordedSet != null)"
                         Name="Weight"
                         SeriesType="SeriesType.Line"
-                        XValue="@(e => e.LastRecordedSet!.CompletionTime)"
-                        YAggregate="@(e => e.Max(e => e.Kilograms))"
+                        XValue="@(e => e.Date)"
+                        YAggregate="@(e => e.Max(e => e.Exercise.Kilograms))"
                         OrderByDescending="e=>e.X" />
 </ApexChart>
 }
@@ -41,12 +41,12 @@
     private bool IsLoading { get; set; } = true;
 
 
-    private ApexChartOptions<RecordedExercise> options = null!;
+    private ApexChartOptions<DatedRecordedExercise> options = null!;
 
     protected override void OnInitialized()
     {
         Task.Delay(RenderDelay).ContinueWith(_ => {IsLoading = false; InvokeAsync(StateHasChanged);});
-        options = new ApexChartOptions<RecordedExercise>
+        options = new ApexChartOptions<DatedRecordedExercise>
             {
                 Chart = new Chart
                 {

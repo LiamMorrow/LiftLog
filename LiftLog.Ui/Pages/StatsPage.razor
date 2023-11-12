@@ -47,33 +47,16 @@ else
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
         var sessions=  await SessionService.GetLatestSessionsAsync().Where(x=>x.RecordedExercises.Any()).ToListAsync();
 
-        _exerciseStats = sessions.GroupBy(x=>x.Blueprint.Name).Select(sessions => new ExerciseStatistics(
-                Name: sessions.Key,
-                CurrentKilograms: 0,
-                MaxKilograms: 0,
-                OneRepMax: 0,
-                TotalKilograms: sessions.Sum(x=>x.TotalKilogramsLifted),
-                RecordedExercises: sessions.Select(x=>new RecordedExercise(
-                    Blueprint: x.RecordedExercises.First().Blueprint,
-                    Kilograms: x.TotalKilogramsLifted,
-                    RecordedSets: ImmutableListValue.Of<RecordedSet?>(new RecordedSet(1, TimeOnly.MinValue))
-                    )).ToImmutableList(),
-                ExpandOnClick: false))
+        var sessionStats = sessions.GroupBy(session=>session.Blueprint.Name).Select(CreateSessionStatistic);
+
+        _exerciseStats = sessionStats
             .Concat(sessions
-            .SelectMany(x=>x.RecordedExercises)
-            .GroupBy(x=>NormalizeName(x.Blueprint.Name))
-            .Select(x=>x.ToList())
-            .Where(x=>x.Count > 0)
-            .Select(exercises=>new ExerciseStatistics(
-                Name: exercises.First().Blueprint.Name,
-                CurrentKilograms: exercises.First().Kilograms,
-                MaxKilograms: exercises.Max(x=>x.Kilograms),
-                OneRepMax: exercises.First().OneRepMax,
-                TotalKilograms: exercises.Sum(x=>x.Kilograms),
-                RecordedExercises: exercises.ToImmutableList(),
-                ExpandOnClick: true
-            )))
-            .ToList();
+                .SelectMany(x=>x.RecordedExercises.Select(ex=>new DatedRecordedExercise(x.Date, ex)))
+                .GroupBy(x => NormalizeName(x.Exercise.Blueprint.Name))
+                .Select(x => x.ToList())
+                .Where(x => x.Count > 0)
+                .Select(CreateExerciseStatistic)
+            ).ToList();
     }
 
     private void HandleCardClick((ExerciseStatistics  exerciseStatistics, int Index) item)
@@ -95,5 +78,38 @@ else
         };
 
         return withoutPlural;
+    }
+
+    private ExerciseStatistics CreateSessionStatistic(IGrouping<string,Session> sessions)
+    {
+        return new ExerciseStatistics(
+            Name: sessions.Key,
+            CurrentKilograms: 0,
+            MaxKilograms: 0,
+            OneRepMax: 0,
+            TotalKilograms: sessions.Sum(session => session.TotalKilogramsLifted),
+            RecordedExercises: sessions.Select(
+                session =>
+                    new DatedRecordedExercise(session.Date, new RecordedExercise(
+                        Blueprint: session.RecordedExercises.First().Blueprint,
+                        Kilograms: session.TotalKilogramsLifted,
+                        RecordedSets: ImmutableListValue.Of<RecordedSet?>(new RecordedSet(1, TimeOnly.MinValue))
+                        )
+                    )
+                ).ToImmutableList(),
+            ExpandOnClick: false);
+    }
+
+    private ExerciseStatistics CreateExerciseStatistic(IEnumerable<DatedRecordedExercise> exercises)
+    {
+        return new ExerciseStatistics(
+            Name: exercises.First().Exercise.Blueprint.Name,
+            CurrentKilograms: exercises.First().Exercise.Kilograms,
+            MaxKilograms: exercises.Max(x=>x.Exercise.Kilograms),
+            OneRepMax: exercises.First().Exercise.OneRepMax,
+            TotalKilograms: exercises.Sum(x=>x.Exercise.Kilograms),
+            RecordedExercises: exercises.ToImmutableList(),
+            ExpandOnClick: true
+        );
     }
 }
