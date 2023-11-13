@@ -7,13 +7,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Azure.Data.Tables" Version="12.8.1" />
+    <PackageReference Include="Azure.Data.Tables" Version="12.8.2" />
     <PackageReference Include="FluentValidation" Version="11.8.0" />
-    <PackageReference Include="Google.Apis.AndroidPublisher.v3" Version="1.63.0.3225" />
-    <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.19.0" />
+    <PackageReference Include="Google.Apis.AndroidPublisher.v3" Version="1.63.0.3233" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.20.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.15.1" />
-    <PackageReference Include="OpenAI-DotNet" Version="7.0.10" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.16.2" />
+    <PackageReference Include="OpenAI-DotNet" Version="7.2.3" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
