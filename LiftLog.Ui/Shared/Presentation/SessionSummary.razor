@@ -1,3 +1,5 @@
+@using System.Globalization
+
 <div class="flex justify-between mb-4">
     <span class="text-xl">@Session.Blueprint.Name</span>
     @if (IsFilled)
@@ -24,6 +26,6 @@
     public bool IsFilled { get; set; }
 
     private string FormattedDate => Session.Date.Year == DateTime.Now.Year
-        ? Session.Date.ToString("M")
-        : Session.Date.ToString("M") + " " + Session.Date.Year;
+        ? Session.Date.ToString("M", CultureInfo.InvariantCulture)
+        : Session.Date.ToString("M", CultureInfo.InvariantCulture) + " " + Session.Date.Year;
 }

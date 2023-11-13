@@ -43,7 +43,7 @@ describe('Completing a session', () => {
 
         cy.get('md-fab').click()
 
-        cy.get('.cardlist .card').first().should('contain.text', 'Workout A').should('contain.text', '13 December 2020')
+        cy.get('.cardlist .card').first().should('contain.text', 'Workout A').should('contain.text', 'December 13 2020')
       })
     })
   })
