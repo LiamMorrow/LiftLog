@@ -1,46 +1,48 @@
+using System.Text.Json;
 using Append.Blazor.Notifications;
 using BlazorDownloadFile;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Fluxor;
-using LiftLog.Ui.Repository;
 using Blazored.LocalStorage;
+using Fluxor;
+using LiftLog.Lib.Serialization;
+using LiftLog.Lib.Services;
 using LiftLog.Ui;
+using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
+using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.CurrentSession;
 using LiftLog.Ui.Store.Program;
 using LiftLog.Web.Services;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using INotificationService = LiftLog.Ui.Services.INotificationService;
-using LiftLog.Lib.Services;
-using LiftLog.Ui.Store.App;
-using System.Text.Json;
-using LiftLog.Lib.Serialization;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<ThemedWebApplication>("#app");
-builder.Services.AddScoped(
-    _ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) }
-);
+builder
+    .Services
+    .AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 builder.Services.AddBlazoredLocalStorage();
 
-builder.Services.AddFluxor(
-    o =>
-        o.ScanAssemblies(typeof(Program).Assembly)
-            .AddMiddleware<PersistSessionMiddleware>()
-            .AddMiddleware<PersistProgramMiddleware>()
-            .AddMiddleware<AppStateInitMiddleware>()
-            .UseReduxDevTools(options =>
-            {
-                options.UseSystemTextJson(_ => JsonSerializerSettings.LiftLog);
-            })
-);
+builder
+    .Services
+    .AddFluxor(
+        o =>
+            o.ScanAssemblies(typeof(Program).Assembly)
+                .AddMiddleware<PersistSessionMiddleware>()
+                .AddMiddleware<PersistProgramMiddleware>()
+                .AddMiddleware<AppStateInitMiddleware>()
+                .UseReduxDevTools(options =>
+                {
+                    options.UseSystemTextJson(_ => JsonSerializerSettings.LiftLog);
+                })
+    );
 
 builder.Services.AddScoped<IKeyValueStore, LocalStorageKeyValueStore>();
 builder.Services.AddScoped<IPreferenceStore, LocalStorageKeyValueStore>();
 
 builder.Services.AddScoped<IProgressRepository, KeyValueProgressRepository>();
 builder.Services.AddScoped<ICurrentProgramRepository, KeyValueCurrentProgramRepository>();
-builder.Services.AddScoped<ProTokenRepository>();
+builder.Services.AddScoped<PreferencesRepository>();
 
 builder.Services.AddScoped<SessionService>();
 
@@ -54,12 +56,14 @@ builder.Services.AddBlazorDownloadFile();
 builder.Services.AddScoped<ITextExporter, WebTextExporter>();
 builder.Services.AddScoped<INotificationService, WebNotificationService>();
 
-builder.Services.AddScoped<IAppPurchaseService>(
-    svc =>
-        new WebAppPurchaseService(
-            svc.GetRequiredService<IConfiguration>().GetValue<string>("WebAuthApiKey")
-                ?? throw new Exception("WebAuthApiKey configuration is not set.")
-        )
-);
+builder
+    .Services
+    .AddScoped<IAppPurchaseService>(
+        svc =>
+            new WebAppPurchaseService(
+                svc.GetRequiredService<IConfiguration>().GetValue<string>("WebAuthApiKey")
+                    ?? throw new Exception("WebAuthApiKey configuration is not set.")
+            )
+    );
 
 await builder.Build().RunAsync();

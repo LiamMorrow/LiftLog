@@ -5,11 +5,11 @@ namespace LiftLog.Ui.Store.App;
 
 public class AppStateInitMiddleware : Middleware
 {
-    private readonly ProTokenRepository proTokenRepository;
+    private readonly PreferencesRepository preferencesRepository;
 
-    public AppStateInitMiddleware(ProTokenRepository proTokenRepository)
+    public AppStateInitMiddleware(PreferencesRepository preferencesRepository)
     {
-        this.proTokenRepository = proTokenRepository;
+        this.preferencesRepository = preferencesRepository;
     }
 
     public override async Task InitializeAsync(IDispatcher dispatch, IStore store)
@@ -17,9 +17,11 @@ public class AppStateInitMiddleware : Middleware
 #if TEST_MODE
         await Task.Yield();
 #else
-        var proToken = await proTokenRepository.GetProTokenAsync();
+        var proToken = await preferencesRepository.GetProTokenAsync();
 
         dispatch.Dispatch(new SetProTokenAction(proToken));
 #endif
+        var useImperialUnits = await preferencesRepository.GetUseImperialUnitsAsync();
+        dispatch.Dispatch(new SetUseImperialUnitsAction(useImperialUnits));
     }
 }

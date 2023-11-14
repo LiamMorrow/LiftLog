@@ -1,10 +1,10 @@
 namespace LiftLog.Ui.Services;
 
-public class ProTokenRepository
+public class PreferencesRepository
 {
     private readonly IPreferenceStore preferenceStore;
 
-    public ProTokenRepository(IPreferenceStore preferenceStore)
+    public PreferencesRepository(IPreferenceStore preferenceStore)
     {
         this.preferenceStore = preferenceStore;
     }
@@ -27,5 +27,16 @@ public class ProTokenRepository
     {
         if (token is not null)
             await preferenceStore.SetItemAsync("proToken", token);
+    }
+
+    public async Task<bool> GetUseImperialUnitsAsync()
+    {
+        var useImperialUnits = await preferenceStore.GetItemAsync("useImperialUnits");
+        return useImperialUnits is "True";
+    }
+
+    public async Task SetUseImperialUnitsAsync(bool useImperialUnits)
+    {
+        await preferenceStore.SetItemAsync("useImperialUnits", useImperialUnits.ToString());
     }
 }
