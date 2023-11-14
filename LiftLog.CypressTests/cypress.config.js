@@ -8,5 +8,6 @@ module.exports = defineConfig({
     viewportHeight: 800,
     viewportWidth: 400,
     defaultCommandTimeout: 10000,
+    baseUrl: 'http://127.0.0.1:5000'
   },
 });
