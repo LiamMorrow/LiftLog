@@ -1,7 +1,6 @@
 namespace LiftLog.Backend.Services;
 
 using System.Collections.Immutable;
-using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using LiftLog.Lib;
@@ -54,7 +53,7 @@ public class GptAiWorkoutPlanner : IAiWorkoutPlanner
             new Message(
                 Role.User,
                 $"""
-            I am a {attributes.Age} year old {genderText} who weighs {attributes.WeightRange} kilograms. I would like to work on {goalsText}.
+            I am a {attributes.Age} year old {genderText} who weighs {attributes.WeightRange} {(attributes.UseImperialUnits ? "pounds" : "kilograms")}. I would like to work on {goalsText}.
             I would like to work out {attributes.DaysPerWeek} days per week.
             My skill level with weight training is {attributes.Experience}.
             Please make me a workout plan.
@@ -77,7 +76,8 @@ public class GptAiWorkoutPlanner : IAiWorkoutPlanner
 
             return new AiWorkoutPlan(
                 gptPlan.Description,
-                gptPlan.Sessions
+                gptPlan
+                    .Sessions
                     .Select(
                         s =>
                             new SessionBlueprint(
@@ -89,8 +89,8 @@ public class GptAiWorkoutPlanner : IAiWorkoutPlanner
                                                 e.Name,
                                                 e.Sets,
                                                 e.RepsPerSet,
-                                                e.InitialKilograms,
-                                                e.KilogramsIncreaseOnSuccess,
+                                                e.InitialWeight,
+                                                e.WeightIncreaseOnSuccess,
                                                 new Rest(
                                                     TimeSpan.FromSeconds(
                                                         e.RestBetweenSets.MinRestSeconds
@@ -124,7 +124,12 @@ public class GptAiWorkoutPlanner : IAiWorkoutPlanner
         var areasToWorkout = string.Join(" and ", attributes.AreasToWorkout);
         var exerciseText = string.Join(
             "\n",
-            attributes.ExerciseToKilograms.Select(pc => $"{pc.Key} at {pc.Value} kilograms")
+            attributes
+                .ExerciseToWeight
+                .Select(
+                    pc =>
+                        $"{pc.Key} at {pc.Value} {(attributes.UseImperialUnits ? "pounds" : "kilograms")}"
+                )
         );
 
         var volumeText = attributes.Volume switch
@@ -180,15 +185,16 @@ public class GptAiWorkoutPlanner : IAiWorkoutPlanner
 
             return new SessionBlueprint(
                 gptPlan.Name,
-                gptPlan.Exercises
+                gptPlan
+                    .Exercises
                     .Select(
                         e =>
                             new ExerciseBlueprint(
                                 e.Name,
                                 e.Sets,
                                 e.RepsPerSet,
-                                e.InitialKilograms,
-                                e.KilogramsIncreaseOnSuccess,
+                                e.InitialWeight,
+                                e.WeightIncreaseOnSuccess,
                                 new Rest(
                                     TimeSpan.FromSeconds(e.RestBetweenSets.MinRestSeconds),
                                     TimeSpan.FromSeconds(e.RestBetweenSets.MaxRestSeconds),
@@ -222,8 +228,8 @@ public class GptAiWorkoutPlanner : IAiWorkoutPlanner
         string Name,
         int Sets,
         int RepsPerSet,
-        decimal InitialKilograms,
-        decimal KilogramsIncreaseOnSuccess,
+        decimal InitialWeight,
+        decimal WeightIncreaseOnSuccess,
         GptRest RestBetweenSets
     );
 

@@ -29,7 +29,8 @@ internal record SessionDaoV1(
         new(
             model.Id,
             SessionBlueprintDaoV1.FromModel(model.Blueprint),
-            model.RecordedExercises
+            model
+                .RecordedExercises
                 .Select(x => RecordedExerciseDaoV1.FromModel(model.Date, x))
                 .ToImmutableList(),
             new DateTimeOffset(
@@ -64,8 +65,9 @@ internal record RecordedExerciseDaoV1(
     ) =>
         new(
             ExerciseBlueprintDaoV1.FromModel(model.Blueprint),
-            model.Kilograms,
-            model.RecordedSets
+            model.Weight,
+            model
+                .RecordedSets
                 .Select(x => RecordedSetDaoV1.FromModel(sessionDate, x))
                 .ToImmutableList()
         );

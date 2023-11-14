@@ -61,15 +61,15 @@ else
                             />
                         </div>
                         <EditableIncrementer
-                            Increment=@Math.Max(exercise.KilogramsIncreaseOnSuccess, 0.1m)
+                            Increment=@Math.Max(exercise.WeightIncreaseOnSuccess, 0.1m)
                             Label="Initial Weight"
-                            Value=@exercise.InitialKilograms
+                            Value=@exercise.InitialWeight
                             OnChange="e => SetExerciseInitialWeight(index, e)"
                         />
                         <EditableIncrementer
                             Increment="0.1m"
                             Label="Auto Increase"
-                            Value="exercise.KilogramsIncreaseOnSuccess"
+                            Value="exercise.WeightIncreaseOnSuccess"
                             OnChange="e => SetExerciseSuccessWeight(index, e)"/>
 
                         <Switch Label="Superset With Next Exercise" Value=exercise.SupersetWithNext OnSwitched="supersets=>SetExerciseSupersetsNext(index, supersets)"/>
@@ -147,11 +147,11 @@ else
         Dispatcher.Dispatch(new SetEditingSessionNameAction(name));
     }
 
-    void SetExerciseInitialWeight(int exerciseIndex, decimal initialKilograms)
-        => Dispatcher.Dispatch(new SetExerciseInitialWeightAction(exerciseIndex, initialKilograms));
+    void SetExerciseInitialWeight(int exerciseIndex, decimal initialWeight)
+        => Dispatcher.Dispatch(new SetExerciseInitialWeightAction(exerciseIndex, initialWeight));
 
-    void SetExerciseSuccessWeight(int exerciseIndex, decimal kilograms)
-        => Dispatcher.Dispatch(new SetExerciseKilogramsIncreaseOnSuccessAction(exerciseIndex, Math.Max(kilograms, 0)));
+    void SetExerciseSuccessWeight(int exerciseIndex, decimal weight)
+        => Dispatcher.Dispatch(new SetExerciseWeightIncreaseOnSuccessAction(exerciseIndex, Math.Max(weight, 0)));
 
     void OnRestUpdated(int exerciseIndex, Rest rest) => Dispatcher.Dispatch(new SetRestAction(exerciseIndex, rest));
 

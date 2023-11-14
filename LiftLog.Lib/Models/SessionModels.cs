@@ -60,15 +60,15 @@ public record Session(
     public bool IsComplete =>
         RecordedExercises.All(x => x.RecordedSets.All(set => set is not null));
 
-    public decimal TotalKilogramsLifted =>
+    public decimal TotalWeightLifted =>
         RecordedExercises.Sum(
-            ex => ex.Kilograms * ex.RecordedSets.Sum(set => set?.RepsCompleted ?? 0)
+            ex => ex.Weight * ex.RecordedSets.Sum(set => set?.RepsCompleted ?? 0)
         );
 }
 
 public record RecordedExercise(
     ExerciseBlueprint Blueprint,
-    decimal Kilograms,
+    decimal Weight,
     ImmutableListValue<RecordedSet?> RecordedSets
 )
 {
@@ -78,8 +78,7 @@ public record RecordedExercise(
     public RecordedSet? LastRecordedSet =>
         RecordedSets.OrderByDescending(x => x?.CompletionTime).FirstOrDefault(x => x is not null);
 
-    public decimal OneRepMax =>
-        Math.Floor(Kilograms / (1.0278m - (0.0278m * Blueprint.RepsPerSet)));
+    public decimal OneRepMax => Math.Floor(Weight / (1.0278m - (0.0278m * Blueprint.RepsPerSet)));
 
     public bool HasRemainingSets => RecordedSets.Any(x => x is null);
 }

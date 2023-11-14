@@ -4,7 +4,7 @@ using LiftLog.Ui.Models;
 
 namespace LiftLog.Ui.Store.AiSessionCreator;
 
-public record GenerateAiSessionAction(AiSessionCreatorModel Attributes);
+public record GenerateAiSessionAction(AiSessionCreatorModel Attributes, bool UseImperialUnits);
 
 public record ClearAiGeneratedSessionStateAction();
 

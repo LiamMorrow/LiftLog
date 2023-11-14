@@ -100,10 +100,9 @@ public class SessionService
                 e,
                 lastExercise switch
                 {
-                    null => e.InitialKilograms,
-                    { SucceededAllSets: true }
-                        => lastExercise.Kilograms + e.KilogramsIncreaseOnSuccess,
-                    _ => lastExercise.Kilograms
+                    null => e.InitialWeight,
+                    { SucceededAllSets: true } => lastExercise.Weight + e.WeightIncreaseOnSuccess,
+                    _ => lastExercise.Weight
                 },
                 Enumerable.Range(0, e.Sets).Select(_ => (RecordedSet?)null).ToImmutableList()
             );

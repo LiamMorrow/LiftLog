@@ -1,6 +1,6 @@
 <div>
     <AppButton data-cy="weight-display" Type="AppButtonType.OutlineSecondary" OnClick="OnOpenClick">
-        <WeightFormat Kilograms="Exercise.Kilograms"/>
+        <WeightFormat Weight="Exercise.Weight"/>
     </AppButton>
 
     <Dialog
@@ -12,8 +12,8 @@
             <div  class="flex flex-col gap-2">
                 <TextField label="Weight" required suffix-text="@WeightSuffix" TextFieldType="TextFieldType.Outline" Value=@(EditorWeight.ToString()) OnChange="HandleInputChange"  type="text" inputmode="decimal" step="@Increment" />
                 <div class="flex justify-between">
-                    <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightDecrementClick><md-icon slot="icon">remove</md-icon><WeightFormat Kilograms="Increment"  /></AppButton>
-                    <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightIncrementClick><md-icon slot="icon">add</md-icon><WeightFormat Kilograms="Increment" /></AppButton>
+                    <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightDecrementClick><md-icon slot="icon">remove</md-icon><WeightFormat Weight="Increment"  /></AppButton>
+                    <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightIncrementClick><md-icon slot="icon">add</md-icon><WeightFormat Weight="Increment" /></AppButton>
                 </div>
             </div>
         </div>
@@ -39,13 +39,13 @@
     [CascadingParameter(Name = "UseImperial")]
     public bool UseImperialUnits { get; set; }
 
-    private decimal Increment => Exercise.Blueprint.KilogramsIncreaseOnSuccess == 0 ? 2.5m : Exercise.Blueprint.KilogramsIncreaseOnSuccess;
+    private decimal Increment => Exercise.Blueprint.WeightIncreaseOnSuccess == 0 ? 2.5m : Exercise.Blueprint.WeightIncreaseOnSuccess;
 
     private decimal EditorWeight { get; set; }
 
     private void OnOpenClick()
     {
-        EditorWeight = Exercise.Kilograms;
+        EditorWeight = Exercise.Weight;
         dialog?.Open();
     }
 

@@ -14,7 +14,8 @@ public static class Sessions
             new Session(
                 Id: Guid.NewGuid(),
                 Blueprint: sessionBlueprint,
-                RecordedExercises: sessionBlueprint.Exercises
+                RecordedExercises: sessionBlueprint
+                    .Exercises
                     .Select(x => CreateRecordedExercise(x))
                     .ToImmutableList(),
                 Date: DateOnly.Parse("2021-04-05")
@@ -31,7 +32,7 @@ public static class Sessions
         return (transform ?? (e => e)).Invoke(
             new RecordedExercise(
                 Blueprint: exerciseBlueprint,
-                Kilograms: exerciseBlueprint.InitialKilograms,
+                Weight: exerciseBlueprint.InitialWeight,
                 RecordedSets: Enumerable
                     .Range(0, exerciseBlueprint.Sets)
                     .Select(

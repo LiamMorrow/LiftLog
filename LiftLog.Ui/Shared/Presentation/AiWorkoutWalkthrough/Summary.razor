@@ -20,6 +20,9 @@ Your skill level with weight training is <span class="font-bold text-primary">@A
     [Parameter]
     public Action<bool> OnConfirm { get; set; } = null!;
 
+    [CascadingParameter(Name = "UseImperial")]
+    public bool UseImperial { get; set; }
+
     private string GenderText => Attributes.Gender switch {
         Gender.Male => " male",
         Gender.Female => " female",
@@ -28,4 +31,6 @@ Your skill level with weight training is <span class="font-bold text-primary">@A
     };
 
     private string GoalsText => String.Join(" and ", Attributes.Goals);
+
+    private string WeightUnit => UseImperial ? "pounds" : "kilograms";
 }

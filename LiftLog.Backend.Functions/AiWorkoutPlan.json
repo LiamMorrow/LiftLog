@@ -26,7 +26,7 @@
             "items": {
               "type": "object",
               "description": "An exercise to perform.",
-              "required": ["Name", "Sets", "RepsPerSet", "InitialKilograms", "KilogramsIncreaseOnSuccess", "Rest"],
+              "required": ["Name", "Sets", "RepsPerSet", "InitialWeight", "WeightIncreaseOnSuccess", "Rest"],
               "properties": {
                 "Name": {
                   "type": "string",
@@ -40,13 +40,13 @@
                   "type": "integer",
                   "description": "The number of reps to perform.  If the exercise is timed, this is the number of seconds to perform the exercise for."
                 },
-                "InitialKilograms": {
+                "InitialWeight": {
                   "type": "number",
-                  "description": "The initial weight to use for the exercise when first performing it. If it is bodyweight, set to 0."
+                  "description": "The initial weight to use for the exercise when first performing it. If it is bodyweight, set to 0. The units are the same that the user specifies."
                 },
-                "KilogramsIncreaseOnSuccess": {
+                "WeightIncreaseOnSuccess": {
                   "type": "number",
-                  "description": "The amount of weight to increase by on successful completion of all reps in the set.  If the exercise is timed, this is the number of seconds to increase by on successful completion of all reps in the set."
+                  "description": "The amount of weight to increase by on successful completion of all reps in the set.  If the exercise is timed, this is the number of seconds to increase by on successful completion of all reps in the set. The units are the same that the user specifies."
                 },
                 "RestBetweenSets": {
                   "type": "object",

@@ -74,9 +74,9 @@
         Dispatcher.Dispatch(new NotifySetTimerAction(SessionTarget.WorkoutSession));
     }
 
-    private void UpdateWeightForExercise(int exerciseIndex, decimal kilograms)
+    private void UpdateWeightForExercise(int exerciseIndex, decimal weight)
     {
-        Dispatcher.Dispatch(new UpdateExerciseWeightAction(SessionTarget.WorkoutSession, exerciseIndex, kilograms));
+        Dispatcher.Dispatch(new UpdateExerciseWeightAction(SessionTarget.WorkoutSession, exerciseIndex, weight));
     }
 
     private void EditExercise(int exerciseIndex, SessionExerciseEditModel exercise)

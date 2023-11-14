@@ -38,19 +38,23 @@ public static class Reducers
             session with
             {
                 Date = sessionDate,
-                RecordedExercises = session.RecordedExercises.SetItem(
-                    action.ExerciseIndex,
-                    exerciseAtIndex with
-                    {
-                        RecordedSets = exerciseAtIndex.RecordedSets.SetItem(
-                            action.SetIndex,
-                            GetCycledRepCount(
-                                exerciseAtIndex.RecordedSets[action.SetIndex],
-                                exerciseBlueprint
-                            )
-                        )
-                    }
-                )
+                RecordedExercises = session
+                    .RecordedExercises
+                    .SetItem(
+                        action.ExerciseIndex,
+                        exerciseAtIndex with
+                        {
+                            RecordedSets = exerciseAtIndex
+                                .RecordedSets
+                                .SetItem(
+                                    action.SetIndex,
+                                    GetCycledRepCount(
+                                        exerciseAtIndex.RecordedSets[action.SetIndex],
+                                        exerciseBlueprint
+                                    )
+                                )
+                        }
+                    )
             }
         );
     }
@@ -93,7 +97,7 @@ public static class Reducers
         var newExercise = existingExercise with
         {
             Blueprint = newExerciseBlueprint,
-            Kilograms = action.Exercise.Kilograms,
+            Weight = action.Exercise.Weight,
             RecordedSets = Enumerable
                 .Range(0, newExerciseBlueprint.Sets)
                 .Select(index => existingExercise.RecordedSets.ElementAtOrDefault(index))
@@ -106,15 +110,14 @@ public static class Reducers
             {
                 Blueprint = session.Blueprint with
                 {
-                    Exercises = session.Blueprint.Exercises.SetItem(
-                        action.ExerciseIndex,
-                        newExerciseBlueprint
-                    )
+                    Exercises = session
+                        .Blueprint
+                        .Exercises
+                        .SetItem(action.ExerciseIndex, newExerciseBlueprint)
                 },
-                RecordedExercises = session.RecordedExercises.SetItem(
-                    action.ExerciseIndex,
-                    newExercise
-                )
+                RecordedExercises = session
+                    .RecordedExercises
+                    .SetItem(action.ExerciseIndex, newExercise)
             }
         );
     }
@@ -130,14 +133,14 @@ public static class Reducers
             Name: action.Exercise.Name,
             Sets: action.Exercise.Sets,
             RepsPerSet: action.Exercise.Reps,
-            InitialKilograms: action.Exercise.Kilograms,
-            KilogramsIncreaseOnSuccess: 0,
+            InitialWeight: action.Exercise.Weight,
+            WeightIncreaseOnSuccess: 0,
             RestBetweenSets: Rest.Medium,
             false
         );
         var newExercise = new RecordedExercise(
             newExerciseBlueprint,
-            action.Exercise.Kilograms,
+            action.Exercise.Weight,
             Enumerable
                 .Range(0, newExerciseBlueprint.Sets)
                 .Select(_ => (RecordedSet?)null)
@@ -171,13 +174,17 @@ public static class Reducers
             action.Target,
             session with
             {
-                RecordedExercises = session.RecordedExercises.SetItem(
-                    action.ExerciseIndex,
-                    exerciseAtIndex with
-                    {
-                        RecordedSets = exerciseAtIndex.RecordedSets.SetItem(action.SetIndex, null)
-                    }
-                )
+                RecordedExercises = session
+                    .RecordedExercises
+                    .SetItem(
+                        action.ExerciseIndex,
+                        exerciseAtIndex with
+                        {
+                            RecordedSets = exerciseAtIndex
+                                .RecordedSets
+                                .SetItem(action.SetIndex, null)
+                        }
+                    )
             }
         );
     }
@@ -195,13 +202,9 @@ public static class Reducers
             action.Target,
             session with
             {
-                RecordedExercises = session.RecordedExercises.SetItem(
-                    action.ExerciseIndex,
-                    exerciseAtIndex with
-                    {
-                        Kilograms = action.Kilograms
-                    }
-                )
+                RecordedExercises = session
+                    .RecordedExercises
+                    .SetItem(action.ExerciseIndex, exerciseAtIndex with { Weight = action.Weight })
             }
         );
     }

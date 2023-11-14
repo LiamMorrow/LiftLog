@@ -26,10 +26,10 @@ else
     {
         <span slot="headline">@(_selectedExercise.Name)</span>
         <div slot="content" class="flex flex-col">
-            <span class="flex justify-between text-on-surface"><span>Current: </span><WeightFormat Kilograms=@(_selectedExercise.CurrentKilograms)/></span>
-            <span class="flex justify-between text-on-surface"><span>Max: </span><WeightFormat Kilograms=@(_selectedExercise.MaxKilograms)/></span>
-            <span class="flex justify-between text-on-surface"><span>One Rep Max: </span><WeightFormat Kilograms=@(_selectedExercise.OneRepMax)/></span>
-            <span class="flex justify-between text-on-surface"><span>Total Lifted: </span><WeightFormat Kilograms=@(_selectedExercise.TotalKilograms)/></span>
+            <span class="flex justify-between text-on-surface"><span>Current: </span><WeightFormat Weight=@(_selectedExercise.CurrentWeight)/></span>
+            <span class="flex justify-between text-on-surface"><span>Max: </span><WeightFormat Weight=@(_selectedExercise.MaxWeight)/></span>
+            <span class="flex justify-between text-on-surface"><span>One Rep Max: </span><WeightFormat Weight=@(_selectedExercise.OneRepMax)/></span>
+            <span class="flex justify-between text-on-surface"><span>Total Lifted: </span><WeightFormat Weight=@(_selectedExercise.TotalWeight)/></span>
         </div>
     <div slot="actions">
         <AppButton Type=AppButtonType.Text OnClick=@(()=>dialog?.Close())>Close</AppButton>
@@ -84,15 +84,15 @@ else
     {
         return new ExerciseStatistics(
             Name: sessions.Key,
-            CurrentKilograms: 0,
-            MaxKilograms: 0,
+            CurrentWeight: 0,
+            MaxWeight: 0,
             OneRepMax: 0,
-            TotalKilograms: sessions.Sum(session => session.TotalKilogramsLifted),
+            TotalWeight: sessions.Sum(session => session.TotalWeightLifted),
             RecordedExercises: sessions.Select(
                 session =>
                     new DatedRecordedExercise(session.Date, new RecordedExercise(
                         Blueprint: session.RecordedExercises.First().Blueprint,
-                        Kilograms: session.TotalKilogramsLifted,
+                        Weight: session.TotalWeightLifted,
                         RecordedSets: ImmutableListValue.Of<RecordedSet?>(new RecordedSet(1, TimeOnly.MinValue))
                         )
                     )
@@ -104,10 +104,10 @@ else
     {
         return new ExerciseStatistics(
             Name: exercises.First().Exercise.Blueprint.Name,
-            CurrentKilograms: exercises.First().Exercise.Kilograms,
-            MaxKilograms: exercises.Max(x=>x.Exercise.Kilograms),
+            CurrentWeight: exercises.First().Exercise.Weight,
+            MaxWeight: exercises.Max(x=>x.Exercise.Weight),
             OneRepMax: exercises.First().Exercise.OneRepMax,
-            TotalKilograms: exercises.Sum(x=>x.Exercise.Kilograms),
+            TotalWeight: exercises.Sum(x=>x.Exercise.Weight),
             RecordedExercises: exercises.ToImmutableList(),
             ExpandOnClick: true
         );

@@ -39,10 +39,15 @@ public class ProgramEffects
         {
             var latestExercises = (await progressRepository.GetLatestRecordedExercisesAsync())
                 .GroupBy(x => x.Key.Name)
-                .ToImmutableDictionary(x => x.Key, x => x.First().Value.Kilograms);
+                .ToImmutableDictionary(x => x.Key, x => x.First().Value.Weight);
 
             var generatedSession = await aiWorkoutPlanner.GenerateSessionAsync(
-                new(action.Attributes.AreasToWorkout, action.Attributes.Volume, latestExercises)
+                new(
+                    action.Attributes.AreasToWorkout,
+                    action.Attributes.Volume,
+                    latestExercises,
+                    action.UseImperialUnits
+                )
             );
 
             dispatcher.Dispatch(new SetAiGeneratedSessionAction(generatedSession));

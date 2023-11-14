@@ -24,7 +24,7 @@
                         Name="Weight"
                         SeriesType="SeriesType.Line"
                         XValue="@(e => e.Date)"
-                        YAggregate="@(e => e.Max(e => e.Exercise.Kilograms))"
+                        YAggregate="@(e => e.Max(e => e.Exercise.Weight))"
                         OrderByDescending="e=>e.X" />
 </ApexChart>
 }
