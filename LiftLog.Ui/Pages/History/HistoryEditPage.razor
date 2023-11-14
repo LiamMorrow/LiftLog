@@ -80,8 +80,8 @@
     private void CycleRepcountForExercise(int exerciseIndex, int setIndex)
         => Dispatcher.Dispatch(new CycleExerciseRepsAction(SessionTarget.HistorySession, exerciseIndex, setIndex));
 
-    private void UpdateWeightForExercise(int exerciseIndex, decimal kilograms)
-        => Dispatcher.Dispatch(new UpdateExerciseWeightAction(SessionTarget.HistorySession, exerciseIndex, kilograms));
+    private void UpdateWeightForExercise(int exerciseIndex, decimal weight)
+        => Dispatcher.Dispatch(new UpdateExerciseWeightAction(SessionTarget.HistorySession, exerciseIndex, weight));
 
     private void EditExercise(int exerciseIndex, SessionExerciseEditModel exercise)
         => Dispatcher.Dispatch(new EditExerciseInActiveSessionAction(SessionTarget.HistorySession, exerciseIndex, exercise));

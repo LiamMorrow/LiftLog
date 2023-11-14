@@ -5,10 +5,10 @@ namespace LiftLog.Ui.Models;
 
 public record ExerciseStatistics(
     string Name,
-    decimal CurrentKilograms,
-    decimal MaxKilograms,
+    decimal CurrentWeight,
+    decimal MaxWeight,
     decimal OneRepMax,
-    decimal TotalKilograms,
+    decimal TotalWeight,
     ImmutableListValue<DatedRecordedExercise> RecordedExercises,
     bool ExpandOnClick
 );

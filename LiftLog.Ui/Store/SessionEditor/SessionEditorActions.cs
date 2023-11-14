@@ -16,11 +16,11 @@ public record AddExerciseAction(ExerciseBlueprint ExerciseBlueprint);
 
 public record RemoveExerciseAction(ExerciseBlueprint ExerciseBlueprint);
 
-public record SetExerciseInitialWeightAction(int ExerciseIndex, decimal InitialKilograms);
+public record SetExerciseInitialWeightAction(int ExerciseIndex, decimal InitialWeight);
 
-public record SetExerciseKilogramsIncreaseOnSuccessAction(
+public record SetExerciseWeightIncreaseOnSuccessAction(
     int ExerciseIndex,
-    decimal KilogramsIncreaseOnSuccess
+    decimal WeightIncreaseOnSuccess
 );
 
 public record SetRestAction(int ExerciseIndex, Rest Rest);

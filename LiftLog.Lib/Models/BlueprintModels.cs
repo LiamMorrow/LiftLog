@@ -18,7 +18,7 @@ public record SessionBlueprint(string Name, ImmutableListValue<ExerciseBlueprint
         {
             return new RecordedExercise(
                 e,
-                e.InitialKilograms,
+                e.InitialWeight,
                 Enumerable.Range(0, e.Sets).Select(_ => (RecordedSet?)null).ToImmutableList()
             );
         }
@@ -36,8 +36,8 @@ public record ExerciseBlueprint(
     string Name,
     int Sets,
     int RepsPerSet,
-    decimal InitialKilograms,
-    decimal KilogramsIncreaseOnSuccess,
+    decimal InitialWeight,
+    decimal WeightIncreaseOnSuccess,
     Rest RestBetweenSets,
     bool SupersetWithNext
 );

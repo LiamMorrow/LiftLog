@@ -22,7 +22,7 @@
             <AppButton OnClick="ExportData" Type="AppButtonType.OutlineSecondary">
                 <md-icon slot="icon">upload</md-icon>Backup
             </AppButton>
-            <AppButton OnClick="ImportData" Type="AppButtonType.OutlineSecondary">
+            <AppButton data-cy="restore-button" OnClick="ImportData" Type="AppButtonType.OutlineSecondary">
                 <md-icon slot="icon">download</md-icon>Restore
             </AppButton>
         </div>
@@ -36,6 +36,18 @@
         </AppButton>
     </Card>
     <ProFeatureCard />
+
+    <Card>
+        <div class="flex flex-col gap-4">
+            <div class="flex justify-between">
+                <span class="text-lg">Configuration</span>
+                <md-icon>settings</md-icon>
+            </div>
+            <div>
+                <Switch Label="Use Imperial Units" Value=@AppState.Value.UseImperialUnits OnSwitched="SetUseImperialUnits"/>
+            </div>
+        </div>
+    </Card>
 </div>
 
 @code {
@@ -70,5 +82,9 @@
     }
 
     private void ExportData() => Dispatcher.Dispatch(new ExportDataAction());
+
+    private void SetUseImperialUnits(bool value)
+        => Dispatcher.Dispatch(new SetUseImperialUnitsAction(value));
+
 
 }

@@ -49,7 +49,7 @@
 
 @code {
     private int step = 1;
-    private AiWorkoutAttributes attributes = new AiWorkoutAttributes(Gender.PreferNotToSay,"", 0, 0, new ImmutableListValue<string>(), Experience.Beginner);
+    private AiWorkoutAttributes attributes = new AiWorkoutAttributes(Gender.PreferNotToSay,"", 0, 0, new ImmutableListValue<string>(), Experience.Beginner, false);
     [Parameter][EditorRequired] public Action<AiWorkoutAttributes> OnAttributesSelected { get; set; } = null!;
 
     private void OnPrevious()

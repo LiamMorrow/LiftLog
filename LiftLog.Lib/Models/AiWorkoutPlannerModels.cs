@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Text.Json.Serialization;
 
 namespace LiftLog.Lib.Models;
 
@@ -31,7 +32,8 @@ public record AiWorkoutAttributes(
     int Age,
     int DaysPerWeek,
     ImmutableListValue<string> Goals,
-    Experience Experience
+    Experience Experience,
+    bool UseImperialUnits
 );
 
 public record AiWorkoutPlan(string Description, ImmutableListValue<SessionBlueprint> Sessions);
@@ -39,5 +41,8 @@ public record AiWorkoutPlan(string Description, ImmutableListValue<SessionBluepr
 public record AiSessionAttributes(
     ImmutableListValue<string> AreasToWorkout,
     int Volume,
-    ImmutableDictionary<string, decimal> ExerciseToKilograms
+    // TODO: Legacy name
+    [property: JsonPropertyName("exerciseToKilograms")]
+        ImmutableDictionary<string, decimal> ExerciseToWeight,
+    bool UseImperialUnits
 );

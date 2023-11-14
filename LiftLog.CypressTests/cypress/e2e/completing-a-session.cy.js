@@ -2,7 +2,7 @@
 
 describe('Completing a session', () => {
   beforeEach(() => {
-    cy.visit('http://127.0.0.1:5000')
+    cy.visit('/')
   })
 
   describe('When a user selects a pre-made program', () => {
@@ -31,9 +31,6 @@ describe('Completing a session', () => {
         cy.get('md-fab').click()
 
         cy.get('.cardlist .card').first().should('contain.text', 'Workout B')
-
-        // Ensure persisted
-        // cy.reload()
 
         cy.get('nav').contains('History').click()
 

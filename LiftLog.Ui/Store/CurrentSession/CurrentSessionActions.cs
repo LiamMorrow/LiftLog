@@ -15,11 +15,7 @@ public record CycleExerciseRepsAction(SessionTarget Target, int ExerciseIndex, i
 
 public record ClearExerciseRepsAction(SessionTarget Target, int ExerciseIndex, int SetIndex);
 
-public record UpdateExerciseWeightAction(
-    SessionTarget Target,
-    int ExerciseIndex,
-    decimal Kilograms
-);
+public record UpdateExerciseWeightAction(SessionTarget Target, int ExerciseIndex, decimal Weight);
 
 public record EditExerciseInActiveSessionAction(
     SessionTarget Target,

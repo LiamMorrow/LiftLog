@@ -76,7 +76,7 @@
         Name: "",
         Sets: 3,
         Reps: 10,
-        Kilograms: 0
+        Weight: 0
         );
     private int? _exerciseToEditIndex;
     private int? _exerciseToRemoveIndex;
@@ -155,7 +155,7 @@
         => (int set) => ClearRepCountForExercise(exerciseIndex, set);
 
     private Action<decimal> UpdateWeightForExerciseWrapper(int exerciseIndex)
-        => (decimal kilograms) => UpdateWeightForExercise(exerciseIndex, kilograms);
+        => (decimal weight) => UpdateWeightForExercise(exerciseIndex, weight);
 
     private void EditExerciseHandler()
     {
@@ -189,7 +189,7 @@
             Name: "",
             Sets: 3,
             Reps: 10,
-            Kilograms: 0
+            Weight: 0
             );
         _editExerciseDialog?.Open();
     }
@@ -214,7 +214,7 @@
             exercise.Blueprint.Name,
             exercise.Blueprint.Sets,
             exercise.Blueprint.RepsPerSet,
-            exercise.Kilograms);
+            exercise.Weight);
         StateHasChanged();
         _editExerciseDialog?.Open();
     }
@@ -240,7 +240,7 @@
         else if (Session.IsComplete)
         {
             return @<SnackBar><span>This session you lifted </span><span class="font-bold">
-            <WeightFormat Kilograms="Session.TotalKilogramsLifted" />
+            <WeightFormat Weight="Session.TotalWeightLifted" />
         </span></SnackBar>;
         }
         return null;
