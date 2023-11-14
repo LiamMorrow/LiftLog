@@ -1,6 +1,11 @@
-<span class="flex items-center">@(Kilograms.ToString("0.####"))<span class="text-sm">kg</span></span>
+<span class="flex items-center">@(Kilograms.ToString("0.####"))<span class="text-sm">@Suffix</span></span>
 @code {
     [EditorRequired]
     [Parameter]
     public decimal Kilograms { get; set; }
+
+    [CascadingParameter(Name = "UseImperial")]
+    public bool UseImperial { get; set; }
+
+    private string Suffix => UseImperial ? "lbs" : "kg";
 }

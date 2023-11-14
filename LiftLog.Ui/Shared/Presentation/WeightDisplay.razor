@@ -10,7 +10,7 @@
         <span slot="headline">Weight</span>
         <div  slot="content">
             <div  class="flex flex-col gap-2">
-                <TextField label="Weight" required suffix-text="kg" TextFieldType="TextFieldType.Outline" Value=@(EditorWeight.ToString()) OnChange="HandleInputChange"  type="text" inputmode="decimal" step="@Increment" />
+                <TextField label="Weight" required suffix-text="@WeightSuffix" TextFieldType="TextFieldType.Outline" Value=@(EditorWeight.ToString()) OnChange="HandleInputChange"  type="text" inputmode="decimal" step="@Increment" />
                 <div class="flex justify-between">
                     <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightDecrementClick><md-icon slot="icon">remove</md-icon><WeightFormat Kilograms="Increment"  /></AppButton>
                     <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightIncrementClick><md-icon slot="icon">add</md-icon><WeightFormat Kilograms="Increment" /></AppButton>
@@ -35,6 +35,9 @@
     [EditorRequired]
     [Parameter]
     public Action<decimal> UpdateWeightForExercise { get; set; } = null!;
+
+    [CascadingParameter(Name = "UseImperial")]
+    public bool UseImperialUnits { get; set; }
 
     private decimal Increment => Exercise.Blueprint.KilogramsIncreaseOnSuccess == 0 ? 2.5m : Exercise.Blueprint.KilogramsIncreaseOnSuccess;
 
@@ -73,4 +76,6 @@
             EditorWeight = result;
         }
     }
+
+    private string WeightSuffix => UseImperialUnits ? "lbs" : "kg";
 }

@@ -38,6 +38,11 @@
     // Loading lots of graphs at once can be slow, so we can delay the rendering of this graph
     public TimeSpan RenderDelay { get; set; }
 
+
+    [CascadingParameter(Name="UseImperial")]
+    public bool UseImperial { get; set; }
+
+
     private bool IsLoading { get; set; } = true;
 
 
@@ -89,7 +94,7 @@
                             Style = new(){
                                 Colors = new Color(GetColorString(ThemeProvider.GetColorScheme().OnSurface)),
                             },
-                            Formatter = "(value)=>parseFloat(parseFloat(value).toFixed(3)) + ' kg'",
+                            Formatter =$"(value)=>parseFloat(parseFloat(value).toFixed(3)) + ' {WeightSuffix}'",
                         },
                       }
                 },
@@ -108,4 +113,6 @@
     }
 
     private string GetColorString(uint color) => "#"+color.ToString("X").Substring(2,6);
+
+    private string WeightSuffix => UseImperial ? " lbs" : " kg";
 }
