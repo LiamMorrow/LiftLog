@@ -32,6 +32,7 @@ jobs:
           start: yarn server-ci
           wait-on: http://localhost:5000
           working-directory: ./LiftLog.CypressTests
+          browser: chrome
       - name: Upload screenshots
         uses: actions/upload-artifact@v2
         with:
