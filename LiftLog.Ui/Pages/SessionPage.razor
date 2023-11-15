@@ -46,7 +46,7 @@
 
 @code
 {
-    private ImmutableDictionary<KeyedExerciseBlueprint, RecordedExercise> previouslyCompleted = [ ];
+    private ImmutableDictionary<KeyedExerciseBlueprint, RecordedExercise> previouslyCompleted = ImmutableDictionary<KeyedExerciseBlueprint, RecordedExercise>.Empty;
     private bool initted = false;
     private async Task Init(Session session)
     {
