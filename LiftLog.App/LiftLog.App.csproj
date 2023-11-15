@@ -73,8 +73,8 @@
 
     <ItemGroup>
         <PackageReference Include="MaterialColorUtilities.Maui" Version="0.3.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
         <PackageReference Include="Plugin.InAppBilling" Version="7.1.0" />
         <PackageReference Include="Plugin.LocalNotification" Version="10.1.8" />
         <PackageReference Include="Sentry.Extensions.Logging" Version="3.41.0" />
