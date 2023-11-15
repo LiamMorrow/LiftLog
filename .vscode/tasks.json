@@ -100,7 +100,7 @@
       "type": "func",
       "dependsOn": "build (functions)",
       "options": {
-        "cwd": "${workspaceFolder}/LiftLog.Backend.Functions/bin/Debug/net7.0"
+        "cwd": "${workspaceFolder}/LiftLog.Backend.Functions/bin/Debug/net8.0"
       },
       "command": "host start",
       "isBackground": true,
