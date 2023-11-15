@@ -5,18 +5,6 @@ using LiftLog.Lib.Serialization;
 
 namespace LiftLog.Lib
 {
-    public static class ImmutableListValue
-    {
-        public static ImmutableListValue<T> Of<T>(params T[] items)
-        {
-            return new ImmutableListValue<T>(items.ToImmutableList());
-        }
-
-        public static ImmutableListValue<T> Of<T>(IEnumerable<T> items)
-        {
-            return new ImmutableListValue<T>(items.ToImmutableList());
-        }
-    }
     /**
   * An implementation of immutable list with value semantics.
   */
@@ -25,7 +13,7 @@ namespace LiftLog.Lib
     {
         public ImmutableListValue()
         {
-            Items = ImmutableList<T>.Empty;
+            Items =  [ ];
         }
 
         public ImmutableListValue(ImmutableList<T> items)

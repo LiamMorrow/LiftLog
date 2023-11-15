@@ -19,14 +19,9 @@ public class PersistProgramMiddleware : Middleware
     {
         _store = store;
         var programs = await _programRepository.GetSessionsInProgramAsync();
-        store.Features[nameof(ProgramFeature)].RestoreState(
-            new ProgramState(
-                programs,
-                ImmutableListValue.Of<Session>(),
-                true,
-                ImmutableListValue<string>.Empty
-            )
-        );
+        store
+            .Features[nameof(ProgramFeature)]
+            .RestoreState(new ProgramState(programs, [ ], true, [ ]));
 
         dispatch.Dispatch(new RehydrateProgramAction());
     }
