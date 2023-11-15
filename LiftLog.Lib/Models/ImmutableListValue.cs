@@ -29,7 +29,7 @@ namespace LiftLog.Lib
             Items =  [ .. items ];
         }
 
-        public static readonly ImmutableListValue<T> Empty = new();
+        public static readonly ImmutableListValue<T> Empty =  [ ];
 
         // Note - This allows for setting internally.
         // It can be set during an Equals check when 2 lists are equal by sequence, but not by reference
