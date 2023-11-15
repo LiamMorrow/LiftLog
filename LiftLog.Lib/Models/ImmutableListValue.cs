@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
+using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
 
 namespace LiftLog.Lib
@@ -9,6 +11,7 @@ namespace LiftLog.Lib
   * An implementation of immutable list with value semantics.
   */
     [JsonConverter(typeof(ImmutableListValueJsonConverter))]
+    [CollectionBuilder(typeof(ImmutableListValueBuilder), "Create")]
     public sealed class ImmutableListValue<T> : IImmutableList<T>
     {
         public ImmutableListValue()
@@ -23,7 +26,7 @@ namespace LiftLog.Lib
 
         public ImmutableListValue(List<T> items)
         {
-            Items = items.ToImmutableList();
+            Items =  [ .. items ];
         }
 
         public static readonly ImmutableListValue<T> Empty = new();

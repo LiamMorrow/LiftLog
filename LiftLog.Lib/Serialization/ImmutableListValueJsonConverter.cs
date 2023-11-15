@@ -29,8 +29,7 @@ namespace LiftLog.Lib.Serialization
             return (JsonConverter?)Activator.CreateInstance(converterType, new[] { options });
         }
 
-        private class ImmutableListValueJsonConverterInner<T>
-            : JsonConverter<ImmutableListValue<T>>
+        private class ImmutableListValueJsonConverterInner<T> : JsonConverter<ImmutableListValue<T>>
         {
             private readonly JsonConverter<List<T>> _jsonConverter;
 
@@ -59,7 +58,7 @@ namespace LiftLog.Lib.Serialization
                 JsonSerializerOptions options
             )
             {
-                _jsonConverter.Write(writer, value.ToList(), options);
+                _jsonConverter.Write(writer, [ .. value ], options);
             }
         }
     }
