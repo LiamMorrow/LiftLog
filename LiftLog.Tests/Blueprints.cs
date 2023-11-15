@@ -26,11 +26,11 @@ public static class Blueprints
     {
         return new SessionBlueprint(
             Name: "Test Session",
-            Exercises: ImmutableListValue.Of(
+            Exercises: [
                 CreateExerciseBlueprint(),
                 CreateExerciseBlueprint(e => e with { Name = "Test Exercise 2", RepsPerSet = 4 }),
                 CreateExerciseBlueprint(e => e with { Name = "Test Exercise 3", Sets = 4 })
-            )
+            ]
         );
     }
 }

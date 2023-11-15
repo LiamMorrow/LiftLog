@@ -1,31 +1,22 @@
 using System.Collections;
 using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
+using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
 
 namespace LiftLog.Lib
 {
-    public static class ImmutableListValue
-    {
-        public static ImmutableListValue<T> Of<T>(params T[] items)
-        {
-            return new ImmutableListValue<T>(items.ToImmutableList());
-        }
-
-        public static ImmutableListValue<T> Of<T>(IEnumerable<T> items)
-        {
-            return new ImmutableListValue<T>(items.ToImmutableList());
-        }
-    }
     /**
   * An implementation of immutable list with value semantics.
   */
     [JsonConverter(typeof(ImmutableListValueJsonConverter))]
+    [CollectionBuilder(typeof(ImmutableListValueBuilder), "Create")]
     public sealed class ImmutableListValue<T> : IImmutableList<T>
     {
         public ImmutableListValue()
         {
-            Items = ImmutableList<T>.Empty;
+            Items =  [ ];
         }
 
         public ImmutableListValue(ImmutableList<T> items)
@@ -35,10 +26,10 @@ namespace LiftLog.Lib
 
         public ImmutableListValue(List<T> items)
         {
-            Items = items.ToImmutableList();
+            Items =  [ .. items ];
         }
 
-        public static readonly ImmutableListValue<T> Empty = new();
+        public static readonly ImmutableListValue<T> Empty =  [ ];
 
         // Note - This allows for setting internally.
         // It can be set during an Equals check when 2 lists are equal by sequence, but not by reference

@@ -67,7 +67,7 @@ else
 
 @code {
 
-    private AiSessionCreatorModel Model { get; set; } = new AiSessionCreatorModel(ImmutableListValue<string>.Empty, 50);
+    private AiSessionCreatorModel Model { get; set; } = new AiSessionCreatorModel([ ], 50);
 
     private string? ValidationError => Model switch
     {
