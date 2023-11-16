@@ -10,14 +10,17 @@ It incorporates material design 3, with designs and layout driven by [tailwindcs
 
 Built into it is an AI planner which will tailor a specific gym plan to your goals and body.
 
+Checkout [the app website](https://liftlog.online) for screenshots and features.
+
 ## Quickstart
 
 ### Prerequisites
 
-Ensure the dotnet sdk is installed and on the latest version.  You can do that by following the instructions [here](https://dotnet.microsoft.com/en-us/download).
+Ensure the dotnet sdk is installed and on the latest version. You can do that by following the instructions [here](https://dotnet.microsoft.com/en-us/download).
 [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/) is also required to build some of the web assets.
 
 ### Running
+
 Before running, you must build the web assets once, after they are built it is rare to need to build them again.
 
 ```bash
