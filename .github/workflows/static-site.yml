@@ -31,6 +31,14 @@ jobs:
           source_dir: ./site
           container_name: static-assets
           connection_string: ${{ secrets.AzureStaticSiteConnectionString }}
+          extra_args: "--pattern assets/*.png"
+          # WARNING: this will overwrite existing blobs in your blob storage
+          overwrite: "true"
+      - uses: bacongobbler/azure-blob-storage-upload@main
+        with:
+          source_dir: ./site
+          container_name: static-assets
+          connection_string: ${{ secrets.AzureStaticSiteConnectionString }}
           extra_args: "--pattern *.html"
           # WARNING: this will overwrite existing blobs in your blob storage
           overwrite: "true"
