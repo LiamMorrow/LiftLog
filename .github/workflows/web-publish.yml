@@ -31,3 +31,6 @@ jobs:
         uses: actions/upload-pages-artifact@v2
         with:
           path: ./LiftLog.Web/bin/Release/net8.0/publish/wwwroot
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
