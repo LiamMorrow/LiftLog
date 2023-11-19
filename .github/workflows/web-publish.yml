@@ -1,0 +1,33 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+#src: https://www.andreasnesheim.no/setting-up-ci-for-your-net-maui-ios-app-with-github-actions/
+
+name: Release Web
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      KEYCHAIN: job-${{ github.job }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+      - name: Build Tailwind
+        run: yarn && yarn build
+        working-directory: ./LiftLog.Ui
+      - name: Build
+        run: dotnet publish -c Release
+        working-directory: ./LiftLog.Web
+      - name: Upload pages
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: ./LiftLog.Web/bin/Release/net8.0/publish/wwwroot

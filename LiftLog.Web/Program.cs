@@ -31,10 +31,12 @@ builder
                 .AddMiddleware<PersistSessionMiddleware>()
                 .AddMiddleware<PersistProgramMiddleware>()
                 .AddMiddleware<AppStateInitMiddleware>()
+#if DEBUG
                 .UseReduxDevTools(options =>
                 {
                     options.UseSystemTextJson(_ => JsonSerializerSettings.LiftLog);
                 })
+#endif
     );
 
 builder.Services.AddScoped<IKeyValueStore, LocalStorageKeyValueStore>();
