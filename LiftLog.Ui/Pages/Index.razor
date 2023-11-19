@@ -40,11 +40,19 @@ else if (ProgramState.Value.UpcomingSessions.Count == 0)
 }
 else
 {
-    <CardList Items="ProgramState.Value.UpcomingSessions.IndexedTuples()" OnClick="x=>SelectSession(x.Item)"
+<CardList Items="ProgramState.Value.UpcomingSessions.IndexedTuples()" OnClick="x=>SelectSession(x.Item)"
     ShouldHighlight="session => session.Index == 0">
     <SessionSummary IsFilled="context.Item.IsStarted" Session="context.Item"></SessionSummary>
 </CardList>
 }
+
+
+<div class="sticky bottom-0 flex flex-col pointer-events-none">
+    <div class="flex justify-end w-full my-2">
+        <FloatingButton variant="primary" has-icon OnClick=StartFreeformSession Label="Freeform Session"><md-icon slot="icon">fitness_center</md-icon>
+        </FloatingButton>
+    </div>
+</div>
 
 <Dialog @ref=replaceCurrentSesisonDialog>
     <span slot="headline">Replace current session</span>
@@ -91,5 +99,19 @@ else
         }
         Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, selectedSession));
         NavigationManager.NavigateTo("/session");
+    }
+
+    private void StartFreeformSession()
+    {
+        selectedSession = new Session(Guid.NewGuid(), new SessionBlueprint("Freeform Session", []), [], DateOnly.FromDateTime(DateTime.Now));
+        if (CurrentSessionState.Value.WorkoutSession is { IsStarted: true })
+        {
+            replaceCurrentSesisonDialog?.Open();
+        }
+        else
+        {
+            Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, selectedSession));
+            NavigationManager.NavigateTo("/session");
+        }
     }
 }

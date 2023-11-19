@@ -12,10 +12,11 @@
         OnEditExercise=@(() => BeginEditExercise(context.Index))
         OnRemoveExercise=@(()=> BeginRemoveExercise(context.Index)) />
 </CardList>
-
+<div class="flex justify-center mt-2">
+    <AddExerciseCard OnClick="@BeginAddExercise"/>
+</div>
 <div class="flex  justify-center gap-2 mt-6">
-    <AppButton OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon>Add Exercise</AppButton>
-    @if (!SessionInPlan)
+    @if (!SessionInPlan && Session.RecordedExercises.Any())
     {
         <AppButton Type="AppButtonType.Secondary" OnClick="@(()=>_updatePlanDialog?.Open())"><md-icon
                 slot="icon">assignment_add</md-icon>Update Plan
