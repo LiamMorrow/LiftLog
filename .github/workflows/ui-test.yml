@@ -35,7 +35,7 @@ jobs:
           wait-on: http://localhost:5000
           working-directory: ./LiftLog.CypressTests
       - name: Upload screenshots
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: cypress-screenshots
