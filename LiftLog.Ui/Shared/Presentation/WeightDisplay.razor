@@ -13,7 +13,7 @@
                 <TextField label="Weight" required suffix-text="@WeightSuffix" TextFieldType="TextFieldType.Outline" Value=@(EditorWeight.ToString()) OnChange="HandleInputChange"  type="text" inputmode="decimal" step="@Increment" />
                 <div class="flex justify-between">
                     <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightDecrementClick><md-icon slot="icon">remove</md-icon><WeightFormat Weight="Increment"  /></AppButton>
-                    <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightIncrementClick><md-icon slot="icon">add</md-icon><WeightFormat Weight="Increment" /></AppButton>
+                    <AppButton data-cy="increment-weight" Type=AppButtonType.OutlineSecondary OnClick=OnWeightIncrementClick><md-icon slot="icon">add</md-icon><WeightFormat Weight="Increment" /></AppButton>
                 </div>
             </div>
         </div>

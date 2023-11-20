@@ -24,7 +24,7 @@
 }
 else
 {
-    <div class="mb-2 overflow-auto bg-surface">
+    <div class="bg-surface">
         <TextField
             TextFieldType="TextFieldType.Filled"
             class="w-full mb-4"
@@ -85,11 +85,13 @@ else
             </SplitCardControl>
         </CardList>
     </div>
-    <div class="flex justify-center w-full">
+    <div class="flex justify-center pointer-events-none w-full mt-2">
         <AppButton Type="AppButtonType.Primary" OnClick=AddExercise>Add Exercise</AppButton>
     </div>
-    <div class="sticky bottom-0 flex justify-end w-full  my-2">
-        <FloatingButton has-icon variant="secondary" OnClick=SaveSession Label="Save"><md-icon slot="icon">save</md-icon></FloatingButton>
+    <div class="sticky bottom-0 flex flex-col pointer-events-none mt-auto pt-2">
+        <div class="flex justify-end w-full">
+            <FloatingButton has-icon variant="secondary" OnClick=SaveSession Label="Save"><md-icon slot="icon">save</md-icon></FloatingButton>
+        </div>
     </div>
 }
 @code {

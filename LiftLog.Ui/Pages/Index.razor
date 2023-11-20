@@ -23,28 +23,36 @@
 else if (ProgramState.Value.UpcomingSessions.Count == 0)
 {
     <div class="flex flex-col gap-2">
-    <Card class="flex flex-col gap-4">
-        <div class="flex justify-between">
-            <span class="text-lg">No plan created yet!</span>
-            <md-icon>info</md-icon>
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-            <AppButton Type="AppButtonType.Secondary" OnClick=@(()=>NavigationManager.NavigateTo("/settings"))><md-icon
-                    slot="icon">add</md-icon>Create</AppButton>
-            <AppButton OnClick=@(()=>NavigationManager.NavigateTo("/settings/program-list"))><md-icon
-                    slot="icon">assignment</md-icon>Use ours</AppButton>
-        </div>
-    </Card>
-    <ProFeatureCard />
-</div>
+        <Card class="flex flex-col gap-4">
+            <div class="flex justify-between">
+                <span class="text-lg">No plan created yet!</span>
+                <md-icon>info</md-icon>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <AppButton Type="AppButtonType.Secondary" OnClick=@(()=>NavigationManager.NavigateTo("/settings"))><md-icon
+                        slot="icon">add</md-icon>Create</AppButton>
+                <AppButton OnClick=@(()=>NavigationManager.NavigateTo("/settings/program-list"))><md-icon
+                        slot="icon">assignment</md-icon>Use built in</AppButton>
+            </div>
+        </Card>
+        <ProFeatureCard />
+    </div>
 }
 else
 {
-    <CardList Items="ProgramState.Value.UpcomingSessions.IndexedTuples()" OnClick="x=>SelectSession(x.Item)"
+<CardList Items="ProgramState.Value.UpcomingSessions.IndexedTuples()" OnClick="x=>SelectSession(x.Item)"
     ShouldHighlight="session => session.Index == 0">
     <SessionSummary IsFilled="context.Item.IsStarted" Session="context.Item"></SessionSummary>
 </CardList>
 }
+
+
+<div class="sticky bottom-0 flex flex-col pointer-events-none mt-auto pt-2">
+    <div class="flex justify-end w-full">
+        <FloatingButton variant="secondary" has-icon OnClick=StartFreeformSession Label="Freeform Session"><md-icon slot="icon">fitness_center</md-icon>
+        </FloatingButton>
+    </div>
+</div>
 
 <Dialog @ref=replaceCurrentSesisonDialog>
     <span slot="headline">Replace current session</span>
@@ -91,5 +99,19 @@ else
         }
         Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, selectedSession));
         NavigationManager.NavigateTo("/session");
+    }
+
+    private void StartFreeformSession()
+    {
+        selectedSession = new Session(Guid.NewGuid(), new SessionBlueprint("Freeform Session", []), [], DateOnly.FromDateTime(DateTime.Now));
+        if (CurrentSessionState.Value.WorkoutSession is { IsStarted: true })
+        {
+            replaceCurrentSesisonDialog?.Open();
+        }
+        else
+        {
+            Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, selectedSession));
+            NavigationManager.NavigateTo("/session");
+        }
     }
 }

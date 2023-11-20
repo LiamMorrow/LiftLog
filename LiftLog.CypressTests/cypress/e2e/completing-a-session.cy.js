@@ -5,6 +5,36 @@ describe('Completing a session', () => {
     cy.visit('/')
   })
 
+  describe('When a user adds a freeform session', () => {
+    beforeEach(() => {
+      cy.get('md-fab').click()
+    })
+
+    it('can complete a freeform workout', () => {
+      cy.contains('Add Exercise', { includeShadowDom: true }).click()
+      cy.get('md-outlined-text-field').get('input', { includeShadowDom: true }).first().click().type('Squat')
+
+      cy.get('[slot="actions"]').contains("Save").click()
+
+
+      cy.get('.repcount').first().click()
+      cy.get('.snackbar').contains('Rest between').should('be.visible')
+      cy.get('.repcount').first().click().should('contain.text', '9/10')
+
+      cy.get('[data-cy=weight-display]').click()
+
+      cy.get('[data-cy=increment-weight]').click().click().click()
+
+      cy.get('[slot="actions"]').contains("Save").click()
+
+      cy.get('md-fab').click()
+
+      cy.get('nav').contains('History').click()
+
+      cy.get('.cardlist .card').first('.card').should('contain.text', 'Freeform Session').should('contain.text', '7.5kg')
+    })
+  })
+
   describe('When a user selects a pre-made program', () => {
     beforeEach(() => {
       cy.get('nav').contains('Settings').click()

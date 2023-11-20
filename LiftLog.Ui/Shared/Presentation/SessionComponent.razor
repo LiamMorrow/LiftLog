@@ -1,21 +1,32 @@
 @using LiftLog.Ui.Util
 
-<CardList Items="Session.RecordedExercises.IndexedTuples()">
-    <WeightedExercise
-        @key=context.Index
-        RecordedExercise="context.Item"
-        ToStartNext=@(Session.NextExercise == context.Item)
-        CycleRepCountForSet=CycleRepCountForExerciseSet(context.Index)
-        ClearRepCountForSet=ClearRepCountForExerciseSet(context.Index)
-        UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index)
-        PreviousRecordedExercise=PreviouslyCompleted.GetValueOrDefault(context.Item.Blueprint)
-        OnEditExercise=@(() => BeginEditExercise(context.Index))
-        OnRemoveExercise=@(()=> BeginRemoveExercise(context.Index)) />
-</CardList>
-
+@if(!Session.RecordedExercises.Any())
+{
+    <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
+        <md-icon>info</md-icon>
+        <span>
+            <p>Session contains no exercises.</p>
+        </span>
+    </div>
+}
+else
+{
+    <CardList Items="Session.RecordedExercises.IndexedTuples()">
+        <WeightedExercise
+            @key=context.Index
+            RecordedExercise="context.Item"
+            ToStartNext=@(Session.NextExercise == context.Item)
+            CycleRepCountForSet=CycleRepCountForExerciseSet(context.Index)
+            ClearRepCountForSet=ClearRepCountForExerciseSet(context.Index)
+            UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index)
+            PreviousRecordedExercise=PreviouslyCompleted.GetValueOrDefault(context.Item.Blueprint)
+            OnEditExercise=@(() => BeginEditExercise(context.Index))
+            OnRemoveExercise=@(()=> BeginRemoveExercise(context.Index)) />
+    </CardList>
+}
 <div class="flex  justify-center gap-2 mt-6">
     <AppButton OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon>Add Exercise</AppButton>
-    @if (!SessionInPlan)
+    @if (!SessionInPlan && Session.RecordedExercises.Any())
     {
         <AppButton Type="AppButtonType.Secondary" OnClick="@(()=>_updatePlanDialog?.Open())"><md-icon
                 slot="icon">assignment_add</md-icon>Update Plan
@@ -25,12 +36,12 @@
 
 @if (Session.RecordedExercises.Any())
 {
-    <div class="sticky bottom-0 flex flex-col pointer-events-none">
-    <div class="flex justify-end w-full my-2">
-        <FloatingButton variant="secondary" has-icon OnClick=SaveSession Label="Save"><md-icon slot="icon">save</md-icon>
-        </FloatingButton>
-    </div>
-    @RenderSnackBar()
+    <div class="sticky bottom-0 flex flex-col pointer-events-none mt-auto pt-2">
+        <div class="flex justify-end w-full">
+            <FloatingButton variant="secondary" has-icon OnClick=SaveSession Label="Save"><md-icon slot="icon">save</md-icon>
+            </FloatingButton>
+        </div>
+        @RenderSnackBar()
     </div>
 }
 
