@@ -4,13 +4,14 @@
 
 <a href='https://play.google.com/store/apps/details?id=com.limajuice.liftlog&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play'  style="height: 50px;" src='./Assets/google-play-badge.png?'/></a>
 <a href="https://apps.apple.com/au/app/liftlog/id6467372581?itsct=apps_box_badge&amp;itscg=30200" ><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1696550400" alt="Download on the App Store" style="border-radius: 13px; width: 250px; height: 50px "></a>
+<a href='https://app.liftlog.online'><img alt='Try demo in your browser'  style="height: 50px;" src='./Assets/web-badge.png?'/></a>
 
 LiftLog aims to be an intuitive, simple gym weight tracking app. It runs on all mobile platforms, and is built as a .NET MAUI Blazor Hybrid app.
 It incorporates material design 3, with designs and layout driven by [tailwindcss](https://tailwindcss.com/).
 
 Built into it is an AI planner which will tailor a specific gym plan to your goals and body.
 
-Checkout [the app website](https://liftlog.online) for screenshots and features.  Or checkout https://app.liftlog.online to try it out without installing an app.
+Checkout [the app website](https://liftlog.online) for screenshots and features. Or checkout https://app.liftlog.online to try it out without installing an app.
 
 ## Quickstart
 
