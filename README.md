@@ -10,7 +10,7 @@ It incorporates material design 3, with designs and layout driven by [tailwindcs
 
 Built into it is an AI planner which will tailor a specific gym plan to your goals and body.
 
-Checkout [the app website](https://liftlog.online) for screenshots and features.
+Checkout [the app website](https://liftlog.online) for screenshots and features.  Or checkout https://app.liftlog.online to try it out without installing an app.
 
 ## Quickstart
 
