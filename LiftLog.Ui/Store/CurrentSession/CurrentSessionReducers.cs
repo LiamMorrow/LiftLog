@@ -144,7 +144,8 @@ public static class Reducers
             Enumerable
                 .Range(0, newExerciseBlueprint.Sets)
                 .Select(_ => (RecordedSet?)null)
-                .ToImmutableList()
+                .ToImmutableList(),
+            null
         );
         return WithActiveSession(
             state,

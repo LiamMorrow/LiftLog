@@ -19,7 +19,8 @@ public record SessionBlueprint(string Name, ImmutableListValue<ExerciseBlueprint
             return new RecordedExercise(
                 e,
                 e.InitialWeight,
-                Enumerable.Range(0, e.Sets).Select(_ => (RecordedSet?)null).ToImmutableList()
+                Enumerable.Range(0, e.Sets).Select(_ => (RecordedSet?)null).ToImmutableList(),
+                null
             );
         }
 

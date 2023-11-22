@@ -47,7 +47,8 @@ public static class Sessions
                                 _ => null
                             }
                     )
-                    .ToImmutableList()
+                    .ToImmutableList(),
+                Notes: null
             )
         );
     }
