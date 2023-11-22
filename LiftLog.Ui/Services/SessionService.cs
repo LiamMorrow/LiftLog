@@ -105,7 +105,7 @@ public class SessionService
                     _ => lastExercise.Weight
                 },
                 Enumerable.Range(0, e.Sets).Select(_ => (RecordedSet?)null).ToImmutableList(),
-                lastExercise?.Notes
+                null
             );
         }
 
