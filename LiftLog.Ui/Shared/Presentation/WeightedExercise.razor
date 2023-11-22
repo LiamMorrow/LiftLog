@@ -12,9 +12,12 @@
         <div class="flex flex-col gap-4">
             <div class="flex justify-between gap-2">
                 <span class="text-xl">@RecordedExercise.Blueprint.Name</span>
+                <div class="flex gap-2">
                     <WeightDisplay
                         Exercise="displayedExercise"
-                        UpdateWeightForExercise="UpdateWeightForExercise"/>
+                            UpdateWeightForExercise="UpdateWeightForExercise"/>
+                    <IconButton Icon="notes" OnClick="OnOpenNotesButtonClick" Type="IconButtonType.Outlined"/>
+                </div>
             </div>
             <div class="flex flex-wrap justify-center gap-2">
                 @foreach (var (set, i) in displayedExercise.RecordedSets.IndexedTuples())
@@ -42,9 +45,23 @@
         }
     </SideContent>
 </SplitCardControl>
+
+<Dialog @ref=notesDialog>
+    <span slot="headline">@(RecordedExercise.Blueprint.Name) Notes</span>
+    <div slot="content">
+        <TextField label="Notes" required TextFieldType="TextFieldType.Outline" Value=@EditorNotes OnChange="HandleNotesChange"  type="textarea"  />
+    </div>
+    <div slot="actions">
+        <AppButton Type="AppButtonType.Text" OnClick=@(()=>notesDialog?.Close())>Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick=HandleNotesSave>Save</AppButton>
+    </div>
+</Dialog>
 @code {
   private bool _holdingPrevious = false;
   private Menu? _menu;
+  private Dialog? notesDialog;
+
+  private string? EditorNotes {get;set;}
 
   [EditorRequired]
   [Parameter]
@@ -72,9 +89,30 @@
 
   [EditorRequired]
   [Parameter]
+  public Action<string?> UpdateNotesForExercise { get; set; } = null!;
+
+  [EditorRequired]
+  [Parameter]
   public Action OnEditExercise { get; set; } = null!;
 
   [EditorRequired]
   [Parameter]
   public Action OnRemoveExercise { get; set; } = null!;
+
+  private void HandleNotesChange(string value)
+  {
+    EditorNotes = value;
+  }
+
+  private void HandleNotesSave()
+  {
+    UpdateNotesForExercise(EditorNotes);
+    notesDialog?.Close();
+  }
+
+  private void OnOpenNotesButtonClick()
+  {
+      EditorNotes = RecordedExercise.Notes;
+      notesDialog?.Open();
+  }
 }

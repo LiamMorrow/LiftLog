@@ -222,6 +222,26 @@ public static class Reducers
         SetCurrentSessionAction action
     ) => WithActiveSession(state, action.Target, action.Session);
 
+    [ReducerMethod]
+    public static CurrentSessionState UpdateNotesForExercise(
+        CurrentSessionState state,
+        UpdateNotesForExerciseAction action
+    )
+    {
+        var session = ActiveSession(state, action.Target) ?? throw new Exception();
+        var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
+        return WithActiveSession(
+            state,
+            action.Target,
+            session with
+            {
+                RecordedExercises = session
+                    .RecordedExercises
+                    .SetItem(action.ExerciseIndex, exerciseAtIndex with { Notes = action.Notes })
+            }
+        );
+    }
+
     private static RecordedSet? GetCycledRepCount(
         RecordedSet? recordedSet,
         ExerciseBlueprint exerciseBlueprint
