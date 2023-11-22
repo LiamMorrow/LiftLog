@@ -2,24 +2,28 @@
 {
     case IconButtonType.Standard:
         <md-icon-button
+            @attributes="AdditionalAttributes"
             @onpointerdown="OnPointerDown"
             @onpointerleave="OnPointerLeave"
             @onpointerup="OnPointerUp" class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=""><md-icon>@Icon</md-icon></md-icon-button>
         break;
     case IconButtonType.Filled:
         <md-filled-icon-button
+            @attributes="AdditionalAttributes"
             @onpointerdown="OnPointerDown"
             @onpointerleave="OnPointerLeave"
             @onpointerup="OnPointerUp" class="pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=""><md-icon>@Icon</md-icon></md-filled-icon-button>
         break;
     case IconButtonType.FilledTonal:
         <md-filled-tonal-icon-button
+            @attributes="AdditionalAttributes"
             @onpointerdown="OnPointerDown"
             @onpointerleave="OnPointerLeave"
             @onpointerup="OnPointerUp" class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=""><md-icon>@Icon</md-icon></md-filled-tonal-icon-button>
         break;
     case IconButtonType.Outlined:
         <md-outlined-icon-button
+            @attributes="AdditionalAttributes"
             @onpointerdown="OnPointerDown"
             @onpointerleave="OnPointerLeave"
             @onpointerup="OnPointerUp" class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=""><md-icon>@Icon</md-icon></md-outlined-icon-button>
@@ -51,6 +55,8 @@
     [Parameter]
     public bool Disabled { get; set; }
 
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     private void OnPointerDown(PointerEventArgs args)
     {

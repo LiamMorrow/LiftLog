@@ -72,6 +72,33 @@ describe('Completing a session', () => {
 
         cy.get('.cardlist .card').first().should('contain.text', 'Workout A').should('contain.text', 'December 13 2020')
       })
+
+      it.only('can add notes to an exercise and see them the next time they do that exercise', () => {
+        cy.contains('Workout A').click()
+
+        cy.get('[data-cy=exercise-notes-btn]').first().click()
+        cy.get('md-outlined-text-field').get('textarea', { includeShadowDom: true }).first().click().type('I am NoteTaker, master of notes')
+        cy.get('[data-cy=notes-dialog-actions]').contains("Save").click()
+
+        cy.get('md-fab').click()
+
+        cy.get('nav').contains('History').click()
+
+        cy.get('.cardlist .card').first('.card').should('contain.text', 'Workout A').click()
+
+        cy.get('[data-cy=exercise-notes-btn]').first().click()
+        cy.get('md-outlined-text-field').get('textarea', { includeShadowDom: true })
+          .first()
+          .should('have.value', 'I am NoteTaker, master of notes')
+          .type('Replace notes but do not save')
+        cy.get('[data-cy=notes-dialog-actions]').contains("Cancel").click()
+
+        cy.get('nav').contains('Workout').click()
+        cy.contains('Workout A').click()
+
+        cy.get('[data-cy=prev-exercise-btn]').first().then(btn => btn.trigger('pointerdown', {}))
+        cy.get('[data-cy=exercise-notes]').should('contain.text', 'I am NoteTaker, master of notes')
+      })
     })
   })
 })

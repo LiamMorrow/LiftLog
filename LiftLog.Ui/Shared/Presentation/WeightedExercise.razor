@@ -16,7 +16,7 @@
                     <WeightDisplay
                         Exercise="displayedExercise"
                             UpdateWeightForExercise="UpdateWeightForExercise"/>
-                    <IconButton Icon="notes" OnClick="OnOpenNotesButtonClick" Type="IconButtonType.Outlined"/>
+                    <IconButton data-cy="exercise-notes-btn" Icon="notes" OnClick="OnOpenNotesButtonClick" Type="IconButtonType.Outlined"/>
                 </div>
             </div>
             <div class="flex flex-wrap justify-center gap-2">
@@ -33,7 +33,7 @@
             </div>
             @if(notesToShow is not null)
             {
-                <span>@notesToShow</span>
+                <span data-cy="exercise-notes">@notesToShow</span>
             }
         </div>
     </MainContent>
@@ -45,7 +45,7 @@
         </Menu>
         @if(PreviousRecordedExercise != null)
         {
-            <IconButton Type="IconButtonType.FilledTonal" Icon="history" OnClick="()=>{}" OnStartHold="()=> _holdingPrevious=true" OnEndHold="()=>_holdingPrevious = false" />
+            <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.FilledTonal" Icon="history" OnClick="()=>{}" OnStartHold="()=> _holdingPrevious=true" OnEndHold="()=>_holdingPrevious = false" />
         }
     </SideContent>
 </SplitCardControl>
@@ -55,7 +55,7 @@
     <div slot="content">
         <TextField label="Notes" TextFieldType="TextFieldType.Outline" Value=@EditorNotes OnChange="HandleNotesChange"  type="textarea"  />
     </div>
-    <div slot="actions">
+    <div slot="actions" data-cy="notes-dialog-actions">
         <AppButton Type="AppButtonType.Text" OnClick=@(()=>notesDialog?.Close())>Cancel</AppButton>
         <AppButton Type="AppButtonType.Text" OnClick=HandleNotesSave>Save</AppButton>
     </div>
@@ -65,7 +65,7 @@
   private Menu? _menu;
   private Dialog? notesDialog;
 
-  private string? EditorNotes {get;set;}
+  private string EditorNotes {get;set;} = "";
 
   [EditorRequired]
   [Parameter]
@@ -110,13 +110,13 @@
 
   private void HandleNotesSave()
   {
-    UpdateNotesForExercise(EditorNotes);
+    UpdateNotesForExercise(EditorNotes == "" ? null : EditorNotes);
     notesDialog?.Close();
   }
 
   private void OnOpenNotesButtonClick()
   {
-      EditorNotes = RecordedExercise.Notes;
+      EditorNotes = RecordedExercise.Notes ?? "";
       notesDialog?.Open();
   }
 }
