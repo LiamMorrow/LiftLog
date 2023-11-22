@@ -49,7 +49,7 @@
 <Dialog @ref=notesDialog>
     <span slot="headline">@(RecordedExercise.Blueprint.Name) Notes</span>
     <div slot="content">
-        <TextField label="Notes" required TextFieldType="TextFieldType.Outline" Value=@EditorNotes OnChange="HandleNotesChange"  type="textarea"  />
+        <TextField label="Notes" TextFieldType="TextFieldType.Outline" Value=@EditorNotes OnChange="HandleNotesChange"  type="textarea"  />
     </div>
     <div slot="actions">
         <AppButton Type="AppButtonType.Text" OnClick=@(()=>notesDialog?.Close())>Cancel</AppButton>
