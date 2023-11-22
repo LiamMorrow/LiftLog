@@ -56,7 +56,8 @@ internal record SessionDaoV1(
 internal record RecordedExerciseDaoV1(
     [property: JsonPropertyName("Blueprint")] ExerciseBlueprintDaoV1 Blueprint,
     [property: JsonPropertyName("Kilograms")] decimal Kilograms,
-    [property: JsonPropertyName("RecordedSets")] ImmutableListValue<RecordedSetDaoV1?> RecordedSets
+    [property: JsonPropertyName("RecordedSets")] ImmutableListValue<RecordedSetDaoV1?> RecordedSets,
+    [property: JsonPropertyName("Notes")] string? Notes
 )
 {
     public static RecordedExerciseDaoV1 FromModel(
@@ -69,14 +70,16 @@ internal record RecordedExerciseDaoV1(
             model
                 .RecordedSets
                 .Select(x => RecordedSetDaoV1.FromModel(sessionDate, x))
-                .ToImmutableList()
+                .ToImmutableList(),
+            model.Notes
         );
 
     public Lib.Models.RecordedExercise ToModel() =>
         new(
             Blueprint.ToModel(),
             Kilograms,
-            RecordedSets.Select(x => x?.ToModel()).ToImmutableList()
+            RecordedSets.Select(x => x?.ToModel()).ToImmutableList(),
+            Notes
         );
 }
 

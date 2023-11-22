@@ -46,6 +46,7 @@
         RemoveExercise=RemoveExercise
         EditExercise="EditExercise"
         AddExercise="AddExercise"
+        UpdateNotesForExercise="UpdateNotesForExercise"
         ExerciseNames="ProgramState.Value.ExerciseNames"
         SessionInPlan=@(ProgramState.Value.SessionBlueprints.Contains(CurrentSessionState.Value.HistorySession.Blueprint))
         SessionWithSameNameInPlan=@(ProgramState.Value.SessionBlueprints.Any(x=>x.Name == CurrentSessionState.Value.HistorySession.Blueprint.Name))
@@ -91,6 +92,9 @@
 
     private void RemoveExercise(int exerciseIndex)
         => Dispatcher.Dispatch(new RemoveExerciseFromActiveSessionAction(SessionTarget.HistorySession, exerciseIndex));
+
+    private void UpdateNotesForExercise(int exerciseIndex, string? notes)
+        => Dispatcher.Dispatch(new UpdateNotesForExerciseAction(SessionTarget.HistorySession, exerciseIndex, notes));
 
     private void AddSessionToPlan()
     {

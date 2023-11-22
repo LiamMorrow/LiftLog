@@ -17,6 +17,8 @@ public record ClearExerciseRepsAction(SessionTarget Target, int ExerciseIndex, i
 
 public record UpdateExerciseWeightAction(SessionTarget Target, int ExerciseIndex, decimal Weight);
 
+public record UpdateNotesForExerciseAction(SessionTarget Target, int ExerciseIndex, string? Notes);
+
 public record EditExerciseInActiveSessionAction(
     SessionTarget Target,
     int ExerciseIndex,

@@ -104,7 +104,8 @@ public class SessionService
                     { SucceededAllSets: true } => lastExercise.Weight + e.WeightIncreaseOnSuccess,
                     _ => lastExercise.Weight
                 },
-                Enumerable.Range(0, e.Sets).Select(_ => (RecordedSet?)null).ToImmutableList()
+                Enumerable.Range(0, e.Sets).Select(_ => (RecordedSet?)null).ToImmutableList(),
+                null
             );
         }
 

@@ -69,7 +69,8 @@ public record Session(
 public record RecordedExercise(
     ExerciseBlueprint Blueprint,
     decimal Weight,
-    ImmutableListValue<RecordedSet?> RecordedSets
+    ImmutableListValue<RecordedSet?> RecordedSets,
+    string? Notes
 )
 {
     public bool SucceededAllSets =>
