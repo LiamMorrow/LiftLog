@@ -1,10 +1,10 @@
 ﻿@using LiftLog.Ui.Util
 @{
-    var (displayedExercise, repToStartNext) = (_holdingPrevious, PreviousRecordedExercise) switch
+    var (displayedExercise, repToStartNext, notesToShow) = (_holdingPrevious, PreviousRecordedExercise) switch
     {
-        (true, null) => (RecordedExercise, -1),
-        (true, _) => (PreviousRecordedExercise!, -1),
-        (false, _) => (RecordedExercise, RecordedExercise.RecordedSets.IndexOf(null))
+        (true, null) => (RecordedExercise, -1, null),
+        (true, var previous) => (previous, -1, previous.Notes),
+        (false, _) => (RecordedExercise, RecordedExercise.RecordedSets.IndexOf(null), null)
     };
 }
 <SplitCardControl>
@@ -31,6 +31,10 @@
                         ToStartNext=@(ToStartNext && repToStartNext == i) />
                 }
             </div>
+            @if(notesToShow is not null)
+            {
+                <span>@notesToShow</span>
+            }
         </div>
     </MainContent>
     <SideContent>
