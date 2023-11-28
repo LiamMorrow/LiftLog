@@ -28,17 +28,6 @@ public static class SessionEditorReducers
         );
 
     [ReducerMethod]
-    public static SessionEditorState SetExercisesSupersetsNext(
-        SessionEditorState state,
-        SetExercisesSupersetsNextAction action
-    ) =>
-        UpdateExerciseIfCan(
-            state,
-            action.ExerciseIndex,
-            blueprint => blueprint with { SupersetWithNext = action.Supersets }
-        );
-
-    [ReducerMethod]
     public static SessionEditorState AddExerciseAction(
         SessionEditorState state,
         AddExerciseAction action
@@ -129,89 +118,10 @@ public static class SessionEditorReducers
     }
 
     [ReducerMethod]
-    public static SessionEditorState SetExerciseInitialWeight(
+    public static SessionEditorState UpdateSessionExercise(
         SessionEditorState state,
-        SetExerciseInitialWeightAction action
-    ) =>
-        UpdateExerciseIfCan(
-            state,
-            action.ExerciseIndex,
-            blueprint => blueprint with { InitialWeight = action.InitialWeight }
-        );
-
-    [ReducerMethod]
-    public static SessionEditorState SetExerciseWeightIncreaseOnSuccess(
-        SessionEditorState state,
-        SetExerciseWeightIncreaseOnSuccessAction action
-    ) =>
-        UpdateExerciseIfCan(
-            state,
-            action.ExerciseIndex,
-            blueprint => blueprint with { WeightIncreaseOnSuccess = action.WeightIncreaseOnSuccess }
-        );
-
-    [ReducerMethod]
-    public static SessionEditorState SetExerciseName(
-        SessionEditorState state,
-        SetExerciseNameAction action
-    ) =>
-        UpdateExerciseIfCan(
-            state,
-            action.ExerciseIndex,
-            blueprint => blueprint with { Name = action.Name }
-        );
-
-    [ReducerMethod]
-    public static SessionEditorState SetMin(SessionEditorState state, SetRestAction action) =>
-        UpdateExerciseIfCan(
-            state,
-            action.ExerciseIndex,
-            blueprint => blueprint with { RestBetweenSets = action.Rest }
-        );
-
-    [ReducerMethod]
-    public static SessionEditorState IncrementExerciseSets(
-        SessionEditorState state,
-        IncrementExerciseSetsAction action
-    ) =>
-        UpdateExerciseIfCan(
-            state,
-            action.ExerciseIndex,
-            blueprint => blueprint with { Sets = Math.Max(0, blueprint.Sets + 1) }
-        );
-
-    [ReducerMethod]
-    public static SessionEditorState DecrementExerciseSets(
-        SessionEditorState state,
-        DecrementExerciseSetsAction action
-    ) =>
-        UpdateExerciseIfCan(
-            state,
-            action.ExerciseIndex,
-            blueprint => blueprint with { Sets = Math.Max(0, blueprint.Sets - 1) }
-        );
-
-    [ReducerMethod]
-    public static SessionEditorState IncrementExerciseRepsPerSet(
-        SessionEditorState state,
-        IncrementExerciseRepsPerSetAction action
-    ) =>
-        UpdateExerciseIfCan(
-            state,
-            action.ExerciseIndex,
-            blueprint => blueprint with { RepsPerSet = Math.Max(0, blueprint.RepsPerSet + 1) }
-        );
-
-    [ReducerMethod]
-    public static SessionEditorState DecrementExerciseRepsPerSet(
-        SessionEditorState state,
-        DecrementExerciseRepsPerSetAction action
-    ) =>
-        UpdateExerciseIfCan(
-            state,
-            action.ExerciseIndex,
-            blueprint => blueprint with { RepsPerSet = Math.Max(0, blueprint.RepsPerSet - 1) }
-        );
+        UpdateSessionExerciseAction action
+    ) => UpdateExerciseIfCan(state, action.ExerciseIndex, blueprint => action.ExerciseBlueprint);
 
     private static SessionEditorState UpdateExerciseIfCan(
         SessionEditorState state,

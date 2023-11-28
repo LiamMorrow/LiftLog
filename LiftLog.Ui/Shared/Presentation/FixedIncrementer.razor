@@ -1,9 +1,9 @@
 @typeparam T
 
 <div @attributes=@AdditionalAttributes class="flex items-center @(AdditionalAttributes?.GetValueOrDefault("class"))">
-    <IconButton Type="IconButtonType.Outlined" OnClick="Decrement" Icon="remove" />
+    <IconButton data-cy="fixed-decrement" Type="IconButtonType.Outlined" OnClick="Decrement" Icon="remove" />
     <span class="inline-block w-20 mx-2 text-center">@Value @Label</span>
-    <IconButton Type="IconButtonType.Outlined" OnClick="Increment" Icon="add" />
+    <IconButton data-cy="fixed-increment" Type="IconButtonType.Outlined" OnClick="Increment" Icon="add" />
 </div>
 
 @code
