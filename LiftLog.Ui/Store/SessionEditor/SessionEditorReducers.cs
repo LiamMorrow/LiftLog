@@ -121,12 +121,7 @@ public static class SessionEditorReducers
     public static SessionEditorState UpdateSessionExercise(
         SessionEditorState state,
         UpdateSessionExerciseAction action
-    ) =>
-        UpdateExerciseIfCan(
-            state,
-            action.ExerciseIndex,
-            blueprint => action.ExerciseBlueprint
-        );
+    ) => UpdateExerciseIfCan(state, action.ExerciseIndex, blueprint => action.ExerciseBlueprint);
 
     private static SessionEditorState UpdateExerciseIfCan(
         SessionEditorState state,

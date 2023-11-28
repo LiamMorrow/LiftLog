@@ -14,7 +14,4 @@ public record AddExerciseAction(ExerciseBlueprint ExerciseBlueprint);
 
 public record RemoveExerciseAction(ExerciseBlueprint ExerciseBlueprint);
 
-public record UpdateSessionExerciseAction(
-    int ExerciseIndex,
-    ExerciseBlueprint ExerciseBlueprint
-);
+public record UpdateSessionExerciseAction(int ExerciseIndex, ExerciseBlueprint ExerciseBlueprint);
