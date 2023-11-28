@@ -25,7 +25,9 @@ public class MauiShareTextExporter : ITextExporter
         {
             await writer.WriteAsync(text);
         }
-        await _share.RequestAsync(new ShareFileRequest { Title = "Export Data", File = new ShareFile(file) });
+        await _share.RequestAsync(
+            new ShareFileRequest { Title = "Export Data", File = new ShareFile(file) }
+        );
     }
 
     public async Task<string> ImportTextAsync()

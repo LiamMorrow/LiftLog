@@ -1,12 +1,12 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Text.Json;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
-using LiftLog.Ui.Repository;
 using LiftLog.Ui.Models.SessionHistoryDao;
+using LiftLog.Ui.Repository;
 using LiftLog.Ui.Util;
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Ui.Services

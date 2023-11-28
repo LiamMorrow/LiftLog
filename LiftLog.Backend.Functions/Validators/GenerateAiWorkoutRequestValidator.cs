@@ -8,6 +8,7 @@ public class GenerateAiWorkoutRequestValidator : AbstractValidator<GenerateAiWor
     public GenerateAiWorkoutRequestValidator()
     {
         RuleFor(x => x.Attributes).NotNull();
-        RuleFor(x => x.Attributes).SetValidator(new GenerateAiWorkoutPlanRequestAttributesValidator());
+        RuleFor(x => x.Attributes)
+            .SetValidator(new GenerateAiWorkoutPlanRequestAttributesValidator());
     }
 }

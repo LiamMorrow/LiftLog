@@ -1,5 +1,3 @@
-
-
 using System.Text.Json.Serialization;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
@@ -22,7 +20,7 @@ using LiftLog.Ui.Store.CurrentSession;
 [JsonSerializable(typeof(SessionDaoV1))]
 internal partial class StorageJsonContext : JsonSerializerContext
 {
-
-    public static readonly StorageJsonContext Context = new StorageJsonContext(JsonSerializerSettings.LiftLog);
-
+    public static readonly StorageJsonContext Context = new StorageJsonContext(
+        JsonSerializerSettings.LiftLog
+    );
 }

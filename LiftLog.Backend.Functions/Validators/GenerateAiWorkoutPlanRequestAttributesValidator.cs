@@ -3,7 +3,9 @@ using FluentValidation;
 using LiftLog.Lib.Models;
 
 namespace LiftLog.Backend.Functions.Validators;
-public class GenerateAiWorkoutPlanRequestAttributesValidator : AbstractValidator<AiWorkoutAttributes>
+
+public class GenerateAiWorkoutPlanRequestAttributesValidator
+    : AbstractValidator<AiWorkoutAttributes>
 {
     public GenerateAiWorkoutPlanRequestAttributesValidator()
     {

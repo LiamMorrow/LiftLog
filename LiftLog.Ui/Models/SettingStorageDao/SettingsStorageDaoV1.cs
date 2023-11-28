@@ -6,6 +6,6 @@ using LiftLog.Ui.Models.SessionHistoryDao;
 namespace LiftLog.Ui.Models.SettingsStorageDao;
 
 internal record SettingsStorageDaoV1(
-        List<SessionDaoV1> Sessions,
-        ImmutableListValue<SessionBlueprintDaoV1> Program
+    List<SessionDaoV1> Sessions,
+    ImmutableListValue<SessionBlueprintDaoV1> Program
 );

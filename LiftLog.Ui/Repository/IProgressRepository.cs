@@ -5,7 +5,6 @@ namespace LiftLog.Ui.Repository
 {
     public interface IProgressRepository
     {
-
         ValueTask<
             ImmutableDictionary<KeyedExerciseBlueprint, RecordedExercise>
         > GetLatestRecordedExercisesAsync();

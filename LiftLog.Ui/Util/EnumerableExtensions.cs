@@ -11,7 +11,9 @@ namespace LiftLog.Ui.Util
             return source.Select((item, index) => (item, index));
         }
 
-        public static async Task<ImmutableList<T>> ToImmutableListAsync<T>(this IAsyncEnumerable<T> source)
+        public static async Task<ImmutableList<T>> ToImmutableListAsync<T>(
+            this IAsyncEnumerable<T> source
+        )
         {
             var immutableListBuilder = ImmutableList.CreateBuilder<T>();
             await foreach (var item in source)
@@ -21,8 +23,16 @@ namespace LiftLog.Ui.Util
             return immutableListBuilder.ToImmutable();
         }
 
-        public static async ValueTask<ImmutableDictionary<K, V>> ToImmutableDictionaryAwaitAsync<T, K, V>(this IAsyncEnumerable<T> source, Func<T, ValueTask<K>> keySelector, Func<T, ValueTask<V>> valueSelector)
-        where K : notnull
+        public static async ValueTask<ImmutableDictionary<K, V>> ToImmutableDictionaryAwaitAsync<
+            T,
+            K,
+            V
+        >(
+            this IAsyncEnumerable<T> source,
+            Func<T, ValueTask<K>> keySelector,
+            Func<T, ValueTask<V>> valueSelector
+        )
+            where K : notnull
         {
             var immutableDictionaryBuilder = ImmutableDictionary.CreateBuilder<K, V>();
             await foreach (var item in source)

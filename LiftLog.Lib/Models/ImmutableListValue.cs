@@ -16,7 +16,7 @@ namespace LiftLog.Lib
     {
         public ImmutableListValue()
         {
-            Items =  [ ];
+            Items =  [];
         }
 
         public ImmutableListValue(ImmutableList<T> items)
@@ -26,10 +26,10 @@ namespace LiftLog.Lib
 
         public ImmutableListValue(List<T> items)
         {
-            Items =  [ .. items ];
+            Items =  [.. items];
         }
 
-        public static readonly ImmutableListValue<T> Empty =  [ ];
+        public static readonly ImmutableListValue<T> Empty = [];
 
         // Note - This allows for setting internally.
         // It can be set during an Equals check when 2 lists are equal by sequence, but not by reference

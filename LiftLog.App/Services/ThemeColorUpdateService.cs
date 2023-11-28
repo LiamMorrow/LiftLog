@@ -1,10 +1,11 @@
+using MaterialColorUtilities.Maui;
+using Microsoft.Extensions.Options;
+using Microsoft.Maui.Platform;
 #if ANDROID
 using Android.App;
 using AndroidX.Core.View;
 #endif
-using MaterialColorUtilities.Maui;
-using Microsoft.Extensions.Options;
-using Microsoft.Maui.Platform;
+
 
 namespace LiftLog.App.Services;
 

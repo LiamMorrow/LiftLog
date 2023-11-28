@@ -21,15 +21,16 @@ namespace LiftLog.App;
 )]
 public class MainActivity : MauiAppCompatActivity
 {
-
     protected override void OnCreate(Bundle? savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
         WindowCompat.SetDecorFitsSystemWindows(Window, false);
         var themeProvider = MauiApplication.Current.Services.GetRequiredService<AppThemeProvider>();
-        ViewCompat.SetOnApplyWindowInsetsListener(Window.DecorView, new WindowInsetsListener(themeProvider, Resources.DisplayMetrics.Density));
+        ViewCompat.SetOnApplyWindowInsetsListener(
+            Window.DecorView,
+            new WindowInsetsListener(themeProvider, Resources.DisplayMetrics.Density)
+        );
     }
-
 
     private class WindowInsetsListener : Java.Lang.Object, IOnApplyWindowInsetsListener
     {
@@ -42,7 +43,10 @@ public class MainActivity : MauiAppCompatActivity
             this.density = density;
         }
 
-        public WindowInsetsCompat OnApplyWindowInsets(Android.Views.View v, WindowInsetsCompat insets)
+        public WindowInsetsCompat OnApplyWindowInsets(
+            Android.Views.View v,
+            WindowInsetsCompat insets
+        )
         {
             // convert android px to css px
             var top = insets.SystemWindowInsetTop / density;

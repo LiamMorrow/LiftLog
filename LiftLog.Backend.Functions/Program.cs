@@ -1,12 +1,12 @@
-using Microsoft.Extensions.Hosting;
+using System.Security.Cryptography.X509Certificates;
+using Azure.Data.Tables;
+using Google.Apis.AndroidPublisher.v3;
+using Google.Apis.Auth.OAuth2;
+using LiftLog.Backend.Functions.Services;
 using LiftLog.Backend.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using LiftLog.Backend.Functions.Services;
-using Azure.Data.Tables;
-using Google.Apis.AndroidPublisher.v3;
-using System.Security.Cryptography.X509Certificates;
-using Google.Apis.Auth.OAuth2;
+using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
@@ -41,12 +41,12 @@ var host = new HostBuilder()
             services.AddSingleton(
                 (service) =>
                 {
-                    var certificateBase64 = context.Configuration.GetValue<string>(
-                        "GooglePlayServiceAccountKeyBase64"
-                    );
-                    var serviceAccountEmail = context.Configuration.GetValue<string>(
-                        "GooglePlayServiceAccountEmail"
-                    );
+                    var certificateBase64 = context
+                        .Configuration
+                        .GetValue<string>("GooglePlayServiceAccountKeyBase64");
+                    var serviceAccountEmail = context
+                        .Configuration
+                        .GetValue<string>("GooglePlayServiceAccountEmail");
                     var certificateBytes = Convert.FromBase64String(certificateBase64);
                     var certificate = new X509Certificate2(
                         certificateBytes,
