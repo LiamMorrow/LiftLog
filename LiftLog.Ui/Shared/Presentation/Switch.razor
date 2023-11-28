@@ -1,6 +1,6 @@
 @inject IJSRuntime JSRuntime
 <label class="flex justify-between gap-3 items-center"> @Label
-<md-switch @ref=_switchRef @onchange=HandleInput selected=@Value ></md-switch>
+<md-switch @attributes=AdditionalAttributes @ref=_switchRef @onchange=HandleInput selected=@Value ></md-switch>
 </label>
 @code{
 
@@ -12,11 +12,14 @@
 
     [Parameter]
     [EditorRequired]
-    public bool Value {get;set;}
+    public bool Value { get;set; }
 
     [Parameter]
     [EditorRequired]
     public EventCallback<bool> OnSwitched {get;set;}
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {

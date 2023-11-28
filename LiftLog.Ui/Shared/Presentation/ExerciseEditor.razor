@@ -1,4 +1,5 @@
 <TextField
+    data-cy="exercise-name"
     TextFieldType="TextFieldType.Outline"
     class="w-full mb-2 text-xl"
     Label="Exercise Name"
@@ -8,12 +9,14 @@
 <div class="flex flex-wrap justify-around w-full gap-4">
     <div class="flex flex-col items-center gap-1">
         <FixedIncrementer
+            data-cy="exercise-sets"
             Value="Exercise.Sets"
             Increment="() => IncrementExerciseSets()"
             Decrement="() => DecrementExerciseSets()"
             Label="Sets"
         />
         <FixedIncrementer
+            data-cy="exercise-reps"
             Value="Exercise.RepsPerSet"
             Increment="() => IncrementExerciseRepsPerSet()"
             Decrement="() => DecrementExerciseRepsPerSet()"
@@ -23,16 +26,18 @@
     <EditableIncrementer
         Increment=@Math.Max(Exercise.WeightIncreaseOnSuccess, 0.1m)
         Label="Initial Weight"
+        data-cy="exercise-initial-weight"
         Value=@Exercise.InitialWeight
         OnChange="e => SetExerciseInitialWeight(e)"
     />
     <EditableIncrementer
         Increment="0.1m"
         Label="Auto Increase"
+        data-cy="exercise-auto-increase"
         Value="Exercise.WeightIncreaseOnSuccess"
         OnChange="e => SetExerciseSuccessWeight(e)"/>
 
-    <Switch Label="Superset With Next Exercise" Value=Exercise.SupersetWithNext OnSwitched="supersets=>SetExerciseSupersetsNext(supersets)"/>
+    <Switch Label="Superset With Next Exercise" data-cy="exercise-superset" Value=Exercise.SupersetWithNext OnSwitched="supersets=>SetExerciseSupersetsNext(supersets)"/>
 
     <RestEditorGroup Rest="Exercise.RestBetweenSets" OnRestUpdated="rest => OnRestUpdated(rest)"/>
 </div>
