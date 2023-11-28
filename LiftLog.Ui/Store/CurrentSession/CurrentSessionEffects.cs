@@ -79,7 +79,9 @@ public class CurrentSessionEffects
         if (session?.NextExercise is not null)
         {
             var exerciseIndex = session.RecordedExercises.IndexOf(session.NextExercise);
-            var setIndex = session.NextExercise.RecordedSets
+            var setIndex = session
+                .NextExercise
+                .RecordedSets
                 .IndexedTuples()
                 .Where(x => x.Item is null)
                 .Select(x => x.Index as int?)

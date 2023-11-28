@@ -7,14 +7,14 @@ using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
 using LiftLog.Lib.Services;
-using LiftLog.Ui.Repository;
 using LiftLog.Ui.Models.SessionBlueprintDao;
 using LiftLog.Ui.Models.SessionHistoryDao;
+using LiftLog.Ui.Models.SettingsStorageDao;
+using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.Program;
 using LiftLog.Ui.Util;
 using Microsoft.Extensions.Logging;
-using LiftLog.Ui.Models.SettingsStorageDao;
 
 namespace LiftLog.Ui.Store.Settings;
 

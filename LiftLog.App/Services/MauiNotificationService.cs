@@ -1,12 +1,12 @@
+using Fluxor;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Store.CurrentSession;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
 using Plugin.LocalNotification.EventArgs;
+using IDispatcher = Fluxor.IDispatcher;
 using ILocalNotificationService = Plugin.LocalNotification.INotificationService;
 using INotificationService = LiftLog.Ui.Services.INotificationService;
-using IDispatcher = Fluxor.IDispatcher;
-using Fluxor;
 
 namespace LiftLog.App.Services;
 

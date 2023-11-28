@@ -58,7 +58,7 @@ namespace LiftLog.Lib.Serialization
                 JsonSerializerOptions options
             )
             {
-                _jsonConverter.Write(writer, [ .. value ], options);
+                _jsonConverter.Write(writer, [.. value], options);
             }
         }
     }

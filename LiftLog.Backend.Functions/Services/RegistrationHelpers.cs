@@ -6,7 +6,10 @@ using OpenAI;
 
 public static class RegistrationHelpers
 {
-    public static IServiceCollection RegisterGptAiWorkoutPlanner(this IServiceCollection source, string apiKey)
+    public static IServiceCollection RegisterGptAiWorkoutPlanner(
+        this IServiceCollection source,
+        string apiKey
+    )
     {
         var openAiClient = new OpenAIClient(apiKey, OpenAIClientSettings.Default, new HttpClient());
         source.AddSingleton(openAiClient);

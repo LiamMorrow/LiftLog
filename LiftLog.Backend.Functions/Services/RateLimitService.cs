@@ -1,9 +1,9 @@
+using System.Runtime.Intrinsics.Arm;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using Azure;
 using Azure.Data.Tables;
-using System.Security.Cryptography;
-using System.Runtime.Intrinsics.Arm;
-using System.Text;
 using LiftLog.Lib.Models;
 
 namespace LiftLog.Backend.Functions.Services;

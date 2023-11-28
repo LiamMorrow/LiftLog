@@ -13,14 +13,21 @@ public static class ProgramReducers
     ) => state with { ExerciseNames = action.ExerciseNames };
 
     [ReducerMethod]
-    public static ProgramState FetchUpcomingSessions(ProgramState state, FetchUpcomingSessionsAction _) =>
-        state with { IsLoadingUpcomingSessions = true };
+    public static ProgramState FetchUpcomingSessions(
+        ProgramState state,
+        FetchUpcomingSessionsAction _
+    ) => state with { IsLoadingUpcomingSessions = true };
 
     [ReducerMethod]
     public static ProgramState SetUpcomingSessions(
         ProgramState state,
         SetUpcomingSessionsAction action
-    ) => state with { UpcomingSessions = action.UpcomingSessions, IsLoadingUpcomingSessions = false };
+    ) =>
+        state with
+        {
+            UpcomingSessions = action.UpcomingSessions,
+            IsLoadingUpcomingSessions = false
+        };
 
     [ReducerMethod]
     public static ProgramState SetProgramSessions(
@@ -38,10 +45,9 @@ public static class ProgramReducers
 
         return state with
         {
-            SessionBlueprints = state.SessionBlueprints.SetItem(
-                action.SessionIndex,
-                action.SessionBlueprint
-            )
+            SessionBlueprints = state
+                .SessionBlueprints
+                .SetItem(action.SessionIndex, action.SessionBlueprint)
         };
     }
 
@@ -67,7 +73,8 @@ public static class ProgramReducers
 
         return state with
         {
-            SessionBlueprints = state.SessionBlueprints
+            SessionBlueprints = state
+                .SessionBlueprints
                 .SetItem(index, toSwap)
                 .SetItem(index - 1, action.SessionBlueprint)
         };
@@ -89,7 +96,8 @@ public static class ProgramReducers
 
         return state with
         {
-            SessionBlueprints = state.SessionBlueprints
+            SessionBlueprints = state
+                .SessionBlueprints
                 .SetItem(index, toSwap)
                 .SetItem(index + 1, action.SessionBlueprint)
         };

@@ -7,4 +7,5 @@ public record SettingsState(
     AiWorkoutAttributes? AiWorkoutAttributes,
     bool IsGeneratingAiPlan,
     string? AiPlanError,
-    AiWorkoutPlan? AiPlan);
+    AiWorkoutPlan? AiPlan
+);

@@ -13,20 +13,22 @@ public static class SettingsReducers
     ) => state with { IsGeneratingAiPlan = action.IsGeneratingAiPlan };
 
     [ReducerMethod]
-    public static SettingsState SetAiPlanError(
-        SettingsState state,
-        SetAiPlanErrorAction action
-    ) => state with { AiPlanError = action.AiPlanError };
+    public static SettingsState SetAiPlanError(SettingsState state, SetAiPlanErrorAction action) =>
+        state with
+        {
+            AiPlanError = action.AiPlanError
+        };
 
     [ReducerMethod]
-    public static SettingsState SetAiPlan(
-        SettingsState state,
-        SetAiPlanAction action
-    ) => state with { AiPlan = action.Plan };
+    public static SettingsState SetAiPlan(SettingsState state, SetAiPlanAction action) =>
+        state with
+        {
+            AiPlan = action.Plan
+        };
 
     [ReducerMethod]
     public static SettingsState SetAiPlanAttributes(
-            SettingsState state,
-            SetAiPlanAttributesAction action
-        ) => state with { AiWorkoutAttributes = action.Attributes };
+        SettingsState state,
+        SetAiPlanAttributesAction action
+    ) => state with { AiWorkoutAttributes = action.Attributes };
 }

@@ -7,4 +7,5 @@ public record ProgramState(
     ImmutableListValue<SessionBlueprint> SessionBlueprints,
     ImmutableListValue<Session> UpcomingSessions,
     bool IsLoadingUpcomingSessions,
-    ImmutableListValue<string> ExerciseNames);
+    ImmutableListValue<string> ExerciseNames
+);
