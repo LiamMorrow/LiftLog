@@ -19,6 +19,8 @@ public record UpdateExerciseWeightAction(SessionTarget Target, int ExerciseIndex
 
 public record UpdateNotesForExerciseAction(SessionTarget Target, int ExerciseIndex, string? Notes);
 
+public record UpdateBodyweightAction(SessionTarget Target, decimal? Bodyweight);
+
 public record EditExerciseInActiveSessionAction(
     SessionTarget Target,
     int ExerciseIndex,

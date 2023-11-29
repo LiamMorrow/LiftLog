@@ -51,7 +51,8 @@
         SessionInPlan=@(ProgramState.Value.SessionBlueprints.Contains(CurrentSessionState.Value.HistorySession.Blueprint))
         SessionWithSameNameInPlan=@(ProgramState.Value.SessionBlueprints.Any(x=>x.Name == CurrentSessionState.Value.HistorySession.Blueprint.Name))
         AddSessionToPlan="AddSessionToPlan"
-        UpdateSessionInPlan="UpdateSessionInPlan" />
+        UpdateSessionInPlan="UpdateSessionInPlan"
+        UpdateBodyweight="UpdateBodyweight" />
 }
 
 @code
@@ -95,6 +96,9 @@
 
     private void UpdateNotesForExercise(int exerciseIndex, string? notes)
         => Dispatcher.Dispatch(new UpdateNotesForExerciseAction(SessionTarget.HistorySession, exerciseIndex, notes));
+
+    private void UpdateBodyweight(decimal? bodyweight)
+        => Dispatcher.Dispatch(new UpdateBodyweightAction(SessionTarget.WorkoutSession, bodyweight));
 
     private void AddSessionToPlan()
     {

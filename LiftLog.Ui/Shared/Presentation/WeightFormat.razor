@@ -1,11 +1,13 @@
-<span class="flex items-center">@(Weight.ToString("0.####"))<span class="text-sm">@Suffix</span></span>
+<span class="flex items-center">@WeightDisplay<span class="text-sm">@Suffix</span></span>
 @code {
     [EditorRequired]
     [Parameter]
-    public decimal Weight { get; set; }
+    public decimal? Weight { get; set; }
 
     [CascadingParameter(Name = "UseImperial")]
     public bool UseImperial { get; set; }
+
+    private string WeightDisplay => Weight?.ToString("0.####") ?? "-";
 
     private string Suffix => UseImperial ? "lbs" : "kg";
 }

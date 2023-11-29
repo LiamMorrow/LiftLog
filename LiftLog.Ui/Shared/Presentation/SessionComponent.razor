@@ -25,6 +25,15 @@ else
             OnRemoveExercise=@(()=> BeginRemoveExercise(context.Index)) />
     </CardList>
 }
+<div class="flex-col flex justify-center gap-2 mt-2">
+    <Card>
+        <div class="flex justify-between items-center">
+            <span class="text-xl">Bodyweight</span>
+            <WeightDisplay Weight=Session.Bodyweight UpdateWeight="UpdateBodyweight" Increment="0.1m" Label="Bodyweight" />
+        </div>
+    </Card>
+</div>
+
 <div class="flex  justify-center gap-2 mt-6">
     <AppButton OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon>Add Exercise</AppButton>
     @if (!SessionInPlan && Session.RecordedExercises.Any())
@@ -122,6 +131,10 @@ else
     [EditorRequired]
     [Parameter]
     public Action<int, string?> UpdateNotesForExercise { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
+    public Action<decimal?> UpdateBodyweight { get; set; } = null!;
 
     [EditorRequired]
     [Parameter]

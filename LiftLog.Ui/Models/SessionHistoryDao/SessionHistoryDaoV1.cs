@@ -22,7 +22,8 @@ internal record SessionDaoV1(
     [property: JsonPropertyName("Blueprint")] SessionBlueprintDaoV1 Blueprint,
     [property: JsonPropertyName("RecordedExercises")]
         ImmutableListValue<RecordedExerciseDaoV1> RecordedExercises,
-    [property: JsonPropertyName("Date")] DateTimeOffset Date
+    [property: JsonPropertyName("Date")] DateTimeOffset Date,
+    [property: JsonPropertyName("Bodyweight")] decimal? Bodyweight
 )
 {
     public static SessionDaoV1 FromModel(Lib.Models.Session model) =>
@@ -41,7 +42,8 @@ internal record SessionDaoV1(
                 0,
                 0,
                 TimeSpan.Zero
-            )
+            ),
+            model.Bodyweight
         );
 
     public Lib.Models.Session ToModel() =>
@@ -49,7 +51,8 @@ internal record SessionDaoV1(
             Id,
             Blueprint.ToModel(),
             RecordedExercises.Select(x => x.ToModel()).ToImmutableList(),
-            new DateOnly(Date.Year, Date.Month, Date.Day)
+            new DateOnly(Date.Year, Date.Month, Date.Day),
+            Bodyweight
         );
 }
 
