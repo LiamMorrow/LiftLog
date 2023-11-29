@@ -98,7 +98,7 @@
         => Dispatcher.Dispatch(new UpdateNotesForExerciseAction(SessionTarget.HistorySession, exerciseIndex, notes));
 
     private void UpdateBodyweight(decimal? bodyweight)
-        => Dispatcher.Dispatch(new UpdateBodyweightAction(SessionTarget.WorkoutSession, bodyweight));
+        => Dispatcher.Dispatch(new UpdateBodyweightAction(SessionTarget.HistorySession, bodyweight));
 
     private void AddSessionToPlan()
     {

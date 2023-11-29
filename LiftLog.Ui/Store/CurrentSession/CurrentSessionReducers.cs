@@ -249,7 +249,7 @@ public static class Reducers
     ) =>
         WithActiveSession(
             state,
-            SessionTarget.WorkoutSession,
+            action.Target,
             session =>
                 session switch
                 {
