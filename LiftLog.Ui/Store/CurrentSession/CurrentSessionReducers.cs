@@ -242,6 +242,22 @@ public static class Reducers
         );
     }
 
+    [ReducerMethod]
+    public static CurrentSessionState UpdateBodyweight(
+        CurrentSessionState state,
+        UpdateBodyweightAction action
+    ) =>
+        WithActiveSession(
+            state,
+            action.Target,
+            session =>
+                session switch
+                {
+                    null => session,
+                    _ => session with { Bodyweight = action.Bodyweight }
+                }
+        );
+
     private static RecordedSet? GetCycledRepCount(
         RecordedSet? recordedSet,
         ExerciseBlueprint exerciseBlueprint
@@ -271,6 +287,26 @@ public static class Reducers
         {
             SessionTarget.WorkoutSession => state with { WorkoutSession = session },
             SessionTarget.HistorySession => state with { HistorySession = session },
+            _ => throw new Exception()
+        };
+
+    private static CurrentSessionState WithActiveSession(
+        this CurrentSessionState state,
+        SessionTarget target,
+        Func<Session?, Session?> sessionMap
+    ) =>
+        target switch
+        {
+            SessionTarget.WorkoutSession
+                => state with
+                {
+                    WorkoutSession = sessionMap(state.WorkoutSession)
+                },
+            SessionTarget.HistorySession
+                => state with
+                {
+                    HistorySession = sessionMap(state.HistorySession)
+                },
             _ => throw new Exception()
         };
 

@@ -85,7 +85,10 @@ public class SessionService
         return CreateNewSession(
             sessionBlueprints[(lastBlueprintIndex + 1) % sessionBlueprints.Count],
             latestRecordedExercises
-        );
+        ) with
+        {
+            Bodyweight = previousSession.Bodyweight
+        };
     }
 
     private Session CreateNewSession(
@@ -113,7 +116,8 @@ public class SessionService
             Guid.NewGuid(),
             sessionBlueprint,
             sessionBlueprint.Exercises.Select(GetNextExercise).ToImmutableList(),
-            DateOnly.FromDateTime(DateTime.Now)
+            DateOnly.FromDateTime(DateTime.Now),
+            null
         );
     }
 }

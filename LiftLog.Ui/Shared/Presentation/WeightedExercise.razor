@@ -14,8 +14,9 @@
                 <span class="text-xl">@RecordedExercise.Blueprint.Name</span>
                 <div class="flex gap-2">
                     <WeightDisplay
-                        Exercise="displayedExercise"
-                            UpdateWeightForExercise="UpdateWeightForExercise"/>
+                        Weight="displayedExercise.Weight"
+                        Increment="displayedExercise.Blueprint.WeightIncreaseOnSuccess"
+                            UpdateWeight="w => {if (w is not null) UpdateWeightForExercise(w.Value);}"/>
                     <IconButton data-cy="exercise-notes-btn" Icon="notes" OnClick="OnOpenNotesButtonClick" Type="IconButtonType.Outlined"/>
                 </div>
             </div>

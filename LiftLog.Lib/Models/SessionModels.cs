@@ -4,7 +4,8 @@ public record Session(
     Guid Id,
     SessionBlueprint Blueprint,
     ImmutableListValue<RecordedExercise> RecordedExercises,
-    DateOnly Date
+    DateOnly Date,
+    decimal? Bodyweight
 )
 {
     public RecordedExercise? NextExercise

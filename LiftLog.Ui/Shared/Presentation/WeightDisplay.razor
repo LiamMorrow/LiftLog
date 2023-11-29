@@ -1,19 +1,19 @@
 <div>
     <AppButton data-cy="weight-display" Type="AppButtonType.OutlineSecondary" OnClick="OnOpenClick">
-        <WeightFormat Weight="Exercise.Weight"/>
+        <WeightFormat Weight="Weight"/>
     </AppButton>
 
     <Dialog
         @ref="dialog"
         style="--md-dialog-container-max-block-size: 500px;"
     >
-        <span slot="headline">Weight</span>
+        <span slot="headline">@Label</span>
         <div  slot="content">
             <div  class="flex flex-col gap-2">
-                <TextField label="Weight" required suffix-text="@WeightSuffix" TextFieldType="TextFieldType.Outline" Value=@(EditorWeight.ToString()) OnChange="HandleInputChange"  type="text" inputmode="decimal" step="@Increment" />
+                <TextField label="@Label" required=@(!AllowNull) suffix-text="@WeightSuffix" TextFieldType="TextFieldType.Outline" Value=@(EditorWeight.ToString()) OnChange="HandleInputChange"  type="text" inputmode="decimal" step="@NonZeroIncrement" />
                 <div class="flex justify-between">
-                    <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightDecrementClick><md-icon slot="icon">remove</md-icon><WeightFormat Weight="Increment"  /></AppButton>
-                    <AppButton data-cy="increment-weight" Type=AppButtonType.OutlineSecondary OnClick=OnWeightIncrementClick><md-icon slot="icon">add</md-icon><WeightFormat Weight="Increment" /></AppButton>
+                    <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightDecrementClick><md-icon slot="icon">remove</md-icon><WeightFormat Weight="NonZeroIncrement"  /></AppButton>
+                    <AppButton data-cy="increment-weight" Type=AppButtonType.OutlineSecondary OnClick=OnWeightIncrementClick><md-icon slot="icon">add</md-icon><WeightFormat Weight="NonZeroIncrement" /></AppButton>
                 </div>
             </div>
         </div>
@@ -30,22 +30,32 @@
 
     [EditorRequired]
     [Parameter]
-    public RecordedExercise Exercise { get; set; } = null!;
+    public decimal? Weight { get; set; } = null!;
+
+    [Parameter]
+    public string Label { get; set; } = "Weight";
 
     [EditorRequired]
     [Parameter]
-    public Action<decimal> UpdateWeightForExercise { get; set; } = null!;
+    public decimal Increment { get; set; } = 2.5m;
+
+    [EditorRequired]
+    [Parameter]
+    public Action<decimal?> UpdateWeight { get; set; } = null!;
+
+    [Parameter]
+    public bool AllowNull { get; set; } = false;
 
     [CascadingParameter(Name = "UseImperial")]
     public bool UseImperialUnits { get; set; }
 
-    private decimal Increment => Exercise.Blueprint.WeightIncreaseOnSuccess == 0 ? 2.5m : Exercise.Blueprint.WeightIncreaseOnSuccess;
+    private decimal NonZeroIncrement => Increment == 0 ? 2.5m : Increment;
 
-    private decimal EditorWeight { get; set; }
+    private decimal? EditorWeight { get; set; }
 
     private void OnOpenClick()
     {
-        EditorWeight = Exercise.Weight;
+        EditorWeight = Weight;
         dialog?.Open();
     }
 
@@ -56,7 +66,7 @@
 
     private void OnSaveClick()
     {
-        UpdateWeightForExercise(EditorWeight);
+        UpdateWeight(EditorWeight);
         dialog?.Close();
     }
 
@@ -71,6 +81,11 @@
     }
 
     private void HandleInputChange(string? value){
+        if(string.IsNullOrWhiteSpace(value) && AllowNull)
+        {
+            EditorWeight = null;
+            return;
+        }
         if (decimal.TryParse(value, out var result))
         {
             EditorWeight = result;
