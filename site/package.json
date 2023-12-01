@@ -7,7 +7,7 @@
     "tailwindcss": "^3.3.3"
   },
   "scripts": {
-    "build": "tailwindcss --config tailwind.config.js -i ./css/app.css -o ./css/app.min.css",
+    "build": "tailwindcss --config tailwind.config.js -i ./css/app.css -o ./css/app.min.css && ./build.sh",
     "watch": "tailwindcss --config tailwind.config.js -i ./css/app.css -o ./css/app.min.css --watch"
   }
 }

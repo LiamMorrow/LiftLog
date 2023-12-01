@@ -1,6 +1,4 @@
-# Use github actions to Build our static website and upload to azure storage
-
-name: Upload To Azure Blob Storage
+name: Upload site as docker image to ghcr.io
 on:
   push:
     branches:
@@ -18,27 +16,7 @@ jobs:
       - name: Build
         run: yarn build
         working-directory: ./site
-      - uses: bacongobbler/azure-blob-storage-upload@main
-        with:
-          source_dir: ./site
-          container_name: static-assets
-          connection_string: ${{ secrets.AzureStaticSiteConnectionString }}
-          extra_args: "--pattern css/app.min.css"
-          # WARNING: this will overwrite existing blobs in your blob storage
-          overwrite: "true"
-      - uses: bacongobbler/azure-blob-storage-upload@main
-        with:
-          source_dir: ./site
-          container_name: static-assets
-          connection_string: ${{ secrets.AzureStaticSiteConnectionString }}
-          extra_args: "--pattern assets/*.png"
-          # WARNING: this will overwrite existing blobs in your blob storage
-          overwrite: "true"
-      - uses: bacongobbler/azure-blob-storage-upload@main
-        with:
-          source_dir: ./site
-          container_name: static-assets
-          connection_string: ${{ secrets.AzureStaticSiteConnectionString }}
-          extra_args: "--pattern *.html"
-          # WARNING: this will overwrite existing blobs in your blob storage
-          overwrite: "true"
+      - name: Build Docker image
+        run: docker build -t ghcr.io/LiamMorrow/LiftLog:site .
+      - name: Push Docker image
+        run: docker push ghcr.io/LiamMorrow/LiftLog:site
