@@ -17,6 +17,6 @@ jobs:
         run: yarn build
         working-directory: ./site
       - name: Build Docker image
-        run: docker build -t ghcr.io/LiamMorrow/LiftLog:site .
+        run: docker build -t ghcr.io/liammorrow/liftlog:site .
       - name: Push Docker image
-        run: docker push ghcr.io/LiamMorrow/LiftLog:site
+        run: docker push ghcr.io/liammorrow/liftlog:site
