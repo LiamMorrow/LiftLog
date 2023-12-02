@@ -5,6 +5,7 @@ on:
       - main
     paths:
       - "site/**"
+      - ".github/workflows/static-site.yml"
 jobs:
   upload:
     runs-on: ubuntu-latest
