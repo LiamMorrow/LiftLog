@@ -59,12 +59,12 @@ jobs:
 
       # Build and push Docker image with Buildx
       # https://github.com/docker/build-push-action
-      - name: Build and push Docker image Signalr
+      - name: Build and push Docker image
         id: build-and-push-signalr
         uses: docker/build-push-action@v3
         with:
-          context: src
-          file: src/LimaJuice.Server.Signalr/Dockerfile
+          context: site
+          file: site/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ghcr.io/liammorrow/liftlog:site
