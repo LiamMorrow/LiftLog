@@ -19,5 +19,6 @@ jobs:
         working-directory: ./site
       - name: Build Docker image
         run: docker build -t ghcr.io/liammorrow/liftlog:site .
+        working-directory: ./site
       - name: Push Docker image
         run: docker push ghcr.io/liammorrow/liftlog:site
