@@ -45,20 +45,27 @@ else
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Statistics"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
-        var sessions=  await SessionService.GetLatestSessionsAsync().Where(x=>x.RecordedExercises.Any()).ToListAsync();
 
-        List<ExerciseStatistics> bodyweightStats = [ CreateBodyweightStatistic(sessions) ];
-        var sessionStats = sessions.GroupBy(session=>session.Blueprint.Name).Select(CreateSessionStatistic);
+        List<ExerciseStatistics> stats = [ ];
 
-        _exerciseStats = bodyweightStats.Where(x=>x.RecordedExercises.Any())
-            .Concat(sessionStats)
-            .Concat(sessions
-                .SelectMany(x=>x.RecordedExercises.Select(ex=>new DatedRecordedExercise(x.Date, ex)))
-                .GroupBy(x => NormalizeName(x.Exercise.Blueprint.Name))
-                .Select(x => x.ToList())
-                .Where(x => x.Count > 0)
-                .Select(CreateExerciseStatistic)
-            ).ToList();
+        await Task.Run(async ()=> {
+            var sessions=  await SessionService.GetLatestSessionsAsync().Where(x=>x.RecordedExercises.Any()).ToListAsync();
+
+            List<ExerciseStatistics> bodyweightStats = [ CreateBodyweightStatistic(sessions) ];
+            var sessionStats = sessions.GroupBy(session=>session.Blueprint.Name).Select(CreateSessionStatistic);
+
+            stats = bodyweightStats.Where(x=>x.RecordedExercises.Any())
+                .Concat(sessionStats)
+                .Concat(sessions
+                    .SelectMany(x=>x.RecordedExercises.Select(ex=>new DatedRecordedExercise(x.Date, ex)))
+                    .GroupBy(x => NormalizeName(x.Exercise.Blueprint.Name))
+                    .Select(x => x.ToList())
+                    .Where(x => x.Count > 0)
+                    .Select(CreateExerciseStatistic)
+                ).ToList();
+        });
+
+        _exerciseStats = stats;
     }
 
     private void HandleCardClick((ExerciseStatistics  exerciseStatistics, int Index) item)

@@ -18,7 +18,8 @@ public static class Sessions
                     .Exercises
                     .Select(x => CreateRecordedExercise(x))
                     .ToImmutableList(),
-                Date: DateOnly.Parse("2021-04-05")
+                Date: DateOnly.Parse("2021-04-05"),
+                Bodyweight: null
             )
         );
     }
