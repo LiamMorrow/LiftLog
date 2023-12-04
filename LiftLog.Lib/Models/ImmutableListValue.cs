@@ -16,7 +16,7 @@ namespace LiftLog.Lib
     {
         public ImmutableListValue()
         {
-            Items =  [];
+            Items = [];
         }
 
         public ImmutableListValue(ImmutableList<T> items)
@@ -26,7 +26,7 @@ namespace LiftLog.Lib
 
         public ImmutableListValue(List<T> items)
         {
-            Items =  [.. items];
+            Items = [.. items];
         }
 
         public static readonly ImmutableListValue<T> Empty = [];
