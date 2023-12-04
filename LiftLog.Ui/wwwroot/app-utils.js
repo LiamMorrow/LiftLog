@@ -70,6 +70,15 @@ AppUtils.selectAllText = function (element) {
         // quick n dirty, not all inputs support selecting: e.g. date
     }
 }
+/**
+* @param {HTMLElement} element
+*/
+AppUtils.scrollToTop = function (element) {
+    element.scrollTo({
+        top: 0,
+        behavior: 'instant'
+    });
+}
 
 AppUtils.callOn = function (element, funcName) {
     element[funcName]();

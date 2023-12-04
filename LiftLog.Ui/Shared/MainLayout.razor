@@ -53,9 +53,15 @@
         if (firstRender)
         {
             await Js.InvokeAsync<IJSObjectReference>("import", "/_content/LiftLog.Ui/load-tailwind.js");
+            NavigationManager.LocationChanged += HandleLocationChanged;
         }
 #endif
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        await Js.InvokeVoidAsync("AppUtils.scrollToTop", _contentElementRef);
     }
 
     private async void OnContentScroll()
