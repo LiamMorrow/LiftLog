@@ -8,7 +8,7 @@ on:
     branches-ignore: [main]
 
 jobs:
-  test:
+  check-format:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
-      - name: Restore dependencies
-        run: dotnet restore
+      - name: Install csharpier
+        run: dotnet tool install -g csharpier
       - name: Check formatting with csharpier
         run: dotnet-csharpier . --check
