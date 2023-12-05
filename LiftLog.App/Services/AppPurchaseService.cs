@@ -98,15 +98,12 @@ public class AppPurchaseService : IAppPurchaseService
             if (!connected || !billing.CanMakePayments)
                 return new("USD", "ERROR GETTING PRICE");
 
-            var products = await billing.GetProductInfoAsync(
-                ItemType.InAppPurchase,
-                new[] { "pro" }
-            );
+            var products = await billing.GetProductInfoAsync(ItemType.InAppPurchase, ["pro"]);
             var proProduct = products.FirstOrDefault(p => p.ProductId == "pro");
             if (proProduct == null)
                 return new("USD", "ERROR GETTING PRICE");
 
-            return new("USD", proProduct.LocalizedPrice);
+            return new(proProduct.CurrencyCode, proProduct.LocalizedPrice);
         }
         catch (TaskCanceledException ex)
         {

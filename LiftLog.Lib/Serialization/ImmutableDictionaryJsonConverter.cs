@@ -26,7 +26,7 @@ namespace LiftLog.Lib.Serialization
         {
             var genericArgs = type.GetGenericArguments();
             var converterType = typeof(ImmutableDictionaryJsonConverterInner<,>).MakeGenericType(
-                new[] { genericArgs[0], genericArgs[1] }
+                [genericArgs[0], genericArgs[1]]
             );
             return (JsonConverter?)Activator.CreateInstance(converterType, new[] { options });
         }
