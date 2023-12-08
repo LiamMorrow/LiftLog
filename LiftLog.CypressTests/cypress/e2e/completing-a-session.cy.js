@@ -10,7 +10,7 @@ describe('Completing a session', () => {
       cy.get('md-fab').click()
     })
 
-    it.only('can complete a freeform workout', () => {
+    it('can complete a freeform workout', () => {
       cy.contains('Add Exercise', { includeShadowDom: true }).click()
       cy.get('[data-cy="session-exercise-editor"] md-outlined-text-field').find('input', { includeShadowDom: true }).first().click().type('Squat')
 
