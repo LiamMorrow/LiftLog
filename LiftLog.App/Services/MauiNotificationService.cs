@@ -41,7 +41,7 @@ public class MauiNotificationService : INotificationService
         var rest = exercise switch
         {
             { LastRecordedSet: not null }
-                => exercise.LastRecordedSet?.RepsCompleted == exercise.Blueprint.RepsPerSet
+                => exercise.LastRecordedSet?.Set?.RepsCompleted >= exercise.Blueprint.RepsPerSet
                     ? exercise.Blueprint.RestBetweenSets.MinRest
                     : exercise.Blueprint.RestBetweenSets.FailureRest,
             _ => TimeSpan.Zero,
