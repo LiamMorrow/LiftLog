@@ -79,7 +79,7 @@ public record RecordedExercise(
     /// <summary>
     /// An exercise is considered a success if ALL sets are successful, with ANY of the sets >= the top level weight
     /// </summary>
-    public bool SucceededAllSets =>
+    public bool IsSuccessForProgressiveOverload =>
         PotentialSets.All(x => x.Set is not null && x.Set.RepsCompleted >= Blueprint.RepsPerSet)
         && PotentialSets.Any(x => x.Weight >= Weight);
 

@@ -102,7 +102,8 @@ public class SessionService
             var weight = lastExercise switch
             {
                 null => e.InitialWeight,
-                { SucceededAllSets: true } => lastExercise.Weight + e.WeightIncreaseOnSuccess,
+                { IsSuccessForProgressiveOverload: true }
+                    => lastExercise.Weight + e.WeightIncreaseOnSuccess,
                 _ => lastExercise.Weight
             };
             return new RecordedExercise(
