@@ -26,6 +26,7 @@ public static class Reducers
         var session = ActiveSession(state, action.Target) ?? throw new Exception();
         var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
         var exerciseBlueprint = session.Blueprint.Exercises[action.ExerciseIndex];
+        var setAtIndex = exerciseAtIndex.PotentialSets[action.SetIndex];
         var sessionDate = session.Date;
         if (!session.IsStarted)
         {
@@ -44,14 +45,14 @@ public static class Reducers
                         action.ExerciseIndex,
                         exerciseAtIndex with
                         {
-                            RecordedSets = exerciseAtIndex
-                                .RecordedSets
+                            PotentialSets = exerciseAtIndex
+                                .PotentialSets
                                 .SetItem(
                                     action.SetIndex,
-                                    GetCycledRepCount(
-                                        exerciseAtIndex.RecordedSets[action.SetIndex],
-                                        exerciseBlueprint
-                                    )
+                                    setAtIndex with
+                                    {
+                                        Set = GetCycledRepCount(setAtIndex.Set, exerciseBlueprint)
+                                    }
                                 )
                         }
                     )
@@ -98,9 +99,13 @@ public static class Reducers
         {
             Blueprint = newExerciseBlueprint,
             Weight = action.Exercise.Weight,
-            RecordedSets = Enumerable
+            PotentialSets = Enumerable
                 .Range(0, newExerciseBlueprint.Sets)
-                .Select(index => existingExercise.RecordedSets.ElementAtOrDefault(index))
+                .Select(
+                    index =>
+                        existingExercise.PotentialSets.ElementAtOrDefault(index)
+                        ?? new PotentialSet(null, action.Exercise.Weight)
+                )
                 .ToImmutableList()
         };
         return WithActiveSession(
@@ -143,7 +148,7 @@ public static class Reducers
             action.Exercise.Weight,
             Enumerable
                 .Range(0, newExerciseBlueprint.Sets)
-                .Select(_ => (RecordedSet?)null)
+                .Select(_ => new PotentialSet(null, action.Exercise.Weight))
                 .ToImmutableList(),
             null
         );
@@ -169,6 +174,7 @@ public static class Reducers
     {
         var session = ActiveSession(state, action.Target) ?? throw new Exception();
         var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
+        var potentialSetAtIndex = exerciseAtIndex.PotentialSets[action.SetIndex];
 
         return WithActiveSession(
             state,
@@ -181,9 +187,9 @@ public static class Reducers
                         action.ExerciseIndex,
                         exerciseAtIndex with
                         {
-                            RecordedSets = exerciseAtIndex
-                                .RecordedSets
-                                .SetItem(action.SetIndex, null)
+                            PotentialSets = exerciseAtIndex
+                                .PotentialSets
+                                .SetItem(action.SetIndex, potentialSetAtIndex with { Set = null })
                         }
                     )
             }

@@ -4,7 +4,7 @@
     {
         (true, null) => (RecordedExercise, -1, null),
         (true, var previous) => (previous, -1, previous.Notes),
-        (false, _) => (RecordedExercise, RecordedExercise.RecordedSets.IndexOf(null), null)
+        (false, _) => (RecordedExercise, RecordedExercise.PotentialSets.IndexOf(x => x.Set is null), null)
     };
 }
 <SplitCardControl>
@@ -21,14 +21,14 @@
                 </div>
             </div>
             <div class="flex flex-wrap justify-center gap-2">
-                @foreach (var (set, i) in displayedExercise.RecordedSets.IndexedTuples())
+                @foreach (var (set, i) in displayedExercise.PotentialSets.IndexedTuples())
                 {
                     <RepCount
                         @key=i
                         MaxReps="displayedExercise.Blueprint.RepsPerSet"
                         CycleRepCount=@(() => CycleRepCountForSet(i))
                         ClearRepCount=@(() => ClearRepCountForSet(i))
-                        RepCountValue=@set?.RepsCompleted
+                        RepCountValue=@set.Set?.RepsCompleted
                         ToStartNext=@(ToStartNext && repToStartNext == i) />
                 }
             </div>

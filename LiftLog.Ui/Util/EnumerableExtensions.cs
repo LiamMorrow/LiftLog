@@ -11,6 +11,19 @@ namespace LiftLog.Ui.Util
             return source.Select((item, index) => (item, index));
         }
 
+        public static int IndexOf<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, bool> predicate
+        )
+        {
+            var tuples = source.IndexedTuples();
+            var matchingTuple = tuples
+                .Where(x => predicate(x.Item))
+                .Cast<(TSource?, int)>()
+                .DefaultIfEmpty((default(TSource), -1));
+            return matchingTuple.First().Item2;
+        }
+
         public static async Task<ImmutableList<T>> ToImmutableListAsync<T>(
             this IAsyncEnumerable<T> source
         )

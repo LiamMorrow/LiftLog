@@ -99,15 +99,19 @@ public class SessionService
         RecordedExercise GetNextExercise(ExerciseBlueprint e)
         {
             var lastExercise = latestRecordedExercises.GetValueOrDefault(e);
+            var weight = lastExercise switch
+            {
+                null => e.InitialWeight,
+                { SucceededAllSets: true } => lastExercise.Weight + e.WeightIncreaseOnSuccess,
+                _ => lastExercise.Weight
+            };
             return new RecordedExercise(
                 e,
-                lastExercise switch
-                {
-                    null => e.InitialWeight,
-                    { SucceededAllSets: true } => lastExercise.Weight + e.WeightIncreaseOnSuccess,
-                    _ => lastExercise.Weight
-                },
-                Enumerable.Range(0, e.Sets).Select(_ => (RecordedSet?)null).ToImmutableList(),
+                weight,
+                Enumerable
+                    .Range(0, e.Sets)
+                    .Select(_ => new PotentialSet(null, weight))
+                    .ToImmutableList(),
                 null
             );
         }

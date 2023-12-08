@@ -79,18 +79,11 @@ public class CurrentSessionEffects
         if (session?.NextExercise is not null)
         {
             var exerciseIndex = session.RecordedExercises.IndexOf(session.NextExercise);
-            var setIndex = session
-                .NextExercise
-                .RecordedSets
-                .IndexedTuples()
-                .Where(x => x.Item is null)
-                .Select(x => x.Index as int?)
-                .DefaultIfEmpty(null)
-                .First();
-            if (setIndex is not null)
+            var setIndex = session.NextExercise.PotentialSets.IndexOf(x => x.Set is null);
+            if (setIndex is not -1)
             {
                 dispatcher.Dispatch(
-                    new CycleExerciseRepsAction(action.Target, exerciseIndex, setIndex.Value)
+                    new CycleExerciseRepsAction(action.Target, exerciseIndex, setIndex)
                 );
                 dispatcher.Dispatch(new NotifySetTimerAction(action.Target));
             }

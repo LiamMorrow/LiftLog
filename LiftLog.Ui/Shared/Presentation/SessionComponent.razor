@@ -256,14 +256,14 @@ else
 
     private RenderFragment? RenderSnackBar()
     {
-
-        if (ShowRestTimer && Session.NextExercise is not null && Session.LastExercise?.LastRecordedSet is not null)
+        var lastRecordedSet = Session.LastExercise?.LastRecordedSet;
+        if (ShowRestTimer && Session.NextExercise is not null && Session.LastExercise is not null && lastRecordedSet is {Set : {}} lrs)
         {
-            var lastSetFailed = Session.LastExercise.LastRecordedSet.RepsCompleted < Session.LastExercise.Blueprint.RepsPerSet;
+            var lastSetFailed = lrs.Set.RepsCompleted < Session.LastExercise.Blueprint.RepsPerSet;
 
             return @<RestTimer
                 Rest=Session.LastExercise.Blueprint.RestBetweenSets
-                StartTime=Session.LastExercise.LastRecordedSet.CompletionTime
+                StartTime=lrs.Set.CompletionTime
                 Failed=lastSetFailed />;
         }
         else if (Session.IsComplete)
