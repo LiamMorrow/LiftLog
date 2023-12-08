@@ -2,6 +2,7 @@ using System.Diagnostics;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Services;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.Devices;
 using Plugin.InAppBilling;
 
 namespace LiftLog.App.Services;

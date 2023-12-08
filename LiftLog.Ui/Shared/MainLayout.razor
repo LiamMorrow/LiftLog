@@ -19,7 +19,7 @@
                     </div>
                 </div>
             </div>
-            <div @ref="_contentElementRef" class="px-2 pb-2 overflow-auto bg-surface flex flex-col" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
+            <div @ref="_contentElementRef" id="scrollingElement" class="px-2 pb-2 overflow-auto bg-surface flex flex-col" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
                 @Body
             </div>
             <NavBar></NavBar>
@@ -47,15 +47,22 @@
         };
         base.OnInitialized();
     }
-        protected override async Task OnAfterRenderAsync(bool firstRender)
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
 #if DEBUG
         if (firstRender)
         {
             await Js.InvokeAsync<IJSObjectReference>("import", "/_content/LiftLog.Ui/load-tailwind.js");
+            NavigationManager.LocationChanged += HandleLocationChanged;
         }
 #endif
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        await Js.InvokeVoidAsync("AppUtils.scrollToTop", _contentElementRef);
     }
 
     private async void OnContentScroll()

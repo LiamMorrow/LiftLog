@@ -1,6 +1,7 @@
 ﻿@inject IJSRuntime JSRuntime
 
 <button
+    @ref="_button"
     class="
         repcount
         w-14
@@ -31,6 +32,7 @@
     private DateTime? _lastPointerDownTime;
     private DateTime? _clearRepCountTime;
     private ElementReference _focusRing;
+    private ElementReference _button;
 
     [EditorRequired]
     [Parameter]
@@ -51,6 +53,7 @@
     [EditorRequired]
     [Parameter]
     public bool ToStartNext { get; set; }
+    private bool _prevToStartNext;
 
     private string BoxShadowFill => RepCountValue is not null  ? "0" : "2rem";
 
@@ -67,11 +70,25 @@
         });
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        if(_prevToStartNext != ToStartNext && ToStartNext)
+        {
+            await JSRuntime.InvokeVoidAsync("AppUtils.scrollIntoView", _button);
+        }
+        _prevToStartNext = ToStartNext;
+        await base.OnParametersSetAsync();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(firstRender)
         {
             await JSRuntime.InvokeVoidAsync("AppUtils.callOn", _focusRing, "detach");
+            if(ToStartNext)
+            {
+                await JSRuntime.InvokeVoidAsync("AppUtils.scrollIntoView", _button);
+            }
         }
         await base.OnAfterRenderAsync(firstRender);
     }
