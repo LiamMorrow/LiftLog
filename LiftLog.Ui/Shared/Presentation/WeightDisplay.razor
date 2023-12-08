@@ -72,12 +72,12 @@
 
     private void OnWeightIncrementClick()
     {
-        EditorWeight += Increment;
+        EditorWeight += NonZeroIncrement;
     }
 
     private void OnWeightDecrementClick()
     {
-        EditorWeight -= Increment;
+        EditorWeight -= NonZeroIncrement;
     }
 
     private void HandleInputChange(string? value){

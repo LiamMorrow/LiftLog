@@ -1,1 +1,1 @@
-./cypress/screenshots
+cypress/screenshots/**/*

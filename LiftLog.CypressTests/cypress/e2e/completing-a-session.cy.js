@@ -10,20 +10,20 @@ describe('Completing a session', () => {
       cy.get('md-fab').click()
     })
 
-    it('can complete a freeform workout', () => {
+    it.only('can complete a freeform workout', () => {
       cy.contains('Add Exercise', { includeShadowDom: true }).click()
-      cy.get('md-outlined-text-field').find('input', { includeShadowDom: true }).first().click().type('Squat')
+      cy.get('[data-cy="session-exercise-editor"] md-outlined-text-field').find('input', { includeShadowDom: true }).first().click().type('Squat')
 
-      cy.get('[slot="actions"]').contains("Save").click()
+      cy.get('[data-cy="session-exercise-editor-actions"]').contains("Save").click()
 
 
       cy.get('.repcount').first().click()
       cy.get('.snackbar').contains('Rest between').should('be.visible')
       cy.get('.repcount').first().click().should('contain.text', '9/10')
 
-      cy.get('[data-cy=weight-display]').click()
+      cy.get('[data-cy=weight-display]').first().click()
 
-      cy.get('[data-cy=increment-weight]').click().click().click()
+      cy.get('[data-cy=increment-weight]').first().click().click().click()
 
       cy.get('[slot="actions"]').contains("Save").click()
 
@@ -73,7 +73,7 @@ describe('Completing a session', () => {
         cy.get('.cardlist .card').first().should('contain.text', 'Workout A').should('contain.text', 'December 13 2020')
       })
 
-      it.only('can add notes to an exercise and see them the next time they do that exercise', () => {
+      it('can add notes to an exercise and see them the next time they do that exercise', () => {
         cy.contains('Workout A').click()
 
         cy.get('[data-cy=exercise-notes-btn]').first().click()

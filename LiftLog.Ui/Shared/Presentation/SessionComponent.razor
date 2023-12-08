@@ -61,7 +61,7 @@ else
         <SessionExerciseEditor Exercise=_editingExercise ExerciseNames="ExerciseNames" OnExerciseUpdate=@((e) =>
             {_editingExercise = e; StateHasChanged();} ) />
     </div>
-    <div slot="actions">
+    <div slot="actions" data-cy="session-exercise-editor-actions">
         <AppButton Type="AppButtonType.Text" OnClick="()=>{_editExerciseDialog?.Close(); }">Cancel</AppButton>
         <AppButton Type="AppButtonType.Text" OnClick="EditExerciseHandler">Save</AppButton>
     </div>
