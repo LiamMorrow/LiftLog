@@ -23,7 +23,8 @@ public record SessionBlueprint(string Name, ImmutableListValue<ExerciseBlueprint
                     .Range(0, e.Sets)
                     .Select(_ => new PotentialSet(null, e.InitialWeight))
                     .ToImmutableList(),
-                null
+                null,
+                false
             );
         }
 

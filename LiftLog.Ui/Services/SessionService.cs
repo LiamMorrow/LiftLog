@@ -113,7 +113,8 @@ public class SessionService
                     .Range(0, e.Sets)
                     .Select(_ => new PotentialSet(null, weight))
                     .ToImmutableList(),
-                null
+                null,
+                lastExercise?.PerSetWeight ?? false
             );
         }
 

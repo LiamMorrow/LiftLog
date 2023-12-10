@@ -73,7 +73,8 @@ public record RecordedExercise(
     ExerciseBlueprint Blueprint,
     decimal Weight,
     ImmutableListValue<PotentialSet> PotentialSets,
-    string? Notes
+    string? Notes,
+    bool PerSetWeight
 )
 {
     /// <summary>

@@ -23,12 +23,13 @@
             <div class="flex flex-wrap justify-center gap-2">
                 @foreach (var (set, i) in displayedExercise.PotentialSets.IndexedTuples())
                 {
-                    <RepCount
+                    <PotentialSetCounter
                         @key=i
+                        Set="set"
+                        ShowWeight=@(i % 2 == 0)
                         MaxReps="displayedExercise.Blueprint.RepsPerSet"
                         CycleRepCount=@(() => CycleRepCountForSet(i))
                         ClearRepCount=@(() => ClearRepCountForSet(i))
-                        RepCountValue=@set.Set?.RepsCompleted
                         ToStartNext=@(ToStartNext && repToStartNext == i) />
                 }
             </div>
