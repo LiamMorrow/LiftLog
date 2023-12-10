@@ -20,6 +20,7 @@ else
             ClearRepCountForSet=ClearRepCountForExerciseSet(context.Index)
             UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index)
             PreviousRecordedExercise=PreviouslyCompleted.GetValueOrDefault(context.Item.Blueprint)
+            ToggleExercisePerSeptWeight=@(() =>ToggleExercisePerSeptWeight(context.Index))
             UpdateNotesForExercise=@((notes)=>UpdateNotesForExercise(context.Index, notes))
             OnEditExercise=@(() => BeginEditExercise(context.Index))
             OnRemoveExercise=@(()=> BeginRemoveExercise(context.Index)) />
@@ -134,6 +135,10 @@ else
 
     [EditorRequired]
     [Parameter]
+    public Action<int> ToggleExercisePerSeptWeight { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
     public Action<decimal?> UpdateBodyweight { get; set; } = null!;
 
     [EditorRequired]
@@ -185,6 +190,8 @@ else
 
     private Action<decimal> UpdateWeightForExerciseWrapper(int exerciseIndex)
         => (decimal weight) => UpdateWeightForExercise(exerciseIndex, weight);
+
+
 
     private void EditExerciseHandler()
     {

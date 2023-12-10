@@ -198,6 +198,32 @@ public static class Reducers
     }
 
     [ReducerMethod]
+    public static CurrentSessionState ToggleExercisePerSeptWeight(
+        CurrentSessionState state,
+        ToggleExercisePerSeptWeightAction action
+    )
+    {
+        var session = ActiveSession(state, action.Target) ?? throw new Exception();
+        var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
+        return WithActiveSession(
+            state,
+            action.Target,
+            session with
+            {
+                RecordedExercises = session
+                    .RecordedExercises
+                    .SetItem(
+                        action.ExerciseIndex,
+                        exerciseAtIndex with
+                        {
+                            PerSetWeight = !exerciseAtIndex.PerSetWeight
+                        }
+                    )
+            }
+        );
+    }
+
+    [ReducerMethod]
     public static CurrentSessionState UpdateExerciseWeight(
         CurrentSessionState state,
         UpdateExerciseWeightAction action
