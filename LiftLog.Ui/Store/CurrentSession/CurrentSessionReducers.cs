@@ -198,9 +198,9 @@ public static class Reducers
     }
 
     [ReducerMethod]
-    public static CurrentSessionState ToggleExercisePerSeptWeight(
+    public static CurrentSessionState ToggleExercisePerSetWeight(
         CurrentSessionState state,
-        ToggleExercisePerSeptWeightAction action
+        ToggleExercisePerSetWeightAction action
     )
     {
         var session = ActiveSession(state, action.Target) ?? throw new Exception();
@@ -217,6 +217,41 @@ public static class Reducers
                         exerciseAtIndex with
                         {
                             PerSetWeight = !exerciseAtIndex.PerSetWeight
+                        }
+                    )
+            }
+        );
+    }
+
+    [ReducerMethod]
+    public static CurrentSessionState UpdateWeightForSet(
+        CurrentSessionState state,
+        UpdateWeightForSetAction action
+    )
+    {
+        var session = ActiveSession(state, action.Target) ?? throw new Exception();
+        var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
+        var setAtIndex = exerciseAtIndex.PotentialSets[action.SetIndex];
+        return WithActiveSession(
+            state,
+            action.Target,
+            session with
+            {
+                RecordedExercises = session
+                    .RecordedExercises
+                    .SetItem(
+                        action.ExerciseIndex,
+                        exerciseAtIndex with
+                        {
+                            PotentialSets = exerciseAtIndex
+                                .PotentialSets
+                                .SetItem(
+                                    action.SetIndex,
+                                    setAtIndex with
+                                    {
+                                        Weight = action.Weight
+                                    }
+                                )
                         }
                     )
             }

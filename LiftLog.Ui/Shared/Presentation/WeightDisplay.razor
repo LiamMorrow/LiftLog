@@ -3,30 +3,19 @@
         <WeightFormat Weight="Weight"/>
     </AppButton>
 
-    <Dialog
+    <WeightDialog
         @ref="dialog"
-        style="--md-dialog-container-max-block-size: 500px;"
-    >
-        <span slot="headline">@Label</span>
-        <div  slot="content">
-            <div  class="flex flex-col gap-2">
-                <TextField label="@Label" required=@(!AllowNull) suffix-text="@WeightSuffix" TextFieldType="TextFieldType.Outline" Value=@(EditorWeight.ToString()) OnChange="HandleInputChange"  type="text" inputmode="decimal" step="@NonZeroIncrement" />
-                <div class="flex justify-between">
-                    <AppButton Type=AppButtonType.OutlineSecondary OnClick=OnWeightDecrementClick><md-icon slot="icon">remove</md-icon><WeightFormat Weight="NonZeroIncrement"  /></AppButton>
-                    <AppButton data-cy="increment-weight" Type=AppButtonType.OutlineSecondary OnClick=OnWeightIncrementClick><md-icon slot="icon">add</md-icon><WeightFormat Weight="NonZeroIncrement" /></AppButton>
-                </div>
-            </div>
-        </div>
-        <div slot="actions" class="flex gap-1" >
-            <AppButton dialog-action="close" OnClick=OnCloseClick Type=AppButtonType.Text>Close</AppButton>
-            <AppButton dialog-action="save" dialog-focus OnClick=OnSaveClick Type=AppButtonType.Text>Save</AppButton>
-        </div>
-    </Dialog>
+        Weight="Weight"
+        Label="@Label"
+        UpdateWeight="UpdateWeight"
+        Increment="Increment"
+        AllowNull="AllowNull"
+    />
 </div>
 
 @code {
 
-    private Dialog? dialog;
+    private WeightDialog? dialog;
 
     [EditorRequired]
     [Parameter]
@@ -46,51 +35,8 @@
     [Parameter]
     public bool AllowNull { get; set; } = false;
 
-    [CascadingParameter(Name = "UseImperial")]
-    public bool UseImperialUnits { get; set; }
-
-    private decimal NonZeroIncrement => Increment == 0 ? 2.5m : Increment;
-
-    private decimal? EditorWeight { get; set; }
-
     private void OnOpenClick()
     {
-        EditorWeight = Weight;
         dialog?.Open();
     }
-
-    private void OnCloseClick()
-    {
-        dialog?.Close();
-    }
-
-    private void OnSaveClick()
-    {
-        UpdateWeight(EditorWeight);
-        dialog?.Close();
-    }
-
-    private void OnWeightIncrementClick()
-    {
-        EditorWeight += NonZeroIncrement;
-    }
-
-    private void OnWeightDecrementClick()
-    {
-        EditorWeight -= NonZeroIncrement;
-    }
-
-    private void HandleInputChange(string? value){
-        if(string.IsNullOrWhiteSpace(value) && AllowNull)
-        {
-            EditorWeight = null;
-            return;
-        }
-        if (decimal.TryParse(value, out var result))
-        {
-            EditorWeight = result;
-        }
-    }
-
-    private string WeightSuffix => UseImperialUnits ? "lbs" : "kg";
 }

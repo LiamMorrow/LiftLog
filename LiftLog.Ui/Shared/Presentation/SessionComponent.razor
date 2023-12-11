@@ -20,7 +20,8 @@ else
             ClearRepCountForSet=ClearRepCountForExerciseSet(context.Index)
             UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index)
             PreviousRecordedExercise=PreviouslyCompleted.GetValueOrDefault(context.Item.Blueprint)
-            ToggleExercisePerSeptWeight=@(() =>ToggleExercisePerSeptWeight(context.Index))
+            ToggleExercisePerSetWeight=@(() =>ToggleExercisePerSetWeight(context.Index))
+            UpdateWeightForSet=@((setIndex, weight) => UpdateWeightForSet(context.Index, setIndex, weight))
             UpdateNotesForExercise=@((notes)=>UpdateNotesForExercise(context.Index, notes))
             OnEditExercise=@(() => BeginEditExercise(context.Index))
             OnRemoveExercise=@(()=> BeginRemoveExercise(context.Index)) />
@@ -135,7 +136,11 @@ else
 
     [EditorRequired]
     [Parameter]
-    public Action<int> ToggleExercisePerSeptWeight { get; set; } = null!;
+    public Action<int> ToggleExercisePerSetWeight { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
+    public Action<int,int,decimal> UpdateWeightForSet { get; set; } = null!;
 
     [EditorRequired]
     [Parameter]
