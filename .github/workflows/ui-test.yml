@@ -25,7 +25,7 @@ jobs:
         working-directory: ./LiftLog.Ui
       - name: Dependencies
         run: yarn
-        working-directory: ./LiftLog.CypressTests
+        working-directory: ./LiftLog.Cypress
       - name: Test
         uses: cypress-io/github-action@v6
         env:
@@ -33,10 +33,10 @@ jobs:
         with:
           start: yarn server-ci
           wait-on: http://localhost:5000
-          working-directory: ./LiftLog.CypressTests
+          working-directory: ./LiftLog.Cypress
       - name: Upload screenshots
         uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: cypress-screenshots
-          path: ./LiftLog.CypressTests/cypress/screenshots
+          path: ./LiftLog.Cypress/cypress/screenshots
