@@ -88,7 +88,7 @@ public class CurrentSessionReducerTests
             .WorkoutSession!
             .RecordedExercises[1]
             .PotentialSets
-            .Where(x => x.Set is null)
+            .Take(2)
             .Should()
             .AllSatisfy(x => x.Weight.Should().Be(50m));
         newState.WorkoutSession!.RecordedExercises[1].PotentialSets[2].Weight.Should().Be(60m);
