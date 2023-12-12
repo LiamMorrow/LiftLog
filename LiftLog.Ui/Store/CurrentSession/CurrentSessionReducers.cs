@@ -4,7 +4,7 @@ using LiftLog.Lib.Models;
 
 namespace LiftLog.Ui.Store.CurrentSession;
 
-public static class Reducers
+public static class CurrentSessionReducers
 {
     [ReducerMethod]
     public static CurrentSessionState SetActiveSessionDate(

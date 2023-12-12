@@ -52,8 +52,23 @@ public static class Sessions
                             }
                     )
                     .ToImmutableList(),
-                Notes: null
+                Notes: null,
+                PerSetWeight: false
             )
         );
+    }
+
+    public static PotentialSet CreatePotentialSet(
+        decimal weight,
+        int repsCompleted = 10,
+        bool isEmpty = false
+    )
+    {
+        return isEmpty
+            ? new PotentialSet(null, weight)
+            : new PotentialSet(
+                new(RepsCompleted: repsCompleted, CompletionTime: TimeOnly.Parse("14:32:00")),
+                weight
+            );
     }
 }
