@@ -28,6 +28,7 @@
                         Set="set"
                         ShowWeight=displayedExercise.PerSetWeight
                         MaxReps="displayedExercise.Blueprint.RepsPerSet"
+                        WeightIncrement="displayedExercise.Blueprint.WeightIncreaseOnSuccess"
                         CycleRepCount=@(() => CycleRepCountForSet(i))
                         ClearRepCount=@(() => ClearRepCountForSet(i))
                         UpdateWeight=@((weight)=>UpdateWeightForSet(i, weight))
@@ -46,7 +47,7 @@
             <MenuItem Label="Edit" Icon="edit" OnClick="OnEditExercise" />
             <MenuItem Label="Remove" Icon="delete" OnClick="OnRemoveExercise" />
         </Menu>
-        <IconButton data-cy="per-rep-weight-btn" Type=IconButtonType.FilledTonal Icon=check OnClick="()=>ToggleExercisePerSetWeight()"></IconButton>
+        <IconButton data-cy="per-rep-weight-btn" Type=IconButtonType.FilledTonal Icon=weight OnClick="ToggleExercisePerSetWeight"></IconButton>
         @if(PreviousRecordedExercise != null)
         {
             <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.FilledTonal" Icon="history" OnStartHold="()=> _holdingPrevious=true" OnEndHold="()=>_holdingPrevious = false" />

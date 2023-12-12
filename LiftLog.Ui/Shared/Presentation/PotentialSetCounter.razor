@@ -55,7 +55,7 @@
     Weight="Set.Weight"
     Label="Set Weight"
     UpdateWeight="d=>UpdateWeight(d!.Value)"
-    Increment="2.5m"
+    Increment="WeightIncrement"
     AllowNull="false"
 />
 @code
@@ -72,6 +72,10 @@
     [Parameter]
     [EditorRequired]
     public Action<decimal> UpdateWeight { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public decimal WeightIncrement { get; set; }
 
     [EditorRequired]
     [Parameter]
