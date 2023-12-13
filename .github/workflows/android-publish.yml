@@ -33,9 +33,9 @@ jobs:
         run: echo "${ANDROID_KEYSTORE_BASE64}" | base64 -d > liftlog.keystore
         working-directory: ./LiftLog.App
       - name: Setup JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
-          distribution: "adopt"
+          distribution: "microsoft"
           java-version: "17"
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v3.2.0
