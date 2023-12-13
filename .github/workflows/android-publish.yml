@@ -32,7 +32,7 @@ jobs:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: echo "${ANDROID_KEYSTORE_BASE64}" | base64 -d > liftlog.keystore
         working-directory: ./LiftLog.App
-      - name: Setup JDK 17
+      - name: Setup JDK
         uses: actions/setup-java@v4
         with:
           distribution: "microsoft"
