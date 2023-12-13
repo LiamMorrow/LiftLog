@@ -1,8 +1,11 @@
 @inject IJSRuntime JSRuntime
 
 <div class="flex flex-col items-center relative">
+
+    @* The box shadow is shown when the rep ISN'T completed.  The background colour is also animated to ensure that it remains visible in both transition directions *@
     <button
         @ref="_button"
+
         class="
             repcount
             flex-shrink-0
@@ -11,12 +14,11 @@
             @RepCountRounding
             relative
             text-center
-            bg-primary
             text-xl
             flex
             justify-center
             align-middle
-            transition-[box-shadow,_border-radius]
+            transition-[box-shadow,_border-radius,background-color]
             duration-150
             items-center
             @ColorClass
@@ -109,7 +111,8 @@
 
     private string BoxShadowFill => RepCountValue is not null  ? "0" : "2rem";
 
-    private string ColorClass =>  RepCountValue is not null ? "text-on-primary" : "text-on-secondary-container";
+// Realistically the bg should not be seen when there is a rep count, but there are mild artifacts when keeping it as bg-primary
+    private string ColorClass =>  RepCountValue is not null ? "text-on-primary bg-primary" : "text-on-secondary-container bg-secondary-container";
 
     private string? RepCountToStartClass => ToStartNext ? "" : null;
 
