@@ -73,7 +73,7 @@ describe('Completing a session', () => {
         cy.get('.cardlist .card').first().should('contain.text', 'Workout A').should('contain.text', 'December 13 2020')
       })
 
-      it.only('can complete a workout while switching to per set weights with it progressing properly', () => {
+      it('can complete a workout while switching to per set weights with it progressing properly', () => {
         cy.contains('Workout A').click()
         cy.contains('Rest between').should('not.exist')
         cy.get('.repcount').first().click().should('contain.text', '5/5')
