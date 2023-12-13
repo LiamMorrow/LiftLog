@@ -27,8 +27,13 @@ jobs:
         run: dotnet workload restore
       - name: Restore dependencies
         run: dotnet restore -p:TargetFramework=net8.0-android
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: "microsoft"
+          java-version: "17"
       - name: Setup Android SDK Tools
-        uses: android-actions/setup-android@v2.0.10
+        uses: android-actions/setup-android@v3.2.0
       - name: Build Tailwind
         run: yarn && yarn build
         working-directory: ./LiftLog.Ui
