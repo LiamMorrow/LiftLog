@@ -1,12 +1,14 @@
 using System.Text.Json.Serialization;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
+using LiftLog.Ui.Models.CurrentSessionStateDao;
 using LiftLog.Ui.Models.SessionBlueprintDao;
 using LiftLog.Ui.Models.SessionHistoryDao;
 using LiftLog.Ui.Models.SettingsStorageDao;
 using LiftLog.Ui.Store.CurrentSession;
 
 [JsonSerializable(typeof(SessionBlueprintContainerDaoV1))]
+[JsonSerializable(typeof(CurrentSessionStateDaoV1))]
 [JsonSerializable(typeof(SessionHistoryDaoV1))]
 [JsonSerializable(typeof(CurrentSessionState))]
 [JsonSerializable(typeof(List<SessionBlueprintDaoV1>))]
