@@ -9,22 +9,16 @@ using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Ui.Store.CurrentSession
 {
-    public class PersistSessionMiddleware : Middleware
+    public class PersistSessionMiddleware(
+        IKeyValueStore _keyValueStore,
+        ILogger<PersistSessionMiddleware> logger
+    ) : Middleware
     {
         private const string Key = "CurrentSessionStateV1";
         private IStore? _store;
-        private readonly IKeyValueStore keyValueStore;
-        private readonly ILogger<PersistSessionMiddleware> logger;
+        private readonly IKeyValueStore keyValueStore = _keyValueStore;
+        private readonly ILogger<PersistSessionMiddleware> logger = logger;
         private CurrentSessionState? previousState;
-
-        public PersistSessionMiddleware(
-            IKeyValueStore _keyValueStore,
-            ILogger<PersistSessionMiddleware> logger
-        )
-        {
-            keyValueStore = _keyValueStore;
-            this.logger = logger;
-        }
 
         public override async Task InitializeAsync(IDispatcher dispatch, IStore store)
         {
