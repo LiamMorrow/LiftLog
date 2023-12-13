@@ -2,27 +2,23 @@ using System.Diagnostics;
 using System.Text.Json;
 using Fluxor;
 using LiftLog.Lib.Serialization;
+using LiftLog.Ui.Models.CurrentSessionStateDao;
+using LiftLog.Ui.Models.SessionHistoryDao;
 using LiftLog.Ui.Services;
 using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Ui.Store.CurrentSession
 {
-    public class PersistSessionMiddleware : Middleware
+    public class PersistSessionMiddleware(
+        IKeyValueStore _keyValueStore,
+        ILogger<PersistSessionMiddleware> logger
+    ) : Middleware
     {
-        private const string Key = "CurrentSessionState";
+        private const string Key = "CurrentSessionStateV1";
         private IStore? _store;
-        private readonly IKeyValueStore keyValueStore;
-        private readonly ILogger<PersistSessionMiddleware> logger;
+        private readonly IKeyValueStore keyValueStore = _keyValueStore;
+        private readonly ILogger<PersistSessionMiddleware> logger = logger;
         private CurrentSessionState? previousState;
-
-        public PersistSessionMiddleware(
-            IKeyValueStore _keyValueStore,
-            ILogger<PersistSessionMiddleware> logger
-        )
-        {
-            keyValueStore = _keyValueStore;
-            this.logger = logger;
-        }
 
         public override async Task InitializeAsync(IDispatcher dispatch, IStore store)
         {
@@ -35,9 +31,9 @@ namespace LiftLog.Ui.Store.CurrentSession
             {
                 var currentSessionState =
                     currentSessionStateJson != null
-                        ? JsonSerializer.Deserialize<CurrentSessionState>(
+                        ? JsonSerializer.Deserialize<CurrentSessionStateDaoV1>(
                             currentSessionStateJson,
-                            StorageJsonContext.Context.CurrentSessionState
+                            StorageJsonContext.Context.CurrentSessionStateDaoV1
                         )
                         : null;
                 var deserializationTime = sw.ElapsedMilliseconds;
@@ -47,7 +43,7 @@ namespace LiftLog.Ui.Store.CurrentSession
                 );
                 if (currentSessionState is not null)
                 {
-                    store.Features["CurrentSession"].RestoreState(currentSessionState);
+                    store.Features["CurrentSession"].RestoreState(currentSessionState.ToModel());
                 }
             }
             catch (JsonException e)
@@ -69,8 +65,8 @@ namespace LiftLog.Ui.Store.CurrentSession
                 try
                 {
                     var currentSessionState = JsonSerializer.Serialize(
-                        currentState,
-                        StorageJsonContext.Context.CurrentSessionState
+                        CurrentSessionStateDaoV1.FromModel(currentState),
+                        StorageJsonContext.Context.CurrentSessionStateDaoV1
                     );
                     var serializationTime = sw.ElapsedMilliseconds;
                     sw.Restart();
