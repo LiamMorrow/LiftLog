@@ -73,6 +73,50 @@ describe('Completing a session', () => {
         cy.get('.cardlist .card').first().should('contain.text', 'Workout A').should('contain.text', 'December 13 2020')
       })
 
+      it.only('can complete a workout while switching to per set weights with it progressing properly', () => {
+        cy.contains('Workout A').click()
+        cy.contains('Rest between').should('not.exist')
+        cy.get('.repcount').first().click().should('contain.text', '5/5')
+        cy.get('.snackbar').contains('Rest between').should('be.visible')
+
+        cy.get('.cardlist .card').eq(0).should('contain.text', 'Squat')
+        cy.get('[data-cy=weight-display]').first().should('contain.text', '20kg')
+        cy.get('[data-cy=per-rep-weight-btn]').first().click()
+
+        // Update the weight of the second set to be lower than the top level weight
+        cy.get('[data-cy=set-weight-button]').eq(1).click()
+        cy.get('[data-cy=decrement-weight]:visible').click()
+        cy.get('[slot="actions"]:visible').contains("Save").click()
+        cy.get('[data-cy=set-weight-button]').eq(1).should('contain.text', '17.5kg')
+        cy.get('[data-cy=set-weight-button]').eq(2).should('contain.text', '20kg')
+
+        // Update top level weight - which should update all sets which aren't completed and have the same weight (i.e. the last set)
+        cy.get('[data-cy=weight-display]').first().click()
+        cy.get('[data-cy=decrement-weight]').first().click().click().click()
+        cy.get('[slot="actions"]:visible').contains("Save").click()
+        cy.get('[data-cy=set-weight-button]').eq(0).should('contain.text', '20kg')
+        cy.get('[data-cy=set-weight-button]').eq(1).should('contain.text', '17.5kg')
+        cy.get('[data-cy=set-weight-button]').eq(2).should('contain.text', '12.5kg')
+
+        // We reduced top level weight to 12.5
+        cy.get('[data-cy=weight-display]').first().should('contain.text', '12.5kg')
+
+        // Complete all sets
+        for (let i = 1; i <= 6; i++) {
+          cy.get('.repcount').eq(i).click()
+        }
+
+        cy.get('.snackbar').should('be.visible').should('contain.text', 'This session you lifted').should('contain.text', '650')
+        cy.get('md-fab').click()
+
+        cy.get('.cardlist .card').eq(0).should('contain.text', 'Workout B')
+        cy.get('.cardlist .card').eq(1).should('contain.text', 'Workout A').click()
+
+        cy.get('.cardlist .card').eq(0).should('contain.text', 'Squat')
+        // Since all sets were completed - with at least one of the sets having equal or higher weight than the top level, the weight should have increased
+        cy.get('[data-cy=weight-display]').first().should('contain.text', '15kg')
+      })
+
       it('can add notes to an exercise and see them the next time they do that exercise', () => {
         cy.contains('Workout A').click()
 
