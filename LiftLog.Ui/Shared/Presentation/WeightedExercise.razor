@@ -4,7 +4,7 @@
     {
         (true, null) => (RecordedExercise, -1, null),
         (true, var previous) => (previous, -1, previous.Notes),
-        (false, _) => (RecordedExercise, RecordedExercise.RecordedSets.IndexOf(null), null)
+        (false, _) => (RecordedExercise, RecordedExercise.PotentialSets.IndexOf(x => x.Set is null), null)
     };
 }
 <SplitCardControl>
@@ -21,14 +21,17 @@
                 </div>
             </div>
             <div class="flex flex-wrap justify-center gap-2">
-                @foreach (var (set, i) in displayedExercise.RecordedSets.IndexedTuples())
+                @foreach (var (set, i) in displayedExercise.PotentialSets.IndexedTuples())
                 {
-                    <RepCount
+                    <PotentialSetCounter
                         @key=i
+                        Set="set"
+                        ShowWeight=displayedExercise.PerSetWeight
                         MaxReps="displayedExercise.Blueprint.RepsPerSet"
+                        WeightIncrement="displayedExercise.Blueprint.WeightIncreaseOnSuccess"
                         CycleRepCount=@(() => CycleRepCountForSet(i))
                         ClearRepCount=@(() => ClearRepCountForSet(i))
-                        RepCountValue=@set?.RepsCompleted
+                        UpdateWeight=@((weight)=>UpdateWeightForSet(i, weight))
                         ToStartNext=@(ToStartNext && repToStartNext == i) />
                 }
             </div>
@@ -44,9 +47,10 @@
             <MenuItem Label="Edit" Icon="edit" OnClick="OnEditExercise" />
             <MenuItem Label="Remove" Icon="delete" OnClick="OnRemoveExercise" />
         </Menu>
+        <IconButton data-cy="per-rep-weight-btn" Type=IconButtonType.FilledTonal Icon=weight OnClick="ToggleExercisePerSetWeight"></IconButton>
         @if(PreviousRecordedExercise != null)
         {
-            <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.FilledTonal" Icon="history" OnClick="()=>{}" OnStartHold="()=> _holdingPrevious=true" OnEndHold="()=>_holdingPrevious = false" />
+            <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.FilledTonal" Icon="history" OnStartHold="()=> _holdingPrevious=true" OnEndHold="()=>_holdingPrevious = false" />
         }
     </SideContent>
 </SplitCardControl>
@@ -90,6 +94,10 @@
 
   [EditorRequired]
   [Parameter]
+  public Action<int, decimal> UpdateWeightForSet { get; set; } = null!;
+
+  [EditorRequired]
+  [Parameter]
   public Action<decimal> UpdateWeightForExercise { get; set; } = null!;
 
   [EditorRequired]
@@ -99,6 +107,10 @@
   [EditorRequired]
   [Parameter]
   public Action OnEditExercise { get; set; } = null!;
+
+  [EditorRequired]
+  [Parameter]
+  public Action ToggleExercisePerSetWeight { get; set; } = null!;
 
   [EditorRequired]
   [Parameter]

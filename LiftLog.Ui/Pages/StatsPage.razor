@@ -104,8 +104,9 @@ else
                     new DatedRecordedExercise(session.Date, new RecordedExercise(
                         Blueprint: session.RecordedExercises.First().Blueprint,
                         Weight: session.Bodyweight!.Value,
-                        RecordedSets: [new RecordedSet(1, TimeOnly.MinValue)],
-                        null
+                        PotentialSets: [new(new RecordedSet(1, TimeOnly.MinValue), 0)],
+                        null,
+                        false
                         )
                     )
                 ).ToImmutableList(),
@@ -125,8 +126,9 @@ else
                     new DatedRecordedExercise(session.Date, new RecordedExercise(
                         Blueprint: session.RecordedExercises.First().Blueprint,
                         Weight: session.TotalWeightLifted,
-                        RecordedSets: [new RecordedSet(1, TimeOnly.MinValue)],
-                        null
+                        PotentialSets: [new(new RecordedSet(1, TimeOnly.MinValue), 0)],
+                        null,
+                        false
                         )
                     )
                 ).ToImmutableList(),

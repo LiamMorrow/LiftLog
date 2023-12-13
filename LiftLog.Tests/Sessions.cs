@@ -34,23 +34,41 @@ public static class Sessions
             new RecordedExercise(
                 Blueprint: exerciseBlueprint,
                 Weight: exerciseBlueprint.InitialWeight,
-                RecordedSets: Enumerable
+                PotentialSets: Enumerable
                     .Range(0, exerciseBlueprint.Sets)
                     .Select(
                         (i) =>
                             i switch
                             {
                                 0
-                                    => new RecordedSet(
-                                        RepsCompleted: exerciseBlueprint.RepsPerSet,
-                                        CompletionTime: TimeOnly.Parse("14:32:00")
+                                    => new PotentialSet(
+                                        new(
+                                            RepsCompleted: exerciseBlueprint.RepsPerSet,
+                                            CompletionTime: TimeOnly.Parse("14:32:00")
+                                        ),
+                                        exerciseBlueprint.InitialWeight
                                     ),
-                                _ => null
+                                _ => new PotentialSet(null, exerciseBlueprint.InitialWeight)
                             }
                     )
                     .ToImmutableList(),
-                Notes: null
+                Notes: null,
+                PerSetWeight: false
             )
         );
+    }
+
+    public static PotentialSet CreatePotentialSet(
+        decimal weight,
+        int repsCompleted = 10,
+        bool isEmpty = false
+    )
+    {
+        return isEmpty
+            ? new PotentialSet(null, weight)
+            : new PotentialSet(
+                new(RepsCompleted: repsCompleted, CompletionTime: TimeOnly.Parse("14:32:00")),
+                weight
+            );
     }
 }

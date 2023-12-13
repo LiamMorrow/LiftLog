@@ -60,7 +60,8 @@ internal record RecordedExerciseDaoV1(
     [property: JsonPropertyName("Blueprint")] ExerciseBlueprintDaoV1 Blueprint,
     [property: JsonPropertyName("Kilograms")] decimal Kilograms,
     [property: JsonPropertyName("RecordedSets")] ImmutableListValue<RecordedSetDaoV1?> RecordedSets,
-    [property: JsonPropertyName("Notes")] string? Notes
+    [property: JsonPropertyName("Notes")] string? Notes,
+    [property: JsonPropertyName("PerSetWeight")] bool PerSetWeight
 )
 {
     public static RecordedExerciseDaoV1 FromModel(
@@ -71,42 +72,68 @@ internal record RecordedExerciseDaoV1(
             ExerciseBlueprintDaoV1.FromModel(model.Blueprint),
             model.Weight,
             model
-                .RecordedSets
+                .PotentialSets
                 .Select(x => RecordedSetDaoV1.FromModel(sessionDate, x))
                 .ToImmutableList(),
-            model.Notes
+            model.Notes,
+            model.PerSetWeight
         );
 
     public Lib.Models.RecordedExercise ToModel() =>
         new(
             Blueprint.ToModel(),
             Kilograms,
-            RecordedSets.Select(x => x?.ToModel()).ToImmutableList(),
-            Notes
+            RecordedSets
+                .Select(x => x?.ToModel(this) ?? new Lib.Models.PotentialSet(null, Kilograms))
+                .ToImmutableList(),
+            Notes,
+            PerSetWeight
         );
 }
 
 internal record RecordedSetDaoV1(
-    [property: JsonPropertyName("RepsCompleted")] int RepsCompleted,
-    [property: JsonPropertyName("CompletionTime")] DateTimeOffset CompletionTime
+    [property: JsonPropertyName("RepsCompleted")] int? RepsCompleted,
+    [property: JsonPropertyName("CompletionTime")] DateTimeOffset? CompletionTime,
+    [property: JsonPropertyName("Weight")] decimal? Weight
 )
 {
     public static RecordedSetDaoV1? FromModel(
         DateOnly sessionDate,
-        Lib.Models.RecordedSet? model
+        Lib.Models.PotentialSet model
     ) =>
-        model is null
-            ? null
-            : new RecordedSetDaoV1(
-                model.RepsCompleted,
-                sessionDate.ToDateTime(model.CompletionTime)
-            );
+        model switch
+        {
+            { Set: null }
+                => new RecordedSetDaoV1(
+                    RepsCompleted: null,
+                    CompletionTime: null,
+                    Weight: model.Weight
+                ),
+            { Set: { } } completed
+                => new RecordedSetDaoV1(
+                    RepsCompleted: model.Set.RepsCompleted,
+                    CompletionTime: sessionDate.ToDateTime(completed.Set.CompletionTime),
+                    Weight: completed.Weight
+                ),
+            _ => null
+        };
 
-    public Lib.Models.RecordedSet? ToModel() =>
-        RepsCompleted == 0
-            ? null
-            : new Lib.Models.RecordedSet(
-                RepsCompleted,
-                TimeOnly.FromDateTime(CompletionTime.DateTime)
-            );
+    public Lib.Models.PotentialSet ToModel(RecordedExerciseDaoV1 exercise)
+    {
+        var weight = Weight ?? exercise.Kilograms;
+        return this switch
+        {
+            { RepsCompleted: null, CompletionTime: null }
+                => new Lib.Models.PotentialSet(null, weight),
+            { RepsCompleted: { }, CompletionTime: { } } completed
+                => new Lib.Models.PotentialSet(
+                    new Lib.Models.RecordedSet(
+                        completed.RepsCompleted.Value,
+                        TimeOnly.FromDateTime(completed.CompletionTime.Value.DateTime)
+                    ),
+                    weight
+                ),
+            _ => throw new Exception("Invalid RecordedSetDaoV1")
+        };
+    }
 }

@@ -1,4 +1,6 @@
-﻿namespace LiftLog.Lib.Models;
+﻿using System.Collections.Immutable;
+
+namespace LiftLog.Lib.Models;
 
 public record Session(
     Guid Id,
@@ -15,7 +17,7 @@ public record Session(
             var latestExerciseIndex = RecordedExercises
                 .IndexedTuples()
                 .Where(x => x.Item.LastRecordedSet is not null)
-                .OrderByDescending(x => x.Item.LastRecordedSet?.CompletionTime)
+                .OrderByDescending(x => x.Item.LastRecordedSet?.Set?.CompletionTime)
                 .Select(x => x.Index)
                 .FirstOrDefault(-1);
             var latestExerciseSupersetsWithNext = latestExerciseIndex switch
@@ -45,44 +47,53 @@ public record Session(
             }
             return RecordedExercises
                 .Where(x => x.HasRemainingSets)
-                .OrderByDescending(x => x.LastRecordedSet?.CompletionTime)
+                .OrderByDescending(x => x.LastRecordedSet?.Set?.CompletionTime)
                 .FirstOrDefault();
         }
     }
 
     public RecordedExercise? LastExercise =>
         RecordedExercises
-            .Where(x => x.RecordedSets.Any(set => set is not null))
-            .OrderByDescending(x => x.LastRecordedSet?.CompletionTime)
+            .Where(x => x.PotentialSets.Any(set => set.Set is not null))
+            .OrderByDescending(x => x.LastRecordedSet?.Set?.CompletionTime)
             .FirstOrDefault();
 
     public bool IsStarted => RecordedExercises.Any(x => x.LastRecordedSet is not null);
 
     public bool IsComplete =>
-        RecordedExercises.All(x => x.RecordedSets.All(set => set is not null));
+        RecordedExercises.All(x => x.PotentialSets.All(set => set.Set is not null));
 
     public decimal TotalWeightLifted =>
         RecordedExercises.Sum(
-            ex => ex.Weight * ex.RecordedSets.Sum(set => set?.RepsCompleted ?? 0)
+            ex => ex.PotentialSets.Sum(set => (set.Set?.RepsCompleted ?? 0) * set.Weight)
         );
 }
 
 public record RecordedExercise(
     ExerciseBlueprint Blueprint,
     decimal Weight,
-    ImmutableListValue<RecordedSet?> RecordedSets,
-    string? Notes
+    ImmutableListValue<PotentialSet> PotentialSets,
+    string? Notes,
+    bool PerSetWeight
 )
 {
-    public bool SucceededAllSets =>
-        RecordedSets.All(x => x is not null && x.RepsCompleted == Blueprint.RepsPerSet);
+    /// <summary>
+    /// An exercise is considered a success if ALL sets are successful, with ANY of the sets >= the top level weight
+    /// </summary>
+    public bool IsSuccessForProgressiveOverload =>
+        PotentialSets.All(x => x.Set is not null && x.Set.RepsCompleted >= Blueprint.RepsPerSet)
+        && PotentialSets.Any(x => x.Weight >= Weight);
 
-    public RecordedSet? LastRecordedSet =>
-        RecordedSets.OrderByDescending(x => x?.CompletionTime).FirstOrDefault(x => x is not null);
+    public PotentialSet? LastRecordedSet =>
+        PotentialSets
+            .OrderByDescending(x => x.Set?.CompletionTime)
+            .FirstOrDefault(x => x is not null);
 
     public decimal OneRepMax => Math.Floor(Weight / (1.0278m - (0.0278m * Blueprint.RepsPerSet)));
 
-    public bool HasRemainingSets => RecordedSets.Any(x => x is null);
+    public bool HasRemainingSets => PotentialSets.Any(x => x.Set is null);
 }
 
 public record RecordedSet(int RepsCompleted, TimeOnly CompletionTime);
+
+public record PotentialSet(RecordedSet? Set, decimal Weight);

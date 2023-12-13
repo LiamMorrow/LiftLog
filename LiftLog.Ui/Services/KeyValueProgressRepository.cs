@@ -39,7 +39,7 @@ namespace LiftLog.Ui.Services
                 var session in _storedSessions
                     .Select(day => day.Value)
                     .OrderByDescending(x => x.Date)
-                    .ThenByDescending(x => x.LastExercise?.LastRecordedSet?.CompletionTime)
+                    .ThenByDescending(x => x.LastExercise?.LastRecordedSet?.Set?.CompletionTime)
             )
             {
                 yield return session;

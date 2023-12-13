@@ -1,4 +1,4 @@
-<span class="flex items-center">@WeightDisplay<span class="text-sm">@Suffix</span></span>
+<span class="flex items-center">@WeightDisplay<span class="@SuffixClass">@Suffix</span></span>
 @code {
     [EditorRequired]
     [Parameter]
@@ -6,6 +6,9 @@
 
     [CascadingParameter(Name = "UseImperial")]
     public bool UseImperial { get; set; }
+
+    [Parameter]
+    public string SuffixClass { get;set; } = "text-sm";
 
     private string WeightDisplay => Weight?.ToString("0.####") ?? "-";
 

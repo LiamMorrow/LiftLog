@@ -20,6 +20,8 @@ else
             ClearRepCountForSet=ClearRepCountForExerciseSet(context.Index)
             UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index)
             PreviousRecordedExercise=PreviouslyCompleted.GetValueOrDefault(context.Item.Blueprint)
+            ToggleExercisePerSetWeight=@(() =>ToggleExercisePerSetWeight(context.Index))
+            UpdateWeightForSet=@((setIndex, weight) => UpdateWeightForSet(context.Index, setIndex, weight))
             UpdateNotesForExercise=@((notes)=>UpdateNotesForExercise(context.Index, notes))
             OnEditExercise=@(() => BeginEditExercise(context.Index))
             OnRemoveExercise=@(()=> BeginRemoveExercise(context.Index)) />
@@ -61,7 +63,7 @@ else
         <SessionExerciseEditor Exercise=_editingExercise ExerciseNames="ExerciseNames" OnExerciseUpdate=@((e) =>
             {_editingExercise = e; StateHasChanged();} ) />
     </div>
-    <div slot="actions">
+    <div slot="actions" data-cy="session-exercise-editor-actions">
         <AppButton Type="AppButtonType.Text" OnClick="()=>{_editExerciseDialog?.Close(); }">Cancel</AppButton>
         <AppButton Type="AppButtonType.Text" OnClick="EditExerciseHandler">Save</AppButton>
     </div>
@@ -134,6 +136,14 @@ else
 
     [EditorRequired]
     [Parameter]
+    public Action<int> ToggleExercisePerSetWeight { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
+    public Action<int,int,decimal> UpdateWeightForSet { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
     public Action<decimal?> UpdateBodyweight { get; set; } = null!;
 
     [EditorRequired]
@@ -185,6 +195,8 @@ else
 
     private Action<decimal> UpdateWeightForExerciseWrapper(int exerciseIndex)
         => (decimal weight) => UpdateWeightForExercise(exerciseIndex, weight);
+
+
 
     private void EditExerciseHandler()
     {
@@ -256,14 +268,14 @@ else
 
     private RenderFragment? RenderSnackBar()
     {
-
-        if (ShowRestTimer && Session.NextExercise is not null && Session.LastExercise?.LastRecordedSet is not null)
+        var lastRecordedSet = Session.LastExercise?.LastRecordedSet;
+        if (ShowRestTimer && Session.NextExercise is not null && Session.LastExercise is not null && lastRecordedSet is {Set : {}} lrs)
         {
-            var lastSetFailed = Session.LastExercise.LastRecordedSet.RepsCompleted < Session.LastExercise.Blueprint.RepsPerSet;
+            var lastSetFailed = lrs.Set.RepsCompleted < Session.LastExercise.Blueprint.RepsPerSet;
 
             return @<RestTimer
                 Rest=Session.LastExercise.Blueprint.RestBetweenSets
-                StartTime=Session.LastExercise.LastRecordedSet.CompletionTime
+                StartTime=lrs.Set.CompletionTime
                 Failed=lastSetFailed />;
         }
         else if (Session.IsComplete)

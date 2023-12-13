@@ -47,6 +47,8 @@
         EditExercise="EditExercise"
         AddExercise="AddExercise"
         UpdateNotesForExercise="UpdateNotesForExercise"
+        ToggleExercisePerSetWeight=ToggleExercisePerSetWeight
+        UpdateWeightForSet=UpdateWeightForSet
         ExerciseNames="ProgramState.Value.ExerciseNames"
         SessionInPlan=@(ProgramState.Value.SessionBlueprints.Contains(CurrentSessionState.Value.HistorySession.Blueprint))
         SessionWithSameNameInPlan=@(ProgramState.Value.SessionBlueprints.Any(x=>x.Name == CurrentSessionState.Value.HistorySession.Blueprint.Name))
@@ -96,6 +98,12 @@
 
     private void UpdateNotesForExercise(int exerciseIndex, string? notes)
         => Dispatcher.Dispatch(new UpdateNotesForExerciseAction(SessionTarget.HistorySession, exerciseIndex, notes));
+
+    private void ToggleExercisePerSetWeight(int exerciseIndex)
+        => Dispatcher.Dispatch(new ToggleExercisePerSetWeightAction(SessionTarget.HistorySession, exerciseIndex));
+
+    private void UpdateWeightForSet(int exerciseIndex, int setIndex, decimal weight)
+        => Dispatcher.Dispatch(new UpdateWeightForSetAction(SessionTarget.HistorySession, exerciseIndex, setIndex, weight));
 
     private void UpdateBodyweight(decimal? bodyweight)
         => Dispatcher.Dispatch(new UpdateBodyweightAction(SessionTarget.HistorySession, bodyweight));

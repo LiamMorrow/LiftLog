@@ -1,0 +1,169 @@
+@inject IJSRuntime JSRuntime
+
+<div class="flex flex-col items-center relative">
+    <button
+        @ref="_button"
+        class="
+            repcount
+            flex-shrink-0
+            w-14
+            h-14
+            @RepCountRounding
+            relative
+            text-center
+            bg-primary
+            text-xl
+            flex
+            justify-center
+            align-middle
+            transition-[box-shadow,_border-radius]
+            duration-150
+            items-center
+            @ColorClass
+            @RepCountToStartClass"
+        @onpointerdown="OnPointerDown"
+        @onpointerleave="OnPointerLeave"
+        @onpointerup="OnPointerUp"
+        style="box-shadow: inset 0 0 0 @BoxShadowFill var(--md-sys-color-secondary-container);">
+        <md-ripple style="--md-ripple-pressed-color: var(--md-sys-color-on-primary-container)" ></md-ripple>
+        <span class="font-bold">@(RepCountValue?.ToString() ?? "-")</span><span class="inline text-sm align-text-top">/@MaxReps</span>
+    </button>
+    <md-focus-ring @ref="_focusRing" visible=@ToStartNext style="--md-focus-ring-shape: 0.75rem"></md-focus-ring>
+        <button
+            @onclick=HandleWeightClick
+            data-cy="set-weight-button"
+            class="
+            relative
+            rounded-b-xl
+            transition-[height,padding,width]
+            @scale
+            overflow-hidden
+            text-xs
+            flex
+            border-t
+            justify-center
+            border-outline
+            bg-surface-container-high
+            text-on-surface-variant"
+        >
+            <md-ripple></md-ripple>
+            <WeightFormat Weight=Set.Weight SuffixClass=""/>
+        </button>
+</div>
+
+<WeightDialog
+    @ref="dialog"
+    Weight="Set.Weight"
+    Label="Set Weight"
+    UpdateWeight="d=>UpdateWeight(d!.Value)"
+    Increment="WeightIncrement"
+    AllowNull="false"
+/>
+@code
+{
+    private WeightDialog? dialog;
+    [Parameter]
+    [EditorRequired]
+    public PotentialSet Set { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public bool ShowWeight { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public Action<decimal> UpdateWeight { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public decimal WeightIncrement { get; set; }
+
+    [EditorRequired]
+    [Parameter]
+    public int MaxReps { get; set; }
+
+    [EditorRequired]
+    [Parameter]
+    public Action CycleRepCount { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
+    public Action ClearRepCount { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
+    public bool ToStartNext { get; set; }
+
+    private int? RepCountValue => Set.Set?.RepsCompleted;
+
+    private string RepCountRounding => ShowWeight ? "rounded-t-xl" : "rounded-xl";
+
+    private DateTime? _lastPointerDownTime;
+    private DateTime? _clearRepCountTime;
+    private ElementReference _focusRing;
+    private ElementReference _button;
+
+    private string scale => ShowWeight ? "p-2 h-8 w-14" : "h-0 w-0 p-0";
+
+    private bool _prevToStartNext;
+
+    private string BoxShadowFill => RepCountValue is not null  ? "0" : "2rem";
+
+    private string ColorClass =>  RepCountValue is not null ? "text-on-primary" : "text-on-secondary-container";
+
+    private string? RepCountToStartClass => ToStartNext ? "" : null;
+
+
+    private void OnPointerDown(PointerEventArgs args){
+        _lastPointerDownTime = DateTime.Now;
+        Task.Delay(500).ContinueWith(_ => {
+            if (_lastPointerDownTime is null || _lastPointerDownTime.Value.AddMilliseconds(500) > DateTime.Now) return;
+            _clearRepCountTime = DateTime.Now;
+            ClearRepCount();
+        });
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if(_prevToStartNext != ToStartNext && ToStartNext)
+        {
+            await JSRuntime.InvokeVoidAsync("AppUtils.scrollIntoView", _button);
+        }
+        _prevToStartNext = ToStartNext;
+        await base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("AppUtils.callOn", _focusRing, "detach");
+            if(ToStartNext)
+            {
+                await JSRuntime.InvokeVoidAsync("AppUtils.scrollIntoView", _button);
+            }
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void OnPointerLeave(PointerEventArgs args){
+        _lastPointerDownTime = null;
+    }
+
+    private void OnPointerUp(PointerEventArgs args){
+        // On desktop holding down opens a right click menu - so this does not fire
+        // This results in needing to click the repcount twice after cycling.  Not an issue on mobile
+        if(_clearRepCountTime is null)
+        {
+            CycleRepCount();
+        }
+        _clearRepCountTime = null;
+        _lastPointerDownTime = null;
+    }
+
+    private void HandleWeightClick()
+    {
+        dialog?.Open();
+    }
+
+}

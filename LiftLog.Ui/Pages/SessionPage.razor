@@ -38,6 +38,8 @@
         AddExercise="AddExercise"
         UpdateNotesForExercise="UpdateNotesForExercise"
         ExerciseNames="ProgramState.Value.ExerciseNames"
+        ToggleExercisePerSetWeight=ToggleExercisePerSetWeight
+        UpdateWeightForSet=UpdateWeightForSet
         SessionInPlan=@(ProgramState.Value.SessionBlueprints.Contains(CurrentSessionState.Value.WorkoutSession.Blueprint))
         SessionWithSameNameInPlan=@(ProgramState.Value.SessionBlueprints.Any(x=>x.Name == CurrentSessionState.Value.WorkoutSession.Blueprint.Name))
         AddSessionToPlan="AddSessionToPlan"
@@ -74,6 +76,12 @@
         Dispatcher.Dispatch(new CycleExerciseRepsAction(SessionTarget.WorkoutSession, exerciseIndex, setIndex));
         Dispatcher.Dispatch(new NotifySetTimerAction(SessionTarget.WorkoutSession));
     }
+
+    private void ToggleExercisePerSetWeight(int exerciseIndex)
+        => Dispatcher.Dispatch(new ToggleExercisePerSetWeightAction(SessionTarget.WorkoutSession, exerciseIndex));
+
+    private void UpdateWeightForSet(int exerciseIndex, int setIndex, decimal weight)
+        => Dispatcher.Dispatch(new UpdateWeightForSetAction(SessionTarget.WorkoutSession, exerciseIndex, setIndex, weight));
 
     private void UpdateWeightForExercise(int exerciseIndex, decimal weight)
     {

@@ -4,7 +4,7 @@ using LiftLog.Lib.Models;
 
 namespace LiftLog.Ui.Store.CurrentSession;
 
-public static class Reducers
+public static class CurrentSessionReducers
 {
     [ReducerMethod]
     public static CurrentSessionState SetActiveSessionDate(
@@ -26,6 +26,7 @@ public static class Reducers
         var session = ActiveSession(state, action.Target) ?? throw new Exception();
         var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
         var exerciseBlueprint = session.Blueprint.Exercises[action.ExerciseIndex];
+        var setAtIndex = exerciseAtIndex.PotentialSets[action.SetIndex];
         var sessionDate = session.Date;
         if (!session.IsStarted)
         {
@@ -44,14 +45,14 @@ public static class Reducers
                         action.ExerciseIndex,
                         exerciseAtIndex with
                         {
-                            RecordedSets = exerciseAtIndex
-                                .RecordedSets
+                            PotentialSets = exerciseAtIndex
+                                .PotentialSets
                                 .SetItem(
                                     action.SetIndex,
-                                    GetCycledRepCount(
-                                        exerciseAtIndex.RecordedSets[action.SetIndex],
-                                        exerciseBlueprint
-                                    )
+                                    setAtIndex with
+                                    {
+                                        Set = GetCycledRepCount(setAtIndex.Set, exerciseBlueprint)
+                                    }
                                 )
                         }
                     )
@@ -98,9 +99,14 @@ public static class Reducers
         {
             Blueprint = newExerciseBlueprint,
             Weight = action.Exercise.Weight,
-            RecordedSets = Enumerable
+            PotentialSets = Enumerable
+                // Keep existing sets, but add new ones if the new exercise has more sets
                 .Range(0, newExerciseBlueprint.Sets)
-                .Select(index => existingExercise.RecordedSets.ElementAtOrDefault(index))
+                .Select(
+                    index =>
+                        existingExercise.PotentialSets.ElementAtOrDefault(index)
+                        ?? new PotentialSet(null, action.Exercise.Weight)
+                )
                 .ToImmutableList()
         };
         return WithActiveSession(
@@ -142,10 +148,10 @@ public static class Reducers
             newExerciseBlueprint,
             action.Exercise.Weight,
             Enumerable
-                .Range(0, newExerciseBlueprint.Sets)
-                .Select(_ => (RecordedSet?)null)
+                .Repeat(new PotentialSet(null, action.Exercise.Weight), newExerciseBlueprint.Sets)
                 .ToImmutableList(),
-            null
+            null,
+            false
         );
         return WithActiveSession(
             state,
@@ -169,6 +175,7 @@ public static class Reducers
     {
         var session = ActiveSession(state, action.Target) ?? throw new Exception();
         var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
+        var potentialSetAtIndex = exerciseAtIndex.PotentialSets[action.SetIndex];
 
         return WithActiveSession(
             state,
@@ -181,9 +188,70 @@ public static class Reducers
                         action.ExerciseIndex,
                         exerciseAtIndex with
                         {
-                            RecordedSets = exerciseAtIndex
-                                .RecordedSets
-                                .SetItem(action.SetIndex, null)
+                            PotentialSets = exerciseAtIndex
+                                .PotentialSets
+                                .SetItem(action.SetIndex, potentialSetAtIndex with { Set = null })
+                        }
+                    )
+            }
+        );
+    }
+
+    [ReducerMethod]
+    public static CurrentSessionState ToggleExercisePerSetWeight(
+        CurrentSessionState state,
+        ToggleExercisePerSetWeightAction action
+    )
+    {
+        var session = ActiveSession(state, action.Target) ?? throw new Exception();
+        var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
+        return WithActiveSession(
+            state,
+            action.Target,
+            session with
+            {
+                RecordedExercises = session
+                    .RecordedExercises
+                    .SetItem(
+                        action.ExerciseIndex,
+                        exerciseAtIndex with
+                        {
+                            PerSetWeight = !exerciseAtIndex.PerSetWeight
+                        }
+                    )
+            }
+        );
+    }
+
+    [ReducerMethod]
+    public static CurrentSessionState UpdateWeightForSet(
+        CurrentSessionState state,
+        UpdateWeightForSetAction action
+    )
+    {
+        var session = ActiveSession(state, action.Target) ?? throw new Exception();
+        var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
+        var setAtIndex = exerciseAtIndex.PotentialSets[action.SetIndex];
+        return WithActiveSession(
+            state,
+            action.Target,
+            session with
+            {
+                RecordedExercises = session
+                    .RecordedExercises
+                    .SetItem(
+                        action.ExerciseIndex,
+                        exerciseAtIndex with
+                        {
+                            PotentialSets = exerciseAtIndex
+                                .PotentialSets
+                                .SetItem(
+                                    action.SetIndex,
+                                    setAtIndex with
+                                    {
+                                        Weight = action.Weight
+                                    }
+                                )
                         }
                     )
             }
@@ -198,6 +266,20 @@ public static class Reducers
     {
         var session = ActiveSession(state, action.Target) ?? throw new Exception();
         var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
+        var previousWeight = exerciseAtIndex.Weight;
+        var newPotentialSets = exerciseAtIndex
+            .PotentialSets
+            .Select(
+                set =>
+                    !exerciseAtIndex.PerSetWeight
+                    || (set.Weight == previousWeight && set.Set is null)
+                        ? set with
+                        {
+                            Weight = action.Weight
+                        }
+                        : set
+            )
+            .ToImmutableList();
         return WithActiveSession(
             state,
             action.Target,
@@ -205,7 +287,14 @@ public static class Reducers
             {
                 RecordedExercises = session
                     .RecordedExercises
-                    .SetItem(action.ExerciseIndex, exerciseAtIndex with { Weight = action.Weight })
+                    .SetItem(
+                        action.ExerciseIndex,
+                        exerciseAtIndex with
+                        {
+                            Weight = action.Weight,
+                            PotentialSets = newPotentialSets
+                        }
+                    )
             }
         );
     }

@@ -16,6 +16,7 @@ using LiftLog.Ui.Store.CurrentSession;
 [JsonSerializable(typeof(List<RecordedExercise>))]
 [JsonSerializable(typeof(List<RecordedSet>))]
 [JsonSerializable(typeof(List<ExerciseBlueprint>))]
+[JsonSerializable(typeof(List<PotentialSet>))]
 [JsonSerializable(typeof(SettingsStorageDaoV1))]
 [JsonSerializable(typeof(SessionDaoV1))]
 internal partial class StorageJsonContext : JsonSerializerContext
