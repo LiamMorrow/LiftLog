@@ -3,21 +3,14 @@ using MaterialColorUtilities.Schemes;
 
 namespace LiftLog.App.Services;
 
-public class AppThemeProvider : IThemeProvider
+public class AppThemeProvider(ThemeColorUpdateService colorUpdateService) : IThemeProvider
 {
-    private readonly ThemeColorUpdateService _colorUpdateService;
-
-    public AppThemeProvider(ThemeColorUpdateService colorUpdateService)
-    {
-        _colorUpdateService = colorUpdateService;
-    }
-
-    public Scheme<uint> GetColorScheme() => _colorUpdateService.SchemeInt;
+    public Scheme<uint> GetColorScheme() => colorUpdateService.SchemeInt;
 
     public event EventHandler SeedChanged
     {
-        add => _colorUpdateService.SeedChanged += value;
-        remove => _colorUpdateService.SeedChanged -= value;
+        add => colorUpdateService.SeedChanged += value;
+        remove => colorUpdateService.SeedChanged -= value;
     }
 
     public event EventHandler InsetsChanged;

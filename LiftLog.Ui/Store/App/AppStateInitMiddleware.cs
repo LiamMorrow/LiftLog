@@ -3,15 +3,8 @@ using LiftLog.Ui.Services;
 
 namespace LiftLog.Ui.Store.App;
 
-public class AppStateInitMiddleware : Middleware
+public class AppStateInitMiddleware(PreferencesRepository preferencesRepository) : Middleware
 {
-    private readonly PreferencesRepository preferencesRepository;
-
-    public AppStateInitMiddleware(PreferencesRepository preferencesRepository)
-    {
-        this.preferencesRepository = preferencesRepository;
-    }
-
     public override async Task InitializeAsync(IDispatcher dispatch, IStore store)
     {
 #if TEST_MODE

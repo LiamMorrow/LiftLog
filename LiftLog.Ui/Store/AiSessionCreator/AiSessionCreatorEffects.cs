@@ -11,26 +11,12 @@ using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Ui.Store.AiSessionCreator;
 
-public class ProgramEffects
+public class ProgramEffects(
+    IProgressRepository progressRepository,
+    IAiWorkoutPlanner aiWorkoutPlanner,
+    ILogger<ProgramEffects> logger
+)
 {
-    private readonly IProgressRepository progressRepository;
-    private readonly IAiWorkoutPlanner aiWorkoutPlanner;
-    private readonly IState<AiSessionCreatorState> state;
-    private readonly ILogger<ProgramEffects> logger;
-
-    public ProgramEffects(
-        IProgressRepository progressRepository,
-        IAiWorkoutPlanner aiWorkoutPlanner,
-        IState<AiSessionCreatorState> state,
-        ILogger<ProgramEffects> logger
-    )
-    {
-        this.progressRepository = progressRepository;
-        this.aiWorkoutPlanner = aiWorkoutPlanner;
-        this.state = state;
-        this.logger = logger;
-    }
-
     [EffectMethod]
     public async Task GenerateSessionAsync(GenerateAiSessionAction action, IDispatcher dispatcher)
     {

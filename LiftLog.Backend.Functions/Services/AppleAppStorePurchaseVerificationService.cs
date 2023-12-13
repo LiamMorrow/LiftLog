@@ -5,21 +5,13 @@ using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Backend.Functions.Services;
 
-public class AppleAppStorePurchaseVerificationService
+public class AppleAppStorePurchaseVerificationService(
+    HttpClient httpClient,
+    ILogger<AppleAppStorePurchaseVerificationService> logger
+)
 {
     const string AppleAppStoreSandboxUrl = "https://sandbox.itunes.apple.com/verifyReceipt";
     const string AppleAppStoreProductionUrl = "https://buy.itunes.apple.com/verifyReceipt";
-    private readonly HttpClient httpClient;
-    private readonly ILogger<AppleAppStorePurchaseVerificationService> logger;
-
-    public AppleAppStorePurchaseVerificationService(
-        HttpClient httpClient,
-        ILogger<AppleAppStorePurchaseVerificationService> logger
-    )
-    {
-        this.httpClient = httpClient;
-        this.logger = logger;
-    }
 
     public async Task<bool> IsValidPurchaseToken(string proToken)
     {

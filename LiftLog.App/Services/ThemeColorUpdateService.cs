@@ -8,19 +8,16 @@ using AndroidX.Core.View;
 
 namespace LiftLog.App.Services;
 
-public class ThemeColorUpdateService : MaterialColorService
+public class ThemeColorUpdateService(
+    IOptions<MaterialColorOptions> options,
+    IDynamicColorService dynamicColorService,
+    IPreferences preferences
+) : MaterialColorService(options, dynamicColorService, preferences)
 {
     // Sometimes it does not update the theme until the device is rotated
     // I have a feeling that the weak event has released the listener
     // I think we can do a better job of listening (maybe via the store?)
     private readonly WeakEventManager _weakEventManager = new();
-
-    public ThemeColorUpdateService(
-        IOptions<MaterialColorOptions> options,
-        IDynamicColorService dynamicColorService,
-        IPreferences preferences
-    )
-        : base(options, dynamicColorService, preferences) { }
 
     public event EventHandler SeedChanged
     {

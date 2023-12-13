@@ -7,43 +7,32 @@ using LiftLog.Ui.Util;
 
 namespace LiftLog.Ui.Services;
 
-public class SessionService
+public class SessionService(
+    IState<CurrentSessionState> currentSessionState,
+    IProgressRepository progressRepository,
+    ICurrentProgramRepository programRepository
+)
 {
-    private readonly IState<CurrentSessionState> _currentSessionState;
-    private readonly IProgressRepository _progressRepository;
-    private readonly ICurrentProgramRepository _programRepository;
-
-    public SessionService(
-        IState<CurrentSessionState> currentSessionState,
-        IProgressRepository progressRepository,
-        ICurrentProgramRepository programRepository
-    )
-    {
-        _currentSessionState = currentSessionState;
-        _progressRepository = progressRepository;
-        _programRepository = programRepository;
-    }
-
     /// <summary>
     /// Returns all future sessions in order, including the current session if there is one.
     /// This enumerable is infinite, so ensure to limit output when consuming.
     /// </summary>
     public async IAsyncEnumerable<Session> GetUpcomingSessionsAsync()
     {
-        var sessionBluePrints = await _programRepository.GetSessionsInProgramAsync();
+        var sessionBluePrints = await programRepository.GetSessionsInProgramAsync();
         if (!sessionBluePrints.Any())
         {
             yield break;
         }
-        var latestRecordedExercises = await _progressRepository.GetLatestRecordedExercisesAsync();
-        var currentSession = _currentSessionState.Value.WorkoutSession;
+        var latestRecordedExercises = await progressRepository.GetLatestRecordedExercisesAsync();
+        var currentSession = currentSessionState.Value.WorkoutSession;
         if (currentSession?.IsStarted == true)
             yield return currentSession;
 
         var latestSession = currentSession switch
         {
             { IsStarted: true } => currentSession,
-            _ => await _progressRepository.GetOrderedSessions().FirstOrDefaultAsync()
+            _ => await progressRepository.GetOrderedSessions().FirstOrDefaultAsync()
         };
         if (latestSession == null)
         {
@@ -65,12 +54,12 @@ public class SessionService
 
     public IAsyncEnumerable<Session> GetLatestSessionsAsync()
     {
-        return _progressRepository.GetOrderedSessions();
+        return progressRepository.GetOrderedSessions();
     }
 
     public async Task<Session> HydrateSessionFromBlueprint(SessionBlueprint sessionBlueprint)
     {
-        var latestRecordedExercises = await _progressRepository.GetLatestRecordedExercisesAsync();
+        var latestRecordedExercises = await progressRepository.GetLatestRecordedExercisesAsync();
         return CreateNewSession(sessionBlueprint, latestRecordedExercises);
     }
 

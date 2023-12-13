@@ -7,20 +7,11 @@ using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Backend.Services;
 
-public class GooglePlayPurchaseVerificationService
+public class GooglePlayPurchaseVerificationService(
+    AndroidPublisherService androidPublisherService,
+    ILogger<GooglePlayPurchaseVerificationService> logger
+)
 {
-    private readonly AndroidPublisherService androidPublisherService;
-    private readonly ILogger<GooglePlayPurchaseVerificationService> logger;
-
-    public GooglePlayPurchaseVerificationService(
-        AndroidPublisherService androidPublisherService,
-        ILogger<GooglePlayPurchaseVerificationService> logger
-    )
-    {
-        this.androidPublisherService = androidPublisherService;
-        this.logger = logger;
-    }
-
     public async Task<bool> IsValidPurchaseToken(string proToken)
     {
         var getRequest = androidPublisherService

@@ -3,18 +3,11 @@ using LiftLog.Ui.Services;
 
 namespace LiftLog.Web.Services;
 
-public class WebAppPurchaseService : IAppPurchaseService
+public class WebAppPurchaseService(string webAuthKey) : IAppPurchaseService
 {
-    private readonly string webProKey;
-
-    public WebAppPurchaseService(string webAuthKey)
-    {
-        this.webProKey = webAuthKey;
-    }
-
     public Task<string?> GetProKeyAsync()
     {
-        return Task.FromResult<string?>(webProKey);
+        return Task.FromResult<string?>(webAuthKey);
     }
 
     public AppStore GetAppStore()

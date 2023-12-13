@@ -3,17 +3,8 @@ using LiftLog.Ui.Services;
 
 namespace LiftLog.App.Services;
 
-public class MauiShareTextExporter : ITextExporter
+public class MauiShareTextExporter(IShare share, IFilePicker filePicker) : ITextExporter
 {
-    private readonly IShare _share;
-    private readonly IFilePicker filePicker;
-
-    public MauiShareTextExporter(IShare share, IFilePicker filePicker)
-    {
-        _share = share;
-        this.filePicker = filePicker;
-    }
-
     public async Task ExportTextAsync(string text)
     {
         string fileName = "liftlog-export.json.gz";
@@ -25,7 +16,7 @@ public class MauiShareTextExporter : ITextExporter
         {
             await writer.WriteAsync(text);
         }
-        await _share.RequestAsync(
+        await share.RequestAsync(
             new ShareFileRequest { Title = "Export Data", File = new ShareFile(file) }
         );
     }

@@ -1,14 +1,7 @@
 namespace LiftLog.Ui.Services;
 
-public class PreferencesRepository
+public class PreferencesRepository(IPreferenceStore preferenceStore)
 {
-    private readonly IPreferenceStore preferenceStore;
-
-    public PreferencesRepository(IPreferenceStore preferenceStore)
-    {
-        this.preferenceStore = preferenceStore;
-    }
-
     public async Task<string?> GetProTokenAsync()
     {
 #if TEST_MODE

@@ -3,15 +3,8 @@ using LiftLog.Lib.Models;
 
 namespace LiftLog.Backend.Functions.Services;
 
-public class WebAuthPurchaseVerificationService
+public class WebAuthPurchaseVerificationService(string? webAuthKey)
 {
-    private readonly string? webAuthKey;
-
-    public WebAuthPurchaseVerificationService(string? webAuthKey)
-    {
-        this.webAuthKey = webAuthKey;
-    }
-
     public Task<bool> IsValidPurchaseToken(string proToken)
     {
         // Deny all requests if the web auth key is not set
