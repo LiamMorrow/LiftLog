@@ -20,8 +20,7 @@ public record SessionBlueprint(string Name, ImmutableListValue<ExerciseBlueprint
                 e,
                 e.InitialWeight,
                 Enumerable
-                    .Range(0, e.Sets)
-                    .Select(_ => new PotentialSet(null, e.InitialWeight))
+                    .Repeat(new PotentialSet(null, e.InitialWeight), e.Sets)
                     .ToImmutableList(),
                 null,
                 false

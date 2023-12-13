@@ -109,10 +109,7 @@ public class SessionService
             return new RecordedExercise(
                 e,
                 weight,
-                Enumerable
-                    .Range(0, e.Sets)
-                    .Select(_ => new PotentialSet(null, weight))
-                    .ToImmutableList(),
+                Enumerable.Repeat(new PotentialSet(null, weight), e.Sets).ToImmutableList(),
                 null,
                 lastExercise?.PerSetWeight ?? false
             );

@@ -100,6 +100,7 @@ public static class CurrentSessionReducers
             Blueprint = newExerciseBlueprint,
             Weight = action.Exercise.Weight,
             PotentialSets = Enumerable
+                // Keep existing sets, but add new ones if the new exercise has more sets
                 .Range(0, newExerciseBlueprint.Sets)
                 .Select(
                     index =>
@@ -147,8 +148,7 @@ public static class CurrentSessionReducers
             newExerciseBlueprint,
             action.Exercise.Weight,
             Enumerable
-                .Range(0, newExerciseBlueprint.Sets)
-                .Select(_ => new PotentialSet(null, action.Exercise.Weight))
+                .Repeat(new PotentialSet(null, action.Exercise.Weight), newExerciseBlueprint.Sets)
                 .ToImmutableList(),
             null,
             false
