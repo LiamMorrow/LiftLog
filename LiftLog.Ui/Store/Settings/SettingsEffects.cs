@@ -18,36 +18,21 @@ using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Ui.Store.Settings;
 
-public class SettingsEffects
+public class SettingsEffects(
+    IProgressRepository ProgressRepository,
+    ICurrentProgramRepository ProgramRepository,
+    ITextExporter textExporter,
+    IAiWorkoutPlanner aiWorkoutPlanner,
+    ILogger<SettingsEffects> logger
+)
 {
-    private readonly IProgressRepository _ProgressRepository;
-    private readonly ICurrentProgramRepository _ProgramRepository;
-    private readonly ITextExporter _textExporter;
-    private readonly IAiWorkoutPlanner aiWorkoutPlanner;
-    private readonly ILogger<SettingsEffects> _logger;
-
-    public SettingsEffects(
-        IProgressRepository ProgressRepository,
-        ICurrentProgramRepository ProgramRepository,
-        ITextExporter textExporter,
-        IAiWorkoutPlanner aiWorkoutPlanner,
-        ILogger<SettingsEffects> logger
-    )
-    {
-        _ProgressRepository = ProgressRepository;
-        _ProgramRepository = ProgramRepository;
-        _textExporter = textExporter;
-        this.aiWorkoutPlanner = aiWorkoutPlanner;
-        _logger = logger;
-    }
-
     [EffectMethod]
     public async Task ExportData(ExportDataAction _, IDispatcher __)
     {
-        var sessions = await _ProgressRepository.GetOrderedSessions().ToListAsync();
-        var program = await _ProgramRepository.GetSessionsInProgramAsync();
+        var sessions = await ProgressRepository.GetOrderedSessions().ToListAsync();
+        var program = await ProgramRepository.GetSessionsInProgramAsync();
 
-        await _textExporter.ExportTextAsync(
+        await textExporter.ExportTextAsync(
             JsonSerializer.Serialize(
                 new SettingsStorageDaoV1(
                     sessions.Select(SessionDaoV1.FromModel).ToList(),
@@ -63,7 +48,7 @@ public class SettingsEffects
     {
         try
         {
-            var importText = await _textExporter.ImportTextAsync();
+            var importText = await textExporter.ImportTextAsync();
             if (string.IsNullOrEmpty(importText))
                 return;
             var deserialized = JsonSerializer.Deserialize<SettingsStorageDaoV1>(
@@ -72,7 +57,7 @@ public class SettingsEffects
             );
             if (deserialized != null)
             {
-                await _ProgressRepository.SaveCompletedSessionsAsync(
+                await ProgressRepository.SaveCompletedSessionsAsync(
                     deserialized.Sessions.Select(x => x.ToModel())
                 );
                 dispatcher.Dispatch(
@@ -83,12 +68,12 @@ public class SettingsEffects
             }
             else
             {
-                _logger.LogWarning("Could not deserialize data for import {data}", importText);
+                logger.LogWarning("Could not deserialize data for import {data}", importText);
             }
         }
         catch (JsonException ex)
         {
-            _logger.LogError(ex, "Error importing");
+            logger.LogError(ex, "Error importing");
         }
     }
 

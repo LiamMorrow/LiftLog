@@ -9,19 +9,13 @@ using LiftLog.Ui.Util;
 
 namespace LiftLog.Ui.Services;
 
-public class KeyValueCurrentProgramRepository : ICurrentProgramRepository
+public class KeyValueCurrentProgramRepository(IKeyValueStore keyValueStore)
+    : ICurrentProgramRepository
 {
     private const string StorageKey = "Program";
     private bool _initialised;
-    private readonly IKeyValueStore _keyValueStore;
-
     private ImmutableListValue<SessionBlueprint> _sessions =
         ImmutableList.Create<SessionBlueprint>();
-
-    public KeyValueCurrentProgramRepository(IKeyValueStore keyValueStore)
-    {
-        _keyValueStore = keyValueStore;
-    }
 
     public async ValueTask<ImmutableListValue<SessionBlueprint>> GetSessionsInProgramAsync()
     {
@@ -33,8 +27,8 @@ public class KeyValueCurrentProgramRepository : ICurrentProgramRepository
     {
         await InitialiseAsync();
         _sessions = sessions.ToImmutableList();
-        await _keyValueStore.SetItemAsync($"{StorageKey}-Version", "1");
-        await _keyValueStore.SetItemAsync(
+        await keyValueStore.SetItemAsync($"{StorageKey}-Version", "1");
+        await keyValueStore.SetItemAsync(
             StorageKey,
             JsonSerializer.Serialize(
                 SessionBlueprintContainerDaoV1.FromModel(_sessions),
@@ -47,13 +41,13 @@ public class KeyValueCurrentProgramRepository : ICurrentProgramRepository
     {
         if (!_initialised)
         {
-            var version = await _keyValueStore.GetItemAsync($"{StorageKey}-Version");
+            var version = await keyValueStore.GetItemAsync($"{StorageKey}-Version");
             if (version is null)
             {
                 version = "1";
-                await _keyValueStore.SetItemAsync($"{StorageKey}-Version", "1");
+                await keyValueStore.SetItemAsync($"{StorageKey}-Version", "1");
             }
-            var storedDataJson = await _keyValueStore.GetItemAsync(StorageKey);
+            var storedDataJson = await keyValueStore.GetItemAsync(StorageKey);
             var storedData = version switch
             {
                 "1"

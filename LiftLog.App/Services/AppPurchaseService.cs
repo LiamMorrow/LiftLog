@@ -7,15 +7,8 @@ using Plugin.InAppBilling;
 
 namespace LiftLog.App.Services;
 
-public class AppPurchaseService : IAppPurchaseService
+public class AppPurchaseService(ILogger<AppPurchaseService> logger) : IAppPurchaseService
 {
-    private readonly ILogger<AppPurchaseService> logger;
-
-    public AppPurchaseService(ILogger<AppPurchaseService> logger)
-    {
-        this.logger = logger;
-    }
-
     public AppStore GetAppStore()
     {
         return DeviceInfo.Platform switch

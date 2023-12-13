@@ -4,23 +4,12 @@ using LiftLog.Lib.Models;
 
 namespace LiftLog.Backend.Functions.Services;
 
-public class PurchaseVerificationService
+public class PurchaseVerificationService(
+    GooglePlayPurchaseVerificationService googlePlayPurchaseVerificationService,
+    WebAuthPurchaseVerificationService webAuthPurchaseVerificationService,
+    AppleAppStorePurchaseVerificationService appleAppStorePurchaseVerificationService
+)
 {
-    private readonly GooglePlayPurchaseVerificationService googlePlayPurchaseVerificationService;
-    private readonly WebAuthPurchaseVerificationService webAuthPurchaseVerificationService;
-    private readonly AppleAppStorePurchaseVerificationService appleAppStorePurchaseVerificationService;
-
-    public PurchaseVerificationService(
-        GooglePlayPurchaseVerificationService googlePlayPurchaseVerificationService,
-        WebAuthPurchaseVerificationService webAuthPurchaseVerificationService,
-        AppleAppStorePurchaseVerificationService appleAppStorePurchaseVerificationService
-    )
-    {
-        this.googlePlayPurchaseVerificationService = googlePlayPurchaseVerificationService;
-        this.webAuthPurchaseVerificationService = webAuthPurchaseVerificationService;
-        this.appleAppStorePurchaseVerificationService = appleAppStorePurchaseVerificationService;
-    }
-
     public Task<bool> IsValidPurchaseToken(AppStore appStore, string proToken)
     {
         return appStore switch

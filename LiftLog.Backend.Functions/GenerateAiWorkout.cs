@@ -12,25 +12,14 @@ using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Backend.Functions;
 
-public class GenerateAiWorkout
+public class GenerateAiWorkout(
+    IAiWorkoutPlanner aiWorkoutPlanner,
+    RateLimitService rateLimitService,
+    PurchaseVerificationService purchaseVerificationService,
+    ILoggerFactory loggerFactory
+)
 {
-    private readonly ILogger _logger;
-    private readonly IAiWorkoutPlanner aiWorkoutPlanner;
-    private readonly RateLimitService rateLimitService;
-    private readonly PurchaseVerificationService purchaseVerificationService;
-
-    public GenerateAiWorkout(
-        IAiWorkoutPlanner aiWorkoutPlanner,
-        RateLimitService rateLimitService,
-        PurchaseVerificationService purchaseVerificationService,
-        ILoggerFactory loggerFactory
-    )
-    {
-        _logger = loggerFactory.CreateLogger<GenerateAiWorkout>();
-        this.aiWorkoutPlanner = aiWorkoutPlanner;
-        this.rateLimitService = rateLimitService;
-        this.purchaseVerificationService = purchaseVerificationService;
-    }
+    private readonly ILogger _logger = loggerFactory.CreateLogger<GenerateAiWorkout>();
 
     [Function("GenerateAiWorkout")]
     public async Task<HttpResponseData> Run(

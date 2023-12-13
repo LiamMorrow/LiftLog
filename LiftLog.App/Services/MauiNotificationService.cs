@@ -10,24 +10,14 @@ using INotificationService = LiftLog.Ui.Services.INotificationService;
 
 namespace LiftLog.App.Services;
 
-public class MauiNotificationService : INotificationService
+public class MauiNotificationService(
+    ILocalNotificationService notificationService,
+    IDispatcher dispatcher,
+    IState<CurrentSessionState> state
+) : INotificationService
 {
-    private readonly ILocalNotificationService _notificationService;
-    private readonly IDispatcher _dispatcher;
-    private readonly IState<CurrentSessionState> _state;
     private static readonly NotificationHandle NextSetNotificationHandle = new(1000);
     public const string NextSetNotificationChannelId = "Set Timers";
-
-    public MauiNotificationService(
-        ILocalNotificationService notificationService,
-        IDispatcher dispatcher,
-        IState<CurrentSessionState> state
-    )
-    {
-        _notificationService = notificationService;
-        _dispatcher = dispatcher;
-        _state = state;
-    }
 
     public async Task ScheduleNextSetNotificationAsync(
         SessionTarget target,
@@ -35,9 +25,9 @@ public class MauiNotificationService : INotificationService
     )
     {
         var id = Guid.NewGuid();
-        _dispatcher.Dispatch(new SetLatestSetTimerNotificationIdAction(id));
-        await _notificationService.RequestNotificationPermission();
-        _notificationService.Cancel(NextSetNotificationHandle.Id);
+        dispatcher.Dispatch(new SetLatestSetTimerNotificationIdAction(id));
+        await notificationService.RequestNotificationPermission();
+        notificationService.Cancel(NextSetNotificationHandle.Id);
         var rest = exercise switch
         {
             { LastRecordedSet: not null }
@@ -48,20 +38,20 @@ public class MauiNotificationService : INotificationService
         };
         if (rest != TimeSpan.Zero)
         {
-            _notificationService.NotificationActionTapped += Current_NotificationActionTapped;
+            notificationService.NotificationActionTapped += Current_NotificationActionTapped;
 
             void Current_NotificationActionTapped(NotificationActionEventArgs e)
             {
-                _notificationService.NotificationActionTapped -= Current_NotificationActionTapped;
-                if (_state.Value.LatestSetTimerNotificationId != id)
+                notificationService.NotificationActionTapped -= Current_NotificationActionTapped;
+                if (state.Value.LatestSetTimerNotificationId != id)
                 {
                     return;
                 }
-                _notificationService.Cancel(NextSetNotificationHandle.Id);
+                notificationService.Cancel(NextSetNotificationHandle.Id);
                 switch (e.ActionId)
                 {
                     case 100:
-                        _dispatcher.Dispatch(new CompleteSetFromNotificationAction(target));
+                        dispatcher.Dispatch(new CompleteSetFromNotificationAction(target));
                         break;
                 }
             }
@@ -78,13 +68,13 @@ public class MauiNotificationService : INotificationService
                     RepeatType = NotificationRepeat.No,
                 },
             };
-            await _notificationService.Show(request);
+            await notificationService.Show(request);
         }
     }
 
     public Task CancelNextSetNotificationAsync()
     {
-        _notificationService.Cancel(NextSetNotificationHandle.Id);
+        notificationService.Cancel(NextSetNotificationHandle.Id);
         return Task.CompletedTask;
     }
 

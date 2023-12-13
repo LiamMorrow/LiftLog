@@ -8,15 +8,8 @@ using LiftLog.Lib.Models;
 
 namespace LiftLog.Backend.Functions.Services;
 
-public class RateLimitService
+public class RateLimitService(TableClient tableClient)
 {
-    private readonly TableClient tableClient;
-
-    public RateLimitService(TableClient tableClient)
-    {
-        this.tableClient = tableClient;
-    }
-
     public async Task<RateLimitResult> GetRateLimitAsync(AppStore appStore, string rateLimitKey)
     {
         if (System.Environment.GetEnvironmentVariable("TEST_MODE") == "True")

@@ -11,7 +11,10 @@ using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Ui.Services
 {
-    public class KeyValueProgressRepository : IProgressRepository
+    public class KeyValueProgressRepository(
+        IKeyValueStore keyValueStore,
+        ILogger<KeyValueProgressRepository> logger
+    ) : IProgressRepository
     {
         private const string StorageKey = "Progress";
         private bool _initialised;
@@ -19,17 +22,6 @@ namespace LiftLog.Ui.Services
             Guid,
             Session
         >.Empty;
-        private readonly IKeyValueStore _keyValueStore;
-        private readonly ILogger<KeyValueProgressRepository> logger;
-
-        public KeyValueProgressRepository(
-            IKeyValueStore keyValueStore,
-            ILogger<KeyValueProgressRepository> logger
-        )
-        {
-            _keyValueStore = keyValueStore;
-            this.logger = logger;
-        }
 
         public async IAsyncEnumerable<Session> GetOrderedSessions()
         {
@@ -74,15 +66,15 @@ namespace LiftLog.Ui.Services
                 _initialised = true;
                 var sw = Stopwatch.StartNew();
                 logger.LogInformation("Initialising progress repository");
-                var version = await _keyValueStore.GetItemAsync($"{StorageKey}-Version");
+                var version = await keyValueStore.GetItemAsync($"{StorageKey}-Version");
                 if (version is null)
                 {
                     version = "1";
-                    await _keyValueStore.SetItemAsync($"{StorageKey}-Version", "1");
+                    await keyValueStore.SetItemAsync($"{StorageKey}-Version", "1");
                 }
                 var versionCheckTime = sw.ElapsedMilliseconds;
                 sw.Restart();
-                var storedDataJson = await _keyValueStore.GetItemAsync(StorageKey);
+                var storedDataJson = await keyValueStore.GetItemAsync(StorageKey);
                 var getStoredTime = sw.ElapsedMilliseconds;
                 sw.Restart();
 
@@ -114,8 +106,8 @@ namespace LiftLog.Ui.Services
         private async ValueTask PersistAsync()
         {
             await Task.WhenAll(
-                _keyValueStore.SetItemAsync($"{StorageKey}-Version", "1").AsTask(),
-                _keyValueStore
+                keyValueStore.SetItemAsync($"{StorageKey}-Version", "1").AsTask(),
+                keyValueStore
                     .SetItemAsync(
                         StorageKey,
                         JsonSerializer.Serialize(

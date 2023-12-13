@@ -3,15 +3,8 @@ using LiftLog.Ui.Services;
 
 namespace LiftLog.Ui.Store.App;
 
-public class AppEffects
+public class AppEffects(PreferencesRepository preferencesRepository)
 {
-    private readonly PreferencesRepository preferencesRepository;
-
-    public AppEffects(PreferencesRepository preferencesRepository)
-    {
-        this.preferencesRepository = preferencesRepository;
-    }
-
     [EffectMethod]
     public async Task HandleSetProTokenAction(SetProTokenAction action, IDispatcher dispatcher)
     {

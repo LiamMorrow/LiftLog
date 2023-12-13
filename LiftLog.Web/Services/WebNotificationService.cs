@@ -6,24 +6,17 @@ using INotificationService = LiftLog.Ui.Services.INotificationService;
 
 namespace LiftLog.Web.Services;
 
-public class WebNotificationService : INotificationService
+public class WebNotificationService(
+    Append.Blazor.Notifications.INotificationService notificationService
+) : INotificationService
 {
     private static readonly NotificationHandle NextSetNotificationHandle = new NotificationHandle(
         "NEXT_SET"
     );
-    private readonly Append.Blazor.Notifications.INotificationService _notificationService;
-
     private readonly ConcurrentDictionary<
         NotificationHandle,
         CancellationTokenSource
     > _scheduledNotifications = new();
-
-    public WebNotificationService(
-        Append.Blazor.Notifications.INotificationService notificationService
-    )
-    {
-        _notificationService = notificationService;
-    }
 
     public async Task ScheduleNextSetNotificationAsync(
         SessionTarget target,
@@ -60,7 +53,7 @@ public class WebNotificationService : INotificationService
         string message
     )
     {
-        await _notificationService.CreateAsync(
+        await notificationService.CreateAsync(
             title,
             new NotificationOptions()
             {
@@ -87,13 +80,13 @@ public class WebNotificationService : INotificationService
         string message
     )
     {
-        if (!await _notificationService.IsSupportedByBrowserAsync())
+        if (!await notificationService.IsSupportedByBrowserAsync())
         {
             return;
         }
-        if (_notificationService.PermissionStatus != PermissionType.Granted)
+        if (notificationService.PermissionStatus != PermissionType.Granted)
         {
-            if (await _notificationService.RequestPermissionAsync() != PermissionType.Granted)
+            if (await notificationService.RequestPermissionAsync() != PermissionType.Granted)
             {
                 return;
             }

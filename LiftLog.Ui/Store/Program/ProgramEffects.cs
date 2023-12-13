@@ -8,17 +8,8 @@ using LiftLog.Ui.Util;
 
 namespace LiftLog.Ui.Store.Program;
 
-public class ProgramEffects
+public class ProgramEffects(SessionService sessionService, IState<ProgramState> state)
 {
-    private readonly SessionService sessionService;
-    private readonly IState<ProgramState> state;
-
-    public ProgramEffects(SessionService sessionService, IState<ProgramState> state)
-    {
-        this.sessionService = sessionService;
-        this.state = state;
-    }
-
     [EffectMethod(typeof(FetchUpcomingSessionsAction))]
     public async Task FetchUpcomingSessions(IDispatcher dispatcher)
     {

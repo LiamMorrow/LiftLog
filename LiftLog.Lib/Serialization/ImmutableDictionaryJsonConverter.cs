@@ -31,17 +31,12 @@ namespace LiftLog.Lib.Serialization
             return (JsonConverter?)Activator.CreateInstance(converterType, new[] { options });
         }
 
-        private class ImmutableDictionaryJsonConverterInner<T, V>
+        private class ImmutableDictionaryJsonConverterInner<T, V>(JsonSerializerOptions options)
             : JsonConverter<ImmutableDictionary<T, V>>
             where T : notnull
         {
-            private readonly JsonConverter<Dictionary<T, V>> _jsonConverter;
-
-            public ImmutableDictionaryJsonConverterInner(JsonSerializerOptions options)
-            {
-                _jsonConverter =
-                    (JsonConverter<Dictionary<T, V>>)options.GetConverter(typeof(Dictionary<T, V>));
-            }
+            private readonly JsonConverter<Dictionary<T, V>> _jsonConverter =
+                (JsonConverter<Dictionary<T, V>>)options.GetConverter(typeof(Dictionary<T, V>));
 
             public override ImmutableDictionary<T, V>? Read(
                 ref Utf8JsonReader reader,

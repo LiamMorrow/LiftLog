@@ -8,23 +8,12 @@ using LiftLog.Ui.Store.App;
 
 namespace LiftLog.Ui.Services;
 
-public class ApiBasedAiWorkoutPlanner : IAiWorkoutPlanner
+public class ApiBasedAiWorkoutPlanner(
+    HttpClient httpClient,
+    IState<AppState> appState,
+    IAppPurchaseService appPurchaseService
+) : IAiWorkoutPlanner
 {
-    private readonly HttpClient httpClient;
-    private readonly IState<AppState> appState;
-    private readonly IAppPurchaseService appPurchaseService;
-
-    public ApiBasedAiWorkoutPlanner(
-        HttpClient httpClient,
-        IState<AppState> appState,
-        IAppPurchaseService appPurchaseService
-    )
-    {
-        this.httpClient = httpClient;
-        this.appState = appState;
-        this.appPurchaseService = appPurchaseService;
-    }
-
     public async Task<AiWorkoutPlan> GenerateWorkoutPlanAsync(AiWorkoutAttributes attributes)
     {
         var proToken = appState.Value.ProState.ProToken;
@@ -106,8 +95,4 @@ public class ApiBasedAiWorkoutPlanner : IAiWorkoutPlanner
     }
 }
 
-class AiFailedToGenerateException : Exception
-{
-    public AiFailedToGenerateException(string message)
-        : base(message) { }
-}
+class AiFailedToGenerateException(string message) : Exception(message) { }

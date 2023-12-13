@@ -4,20 +4,12 @@ using LiftLog.Ui.Services;
 
 namespace LiftLog.Web.Services;
 
-public class WebTextExporter : ITextExporter
+public class WebTextExporter(IBlazorDownloadFileService downloadFileService, HttpClient httpClient)
+    : ITextExporter
 {
-    private readonly IBlazorDownloadFileService _downloadFileService;
-    private readonly HttpClient httpClient;
-
-    public WebTextExporter(IBlazorDownloadFileService downloadFileService, HttpClient httpClient)
-    {
-        _downloadFileService = downloadFileService;
-        this.httpClient = httpClient;
-    }
-
     public async Task ExportTextAsync(string text)
     {
-        await _downloadFileService.DownloadFileFromText(
+        await downloadFileService.DownloadFileFromText(
             fileName: "liftlog.export.json",
             plainText: text,
             encoding: Encoding.UTF8,

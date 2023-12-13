@@ -5,20 +5,14 @@ using LiftLog.Ui.Repository;
 
 namespace LiftLog.Ui.Store.Program;
 
-public class PersistProgramMiddleware : Middleware
+public class PersistProgramMiddleware(ICurrentProgramRepository programRepository) : Middleware
 {
-    private readonly ICurrentProgramRepository _programRepository;
     private IStore? _store;
-
-    public PersistProgramMiddleware(ICurrentProgramRepository programRepository)
-    {
-        _programRepository = programRepository;
-    }
 
     public override async Task InitializeAsync(IDispatcher dispatch, IStore store)
     {
         _store = store;
-        var programs = await _programRepository.GetSessionsInProgramAsync();
+        var programs = await programRepository.GetSessionsInProgramAsync();
         store
             .Features[nameof(ProgramFeature)]
             .RestoreState(new ProgramState(programs, [], true, []));
@@ -34,6 +28,6 @@ public class PersistProgramMiddleware : Middleware
             return;
         }
 
-        _programRepository.PersistSessionsInProgramAsync(currentState.SessionBlueprints);
+        programRepository.PersistSessionsInProgramAsync(currentState.SessionBlueprints);
     }
 }

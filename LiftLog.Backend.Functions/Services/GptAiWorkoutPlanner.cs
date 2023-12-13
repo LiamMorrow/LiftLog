@@ -10,20 +10,14 @@ using LiftLog.Lib.Services;
 using OpenAI;
 using OpenAI.Chat;
 
-public class GptAiWorkoutPlanner : IAiWorkoutPlanner
+public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
 {
-    private readonly OpenAIClient openAiClient;
     private readonly JsonNode aiWorkoutPlanJsonSchema = JsonNode.Parse(
         File.ReadAllText("./AiWorkoutPlan.json")
     )!;
     private readonly JsonNode sessionBlueprintJsonSchema = JsonNode.Parse(
         File.ReadAllText("./AiSessionBlueprint.json")
     )!;
-
-    public GptAiWorkoutPlanner(OpenAIClient openAiClient)
-    {
-        this.openAiClient = openAiClient;
-    }
 
     public async Task<AiWorkoutPlan> GenerateWorkoutPlanAsync(AiWorkoutAttributes attributes)
     {
