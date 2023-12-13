@@ -66,17 +66,24 @@ namespace LiftLog.Ui.Store.CurrentSession
             if (currentState != null && previousState != currentState)
             {
                 previousState = currentState;
-                var currentSessionState = JsonSerializer.Serialize(
-                    currentState,
-                    StorageJsonContext.Context.CurrentSessionState
-                );
-                var serializationTime = sw.ElapsedMilliseconds;
-                sw.Restart();
-                await keyValueStore.SetItemAsync(Key, currentSessionState);
-                sw.Stop();
-                logger.LogInformation(
-                    $"Persisted current session state in (serialization: {serializationTime}ms |currentState {currentStateTime}ms | storage: {sw.ElapsedMilliseconds}ms | total: {currentStateTime + serializationTime + sw.ElapsedMilliseconds}ms)"
-                );
+                try
+                {
+                    var currentSessionState = JsonSerializer.Serialize(
+                        currentState,
+                        StorageJsonContext.Context.CurrentSessionState
+                    );
+                    var serializationTime = sw.ElapsedMilliseconds;
+                    sw.Restart();
+                    await keyValueStore.SetItemAsync(Key, currentSessionState);
+                    sw.Stop();
+                    logger.LogInformation(
+                        $"Persisted current session state in (serialization: {serializationTime}ms |currentState {currentStateTime}ms | storage: {sw.ElapsedMilliseconds}ms | total: {currentStateTime + serializationTime + sw.ElapsedMilliseconds}ms)"
+                    );
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Failed to persist current session state");
+                }
             }
         }
     }
