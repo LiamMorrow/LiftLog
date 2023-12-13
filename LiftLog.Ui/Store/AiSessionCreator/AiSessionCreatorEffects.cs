@@ -14,7 +14,6 @@ namespace LiftLog.Ui.Store.AiSessionCreator;
 public class ProgramEffects(
     IProgressRepository progressRepository,
     IAiWorkoutPlanner aiWorkoutPlanner,
-    IState<AiSessionCreatorState> state,
     ILogger<ProgramEffects> logger
 )
 {
