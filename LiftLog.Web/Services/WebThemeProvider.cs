@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using LiftLog.Ui.Services;
 using MaterialColorUtilities.Palettes;
 using MaterialColorUtilities.Schemes;
@@ -9,13 +10,25 @@ namespace LiftLog.Web.Services;
 
 public class WebThemeProvider : IThemeProvider
 {
-    private readonly CorePalette _corePalette;
-    private readonly Scheme<uint> _scheme;
+    private Scheme<uint> _scheme;
+    private uint? _seed;
+    private readonly IJSRuntime jsRuntime;
 
     public WebThemeProvider(IJSRuntime jsRuntime)
     {
-        _corePalette = new();
-        _corePalette.Fill(0xF44336);
+        this.jsRuntime = jsRuntime;
+        SetSeedColor(0xF44336, ThemePreference.FollowSystem);
+    }
+
+    public Scheme<uint> GetColorScheme() => _scheme;
+
+    [MemberNotNull(nameof(_scheme))]
+    public void SetSeedColor(uint? seed, ThemePreference themePreference)
+    {
+        _seed = seed;
+        var _corePalette = new CorePalette();
+
+        _corePalette.Fill(seed ?? 0xF44336);
 
         if (jsRuntime is not IJSInProcessRuntime jsInProcessRuntime)
         {
@@ -23,23 +36,42 @@ public class WebThemeProvider : IThemeProvider
         }
 
         BlazorJavascriptInitialization.Initialize(jsInProcessRuntime);
+
         var window = jsInProcessRuntime.GetWindow()!;
-        _scheme = window
+        var windowThemePrefersDark = window
             .matchMedia(jsInProcessRuntime.CreateString("(prefers-color-scheme: dark)"))
             .matches
-            .ConvertToValue<bool>()
-            ? new DarkSchemeMapper().Map(_corePalette)
-            : new LightSchemeMapper().Map(_corePalette);
+            .ConvertToValue<bool>();
+
+        Scheme<uint> Light() => new LightSchemeMapper().Map(_corePalette);
+        Scheme<uint> Dark() => new DarkSchemeMapper().Map(_corePalette);
+        _scheme = themePreference switch
+        {
+            ThemePreference.FollowSystem => windowThemePrefersDark ? Dark() : Light(),
+            ThemePreference.Light => Light(),
+            ThemePreference.Dark => Dark(),
+            _
+                => throw new ArgumentOutOfRangeException(
+                    nameof(themePreference),
+                    themePreference,
+                    null
+                )
+        };
+        SeedChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    public Scheme<uint> GetColorScheme() => _scheme;
-
-    public event EventHandler SeedChanged
+    public uint? GetSeed()
     {
-        add { }
-        remove { }
+        return _seed;
     }
-    public event EventHandler InsetsChanged
+
+    public ThemePreference GetThemePreference()
+    {
+        return ThemePreference.FollowSystem;
+    }
+
+    public event EventHandler? SeedChanged;
+    public event EventHandler? InsetsChanged
     {
         add { }
         remove { }
