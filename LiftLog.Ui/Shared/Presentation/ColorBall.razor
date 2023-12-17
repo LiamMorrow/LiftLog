@@ -1,0 +1,34 @@
+@inject IJSRuntime JSRuntime
+
+<button
+@onclick="OnClick"
+class="bg-[@SeedHexString] w-12 h-12 rounded-full relative"
+>
+    <md-focus-ring @ref="_focusRing" visible=@Selected style="--md-focus-ring-shape: 3rem"></md-focus-ring>
+<md-ripple></md-ripple>
+</button>
+
+@code{
+    private ElementReference _focusRing;
+    [Parameter]
+    [EditorRequired]
+    public uint Seed { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public bool Selected { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback OnClick { get; set; }
+
+    private string SeedHexString => "#"+Seed.ToString("X6");
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("AppUtils.callOn", _focusRing, "detach");
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

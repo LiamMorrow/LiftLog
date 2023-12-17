@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@material/web": "1.0.1",
-    "@melloware/coloris": "^0.22.0",
     "@rollup/plugin-node-resolve": "^15.2.1",
     "patch-package": "^8.0.0",
     "rollup": "^4.0.0",

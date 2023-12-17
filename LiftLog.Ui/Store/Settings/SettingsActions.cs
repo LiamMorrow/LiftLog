@@ -20,4 +20,4 @@ public record SetAiPlanErrorAction(string? AiPlanError);
 
 public record FetchSavedProgramsAction();
 
-public record SetThemeAction(uint Seed, ThemePreference ThemePreference);
+public record SetThemeAction(uint? Seed, ThemePreference ThemePreference);

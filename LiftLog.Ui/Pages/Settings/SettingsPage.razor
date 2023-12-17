@@ -47,21 +47,19 @@
             <div>
                 <Switch Label="Use Imperial Units" Value=@AppState.Value.UseImperialUnits OnSwitched="SetUseImperialUnits"/>
             </div>
-            <button @onclick=HandleOnThemeClick> THEME </button>
+
+            <ThemeChooser
+                Seed="@ThemeProvider.GetSeed()"
+                ThemePreference="@ThemeProvider.GetThemePreference()"
+                OnUpdateTheme="@(HandleThemeUpdate)"
+            />
         </div>
     </Card>
 </div>
 
-<ThemeDialog
-    @ref=_themeDialog
-    Seed="@ThemeProvider.GetSeed()"
-    ThemePreference="@ThemeProvider.GetThemePreference()"
-    OnUpdateTheme="@((_)=>{})"
-/>
 
 @code {
     private string ImportJson { get; set; } = "";
-    private ThemeDialog? _themeDialog;
 
     protected override void OnInitialized()
     {
@@ -96,10 +94,6 @@
     private void SetUseImperialUnits(bool value)
         => Dispatcher.Dispatch(new SetUseImperialUnitsAction(value));
 
-    private void HandleOnThemeClick()
-    {
-        _themeDialog?.Open();
-    }
-
-
+    private void HandleThemeUpdate((uint? Seed, ThemePreference ThemePreference) value)
+        => Dispatcher.Dispatch(new SetThemeAction(value.Seed, value.ThemePreference));
 }

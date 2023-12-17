@@ -1,0 +1,44 @@
+<div class="flex flex-col gap-2 items-start">
+    <span class="text-xl">Theme</span>
+<div class="flex gap-2">
+    <AppButton OnClick="() => HandleColorChange(null)" Type="AppButtonType.Text">Default</AppButton>
+    @ColorBall(FromHex("AA0000"))
+    @ColorBall(FromHex("00AA00"))
+    @ColorBall(FromHex("0000AA"))
+    @ColorBall(FromHex("AA00AA"))
+    @ColorBall(FromHex("00AAAA"))
+    @ColorBall(FromHex("AAAA00"))
+</div>
+</div>
+
+@code {
+    private string modalId = "modal-" + Guid.NewGuid().ToString("N");
+    [Parameter]
+    [EditorRequired]
+    public uint? Seed { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public ThemePreference ThemePreference { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public Action<(uint? Seed, ThemePreference ThemePreference)> OnUpdateTheme { get; set; } = null!;
+
+
+    private void HandleColorChange(uint? seed)
+    {
+        OnUpdateTheme((seed, ThemePreference));
+    }
+
+    private RenderFragment ColorBall(uint seed)
+    {
+        return @<ColorBall Seed="@seed" OnClick="() => HandleColorChange(seed)" Selected=@(Seed == seed) />;
+    }
+
+    private uint FromHex(string hex)
+    {
+        return uint.Parse(hex, System.Globalization.NumberStyles.HexNumber);
+    }
+
+}

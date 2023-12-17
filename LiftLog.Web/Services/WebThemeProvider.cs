@@ -13,10 +13,12 @@ public class WebThemeProvider : IThemeProvider
     private Scheme<uint> _scheme;
     private uint? _seed;
     private readonly IJSRuntime jsRuntime;
+    private readonly IPreferenceStore preferenceStore;
 
-    public WebThemeProvider(IJSRuntime jsRuntime)
+    public WebThemeProvider(IJSRuntime jsRuntime, IPreferenceStore preferenceStore)
     {
         this.jsRuntime = jsRuntime;
+        this.preferenceStore = preferenceStore;
         SetSeedColor(0xF44336, ThemePreference.FollowSystem);
     }
 
@@ -29,6 +31,8 @@ public class WebThemeProvider : IThemeProvider
         var _corePalette = new CorePalette();
 
         _corePalette.Fill(seed ?? 0xF44336);
+        preferenceStore.SetItemAsync("THEME_SEED", seed?.ToString("X") ?? "null");
+        preferenceStore.SetItemAsync("THEME_PREF", themePreference.ToString());
 
         if (jsRuntime is not IJSInProcessRuntime jsInProcessRuntime)
         {
