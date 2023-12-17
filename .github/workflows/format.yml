@@ -18,6 +18,6 @@ jobs:
         with:
           dotnet-version: 8.0.x
       - name: Install csharpier
-        run: dotnet tool install -g csharpier
+        run: dotnet tool restore
       - name: Check formatting with csharpier
-        run: dotnet-csharpier . --check
+        run: dotnet tool run dotnet-csharpier . --check

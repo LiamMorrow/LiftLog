@@ -41,12 +41,12 @@ var host = new HostBuilder()
             services.AddSingleton(
                 (service) =>
                 {
-                    var certificateBase64 = context
-                        .Configuration
-                        .GetValue<string>("GooglePlayServiceAccountKeyBase64");
-                    var serviceAccountEmail = context
-                        .Configuration
-                        .GetValue<string>("GooglePlayServiceAccountEmail");
+                    var certificateBase64 = context.Configuration.GetValue<string>(
+                        "GooglePlayServiceAccountKeyBase64"
+                    );
+                    var serviceAccountEmail = context.Configuration.GetValue<string>(
+                        "GooglePlayServiceAccountEmail"
+                    );
                     var certificateBytes = Convert.FromBase64String(certificateBase64);
                     var certificate = new X509Certificate2(
                         certificateBytes,

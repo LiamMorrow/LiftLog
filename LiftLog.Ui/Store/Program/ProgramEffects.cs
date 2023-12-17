@@ -29,9 +29,7 @@ public class ProgramEffects(SessionService sessionService, IState<ProgramState> 
             .SelectMany(x => x.Blueprint.Exercises.Select(ex => ex.Name).ToAsyncEnumerable())
             .Concat(
                 state
-                    .Value
-                    .SessionBlueprints
-                    .SelectMany(x => x.Exercises.Select(ex => ex.Name))
+                    .Value.SessionBlueprints.SelectMany(x => x.Exercises.Select(ex => ex.Name))
                     .ToAsyncEnumerable()
             )
             .Distinct()

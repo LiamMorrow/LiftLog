@@ -13,8 +13,7 @@ public class CurrentSessionReducerTests
                     session with
                     {
                         RecordedExercises = session
-                            .RecordedExercises
-                            .SetItem(
+                            .RecordedExercises.SetItem(
                                 0,
                                 Sessions.CreateRecordedExercise(
                                     null,
@@ -65,10 +64,8 @@ public class CurrentSessionReducerTests
 
         newState.WorkoutSession!.RecordedExercises[0].Weight.Should().Be(50m);
         newState
-            .WorkoutSession!
-            .RecordedExercises[0]
-            .PotentialSets
-            .Should()
+            .WorkoutSession!.RecordedExercises[0]
+            .PotentialSets.Should()
             .AllSatisfy(x => x.Weight.Should().Be(50m));
     }
 
@@ -85,10 +82,8 @@ public class CurrentSessionReducerTests
 
         newState.WorkoutSession!.RecordedExercises[1].Weight.Should().Be(50m);
         newState
-            .WorkoutSession!
-            .RecordedExercises[1]
-            .PotentialSets
-            .Take(2)
+            .WorkoutSession!.RecordedExercises[1]
+            .PotentialSets.Take(2)
             .Should()
             .AllSatisfy(x => x.Weight.Should().Be(50m));
         newState.WorkoutSession!.RecordedExercises[1].PotentialSets[2].Weight.Should().Be(60m);

@@ -39,23 +39,19 @@ public static class CurrentSessionReducers
             session with
             {
                 Date = sessionDate,
-                RecordedExercises = session
-                    .RecordedExercises
-                    .SetItem(
-                        action.ExerciseIndex,
-                        exerciseAtIndex with
-                        {
-                            PotentialSets = exerciseAtIndex
-                                .PotentialSets
-                                .SetItem(
-                                    action.SetIndex,
-                                    setAtIndex with
-                                    {
-                                        Set = GetCycledRepCount(setAtIndex.Set, exerciseBlueprint)
-                                    }
-                                )
-                        }
-                    )
+                RecordedExercises = session.RecordedExercises.SetItem(
+                    action.ExerciseIndex,
+                    exerciseAtIndex with
+                    {
+                        PotentialSets = exerciseAtIndex.PotentialSets.SetItem(
+                            action.SetIndex,
+                            setAtIndex with
+                            {
+                                Set = GetCycledRepCount(setAtIndex.Set, exerciseBlueprint)
+                            }
+                        )
+                    }
+                )
             }
         );
     }
@@ -116,14 +112,15 @@ public static class CurrentSessionReducers
             {
                 Blueprint = session.Blueprint with
                 {
-                    Exercises = session
-                        .Blueprint
-                        .Exercises
-                        .SetItem(action.ExerciseIndex, newExerciseBlueprint)
+                    Exercises = session.Blueprint.Exercises.SetItem(
+                        action.ExerciseIndex,
+                        newExerciseBlueprint
+                    )
                 },
-                RecordedExercises = session
-                    .RecordedExercises
-                    .SetItem(action.ExerciseIndex, newExercise)
+                RecordedExercises = session.RecordedExercises.SetItem(
+                    action.ExerciseIndex,
+                    newExercise
+                )
             }
         );
     }
@@ -182,17 +179,19 @@ public static class CurrentSessionReducers
             action.Target,
             session with
             {
-                RecordedExercises = session
-                    .RecordedExercises
-                    .SetItem(
-                        action.ExerciseIndex,
-                        exerciseAtIndex with
-                        {
-                            PotentialSets = exerciseAtIndex
-                                .PotentialSets
-                                .SetItem(action.SetIndex, potentialSetAtIndex with { Set = null })
-                        }
-                    )
+                RecordedExercises = session.RecordedExercises.SetItem(
+                    action.ExerciseIndex,
+                    exerciseAtIndex with
+                    {
+                        PotentialSets = exerciseAtIndex.PotentialSets.SetItem(
+                            action.SetIndex,
+                            potentialSetAtIndex with
+                            {
+                                Set = null
+                            }
+                        )
+                    }
+                )
             }
         );
     }
@@ -210,15 +209,13 @@ public static class CurrentSessionReducers
             action.Target,
             session with
             {
-                RecordedExercises = session
-                    .RecordedExercises
-                    .SetItem(
-                        action.ExerciseIndex,
-                        exerciseAtIndex with
-                        {
-                            PerSetWeight = !exerciseAtIndex.PerSetWeight
-                        }
-                    )
+                RecordedExercises = session.RecordedExercises.SetItem(
+                    action.ExerciseIndex,
+                    exerciseAtIndex with
+                    {
+                        PerSetWeight = !exerciseAtIndex.PerSetWeight
+                    }
+                )
             }
         );
     }
@@ -237,23 +234,19 @@ public static class CurrentSessionReducers
             action.Target,
             session with
             {
-                RecordedExercises = session
-                    .RecordedExercises
-                    .SetItem(
-                        action.ExerciseIndex,
-                        exerciseAtIndex with
-                        {
-                            PotentialSets = exerciseAtIndex
-                                .PotentialSets
-                                .SetItem(
-                                    action.SetIndex,
-                                    setAtIndex with
-                                    {
-                                        Weight = action.Weight
-                                    }
-                                )
-                        }
-                    )
+                RecordedExercises = session.RecordedExercises.SetItem(
+                    action.ExerciseIndex,
+                    exerciseAtIndex with
+                    {
+                        PotentialSets = exerciseAtIndex.PotentialSets.SetItem(
+                            action.SetIndex,
+                            setAtIndex with
+                            {
+                                Weight = action.Weight
+                            }
+                        )
+                    }
+                )
             }
         );
     }
@@ -268,8 +261,7 @@ public static class CurrentSessionReducers
         var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
         var previousWeight = exerciseAtIndex.Weight;
         var newPotentialSets = exerciseAtIndex
-            .PotentialSets
-            .Select(
+            .PotentialSets.Select(
                 set =>
                     !exerciseAtIndex.PerSetWeight
                     || (set.Weight == previousWeight && set.Set is null)
@@ -285,16 +277,14 @@ public static class CurrentSessionReducers
             action.Target,
             session with
             {
-                RecordedExercises = session
-                    .RecordedExercises
-                    .SetItem(
-                        action.ExerciseIndex,
-                        exerciseAtIndex with
-                        {
-                            Weight = action.Weight,
-                            PotentialSets = newPotentialSets
-                        }
-                    )
+                RecordedExercises = session.RecordedExercises.SetItem(
+                    action.ExerciseIndex,
+                    exerciseAtIndex with
+                    {
+                        Weight = action.Weight,
+                        PotentialSets = newPotentialSets
+                    }
+                )
             }
         );
     }
@@ -324,9 +314,13 @@ public static class CurrentSessionReducers
             action.Target,
             session with
             {
-                RecordedExercises = session
-                    .RecordedExercises
-                    .SetItem(action.ExerciseIndex, exerciseAtIndex with { Notes = action.Notes })
+                RecordedExercises = session.RecordedExercises.SetItem(
+                    action.ExerciseIndex,
+                    exerciseAtIndex with
+                    {
+                        Notes = action.Notes
+                    }
+                )
             }
         );
     }

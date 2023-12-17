@@ -45,9 +45,10 @@ public static class ProgramReducers
 
         return state with
         {
-            SessionBlueprints = state
-                .SessionBlueprints
-                .SetItem(action.SessionIndex, action.SessionBlueprint)
+            SessionBlueprints = state.SessionBlueprints.SetItem(
+                action.SessionIndex,
+                action.SessionBlueprint
+            )
         };
     }
 
@@ -74,8 +75,7 @@ public static class ProgramReducers
         return state with
         {
             SessionBlueprints = state
-                .SessionBlueprints
-                .SetItem(index, toSwap)
+                .SessionBlueprints.SetItem(index, toSwap)
                 .SetItem(index - 1, action.SessionBlueprint)
         };
     }
@@ -97,8 +97,7 @@ public static class ProgramReducers
         return state with
         {
             SessionBlueprints = state
-                .SessionBlueprints
-                .SetItem(index, toSwap)
+                .SessionBlueprints.SetItem(index, toSwap)
                 .SetItem(index + 1, action.SessionBlueprint)
         };
     }

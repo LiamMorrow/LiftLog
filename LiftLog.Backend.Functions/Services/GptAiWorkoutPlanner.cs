@@ -71,34 +71,32 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
             return new AiWorkoutPlan(
                 gptPlan.Description,
                 gptPlan
-                    .Sessions
-                    .Select(
+                    .Sessions.Select(
                         s =>
                             new SessionBlueprint(
                                 s.Name,
-                                s.Exercises
-                                    .Select(
-                                        e =>
-                                            new ExerciseBlueprint(
-                                                e.Name,
-                                                e.Sets,
-                                                e.RepsPerSet,
-                                                e.InitialWeight,
-                                                e.WeightIncreaseOnSuccess,
-                                                new Rest(
-                                                    TimeSpan.FromSeconds(
-                                                        e.RestBetweenSets.MinRestSeconds
-                                                    ),
-                                                    TimeSpan.FromSeconds(
-                                                        e.RestBetweenSets.MaxRestSeconds
-                                                    ),
-                                                    TimeSpan.FromSeconds(
-                                                        e.RestBetweenSets.FailureRestSeconds
-                                                    )
+                                s.Exercises.Select(
+                                    e =>
+                                        new ExerciseBlueprint(
+                                            e.Name,
+                                            e.Sets,
+                                            e.RepsPerSet,
+                                            e.InitialWeight,
+                                            e.WeightIncreaseOnSuccess,
+                                            new Rest(
+                                                TimeSpan.FromSeconds(
+                                                    e.RestBetweenSets.MinRestSeconds
                                                 ),
-                                                false
-                                            )
-                                    )
+                                                TimeSpan.FromSeconds(
+                                                    e.RestBetweenSets.MaxRestSeconds
+                                                ),
+                                                TimeSpan.FromSeconds(
+                                                    e.RestBetweenSets.FailureRestSeconds
+                                                )
+                                            ),
+                                            false
+                                        )
+                                )
                                     .ToImmutableList()
                             )
                     )
@@ -118,12 +116,10 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
         var areasToWorkout = string.Join(" and ", attributes.AreasToWorkout);
         var exerciseText = string.Join(
             "\n",
-            attributes
-                .ExerciseToWeight
-                .Select(
-                    pc =>
-                        $"{pc.Key} at {pc.Value} {(attributes.UseImperialUnits ? "pounds" : "kilograms")}"
-                )
+            attributes.ExerciseToWeight.Select(
+                pc =>
+                    $"{pc.Key} at {pc.Value} {(attributes.UseImperialUnits ? "pounds" : "kilograms")}"
+            )
         );
 
         var volumeText = attributes.Volume switch
@@ -180,8 +176,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
             return new SessionBlueprint(
                 gptPlan.Name,
                 gptPlan
-                    .Exercises
-                    .Select(
+                    .Exercises.Select(
                         e =>
                             new ExerciseBlueprint(
                                 e.Name,
