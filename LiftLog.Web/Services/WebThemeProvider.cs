@@ -8,31 +8,39 @@ using RealGoodApps.BlazorJavascript.Interop.Extensions;
 
 namespace LiftLog.Web.Services;
 
-public class WebThemeProvider : IThemeProvider
+public class WebThemeProvider(IJSRuntime jsRuntime, IPreferenceStore preferenceStore)
+    : IThemeProvider
 {
-    private Scheme<uint> _scheme;
-    private uint? _seed;
-    private readonly IJSRuntime jsRuntime;
-    private readonly IPreferenceStore preferenceStore;
+    const uint DEFAULT_SEED = 0xF44336;
 
-    public WebThemeProvider(IJSRuntime jsRuntime, IPreferenceStore preferenceStore)
+    private Scheme<uint>? _scheme;
+    private uint? _seed;
+
+    public async ValueTask<Scheme<uint>> GetColorSchemeAsync() =>
+        _scheme ??= await GetInitialColorScheme();
+
+    private async ValueTask<Scheme<uint>> GetInitialColorScheme()
     {
-        this.jsRuntime = jsRuntime;
-        this.preferenceStore = preferenceStore;
-        SetSeedColor(0xF44336, ThemePreference.FollowSystem);
+        var seedAndPref = await Task.WhenAll(
+            preferenceStore.GetItemAsync("THEME_SEED").AsTask(),
+            preferenceStore.GetItemAsync("THEME_PREF").AsTask()
+        );
+        var seed = seedAndPref[0] ?? "null";
+        var pref = seedAndPref[1] ?? "FollowSystem";
+        await SetSeedColor(
+            seed == "null" ? null : uint.Parse(seed, System.Globalization.NumberStyles.HexNumber),
+            Enum.Parse<ThemePreference>(pref)
+        );
+        return _scheme;
     }
 
-    public Scheme<uint> GetColorScheme() => _scheme;
-
     [MemberNotNull(nameof(_scheme))]
-    public void SetSeedColor(uint? seed, ThemePreference themePreference)
+    public async Task SetSeedColor(uint? seed, ThemePreference themePreference)
     {
         _seed = seed;
         var _corePalette = new CorePalette();
 
-        _corePalette.Fill(seed ?? 0xF44336);
-        preferenceStore.SetItemAsync("THEME_SEED", seed?.ToString("X") ?? "null");
-        preferenceStore.SetItemAsync("THEME_PREF", themePreference.ToString());
+        _corePalette.Fill(seed ?? DEFAULT_SEED);
 
         if (jsRuntime is not IJSInProcessRuntime jsInProcessRuntime)
         {
@@ -62,6 +70,10 @@ public class WebThemeProvider : IThemeProvider
                 )
         };
         SeedChanged?.Invoke(this, EventArgs.Empty);
+        await Task.WhenAll(
+            preferenceStore.SetItemAsync("THEME_SEED", seed?.ToString("X") ?? "null").AsTask(),
+            preferenceStore.SetItemAsync("THEME_PREF", themePreference.ToString()).AsTask()
+        );
     }
 
     public uint? GetSeed()

@@ -1,12 +1,15 @@
+using System.Threading.Tasks;
 using LiftLog.Ui.Services;
 using MaterialColorUtilities.Schemes;
 using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Storage;
 
 namespace LiftLog.App.Services;
 
 public class AppThemeProvider(ThemeColorUpdateService colorUpdateService) : IThemeProvider
 {
-    public Scheme<uint> GetColorScheme() => colorUpdateService.SchemeInt;
+    public ValueTask<Scheme<uint>> GetColorSchemeAsync() =>
+        ValueTask.FromResult(colorUpdateService.SchemeInt);
 
     public event EventHandler SeedChanged
     {
@@ -22,11 +25,11 @@ public class AppThemeProvider(ThemeColorUpdateService colorUpdateService) : IThe
 
     public void NotifyInsetsChanged() => InsetsChanged?.Invoke(this, EventArgs.Empty);
 
-    public void SetSeedColor(uint? seed, ThemePreference themePreference)
+    public Task SetSeedColor(uint? seed, ThemePreference themePreference)
     {
         if (Microsoft.Maui.Controls.Application.Current is null)
         {
-            return;
+            return Task.CompletedTask;
         }
         Microsoft.Maui.Controls.Application.Current.UserAppTheme = themePreference switch
         {
@@ -41,8 +44,37 @@ public class AppThemeProvider(ThemeColorUpdateService colorUpdateService) : IThe
                 )
         };
         if (seed is not null)
+        {
+            colorUpdateService.EnableDynamicColor = false;
+            Preferences.Default.Set("EnableDynamicColor", false);
             colorUpdateService.Seed = seed.Value;
+        }
         else
+        {
+            colorUpdateService.EnableDynamicColor = true;
             colorUpdateService.ForgetSeed();
+        }
+        return Task.CompletedTask;
+    }
+
+    public uint? GetSeed()
+    {
+        return colorUpdateService.EnableDynamicColor ? null : colorUpdateService.Seed;
+    }
+
+    public ThemePreference GetThemePreference()
+    {
+        return Microsoft.Maui.Controls.Application.Current.UserAppTheme switch
+        {
+            AppTheme.Unspecified => ThemePreference.FollowSystem,
+            AppTheme.Light => ThemePreference.Light,
+            AppTheme.Dark => ThemePreference.Dark,
+            _
+                => throw new ArgumentOutOfRangeException(
+                    nameof(Microsoft.Maui.Controls.Application.Current.UserAppTheme),
+                    Microsoft.Maui.Controls.Application.Current.UserAppTheme,
+                    null
+                )
+        };
     }
 }

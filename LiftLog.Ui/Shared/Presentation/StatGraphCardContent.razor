@@ -1,6 +1,8 @@
 @using ApexCharts;
 @using LiftLog.Ui.Services;
 @using MaterialColorUtilities.Utils;
+@using MaterialColorUtilities.Schemes;
+
 @implements IDisposable
 
 @inject IThemeProvider ThemeProvider
@@ -58,16 +60,9 @@
         _disposed = true;
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        Task.Delay(RenderDelay).ContinueWith(_ =>
-        {
-            if(!_disposed)
-            {
-                IsLoading = false;
-                InvokeAsync(StateHasChanged);
-            }
-        });
+        var scheme = await ThemeProvider.GetColorSchemeAsync();
         options = new ApexChartOptions<DatedRecordedExercise>
             {
                 Chart = new Chart
@@ -89,27 +84,27 @@
                     Curve = Curve.Straight,
                     Width = 4
                 },
-                Colors = new() {GetColorString(ThemeProvider.GetColorScheme().Primary)},
+                Colors = new() {GetColorString(scheme.Primary)},
                 Title = new(){
                     Style = new (){
-                        Color = GetColorString(ThemeProvider.GetColorScheme().OnSurface),
+                        Color = GetColorString(scheme.OnSurface),
                     }
                 },
                 Xaxis = new(){
                     Labels = new(){
                         Style = new(){
-                            Colors = new Color(GetColorString(ThemeProvider.GetColorScheme().OnSurface)),
+                            Colors = new Color(GetColorString(scheme.OnSurface)),
                         }
                     },
                     AxisBorder = new(){
-                        Color = GetColorString(ThemeProvider.GetColorScheme().OutlineVariant),
+                        Color = GetColorString(scheme.OutlineVariant),
                     },
                 },
                 Yaxis = new(){
                       new(){
                         Labels = new(){
                             Style = new(){
-                                Colors = new Color(GetColorString(ThemeProvider.GetColorScheme().OnSurface)),
+                                Colors = new Color(GetColorString(scheme.OnSurface)),
                             },
                             Formatter =$"(value)=>parseFloat(parseFloat(value).toFixed(3)) + ' {WeightSuffix}'",
                         },
@@ -119,14 +114,23 @@
                     Enabled =false
                 },
                 Grid = new(){
-                    BorderColor = GetColorString(ThemeProvider.GetColorScheme().OutlineVariant),
+                    BorderColor = GetColorString(scheme.OutlineVariant),
                 },
                 Markers = new(){
                     Size = 2,
-                    StrokeColors = new Color(GetColorString(ThemeProvider.GetColorScheme().Primary)),
+                    StrokeColors = new Color(GetColorString(scheme.Primary)),
                     StrokeWidth = 4,
                 }
             };
+
+        await Task.Delay(RenderDelay).ContinueWith(_ =>
+        {
+            if(!_disposed)
+            {
+                IsLoading = false;
+                InvokeAsync(StateHasChanged);
+            }
+        });
     }
 
     private string GetColorString(uint color) => "#"+color.ToString("X").Substring(2,6);

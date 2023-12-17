@@ -102,7 +102,6 @@ public class SettingsEffects(
     [EffectMethod]
     public async Task SetTheme(SetThemeAction action, IDispatcher __)
     {
-        themeProvider.SetSeedColor(action.Seed, action.ThemePreference);
-        await Task.CompletedTask;
+        await themeProvider.SetSeedColor(action.Seed, action.ThemePreference);
     }
 }

@@ -51,7 +51,7 @@
             <ThemeChooser
                 Seed="@ThemeProvider.GetSeed()"
                 ThemePreference="@ThemeProvider.GetThemePreference()"
-                OnUpdateTheme="@(HandleThemeUpdate)"
+                OnUpdateTheme="@(async a=>await HandleThemeUpdate(a))"
             />
         </div>
     </Card>
@@ -94,6 +94,11 @@
     private void SetUseImperialUnits(bool value)
         => Dispatcher.Dispatch(new SetUseImperialUnitsAction(value));
 
-    private void HandleThemeUpdate((uint? Seed, ThemePreference ThemePreference) value)
-        => Dispatcher.Dispatch(new SetThemeAction(value.Seed, value.ThemePreference));
+    private async Task HandleThemeUpdate((uint? Seed, ThemePreference ThemePreference) value)
+        {
+            Dispatcher.Dispatch(new SetThemeAction(value.Seed, value.ThemePreference));
+            await Task.Delay(100);
+            StateHasChanged();
+        }
+
 }

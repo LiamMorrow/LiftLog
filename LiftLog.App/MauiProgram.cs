@@ -7,7 +7,11 @@ using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.CurrentSession;
 using LiftLog.Ui.Store.Program;
 using MaterialColorUtilities.Maui;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.Controls.Hosting;
+using Microsoft.Maui.Hosting;
+using Microsoft.Maui.Storage;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
 using Sentry.Extensions.Logging.Extensions.DependencyInjection;
@@ -68,7 +72,7 @@ public static class MauiProgram
             .Services
             .AddFluxor(
                 o =>
-                    o.ScanAssemblies(typeof(AppActions).Assembly)
+                    o.ScanAssemblies(typeof(CurrentSessionReducers).Assembly)
                         .AddMiddleware<PersistSessionMiddleware>()
                         .AddMiddleware<PersistProgramMiddleware>()
                         .AddMiddleware<AppStateInitMiddleware>()
@@ -117,7 +121,11 @@ public static class MauiProgram
 
         builder.Services.AddScoped<IAppPurchaseService, AppPurchaseService>();
 
-        builder.UseMaterialColors<ThemeColorUpdateService>(0xF44336);
+        builder.UseMaterialColors<ThemeColorUpdateService>(opts =>
+        {
+            opts.FallbackSeed = 0xF44336;
+            opts.EnableDynamicColor = Preferences.Default.Get("EnableDynamicColor", true);
+        });
         return builder.Build();
     }
 }
