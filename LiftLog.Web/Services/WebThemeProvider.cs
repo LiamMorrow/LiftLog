@@ -26,8 +26,7 @@ public class WebThemeProvider : IThemeProvider
         var window = jsInProcessRuntime.GetWindow()!;
         _scheme = window
             .matchMedia(jsInProcessRuntime.CreateString("(prefers-color-scheme: dark)"))
-            .matches
-            .ConvertToValue<bool>()
+            .matches.ConvertToValue<bool>()
             ? new DarkSchemeMapper().Map(_corePalette)
             : new LightSchemeMapper().Map(_corePalette);
     }

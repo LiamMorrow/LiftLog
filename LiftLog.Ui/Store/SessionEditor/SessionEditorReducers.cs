@@ -78,9 +78,7 @@ public static class SessionEditorReducers
             state.SessionBlueprint with
             {
                 Exercises = state
-                    .SessionBlueprint
-                    .Exercises
-                    .SetItem(index, toSwap)
+                    .SessionBlueprint.Exercises.SetItem(index, toSwap)
                     .SetItem(index - 1, action.ExerciseBlueprint)
             }
         );
@@ -109,9 +107,7 @@ public static class SessionEditorReducers
             state.SessionBlueprint with
             {
                 Exercises = state
-                    .SessionBlueprint
-                    .Exercises
-                    .SetItem(index, toSwap)
+                    .SessionBlueprint.Exercises.SetItem(index, toSwap)
                     .SetItem(index + 1, action.ExerciseBlueprint)
             }
         );
@@ -137,21 +133,19 @@ public static class SessionEditorReducers
 
         if (index < 0 || index >= state.SessionBlueprint.Exercises.Count)
         {
-            Console
-                .Error
-                .WriteLine(
-                    $"Warn: index {index} out of range {state.SessionBlueprint.Exercises.Count}"
-                );
+            Console.Error.WriteLine(
+                $"Warn: index {index} out of range {state.SessionBlueprint.Exercises.Count}"
+            );
             return state;
         }
 
         return new SessionEditorState(
             state.SessionBlueprint with
             {
-                Exercises = state
-                    .SessionBlueprint
-                    .Exercises
-                    .SetItem(index, updator(state.SessionBlueprint.Exercises[index])),
+                Exercises = state.SessionBlueprint.Exercises.SetItem(
+                    index,
+                    updator(state.SessionBlueprint.Exercises[index])
+                ),
             }
         );
     }
