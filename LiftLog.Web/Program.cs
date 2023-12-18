@@ -48,7 +48,7 @@ builder.Services.AddScoped<SessionService>();
 
 builder.Services.AddScoped<IAiWorkoutPlanner, ApiBasedAiWorkoutPlanner>();
 
-builder.Services.AddSingleton<IThemeProvider, WebThemeProvider>();
+builder.Services.AddScoped<IThemeProvider, WebThemeProvider>();
 
 builder.Services.AddNotifications();
 

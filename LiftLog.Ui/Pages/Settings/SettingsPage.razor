@@ -9,6 +9,7 @@
 @inject NavigationManager NavigationManager
 @inject IDispatcher Dispatcher
 @inject IAppPurchaseService AppPurchaseService
+@inject IThemeProvider ThemeProvider
 @inject IState<AppState> AppState
 @inject NavigationManager NavigationManager
 
@@ -46,9 +47,16 @@
             <div>
                 <Switch Label="Use Imperial Units" Value=@AppState.Value.UseImperialUnits OnSwitched="SetUseImperialUnits"/>
             </div>
+    <md-divider></md-divider>
+            <ThemeChooser
+                Seed="@ThemeProvider.GetSeed()"
+                ThemePreference="@ThemeProvider.GetThemePreference()"
+                OnUpdateTheme="@(async a=>await HandleThemeUpdate(a))"
+            />
         </div>
     </Card>
 </div>
+
 
 @code {
     private string ImportJson { get; set; } = "";
@@ -86,5 +94,11 @@
     private void SetUseImperialUnits(bool value)
         => Dispatcher.Dispatch(new SetUseImperialUnitsAction(value));
 
+    private async Task HandleThemeUpdate((uint? Seed, ThemePreference ThemePreference) value)
+        {
+            Dispatcher.Dispatch(new SetThemeAction(value.Seed, value.ThemePreference));
+            await Task.Delay(100);
+            StateHasChanged();
+        }
 
 }

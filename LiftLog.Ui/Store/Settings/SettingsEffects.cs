@@ -23,6 +23,7 @@ public class SettingsEffects(
     ICurrentProgramRepository ProgramRepository,
     ITextExporter textExporter,
     IAiWorkoutPlanner aiWorkoutPlanner,
+    IThemeProvider themeProvider,
     ILogger<SettingsEffects> logger
 )
 {
@@ -96,5 +97,11 @@ public class SettingsEffects(
         {
             dispatcher.Dispatch(new SetIsGeneratingAiPlanAction(false));
         }
+    }
+
+    [EffectMethod]
+    public async Task SetTheme(SetThemeAction action, IDispatcher __)
+    {
+        await themeProvider.SetSeedColor(action.Seed, action.ThemePreference);
     }
 }

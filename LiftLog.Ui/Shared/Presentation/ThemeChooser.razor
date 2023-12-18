@@ -1,0 +1,58 @@
+@inject IJSRuntime JSRuntime
+
+<div class="flex flex-col gap-2 items-start justify-start">
+    <span class="text-lg">Theme</span>
+    <div class="flex items-center gap-4 w-full  overflow-x-auto p-2">
+        <AppButton OnClick="() => HandleColorChange(null)" Type="AppButtonType.Text"><md-focus-ring @ref=_focusRing  visible="@(Seed == null)"></md-focus-ring>Default</AppButton>
+        <div class="gap-2 flex">
+        @ColorBall(FromHex("AA0000"))
+        @ColorBall(FromHex("00AA00"))
+        @ColorBall(FromHex("0000AA"))
+        @ColorBall(FromHex("AA00AA"))
+        @ColorBall(FromHex("00AAAA"))
+        @ColorBall(FromHex("AAAA00"))
+        @ColorBall(FromHex("FFC0CB"))
+        @ColorBall(FromHex("7f3f00"))
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public uint? Seed { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public ThemePreference ThemePreference { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public Action<(uint? Seed, ThemePreference ThemePreference)> OnUpdateTheme { get; set; } = null!;
+    private ElementReference _focusRing;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("AppUtils.callOn", _focusRing, "detach");
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+    private void HandleColorChange(uint? seed)
+    {
+        OnUpdateTheme((seed, ThemePreference));
+    }
+
+    private RenderFragment ColorBall(uint seed)
+    {
+        return @<ColorBall Seed="@seed" OnClick="() => HandleColorChange(seed)" Selected=@(Seed == seed) />;
+    }
+
+    private uint FromHex(string hex)
+    {
+        return uint.Parse(hex, System.Globalization.NumberStyles.HexNumber);
+    }
+
+}

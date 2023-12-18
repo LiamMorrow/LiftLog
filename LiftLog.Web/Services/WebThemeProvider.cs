@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using LiftLog.Ui.Services;
 using MaterialColorUtilities.Palettes;
 using MaterialColorUtilities.Schemes;
@@ -7,15 +8,39 @@ using RealGoodApps.BlazorJavascript.Interop.Extensions;
 
 namespace LiftLog.Web.Services;
 
-public class WebThemeProvider : IThemeProvider
+public class WebThemeProvider(IJSRuntime jsRuntime, IPreferenceStore preferenceStore)
+    : IThemeProvider
 {
-    private readonly CorePalette _corePalette;
-    private readonly Scheme<uint> _scheme;
+    const uint DEFAULT_SEED = 0xF44336;
 
-    public WebThemeProvider(IJSRuntime jsRuntime)
+    private Scheme<uint>? _scheme;
+    private uint? _seed;
+
+    public async ValueTask<Scheme<uint>> GetColorSchemeAsync() =>
+        _scheme ??= await GetInitialColorScheme();
+
+    private async ValueTask<Scheme<uint>> GetInitialColorScheme()
     {
-        _corePalette = new();
-        _corePalette.Fill(0xF44336);
+        var seedAndPref = await Task.WhenAll(
+            preferenceStore.GetItemAsync("THEME_SEED").AsTask(),
+            preferenceStore.GetItemAsync("THEME_PREF").AsTask()
+        );
+        var seed = seedAndPref[0] ?? "null";
+        var pref = seedAndPref[1] ?? "FollowSystem";
+        await SetSeedColor(
+            seed == "null" ? null : uint.Parse(seed, System.Globalization.NumberStyles.HexNumber),
+            Enum.Parse<ThemePreference>(pref)
+        );
+        return _scheme;
+    }
+
+    [MemberNotNull(nameof(_scheme))]
+    public async Task SetSeedColor(uint? seed, ThemePreference themePreference)
+    {
+        _seed = seed;
+        var _corePalette = new CorePalette();
+
+        _corePalette.Fill(seed ?? DEFAULT_SEED);
 
         if (jsRuntime is not IJSInProcessRuntime jsInProcessRuntime)
         {
@@ -23,22 +48,45 @@ public class WebThemeProvider : IThemeProvider
         }
 
         BlazorJavascriptInitialization.Initialize(jsInProcessRuntime);
+
         var window = jsInProcessRuntime.GetWindow()!;
-        _scheme = window
+        var windowThemePrefersDark = window
             .matchMedia(jsInProcessRuntime.CreateString("(prefers-color-scheme: dark)"))
-            .matches.ConvertToValue<bool>()
-            ? new DarkSchemeMapper().Map(_corePalette)
-            : new LightSchemeMapper().Map(_corePalette);
+            .matches.ConvertToValue<bool>();
+
+        Scheme<uint> Light() => new LightSchemeMapper().Map(_corePalette);
+        Scheme<uint> Dark() => new DarkSchemeMapper().Map(_corePalette);
+        _scheme = themePreference switch
+        {
+            ThemePreference.FollowSystem => windowThemePrefersDark ? Dark() : Light(),
+            ThemePreference.Light => Light(),
+            ThemePreference.Dark => Dark(),
+            _
+                => throw new ArgumentOutOfRangeException(
+                    nameof(themePreference),
+                    themePreference,
+                    null
+                )
+        };
+        SeedChanged?.Invoke(this, EventArgs.Empty);
+        await Task.WhenAll(
+            preferenceStore.SetItemAsync("THEME_SEED", seed?.ToString("X") ?? "null").AsTask(),
+            preferenceStore.SetItemAsync("THEME_PREF", themePreference.ToString()).AsTask()
+        );
     }
 
-    public Scheme<uint> GetColorScheme() => _scheme;
-
-    public event EventHandler SeedChanged
+    public uint? GetSeed()
     {
-        add { }
-        remove { }
+        return _seed;
     }
-    public event EventHandler InsetsChanged
+
+    public ThemePreference GetThemePreference()
+    {
+        return ThemePreference.FollowSystem;
+    }
+
+    public event EventHandler? SeedChanged;
+    public event EventHandler? InsetsChanged
     {
         add { }
         remove { }
