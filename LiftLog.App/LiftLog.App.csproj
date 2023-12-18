@@ -22,8 +22,8 @@
         <ApplicationIdGuid>71733E37-6FDD-4EEF-A0BF-DE32634D58EC</ApplicationIdGuid>
 
         <!-- Versions -->
-        <ApplicationDisplayVersion>1.11.3</ApplicationDisplayVersion>
-        <ApplicationVersion>39</ApplicationVersion>
+        <ApplicationDisplayVersion>1.12.0</ApplicationDisplayVersion>
+        <ApplicationVersion>40</ApplicationVersion>
 
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
