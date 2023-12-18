@@ -2,7 +2,8 @@
 
 <button
 @onclick="OnClick"
-class="bg-[@SeedHexString] w-12 h-12 rounded-full relative border-outline-variant border-2"
+class="w-12 h-12 rounded-full relative border-outline-variant border-2"
+style="background-color: @SeedHexString;"
 >
     <md-focus-ring @ref="_focusRing" visible=@Selected style="--md-focus-ring-shape: 3rem"></md-focus-ring>
     <md-ripple></md-ripple>
