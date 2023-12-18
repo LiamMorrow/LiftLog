@@ -9,7 +9,7 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@material/web": "1.0.1",
+    "@material/web": "1.1.1",
     "@rollup/plugin-node-resolve": "^15.2.1",
     "patch-package": "^8.0.0",
     "rollup": "^4.0.0",
