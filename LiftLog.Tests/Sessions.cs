@@ -15,8 +15,7 @@ public static class Sessions
                 Id: Guid.NewGuid(),
                 Blueprint: sessionBlueprint,
                 RecordedExercises: sessionBlueprint
-                    .Exercises
-                    .Select(x => CreateRecordedExercise(x))
+                    .Exercises.Select(x => CreateRecordedExercise(x))
                     .ToImmutableList(),
                 Date: DateOnly.Parse("2021-04-05"),
                 Bodyweight: null

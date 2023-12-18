@@ -17,27 +17,25 @@ using INotificationService = LiftLog.Ui.Services.INotificationService;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<ThemedWebApplication>("#app");
-builder
-    .Services
-    .AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+builder.Services.AddScoped(
+    _ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) }
+);
 
 builder.Services.AddBlazoredLocalStorage();
 
-builder
-    .Services
-    .AddFluxor(
-        o =>
-            o.ScanAssemblies(typeof(Program).Assembly)
-                .AddMiddleware<PersistSessionMiddleware>()
-                .AddMiddleware<PersistProgramMiddleware>()
-                .AddMiddleware<AppStateInitMiddleware>()
+builder.Services.AddFluxor(
+    o =>
+        o.ScanAssemblies(typeof(Program).Assembly)
+            .AddMiddleware<PersistSessionMiddleware>()
+            .AddMiddleware<PersistProgramMiddleware>()
+            .AddMiddleware<AppStateInitMiddleware>()
 #if DEBUG
-                .UseReduxDevTools(options =>
-                {
-                    options.UseSystemTextJson(_ => JsonSerializerSettings.LiftLog);
-                })
+            .UseReduxDevTools(options =>
+            {
+                options.UseSystemTextJson(_ => JsonSerializerSettings.LiftLog);
+            })
 #endif
-    );
+);
 
 builder.Services.AddScoped<IKeyValueStore, LocalStorageKeyValueStore>();
 builder.Services.AddScoped<IPreferenceStore, LocalStorageKeyValueStore>();
@@ -58,14 +56,12 @@ builder.Services.AddBlazorDownloadFile();
 builder.Services.AddScoped<ITextExporter, WebTextExporter>();
 builder.Services.AddScoped<INotificationService, WebNotificationService>();
 
-builder
-    .Services
-    .AddScoped<IAppPurchaseService>(
-        svc =>
-            new WebAppPurchaseService(
-                svc.GetRequiredService<IConfiguration>().GetValue<string>("WebAuthApiKey")
-                    ?? throw new Exception("WebAuthApiKey configuration is not set.")
-            )
-    );
+builder.Services.AddScoped<IAppPurchaseService>(
+    svc =>
+        new WebAppPurchaseService(
+            svc.GetRequiredService<IConfiguration>().GetValue<string>("WebAuthApiKey")
+                ?? throw new Exception("WebAuthApiKey configuration is not set.")
+        )
+);
 
 await builder.Build().RunAsync();

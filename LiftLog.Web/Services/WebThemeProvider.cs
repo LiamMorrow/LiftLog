@@ -52,8 +52,7 @@ public class WebThemeProvider(IJSRuntime jsRuntime, IPreferenceStore preferenceS
         var window = jsInProcessRuntime.GetWindow()!;
         var windowThemePrefersDark = window
             .matchMedia(jsInProcessRuntime.CreateString("(prefers-color-scheme: dark)"))
-            .matches
-            .ConvertToValue<bool>();
+            .matches.ConvertToValue<bool>();
 
         Scheme<uint> Light() => new LightSchemeMapper().Map(_corePalette);
         Scheme<uint> Dark() => new DarkSchemeMapper().Map(_corePalette);

@@ -14,10 +14,11 @@ public class GooglePlayPurchaseVerificationService(
 {
     public async Task<bool> IsValidPurchaseToken(string proToken)
     {
-        var getRequest = androidPublisherService
-            .Purchases
-            .Products
-            .Get("com.limajuice.liftlog", "pro", proToken);
+        var getRequest = androidPublisherService.Purchases.Products.Get(
+            "com.limajuice.liftlog",
+            "pro",
+            proToken
+        );
         try
         {
             var purchaseResult = await getRequest.ExecuteAsync();

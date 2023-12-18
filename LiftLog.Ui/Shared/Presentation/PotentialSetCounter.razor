@@ -107,8 +107,6 @@
 
     private string scale => ShowWeight ? "p-2 h-8 w-14" : "h-0 w-0 p-0";
 
-    private bool _prevToStartNext;
-
     private string BoxShadowFill => RepCountValue is not null  ? "0" : "2rem";
 
 // Realistically the bg should not be seen when there is a rep count, but there are mild artifacts when keeping it as bg-primary
@@ -124,16 +122,6 @@
             _clearRepCountTime = DateTime.Now;
             ClearRepCount();
         });
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        if(_prevToStartNext != ToStartNext && ToStartNext)
-        {
-            await JSRuntime.InvokeVoidAsync("AppUtils.scrollIntoView", _button);
-        }
-        _prevToStartNext = ToStartNext;
-        await base.OnParametersSetAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
