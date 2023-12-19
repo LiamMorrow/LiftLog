@@ -51,8 +51,9 @@ public class AppThemeProvider(ThemeColorUpdateService colorUpdateService) : IThe
         }
         else
         {
-            colorUpdateService.EnableDynamicColor = true;
             colorUpdateService.ForgetSeed();
+            colorUpdateService.EnableDynamicColor = true;
+            Preferences.Default.Set("EnableDynamicColor", true);
         }
         return Task.CompletedTask;
     }
