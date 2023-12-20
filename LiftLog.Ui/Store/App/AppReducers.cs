@@ -36,4 +36,11 @@ public static class AppReducers
         {
             UseImperialUnits = action.UseImperialUnits
         };
+
+    [ReducerMethod]
+    public static AppState SetShowBodyweight(AppState state, SetShowBodyweightAction action) =>
+        state with
+        {
+            ShowBodyweight = action.ShowBodyweight
+        };
 }

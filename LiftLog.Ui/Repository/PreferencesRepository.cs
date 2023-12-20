@@ -32,4 +32,14 @@ public class PreferencesRepository(IPreferenceStore preferenceStore)
     {
         await preferenceStore.SetItemAsync("useImperialUnits", useImperialUnits.ToString());
     }
+
+    public async Task SetShowBodyweightAsync(bool showBodyweight)
+    {
+        await preferenceStore.SetItemAsync("showBodyweight", showBodyweight.ToString());
+    }
+
+    public async Task<bool> GetShowBodyweightAsync()
+    {
+        return await preferenceStore.GetItemAsync("showBodyweight") is "True" or null;
+    }
 }

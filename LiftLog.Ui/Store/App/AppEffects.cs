@@ -19,4 +19,13 @@ public class AppEffects(PreferencesRepository preferencesRepository)
     {
         await preferencesRepository.SetUseImperialUnitsAsync(action.UseImperialUnits);
     }
+
+    [EffectMethod]
+    public async Task HandleSetShowBodyweightAction(
+        SetShowBodyweightAction action,
+        IDispatcher dispatcher
+    )
+    {
+        await preferencesRepository.SetShowBodyweightAsync(action.ShowBodyweight);
+    }
 }
