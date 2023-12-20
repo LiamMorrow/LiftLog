@@ -27,14 +27,17 @@ else
             OnRemoveExercise=@(()=> BeginRemoveExercise(context.Index)) />
     </CardList>
 }
-<div class="flex-col flex justify-center gap-2 mt-2">
-    <Card>
-        <div class="flex justify-between items-center">
-            <span class="text-xl">Bodyweight</span>
-            <WeightDisplay AllowNull=true Weight=Session.Bodyweight UpdateWeight="UpdateBodyweight" Increment="0.1m" Label="Bodyweight" />
-        </div>
-    </Card>
-</div>
+@if (ShowBodyweight)
+{
+    <div class="flex-col flex justify-center gap-2 mt-2">
+        <Card>
+            <div class="flex justify-between items-center">
+                <span class="text-xl">Bodyweight</span>
+                <WeightDisplay AllowNull=true Weight=Session.Bodyweight UpdateWeight="UpdateBodyweight" Increment="0.1m" Label="Bodyweight" />
+            </div>
+        </Card>
+    </div>
+}
 
 <div class="flex  justify-center gap-2 mt-6">
     <AppButton OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon>Add Exercise</AppButton>
@@ -185,6 +188,10 @@ else
     [Parameter]
     [EditorRequired]
     public Action UpdateSessionInPlan { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public bool ShowBodyweight { get; set; }
 
     private Action<int> CycleRepCountForExerciseSet(int exerciseIndex)
         => (int set) => CycleRepcountForExercise(exerciseIndex, set);

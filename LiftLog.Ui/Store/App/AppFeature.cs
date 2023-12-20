@@ -15,6 +15,7 @@ public class AppFeature : Feature<AppState>
             ProState: new ProState(ProToken: null),
             ReopenCurrentSession: true,
             BackNavigationUrl: null,
-            UseImperialUnits: false
+            UseImperialUnits: false,
+            ShowBodyweight: true
         );
 }

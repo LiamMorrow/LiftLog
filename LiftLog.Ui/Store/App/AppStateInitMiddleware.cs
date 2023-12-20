@@ -16,5 +16,7 @@ public class AppStateInitMiddleware(PreferencesRepository preferencesRepository)
 #endif
         var useImperialUnits = await preferencesRepository.GetUseImperialUnitsAsync();
         dispatch.Dispatch(new SetUseImperialUnitsAction(useImperialUnits));
+        var showBodyweight = await preferencesRepository.GetShowBodyweightAsync();
+        dispatch.Dispatch(new SetShowBodyweightAction(showBodyweight));
     }
 }

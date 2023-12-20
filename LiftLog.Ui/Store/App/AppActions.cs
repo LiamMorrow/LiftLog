@@ -11,3 +11,5 @@ public record SetReopenCurrentSessionAction(bool ReopenCurrentSession);
 public record SetBackNavigationUrlAction(string? BackNavigationUrl);
 
 public record SetUseImperialUnitsAction(bool UseImperialUnits);
+
+public record SetShowBodyweightAction(bool ShowBodyweight);

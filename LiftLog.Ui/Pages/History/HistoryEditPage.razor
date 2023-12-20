@@ -10,6 +10,7 @@
 @inject IState<ProgramState> ProgramState
 @inject IProgressRepository ProgressRepository
 @inject IDispatcher Dispatcher
+@inject IState<AppState> AppState;
 @inject NavigationManager NavigationManager
 
 @{
@@ -47,6 +48,7 @@
         EditExercise="EditExercise"
         AddExercise="AddExercise"
         UpdateNotesForExercise="UpdateNotesForExercise"
+        ShowBodyweight="AppState.Value.ShowBodyweight"
         ToggleExercisePerSetWeight=ToggleExercisePerSetWeight
         UpdateWeightForSet=UpdateWeightForSet
         ExerciseNames="ProgramState.Value.ExerciseNames"
