@@ -10,7 +10,7 @@
 <div class="h-full page bg-surface">
     <section class="relative h-full content">
         <div class="grid grid-cols-1 h-full grid-rows-[min-content_1fr_min-content]">
-            <div class="flex flex-col @_topNavColorClass transition-colors @_animateClass">
+            <div class="flex flex-col @_topNavColorClass transition-colors">
                 <div style="height: @ThemeProvider.SystemSafeInsetTop"></div>
                 <div class="flex items-center px-4 py-4 gap-2 text-2xl @Justify ">
                     @RenderBackButton()
@@ -19,7 +19,7 @@
                     </div>
                 </div>
             </div>
-            <div @ref="_contentElementRef" id="scrollingElement" class=" @_animateClass px-2 pb-2 overflow-auto bg-surface flex flex-col" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
+            <div @ref="_contentElementRef" id="scrollingElement" class="px-2 pb-2 overflow-auto bg-surface flex flex-col" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
                 @Body
             </div>
             <NavBar></NavBar>
@@ -37,8 +37,6 @@
     private ElementReference _contentElementRef;
 
     private string _topNavColorClass = "bg-surface";
-    private string _animateClass = "";
-
 
     protected override void OnInitialized()
     {
@@ -59,10 +57,6 @@
 #endif
         if (firstRender)
         {
-            NavigationManager.RegisterLocationChangingHandler( x =>{
-                _animateClass = "animate-fade-zoom-out";
-                return ValueTask.CompletedTask;
-            });
             NavigationManager.LocationChanged += HandleLocationChanged;
         }
         await base.OnAfterRenderAsync(firstRender);
@@ -71,13 +65,6 @@
     private async void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
     {
         await Js.InvokeVoidAsync("AppUtils.scrollToTop", _contentElementRef);
-
-        await Task.Delay(150);
-        _animateClass = "animate-fade-zoom-in";
-        StateHasChanged();
-        await Task.Delay(150);
-        _animateClass = "";
-        StateHasChanged();
     }
 
     private async void OnContentScroll()
