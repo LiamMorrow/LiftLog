@@ -35,10 +35,10 @@ describe('Settings', () => {
 function assertShowsBodyweightOnAllPages(shouldShow) {
   const classify = shouldShow ? 'contain.text' : 'not.contain.text'
   cy.navigate('Stats')
-  cy.get('.cardlist .card').first().should(classify, 'Bodyweight')
+  cy.getA('.cardlist .card').first().should(classify, 'Bodyweight')
   cy.navigate('Workout')
-  cy.get('.cardlist .card').first().click()
-  cy.get('.card').last().should(classify, 'Bodyweight')
+  cy.getA('.cardlist .card').first().click()
+  cy.getA('.card').last().should(classify, 'Bodyweight')
 }
 
 function assertCorrectWeightUnitsOnAllPages(units) {
