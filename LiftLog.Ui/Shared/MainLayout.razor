@@ -64,6 +64,7 @@
 
     private async void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
     {
+        await Task.Yield();
         await Js.InvokeVoidAsync("AppUtils.scrollToTop", _contentElementRef);
     }
 

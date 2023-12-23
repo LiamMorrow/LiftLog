@@ -98,6 +98,11 @@ public static class MauiProgram
         builder.Services.AddScoped<IProgressRepository, KeyValueProgressRepository>();
         builder.Services.AddScoped<PreferencesRepository>();
 
+        builder.Services.AddScoped<
+            BlazorTransitionableRoute.IRouteTransitionInvoker,
+            BlazorTransitionableRoute.DefaultRouteTransitionInvoker
+        >();
+
         builder.Services.AddSingleton<IKeyValueStore, AppDataFileStorageKeyValueStore>();
         builder.Services.AddSingleton<IPreferenceStore, SecureStoragePreferenceStore>();
         builder.Services.AddScoped<INotificationService, MauiNotificationService>();

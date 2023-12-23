@@ -55,6 +55,10 @@ builder.Services.AddNotifications();
 builder.Services.AddBlazorDownloadFile();
 builder.Services.AddScoped<ITextExporter, WebTextExporter>();
 builder.Services.AddScoped<INotificationService, WebNotificationService>();
+builder.Services.AddScoped<
+    BlazorTransitionableRoute.IRouteTransitionInvoker,
+    BlazorTransitionableRoute.DefaultRouteTransitionInvoker
+>();
 
 builder.Services.AddScoped<IAppPurchaseService>(
     svc =>
