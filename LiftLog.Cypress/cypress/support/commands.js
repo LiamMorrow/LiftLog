@@ -23,3 +23,16 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('getA', (selector, opts) => {
+    return cy.get('.transitioned ' + selector, opts)
+})
+
+Cypress.Commands.add('containsA', (selector, opts) => {
+    return cy.get('.transitioned').contains(selector, opts)
+})
+
+
+Cypress.Commands.add('navigate', (navButtonText) => {
+    return cy.get('nav').contains(navButtonText).click()
+})
