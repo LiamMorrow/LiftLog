@@ -74,21 +74,6 @@ AppUtils.selectAllText = function (element) {
 /**
 * @param {HTMLElement} element
 */
-AppUtils.scrollIntoView = function (element) {
-    if (element?.scrollIntoView) {
-        const scrollingElement = document.getElementById('scrollingElement');
-        if (element.getBoundingClientRect().bottom > scrollingElement.clientHeight || element.getBoundingClientRect().top < 0) {
-            element.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center',
-                inline: 'center'
-            })
-        }
-    }
-}
-/**
-* @param {HTMLElement} element
-*/
 AppUtils.scrollToTop = function (element) {
     element.scrollTo({
         top: 0,

@@ -1,0 +1,27 @@
+@inherits TransitionableLayoutComponent
+
+<style>
+    .transitionable {
+        transform-origin: 50vw 50vh;
+    }
+    .transitioned {
+        z-index: 1;
+    }
+    .transitioned_behind {
+        z-index: 0;
+        max-height: 0;
+        overflow: visible;
+    }
+</style>
+
+<div class="bg-surface h-full transitionable @transitioningClass @(Transition.IntoView ? "transitioned" : "transitioned_behind")">
+    @Body
+</div>
+
+@code {
+    private string transitioningClass => Transition.FirstRender ? "" : Transition.IntoView
+        ? $"animate-fade-zoom-in"
+         : $"animate-fade-zoom-out";
+
+
+}

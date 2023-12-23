@@ -129,10 +129,6 @@
         if(firstRender)
         {
             await JSRuntime.InvokeVoidAsync("AppUtils.callOn", _focusRing, "detach");
-            if(ToStartNext)
-            {
-                await JSRuntime.InvokeVoidAsync("AppUtils.scrollIntoView", _button);
-            }
         }
         await base.OnAfterRenderAsync(firstRender);
     }

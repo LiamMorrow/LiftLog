@@ -38,7 +38,6 @@
 
     private string _topNavColorClass = "bg-surface";
 
-
     protected override void OnInitialized()
     {
         ThemeProvider.InsetsChanged += (_,_)=>
@@ -54,14 +53,18 @@
         if (firstRender)
         {
             await Js.InvokeAsync<IJSObjectReference>("import", "/_content/LiftLog.Ui/load-tailwind.js");
-            NavigationManager.LocationChanged += HandleLocationChanged;
         }
 #endif
+        if (firstRender)
+        {
+            NavigationManager.LocationChanged += HandleLocationChanged;
+        }
         await base.OnAfterRenderAsync(firstRender);
     }
 
     private async void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
     {
+        await Task.Yield();
         await Js.InvokeVoidAsync("AppUtils.scrollToTop", _contentElementRef);
     }
 
