@@ -38,5 +38,5 @@ jobs:
         run: yarn && yarn build
         working-directory: ./LiftLog.Ui
       - name: Build
-        run: dotnet build -p:TargetFramework=net8.0-android -f net8.0-android
+        run: dotnet build -p:TargetFramework=net8.0-android -f net8.0-android -p:BuildFor=android
         working-directory: ./LiftLog.App
