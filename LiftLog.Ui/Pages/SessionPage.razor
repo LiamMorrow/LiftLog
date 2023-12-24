@@ -9,7 +9,7 @@
 @inject IState<CurrentSessionState> CurrentSessionState
 @inject IState<ProgramState> ProgramState
 @inject IProgressRepository ProgressRepository
-@inject IState<AppState> AppState
+@inject IState<SettingsState> SettingsState
 @inject IDispatcher Dispatcher
 @inject NavigationManager NavigationManager
 @inject ILogger<SessionPage> logger
@@ -39,7 +39,7 @@
         AddExercise="AddExercise"
         UpdateNotesForExercise="UpdateNotesForExercise"
         ExerciseNames="ProgramState.Value.ExerciseNames"
-        ShowBodyweight="AppState.Value.ShowBodyweight"
+        ShowBodyweight="SettingsState.Value.ShowBodyweight"
         ToggleExercisePerSetWeight=ToggleExercisePerSetWeight
         UpdateWeightForSet=UpdateWeightForSet
         SessionInPlan=@(ProgramState.Value.SessionBlueprints.Contains(CurrentSessionState.Value.WorkoutSession.Blueprint))

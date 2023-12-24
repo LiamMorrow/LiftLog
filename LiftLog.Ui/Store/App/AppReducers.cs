@@ -29,18 +29,4 @@ public static class AppReducers
         AppState state,
         SetBackNavigationUrlAction action
     ) => state with { BackNavigationUrl = action.BackNavigationUrl };
-
-    [ReducerMethod]
-    public static AppState SetUseImperialUnits(AppState state, SetUseImperialUnitsAction action) =>
-        state with
-        {
-            UseImperialUnits = action.UseImperialUnits
-        };
-
-    [ReducerMethod]
-    public static AppState SetShowBodyweight(AppState state, SetShowBodyweightAction action) =>
-        state with
-        {
-            ShowBodyweight = action.ShowBodyweight
-        };
 }

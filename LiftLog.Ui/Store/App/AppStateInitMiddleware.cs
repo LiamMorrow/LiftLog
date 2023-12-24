@@ -15,9 +15,5 @@ public class AppStateInitMiddleware(PreferencesRepository preferencesRepository)
 
         dispatch.Dispatch(new SetProTokenAction(proToken));
 #endif
-        var useImperialUnits = await preferencesRepository.GetUseImperialUnitsAsync();
-        dispatch.Dispatch(new SetUseImperialUnitsAction(useImperialUnits));
-        var showBodyweight = await preferencesRepository.GetShowBodyweightAsync();
-        dispatch.Dispatch(new SetShowBodyweightAction(showBodyweight));
     }
 }

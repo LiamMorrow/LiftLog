@@ -3,10 +3,11 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorLayout
 @inject IJSRuntime Js
 @inject IState<AppState> AppState
+@inject IState<SettingsState> SettingsState
 @inject IThemeProvider ThemeProvider
 @inject NavigationManager NavigationManager
 
-<CascadingValue Name="UseImperial" Value="AppState.Value.UseImperialUnits">
+<CascadingValue Name="UseImperial" Value="SettingsState.Value.UseImperialUnits">
 <div class="h-full page bg-surface">
     <section class="relative h-full content">
         <div class="grid grid-cols-1 h-full grid-rows-[min-content_1fr_min-content]">

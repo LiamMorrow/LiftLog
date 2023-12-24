@@ -31,4 +31,16 @@ public static class SettingsReducers
         SettingsState state,
         SetAiPlanAttributesAction action
     ) => state with { AiWorkoutAttributes = action.Attributes };
+
+    [ReducerMethod]
+    public static SettingsState SetUseImperialUnits(
+        SettingsState state,
+        SetUseImperialUnitsAction action
+    ) => state with { UseImperialUnits = action.UseImperialUnits };
+
+    [ReducerMethod]
+    public static SettingsState SetShowBodyweight(
+        SettingsState state,
+        SetShowBodyweightAction action
+    ) => state with { ShowBodyweight = action.ShowBodyweight };
 }

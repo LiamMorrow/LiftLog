@@ -8,9 +8,7 @@ public record AppState(
     string Title,
     ProState ProState,
     bool ReopenCurrentSession,
-    string? BackNavigationUrl,
-    bool UseImperialUnits,
-    bool ShowBodyweight
+    string? BackNavigationUrl
 );
 
 public record ProState(string? ProToken)

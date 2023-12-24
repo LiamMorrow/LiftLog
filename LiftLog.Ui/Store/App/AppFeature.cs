@@ -14,8 +14,6 @@ public class AppFeature : Feature<AppState>
             Title: "LiftLog",
             ProState: new ProState(ProToken: null),
             ReopenCurrentSession: true,
-            BackNavigationUrl: null,
-            UseImperialUnits: false,
-            ShowBodyweight: true
+            BackNavigationUrl: null
         );
 }

@@ -10,7 +10,7 @@
 @inject IDispatcher Dispatcher
 @inject IAppPurchaseService AppPurchaseService
 @inject IThemeProvider ThemeProvider
-@inject IState<AppState> AppState
+@inject IState<SettingsState> SettingsState
 @inject NavigationManager NavigationManager
 
 <div class="flex flex-col gap-2">
@@ -45,10 +45,10 @@
                 <md-icon>settings</md-icon>
             </div>
             <div>
-                <Switch Label="Use imperial units" Value=@AppState.Value.UseImperialUnits OnSwitched="SetUseImperialUnits"/>
+                <Switch Label="Use imperial units" Value=@SettingsState.Value.UseImperialUnits OnSwitched="SetUseImperialUnits"/>
             </div>
             <div>
-                <Switch Label="Show bodyweight" Value=@AppState.Value.ShowBodyweight OnSwitched="SetShowBodyweight"/>
+                <Switch Label="Show bodyweight" Value=@SettingsState.Value.ShowBodyweight OnSwitched="SetShowBodyweight"/>
             </div>
             <md-divider></md-divider>
             <ThemeChooser

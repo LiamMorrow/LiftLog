@@ -11,6 +11,7 @@ using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.CurrentSession;
 using LiftLog.Ui.Store.Program;
+using LiftLog.Ui.Store.Settings;
 using LiftLog.Web.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using INotificationService = LiftLog.Ui.Services.INotificationService;
@@ -29,6 +30,7 @@ builder.Services.AddFluxor(
             .AddMiddleware<PersistSessionMiddleware>()
             .AddMiddleware<PersistProgramMiddleware>()
             .AddMiddleware<AppStateInitMiddleware>()
+            .AddMiddleware<SettingsStateInitMiddleware>()
 #if DEBUG
             .UseReduxDevTools(options =>
             {

@@ -6,6 +6,7 @@ using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.CurrentSession;
 using LiftLog.Ui.Store.Program;
+using LiftLog.Ui.Store.Settings;
 using MaterialColorUtilities.Maui;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -74,6 +75,7 @@ public static class MauiProgram
                     .AddMiddleware<PersistSessionMiddleware>()
                     .AddMiddleware<PersistProgramMiddleware>()
                     .AddMiddleware<AppStateInitMiddleware>()
+                    .AddMiddleware<SettingsStateInitMiddleware>()
         );
 
         // Add this section anywhere on the builder:

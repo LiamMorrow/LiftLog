@@ -21,3 +21,7 @@ public record SetAiPlanErrorAction(string? AiPlanError);
 public record FetchSavedProgramsAction();
 
 public record SetThemeAction(uint? Seed, ThemePreference ThemePreference);
+
+public record SetUseImperialUnitsAction(bool UseImperialUnits);
+
+public record SetShowBodyweightAction(bool ShowBodyweight);

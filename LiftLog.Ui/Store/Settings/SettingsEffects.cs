@@ -24,7 +24,8 @@ public class SettingsEffects(
     ITextExporter textExporter,
     IAiWorkoutPlanner aiWorkoutPlanner,
     IThemeProvider themeProvider,
-    ILogger<SettingsEffects> logger
+    ILogger<SettingsEffects> logger,
+    PreferencesRepository preferencesRepository
 )
 {
     [EffectMethod]
@@ -103,5 +104,23 @@ public class SettingsEffects(
     public async Task SetTheme(SetThemeAction action, IDispatcher __)
     {
         await themeProvider.SetSeedColor(action.Seed, action.ThemePreference);
+    }
+
+    [EffectMethod]
+    public async Task HandleSetUseImperialUnitsAction(
+        SetUseImperialUnitsAction action,
+        IDispatcher dispatcher
+    )
+    {
+        await preferencesRepository.SetUseImperialUnitsAsync(action.UseImperialUnits);
+    }
+
+    [EffectMethod]
+    public async Task HandleSetShowBodyweightAction(
+        SetShowBodyweightAction action,
+        IDispatcher dispatcher
+    )
+    {
+        await preferencesRepository.SetShowBodyweightAsync(action.ShowBodyweight);
     }
 }
