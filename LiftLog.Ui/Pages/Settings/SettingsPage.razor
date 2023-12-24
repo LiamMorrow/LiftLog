@@ -50,6 +50,9 @@
             <div>
                 <Switch Label="Show bodyweight" Value=@SettingsState.Value.ShowBodyweight OnSwitched="SetShowBodyweight"/>
             </div>
+            <div>
+                <Switch Label="Show tips" Value=@SettingsState.Value.ShowTips OnSwitched="SetShowTips"/>
+            </div>
             <md-divider></md-divider>
             <ThemeChooser
                 Seed="@ThemeProvider.GetSeed()"
@@ -100,6 +103,9 @@
 
     private void SetShowBodyweight(bool value)
         => Dispatcher.Dispatch(new SetShowBodyweightAction(value));
+
+    private void SetShowTips(bool value)
+        => Dispatcher.Dispatch(new SetShowTipsAction(value));
 
     private async Task HandleThemeUpdate((uint? Seed, ThemePreference ThemePreference) value)
         {
