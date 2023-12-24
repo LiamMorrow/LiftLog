@@ -64,6 +64,6 @@ public class PreferencesRepository(IPreferenceStore preferenceStore)
         if (int.TryParse(tipToShow, out var tipToShowInt))
             return tipToShowInt;
         else
-            return -1;
+            return 1;
     }
 }
