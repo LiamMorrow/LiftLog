@@ -47,12 +47,12 @@ else
 }
 
 
-<div class="sticky bottom-0 flex flex-col pointer-events-none mt-auto pt-2">
-    <div class="flex justify-end w-full">
+<FloatingBottomContainer>
+    <Fab>
         <FloatingButton variant="secondary" has-icon OnClick=StartFreeformSession Label="Freeform Session"><md-icon slot="icon">fitness_center</md-icon>
         </FloatingButton>
-    </div>
-</div>
+    </Fab>
+</FloatingBottomContainer>
 
 <Dialog @ref=replaceCurrentSesisonDialog>
     <span slot="headline">Replace current session</span>

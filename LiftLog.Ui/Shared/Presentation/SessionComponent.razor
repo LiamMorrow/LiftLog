@@ -51,13 +51,13 @@ else
 
 @if (Session.RecordedExercises.Any())
 {
-    <div class="sticky bottom-0 flex flex-col pointer-events-none mt-auto pt-2 gap-2">
-        <div class="flex justify-end w-full">
+    <FloatingBottomContainer>
+        <Fab>
             <FloatingButton variant="secondary" has-icon OnClick=SaveSession Label="Save"><md-icon slot="icon">save</md-icon>
             </FloatingButton>
-        </div>
-        @RenderSnackBar()
-    </div>
+        </Fab>
+        <AdditionalContent>@RenderSnackBar()</AdditionalContent>
+    </FloatingBottomContainer>
 }
 
 <Dialog @ref="_editExerciseDialog" OnClose=@(()=> _exerciseToEditIndex = null)>
