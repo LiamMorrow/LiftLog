@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using Fluxor;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
+using LiftLog.Ui.Models;
 using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
 
@@ -124,6 +125,4 @@ public class StatsEffects(IState<StatsState> state, IProgressRepository progress
             OneRepMax: exercises.First().RecordedExercise.OneRepMax
         );
     }
-
-    private record DatedRecordedExercise(DateTime DateTime, RecordedExercise RecordedExercise);
 }

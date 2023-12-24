@@ -1,6 +1,6 @@
 ﻿@using LiftLog.Ui.Util
 @{
-    var (displayedExercise, repToStartNext, notesToShow) = (_holdingPrevious, PreviousRecordedExercise) switch
+    var (displayedExercise, repToStartNext, notesToShow) = (_holdingPrevious, PreviousRecordedExercises?.FirstOrDefault()?.RecordedExercise) switch
     {
         (true, null) => (RecordedExercise, -1, null),
         (true, var previous) => (previous, -1, previous.Notes),
@@ -39,6 +39,10 @@
             {
                 <span data-cy="exercise-notes">@notesToShow</span>
             }
+            @if(_holdingPrevious && PreviousRecordedExercises?.Any() == true)
+            {
+                <StatGraphCardContent Statistics=GetStatistics() RenderDelay=TimeSpan.Zero ShowTitle=false ></StatGraphCardContent>
+            }
         </div>
     </MainContent>
     <SideContent>
@@ -48,7 +52,7 @@
             <MenuItem Label="Remove" Icon="delete" OnClick="OnRemoveExercise" />
         </Menu>
         <IconButton data-cy="per-rep-weight-btn" Type=IconButtonType.FilledTonal Icon=weight OnClick="ToggleExercisePerSetWeight"></IconButton>
-        @if(PreviousRecordedExercise != null)
+        @if(PreviousRecordedExercises?.Any() == true)
         {
             <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.FilledTonal" Icon="history" OnStartHold="()=> _holdingPrevious=true" OnEndHold="()=>_holdingPrevious = false" />
         }
@@ -78,7 +82,7 @@
 
   [EditorRequired]
   [Parameter]
-  public RecordedExercise? PreviousRecordedExercise { get; set; }
+  public ImmutableListValue<DatedRecordedExercise> PreviousRecordedExercises { get; set; } = null!;
 
   [EditorRequired]
   [Parameter]
@@ -131,5 +135,14 @@
   {
       EditorNotes = RecordedExercise.Notes ?? "";
       notesDialog?.Open();
+  }
+
+  private StatisticOverTime GetStatistics(){
+        return new StatisticOverTime(
+            RecordedExercise.Blueprint.Name,
+            PreviousRecordedExercises
+                .Select(x => new TimeTrackedStatistic(x.DateTime ,x.RecordedExercise.Weight))
+                .ToImmutableList()
+            );
   }
 }

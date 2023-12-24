@@ -7,7 +7,9 @@
 
 @inject IThemeProvider ThemeProvider
 
-<h2 class="text-xl text-on-surface">@(Statistics.Title)</h2>
+@if(ShowTitle){
+    <h2 class="text-xl text-on-surface">@(Statistics.Title)</h2>
+}
 @if(IsLoading)
 {
     <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
@@ -46,6 +48,9 @@
 
     [CascadingParameter(Name="UseImperial")]
     public bool UseImperial { get; set; }
+
+    [Parameter]
+    public bool ShowTitle { get; set; } = true;
 
 
     private bool IsLoading { get; set; } = true;
