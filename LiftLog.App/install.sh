@@ -11,4 +11,9 @@ dotnet build -t:Run -c Release -f net8.0-android -p:TargetFramework=net8.0-andro
     exit 0
 fi
 
+if [ "$1" == "-c" ]; then
+    dotnet clean
+    dotnet clean -f net8.0-android
+fi
+
 dotnet build -t:Run -c Debug -f net8.0-android -p:TargetFramework=net8.0-android -p:ExtraDefineConstants=TEST_MODE #-p:AndroidEnableProfiler=true
