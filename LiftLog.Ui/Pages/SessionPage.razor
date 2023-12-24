@@ -146,6 +146,7 @@
     {
         Dispatcher.Dispatch(new PersistCurrentSessionAction(SessionTarget.WorkoutSession));
         Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, null));
+        Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
 
         NavigationManager.NavigateTo("/");
     }

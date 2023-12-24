@@ -58,6 +58,7 @@ else{
             return;
         }
         Dispatcher.Dispatch(new DeleteSessionAction(_selectedSession));
+        Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
         _selectedSession = null;
         _deleteDialog?.Close();
         this._latestSessions = await SessionService

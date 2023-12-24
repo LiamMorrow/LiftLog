@@ -145,6 +145,7 @@
     {
         Dispatcher.Dispatch(new PersistCurrentSessionAction(SessionTarget.HistorySession));
         Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.HistorySession, null));
+        Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
 
         NavigationManager.NavigateTo("/history");
     }
