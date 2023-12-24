@@ -33,7 +33,7 @@
     private void ClearRepCountForSet()
     {
         set = set with { Set = null };
-        InvokeAsync(StateHasChanged);
+        StateHasChanged();
     }
 
 
