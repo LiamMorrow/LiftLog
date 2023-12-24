@@ -1,0 +1,62 @@
+<span>That's around <span class="font-bold">@GetWeightInObjects()</span> <span>@(weightToObjectMass[randomWeightIndex].Name)</span></span>
+
+@code{
+    private int randomWeightIndex = new Random().Next(weightToObjectMass.Count);
+    record WeightToObjectMass(string Name, decimal Kilograms);
+
+    [Parameter]
+    [EditorRequired]
+    public decimal Weight { get; set; }
+
+    [CascadingParameter(Name = "UseImperial")]
+    public bool UseImperial { get; set; }
+
+    static readonly ImmutableListValue<WeightToObjectMass> weightToObjectMass = [
+        new("elephants 🐘", 4000m),
+        new("cars 🚗", 1500m),
+        new("house cats 🐱", 4m),
+        new("human brains 🧠", 1.4m),
+        new("blue whale tongues 🐳", 2700m),
+        new("giraffes 🦒", 1200m),
+        new("pianos 🎹", 300m),
+        new("hot air balloons 🎈", 250m),
+        new("horses 🐴", 900m),
+        new("refrigerators ❄️", 50m),
+        new("bowling balls 🎳", 6.8m),
+        new("school buses 🚌", 12000m),
+        new("slices of bread 🍞", 0.03m),
+        new("African bull frogs 🐸", 1m),
+        new("motorcycles 🏍️", 200m),
+        new("basketballs 🏀", 0.62m),
+        new("sunflower seeds 🌻", 0.00005m),
+        new("macbook pros 💻", 1.4m),
+        new("golf balls ⛳", 0.045m),
+        new("air conditioners ❄️", 100m),
+        new("turtles 🐢", 0.9m),
+        new("baseballs ⚾", 0.145m),
+        new("apples 🍎", 0.2m),
+        new("bananas 🍌", 0.18m),
+        new("watermelons 🍉", 10m),
+        new("bricks 🧱", 2.3m),
+        new("cinder blocks 🧱", 18m),
+        new("hamsters 🐹", 0.14m),
+        new("chihuahuas 🐕", 4m),
+        new("honey bees 🐝", 0.00025m),
+        new("butterflies 🦋", 0.0003m),
+        new("medium dogs 🐶", 25m),
+        new("large dogs 🐶", 50m),
+        new("small dogs 🐶", 10m),
+    ];
+
+    private string GetWeightInObjects()
+    {
+        var convertedObjectWeight = UseImperial ? weightToObjectMass[randomWeightIndex].Kilograms * 2.205m : weightToObjectMass[randomWeightIndex].Kilograms;
+        var weightInObjects = Weight / convertedObjectWeight;
+        if(weightInObjects is < 1 and >0)
+        {
+            randomWeightIndex = new Random().Next(weightToObjectMass.Count);
+            return GetWeightInObjects();
+        }
+        return weightInObjects.ToString("N0");
+    }
+}

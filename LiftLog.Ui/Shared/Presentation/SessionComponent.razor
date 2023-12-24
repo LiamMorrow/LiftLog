@@ -287,9 +287,16 @@ else
         }
         else if (Session.IsComplete)
         {
-            return @<SnackBar><span>This session you lifted </span><span class="font-bold">
-            <WeightFormat Weight="Session.TotalWeightLifted" />
-        </span></SnackBar>;
+            return @<SnackBar>
+                <span class="flex flex-col justify-start">
+                    <span class="flex justify-between">
+                        <span>This session you lifted </span><span class="font-bold"><WeightFormat Weight="Session.TotalWeightLifted" /></span>
+                    </span>
+                    <span class="flex justify-between">
+                        <WeightToObjectComparison Weight="Session.TotalWeightLifted"/>
+                    </span>
+                </span>
+                </SnackBar>;
         }
         return null;
     }
