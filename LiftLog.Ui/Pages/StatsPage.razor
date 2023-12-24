@@ -1,13 +1,15 @@
 @page "/stats"
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 @using LiftLog.Ui.Services;
 @using Fluxor;
 @using LiftLog.Ui.Store.App;
 
 @inject SessionService SessionService;
 @inject IState<SettingsState> SettingsState;
+@inject IState<StatsState> StatsState;
 @inject IDispatcher Dispatcher;
 
-@if(_exerciseStats.Count == 0)
+@if(StatsState.Value.SessionStats.Count == 0)
 {
 <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
     <md-icon>info</md-icon>
@@ -18,19 +20,29 @@
 }
 else
 {
-    <CardList Items="@(_exerciseStats.IndexedTuples())" OnClick=@HandleCardClick>
-        <StatGraphCardContent ExerciseStatistics="context.Item" RenderDelay="TimeSpan.FromMilliseconds(context.Index*200)"/>
-    </CardList>
+    <div class="flex flex-col gap-2">
+        @if(SettingsState.Value.ShowBodyweight && StatsState.Value.BodyweightStats.Statistics.Any()){
+            <Card>
+                <StatGraphCardContent Statistics="StatsState.Value.BodyweightStats" RenderDelay="TimeSpan.FromMilliseconds(100)"/>
+            </Card>
+        }
+        <CardList Items="@(StatsState.Value.SessionStats.IndexedTuples())">
+            <StatGraphCardContent Statistics="context.Item" RenderDelay="TimeSpan.FromMilliseconds(200 + context.Index*200 )"/>
+        </CardList>
+        <CardList Items="@(StatsState.Value.ExerciseStats.IndexedTuples())" OnClick=@HandleCardClick>
+            <StatGraphCardContent Statistics="context.Item" RenderDelay="TimeSpan.FromMilliseconds(200 +context.Index*200)"/>
+        </CardList>
+    </div>
 }
 <Dialog @ref=dialog>
     @if(_selectedExercise is not null)
     {
-        <span slot="headline">@(_selectedExercise.Name)</span>
+        <span slot="headline">@(_selectedExercise.Title)</span>
         <div slot="content" class="flex flex-col">
-            <span class="flex justify-between text-on-surface"><span>Current: </span><WeightFormat Weight=@(_selectedExercise.CurrentWeight)/></span>
-            <span class="flex justify-between text-on-surface"><span>Max: </span><WeightFormat Weight=@(_selectedExercise.MaxWeight)/></span>
+            <span class="flex justify-between text-on-surface"><span>Current: </span><WeightFormat Weight=@(_selectedExercise.Current)/></span>
+            <span class="flex justify-between text-on-surface"><span>Max: </span><WeightFormat Weight=@(_selectedExercise.Max)/></span>
             <span class="flex justify-between text-on-surface"><span>One Rep Max: </span><WeightFormat Weight=@(_selectedExercise.OneRepMax)/></span>
-            <span class="flex justify-between text-on-surface"><span>Total Lifted: </span><WeightFormat Weight=@(_selectedExercise.TotalWeight)/></span>
+            <span class="flex justify-between text-on-surface"><span>Total Lifted: </span><WeightFormat Weight=@(_selectedExercise.TotalLifted)/></span>
         </div>
     <div slot="actions">
         <AppButton Type=AppButtonType.Text OnClick=@(()=>dialog?.Close())>Close</AppButton>
@@ -39,113 +51,20 @@ else
 </Dialog>
 @code {
     private Dialog? dialog;
-    private List<ExerciseStatistics> _exerciseStats = new();
-    private ExerciseStatistics? _selectedExercise;
+    private ExerciseStatisticOverTime? _selectedExercise;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
+        Dispatcher.Dispatch(new FetchStatsAction());
         Dispatcher.Dispatch(new SetPageTitleAction("Statistics"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
-
-        List<ExerciseStatistics> stats = [ ];
-
-        await Task.Run(async ()=> {
-            var sessions=  await SessionService.GetLatestSessionsAsync().Where(x=>x.RecordedExercises.Any()).ToListAsync();
-
-            List<ExerciseStatistics> bodyweightStats = [ CreateBodyweightStatistic(sessions) ];
-            var sessionStats = sessions.GroupBy(session=>session.Blueprint.Name).Select(CreateSessionStatistic);
-
-            stats = bodyweightStats.Where(x=>SettingsState.Value.ShowBodyweight).Where(x=>x.RecordedExercises.Any())
-                .Concat(sessionStats)
-                .Concat(sessions
-                    .SelectMany(x=>x.RecordedExercises.Select(ex=>new DatedRecordedExercise(x.Date, ex)))
-                    .GroupBy(x => NormalizeName(x.Exercise.Blueprint.Name))
-                    .Select(x => x.ToList())
-                    .Where(x => x.Count > 0)
-                    .Select(CreateExerciseStatistic)
-                ).ToList();
-        });
-
-        _exerciseStats = stats;
+        base.OnInitialized();
     }
 
-    private void HandleCardClick((ExerciseStatistics  exerciseStatistics, int Index) item)
+    private void HandleCardClick((ExerciseStatisticOverTime  exerciseStatistics, int Index) item)
     {
-        if(!item.exerciseStatistics.ExpandOnClick) return;
         _selectedExercise = item.exerciseStatistics;
         StateHasChanged();
         dialog?.Open();
-    }
-
-    private string NormalizeName(string name)
-    {
-        var lowerName= name.ToLower().Trim().Replace("flies", "flys");
-        var withoutPlural = lowerName switch
-        {
-            string s when s.EndsWith("es") => s.Substring(0, s.Length - 2),
-            string s when s.EndsWith("s") => s.Substring(0, s.Length - 1),
-            _ => lowerName
-        };
-
-        return withoutPlural;
-    }
-
-
-    private ExerciseStatistics CreateBodyweightStatistic(IEnumerable<Session> sessions)
-    {
-        // Really stretching the definition of exercise statistics here
-        return new ExerciseStatistics(
-            Name: "Bodyweight",
-            CurrentWeight: 0,
-            MaxWeight: 0,
-            OneRepMax: 0,
-            TotalWeight: 0,
-            RecordedExercises: sessions.Where(x=>x.Bodyweight is not null).Select(
-                session =>
-                    new DatedRecordedExercise(session.Date, new RecordedExercise(
-                        Blueprint: session.RecordedExercises.First().Blueprint,
-                        Weight: session.Bodyweight!.Value,
-                        PotentialSets: [new(new RecordedSet(1, TimeOnly.MinValue), 0)],
-                        null,
-                        false
-                        )
-                    )
-                ).ToImmutableList(),
-            ExpandOnClick: false);
-    }
-
-    private ExerciseStatistics CreateSessionStatistic(IGrouping<string,Session> sessions)
-    {
-        return new ExerciseStatistics(
-            Name: sessions.Key,
-            CurrentWeight: 0,
-            MaxWeight: 0,
-            OneRepMax: 0,
-            TotalWeight: sessions.Sum(session => session.TotalWeightLifted),
-            RecordedExercises: sessions.Select(
-                session =>
-                    new DatedRecordedExercise(session.Date, new RecordedExercise(
-                        Blueprint: session.RecordedExercises.First().Blueprint,
-                        Weight: session.TotalWeightLifted,
-                        PotentialSets: [new(new RecordedSet(1, TimeOnly.MinValue), 0)],
-                        null,
-                        false
-                        )
-                    )
-                ).ToImmutableList(),
-            ExpandOnClick: false);
-    }
-
-    private ExerciseStatistics CreateExerciseStatistic(IEnumerable<DatedRecordedExercise> exercises)
-    {
-        return new ExerciseStatistics(
-            Name: exercises.First().Exercise.Blueprint.Name,
-            CurrentWeight: exercises.First().Exercise.Weight,
-            MaxWeight: exercises.Max(x=>x.Exercise.Weight),
-            OneRepMax: exercises.First().Exercise.OneRepMax,
-            TotalWeight: exercises.Sum(x=>x.Exercise.Weight),
-            RecordedExercises: exercises.ToImmutableList(),
-            ExpandOnClick: true
-        );
     }
 }

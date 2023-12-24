@@ -19,7 +19,7 @@ else
             CycleRepCountForSet=CycleRepCountForExerciseSet(context.Index)
             ClearRepCountForSet=ClearRepCountForExerciseSet(context.Index)
             UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index)
-            PreviousRecordedExercise=PreviouslyCompleted.GetValueOrDefault(context.Item.Blueprint)
+            PreviousRecordedExercises=@(PreviouslyCompleted.GetValueOrDefault(context.Item.Blueprint, []))
             ToggleExercisePerSetWeight=@(() =>ToggleExercisePerSetWeight(context.Index))
             UpdateWeightForSet=@((setIndex, weight) => UpdateWeightForSet(context.Index, setIndex, weight))
             UpdateNotesForExercise=@((notes)=>UpdateNotesForExercise(context.Index, notes))
@@ -116,7 +116,7 @@ else
 
     [EditorRequired]
     [Parameter]
-    public ImmutableDictionary<KeyedExerciseBlueprint, RecordedExercise> PreviouslyCompleted { get; set; } = null!;
+    public ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>> PreviouslyCompleted { get; set; } = null!;
 
     [Parameter]
     public bool ShowRestTimer { get; set; } = true;

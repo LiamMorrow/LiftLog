@@ -90,6 +90,7 @@
     private void ImportData()
     {
         Dispatcher.Dispatch(new ImportDataAction());
+        Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
     }
 
     private void ExportData() => Dispatcher.Dispatch(new ExportDataAction());

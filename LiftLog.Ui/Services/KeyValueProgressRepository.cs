@@ -2,8 +2,10 @@ using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Text.Json;
+using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
+using LiftLog.Ui.Models;
 using LiftLog.Ui.Models.SessionHistoryDao;
 using LiftLog.Ui.Repository;
 using LiftLog.Ui.Util;
@@ -18,6 +20,7 @@ namespace LiftLog.Ui.Services
     {
         private const string StorageKey = "Progress";
         private bool _initialised;
+        private bool _initialising;
         private ImmutableDictionary<Guid, Session> _storedSessions = ImmutableDictionary<
             Guid,
             Session
@@ -63,7 +66,13 @@ namespace LiftLog.Ui.Services
         {
             if (!_initialised)
             {
-                _initialised = true;
+                if (_initialising)
+                {
+                    await Task.Delay(20);
+                    await InitialiseAsync();
+                    return;
+                }
+                _initialising = true;
                 var sw = Stopwatch.StartNew();
                 logger.LogInformation("Initialising progress repository");
                 var version = await keyValueStore.GetItemAsync($"{StorageKey}-Version");
@@ -100,6 +109,7 @@ namespace LiftLog.Ui.Services
                 logger.LogInformation(
                     $"Initialised progress repository in ({versionCheckTime}ms, {getStoredTime}ms, {deserialiseTime}ms, {convertTime}ms))"
                 );
+                _initialised = true;
             }
         }
 
@@ -129,6 +139,33 @@ namespace LiftLog.Ui.Services
                 .ToImmutableDictionaryAwaitAsync(
                     x => ValueTask.FromResult(x.Key),
                     x => x.FirstAsync()
+                );
+        }
+
+        public ValueTask<
+            ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>>
+        > GetLatestOrderedRecordedExercisesAsync()
+        {
+            return GetOrderedSessions()
+                .SelectMany(
+                    x =>
+                        x.RecordedExercises.Where(x => x.LastRecordedSet?.Set is not null)
+                            .Select(
+                                ex =>
+                                    new DatedRecordedExercise(
+                                        x.Date.ToDateTime(ex.LastRecordedSet!.Set!.CompletionTime),
+                                        ex
+                                    )
+                            )
+                            .ToAsyncEnumerable()
+                )
+                .GroupBy(x => (KeyedExerciseBlueprint)x.RecordedExercise.Blueprint)
+                .ToImmutableDictionaryAwaitAsync(
+                    x => ValueTask.FromResult(x.Key),
+                    async x =>
+                        new ImmutableListValue<DatedRecordedExercise>(
+                            await x.ToImmutableListAsync()
+                        )
                 );
         }
     }

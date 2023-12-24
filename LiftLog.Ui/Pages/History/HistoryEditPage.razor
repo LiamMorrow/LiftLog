@@ -61,7 +61,7 @@
 
 @code
 {
-    private ImmutableDictionary<KeyedExerciseBlueprint, RecordedExercise> previouslyCompleted = ImmutableDictionary<KeyedExerciseBlueprint, RecordedExercise>.Empty;
+    private ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>> previouslyCompleted = ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>>.Empty;
     private bool initted = false;
     private void Init(Session session)
     {
@@ -145,6 +145,7 @@
     {
         Dispatcher.Dispatch(new PersistCurrentSessionAction(SessionTarget.HistorySession));
         Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.HistorySession, null));
+        Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
 
         NavigationManager.NavigateTo("/history");
     }
