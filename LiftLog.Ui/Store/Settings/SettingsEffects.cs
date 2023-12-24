@@ -123,4 +123,16 @@ public class SettingsEffects(
     {
         await preferencesRepository.SetShowBodyweightAsync(action.ShowBodyweight);
     }
+
+    [EffectMethod]
+    public async Task HandleSetShowTipsAction(SetShowTipsAction action, IDispatcher dispatcher)
+    {
+        await preferencesRepository.SetShowTipsAsync(action.ShowTips);
+    }
+
+    [EffectMethod]
+    public async Task HandleSetTipToShowAction(SetTipToShowAction action, IDispatcher dispatcher)
+    {
+        await preferencesRepository.SetTipToShowAsync(action.TipToShow);
+    }
 }

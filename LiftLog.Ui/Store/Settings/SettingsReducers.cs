@@ -43,4 +43,18 @@ public static class SettingsReducers
         SettingsState state,
         SetShowBodyweightAction action
     ) => state with { ShowBodyweight = action.ShowBodyweight };
+
+    [ReducerMethod]
+    public static SettingsState SetShowTips(SettingsState state, SetShowTipsAction action) =>
+        state with
+        {
+            ShowTips = action.ShowTips
+        };
+
+    [ReducerMethod]
+    public static SettingsState SetSetTipToShow(SettingsState state, SetTipToShowAction action) =>
+        state with
+        {
+            TipToShow = action.TipToShow
+        };
 }

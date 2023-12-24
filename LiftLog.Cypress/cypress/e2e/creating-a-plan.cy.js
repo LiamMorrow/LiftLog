@@ -8,6 +8,8 @@ describe('Creating a plan', () => {
   describe('When a user creates a plan', () => {
     beforeEach(() => {
       cy.navigate('Settings')
+      // Disable tips
+      cy.containsA('Show tips').click()
       cy.containsA('Manage workouts').click()
       cy.containsA('Add Session').click()
       cy.containsA('Session 1').click()
