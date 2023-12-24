@@ -56,6 +56,7 @@ public class StatsEffects(IState<StatsState> state, IProgressRepository progress
             );
 
             dispatcher.Dispatch(new SetStatsIsDirtyAction(false));
+            dispatcher.Dispatch(new SetStatsIsLoadingAction(false));
         });
     }
 
@@ -64,15 +65,15 @@ public class StatsEffects(IState<StatsState> state, IProgressRepository progress
         var lowerName = name.ToLower().Trim().Replace("flies", "flys");
         var withoutPlural = lowerName switch
         {
-            string s when s.EndsWith("es") => s.Substring(0, s.Length - 2),
-            string s when s.EndsWith("s") => s.Substring(0, s.Length - 1),
+            string s when s.EndsWith("es") => s[..^2],
+            string s when s.EndsWith('s') => s[..^1],
             _ => lowerName
         };
 
         return withoutPlural;
     }
 
-    private StatisticOverTime CreateBodyweightStatistic(IEnumerable<Session> sessions)
+    private static StatisticOverTime CreateBodyweightStatistic(IEnumerable<Session> sessions)
     {
         return new(
             "Bodyweight",
@@ -89,7 +90,7 @@ public class StatsEffects(IState<StatsState> state, IProgressRepository progress
         );
     }
 
-    private StatisticOverTime CreateSessionStatistic(IGrouping<string, Session> sessions)
+    private static StatisticOverTime CreateSessionStatistic(IGrouping<string, Session> sessions)
     {
         return new StatisticOverTime(
             sessions.Key,
@@ -105,7 +106,7 @@ public class StatsEffects(IState<StatsState> state, IProgressRepository progress
         );
     }
 
-    private ExerciseStatisticOverTime CreateExerciseStatistic(
+    private static ExerciseStatisticOverTime CreateExerciseStatistic(
         IEnumerable<DatedRecordedExercise> exercises
     )
     {
