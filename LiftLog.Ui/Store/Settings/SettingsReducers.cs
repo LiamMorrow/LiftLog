@@ -50,4 +50,11 @@ public static class SettingsReducers
         {
             ShowTips = action.ShowTips
         };
+
+    [ReducerMethod]
+    public static SettingsState SetSetTipToShow(SettingsState state, SetTipToShowAction action) =>
+        state with
+        {
+            TipToShow = action.TipToShow
+        };
 }

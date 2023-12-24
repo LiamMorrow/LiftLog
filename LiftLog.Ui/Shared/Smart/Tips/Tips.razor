@@ -1,0 +1,31 @@
+@inject IState<SettingsState> SettingsState
+@inject IDispatcher Dispatcher
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+
+@if(SettingsState.Value.ShowTips && SettingsState.Value.TipToShow <= totalTips){
+    <Card class="flex flex-col gap-4">
+       <div class="flex justify-between"><h1 class="text-xl">Tip</h1><AppButton Type="AppButtonType.OutlineSecondary" OnClick="()=>HandleNextClick()">@NextText</AppButton></div>
+        @switch(SettingsState.Value.TipToShow)
+        {
+            case 1:
+                <DisablingTipsTip/>
+                break;
+            case 2:
+                <HoldingRepCounterTip/>
+                break;
+        }
+    </Card>
+}
+
+@code
+{
+    private static readonly int totalTips = 2;
+
+    private void HandleNextClick(){
+        Dispatcher.Dispatch(new SetTipToShowAction(SettingsState.Value.TipToShow+1));
+        StateHasChanged();
+    }
+
+    private string NextText => SettingsState.Value.TipToShow >= totalTips ? "Close" : "Next";
+}

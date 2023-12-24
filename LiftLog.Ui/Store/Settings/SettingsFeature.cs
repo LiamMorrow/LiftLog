@@ -14,6 +14,7 @@ public class SettingsFeature : Feature<SettingsState>
             AiPlan: null,
             UseImperialUnits: false,
             ShowBodyweight: true,
-            ShowTips: true
+            ShowTips: true,
+            TipToShow: 1
         );
 }

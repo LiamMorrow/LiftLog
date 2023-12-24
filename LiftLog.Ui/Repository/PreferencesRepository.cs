@@ -52,4 +52,18 @@ public class PreferencesRepository(IPreferenceStore preferenceStore)
     {
         return await preferenceStore.GetItemAsync("showTips") is "True" or null;
     }
+
+    public async Task SetTipToShowAsync(int tipToShow)
+    {
+        await preferenceStore.SetItemAsync("tipToShow", tipToShow.ToString());
+    }
+
+    public async Task<int> GetTipToShowAsync()
+    {
+        var tipToShow = await preferenceStore.GetItemAsync("tipToShow");
+        if (int.TryParse(tipToShow, out var tipToShowInt))
+            return tipToShowInt;
+        else
+            return -1;
+    }
 }

@@ -50,8 +50,10 @@
             <div>
                 <Switch Label="Show bodyweight" Value=@SettingsState.Value.ShowBodyweight OnSwitched="SetShowBodyweight"/>
             </div>
+            <md-divider></md-divider>
             <div>
                 <Switch Label="Show tips" Value=@SettingsState.Value.ShowTips OnSwitched="SetShowTips"/>
+                <AppButton Type=AppButtonType.OutlineSecondary OnClick=ResetTips>Reset tips</AppButton>
             </div>
             <md-divider></md-divider>
             <ThemeChooser
@@ -106,6 +108,9 @@
 
     private void SetShowTips(bool value)
         => Dispatcher.Dispatch(new SetShowTipsAction(value));
+
+    private void ResetTips()
+        => Dispatcher.Dispatch(new SetTipToShowAction(1));
 
     private async Task HandleThemeUpdate((uint? Seed, ThemePreference ThemePreference) value)
         {

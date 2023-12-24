@@ -27,3 +27,5 @@ public record SetUseImperialUnitsAction(bool UseImperialUnits);
 public record SetShowBodyweightAction(bool ShowBodyweight);
 
 public record SetShowTipsAction(bool ShowTips);
+
+public record SetTipToShowAction(int TipToShow);

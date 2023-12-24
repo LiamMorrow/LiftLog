@@ -1,0 +1,40 @@
+<div class="flex gap-4">
+    <span>You can tap and hold on any set's rep counter to clear it.
+    Try it now!</span>
+    <PotentialSetCounter
+        Set="set"
+        ShowWeight=false
+        MaxReps="8"
+        WeightIncrement="0.25m"
+        CycleRepCount=@(() => CycleRepCountForSet())
+        ClearRepCount=@(() => ClearRepCountForSet())
+        UpdateWeight=@((_)=>{})
+        ToStartNext=false />
+</div>
+@code{
+    private PotentialSet set = new PotentialSet(new RecordedSet(8, TimeOnly.MinValue), 10m);
+
+    private void CycleRepCountForSet()
+    {
+        set = set with {
+            Set = set.Set switch
+            {
+                // When unset - we say the user completed all reps
+                null => new RecordedSet(8,TimeOnly.FromDateTime(DateTime.Now)),
+                // When they completed no reps, we transition back to unset
+                { RepsCompleted: 0 } => null,
+                // Otherwise, just decrement from the current
+                var reps => reps with { RepsCompleted = reps.RepsCompleted - 1 }
+            }
+        };
+        StateHasChanged();
+    }
+
+    private void ClearRepCountForSet()
+    {
+        set = set with { Set = null };
+        StateHasChanged();
+    }
+
+
+}

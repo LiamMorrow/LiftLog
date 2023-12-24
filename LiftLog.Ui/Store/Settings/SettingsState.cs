@@ -10,5 +10,6 @@ public record SettingsState(
     AiWorkoutPlan? AiPlan,
     bool UseImperialUnits,
     bool ShowBodyweight,
-    bool ShowTips
+    bool ShowTips,
+    int TipToShow
 );

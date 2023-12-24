@@ -12,5 +12,9 @@ public class SettingsStateInitMiddleware(PreferencesRepository preferencesReposi
         dispatch.Dispatch(new SetUseImperialUnitsAction(useImperialUnits));
         var showBodyweight = await preferencesRepository.GetShowBodyweightAsync();
         dispatch.Dispatch(new SetShowBodyweightAction(showBodyweight));
+        var showTips = await preferencesRepository.GetShowTipsAsync();
+        dispatch.Dispatch(new SetShowTipsAction(showTips));
+        var tipToShow = await preferencesRepository.GetTipToShowAsync();
+        dispatch.Dispatch(new SetTipToShowAction(tipToShow));
     }
 }
