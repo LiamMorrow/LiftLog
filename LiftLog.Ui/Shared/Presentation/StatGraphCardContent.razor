@@ -7,7 +7,7 @@
 
 @inject IThemeProvider ThemeProvider
 
-<h2 class="text-xl text-on-surface">@(ExerciseStatistics.Name)</h2>
+<h2 class="text-xl text-on-surface">@(Statistics.Title)</h2>
 @if(IsLoading)
 {
     <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
@@ -19,24 +19,24 @@
 } else
 {
     <ApexChart
-        TItem="DatedRecordedExercise"
+        TItem="TimeTrackedStatistic"
         Title=""
         Options="options"
         XAxisType="XAxisType.Datetime">
 
-        <ApexPointSeries TItem="DatedRecordedExercise"
-                            Items="ExerciseStatistics.RecordedExercises.Where(x=>x.Exercise.LastRecordedSet != null)"
+        <ApexPointSeries TItem="TimeTrackedStatistic"
+                            Items="Statistics.Statistics"
                             Name="Weight"
                             SeriesType="SeriesType.Line"
-                            XValue="@(e => e.Date)"
-                            YAggregate="@(e => e.Max(e => e.Exercise.Weight))"
+                            XValue="@(e => e.DateTime)"
+                            YAggregate="@(e => e.Max(e => e.Value))"
                             OrderByDescending="e=>e.X" />
     </ApexChart>
 }
 @code {
     [Parameter]
     [EditorRequired]
-    public ExerciseStatistics ExerciseStatistics { get; set; } = null!;
+    public StatisticOverTime Statistics { get; set; } = null!;
 
     [Parameter]
     [EditorRequired]
@@ -53,7 +53,7 @@
     private bool _disposed = false;
 
 
-    private ApexChartOptions<DatedRecordedExercise> options = null!;
+    private ApexChartOptions<TimeTrackedStatistic> options = null!;
 
     public void Dispose()
     {
@@ -63,7 +63,7 @@
     protected override async Task OnInitializedAsync()
     {
         var scheme = await ThemeProvider.GetColorSchemeAsync();
-        options = new ApexChartOptions<DatedRecordedExercise>
+        options = new ApexChartOptions<TimeTrackedStatistic>
             {
                 Chart = new Chart
                 {
