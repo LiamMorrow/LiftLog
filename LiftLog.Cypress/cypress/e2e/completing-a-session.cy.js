@@ -38,6 +38,8 @@ describe('Completing a session', () => {
   describe('When a user selects a pre-made program', () => {
     beforeEach(() => {
       cy.navigate('Settings')
+      // Disable tips
+      cy.containsA('Show tips').click()
       cy.containsA('Select a plan').click()
       cy.containsA("Starting Strength").click()
       cy.getA('[slot="actions"]').contains("Select").click()

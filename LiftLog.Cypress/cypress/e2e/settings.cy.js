@@ -8,6 +8,8 @@ describe('Settings', () => {
   describe('When a user restores data', () => {
     beforeEach(() => {
       cy.navigate('Settings')
+      // Disable tips
+      cy.containsA('Show tips').click()
       cy.getA('[data-cy=restore-button]').click()
     })
 
