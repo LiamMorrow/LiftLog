@@ -4,7 +4,7 @@
 
 
 @if(SettingsState.Value.ShowTips && SettingsState.Value.TipToShow <= totalTips){
-    <Card class="flex flex-col gap-4">
+    <Card class="flex flex-col gap-4" IsHighlighted=true>
        <div class="flex justify-between"><h1 class="text-xl">Tip</h1><AppButton Type="AppButtonType.OutlineSecondary" OnClick="()=>HandleNextClick()">@NextText</AppButton></div>
         @switch(SettingsState.Value.TipToShow)
         {
