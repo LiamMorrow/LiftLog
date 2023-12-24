@@ -1,4 +1,5 @@
 <SnackBar>
+    <div class="flex justify-between">
     @if (Failed)
     {
         <span>Rest <span class="font-bold">@(Rest.FailureRest.ToString(TimespanFormatStr))</span></span>
@@ -13,6 +14,7 @@
         <span>Rest between <span class="font-bold">@(Rest.MinRest.ToString(TimespanFormatStr))</span> and <span class="font-bold">@(Rest.MaxRest.ToString(TimespanFormatStr))</span></span>
     }
     <span class="font-bold">@(TimeSinceStart.ToString(TimespanFormatStr))</span>
+    </div>
 </SnackBar>
 
 @code {
