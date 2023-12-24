@@ -42,4 +42,14 @@ public class PreferencesRepository(IPreferenceStore preferenceStore)
     {
         return await preferenceStore.GetItemAsync("showBodyweight") is "True" or null;
     }
+
+    public async Task SetShowTipsAsync(bool showTips)
+    {
+        await preferenceStore.SetItemAsync("showTips", showTips.ToString());
+    }
+
+    public async Task<bool> GetShowTipsAsync()
+    {
+        return await preferenceStore.GetItemAsync("showTips") is "True" or null;
+    }
 }

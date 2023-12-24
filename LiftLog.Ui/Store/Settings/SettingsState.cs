@@ -9,5 +9,6 @@ public record SettingsState(
     string? AiPlanError,
     AiWorkoutPlan? AiPlan,
     bool UseImperialUnits,
-    bool ShowBodyweight
+    bool ShowBodyweight,
+    bool ShowTips
 );
