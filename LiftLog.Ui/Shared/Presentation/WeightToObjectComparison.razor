@@ -52,6 +52,11 @@
     {
         var convertedObjectWeight = UseImperial ? weightToObjectMass[randomWeightIndex].Kilograms * 2.205m : weightToObjectMass[randomWeightIndex].Kilograms;
         var weightInObjects = Weight / convertedObjectWeight;
+        if(weightInObjects is < 1 and >0)
+        {
+            randomWeightIndex = new Random().Next(weightToObjectMass.Count);
+            return GetWeightInObjects();
+        }
         return weightInObjects.ToString("N0");
     }
 }
