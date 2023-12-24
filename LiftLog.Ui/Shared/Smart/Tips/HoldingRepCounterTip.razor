@@ -9,7 +9,7 @@
         CycleRepCount=@(() => CycleRepCountForSet())
         ClearRepCount=@(() => ClearRepCountForSet())
         UpdateWeight=@((_)=>{})
-        ToStartNext=false />
+        ToStartNext=@(set.Set is null) />
 </div>
 @code{
     private PotentialSet set = new PotentialSet(new RecordedSet(8, TimeOnly.MinValue), 10m);

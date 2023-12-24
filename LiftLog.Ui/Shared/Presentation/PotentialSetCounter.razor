@@ -115,13 +115,12 @@
     private string? RepCountToStartClass => ToStartNext ? "" : null;
 
 
-    private void OnPointerDown(PointerEventArgs args){
+    private async void OnPointerDown(PointerEventArgs args){
         _lastPointerDownTime = DateTime.Now;
-        Task.Delay(500).ContinueWith(_ => {
-            if (_lastPointerDownTime is null || _lastPointerDownTime.Value.AddMilliseconds(500) > DateTime.Now) return;
-            _clearRepCountTime = DateTime.Now;
-            ClearRepCount();
-        });
+        await Task.Delay(500);
+        if (_lastPointerDownTime is null || _lastPointerDownTime.Value.AddMilliseconds(500) > DateTime.Now) return;
+        _clearRepCountTime = DateTime.Now;
+        ClearRepCount();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
