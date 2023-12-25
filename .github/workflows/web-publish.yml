@@ -40,4 +40,4 @@ jobs:
           path: ./LiftLog.Web/bin/Release/net8.0/publish/wwwroot
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v3
+        uses: actions/deploy-pages@v4
