@@ -35,7 +35,7 @@ jobs:
         run: dotnet publish -c Release
         working-directory: ./LiftLog.Web
       - name: Upload pages
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./LiftLog.Web/bin/Release/net8.0/publish/wwwroot
       - name: Deploy to GitHub Pages
