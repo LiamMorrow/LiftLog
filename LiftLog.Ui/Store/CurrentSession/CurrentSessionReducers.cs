@@ -83,6 +83,11 @@ public static class CurrentSessionReducers
         EditExerciseInActiveSessionAction action
     )
     {
+        // Updating the weight of an exercise is necessary, because we need to update the weight of all sets
+        state = UpdateExerciseWeight(
+            state,
+            new(action.Target, action.ExerciseIndex, action.Exercise.Weight)
+        );
         var session = ActiveSession(state, action.Target) ?? throw new Exception();
         var newExerciseBlueprint = session.Blueprint.Exercises[action.ExerciseIndex] with
         {
