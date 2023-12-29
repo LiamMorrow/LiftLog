@@ -1,0 +1,11 @@
+syntax = "proto3";
+package LiftLog.Ui.Models.CurrentSessionStateDao;
+
+import "Models/Utils.proto";
+import "Models/SessionHistoryDao/SessionHistoryDaoV2.proto";
+
+message CurrentSessionStateDaoV2 {
+    optional LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2 workout_session = 1;
+    optional LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2 history_session = 2;
+    optional LiftLog.Ui.Models.UUIDDao latest_set_timer_notification_id = 3;
+}

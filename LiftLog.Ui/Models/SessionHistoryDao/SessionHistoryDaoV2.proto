@@ -1,0 +1,36 @@
+syntax = "proto3";
+package LiftLog.Ui.Models.SessionHistoryDao;
+
+import "Models/Utils.proto";
+import "Models/SessionBlueprintDao/SessionBlueprintDaoV2.proto";
+
+message SessionHistoryDaoV2 {
+    repeated SessionDaoV2 completed_sessions = 1;
+}
+
+message SessionDaoV2 {
+    LiftLog.Ui.Models.UUIDDao id = 1;
+    LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2 session_blueprint = 2;
+    repeated RecordedExerciseDaoV2 recorded_exercises = 3;
+    LiftLog.Ui.Models.DateOnlyDao date = 4;
+    optional LiftLog.Ui.Models.DecimalValue bodyweight = 5;
+}
+
+
+message RecordedExerciseDaoV2 {
+    LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2 exercise_blueprint = 1;
+    LiftLog.Ui.Models.DecimalValue weight = 2;
+    repeated PotentialSetDaoV2 potential_sets = 3;
+    optional string notes = 4;
+    bool per_set_weight = 5;
+}
+
+message PotentialSetDaoV2 {
+    optional RecordedSetDaoV2 recorded_set = 1;
+    LiftLog.Ui.Models.DecimalValue weight = 2;
+}
+
+message RecordedSetDaoV2 {
+    int32 reps_completed = 1;
+    LiftLog.Ui.Models.TimeOnlyDao completion_time = 2;
+}
