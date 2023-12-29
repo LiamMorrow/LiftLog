@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json;
 using Fluxor;
+using Google.Protobuf;
 using LiftLog.Lib.Serialization;
 using LiftLog.Ui.Models.CurrentSessionStateDao;
 using LiftLog.Ui.Models.SessionHistoryDao;
@@ -14,7 +15,8 @@ namespace LiftLog.Ui.Store.CurrentSession
         ILogger<PersistSessionMiddleware> logger
     ) : Middleware
     {
-        private const string Key = "CurrentSessionStateV1";
+        // Bad name, too late to change
+        private const string StorageKey = "CurrentSessionStateV1";
         private IStore? _store;
         private readonly IKeyValueStore keyValueStore = _keyValueStore;
         private readonly ILogger<PersistSessionMiddleware> logger = logger;
@@ -24,26 +26,35 @@ namespace LiftLog.Ui.Store.CurrentSession
         {
             _store = store;
             var sw = Stopwatch.StartNew();
-            var currentSessionStateJson = await keyValueStore.GetItemAsync(Key);
-            var storageTime = sw.ElapsedMilliseconds;
-            sw.Restart();
+            var currentSessionVersion =
+                await keyValueStore.GetItemAsync($"{StorageKey}-Version") ?? "1";
             try
             {
-                var currentSessionState =
-                    currentSessionStateJson != null
-                        ? JsonSerializer.Deserialize<CurrentSessionStateDaoV1>(
-                            currentSessionStateJson,
-                            StorageJsonContext.Context.CurrentSessionStateDaoV1
-                        )
-                        : null;
+                var currentSessionState = currentSessionVersion switch
+                {
+                    "1"
+                        => JsonSerializer
+                            .Deserialize<CurrentSessionStateDaoV1>(
+                                await keyValueStore.GetItemAsync(StorageKey) ?? "null",
+                                StorageJsonContext.Context.CurrentSessionStateDaoV1
+                            )
+                            ?.ToModel(),
+                    "2"
+                        => CurrentSessionStateDaoV2
+                            .Parser.ParseFrom(
+                                await keyValueStore.GetItemBytesAsync(StorageKey) ?? []
+                            )
+                            .ToModel(),
+                    _ => null
+                };
                 var deserializationTime = sw.ElapsedMilliseconds;
                 sw.Stop();
                 logger.LogInformation(
-                    $"Deserialized current session state in (storage: {storageTime}ms | deserialization: {deserializationTime}ms | total: {storageTime + deserializationTime}ms)"
+                    $"Deserialized current session state in {deserializationTime}ms"
                 );
                 if (currentSessionState is not null)
                 {
-                    store.Features["CurrentSession"].RestoreState(currentSessionState.ToModel());
+                    store.Features["CurrentSession"].RestoreState(currentSessionState);
                 }
             }
             catch (JsonException e)
@@ -64,13 +75,13 @@ namespace LiftLog.Ui.Store.CurrentSession
                 previousState = currentState;
                 try
                 {
-                    var currentSessionState = JsonSerializer.Serialize(
-                        CurrentSessionStateDaoV1.FromModel(currentState),
-                        StorageJsonContext.Context.CurrentSessionStateDaoV1
-                    );
+                    var currentSessionState = CurrentSessionStateDaoV2
+                        .FromModel(currentState)
+                        .ToByteArray();
                     var serializationTime = sw.ElapsedMilliseconds;
                     sw.Restart();
-                    await keyValueStore.SetItemAsync(Key, currentSessionState);
+                    await keyValueStore.SetItemAsync(StorageKey, currentSessionState);
+                    await keyValueStore.SetItemAsync($"{StorageKey}-Version", "2");
                     sw.Stop();
                     logger.LogInformation(
                         $"Persisted current session state in (serialization: {serializationTime}ms |currentState {currentStateTime}ms | storage: {sw.ElapsedMilliseconds}ms | total: {currentStateTime + serializationTime + sw.ElapsedMilliseconds}ms)"

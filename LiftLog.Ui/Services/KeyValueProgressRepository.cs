@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Text.Json;
+using Google.Protobuf;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
@@ -78,13 +79,10 @@ namespace LiftLog.Ui.Services
                 var version = await keyValueStore.GetItemAsync($"{StorageKey}-Version");
                 if (version is null)
                 {
-                    version = "1";
-                    await keyValueStore.SetItemAsync($"{StorageKey}-Version", "1");
+                    version = "2";
+                    await keyValueStore.SetItemAsync($"{StorageKey}-Version", "2");
                 }
                 var versionCheckTime = sw.ElapsedMilliseconds;
-                sw.Restart();
-                var storedDataJson = await keyValueStore.GetItemAsync(StorageKey);
-                var getStoredTime = sw.ElapsedMilliseconds;
                 sw.Restart();
 
                 SessionHistoryDaoContainer? storedData = version switch
@@ -92,8 +90,14 @@ namespace LiftLog.Ui.Services
                     "1"
                         => JsonSerializer
                             .Deserialize<SessionHistoryDaoV1>(
-                                storedDataJson ?? "null",
+                                await keyValueStore.GetItemAsync(StorageKey) ?? "null",
                                 StorageJsonContext.Context.SessionHistoryDaoV1
+                            )
+                            ?.ToModel(),
+                    "2"
+                        => SessionHistoryDaoV2
+                            .Parser.ParseFrom(
+                                await keyValueStore.GetItemBytesAsync(StorageKey) ?? []
                             )
                             ?.ToModel(),
                     _ => throw new Exception($"Unknown version {version} of {StorageKey}"),
@@ -107,7 +111,7 @@ namespace LiftLog.Ui.Services
                 var convertTime = sw.ElapsedMilliseconds;
                 sw.Stop();
                 logger.LogInformation(
-                    $"Initialised progress repository in ({versionCheckTime}ms, {getStoredTime}ms, {deserialiseTime}ms, {convertTime}ms))"
+                    $"Initialised progress repository in ({versionCheckTime}ms, {deserialiseTime}ms, {convertTime}ms))"
                 );
                 _initialised = true;
             }
@@ -116,14 +120,13 @@ namespace LiftLog.Ui.Services
         private async ValueTask PersistAsync()
         {
             await Task.WhenAll(
-                keyValueStore.SetItemAsync($"{StorageKey}-Version", "1").AsTask(),
+                keyValueStore.SetItemAsync($"{StorageKey}-Version", "2").AsTask(),
                 keyValueStore
                     .SetItemAsync(
                         StorageKey,
-                        JsonSerializer.Serialize(
-                            SessionHistoryDaoV1.FromModel(new(_storedSessions)),
-                            StorageJsonContext.Context.SessionHistoryDaoV1
-                        )
+                        SessionHistoryDaoV2
+                            .FromModel(new SessionHistoryDaoContainer(_storedSessions))
+                            .ToByteArray()
                     )
                     .AsTask()
             );

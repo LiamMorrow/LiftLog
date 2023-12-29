@@ -1,7 +1,7 @@
 namespace LiftLog.Ui.Services;
 
-public interface ITextExporter
+public interface IExporter
 {
-    Task ExportTextAsync(string text);
-    Task<string> ImportTextAsync();
+    Task ExportBytesAsync(byte[] bytes);
+    Task<byte[]> ImportBytesAsync();
 }

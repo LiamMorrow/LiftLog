@@ -12,7 +12,7 @@ internal partial class SessionHistoryDaoV2
     }
 
     public static SessionHistoryDaoV2 FromModel(SessionHistoryDaoContainer model) =>
-        new(model.CompletedSessions.Values.Select(SessionDaoV2.FromModel).Cast<SessionDaoV2>());
+        new(model.CompletedSessions.Values.Select(SessionDaoV2.FromModel));
 
     public SessionHistoryDaoContainer ToModel() =>
         new(CompletedSessions.Select(x => x.ToModel()).ToImmutableDictionary(x => x.Id, x => x));
@@ -35,17 +35,14 @@ internal partial class SessionDaoV2
         Bodyweight = bodyweight;
     }
 
-    [return: NotNullIfNotNull(nameof(model))]
-    public static SessionDaoV2? FromModel(Lib.Models.Session? model) =>
-        model is null
-            ? null
-            : new(
-                model.Id,
-                SessionBlueprintDaoV2.FromModel(model.Blueprint),
-                model.RecordedExercises.Select(RecordedExerciseDaoV2.FromModel).ToImmutableList(),
-                model.Date,
-                model.Bodyweight
-            );
+    public static SessionDaoV2 FromModel(Lib.Models.Session model) =>
+        new(
+            model.Id,
+            SessionBlueprintDaoV2.FromModel(model.Blueprint),
+            model.RecordedExercises.Select(RecordedExerciseDaoV2.FromModel).ToImmutableList(),
+            model.Date,
+            model.Bodyweight
+        );
 
     public Lib.Models.Session ToModel() =>
         new(
@@ -104,7 +101,7 @@ internal partial class PotentialSetDaoV2
     public static PotentialSetDaoV2 FromModel(Lib.Models.PotentialSet model) =>
         new(RecordedSetDaoV2.FromModel(model.Set), model.Weight);
 
-    public Lib.Models.PotentialSet ToModel() => new(RecordedSet.ToModel(), Weight);
+    public Lib.Models.PotentialSet ToModel() => new(RecordedSet?.ToModel(), Weight);
 }
 
 internal partial class RecordedSetDaoV2

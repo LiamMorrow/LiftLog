@@ -1,7 +1,23 @@
 using System.Collections.Immutable;
 using Google.Protobuf.WellKnownTypes;
+using LiftLog.Lib;
 
 namespace LiftLog.Ui.Models.SessionBlueprintDao;
+
+internal partial class SessionBlueprintContainerDaoV2
+{
+    public SessionBlueprintContainerDaoV2(IEnumerable<SessionBlueprintDaoV2> sessions)
+    {
+        SessionBlueprints.AddRange(sessions);
+    }
+
+    public static SessionBlueprintContainerDaoV2 FromModel(
+        ImmutableList<Lib.Models.SessionBlueprint> model
+    ) => new(model.Select(SessionBlueprintDaoV2.FromModel));
+
+    public ImmutableListValue<Lib.Models.SessionBlueprint> ToModel() =>
+        SessionBlueprints.Select(x => x.ToModel()).ToImmutableList();
+}
 
 internal partial class SessionBlueprintDaoV2
 {

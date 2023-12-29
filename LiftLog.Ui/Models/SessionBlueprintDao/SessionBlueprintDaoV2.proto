@@ -4,6 +4,10 @@ package LiftLog.Ui.Models.SessionBlueprintDao;
 import "Models/Utils.proto";
 import "google/protobuf/duration.proto";
 
+message SessionBlueprintContainerDaoV2 {
+    repeated SessionBlueprintDaoV2 session_blueprints = 1;
+}
+
 message SessionBlueprintDaoV2 {
     string name = 1;
     repeated ExerciseBlueprintDaoV2 exercise_blueprints = 2;

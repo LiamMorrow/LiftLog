@@ -55,7 +55,7 @@ builder.Services.AddScoped<IThemeProvider, WebThemeProvider>();
 builder.Services.AddNotifications();
 
 builder.Services.AddBlazorDownloadFile();
-builder.Services.AddScoped<ITextExporter, WebTextExporter>();
+builder.Services.AddScoped<IExporter, WebExporter>();
 builder.Services.AddScoped<INotificationService, WebNotificationService>();
 builder.Services.AddScoped<
     BlazorTransitionableRoute.IRouteTransitionInvoker,

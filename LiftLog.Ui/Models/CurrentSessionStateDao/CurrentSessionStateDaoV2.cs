@@ -18,8 +18,8 @@ internal partial class CurrentSessionStateDaoV2
 
     public static CurrentSessionStateDaoV2 FromModel(CurrentSessionState model) =>
         new(
-            SessionDaoV2.FromModel(model.WorkoutSession),
-            SessionDaoV2.FromModel(model.HistorySession),
+            model.WorkoutSession is null ? null : SessionDaoV2.FromModel(model.WorkoutSession),
+            model.HistorySession is null ? null : SessionDaoV2.FromModel(model.HistorySession),
             model.LatestSetTimerNotificationId
         );
 

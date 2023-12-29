@@ -2,6 +2,7 @@ syntax = "proto3";
 package LiftLog.Ui.Models.SessionHistoryDao;
 
 import "Models/Utils.proto";
+import "google/protobuf/wrappers.proto";
 import "Models/SessionBlueprintDao/SessionBlueprintDaoV2.proto";
 
 message SessionHistoryDaoV2 {
@@ -21,7 +22,7 @@ message RecordedExerciseDaoV2 {
     LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2 exercise_blueprint = 1;
     LiftLog.Ui.Models.DecimalValue weight = 2;
     repeated PotentialSetDaoV2 potential_sets = 3;
-    optional string notes = 4;
+    optional google.protobuf.StringValue notes = 4;
     bool per_set_weight = 5;
 }
 
