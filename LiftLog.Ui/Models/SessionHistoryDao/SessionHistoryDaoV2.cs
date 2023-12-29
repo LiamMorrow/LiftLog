@@ -29,10 +29,10 @@ internal partial class SessionDaoV2
     )
     {
         Id = id;
-        SessionBlueprint = sessionBlueprint;
         RecordedExercises.AddRange(recordedExercises);
         Date = date;
         Bodyweight = bodyweight;
+        SessionName = sessionBlueprint.Name;
     }
 
     public static SessionDaoV2 FromModel(Lib.Models.Session model) =>
@@ -47,7 +47,10 @@ internal partial class SessionDaoV2
     public Lib.Models.Session ToModel() =>
         new(
             Id,
-            SessionBlueprint.ToModel(),
+            new Lib.Models.SessionBlueprint(
+                SessionName,
+                RecordedExercises.Select(x => x.ToModel().Blueprint).ToImmutableList()
+            ),
             RecordedExercises.Select(x => x.ToModel()).ToImmutableList(),
             Date,
             Bodyweight

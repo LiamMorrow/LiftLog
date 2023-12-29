@@ -2,9 +2,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using Fluxor;
 using Google.Protobuf;
-using LiftLog.Lib.Serialization;
 using LiftLog.Ui.Models.CurrentSessionStateDao;
-using LiftLog.Ui.Models.SessionHistoryDao;
 using LiftLog.Ui.Services;
 using Microsoft.Extensions.Logging;
 

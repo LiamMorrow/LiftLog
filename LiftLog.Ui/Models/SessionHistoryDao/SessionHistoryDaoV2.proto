@@ -11,7 +11,7 @@ message SessionHistoryDaoV2 {
 
 message SessionDaoV2 {
     LiftLog.Ui.Models.UUIDDao id = 1;
-    LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2 session_blueprint = 2;
+    string session_name = 2;
     repeated RecordedExerciseDaoV2 recorded_exercises = 3;
     LiftLog.Ui.Models.DateOnlyDao date = 4;
     optional LiftLog.Ui.Models.DecimalValue bodyweight = 5;
