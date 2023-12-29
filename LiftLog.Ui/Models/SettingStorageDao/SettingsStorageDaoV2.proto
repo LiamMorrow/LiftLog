@@ -1,0 +1,10 @@
+syntax = "proto3";
+package LiftLog.Ui.Models.SettingsStorageDao;
+
+import "Models/SessionHistoryDao/SessionHistoryDaoV2.proto";
+import "Models/SessionBlueprintDao/SessionBlueprintDaoV2.proto";
+
+message SettingsStorageDaoV2 {
+    repeated LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2 sessions = 1;
+    repeated LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2 program = 2;
+}

@@ -12,8 +12,18 @@ public class LocalStorageKeyValueStore(ILocalStorageService localStorageService)
         return localStorageService.GetItemAsStringAsync(key);
     }
 
+    public ValueTask<byte[]?> GetItemBytesAsync(string key)
+    {
+        return localStorageService.GetItemAsync<byte[]?>(key);
+    }
+
     public ValueTask SetItemAsync(string key, string value)
     {
         return localStorageService.SetItemAsStringAsync(key, value);
+    }
+
+    public ValueTask SetItemAsync(string key, byte[] value)
+    {
+        return localStorageService.SetItemAsync(key, value);
     }
 }

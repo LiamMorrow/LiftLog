@@ -1,5 +1,7 @@
+using System.Buffers.Text;
 using System.Collections.Immutable;
 using System.Text.Json;
+using Google.Protobuf;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
@@ -27,13 +29,10 @@ public class KeyValueCurrentProgramRepository(IKeyValueStore keyValueStore)
     {
         await InitialiseAsync();
         _sessions = sessions.ToImmutableList();
-        await keyValueStore.SetItemAsync($"{StorageKey}-Version", "1");
+        await keyValueStore.SetItemAsync($"{StorageKey}-Version", "2");
         await keyValueStore.SetItemAsync(
             StorageKey,
-            JsonSerializer.Serialize(
-                SessionBlueprintContainerDaoV1.FromModel(_sessions),
-                StorageJsonContext.Context.SessionBlueprintContainerDaoV1
-            )
+            SessionBlueprintContainerDaoV2.FromModel(_sessions).ToByteArray()
         );
     }
 
@@ -44,19 +43,22 @@ public class KeyValueCurrentProgramRepository(IKeyValueStore keyValueStore)
             var version = await keyValueStore.GetItemAsync($"{StorageKey}-Version");
             if (version is null)
             {
-                version = "1";
-                await keyValueStore.SetItemAsync($"{StorageKey}-Version", "1");
+                version = "2";
+                await keyValueStore.SetItemAsync($"{StorageKey}-Version", "2");
             }
-            var storedDataJson = await keyValueStore.GetItemAsync(StorageKey);
             var storedData = version switch
             {
                 "1"
                     => JsonSerializer
                         .Deserialize<SessionBlueprintContainerDaoV1>(
-                            storedDataJson ?? "null",
+                            await keyValueStore.GetItemAsync(StorageKey) ?? "null",
                             StorageJsonContext.Context.SessionBlueprintContainerDaoV1
                         )
                         ?.ToModel(),
+                "2"
+                    => SessionBlueprintContainerDaoV2
+                        .Parser.ParseFrom(await keyValueStore.GetItemBytesAsync(StorageKey) ?? [])
+                        .ToModel(),
                 _ => throw new Exception($"Unknown version {version} of {StorageKey}"),
             };
             _sessions = storedData ?? ImmutableList.Create<SessionBlueprint>();

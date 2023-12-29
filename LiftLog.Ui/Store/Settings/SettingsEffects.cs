@@ -3,6 +3,7 @@
 using System.Collections.Immutable;
 using System.Text.Json;
 using Fluxor;
+using Google.Protobuf;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
@@ -21,7 +22,7 @@ namespace LiftLog.Ui.Store.Settings;
 public class SettingsEffects(
     IProgressRepository ProgressRepository,
     ICurrentProgramRepository ProgramRepository,
-    ITextExporter textExporter,
+    IExporter textExporter,
     IAiWorkoutPlanner aiWorkoutPlanner,
     IThemeProvider themeProvider,
     ILogger<SettingsEffects> logger,
@@ -34,29 +35,58 @@ public class SettingsEffects(
         var sessions = await ProgressRepository.GetOrderedSessions().ToListAsync();
         var program = await ProgramRepository.GetSessionsInProgramAsync();
 
-        await textExporter.ExportTextAsync(
-            JsonSerializer.Serialize(
-                new SettingsStorageDaoV1(
-                    sessions.Select(SessionDaoV1.FromModel).ToList(),
-                    program.Select(SessionBlueprintDaoV1.FromModel).ToImmutableList()
-                ),
-                StorageJsonContext.Context.SettingsStorageDaoV1
-            )
+        await textExporter.ExportBytesAsync(
+            new SettingsStorageDaoV2(
+                sessions.Select(SessionDaoV2.FromModel),
+                program.Select(SessionBlueprintDaoV2.FromModel)
+            ).ToByteArray()
         );
     }
 
     [EffectMethod]
     public async Task ImportData(ImportDataAction action, IDispatcher dispatcher)
     {
+        SettingsStorageDaoV2? Deserialize(byte[] bytes)
+        {
+            try
+            {
+                return SettingsStorageDaoV2.Parser.ParseFrom(bytes);
+            }
+            catch (InvalidProtocolBufferException v2Ex)
+            {
+                // Try to deserialize as v1
+                try
+                {
+                    var v1 = JsonSerializer.Deserialize<SettingsStorageDaoV1>(
+                        bytes,
+                        StorageJsonContext.Context.SettingsStorageDaoV1
+                    );
+                    if (v1 is null)
+                    {
+                        return null;
+                    }
+                    return new SettingsStorageDaoV2(
+                        v1.Sessions.Select(x => x.ToModel()).Select(SessionDaoV2.FromModel),
+                        v1.Program.Select(x => x.ToModel()).Select(SessionBlueprintDaoV2.FromModel)
+                    );
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(
+                        "Could not deserialize as v1 or v2: V1 Exception:{ex}, \nV2 Exception {v2Ex}",
+                        ex,
+                        v2Ex
+                    );
+                    return null;
+                }
+            }
+        }
         try
         {
-            var importText = await textExporter.ImportTextAsync();
-            if (string.IsNullOrEmpty(importText))
+            var importBytes = await textExporter.ImportBytesAsync();
+            if (importBytes is null || importBytes.Length == 0)
                 return;
-            var deserialized = JsonSerializer.Deserialize<SettingsStorageDaoV1>(
-                importText,
-                StorageJsonContext.Context.SettingsStorageDaoV1
-            );
+            var deserialized = Deserialize(importBytes);
             if (deserialized != null)
             {
                 await ProgressRepository.SaveCompletedSessionsAsync(
@@ -70,7 +100,7 @@ public class SettingsEffects(
             }
             else
             {
-                logger.LogWarning("Could not deserialize data for import {data}", importText);
+                logger.LogError("Could not deserialize data for import {data}", importBytes);
             }
         }
         catch (JsonException ex)
