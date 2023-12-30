@@ -5,7 +5,7 @@ namespace LiftLog.Lib.Services;
 [System.Runtime.Versioning.UnsupportedOSPlatform("browser")]
 public class AesEncryptionService : IEncryptionService
 {
-    public byte[] Decrypt(byte[] data, byte[] IV, byte[] key)
+    public ValueTask<byte[]> DecryptAsync(byte[] data, byte[] IV, byte[] key)
     {
         var aes = Aes.Create();
 
@@ -14,28 +14,27 @@ public class AesEncryptionService : IEncryptionService
 
         using var decryptor = aes.CreateDecryptor();
 
-        return decryptor.TransformFinalBlock(data, 0, data.Length);
+        return ValueTask.FromResult(decryptor.TransformFinalBlock(data, 0, data.Length));
     }
 
-    public byte[] Encrypt(byte[] data, byte[] IV, byte[] key)
+    public ValueTask<(byte[] EncryptedPayload, byte[] IV)> EncryptAsync(byte[] data, byte[] key)
     {
         var aes = Aes.Create();
 
-        aes.IV = IV;
+        aes.GenerateIV();
         aes.Key = key;
 
         using var encryptor = aes.CreateEncryptor();
 
-        return encryptor.TransformFinalBlock(data, 0, data.Length);
+        return ValueTask.FromResult((encryptor.TransformFinalBlock(data, 0, data.Length), aes.IV));
     }
 
-    public (byte[] IV, byte[] Key) GenerateKey()
+    public ValueTask<byte[]> GenerateKeyAsync()
     {
         //Generate a public/private key pair.
         var aes = Aes.Create();
-        aes.GenerateIV();
         aes.GenerateKey();
 
-        return (aes.IV, aes.Key);
+        return ValueTask.FromResult(aes.Key);
     }
 }

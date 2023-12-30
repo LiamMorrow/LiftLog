@@ -31,7 +31,9 @@ public class FeedEffects(
         );
         if (response.Events.Any())
         {
-            var feedItems = response.Events.Select(ToFeedItem).WhereNotNull();
+            var feedItems = (
+                await Task.WhenAll(response.Events.Select(x => ToFeedItemAsync(x).AsTask()))
+            ).WhereNotNull();
             var now = DateTimeOffset.UtcNow;
             dispatcher.Dispatch(
                 new ReplaceFeedItemsAction(
@@ -51,7 +53,7 @@ public class FeedEffects(
             Name: response.EncryptedName is null or { Length: 0 }
                 ? action.Name
                 : Encoding.UTF8.GetString(
-                    encryptionService.Decrypt(
+                    await encryptionService.DecryptAsync(
                         response.EncryptedName,
                         response.EncryptionIV,
                         action.EncryptionKey
@@ -61,7 +63,7 @@ public class FeedEffects(
                 ? []
                 : CurrentPlanDaoV1
                     .Parser.ParseFrom(
-                        encryptionService.Decrypt(
+                        await encryptionService.DecryptAsync(
                             response.EncryptedCurrentPlan,
                             response.EncryptionIV,
                             action.EncryptionKey
@@ -71,7 +73,7 @@ public class FeedEffects(
                     .ToImmutableList(),
             ProfilePicture: response.EncryptedProfilePicture is null or { Length: 0 }
                 ? null
-                : encryptionService.Decrypt(
+                : await encryptionService.DecryptAsync(
                     response.EncryptedProfilePicture,
                     response.EncryptionIV,
                     action.EncryptionKey
@@ -81,11 +83,15 @@ public class FeedEffects(
         dispatcher.Dispatch(new PutFeedUserAction(user));
     }
 
-    private FeedItem? ToFeedItem(UserEventResponse userEvent)
+    private async ValueTask<FeedItem?> ToFeedItemAsync(UserEventResponse userEvent)
     {
         var userId = userEvent.UserId;
         var encryptedPayload = userEvent.EncryptedEventPayload;
-        var payload = DecryptPayload(userId, userEvent.EncryptedEventIV, encryptedPayload);
+        var payload = await DecryptPayloadAsync(
+            userId,
+            userEvent.EncryptedEventIV,
+            encryptedPayload
+        );
         // We only support session events rn
         if (payload is not { EventPayloadCase: EventPayloadOneofCase.Session })
         {
@@ -100,11 +106,15 @@ public class FeedEffects(
         );
     }
 
-    private UserEventPayload? DecryptPayload(Guid userId, byte[] iv, byte[] encryptedPayload)
+    private async ValueTask<UserEventPayload?> DecryptPayloadAsync(
+        Guid userId,
+        byte[] iv,
+        byte[] encryptedPayload
+    )
     {
         var user = state.Value.Users[userId];
         var key = user.EncryptionKey;
-        var decrypted = encryptionService.Decrypt(encryptedPayload, iv, key);
+        var decrypted = await encryptionService.DecryptAsync(encryptedPayload, iv, key);
         return UserEventPayload.Parser.ParseFrom(decrypted);
     }
 }

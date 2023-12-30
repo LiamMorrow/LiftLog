@@ -13,27 +13,26 @@ public class AesEncryptionServiceTests
     }
 
     [Fact]
-    public void GenerateKeyPair_GeneratesKey()
+    public async Task GenerateKeyPair_GeneratesKey()
     {
         // Arrange
         // Act
-        var (iv, key) = _encryptionService.GenerateKey();
+        var key = await _encryptionService.GenerateKeyAsync();
 
         // Assert
-        Assert.NotNull(iv);
         Assert.NotNull(key);
     }
 
     [Fact]
-    public void EncryptAndDecrypt_EncryptsAndDecryptsData()
+    public async Task EncryptAndDecrypt_EncryptsAndDecryptsData()
     {
         // Arrange
-        var (iv, key) = _encryptionService.GenerateKey();
+        var key = await _encryptionService.GenerateKeyAsync();
         var data = Encoding.UTF8.GetBytes("Hello, world!");
 
         // Act
-        var encryptedData = _encryptionService.Encrypt(data, iv, key);
-        var decryptedData = _encryptionService.Decrypt(encryptedData, iv, key);
+        var (encryptedData, iv) = await _encryptionService.EncryptAsync(data, key);
+        var decryptedData = await _encryptionService.DecryptAsync(encryptedData, iv, key);
 
         // Assert
         Assert.Equal(data, decryptedData);

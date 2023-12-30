@@ -64,6 +64,9 @@ builder.Services.AddScoped<
     BlazorTransitionableRoute.DefaultRouteTransitionInvoker
 >();
 
+builder.Services.AddScoped<FeedApiService>();
+builder.Services.AddScoped<IEncryptionService, JsAesEncryptionService>();
+
 builder.Services.AddScoped<IAppPurchaseService>(
     svc =>
         new WebAppPurchaseService(

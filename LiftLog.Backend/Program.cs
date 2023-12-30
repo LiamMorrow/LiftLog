@@ -1,13 +1,9 @@
-using System.Security.Cryptography;
-using System.Text;
 using FluentValidation;
-using FluentValidation.TestHelper;
 using LiftLog.Backend.Db;
 using LiftLog.Backend.Functions.Validators;
 using LiftLog.Backend.Models;
 using LiftLog.Backend.Service;
 using LiftLog.Lib.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

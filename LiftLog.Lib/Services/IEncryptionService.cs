@@ -2,7 +2,8 @@ namespace LiftLog.Lib.Services;
 
 public interface IEncryptionService
 {
-    byte[] Decrypt(byte[] data, byte[] IV, byte[] key);
-    byte[] Encrypt(byte[] data, byte[] IV, byte[] key);
-    (byte[] IV, byte[] Key) GenerateKey();
+    ValueTask<byte[]> DecryptAsync(byte[] data, byte[] IV, byte[] key);
+
+    public ValueTask<(byte[] EncryptedPayload, byte[] IV)> EncryptAsync(byte[] data, byte[] key);
+    ValueTask<byte[]> GenerateKeyAsync();
 }
