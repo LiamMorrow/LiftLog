@@ -7,9 +7,13 @@ public class User
     // Hashed and salted password used for authentication
     public string HashedPassword { get; set; } = null!;
 
-    public byte[] EncryptedCurrentPlan { get; set; } = null!;
+    public DateTimeOffset LastAccessed { get; set; }
 
-    public byte[] EncryptedProfilePicture { get; set; } = null!;
+    public byte[] Salt { get; set; } = null!;
 
-    public byte[] EncryptedName { get; set; } = null!;
+    public byte[]? EncryptedCurrentPlan { get; set; }
+
+    public byte[]? EncryptedProfilePicture { get; set; }
+
+    public byte[]? EncryptedName { get; set; }
 }

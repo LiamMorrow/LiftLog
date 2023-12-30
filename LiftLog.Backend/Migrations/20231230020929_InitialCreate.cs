@@ -17,9 +17,10 @@ namespace LiftLog.Backend.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     HashedPassword = table.Column<string>(type: "text", nullable: false),
-                    EncryptedCurrentPlan = table.Column<byte[]>(type: "bytea", nullable: false),
-                    EncryptedProfilePicture = table.Column<byte[]>(type: "bytea", nullable: false),
-                    EncryptedName = table.Column<byte[]>(type: "bytea", nullable: false)
+                    Salt = table.Column<byte[]>(type: "bytea", nullable: false),
+                    EncryptedCurrentPlan = table.Column<byte[]>(type: "bytea", nullable: true),
+                    EncryptedProfilePicture = table.Column<byte[]>(type: "bytea", nullable: true),
+                    EncryptedName = table.Column<byte[]>(type: "bytea", nullable: true)
                 },
                 constraints: table =>
                 {

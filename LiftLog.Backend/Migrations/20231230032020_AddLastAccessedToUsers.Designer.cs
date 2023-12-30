@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LiftLog.Backend.Migrations
 {
     [DbContext(typeof(UserDataContext))]
-    [Migration("20231230012421_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20231230032020_AddLastAccessedToUsers")]
+    partial class AddLastAccessedToUsers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,20 +32,24 @@ namespace LiftLog.Backend.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<byte[]>("EncryptedCurrentPlan")
-                        .IsRequired()
                         .HasColumnType("bytea");
 
                     b.Property<byte[]>("EncryptedName")
-                        .IsRequired()
                         .HasColumnType("bytea");
 
                     b.Property<byte[]>("EncryptedProfilePicture")
-                        .IsRequired()
                         .HasColumnType("bytea");
 
                     b.Property<string>("HashedPassword")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastAccessed")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<byte[]>("Salt")
+                        .IsRequired()
+                        .HasColumnType("bytea");
 
                     b.HasKey("Id");
 

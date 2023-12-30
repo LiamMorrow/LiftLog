@@ -3,6 +3,7 @@ using System;
 using LiftLog.Backend.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LiftLog.Backend.Migrations
 {
     [DbContext(typeof(UserDataContext))]
-    partial class UserDataContextModelSnapshot : ModelSnapshot
+    [Migration("20231230020929_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,9 +43,6 @@ namespace LiftLog.Backend.Migrations
                     b.Property<string>("HashedPassword")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("LastAccessed")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<byte[]>("Salt")
                         .IsRequired()
