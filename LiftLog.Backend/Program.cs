@@ -79,7 +79,8 @@ app.MapGet(
             new GetUserResponse(
                 EncryptedCurrentPlan: user.EncryptedCurrentPlan,
                 EncryptedProfilePicture: user.EncryptedProfilePicture,
-                EncryptedName: user.EncryptedName
+                EncryptedName: user.EncryptedName,
+                EncryptionIV: user.EncryptionIV
             )
         );
     }
@@ -110,6 +111,7 @@ app.MapPut(
         user.EncryptedCurrentPlan = request.EncryptedCurrentPlan;
         user.EncryptedProfilePicture = request.EncryptedProfilePicture;
         user.EncryptedName = request.EncryptedName;
+        user.EncryptionIV = request.EncryptionIV;
         await db.SaveChangesAsync();
         return Results.Ok();
     }
@@ -145,6 +147,7 @@ app.MapPut(
             LastAccessed = DateTimeOffset.UtcNow,
             Expiry = request.Expiry,
             EncryptedEvent = request.EncryptedEventPayload,
+            EncryptionIV = request.EncryptedEventIV,
         };
         user.LastAccessed = DateTimeOffset.UtcNow;
         await db.UserEvents.AddAsync(userEvent);
@@ -175,6 +178,7 @@ app.MapPost(
                         EventId: x.Id,
                         Timestamp: x.Timestamp,
                         EncryptedEventPayload: x.EncryptedEvent,
+                        EncryptedEventIV: x.EncryptionIV,
                         Expiry: x.Expiry
                     )
             )

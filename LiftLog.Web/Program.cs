@@ -10,6 +10,7 @@ using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.CurrentSession;
+using LiftLog.Ui.Store.Feed;
 using LiftLog.Ui.Store.Program;
 using LiftLog.Ui.Store.Settings;
 using LiftLog.Web.Services;
@@ -31,6 +32,7 @@ builder.Services.AddFluxor(
             .AddMiddleware<PersistProgramMiddleware>()
             .AddMiddleware<AppStateInitMiddleware>()
             .AddMiddleware<SettingsStateInitMiddleware>()
+            .AddMiddleware<FeedStateInitMiddleware>()
 #if DEBUG
             .UseReduxDevTools(options =>
             {

@@ -9,13 +9,17 @@ public record PutUserDataRequest(
     string Password,
     byte[] EncryptedCurrentPlan,
     byte[] EncryptedProfilePicture,
-    byte[] EncryptedName
+    byte[] EncryptedName,
+    // The IV can be considered public, as long as the encryption key is kept secret
+    byte[] EncryptionIV
 );
 
 public record GetUserResponse(
     byte[]? EncryptedCurrentPlan,
     byte[]? EncryptedProfilePicture,
-    byte[]? EncryptedName
+    byte[]? EncryptedName,
+    // The IV can be considered public, as long as the encryption key is kept secret
+    byte[] EncryptionIV
 );
 
 public record PutUserEventRequest(
@@ -24,6 +28,8 @@ public record PutUserEventRequest(
     // This payload is encrypted with the user's private key, which we do not store
     // Its schema is defined in LiftLog.Ui/Models/UserEvent.proto - we don't reference this proto since the server doesn't need to deserialize it
     byte[] EncryptedEventPayload,
+    // The IV can be considered public, as long as the encryption key is kept secret
+    byte[] EncryptedEventIV,
     // A user supplied expiry time for this event, this does not ensure that the event will last this long, just that it will definitely be deleted after this time
     // We may delete the event before this time if it is not accessed for a long time
     DateTimeOffset Expiry
@@ -38,6 +44,8 @@ public record UserEventResponse(
     // This payload is encrypted with the user's private key, which should be stored on the client which is requesting the event
     // Its schema is defined in LiftLog.Ui/Models/UserEvent.proto
     byte[] EncryptedEventPayload,
+    // The IV can be considered public, as long as the encryption key is kept secret
+    byte[] EncryptedEventIV,
     DateTimeOffset Expiry
 );
 

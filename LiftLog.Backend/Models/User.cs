@@ -16,4 +16,7 @@ public class User
     public byte[]? EncryptedProfilePicture { get; set; }
 
     public byte[]? EncryptedName { get; set; }
+
+    // The IV can be considered public, as long as the encryption key is kept secret
+    public byte[] EncryptionIV { get; set; } = null!;
 }

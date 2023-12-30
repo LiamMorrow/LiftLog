@@ -76,6 +76,7 @@ public static class MauiProgram
                     .AddMiddleware<PersistProgramMiddleware>()
                     .AddMiddleware<AppStateInitMiddleware>()
                     .AddMiddleware<SettingsStateInitMiddleware>()
+                    .AddMiddleware<FeedStateInitMiddleware>()
         );
 
         // Add this section anywhere on the builder:

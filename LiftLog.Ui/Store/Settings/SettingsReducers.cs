@@ -2,7 +2,7 @@ using Fluxor;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Store.Settings;
 
-namespace LiftLog.Ui.Store.SessionEditor;
+namespace LiftLog.Ui.Store.Settings;
 
 public static class SettingsReducers
 {

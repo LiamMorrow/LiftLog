@@ -218,5 +218,10 @@ namespace LiftLog.Lib
         {
             return ((IEnumerable)Items).GetEnumerator();
         }
+
+        public ImmutableListValue<T> AddRange(IEnumerable<T> feedItems)
+        {
+            return new ImmutableListValue<T>(Items.AddRange(feedItems));
+        }
     }
 }

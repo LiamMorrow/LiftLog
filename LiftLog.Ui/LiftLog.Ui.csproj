@@ -5,8 +5,6 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <!-- Protobuf generates code with lower case types -->
-    <NoWarn>CS8981;</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -27,8 +25,8 @@
     <PackageReference Include="Fluxor.Blazor.Web" Version="5.9.1" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
 
-    <PackageReference Include="Google.Protobuf" Version="3.18.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.40.0">
+    <PackageReference Include="Google.Protobuf" Version="3.25.1" />
+    <PackageReference Include="Grpc.Tools" Version="2.60.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -56,11 +54,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Models\Utils.proto" GrpcServices="None"  AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
-    <Protobuf Include="Models\UserEvent.proto" GrpcServices="None"  AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
-    <Protobuf Include="Models\SessionHistoryDao\SessionHistoryDaoV2.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
-    <Protobuf Include="Models\SessionBlueprintDao\SessionBlueprintDaoV2.proto" GrpcServices="None"  AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
-    <Protobuf Include="Models\SettingStorageDao\SettingsStorageDaoV2.proto" GrpcServices="None"  AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
-    <Protobuf Include="Models\CurrentSessionStateDao\CurrentSessionStateDaoV2.proto" GrpcServices="None"  AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
+    <Protobuf Include="Models\Utils.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true" />
+    <Protobuf Include="Models\UserEvent.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true" />
+    <Protobuf Include="Models\SessionHistoryDao\SessionHistoryDaoV2.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true" />
+    <Protobuf Include="Models\SessionBlueprintDao\SessionBlueprintDaoV2.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true" />
+    <Protobuf Include="Models\SettingStorageDao\SettingsStorageDaoV2.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true" />
+    <Protobuf Include="Models\CurrentSessionStateDao\CurrentSessionStateDaoV2.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true" />
+    <Protobuf Include="Models\FeedStateDao.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true" />
   </ItemGroup>
 </Project>
