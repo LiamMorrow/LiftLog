@@ -46,7 +46,7 @@ else
         if(FeedState.Value.Identity == null)
             return null;
         var encryptionKey = FeedState.Value.Identity.EncryptionKey;
-        return $"https://app.liftlog.online/feed/shared?secret={encryptionKey.ToUrlSafeHexString()}";
+        return FeedPageUtils.GetShareUrl(FeedState.Value.Identity.Id, encryptionKey);
     }
 
     private void StartPublishing()

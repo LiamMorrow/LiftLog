@@ -1,0 +1,31 @@
+@using Fluxor;
+
+@page "/feed/share"
+
+@inject IState<FeedState> FeedState
+@inject IStringSharer StringSharer
+@inject IDispatcher Dispatcher
+@inject NavigationManager NavigationManager
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+
+@code
+{
+    [SupplyParameterFromQuery(Name="secret")]
+    public string Secret { get; set; } = "";
+
+    [SupplyParameterFromQuery(Name="id")]
+    private Guid id { get; set; }
+    protected override void OnInitialized()
+    {
+        Dispatcher.Dispatch(new SetPageTitleAction("Subscribe to a feed"));
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/feed"));
+        if(String.IsNullOrEmpty(Secret) || id == Guid.Empty)
+        {
+            NavigationManager.NavigateTo("/feed");
+        }
+        base.OnInitialized();
+    }
+
+}
