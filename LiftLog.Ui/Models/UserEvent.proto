@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package LiftLog.Lib.Models;
+
+import "Models/SessionHistoryDao/SessionHistoryDaoV2.proto";
+
+message UserEventPayload {
+    oneof event_payload {
+        LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2 session = 1;
+    }
+}
