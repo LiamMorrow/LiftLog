@@ -17,11 +17,22 @@ public class AesEncryptionService : IEncryptionService
         return ValueTask.FromResult(decryptor.TransformFinalBlock(data, 0, data.Length));
     }
 
-    public ValueTask<(byte[] EncryptedPayload, byte[] IV)> EncryptAsync(byte[] data, byte[] key)
+    public ValueTask<(byte[] EncryptedPayload, byte[] IV)> EncryptAsync(
+        byte[] data,
+        byte[] key,
+        byte[]? iv = null
+    )
     {
         var aes = Aes.Create();
 
-        aes.GenerateIV();
+        if (iv is not null)
+        {
+            aes.IV = iv;
+        }
+        else
+        {
+            aes.GenerateIV();
+        }
         aes.Key = key;
 
         using var encryptor = aes.CreateEncryptor();

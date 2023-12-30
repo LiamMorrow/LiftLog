@@ -10,7 +10,11 @@ public class JsAesEncryptionService : IEncryptionService
         throw new NotImplementedException();
     }
 
-    public ValueTask<(byte[] EncryptedPayload, byte[] IV)> EncryptAsync(byte[] data, byte[] key)
+    public ValueTask<(byte[] EncryptedPayload, byte[] IV)> EncryptAsync(
+        byte[] data,
+        byte[] key,
+        byte[]? iv = null
+    )
     {
         throw new NotImplementedException();
     }

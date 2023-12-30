@@ -37,4 +37,24 @@ public class AesEncryptionServiceTests
         // Assert
         Assert.Equal(data, decryptedData);
     }
+
+    [Fact]
+    public async Task EncryptAndDecrypt_EncryptsAndDecryptsDataGivenSameIV()
+    {
+        // Arrange
+        var key = await _encryptionService.GenerateKeyAsync();
+        var data1 = Encoding.UTF8.GetBytes("Hello, world!");
+        var data2 = Encoding.UTF8.GetBytes("Goodbye, world!");
+
+        // Act
+        var (encryptedData1, iv) = await _encryptionService.EncryptAsync(data1, key);
+        var decryptedData1 = await _encryptionService.DecryptAsync(encryptedData1, iv, key);
+
+        var (encryptedData2, _) = await _encryptionService.EncryptAsync(data2, key, iv);
+        var decryptedData2 = await _encryptionService.DecryptAsync(encryptedData2, iv, key);
+
+        // Assert
+        Assert.Equal(data1, decryptedData1);
+        Assert.Equal(data2, decryptedData2);
+    }
 }

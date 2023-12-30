@@ -4,6 +4,10 @@ public interface IEncryptionService
 {
     ValueTask<byte[]> DecryptAsync(byte[] data, byte[] IV, byte[] key);
 
-    public ValueTask<(byte[] EncryptedPayload, byte[] IV)> EncryptAsync(byte[] data, byte[] key);
+    public ValueTask<(byte[] EncryptedPayload, byte[] IV)> EncryptAsync(
+        byte[] data,
+        byte[] key,
+        byte[]? iv = null
+    );
     ValueTask<byte[]> GenerateKeyAsync();
 }
