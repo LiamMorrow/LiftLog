@@ -20,6 +20,13 @@ public class FeedApiService(HttpClient httpClient)
         return (await result.Content.ReadFromJsonAsync<GetEventsResponse>())!;
     }
 
+    public async Task<CreateUserResponse> CreateUserAsync(CreateUserRequest request)
+    {
+        // TODO handle 404 etc
+        var result = await httpClient.PostAsJsonAsync($"{baseUrl}user/create", request);
+        return (await result.Content.ReadFromJsonAsync<CreateUserResponse>())!;
+    }
+
     public Task<GetUserResponse> GetUserAsync(Guid id)
     {
         // TODO handle 404 etc

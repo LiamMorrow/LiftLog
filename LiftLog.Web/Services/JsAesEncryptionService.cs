@@ -1,13 +1,14 @@
 using LiftLog.Lib.Services;
+using Microsoft.JSInterop;
 
 namespace LiftLog.Web.Services;
 
 // Dotnet AES-GCM implementation is not compatible with the JS implementation
-public class JsAesEncryptionService : IEncryptionService
+public class JsAesEncryptionService(IJSRuntime jSRuntime) : IEncryptionService
 {
-    public ValueTask<byte[]> DecryptAsync(byte[] data, byte[] IV, byte[] key)
+    public ValueTask<byte[]> DecryptAsync(byte[] data, byte[] key, byte[] IV)
     {
-        throw new NotImplementedException();
+        return jSRuntime.InvokeAsync<byte[]>("CryptoUtils.decrypt", data, key, IV);
     }
 
     public ValueTask<(byte[] EncryptedPayload, byte[] IV)> EncryptAsync(
@@ -16,11 +17,11 @@ public class JsAesEncryptionService : IEncryptionService
         byte[]? iv = null
     )
     {
-        throw new NotImplementedException();
+        return jSRuntime.InvokeAsync<(byte[], byte[])>("CryptoUtils.encrypt", data, key, iv);
     }
 
     public ValueTask<byte[]> GenerateKeyAsync()
     {
-        throw new NotImplementedException();
+        return jSRuntime.InvokeAsync<byte[]>("CryptoUtils.generateKey");
     }
 }

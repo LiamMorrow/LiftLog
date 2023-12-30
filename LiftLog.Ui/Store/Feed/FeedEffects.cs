@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Text;
 using Fluxor;
+using Google.Protobuf;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Services;
 using LiftLog.Ui.Models;
@@ -13,7 +14,8 @@ namespace LiftLog.Ui.Store.Feed;
 public class FeedEffects(
     IState<FeedState> state,
     FeedApiService feedApiService,
-    IEncryptionService encryptionService
+    IEncryptionService encryptionService,
+    IKeyValueStore keyValueStore
 )
 {
     [EffectMethod]
@@ -22,6 +24,10 @@ public class FeedEffects(
         IDispatcher dispatcher
     )
     {
+        if (state.Value.Identity is null || state.Value.Users.IsEmpty)
+        {
+            return;
+        }
         var response = await feedApiService.GetUserEventsAsync(
             new GetEventsRequest(
                 UserIds: state.Value.Users.Keys.ToArray(),
@@ -55,8 +61,8 @@ public class FeedEffects(
                 : Encoding.UTF8.GetString(
                     await encryptionService.DecryptAsync(
                         response.EncryptedName,
-                        response.EncryptionIV,
-                        action.EncryptionKey
+                        action.EncryptionKey,
+                        response.EncryptionIV
                     )
                 ),
             CurrentPlan: response.EncryptedCurrentPlan is null or { Length: 0 }
@@ -65,8 +71,8 @@ public class FeedEffects(
                     .Parser.ParseFrom(
                         await encryptionService.DecryptAsync(
                             response.EncryptedCurrentPlan,
-                            response.EncryptionIV,
-                            action.EncryptionKey
+                            action.EncryptionKey,
+                            response.EncryptionIV
                         )
                     )
                     .Sessions.Select(sessionBlueprintDao => sessionBlueprintDao.ToModel())
@@ -75,12 +81,115 @@ public class FeedEffects(
                 ? null
                 : await encryptionService.DecryptAsync(
                     response.EncryptedProfilePicture,
-                    response.EncryptionIV,
-                    action.EncryptionKey
+                    action.EncryptionKey,
+                    response.EncryptionIV
                 )
         );
 
         dispatcher.Dispatch(new PutFeedUserAction(user));
+    }
+
+    [EffectMethod]
+    public async Task HandleCreateFeedIdentityAction(
+        CreateFeedIdentityAction action,
+        IDispatcher dispatcher
+    )
+    {
+        var response = await feedApiService.CreateUserAsync(new CreateUserRequest(Id: action.Id));
+        var encryptionKey = await encryptionService.GenerateKeyAsync();
+        await GenerateAndPutFeedIdentityAsync(
+            dispatcher,
+            action.Id,
+            response.Password,
+            encryptionKey,
+            action.Name,
+            action.ProfilePicture
+        );
+    }
+
+    [EffectMethod]
+    public async Task HandleUpdateFeedIdentityAction(
+        UpdateFeedIdentityAction action,
+        IDispatcher dispatcher
+    )
+    {
+        if (state.Value.Identity is null)
+        {
+            return;
+        }
+        await GenerateAndPutFeedIdentityAsync(
+            dispatcher,
+            state.Value.Identity.Id,
+            state.Value.Identity.Password,
+            state.Value.Identity.EncryptionKey,
+            action.Name,
+            action.ProfilePicture
+        );
+    }
+
+    private async Task GenerateAndPutFeedIdentityAsync(
+        IDispatcher dispatcher,
+        Guid id,
+        string password,
+        byte[] encryptionKey,
+        string? name,
+        byte[]? profilePicture
+    )
+    {
+        var (_, iv) = await encryptionService.EncryptAsync([1], encryptionKey);
+        byte[]? encryptedName = name is null
+            ? null
+            : (
+                await encryptionService.EncryptAsync(
+                    Encoding.UTF8.GetBytes(name),
+                    encryptionKey,
+                    iv
+                )
+            ).EncryptedPayload;
+        var encryptedProfilePicture = profilePicture is null
+            ? null
+            : (
+                await encryptionService.EncryptAsync(profilePicture, encryptionKey, iv)
+            ).EncryptedPayload;
+
+        await feedApiService.PutUserDataAsync(
+            new PutUserDataRequest(
+                Id: id,
+                Password: password,
+                EncryptedCurrentPlan: null,
+                EncryptedName: encryptedName,
+                EncryptedProfilePicture: encryptedProfilePicture,
+                EncryptionIV: iv
+            )
+        );
+
+        var identity = new FeedIdentity(
+            Id: id,
+            EncryptionKey: encryptionKey,
+            Password: password,
+            Name: name,
+            ProfilePicture: profilePicture
+        );
+
+        dispatcher.Dispatch(new PutFeedIdentityAction(identity));
+    }
+
+    [EffectMethod]
+    public Task PutFeedIdentity(PutFeedIdentityAction action, IDispatcher dispatcher)
+    {
+        return PersistFeedState();
+    }
+
+    [EffectMethod]
+    public Task ReplaceFeedItems(ReplaceFeedItemsAction action, IDispatcher dispatcher)
+    {
+        return PersistFeedState();
+    }
+
+    [EffectMethod]
+    public Task PutFeedUser(PutFeedUserAction action, IDispatcher dispatcher)
+    {
+        return PersistFeedState();
     }
 
     private async ValueTask<FeedItem?> ToFeedItemAsync(UserEventResponse userEvent)
@@ -114,7 +223,16 @@ public class FeedEffects(
     {
         var user = state.Value.Users[userId];
         var key = user.EncryptionKey;
-        var decrypted = await encryptionService.DecryptAsync(encryptedPayload, iv, key);
+        var decrypted = await encryptionService.DecryptAsync(encryptedPayload, key, iv);
         return UserEventPayload.Parser.ParseFrom(decrypted);
+    }
+
+    private async Task PersistFeedState()
+    {
+        await keyValueStore.SetItemAsync($"{FeedStateInitMiddleware.StorageKey}Version", "1");
+        await keyValueStore.SetItemAsync(
+            FeedStateInitMiddleware.StorageKey,
+            ((FeedStateDaoV1)state.Value).ToByteArray()
+        );
     }
 }

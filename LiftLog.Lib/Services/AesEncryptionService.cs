@@ -5,7 +5,7 @@ namespace LiftLog.Lib.Services;
 [System.Runtime.Versioning.UnsupportedOSPlatform("browser")]
 public class AesEncryptionService : IEncryptionService
 {
-    public ValueTask<byte[]> DecryptAsync(byte[] data, byte[] IV, byte[] key)
+    public ValueTask<byte[]> DecryptAsync(byte[] data, byte[] key, byte[] IV)
     {
         var aes = Aes.Create();
 

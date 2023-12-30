@@ -75,4 +75,6 @@ builder.Services.AddScoped<IAppPurchaseService>(
         )
 );
 
+builder.Services.AddScoped<IStringSharer, ClipboardStringSharer>();
+
 await builder.Build().RunAsync();

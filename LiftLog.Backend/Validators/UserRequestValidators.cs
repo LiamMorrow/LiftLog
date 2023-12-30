@@ -19,13 +19,13 @@ public class PutUserDataRequestValidator : AbstractValidator<PutUserDataRequest>
     {
         RuleFor(x => x.Id).NotEmpty();
         RuleFor(x => x.Password).NotEmpty();
-        RuleFor(x => x.EncryptedCurrentPlan.Length)
+        RuleFor(x => x.EncryptedCurrentPlan!.Length)
             .InclusiveBetween(0, 2 * KB)
             .When(x => x.EncryptedCurrentPlan != null);
-        RuleFor(x => x.EncryptedProfilePicture.Length)
+        RuleFor(x => x.EncryptedProfilePicture!.Length)
             .InclusiveBetween(0, 2000 * KB)
             .When(x => x.EncryptedProfilePicture != null);
-        RuleFor(x => x.EncryptedName.Length)
+        RuleFor(x => x.EncryptedName!.Length)
             .InclusiveBetween(0, 2 * KB)
             .When(x => x.EncryptedName != null);
     }

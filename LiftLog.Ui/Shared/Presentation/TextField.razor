@@ -2,12 +2,12 @@
 
 @switch(TextFieldType){
     case TextFieldType.Outline:
-        <md-outlined-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange((string)e.Value!)) @onfocusin=SelectOnFocus>
+        <md-outlined-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange?.Invoke((string)e.Value!)) @onfocusin=SelectOnFocus @onclick=OnClick >
             @ChildContent
         </md-outlined-text-field>
         break;
     case TextFieldType.Filled:
-        <md-filled-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange((string)e.Value!)) @onfocusin=SelectOnFocus >
+        <md-filled-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange?.Invoke((string)e.Value!)) @onfocusin=SelectOnFocus @onclick=OnClick >
             @ChildContent
         </md-filled-text-field>
         break;
@@ -27,8 +27,10 @@
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     [Parameter]
-    [EditorRequired]
-    public Action<string?> OnChange { get; set; } = null!;
+    public Action<string?>? OnChange { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
 
     [Parameter]
     public TextFieldType TextFieldType {get;set;} = TextFieldType.Outline;

@@ -15,7 +15,17 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateUserRequestValidator>
 builder.Services.AddDbContext<UserDataContext>(
     options => options.UseNpgsql(builder.Configuration.GetConnectionString("UserDataContext"))
 );
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("*").AllowAnyHeader().AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
+
+app.UseCors();
 
 app.UseHttpsRedirection();
 

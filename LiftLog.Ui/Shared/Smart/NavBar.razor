@@ -10,6 +10,7 @@
         <NavButton IsActive=@IsRouteMatch("(/$|^$|/session/?)") Navigate="NavigateToWorkout" Icon="fitness_center" Text="Workout"></NavButton>
         <NavButton IsActive=@IsRouteMatch("/history(/?.*)") Navigate="NavigateToHistory" Icon="history" Text="History" ></NavButton>
         <NavButton IsActive=@IsRouteMatch("/stats(/?.*)") Navigate="NavigateToStats" Icon="show_chart" Text="Stats" ></NavButton>
+        <NavButton IsActive=@IsRouteMatch("/feed(/?.*)") Navigate="NavigateToFeed" Icon="feed" Text="Feed" ></NavButton>
         <NavButton IsActive=@IsRouteMatch("/settings(/?.*)") Navigate="NavigateToSettings" Icon="settings" Text="Settings"></NavButton>
     </div>
     <div style="height: @ThemeProvider.SystemSafeInsetBottom"></div>
@@ -50,6 +51,12 @@
     private void NavigateToSettings()
     {
         NavigationManager.NavigateTo("/settings");
+        StateHasChanged();
+    }
+
+    private void NavigateToFeed()
+    {
+        NavigationManager.NavigateTo("/feed");
         StateHasChanged();
     }
 

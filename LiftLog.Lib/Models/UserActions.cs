@@ -7,9 +7,9 @@ public record CreateUserResponse(string Password);
 public record PutUserDataRequest(
     Guid Id,
     string Password,
-    byte[] EncryptedCurrentPlan,
-    byte[] EncryptedProfilePicture,
-    byte[] EncryptedName,
+    byte[]? EncryptedCurrentPlan,
+    byte[]? EncryptedProfilePicture,
+    byte[]? EncryptedName,
     // The IV can be considered public, as long as the encryption key is kept secret
     byte[] EncryptionIV
 );

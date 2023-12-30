@@ -2,6 +2,10 @@ using LiftLog.Lib;
 
 namespace LiftLog.Ui.Store.Feed;
 
+public record CreateFeedIdentityAction(Guid Id, string? Name, byte[]? ProfilePicture);
+
+public record UpdateFeedIdentityAction(string? Name, byte[]? ProfilePicture);
+
 public record PutFeedIdentityAction(FeedIdentity? Identity);
 
 public record ReplaceFeedItemsAction(ImmutableListValue<FeedItem> Items);

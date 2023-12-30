@@ -18,5 +18,5 @@ public class User
     public byte[]? EncryptedName { get; set; }
 
     // The IV can be considered public, as long as the encryption key is kept secret
-    public byte[] EncryptionIV { get; set; } = null!;
+    public byte[]? EncryptionIV { get; set; } = null!;
 }

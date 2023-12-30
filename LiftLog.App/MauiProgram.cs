@@ -123,6 +123,8 @@ public static class MauiProgram
         builder.Services.AddSingleton(FilePicker.Default);
         builder.Services.AddScoped<SessionService>();
 
+        builder.Services.AddScoped<IStringSharer, MauiStringSharer>();
+
         builder.Services.AddScoped<IAppPurchaseService, AppPurchaseService>();
 
         builder.UseMaterialColors<ThemeColorUpdateService>(opts =>
