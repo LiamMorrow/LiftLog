@@ -11,17 +11,25 @@ public class JsAesEncryptionService(IJSRuntime jSRuntime) : IEncryptionService
         return jSRuntime.InvokeAsync<byte[]>("CryptoUtils.decrypt", data, key, IV);
     }
 
-    public ValueTask<(byte[] EncryptedPayload, byte[] IV)> EncryptAsync(
+    public async ValueTask<(byte[] EncryptedPayload, byte[] IV)> EncryptAsync(
         byte[] data,
         byte[] key,
         byte[]? iv = null
     )
     {
-        return jSRuntime.InvokeAsync<(byte[], byte[])>("CryptoUtils.encrypt", data, key, iv);
+        var result = await jSRuntime.InvokeAsync<EncryptResult>(
+            "CryptoUtils.encrypt",
+            data,
+            key,
+            iv
+        );
+        return (result.Encrypted, result.IV);
     }
 
     public ValueTask<byte[]> GenerateKeyAsync()
     {
         return jSRuntime.InvokeAsync<byte[]>("CryptoUtils.generateKey");
     }
+
+    private record EncryptResult(byte[] Encrypted, byte[] IV);
 }

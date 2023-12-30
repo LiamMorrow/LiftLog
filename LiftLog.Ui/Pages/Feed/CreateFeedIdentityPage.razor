@@ -53,6 +53,7 @@ else
     {
         Dispatcher.Dispatch(new CreateFeedIdentityAction(Guid.NewGuid(), string.IsNullOrEmpty(name) ? null : name, null));
     }
+
     private void UpdatePublishingDetails()
     {
         Dispatcher.Dispatch(new UpdateFeedIdentityAction(string.IsNullOrEmpty(name) ? null : name, null));

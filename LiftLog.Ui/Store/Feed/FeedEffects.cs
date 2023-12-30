@@ -172,6 +172,17 @@ public class FeedEffects(
         );
 
         dispatcher.Dispatch(new PutFeedIdentityAction(identity));
+        dispatcher.Dispatch(
+            new PutFeedUserAction(
+                new FeedUser(
+                    Id: id,
+                    EncryptionKey: encryptionKey,
+                    Name: "You",
+                    CurrentPlan: [],
+                    ProfilePicture: profilePicture
+                )
+            )
+        );
     }
 
     [EffectMethod]

@@ -28,7 +28,7 @@ CryptoUtils.encrypt = async function (data, key, optionalIV) {
     )
 
     return {
-        encrypted,
+        encrypted: new Uint8Array(encrypted),
         iv
     }
 }
