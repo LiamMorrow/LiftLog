@@ -25,33 +25,52 @@ public class FeedEffects(
         IDispatcher dispatcher
     )
     {
-        if (state.Value.Identity is null || state.Value.Users.IsEmpty)
+        if (state.Value.Users.IsEmpty)
         {
             return;
         }
-        var response = await feedApiService.GetUserEventsAsync(
+        var feedResponseTask = feedApiService.GetUserEventsAsync(
             new GetEventsRequest(
                 UserIds: state.Value.Users.Keys.ToArray(),
                 Since: state.Value.Feed.MaxBy(x => x.Timestamp)?.Timestamp
                     ?? DateTimeOffset.MinValue
             )
         );
-        if (response.Events.Any())
-        {
-            var feedItems = (
-                await Task.WhenAll(response.Events.Select(x => ToFeedItemAsync(x).AsTask()))
-            ).WhereNotNull();
-            var now = DateTimeOffset.UtcNow;
-            dispatcher.Dispatch(
-                new ReplaceFeedItemsAction(
-                    state
-                        .Value.Feed.Concat(feedItems)
-                        .Where(x => x.Expiry >= now)
-                        .DistinctBy(x => x.EventId)
-                        .ToImmutableList()
+        var userResponseTask = feedApiService.GetUsersAsync(
+            new GetUsersRequest(state.Value.Users.Keys.ToArray())
+        );
+
+        var feedResponse = await feedResponseTask;
+        var users = (await userResponseTask).Users;
+
+        var newUsers = (
+            await Task.WhenAll(
+                users.Select(
+                    x =>
+                        GetDecryptedUserAsync(
+                            x.Key,
+                            state.Value.Users[x.Key].EncryptionKey,
+                            x.Value
+                        )
                 )
-            );
-        }
+            )
+        ).ToImmutableList();
+        dispatcher.Dispatch(new ReplaceFeedUsersAction(newUsers));
+
+        var feedItems = (
+            await Task.WhenAll(feedResponse.Events.Select(x => ToFeedItemAsync(x).AsTask()))
+        ).WhereNotNull();
+        var now = DateTimeOffset.UtcNow;
+        dispatcher.Dispatch(
+            new ReplaceFeedItemsAction(
+                state
+                    .Value.Feed.Concat(feedItems)
+                    .Where(x => x.Expiry >= now)
+                    .DistinctBy(x => x.EventId)
+                    .Where(x => users.ContainsKey(x.UserId))
+                    .ToImmutableList()
+            )
+        );
     }
 
     [EffectMethod]
@@ -61,15 +80,29 @@ public class FeedEffects(
     )
     {
         var response = await feedApiService.GetUserAsync(action.Id);
-        var user = new FeedUser(
-            Id: action.Id,
-            EncryptionKey: action.EncryptionKey,
+
+        dispatcher.Dispatch(
+            new SetSharedFeedUserAction(
+                await GetDecryptedUserAsync(action.Id, action.EncryptionKey, response)
+            )
+        );
+    }
+
+    private async Task<FeedUser> GetDecryptedUserAsync(
+        Guid Id,
+        byte[] encryptionKey,
+        GetUserResponse response
+    )
+    {
+        return new FeedUser(
+            Id,
+            EncryptionKey: encryptionKey,
             Name: response.EncryptedName is null or { Length: 0 }
                 ? null
                 : Encoding.UTF8.GetString(
                     await encryptionService.DecryptAsync(
                         response.EncryptedName,
-                        action.EncryptionKey,
+                        encryptionKey,
                         response.EncryptionIV
                     )
                 ),
@@ -79,7 +112,7 @@ public class FeedEffects(
                     .Parser.ParseFrom(
                         await encryptionService.DecryptAsync(
                             response.EncryptedCurrentPlan,
-                            action.EncryptionKey,
+                            encryptionKey,
                             response.EncryptionIV
                         )
                     )
@@ -89,12 +122,10 @@ public class FeedEffects(
                 ? null
                 : await encryptionService.DecryptAsync(
                     response.EncryptedProfilePicture,
-                    action.EncryptionKey,
+                    encryptionKey,
                     response.EncryptionIV
                 )
         );
-
-        dispatcher.Dispatch(new SetSharedFeedUserAction(user));
     }
 
     [EffectMethod]

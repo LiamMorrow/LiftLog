@@ -2,6 +2,10 @@ namespace LiftLog.Lib.Models;
 
 public record CreateUserRequest(Guid Id);
 
+public record GetUsersRequest(Guid[] Ids);
+
+public record GetUsersResponse(Dictionary<Guid, GetUserResponse> Users);
+
 public record CreateUserResponse(string Password);
 
 public record PutUserDataRequest(

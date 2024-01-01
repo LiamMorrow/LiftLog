@@ -42,4 +42,11 @@ public class FeedApiService(HttpClient httpClient)
     {
         return httpClient.PutAsJsonAsync($"{baseUrl}event", request);
     }
+
+    public async Task<GetUsersResponse> GetUsersAsync(GetUsersRequest getUsersRequest)
+    {
+        // TODO handle 404 etc
+        var result = await httpClient.PostAsJsonAsync($"{baseUrl}users", getUsersRequest);
+        return (await result.Content.ReadFromJsonAsync<GetUsersResponse>())!;
+    }
 }

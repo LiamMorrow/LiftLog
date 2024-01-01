@@ -125,7 +125,8 @@ internal partial class FeedStateDaoV1
                 Users: value.FeedUsers.ToImmutableDictionary(
                     feedUserDao => (Guid)feedUserDao.Id,
                     x => (FeedUser)x
-                )
+                ),
+                SharedFeedUser: null
             );
 
     [return: NotNullIfNotNull(nameof(value))]

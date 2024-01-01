@@ -9,6 +9,27 @@
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
+@if(FeedState.Value.SharedFeedUser != null)
+{
+    <div class="text-on-surface flex flex-col justify-center gap-4 p-4 h-full">
+        <span class="text-lg"><span class="font-bold text-primary">@Name</span> wants to share their workouts with you!</span>
+        <span class="text-sm">Would you like to see their workouts in your feed?</span>
+        <div class="grid grid-cols-2 gap-2">
+            <AppButton Type=AppButtonType.Text OnClick=HandleNoThanksClick>No thanks</AppButton>
+            <AppButton Type=AppButtonType.Primary OnClick=HandleSureClick>Sure!</AppButton>
+        </div>
+    </div>
+}
+else
+{
+    <div class="flex flex-col justify-center h-full gap-4 text-on-surface ">
+        <div><md-circular-progress aria-label="Session loading" indeterminate four-color></md-circular-progress></div>
+        <span>
+            <p>Loading Sessions...</p>
+        </span>
+    </div>
+}
+
 
 @code
 {
@@ -25,8 +46,27 @@
         {
             NavigationManager.NavigateTo("/feed");
         }
-        Dispatcher.Dispatch(new FetchSharedFeedUserAction(id, Secret.FromUrlSafeHexString());
+        Dispatcher.Dispatch(new FetchSharedFeedUserAction(id, Secret.FromUrlSafeHexString()));
         base.OnInitialized();
+    }
+
+    private string Name => FeedState.Value.SharedFeedUser?.Name ?? "Someone";
+
+    private void HandleNoThanksClick()
+    {
+        Dispatcher.Dispatch(new SetSharedFeedUserAction(null));
+        NavigationManager.NavigateTo("/feed");
+    }
+
+    private void HandleSureClick()
+    {
+        if(FeedState.Value.SharedFeedUser == null)
+        {
+            return;
+        }
+        Dispatcher.Dispatch(new PutFeedUserAction(FeedState.Value.SharedFeedUser));
+        Dispatcher.Dispatch(new SetSharedFeedUserAction(null));
+        NavigationManager.NavigateTo("/feed");
     }
 
 }

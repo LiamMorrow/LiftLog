@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using FluentValidation;
 using LiftLog.Backend.Db;
 using LiftLog.Backend.Functions.Validators;
@@ -87,6 +88,38 @@ app.MapGet(
                 EncryptedProfilePicture: user.EncryptedProfilePicture,
                 EncryptedName: user.EncryptedName,
                 EncryptionIV: user.EncryptionIV
+            )
+        );
+    }
+);
+
+app.MapPost(
+    "/users",
+    async (UserDataContext db, GetUsersRequest request, IValidator<GetUsersRequest> validator) =>
+    {
+        var validationResult = await validator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            return Results.BadRequest(validationResult.Errors);
+        }
+        var users = await db.Users.Where(x => request.Ids.Contains(x.Id)).ToArrayAsync();
+        foreach (var user in users)
+        {
+            user.LastAccessed = DateTimeOffset.UtcNow;
+        }
+        await db.SaveChangesAsync();
+        return Results.Ok(
+            new GetUsersResponse(
+                users.ToDictionary(
+                    x => x.Id,
+                    x =>
+                        new GetUserResponse(
+                            EncryptedCurrentPlan: x.EncryptedCurrentPlan,
+                            EncryptedProfilePicture: x.EncryptedProfilePicture,
+                            EncryptedName: x.EncryptedName,
+                            EncryptionIV: x.EncryptionIV
+                        )
+                )
             )
         );
     }

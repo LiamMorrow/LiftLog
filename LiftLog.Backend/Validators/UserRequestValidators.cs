@@ -11,6 +11,15 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
     }
 }
 
+public class GetUsersRequestValidator : AbstractValidator<GetUsersRequest>
+{
+    public GetUsersRequestValidator()
+    {
+        RuleFor(x => x.Ids).NotEmpty();
+        RuleFor(x => x.Ids.Length).InclusiveBetween(1, 200).When(x => x.Ids != null);
+    }
+}
+
 public class PutUserDataRequestValidator : AbstractValidator<PutUserDataRequest>
 {
     const int KB = 1024;

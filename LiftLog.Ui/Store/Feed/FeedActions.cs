@@ -13,7 +13,7 @@ public record ReplaceFeedItemsAction(ImmutableListValue<FeedItem> Items);
 
 public record PutFeedUserAction(FeedUser User);
 
-public record SetSharedFeedUserAction(FeedUser User);
+public record SetSharedFeedUserAction(FeedUser? User);
 
 public record FetchSharedFeedUserAction(Guid Id, byte[] EncryptionKey);
 
@@ -22,3 +22,5 @@ public record SaveSharedFeedUserAction();
 public record FetchSessionFeedItemsAction();
 
 public record PublishWorkoutToFeedAction(Session Session);
+
+public record ReplaceFeedUsersAction(ImmutableListValue<FeedUser> Users);

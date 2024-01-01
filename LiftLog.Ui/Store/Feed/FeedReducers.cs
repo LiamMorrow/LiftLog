@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Fluxor;
 
 namespace LiftLog.Ui.Store.Feed;
@@ -41,4 +42,11 @@ public static class FeedReducers
                 Users = state.Users.SetItem(state.SharedFeedUser.Id, state.SharedFeedUser),
                 SharedFeedUser = null
             };
+
+    [ReducerMethod]
+    public static FeedState ReplaceFeedUsers(FeedState state, ReplaceFeedUsersAction action) =>
+        state with
+        {
+            Users = action.Users.ToImmutableDictionary(x => x.Id)
+        };
 }
