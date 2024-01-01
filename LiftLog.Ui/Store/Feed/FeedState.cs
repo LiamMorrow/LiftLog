@@ -8,13 +8,13 @@ namespace LiftLog.Ui.Store.Feed;
 public record FeedState(
     FeedIdentity? Identity,
     ImmutableListValue<FeedItem> Feed,
-    ImmutableDictionary<Guid, FeedUser> Users
+    ImmutableDictionary<Guid, FeedUser> Users,
+    FeedUser? SharedFeedUser
 );
 
 public record FeedUser(
     Guid Id,
-    // A user may not have a name on the server, but we force our user to give them a name in this case
-    string Name,
+    string? Name,
     ImmutableListValue<SessionBlueprint> CurrentPlan,
     byte[]? ProfilePicture,
     byte[] EncryptionKey

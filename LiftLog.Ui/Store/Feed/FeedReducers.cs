@@ -24,4 +24,21 @@ public static class FeedReducers
         {
             Users = state.Users.SetItem(action.User.Id, action.User)
         };
+
+    [ReducerMethod]
+    public static FeedState SetSharedFeedUser(FeedState state, SetSharedFeedUserAction action) =>
+        state with
+        {
+            SharedFeedUser = action.User
+        };
+
+    [ReducerMethod]
+    public static FeedState SaveSharedFeedUser(FeedState state, SaveSharedFeedUserAction _) =>
+        state.SharedFeedUser is null
+            ? state
+            : state with
+            {
+                Users = state.Users.SetItem(state.SharedFeedUser.Id, state.SharedFeedUser),
+                SharedFeedUser = null
+            };
 }

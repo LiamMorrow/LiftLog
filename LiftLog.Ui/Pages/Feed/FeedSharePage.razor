@@ -25,6 +25,7 @@
         {
             NavigationManager.NavigateTo("/feed");
         }
+        Dispatcher.Dispatch(new FetchSharedFeedUserAction(id, Secret.FromUrlSafeHexString());
         base.OnInitialized();
     }
 

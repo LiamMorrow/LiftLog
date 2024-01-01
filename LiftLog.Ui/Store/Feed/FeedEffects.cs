@@ -55,14 +55,17 @@ public class FeedEffects(
     }
 
     [EffectMethod]
-    public async Task HandleAddFeedUserAction(AddFeedUserAction action, IDispatcher dispatcher)
+    public async Task HandleFetchSharedFeedUserAction(
+        FetchSharedFeedUserAction action,
+        IDispatcher dispatcher
+    )
     {
         var response = await feedApiService.GetUserAsync(action.Id);
         var user = new FeedUser(
             Id: action.Id,
             EncryptionKey: action.EncryptionKey,
             Name: response.EncryptedName is null or { Length: 0 }
-                ? action.Name
+                ? null
                 : Encoding.UTF8.GetString(
                     await encryptionService.DecryptAsync(
                         response.EncryptedName,
@@ -91,7 +94,7 @@ public class FeedEffects(
                 )
         );
 
-        dispatcher.Dispatch(new PutFeedUserAction(user));
+        dispatcher.Dispatch(new SetSharedFeedUserAction(user));
     }
 
     [EffectMethod]
