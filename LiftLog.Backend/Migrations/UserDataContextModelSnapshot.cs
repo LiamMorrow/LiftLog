@@ -38,6 +38,7 @@ namespace LiftLog.Backend.Migrations
                         .HasColumnType("bytea");
 
                     b.Property<byte[]>("EncryptionIV")
+                        .IsRequired()
                         .HasColumnType("bytea");
 
                     b.Property<string>("HashedPassword")

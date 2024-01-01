@@ -10,10 +10,10 @@
 
 @if(FeedState.Value.Identity is null)
 {
-    <Card>
+    <Card IsHighlighted=true>
         <div class="flex flex-col gap-2">
             <h2 class="text-xl self-start">Start publishing to your feed</h2>
-            <p class="self-start">You're currently not publishing your workouts for your friends to see</p>
+            <p class="self-start">You're not currently publishing your workouts for your friends to see</p>
             <AppButton class="self-end" Type=AppButtonType.Text OnClick=NavigateToCreateFeedIdentity >Start</AppButton>
         </div>
     </Card>
