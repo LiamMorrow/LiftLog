@@ -235,7 +235,13 @@ public class FeedEffects(
             return;
         }
         var (encryptedPayload, iv) = await encryptionService.EncryptAsync(
-            new UserEventPayload { Session = SessionDaoV2.FromModel(action.Session) }.ToByteArray(),
+            new UserEventPayload
+            {
+                SessionPayload = new SessionUserEvent
+                {
+                    Session = SessionDaoV2.FromModel(action.Session)
+                }
+            }.ToByteArray(),
             state.Value.Identity.EncryptionKey
         );
         await feedApiService.PutUserEventAsync(
@@ -277,7 +283,7 @@ public class FeedEffects(
             encryptedPayload
         );
         // We only support session events rn
-        if (payload is not { EventPayloadCase: EventPayloadOneofCase.Session })
+        if (payload is not { EventPayloadCase: EventPayloadOneofCase.SessionPayload })
         {
             return null;
         }
@@ -286,7 +292,7 @@ public class FeedEffects(
             EventId: userEvent.EventId,
             Timestamp: userEvent.Timestamp,
             Expiry: userEvent.Expiry,
-            Session: payload.Session.ToModel()
+            Session: payload.SessionPayload.Session.ToModel()
         );
     }
 
