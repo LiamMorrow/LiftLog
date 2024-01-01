@@ -63,6 +63,7 @@ app.MapPost(
             HashedPassword = hashedPassword,
             Salt = salt,
             LastAccessed = DateTimeOffset.UtcNow,
+            EncryptionIV = [],
         };
 
         await db.Users.AddAsync(user);
