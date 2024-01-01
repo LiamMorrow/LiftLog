@@ -41,7 +41,15 @@ public class FeedEffects(
         );
 
         var feedResponse = await feedResponseTask;
-        var users = (await userResponseTask).Users;
+        var usersResponse = await userResponseTask;
+
+        if (!usersResponse.IsSuccess || !feedResponse.IsSuccess)
+        {
+            // TODO handle properly
+            return;
+        }
+        var feedEvents = feedResponse.Data.Events;
+        var users = usersResponse.Data.Users;
 
         var newUsers = (
             await Task.WhenAll(
@@ -58,7 +66,7 @@ public class FeedEffects(
         dispatcher.Dispatch(new ReplaceFeedUsersAction(newUsers));
 
         var feedItems = (
-            await Task.WhenAll(feedResponse.Events.Select(x => ToFeedItemAsync(x).AsTask()))
+            await Task.WhenAll(feedEvents.Select(x => ToFeedItemAsync(x).AsTask()))
         ).WhereNotNull();
         var now = DateTimeOffset.UtcNow;
         dispatcher.Dispatch(
@@ -79,52 +87,18 @@ public class FeedEffects(
         IDispatcher dispatcher
     )
     {
-        var response = await feedApiService.GetUserAsync(action.Id);
+        var feedResponse = await feedApiService.GetUserAsync(action.Id);
+
+        if (!feedResponse.IsSuccess)
+        {
+            // TODO handle properly
+            return;
+        }
 
         dispatcher.Dispatch(
             new SetSharedFeedUserAction(
-                await GetDecryptedUserAsync(action.Id, action.EncryptionKey, response)
+                await GetDecryptedUserAsync(action.Id, action.EncryptionKey, feedResponse.Data)
             )
-        );
-    }
-
-    private async Task<FeedUser> GetDecryptedUserAsync(
-        Guid Id,
-        byte[] encryptionKey,
-        GetUserResponse response
-    )
-    {
-        return new FeedUser(
-            Id,
-            EncryptionKey: encryptionKey,
-            Name: response.EncryptedName is null or { Length: 0 }
-                ? null
-                : Encoding.UTF8.GetString(
-                    await encryptionService.DecryptAsync(
-                        response.EncryptedName,
-                        encryptionKey,
-                        response.EncryptionIV
-                    )
-                ),
-            CurrentPlan: response.EncryptedCurrentPlan is null or { Length: 0 }
-                ? []
-                : CurrentPlanDaoV1
-                    .Parser.ParseFrom(
-                        await encryptionService.DecryptAsync(
-                            response.EncryptedCurrentPlan,
-                            encryptionKey,
-                            response.EncryptionIV
-                        )
-                    )
-                    .Sessions.Select(sessionBlueprintDao => sessionBlueprintDao.ToModel())
-                    .ToImmutableList(),
-            ProfilePicture: response.EncryptedProfilePicture is null or { Length: 0 }
-                ? null
-                : await encryptionService.DecryptAsync(
-                    response.EncryptedProfilePicture,
-                    encryptionKey,
-                    response.EncryptionIV
-                )
         );
     }
 
@@ -135,11 +109,16 @@ public class FeedEffects(
     )
     {
         var response = await feedApiService.CreateUserAsync(new CreateUserRequest(Id: action.Id));
+        if (!response.IsSuccess)
+        {
+            // TODO handle properly
+            return;
+        }
         var encryptionKey = await encryptionService.GenerateKeyAsync();
         await GenerateAndPutFeedIdentityAsync(
             dispatcher,
             action.Id,
-            response.Password,
+            response.Data.Password,
             encryptionKey,
             action.Name,
             action.ProfilePicture
@@ -164,6 +143,55 @@ public class FeedEffects(
             action.Name,
             action.ProfilePicture
         );
+    }
+
+    [EffectMethod]
+    public async Task HandlePublishWorkoutToFeedAction(
+        PublishWorkoutToFeedAction action,
+        IDispatcher dispatcher
+    )
+    {
+        if (state.Value.Identity is null)
+        {
+            return;
+        }
+        var (encryptedPayload, iv) = await encryptionService.EncryptAsync(
+            new UserEventPayload
+            {
+                SessionPayload = new SessionUserEvent
+                {
+                    Session = SessionDaoV2.FromModel(action.Session)
+                }
+            }.ToByteArray(),
+            state.Value.Identity.EncryptionKey
+        );
+        await feedApiService.PutUserEventAsync(
+            new PutUserEventRequest(
+                UserId: state.Value.Identity.Id,
+                Password: state.Value.Identity.Password,
+                EncryptedEventPayload: encryptedPayload,
+                EncryptedEventIV: iv,
+                Expiry: DateTimeOffset.UtcNow.AddDays(90)
+            )
+        );
+    }
+
+    [EffectMethod]
+    public Task PutFeedIdentity(PutFeedIdentityAction action, IDispatcher dispatcher)
+    {
+        return PersistFeedState();
+    }
+
+    [EffectMethod]
+    public Task ReplaceFeedItems(ReplaceFeedItemsAction action, IDispatcher dispatcher)
+    {
+        return PersistFeedState();
+    }
+
+    [EffectMethod]
+    public Task PutFeedUser(PutFeedUserAction action, IDispatcher dispatcher)
+    {
+        return PersistFeedState();
     }
 
     private async Task GenerateAndPutFeedIdentityAsync(
@@ -224,53 +252,44 @@ public class FeedEffects(
         );
     }
 
-    [EffectMethod]
-    public async Task HandlePublishWorkoutToFeedAction(
-        PublishWorkoutToFeedAction action,
-        IDispatcher dispatcher
+    private async Task<FeedUser> GetDecryptedUserAsync(
+        Guid Id,
+        byte[] encryptionKey,
+        GetUserResponse response
     )
     {
-        if (state.Value.Identity is null)
-        {
-            return;
-        }
-        var (encryptedPayload, iv) = await encryptionService.EncryptAsync(
-            new UserEventPayload
-            {
-                SessionPayload = new SessionUserEvent
-                {
-                    Session = SessionDaoV2.FromModel(action.Session)
-                }
-            }.ToByteArray(),
-            state.Value.Identity.EncryptionKey
+        return new FeedUser(
+            Id,
+            EncryptionKey: encryptionKey,
+            Name: response.EncryptedName is null or { Length: 0 }
+                ? null
+                : Encoding.UTF8.GetString(
+                    await encryptionService.DecryptAsync(
+                        response.EncryptedName,
+                        encryptionKey,
+                        response.EncryptionIV
+                    )
+                ),
+            CurrentPlan: response.EncryptedCurrentPlan is null or { Length: 0 }
+                ? []
+                : CurrentPlanDaoV1
+                    .Parser.ParseFrom(
+                        await encryptionService.DecryptAsync(
+                            response.EncryptedCurrentPlan,
+                            encryptionKey,
+                            response.EncryptionIV
+                        )
+                    )
+                    .Sessions.Select(sessionBlueprintDao => sessionBlueprintDao.ToModel())
+                    .ToImmutableList(),
+            ProfilePicture: response.EncryptedProfilePicture is null or { Length: 0 }
+                ? null
+                : await encryptionService.DecryptAsync(
+                    response.EncryptedProfilePicture,
+                    encryptionKey,
+                    response.EncryptionIV
+                )
         );
-        await feedApiService.PutUserEventAsync(
-            new PutUserEventRequest(
-                UserId: state.Value.Identity.Id,
-                Password: state.Value.Identity.Password,
-                EncryptedEventPayload: encryptedPayload,
-                EncryptedEventIV: iv,
-                Expiry: DateTimeOffset.UtcNow.AddDays(90)
-            )
-        );
-    }
-
-    [EffectMethod]
-    public Task PutFeedIdentity(PutFeedIdentityAction action, IDispatcher dispatcher)
-    {
-        return PersistFeedState();
-    }
-
-    [EffectMethod]
-    public Task ReplaceFeedItems(ReplaceFeedItemsAction action, IDispatcher dispatcher)
-    {
-        return PersistFeedState();
-    }
-
-    [EffectMethod]
-    public Task PutFeedUser(PutFeedUserAction action, IDispatcher dispatcher)
-    {
-        return PersistFeedState();
     }
 
     private async ValueTask<FeedItem?> ToFeedItemAsync(UserEventResponse userEvent)

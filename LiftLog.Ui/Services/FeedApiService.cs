@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Net.Http.Json;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
@@ -13,40 +15,119 @@ public class FeedApiService(HttpClient httpClient)
     private static readonly string baseUrl = "https://api.liftlog.online/";
 #endif
 
-    public async Task<GetEventsResponse> GetUserEventsAsync(GetEventsRequest request)
+    public Task<ApiResult<GetEventsResponse>> GetUserEventsAsync(GetEventsRequest request)
     {
-        // TODO handle 404 etc
-        var result = await httpClient.PostAsJsonAsync($"{baseUrl}events", request);
-        return (await result.Content.ReadFromJsonAsync<GetEventsResponse>())!;
+        return GetApiResultAsync(async () =>
+        {
+            var result = await httpClient.PostAsJsonAsync($"{baseUrl}events", request);
+            return (await result.Content.ReadFromJsonAsync<GetEventsResponse>())!;
+        });
     }
 
-    public async Task<CreateUserResponse> CreateUserAsync(CreateUserRequest request)
+    public Task<ApiResult<CreateUserResponse>> CreateUserAsync(CreateUserRequest request)
     {
-        // TODO handle 404 etc
-        var result = await httpClient.PostAsJsonAsync($"{baseUrl}user/create", request);
-        return (await result.Content.ReadFromJsonAsync<CreateUserResponse>())!;
+        return GetApiResultAsync(async () =>
+        {
+            var result = await httpClient.PostAsJsonAsync($"{baseUrl}user/create", request);
+            return (await result.Content.ReadFromJsonAsync<CreateUserResponse>())!;
+        });
     }
 
-    public Task<GetUserResponse> GetUserAsync(Guid id)
+    public Task<ApiResult<GetUserResponse>> GetUserAsync(Guid id)
     {
-        // TODO handle 404 etc
-        return httpClient.GetFromJsonAsync<GetUserResponse>($"{baseUrl}user/{id}")!;
+        return GetApiResultAsync(async () =>
+        {
+            return (await httpClient.GetFromJsonAsync<GetUserResponse>($"{baseUrl}user/{id}"))!;
+        });
     }
 
-    public Task PutUserDataAsync(PutUserDataRequest request)
+    public Task<ApiResult> PutUserDataAsync(PutUserDataRequest request)
     {
-        return httpClient.PutAsJsonAsync($"{baseUrl}user", request);
+        return GetApiResultAsync(async () =>
+        {
+            await httpClient.PutAsJsonAsync($"{baseUrl}user", request);
+        });
     }
 
-    public Task PutUserEventAsync(PutUserEventRequest request)
+    public Task<ApiResult> PutUserEventAsync(PutUserEventRequest request)
     {
-        return httpClient.PutAsJsonAsync($"{baseUrl}event", request);
+        return GetApiResultAsync(async () =>
+        {
+            await httpClient.PutAsJsonAsync($"{baseUrl}event", request);
+        });
     }
 
-    public async Task<GetUsersResponse> GetUsersAsync(GetUsersRequest getUsersRequest)
+    public Task<ApiResult<GetUsersResponse>> GetUsersAsync(GetUsersRequest getUsersRequest)
     {
-        // TODO handle 404 etc
-        var result = await httpClient.PostAsJsonAsync($"{baseUrl}users", getUsersRequest);
-        return (await result.Content.ReadFromJsonAsync<GetUsersResponse>())!;
+        return GetApiResultAsync(async () =>
+        {
+            var result = await httpClient.PostAsJsonAsync($"{baseUrl}users", getUsersRequest);
+            return (await result.Content.ReadFromJsonAsync<GetUsersResponse>())!;
+        });
     }
+
+    private static async Task<ApiResult<T>> GetApiResultAsync<T>(Func<Task<T>> action)
+    {
+        try
+        {
+            return new ApiResult<T>(await action(), []);
+        }
+        catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound)
+        {
+            return new ApiResult<T>(default, [new ApiError(ApiErrorType.NotFound, e.Message, e)]);
+        }
+        catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            return new ApiResult<T>(
+                default,
+                [new ApiError(ApiErrorType.Unauthorized, e.Message, e)]
+            );
+        }
+        catch (HttpRequestException e) when (e.StatusCode == (HttpStatusCode)429)
+        {
+            return new ApiResult<T>(
+                default,
+                [new ApiError(ApiErrorType.RateLimited, e.Message, e)]
+            );
+        }
+        catch (HttpRequestException e)
+        {
+            return new ApiResult<T>(default, [new ApiError(ApiErrorType.Unknown, e.Message, e)]);
+        }
+        catch (Exception e)
+        {
+            return new ApiResult<T>(default, [new ApiError(ApiErrorType.Unknown, e.Message, e)]);
+        }
+    }
+
+    private static async Task<ApiResult> GetApiResultAsync(Func<Task> action)
+    {
+        // Be explicit here with generic to avoid accidental recursion
+        return await GetApiResultAsync<int>(async () =>
+        {
+            await action();
+            return 1;
+        });
+    }
+}
+
+public enum ApiErrorType
+{
+    Unknown = 0,
+    NotFound = 1,
+    Unauthorized = 2,
+    RateLimited = 3,
+}
+
+public record ApiError(ApiErrorType Type, string Message, Exception Exception);
+
+public record ApiResult<T>(T? Data, ApiError[] Errors) : ApiResult(Errors)
+{
+    [MemberNotNullWhen(true, nameof(Data))]
+    public new bool IsSuccess => Errors is { Length: 0 };
+}
+
+public record ApiResult(ApiError[] Errors)
+{
+    public bool IsSuccess => Errors is { Length: 0 };
 }
