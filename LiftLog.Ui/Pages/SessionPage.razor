@@ -145,6 +145,9 @@
     private void SaveSession()
     {
         Dispatcher.Dispatch(new PersistCurrentSessionAction(SessionTarget.WorkoutSession));
+        if(CurrentSessionState.Value.WorkoutSession is not null){
+            Dispatcher.Dispatch(new PublishWorkoutToFeedAction(CurrentSessionState.Value.WorkoutSession));
+        }
         Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, null));
         Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
 

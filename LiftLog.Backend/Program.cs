@@ -172,9 +172,8 @@ app.MapPost(
             return Results.BadRequest(validationResult.Errors);
         }
         var events = await db.UserEvents.Where(x => request.UserIds.Contains(x.UserId))
-            .Where(x => x.Timestamp >= request.Since)
+            .Where(x => x.Timestamp > request.Since)
             .Where(x => x.Expiry > DateTimeOffset.UtcNow)
-            .Where(x => x.LastAccessed >= DateTimeOffset.UtcNow - TimeSpan.FromDays(7))
             .ToArrayAsync();
         var userEvents = events
             .Select(

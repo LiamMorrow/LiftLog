@@ -1,4 +1,5 @@
 using LiftLog.Lib;
+using LiftLog.Lib.Models;
 
 namespace LiftLog.Ui.Store.Feed;
 
@@ -15,3 +16,5 @@ public record PutFeedUserAction(FeedUser User);
 public record AddFeedUserAction(Guid Id, byte[] EncryptionKey, string Name);
 
 public record FetchSessionFeedItemsAction();
+
+public record PublishWorkoutToFeedAction(Session Session);

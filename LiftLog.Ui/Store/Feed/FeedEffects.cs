@@ -5,6 +5,7 @@ using Google.Protobuf;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Services;
 using LiftLog.Ui.Models;
+using LiftLog.Ui.Models.SessionHistoryDao;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Util;
 using static LiftLog.Lib.Models.UserEventPayload;
@@ -43,7 +44,11 @@ public class FeedEffects(
             var now = DateTimeOffset.UtcNow;
             dispatcher.Dispatch(
                 new ReplaceFeedItemsAction(
-                    state.Value.Feed.Concat(feedItems).Where(x => x.Expiry >= now).ToImmutableList()
+                    state
+                        .Value.Feed.Concat(feedItems)
+                        .Where(x => x.Expiry >= now)
+                        .DistinctBy(x => x.EventId)
+                        .ToImmutableList()
                 )
             );
         }
@@ -181,6 +186,31 @@ public class FeedEffects(
                     CurrentPlan: [],
                     ProfilePicture: profilePicture
                 )
+            )
+        );
+    }
+
+    [EffectMethod]
+    public async Task HandlePublishWorkoutToFeedAction(
+        PublishWorkoutToFeedAction action,
+        IDispatcher dispatcher
+    )
+    {
+        if (state.Value.Identity is null)
+        {
+            return;
+        }
+        var (encryptedPayload, iv) = await encryptionService.EncryptAsync(
+            new UserEventPayload { Session = SessionDaoV2.FromModel(action.Session) }.ToByteArray(),
+            state.Value.Identity.EncryptionKey
+        );
+        await feedApiService.PutUserEventAsync(
+            new PutUserEventRequest(
+                UserId: state.Value.Identity.Id,
+                Password: state.Value.Identity.Password,
+                EncryptedEventPayload: encryptedPayload,
+                EncryptedEventIV: iv,
+                Expiry: DateTimeOffset.UtcNow.AddDays(90)
             )
         );
     }

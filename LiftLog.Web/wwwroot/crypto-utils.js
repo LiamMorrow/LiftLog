@@ -45,5 +45,5 @@ CryptoUtils.decrypt = async function (data, key, iv) {
         params, cryptoKey, data
     )
 
-    return decrypted
+    return new Uint8Array(decrypted)
 }
