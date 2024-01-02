@@ -19,7 +19,7 @@
     <div id="mainfeed-panel" role="tabpanel" aria-labelledby="mainfeed-tab" class="@(GetTabClass("mainfeed-panel"))">
         @if(FeedState.Value.Identity is null)
         {
-            <Card IsHighlighted=true>
+            <Card IsHighlighted=true class="mb-4" >
                 <div class="flex flex-col gap-2">
                     <h2 class="text-xl self-start">Start publishing to your feed</h2>
                     <p class="self-start text-left">You're not currently publishing your workouts for your friends to see</p>
@@ -32,12 +32,30 @@
             </div>
         }
 
+        @if(FeedState.Value.Feed is {Count: 0})
+        {
+            <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
+                <md-icon>info</md-icon>
+                <span>
+                    <p>Nothing here yet!<br> Nobody you're following has published anything yet! Come back later.</p>
+                </span>
+            </div>
+        }
         <VirtualizedCardList Items=@(FeedState.Value.Feed.Select(x=>(Item: x, User: FeedState.Value.Users.GetValueOrDefault(x.UserId))).Where(x=>x.User is not null).ToList())>
             <FeedItemCardContent Item=context.Item User=@(context.User) />
         </VirtualizedCardList>
     </div>
 
     <div id="following-panel" role="tabpanel" aria-labelledby="following-tab" class="@(GetTabClass("following-panel"))">
+        @if(FeedState.Value.Users is {Count: 0})
+        {
+            <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
+                <md-icon>info</md-icon>
+                <span>
+                    <p>Start following someone!<br>You're not currently following anyone, click someone's share link to start!</p>
+                </span>
+            </div>
+        }
         <VirtualizedCardList Items=@(FeedState.Value.Users.Values.ToList())>
             <FeedUserCardContent User=context UpdateUser="UpdateUser" DeleteUser="() => BeginDeleteUser(context)" />
         </VirtualizedCardList>

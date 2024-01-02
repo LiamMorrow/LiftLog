@@ -25,12 +25,13 @@ else
     <div class="text-on-surface flex flex-col gap-4 p-4">
         <span class="text-lg">Share this link to let others track your progress!</span>
 
-        <TextField Value="@name" label="Your name" OnChange=@SetName />
+        <TextField Value="@name" label="Your name (optional)" OnChange=@SetName />
         <TextField Value="@GetShareUrl()" label="Share Link" readonly="readonly" OnClick="HandleShareUrlClick" />
         <span class="text-sm">Only those with the link can see what you've shared.</span>
         <div>
             <Switch Label="Publish bodyweight" Value=@publishBodyweight OnSwitched="SetPublishBodyweight"/>
         </div>
+        <AppButton Type=AppButtonType.Text >Stop publishing</AppButton>
     </div>
 }
 
