@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
+      pages: write # to deploy to Pages
+      id-token: write # to verify the deployment originates from an appropriate source
 
     # Deploy to the github-pages environment
     environment:
@@ -34,6 +34,8 @@ jobs:
       - name: Build
         run: dotnet publish -c Release
         working-directory: ./LiftLog.Web
+      - name: Copy 404 page
+        run: cp ./404.html ./LiftLog.Web/bin/Release/net8.0/publish/wwwroot
       - name: Upload pages
         uses: actions/upload-pages-artifact@v3
         with:
