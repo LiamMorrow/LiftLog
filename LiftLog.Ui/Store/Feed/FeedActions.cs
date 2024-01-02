@@ -33,3 +33,5 @@ public record FetchSessionFeedItemsAction();
 public record PublishWorkoutToFeedAction(Session Session);
 
 public record ReplaceFeedUsersAction(ImmutableListValue<FeedUser> Users);
+
+public record DeleteFeedUserAction(FeedUser FeedUser);

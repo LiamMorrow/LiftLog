@@ -49,4 +49,12 @@ public static class FeedReducers
         {
             Users = action.Users.ToImmutableDictionary(x => x.Id)
         };
+
+    [ReducerMethod]
+    public static FeedState DeleteFeedUser(FeedState state, DeleteFeedUserAction action) =>
+        state with
+        {
+            Users = state.Users.Remove(action.FeedUser.Id),
+            Feed = state.Feed.Where(x => x.UserId != action.FeedUser.Id).ToImmutableList()
+        };
 }

@@ -2,20 +2,21 @@
 
 @page "/feed"
 
+@inject IJSRuntime JSRuntime
 @inject IState<FeedState> FeedState
 @inject NavigationManager NavigationManager
 @inject IDispatcher Dispatcher
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 <div class="sticky top-0 z-10 @TopNavColorClass -mx-2 transition-colors">
-    <md-tabs>
+    <md-tabs @ref=tabs @onchange=HandleTabChange>
         <md-primary-tab  id="mainfeed-tab" aria-controls="mainfeed-panel" >Feed</md-primary-tab>
         <md-primary-tab  id="following-tab" aria-controls="following-panel" >Following</md-primary-tab>
     </md-tabs>
 </div>
 
 <div class="mt-2">
-    <div id="mainfeed-panel" role="tabpanel"  aria-labelledby="mainfeed-tab">
+    <div id="mainfeed-panel" role="tabpanel" aria-labelledby="mainfeed-tab" class="@(GetTabClass("mainfeed-panel"))">
         @if(FeedState.Value.Identity is null)
         {
             <Card IsHighlighted=true>
@@ -36,13 +37,31 @@
         </VirtualizedCardList>
     </div>
 
-    <div id="following-panel" role="tabpanel" aria-labelledby="following-tab">
+    <div id="following-panel" role="tabpanel" aria-labelledby="following-tab" class="@(GetTabClass("following-panel"))">
+        <VirtualizedCardList Items=@(FeedState.Value.Users.Values.ToList())>
+            <FeedUserCardContent User=context UpdateUser="UpdateUser" DeleteUser="() => BeginDeleteUser(context)" />
+        </VirtualizedCardList>
     </div>
 </div>
+<Dialog @ref=deleteUserDialog>
+    <span slot="headline">Unfollow user</span>
+    <span slot="content" class="block text-left">This will unfollow <span class="text-primary font-bold">@(userToDelete?.Nickname ?? userToDelete?.Name ?? "someone")</span> and remove all their content on your device.</span>
+    <div slot="actions">
+        <AppButton Type="AppButtonType.Text" OnClick=@(()=>deleteUserDialog?.Close())>Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick=DeleteUser>Unfollow</AppButton>
+    </div>
+</Dialog>
+
 @code
 {
+
     [CascadingParameter(Name="TopNavColorClass")]
     public string TopNavColorClass { get; set; } = null!;
+
+    private ElementReference tabs;
+    private Dialog? deleteUserDialog;
+    private FeedUser? userToDelete;
+    private string activeTab = "mainfeed-panel";
 
     protected override void OnInitialized()
     {
@@ -52,8 +71,40 @@
         base.OnInitialized();
     }
 
-    protected void NavigateToCreateFeedIdentity()
+    private void NavigateToCreateFeedIdentity()
     {
         NavigationManager.NavigateTo("/feed/create-identity");
+    }
+
+    private void UpdateUser(FeedUser user)
+    {
+        Dispatcher.Dispatch(new PutFeedUserAction(user));
+    }
+
+    private void BeginDeleteUser(FeedUser user)
+    {
+        userToDelete = user;
+        deleteUserDialog?.Open();
+        StateHasChanged();
+    }
+
+    private void DeleteUser()
+    {
+        if(userToDelete is not null)
+        {
+            Dispatcher.Dispatch(new DeleteFeedUserAction(userToDelete));
+        }
+        deleteUserDialog?.Close();
+    }
+
+    private async Task HandleTabChange()
+    {
+        activeTab = await JSRuntime.InvokeAsync<string>("AppUtils.getActiveTabControls", tabs);
+        StateHasChanged();
+    }
+
+    private string GetTabClass(string tabId)
+    {
+        return activeTab == tabId ? "" : "hidden";
     }
 }

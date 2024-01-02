@@ -55,6 +55,13 @@ AppUtils.getValue = function (element) {
     return element.value;
 }
 
+
+AppUtils.getActiveTabControls = function (tabs) {
+    /** @type {HTMLElement }*/
+    const activeTab = tabs.activeTab;
+    return activeTab.getAttribute('aria-controls');
+}
+
 AppUtils.setSelected = function (element, selected) {
     element.selected = selected;
 }
