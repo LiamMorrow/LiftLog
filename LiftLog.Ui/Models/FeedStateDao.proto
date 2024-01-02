@@ -17,7 +17,8 @@ message FeedIdentityDaoV1 {
 
 message FeedUserDaoV1 {
     LiftLog.Ui.Models.UUIDDao id = 1;
-    string name = 2;
+    optional google.protobuf.StringValue name = 2;
+    optional google.protobuf.StringValue nickname = 6;
     optional CurrentPlanDaoV1 current_plan = 3;
     optional bytes profile_picture = 4;
     bytes encryption_key = 5;

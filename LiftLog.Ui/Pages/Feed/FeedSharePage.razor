@@ -12,6 +12,7 @@
 @if(FeedState.Value.SharedFeedUser != null)
 {
     <div class="text-on-surface flex flex-col justify-center gap-4 p-4 h-full">
+        <TextField label="Nickname" Value=@(FeedState.Value.SharedFeedUser.Nickname) OnChange="UpdateNickname" />
         <span class="text-lg"><span class="font-bold text-primary">@Name</span> wants to share their workouts with you!</span>
         <span class="text-sm">Would you like to see their workouts in your feed?</span>
         <div class="grid grid-cols-2 gap-2">
@@ -67,6 +68,15 @@ else
         Dispatcher.Dispatch(new PutFeedUserAction(FeedState.Value.SharedFeedUser));
         Dispatcher.Dispatch(new SetSharedFeedUserAction(null));
         NavigationManager.NavigateTo("/feed");
+    }
+
+    private void UpdateNickname(string value)
+    {
+        if(FeedState.Value.SharedFeedUser == null)
+        {
+            return;
+        }
+        Dispatcher.Dispatch(new SetSharedFeedUserAction(FeedState.Value.SharedFeedUser with { Nickname = value }));
     }
 
 }

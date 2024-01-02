@@ -8,6 +8,7 @@ using LiftLog.Ui.Models;
 using LiftLog.Ui.Models.SessionHistoryDao;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Util;
+using Microsoft.Extensions.Logging;
 using static LiftLog.Lib.Models.UserEventPayload;
 
 namespace LiftLog.Ui.Store.Feed;
@@ -16,7 +17,8 @@ public class FeedEffects(
     IState<FeedState> state,
     FeedApiService feedApiService,
     IEncryptionService encryptionService,
-    IKeyValueStore keyValueStore
+    IKeyValueStore keyValueStore,
+    ILogger<FeedEffects> logger
 )
 {
     [EffectMethod]
@@ -58,6 +60,7 @@ public class FeedEffects(
                         GetDecryptedUserAsync(
                             x.Key,
                             state.Value.Users[x.Key].EncryptionKey,
+                            state.Value.Users[x.Key].Nickname,
                             x.Value
                         )
                 )
@@ -88,6 +91,7 @@ public class FeedEffects(
     )
     {
         var feedResponse = await feedApiService.GetUserAsync(action.Id);
+        var existingUser = state.Value.Users.GetValueOrDefault(action.Id);
 
         if (!feedResponse.IsSuccess)
         {
@@ -97,7 +101,12 @@ public class FeedEffects(
 
         dispatcher.Dispatch(
             new SetSharedFeedUserAction(
-                await GetDecryptedUserAsync(action.Id, action.EncryptionKey, feedResponse.Data)
+                await GetDecryptedUserAsync(
+                    action.Id,
+                    action.EncryptionKey,
+                    existingUser?.Nickname,
+                    feedResponse.Data
+                )
             )
         );
     }
@@ -219,7 +228,7 @@ public class FeedEffects(
                 await encryptionService.EncryptAsync(profilePicture, encryptionKey, iv)
             ).EncryptedPayload;
 
-        await feedApiService.PutUserDataAsync(
+        var result = await feedApiService.PutUserDataAsync(
             new PutUserDataRequest(
                 Id: id,
                 Password: password,
@@ -229,6 +238,23 @@ public class FeedEffects(
                 EncryptionIV: iv
             )
         );
+        if (!result.IsSuccess)
+        {
+            logger.LogError(
+                "Failed to put user data for user {Id} with error {Error}",
+                id,
+                result.Error
+            );
+            if (result.Error.Type == ApiErrorType.NotFound)
+            {
+                dispatcher.Dispatch(
+                    new CreateFeedIdentityAction(Guid.NewGuid(), name, profilePicture)
+                );
+                return;
+            }
+            // TODO handle properly
+            return;
+        }
 
         var identity = new FeedIdentity(
             Id: id,
@@ -245,6 +271,7 @@ public class FeedEffects(
                     Id: id,
                     EncryptionKey: encryptionKey,
                     Name: "You",
+                    Nickname: "You",
                     CurrentPlan: [],
                     ProfilePicture: profilePicture
                 )
@@ -255,6 +282,7 @@ public class FeedEffects(
     private async Task<FeedUser> GetDecryptedUserAsync(
         Guid Id,
         byte[] encryptionKey,
+        string? nickname,
         GetUserResponse response
     )
     {
@@ -270,6 +298,7 @@ public class FeedEffects(
                         response.EncryptionIV
                     )
                 ),
+            Nickname: nickname,
             CurrentPlan: response.EncryptedCurrentPlan is null or { Length: 0 }
                 ? []
                 : CurrentPlanDaoV1

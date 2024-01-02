@@ -19,7 +19,9 @@ public class FeedApiService(HttpClient httpClient)
     {
         return GetApiResultAsync(async () =>
         {
-            var result = await httpClient.PostAsJsonAsync($"{baseUrl}events", request);
+            var result = (
+                await httpClient.PostAsJsonAsync($"{baseUrl}events", request)
+            ).EnsureSuccessStatusCode();
             return (await result.Content.ReadFromJsonAsync<GetEventsResponse>())!;
         });
     }
@@ -28,7 +30,9 @@ public class FeedApiService(HttpClient httpClient)
     {
         return GetApiResultAsync(async () =>
         {
-            var result = await httpClient.PostAsJsonAsync($"{baseUrl}user/create", request);
+            var result = (
+                await httpClient.PostAsJsonAsync($"{baseUrl}user/create", request)
+            ).EnsureSuccessStatusCode();
             return (await result.Content.ReadFromJsonAsync<CreateUserResponse>())!;
         });
     }
@@ -37,7 +41,10 @@ public class FeedApiService(HttpClient httpClient)
     {
         return GetApiResultAsync(async () =>
         {
-            return (await httpClient.GetFromJsonAsync<GetUserResponse>($"{baseUrl}user/{id}"))!;
+            var result = (
+                await httpClient.GetAsync($"{baseUrl}user/{id}")
+            ).EnsureSuccessStatusCode();
+            return (await result.Content.ReadFromJsonAsync<GetUserResponse>())!;
         });
     }
 
@@ -45,7 +52,7 @@ public class FeedApiService(HttpClient httpClient)
     {
         return GetApiResultAsync(async () =>
         {
-            await httpClient.PutAsJsonAsync($"{baseUrl}user", request);
+            (await httpClient.PutAsJsonAsync($"{baseUrl}user", request)).EnsureSuccessStatusCode();
         });
     }
 
@@ -53,7 +60,7 @@ public class FeedApiService(HttpClient httpClient)
     {
         return GetApiResultAsync(async () =>
         {
-            await httpClient.PutAsJsonAsync($"{baseUrl}event", request);
+            (await httpClient.PutAsJsonAsync($"{baseUrl}event", request)).EnsureSuccessStatusCode();
         });
     }
 
@@ -61,7 +68,9 @@ public class FeedApiService(HttpClient httpClient)
     {
         return GetApiResultAsync(async () =>
         {
-            var result = await httpClient.PostAsJsonAsync($"{baseUrl}users", getUsersRequest);
+            var result = (
+                await httpClient.PostAsJsonAsync($"{baseUrl}users", getUsersRequest)
+            ).EnsureSuccessStatusCode();
             return (await result.Content.ReadFromJsonAsync<GetUsersResponse>())!;
         });
     }
@@ -70,33 +79,27 @@ public class FeedApiService(HttpClient httpClient)
     {
         try
         {
-            return new ApiResult<T>(await action(), []);
+            return new ApiResult<T>(await action());
         }
         catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound)
         {
-            return new ApiResult<T>(default, [new ApiError(ApiErrorType.NotFound, e.Message, e)]);
+            return new ApiResult<T>(new ApiError(ApiErrorType.NotFound, e.Message, e));
         }
         catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.Unauthorized)
         {
-            return new ApiResult<T>(
-                default,
-                [new ApiError(ApiErrorType.Unauthorized, e.Message, e)]
-            );
+            return new ApiResult<T>(new ApiError(ApiErrorType.Unauthorized, e.Message, e));
         }
         catch (HttpRequestException e) when (e.StatusCode == (HttpStatusCode)429)
         {
-            return new ApiResult<T>(
-                default,
-                [new ApiError(ApiErrorType.RateLimited, e.Message, e)]
-            );
+            return new ApiResult<T>(new ApiError(ApiErrorType.RateLimited, e.Message, e));
         }
         catch (HttpRequestException e)
         {
-            return new ApiResult<T>(default, [new ApiError(ApiErrorType.Unknown, e.Message, e)]);
+            return new ApiResult<T>(new ApiError(ApiErrorType.Unknown, e.Message, e));
         }
         catch (Exception e)
         {
-            return new ApiResult<T>(default, [new ApiError(ApiErrorType.Unknown, e.Message, e)]);
+            return new ApiResult<T>(new ApiError(ApiErrorType.Unknown, e.Message, e));
         }
     }
 
@@ -121,13 +124,25 @@ public enum ApiErrorType
 
 public record ApiError(ApiErrorType Type, string Message, Exception Exception);
 
-public record ApiResult<T>(T? Data, ApiError[] Errors) : ApiResult(Errors)
+public record ApiResult<T> : ApiResult
 {
+    public T? Data { get; }
+
     [MemberNotNullWhen(true, nameof(Data))]
-    public new bool IsSuccess => Errors is { Length: 0 };
+    public new bool IsSuccess => Error is null;
+
+    public ApiResult(T data)
+        : base(default(ApiError))
+    {
+        Data = data;
+    }
+
+    public ApiResult(ApiError error)
+        : base(error) { }
 }
 
-public record ApiResult(ApiError[] Errors)
+public record ApiResult(ApiError? Error)
 {
-    public bool IsSuccess => Errors is { Length: 0 };
+    [MemberNotNullWhen(false, nameof(Error))]
+    public bool IsSuccess => Error is null;
 }

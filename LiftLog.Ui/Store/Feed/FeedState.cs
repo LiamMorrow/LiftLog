@@ -15,6 +15,7 @@ public record FeedState(
 public record FeedUser(
     Guid Id,
     string? Name,
+    string? Nickname,
     ImmutableListValue<SessionBlueprint> CurrentPlan,
     byte[]? ProfilePicture,
     byte[] EncryptionKey

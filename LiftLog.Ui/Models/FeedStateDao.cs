@@ -51,6 +51,7 @@ internal partial class FeedUserDaoV1
             : new FeedUser(
                 Id: value.Id,
                 Name: value.Name,
+                Nickname: value.Nickname,
                 EncryptionKey: value.EncryptionKey.ToByteArray(),
                 CurrentPlan: value
                     .CurrentPlan?.Sessions
@@ -69,6 +70,7 @@ internal partial class FeedUserDaoV1
             {
                 Id = value.Id,
                 Name = value.Name,
+                Nickname = value.Nickname,
                 CurrentPlan = new CurrentPlanDaoV1
                 {
                     Sessions = { value.CurrentPlan.Select(SessionBlueprintDaoV2.FromModel) }

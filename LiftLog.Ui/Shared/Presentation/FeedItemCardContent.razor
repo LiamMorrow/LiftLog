@@ -1,6 +1,6 @@
 @if(Item is SessionFeedItem sessionFeedItem){
     <div class="flex flex-col gap-2 items-start">
-        <span><span class="text-primary font-bold">@User.Name</span> completed a session!</span>
+        <span><span class="text-primary font-bold">@(User.Nickname ?? User.Name ?? "Someone")</span> completed a session!</span>
         <div class="w-full">
             <SessionSummary Session="sessionFeedItem.Session" IsFilled=true />
         </div>
