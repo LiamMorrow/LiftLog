@@ -29,3 +29,5 @@ public record SetShowBodyweightAction(bool ShowBodyweight);
 public record SetShowTipsAction(bool ShowTips);
 
 public record SetTipToShowAction(int TipToShow);
+
+public record SetShowFeedAction(bool ShowFeed);

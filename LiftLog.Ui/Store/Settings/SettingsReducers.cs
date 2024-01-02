@@ -57,4 +57,11 @@ public static class SettingsReducers
         {
             TipToShow = action.TipToShow
         };
+
+    [ReducerMethod]
+    public static SettingsState SetShowFeed(SettingsState state, SetShowFeedAction action) =>
+        state with
+        {
+            ShowFeed = action.ShowFeed
+        };
 }

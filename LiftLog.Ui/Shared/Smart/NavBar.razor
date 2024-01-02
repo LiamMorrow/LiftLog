@@ -3,12 +3,17 @@
 @inject NavigationManager NavigationManager
 @inject IState<CurrentSessionState> CurrentSessionState
 @inject IState<AppState> AppState
+@inject IState<SettingsState> SettingsState
 @inject IThemeProvider ThemeProvider
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <nav class="flex flex-col bg-surface-container text-on-surface">
     <div class="flex justify-around py-3">
         <NavButton IsActive=@IsRouteMatch("(/$|^$|/session/?)") Navigate="NavigateToWorkout" Icon="fitness_center" Text="Workout"></NavButton>
-        <NavButton IsActive=@IsRouteMatch("/feed(/?.*)") Navigate="NavigateToFeed" Icon="diversity_3" Text="Feed" ></NavButton>
+        @if(SettingsState.Value.ShowFeed){
+            <NavButton IsActive=@IsRouteMatch("/feed(/?.*)") Navigate="NavigateToFeed" Icon="diversity_3" Text="Feed" ></NavButton>
+        }
         <NavButton IsActive=@IsRouteMatch("/stats(/?.*)") Navigate="NavigateToStats" Icon="show_chart" Text="Stats" ></NavButton>
         <NavButton IsActive=@IsRouteMatch("/history(/?.*)") Navigate="NavigateToHistory" Icon="history" Text="History" ></NavButton>
         <NavButton IsActive=@IsRouteMatch("/settings(/?.*)") Navigate="NavigateToSettings" Icon="settings" Text="Settings"></NavButton>
@@ -77,8 +82,9 @@
         InvokeAsync(StateHasChanged);
     }
 
-    public void Dispose()
+    protected override void Dispose(bool disposing)
     {
         NavigationManager.LocationChanged -= LocationChanged;
+        base.Dispose(disposing);
     }
 }
