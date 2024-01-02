@@ -71,6 +71,9 @@
             --md-sys-color-surface-dim: rgb(@GetColorStr(_scheme.SurfaceDim));
             --md-sys-color-shadow: rgb(@GetColorStr(_scheme.Shadow));
             --md-outlined-button-label-text-type: 'Roboto Flex';
+
+            /* We put tabs in the main header, which animates its change of colour, we can just make the bg transparent to inherit it */
+            --md-primary-tab-container-color: transparent;
         }
     </style>
 }

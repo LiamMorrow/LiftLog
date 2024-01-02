@@ -23,7 +23,8 @@ internal partial class FeedIdentityDaoV1
                 Name: value.Name,
                 ProfilePicture: value.ProfilePicture.IsEmpty
                     ? null
-                    : value.ProfilePicture.ToByteArray()
+                    : value.ProfilePicture.ToByteArray(),
+                PublishBodyweight: value.PublishBodyweight
             );
 
     [return: NotNullIfNotNull(nameof(value))]
@@ -39,6 +40,7 @@ internal partial class FeedIdentityDaoV1
                 ProfilePicture = value.ProfilePicture is null
                     ? ByteString.Empty
                     : ByteString.CopyFrom(value.ProfilePicture),
+                PublishBodyweight = value.PublishBodyweight,
             };
 }
 

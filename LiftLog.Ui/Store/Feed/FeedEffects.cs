@@ -130,7 +130,8 @@ public class FeedEffects(
             response.Data.Password,
             encryptionKey,
             action.Name,
-            action.ProfilePicture
+            action.ProfilePicture,
+            action.PublishBodyweight
         );
     }
 
@@ -150,7 +151,8 @@ public class FeedEffects(
             state.Value.Identity.Password,
             state.Value.Identity.EncryptionKey,
             action.Name,
-            action.ProfilePicture
+            action.ProfilePicture,
+            action.PublishBodyweight
         );
     }
 
@@ -169,7 +171,14 @@ public class FeedEffects(
             {
                 SessionPayload = new SessionUserEvent
                 {
-                    Session = SessionDaoV2.FromModel(action.Session)
+                    Session = SessionDaoV2.FromModel(
+                        action.Session with
+                        {
+                            Bodyweight = state.Value.Identity.PublishBodyweight
+                                ? action.Session.Bodyweight
+                                : null
+                        }
+                    )
                 }
             }.ToByteArray(),
             state.Value.Identity.EncryptionKey
@@ -209,7 +218,8 @@ public class FeedEffects(
         string password,
         byte[] encryptionKey,
         string? name,
-        byte[]? profilePicture
+        byte[]? profilePicture,
+        bool publishBodyweight
     )
     {
         var (_, iv) = await encryptionService.EncryptAsync([1], encryptionKey);
@@ -248,7 +258,12 @@ public class FeedEffects(
             if (result.Error.Type == ApiErrorType.NotFound)
             {
                 dispatcher.Dispatch(
-                    new CreateFeedIdentityAction(Guid.NewGuid(), name, profilePicture)
+                    new CreateFeedIdentityAction(
+                        Guid.NewGuid(),
+                        name,
+                        profilePicture,
+                        publishBodyweight
+                    )
                 );
                 return;
             }
@@ -261,7 +276,8 @@ public class FeedEffects(
             EncryptionKey: encryptionKey,
             Password: password,
             Name: name,
-            ProfilePicture: profilePicture
+            ProfilePicture: profilePicture,
+            PublishBodyweight: publishBodyweight
         );
 
         dispatcher.Dispatch(new PutFeedIdentityAction(identity));

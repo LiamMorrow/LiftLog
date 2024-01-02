@@ -13,6 +13,7 @@ message FeedIdentityDaoV1 {
     string password = 4;
     optional google.protobuf.StringValue name = 5;
     optional bytes profile_picture = 6;
+    bool publish_bodyweight = 7;
 }
 
 message FeedUserDaoV1 {

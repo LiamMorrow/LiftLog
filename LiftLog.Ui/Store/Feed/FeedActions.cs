@@ -3,9 +3,18 @@ using LiftLog.Lib.Models;
 
 namespace LiftLog.Ui.Store.Feed;
 
-public record CreateFeedIdentityAction(Guid Id, string? Name, byte[]? ProfilePicture);
+public record CreateFeedIdentityAction(
+    Guid Id,
+    string? Name,
+    byte[]? ProfilePicture,
+    bool PublishBodyweight
+);
 
-public record UpdateFeedIdentityAction(string? Name, byte[]? ProfilePicture);
+public record UpdateFeedIdentityAction(
+    string? Name,
+    byte[]? ProfilePicture,
+    bool PublishBodyweight
+);
 
 public record PutFeedIdentityAction(FeedIdentity? Identity);
 

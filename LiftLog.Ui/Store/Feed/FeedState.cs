@@ -41,5 +41,6 @@ public record FeedIdentity(
     byte[] EncryptionKey,
     string Password,
     string? Name,
-    byte[]? ProfilePicture
+    byte[]? ProfilePicture,
+    bool PublishBodyweight
 );

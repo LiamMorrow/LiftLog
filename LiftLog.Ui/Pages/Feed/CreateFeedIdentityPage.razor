@@ -12,7 +12,10 @@
 {
     <div class="text-on-surface flex flex-col gap-4 p-4">
         <span class="text-lg">Create a new identity to start publishing!</span>
-        <TextField Value="@name" label="Your name (optional)" OnChange=@((val)=>name = val) />
+        <TextField Value="@(FeedState.Value.Identity?.Name ?? "")" label="Your name (optional)" OnChange=@SetName />
+        <div>
+            <Switch Label="Publish bodyweight" Value=@publishBodyweight OnSwitched="SetPublishBodyweight"/>
+        </div>
         <span class="text-sm">This will generate a new link which you can share with others.</span>
         <AppButton Type=AppButtonType.Text OnClick=StartPublishing>Start publishing</AppButton>
     </div>
@@ -22,21 +25,25 @@ else
     <div class="text-on-surface flex flex-col gap-4 p-4">
         <span class="text-lg">Share this link to let others track your progress!</span>
 
-        <TextField Value="@name" label="Your name" OnChange=@((val)=>name = val) />
+        <TextField Value="@name" label="Your name" OnChange=@SetName />
         <TextField Value="@GetShareUrl()" label="Share Link" readonly="readonly" OnClick="HandleShareUrlClick" />
         <span class="text-sm">Only those with the link can see what you've shared.</span>
-        <AppButton Type=AppButtonType.Text OnClick=UpdatePublishingDetails>Update details</AppButton>
+        <div>
+            <Switch Label="Publish bodyweight" Value=@publishBodyweight OnSwitched="SetPublishBodyweight"/>
+        </div>
     </div>
 }
 
 @code
 {
     private string name = "";
+    private bool publishBodyweight;
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Start Publishing"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/feed"));
         name = FeedState.Value.Identity?.Name ?? "";
+        publishBodyweight = FeedState.Value.Identity?.PublishBodyweight ?? false;
         base.OnInitialized();
     }
 
@@ -51,12 +58,14 @@ else
 
     private void StartPublishing()
     {
-        Dispatcher.Dispatch(new CreateFeedIdentityAction(Guid.NewGuid(), string.IsNullOrEmpty(name) ? null : name, null));
+        Dispatcher.Dispatch(new CreateFeedIdentityAction(Guid.NewGuid(), string.IsNullOrEmpty(name) ? null : name, null, publishBodyweight));
     }
 
     private void UpdatePublishingDetails()
     {
-        Dispatcher.Dispatch(new UpdateFeedIdentityAction(string.IsNullOrEmpty(name) ? null : name, null));
+        if(FeedState.Value.Identity is null)
+            return;
+        Dispatcher.Dispatch(new UpdateFeedIdentityAction(string.IsNullOrEmpty(name) ? null : name, null, publishBodyweight));
     }
 
     private async Task HandleShareUrlClick()
@@ -66,4 +75,18 @@ else
             return;
         await StringSharer.ShareAsync(shareUrl);
     }
+
+    private void SetName(string value)
+    {
+        name = value;
+        UpdatePublishingDetails();
+    }
+
+    private void SetPublishBodyweight(bool value)
+    {
+        publishBodyweight = value;
+        UpdatePublishingDetails();
+    }
+
+
 }
