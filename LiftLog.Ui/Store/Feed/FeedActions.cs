@@ -7,13 +7,15 @@ public record CreateFeedIdentityAction(
     Guid Id,
     string? Name,
     byte[]? ProfilePicture,
-    bool PublishBodyweight
+    bool PublishBodyweight,
+    bool PublishPlan
 );
 
 public record UpdateFeedIdentityAction(
     string? Name,
     byte[]? ProfilePicture,
-    bool PublishBodyweight
+    bool PublishBodyweight,
+    bool PublishPlan
 );
 
 public record PutFeedIdentityAction(FeedIdentity? Identity);
@@ -23,6 +25,8 @@ public record ReplaceFeedItemsAction(ImmutableListValue<FeedItem> Items);
 public record PutFeedUserAction(FeedUser User);
 
 public record SetSharedFeedUserAction(FeedUser? User);
+
+public record PublishIdentityIfEnabledAction();
 
 public record FetchSharedFeedUserAction(Guid Id, byte[] EncryptionKey);
 

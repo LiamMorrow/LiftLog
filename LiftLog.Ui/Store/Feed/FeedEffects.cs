@@ -2,11 +2,13 @@ using System.Collections.Immutable;
 using System.Text;
 using Fluxor;
 using Google.Protobuf;
+using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Services;
 using LiftLog.Ui.Models;
 using LiftLog.Ui.Models.SessionHistoryDao;
 using LiftLog.Ui.Services;
+using LiftLog.Ui.Store.Program;
 using LiftLog.Ui.Util;
 using Microsoft.Extensions.Logging;
 using static LiftLog.Lib.Models.UserEventPayload;
@@ -15,6 +17,7 @@ namespace LiftLog.Ui.Store.Feed;
 
 public class FeedEffects(
     IState<FeedState> state,
+    IState<ProgramState> programState,
     FeedApiService feedApiService,
     IEncryptionService encryptionService,
     IKeyValueStore keyValueStore,
@@ -131,7 +134,8 @@ public class FeedEffects(
             encryptionKey,
             action.Name,
             action.ProfilePicture,
-            action.PublishBodyweight
+            action.PublishBodyweight,
+            action.PublishPlan
         );
     }
 
@@ -152,7 +156,30 @@ public class FeedEffects(
             state.Value.Identity.EncryptionKey,
             action.Name,
             action.ProfilePicture,
-            action.PublishBodyweight
+            action.PublishBodyweight,
+            action.PublishPlan
+        );
+    }
+
+    [EffectMethod]
+    public async Task PublishIdentityIfEnabled(
+        PublishIdentityIfEnabledAction _,
+        IDispatcher dispatcher
+    )
+    {
+        if (state.Value.Identity is null)
+        {
+            return;
+        }
+        await GenerateAndPutFeedIdentityAsync(
+            dispatcher,
+            state.Value.Identity.Id,
+            state.Value.Identity.Password,
+            state.Value.Identity.EncryptionKey,
+            state.Value.Identity.Name,
+            state.Value.Identity.ProfilePicture,
+            state.Value.Identity.PublishBodyweight,
+            state.Value.Identity.PublishPlan
         );
     }
 
@@ -219,7 +246,8 @@ public class FeedEffects(
         byte[] encryptionKey,
         string? name,
         byte[]? profilePicture,
-        bool publishBodyweight
+        bool publishBodyweight,
+        bool publishPlan
     )
     {
         var (_, iv) = await encryptionService.EncryptAsync([1], encryptionKey);
@@ -238,11 +266,23 @@ public class FeedEffects(
                 await encryptionService.EncryptAsync(profilePicture, encryptionKey, iv)
             ).EncryptedPayload;
 
+        var currentProgram = (CurrentPlanDaoV1?)programState.Value.SessionBlueprints;
+        var encryptedPlan =
+            currentProgram is null || !publishPlan
+                ? null
+                : (
+                    await encryptionService.EncryptAsync(
+                        currentProgram.ToByteArray(),
+                        encryptionKey,
+                        iv
+                    )
+                ).EncryptedPayload;
+
         var result = await feedApiService.PutUserDataAsync(
             new PutUserDataRequest(
                 Id: id,
                 Password: password,
-                EncryptedCurrentPlan: null,
+                EncryptedCurrentPlan: encryptedPlan,
                 EncryptedName: encryptedName,
                 EncryptedProfilePicture: encryptedProfilePicture,
                 EncryptionIV: iv
@@ -262,7 +302,8 @@ public class FeedEffects(
                         Guid.NewGuid(),
                         name,
                         profilePicture,
-                        publishBodyweight
+                        publishBodyweight,
+                        publishPlan
                     )
                 );
                 return;
@@ -277,7 +318,8 @@ public class FeedEffects(
             Password: password,
             Name: name,
             ProfilePicture: profilePicture,
-            PublishBodyweight: publishBodyweight
+            PublishBodyweight: publishBodyweight,
+            PublishPlan: publishPlan
         );
 
         dispatcher.Dispatch(new PutFeedIdentityAction(identity));
@@ -286,9 +328,11 @@ public class FeedEffects(
                 new FeedUser(
                     Id: id,
                     EncryptionKey: encryptionKey,
-                    Name: "You",
+                    Name: name ?? "You",
                     Nickname: "You",
-                    CurrentPlan: [],
+                    CurrentPlan: currentProgram is null
+                        ? []
+                        : (ImmutableListValue<SessionBlueprint>)currentProgram,
                     ProfilePicture: profilePicture
                 )
             )

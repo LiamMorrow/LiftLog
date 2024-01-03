@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
+using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Models.SessionBlueprintDao;
 using LiftLog.Ui.Models.SessionHistoryDao;
@@ -24,7 +25,8 @@ internal partial class FeedIdentityDaoV1
                 ProfilePicture: value.ProfilePicture.IsEmpty
                     ? null
                     : value.ProfilePicture.ToByteArray(),
-                PublishBodyweight: value.PublishBodyweight
+                PublishBodyweight: value.PublishBodyweight,
+                PublishPlan: value.PublishPlan
             );
 
     [return: NotNullIfNotNull(nameof(value))]
@@ -41,6 +43,7 @@ internal partial class FeedIdentityDaoV1
                     ? ByteString.Empty
                     : ByteString.CopyFrom(value.ProfilePicture),
                 PublishBodyweight = value.PublishBodyweight,
+                PublishPlan = value.PublishPlan
             };
 }
 
@@ -73,10 +76,7 @@ internal partial class FeedUserDaoV1
                 Id = value.Id,
                 Name = value.Name,
                 Nickname = value.Nickname,
-                CurrentPlan = new CurrentPlanDaoV1
-                {
-                    Sessions = { value.CurrentPlan.Select(SessionBlueprintDaoV2.FromModel) }
-                },
+                CurrentPlan = value.CurrentPlan,
                 EncryptionKey = ByteString.CopyFrom(value.EncryptionKey),
                 ProfilePicture = value.ProfilePicture is null
                     ? ByteString.Empty
@@ -143,4 +143,25 @@ internal partial class FeedStateDaoV1
                 FeedItems = { value.Feed.Select(x => (FeedItemDaoV1)x) },
                 FeedUsers = { value.Users.Values.Select(x => (FeedUserDaoV1)x) },
             };
+}
+
+internal partial class CurrentPlanDaoV1
+{
+    [return: NotNullIfNotNull(nameof(value))]
+    public static implicit operator ImmutableListValue<SessionBlueprint>?(
+        CurrentPlanDaoV1? value
+    ) =>
+        value is null
+            ? []
+            : value
+                .Sessions.Select(sessionBlueprintDao => sessionBlueprintDao.ToModel())
+                .ToImmutableList();
+
+    [return: NotNullIfNotNull(nameof(value))]
+    public static implicit operator CurrentPlanDaoV1?(
+        ImmutableListValue<SessionBlueprint>? value
+    ) =>
+        value is null or []
+            ? null
+            : new CurrentPlanDaoV1 { Sessions = { value.Select(SessionBlueprintDaoV2.FromModel) } };
 }

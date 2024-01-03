@@ -57,7 +57,7 @@
             </div>
         }
         <VirtualizedCardList Items=@(FeedState.Value.Users.Values.ToList())>
-            <FeedUserCardContent User=context UpdateUser="UpdateUser" DeleteUser="() => BeginDeleteUser(context)" />
+            <FeedUserCardContent User=context UpdateUser="UpdateUser" DeleteUser="() => BeginDeleteUser(context)" ViewUserPlan="() => ViewUserPlan(context)" />
         </VirtualizedCardList>
     </div>
 </div>
@@ -113,6 +113,11 @@
             Dispatcher.Dispatch(new DeleteFeedUserAction(userToDelete));
         }
         deleteUserDialog?.Close();
+    }
+
+    private void ViewUserPlan(FeedUser user)
+    {
+        NavigationManager.NavigateTo($"/feed/user-plan/{user.Id}");
     }
 
     private async Task HandleTabChange()

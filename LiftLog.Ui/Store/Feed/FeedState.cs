@@ -42,5 +42,6 @@ public record FeedIdentity(
     string Password,
     string? Name,
     byte[]? ProfilePicture,
-    bool PublishBodyweight
+    bool PublishBodyweight,
+    bool PublishPlan
 );

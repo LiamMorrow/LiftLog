@@ -1,13 +1,18 @@
 <SplitCardControl>
     <MainContent>
-<div class="flex flex-col gap-4">
-    <span class="text-left text-lg text-primary font-bold">@(User.Name ?? "Someone")</span>
-    <TextField Value=@(User.Nickname ?? "") OnChange="val => UpdateUser(User with { Nickname = val })" label="Nickname" />
-</div>
+    <div class="flex flex-col gap-4">
+        <span class="text-left text-lg text-primary font-bold">@(User.Name ?? "Someone")</span>
+        <TextField Value=@(User.Nickname ?? "") OnChange="val => UpdateUser(User with { Nickname = val })" label="Nickname" />
+        @if(User.CurrentPlan is not [])
+        {
+            <AppButton Type="AppButtonType.Text" OnClick=ViewUserPlan>
+                View their plan
+            </AppButton>
+        }
+    </div>
 </MainContent>
 <SideContent>
-
-            <IconButton Type="IconButtonType.FilledTonal" OnClick=@DeleteUser Icon="person_remove" />
+    <IconButton Type="IconButtonType.FilledTonal" OnClick=@DeleteUser Icon="person_remove" />
 </SideContent>
 </SplitCardControl>
 
@@ -24,4 +29,8 @@
     [Parameter]
     [EditorRequired]
     public Action DeleteUser { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public Action ViewUserPlan { get; set; } = null!;
 }

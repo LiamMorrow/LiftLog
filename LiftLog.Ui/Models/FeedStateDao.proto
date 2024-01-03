@@ -14,6 +14,7 @@ message FeedIdentityDaoV1 {
     optional google.protobuf.StringValue name = 5;
     optional bytes profile_picture = 6;
     bool publish_bodyweight = 7;
+    bool publish_plan = 8;
 }
 
 message FeedUserDaoV1 {

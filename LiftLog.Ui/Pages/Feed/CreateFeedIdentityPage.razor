@@ -16,6 +16,9 @@
         <div>
             <Switch Label="Publish bodyweight" Value=@publishBodyweight OnSwitched="SetPublishBodyweight"/>
         </div>
+        <div>
+            <Switch Label="Publish plan" Value=@publishPlan OnSwitched="SetPublishPlan"/>
+        </div>
         <span class="text-sm">This will generate a new link which you can share with others.</span>
         <AppButton Type=AppButtonType.Text OnClick=StartPublishing>Start publishing</AppButton>
     </div>
@@ -31,6 +34,9 @@ else
         <div>
             <Switch Label="Publish bodyweight" Value=@publishBodyweight OnSwitched="SetPublishBodyweight"/>
         </div>
+        <div>
+            <Switch Label="Publish plan" Value=@publishPlan OnSwitched="SetPublishPlan"/>
+        </div>
         <AppButton Type=AppButtonType.Text >Stop publishing</AppButton>
     </div>
 }
@@ -39,12 +45,14 @@ else
 {
     private string name = "";
     private bool publishBodyweight;
+    private bool publishPlan;
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Start Publishing"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/feed"));
         name = FeedState.Value.Identity?.Name ?? "";
         publishBodyweight = FeedState.Value.Identity?.PublishBodyweight ?? false;
+        publishPlan = FeedState.Value.Identity?.PublishPlan ?? true;
         base.OnInitialized();
     }
 
@@ -59,14 +67,14 @@ else
 
     private void StartPublishing()
     {
-        Dispatcher.Dispatch(new CreateFeedIdentityAction(Guid.NewGuid(), string.IsNullOrEmpty(name) ? null : name, null, publishBodyweight));
+        Dispatcher.Dispatch(new CreateFeedIdentityAction(Guid.NewGuid(), string.IsNullOrEmpty(name) ? null : name, null, publishBodyweight, publishPlan));
     }
 
     private void UpdatePublishingDetails()
     {
         if(FeedState.Value.Identity is null)
             return;
-        Dispatcher.Dispatch(new UpdateFeedIdentityAction(string.IsNullOrEmpty(name) ? null : name, null, publishBodyweight));
+        Dispatcher.Dispatch(new UpdateFeedIdentityAction(string.IsNullOrEmpty(name) ? null : name, null, publishBodyweight, publishPlan));
     }
 
     private async Task HandleShareUrlClick()
@@ -86,6 +94,11 @@ else
     private void SetPublishBodyweight(bool value)
     {
         publishBodyweight = value;
+        UpdatePublishingDetails();
+    }
+    private void SetPublishPlan(bool value)
+    {
+        publishPlan = value;
         UpdatePublishingDetails();
     }
 

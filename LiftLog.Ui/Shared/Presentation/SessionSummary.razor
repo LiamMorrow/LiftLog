@@ -12,7 +12,16 @@
 {
     <div class="flex justify-between w-full">
         <span>@exercise.Blueprint.Name</span>
-        <WeightFormat Weight="@exercise.Weight" />
+        <span class="flex gap-2">
+            @if(ShowSets)
+            {
+                <span>@(exercise.Blueprint.Sets) x @(exercise.Blueprint.RepsPerSet) </span>
+            }
+            @if(ShowWeight)
+            {
+                <WeightFormat Weight="@exercise.Weight" />
+            }
+        </span>
     </div>
 }
 
@@ -24,6 +33,12 @@
 
     [Parameter]
     public bool IsFilled { get; set; }
+
+    [Parameter]
+    public bool ShowSets { get; set; }
+
+    [Parameter]
+    public bool ShowWeight { get; set; } = true;
 
     private string FormattedDate => Session.Date.Year == DateTime.Now.Year
         ? Session.Date.ToString("M", CultureInfo.InvariantCulture)
