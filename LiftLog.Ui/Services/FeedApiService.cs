@@ -75,6 +75,16 @@ public class FeedApiService(HttpClient httpClient)
         });
     }
 
+    public Task<ApiResult> DeleteUserAsync(DeleteUserRequest deleteUserRequest)
+    {
+        return GetApiResultAsync(async () =>
+        {
+            (
+                await httpClient.PostAsJsonAsync($"{baseUrl}user/delete", deleteUserRequest)
+            ).EnsureSuccessStatusCode();
+        });
+    }
+
     private static async Task<ApiResult<T>> GetApiResultAsync<T>(Func<Task<T>> action)
     {
         try

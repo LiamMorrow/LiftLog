@@ -20,6 +20,15 @@ public class GetUsersRequestValidator : AbstractValidator<GetUsersRequest>
     }
 }
 
+public class DeleteUserRequestValidator : AbstractValidator<DeleteUserRequest>
+{
+    public DeleteUserRequestValidator()
+    {
+        RuleFor(x => x.Id).NotEmpty();
+        RuleFor(x => x.Password).NotEmpty();
+    }
+}
+
 public class PutUserDataRequestValidator : AbstractValidator<PutUserDataRequest>
 {
     const int KB = 1024;

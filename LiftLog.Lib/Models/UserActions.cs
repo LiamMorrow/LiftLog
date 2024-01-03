@@ -4,6 +4,8 @@ public record CreateUserRequest(Guid Id);
 
 public record GetUsersRequest(Guid[] Ids);
 
+public record DeleteUserRequest(Guid Id, string Password);
+
 public record GetUsersResponse(Dictionary<Guid, GetUserResponse> Users);
 
 public record CreateUserResponse(string Password);

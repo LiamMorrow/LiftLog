@@ -110,7 +110,7 @@
     {
         if(userToDelete is not null)
         {
-            Dispatcher.Dispatch(new DeleteFeedUserAction(userToDelete));
+            Dispatcher.Dispatch(new DeleteFeedUserAction(userToDelete.Id));
         }
         deleteUserDialog?.Close();
     }

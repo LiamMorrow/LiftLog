@@ -2,7 +2,7 @@
     <div class="flex flex-col gap-2 items-start">
         <span><span class="text-primary font-bold">@(User.Nickname ?? User.Name ?? "Someone")</span> completed a workout!</span>
         <div class="w-full">
-            <SessionSummary Session="sessionFeedItem.Session" IsFilled=true />
+            <SessionSummary Session="sessionFeedItem.Session" IsFilled=true ShowSets=true />
         </div>
     </div>
 }

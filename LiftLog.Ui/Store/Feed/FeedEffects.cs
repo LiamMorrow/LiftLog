@@ -115,6 +115,29 @@ public class FeedEffects(
     }
 
     [EffectMethod]
+    public async Task HandleDeleteFeedIdentityAction(
+        DeleteFeedIdentityAction _,
+        IDispatcher dispatcher
+    )
+    {
+        var identity = state.Value.Identity;
+        if (identity is null)
+        {
+            return;
+        }
+        var response = await feedApiService.DeleteUserAsync(
+            new DeleteUserRequest(Id: identity.Id, Password: identity.Password)
+        );
+        if (!response.IsSuccess)
+        {
+            // TODO handle properly
+            return;
+        }
+        dispatcher.Dispatch(new PutFeedIdentityAction(null));
+        dispatcher.Dispatch(new DeleteFeedUserAction(identity.Id));
+    }
+
+    [EffectMethod]
     public async Task HandleCreateFeedIdentityAction(
         CreateFeedIdentityAction action,
         IDispatcher dispatcher

@@ -95,6 +95,34 @@ app.MapGet(
 );
 
 app.MapPost(
+    "/user/delete",
+    async (
+        UserDataContext db,
+        DeleteUserRequest request,
+        IValidator<DeleteUserRequest> validator
+    ) =>
+    {
+        var validationResult = await validator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            return Results.BadRequest(validationResult.Errors);
+        }
+        var user = await db.Users.FindAsync(request.Id);
+        if (user == null)
+        {
+            return Results.NotFound();
+        }
+        if (!PasswordService.VerifyPassword(request.Password, user.HashedPassword, user.Salt))
+        {
+            return Results.Unauthorized();
+        }
+        db.Users.Remove(user);
+        await db.SaveChangesAsync();
+        return Results.Ok();
+    }
+);
+
+app.MapPost(
     "/users",
     async (UserDataContext db, GetUsersRequest request, IValidator<GetUsersRequest> validator) =>
     {

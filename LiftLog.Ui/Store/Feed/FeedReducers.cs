@@ -54,7 +54,7 @@ public static class FeedReducers
     public static FeedState DeleteFeedUser(FeedState state, DeleteFeedUserAction action) =>
         state with
         {
-            Users = state.Users.Remove(action.FeedUser.Id),
-            Feed = state.Feed.Where(x => x.UserId != action.FeedUser.Id).ToImmutableList()
+            Users = state.Users.Remove(action.FeedUserId),
+            Feed = state.Feed.Where(x => x.UserId != action.FeedUserId).ToImmutableList()
         };
 }

@@ -22,6 +22,8 @@ public record PutFeedIdentityAction(FeedIdentity? Identity);
 
 public record ReplaceFeedItemsAction(ImmutableListValue<FeedItem> Items);
 
+public record DeleteFeedIdentityAction();
+
 public record PutFeedUserAction(FeedUser User);
 
 public record SetSharedFeedUserAction(FeedUser? User);
@@ -38,4 +40,4 @@ public record PublishWorkoutToFeedAction(Session Session);
 
 public record ReplaceFeedUsersAction(ImmutableListValue<FeedUser> Users);
 
-public record DeleteFeedUserAction(FeedUser FeedUser);
+public record DeleteFeedUserAction(Guid FeedUserId);
