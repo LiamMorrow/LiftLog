@@ -5,6 +5,7 @@ using LiftLog.Lib.Models;
 namespace LiftLog.Ui.Store.Feed;
 
 public record FeedState(
+    bool IsLoadingIdentity,
     FeedIdentity? Identity,
     ImmutableListValue<FeedItem> Feed,
     ImmutableDictionary<Guid, FeedUser> Users,

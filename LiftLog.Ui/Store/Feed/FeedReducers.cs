@@ -57,4 +57,10 @@ public static class FeedReducers
             Users = state.Users.Remove(action.FeedUserId),
             Feed = state.Feed.Where(x => x.UserId != action.FeedUserId).ToImmutableList()
         };
+
+    [ReducerMethod]
+    public static FeedState SetIsLoadingIdentity(
+        FeedState state,
+        SetIsLoadingIdentityAction action
+    ) => state with { IsLoadingIdentity = action.IsLoadingIdentity };
 }

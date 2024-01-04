@@ -136,6 +136,7 @@ public class FeedEffects(
         }
         dispatcher.Dispatch(new PutFeedIdentityAction(null));
         dispatcher.Dispatch(new DeleteFeedUserAction(identity.Id));
+        dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
     }
 
     [EffectMethod]
@@ -144,9 +145,15 @@ public class FeedEffects(
         IDispatcher dispatcher
     )
     {
+        if (state.Value.IsLoadingIdentity)
+        {
+            return;
+        }
+        dispatcher.Dispatch(new SetIsLoadingIdentityAction(true));
         var response = await feedApiService.CreateUserAsync(new CreateUserRequest(Id: action.Id));
         if (!response.IsSuccess)
         {
+            dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
             // TODO handle properly
             return;
         }
@@ -161,6 +168,7 @@ public class FeedEffects(
             action.PublishBodyweight,
             action.PublishPlan
         );
+        dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
     }
 
     [EffectMethod]

@@ -124,6 +124,7 @@ internal partial class FeedStateDaoV1
         value is null
             ? null
             : new FeedState(
+                IsLoadingIdentity: false,
                 Identity: value.Identity,
                 Feed: value.FeedItems.Select(x => (FeedItem?)x).WhereNotNull().ToImmutableList(),
                 Users: value.FeedUsers.ToImmutableDictionary(

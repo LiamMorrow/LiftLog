@@ -41,3 +41,5 @@ public record PublishWorkoutToFeedAction(Session Session);
 public record ReplaceFeedUsersAction(ImmutableListValue<FeedUser> Users);
 
 public record DeleteFeedUserAction(Guid FeedUserId);
+
+public record SetIsLoadingIdentityAction(bool IsLoadingIdentity);
