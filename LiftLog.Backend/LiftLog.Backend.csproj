@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>true</InvariantGlobalization>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <ContainerRepository>liftlog-api</ContainerRepository>
   </PropertyGroup>
 
   <ItemGroup>
