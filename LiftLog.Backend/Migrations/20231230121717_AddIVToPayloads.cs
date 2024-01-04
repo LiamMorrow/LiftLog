@@ -15,26 +15,24 @@ namespace LiftLog.Backend.Migrations
                 table: "Users",
                 type: "bytea",
                 nullable: false,
-                defaultValue: new byte[0]);
+                defaultValue: new byte[0]
+            );
 
             migrationBuilder.AddColumn<byte[]>(
                 name: "EncryptionIV",
                 table: "UserEvents",
                 type: "bytea",
                 nullable: false,
-                defaultValue: new byte[0]);
+                defaultValue: new byte[0]
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "EncryptionIV",
-                table: "Users");
+            migrationBuilder.DropColumn(name: "EncryptionIV", table: "Users");
 
-            migrationBuilder.DropColumn(
-                name: "EncryptionIV",
-                table: "UserEvents");
+            migrationBuilder.DropColumn(name: "EncryptionIV", table: "UserEvents");
         }
     }
 }
