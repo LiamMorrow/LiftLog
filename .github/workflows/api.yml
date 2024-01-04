@@ -34,6 +34,6 @@ jobs:
         run: dotnet publish --os linux --arch x64 /t:PublishContainer -c Release
         working-directory: LiftLog.Backend
       - name: Tag image
-        run: docker tag liftlog-api:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:api
+        run: docker tag liftlog-api:latest ghcr.io/liammorrow/liftlog:api
       - name: Push image
-        run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:api
+        run: docker push ghcr.io/liammorrow/liftlog:api
