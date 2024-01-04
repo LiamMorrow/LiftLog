@@ -3,14 +3,9 @@ using Microsoft.JSInterop;
 
 namespace LiftLog.Web.Services;
 
-public class ClipboardStringSharer : IStringSharer
+public class ClipboardStringSharer(IJSRuntime jsRuntime) : IStringSharer
 {
-    private readonly IJSRuntime _jsRuntime;
-
-    public ClipboardStringSharer(IJSRuntime jsRuntime)
-    {
-        _jsRuntime = jsRuntime;
-    }
+    private readonly IJSRuntime _jsRuntime = jsRuntime;
 
     public async Task ShareAsync(string text)
     {

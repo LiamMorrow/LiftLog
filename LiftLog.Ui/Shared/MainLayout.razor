@@ -5,6 +5,7 @@
 @inject IState<AppState> AppState
 @inject IState<SettingsState> SettingsState
 @inject IThemeProvider ThemeProvider
+@inject InsetsManager InsetsManager
 @inject NavigationManager NavigationManager
 
 <CascadingValue Name="UseImperial" Value="SettingsState.Value.UseImperialUnits">
@@ -13,7 +14,7 @@
     <section class="relative h-full content">
         <div class="grid grid-cols-1 h-full grid-rows-[min-content_1fr_min-content]">
             <div class="flex flex-col @_topNavColorClass transition-colors">
-                <div style="height: @ThemeProvider.SystemSafeInsetTop"></div>
+                <div style="height: @InsetsManager.SystemSafeInsetTop"></div>
                 <div class="flex items-center px-4 py-4 gap-2 text-2xl @Justify ">
                     @RenderBackButton()
                     <div class="h-[40px] flex items-center">
@@ -43,7 +44,7 @@
 
     protected override void OnInitialized()
     {
-        ThemeProvider.InsetsChanged += (_,_)=>
+        InsetsManager.InsetsChanged += (_,_)=>
         {
             InvokeAsync(StateHasChanged);
         };

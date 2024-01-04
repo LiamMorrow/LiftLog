@@ -18,12 +18,6 @@ public interface IThemeProvider
     public ThemePreference GetThemePreference();
 
     event EventHandler SeedChanged;
-
-    event EventHandler InsetsChanged;
-
-    string SystemSafeInsetTop { get; }
-
-    string SystemSafeInsetBottom { get; }
 }
 
 public enum ThemePreference

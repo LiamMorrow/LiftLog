@@ -5,6 +5,7 @@
 @inject IState<AppState> AppState
 @inject IState<SettingsState> SettingsState
 @inject IThemeProvider ThemeProvider
+@inject InsetsManager InsetsManager
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
@@ -18,14 +19,14 @@
         <NavButton IsActive=@IsRouteMatch("/history(/?.*)") Navigate="NavigateToHistory" Icon="history" Text="History" ></NavButton>
         <NavButton IsActive=@IsRouteMatch("/settings(/?.*)") Navigate="NavigateToSettings" Icon="settings" Text="Settings"></NavButton>
     </div>
-    <div style="height: @ThemeProvider.SystemSafeInsetBottom"></div>
+    <div style="height: @InsetsManager.SystemSafeInsetBottom"></div>
    </nav>
 @code {
 
     protected override void OnInitialized()
     {
         NavigationManager.LocationChanged += LocationChanged;
-        ThemeProvider.InsetsChanged += (_,_)=>
+        InsetsManager.InsetsChanged += (_,_)=>
         {
             InvokeAsync(StateHasChanged);
         };
