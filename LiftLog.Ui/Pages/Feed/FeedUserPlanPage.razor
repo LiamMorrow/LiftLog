@@ -1,0 +1,75 @@
+@using Fluxor;
+
+@page "/feed/user-plan/{UserIdStr}"
+
+@inject IJSRuntime JSRuntime
+@inject IState<FeedState> FeedState
+@inject NavigationManager NavigationManager
+@inject IDispatcher Dispatcher
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+
+<div class="flex flex-col gap-4">
+    <CardList Items="plan">
+        <SessionSummary Session="context.GetEmptySession()" ShowSets="true" ShowWeight=false/>
+    </CardList>
+    <div>
+        <AppButton OnClick="()=>usePlanDialog?.Open()" ><md-icon slot="icon">assignment</md-icon>Use their plan</AppButton>
+    </div>
+</div>
+
+@if(user != null)
+{
+    <Dialog @ref="usePlanDialog">
+
+        <span slot="headline">Use their plan</span>
+        <span slot="content" class="block text-left">This will overwrite your current plan and import <span class="font-bold text-primary">@(user.Nickname ?? user.Name)'s</span> plan</span>
+        <div slot="actions">
+            <AppButton Type="AppButtonType.Text" OnClick=@(()=>usePlanDialog?.Close())>Cancel</AppButton>
+            <AppButton Type="AppButtonType.Text" OnClick=UsePlan>Overwrite</AppButton>
+        </div>
+    </Dialog>
+}
+@code
+{
+    [Parameter]
+    public string UserIdStr { get; set; } = null!;
+
+    private Dialog? usePlanDialog;
+
+    private FeedUser? user;
+
+    private ImmutableListValue<SessionBlueprint> plan = [];
+
+    protected override void OnInitialized()
+    {
+        Dispatcher.Dispatch(new SetPageTitleAction("User Plan"));
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/feed"));
+        if(FeedState.Value.Users is null || !Guid.TryParse(UserIdStr, out var userId))
+        {
+            NavigationManager.NavigateTo("/feed");
+        }
+        else
+        {
+            if(!FeedState.Value.Users.TryGetValue(userId, out user))
+            {
+                NavigationManager.NavigateTo("/feed");
+            }
+            else
+            {
+                Dispatcher.Dispatch(new SetPageTitleAction($"{user.Nickname ?? user.Name}'s Plan"));
+                plan = user.CurrentPlan;
+            }
+        }
+
+        base.OnInitialized();
+    }
+
+    private void UsePlan()
+    {
+        Dispatcher.Dispatch(new SetProgramSessionsAction(plan));
+        usePlanDialog?.Close();
+    }
+
+}

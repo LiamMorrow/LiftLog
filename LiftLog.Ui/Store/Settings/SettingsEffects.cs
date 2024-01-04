@@ -165,4 +165,10 @@ public class SettingsEffects(
     {
         await preferencesRepository.SetTipToShowAsync(action.TipToShow);
     }
+
+    [EffectMethod]
+    public async Task HandleShowFeedAction(SetShowFeedAction action, IDispatcher dispatcher)
+    {
+        await preferencesRepository.SetShowFeedAsync(action.ShowFeed);
+    }
 }

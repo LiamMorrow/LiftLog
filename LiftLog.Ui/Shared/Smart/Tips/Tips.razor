@@ -12,19 +12,22 @@
                 <DisablingTipsTip/>
                 break;
             case 2:
-                <GeneralButtonInfoTip/>
+                <GeneralButtonInfoTip />
                 break;
             case 3:
-                <HoldingRepCounterTip/>
+                <HoldingRepCounterTip />
                 break;
             case 4:
                 <NotesButtonTip/>
                 break;
             case 5:
-                <PreviousButtonTip/>
+                <PreviousButtonTip />
                 break;
             case 6:
-                <RestoringASessionTip/>
+                <RestoringASessionTip />
+                break;
+            case 7:
+                <FeedTip />
                 break;
         }
     </Card>
@@ -32,7 +35,7 @@
 
 @code
 {
-    private static readonly int totalTips = 6;
+    private static readonly int totalTips = 7;
 
     private void HandleNextClick(){
         Dispatcher.Dispatch(new SetTipToShowAction(SettingsState.Value.TipToShow+1));

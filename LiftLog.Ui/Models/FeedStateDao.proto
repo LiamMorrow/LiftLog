@@ -1,0 +1,47 @@
+syntax = "proto3";
+package LiftLog.Ui.Models;
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+import "Models/Utils.proto";
+import "Models/SessionHistoryDao/SessionHistoryDaoV2.proto";
+import "Models/SessionBlueprintDao/SessionBlueprintDaoV2.proto";
+
+message FeedIdentityDaoV1 {
+    LiftLog.Ui.Models.UUIDDao id = 1;
+    bytes encryption_key = 2;
+    string password = 4;
+    optional google.protobuf.StringValue name = 5;
+    optional bytes profile_picture = 6;
+    bool publish_bodyweight = 7;
+    bool publish_plan = 8;
+}
+
+message FeedUserDaoV1 {
+    LiftLog.Ui.Models.UUIDDao id = 1;
+    optional google.protobuf.StringValue name = 2;
+    optional google.protobuf.StringValue nickname = 6;
+    optional CurrentPlanDaoV1 current_plan = 3;
+    optional bytes profile_picture = 4;
+    bytes encryption_key = 5;
+}
+
+message CurrentPlanDaoV1 {
+    repeated LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2 sessions = 1;
+}
+
+message FeedItemDaoV1 {
+    LiftLog.Ui.Models.UUIDDao user_id = 1;
+    LiftLog.Ui.Models.UUIDDao event_id = 2;
+    google.protobuf.Timestamp timestamp = 3;
+    google.protobuf.Timestamp expiry = 4;
+    oneof payload {
+        LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2 session = 5;
+    }
+}
+
+message FeedStateDaoV1 {
+    repeated LiftLog.Ui.Models.FeedItemDaoV1 feed_items = 1;
+    repeated LiftLog.Ui.Models.FeedUserDaoV1 feed_users = 2;
+    optional LiftLog.Ui.Models.FeedIdentityDaoV1 identity = 3;
+}

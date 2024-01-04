@@ -63,7 +63,7 @@ public class StatsEffects(IState<StatsState> state, IProgressRepository progress
 
     private static string NormalizeName(string name)
     {
-        var lowerName = name.ToLower().Trim().Replace("flies", "flys");
+        var lowerName = name.ToLower().Trim().Replace("flies", "flys").Replace("flyes", "flys");
         var withoutPlural = lowerName switch
         {
             string s when s.EndsWith("es") => s[..^2],

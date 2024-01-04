@@ -11,6 +11,14 @@ public static class LinqExtensions
         return source.Select((item, index) => (item, index));
     }
 
+    public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> source)
+        where T : notnull
+    {
+#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
+        return source.Where(x => x is not null);
+#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
+    }
+
     public static int IndexOf<TSource>(
         this IEnumerable<TSource> source,
         Func<TSource, bool> predicate

@@ -86,13 +86,4 @@ public class WebThemeProvider(IJSRuntime jsRuntime, IPreferenceStore preferenceS
     }
 
     public event EventHandler? SeedChanged;
-    public event EventHandler? InsetsChanged
-    {
-        add { }
-        remove { }
-    }
-
-    public string SystemSafeInsetTop => "0px";
-
-    public string SystemSafeInsetBottom => "0px";
 }

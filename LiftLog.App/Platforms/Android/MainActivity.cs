@@ -4,8 +4,7 @@ using Android.Content.PM;
 using Android.Content.Res;
 using Android.OS;
 using AndroidX.Core.View;
-using Java.Interop;
-using LiftLog.App.Services;
+using LiftLog.Ui.Services;
 
 namespace LiftLog.App;
 
@@ -25,21 +24,21 @@ public class MainActivity : MauiAppCompatActivity
     {
         base.OnCreate(savedInstanceState);
         WindowCompat.SetDecorFitsSystemWindows(Window, false);
-        var themeProvider = MauiApplication.Current.Services.GetRequiredService<AppThemeProvider>();
+        var insetsManager = MauiApplication.Current.Services.GetRequiredService<InsetsManager>();
         ViewCompat.SetOnApplyWindowInsetsListener(
             Window.DecorView,
-            new WindowInsetsListener(themeProvider, Resources.DisplayMetrics.Density)
+            new WindowInsetsListener(insetsManager, Resources.DisplayMetrics.Density)
         );
     }
 
     private class WindowInsetsListener : Java.Lang.Object, IOnApplyWindowInsetsListener
     {
-        private readonly AppThemeProvider _themeProvider;
+        private readonly InsetsManager _insetsManager;
         private readonly float density;
 
-        public WindowInsetsListener(AppThemeProvider themeProvider, float density)
+        public WindowInsetsListener(InsetsManager insetsManager, float density)
         {
-            _themeProvider = themeProvider;
+            _insetsManager = insetsManager;
             this.density = density;
         }
 
@@ -51,9 +50,9 @@ public class MainActivity : MauiAppCompatActivity
             // convert android px to css px
             var top = insets.SystemWindowInsetTop / density;
             var bottom = insets.SystemWindowInsetBottom / density;
-            _themeProvider.SystemSafeInsetTop = $"{top}px";
-            _themeProvider.SystemSafeInsetBottom = $"{bottom}px";
-            _themeProvider.NotifyInsetsChanged();
+            _insetsManager.SystemSafeInsetTop = $"{top}px";
+            _insetsManager.SystemSafeInsetBottom = $"{bottom}px";
+            _insetsManager.NotifyInsetsChanged();
             return insets;
         }
     }

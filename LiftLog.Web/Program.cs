@@ -10,6 +10,7 @@ using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.CurrentSession;
+using LiftLog.Ui.Store.Feed;
 using LiftLog.Ui.Store.Program;
 using LiftLog.Ui.Store.Settings;
 using LiftLog.Web.Services;
@@ -24,50 +25,27 @@ builder.Services.AddScoped(
 
 builder.Services.AddBlazoredLocalStorage();
 
-builder.Services.AddFluxor(
-    o =>
-        o.ScanAssemblies(typeof(Program).Assembly)
-            .AddMiddleware<PersistSessionMiddleware>()
-            .AddMiddleware<PersistProgramMiddleware>()
-            .AddMiddleware<AppStateInitMiddleware>()
-            .AddMiddleware<SettingsStateInitMiddleware>()
-#if DEBUG
-            .UseReduxDevTools(options =>
-            {
-                options.UseSystemTextJson(_ => JsonSerializerSettings.LiftLog);
-            })
-#endif
-);
-
-builder.Services.AddScoped<IKeyValueStore, LocalStorageKeyValueStore>();
-builder.Services.AddScoped<IPreferenceStore, LocalStorageKeyValueStore>();
-
-builder.Services.AddScoped<IProgressRepository, KeyValueProgressRepository>();
-builder.Services.AddScoped<ICurrentProgramRepository, KeyValueCurrentProgramRepository>();
-builder.Services.AddScoped<PreferencesRepository>();
-
-builder.Services.AddScoped<SessionService>();
-
-builder.Services.AddScoped<IAiWorkoutPlanner, ApiBasedAiWorkoutPlanner>();
-
-builder.Services.AddScoped<IThemeProvider, WebThemeProvider>();
-
 builder.Services.AddNotifications();
 
 builder.Services.AddBlazorDownloadFile();
-builder.Services.AddScoped<IExporter, WebExporter>();
-builder.Services.AddScoped<INotificationService, WebNotificationService>();
-builder.Services.AddScoped<
-    BlazorTransitionableRoute.IRouteTransitionInvoker,
-    BlazorTransitionableRoute.DefaultRouteTransitionInvoker
->();
 
-builder.Services.AddScoped<IAppPurchaseService>(
+builder.Services.AddSingleton(
     svc =>
-        new WebAppPurchaseService(
+        new WebAppPurchaseServiceConfiguration(
             svc.GetRequiredService<IConfiguration>().GetValue<string>("WebAuthApiKey")
                 ?? throw new Exception("WebAuthApiKey configuration is not set.")
         )
 );
+
+builder.Services.RegisterUiServices<
+    LocalStorageKeyValueStore,
+    LocalStorageKeyValueStore,
+    WebNotificationService,
+    WebExporter,
+    WebThemeProvider,
+    ClipboardStringSharer,
+    WebAppPurchaseService,
+    JsAesEncryptionService
+>();
 
 await builder.Build().RunAsync();

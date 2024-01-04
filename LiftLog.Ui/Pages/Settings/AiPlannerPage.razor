@@ -75,6 +75,7 @@ else
     {
         Dispatcher.Dispatch(new SetProgramSessionsAction(plan.Sessions));
         Dispatcher.Dispatch(new SetAiPlanAction(null));
+        Dispatcher.Dispatch(new PublishIdentityIfEnabledAction());
         NavigationManager.NavigateTo("/");
     }
 }

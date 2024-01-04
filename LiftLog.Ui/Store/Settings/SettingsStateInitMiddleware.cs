@@ -16,5 +16,7 @@ public class SettingsStateInitMiddleware(PreferencesRepository preferencesReposi
         dispatch.Dispatch(new SetShowTipsAction(showTips));
         var tipToShow = await preferencesRepository.GetTipToShowAsync();
         dispatch.Dispatch(new SetTipToShowAction(tipToShow));
+        var showFeed = await preferencesRepository.GetShowFeedAsync();
+        dispatch.Dispatch(new SetShowFeedAction(showFeed));
     }
 }

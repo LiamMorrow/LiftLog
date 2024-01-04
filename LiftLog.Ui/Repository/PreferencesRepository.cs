@@ -66,4 +66,14 @@ public class PreferencesRepository(IPreferenceStore preferenceStore)
         else
             return 1;
     }
+
+    public async Task SetShowFeedAsync(bool showFeed)
+    {
+        await preferenceStore.SetItemAsync("showFeed", showFeed.ToString());
+    }
+
+    public async Task<bool> GetShowFeedAsync()
+    {
+        return await preferenceStore.GetItemAsync("showTips") is "True" or null;
+    }
 }

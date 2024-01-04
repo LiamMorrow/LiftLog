@@ -2,7 +2,7 @@ using Fluxor;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Store.Settings;
 
-namespace LiftLog.Ui.Store.SessionEditor;
+namespace LiftLog.Ui.Store.Settings;
 
 public static class SettingsReducers
 {
@@ -56,5 +56,12 @@ public static class SettingsReducers
         state with
         {
             TipToShow = action.TipToShow
+        };
+
+    [ReducerMethod]
+    public static SettingsState SetShowFeed(SettingsState state, SetShowFeedAction action) =>
+        state with
+        {
+            ShowFeed = action.ShowFeed
         };
 }

@@ -11,5 +11,6 @@ public record SettingsState(
     bool UseImperialUnits,
     bool ShowBodyweight,
     bool ShowTips,
-    int TipToShow
+    int TipToShow,
+    bool ShowFeed
 );

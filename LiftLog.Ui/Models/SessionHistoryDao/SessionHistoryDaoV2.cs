@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using LiftLog.Ui.Models.SessionBlueprintDao;
 
 namespace LiftLog.Ui.Models.SessionHistoryDao;

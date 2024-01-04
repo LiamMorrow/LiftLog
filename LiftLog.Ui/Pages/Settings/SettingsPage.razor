@@ -50,6 +50,9 @@
             <div>
                 <Switch Label="Show bodyweight" Value=@SettingsState.Value.ShowBodyweight OnSwitched="SetShowBodyweight"/>
             </div>
+            <div>
+                <Switch Label="Show feed" Value=@SettingsState.Value.ShowFeed OnSwitched="SetShowFeed"/>
+            </div>
             <md-divider></md-divider>
             <div>
                 <Switch Label="Show tips" Value=@SettingsState.Value.ShowTips OnSwitched="SetShowTips"/>
@@ -105,6 +108,8 @@
 
     private void SetShowBodyweight(bool value)
         => Dispatcher.Dispatch(new SetShowBodyweightAction(value));
+    private void SetShowFeed(bool value)
+        => Dispatcher.Dispatch(new SetShowFeedAction(value));
 
     private void SetShowTips(bool value)
         => Dispatcher.Dispatch(new SetShowTipsAction(value));

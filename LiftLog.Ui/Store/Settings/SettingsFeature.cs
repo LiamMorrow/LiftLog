@@ -15,6 +15,7 @@ public class SettingsFeature : Feature<SettingsState>
             UseImperialUnits: false,
             ShowBodyweight: true,
             ShowTips: true,
-            TipToShow: 1
+            TipToShow: 1,
+            ShowFeed: true
         );
 }
