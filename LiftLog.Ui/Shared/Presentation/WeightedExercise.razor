@@ -7,16 +7,15 @@
             @RenderMainContent()
         </MainContent>
         <SideContent>
-                <IconButton Type="IconButtonType.FilledTonal" OnClick="()=>{_menu?.Open();}" Icon="more_horiz" />
-                <Menu @ref="_menu">
-                    <MenuItem Label="Edit" Icon="edit" OnClick="OnEditExercise" />
-                    <MenuItem Label="Remove" Icon="delete" OnClick="OnRemoveExercise" />
-                </Menu>
-                <IconButton data-cy="per-rep-weight-btn" Type=IconButtonType.FilledTonal Icon=weight OnClick="ToggleExercisePerSetWeight"></IconButton>
-                @if(PreviousRecordedExercises?.Any() == true)
-                {
-                    <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.FilledTonal" Icon="history" OnStartHold="()=> _holdingPrevious=true" OnEndHold="()=>_holdingPrevious = false" />
-                }
+            <IconButton Type="IconButtonType.FilledTonal" OnClick="()=>{_menu?.Open();}" Icon="more_horiz" />
+            <Menu @ref="_menu">
+                <MenuItem Label="Edit" Icon="edit" OnClick="OnEditExercise" />
+                <MenuItem Label="Remove" Icon="delete" OnClick="OnRemoveExercise" />
+            </Menu>
+            <IconButton data-cy="per-rep-weight-btn" Type=IconButtonType.FilledTonal Icon=weight OnClick="ToggleExercisePerSetWeight"></IconButton>
+            @if(PreviousRecordedExercises?.Any() == true)
+            {
+                <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.FilledTonal" Icon="history" OnStartHold="()=> _holdingPrevious=true" OnEndHold="()=>_holdingPrevious = false" />
             }
         </SideContent>
     </SplitCardControl>
