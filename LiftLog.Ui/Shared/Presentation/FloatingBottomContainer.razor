@@ -1,8 +1,11 @@
 
 <div class="sticky bottom-0 flex flex-col pointer-events-none mt-auto pt-2 gap-2  z-10">
-    <div class="flex justify-end w-full mt-2">
-        @Fab
-    </div>
+    @if(Fab is not null)
+    {
+        <div class="flex justify-end w-full mt-2">
+            @Fab
+        </div>
+    }
     @if(AdditionalContent is not null)
     {
         @AdditionalContent
@@ -10,6 +13,6 @@
 </div>
 
 @code {
-    [Parameter][EditorRequired] public RenderFragment Fab { get; set; } = null!;
+    [Parameter] public RenderFragment? Fab { get; set; } = null!;
     [Parameter] public RenderFragment? AdditionalContent { get; set; }
 }

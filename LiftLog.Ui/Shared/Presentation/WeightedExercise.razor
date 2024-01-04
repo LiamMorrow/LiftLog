@@ -148,7 +148,7 @@
                         CycleRepCount=@(() => CycleRepCountForSet(i))
                         ClearRepCount=@(() => ClearRepCountForSet(i))
                         UpdateWeight=@((weight)=>UpdateWeightForSet(i, weight))
-                        ToStartNext=@(ToStartNext && repToStartNext == i) />
+                        ToStartNext=@(ToStartNext && repToStartNext == i && !IsReadonly) />
                 }
             </div>
             @if(notesToShow is not null)

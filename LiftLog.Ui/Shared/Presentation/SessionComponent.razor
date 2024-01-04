@@ -52,8 +52,9 @@ else
         }
     </div>
 }
-@if (!IsReadonly && Session.RecordedExercises.Any())
+@if (Session.RecordedExercises.Any())
 {
+    @if(!IsReadonly){
     <FloatingBottomContainer>
         <Fab>
             <FloatingButton variant="secondary" has-icon OnClick=SaveSession Label="Save"><md-icon slot="icon">save</md-icon>
@@ -61,6 +62,11 @@ else
         </Fab>
         <AdditionalContent>@RenderSnackBar()</AdditionalContent>
     </FloatingBottomContainer>
+    } else {
+    <FloatingBottomContainer>
+        <AdditionalContent>@RenderSnackBar()</AdditionalContent>
+    </FloatingBottomContainer>
+    }
 }
 
 <Dialog @ref="_editExerciseDialog" OnClose=@(()=> _exerciseToEditIndex = null)>
