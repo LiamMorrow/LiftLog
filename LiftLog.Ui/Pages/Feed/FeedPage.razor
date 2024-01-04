@@ -41,7 +41,7 @@
                 </span>
             </div>
         }
-        <VirtualizedCardList Items=@(FeedState.Value.Feed.Select(x=>(Item: x, User: FeedState.Value.Users.GetValueOrDefault(x.UserId))).Where(x=>x.User is not null).ToList()) OnClick=@(x=>ViewFeedSession(x.Item))>
+        <VirtualizedCardList Items=@(FeedState.Value.Feed.Select(x=>(Item: x, User: FeedState.Value.Users.GetValueOrDefault(x.UserId))).Where(x=>x.User is not null).ToList()) OnClick=@(x=>ViewFeedSession(x.Item)) CardClass="animate-fade-zoom-in">
             <FeedItemCardContent Item=context.Item User=@(context.User) />
         </VirtualizedCardList>
     </div>
@@ -56,7 +56,7 @@
                 </span>
             </div>
         }
-        <VirtualizedCardList Items=@(FeedState.Value.Users.Values.ToList())>
+        <VirtualizedCardList Items=@(FeedState.Value.Users.Values.ToList()) CardClass="animate-fade-zoom-in">
             <FeedUserCardContent User=context UpdateUser="UpdateUser" DeleteUser="() => BeginDeleteUser(context)" ViewUserPlan="() => ViewUserPlan(context)" />
         </VirtualizedCardList>
     </div>
