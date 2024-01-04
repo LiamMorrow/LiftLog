@@ -82,6 +82,7 @@ public class FeedEffects(
                     .Where(x => x.Expiry >= now)
                     .DistinctBy(x => x.EventId)
                     .Where(x => users.ContainsKey(x.UserId))
+                    .OrderByDescending(x => x.Timestamp)
                     .ToImmutableList()
             )
         );

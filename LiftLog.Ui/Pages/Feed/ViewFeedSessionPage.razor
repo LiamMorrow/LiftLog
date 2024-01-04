@@ -1,0 +1,99 @@
+@using Fluxor;
+
+@page "/feed/view-session/{EventId}"
+
+@inject IState<FeedState> FeedState
+@inject IState<ProgramState> ProgramState
+@inject NavigationManager NavigationManager
+@inject IDispatcher Dispatcher
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+@if(session is not null)
+{
+    <div class="pb-2">
+        <SessionComponent
+            CycleRepcountForExercise=@((_,_)=>{})
+            ClearRepCountForExercise="@((_,_)=>{})"
+            UpdateWeightForExercise=@((_,_)=>{})
+            Session=session
+            SaveSession=@(()=>{})
+            CloseSession=@(()=>{})
+            PreviouslyCompleted=@(ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>>.Empty)
+            RemoveExercise=@((_)=>{})
+            EditExercise="@((_,_)=>{})"
+            AddExercise="@((_)=>{})"
+            UpdateNotesForExercise="@((_,_)=>{})"
+            ExerciseNames="[]"
+            ShowBodyweight="session.Bodyweight is not null"
+            ToggleExercisePerSetWeight=@((_)=>{})
+            UpdateWeightForSet=@((_,_,_)=>{})
+            SessionInPlan=@(ProgramState.Value.SessionBlueprints.Contains(session.Blueprint))
+            SessionWithSameNameInPlan=@(ProgramState.Value.SessionBlueprints.Any(x=>x.Name == session.Blueprint.Name))
+            AddSessionToPlan="AddSessionToPlan"
+            UpdateSessionInPlan="UpdateSessionInPlan"
+            UpdateBodyweight="@(_=>{})"
+            IsReadonly=true />
+    </div>
+}
+
+@code
+{
+
+    Session? session;
+
+    [Parameter]
+    public string EventId { get; set; } = "";
+
+    protected override void OnInitialized()
+    {
+        Dispatcher.Dispatch(new SetPageTitleAction("Feed Session"));
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/feed"));
+
+        if (Guid.TryParse(EventId, out var eventId))
+        {
+            session = FeedState
+                .Value.Feed.OfType<SessionFeedItem>()
+                .FirstOrDefault(x => x.EventId == eventId)
+                ?.Session;
+            if(session is not null)
+                Dispatcher.Dispatch(new SetPageTitleAction(session.Blueprint.Name));
+        }
+
+        if(session is null)
+        {
+            NavigationManager.NavigateTo("/feed");
+        }
+        base.OnInitialized();
+    }
+
+
+    private void AddSessionToPlan()
+    {
+        if(session?.Blueprint is SessionBlueprint blueprint)
+        {
+            var existingSessionWithSameName = ProgramState.Value.SessionBlueprints.Any(x=>x.Name ==blueprint.Name);
+            if(existingSessionWithSameName){
+                var blueprintNameWithoutNumber = System.Text.RegularExpressions.Regex.Replace(blueprint.Name, @" \(\d+\)$", "");
+                var newName = blueprint.Name;
+                var i = 1;
+                while(ProgramState.Value.SessionBlueprints.Any(x=>x.Name == newName))
+                {
+                    newName = $"{blueprintNameWithoutNumber} ({i})";
+                    i++;
+                }
+                blueprint = blueprint with { Name = newName };
+            }
+            Dispatcher.Dispatch(new AddProgramSessionAction(blueprint));
+        }
+    }
+
+    private void UpdateSessionInPlan()
+    {
+        if(session?.Blueprint is SessionBlueprint blueprint)
+        {
+            var blueprintIndex = ProgramState.Value.SessionBlueprints.IndexedTuples().First(x=>x.Item.Name ==blueprint.Name).Index;
+            Dispatcher.Dispatch(new SetProgramSessionAction(blueprintIndex, blueprint));
+        }
+    }
+}

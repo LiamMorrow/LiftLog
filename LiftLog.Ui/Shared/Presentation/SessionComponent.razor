@@ -24,7 +24,8 @@ else
             UpdateWeightForSet=@((setIndex, weight) => UpdateWeightForSet(context.Index, setIndex, weight))
             UpdateNotesForExercise=@((notes)=>UpdateNotesForExercise(context.Index, notes))
             OnEditExercise=@(() => BeginEditExercise(context.Index))
-            OnRemoveExercise=@(()=> BeginRemoveExercise(context.Index)) />
+            OnRemoveExercise=@(()=> BeginRemoveExercise(context.Index))
+            IsReadonly=IsReadonly />
     </CardList>
 }
 @if (ShowBodyweight)
@@ -39,17 +40,19 @@ else
     </div>
 }
 
-<div class="flex  justify-center gap-2 mt-6">
-    <AppButton OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon>Add Exercise</AppButton>
-    @if (!SessionInPlan && Session.RecordedExercises.Any())
-    {
-        <AppButton Type="AppButtonType.Secondary" OnClick="@(()=>_updatePlanDialog?.Open())"><md-icon
-                slot="icon">assignment_add</md-icon>Update Plan
-        </AppButton>
-    }
-</div>
-
-@if (Session.RecordedExercises.Any())
+@if(!IsReadonly)
+{
+    <div class="flex  justify-center gap-2 mt-6">
+        <AppButton OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon>Add Exercise</AppButton>
+        @if (!SessionInPlan && Session.RecordedExercises.Any())
+        {
+            <AppButton Type="AppButtonType.Secondary" OnClick="@(()=>_updatePlanDialog?.Open())"><md-icon
+                    slot="icon">assignment_add</md-icon>Update Plan
+            </AppButton>
+        }
+    </div>
+}
+@if (!IsReadonly && Session.RecordedExercises.Any())
 {
     <FloatingBottomContainer>
         <Fab>
@@ -192,6 +195,9 @@ else
     [Parameter]
     [EditorRequired]
     public bool ShowBodyweight { get; set; }
+
+    [Parameter]
+    public bool IsReadonly { get; set; } = false;
 
     private Action<int> CycleRepCountForExerciseSet(int exerciseIndex)
         => (int set) => CycleRepcountForExercise(exerciseIndex, set);

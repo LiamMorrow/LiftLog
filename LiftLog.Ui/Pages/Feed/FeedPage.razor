@@ -41,7 +41,7 @@
                 </span>
             </div>
         }
-        <VirtualizedCardList Items=@(FeedState.Value.Feed.Select(x=>(Item: x, User: FeedState.Value.Users.GetValueOrDefault(x.UserId))).Where(x=>x.User is not null).ToList())>
+        <VirtualizedCardList Items=@(FeedState.Value.Feed.Select(x=>(Item: x, User: FeedState.Value.Users.GetValueOrDefault(x.UserId))).Where(x=>x.User is not null).ToList()) OnClick=@(x=>ViewFeedSession(x.Item))>
             <FeedItemCardContent Item=context.Item User=@(context.User) />
         </VirtualizedCardList>
     </div>
@@ -129,5 +129,12 @@
     private string GetTabClass(string tabId)
     {
         return activeTab == tabId ? "" : "hidden";
+    }
+
+    private void ViewFeedSession(FeedItem item)
+    {
+        if(item is SessionFeedItem sessionItem){
+            NavigationManager.NavigateTo($"/feed/view-session/{sessionItem.EventId}");
+        }
     }
 }
