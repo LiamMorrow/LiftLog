@@ -16,7 +16,16 @@ namespace LiftLog.App;
         | ConfigChanges.UiMode
         | ConfigChanges.ScreenLayout
         | ConfigChanges.SmallestScreenSize
-        | ConfigChanges.Density
+        | ConfigChanges.Density,
+    Exported = true,
+    LaunchMode = LaunchMode.SingleTask
+)]
+[IntentFilter(
+    [Android.Content.Intent.ActionView],
+    AutoVerify = true,
+    Categories = [Android.Content.Intent.CategoryDefault, Android.Content.Intent.CategoryBrowsable],
+    DataScheme = "https",
+    DataHost = "app.liftlog.online"
 )]
 public class MainActivity : MauiAppCompatActivity
 {
@@ -31,16 +40,12 @@ public class MainActivity : MauiAppCompatActivity
         );
     }
 
-    private class WindowInsetsListener : Java.Lang.Object, IOnApplyWindowInsetsListener
+    private class WindowInsetsListener(InsetsManager insetsManager, float density)
+        : Java.Lang.Object,
+            IOnApplyWindowInsetsListener
     {
-        private readonly InsetsManager _insetsManager;
-        private readonly float density;
-
-        public WindowInsetsListener(InsetsManager insetsManager, float density)
-        {
-            _insetsManager = insetsManager;
-            this.density = density;
-        }
+        private readonly InsetsManager _insetsManager = insetsManager;
+        private readonly float density = density;
 
         public WindowInsetsCompat OnApplyWindowInsets(
             Android.Views.View v,
