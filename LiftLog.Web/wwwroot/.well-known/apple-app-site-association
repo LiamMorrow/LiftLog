@@ -1,0 +1,19 @@
+{
+  "activitycontinuation": {
+    "apps": [
+      "U8Q4NXKYES.com.limajuice.liftlog"
+    ]
+  },
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "U8Q4NXKYES.com.limajuice.liftlog",
+        "paths": [
+          "*",
+          "/*"
+        ]
+      }
+    ]
+  }
+}
