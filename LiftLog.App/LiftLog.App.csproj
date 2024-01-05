@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
-        <TargetFrameworks>net8.0-android;</TargetFrameworks>
+        <TargetFrameworks>net8.0-ios;</TargetFrameworks>
 
         <!--This wild business is so that when I open vscode it doesn't try and open the project as an android or ios one, which causes weird locks when building from the cli-->
         <TargetFramework Condition="'$(BuildFor)' == 'android'">net8.0-android</TargetFramework>
         <TargetFramework Condition="'$(BuildFor)' == 'ios'">net8.0-ios</TargetFramework>
-        <TargetFramework Condition="'$(BuildFor)' == ''">net8.0</TargetFramework>
-        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx'))">$(TargetFrameworks);net8.0-ios;</TargetFrameworks>
+        <TargetFramework Condition="'$(BuildFor)' == ''">net8.0-ios</TargetFramework>
+        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx'))">$(TargetFrameworks);net8.0-android;</TargetFrameworks>
 
         <OutputType>Exe</OutputType>
         <RootNamespace>LiftLog.App</RootNamespace>
@@ -92,4 +92,11 @@
       <ProjectReference Include="..\LiftLog.Ui\LiftLog.Ui.csproj" />
     </ItemGroup>
 
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+        <CustomEntitlements
+            Include="com.apple.developer.associated-domains"
+            Type="StringArray"
+            Value="applinks:app.liftlog.online" />
+
+    </ItemGroup>
 </Project>

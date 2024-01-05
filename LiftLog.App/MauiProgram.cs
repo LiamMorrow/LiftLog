@@ -110,7 +110,35 @@ public static class MauiProgram
         builder.ConfigureLifecycleEvents(lifecycle =>
         {
 #if IOS || MACCATALYST
-            // ...
+            lifecycle.AddiOS(ios =>
+            {
+                ios.FinishedLaunching((app, data) => HandleAppLink(app.UserActivity));
+
+                ios.ContinueUserActivity(
+                    (app, userActivity, handler) => HandleAppLink(userActivity)
+                );
+
+                if (
+                    OperatingSystem.IsIOSVersionAtLeast(13)
+                    || OperatingSystem.IsMacCatalystVersionAtLeast(13)
+                )
+                {
+                    ios.SceneWillConnect(
+                        (scene, sceneSession, sceneConnectionOptions) =>
+                            HandleAppLink(
+                                sceneConnectionOptions
+                                    .UserActivities.ToArray()
+                                    .FirstOrDefault(
+                                        a => a.ActivityType == Foundation.NSUserActivityType.BrowsingWeb
+                                    )
+                            )
+                    );
+
+                    ios.SceneContinueUserActivity(
+                        (scene, userActivity) => HandleAppLink(userActivity)
+                    );
+                }
+            });
 #elif ANDROID
             lifecycle.AddAndroid(android =>
             {
@@ -134,18 +162,49 @@ public static class MauiProgram
     }
 
 #if ANDROID
-    public static async void HandleIntent(Android.Content.Intent? intent)
+    private static async void HandleIntent(Android.Content.Intent? intent)
     {
         var data = intent?.Data?.ToString();
-        if (data is not null && Uri.TryCreate(data, UriKind.Absolute, out var url))
+        if (data is not null)
         {
-            var path = url.AbsolutePath;
-            var query = url.Query;
-            await MainThread.InvokeOnMainThreadAsync(() =>
-            {
-                return MainPage.NavigateWhenLoaded(path + query);
-            });
+            HandleLink(data)
         }
     }
 #endif
+
+#if IOS || MACCATALYST
+    private static bool HandleAppLink(Foundation.NSUserActivity? activity)
+    {
+        if (activity is null)
+        {
+            return true;
+        }
+
+        var url = activity.WebPageUrl;
+        if (url is null)
+        {
+            return true;
+        }
+        HandleLink(url.AbsoluteString);
+        return true;
+    }
+#endif
+
+    private static void HandleLink(string? link)
+    {
+        if (link is null)
+        {
+            return;
+        }
+        if (!Uri.TryCreate(link, UriKind.Absolute, out var uri))
+        {
+            return;
+        }
+        var path = uri.AbsolutePath;
+        var query = uri.Query;
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            MainPage.NavigateWhenLoaded(path + query);
+        });
+    }
 }
