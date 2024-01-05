@@ -141,9 +141,9 @@ public static class MauiProgram
         {
             var path = url.AbsolutePath;
             var query = url.Query;
-            await MainThread.InvokeOnMainThreadAsync(async () =>
+            await MainThread.InvokeOnMainThreadAsync(() =>
             {
-                MainPage.NavigateWhenLoaded(path + query);
+                return MainPage.NavigateWhenLoaded(path + query);
             });
         }
     }

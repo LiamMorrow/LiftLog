@@ -20,7 +20,7 @@ public partial class MainPage : ContentPage
     /// Currently used to handle intents which open the app from a url
     /// </summary>
     /// <param name="url"></param>
-    public static async void NavigateWhenLoaded(string url)
+    public static async Task NavigateWhenLoaded(string url)
     {
         if (BlazorWebView is null)
         {
@@ -36,7 +36,7 @@ public partial class MainPage : ContentPage
         {
             // Lord forgive me - there doesn't seem to be a loaded event which will guarantee that the webview is ready to navigate
             await Task.Delay(100);
-            NavigateWhenLoaded(url);
+            await NavigateWhenLoaded(url);
             return;
         }
         toNavigate = null;
@@ -47,7 +47,7 @@ public partial class MainPage : ContentPage
         BlazorWebView = blazorWebView;
         if (toNavigate is not null)
         {
-            NavigateWhenLoaded(toNavigate);
+            _ = NavigateWhenLoaded(toNavigate);
         }
 #if DEBUG
 #if IOS
