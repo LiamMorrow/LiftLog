@@ -118,26 +118,13 @@ public static class MauiProgram
                     (app, userActivity, handler) => HandleAppLink(userActivity)
                 );
 
-                if (
-                    OperatingSystem.IsIOSVersionAtLeast(13)
-                    || OperatingSystem.IsMacCatalystVersionAtLeast(13)
-                )
-                {
-                    ios.SceneWillConnect(
-                        (scene, sceneSession, sceneConnectionOptions) =>
-                            HandleAppLink(
-                                sceneConnectionOptions
-                                    .UserActivities.ToArray()
-                                    .FirstOrDefault(
-                                        a => a.ActivityType == Foundation.NSUserActivityType.BrowsingWeb
-                                    )
-                            )
-                    );
-
-                    ios.SceneContinueUserActivity(
-                        (scene, userActivity) => HandleAppLink(userActivity)
-                    );
-                }
+                ios.OpenUrl(
+                    (app, url, options) =>
+                    {
+                        HandleLink(url.AbsoluteString);
+                        return true;
+                    }
+                );
             });
 #elif ANDROID
             lifecycle.AddAndroid(android =>
@@ -167,7 +154,7 @@ public static class MauiProgram
         var data = intent?.Data?.ToString();
         if (data is not null)
         {
-            HandleLink(data)
+            HandleLink(data);
         }
     }
 #endif
@@ -204,7 +191,7 @@ public static class MauiProgram
         var query = uri.Query;
         MainThread.BeginInvokeOnMainThread(() =>
         {
-            MainPage.NavigateWhenLoaded(path + query);
+            _ = MainPage.NavigateWhenLoaded(path + query);
         });
     }
 }

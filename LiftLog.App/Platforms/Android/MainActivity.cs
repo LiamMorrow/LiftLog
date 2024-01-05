@@ -28,6 +28,13 @@ namespace LiftLog.App;
     DataScheme = "https",
     DataHost = "app.liftlog.online"
 )]
+[IntentFilter(
+    [Android.Content.Intent.ActionView],
+    AutoVerify = true,
+    Categories = [Android.Content.Intent.CategoryDefault, Android.Content.Intent.CategoryBrowsable],
+    DataScheme = "liftlog",
+    DataHost = "app.liftlog.online"
+)]
 public class MainActivity : MauiAppCompatActivity
 {
     protected override void OnCreate(Bundle? savedInstanceState)
