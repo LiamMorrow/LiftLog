@@ -9,5 +9,3 @@ public record SetProTokenAction(string? ProToken);
 public record SetReopenCurrentSessionAction(bool ReopenCurrentSession);
 
 public record SetBackNavigationUrlAction(string? BackNavigationUrl);
-
-public record NavigateAction(string Url);
