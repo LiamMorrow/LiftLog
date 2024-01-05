@@ -18,6 +18,7 @@ namespace LiftLog.App;
         | ConfigChanges.SmallestScreenSize
         | ConfigChanges.Density,
     Exported = true,
+    // App crashes if its open and receives an intent without this
     LaunchMode = LaunchMode.SingleTask
 )]
 [IntentFilter(

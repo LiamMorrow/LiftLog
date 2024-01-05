@@ -140,9 +140,10 @@ public static class MauiProgram
         if (data is not null && Uri.TryCreate(data, UriKind.Absolute, out var url))
         {
             var path = url.AbsolutePath;
+            var query = url.Query;
             await MainThread.InvokeOnMainThreadAsync(async () =>
             {
-                MainPage.NavigateWhenLoaded(path);
+                MainPage.NavigateWhenLoaded(path + query);
             });
         }
     }
