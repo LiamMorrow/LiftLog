@@ -19,14 +19,17 @@ internal partial class FeedIdentityDaoV1
             ? null
             : new FeedIdentity(
                 Id: value.Id,
-                EncryptionKey: value.EncryptionKey.ToByteArray(),
+                AesKey: value.AesKey.ToByteArray(),
+                PrivateKey: value.PrivateKey.ToByteArray(),
+                PublicKey: value.PublicKey.ToByteArray(),
                 Password: value.Password,
                 Name: value.Name,
                 ProfilePicture: value.ProfilePicture.IsEmpty
                     ? null
                     : value.ProfilePicture.ToByteArray(),
                 PublishBodyweight: value.PublishBodyweight,
-                PublishPlan: value.PublishPlan
+                PublishPlan: value.PublishPlan,
+                PublishWorkouts: value.PublishWorkouts
             );
 
     [return: NotNullIfNotNull(nameof(value))]
@@ -36,14 +39,17 @@ internal partial class FeedIdentityDaoV1
             : new FeedIdentityDaoV1
             {
                 Id = value.Id,
-                EncryptionKey = ByteString.CopyFrom(value.EncryptionKey),
+                AesKey = ByteString.CopyFrom(value.AesKey),
+                PrivateKey = ByteString.CopyFrom(value.PrivateKey),
+                PublicKey = ByteString.CopyFrom(value.PublicKey),
                 Password = value.Password,
                 Name = value.Name,
                 ProfilePicture = value.ProfilePicture is null
                     ? ByteString.Empty
                     : ByteString.CopyFrom(value.ProfilePicture),
                 PublishBodyweight = value.PublishBodyweight,
-                PublishPlan = value.PublishPlan
+                PublishPlan = value.PublishPlan,
+                PublishWorkouts = value.PublishWorkouts
             };
 }
 
@@ -57,14 +63,16 @@ internal partial class FeedUserDaoV1
                 Id: value.Id,
                 Name: value.Name,
                 Nickname: value.Nickname,
-                EncryptionKey: value.EncryptionKey.ToByteArray(),
+                AesKey: value.AesKey.IsEmpty ? null : value.AesKey.ToByteArray(),
+                PublicKey: value.PublicKey.ToByteArray(),
                 CurrentPlan: value
                     .CurrentPlan?.Sessions
                     .Select(sessionBlueprintDao => sessionBlueprintDao.ToModel())
                     .ToImmutableList() ?? [],
                 ProfilePicture: value.ProfilePicture.IsEmpty
                     ? null
-                    : value.ProfilePicture.ToByteArray()
+                    : value.ProfilePicture.ToByteArray(),
+                FollowSecret: value.FollowSecret
             );
 
     [return: NotNullIfNotNull(nameof(value))]
@@ -77,10 +85,14 @@ internal partial class FeedUserDaoV1
                 Name = value.Name,
                 Nickname = value.Nickname,
                 CurrentPlan = value.CurrentPlan,
-                EncryptionKey = ByteString.CopyFrom(value.EncryptionKey),
+                AesKey = value.AesKey is null
+                    ? ByteString.Empty
+                    : ByteString.CopyFrom(value.AesKey),
+                PublicKey = ByteString.CopyFrom(value.PublicKey),
                 ProfilePicture = value.ProfilePicture is null
                     ? ByteString.Empty
                     : ByteString.CopyFrom(value.ProfilePicture),
+                FollowSecret = value.FollowSecret
             };
 }
 
@@ -131,7 +143,11 @@ internal partial class FeedStateDaoV1
                     feedUserDao => (Guid)feedUserDao.Id,
                     x => (FeedUser)x
                 ),
-                SharedFeedUser: null
+                SharedFeedUser: null,
+                FollowRequests: value
+                    .FollowRequests.Select(x => (FollowRequest)x)
+                    .ToImmutableList(),
+                Followers: value.Followers.Select(x => (FeedUser)x).ToImmutableList()
             );
 
     [return: NotNullIfNotNull(nameof(value))]
@@ -143,6 +159,8 @@ internal partial class FeedStateDaoV1
                 Identity = value.Identity,
                 FeedItems = { value.Feed.Select(x => (FeedItemDaoV1)x) },
                 FeedUsers = { value.Users.Values.Select(x => (FeedUserDaoV1)x) },
+                FollowRequests = { value.FollowRequests.Select(x => (InboxMessageDao)x) },
+                Followers = { value.Followers.Select(x => (FeedUserDaoV1)x) }
             };
 }
 
@@ -165,4 +183,37 @@ internal partial class CurrentPlanDaoV1
         value is null or []
             ? null
             : new CurrentPlanDaoV1 { Sessions = { value.Select(SessionBlueprintDaoV2.FromModel) } };
+}
+
+internal partial class InboxMessageDao
+{
+    [return: NotNullIfNotNull(nameof(value))]
+    public static implicit operator FollowRequest?(InboxMessageDao? value) =>
+        value is null
+            ? null
+            : new FollowRequest(
+                UserId: value.FromUserId,
+                Name: value.FollowRequest.Name,
+                ProfilePicture: value.FollowRequest.ProfilePicture.IsEmpty
+                    ? null
+                    : value.FollowRequest.ProfilePicture.ToByteArray(),
+                PublicKey: value.FollowRequest.PublicKey.ToByteArray()
+            );
+
+    [return: NotNullIfNotNull(nameof(value))]
+    public static implicit operator InboxMessageDao?(FollowRequest? value) =>
+        value is null
+            ? null
+            : new InboxMessageDao
+            {
+                FromUserId = value.UserId,
+                FollowRequest = new FollowRequestDao
+                {
+                    Name = value.Name,
+                    ProfilePicture = value.ProfilePicture is null
+                        ? ByteString.Empty
+                        : ByteString.CopyFrom(value.ProfilePicture),
+                    PublicKey = ByteString.CopyFrom(value.PublicKey)
+                }
+            };
 }

@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 
@@ -9,17 +10,34 @@ public record FeedState(
     FeedIdentity? Identity,
     ImmutableListValue<FeedItem> Feed,
     ImmutableDictionary<Guid, FeedUser> Users,
-    FeedUser? SharedFeedUser
+    FeedUser? SharedFeedUser,
+    ImmutableListValue<FollowRequest> FollowRequests,
+    ImmutableListValue<FeedUser> Followers
 );
 
 public record FeedUser(
     Guid Id,
+    byte[] PublicKey,
     string? Name,
     string? Nickname,
     ImmutableListValue<SessionBlueprint> CurrentPlan,
     byte[]? ProfilePicture,
-    byte[] EncryptionKey
-);
+    byte[]? AesKey,
+    string? FollowSecret
+)
+{
+    public static FeedUser FromShared(Guid id, byte[] publicKey, string? name) =>
+        new(
+            Id: id,
+            PublicKey: publicKey,
+            Name: name,
+            Nickname: null,
+            CurrentPlan: [],
+            ProfilePicture: null,
+            AesKey: null,
+            FollowSecret: null
+        );
+}
 
 public abstract record FeedItem(
     Guid UserId,
@@ -38,10 +56,30 @@ public record SessionFeedItem(
 
 public record FeedIdentity(
     Guid Id,
-    byte[] EncryptionKey,
+    byte[] AesKey,
+    byte[] PublicKey,
+    byte[] PrivateKey,
     string Password,
     string? Name,
     byte[]? ProfilePicture,
     bool PublishBodyweight,
-    bool PublishPlan
+    bool PublishPlan,
+    bool PublishWorkouts
+);
+
+public record FollowRequest(
+    Guid UserId,
+    string Name,
+    byte[]? ProfilePicture,
+    // Used to encrypt the follow response
+    byte[] PublicKey
+);
+
+public record FollowResponse(
+    Guid UserId,
+    [property: MemberNotNullWhen(true, "AesKey")]
+    [property: MemberNotNullWhen(true, "FollowSecret")]
+        bool Accepted,
+    byte[]? AesKey,
+    string? FollowSecret
 );

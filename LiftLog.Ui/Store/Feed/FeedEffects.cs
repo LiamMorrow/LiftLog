@@ -8,10 +8,11 @@ using LiftLog.Lib.Services;
 using LiftLog.Ui.Models;
 using LiftLog.Ui.Models.SessionHistoryDao;
 using LiftLog.Ui.Services;
+using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.Program;
 using LiftLog.Ui.Util;
 using Microsoft.Extensions.Logging;
-using static LiftLog.Lib.Models.UserEventPayload;
+using static LiftLog.Ui.Models.UserEventPayload;
 
 namespace LiftLog.Ui.Store.Feed;
 
@@ -25,6 +26,46 @@ public class FeedEffects(
 )
 {
     [EffectMethod]
+    public async Task HandleRequestFollowSharedUserAction(
+        RequestFollowSharedUserAction action,
+        IDispatcher dispatcher
+    )
+    {
+        var identity = state.Value.Identity;
+        if (identity == null)
+        {
+            return;
+        }
+
+        var inboxMessage = new InboxMessageDao
+        {
+            FromUserId = identity.Id,
+            FollowRequest = new FollowRequestDao
+            {
+                Name = identity.Name,
+                ProfilePicture = ByteString.CopyFrom(identity.ProfilePicture ?? []),
+                PublicKey = ByteString.CopyFrom(identity.PublicKey)
+            }
+        };
+        var response = await feedApiService.PutInboxMessageAsync(
+            new PutInboxMessageRequest(
+                ToUserId: action.FeedUser.Id,
+                EncryptedMessage: await encryptionService.EncryptRsaAsync(
+                    inboxMessage.ToByteArray(),
+                    action.FeedUser.PublicKey
+                )
+            )
+        );
+        if (!response.IsSuccess)
+        {
+            // TODO handle properly
+            return;
+        }
+
+        dispatcher.Dispatch(new PutFeedUserAction(action.FeedUser));
+    }
+
+    [EffectMethod]
     public async Task HandleFetchSessionFeedItemsAction(
         FetchSessionFeedItemsAction _,
         IDispatcher dispatcher
@@ -36,13 +77,17 @@ public class FeedEffects(
         }
         var feedResponseTask = feedApiService.GetUserEventsAsync(
             new GetEventsRequest(
-                UserIds: state.Value.Users.Keys.ToArray(),
+                Users: state
+                    .Value.Users.Where(x => x.Value.FollowSecret is not null)
+                    .Select(x => new GetUserEventRequest(x.Key, x.Value.FollowSecret!))
+                    .ToArray(),
                 Since: state.Value.Feed.MaxBy(x => x.Timestamp)?.Timestamp
                     ?? DateTimeOffset.MinValue
             )
         );
+        var originalUsers = state.Value.Users;
         var userResponseTask = feedApiService.GetUsersAsync(
-            new GetUsersRequest(state.Value.Users.Keys.ToArray())
+            new GetUsersRequest(originalUsers.Keys.ToArray())
         );
 
         var feedResponse = await feedResponseTask;
@@ -54,25 +99,36 @@ public class FeedEffects(
             return;
         }
         var feedEvents = feedResponse.Data.Events;
+        var invalidFollowSecrets = feedResponse.Data.InvalidFollowSecrets;
         var users = usersResponse.Data.Users;
 
         var newUsers = (
             await Task.WhenAll(
                 users.Select(
                     x =>
-                        GetDecryptedUserAsync(
-                            x.Key,
-                            state.Value.Users[x.Key].EncryptionKey,
-                            state.Value.Users[x.Key].Nickname,
-                            x.Value
-                        )
+                        originalUsers[x.Key].AesKey is null
+                            ? Task.FromResult(originalUsers[x.Key])
+                            : GetDecryptedUserAsync(
+                                x.Key,
+                                originalUsers[x.Key].PublicKey,
+                                originalUsers[x.Key].AesKey!,
+                                originalUsers[x.Key].Nickname,
+                                x.Value,
+                                originalUsers[x.Key].FollowSecret
+                            )
                 )
             )
-        ).ToImmutableList();
+        )
+            .Where(x => !invalidFollowSecrets.Contains(x.FollowSecret))
+            .ToImmutableList();
         dispatcher.Dispatch(new ReplaceFeedUsersAction(newUsers));
 
         var feedItems = (
-            await Task.WhenAll(feedEvents.Select(x => ToFeedItemAsync(x).AsTask()))
+            await Task.WhenAll(
+                feedEvents
+                    .Where(ev => newUsers.Any(us => us.Id == ev.UserId))
+                    .Select(x => ToFeedItemAsync(x).AsTask())
+            )
         ).WhereNotNull();
         var now = DateTimeOffset.UtcNow;
         dispatcher.Dispatch(
@@ -81,36 +137,9 @@ public class FeedEffects(
                     .Value.Feed.Concat(feedItems)
                     .Where(x => x.Expiry >= now)
                     .DistinctBy(x => x.EventId)
-                    .Where(x => users.ContainsKey(x.UserId))
+                    .Where(ev => newUsers.Any(us => us.Id == ev.UserId))
                     .OrderByDescending(x => x.Timestamp)
                     .ToImmutableList()
-            )
-        );
-    }
-
-    [EffectMethod]
-    public async Task HandleFetchSharedFeedUserAction(
-        FetchSharedFeedUserAction action,
-        IDispatcher dispatcher
-    )
-    {
-        var feedResponse = await feedApiService.GetUserAsync(action.Id);
-        var existingUser = state.Value.Users.GetValueOrDefault(action.Id);
-
-        if (!feedResponse.IsSuccess)
-        {
-            // TODO handle properly
-            return;
-        }
-
-        dispatcher.Dispatch(
-            new SetSharedFeedUserAction(
-                await GetDecryptedUserAsync(
-                    action.Id,
-                    action.EncryptionKey,
-                    existingUser?.Nickname,
-                    feedResponse.Data
-                )
             )
         );
     }
@@ -129,7 +158,7 @@ public class FeedEffects(
         var response = await feedApiService.DeleteUserAsync(
             new DeleteUserRequest(Id: identity.Id, Password: identity.Password)
         );
-        if (!response.IsSuccess)
+        if (!response.IsSuccess && response.Error.Type != ApiErrorType.NotFound)
         {
             // TODO handle properly
             return;
@@ -137,6 +166,8 @@ public class FeedEffects(
         dispatcher.Dispatch(new PutFeedIdentityAction(null));
         dispatcher.Dispatch(new DeleteFeedUserAction(identity.Id));
         dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
+        dispatcher.Dispatch(new ReplaceFeedItemsAction([]));
+        dispatcher.Dispatch(new ReplaceFeedUsersAction([]));
     }
 
     [EffectMethod]
@@ -157,18 +188,26 @@ public class FeedEffects(
             // TODO handle properly
             return;
         }
-        var encryptionKey = await encryptionService.GenerateKeyAsync();
+        var encryptionKey = await encryptionService.GenerateAesKeyAsync();
+        var (publicKey, privateKey) = await encryptionService.GenerateRsaKeysAsync();
         await GenerateAndPutFeedIdentityAsync(
             dispatcher,
             action.Id,
             response.Data.Password,
             encryptionKey,
+            publicKey,
+            privateKey,
             action.Name,
             action.ProfilePicture,
             action.PublishBodyweight,
-            action.PublishPlan
+            action.PublishPlan,
+            action.PublishWorkouts
         );
         dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
+        if (action.RedirectAfterCreation is not null or "")
+        {
+            dispatcher.Dispatch(new NavigateAction(action.RedirectAfterCreation));
+        }
     }
 
     [EffectMethod]
@@ -185,11 +224,14 @@ public class FeedEffects(
             dispatcher,
             state.Value.Identity.Id,
             state.Value.Identity.Password,
-            state.Value.Identity.EncryptionKey,
+            state.Value.Identity.AesKey,
+            state.Value.Identity.PublicKey,
+            state.Value.Identity.PrivateKey,
             action.Name,
             action.ProfilePicture,
             action.PublishBodyweight,
-            action.PublishPlan
+            action.PublishPlan,
+            action.PublishWorkouts
         );
     }
 
@@ -207,11 +249,14 @@ public class FeedEffects(
             dispatcher,
             state.Value.Identity.Id,
             state.Value.Identity.Password,
-            state.Value.Identity.EncryptionKey,
+            state.Value.Identity.AesKey,
+            state.Value.Identity.PublicKey,
+            state.Value.Identity.PrivateKey,
             state.Value.Identity.Name,
             state.Value.Identity.ProfilePicture,
             state.Value.Identity.PublishBodyweight,
-            state.Value.Identity.PublishPlan
+            state.Value.Identity.PublishPlan,
+            state.Value.Identity.PublishWorkouts
         );
     }
 
@@ -221,11 +266,11 @@ public class FeedEffects(
         IDispatcher dispatcher
     )
     {
-        if (state.Value.Identity is null)
+        if (state.Value.Identity is not { PublishWorkouts: true })
         {
             return;
         }
-        var (encryptedPayload, iv) = await encryptionService.EncryptAsync(
+        var (encryptedPayload, iv) = await encryptionService.EncryptAesAsync(
             new UserEventPayload
             {
                 SessionPayload = new SessionUserEvent
@@ -240,7 +285,7 @@ public class FeedEffects(
                     )
                 }
             }.ToByteArray(),
-            state.Value.Identity.EncryptionKey
+            state.Value.Identity.AesKey
         );
         await feedApiService.PutUserEventAsync(
             new PutUserEventRequest(
@@ -251,6 +296,253 @@ public class FeedEffects(
                 Expiry: DateTimeOffset.UtcNow.AddDays(90)
             )
         );
+    }
+
+    [EffectMethod]
+    public async Task HandleFetchInboxItemsAction(FetchInboxItemsAction _, IDispatcher dispatcher)
+    {
+        var identity = state.Value.Identity;
+        if (identity is null)
+        {
+            return;
+        }
+        var inboxItemsResponse = await feedApiService.GetInboxMessagesAsync(
+            new GetInboxMessagesRequest(identity.Id, identity.Password)
+        );
+        if (!inboxItemsResponse.IsSuccess)
+        {
+            // TODO handle properly
+            return;
+        }
+
+        var encryptedInboxItems = inboxItemsResponse.Data.InboxMessages;
+        var inboxItems = (
+            await Task.WhenAll(
+                encryptedInboxItems.Select(x => DecryptIfValid(x, identity.PrivateKey))
+            )
+        ).WhereNotNull();
+
+        ImmutableListValue<FollowRequest> newFollowRequests = inboxItems
+            .Where(
+                x => x.MessagePayloadCase == InboxMessageDao.MessagePayloadOneofCase.FollowRequest
+            )
+            .Select(
+                x =>
+                    new FollowRequest(
+                        UserId: x.FromUserId,
+                        Name: x.FollowRequest.Name?.ToString() ?? "Anonymous User",
+                        ProfilePicture: x.FollowRequest.ProfilePicture.IsEmpty
+                            ? null
+                            : x.FollowRequest.ProfilePicture.ToByteArray(),
+                        PublicKey: x.FollowRequest.PublicKey.ToByteArray()
+                    )
+            )
+            .ToImmutableList();
+        dispatcher.Dispatch(new AppendNewFollowRequestsAction(newFollowRequests));
+
+        var newFollowResponses = inboxItems
+            .Where(
+                x => x.MessagePayloadCase == InboxMessageDao.MessagePayloadOneofCase.FollowResponse
+            )
+            .Select(
+                x =>
+                    new FollowResponse(
+                        UserId: x.FromUserId,
+                        Accepted: x.FollowResponse.ResponsePayloadCase
+                            == FollowResponseDao.ResponsePayloadOneofCase.Accepted,
+                        AesKey: x.FollowResponse.ResponsePayloadCase
+                        == FollowResponseDao.ResponsePayloadOneofCase.Accepted
+                            ? x.FollowResponse.Accepted.AesKey.ToByteArray()
+                            : null,
+                        FollowSecret: x.FollowResponse.ResponsePayloadCase
+                        == FollowResponseDao.ResponsePayloadOneofCase.Accepted
+                            ? x.FollowResponse.Accepted.FollowSecret
+                            : null
+                    )
+            )
+            .ToImmutableList();
+
+        dispatcher.Dispatch(new ProcessFollowResponsesAction(newFollowResponses));
+    }
+
+    [EffectMethod]
+    public Task HandleProcessFollowResponsesAction(
+        ProcessFollowResponsesAction action,
+        IDispatcher dispatcher
+    )
+    {
+        var acceptResponses = action.Responses.Where(x => x.Accepted).ToDictionary(x => x.UserId);
+        var rejectedUsers = action
+            .Responses.Where(x => !x.Accepted)
+            .Select(x => x.UserId)
+            .ToHashSet();
+        var usersAfterResponses = state
+            .Value.Users.Select(
+                x =>
+                    acceptResponses.TryGetValue(x.Key, out var value)
+                        ? x.Value with
+                        {
+                            FollowSecret = value.FollowSecret,
+                            AesKey = value.AesKey,
+                        }
+                        : x.Value
+            )
+            .Where(x => !rejectedUsers.Contains(x.Id))
+            .ToImmutableList();
+
+        dispatcher.Dispatch(new ReplaceFeedUsersAction(usersAfterResponses));
+        dispatcher.Dispatch(new FetchSessionFeedItemsAction());
+
+        return Task.CompletedTask;
+    }
+
+    [EffectMethod]
+    public async Task HandleAcceptFollowRequestAction(
+        AcceptFollowRequestAction action,
+        IDispatcher dispatcher
+    )
+    {
+        var identity = state.Value.Identity;
+        if (identity is null)
+        {
+            return;
+        }
+        var followSecret =
+            state.Value.Followers.FirstOrDefault(x => x.Id == action.Request.UserId)?.FollowSecret
+            ?? Guid.NewGuid().ToString();
+        var putFollowSecretResponse = await feedApiService.PutUserFollowSecretAsync(
+            new PutUserFollowSecretRequest(
+                UserId: identity.Id,
+                Password: identity.Password,
+                FollowSecret: followSecret
+            )
+        );
+        if (!putFollowSecretResponse.IsSuccess)
+        {
+            // TODO handle properly
+            return;
+        }
+
+        var inboxMessage = new InboxMessageDao
+        {
+            FromUserId = identity.Id,
+            FollowResponse = new FollowResponseDao
+            {
+                Accepted = new FollowResponseAcceptedDao
+                {
+                    AesKey = ByteString.CopyFrom(identity.AesKey),
+                    FollowSecret = followSecret
+                }
+            }
+        };
+        var encryptedMessage = await encryptionService.EncryptRsaAsync(
+            inboxMessage.ToByteArray(),
+            action.Request.PublicKey
+        );
+        var putResponse = await feedApiService.PutInboxMessageAsync(
+            new PutInboxMessageRequest(
+                ToUserId: action.Request.UserId,
+                EncryptedMessage: encryptedMessage
+            )
+        );
+        if (!putResponse.IsSuccess)
+        {
+            if (putResponse.Error.Type == ApiErrorType.NotFound)
+            {
+                dispatcher.Dispatch(new RemoveFollowRequestAction(action.Request));
+            }
+            // TODO handle properly
+            return;
+        }
+
+        dispatcher.Dispatch(
+            new AddFollowerAction(
+                FeedUser.FromShared(
+                    action.Request.UserId,
+                    action.Request.PublicKey,
+                    action.Request.Name
+                ) with
+                {
+                    FollowSecret = followSecret
+                }
+            )
+        );
+        dispatcher.Dispatch(new RemoveFollowRequestAction(action.Request));
+    }
+
+    [EffectMethod]
+    public async Task HandleDenyFollowRequestAction(
+        DenyFollowRequestAction action,
+        IDispatcher dispatcher
+    )
+    {
+        var identity = state.Value.Identity;
+        if (identity is null)
+        {
+            return;
+        }
+
+        var inboxMessage = new InboxMessageDao
+        {
+            FromUserId = identity.Id,
+            FollowResponse = new FollowResponseDao { Rejected = new FollowResponseRejectedDao() }
+        };
+        byte[][]? encryptedMessage;
+        try
+        {
+            encryptedMessage = await encryptionService.EncryptRsaAsync(
+                inboxMessage.ToByteArray(),
+                action.Request.PublicKey
+            );
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed to encrypt inbox message");
+            dispatcher.Dispatch(new RemoveFollowRequestAction(action.Request));
+            return;
+        }
+        var putResponse = await feedApiService.PutInboxMessageAsync(
+            new PutInboxMessageRequest(
+                ToUserId: action.Request.UserId,
+                EncryptedMessage: encryptedMessage
+            )
+        );
+        if (!putResponse.IsSuccess && putResponse.Error.Type != ApiErrorType.NotFound)
+        {
+            // TODO handle properly
+            return;
+        }
+
+        dispatcher.Dispatch(new RemoveFollowRequestAction(action.Request));
+    }
+
+    [EffectMethod]
+    public async Task HandleStartRemoveFollowerAction(
+        StartRemoveFollowerAction action,
+        IDispatcher dispatcher
+    )
+    {
+        var identity = state.Value.Identity;
+        if (identity is null)
+        {
+            return;
+        }
+        var deleteFollowSecretResponse = await feedApiService.DeleteUserFollowSecretAsync(
+            new DeleteUserFollowSecretRequest(
+                UserId: identity.Id,
+                Password: identity.Password,
+                FollowSecret: action.User.FollowSecret!
+            )
+        );
+        if (
+            !deleteFollowSecretResponse.IsSuccess
+            && deleteFollowSecretResponse.Error.Type != ApiErrorType.NotFound
+        )
+        {
+            // TODO handle properly
+            return;
+        }
+        dispatcher.Dispatch(new RemoveFollowerAction(action.User));
     }
 
     [EffectMethod]
@@ -271,22 +563,84 @@ public class FeedEffects(
         return PersistFeedState();
     }
 
+    [EffectMethod]
+    public Task ReplaceFeedUsers(ReplaceFeedUsersAction action, IDispatcher dispatcher)
+    {
+        return PersistFeedState();
+    }
+
+    [EffectMethod]
+    public Task DeleteFeedUser(DeleteFeedUserAction action, IDispatcher dispatcher)
+    {
+        return PersistFeedState();
+    }
+
+    [EffectMethod]
+    public Task AppendNewFollowRequests(
+        AppendNewFollowRequestsAction action,
+        IDispatcher dispatcher
+    )
+    {
+        return PersistFeedState();
+    }
+
+    [EffectMethod]
+    public Task ProcessFollowResponses(RemoveFollowerAction action, IDispatcher dispatcher)
+    {
+        return PersistFeedState();
+    }
+
+    [EffectMethod]
+    public Task AddFollowerAction(AddFollowerAction action, IDispatcher dispatcher)
+    {
+        return PersistFeedState();
+    }
+
+    [EffectMethod]
+    public Task RemoveFollowRequestAction(RemoveFollowRequestAction action, IDispatcher dispatcher)
+    {
+        return PersistFeedState();
+    }
+
+    private async Task<InboxMessageDao?> DecryptIfValid(
+        GetInboxMessageResponse inboxMessage,
+        byte[] privateKey
+    )
+    {
+        try
+        {
+            var decrypted = await encryptionService.DecryptRsaAsync(
+                inboxMessage.EncryptedMessage,
+                privateKey
+            );
+            return InboxMessageDao.Parser.ParseFrom(decrypted);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed to decrypt inbox message");
+            return null;
+        }
+    }
+
     private async Task GenerateAndPutFeedIdentityAsync(
         IDispatcher dispatcher,
         Guid id,
         string password,
         byte[] encryptionKey,
+        byte[] publicKey,
+        byte[] privateKey,
         string? name,
         byte[]? profilePicture,
         bool publishBodyweight,
-        bool publishPlan
+        bool publishPlan,
+        bool publishWorkouts
     )
     {
-        var (_, iv) = await encryptionService.EncryptAsync([1], encryptionKey);
+        var (_, iv) = await encryptionService.EncryptAesAsync([1], encryptionKey);
         byte[]? encryptedName = name is null
             ? null
             : (
-                await encryptionService.EncryptAsync(
+                await encryptionService.EncryptAesAsync(
                     Encoding.UTF8.GetBytes(name),
                     encryptionKey,
                     iv
@@ -295,7 +649,7 @@ public class FeedEffects(
         var encryptedProfilePicture = profilePicture is null
             ? null
             : (
-                await encryptionService.EncryptAsync(profilePicture, encryptionKey, iv)
+                await encryptionService.EncryptAesAsync(profilePicture, encryptionKey, iv)
             ).EncryptedPayload;
 
         var currentProgram = (CurrentPlanDaoV1?)programState.Value.SessionBlueprints;
@@ -303,7 +657,7 @@ public class FeedEffects(
             currentProgram is null || !publishPlan
                 ? null
                 : (
-                    await encryptionService.EncryptAsync(
+                    await encryptionService.EncryptAesAsync(
                         currentProgram.ToByteArray(),
                         encryptionKey,
                         iv
@@ -335,7 +689,9 @@ public class FeedEffects(
                         name,
                         profilePicture,
                         publishBodyweight,
-                        publishPlan
+                        publishPlan,
+                        publishWorkouts,
+                        null
                     )
                 );
                 return;
@@ -346,47 +702,40 @@ public class FeedEffects(
 
         var identity = new FeedIdentity(
             Id: id,
-            EncryptionKey: encryptionKey,
+            AesKey: encryptionKey,
+            PublicKey: publicKey,
+            PrivateKey: privateKey,
             Password: password,
             Name: name,
             ProfilePicture: profilePicture,
             PublishBodyweight: publishBodyweight,
-            PublishPlan: publishPlan
+            PublishPlan: publishPlan,
+            PublishWorkouts: publishWorkouts
         );
 
         dispatcher.Dispatch(new PutFeedIdentityAction(identity));
-        dispatcher.Dispatch(
-            new PutFeedUserAction(
-                new FeedUser(
-                    Id: id,
-                    EncryptionKey: encryptionKey,
-                    Name: name ?? "You",
-                    Nickname: "You",
-                    CurrentPlan: currentProgram is null
-                        ? []
-                        : (ImmutableListValue<SessionBlueprint>)currentProgram,
-                    ProfilePicture: profilePicture
-                )
-            )
-        );
+        // TODO subscribe to self
     }
 
     private async Task<FeedUser> GetDecryptedUserAsync(
         Guid Id,
-        byte[] encryptionKey,
+        byte[] publicKey,
+        byte[] aesKey,
         string? nickname,
-        GetUserResponse response
+        GetUserResponse response,
+        string? followSecret
     )
     {
         return new FeedUser(
             Id,
-            EncryptionKey: encryptionKey,
+            PublicKey: publicKey,
+            AesKey: aesKey,
             Name: response.EncryptedName is null or { Length: 0 }
                 ? null
                 : Encoding.UTF8.GetString(
-                    await encryptionService.DecryptAsync(
+                    await encryptionService.DecryptAesAsync(
                         response.EncryptedName,
-                        encryptionKey,
+                        aesKey,
                         response.EncryptionIV
                     )
                 ),
@@ -395,9 +744,9 @@ public class FeedEffects(
                 ? []
                 : CurrentPlanDaoV1
                     .Parser.ParseFrom(
-                        await encryptionService.DecryptAsync(
+                        await encryptionService.DecryptAesAsync(
                             response.EncryptedCurrentPlan,
-                            encryptionKey,
+                            aesKey,
                             response.EncryptionIV
                         )
                     )
@@ -405,11 +754,12 @@ public class FeedEffects(
                     .ToImmutableList(),
             ProfilePicture: response.EncryptedProfilePicture is null or { Length: 0 }
                 ? null
-                : await encryptionService.DecryptAsync(
+                : await encryptionService.DecryptAesAsync(
                     response.EncryptedProfilePicture,
-                    encryptionKey,
+                    aesKey,
                     response.EncryptionIV
-                )
+                ),
+            FollowSecret: followSecret
         );
     }
 
@@ -443,8 +793,12 @@ public class FeedEffects(
     )
     {
         var user = state.Value.Users[userId];
-        var key = user.EncryptionKey;
-        var decrypted = await encryptionService.DecryptAsync(encryptedPayload, key, iv);
+        var key = user.AesKey;
+        if (key is null)
+        {
+            return null;
+        }
+        var decrypted = await encryptionService.DecryptAesAsync(encryptedPayload, key, iv);
         return UserEventPayload.Parser.ParseFrom(decrypted);
     }
 

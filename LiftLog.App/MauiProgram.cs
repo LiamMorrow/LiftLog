@@ -98,7 +98,7 @@ public static class MauiProgram
             AppThemeProvider,
             MauiStringSharer,
             AppPurchaseService,
-            AesEncryptionService
+            OsEncryptionService
         >();
 
         builder.UseMaterialColors<ThemeColorUpdateService>(opts =>

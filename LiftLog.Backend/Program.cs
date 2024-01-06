@@ -233,7 +233,16 @@ app.MapPost(
         {
             return Results.BadRequest(validationResult.Errors);
         }
-        var events = await db.UserEvents.Where(x => request.UserIds.Contains(x.UserId))
+        var validFollowSecrets = await db.UserFollowSecrets.Where(
+            x => request.Users.Select(x => x.FollowSecret).Contains(x.Value)
+        )
+            .ToArrayAsync();
+        var invalidFollowSecrets = request
+            .Users.Select(x => x.FollowSecret)
+            .Except(validFollowSecrets.Select(x => x.Value))
+            .ToArray();
+        var userIds = validFollowSecrets.Select(x => x.UserId).ToArray();
+        var events = await db.UserEvents.Where(x => userIds.Contains(x.UserId))
             .Where(x => x.Timestamp > request.Since)
             .Where(x => x.Expiry > DateTimeOffset.UtcNow)
             .ToArrayAsync();
@@ -255,7 +264,147 @@ app.MapPost(
             userEvent.LastAccessed = DateTimeOffset.UtcNow;
         }
         await db.SaveChangesAsync();
-        return Results.Ok(new GetEventsResponse(userEvents));
+        return Results.Ok(new GetEventsResponse(userEvents, invalidFollowSecrets));
+    }
+);
+
+app.MapPut(
+    "/inbox",
+    async (
+        UserDataContext db,
+        PutInboxMessageRequest request,
+        IValidator<PutInboxMessageRequest> validator
+    ) =>
+    {
+        var validationResult = await validator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            return Results.BadRequest(validationResult.Errors);
+        }
+        var user = await db.Users.FindAsync(request.ToUserId);
+        if (user == null)
+        {
+            return Results.NotFound();
+        }
+
+        var userInboxItem = new UserInboxItem
+        {
+            Id = Guid.NewGuid(),
+            UserId = request.ToUserId,
+            EncryptedMessage = request.EncryptedMessage,
+        };
+        db.UserInboxItems.Add(userInboxItem);
+        await db.SaveChangesAsync();
+
+        return Results.Ok();
+    }
+);
+
+app.MapPost(
+    "/inbox",
+    async (
+        UserDataContext db,
+        GetInboxMessagesRequest request,
+        IValidator<GetInboxMessagesRequest> validator
+    ) =>
+    {
+        var validationResult = await validator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            return Results.BadRequest(validationResult.Errors);
+        }
+        var user = await db.Users.FindAsync(request.UserId);
+        if (user == null)
+        {
+            return Results.NotFound();
+        }
+        if (!PasswordService.VerifyPassword(request.Password, user.HashedPassword, user.Salt))
+        {
+            return Results.Unauthorized();
+        }
+        var inboxItems = await db.UserInboxItems.Where(x => x.UserId == request.UserId)
+            .ToArrayAsync();
+        db.UserInboxItems.RemoveRange(inboxItems);
+        await db.SaveChangesAsync();
+        return Results.Ok(
+            new GetInboxMessagesResponse(
+                inboxItems
+                    .Select(
+                        x =>
+                            new GetInboxMessageResponse(
+                                Id: x.Id,
+                                EncryptedMessage: x.EncryptedMessage
+                            )
+                    )
+                    .ToArray()
+            )
+        );
+    }
+);
+
+app.MapPut(
+    "/follow-secret",
+    async (
+        UserDataContext db,
+        PutUserFollowSecretRequest request,
+        IValidator<PutUserFollowSecretRequest> validator
+    ) =>
+    {
+        var validationResult = await validator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            return Results.BadRequest(validationResult.Errors);
+        }
+        var user = await db.Users.FindAsync(request.UserId);
+        if (user == null)
+        {
+            return Results.NotFound();
+        }
+        if (!PasswordService.VerifyPassword(request.Password, user.HashedPassword, user.Salt))
+        {
+            return Results.Unauthorized();
+        }
+        var userFollowSecret = new UserFollowSecret
+        {
+            Id = Guid.NewGuid(),
+            UserId = request.UserId,
+            Value = request.FollowSecret,
+        };
+        await db.UserFollowSecrets.AddAsync(userFollowSecret);
+        await db.SaveChangesAsync();
+        return Results.Ok();
+    }
+);
+
+app.MapPost(
+    "/follow-secret/delete",
+    async (
+        UserDataContext db,
+        DeleteUserFollowSecretRequest request,
+        IValidator<DeleteUserFollowSecretRequest> validator
+    ) =>
+    {
+        var validationResult = await validator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            return Results.BadRequest(validationResult.Errors);
+        }
+        var user = await db.Users.FindAsync(request.UserId);
+        if (user == null)
+        {
+            return Results.NotFound();
+        }
+        if (!PasswordService.VerifyPassword(request.Password, user.HashedPassword, user.Salt))
+        {
+            return Results.Unauthorized();
+        }
+        var userFollowSecret = await db.UserFollowSecrets.Where(
+            x => x.UserId == request.UserId && x.Value == request.FollowSecret
+        )
+            .ToListAsync();
+        db.UserFollowSecrets.RemoveRange(userFollowSecret);
+        await db.SaveChangesAsync();
+        return Results.Ok();
     }
 );
 

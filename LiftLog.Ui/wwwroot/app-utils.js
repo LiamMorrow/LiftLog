@@ -1,6 +1,6 @@
 var AppUtils = {};
 AppUtils.getScrollTop = function (element) {
-    return element.scrollTop
+    return element?.scrollTop
 };
 /**
  *
@@ -82,7 +82,7 @@ AppUtils.selectAllText = function (element) {
 * @param {HTMLElement} element
 */
 AppUtils.scrollToTop = function (element) {
-    element.scrollTo({
+    element?.scrollTo({
         top: 0,
         behavior: 'instant'
     });
