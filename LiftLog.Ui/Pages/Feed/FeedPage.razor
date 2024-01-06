@@ -87,7 +87,7 @@
 </div>
 <Dialog @ref=deleteUserDialog>
     <span slot="headline">Unfollow user</span>
-    <span slot="content" class="block text-left">This will unfollow <span class="text-primary font-bold">@(userToDelete?.Nickname ?? userToDelete?.Name ?? "someone")</span> and remove all their content on your device.</span>
+    <span slot="content" class="block text-left">This will unfollow <span class="text-primary font-bold">@(userToDelete?.Nickname ?? userToDelete?.Name ?? "Anonymous User")</span> and remove all their content on your device.</span>
     <div slot="actions">
         <AppButton Type="AppButtonType.Text" OnClick=@(()=>deleteUserDialog?.Close())>Cancel</AppButton>
         <AppButton Type="AppButtonType.Text" OnClick=DeleteUser>Unfollow</AppButton>

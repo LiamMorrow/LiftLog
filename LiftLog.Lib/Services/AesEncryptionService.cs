@@ -51,7 +51,7 @@ public class OsEncryptionService : IEncryptionService
 
     public ValueTask<byte[][]> EncryptRsaAsync(byte[] data, byte[] publicKey)
     {
-        var rsa = RSA.Create(4096);
+        var rsa = RSA.Create(2048);
 
         rsa.ImportSubjectPublicKeyInfo(publicKey, out _);
         // encrypt one chunk at a time, as RSA has a size limit of 245 bytes
@@ -87,7 +87,7 @@ public class OsEncryptionService : IEncryptionService
 
     public ValueTask<(byte[] PublicKey, byte[] PrivateKey)> GenerateRsaKeysAsync()
     {
-        var rsa = RSA.Create(4096);
+        var rsa = RSA.Create(2048);
 
         return ValueTask.FromResult(
             (rsa.ExportSubjectPublicKeyInfo(), rsa.ExportPkcs8PrivateKey())

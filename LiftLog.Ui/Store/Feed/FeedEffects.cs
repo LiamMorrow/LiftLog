@@ -330,7 +330,7 @@ public class FeedEffects(
                 x =>
                     new FollowRequest(
                         UserId: x.FromUserId,
-                        Name: x.FollowRequest.Name?.ToString() ?? "Someone",
+                        Name: x.FollowRequest.Name?.ToString() ?? "Anonymous User",
                         ProfilePicture: x.FollowRequest.ProfilePicture.IsEmpty
                             ? null
                             : x.FollowRequest.ProfilePicture.ToByteArray(),

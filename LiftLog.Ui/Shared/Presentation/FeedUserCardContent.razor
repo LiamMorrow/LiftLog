@@ -2,7 +2,7 @@
     <MainContent>
     <div class="flex flex-col gap-4">
         <div class="flex justify-between items-center">
-        <span class=" text-lg text-primary font-bold">@(User.Name ?? "Someone")</span>
+        <span class=" text-lg text-primary font-bold">@(User.Name ?? "Anonymous User")</span>
             @if(User.AesKey is null){
                 <span class="text-xs text-tertiary">Awaiting Response</span>
             }
