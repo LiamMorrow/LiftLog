@@ -58,10 +58,6 @@
       <UseInterpreter>True</UseInterpreter>
     </PropertyGroup>
 
-    <PropertyGroup Condition="$(TargetFramework.Contains('-ios'))">
-      <CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
-    </PropertyGroup>
-
 	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' Or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
 
 		<!-- For debugging, use '?mode=developer' for debug to bypass apple's CDN cache -->
