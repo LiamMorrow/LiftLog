@@ -8,7 +8,8 @@ public record CreateFeedIdentityAction(
     string? Name,
     byte[]? ProfilePicture,
     bool PublishBodyweight,
-    bool PublishPlan
+    bool PublishPlan,
+    string? RedirectAfterCreation
 );
 
 public record UpdateFeedIdentityAction(

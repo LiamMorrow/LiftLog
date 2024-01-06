@@ -8,6 +8,7 @@ using LiftLog.Lib.Services;
 using LiftLog.Ui.Models;
 using LiftLog.Ui.Models.SessionHistoryDao;
 using LiftLog.Ui.Services;
+using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.Program;
 using LiftLog.Ui.Util;
 using Microsoft.Extensions.Logging;
@@ -200,6 +201,10 @@ public class FeedEffects(
             action.PublishPlan
         );
         dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
+        if (action.RedirectAfterCreation is not null or "")
+        {
+            dispatcher.Dispatch(new NavigateAction(action.RedirectAfterCreation));
+        }
     }
 
     [EffectMethod]
@@ -678,7 +683,8 @@ public class FeedEffects(
                         name,
                         profilePicture,
                         publishBodyweight,
-                        publishPlan
+                        publishPlan,
+                        null
                     )
                 );
                 return;

@@ -5,7 +5,6 @@
 @inject IState<FeedState> FeedState
 @inject IStringSharer StringSharer
 @inject IDispatcher Dispatcher
-@inject NavigationManager NavigationManager
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
@@ -48,7 +47,9 @@ else
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/feed"));
         if(String.IsNullOrEmpty(PublicKey) || id == Guid.Empty)
         {
-            NavigationManager.NavigateTo("/feed");
+            Dispatcher.Dispatch(new NavigateAction("/feed"));
+        }else if(FeedState.Value.Identity is null) {
+            Dispatcher.Dispatch(new NavigateAction("/feed/create-identity?from=" + Uri.EscapeDataString("/feed/share?pub=" + PublicKey + "&id=" + id + "&name=" + Name ?? "")));
         }else
         {
             Dispatcher.Dispatch(new SetSharedFeedUserAction(FeedUser.FromShared(id, PublicKey.FromUrlSafeHexString(), Name)));
@@ -61,7 +62,7 @@ else
     private void HandleNoThanksClick()
     {
         Dispatcher.Dispatch(new SetSharedFeedUserAction(null));
-        NavigationManager.NavigateTo("/feed");
+        Dispatcher.Dispatch(new NavigateAction("/feed"));
     }
 
     private void HandleSureClick()
@@ -72,7 +73,7 @@ else
         }
         Dispatcher.Dispatch(new RequestFollowSharedUserAction(FeedState.Value.SharedFeedUser));
         Dispatcher.Dispatch(new SetSharedFeedUserAction(null));
-        NavigationManager.NavigateTo("/feed");
+        Dispatcher.Dispatch(new NavigateAction("/feed"));
     }
 
     private void UpdateNickname(string value)

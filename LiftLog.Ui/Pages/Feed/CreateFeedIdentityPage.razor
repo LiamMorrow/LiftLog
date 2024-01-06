@@ -11,7 +11,7 @@
 @if(FeedState.Value.Identity == null)
 {
     <div class="text-on-surface flex flex-col gap-4 p-4">
-        <span class="text-lg">Create a new identity to start publishing!</span>
+        <span class="text-lg">Create a new identity to start using the feed!</span>
         <TextField Value="@(FeedState.Value.Identity?.Name ?? "")" label="Your name (optional)" OnChange=@SetName />
         <div>
             <Switch Label="Publish bodyweight" Value=@publishBodyweight OnSwitched="SetPublishBodyweight"/>
@@ -55,6 +55,10 @@ else
     private bool publishBodyweight;
     private bool publishPlan;
     private Dialog? stopPublishingDialog;
+
+    [SupplyParameterFromQuery(Name="from")]
+    public string From { get; set; } = "";
+
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Start Publishing"));
@@ -67,7 +71,7 @@ else
 
     private void StartPublishing()
     {
-        Dispatcher.Dispatch(new CreateFeedIdentityAction(Guid.NewGuid(), string.IsNullOrEmpty(name) ? null : name, null, publishBodyweight, publishPlan));
+        Dispatcher.Dispatch(new CreateFeedIdentityAction(Guid.NewGuid(), string.IsNullOrEmpty(name) ? null : name, null, publishBodyweight, publishPlan, From == null ? null : From));
     }
 
     private void UpdatePublishingDetails()
