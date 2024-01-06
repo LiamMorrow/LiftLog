@@ -18,6 +18,7 @@ message FeedIdentityDaoV1 {
     optional bytes profile_picture = 6;
     bool publish_bodyweight = 7;
     bool publish_plan = 8;
+    bool publish_workouts = 11;
 }
 
 message FeedUserDaoV1 {

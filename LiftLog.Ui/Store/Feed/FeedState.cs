@@ -63,7 +63,8 @@ public record FeedIdentity(
     string? Name,
     byte[]? ProfilePicture,
     bool PublishBodyweight,
-    bool PublishPlan
+    bool PublishPlan,
+    bool PublishWorkouts
 );
 
 public record FollowRequest(

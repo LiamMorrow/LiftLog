@@ -166,6 +166,8 @@ public class FeedEffects(
         dispatcher.Dispatch(new PutFeedIdentityAction(null));
         dispatcher.Dispatch(new DeleteFeedUserAction(identity.Id));
         dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
+        dispatcher.Dispatch(new ReplaceFeedItemsAction([]));
+        dispatcher.Dispatch(new ReplaceFeedUsersAction([]));
     }
 
     [EffectMethod]
@@ -198,7 +200,8 @@ public class FeedEffects(
             action.Name,
             action.ProfilePicture,
             action.PublishBodyweight,
-            action.PublishPlan
+            action.PublishPlan,
+            action.PublishWorkouts
         );
         dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
         if (action.RedirectAfterCreation is not null or "")
@@ -227,7 +230,8 @@ public class FeedEffects(
             action.Name,
             action.ProfilePicture,
             action.PublishBodyweight,
-            action.PublishPlan
+            action.PublishPlan,
+            action.PublishWorkouts
         );
     }
 
@@ -251,7 +255,8 @@ public class FeedEffects(
             state.Value.Identity.Name,
             state.Value.Identity.ProfilePicture,
             state.Value.Identity.PublishBodyweight,
-            state.Value.Identity.PublishPlan
+            state.Value.Identity.PublishPlan,
+            state.Value.Identity.PublishWorkouts
         );
     }
 
@@ -261,7 +266,7 @@ public class FeedEffects(
         IDispatcher dispatcher
     )
     {
-        if (state.Value.Identity is null)
+        if (state.Value.Identity is not { PublishWorkouts: true })
         {
             return;
         }
@@ -627,7 +632,8 @@ public class FeedEffects(
         string? name,
         byte[]? profilePicture,
         bool publishBodyweight,
-        bool publishPlan
+        bool publishPlan,
+        bool publishWorkouts
     )
     {
         var (_, iv) = await encryptionService.EncryptAesAsync([1], encryptionKey);
@@ -684,6 +690,7 @@ public class FeedEffects(
                         profilePicture,
                         publishBodyweight,
                         publishPlan,
+                        publishWorkouts,
                         null
                     )
                 );
@@ -702,7 +709,8 @@ public class FeedEffects(
             Name: name,
             ProfilePicture: profilePicture,
             PublishBodyweight: publishBodyweight,
-            PublishPlan: publishPlan
+            PublishPlan: publishPlan,
+            PublishWorkouts: publishWorkouts
         );
 
         dispatcher.Dispatch(new PutFeedIdentityAction(identity));

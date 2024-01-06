@@ -11,8 +11,11 @@
 @if(FeedState.Value.Identity == null)
 {
     <div class="text-on-surface flex flex-col gap-4 p-4">
-        <span class="text-lg">Create a new identity to start using the feed!</span>
-        <TextField Value="@(FeedState.Value.Identity?.Name ?? "")" label="Your name (optional)" OnChange=@SetName />
+        <span class="text-lg">Create a new account to start using the feed!</span>
+        <TextField Value="@name" label="Your name (optional)" OnChange=@SetName />
+        <div>
+            <Switch Label="Publish workouts" Value=@publishWorkouts OnSwitched="SetPublishWorkouts"/>
+        </div>
         <div>
             <Switch Label="Publish bodyweight" Value=@publishBodyweight OnSwitched="SetPublishBodyweight"/>
         </div>
@@ -20,7 +23,7 @@
             <Switch Label="Publish plan" Value=@publishPlan OnSwitched="SetPublishPlan"/>
         </div>
         <span class="text-sm">This will generate a new link which you can share with others.</span>
-        <AppButton Type=AppButtonType.Text OnClick=StartPublishing>Start publishing</AppButton>
+        <AppButton Type=AppButtonType.Text OnClick=StartPublishing>Create account</AppButton>
     </div>
 }
 else
@@ -31,21 +34,24 @@ else
         <TextField Value="@name" label="Your name (optional)" OnChange=@SetName />
         <FeedShareUrl/>
         <div>
+            <Switch Label="Publish workouts" Value=@publishWorkouts OnSwitched="SetPublishWorkouts"/>
+        </div>
+        <div>
             <Switch Label="Publish bodyweight" Value=@publishBodyweight OnSwitched="SetPublishBodyweight"/>
         </div>
         <div>
             <Switch Label="Publish plan" Value=@publishPlan OnSwitched="SetPublishPlan"/>
         </div>
-        <AppButton Type=AppButtonType.Text OnClick="@(()=>stopPublishingDialog?.Open())">Stop publishing</AppButton>
+        <AppButton Type=AppButtonType.Text OnClick="@(()=>stopPublishingDialog?.Open())">Delete account</AppButton>
     </div>
 }
 
 <Dialog @ref=stopPublishingDialog>
-    <span slot="headline">Stop publishing</span>
-    <span slot="content" class="block text-left">This will stop publishing data to other people's feed. If you want to start again, you will need to reshare your link with them.</span>
+    <span slot="headline">Delete account</span>
+    <span slot="content" class="block text-left">This will delete your account on the servers and unsubscribe you from all feeds.  You will need to resubscribe and share a new link if you want to enable the feed again.</span>
     <div slot="actions">
         <AppButton Type="AppButtonType.Text" OnClick=@(()=>stopPublishingDialog?.Close())>Cancel</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick=StopPublishing>Stop publishing</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick=StopPublishing>Delete</AppButton>
     </div>
 </Dialog>
 
@@ -53,6 +59,7 @@ else
 {
     private string name = "";
     private bool publishBodyweight;
+    private bool publishWorkouts;
     private bool publishPlan;
     private Dialog? stopPublishingDialog;
 
@@ -66,19 +73,20 @@ else
         name = FeedState.Value.Identity?.Name ?? "";
         publishBodyweight = FeedState.Value.Identity?.PublishBodyweight ?? false;
         publishPlan = FeedState.Value.Identity?.PublishPlan ?? true;
+        publishWorkouts = FeedState.Value.Identity?.PublishWorkouts ?? true;
         base.OnInitialized();
     }
 
     private void StartPublishing()
     {
-        Dispatcher.Dispatch(new CreateFeedIdentityAction(Guid.NewGuid(), string.IsNullOrEmpty(name) ? null : name, null, publishBodyweight, publishPlan, From == null ? null : From));
+        Dispatcher.Dispatch(new CreateFeedIdentityAction(Guid.NewGuid(), string.IsNullOrEmpty(name) ? null : name, null, publishBodyweight, publishPlan, publishWorkouts, From == null ? null : From));
     }
 
     private void UpdatePublishingDetails()
     {
         if(FeedState.Value.Identity is null)
             return;
-        Dispatcher.Dispatch(new UpdateFeedIdentityAction(string.IsNullOrEmpty(name) ? null : name, null, publishBodyweight, publishPlan));
+        Dispatcher.Dispatch(new UpdateFeedIdentityAction(string.IsNullOrEmpty(name) ? null : name, null, publishBodyweight, publishPlan, publishWorkouts));
     }
 
     private void SetName(string value)
@@ -90,6 +98,12 @@ else
     private void SetPublishBodyweight(bool value)
     {
         publishBodyweight = value;
+        UpdatePublishingDetails();
+    }
+
+    private void SetPublishWorkouts(bool value)
+    {
+        publishWorkouts = value;
         UpdatePublishingDetails();
     }
 

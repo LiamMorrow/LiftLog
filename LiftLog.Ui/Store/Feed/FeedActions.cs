@@ -9,6 +9,7 @@ public record CreateFeedIdentityAction(
     byte[]? ProfilePicture,
     bool PublishBodyweight,
     bool PublishPlan,
+    bool PublishWorkouts,
     string? RedirectAfterCreation
 );
 
@@ -16,7 +17,8 @@ public record UpdateFeedIdentityAction(
     string? Name,
     byte[]? ProfilePicture,
     bool PublishBodyweight,
-    bool PublishPlan
+    bool PublishPlan,
+    bool PublishWorkouts
 );
 
 public record PutFeedIdentityAction(FeedIdentity? Identity);
