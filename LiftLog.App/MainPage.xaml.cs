@@ -39,7 +39,6 @@ public partial class MainPage : ContentPage
             await NavigateWhenLoaded(url);
             return;
         }
-        Console.WriteLine("Navigated to {0}", url);
         toNavigate = null;
     }
 
