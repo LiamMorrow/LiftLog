@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace LiftLog.Backend.Models;
 
 public class UserEvent
@@ -18,6 +20,7 @@ public class UserEvent
 
     // This payload is encrypted with the user's private key, which we do not store
     // Its schema is defined in LiftLog.Ui/Models/UserEvent.proto - we don't reference this proto since the server doesn't need to deserialize it
+    [MaxLength(5 * 1024)]
     public byte[] EncryptedEvent { get; set; } = null!;
 
     // The IV can be considered public, as long as the encryption key is kept secret

@@ -25,7 +25,7 @@ public class DeleteUserRequestValidator : AbstractValidator<DeleteUserRequest>
     public DeleteUserRequestValidator()
     {
         RuleFor(x => x.Id).NotEmpty();
-        RuleFor(x => x.Password).NotEmpty();
+        RuleFor(x => x.Password).NotEmpty().MaximumLength(40);
     }
 }
 
@@ -62,6 +62,10 @@ public class PutUserEventRequestValidator : AbstractValidator<PutUserEventReques
             .InclusiveBetween(0, 5 * KB)
             .When(x => x.EncryptedEventPayload != null);
         RuleFor(x => x.Expiry).NotEmpty();
+        RuleFor(x => x.EncryptedEventIV).NotEmpty();
+        RuleFor(x => x.EncryptedEventIV.Length)
+            .InclusiveBetween(0, 16)
+            .When(x => x.EncryptedEventIV != null);
     }
 }
 
@@ -85,7 +89,10 @@ public class PutInboxMessageRequestValidator : AbstractValidator<PutInboxMessage
         RuleFor(x => x.ToUserId).NotEmpty();
         RuleFor(x => x.EncryptedMessage).NotEmpty();
         RuleFor(x => x.EncryptedMessage.Length)
-            .InclusiveBetween(0, 5 * KB)
+            .InclusiveBetween(0, 20)
+            .When(x => x.EncryptedMessage != null);
+        RuleForEach(x => x.EncryptedMessage)
+            .ChildRules(x => x.RuleFor(y => y.Length).InclusiveBetween(0, 1 * KB))
             .When(x => x.EncryptedMessage != null);
     }
 }
@@ -95,7 +102,7 @@ public class GetInboxMessagesRequestValidator : AbstractValidator<GetInboxMessag
     public GetInboxMessagesRequestValidator()
     {
         RuleFor(x => x.UserId).NotEmpty();
-        RuleFor(x => x.Password).NotEmpty();
+        RuleFor(x => x.Password).NotEmpty().MaximumLength(40);
     }
 }
 
@@ -104,8 +111,8 @@ public class PutUserFollowSecretRequestValidator : AbstractValidator<PutUserFoll
     public PutUserFollowSecretRequestValidator()
     {
         RuleFor(x => x.UserId).NotEmpty();
-        RuleFor(x => x.FollowSecret).NotEmpty();
-        RuleFor(x => x.Password).NotEmpty();
+        RuleFor(x => x.FollowSecret).NotEmpty().MaximumLength(40);
+        RuleFor(x => x.Password).NotEmpty().MaximumLength(40);
     }
 }
 
@@ -115,7 +122,7 @@ public class DeleteUserFollowSecretRequestValidator
     public DeleteUserFollowSecretRequestValidator()
     {
         RuleFor(x => x.UserId).NotEmpty();
-        RuleFor(x => x.FollowSecret).NotEmpty();
-        RuleFor(x => x.Password).NotEmpty();
+        RuleFor(x => x.FollowSecret).NotEmpty().MaximumLength(40);
+        RuleFor(x => x.Password).NotEmpty().MaximumLength(40);
     }
 }

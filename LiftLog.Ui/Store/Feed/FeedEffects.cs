@@ -84,13 +84,9 @@ public class FeedEffects(
                     ?? DateTimeOffset.MinValue
             )
         );
+        var originalUsers = state.Value.Users;
         var userResponseTask = feedApiService.GetUsersAsync(
-            new GetUsersRequest(
-                state
-                    .Value.Users.Values.Where(x => x.AesKey is not null)
-                    .Select(x => x.Id)
-                    .ToArray()
-            )
+            new GetUsersRequest(originalUsers.Keys.ToArray())
         );
 
         var feedResponse = await feedResponseTask;
@@ -109,14 +105,16 @@ public class FeedEffects(
             await Task.WhenAll(
                 users.Select(
                     x =>
-                        GetDecryptedUserAsync(
-                            x.Key,
-                            state.Value.Users[x.Key].PublicKey,
-                            state.Value.Users[x.Key].AesKey!,
-                            state.Value.Users[x.Key].Nickname,
-                            x.Value,
-                            state.Value.Users[x.Key].FollowSecret
-                        )
+                        originalUsers[x.Key].AesKey is null
+                            ? Task.FromResult(originalUsers[x.Key])
+                            : GetDecryptedUserAsync(
+                                x.Key,
+                                originalUsers[x.Key].PublicKey,
+                                originalUsers[x.Key].AesKey!,
+                                originalUsers[x.Key].Nickname,
+                                x.Value,
+                                originalUsers[x.Key].FollowSecret
+                            )
                 )
             )
         )
@@ -399,7 +397,9 @@ public class FeedEffects(
         {
             return;
         }
-        var followSecret = Guid.NewGuid().ToString();
+        var followSecret =
+            state.Value.Followers.FirstOrDefault(x => x.Id == action.Request.UserId)?.FollowSecret
+            ?? Guid.NewGuid().ToString();
         var putFollowSecretResponse = await feedApiService.PutUserFollowSecretAsync(
             new PutUserFollowSecretRequest(
                 UserId: identity.Id,

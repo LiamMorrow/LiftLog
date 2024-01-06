@@ -29,8 +29,7 @@ else
         <span class="text-lg">Share this link to let others track your progress!</span>
 
         <TextField Value="@name" label="Your name (optional)" OnChange=@SetName />
-        <TextField Value="@GetShareUrl()" label="Share Link" readonly="readonly" OnClick="HandleShareUrlClick" />
-        <span class="text-sm">Only those with the link can see what you've shared.</span>
+        <FeedShareUrl/>
         <div>
             <Switch Label="Publish bodyweight" Value=@publishBodyweight OnSwitched="SetPublishBodyweight"/>
         </div>
@@ -66,15 +65,6 @@ else
         base.OnInitialized();
     }
 
-
-    private string? GetShareUrl()
-    {
-        if(FeedState.Value.Identity == null)
-            return null;
-        var identity = FeedState.Value.Identity;
-        return FeedPageUtils.GetShareUrl(identity.Id, identity.PublicKey, identity.Name);
-    }
-
     private void StartPublishing()
     {
         Dispatcher.Dispatch(new CreateFeedIdentityAction(Guid.NewGuid(), string.IsNullOrEmpty(name) ? null : name, null, publishBodyweight, publishPlan));
@@ -85,14 +75,6 @@ else
         if(FeedState.Value.Identity is null)
             return;
         Dispatcher.Dispatch(new UpdateFeedIdentityAction(string.IsNullOrEmpty(name) ? null : name, null, publishBodyweight, publishPlan));
-    }
-
-    private async Task HandleShareUrlClick()
-    {
-        var shareUrl = GetShareUrl();
-        if(shareUrl == null)
-            return;
-        await StringSharer.ShareAsync(shareUrl);
     }
 
     private void SetName(string value)

@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace LiftLog.Backend.Models;
 
 // This secret is what is used when requesting a user's events.
@@ -10,5 +12,6 @@ public class UserFollowSecret
 
     public User User { get; set; } = null!;
 
+    [MaxLength(40)]
     public string Value { get; set; } = null!;
 }

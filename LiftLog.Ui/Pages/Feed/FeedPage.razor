@@ -65,6 +65,9 @@
 
 
     <div id="followers-panel" role="tabpanel" aria-labelledby="followers-tab" class="@(GetTabClass("followers-panel"))">
+        <div class="flex flex-col my-4">
+        <FeedShareUrl/>
+        </div>
         @if(FeedState.Value.Followers is {Count: 0} && FeedState.Value.FollowRequests is {Count: 0})
         {
             <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">

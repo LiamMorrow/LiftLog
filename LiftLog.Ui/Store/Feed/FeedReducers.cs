@@ -68,7 +68,14 @@ public static class FeedReducers
     public static FeedState AppendNewFollowRequests(
         FeedState state,
         AppendNewFollowRequestsAction action
-    ) => state with { FollowRequests = state.FollowRequests.AddRange(action.Requests) };
+    ) =>
+        state with
+        {
+            FollowRequests = state
+                .FollowRequests.Concat(action.Requests)
+                .DistinctBy(x => x.UserId)
+                .ToImmutableList()
+        };
 
     [ReducerMethod]
     public static FeedState RemoveFollowRequest(
