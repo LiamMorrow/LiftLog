@@ -24,6 +24,8 @@ public record ReplaceFeedItemsAction(ImmutableListValue<FeedItem> Items);
 
 public record DeleteFeedIdentityAction();
 
+public record RequestFollowSharedUserAction(FeedUser FeedUser);
+
 public record PutFeedUserAction(FeedUser User);
 
 public record SetSharedFeedUserAction(FeedUser? User);

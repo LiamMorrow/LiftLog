@@ -3,6 +3,8 @@ syntax = "proto3";
 package LiftLog.Lib.Models;
 
 import "Models/SessionHistoryDao/SessionHistoryDaoV2.proto";
+import "Models/Utils.proto";
+import "google/protobuf/wrappers.proto";
 
 message UserEventPayload {
     // Note that messages shouldn;t just be raw data, but should be a wrapper around the data
@@ -14,4 +16,37 @@ message UserEventPayload {
 
 message SessionUserEvent {
     LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2 session = 1;
+}
+
+message InboxMessage {
+    LiftLog.Ui.Models.UUIDDao from_user_id = 1;
+    oneof message_payload {
+        FollowRequest follow_request = 2;
+        FollowResponse follow_response = 3;
+    }
+}
+
+message FollowRequest {
+    optional google.protobuf.StringValue name = 1;
+    optional bytes profile_picture = 2;
+    // Used to encrypt the follow response
+    bytes public_key = 3;
+}
+
+// Encrypted with the public key of the user who sent the follow request
+message FollowResponse {
+    oneof response_payload {
+        FollowResponseAccepted accepted = 1;
+        FollowResponseRejected rejected = 2;
+    }
+}
+
+message FollowResponseAccepted {
+    bytes aes_key = 1;
+    // Must be given with any requests to user's feed.
+    //This may be revoked at any time, if so, the follower should mark user as unfollowed
+    string follow_secret = 2;
+}
+
+message FollowResponseRejected {
 }

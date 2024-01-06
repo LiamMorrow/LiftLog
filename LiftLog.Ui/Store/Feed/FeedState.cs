@@ -18,8 +18,9 @@ public record FeedUser(
     string? Nickname,
     ImmutableListValue<SessionBlueprint> CurrentPlan,
     byte[]? ProfilePicture,
-    byte[] EncryptionKey
-);
+    byte[] EncryptionKey,
+    string? FollowSecret
+) { }
 
 public abstract record FeedItem(
     Guid UserId,

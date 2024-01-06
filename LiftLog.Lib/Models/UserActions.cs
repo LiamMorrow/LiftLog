@@ -41,7 +41,9 @@ public record PutUserEventRequest(
     DateTimeOffset Expiry
 );
 
-public record GetEventsRequest(Guid[] UserIds, DateTimeOffset Since);
+public record GetUserEventRequest(Guid UserId, string FollowSecret);
+
+public record GetEventsRequest(GetUserEventRequest[] Users, DateTimeOffset Since);
 
 public record UserEventResponse(
     Guid UserId,
@@ -56,3 +58,17 @@ public record UserEventResponse(
 );
 
 public record GetEventsResponse(UserEventResponse[] Events);
+
+// Encrypt with the TO user's public key, which they store on their client
+public record PutInboxMessageRequest(Guid ToUserId, byte[] EncryptedMessage);
+
+public record GetInboxMessagesRequest(Guid UserId, string Password);
+
+// Encrypted with the requester's public key, which they store on their client
+public record GetInboxMessageResponse(Guid Id, byte[] EncryptedMessage);
+
+public record GetInboxMessagesResponse(GetInboxMessageResponse[] InboxMessages);
+
+public record PutUserFollowSecretRequest(Guid UserId, string Password, string FollowSecret);
+
+public record DeleteUserFollowSecretRequest(Guid UserId, string Password, string FollowSecret);

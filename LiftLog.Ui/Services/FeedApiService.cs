@@ -85,6 +85,56 @@ public class FeedApiService(HttpClient httpClient)
         });
     }
 
+    public Task<ApiResult> PutInboxMessageAsync(PutInboxMessageRequest postInboxMessageRequest)
+    {
+        return GetApiResultAsync(async () =>
+        {
+            (
+                await httpClient.PostAsJsonAsync($"{baseUrl}inbox", postInboxMessageRequest)
+            ).EnsureSuccessStatusCode();
+        });
+    }
+
+    public Task<ApiResult<GetInboxMessagesResponse>> GetInboxMessagesAsync(
+        GetInboxMessagesRequest getInboxMessagesRequest
+    )
+    {
+        return GetApiResultAsync(async () =>
+        {
+            var result = (
+                await httpClient.PostAsJsonAsync($"{baseUrl}inbox", getInboxMessagesRequest)
+            ).EnsureSuccessStatusCode();
+            return (await result.Content.ReadFromJsonAsync<GetInboxMessagesResponse>())!;
+        });
+    }
+
+    public Task<ApiResult> PutUserFollowSecretAsync(
+        PutUserFollowSecretRequest putFollowSecretRequest
+    )
+    {
+        return GetApiResultAsync(async () =>
+        {
+            (
+                await httpClient.PutAsJsonAsync($"{baseUrl}follow-secret", putFollowSecretRequest)
+            ).EnsureSuccessStatusCode();
+        });
+    }
+
+    public Task<ApiResult> DeleteUserFollowSecretAsync(
+        DeleteUserFollowSecretRequest deleteUserFollowSecretRequest
+    )
+    {
+        return GetApiResultAsync(async () =>
+        {
+            (
+                await httpClient.PostAsJsonAsync(
+                    $"{baseUrl}follow-secret/delete",
+                    deleteUserFollowSecretRequest
+                )
+            ).EnsureSuccessStatusCode();
+        });
+    }
+
     private static async Task<ApiResult<T>> GetApiResultAsync<T>(Func<Task<T>> action)
     {
         try

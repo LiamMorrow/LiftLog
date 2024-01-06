@@ -45,7 +45,7 @@ builder.Services.RegisterUiServices<
     WebThemeProvider,
     ClipboardStringSharer,
     WebAppPurchaseService,
-    JsAesEncryptionService
+    JsEncryptionService
 >();
 
 await builder.Build().RunAsync();

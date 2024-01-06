@@ -34,8 +34,8 @@ else
 
 @code
 {
-    [SupplyParameterFromQuery(Name="secret")]
-    public string Secret { get; set; } = "";
+    [SupplyParameterFromQuery(Name="pub")]
+    public string PublicKey { get; set; } = "";
 
     [SupplyParameterFromQuery(Name="id")]
     private Guid id { get; set; }
@@ -43,11 +43,11 @@ else
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Subscribe to a feed"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/feed"));
-        if(String.IsNullOrEmpty(Secret) || id == Guid.Empty)
+        if(String.IsNullOrEmpty(PublicKey) || id == Guid.Empty)
         {
             NavigationManager.NavigateTo("/feed");
         }
-        Dispatcher.Dispatch(new FetchSharedFeedUserAction(id, Secret.FromUrlSafeHexString()));
+        Dispatcher.Dispatch(new FetchSharedFeedUserAction(id, PublicKey.FromUrlSafeHexString()));
         base.OnInitialized();
     }
 
@@ -65,7 +65,7 @@ else
         {
             return;
         }
-        Dispatcher.Dispatch(new PutFeedUserAction(FeedState.Value.SharedFeedUser));
+        Dispatcher.Dispatch(new RequestFollowSharedUserAction(FeedState.Value.SharedFeedUser));
         Dispatcher.Dispatch(new SetSharedFeedUserAction(null));
         NavigationManager.NavigateTo("/feed");
     }

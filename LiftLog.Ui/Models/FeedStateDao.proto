@@ -24,6 +24,7 @@ message FeedUserDaoV1 {
     optional CurrentPlanDaoV1 current_plan = 3;
     optional bytes profile_picture = 4;
     bytes encryption_key = 5;
+    optional google.protobuf.StringValue follow_secret = 7;
 }
 
 message CurrentPlanDaoV1 {

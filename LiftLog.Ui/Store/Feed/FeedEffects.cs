@@ -2,7 +2,6 @@ using System.Collections.Immutable;
 using System.Text;
 using Fluxor;
 using Google.Protobuf;
-using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Services;
 using LiftLog.Ui.Models;
@@ -36,7 +35,10 @@ public class FeedEffects(
         }
         var feedResponseTask = feedApiService.GetUserEventsAsync(
             new GetEventsRequest(
-                UserIds: state.Value.Users.Keys.ToArray(),
+                Users: state
+                    .Value.Users.Where(x => x.Value.FollowSecret is not null)
+                    .Select(x => new GetUserEventRequest(x.Key, x.Value.FollowSecret!))
+                    .ToArray(),
                 Since: state.Value.Feed.MaxBy(x => x.Timestamp)?.Timestamp
                     ?? DateTimeOffset.MinValue
             )
@@ -64,7 +66,8 @@ public class FeedEffects(
                             x.Key,
                             state.Value.Users[x.Key].EncryptionKey,
                             state.Value.Users[x.Key].Nickname,
-                            x.Value
+                            x.Value,
+                            state.Value.Users[x.Key].FollowSecret
                         )
                 )
             )
@@ -109,7 +112,8 @@ public class FeedEffects(
                     action.Id,
                     action.EncryptionKey,
                     existingUser?.Nickname,
-                    feedResponse.Data
+                    feedResponse.Data,
+                    null
                 )
             )
         );
@@ -157,7 +161,7 @@ public class FeedEffects(
             // TODO handle properly
             return;
         }
-        var encryptionKey = await encryptionService.GenerateKeyAsync();
+        var encryptionKey = await encryptionService.GenerateAesKeyAsync();
         await GenerateAndPutFeedIdentityAsync(
             dispatcher,
             action.Id,
@@ -225,7 +229,7 @@ public class FeedEffects(
         {
             return;
         }
-        var (encryptedPayload, iv) = await encryptionService.EncryptAsync(
+        var (encryptedPayload, iv) = await encryptionService.EncryptAesAsync(
             new UserEventPayload
             {
                 SessionPayload = new SessionUserEvent
@@ -282,11 +286,11 @@ public class FeedEffects(
         bool publishPlan
     )
     {
-        var (_, iv) = await encryptionService.EncryptAsync([1], encryptionKey);
+        var (_, iv) = await encryptionService.EncryptAesAsync([1], encryptionKey);
         byte[]? encryptedName = name is null
             ? null
             : (
-                await encryptionService.EncryptAsync(
+                await encryptionService.EncryptAesAsync(
                     Encoding.UTF8.GetBytes(name),
                     encryptionKey,
                     iv
@@ -295,7 +299,7 @@ public class FeedEffects(
         var encryptedProfilePicture = profilePicture is null
             ? null
             : (
-                await encryptionService.EncryptAsync(profilePicture, encryptionKey, iv)
+                await encryptionService.EncryptAesAsync(profilePicture, encryptionKey, iv)
             ).EncryptedPayload;
 
         var currentProgram = (CurrentPlanDaoV1?)programState.Value.SessionBlueprints;
@@ -303,7 +307,7 @@ public class FeedEffects(
             currentProgram is null || !publishPlan
                 ? null
                 : (
-                    await encryptionService.EncryptAsync(
+                    await encryptionService.EncryptAesAsync(
                         currentProgram.ToByteArray(),
                         encryptionKey,
                         iv
@@ -355,27 +359,15 @@ public class FeedEffects(
         );
 
         dispatcher.Dispatch(new PutFeedIdentityAction(identity));
-        dispatcher.Dispatch(
-            new PutFeedUserAction(
-                new FeedUser(
-                    Id: id,
-                    EncryptionKey: encryptionKey,
-                    Name: name ?? "You",
-                    Nickname: "You",
-                    CurrentPlan: currentProgram is null
-                        ? []
-                        : (ImmutableListValue<SessionBlueprint>)currentProgram,
-                    ProfilePicture: profilePicture
-                )
-            )
-        );
+        // TODO subscribe to self
     }
 
     private async Task<FeedUser> GetDecryptedUserAsync(
         Guid Id,
         byte[] encryptionKey,
         string? nickname,
-        GetUserResponse response
+        GetUserResponse response,
+        string? followSecret
     )
     {
         return new FeedUser(
@@ -384,7 +376,7 @@ public class FeedEffects(
             Name: response.EncryptedName is null or { Length: 0 }
                 ? null
                 : Encoding.UTF8.GetString(
-                    await encryptionService.DecryptAsync(
+                    await encryptionService.DecryptAesAsync(
                         response.EncryptedName,
                         encryptionKey,
                         response.EncryptionIV
@@ -395,7 +387,7 @@ public class FeedEffects(
                 ? []
                 : CurrentPlanDaoV1
                     .Parser.ParseFrom(
-                        await encryptionService.DecryptAsync(
+                        await encryptionService.DecryptAesAsync(
                             response.EncryptedCurrentPlan,
                             encryptionKey,
                             response.EncryptionIV
@@ -405,11 +397,12 @@ public class FeedEffects(
                     .ToImmutableList(),
             ProfilePicture: response.EncryptedProfilePicture is null or { Length: 0 }
                 ? null
-                : await encryptionService.DecryptAsync(
+                : await encryptionService.DecryptAesAsync(
                     response.EncryptedProfilePicture,
                     encryptionKey,
                     response.EncryptionIV
-                )
+                ),
+            FollowSecret: followSecret
         );
     }
 
@@ -444,7 +437,7 @@ public class FeedEffects(
     {
         var user = state.Value.Users[userId];
         var key = user.EncryptionKey;
-        var decrypted = await encryptionService.DecryptAsync(encryptedPayload, key, iv);
+        var decrypted = await encryptionService.DecryptAesAsync(encryptedPayload, key, iv);
         return UserEventPayload.Parser.ParseFrom(decrypted);
     }
 

@@ -64,7 +64,8 @@ internal partial class FeedUserDaoV1
                     .ToImmutableList() ?? [],
                 ProfilePicture: value.ProfilePicture.IsEmpty
                     ? null
-                    : value.ProfilePicture.ToByteArray()
+                    : value.ProfilePicture.ToByteArray(),
+                FollowSecret: value.FollowSecret
             );
 
     [return: NotNullIfNotNull(nameof(value))]
@@ -81,6 +82,7 @@ internal partial class FeedUserDaoV1
                 ProfilePicture = value.ProfilePicture is null
                     ? ByteString.Empty
                     : ByteString.CopyFrom(value.ProfilePicture),
+                FollowSecret = value.FollowSecret
             };
 }
 
