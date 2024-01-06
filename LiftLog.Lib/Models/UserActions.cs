@@ -57,7 +57,7 @@ public record UserEventResponse(
     DateTimeOffset Expiry
 );
 
-public record GetEventsResponse(UserEventResponse[] Events);
+public record GetEventsResponse(UserEventResponse[] Events, string[] InvalidFollowSecrets);
 
 // Encrypt with the TO user's public key, which they store on their client
 // RSA has max message size of key size, so chunk if necessary

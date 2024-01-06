@@ -233,10 +233,16 @@ app.MapPost(
         {
             return Results.BadRequest(validationResult.Errors);
         }
-        // TODO auth against follow secret
-        var events = await db.UserEvents.Where(
-            x => request.Users.Select(x => x.UserId).Contains(x.UserId)
+        var validFollowSecrets = await db.UserFollowSecrets.Where(
+            x => request.Users.Select(x => x.FollowSecret).Contains(x.Value)
         )
+            .ToArrayAsync();
+        var invalidFollowSecrets = request
+            .Users.Select(x => x.FollowSecret)
+            .Except(validFollowSecrets.Select(x => x.Value))
+            .ToArray();
+        var userIds = validFollowSecrets.Select(x => x.UserId).ToArray();
+        var events = await db.UserEvents.Where(x => userIds.Contains(x.UserId))
             .Where(x => x.Timestamp > request.Since)
             .Where(x => x.Expiry > DateTimeOffset.UtcNow)
             .ToArrayAsync();
@@ -258,7 +264,7 @@ app.MapPost(
             userEvent.LastAccessed = DateTimeOffset.UtcNow;
         }
         await db.SaveChangesAsync();
-        return Results.Ok(new GetEventsResponse(userEvents));
+        return Results.Ok(new GetEventsResponse(userEvents, invalidFollowSecrets));
     }
 );
 

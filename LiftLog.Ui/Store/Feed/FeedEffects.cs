@@ -102,6 +102,7 @@ public class FeedEffects(
             return;
         }
         var feedEvents = feedResponse.Data.Events;
+        var invalidFollowSecrets = feedResponse.Data.InvalidFollowSecrets;
         var users = usersResponse.Data.Users;
 
         var newUsers = (
@@ -118,11 +119,17 @@ public class FeedEffects(
                         )
                 )
             )
-        ).ToImmutableList();
+        )
+            .Where(x => !invalidFollowSecrets.Contains(x.FollowSecret))
+            .ToImmutableList();
         dispatcher.Dispatch(new ReplaceFeedUsersAction(newUsers));
 
         var feedItems = (
-            await Task.WhenAll(feedEvents.Select(x => ToFeedItemAsync(x).AsTask()))
+            await Task.WhenAll(
+                feedEvents
+                    .Where(ev => newUsers.Any(us => us.Id == ev.UserId))
+                    .Select(x => ToFeedItemAsync(x).AsTask())
+            )
         ).WhereNotNull();
         var now = DateTimeOffset.UtcNow;
         dispatcher.Dispatch(
@@ -131,7 +138,7 @@ public class FeedEffects(
                     .Value.Feed.Concat(feedItems)
                     .Where(x => x.Expiry >= now)
                     .DistinctBy(x => x.EventId)
-                    .Where(x => users.ContainsKey(x.UserId))
+                    .Where(ev => newUsers.Any(us => us.Id == ev.UserId))
                     .OrderByDescending(x => x.Timestamp)
                     .ToImmutableList()
             )
