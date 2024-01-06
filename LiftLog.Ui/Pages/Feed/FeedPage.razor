@@ -12,6 +12,7 @@
     <md-tabs @ref=tabs @onchange=HandleTabChange>
         <md-primary-tab  id="mainfeed-tab" aria-controls="mainfeed-panel" >Feed</md-primary-tab>
         <md-primary-tab  id="following-tab" aria-controls="following-panel" >Following</md-primary-tab>
+        <md-primary-tab  id="followers-tab" aria-controls="followers-panel" >Followers</md-primary-tab>
     </md-tabs>
 </div>
 
@@ -60,6 +61,26 @@
             <FeedUserCardContent User=context UpdateUser="UpdateUser" DeleteUser="() => BeginDeleteUser(context)" ViewUserPlan="() => ViewUserPlan(context)" />
         </VirtualizedCardList>
     </div>
+
+
+
+    <div id="followers-panel" role="tabpanel" aria-labelledby="followers-tab" class="@(GetTabClass("followers-panel"))">
+        @if(FeedState.Value.Followers is {Count: 0} && FeedState.Value.FollowRequests is {Count: 0})
+        {
+            <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
+                <md-icon>info</md-icon>
+                <span>
+                    <p>Nobody is following you yet!<br>Share your link with friends to get followers</p>
+                </span>
+            </div>
+        }
+        <VirtualizedCardList Items=@(FeedState.Value.FollowRequests.ToList()) CardClass="animate-fade-zoom-in">
+            <FollowRequestCardContent FollowRequest=context Accept=@(()=>AcceptFollowRequest(context)) Deny=@(()=>DenyFollowRequest(context)) />
+        </VirtualizedCardList>
+        <VirtualizedCardList Items=@(FeedState.Value.Followers.ToList()) CardClass="animate-fade-zoom-in">
+            <FollowerCardContent User=context RemoveFollower=@(()=> RemoveFollower(context))/>
+        </VirtualizedCardList>
+    </div>
 </div>
 <Dialog @ref=deleteUserDialog>
     <span slot="headline">Unfollow user</span>
@@ -86,6 +107,7 @@
         Dispatcher.Dispatch(new SetPageTitleAction("Feed"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
         Dispatcher.Dispatch(new FetchSessionFeedItemsAction());
+        Dispatcher.Dispatch(new FetchInboxItemsAction());
         base.OnInitialized();
     }
 
@@ -94,9 +116,24 @@
         NavigationManager.NavigateTo("/feed/create-identity");
     }
 
+    private void AcceptFollowRequest(FollowRequest request)
+    {
+        Dispatcher.Dispatch(new AcceptFollowRequestAction(request));
+    }
+
+    private void DenyFollowRequest(FollowRequest request)
+    {
+        Dispatcher.Dispatch(new DenyFollowRequestAction(request));
+    }
+
     private void UpdateUser(FeedUser user)
     {
         Dispatcher.Dispatch(new PutFeedUserAction(user));
+    }
+
+    private void RemoveFollower(FeedUser follower)
+    {
+        Dispatcher.Dispatch(new StartRemoveFollowerAction(follower));
     }
 
     private void BeginDeleteUser(FeedUser user)

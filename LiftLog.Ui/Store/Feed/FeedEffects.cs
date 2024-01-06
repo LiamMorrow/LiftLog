@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Text;
 using Fluxor;
 using Google.Protobuf;
+using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Services;
 using LiftLog.Ui.Models;
@@ -306,7 +307,7 @@ public class FeedEffects(
             )
         ).WhereNotNull();
 
-        var newFollowRequests = inboxItems
+        ImmutableListValue<FollowRequest> newFollowRequests = inboxItems
             .Where(
                 x => x.MessagePayloadCase == InboxMessageDao.MessagePayloadOneofCase.FollowRequest
             )
@@ -375,8 +376,145 @@ public class FeedEffects(
             .ToImmutableList();
 
         dispatcher.Dispatch(new ReplaceFeedUsersAction(usersAfterResponses));
+        dispatcher.Dispatch(new FetchSessionFeedItemsAction());
 
         return Task.CompletedTask;
+    }
+
+    [EffectMethod]
+    public async Task HandleAcceptFollowRequestAction(
+        AcceptFollowRequestAction action,
+        IDispatcher dispatcher
+    )
+    {
+        var identity = state.Value.Identity;
+        if (identity is null)
+        {
+            return;
+        }
+        var followSecret = Guid.NewGuid().ToString();
+        var putFollowSecretResponse = await feedApiService.PutUserFollowSecretAsync(
+            new PutUserFollowSecretRequest(
+                UserId: identity.Id,
+                Password: identity.Password,
+                FollowSecret: followSecret
+            )
+        );
+        if (!putFollowSecretResponse.IsSuccess)
+        {
+            // TODO handle properly
+            return;
+        }
+
+        var inboxMessage = new InboxMessageDao
+        {
+            FromUserId = identity.Id,
+            FollowResponse = new FollowResponseDao
+            {
+                Accepted = new FollowResponseAcceptedDao
+                {
+                    AesKey = ByteString.CopyFrom(identity.AesKey),
+                    FollowSecret = followSecret
+                }
+            }
+        };
+        var encryptedMessage = await encryptionService.EncryptRsaAsync(
+            inboxMessage.ToByteArray(),
+            action.Request.PublicKey
+        );
+        var putResponse = await feedApiService.PutInboxMessageAsync(
+            new PutInboxMessageRequest(
+                ToUserId: action.Request.UserId,
+                EncryptedMessage: encryptedMessage
+            )
+        );
+        if (!putResponse.IsSuccess)
+        {
+            if (putResponse.Error.Type == ApiErrorType.NotFound)
+            {
+                dispatcher.Dispatch(new RemoveFollowRequestAction(action.Request));
+            }
+            // TODO handle properly
+            return;
+        }
+
+        dispatcher.Dispatch(
+            new AddFollowerAction(
+                FeedUser.FromShared(
+                    action.Request.UserId,
+                    action.Request.PublicKey,
+                    action.Request.Name
+                ) with
+                {
+                    FollowSecret = followSecret
+                }
+            )
+        );
+        dispatcher.Dispatch(new RemoveFollowRequestAction(action.Request));
+    }
+
+    [EffectMethod]
+    public async Task HandleDenyFollowRequestAction(
+        DenyFollowRequestAction action,
+        IDispatcher dispatcher
+    )
+    {
+        var identity = state.Value.Identity;
+        if (identity is null)
+        {
+            return;
+        }
+        var inboxMessage = new InboxMessageDao
+        {
+            FromUserId = identity.Id,
+            FollowResponse = new FollowResponseDao { Rejected = new FollowResponseRejectedDao() }
+        };
+        var encryptedMessage = await encryptionService.EncryptRsaAsync(
+            inboxMessage.ToByteArray(),
+            action.Request.PublicKey
+        );
+        var putResponse = await feedApiService.PutInboxMessageAsync(
+            new PutInboxMessageRequest(
+                ToUserId: action.Request.UserId,
+                EncryptedMessage: encryptedMessage
+            )
+        );
+        if (!putResponse.IsSuccess && putResponse.Error.Type != ApiErrorType.NotFound)
+        {
+            // TODO handle properly
+            return;
+        }
+
+        dispatcher.Dispatch(new RemoveFollowRequestAction(action.Request));
+    }
+
+    [EffectMethod]
+    public async Task HandleStartRemoveFollowerAction(
+        StartRemoveFollowerAction action,
+        IDispatcher dispatcher
+    )
+    {
+        var identity = state.Value.Identity;
+        if (identity is null)
+        {
+            return;
+        }
+        var deleteFollowSecretResponse = await feedApiService.DeleteUserFollowSecretAsync(
+            new DeleteUserFollowSecretRequest(
+                UserId: identity.Id,
+                Password: identity.Password,
+                FollowSecret: action.User.FollowSecret!
+            )
+        );
+        if (
+            !deleteFollowSecretResponse.IsSuccess
+            && deleteFollowSecretResponse.Error.Type != ApiErrorType.NotFound
+        )
+        {
+            // TODO handle properly
+            return;
+        }
+        dispatcher.Dispatch(new RemoveFollowerAction(action.User));
     }
 
     [EffectMethod]
@@ -393,6 +531,45 @@ public class FeedEffects(
 
     [EffectMethod]
     public Task PutFeedUser(PutFeedUserAction action, IDispatcher dispatcher)
+    {
+        return PersistFeedState();
+    }
+
+    [EffectMethod]
+    public Task ReplaceFeedUsers(ReplaceFeedUsersAction action, IDispatcher dispatcher)
+    {
+        return PersistFeedState();
+    }
+
+    [EffectMethod]
+    public Task DeleteFeedUser(DeleteFeedUserAction action, IDispatcher dispatcher)
+    {
+        return PersistFeedState();
+    }
+
+    [EffectMethod]
+    public Task AppendNewFollowRequests(
+        AppendNewFollowRequestsAction action,
+        IDispatcher dispatcher
+    )
+    {
+        return PersistFeedState();
+    }
+
+    [EffectMethod]
+    public Task ProcessFollowResponses(RemoveFollowerAction action, IDispatcher dispatcher)
+    {
+        return PersistFeedState();
+    }
+
+    [EffectMethod]
+    public Task AddFollowerAction(AddFollowerAction action, IDispatcher dispatcher)
+    {
+        return PersistFeedState();
+    }
+
+    [EffectMethod]
+    public Task RemoveFollowRequestAction(RemoveFollowRequestAction action, IDispatcher dispatcher)
     {
         return PersistFeedState();
     }

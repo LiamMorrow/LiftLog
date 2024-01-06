@@ -142,7 +142,10 @@ internal partial class FeedStateDaoV1
                     x => (FeedUser)x
                 ),
                 SharedFeedUser: null,
-                FollowRequests: value.FollowRequests.Select(x => (FollowRequest)x).ToImmutableList()
+                FollowRequests: value
+                    .FollowRequests.Select(x => (FollowRequest)x)
+                    .ToImmutableList(),
+                Followers: value.Followers.Select(x => (FeedUser)x).ToImmutableList()
             );
 
     [return: NotNullIfNotNull(nameof(value))]
@@ -154,6 +157,8 @@ internal partial class FeedStateDaoV1
                 Identity = value.Identity,
                 FeedItems = { value.Feed.Select(x => (FeedItemDaoV1)x) },
                 FeedUsers = { value.Users.Values.Select(x => (FeedUserDaoV1)x) },
+                FollowRequests = { value.FollowRequests.Select(x => (InboxMessageDao)x) },
+                Followers = { value.Followers.Select(x => (FeedUserDaoV1)x) }
             };
 }
 

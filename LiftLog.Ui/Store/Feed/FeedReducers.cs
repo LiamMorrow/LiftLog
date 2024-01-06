@@ -69,4 +69,24 @@ public static class FeedReducers
         FeedState state,
         AppendNewFollowRequestsAction action
     ) => state with { FollowRequests = state.FollowRequests.AddRange(action.Requests) };
+
+    [ReducerMethod]
+    public static FeedState RemoveFollowRequest(
+        FeedState state,
+        RemoveFollowRequestAction action
+    ) => state with { FollowRequests = state.FollowRequests.Remove(action.Request) };
+
+    [ReducerMethod]
+    public static FeedState AddFollower(FeedState state, AddFollowerAction action) =>
+        state with
+        {
+            Followers = state.Followers.Add(action.User).DistinctBy(x => x.Id).ToImmutableList()
+        };
+
+    [ReducerMethod]
+    public static FeedState RemoveFollower(FeedState state, RemoveFollowerAction action) =>
+        state with
+        {
+            Followers = state.Followers.Remove(action.User)
+        };
 }

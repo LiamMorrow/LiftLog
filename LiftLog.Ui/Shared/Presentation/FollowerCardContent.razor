@@ -1,0 +1,21 @@
+<SplitCardControl>
+    <MainContent>
+    <div class="flex flex-col gap-4">
+        <span><span class="text-primary font-bold">@(User.Name ?? "Someone")</span> is following you!</span>
+    </div>
+</MainContent>
+<SideContent>
+    <IconButton Type="IconButtonType.FilledTonal" OnClick=@RemoveFollower Icon="person_remove" />
+</SideContent>
+</SplitCardControl>
+
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public FeedUser User { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public Action RemoveFollower { get; set; } = null!;
+}

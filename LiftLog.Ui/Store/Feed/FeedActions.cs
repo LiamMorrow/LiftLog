@@ -49,3 +49,15 @@ public record SetIsLoadingIdentityAction(bool IsLoadingIdentity);
 public record AppendNewFollowRequestsAction(ImmutableListValue<FollowRequest> Requests);
 
 public record ProcessFollowResponsesAction(ImmutableListValue<FollowResponse> Responses);
+
+public record DenyFollowRequestAction(FollowRequest Request);
+
+public record RemoveFollowRequestAction(FollowRequest Request);
+
+public record AcceptFollowRequestAction(FollowRequest Request);
+
+public record AddFollowerAction(FeedUser User);
+
+public record StartRemoveFollowerAction(FeedUser User);
+
+public record RemoveFollowerAction(FeedUser User);
