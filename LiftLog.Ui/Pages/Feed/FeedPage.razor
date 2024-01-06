@@ -65,6 +65,16 @@
 
 
     <div id="followers-panel" role="tabpanel" aria-labelledby="followers-tab" class="@(GetTabClass("followers-panel"))">
+        @if(FeedState.Value.Identity is null)
+        {
+            <Card IsHighlighted=true class="mb-4" >
+                <div class="flex flex-col gap-2">
+                    <h2 class="text-xl self-start">Start publishing to your feed</h2>
+                    <p class="self-start text-left">You're not currently publishing your workouts for your friends to see</p>
+                    <AppButton class="self-end" Type=AppButtonType.Text OnClick=NavigateToCreateFeedIdentity >Start</AppButton>
+                </div>
+            </Card>
+        }
         <div class="flex flex-col my-4">
         <FeedShareUrl/>
         </div>
