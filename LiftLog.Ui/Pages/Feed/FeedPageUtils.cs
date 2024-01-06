@@ -8,6 +8,6 @@ public static class FeedPageUtils
 #if DEBUG
         $"https://0.0.0.0:5001/feed/share?secret={encryptionKey.ToUrlSafeHexString()}&id={id}";
 #else
-        $"liftlog://app.liftlog.online/feed/share?secret={encryptionKey.ToUrlSafeHexString()}&id={id}";
+        $"https://app.liftlog.online/feed/share?secret={encryptionKey.ToUrlSafeHexString()}&id={id}";
 #endif
 }
