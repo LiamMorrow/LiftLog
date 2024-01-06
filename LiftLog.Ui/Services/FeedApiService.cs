@@ -7,10 +7,18 @@ using LiftLog.Ui.Store.Feed;
 
 namespace LiftLog.Ui.Services;
 
-public class FeedApiService(HttpClient httpClient)
+public class FeedApiService(HttpClient httpClient
+#if DEBUG
+    , IAppPurchaseService appPurchaseService
+#endif
+)
 {
 #if DEBUG
-    private static readonly string baseUrl = "http://localhost:5264/";
+    // Android emulator needs a special loopback address - hacky but works
+    private readonly string baseUrl =
+        appPurchaseService.GetAppStore() == AppStore.Google
+            ? "http://10.0.2.2:5264/"
+            : "http://localhost:5264/";
 #else
     private static readonly string baseUrl = "https://api.liftlog.online/";
 #endif
@@ -166,7 +174,7 @@ public class FeedApiService(HttpClient httpClient)
     private static async Task<ApiResult> GetApiResultAsync(Func<Task> action)
     {
         // Be explicit here with generic to avoid accidental recursion
-        return await GetApiResultAsync<int>(async () =>
+        return await GetApiResultAsync(async () =>
         {
             await action();
             return 1;

@@ -54,13 +54,13 @@ public class OsEncryptionService : IEncryptionService
         var rsa = RSA.Create(2048);
 
         rsa.ImportSubjectPublicKeyInfo(publicKey, out _);
-        // encrypt one chunk at a time, as RSA has a size limit of 245 bytes
+        // encrypt one chunk at a time, as RSA has a size limit of 122 bytes
 
-        var encrypted = new byte[(data.Length / 245) + 1][];
+        var encrypted = new byte[(data.Length / 122) + 1][];
         for (var i = 0; i < encrypted.Length; i++)
         {
             encrypted[i] = rsa.Encrypt(
-                data[(i * 245)..Math.Min((i + 1) * 245, data.Length)],
+                data[(i * 122)..Math.Min((i + 1) * 122, data.Length)],
                 RSAEncryptionPadding.OaepSHA256
             );
         }

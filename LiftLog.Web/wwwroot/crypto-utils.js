@@ -86,9 +86,9 @@ CryptoUtils.encryptRsa = async function (data, publicKey) {
         ["encrypt"],
     );
     const chunkedData = [];
-    // RSA can only encrypt 245 bytes at a time
-    for (let i = 0; i < data.length; i += 245) {
-        chunkedData.push(data.slice(i, i + 245))
+    // RSA can only encrypt 122 bytes at a time
+    for (let i = 0; i < data.length; i += 122) {
+        chunkedData.push(data.slice(i, i + 122))
     }
     return Promise.all(chunkedData.map(async chunk => {
         return new Uint8Array(await crypto.subtle.encrypt(
