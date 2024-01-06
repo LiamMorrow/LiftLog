@@ -45,6 +45,12 @@
             .join("?");
           window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
         }
+      })(window.location);
+    </script>
+
+    <script>
+      // on load try to redirect to the app via liftlog uri scheme
+      window.onload = function () {
         try {
           window.location.href = window.location.href
             .replace("https://", "liftlog://")
@@ -52,7 +58,7 @@
         } catch (e) {
           // Not an app
         }
-      })(window.location);
+      };
     </script>
     <!-- End Single Page Apps for GitHub Pages -->
 
