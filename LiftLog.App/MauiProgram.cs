@@ -2,11 +2,14 @@
 using LiftLog.App.Services;
 using LiftLog.Lib.Services;
 using LiftLog.Ui;
+using LiftLog.Ui.Store.App;
 using MaterialColorUtilities.Maui;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
+using Microsoft.Maui.LifecycleEvents;
 using Microsoft.Maui.Storage;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
@@ -30,14 +33,14 @@ public static class MauiProgram
             notificationBuilder.AddCategory(
                 new NotificationCategory(NotificationCategoryType.Status)
                 {
-                    ActionList = new HashSet<NotificationAction>()
-                    {
+                    ActionList =
+                    [
                         new NotificationAction(100)
                         {
                             Title = "Complete Set",
                             Android = { LaunchAppWhenTapped = false, }
                         },
-                    }
+                    ]
                 }
             );
             notificationBuilder.AddAndroid(android =>
@@ -103,6 +106,92 @@ public static class MauiProgram
             opts.FallbackSeed = 0xF44336;
             opts.EnableDynamicColor = Preferences.Default.Get("EnableDynamicColor", true);
         });
+
+        builder.ConfigureLifecycleEvents(lifecycle =>
+        {
+#if IOS || MACCATALYST
+            lifecycle.AddiOS(ios =>
+            {
+                ios.FinishedLaunching((app, data) => HandleAppLink(app.UserActivity));
+
+                ios.ContinueUserActivity(
+                    (app, userActivity, handler) => HandleAppLink(userActivity)
+                );
+
+                ios.OpenUrl(
+                    (app, url, options) =>
+                    {
+                        HandleLink(url.AbsoluteString);
+                        return true;
+                    }
+                );
+            });
+#elif ANDROID
+            lifecycle.AddAndroid(android =>
+            {
+                android.OnNewIntent(
+                    (activity, bundle) =>
+                    {
+                        HandleIntent(bundle);
+                    }
+                );
+                android.OnCreate(
+                    (activity, bundle) =>
+                    {
+                        HandleIntent(activity.Intent);
+                    }
+                );
+            });
+#endif
+        });
+
         return builder.Build();
+    }
+
+#if ANDROID
+    private static async void HandleIntent(Android.Content.Intent? intent)
+    {
+        var data = intent?.Data?.ToString();
+        if (data is not null)
+        {
+            HandleLink(data);
+        }
+    }
+#endif
+
+#if IOS || MACCATALYST
+    private static bool HandleAppLink(Foundation.NSUserActivity? activity)
+    {
+        if (activity is null)
+        {
+            return true;
+        }
+
+        var url = activity.WebPageUrl;
+        if (url is null)
+        {
+            return true;
+        }
+        HandleLink(url.AbsoluteString);
+        return true;
+    }
+#endif
+
+    private static void HandleLink(string? link)
+    {
+        if (link is null)
+        {
+            return;
+        }
+        if (!Uri.TryCreate(link, UriKind.Absolute, out var uri))
+        {
+            return;
+        }
+        var path = uri.AbsolutePath;
+        var query = uri.Query;
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            _ = MainPage.NavigateWhenLoaded(path + query);
+        });
     }
 }

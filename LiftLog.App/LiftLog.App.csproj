@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
-        <TargetFrameworks>net8.0-android;</TargetFrameworks>
+       <TargetFrameworks>net8.0-android;</TargetFrameworks>
 
         <!--This wild business is so that when I open vscode it doesn't try and open the project as an android or ios one, which causes weird locks when building from the cli-->
         <TargetFramework Condition="'$(BuildFor)' == 'ios'">net8.0-ios</TargetFramework>
@@ -26,8 +26,8 @@
         <ApplicationIdGuid>71733E37-6FDD-4EEF-A0BF-DE32634D58EC</ApplicationIdGuid>
 
         <!-- Versions -->
-        <ApplicationDisplayVersion>1.13.1</ApplicationDisplayVersion>
-        <ApplicationVersion>44</ApplicationVersion>
+        <ApplicationDisplayVersion>2.0.0</ApplicationDisplayVersion>
+        <ApplicationVersion>45</ApplicationVersion>
 
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
@@ -58,6 +58,23 @@
       <UseInterpreter>True</UseInterpreter>
     </PropertyGroup>
 
+	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' Or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+
+		<!-- For debugging, use '?mode=developer' for debug to bypass apple's CDN cache -->
+		<CustomEntitlements
+			Condition="$(Configuration) == 'Debug'"
+			Include="com.apple.developer.associated-domains"
+			Type="StringArray"
+			Value="applinks:app.liftlog.online?mode=developer" />
+
+		<!-- Non debugging, use normal applinks:url value -->
+		<CustomEntitlements
+			Condition="$(Configuration) != 'Debug'"
+			Include="com.apple.developer.associated-domains"
+			Type="StringArray"
+			Value="applinks:app.liftlog.online" />
+
+	</ItemGroup>
     <ItemGroup>
         <!-- App Icon -->
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" ForegroundScale="0.50" Color="#FEF1EF" />
@@ -91,5 +108,4 @@
     <ItemGroup>
       <ProjectReference Include="..\LiftLog.Ui\LiftLog.Ui.csproj" />
     </ItemGroup>
-
 </Project>
