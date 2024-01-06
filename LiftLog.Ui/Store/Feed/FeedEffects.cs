@@ -320,7 +320,7 @@ public class FeedEffects(
                 x =>
                     new FollowRequest(
                         UserId: x.FromUserId,
-                        Name: x.FollowRequest.Name.ToString(),
+                        Name: x.FollowRequest.Name?.ToString() ?? "Someone",
                         ProfilePicture: x.FollowRequest.ProfilePicture.IsEmpty
                             ? null
                             : x.FollowRequest.ProfilePicture.ToByteArray(),
@@ -471,15 +471,26 @@ public class FeedEffects(
         {
             return;
         }
+
         var inboxMessage = new InboxMessageDao
         {
             FromUserId = identity.Id,
             FollowResponse = new FollowResponseDao { Rejected = new FollowResponseRejectedDao() }
         };
-        var encryptedMessage = await encryptionService.EncryptRsaAsync(
-            inboxMessage.ToByteArray(),
-            action.Request.PublicKey
-        );
+        byte[][]? encryptedMessage;
+        try
+        {
+            encryptedMessage = await encryptionService.EncryptRsaAsync(
+                inboxMessage.ToByteArray(),
+                action.Request.PublicKey
+            );
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed to encrypt inbox message");
+            dispatcher.Dispatch(new RemoveFollowRequestAction(action.Request));
+            return;
+        }
         var putResponse = await feedApiService.PutInboxMessageAsync(
             new PutInboxMessageRequest(
                 ToUserId: action.Request.UserId,
