@@ -17,7 +17,8 @@ namespace LiftLog.Backend.Migrations
                 maxLength: 40,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "text");
+                oldType: "text"
+            );
         }
 
         /// <inheritdoc />
@@ -30,7 +31,8 @@ namespace LiftLog.Backend.Migrations
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "character varying(40)",
-                oldMaxLength: 40);
+                oldMaxLength: 40
+            );
         }
     }
 }

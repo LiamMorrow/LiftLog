@@ -13,12 +13,13 @@ namespace LiftLog.Backend.Migrations
         {
             migrationBuilder.CreateTable(
                 name: "UserFollowSecrets",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Value = table.Column<string>(type: "text", nullable: false)
-                },
+                columns: table =>
+                    new
+                    {
+                        Id = table.Column<Guid>(type: "uuid", nullable: false),
+                        UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                        Value = table.Column<string>(type: "text", nullable: false)
+                    },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserFollowSecrets", x => x.Id);
@@ -27,17 +28,20 @@ namespace LiftLog.Backend.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "UserInboxItems",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    EncryptedMessage = table.Column<byte[][]>(type: "bytea[]", nullable: false)
-                },
+                columns: table =>
+                    new
+                    {
+                        Id = table.Column<Guid>(type: "uuid", nullable: false),
+                        UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                        EncryptedMessage = table.Column<byte[][]>(type: "bytea[]", nullable: false)
+                    },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserInboxItems", x => x.Id);
@@ -46,28 +50,30 @@ namespace LiftLog.Backend.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserFollowSecrets_UserId",
                 table: "UserFollowSecrets",
-                column: "UserId");
+                column: "UserId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserInboxItems_UserId",
                 table: "UserInboxItems",
-                column: "UserId");
+                column: "UserId"
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "UserFollowSecrets");
+            migrationBuilder.DropTable(name: "UserFollowSecrets");
 
-            migrationBuilder.DropTable(
-                name: "UserInboxItems");
+            migrationBuilder.DropTable(name: "UserInboxItems");
         }
     }
 }
