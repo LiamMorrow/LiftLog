@@ -49,27 +49,45 @@ public class OsEncryptionService : IEncryptionService
         return ValueTask.FromResult(aes.Key);
     }
 
-    public ValueTask<byte[]> EncryptRsaAsync(byte[] data, byte[] publicKey)
+    public ValueTask<byte[][]> EncryptRsaAsync(byte[] data, byte[] publicKey)
     {
         var rsa = RSA.Create();
 
         rsa.ImportRSAPublicKey(publicKey, out _);
+        // encrypt one chunk at a time, as RSA has a size limit of 245 bytes
 
-        return ValueTask.FromResult(rsa.Encrypt(data, RSAEncryptionPadding.Pkcs1));
+        var encrypted = new byte[(data.Length / 245) + 1][];
+        for (var i = 0; i < encrypted.Length; i++)
+        {
+            encrypted[i] = rsa.Encrypt(
+                data[(i * 245)..Math.Min((i + 1) * 245, data.Length)],
+                RSAEncryptionPadding.Pkcs1
+            );
+        }
+
+        return ValueTask.FromResult(encrypted);
     }
 
-    public ValueTask<byte[]> DecryptRsaAsync(byte[] data, byte[] privateKey)
+    public ValueTask<byte[]> DecryptRsaAsync(byte[][] data, byte[] privateKey)
     {
         var rsa = RSA.Create();
 
         rsa.ImportRSAPrivateKey(privateKey, out _);
 
-        return ValueTask.FromResult(rsa.Decrypt(data, RSAEncryptionPadding.Pkcs1));
+        // decrypt one chunk at a time
+
+        var decrypted = new byte[data.Length][];
+        for (var i = 0; i < data.Length; i++)
+        {
+            decrypted[i] = rsa.Decrypt(data[i], RSAEncryptionPadding.Pkcs1);
+        }
+
+        return ValueTask.FromResult(decrypted.SelectMany(x => x).ToArray());
     }
 
     public ValueTask<(byte[] PublicKey, byte[] PrivateKey)> GenerateRsaKeysAsync()
     {
-        var rsa = RSA.Create();
+        var rsa = RSA.Create(2048);
 
         return ValueTask.FromResult((rsa.ExportRSAPublicKey(), rsa.ExportRSAPrivateKey()));
     }

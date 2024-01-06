@@ -13,6 +13,7 @@ public class FeedFeature : Feature<FeedState>
             Identity: null,
             Feed: [],
             Users: ImmutableDictionary<Guid, FeedUser>.Empty,
-            null
+            SharedFeedUser: null,
+            FollowRequests: []
         );
 }

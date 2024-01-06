@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.JavaScript;
 using LiftLog.Lib.Services;
 using Microsoft.JSInterop;
 
@@ -31,20 +32,20 @@ public class JsEncryptionService(IJSRuntime jSRuntime) : IEncryptionService
         return jSRuntime.InvokeAsync<byte[]>("CryptoUtils.generateAesKey");
     }
 
-    public ValueTask<byte[]> EncryptRsaAsync(byte[] data, byte[] publicKey)
+    public ValueTask<byte[][]> EncryptRsaAsync(byte[] data, byte[] publicKey)
     {
-        return jSRuntime.InvokeAsync<byte[]>("CryptoUtils.encryptRsa", data, publicKey);
+        return jSRuntime.InvokeAsync<byte[][]>("CryptoUtils.encryptRsa", data, publicKey);
     }
 
-    public ValueTask<byte[]> DecryptRsaAsync(byte[] data, byte[] privateKey)
+    public ValueTask<byte[]> DecryptRsaAsync(byte[][] data, byte[] privateKey)
     {
         return jSRuntime.InvokeAsync<byte[]>("CryptoUtils.decryptRsa", data, privateKey);
     }
 
     public async ValueTask<(byte[] PublicKey, byte[] PrivateKey)> GenerateRsaKeysAsync()
     {
-        var keyPair = await jSRuntime.InvokeAsync<RsaKeyPair>("CryptoUtils.generateRsaKeys");
-        return (keyPair.PublicKey, keyPair.PrivateKey);
+        var result = await jSRuntime.InvokeAsync<RsaKeyPair>("CryptoUtils.generateRsaKeys");
+        return (result.PublicKey, result.PrivateKey);
     }
 
     private record EncryptResult(byte[] Encrypted, byte[] IV);

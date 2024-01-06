@@ -12,9 +12,9 @@ public interface IEncryptionService
 
     ValueTask<byte[]> GenerateAesKeyAsync();
 
-    public ValueTask<byte[]> DecryptRsaAsync(byte[] data, byte[] privateKey);
+    public ValueTask<byte[]> DecryptRsaAsync(byte[][] data, byte[] privateKey);
 
-    public ValueTask<byte[]> EncryptRsaAsync(byte[] data, byte[] publicKey);
+    public ValueTask<byte[][]> EncryptRsaAsync(byte[] data, byte[] publicKey);
 
     public ValueTask<(byte[] PublicKey, byte[] PrivateKey)> GenerateRsaKeysAsync();
 }

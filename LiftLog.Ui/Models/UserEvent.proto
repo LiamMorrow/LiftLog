@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package LiftLog.Lib.Models;
+package LiftLog.Ui.Models;
 
 import "Models/SessionHistoryDao/SessionHistoryDaoV2.proto";
 import "Models/Utils.proto";
@@ -18,15 +18,15 @@ message SessionUserEvent {
     LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2 session = 1;
 }
 
-message InboxMessage {
+message InboxMessageDao {
     LiftLog.Ui.Models.UUIDDao from_user_id = 1;
     oneof message_payload {
-        FollowRequest follow_request = 2;
-        FollowResponse follow_response = 3;
+        FollowRequestDao follow_request = 2;
+        FollowResponseDao follow_response = 3;
     }
 }
 
-message FollowRequest {
+message FollowRequestDao {
     optional google.protobuf.StringValue name = 1;
     optional bytes profile_picture = 2;
     // Used to encrypt the follow response
@@ -34,19 +34,19 @@ message FollowRequest {
 }
 
 // Encrypted with the public key of the user who sent the follow request
-message FollowResponse {
+message FollowResponseDao {
     oneof response_payload {
-        FollowResponseAccepted accepted = 1;
-        FollowResponseRejected rejected = 2;
+        FollowResponseAcceptedDao accepted = 1;
+        FollowResponseRejectedDao rejected = 2;
     }
 }
 
-message FollowResponseAccepted {
+message FollowResponseAcceptedDao {
     bytes aes_key = 1;
     // Must be given with any requests to user's feed.
     //This may be revoked at any time, if so, the follower should mark user as unfollowed
     string follow_secret = 2;
 }
 
-message FollowResponseRejected {
+message FollowResponseRejectedDao {
 }

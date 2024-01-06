@@ -63,4 +63,10 @@ public static class FeedReducers
         FeedState state,
         SetIsLoadingIdentityAction action
     ) => state with { IsLoadingIdentity = action.IsLoadingIdentity };
+
+    [ReducerMethod]
+    public static FeedState AppendNewFollowRequests(
+        FeedState state,
+        AppendNewFollowRequestsAction action
+    ) => state with { FollowRequests = state.FollowRequests.AddRange(action.Requests) };
 }

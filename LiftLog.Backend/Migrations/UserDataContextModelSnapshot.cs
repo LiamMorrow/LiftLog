@@ -116,9 +116,9 @@ namespace LiftLog.Backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<byte[]>("EncryptedMessage")
+                    b.Property<byte[][]>("EncryptedMessage")
                         .IsRequired()
-                        .HasColumnType("bytea");
+                        .HasColumnType("bytea[]");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");

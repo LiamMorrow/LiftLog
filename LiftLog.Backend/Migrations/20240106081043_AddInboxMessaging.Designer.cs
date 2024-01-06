@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LiftLog.Backend.Migrations
 {
     [DbContext(typeof(UserDataContext))]
-    [Migration("20240106044256_AddInboxMessaging")]
+    [Migration("20240106081043_AddInboxMessaging")]
     partial class AddInboxMessaging
     {
         /// <inheritdoc />
@@ -119,9 +119,9 @@ namespace LiftLog.Backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<byte[]>("EncryptedMessage")
+                    b.Property<byte[][]>("EncryptedMessage")
                         .IsRequired()
-                        .HasColumnType("bytea");
+                        .HasColumnType("bytea[]");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");

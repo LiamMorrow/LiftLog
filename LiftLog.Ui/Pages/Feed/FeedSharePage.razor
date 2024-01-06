@@ -13,7 +13,7 @@
 {
     <div class="text-on-surface flex flex-col justify-center gap-4 p-4 h-full">
         <TextField label="Nickname" Value=@(FeedState.Value.SharedFeedUser.Nickname) OnChange="UpdateNickname" />
-        <span class="text-lg"><span class="font-bold text-primary">@Name</span> wants to share their workouts with you!</span>
+        <span class="text-lg"><span class="font-bold text-primary">@ResolvedName</span> wants to share their workouts with you!</span>
         <span class="text-sm">Would you like to see their workouts in your feed?</span>
         <div class="grid grid-cols-2 gap-2">
             <AppButton Type=AppButtonType.Text OnClick=HandleNoThanksClick>No thanks</AppButton>
@@ -38,7 +38,10 @@ else
     public string PublicKey { get; set; } = "";
 
     [SupplyParameterFromQuery(Name="id")]
-    private Guid id { get; set; }
+    public Guid id { get; set; }
+
+    [SupplyParameterFromQuery(Name="name")]
+    public string? Name { get; set; }
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Subscribe to a feed"));
@@ -46,12 +49,14 @@ else
         if(String.IsNullOrEmpty(PublicKey) || id == Guid.Empty)
         {
             NavigationManager.NavigateTo("/feed");
+        }else
+        {
+            Dispatcher.Dispatch(new SetSharedFeedUserAction(FeedUser.FromShared(id, PublicKey.FromUrlSafeHexString(), Name)));
         }
-        Dispatcher.Dispatch(new FetchSharedFeedUserAction(id, PublicKey.FromUrlSafeHexString()));
         base.OnInitialized();
     }
 
-    private string Name => FeedState.Value.SharedFeedUser?.Name ?? "Someone";
+    private string ResolvedName => string.IsNullOrEmpty(Name) ? "Someone" : Name;
 
     private void HandleNoThanksClick()
     {

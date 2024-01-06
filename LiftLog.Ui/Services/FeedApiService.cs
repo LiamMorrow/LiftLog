@@ -90,7 +90,7 @@ public class FeedApiService(HttpClient httpClient)
         return GetApiResultAsync(async () =>
         {
             (
-                await httpClient.PostAsJsonAsync($"{baseUrl}inbox", postInboxMessageRequest)
+                await httpClient.PutAsJsonAsync($"{baseUrl}inbox", postInboxMessageRequest)
             ).EnsureSuccessStatusCode();
         });
     }

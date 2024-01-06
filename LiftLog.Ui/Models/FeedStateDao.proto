@@ -6,10 +6,13 @@ import "google/protobuf/timestamp.proto";
 import "Models/Utils.proto";
 import "Models/SessionHistoryDao/SessionHistoryDaoV2.proto";
 import "Models/SessionBlueprintDao/SessionBlueprintDaoV2.proto";
+import "Models/UserEvent.proto";
 
 message FeedIdentityDaoV1 {
     LiftLog.Ui.Models.UUIDDao id = 1;
-    bytes encryption_key = 2;
+    bytes aes_key = 2;
+    bytes public_key = 9;
+    bytes private_key = 10;
     string password = 4;
     optional google.protobuf.StringValue name = 5;
     optional bytes profile_picture = 6;
@@ -19,11 +22,15 @@ message FeedIdentityDaoV1 {
 
 message FeedUserDaoV1 {
     LiftLog.Ui.Models.UUIDDao id = 1;
+    bytes public_key = 8;
+
     optional google.protobuf.StringValue name = 2;
     optional google.protobuf.StringValue nickname = 6;
     optional CurrentPlanDaoV1 current_plan = 3;
     optional bytes profile_picture = 4;
-    bytes encryption_key = 5;
+
+    // These will be null until the user accepts the follow request
+    optional bytes aes_key = 5;
     optional google.protobuf.StringValue follow_secret = 7;
 }
 
@@ -45,4 +52,5 @@ message FeedStateDaoV1 {
     repeated LiftLog.Ui.Models.FeedItemDaoV1 feed_items = 1;
     repeated LiftLog.Ui.Models.FeedUserDaoV1 feed_users = 2;
     optional LiftLog.Ui.Models.FeedIdentityDaoV1 identity = 3;
+    repeated LiftLog.Ui.Models.InboxMessageDao follow_requests = 4;
 }

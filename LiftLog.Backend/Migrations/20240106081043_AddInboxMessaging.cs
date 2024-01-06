@@ -36,7 +36,7 @@ namespace LiftLog.Backend.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    EncryptedMessage = table.Column<byte[]>(type: "bytea", nullable: false)
+                    EncryptedMessage = table.Column<byte[][]>(type: "bytea[]", nullable: false)
                 },
                 constraints: table =>
                 {

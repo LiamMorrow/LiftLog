@@ -60,12 +60,13 @@ public record UserEventResponse(
 public record GetEventsResponse(UserEventResponse[] Events);
 
 // Encrypt with the TO user's public key, which they store on their client
-public record PutInboxMessageRequest(Guid ToUserId, byte[] EncryptedMessage);
+// RSA has max message size of key size, so chunk if necessary
+public record PutInboxMessageRequest(Guid ToUserId, byte[][] EncryptedMessage);
 
 public record GetInboxMessagesRequest(Guid UserId, string Password);
 
 // Encrypted with the requester's public key, which they store on their client
-public record GetInboxMessageResponse(Guid Id, byte[] EncryptedMessage);
+public record GetInboxMessageResponse(Guid Id, byte[][] EncryptedMessage);
 
 public record GetInboxMessagesResponse(GetInboxMessageResponse[] InboxMessages);
 
