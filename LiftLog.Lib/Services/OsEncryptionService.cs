@@ -33,7 +33,7 @@ public class OsEncryptionService : IEncryptionService
 
         if (!rsa.VerifyData(dataHash, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pss))
         {
-            throw new CryptographicException("Signature verification failed");
+            throw new SignatureMismatchException("Signature verification failed");
         }
 
         return ValueTask.FromResult(data);

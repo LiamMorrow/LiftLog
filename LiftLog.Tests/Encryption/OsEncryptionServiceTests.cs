@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Text;
 using LiftLog.Lib.Services;
 
@@ -84,5 +85,33 @@ public class OsEncryptionServiceTests
         Assert.Equal(data1, decryptedData1);
         Assert.Equal(data2, decryptedData2);
         Assert.Equal(encryptedData1.IV, encryptedData2.IV);
+    }
+
+    [Fact]
+    public async Task EncryptAndDecrypt_DecryptionThrowsIfPayloadTamperedWith()
+    {
+        // Arrange
+        var key = await _encryptionService.GenerateAesKeyAsync();
+        var rsaKeyPair = await _encryptionService.GenerateRsaKeysAsync();
+        var data = Encoding.UTF8.GetBytes("Hello, world!");
+
+        // Act
+        var encryptedData = await _encryptionService.SignRsa256PssAndEncryptAesCbcAsync(
+            data,
+            key,
+            rsaKeyPair.PrivateKey
+        );
+
+        encryptedData.EncryptedPayload[0] ^= 0xFF;
+
+        // Assert
+        await Assert.ThrowsAsync<SignatureMismatchException>(
+            async () =>
+                await _encryptionService.DecryptAesCbcAndVerifyRsa256PssAsync(
+                    encryptedData,
+                    key,
+                    rsaKeyPair.PublicKey
+                )
+        );
     }
 }
