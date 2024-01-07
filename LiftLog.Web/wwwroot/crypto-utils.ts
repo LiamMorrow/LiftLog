@@ -80,7 +80,7 @@ const generateRsaKeys = async function (): Promise<RsaKeyPair> {
       hash: "SHA-256",
     },
     true,
-    ["encrypt", "decrypt"]
+    ["encrypt", "decrypt", "sign", "verify"]
   );
 
   const privateKey = await crypto.subtle.exportKey("pkcs8", keyPair.privateKey);
