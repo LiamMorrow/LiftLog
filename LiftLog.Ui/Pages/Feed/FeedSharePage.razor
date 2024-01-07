@@ -52,7 +52,7 @@ else
             Dispatcher.Dispatch(new NavigateAction("/feed/create-identity?from=" + Uri.EscapeDataString("/feed/share?pub=" + PublicKey + "&id=" + id + "&name=" + Name ?? "")));
         }else
         {
-            Dispatcher.Dispatch(new SetSharedFeedUserAction(FeedUser.FromShared(id, PublicKey.FromUrlSafeHexString(), Name)));
+            Dispatcher.Dispatch(new SetSharedFeedUserAction(FeedUser.FromShared(id, new RsaPublicKey(PublicKey.FromUrlSafeHexString()), Name)));
         }
         base.OnInitialized();
     }

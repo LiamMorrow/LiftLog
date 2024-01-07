@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
+using LiftLog.Lib.Services;
 
 namespace LiftLog.Ui.Store.Feed;
 
@@ -18,16 +19,16 @@ public record FeedState(
 
 public record FeedUser(
     Guid Id,
-    byte[] PublicKey,
+    RsaPublicKey PublicKey,
     string? Name,
     string? Nickname,
     ImmutableListValue<SessionBlueprint> CurrentPlan,
     byte[]? ProfilePicture,
-    byte[]? AesKey,
+    AesKey? AesKey,
     string? FollowSecret
 )
 {
-    public static FeedUser FromShared(Guid id, byte[] publicKey, string? name) =>
+    public static FeedUser FromShared(Guid id, RsaPublicKey publicKey, string? name) =>
         new(
             Id: id,
             PublicKey: publicKey,
@@ -57,9 +58,9 @@ public record SessionFeedItem(
 
 public record FeedIdentity(
     Guid Id,
-    byte[] AesKey,
-    byte[] PublicKey,
-    byte[] PrivateKey,
+    AesKey AesKey,
+    RsaPublicKey PublicKey,
+    RsaPrivateKey PrivateKey,
     string Password,
     string? Name,
     byte[]? ProfilePicture,
@@ -73,7 +74,7 @@ public record FollowRequest(
     string Name,
     byte[]? ProfilePicture,
     // Used to encrypt the follow response
-    byte[] PublicKey
+    RsaPublicKey PublicKey
 );
 
 public record FollowResponse(
@@ -81,6 +82,6 @@ public record FollowResponse(
     [property: MemberNotNullWhen(true, "AesKey")]
     [property: MemberNotNullWhen(true, "FollowSecret")]
         bool Accepted,
-    byte[]? AesKey,
+    AesKey? AesKey,
     string? FollowSecret
 );

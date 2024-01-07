@@ -44,16 +44,18 @@ public class FeedEffects(
             {
                 Name = identity.Name,
                 ProfilePicture = ByteString.CopyFrom(identity.ProfilePicture ?? []),
-                PublicKey = ByteString.CopyFrom(identity.PublicKey)
+                PublicKey = ByteString.CopyFrom(identity.PublicKey.SpkiPublicKeyBytes)
             }
         };
         var response = await feedApiService.PutInboxMessageAsync(
             new PutInboxMessageRequest(
                 ToUserId: action.FeedUser.Id,
-                EncryptedMessage: await encryptionService.EncryptRsaAsync(
-                    inboxMessage.ToByteArray(),
-                    action.FeedUser.PublicKey
-                )
+                EncryptedMessage: (
+                    await encryptionService.EncryptRsaOaepSha256Async(
+                        inboxMessage.ToByteArray(),
+                        action.FeedUser.PublicKey
+                    )
+                ).DataChunks
             )
         );
         if (!response.IsSuccess)
@@ -270,7 +272,7 @@ public class FeedEffects(
         {
             return;
         }
-        var (encryptedPayload, iv) = await encryptionService.EncryptAesAsync(
+        var (encryptedPayload, iv) = await encryptionService.SignRsa256PssAndEncryptAesCbcAsync(
             new UserEventPayload
             {
                 SessionPayload = new SessionUserEvent
@@ -285,14 +287,15 @@ public class FeedEffects(
                     )
                 }
             }.ToByteArray(),
-            state.Value.Identity.AesKey
+            state.Value.Identity.AesKey,
+            state.Value.Identity.PrivateKey
         );
         await feedApiService.PutUserEventAsync(
             new PutUserEventRequest(
                 UserId: state.Value.Identity.Id,
                 Password: state.Value.Identity.Password,
                 EncryptedEventPayload: encryptedPayload,
-                EncryptedEventIV: iv,
+                EncryptedEventIV: iv.Value,
                 Expiry: DateTimeOffset.UtcNow.AddDays(90)
             )
         );
@@ -334,7 +337,7 @@ public class FeedEffects(
                         ProfilePicture: x.FollowRequest.ProfilePicture.IsEmpty
                             ? null
                             : x.FollowRequest.ProfilePicture.ToByteArray(),
-                        PublicKey: x.FollowRequest.PublicKey.ToByteArray()
+                        PublicKey: new RsaPublicKey(x.FollowRequest.PublicKey.ToByteArray())
                     )
             )
             .ToImmutableList();
@@ -352,7 +355,7 @@ public class FeedEffects(
                             == FollowResponseDao.ResponsePayloadOneofCase.Accepted,
                         AesKey: x.FollowResponse.ResponsePayloadCase
                         == FollowResponseDao.ResponsePayloadOneofCase.Accepted
-                            ? x.FollowResponse.Accepted.AesKey.ToByteArray()
+                            ? new AesKey(x.FollowResponse.Accepted.AesKey.ToByteArray())
                             : null,
                         FollowSecret: x.FollowResponse.ResponsePayloadCase
                         == FollowResponseDao.ResponsePayloadOneofCase.Accepted
@@ -430,19 +433,19 @@ public class FeedEffects(
             {
                 Accepted = new FollowResponseAcceptedDao
                 {
-                    AesKey = ByteString.CopyFrom(identity.AesKey),
+                    AesKey = ByteString.CopyFrom(identity.AesKey.Value),
                     FollowSecret = followSecret
                 }
             }
         };
-        var encryptedMessage = await encryptionService.EncryptRsaAsync(
+        var encryptedMessage = await encryptionService.EncryptRsaOaepSha256Async(
             inboxMessage.ToByteArray(),
             action.Request.PublicKey
         );
         var putResponse = await feedApiService.PutInboxMessageAsync(
             new PutInboxMessageRequest(
                 ToUserId: action.Request.UserId,
-                EncryptedMessage: encryptedMessage
+                EncryptedMessage: encryptedMessage.DataChunks
             )
         );
         if (!putResponse.IsSuccess)
@@ -487,10 +490,10 @@ public class FeedEffects(
             FromUserId = identity.Id,
             FollowResponse = new FollowResponseDao { Rejected = new FollowResponseRejectedDao() }
         };
-        byte[][]? encryptedMessage;
+        RsaEncryptedData? encryptedMessage;
         try
         {
-            encryptedMessage = await encryptionService.EncryptRsaAsync(
+            encryptedMessage = await encryptionService.EncryptRsaOaepSha256Async(
                 inboxMessage.ToByteArray(),
                 action.Request.PublicKey
             );
@@ -504,7 +507,7 @@ public class FeedEffects(
         var putResponse = await feedApiService.PutInboxMessageAsync(
             new PutInboxMessageRequest(
                 ToUserId: action.Request.UserId,
-                EncryptedMessage: encryptedMessage
+                EncryptedMessage: encryptedMessage.DataChunks
             )
         );
         if (!putResponse.IsSuccess && putResponse.Error.Type != ApiErrorType.NotFound)
@@ -604,13 +607,13 @@ public class FeedEffects(
 
     private async Task<InboxMessageDao?> DecryptIfValid(
         GetInboxMessageResponse inboxMessage,
-        byte[] privateKey
+        RsaPrivateKey privateKey
     )
     {
         try
         {
-            var decrypted = await encryptionService.DecryptRsaAsync(
-                inboxMessage.EncryptedMessage,
+            var decrypted = await encryptionService.DecryptRsaOaepSha256Async(
+                new RsaEncryptedData(inboxMessage.EncryptedMessage),
                 privateKey
             );
             return InboxMessageDao.Parser.ParseFrom(decrypted);
@@ -626,9 +629,9 @@ public class FeedEffects(
         IDispatcher dispatcher,
         Guid id,
         string password,
-        byte[] encryptionKey,
-        byte[] publicKey,
-        byte[] privateKey,
+        AesKey aesKey,
+        RsaPublicKey publicKey,
+        RsaPrivateKey privateKey,
         string? name,
         byte[]? profilePicture,
         bool publishBodyweight,
@@ -636,20 +639,30 @@ public class FeedEffects(
         bool publishWorkouts
     )
     {
-        var (_, iv) = await encryptionService.EncryptAesAsync([1], encryptionKey);
+        var (_, iv) = await encryptionService.SignRsa256PssAndEncryptAesCbcAsync(
+            [1],
+            aesKey,
+            privateKey
+        );
         byte[]? encryptedName = name is null
             ? null
             : (
-                await encryptionService.EncryptAesAsync(
+                await encryptionService.SignRsa256PssAndEncryptAesCbcAsync(
                     Encoding.UTF8.GetBytes(name),
-                    encryptionKey,
+                    aesKey,
+                    privateKey,
                     iv
                 )
             ).EncryptedPayload;
         var encryptedProfilePicture = profilePicture is null
             ? null
             : (
-                await encryptionService.EncryptAesAsync(profilePicture, encryptionKey, iv)
+                await encryptionService.SignRsa256PssAndEncryptAesCbcAsync(
+                    profilePicture,
+                    aesKey,
+                    privateKey,
+                    iv
+                )
             ).EncryptedPayload;
 
         var currentProgram = (CurrentPlanDaoV1?)programState.Value.SessionBlueprints;
@@ -657,9 +670,10 @@ public class FeedEffects(
             currentProgram is null || !publishPlan
                 ? null
                 : (
-                    await encryptionService.EncryptAesAsync(
+                    await encryptionService.SignRsa256PssAndEncryptAesCbcAsync(
                         currentProgram.ToByteArray(),
-                        encryptionKey,
+                        aesKey,
+                        privateKey,
                         iv
                     )
                 ).EncryptedPayload;
@@ -671,7 +685,7 @@ public class FeedEffects(
                 EncryptedCurrentPlan: encryptedPlan,
                 EncryptedName: encryptedName,
                 EncryptedProfilePicture: encryptedProfilePicture,
-                EncryptionIV: iv
+                EncryptionIV: iv.Value
             )
         );
         if (!result.IsSuccess)
@@ -702,7 +716,7 @@ public class FeedEffects(
 
         var identity = new FeedIdentity(
             Id: id,
-            AesKey: encryptionKey,
+            AesKey: aesKey,
             PublicKey: publicKey,
             PrivateKey: privateKey,
             Password: password,
@@ -719,8 +733,8 @@ public class FeedEffects(
 
     private async Task<FeedUser> GetDecryptedUserAsync(
         Guid Id,
-        byte[] publicKey,
-        byte[] aesKey,
+        RsaPublicKey publicKey,
+        AesKey aesKey,
         string? nickname,
         GetUserResponse response,
         string? followSecret
@@ -733,10 +747,13 @@ public class FeedEffects(
             Name: response.EncryptedName is null or { Length: 0 }
                 ? null
                 : Encoding.UTF8.GetString(
-                    await encryptionService.DecryptAesAsync(
-                        response.EncryptedName,
+                    await encryptionService.DecryptAesCbcAndVerifyRsa256PssAsync(
+                        new AesEncryptedAndRsaSignedData(
+                            response.EncryptedName,
+                            new AesIV(response.EncryptionIV)
+                        ),
                         aesKey,
-                        response.EncryptionIV
+                        publicKey
                     )
                 ),
             Nickname: nickname,
@@ -744,20 +761,26 @@ public class FeedEffects(
                 ? []
                 : CurrentPlanDaoV1
                     .Parser.ParseFrom(
-                        await encryptionService.DecryptAesAsync(
-                            response.EncryptedCurrentPlan,
+                        await encryptionService.DecryptAesCbcAndVerifyRsa256PssAsync(
+                            new AesEncryptedAndRsaSignedData(
+                                response.EncryptedCurrentPlan,
+                                new AesIV(response.EncryptionIV)
+                            ),
                             aesKey,
-                            response.EncryptionIV
+                            publicKey
                         )
                     )
                     .Sessions.Select(sessionBlueprintDao => sessionBlueprintDao.ToModel())
                     .ToImmutableList(),
             ProfilePicture: response.EncryptedProfilePicture is null or { Length: 0 }
                 ? null
-                : await encryptionService.DecryptAesAsync(
-                    response.EncryptedProfilePicture,
+                : await encryptionService.DecryptAesCbcAndVerifyRsa256PssAsync(
+                    new AesEncryptedAndRsaSignedData(
+                        response.EncryptedProfilePicture,
+                        new AesIV(response.EncryptionIV)
+                    ),
                     aesKey,
-                    response.EncryptionIV
+                    publicKey
                 ),
             FollowSecret: followSecret
         );
@@ -769,7 +792,7 @@ public class FeedEffects(
         var encryptedPayload = userEvent.EncryptedEventPayload;
         var payload = await DecryptPayloadAsync(
             userId,
-            userEvent.EncryptedEventIV,
+            new AesIV(userEvent.EncryptedEventIV),
             encryptedPayload
         );
         // We only support session events rn
@@ -788,17 +811,22 @@ public class FeedEffects(
 
     private async ValueTask<UserEventPayload?> DecryptPayloadAsync(
         Guid userId,
-        byte[] iv,
+        AesIV iv,
         byte[] encryptedPayload
     )
     {
         var user = state.Value.Users[userId];
         var key = user.AesKey;
+        var publicKey = user.PublicKey;
         if (key is null)
         {
             return null;
         }
-        var decrypted = await encryptionService.DecryptAesAsync(encryptedPayload, key, iv);
+        var decrypted = await encryptionService.DecryptAesCbcAndVerifyRsa256PssAsync(
+            new AesEncryptedAndRsaSignedData(encryptedPayload, iv),
+            key,
+            publicKey
+        );
         return UserEventPayload.Parser.ParseFrom(decrypted);
     }
 
