@@ -18,7 +18,7 @@ public class FeedApiService(HttpClient httpClient
     private readonly string baseUrl =
         appPurchaseService.GetAppStore() == AppStore.Google
             ? "http://10.0.2.2:5264/"
-            : "http://localhost:5264/";
+            : "http://127.0.0.1:5264/";
 #else
     private static readonly string baseUrl = "https://api.liftlog.online/";
 #endif

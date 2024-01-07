@@ -7,48 +7,68 @@ namespace LiftLog.Web.Services;
 // Dotnet AES-GCM implementation is not compatible with the JS implementation
 public class JsEncryptionService(IJSRuntime jSRuntime) : IEncryptionService
 {
-    public ValueTask<byte[]> DecryptAesAsync(byte[] data, byte[] key, byte[] IV)
-    {
-        return jSRuntime.InvokeAsync<byte[]>("CryptoUtils.decryptAes", data, key, IV);
-    }
-
-    public async ValueTask<(byte[] EncryptedPayload, byte[] IV)> EncryptAesAsync(
-        byte[] data,
-        byte[] key,
-        byte[]? iv = null
+    public ValueTask<byte[]> DecryptAesCbcAndVerifyRsa256PssAsync(
+        AesEncryptedAndRsaSignedData data,
+        AesKey key,
+        RsaPublicKey publicKey
     )
     {
-        var result = await jSRuntime.InvokeAsync<EncryptResult>(
-            "CryptoUtils.encryptAes",
+        return jSRuntime.InvokeAsync<byte[]>(
+            "CryptoUtils.decryptAesCbcAndVerifyRsa256PssAsync",
             data,
             key,
-            iv
+            publicKey,
+            IEncryptionService.RsaHashLength
         );
-        return (result.Encrypted, result.IV);
     }
 
-    public ValueTask<byte[]> GenerateAesKeyAsync()
+    public ValueTask<AesEncryptedAndRsaSignedData> SignRsa256PssAndEncryptAesCbcAsync(
+        byte[] data,
+        AesKey key,
+        RsaPrivateKey rsaPrivateKey,
+        AesIV? iv = null
+    )
     {
-        return jSRuntime.InvokeAsync<byte[]>("CryptoUtils.generateAesKey");
+        return jSRuntime.InvokeAsync<AesEncryptedAndRsaSignedData>(
+            "CryptoUtils.signRsa256PssAndEncryptAesCbcAsync",
+            data,
+            key,
+            iv,
+            IEncryptionService.RsaHashLength
+        );
     }
 
-    public ValueTask<byte[][]> EncryptRsaAsync(byte[] data, byte[] publicKey)
+    public ValueTask<AesKey> GenerateAesKeyAsync()
     {
-        return jSRuntime.InvokeAsync<byte[][]>("CryptoUtils.encryptRsa", data, publicKey);
+        return jSRuntime.InvokeAsync<AesKey>("CryptoUtils.generateAesKey");
     }
 
-    public ValueTask<byte[]> DecryptRsaAsync(byte[][] data, byte[] privateKey)
+    public ValueTask<RsaEncryptedData> EncryptRsaOaepSha256Async(
+        byte[] data,
+        RsaPublicKey publicKey
+    )
     {
-        return jSRuntime.InvokeAsync<byte[]>("CryptoUtils.decryptRsa", data, privateKey);
+        return jSRuntime.InvokeAsync<RsaEncryptedData>(
+            "CryptoUtils.encryptRsaOaepSha256Async",
+            data,
+            publicKey
+        );
     }
 
-    public async ValueTask<(byte[] PublicKey, byte[] PrivateKey)> GenerateRsaKeysAsync()
+    public ValueTask<byte[]> DecryptRsaOaepSha256Async(
+        RsaEncryptedData data,
+        RsaPrivateKey privateKey
+    )
     {
-        var result = await jSRuntime.InvokeAsync<RsaKeyPair>("CryptoUtils.generateRsaKeys");
-        return (result.PublicKey, result.PrivateKey);
+        return jSRuntime.InvokeAsync<byte[]>(
+            "CryptoUtils.decryptRsaOaepSha256Async",
+            data,
+            privateKey
+        );
     }
 
-    private record EncryptResult(byte[] Encrypted, byte[] IV);
-
-    private record RsaKeyPair(byte[] PublicKey, byte[] PrivateKey);
+    public ValueTask<RsaKeyPair> GenerateRsaKeysAsync()
+    {
+        return jSRuntime.InvokeAsync<RsaKeyPair>("CryptoUtils.generateRsaKeys");
+    }
 }

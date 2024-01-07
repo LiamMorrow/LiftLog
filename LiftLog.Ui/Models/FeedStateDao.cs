@@ -19,9 +19,9 @@ internal partial class FeedIdentityDaoV1
             ? null
             : new FeedIdentity(
                 Id: value.Id,
-                AesKey: value.AesKey.ToByteArray(),
-                PrivateKey: value.PrivateKey.ToByteArray(),
-                PublicKey: value.PublicKey.ToByteArray(),
+                AesKey: new Lib.Services.AesKey(value.AesKey.ToByteArray()),
+                PrivateKey: new Lib.Services.RsaPrivateKey(value.PrivateKey.ToByteArray()),
+                PublicKey: new Lib.Services.RsaPublicKey(value.PublicKey.ToByteArray()),
                 Password: value.Password,
                 Name: value.Name,
                 ProfilePicture: value.ProfilePicture.IsEmpty
@@ -39,9 +39,9 @@ internal partial class FeedIdentityDaoV1
             : new FeedIdentityDaoV1
             {
                 Id = value.Id,
-                AesKey = ByteString.CopyFrom(value.AesKey),
-                PrivateKey = ByteString.CopyFrom(value.PrivateKey),
-                PublicKey = ByteString.CopyFrom(value.PublicKey),
+                AesKey = ByteString.CopyFrom(value.AesKey.Value),
+                PrivateKey = ByteString.CopyFrom(value.PrivateKey.Pkcs8PrivateKeyBytes),
+                PublicKey = ByteString.CopyFrom(value.PublicKey.SpkiPublicKeyBytes),
                 Password = value.Password,
                 Name = value.Name,
                 ProfilePicture = value.ProfilePicture is null
@@ -63,8 +63,10 @@ internal partial class FeedUserDaoV1
                 Id: value.Id,
                 Name: value.Name,
                 Nickname: value.Nickname,
-                AesKey: value.AesKey.IsEmpty ? null : value.AesKey.ToByteArray(),
-                PublicKey: value.PublicKey.ToByteArray(),
+                AesKey: value.AesKey.IsEmpty
+                    ? null
+                    : new Lib.Services.AesKey(value.AesKey.ToByteArray()),
+                PublicKey: new Lib.Services.RsaPublicKey(value.PublicKey.ToByteArray()),
                 CurrentPlan: value
                     .CurrentPlan?.Sessions
                     .Select(sessionBlueprintDao => sessionBlueprintDao.ToModel())
@@ -87,8 +89,8 @@ internal partial class FeedUserDaoV1
                 CurrentPlan = value.CurrentPlan,
                 AesKey = value.AesKey is null
                     ? ByteString.Empty
-                    : ByteString.CopyFrom(value.AesKey),
-                PublicKey = ByteString.CopyFrom(value.PublicKey),
+                    : ByteString.CopyFrom(value.AesKey.Value),
+                PublicKey = ByteString.CopyFrom(value.PublicKey.SpkiPublicKeyBytes),
                 ProfilePicture = value.ProfilePicture is null
                     ? ByteString.Empty
                     : ByteString.CopyFrom(value.ProfilePicture),
@@ -198,7 +200,9 @@ internal partial class InboxMessageDao
                 ProfilePicture: value.FollowRequest.ProfilePicture.IsEmpty
                     ? null
                     : value.FollowRequest.ProfilePicture.ToByteArray(),
-                PublicKey: value.FollowRequest.PublicKey.ToByteArray()
+                PublicKey: new Lib.Services.RsaPublicKey(
+                    value.FollowRequest.PublicKey.ToByteArray()
+                )
             );
 
     [return: NotNullIfNotNull(nameof(value))]
@@ -214,7 +218,7 @@ internal partial class InboxMessageDao
                     ProfilePicture = value.ProfilePicture is null
                         ? ByteString.Empty
                         : ByteString.CopyFrom(value.ProfilePicture),
-                    PublicKey = ByteString.CopyFrom(value.PublicKey)
+                    PublicKey = ByteString.CopyFrom(value.PublicKey.SpkiPublicKeyBytes)
                 }
             };
 }
