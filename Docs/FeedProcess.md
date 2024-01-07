@@ -69,7 +69,7 @@ The original user then generates an `InboxMessage` (of type `FollowResponse`) co
 
 This payload is encrypted with the `follower's` Public RSA Key they received in the original `FollowRequest`. It is sent to the follower's inbox.
 
-When the follower opens their app, the app will query for their inbox messages and receive this `FollowResponse`. The follower will decrypt the payload using their RSA public key, and persist the follow secret and the original user's AES128 Key. The follower is successfully following the original user! They can now request the original user's feed items (with the follow secret), and decrypt them with the original user's AES128 key.
+When the follower opens their app, the app will query for their inbox messages and receive this `FollowResponse`. The follower will decrypt the payload using their RSA private key, and persist the follow secret and the original user's AES128 Key. The follower is successfully following the original user! They can now request the original user's feed items (with the follow secret), and decrypt them with the original user's AES128 key.
 
 A flow chart demonstrating this process is below.
 Note items in (are encrypted with RSA public key):
