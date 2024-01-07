@@ -20,4 +20,10 @@ namespace LiftLog.Ui.Shared;
     enableStopPropagation: false,
     enablePreventDefault: false
 )]
+[EventHandler(
+    "onpull-to-refresh",
+    typeof(object),
+    enableStopPropagation: false,
+    enablePreventDefault: false
+)]
 public static class EventHandlers { }

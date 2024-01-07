@@ -133,15 +133,61 @@ AppUtils.scrollElementToMiddle = function (elementSelector) {
 AppUtils.setupPullToRefresh = function (elementSelector) {
     const pullToRefresh = PullToRefresh.init({
         mainElement: elementSelector,
-        onRefresh() {
-            console.log("refresh")
+        getStyles() {
+            return `.__PREFIX__ptr {
+    pointer-events: none;
+    top: 0;
+    height: 0;
+    transition: height 0.3s, min-height 0.3s;
+    text-align: center;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    align-content: stretch;
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+  }
+
+  .__PREFIX__box {
+    padding: 10px;
+    flex-basis: 100%;
+  }
+
+  .__PREFIX__pull {
+    transition: none;
+  }
+
+  .__PREFIX__text {
+    margin-top: .33em;
+    color: var(--md-sys-color-tertiary);
+  }
+
+  .__PREFIX__icon {
+    color: var(--md-sys-color-tertiary);
+    transition: transform .3s;
+  }
+
+  /*
+  When at the top of the page, disable vertical overscroll so passive touch
+  listeners can take over.
+  */
+  .__PREFIX__top {
+    touch-action: pan-x pan-down pinch-zoom;
+  }
+
+  .__PREFIX__release .__PREFIX__icon {
+    transform: rotate(180deg);
+  }`;
+        },
+        async onRefresh() {
+            document.querySelector(elementSelector)?.dispatchEvent(new Event('pull-to-refresh', {
+                bubbles: true,
+                cancelable: true,
+            }));
         }
     });
-
-    console.log("SETUP", pullToRefresh)
 }
 
 AppUtils.destroyPullToRefresh = function () {
-    console.log("DESTROY")
     PullToRefresh.destroyAll();
 }

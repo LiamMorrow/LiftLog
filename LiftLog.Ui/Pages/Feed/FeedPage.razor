@@ -19,7 +19,7 @@
 </div>
 
 <div class="mt-2 flex-grow">
-    <div id="mainfeed-panel" role="tabpanel" aria-labelledby="mainfeed-tab" class="@(GetTabClass("mainfeed-panel")) min-h-full">
+    <div id="mainfeed-panel" role="tabpanel" aria-labelledby="mainfeed-tab" class="@(GetTabClass("mainfeed-panel")) min-h-full" @onpull-to-refresh=OnPullToRefresh >
         @if(FeedState.Value.Identity is null)
         {
             <Card IsHighlighted=true class="mb-4" >
@@ -133,6 +133,12 @@
             await JSRuntime.InvokeVoidAsync("AppUtils.setupPullToRefresh", "#mainfeed-panel");
         }
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void OnPullToRefresh()
+    {
+        Dispatcher.Dispatch(new FetchSessionFeedItemsAction());
+        Dispatcher.Dispatch(new FetchInboxItemsAction());
     }
 
     private void NavigateToCreateFeedIdentity()
