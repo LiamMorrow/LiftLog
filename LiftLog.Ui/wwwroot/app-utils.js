@@ -133,6 +133,10 @@ AppUtils.scrollElementToMiddle = function (elementSelector) {
 AppUtils.setupPullToRefresh = function (elementSelector) {
     const pullToRefresh = PullToRefresh.init({
         mainElement: elementSelector,
+        triggerElement: "#scrollingElement",
+        shouldPullToRefresh() {
+            return AppUtils.getScrollTop(document.querySelector("#scrollingElement")) <= 1;
+        },
         getStyles() {
             return `.__PREFIX__ptr {
     pointer-events: none;
