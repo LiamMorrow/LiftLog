@@ -19,12 +19,14 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" PrivateAssets="all" />
     <PackageReference Include="RealGoodApps.BlazorJavascript.Interop" Version="1.1.0" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.3.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LiftLog.Lib\LiftLog.Lib.csproj" />
     <ProjectReference Include="..\LiftLog.Ui\LiftLog.Ui.csproj" />
   </ItemGroup>
-
-
 </Project>
