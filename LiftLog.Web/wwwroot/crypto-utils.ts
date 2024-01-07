@@ -1,5 +1,6 @@
 // SHA-256 hash length in bytes
 const HashLengthBytes = 32;
+const SignatureLengthBytes = 256;
 
 const generateAesKey = async function (): Promise<AesKey> {
   const params: AesKeyGenParams = {
@@ -8,7 +9,7 @@ const generateAesKey = async function (): Promise<AesKey> {
   };
   const key = await crypto.subtle.generateKey(params, true, ["encrypt", "decrypt"]);
 
-  return { Value: new Uint8Array(await crypto.subtle.exportKey("raw", key)) };
+  return { value: new Uint8Array(await crypto.subtle.exportKey("raw", key)) };
 };
 
 const decryptAesCbcAndVerifyRsa256PssAsync = async function (
@@ -16,22 +17,25 @@ const decryptAesCbcAndVerifyRsa256PssAsync = async function (
   key: AesKey,
   publicKey: RsaPublicKey
 ): Promise<Uint8Array> {
-  const params = {
+  const params: AesCbcParams = {
     name: "AES-CBC",
-    iv: data.IV,
+    iv: data.iv.value,
   };
-  const cryptoKey = await crypto.subtle.importKey("raw", key.Value, params, false, ["decrypt"]);
-  const decrypted = new Uint8Array(await crypto.subtle.decrypt(params, cryptoKey, data.EncryptedPayload));
+  const cryptoKey = await crypto.subtle.importKey("raw", key.value, params, false, ["decrypt"]);
+  const decrypted = new Uint8Array(await crypto.subtle.decrypt(params, cryptoKey, data.encryptedPayload));
 
-  const signature = decrypted.slice(decrypted.length - HashLengthBytes);
-  const payload = decrypted.slice(0, decrypted.length - HashLengthBytes);
+  const signature = decrypted.slice(decrypted.length - SignatureLengthBytes);
+  const payload = decrypted.slice(0, decrypted.length - SignatureLengthBytes);
 
-  const rsaParams: RsaPssParams = {
+  const payloadHash = await crypto.subtle.digest("SHA-256", payload);
+
+  const rsaParams: RsaHashedImportParams & RsaPssParams = {
     name: "RSA-PSS",
+    hash: "SHA-256",
     saltLength: HashLengthBytes,
   };
-  const rsaKey = await crypto.subtle.importKey("spki", publicKey.SpkiPublicKeyBytes, rsaParams, false, ["verify"]);
-  const verified = await crypto.subtle.verify(rsaParams, rsaKey, signature, payload);
+  const rsaKey = await crypto.subtle.importKey("spki", publicKey.spkiPublicKeyBytes, rsaParams, false, ["verify"]);
+  const verified = await crypto.subtle.verify(rsaParams, rsaKey, signature, payloadHash);
 
   if (!verified) {
     throw new Error("Signature verification failed");
@@ -44,30 +48,33 @@ const signRsa256PssAndEncryptAesCbcAsync = async function (
   data: Uint8Array,
   key: AesKey,
   privateKey: RsaPrivateKey,
-  aesIv: AesIV | null,
-  saltLength: number
+  aesIv: AesIV | null
 ): Promise<AesEncryptedAndRsaSignedData> {
-  var iv = aesIv?.Value ?? crypto.getRandomValues(new Uint8Array(16));
+  var iv = aesIv?.value ?? crypto.getRandomValues(new Uint8Array(16));
   const params: AesCbcParams = {
     name: "AES-CBC",
     iv,
   };
-  const cryptoKey = await crypto.subtle.importKey("raw", key.Value, params, false, ["encrypt"]);
+  const cryptoKey = await crypto.subtle.importKey("raw", key.value, params, false, ["encrypt"]);
 
-  const rsaParams: RsaPssParams = {
+  const rsaParams: RsaHashedImportParams & RsaPssParams = {
     name: "RSA-PSS",
-    saltLength,
+    hash: "SHA-256",
+    saltLength: HashLengthBytes,
   };
-  const rsaKey = await crypto.subtle.importKey("pkcs8", privateKey.Pkcs8PrivateKeyBytes, rsaParams, false, ["sign"]);
-  const signature = await crypto.subtle.sign(rsaParams, rsaKey, data);
+  const rsaKey = await crypto.subtle.importKey("pkcs8", privateKey.pkcs8PrivateKeyBytes, rsaParams, false, ["sign"]);
+
+  const sha256Hash = await crypto.subtle.digest("SHA-256", data);
+
+  const signature = await crypto.subtle.sign(rsaParams, rsaKey, sha256Hash);
 
   const payload = new Uint8Array([...data, ...new Uint8Array(signature)]);
 
   const encrypted = await crypto.subtle.encrypt(params, cryptoKey, payload);
 
   return {
-    EncryptedPayload: new Uint8Array(encrypted),
-    IV: { Value: iv },
+    encryptedPayload: new Uint8Array(encrypted),
+    iv: { value: iv },
   };
 };
 
@@ -78,17 +85,17 @@ const generateRsaKeys = async function (): Promise<RsaKeyPair> {
       modulusLength: 2048,
       publicExponent: new Uint8Array([1, 0, 1]),
       hash: "SHA-256",
-    },
+    } satisfies RsaHashedKeyGenParams & RsaOaepParams & RsaKeyGenParams,
     true,
-    ["encrypt", "decrypt", "sign", "verify"]
+    ["encrypt", "decrypt"]
   );
 
   const privateKey = await crypto.subtle.exportKey("pkcs8", keyPair.privateKey);
   const publicKey = await crypto.subtle.exportKey("spki", keyPair.publicKey);
 
   return {
-    PrivateKey: { Pkcs8PrivateKeyBytes: new Uint8Array(privateKey) },
-    PublicKey: { SpkiPublicKeyBytes: new Uint8Array(publicKey) },
+    privateKey: { pkcs8PrivateKeyBytes: new Uint8Array(privateKey) },
+    publicKey: { spkiPublicKeyBytes: new Uint8Array(publicKey) },
   };
 };
 
@@ -98,11 +105,11 @@ const encryptRsaOaepSha256Async = async function (
 ): Promise<RsaEncryptedData> {
   const key = await crypto.subtle.importKey(
     "spki",
-    publicKey.SpkiPublicKeyBytes,
+    publicKey.spkiPublicKeyBytes,
     {
       name: "RSA-OAEP",
       hash: "SHA-256",
-    },
+    } satisfies RsaHashedImportParams & RsaOaepParams,
     true,
     ["encrypt"]
   );
@@ -112,7 +119,7 @@ const encryptRsaOaepSha256Async = async function (
     chunkedData.push(data.slice(i, i + 122));
   }
   return {
-    DataChunks: await Promise.all(
+    dataChunks: await Promise.all(
       chunkedData.map(async (chunk) => {
         return new Uint8Array(
           await crypto.subtle.encrypt(
@@ -134,17 +141,17 @@ const decryptRsaOaepSha256Async = async function (
 ): Promise<Uint8Array> {
   const key = await crypto.subtle.importKey(
     "pkcs8",
-    privateKey.Pkcs8PrivateKeyBytes,
+    privateKey.pkcs8PrivateKeyBytes,
     {
       name: "RSA-OAEP",
       hash: "SHA-256",
-    },
+    } satisfies RsaHashedImportParams & RsaOaepParams,
     true,
     ["decrypt"]
   );
   const chunkedData: Uint8Array[] = [];
-  for (let i = 0; i < data.DataChunks.length; i++) {
-    chunkedData.push(data.DataChunks[i]);
+  for (let i = 0; i < data.dataChunks.length; i++) {
+    chunkedData.push(data.dataChunks[i]);
   }
   const decryptedChunks = await Promise.all(
     chunkedData.map(async (chunk) => {
@@ -172,31 +179,31 @@ var CryptoUtils = {
 };
 
 interface RsaPublicKey {
-  SpkiPublicKeyBytes: Uint8Array;
+  spkiPublicKeyBytes: Uint8Array;
 }
 
 interface AesKey {
-  Value: Uint8Array;
+  value: Uint8Array;
 }
 
 interface RsaPrivateKey {
-  Pkcs8PrivateKeyBytes: Uint8Array;
+  pkcs8PrivateKeyBytes: Uint8Array;
 }
 
 interface AesEncryptedAndRsaSignedData {
-  EncryptedPayload: Uint8Array;
-  IV: AesIV;
+  encryptedPayload: Uint8Array;
+  iv: AesIV;
 }
 
 interface RsaEncryptedData {
-  DataChunks: Uint8Array[];
+  dataChunks: Uint8Array[];
 }
 
 interface RsaKeyPair {
-  PublicKey: RsaPublicKey;
-  PrivateKey: RsaPrivateKey;
+  publicKey: RsaPublicKey;
+  privateKey: RsaPrivateKey;
 }
 
 interface AesIV {
-  Value: Uint8Array;
+  value: Uint8Array;
 }

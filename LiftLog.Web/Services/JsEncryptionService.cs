@@ -17,8 +17,7 @@ public class JsEncryptionService(IJSRuntime jSRuntime) : IEncryptionService
             "CryptoUtils.decryptAesCbcAndVerifyRsa256PssAsync",
             data,
             key,
-            publicKey,
-            IEncryptionService.RsaHashLength
+            publicKey
         );
     }
 
@@ -33,8 +32,8 @@ public class JsEncryptionService(IJSRuntime jSRuntime) : IEncryptionService
             "CryptoUtils.signRsa256PssAndEncryptAesCbcAsync",
             data,
             key,
-            iv,
-            IEncryptionService.RsaHashLength
+            rsaPrivateKey,
+            iv
         );
     }
 
