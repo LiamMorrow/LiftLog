@@ -1,0 +1,14 @@
+diff --git a/node_modules/pulltorefreshjs/dist/index.esm.js b/node_modules/pulltorefreshjs/dist/index.esm.js
+index c5001ae..ac4519f 100644
+--- a/node_modules/pulltorefreshjs/dist/index.esm.js
++++ b/node_modules/pulltorefreshjs/dist/index.esm.js
+@@ -376,6 +376,9 @@ var index = {
+     _shared.handlers.forEach(function (h) {
+       h.destroy();
+     });
++    // Theres a bug where if you pull down on the page, and then destroy the pull to refresh,
++    // It leaves it in refreshing, which causes us never to be able to pull to refresh again
++    _shared.state = 'pending'
+   },
+ 
+   init: function init(options) {

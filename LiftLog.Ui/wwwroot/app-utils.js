@@ -128,3 +128,20 @@ AppUtils.scrollElementToMiddle = function (elementSelector) {
         inline: 'center'
     });
 }
+
+
+AppUtils.setupPullToRefresh = function (elementSelector) {
+    const pullToRefresh = PullToRefresh.init({
+        mainElement: elementSelector,
+        onRefresh() {
+            console.log("refresh")
+        }
+    });
+
+    console.log("SETUP", pullToRefresh)
+}
+
+AppUtils.destroyPullToRefresh = function () {
+    console.log("DESTROY")
+    PullToRefresh.destroyAll();
+}
