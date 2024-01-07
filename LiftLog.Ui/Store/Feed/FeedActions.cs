@@ -64,3 +64,5 @@ public record AddFollowerAction(FeedUser User);
 public record StartRemoveFollowerAction(FeedUser User);
 
 public record RemoveFollowerAction(FeedUser User);
+
+public record SetActiveTabAction(string TabId);

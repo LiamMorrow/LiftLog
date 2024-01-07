@@ -12,7 +12,8 @@ public record FeedState(
     ImmutableDictionary<Guid, FeedUser> Users,
     FeedUser? SharedFeedUser,
     ImmutableListValue<FollowRequest> FollowRequests,
-    ImmutableListValue<FeedUser> Followers
+    ImmutableListValue<FeedUser> Followers,
+    string ActiveTab
 );
 
 public record FeedUser(

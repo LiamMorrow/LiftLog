@@ -96,4 +96,11 @@ public static class FeedReducers
         {
             Followers = state.Followers.Remove(action.User)
         };
+
+    [ReducerMethod]
+    public static FeedState SetActiveTab(FeedState state, SetActiveTabAction action) =>
+        state with
+        {
+            ActiveTab = action.TabId
+        };
 }

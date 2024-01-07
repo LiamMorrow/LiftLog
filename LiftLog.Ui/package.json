@@ -12,6 +12,7 @@
     "@material/web": "1.1.1",
     "@rollup/plugin-node-resolve": "^15.2.1",
     "patch-package": "^8.0.0",
+    "pulltorefreshjs": "^0.1.22",
     "rollup": "^4.0.0",
     "tailwindcss": "^3.3.3"
   }

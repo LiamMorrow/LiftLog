@@ -147,7 +147,8 @@ internal partial class FeedStateDaoV1
                 FollowRequests: value
                     .FollowRequests.Select(x => (FollowRequest)x)
                     .ToImmutableList(),
-                Followers: value.Followers.Select(x => (FeedUser)x).ToImmutableList()
+                Followers: value.Followers.Select(x => (FeedUser)x).ToImmutableList(),
+                ActiveTab: "mainfeed-panel"
             );
 
     [return: NotNullIfNotNull(nameof(value))]
