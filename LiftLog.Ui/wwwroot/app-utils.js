@@ -34,6 +34,14 @@ AppUtils.showMdPopup = function (element) {
  * @param {HTMLElement} element
  */
 AppUtils.onCloseMdPopup = function (element) {
+    element?.addEventListener('open', () => {
+        if (element?.shadowRoot) {
+            const scrim = element.shadowRoot.querySelector('.scrim');
+            if (scrim) {
+                scrim.style.zIndex = '99';
+            }
+        }
+    });
     element?.addEventListener('close', () => {
         element?.dispatchEvent(new Event('dialog-close', {
             bubbles: true,

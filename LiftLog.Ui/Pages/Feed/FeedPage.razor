@@ -93,7 +93,7 @@
             <FollowRequestCardContent FollowRequest=context Accept=@(()=>AcceptFollowRequest(context)) Deny=@(()=>DenyFollowRequest(context)) />
         </VirtualizedCardList>
         <VirtualizedCardList Items=@(FeedState.Value.Followers.ToList()) CardClass="animate-fade-zoom-in">
-            <FollowerCardContent User=context RemoveFollower=@(()=> RemoveFollower(context))/>
+            <FollowerCardContent User=context RemoveFollower=@(()=> StartRemoveFollower(context))/>
         </VirtualizedCardList>
     </div>
 </div>
@@ -103,6 +103,14 @@
     <div slot="actions">
         <AppButton Type="AppButtonType.Text" OnClick=@(()=>deleteUserDialog?.Close())>Cancel</AppButton>
         <AppButton Type="AppButtonType.Text" OnClick=DeleteUser>Unfollow</AppButton>
+    </div>
+</Dialog>
+<Dialog @ref=removeFollowerDialog>
+    <span slot="headline">Remove follower</span>
+    <span slot="content" class="block text-left">This will stop <span class="text-primary font-bold">@(userToDelete?.Nickname ?? userToDelete?.Name ?? "Anonymous User")</span> from following you and remove all your content from their device.</span>
+    <div slot="actions">
+        <AppButton Type="AppButtonType.Text" OnClick=@(()=>removeFollowerDialog?.Close())>Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick=RemoveFollower>Unfollow</AppButton>
     </div>
 </Dialog>
 
@@ -115,6 +123,7 @@
 
     private ElementReference tabs;
     private Dialog? deleteUserDialog;
+    private Dialog? removeFollowerDialog;
     private FeedUser? userToDelete;
 
     protected override void OnInitialized()
@@ -161,9 +170,20 @@
         Dispatcher.Dispatch(new PutFeedUserAction(user));
     }
 
-    private void RemoveFollower(FeedUser follower)
+    private void StartRemoveFollower(FeedUser follower)
     {
-        Dispatcher.Dispatch(new StartRemoveFollowerAction(follower));
+        userToDelete = follower;
+        removeFollowerDialog?.Open();
+        StateHasChanged();
+    }
+
+    private void RemoveFollower()
+    {
+        removeFollowerDialog?.Close();
+        if(userToDelete != null){
+            Dispatcher.Dispatch(new StartRemoveFollowerAction(userToDelete));
+        }
+        userToDelete = null;
     }
 
     private void BeginDeleteUser(FeedUser user)
@@ -175,11 +195,12 @@
 
     private void DeleteUser()
     {
+        deleteUserDialog?.Close();
         if(userToDelete is not null)
         {
             Dispatcher.Dispatch(new DeleteFeedUserAction(userToDelete.Id));
         }
-        deleteUserDialog?.Close();
+        userToDelete = null;
     }
 
     private void ViewUserPlan(FeedUser user)
