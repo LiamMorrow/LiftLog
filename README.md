@@ -11,6 +11,8 @@ It incorporates material design 3, with designs and layout driven by [tailwindcs
 
 Built into it is an AI planner which will tailor a specific gym plan to your goals and body.
 
+LiftLog also allows users to publish their workouts to their feed, and subscribe to other user's feeds. This data is end to end encrypted and totally opt in. User's have full control over who can follow them. The technical details of how this works are described in [the feed process docs](./Docs/FeedProcess.md).
+
 Checkout [the app website](https://liftlog.online) for screenshots and features. Or checkout https://app.liftlog.online to try it out without installing an app.
 
 ## Quickstart
