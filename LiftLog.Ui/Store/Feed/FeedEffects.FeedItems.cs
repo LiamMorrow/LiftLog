@@ -119,7 +119,7 @@ public partial class FeedEffects
                 }
             }.ToByteArray(),
             state.Value.Identity.AesKey,
-            state.Value.Identity.PrivateKey
+            state.Value.Identity.RsaKeyPair.PrivateKey
         );
         await feedApiService.PutUserEventAsync(
             new PutUserEventRequest(

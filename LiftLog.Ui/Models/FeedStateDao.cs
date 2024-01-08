@@ -20,8 +20,10 @@ internal partial class FeedIdentityDaoV1
             : new FeedIdentity(
                 Id: value.Id,
                 AesKey: new Lib.Services.AesKey(value.AesKey.ToByteArray()),
-                PrivateKey: new Lib.Services.RsaPrivateKey(value.PrivateKey.ToByteArray()),
-                PublicKey: new Lib.Services.RsaPublicKey(value.PublicKey.ToByteArray()),
+                RsaKeyPair: new Lib.Services.RsaKeyPair(
+                    new Lib.Services.RsaPublicKey(value.PublicKey.ToByteArray()),
+                    new Lib.Services.RsaPrivateKey(value.PrivateKey.ToByteArray())
+                ),
                 Password: value.Password,
                 Name: value.Name,
                 ProfilePicture: value.ProfilePicture.IsEmpty
@@ -40,8 +42,8 @@ internal partial class FeedIdentityDaoV1
             {
                 Id = value.Id,
                 AesKey = ByteString.CopyFrom(value.AesKey.Value),
-                PrivateKey = ByteString.CopyFrom(value.PrivateKey.Pkcs8PrivateKeyBytes),
-                PublicKey = ByteString.CopyFrom(value.PublicKey.SpkiPublicKeyBytes),
+                PrivateKey = ByteString.CopyFrom(value.RsaKeyPair.PrivateKey.Pkcs8PrivateKeyBytes),
+                PublicKey = ByteString.CopyFrom(value.RsaKeyPair.PublicKey.SpkiPublicKeyBytes),
                 Password = value.Password,
                 Name = value.Name,
                 ProfilePicture = value.ProfilePicture is null

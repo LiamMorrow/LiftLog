@@ -53,7 +53,7 @@ public static class FeedReducers
     ) => state with { FollowedUsers = action.FollowedUsers.ToImmutableDictionary(x => x.Id) };
 
     [ReducerMethod]
-    public static FeedState DeleteFeedUser(FeedState state, DeleteFeedUserAction action) =>
+    public static FeedState DeleteFeedUser(FeedState state, UnfollowFeedUserAction action) =>
         state with
         {
             FollowedUsers = state.FollowedUsers.Remove(action.FeedUser.Id),

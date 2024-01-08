@@ -216,4 +216,6 @@ public record ApiResult(ApiError? Error)
 {
     [MemberNotNullWhen(false, nameof(Error))]
     public bool IsSuccess => Error is null;
+
+    public static ApiResult<T> Success<T>(T data) => new ApiResult<T>(data);
 }

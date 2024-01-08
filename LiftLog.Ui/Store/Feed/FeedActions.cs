@@ -45,7 +45,7 @@ public record PublishWorkoutToFeedAction(Session Session);
 
 public record ReplaceFeedFollowedUsersAction(ImmutableListValue<FeedUser> FollowedUsers);
 
-public record DeleteFeedUserAction(FeedUser FeedUser);
+public record UnfollowFeedUserAction(FeedUser FeedUser);
 
 public record SetIsLoadingIdentityAction(bool IsLoadingIdentity);
 

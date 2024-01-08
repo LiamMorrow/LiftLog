@@ -59,8 +59,7 @@ public record SessionFeedItem(
 public record FeedIdentity(
     Guid Id,
     AesKey AesKey,
-    RsaPublicKey PublicKey,
-    RsaPrivateKey PrivateKey,
+    RsaKeyPair RsaKeyPair,
     string Password,
     string? Name,
     byte[]? ProfilePicture,

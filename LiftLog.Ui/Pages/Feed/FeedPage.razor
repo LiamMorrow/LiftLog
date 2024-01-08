@@ -198,7 +198,7 @@
         deleteUserDialog?.Close();
         if(userToDelete is not null)
         {
-            Dispatcher.Dispatch(new DeleteFeedUserAction(userToDelete));
+            Dispatcher.Dispatch(new UnfollowFeedUserAction(userToDelete));
         }
         userToDelete = null;
     }

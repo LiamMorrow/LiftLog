@@ -23,29 +23,23 @@ public partial class FeedEffects
             return;
         }
         dispatcher.Dispatch(new SetIsLoadingIdentityAction(true));
-        var response = await feedApiService.CreateUserAsync(new CreateUserRequest(Id: action.Id));
-        if (!response.IsSuccess)
-        {
-            dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
-            // TODO handle properly
-            return;
-        }
-        var encryptionKey = await encryptionService.GenerateAesKeyAsync();
-        var (publicKey, privateKey) = await encryptionService.GenerateRsaKeysAsync();
-        await GenerateAndPutFeedIdentityAsync(
-            dispatcher,
-            action.Id,
-            response.Data.Password,
-            encryptionKey,
-            publicKey,
-            privateKey,
+        var identityResult = await feedIdentityService.CreateFeedIdentityAsync(
             action.Name,
             action.ProfilePicture,
             action.PublishBodyweight,
             action.PublishPlan,
-            action.PublishWorkouts
+            action.PublishWorkouts,
+            programState.Value.SessionBlueprints
         );
         dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
+        if (!identityResult.IsSuccess)
+        {
+            // TODO handle properly
+            return;
+        }
+
+        dispatcher.Dispatch(new PutFeedIdentityAction(identityResult.Data));
+
         if (action.RedirectAfterCreation is not null or "")
         {
             dispatcher.Dispatch(new NavigateAction(action.RedirectAfterCreation));
@@ -53,29 +47,31 @@ public partial class FeedEffects
     }
 
     [EffectMethod]
-    public async Task HandleUpdateFeedIdentityAction(
+    public Task HandleUpdateFeedIdentityAction(
         UpdateFeedIdentityAction action,
         IDispatcher dispatcher
-    )
-    {
-        if (state.Value.Identity is null)
+    ) =>
+        IfIdentityExists(async identity =>
         {
-            return;
-        }
-        await GenerateAndPutFeedIdentityAsync(
-            dispatcher,
-            state.Value.Identity.Id,
-            state.Value.Identity.Password,
-            state.Value.Identity.AesKey,
-            state.Value.Identity.PublicKey,
-            state.Value.Identity.PrivateKey,
-            action.Name,
-            action.ProfilePicture,
-            action.PublishBodyweight,
-            action.PublishPlan,
-            action.PublishWorkouts
-        );
-    }
+            var result = await feedIdentityService.UpdateFeedIdentityAsync(
+                identity.Id,
+                identity.Password,
+                identity.AesKey,
+                identity.RsaKeyPair,
+                action.Name,
+                action.ProfilePicture,
+                action.PublishBodyweight,
+                action.PublishPlan,
+                action.PublishWorkouts,
+                programState.Value.SessionBlueprints
+            );
+            if (!result.IsSuccess)
+            {
+                // TODO handle properly
+                return;
+            }
+            dispatcher.Dispatch(new PutFeedIdentityAction(result.Data));
+        });
 
     [EffectMethod]
     public async Task HandlePublishIdentityIfEnabledAction(
@@ -87,189 +83,50 @@ public partial class FeedEffects
         {
             return;
         }
-        await GenerateAndPutFeedIdentityAsync(
-            dispatcher,
+        await feedIdentityService.UpdateFeedIdentityAsync(
             state.Value.Identity.Id,
             state.Value.Identity.Password,
             state.Value.Identity.AesKey,
-            state.Value.Identity.PublicKey,
-            state.Value.Identity.PrivateKey,
+            state.Value.Identity.RsaKeyPair,
             state.Value.Identity.Name,
             state.Value.Identity.ProfilePicture,
             state.Value.Identity.PublishBodyweight,
             state.Value.Identity.PublishPlan,
-            state.Value.Identity.PublishWorkouts
+            state.Value.Identity.PublishWorkouts,
+            programState.Value.SessionBlueprints
         );
     }
 
     [EffectMethod]
-    public async Task HandleDeleteFeedIdentityAction(
+    public Task HandleDeleteFeedIdentityAction(
         DeleteFeedIdentityAction _,
         IDispatcher dispatcher
-    )
-    {
-        var identity = state.Value.Identity;
-        if (identity is null)
+    ) =>
+        IfIdentityExists(async identity =>
         {
-            return;
-        }
-        var response = await feedApiService.DeleteUserAsync(
-            new DeleteUserRequest(Id: identity.Id, Password: identity.Password)
-        );
-        if (!response.IsSuccess && response.Error.Type != ApiErrorType.NotFound)
-        {
-            // TODO handle properly
-            return;
-        }
-        dispatcher.Dispatch(new PutFeedIdentityAction(null));
-        dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
-        dispatcher.Dispatch(new ReplaceFeedItemsAction([]));
-        dispatcher.Dispatch(new ReplaceFeedFollowedUsersAction([]));
-    }
+            var response = await feedApiService.DeleteUserAsync(
+                new DeleteUserRequest(Id: identity.Id, Password: identity.Password)
+            );
+            if (!response.IsSuccess && response.Error.Type != ApiErrorType.NotFound)
+            {
+                logger.LogError(
+                    "Failed to delete user {Id} with error {Error}",
+                    identity.Id,
+                    response.Error
+                );
+                // TODO handle properly
+                return;
+            }
+            dispatcher.Dispatch(new PutFeedIdentityAction(null));
+            dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
+            dispatcher.Dispatch(new ReplaceFeedItemsAction([]));
+            dispatcher.Dispatch(new ReplaceFeedFollowedUsersAction([]));
+        });
 
     [EffectMethod]
     public Task PutFeedIdentity(PutFeedIdentityAction action, IDispatcher dispatcher)
     {
         return PersistFeedState();
-    }
-
-    [EffectMethod]
-    public async Task DeleteFeedUserAction(DeleteFeedUserAction action, IDispatcher dispatcher)
-    {
-        await PersistFeedState();
-        var identity = state.Value.Identity;
-        if (identity is null)
-        {
-            return;
-        }
-        if (action.FeedUser.FollowSecret is null)
-        {
-            return;
-        }
-        var inboxMessage = new InboxMessageDao
-        {
-            FromUserId = identity.Id,
-            UnfollowNotification = new UnFollowNotification
-            {
-                FollowSecret = action.FeedUser.FollowSecret,
-            }
-        };
-        var encryptedInboxMessage = await encryptionService.EncryptRsaOaepSha256Async(
-            inboxMessage.ToByteArray(),
-            action.FeedUser.PublicKey
-        );
-        await feedApiService.PutInboxMessageAsync(
-            new PutInboxMessageRequest(
-                EncryptedMessage: encryptedInboxMessage.DataChunks,
-                ToUserId: action.FeedUser.Id
-            )
-        );
-    }
-
-    private async Task GenerateAndPutFeedIdentityAsync(
-        IDispatcher dispatcher,
-        Guid id,
-        string password,
-        AesKey aesKey,
-        RsaPublicKey publicKey,
-        RsaPrivateKey privateKey,
-        string? name,
-        byte[]? profilePicture,
-        bool publishBodyweight,
-        bool publishPlan,
-        bool publishWorkouts
-    )
-    {
-        var (_, iv) = await encryptionService.SignRsa256PssAndEncryptAesCbcAsync(
-            [1],
-            aesKey,
-            privateKey
-        );
-        byte[]? encryptedName = name is null
-            ? null
-            : (
-                await encryptionService.SignRsa256PssAndEncryptAesCbcAsync(
-                    Encoding.UTF8.GetBytes(name),
-                    aesKey,
-                    privateKey,
-                    iv
-                )
-            ).EncryptedPayload;
-        var encryptedProfilePicture = profilePicture is null
-            ? null
-            : (
-                await encryptionService.SignRsa256PssAndEncryptAesCbcAsync(
-                    profilePicture,
-                    aesKey,
-                    privateKey,
-                    iv
-                )
-            ).EncryptedPayload;
-
-        var currentProgram = (CurrentPlanDaoV1?)programState.Value.SessionBlueprints;
-        var encryptedPlan =
-            currentProgram is null || !publishPlan
-                ? null
-                : (
-                    await encryptionService.SignRsa256PssAndEncryptAesCbcAsync(
-                        currentProgram.ToByteArray(),
-                        aesKey,
-                        privateKey,
-                        iv
-                    )
-                ).EncryptedPayload;
-
-        var result = await feedApiService.PutUserDataAsync(
-            new PutUserDataRequest(
-                Id: id,
-                Password: password,
-                EncryptedCurrentPlan: encryptedPlan,
-                EncryptedName: encryptedName,
-                EncryptedProfilePicture: encryptedProfilePicture,
-                EncryptionIV: iv.Value
-            )
-        );
-        if (!result.IsSuccess)
-        {
-            logger.LogError(
-                "Failed to put user data for user {Id} with error {Error}",
-                id,
-                result.Error
-            );
-            if (result.Error.Type == ApiErrorType.NotFound)
-            {
-                dispatcher.Dispatch(
-                    new CreateFeedIdentityAction(
-                        Guid.NewGuid(),
-                        name,
-                        profilePicture,
-                        publishBodyweight,
-                        publishPlan,
-                        publishWorkouts,
-                        null
-                    )
-                );
-                return;
-            }
-            // TODO handle properly
-            return;
-        }
-
-        var identity = new FeedIdentity(
-            Id: id,
-            AesKey: aesKey,
-            PublicKey: publicKey,
-            PrivateKey: privateKey,
-            Password: password,
-            Name: name,
-            ProfilePicture: profilePicture,
-            PublishBodyweight: publishBodyweight,
-            PublishPlan: publishPlan,
-            PublishWorkouts: publishWorkouts
-        );
-
-        dispatcher.Dispatch(new PutFeedIdentityAction(identity));
-        // TODO subscribe to self
     }
 
     private Task IfIdentityExists(

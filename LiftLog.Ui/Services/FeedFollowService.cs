@@ -22,7 +22,7 @@ public class FeedFollowService(
             {
                 Name = identity.Name,
                 ProfilePicture = ByteString.CopyFrom(identity.ProfilePicture ?? []),
-                PublicKey = ByteString.CopyFrom(identity.PublicKey.SpkiPublicKeyBytes)
+                PublicKey = ByteString.CopyFrom(identity.RsaKeyPair.PublicKey.SpkiPublicKeyBytes)
             }
         };
         var response = await feedApiService.PutInboxMessageAsync(

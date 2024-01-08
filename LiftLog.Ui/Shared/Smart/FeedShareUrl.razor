@@ -12,7 +12,7 @@
         if(FeedState.Value.Identity == null)
             return null;
         var identity = FeedState.Value.Identity;
-        return GetShareUrl(identity.Id, identity.PublicKey, identity.Name);
+        return GetShareUrl(identity.Id, identity.RsaKeyPair.PublicKey, identity.Name);
     }
 
     private async Task HandleShareUrlClick()

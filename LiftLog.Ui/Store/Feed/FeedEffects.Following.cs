@@ -21,6 +21,7 @@ public partial class FeedEffects(
     IState<ProgramState> programState,
     FeedApiService feedApiService,
     FeedFollowService feedFollowService,
+    FeedIdentityService feedIdentityService,
     IEncryptionService encryptionService,
     IKeyValueStore keyValueStore,
     ILogger<FeedEffects> logger
@@ -65,7 +66,7 @@ public partial class FeedEffects(
         var encryptedInboxItems = inboxItemsResponse.Data.InboxMessages;
         var inboxItems = (
             await Task.WhenAll(
-                encryptedInboxItems.Select(x => DecryptIfValid(x, identity.PrivateKey))
+                encryptedInboxItems.Select(x => DecryptIfValid(x, identity.RsaKeyPair.PrivateKey))
             )
         ).WhereNotNull();
 
@@ -162,6 +163,39 @@ public partial class FeedEffects(
         dispatcher.Dispatch(new FetchSessionFeedItemsAction());
 
         return Task.CompletedTask;
+    }
+
+    [EffectMethod]
+    public async Task UnfollowFeedUser(UnfollowFeedUserAction action, IDispatcher dispatcher)
+    {
+        await PersistFeedState();
+        var identity = state.Value.Identity;
+        if (identity is null)
+        {
+            return;
+        }
+        if (action.FeedUser.FollowSecret is null)
+        {
+            return;
+        }
+        var inboxMessage = new InboxMessageDao
+        {
+            FromUserId = identity.Id,
+            UnfollowNotification = new UnFollowNotification
+            {
+                FollowSecret = action.FeedUser.FollowSecret,
+            }
+        };
+        var encryptedInboxMessage = await encryptionService.EncryptRsaOaepSha256Async(
+            inboxMessage.ToByteArray(),
+            action.FeedUser.PublicKey
+        );
+        await feedApiService.PutInboxMessageAsync(
+            new PutInboxMessageRequest(
+                EncryptedMessage: encryptedInboxMessage.DataChunks,
+                ToUserId: action.FeedUser.Id
+            )
+        );
     }
 
     [EffectMethod]
