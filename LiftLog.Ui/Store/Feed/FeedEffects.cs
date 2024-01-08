@@ -434,6 +434,16 @@ public class FeedEffects(
         {
             return;
         }
+        if (
+            state.Value.Followers.TryGetValue(action.Request.UserId, out var existingFollower)
+            && existingFollower.FollowSecret is not null
+        )
+        {
+            await HandleStartRemoveFollowerAction(
+                new StartRemoveFollowerAction(existingFollower),
+                dispatcher
+            );
+        }
         var followSecret = Guid.NewGuid().ToString();
         var putFollowSecretResponse = await feedApiService.PutUserFollowSecretAsync(
             new PutUserFollowSecretRequest(
