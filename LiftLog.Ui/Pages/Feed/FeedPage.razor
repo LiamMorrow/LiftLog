@@ -92,7 +92,7 @@
         <VirtualizedCardList Items=@(FeedState.Value.FollowRequests.ToList()) CardClass="animate-fade-zoom-in">
             <FollowRequestCardContent FollowRequest=context Accept=@(()=>AcceptFollowRequest(context)) Deny=@(()=>DenyFollowRequest(context)) />
         </VirtualizedCardList>
-        <VirtualizedCardList Items=@(FeedState.Value.Followers.ToList()) CardClass="animate-fade-zoom-in">
+        <VirtualizedCardList Items=@(FeedState.Value.Followers.Values.ToList()) CardClass="animate-fade-zoom-in">
             <FollowerCardContent User=context RemoveFollower=@(()=> StartRemoveFollower(context))/>
         </VirtualizedCardList>
     </div>

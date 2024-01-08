@@ -87,14 +87,14 @@ public static class FeedReducers
     public static FeedState AddFollower(FeedState state, AddFollowerAction action) =>
         state with
         {
-            Followers = state.Followers.Add(action.User).DistinctBy(x => x.Id).ToImmutableList()
+            Followers = state.Followers.SetItem(action.User.Id, action.User)
         };
 
     [ReducerMethod]
     public static FeedState RemoveFollower(FeedState state, RemoveFollowerAction action) =>
         state with
         {
-            Followers = state.Followers.Remove(action.User)
+            Followers = state.Followers.Remove(action.User.Id)
         };
 
     [ReducerMethod]

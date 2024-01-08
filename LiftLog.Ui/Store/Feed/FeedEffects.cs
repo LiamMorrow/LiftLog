@@ -379,7 +379,7 @@ public class FeedEffects(
             )
             .SelectMany(
                 x =>
-                    followers.Where(
+                    followers.Values.Where(
                         f =>
                             f.Id == x.FromUserId
                             && f.FollowSecret == x.UnfollowNotification.FollowSecret
@@ -434,9 +434,7 @@ public class FeedEffects(
         {
             return;
         }
-        var followSecret =
-            state.Value.Followers.FirstOrDefault(x => x.Id == action.Request.UserId)?.FollowSecret
-            ?? Guid.NewGuid().ToString();
+        var followSecret = Guid.NewGuid().ToString();
         var putFollowSecretResponse = await feedApiService.PutUserFollowSecretAsync(
             new PutUserFollowSecretRequest(
                 UserId: identity.Id,

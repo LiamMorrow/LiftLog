@@ -15,7 +15,7 @@ public class FeedFeature : Feature<FeedState>
             Users: ImmutableDictionary<Guid, FeedUser>.Empty,
             SharedFeedUser: null,
             FollowRequests: [],
-            Followers: [],
+            Followers: ImmutableDictionary<Guid, FeedUser>.Empty,
             "mainfeed-panel"
         );
 }
