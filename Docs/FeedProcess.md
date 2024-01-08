@@ -150,4 +150,4 @@ On decryption:
 4. The Signature is verified using the PublicKey and the UnverifiedPayloadHash
 5. If the signature is valid, then the payload is valid
 
-If an attacker was to attempt to create a modified payload, upon decryption a different SHA256 hash would be generated, which the signature would not be valid for - therefore invalidating the poisone message.
+If an attacker was to attempt to create a modified payload, upon decryption a different SHA256 hash would be generated, which the signature would not be valid for - therefore invalidating the poison message.
