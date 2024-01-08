@@ -23,6 +23,7 @@ message InboxMessageDao {
     oneof message_payload {
         FollowRequestDao follow_request = 2;
         FollowResponseDao follow_response = 3;
+        UnFollowNotification unfollow_notification = 4;
     }
 }
 
@@ -49,4 +50,8 @@ message FollowResponseAcceptedDao {
 }
 
 message FollowResponseRejectedDao {
+}
+
+message UnFollowNotification {
+    string follow_secret = 1;
 }

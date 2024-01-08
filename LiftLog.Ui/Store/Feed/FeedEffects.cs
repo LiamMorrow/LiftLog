@@ -166,7 +166,10 @@ public class FeedEffects(
             return;
         }
         dispatcher.Dispatch(new PutFeedIdentityAction(null));
-        dispatcher.Dispatch(new DeleteFeedUserAction(identity.Id));
+        if (state.Value.Users.TryGetValue(identity.Id, out var user))
+        {
+            dispatcher.Dispatch(new DeleteFeedUserAction(user));
+        }
         dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
         dispatcher.Dispatch(new ReplaceFeedItemsAction([]));
         dispatcher.Dispatch(new ReplaceFeedUsersAction([]));
@@ -366,6 +369,27 @@ public class FeedEffects(
             .ToImmutableList();
 
         dispatcher.Dispatch(new ProcessFollowResponsesAction(newFollowResponses));
+
+        var followers = state.Value.Followers;
+        var unfollowNotifications = inboxItems
+            .Where(
+                x =>
+                    x.MessagePayloadCase
+                    == InboxMessageDao.MessagePayloadOneofCase.UnfollowNotification
+            )
+            .SelectMany(
+                x =>
+                    followers.Where(
+                        f =>
+                            f.Id == x.FromUserId
+                            && f.FollowSecret == x.UnfollowNotification.FollowSecret
+                    )
+            );
+
+        foreach (var unfollowNotification in unfollowNotifications)
+        {
+            dispatcher.Dispatch(new RemoveFollowerAction(unfollowNotification));
+        }
     }
 
     [EffectMethod]
@@ -603,6 +627,39 @@ public class FeedEffects(
     public Task RemoveFollowRequestAction(RemoveFollowRequestAction action, IDispatcher dispatcher)
     {
         return PersistFeedState();
+    }
+
+    [EffectMethod]
+    public async Task DeleteFeedUserAction(DeleteFeedUserAction action, IDispatcher dispatcher)
+    {
+        await PersistFeedState();
+        var identity = state.Value.Identity;
+        if (identity is null)
+        {
+            return;
+        }
+        if (action.FeedUser.FollowSecret is null)
+        {
+            return;
+        }
+        var inboxMessage = new InboxMessageDao
+        {
+            FromUserId = identity.Id,
+            UnfollowNotification = new UnFollowNotification
+            {
+                FollowSecret = action.FeedUser.FollowSecret,
+            }
+        };
+        var encryptedInboxMessage = await encryptionService.EncryptRsaOaepSha256Async(
+            inboxMessage.ToByteArray(),
+            action.FeedUser.PublicKey
+        );
+        await feedApiService.PutInboxMessageAsync(
+            new PutInboxMessageRequest(
+                EncryptedMessage: encryptedInboxMessage.DataChunks,
+                ToUserId: action.FeedUser.Id
+            )
+        );
     }
 
     private async Task<InboxMessageDao?> DecryptIfValid(
