@@ -20,7 +20,11 @@ Personal Information that is NOT encrypted is limited to:
 - Timestamp of request - this is the timestamp of when a feed item was submitted. This could correlate to a time of workout, and therefore could be considered PII.
 - User ID (a UUID) - this is stored on the device, but is not linked to it (i.e. The LiftLog servers cannot trace userId to device)
 
-Data is encrypted by the user before sending to the LiftLog server. It is encrypted via AES-CBC, and signed via RSA-PSS to guarantee authenticity (see [Payload Encryption](#payload-encryption)). At no point does the server store the unencrypted keys, not even public RSA keys (caveat, the public key is supplied as a query parameter, which the server could see. However it is not stored, nor does it reach the API server, merely the CDN).
+Data is encrypted by the user before sending to the LiftLog server. It is encrypted via AES-CBC, and signed via RSA-PSS to guarantee authenticity (see [Payload Encryption](#payload-encryption)). At no point does the server store the unencrypted private keys. Public keys _may_ reach the CDN server via the share url, the risk here is minimal, as:
+
+    A. they are public keys which would only allow inbox messages to be sent to a user
+    B. the CDN servers are separate from the api servers which store data, and
+    C. the share urls usually open directly in the app, bypassing even the CDN servers.
 
 ### How following is accomplished
 
