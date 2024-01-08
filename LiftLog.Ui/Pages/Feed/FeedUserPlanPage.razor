@@ -46,21 +46,14 @@
     {
         Dispatcher.Dispatch(new SetPageTitleAction("User Plan"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/feed"));
-        if(FeedState.Value.Users is null || !Guid.TryParse(UserIdStr, out var userId))
+        if(!Guid.TryParse(UserIdStr, out var userId) || !FeedState.Value.FollowedUsers.TryGetValue(userId, out user))
         {
             NavigationManager.NavigateTo("/feed");
         }
         else
         {
-            if(!FeedState.Value.Users.TryGetValue(userId, out user))
-            {
-                NavigationManager.NavigateTo("/feed");
-            }
-            else
-            {
-                Dispatcher.Dispatch(new SetPageTitleAction($"{user.Nickname ?? user.Name}'s Plan"));
-                plan = user.CurrentPlan;
-            }
+            Dispatcher.Dispatch(new SetPageTitleAction($"{user.Nickname ?? user.Name}'s Plan"));
+            plan = user.CurrentPlan;
         }
 
         base.OnInitialized();

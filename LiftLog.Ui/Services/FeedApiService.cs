@@ -188,6 +188,7 @@ public enum ApiErrorType
     NotFound = 1,
     Unauthorized = 2,
     RateLimited = 3,
+    EncryptionError = 4,
 }
 
 public record ApiError(ApiErrorType Type, string Message, Exception Exception);
@@ -207,6 +208,8 @@ public record ApiResult<T> : ApiResult
 
     public ApiResult(ApiError error)
         : base(error) { }
+
+    public static ApiResult<T> FromFailure(ApiResult other) => new(other.Error!);
 }
 
 public record ApiResult(ApiError? Error)

@@ -10,7 +10,7 @@ public record FeedState(
     bool IsLoadingIdentity,
     FeedIdentity? Identity,
     ImmutableListValue<FeedItem> Feed,
-    ImmutableDictionary<Guid, FeedUser> Users,
+    ImmutableDictionary<Guid, FeedUser> FollowedUsers,
     FeedUser? SharedFeedUser,
     ImmutableListValue<FollowRequest> FollowRequests,
     ImmutableDictionary<Guid, FeedUser> Followers,

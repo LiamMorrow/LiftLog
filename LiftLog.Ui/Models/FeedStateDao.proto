@@ -51,7 +51,7 @@ message FeedItemDaoV1 {
 
 message FeedStateDaoV1 {
     repeated LiftLog.Ui.Models.FeedItemDaoV1 feed_items = 1;
-    repeated LiftLog.Ui.Models.FeedUserDaoV1 feed_users = 2;
+    repeated LiftLog.Ui.Models.FeedUserDaoV1 followed_users = 2;
     optional LiftLog.Ui.Models.FeedIdentityDaoV1 identity = 3;
     repeated LiftLog.Ui.Models.InboxMessageDao follow_requests = 4;
     repeated LiftLog.Ui.Models.FeedUserDaoV1 followers = 5;

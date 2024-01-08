@@ -12,7 +12,7 @@ public class FeedFeature : Feature<FeedState>
             IsLoadingIdentity: false,
             Identity: null,
             Feed: [],
-            Users: ImmutableDictionary<Guid, FeedUser>.Empty,
+            FollowedUsers: ImmutableDictionary<Guid, FeedUser>.Empty,
             SharedFeedUser: null,
             FollowRequests: [],
             Followers: ImmutableDictionary<Guid, FeedUser>.Empty,

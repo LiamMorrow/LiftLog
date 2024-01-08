@@ -20,10 +20,10 @@ public static class FeedReducers
         };
 
     [ReducerMethod]
-    public static FeedState PutFeedUser(FeedState state, PutFeedUserAction action) =>
+    public static FeedState PutFeedUser(FeedState state, PutFollowedUsersAction action) =>
         state with
         {
-            Users = state.Users.SetItem(action.User.Id, action.User)
+            FollowedUsers = state.FollowedUsers.SetItem(action.User.Id, action.User)
         };
 
     [ReducerMethod]
@@ -39,22 +39,24 @@ public static class FeedReducers
             ? state
             : state with
             {
-                Users = state.Users.SetItem(state.SharedFeedUser.Id, state.SharedFeedUser),
+                FollowedUsers = state.FollowedUsers.SetItem(
+                    state.SharedFeedUser.Id,
+                    state.SharedFeedUser
+                ),
                 SharedFeedUser = null
             };
 
     [ReducerMethod]
-    public static FeedState ReplaceFeedUsers(FeedState state, ReplaceFeedUsersAction action) =>
-        state with
-        {
-            Users = action.Users.ToImmutableDictionary(x => x.Id)
-        };
+    public static FeedState ReplaceFeedUsers(
+        FeedState state,
+        ReplaceFeedFollowedUsersAction action
+    ) => state with { FollowedUsers = action.FollowedUsers.ToImmutableDictionary(x => x.Id) };
 
     [ReducerMethod]
     public static FeedState DeleteFeedUser(FeedState state, DeleteFeedUserAction action) =>
         state with
         {
-            Users = state.Users.Remove(action.FeedUser.Id),
+            FollowedUsers = state.FollowedUsers.Remove(action.FeedUser.Id),
             Feed = state.Feed.Where(x => x.UserId != action.FeedUser.Id).ToImmutableList()
         };
 

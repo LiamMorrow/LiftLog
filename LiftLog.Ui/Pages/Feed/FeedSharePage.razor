@@ -71,7 +71,7 @@ else
         {
             return;
         }
-        Dispatcher.Dispatch(new RequestFollowSharedUserAction(FeedState.Value.SharedFeedUser));
+        Dispatcher.Dispatch(new RequestFollowUserAction(FeedState.Value.SharedFeedUser));
         Dispatcher.Dispatch(new SetSharedFeedUserAction(null));
         Dispatcher.Dispatch(new NavigateAction("/feed"));
     }

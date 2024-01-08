@@ -27,11 +27,11 @@ public record ReplaceFeedItemsAction(ImmutableListValue<FeedItem> Items);
 
 public record DeleteFeedIdentityAction();
 
-public record RequestFollowSharedUserAction(FeedUser FeedUser);
+public record RequestFollowUserAction(FeedUser FeedUser);
 
 public record FetchInboxItemsAction();
 
-public record PutFeedUserAction(FeedUser User);
+public record PutFollowedUsersAction(FeedUser User);
 
 public record SetSharedFeedUserAction(FeedUser? User);
 
@@ -43,7 +43,7 @@ public record FetchSessionFeedItemsAction();
 
 public record PublishWorkoutToFeedAction(Session Session);
 
-public record ReplaceFeedUsersAction(ImmutableListValue<FeedUser> Users);
+public record ReplaceFeedFollowedUsersAction(ImmutableListValue<FeedUser> FollowedUsers);
 
 public record DeleteFeedUserAction(FeedUser FeedUser);
 
