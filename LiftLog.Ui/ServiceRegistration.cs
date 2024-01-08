@@ -76,6 +76,8 @@ public static class ServiceRegistration
         services.AddScoped<IEncryptionService, TEncryptionService>();
 
         services.AddScoped<FeedApiService>();
+        services.AddScoped<FeedIdentityService>();
+        services.AddScoped<FeedFollowService>();
 
         services.AddSingleton<InsetsManager>();
 
