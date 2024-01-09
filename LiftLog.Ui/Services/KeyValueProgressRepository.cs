@@ -171,5 +171,11 @@ namespace LiftLog.Ui.Services
                         )
                 );
         }
+
+        public async ValueTask<Session?> GetSessionAsync(Guid sessionId)
+        {
+            await InitialiseAsync();
+            return _storedSessions.GetValueOrDefault(sessionId);
+        }
     }
 }

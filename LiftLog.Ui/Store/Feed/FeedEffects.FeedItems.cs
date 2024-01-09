@@ -92,7 +92,13 @@ public partial class FeedEffects
                     .Where(ev => newUsers.Any(us => us.Id == ev.UserId))
                     .GroupBy(x => (x.UserId, x.EventId))
                     .Select(x => x.OrderByDescending(x => x.Timestamp).First())
-                    .OrderByDescending(x => x.Timestamp)
+                    .OrderByDescending(
+                        x =>
+                            x is SessionFeedItem sessionFeedItem
+                                ? sessionFeedItem.Session.Date.ToDateTime(TimeOnly.MinValue)
+                                : x.Timestamp
+                    )
+                    .ThenByDescending(x => x.Timestamp)
                     .ToImmutableList()
             )
         );
@@ -115,7 +121,11 @@ public partial class FeedEffects
             var session = await progressRepository.GetSessionAsync(sessionId);
             if (session is not null)
             {
-                await PublishSessionAsync(state.Value.Identity, session);
+                var result = await PublishSessionAsync(state.Value.Identity, session);
+                if (!result.IsSuccess)
+                {
+                    continue;
+                }
             }
             dispatcher.Dispatch(new RemoveUnpublishedSessionIdAction(sessionId));
         }

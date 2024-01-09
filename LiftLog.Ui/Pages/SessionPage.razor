@@ -146,7 +146,7 @@
     {
         Dispatcher.Dispatch(new PersistCurrentSessionAction(SessionTarget.WorkoutSession));
         if(CurrentSessionState.Value.WorkoutSession is not null){
-            Dispatcher.Dispatch(new AddUnpublishedSessionId(CurrentSessionState.Value.WorkoutSession.Id));
+            Dispatcher.Dispatch(new AddUnpublishedSessionIdAction(CurrentSessionState.Value.WorkoutSession.Id));
         }
         Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, null));
         Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));

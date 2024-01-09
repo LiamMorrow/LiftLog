@@ -219,7 +219,7 @@ app.MapPut(
         };
         user.LastAccessed = DateTimeOffset.UtcNow;
 
-        var existingEvent = await db.UserEvents.FindAsync(request.EventId);
+        var existingEvent = await db.UserEvents.FindAsync(request.UserId, request.EventId);
         if (existingEvent != null)
         {
             db.UserEvents.Remove(existingEvent);
