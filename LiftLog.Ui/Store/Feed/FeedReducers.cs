@@ -110,7 +110,13 @@ public static class FeedReducers
     public static FeedState AddUnpublishedSessionId(
         FeedState state,
         AddUnpublishedSessionIdAction action
-    ) => state with { UnpublishedSessionIds = state.UnpublishedSessionIds.Add(action.SessionId) };
+    ) =>
+        state is { Identity.PublishWorkouts: true }
+            ? state with
+            {
+                UnpublishedSessionIds = state.UnpublishedSessionIds.Add(action.SessionId)
+            }
+            : state;
 
     [ReducerMethod]
     public static FeedState RemoveUnpublishedSessionId(
