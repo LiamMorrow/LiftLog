@@ -7,6 +7,7 @@ using LiftLog.Lib.Models;
 using LiftLog.Lib.Services;
 using LiftLog.Ui.Models;
 using LiftLog.Ui.Models.SessionHistoryDao;
+using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.Program;
@@ -19,6 +20,7 @@ namespace LiftLog.Ui.Store.Feed;
 public partial class FeedEffects(
     IState<FeedState> state,
     IState<ProgramState> programState,
+    IProgressRepository progressRepository,
     FeedApiService feedApiService,
     FeedFollowService feedFollowService,
     FeedIdentityService feedIdentityService,
@@ -43,94 +45,6 @@ public partial class FeedEffects(
         if (result.IsSuccess)
         {
             dispatcher.Dispatch(new PutFollowedUsersAction(action.FeedUser));
-        }
-    }
-
-    [EffectMethod]
-    public async Task HandleFetchInboxItemsAction(FetchInboxItemsAction _, IDispatcher dispatcher)
-    {
-        var identity = state.Value.Identity;
-        if (identity is null)
-        {
-            return;
-        }
-        var inboxItemsResponse = await feedApiService.GetInboxMessagesAsync(
-            new GetInboxMessagesRequest(identity.Id, identity.Password)
-        );
-        if (!inboxItemsResponse.IsSuccess)
-        {
-            // TODO handle properly
-            return;
-        }
-
-        var encryptedInboxItems = inboxItemsResponse.Data.InboxMessages;
-        var inboxItems = (
-            await Task.WhenAll(
-                encryptedInboxItems.Select(x => DecryptIfValid(x, identity.RsaKeyPair.PrivateKey))
-            )
-        ).WhereNotNull();
-
-        ImmutableListValue<FollowRequest> newFollowRequests = inboxItems
-            .Where(
-                x => x.MessagePayloadCase == InboxMessageDao.MessagePayloadOneofCase.FollowRequest
-            )
-            .Select(
-                x =>
-                    new FollowRequest(
-                        UserId: x.FromUserId,
-                        Name: x.FollowRequest.Name?.ToString() ?? "Anonymous User",
-                        ProfilePicture: x.FollowRequest.ProfilePicture.IsEmpty
-                            ? null
-                            : x.FollowRequest.ProfilePicture.ToByteArray(),
-                        PublicKey: new RsaPublicKey(x.FollowRequest.PublicKey.ToByteArray())
-                    )
-            )
-            .ToImmutableList();
-        dispatcher.Dispatch(new AppendNewFollowRequestsAction(newFollowRequests));
-
-        var newFollowResponses = inboxItems
-            .Where(
-                x => x.MessagePayloadCase == InboxMessageDao.MessagePayloadOneofCase.FollowResponse
-            )
-            .Select(
-                x =>
-                    new FollowResponse(
-                        UserId: x.FromUserId,
-                        Accepted: x.FollowResponse.ResponsePayloadCase
-                            == FollowResponseDao.ResponsePayloadOneofCase.Accepted,
-                        AesKey: x.FollowResponse.ResponsePayloadCase
-                        == FollowResponseDao.ResponsePayloadOneofCase.Accepted
-                            ? new AesKey(x.FollowResponse.Accepted.AesKey.ToByteArray())
-                            : null,
-                        FollowSecret: x.FollowResponse.ResponsePayloadCase
-                        == FollowResponseDao.ResponsePayloadOneofCase.Accepted
-                            ? x.FollowResponse.Accepted.FollowSecret
-                            : null
-                    )
-            )
-            .ToImmutableList();
-
-        dispatcher.Dispatch(new ProcessFollowResponsesAction(newFollowResponses));
-
-        var followers = state.Value.Followers;
-        var unfollowNotifications = inboxItems
-            .Where(
-                x =>
-                    x.MessagePayloadCase
-                    == InboxMessageDao.MessagePayloadOneofCase.UnfollowNotification
-            )
-            .SelectMany(
-                x =>
-                    followers.Values.Where(
-                        f =>
-                            f.Id == x.FromUserId
-                            && f.FollowSecret == x.UnfollowNotification.FollowSecret
-                    )
-            );
-
-        foreach (var unfollowNotification in unfollowNotifications)
-        {
-            dispatcher.Dispatch(new RemoveFollowerAction(unfollowNotification));
         }
     }
 
@@ -342,61 +256,6 @@ public partial class FeedEffects(
             logger.LogError(e, "Failed to decrypt inbox message");
             return null;
         }
-    }
-
-    private async Task<FeedUser> GetDecryptedUserAsync(
-        Guid Id,
-        RsaPublicKey publicKey,
-        AesKey aesKey,
-        string? nickname,
-        GetUserResponse response,
-        string? followSecret
-    )
-    {
-        return new FeedUser(
-            Id,
-            PublicKey: publicKey,
-            AesKey: aesKey,
-            Name: response.EncryptedName is null or { Length: 0 }
-                ? null
-                : Encoding.UTF8.GetString(
-                    await encryptionService.DecryptAesCbcAndVerifyRsa256PssAsync(
-                        new AesEncryptedAndRsaSignedData(
-                            response.EncryptedName,
-                            new AesIV(response.EncryptionIV)
-                        ),
-                        aesKey,
-                        publicKey
-                    )
-                ),
-            Nickname: nickname,
-            CurrentPlan: response.EncryptedCurrentPlan is null or { Length: 0 }
-                ? []
-                : CurrentPlanDaoV1
-                    .Parser.ParseFrom(
-                        await encryptionService.DecryptAesCbcAndVerifyRsa256PssAsync(
-                            new AesEncryptedAndRsaSignedData(
-                                response.EncryptedCurrentPlan,
-                                new AesIV(response.EncryptionIV)
-                            ),
-                            aesKey,
-                            publicKey
-                        )
-                    )
-                    .Sessions.Select(sessionBlueprintDao => sessionBlueprintDao.ToModel())
-                    .ToImmutableList(),
-            ProfilePicture: response.EncryptedProfilePicture is null or { Length: 0 }
-                ? null
-                : await encryptionService.DecryptAesCbcAndVerifyRsa256PssAsync(
-                    new AesEncryptedAndRsaSignedData(
-                        response.EncryptedProfilePicture,
-                        new AesIV(response.EncryptionIV)
-                    ),
-                    aesKey,
-                    publicKey
-                ),
-            FollowSecret: followSecret
-        );
     }
 
     private async Task PersistFeedState()

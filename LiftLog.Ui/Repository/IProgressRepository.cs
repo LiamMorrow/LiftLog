@@ -17,5 +17,7 @@ namespace LiftLog.Ui.Repository
         ValueTask SaveCompletedSessionAsync(Session session);
         ValueTask SaveCompletedSessionsAsync(IEnumerable<Session> sessions);
         ValueTask DeleteSessionAsync(Session session);
+
+        ValueTask<Session?> GetSessionAsync(Guid sessionId);
     }
 }

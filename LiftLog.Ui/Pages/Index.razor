@@ -77,6 +77,7 @@ else
         Dispatcher.Dispatch(new FetchUpcomingSessionsAction());
         Dispatcher.Dispatch(new SetReopenCurrentSessionAction(false));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
+        Dispatcher.Dispatch(new PublishUnpublishedSessionsAction());
         await base.OnInitializedAsync();
     }
 

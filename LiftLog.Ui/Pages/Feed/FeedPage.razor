@@ -132,6 +132,7 @@
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
         Dispatcher.Dispatch(new FetchSessionFeedItemsAction());
         Dispatcher.Dispatch(new FetchInboxItemsAction());
+        Dispatcher.Dispatch(new PublishUnpublishedSessionsAction());
         base.OnInitialized();
     }
 

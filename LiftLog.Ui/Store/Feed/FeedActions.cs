@@ -41,7 +41,7 @@ public record SaveSharedFeedUserAction();
 
 public record FetchSessionFeedItemsAction();
 
-public record PublishWorkoutToFeedAction(Session Session);
+public record PublishUnpublishedSessionsAction();
 
 public record ReplaceFeedFollowedUsersAction(ImmutableListValue<FeedUser> FollowedUsers);
 
@@ -66,3 +66,7 @@ public record StartRemoveFollowerAction(FeedUser User);
 public record RemoveFollowerAction(FeedUser User);
 
 public record SetActiveTabAction(string TabId);
+
+public record AddUnpublishedSessionIdAction(Guid SessionId);
+
+public record RemoveUnpublishedSessionIdAction(Guid SessionId);

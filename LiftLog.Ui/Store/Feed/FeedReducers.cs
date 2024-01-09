@@ -105,4 +105,20 @@ public static class FeedReducers
         {
             ActiveTab = action.TabId
         };
+
+    [ReducerMethod]
+    public static FeedState AddUnpublishedSessionId(
+        FeedState state,
+        AddUnpublishedSessionIdAction action
+    ) => state with { UnpublishedSessionIds = state.UnpublishedSessionIds.Add(action.SessionId) };
+
+    [ReducerMethod]
+    public static FeedState RemoveUnpublishedSessionId(
+        FeedState state,
+        RemoveUnpublishedSessionIdAction action
+    ) =>
+        state with
+        {
+            UnpublishedSessionIds = state.UnpublishedSessionIds.Remove(action.SessionId)
+        };
 }

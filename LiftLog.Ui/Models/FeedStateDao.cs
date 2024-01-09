@@ -154,7 +154,10 @@ internal partial class FeedStateDaoV1
                 Followers: value
                     .Followers.Select(x => (FeedUser)x)
                     .ToImmutableDictionary(x => x.Id),
-                ActiveTab: "mainfeed-panel"
+                ActiveTab: "mainfeed-panel",
+                UnpublishedSessionIds: value
+                    .UnpublishedSessionIds.Select(x => (Guid)x)
+                    .ToImmutableHashSet()
             );
 
     [return: NotNullIfNotNull(nameof(value))]
@@ -167,7 +170,8 @@ internal partial class FeedStateDaoV1
                 FeedItems = { value.Feed.Select(x => (FeedItemDaoV1)x) },
                 FollowedUsers = { value.FollowedUsers.Values.Select(x => (FeedUserDaoV1)x) },
                 FollowRequests = { value.FollowRequests.Select(x => (InboxMessageDao)x) },
-                Followers = { value.Followers.Values.Select(x => (FeedUserDaoV1)x) }
+                Followers = { value.Followers.Values.Select(x => (FeedUserDaoV1)x) },
+                UnpublishedSessionIds = { value.UnpublishedSessionIds.Select(x => (UUIDDao)x) }
             };
 }
 
