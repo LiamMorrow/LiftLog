@@ -82,6 +82,7 @@ public partial class FeedEffects
                     .Select(x => ToFeedItemAsync(x).AsTask())
             )
         ).WhereNotNull();
+
         var now = DateTimeOffset.UtcNow;
         dispatcher.Dispatch(
             new ReplaceFeedItemsAction(
