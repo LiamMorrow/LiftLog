@@ -64,7 +64,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
         try
         {
             var gptPlan = JsonSerializer.Deserialize<GptWorkoutPlan>(
-                result.FirstChoice.Message.Function.Arguments.ToString(),
+                result.FirstChoice.Message.ToolCalls.First().Function.Arguments.ToString(),
                 JsonSerializerSettings.LiftLog
             )!;
 
@@ -106,7 +106,9 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
         catch (Exception e)
         {
             Console.WriteLine(e);
-            Console.WriteLine(result.FirstChoice.Message.Function.Arguments.ToString());
+            Console.WriteLine(
+                result.FirstChoice.Message.ToolCalls.First().Function.Arguments.ToString()
+            );
             throw;
         }
     }
@@ -169,7 +171,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
         try
         {
             var gptPlan = JsonSerializer.Deserialize<GptSessionBlueprint>(
-                result.FirstChoice.Message.Function.Arguments.ToString(),
+                result.FirstChoice.Message.ToolCalls.First().Function.Arguments.ToString(),
                 JsonSerializerSettings.LiftLog
             )!;
 
@@ -198,7 +200,9 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
         catch (Exception e)
         {
             Console.WriteLine(e);
-            Console.WriteLine(result.FirstChoice.Message.Function.Arguments.ToString());
+            Console.WriteLine(
+                result.FirstChoice.Message.ToolCalls.First().Function.Arguments.ToString()
+            );
             throw;
         }
     }
