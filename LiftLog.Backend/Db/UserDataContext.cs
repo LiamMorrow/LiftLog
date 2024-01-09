@@ -32,5 +32,9 @@ public class UserDataContext(DbContextOptions<UserDataContext> options) : DbCont
             .HasMany<UserInboxItem>()
             .WithOne(x => x.User)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<UserEvent>().HasIndex(x => x.Expiry);
+
+        modelBuilder.Entity<UserEvent>().HasKey(x => new { x.UserId, x.Id });
     }
 }
