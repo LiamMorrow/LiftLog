@@ -102,7 +102,7 @@
         <PackageReference Include="Sentry.Extensions.Logging" Version="3.41.3" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.3" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.3" />
-        <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Annotation" Version="1.7.0.3" />
+        <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Annotation" Version="1.7.1" />
     </ItemGroup>
 
     <ItemGroup>
