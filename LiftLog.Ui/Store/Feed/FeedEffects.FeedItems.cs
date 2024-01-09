@@ -165,6 +165,7 @@ public partial class FeedEffects
             new PutUserEventRequest(
                 UserId: identity.Id,
                 Password: identity.Password,
+                EventId: session.Id,
                 EncryptedEventPayload: encryptedPayload,
                 EncryptedEventIV: iv.Value,
                 Expiry: DateTimeOffset.UtcNow.AddDays(90)

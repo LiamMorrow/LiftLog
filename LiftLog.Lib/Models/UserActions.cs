@@ -31,6 +31,7 @@ public record GetUserResponse(
 public record PutUserEventRequest(
     Guid UserId,
     string Password,
+    Guid EventId,
     // This payload is encrypted with the user's private key, which we do not store
     // Its schema is defined in LiftLog.Ui/Models/UserEvent.proto - we don't reference this proto since the server doesn't need to deserialize it
     byte[] EncryptedEventPayload,

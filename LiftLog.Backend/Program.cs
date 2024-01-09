@@ -209,7 +209,7 @@ app.MapPut(
         }
         var userEvent = new UserEvent
         {
-            Id = Guid.NewGuid(),
+            Id = request.EventId,
             UserId = request.UserId,
             Timestamp = DateTimeOffset.UtcNow,
             LastAccessed = DateTimeOffset.UtcNow,
@@ -218,7 +218,14 @@ app.MapPut(
             EncryptionIV = request.EncryptedEventIV,
         };
         user.LastAccessed = DateTimeOffset.UtcNow;
-        await db.UserEvents.AddAsync(userEvent);
+
+        var existingEvent = await db.UserEvents.FindAsync(request.EventId);
+        if (existingEvent != null)
+        {
+            db.UserEvents.Remove(existingEvent);
+        }
+        db.UserEvents.Add(userEvent);
+
         await db.SaveChangesAsync();
         return Results.Ok();
     }
