@@ -88,8 +88,9 @@ public partial class FeedEffects
                 state
                     .Value.Feed.Concat(feedItems)
                     .Where(x => x.Expiry >= now)
-                    .DistinctBy(x => x.EventId)
                     .Where(ev => newUsers.Any(us => us.Id == ev.UserId))
+                    .GroupBy(x => (x.UserId, x.EventId))
+                    .Select(x => x.OrderByDescending(x => x.Timestamp).First())
                     .OrderByDescending(x => x.Timestamp)
                     .ToImmutableList()
             )
