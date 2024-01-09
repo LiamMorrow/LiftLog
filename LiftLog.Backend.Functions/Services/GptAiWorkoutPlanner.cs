@@ -32,7 +32,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
 
         var goalsText = string.Join(" and ", attributes.Goals);
 
-        var functions = new List<Function>
+        var tools = new List<Tool>
         {
             new Function(
                 "GetGymPlan",
@@ -57,8 +57,8 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
         var chatRequest = new ChatRequest(
             messages,
             model: "gpt-3.5-turbo-0613",
-            functionCall: "auto",
-            functions: functions
+            toolChoice: "auto",
+            tools: tools
         );
         var result = await openAiClient.ChatEndpoint.GetCompletionAsync(chatRequest);
         try
@@ -131,7 +131,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
             _ => "ten"
         };
 
-        var functions = new List<Function>
+        var tools = new List<Tool>
         {
             new Function(
                 "GetSession",
@@ -162,8 +162,8 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
         var chatRequest = new ChatRequest(
             messages,
             model: "gpt-3.5-turbo-0613",
-            functionCall: "auto",
-            functions: functions
+            toolChoice: "auto",
+            tools: tools
         );
         var result = await openAiClient.ChatEndpoint.GetCompletionAsync(chatRequest);
         try
