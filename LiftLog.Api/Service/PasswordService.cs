@@ -3,13 +3,13 @@ using System.Text;
 
 namespace LiftLog.Api.Service;
 
-public static class PasswordService
+public class PasswordService
 {
     const int keySize = 64;
     const int iterations = 350000;
-    static readonly HashAlgorithmName hashAlgorithm = HashAlgorithmName.SHA512;
+    readonly HashAlgorithmName hashAlgorithm = HashAlgorithmName.SHA512;
 
-    public static string HashPassword(string password, out byte[] salt)
+    public string HashPassword(string password, out byte[] salt)
     {
         salt = RandomNumberGenerator.GetBytes(keySize);
         var hash = Rfc2898DeriveBytes.Pbkdf2(
@@ -22,7 +22,7 @@ public static class PasswordService
         return Convert.ToHexString(hash);
     }
 
-    public static bool VerifyPassword(string password, string hash, byte[] salt)
+    public bool VerifyPassword(string password, string hash, byte[] salt)
     {
         var hashToCompare = Rfc2898DeriveBytes.Pbkdf2(
             password,

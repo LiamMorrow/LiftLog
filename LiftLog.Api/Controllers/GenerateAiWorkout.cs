@@ -9,7 +9,7 @@ using LiftLog.Lib.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace LiftLog.Api;
+namespace LiftLog.Api.Controllers;
 
 [ApiController]
 [Route("ai")]
@@ -24,7 +24,7 @@ public class GenerateAiWorkoutController(
 {
     [Route("workout")]
     [HttpPost]
-    public async Task<ActionResult> GenerateAiWorkout(
+    public async Task<IActionResult> GenerateAiWorkout(
         [FromHeader(Name = "Authorization")] string? authorization,
         GenerateAiWorkoutPlanRequest request
     )
@@ -51,7 +51,7 @@ public class GenerateAiWorkoutController(
 
     [Route("session")]
     [HttpPost]
-    public async Task<ActionResult> RunAiSession(
+    public async Task<IActionResult> RunAiSession(
         [FromHeader(Name = "Authorization")] string? authorization,
         GenerateAiSessionRequest request
     )
@@ -77,7 +77,7 @@ public class GenerateAiWorkoutController(
         return Ok(plan);
     }
 
-    private async Task<ActionResult?> GetAuthErrorAsync(string? headerAuth, string? bodyAuth)
+    private async Task<IActionResult?> GetAuthErrorAsync(string? headerAuth, string? bodyAuth)
     {
         if (headerAuth is null && bodyAuth is null)
         {
