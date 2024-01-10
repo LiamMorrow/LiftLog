@@ -66,7 +66,7 @@ This is the application which is published to the relevant app store.
 
 ### Backend
 
-#### [LiftLog.Backend](./LiftLog.Backend/)
+#### [LiftLog.Api](./LiftLog.Api/)
 
 This project contains a dotnet webapi backend for LiftLog. It is in charge of storing, and serving feeds to people, however it has no knowledge of the content of feeds, aside from timestamps and user IDs.
 Feeds are end to end encrypted using a shared symmetric key via AES.

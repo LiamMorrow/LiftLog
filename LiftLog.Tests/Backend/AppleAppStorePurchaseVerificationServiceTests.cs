@@ -1,6 +1,6 @@
 using FluentAssertions;
-using LiftLog.Backend.Service;
-using LiftLog.Backend.Validators;
+using LiftLog.Api.Service;
+using LiftLog.Api.Validators;
 using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Tests.Backend;

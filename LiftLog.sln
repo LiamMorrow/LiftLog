@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.App", "LiftLog.App\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.Tests", "LiftLog.Tests\LiftLog.Tests.csproj", "{75F0873F-B7FC-4396-BC1F-1E9DC27D8F38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.Backend", "LiftLog.Backend\LiftLog.Backend.csproj", "{2569C97C-BA58-4DF6-B4CB-0E21E59E50F4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.Api", "LiftLog.Api\LiftLog.Api.csproj", "{2569C97C-BA58-4DF6-B4CB-0E21E59E50F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
