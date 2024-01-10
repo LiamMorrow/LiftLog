@@ -25,4 +25,13 @@
     <PackageReference Include="Google.Apis.AndroidPublisher.v3" Version="1.65.0.3295" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="AiWorkoutPlan.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AiSessionBlueprint.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

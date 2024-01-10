@@ -43,8 +43,8 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
 
         var messages = new List<Message>
         {
-            new Message(Role.System, "You only cater to requests to create gym plans."),
-            new Message(
+            new(Role.System, "You only cater to requests to create gym plans."),
+            new(
                 Role.User,
                 $"""
             I am a {attributes.Age} year old {genderText} who weighs {attributes.WeightRange} {(attributes.UseImperialUnits ? "pounds" : "kilograms")}. I would like to work on {goalsText}.
@@ -144,7 +144,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
 
         var messages = new List<Message>
         {
-            new Message(
+            new(
                 Role.System,
                 """
                 You only cater to requests to create gym a gym session.
@@ -153,7 +153,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
                 They may also specify how many exercises they want to do, and their goals for the session.
                 """
             ),
-            new Message(
+            new(
                 Role.User,
                 $"""
             I'd like to workout today at the gym. The areas I'd like to work on {areasToWorkout}. I'd like it to have at lease {volumeText} exercises. Exercises I'm familiar with are as follows: {exerciseText}.
