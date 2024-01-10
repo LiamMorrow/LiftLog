@@ -1,7 +1,7 @@
 using FluentValidation;
 using LiftLog.Lib.Models;
 
-namespace LiftLog.Backend.Functions.Validators;
+namespace LiftLog.Backend.Validators;
 
 public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
 {

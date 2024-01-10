@@ -1,8 +1,7 @@
 using FluentValidation;
-using LiftLog.Backend.Services;
-using static LiftLog.Backend.Functions.Services.AppleAppStorePurchaseVerificationService;
+using static LiftLog.Backend.Service.AppleAppStorePurchaseVerificationService;
 
-namespace LiftLog.Backend.Functions.Validators;
+namespace LiftLog.Backend.Validators;
 
 public class AppleAppStorePurchaseReceiptValidator : AbstractValidator<AppStoreReceipt>
 {

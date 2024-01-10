@@ -1,7 +1,7 @@
 using System.Reflection.Emit;
 using LiftLog.Lib.Models;
 
-namespace LiftLog.Backend.Functions.Services;
+namespace LiftLog.Backend.Service;
 
 public class WebAuthPurchaseVerificationService(string? webAuthKey)
 {

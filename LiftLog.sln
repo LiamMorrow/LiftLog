@@ -19,8 +19,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.Ui", "LiftLog.Ui\Li
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.App", "LiftLog.App\LiftLog.App.csproj", "{08D7B5DB-F7A2-4ECA-BE13-81128AB252B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog_Backend_Functions", "LiftLog.Backend.Functions\LiftLog_Backend_Functions.csproj", "{79483AE0-DBB9-469A-A3A1-7334C2D594B9}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.Tests", "LiftLog.Tests\LiftLog.Tests.csproj", "{75F0873F-B7FC-4396-BC1F-1E9DC27D8F38}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.Backend", "LiftLog.Backend\LiftLog.Backend.csproj", "{2569C97C-BA58-4DF6-B4CB-0E21E59E50F4}"

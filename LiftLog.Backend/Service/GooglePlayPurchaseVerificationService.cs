@@ -1,11 +1,8 @@
 using System.Net;
-using System.Security.Cryptography.X509Certificates;
 using Google;
 using Google.Apis.AndroidPublisher.v3;
-using Google.Apis.Auth.OAuth2;
-using Microsoft.Extensions.Logging;
 
-namespace LiftLog.Backend.Services;
+namespace LiftLog.Backend.Service;
 
 public class GooglePlayPurchaseVerificationService(
     AndroidPublisherService androidPublisherService,

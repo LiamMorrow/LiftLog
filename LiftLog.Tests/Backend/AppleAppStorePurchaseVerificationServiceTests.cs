@@ -1,5 +1,6 @@
 using FluentAssertions;
-using LiftLog.Backend.Functions.Services;
+using LiftLog.Backend.Service;
+using LiftLog.Backend.Validators;
 using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Tests.Backend;
@@ -11,7 +12,11 @@ public class AppleAppStorePurchaseVerificationServiceTests
     {
         // Arrange
         var logger = Substitute.For<ILogger<AppleAppStorePurchaseVerificationService>>();
-        var service = new AppleAppStorePurchaseVerificationService(new HttpClient(), logger);
+        var service = new AppleAppStorePurchaseVerificationService(
+            new HttpClient(),
+            new AppleAppStorePurchaseReceiptValidator(),
+            logger
+        );
 
         // Act
         var result = await service.IsValidPurchaseToken("invalid token");

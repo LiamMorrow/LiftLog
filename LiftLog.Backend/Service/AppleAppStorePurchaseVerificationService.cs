@@ -1,12 +1,12 @@
-using System.Net.Http.Json;
 using System.Text.Json.Serialization;
-using LiftLog.Backend.Functions.Validators;
-using Microsoft.Extensions.Logging;
+using FluentValidation;
+using static LiftLog.Backend.Service.AppleAppStorePurchaseVerificationService;
 
-namespace LiftLog.Backend.Functions.Services;
+namespace LiftLog.Backend.Service;
 
 public class AppleAppStorePurchaseVerificationService(
     HttpClient httpClient,
+    IValidator<AppStoreReceipt> validator,
     ILogger<AppleAppStorePurchaseVerificationService> logger
 )
 {
@@ -25,7 +25,6 @@ public class AppleAppStorePurchaseVerificationService(
             }
         }
 
-        var validator = new AppleAppStorePurchaseReceiptValidator();
         var validationResult = await validator.ValidateAsync(deserializedToken);
         if (!validationResult.IsValid)
         {

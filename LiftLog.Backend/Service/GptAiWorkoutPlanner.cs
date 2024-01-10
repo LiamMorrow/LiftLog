@@ -1,4 +1,4 @@
-namespace LiftLog.Backend.Services;
+namespace LiftLog.Backend.Service;
 
 using System.Collections.Immutable;
 using System.Text.Json;

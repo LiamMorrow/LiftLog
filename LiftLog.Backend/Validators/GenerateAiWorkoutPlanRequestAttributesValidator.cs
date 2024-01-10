@@ -2,7 +2,7 @@ using System.IO.Compression;
 using FluentValidation;
 using LiftLog.Lib.Models;
 
-namespace LiftLog.Backend.Functions.Validators;
+namespace LiftLog.Backend.Validators;
 
 public class GenerateAiWorkoutPlanRequestAttributesValidator
     : AbstractValidator<AiWorkoutAttributes>

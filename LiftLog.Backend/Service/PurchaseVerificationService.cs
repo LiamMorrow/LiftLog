@@ -1,8 +1,6 @@
-using Google.Apis.AndroidPublisher.v3;
-using LiftLog.Backend.Services;
 using LiftLog.Lib.Models;
 
-namespace LiftLog.Backend.Functions.Services;
+namespace LiftLog.Backend.Service;
 
 public class PurchaseVerificationService(
     GooglePlayPurchaseVerificationService googlePlayPurchaseVerificationService,

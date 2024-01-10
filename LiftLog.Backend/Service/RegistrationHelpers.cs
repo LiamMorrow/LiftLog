@@ -1,4 +1,4 @@
-namespace LiftLog.Backend.Services;
+namespace LiftLog.Backend.Service;
 
 using LiftLog.Lib.Services;
 using Microsoft.Extensions.DependencyInjection;

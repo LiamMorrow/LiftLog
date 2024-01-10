@@ -71,9 +71,7 @@ This is the application which is published to the relevant app store.
 This project contains a dotnet webapi backend for LiftLog. It is in charge of storing, and serving feeds to people, however it has no knowledge of the content of feeds, aside from timestamps and user IDs.
 Feeds are end to end encrypted using a shared symmetric key via AES.
 
-#### [LiftLog.Backend.Functions](./LiftLog.Backend.Functions/)
-
-The backend for AI generated plans is driven by azure functions. It's pretty light, and may be incorporated into the main backend eventually.
+It also handles the AI generated plans with OpenAI.
 
 ### Site
 
