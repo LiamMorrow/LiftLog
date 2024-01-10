@@ -15,7 +15,7 @@ public interface IEncryptionService
     /// <param name="key"></param>
     /// <param name="publicKey"></param>
     /// <returns></returns>
-    ValueTask<byte[]> DecryptAesCbcAndVerifyRsa256PssAsync(
+    Task<byte[]> DecryptAesCbcAndVerifyRsa256PssAsync(
         AesEncryptedAndRsaSignedData data,
         AesKey key,
         RsaPublicKey publicKey
@@ -26,7 +26,7 @@ public interface IEncryptionService
     /// CBC does not guarantee integrity, so we need to supply a signature with the data.
     /// The signature is verified on decryption. Note the signature is also encrypted.
     /// </summary>
-    public ValueTask<AesEncryptedAndRsaSignedData> SignRsa256PssAndEncryptAesCbcAsync(
+    public Task<AesEncryptedAndRsaSignedData> SignRsa256PssAndEncryptAesCbcAsync(
         byte[] data,
         AesKey key,
         RsaPrivateKey rsaPrivateKey,
@@ -35,15 +35,9 @@ public interface IEncryptionService
 
     ValueTask<AesKey> GenerateAesKeyAsync();
 
-    public ValueTask<byte[]> DecryptRsaOaepSha256Async(
-        RsaEncryptedData data,
-        RsaPrivateKey privateKey
-    );
+    public Task<byte[]> DecryptRsaOaepSha256Async(RsaEncryptedData data, RsaPrivateKey privateKey);
 
-    public ValueTask<RsaEncryptedData> EncryptRsaOaepSha256Async(
-        byte[] data,
-        RsaPublicKey publicKey
-    );
+    public Task<RsaEncryptedData> EncryptRsaOaepSha256Async(byte[] data, RsaPublicKey publicKey);
 
     public ValueTask<RsaKeyPair> GenerateRsaKeysAsync();
 }
