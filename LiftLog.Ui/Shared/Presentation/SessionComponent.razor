@@ -94,14 +94,22 @@ else
 
 <Dialog @ref="_updatePlanDialog">
     <span slot="headline">Update Plan</span>
-    <span slot="content" class="block text-left">The plan will be updated with the current session's exercises.</span>
-    <div slot="actions">
-        <AppButton Type="AppButtonType.Text" slot="footer" OnClick="HandleAddAsNewSession">Add as new session</AppButton>
+    <span slot="content" class="block text-left">The plan will be updated with the current session's exercises.
         @if(SessionWithSameNameInPlan){
-            <AppButton Type="AppButtonType.Text" slot="footer" OnClick="HandleUpdateInPlan">
-                Update "@Session.Blueprint.Name"
-            </AppButton>
-        }
+            <span>Would you like to update the existing session <span class="font-bold text-primary">@Session.Blueprint.Name</span>, or add a new session?</span>
+        }</span>
+    <div slot="actions">
+        <div class="flex justify-between flex-grow">
+            <AppButton Type="AppButtonType.Text" slot="footer" OnClick="@(() => _updatePlanDialog?.Close())">Cancel</AppButton>
+            <div>
+                <AppButton Type="AppButtonType.Text" slot="footer" OnClick="HandleAddAsNewSession">Add</AppButton>
+                @if(SessionWithSameNameInPlan){
+                    <AppButton Type="AppButtonType.Text" slot="footer" OnClick="HandleUpdateInPlan">
+                        <span>Update</span>
+                    </AppButton>
+                }
+            </div>
+        </div>
     </div>
 </Dialog>
 
