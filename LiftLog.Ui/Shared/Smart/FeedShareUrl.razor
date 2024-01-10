@@ -23,7 +23,7 @@
         await StringSharer.ShareAsync(shareUrl);
     }
 
-    private static string GetShareUrl(Guid id, RsaPublicKey publicKey, string? name) =>
+    public static string GetShareUrl(Guid id, RsaPublicKey publicKey, string? name) =>
 #if DEBUG
         $"https://0.0.0.0:5001/feed/share?pub={publicKey.SpkiPublicKeyBytes.ToUrlSafeHexString()}&id={id}{(name is null ? "" : $"&name={name}")}";
 #else

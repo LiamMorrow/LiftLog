@@ -93,7 +93,7 @@
             <FollowRequestCardContent FollowRequest=context Accept=@(()=>AcceptFollowRequest(context)) Deny=@(()=>DenyFollowRequest(context)) />
         </VirtualizedCardList>
         <VirtualizedCardList Items=@(FeedState.Value.Followers.Values.ToList()) CardClass="animate-fade-zoom-in">
-            <FollowerCardContent User=context RemoveFollower=@(()=> StartRemoveFollower(context))/>
+            <FollowerCardContent User=context RemoveFollower=@(()=> StartRemoveFollower(context)) ShowFollowBack=@(!FeedState.Value.FollowedUsers.ContainsKey(context.Id)) OnFollowBack=@(()=>RedirectToFollowUserUrl(context))/>
         </VirtualizedCardList>
     </div>
 </div>
@@ -230,6 +230,11 @@
         if(item is SessionFeedItem sessionItem){
             NavigationManager.NavigateTo($"/feed/view-session/{sessionItem.EventId}");
         }
+    }
+
+    private void RedirectToFollowUserUrl(FeedUser user)
+    {
+        NavigationManager.NavigateTo(FeedShareUrl.GetShareUrl(user.Id, user.PublicKey, user.Name));
     }
 
     protected override void Dispose(bool disposing){

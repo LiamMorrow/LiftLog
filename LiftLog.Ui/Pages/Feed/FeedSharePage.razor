@@ -28,10 +28,10 @@
     <div class="text-on-surface flex flex-col justify-center gap-4 p-4 h-full">
         <TextField label="Nickname" Value=@(FeedState.Value.SharedFeedUser.Nickname) OnChange="UpdateNickname" />
         <span class="text-lg"><span class="font-bold text-primary">@ResolvedName</span> wants to share their workouts with you!</span>
-        <span class="text-sm">Would you like to see their workouts in your feed?</span>
-        <div class="grid grid-cols-2 gap-2">
+        <span class="text-sm">Would you like to see their workouts in your feed? <span class="font-bold text-primary">@ResolvedName</span> will need to approve your request on their device.</span>
+        <div class="grid grid-rows-2 gap-2">
+            <AppButton Type=AppButtonType.Primary OnClick=HandleSureClick>Send follow request</AppButton>
             <AppButton Type=AppButtonType.Text OnClick=HandleNoThanksClick>No thanks</AppButton>
-            <AppButton Type=AppButtonType.Primary OnClick=HandleSureClick>Sure!</AppButton>
         </div>
     </div>
 }
@@ -71,7 +71,7 @@ else
             Dispatcher.Dispatch(new NavigateAction("/feed/create-identity?from=" + Uri.EscapeDataString("/feed/share?pub=" + PublicKey + "&id=" + id + "&name=" + Name ?? "")));
         }else
         {
-            Dispatcher.Dispatch(new SetSharedFeedUserAction(FeedUser.FromShared(id, new RsaPublicKey(PublicKey.FromUrlSafeHexString()), Name)));
+            Dispatcher.Dispatch(new SetSharedFeedUserAction(FeedUser.FromShared(id, new RsaPublicKey(PublicKey.FromUrlSafeHexString()), Name) with { Nickname = Name }));
         }
         base.OnInitialized();
     }
