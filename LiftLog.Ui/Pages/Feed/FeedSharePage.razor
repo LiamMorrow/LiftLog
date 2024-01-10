@@ -3,10 +3,25 @@
 @page "/feed/share"
 
 @inject IState<FeedState> FeedState
+@inject IAppPurchaseService AppPurchaseService
+@inject IJSRuntime JSRuntime
 @inject IStringSharer StringSharer
 @inject IDispatcher Dispatcher
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+@if(AppPurchaseService.GetAppStore() == AppStore.Web && phoneAppStore != AppStore.Web)
+{
+<Dialog @ref="_alertWebAppDialog">
+    <span slot="headline">Download App</span>
+    <span slot="content" class="block text-left">This content is better in the app. If you have the app installed and you are seeing this, please update LiftLog in your phone's app store.</span>
+    <div slot="actions">
+        <AppButton Type="AppButtonType.Text" OnClick="()=>{_alertWebAppDialog?.Close();}">Ignore</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="OpenAppStore">Open app store</AppButton>
+    </div>
+</Dialog>
+}
+
 
 @if(FeedState.Value.SharedFeedUser != null)
 {
@@ -41,6 +56,10 @@ else
 
     [SupplyParameterFromQuery(Name="name")]
     public string? Name { get; set; }
+
+    private Dialog? _alertWebAppDialog;
+
+    private AppStore phoneAppStore;
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Subscribe to a feed"));
@@ -55,6 +74,21 @@ else
             Dispatcher.Dispatch(new SetSharedFeedUserAction(FeedUser.FromShared(id, new RsaPublicKey(PublicKey.FromUrlSafeHexString()), Name)));
         }
         base.OnInitialized();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        phoneAppStore = await GetAppStoreFromUserAgent();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if(firstRender)
+        {
+            _alertWebAppDialog?.Open();
+        }
     }
 
     private string ResolvedName => string.IsNullOrEmpty(Name) ? "Anonymous User" : Name;
@@ -85,4 +119,31 @@ else
         Dispatcher.Dispatch(new SetSharedFeedUserAction(FeedState.Value.SharedFeedUser with { Nickname = value }));
     }
 
+    private void  OpenAppStore()
+    {
+        switch(phoneAppStore)
+        {
+            case AppStore.Apple:
+                Dispatcher.Dispatch(new NavigateAction("https://apps.apple.com/au/app/liftlog/id6467372581"));
+                break;
+            case AppStore.Google:
+                Dispatcher.Dispatch(new NavigateAction("https://play.google.com/store/apps/details?id=com.limajuice.liftlog"));
+                break;
+            default:
+                break;
+        }
+    }
+
+    private async Task<AppStore> GetAppStoreFromUserAgent()
+    {
+        var os = await JSRuntime.InvokeAsync<string>("AppUtils.getOs");
+        switch(os){
+            case "iOS":
+                return AppStore.Apple;
+            case "Android":
+                return AppStore.Google;
+            default:
+                return AppStore.Web;
+        }
+    }
 }

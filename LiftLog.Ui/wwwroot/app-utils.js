@@ -203,3 +203,15 @@ AppUtils.setupPullToRefresh = function (elementSelector) {
 AppUtils.destroyPullToRefresh = function () {
     PullToRefresh.destroyAll();
 }
+
+AppUtils.getOs = function () {
+    // Look at user agent to determine OS
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    if (/android/i.test(userAgent)) {
+        return 'Android';
+    }
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+        return 'iOS';
+    }
+    return 'unknown';
+}
