@@ -1,5 +1,5 @@
 using FluentValidation;
-using static LiftLog.Api.Service.AppleAppStorePurchaseVerificationService;
+using LiftLog.Api.Models;
 
 namespace LiftLog.Api.Validators;
 

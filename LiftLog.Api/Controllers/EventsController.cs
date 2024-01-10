@@ -7,11 +7,10 @@ using Microsoft.EntityFrameworkCore;
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
 public class EventsController(UserDataContext db) : ControllerBase
 {
-    [Route("/")]
     [HttpPost]
+    [Route("[controller]")]
     public async Task<IActionResult> GetEvents(
         GetEventsRequest request,
         [FromServices] IValidator<GetEventsRequest> validator

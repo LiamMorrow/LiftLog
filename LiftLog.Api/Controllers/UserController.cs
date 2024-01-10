@@ -9,10 +9,9 @@ using Microsoft.EntityFrameworkCore;
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
 public class UserController(UserDataContext db, PasswordService passwordService) : ControllerBase
 {
-    [Route("/create")]
+    [Route("[controller]/create")]
     [HttpPost]
     public async Task<IActionResult> CreateUser(
         CreateUserRequest request,
@@ -44,7 +43,7 @@ public class UserController(UserDataContext db, PasswordService passwordService)
         return Ok(new CreateUserResponse(password));
     }
 
-    [Route("{id}")]
+    [Route("[controller]/{id}")]
     [HttpGet]
     public async Task<IActionResult> GetUser(Guid id)
     {
@@ -65,7 +64,7 @@ public class UserController(UserDataContext db, PasswordService passwordService)
         );
     }
 
-    [Route("delete")]
+    [Route("[controller]/delete")]
     [HttpPost]
     public async Task<IActionResult> DeleteUser(
         DeleteUserRequest request,
@@ -91,8 +90,8 @@ public class UserController(UserDataContext db, PasswordService passwordService)
         return Ok();
     }
 
-    [Route("/")]
     [HttpPut]
+    [Route("[controller]")]
     public async Task<IActionResult> PutUser(
         PutUserDataRequest request,
         [FromServices] IValidator<PutUserDataRequest> validator

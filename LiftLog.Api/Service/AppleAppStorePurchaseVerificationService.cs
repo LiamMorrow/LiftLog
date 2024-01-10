@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using FluentValidation;
+using LiftLog.Api.Models;
 using static LiftLog.Api.Service.AppleAppStorePurchaseVerificationService;
 
 namespace LiftLog.Api.Service;
@@ -73,12 +74,5 @@ public class AppleAppStorePurchaseVerificationService(
     private record AppStoreReceiptResponse(
         [property: JsonPropertyName("status")] int Status,
         [property: JsonPropertyName("receipt")] AppStoreReceipt Receipt
-    );
-
-    public record AppStoreReceipt(
-        [property: JsonPropertyName("quantity")] string Quantity,
-        [property: JsonPropertyName("product_id")] string ProductId,
-        [property: JsonPropertyName("in_app_ownership_type")] string InAppOwnershipType,
-        [property: JsonPropertyName("bid")] string BundleId
     );
 }

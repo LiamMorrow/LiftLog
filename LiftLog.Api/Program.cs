@@ -7,11 +7,14 @@ using LiftLog.Api.Db;
 using LiftLog.Api.Service;
 using LiftLog.Api.Validators;
 using LiftLog.Lib.Serialization;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddValidatorsFromAssemblyContaining<CreateUserRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateUserRequestValidator>(
+    ServiceLifetime.Singleton
+);
 
 // Add services to the container.
 
@@ -34,12 +37,13 @@ var openAiApiKey =
     ?? throw new Exception("OpenAiApiKey configuration is not set.");
 builder.Services.RegisterGptAiWorkoutPlanner(openAiApiKey);
 
+builder.Services.AddSingleton<PasswordService>();
 builder.Services.AddHttpClient<AppleAppStorePurchaseVerificationService>();
 builder.Services.AddScoped<RateLimitService>();
-builder.Services.AddSingleton<PurchaseVerificationService>();
-builder.Services.AddSingleton<GooglePlayPurchaseVerificationService>();
+builder.Services.AddScoped<PurchaseVerificationService>();
+builder.Services.AddScoped<GooglePlayPurchaseVerificationService>();
 
-builder.Services.AddSingleton(
+builder.Services.AddScoped(
     (service) =>
     {
         var webAuthKey = builder.Configuration.GetValue<string?>("WebAuthApiKey");

@@ -9,12 +9,11 @@ using Microsoft.EntityFrameworkCore;
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
-[Route("follow-secret")]
 public class FollowSecretController(UserDataContext db, PasswordService passwordService)
     : ControllerBase
 {
     [HttpPut]
-    [Route("/")]
+    [Route("follow-secret")]
     public async Task<IActionResult> PutFollowSecret(
         PutUserFollowSecretRequest request,
         [FromServices] IValidator<PutUserFollowSecretRequest> validator
@@ -46,7 +45,7 @@ public class FollowSecretController(UserDataContext db, PasswordService password
     }
 
     [HttpPost]
-    [Route("/delete")]
+    [Route("follow-secret/delete")]
     public async Task<IActionResult> DeleteFollowSecret(
         DeleteUserFollowSecretRequest request,
         [FromServices] IValidator<DeleteUserFollowSecretRequest> validator

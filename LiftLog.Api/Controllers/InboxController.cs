@@ -9,11 +9,10 @@ using Microsoft.EntityFrameworkCore;
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
 public class InboxController(UserDataContext db) : ControllerBase
 {
     [HttpPut]
-    [Route("/")]
+    [Route("[controller]")]
     public async Task<IActionResult> PutInboxItem(
         PutInboxMessageRequest request,
         [FromServices] IValidator<PutInboxMessageRequest> validator
@@ -43,7 +42,7 @@ public class InboxController(UserDataContext db) : ControllerBase
     }
 
     [HttpPost]
-    [Route("/")]
+    [Route("[controller]")]
     public async Task<IActionResult> GetInboxItems(
         GetInboxMessagesRequest request,
         [FromServices] PasswordService passwordService,

@@ -8,11 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
 public class EventController(UserDataContext db, PasswordService passwordService) : ControllerBase
 {
-    [Route("/")]
     [HttpPut]
+    [Route("[controller]")]
     public async Task<IActionResult> PutEvent(
         PutUserEventRequest request,
         [FromServices] IValidator<PutUserEventRequest> validator

@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
-[Route("ai")]
 public class GenerateAiWorkoutController(
     IAiWorkoutPlanner aiWorkoutPlanner,
     RateLimitService rateLimitService,
@@ -20,7 +19,7 @@ public class GenerateAiWorkoutController(
     ILogger<GenerateAiWorkoutController> logger
 ) : ControllerBase
 {
-    [Route("workout")]
+    [Route("/ai/workout")]
     [HttpPost]
     public async Task<IActionResult> GenerateAiWorkout(
         [FromHeader(Name = "Authorization")] string? authorization,
@@ -47,7 +46,7 @@ public class GenerateAiWorkoutController(
         return Ok(plan);
     }
 
-    [Route("session")]
+    [Route("/ai/session")]
     [HttpPost]
     public async Task<IActionResult> RunAiSession(
         [FromHeader(Name = "Authorization")] string? authorization,
@@ -80,14 +79,14 @@ public class GenerateAiWorkoutController(
         if (headerAuth is null && bodyAuth is null)
         {
             logger.LogWarning("Invalid request. Missing Authorization");
-            return Forbid();
+            return StatusCode((int)HttpStatusCode.Forbidden);
         }
 
         var authorizationParts = (bodyAuth ?? headerAuth)!.Split(" ");
         if (authorizationParts.Length != 2)
         {
             logger.LogWarning("Invalid request Incorrect authorization format");
-            return Forbid();
+            return StatusCode((int)HttpStatusCode.Forbidden);
         }
 
         var appStore = JsonSerializer.Deserialize<AppStore>(
@@ -99,7 +98,7 @@ public class GenerateAiWorkoutController(
         if (!await purchaseVerificationService.IsValidPurchaseToken(appStore, proToken))
         {
             logger.LogWarning("Invalid request. Bad Auth.");
-            return Forbid();
+            return StatusCode((int)HttpStatusCode.Forbidden);
         }
 
         var rateLimitResult = await rateLimitService.GetRateLimitAsync(appStore, proToken);
