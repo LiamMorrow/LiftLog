@@ -24,7 +24,7 @@ public class ApiBasedAiWorkoutPlanner(
 
         var request = new HttpRequestMessage(
             HttpMethod.Post,
-            "https://liftlog.azurewebsites.net/api/GenerateAiWorkout?"
+            "https://api.liftlog.online/ai/workout?"
         );
         request.Content = new StringContent(
             JsonSerializer.Serialize(
@@ -64,7 +64,7 @@ public class ApiBasedAiWorkoutPlanner(
 
         var request = new HttpRequestMessage(
             HttpMethod.Post,
-            "https://liftlog.azurewebsites.net/api/GenerateAiSession?"
+            "https://api.liftlog.online/ai/session?"
         );
         request.Content = new StringContent(
             JsonSerializer.Serialize(
