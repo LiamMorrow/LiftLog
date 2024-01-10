@@ -1,5 +1,7 @@
 @using Fluxor
 @using LiftLog.Ui.Store.App
+@using ApexCharts;
+
 @inherits Fluxor.Blazor.Web.Components.FluxorLayout
 @inject IJSRuntime Js
 @inject IState<AppState> AppState
@@ -31,6 +33,22 @@
 </div>
 </CascadingValue>
 </CascadingValue>
+
+<div class="hidden">
+ <ApexChart
+        TItem="DummyChartType"
+        Title=""
+        XAxisType="XAxisType.Datetime">
+
+        <ApexPointSeries TItem="DummyChartType"
+                            Items="new DummyChartType[0]"
+                            Name="Placeholder to load apex charts so it doesn't freeze on load"
+                            SeriesType="SeriesType.Line"
+                            XValue="@(e => DateTime.Now)"
+                            YAggregate="@(e => e.Max(e => e.X))"
+                            OrderByDescending="e=>e.X" />
+    </ApexChart>
+</div>
 
 <HeadContent>
     <title>@AppState.Value.Title</title>
@@ -104,4 +122,6 @@
         return @<IconButton Icon="arrow_back" Type=IconButtonType.Standard OnClick="() => NavigationManager.NavigateTo(backButtonUrl)" />;
     }
 
+
+    private record DummyChartType(int X);
 }
