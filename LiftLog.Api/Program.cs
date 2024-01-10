@@ -43,6 +43,8 @@ builder.Services.AddScoped<RateLimitService>();
 builder.Services.AddScoped<PurchaseVerificationService>();
 builder.Services.AddScoped<GooglePlayPurchaseVerificationService>();
 
+builder.Services.AddHostedService<CleanupExpiredDataHostedService>();
+
 builder.Services.AddScoped(
     (service) =>
     {
