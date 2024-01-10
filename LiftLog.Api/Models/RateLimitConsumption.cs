@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace LiftLog.Api.Models;
 
 public class RateLimitConsumption

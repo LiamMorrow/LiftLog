@@ -1,4 +1,3 @@
-using System.IO.Compression;
 using FluentValidation;
 using LiftLog.Lib.Models;
 

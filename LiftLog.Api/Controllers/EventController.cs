@@ -4,7 +4,6 @@ using LiftLog.Api.Models;
 using LiftLog.Api.Service;
 using LiftLog.Lib.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LiftLog.Api.Controllers;
 

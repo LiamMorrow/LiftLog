@@ -1,13 +1,11 @@
 using System.Net;
 using System.Text.Json;
 using FluentValidation;
-using Google.Apis.AndroidPublisher.v3.Data;
 using LiftLog.Api.Service;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
 using LiftLog.Lib.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Api.Controllers;
 

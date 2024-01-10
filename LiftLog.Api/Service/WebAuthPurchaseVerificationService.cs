@@ -1,6 +1,3 @@
-using System.Reflection.Emit;
-using LiftLog.Lib.Models;
-
 namespace LiftLog.Api.Service;
 
 public class WebAuthPurchaseVerificationService(string? webAuthKey)
