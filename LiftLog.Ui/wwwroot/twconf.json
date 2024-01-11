@@ -65,7 +65,11 @@
         "surface-container-low": "rgb(var(--color-surface-container-low) / <alpha-value>)",
         "surface-container-highest": "rgb(var(--color-surface-container-highest) / <alpha-value>)",
         "outline": "rgb(var(--color-outline) / <alpha-value>)",
-        "outline-variant": "rgb(var(--color-outline-variant) / <alpha-value>)"
+        "outline-variant": "rgb(var(--color-outline-variant) / <alpha-value>)",
+        "error": "rgb(var(--color-error) / <alpha-value>)",
+        "on-error": "rgb(var(--color-on-error) / <alpha-value>)",
+        "error-container": "rgb(var(--color-error-container) / <alpha-value>)",
+        "on-error-container": "rgb(var(--color-on-error-container) / <alpha-value>)"
       },
       "borderRadius": {
         "card": "20px"

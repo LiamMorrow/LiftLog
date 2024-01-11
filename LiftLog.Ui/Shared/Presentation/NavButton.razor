@@ -1,4 +1,10 @@
 <button class="relative flex flex-col items-center" @onclick="Navigate">
+    @if(!IsActive && ShowBadge)
+    {
+        <div class="absolute top-1 right-3 z-20">
+            <div class="w-2 h-2 bg-error rounded-full"></div>
+        </div>
+    }
     <span class="w-16 pt-1 rounded-full @ClassForActiveRouteIcon relative">
         <span class="relative z-10"><md-icon filled="@IsActive">@Icon</md-icon></span>
         <span class="
@@ -35,6 +41,9 @@
     [EditorRequired]
     [Parameter]
     public string Icon { get; set; } = null!;
+
+    [Parameter]
+    public bool ShowBadge { get; set; }
 
 
     private string ClassForActiveRouteIcon => IsActive

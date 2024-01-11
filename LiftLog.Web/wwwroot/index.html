@@ -51,9 +51,10 @@
       // on load try to redirect to the app via liftlog uri scheme
       window.onload = function () {
         try {
-          window.location.href = window.location.href
-            .replace("https://", "liftlog://")
-            .replace("http://", "liftlog://");
+          if (window.location.href.includes("app.liftlog.online"))
+            window.location.href = window.location.href
+              .replace("https://", "liftlog://")
+              .replace("http://", "liftlog://");
         } catch (e) {
           // Not an app
         }

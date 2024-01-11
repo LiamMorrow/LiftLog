@@ -3,6 +3,7 @@
 @inject NavigationManager NavigationManager
 @inject IState<CurrentSessionState> CurrentSessionState
 @inject IState<AppState> AppState
+@inject IState<FeedState> FeedState
 @inject IState<SettingsState> SettingsState
 @inject IThemeProvider ThemeProvider
 @inject InsetsManager InsetsManager
@@ -13,7 +14,7 @@
     <div class="flex justify-around py-3">
         <NavButton IsActive=@IsRouteMatch("(/$|^$|/session/?)") Navigate="NavigateToWorkout" Icon="fitness_center" Text="Workout"></NavButton>
         @if(SettingsState.Value.ShowFeed){
-            <NavButton IsActive=@IsRouteMatch("/feed(/?.*)") Navigate="NavigateToFeed" Icon="diversity_3" Text="Feed" ></NavButton>
+            <NavButton IsActive=@IsRouteMatch("/feed(/?.*)") Navigate="NavigateToFeed" Icon="diversity_3" Text="Feed" ShowBadge=@(FeedState.Value.FollowRequests.Any()) ></NavButton>
         }
         <NavButton IsActive=@IsRouteMatch("/stats(/?.*)") Navigate="NavigateToStats" Icon="show_chart" Text="Stats" ></NavButton>
         <NavButton IsActive=@IsRouteMatch("/history(/?.*)") Navigate="NavigateToHistory" Icon="history" Text="History" ></NavButton>

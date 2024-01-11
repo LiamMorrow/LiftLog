@@ -33,7 +33,12 @@
             --color-surface-container-low: @GetColorStr(_scheme.SurfaceContainerLow);
             --color-outline: @GetColorStr(_scheme.Outline);
             --color-outline-variant: @GetColorStr(_scheme.OutlineVariant);
-    ;
+            --color-error: @GetColorStr(_scheme.Error);
+            --color-error-container: @GetColorStr(_scheme.ErrorContainer);
+            --color-on-error: @GetColorStr(_scheme.OnError);
+            --color-on-error-container: @GetColorStr(_scheme.OnErrorContainer);
+
+
             --md-sys-color-primary: rgb(@GetColorStr(_scheme.Primary));
             --md-sys-color-on-primary: rgb(@GetColorStr(_scheme.OnPrimary));
             --md-sys-color-primary-container: rgb(@GetColorStr(_scheme.PrimaryContainer));
@@ -70,6 +75,8 @@
             --md-sys-color-surface-container-highest: rgb(@GetColorStr(_scheme.SurfaceContainerHighest));
             --md-sys-color-surface-dim: rgb(@GetColorStr(_scheme.SurfaceDim));
             --md-sys-color-shadow: rgb(@GetColorStr(_scheme.Shadow));
+
+
             --md-outlined-button-label-text-type: 'Roboto Flex';
 
             /* We put tabs in the main header, which animates its change of colour, we can just make the bg transparent to inherit it */
