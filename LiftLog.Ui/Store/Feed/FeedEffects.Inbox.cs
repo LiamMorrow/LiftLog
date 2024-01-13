@@ -28,6 +28,10 @@ public partial class FeedEffects
         if (!inboxItemsResponse.IsSuccess)
         {
             // TODO handle properly
+            logger.LogError(
+                "Failed to fetch inbox items with error {Error}",
+                inboxItemsResponse.Error
+            );
             return;
         }
 

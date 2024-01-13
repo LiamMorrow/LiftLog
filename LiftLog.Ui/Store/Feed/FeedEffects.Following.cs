@@ -45,6 +45,11 @@ public partial class FeedEffects(
         {
             dispatcher.Dispatch(new PutFollowedUsersAction(action.FeedUser));
         }
+        else
+        {
+            // TODO handle properly
+            logger.LogError("Failed to request follow user with error {Error}", result.Error);
+        }
     }
 
     [EffectMethod]
@@ -136,6 +141,10 @@ public partial class FeedEffects(
             if (!followSecretResponse.IsSuccess)
             {
                 // TODO handle properly
+                logger.LogError(
+                    "Failed to accept follow request with error {Error}",
+                    followSecretResponse.Error
+                );
                 return;
             }
 
@@ -190,7 +199,10 @@ public partial class FeedEffects(
                     && deleteFollowSecretResponse.Error.Type != ApiErrorType.NotFound
                 )
                 {
-                    // TODO handle properly
+                    logger.LogError(
+                        "Failed to delete follow secret with error {Error}",
+                        deleteFollowSecretResponse.Error
+                    );
                     return;
                 }
             }

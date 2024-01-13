@@ -35,6 +35,7 @@ public partial class FeedEffects
         if (!identityResult.IsSuccess)
         {
             // TODO handle properly
+            logger.LogError("Failed to create user with error {Error}", identityResult.Error);
             return;
         }
 
@@ -68,6 +69,7 @@ public partial class FeedEffects
             if (!result.IsSuccess)
             {
                 // TODO handle properly
+                logger.LogError("Failed to update user with error {Error}", result.Error);
                 return;
             }
             dispatcher.Dispatch(new PutFeedIdentityAction(result.Data));
@@ -115,6 +117,7 @@ public partial class FeedEffects
                     response.Error
                 );
                 // TODO handle properly
+                logger.LogError("Failed to delete user with error {Error}", response.Error);
                 return;
             }
             dispatcher.Dispatch(new PutFeedIdentityAction(null));

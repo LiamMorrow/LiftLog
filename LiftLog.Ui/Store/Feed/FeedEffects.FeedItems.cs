@@ -47,6 +47,11 @@ public partial class FeedEffects
         if (!usersResponse.IsSuccess || !feedResponse.IsSuccess)
         {
             // TODO handle properly
+            logger.LogError(
+                "Failed to request follow user with error {UserResponse} {FeedResponse}",
+                usersResponse,
+                feedResponse
+            );
             return;
         }
         var feedEvents = feedResponse.Data.Events;
