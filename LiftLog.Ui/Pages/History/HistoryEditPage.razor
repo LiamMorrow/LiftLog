@@ -13,15 +13,6 @@
 @inject IState<SettingsState> SettingsState;
 @inject NavigationManager NavigationManager
 
-@{
-    this.SubscribeToAction<RehydrateSessionAction>(state =>
-        {
-            if (CurrentSessionState.Value.HistorySession is null)
-            {
-                NavigationManager.NavigateTo("/history");
-            }
-        });
-}
 @if (CurrentSessionState.Value.HistorySession is not null)
 {
     <div class="flex w-full my-2">
@@ -33,8 +24,6 @@
         OnChange=SetSessionDate
         type="date" />
         </div>
-
-    Init(CurrentSessionState.Value.HistorySession);
     <SessionComponent
         ShowRestTimer=false
         CycleRepcountForExercise=CycleRepcountForExercise
@@ -68,7 +57,6 @@
         if(!initted)
         {
             initted = true;
-            Dispatcher.Dispatch(new SetPageTitleAction(session.Blueprint.Name));
         }
     }
 
@@ -160,6 +148,13 @@
         Dispatcher.Dispatch(new SetPageTitleAction("Session"));
         Dispatcher.Dispatch(new FetchExerciseNamesAction());
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/history"));
+        if (CurrentSessionState.Value.HistorySession is null)
+        {
+                NavigationManager.NavigateTo("/history");
+        }else
+        {
+            Dispatcher.Dispatch(new SetPageTitleAction(CurrentSessionState.Value.HistorySession.Blueprint.Name));
+        }
         base.OnInitialized();
     }
 }

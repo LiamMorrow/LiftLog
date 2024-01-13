@@ -4,6 +4,7 @@ using LiftLog.Lib.Models;
 namespace LiftLog.Ui.Store.Settings;
 
 public record SettingsState(
+    bool IsHydrated,
     AiWorkoutAttributes? AiWorkoutAttributes,
     bool IsGeneratingAiPlan,
     string? AiPlanError,

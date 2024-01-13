@@ -10,5 +10,11 @@ public class ProgramFeature : Feature<ProgramState>
     public override string GetName() => nameof(ProgramFeature);
 
     protected override ProgramState GetInitialState() =>
-        new(ImmutableList.Create<SessionBlueprint>(), [], true, []);
+        new(
+            IsHydrated: false,
+            SessionBlueprints: [],
+            UpcomingSessions: [],
+            IsLoadingUpcomingSessions: true,
+            ExerciseNames: []
+        );
 }

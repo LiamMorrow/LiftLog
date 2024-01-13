@@ -8,6 +8,7 @@ public class SettingsFeature : Feature<SettingsState>
 
     protected override SettingsState GetInitialState() =>
         new(
+            IsHydrated: false,
             AiWorkoutAttributes: null,
             IsGeneratingAiPlan: false,
             AiPlanError: null,

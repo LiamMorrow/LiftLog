@@ -9,6 +9,7 @@ public class FeedFeature : Feature<FeedState>
 
     protected override FeedState GetInitialState() =>
         new(
+            IsHydrated: false,
             IsLoadingIdentity: false,
             Identity: null,
             Feed: [],

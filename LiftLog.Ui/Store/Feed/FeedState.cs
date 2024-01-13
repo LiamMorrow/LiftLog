@@ -7,6 +7,7 @@ using LiftLog.Lib.Services;
 namespace LiftLog.Ui.Store.Feed;
 
 public record FeedState(
+    bool IsHydrated,
     bool IsLoadingIdentity,
     FeedIdentity? Identity,
     ImmutableListValue<FeedItem> Feed,

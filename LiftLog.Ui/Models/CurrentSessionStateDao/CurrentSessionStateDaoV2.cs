@@ -24,5 +24,10 @@ internal partial class CurrentSessionStateDaoV2
         );
 
     public CurrentSessionState ToModel() =>
-        new(WorkoutSession?.ToModel(), HistorySession?.ToModel(), LatestSetTimerNotificationId);
+        new(
+            IsHydrated: true,
+            WorkoutSession?.ToModel(),
+            HistorySession?.ToModel(),
+            LatestSetTimerNotificationId
+        );
 }

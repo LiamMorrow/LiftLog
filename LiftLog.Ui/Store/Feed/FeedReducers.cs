@@ -6,6 +6,13 @@ namespace LiftLog.Ui.Store.Feed;
 public static class FeedReducers
 {
     [ReducerMethod]
+    public static FeedState SetIsHydrated(FeedState state, SetFeedIsHydratedAction action) =>
+        state with
+        {
+            IsHydrated = true
+        };
+
+    [ReducerMethod]
     public static FeedState PutFeedIdentity(FeedState state, PutFeedIdentityAction action) =>
         state with
         {

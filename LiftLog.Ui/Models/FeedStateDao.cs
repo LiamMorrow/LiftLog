@@ -140,6 +140,7 @@ internal partial class FeedStateDaoV1
         value is null
             ? null
             : new FeedState(
+                IsHydrated: true,
                 IsLoadingIdentity: false,
                 Identity: value.Identity,
                 Feed: value.FeedItems.Select(x => (FeedItem?)x).WhereNotNull().ToImmutableList(),

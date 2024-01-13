@@ -7,6 +7,12 @@ namespace LiftLog.Ui.Store.CurrentSession;
 public static class CurrentSessionReducers
 {
     [ReducerMethod]
+    public static CurrentSessionState SetCurrentSessionIsHydrated(
+        CurrentSessionState state,
+        SetCurrentSessionHydratedAction action
+    ) => state with { IsHydrated = true };
+
+    [ReducerMethod]
     public static CurrentSessionState SetActiveSessionDate(
         CurrentSessionState state,
         SetActiveSessionDateAction action

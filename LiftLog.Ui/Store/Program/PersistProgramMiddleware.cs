@@ -15,9 +15,9 @@ public class PersistProgramMiddleware(ICurrentProgramRepository programRepositor
         var programs = await programRepository.GetSessionsInProgramAsync();
         store
             .Features[nameof(ProgramFeature)]
-            .RestoreState(new ProgramState(programs, [], true, []));
+            .RestoreState(new ProgramState(true, programs, [], true, []));
 
-        dispatch.Dispatch(new RehydrateProgramAction());
+        dispatch.Dispatch(new SetProgramIsHydratedAction());
     }
 
     public override void AfterDispatch(object action)
@@ -28,6 +28,6 @@ public class PersistProgramMiddleware(ICurrentProgramRepository programRepositor
             return;
         }
 
-        programRepository.PersistSessionsInProgramAsync(currentState.SessionBlueprints);
+        _ = programRepository.PersistSessionsInProgramAsync(currentState.SessionBlueprints);
     }
 }

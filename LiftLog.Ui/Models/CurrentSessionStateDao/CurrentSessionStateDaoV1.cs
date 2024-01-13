@@ -24,6 +24,7 @@ internal record CurrentSessionStateDaoV1(
 
     public CurrentSessionState ToModel() =>
         new(
+            IsHydrated: true,
             WorkoutSession: WorkoutSession?.ToModel(),
             HistorySession: HistorySession?.ToModel(),
             LatestSetTimerNotificationId: LatestSetTimerNotificationId

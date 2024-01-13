@@ -3,6 +3,8 @@ using LiftLog.Lib.Models;
 
 namespace LiftLog.Ui.Store.Program;
 
+public record SetProgramIsHydratedAction();
+
 public record FetchUpcomingSessionsAction();
 
 public record FetchExerciseNamesAction();
@@ -16,8 +18,6 @@ public record SetProgramSessionsAction(ImmutableListValue<SessionBlueprint> Sess
 public record SetProgramSessionAction(int SessionIndex, SessionBlueprint SessionBlueprint);
 
 public record AddProgramSessionAction(SessionBlueprint SessionBlueprint);
-
-public record RehydrateProgramAction();
 
 public record MoveSessionBlueprintUpInProgramAction(SessionBlueprint SessionBlueprint);
 

@@ -14,18 +14,8 @@
 @inject NavigationManager NavigationManager
 @inject ILogger<SessionPage> logger
 
-@{
-    this.SubscribeToAction<RehydrateSessionAction>(state =>
-    {
-        if (CurrentSessionState.Value.WorkoutSession is null)
-        {
-            NavigationManager.NavigateTo("/");
-        }
-    });
-}
 @if (CurrentSessionState.Value.WorkoutSession is not null)
 {
-    InvokeAsync(() => Init(CurrentSessionState.Value.WorkoutSession));
     <SessionComponent
         CycleRepcountForExercise=CycleRepcountForExercise
         ClearRepCountForExercise="ClearRepCountForExercise"
@@ -53,20 +43,7 @@
 @code
 {
     private ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>> previouslyCompleted = ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>>.Empty;
-    private bool initted = false;
-    private async Task Init(Session session)
-    {
-        if (!initted)
-        {
-            var sw = System.Diagnostics.Stopwatch.StartNew();
-            initted = true;
-            previouslyCompleted = await ProgressRepository.GetLatestOrderedRecordedExercisesAsync();
-            Dispatcher.Dispatch(new SetPageTitleAction(session.Blueprint.Name));
-            await InvokeAsync(StateHasChanged);
-            sw.Stop();
-            logger.LogInformation($"Session init initialized completed in {sw.ElapsedMilliseconds}ms");
-        }
-    }
+
     private void ClearRepCountForExercise(int exerciseIndex, int setIndex)
     {
         Dispatcher.Dispatch(new ClearExerciseRepsAction(SessionTarget.WorkoutSession, exerciseIndex, setIndex));
@@ -159,12 +136,23 @@
         NavigationManager.NavigateTo("/");
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Session"));
         Dispatcher.Dispatch(new FetchExerciseNamesAction());
         Dispatcher.Dispatch(new SetReopenCurrentSessionAction(true));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/"));
-        base.OnInitialized();
+        if (CurrentSessionState.Value.WorkoutSession is null)
+        {
+            NavigationManager.NavigateTo("/");
+        }else
+        {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            previouslyCompleted = await ProgressRepository.GetLatestOrderedRecordedExercisesAsync();
+            Dispatcher.Dispatch(new SetPageTitleAction(CurrentSessionState.Value.WorkoutSession.Blueprint.Name));
+            sw.Stop();
+            logger.LogInformation($"Session init initialized completed in {sw.ElapsedMilliseconds}ms");
+        }
+        await base.OnInitializedAsync();
     }
 }

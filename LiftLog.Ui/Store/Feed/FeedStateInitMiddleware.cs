@@ -24,5 +24,6 @@ public class FeedStateInitMiddleware(IKeyValueStore keyValueStore) : Middleware
                 }
             }
         }
+        dispatch.Dispatch(new SetFeedIsHydratedAction());
     }
 }

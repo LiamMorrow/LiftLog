@@ -7,6 +7,13 @@ namespace LiftLog.Ui.Store.Program;
 public static class ProgramReducers
 {
     [ReducerMethod]
+    public static ProgramState RehydrateProgram(ProgramState state, SetProgramIsHydratedAction _) =>
+        state with
+        {
+            IsHydrated = true
+        };
+
+    [ReducerMethod]
     public static ProgramState SetExerciseNames(
         ProgramState state,
         SetExerciseNamesAction action

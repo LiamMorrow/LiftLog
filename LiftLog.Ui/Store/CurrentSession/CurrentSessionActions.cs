@@ -9,6 +9,8 @@ public enum SessionTarget
     HistorySession
 }
 
+public record SetCurrentSessionHydratedAction();
+
 public record SetActiveSessionDateAction(SessionTarget Target, DateOnly Date);
 
 public record CycleExerciseRepsAction(SessionTarget Target, int ExerciseIndex, int SetIndex);
@@ -51,8 +53,6 @@ public record SetCurrentSessionFromBlueprintAction(
 );
 
 public record PersistCurrentSessionAction(SessionTarget Target);
-
-public record RehydrateSessionAction();
 
 public record NotifySetTimerAction(SessionTarget Target);
 

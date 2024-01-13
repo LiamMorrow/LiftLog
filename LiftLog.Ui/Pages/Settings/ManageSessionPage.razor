@@ -12,18 +12,7 @@
 @inject IState<ProgramState> ProgramState
 @inject IDispatcher Dispatcher
 
-@if (SessionEditorState.Value.SessionBlueprint is null)
-{
-    SubscribeToAction<RehydrateProgramAction>(_ =>
-    {
-        if (ProgramState.Value.SessionBlueprints.Count - 1 < SessionIndex)
-        {
-            BackToManageWorkouts();
-        }
-        Dispatcher.Dispatch(new SetEditingSessionAction(ProgramState.Value.SessionBlueprints[SessionIndex]));
-    });
-}
-else
+@if (SessionEditorState.Value.SessionBlueprint is not null)
 {
     <div class="bg-surface">
         <TextField
@@ -105,6 +94,11 @@ else
         Dispatcher.Dispatch(new SetPageTitleAction("Manage Session"));
         Dispatcher.Dispatch(new FetchExerciseNamesAction());
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings/manage-workouts"));
+        if (ProgramState.Value.SessionBlueprints.Count - 1 < SessionIndex)
+        {
+            BackToManageWorkouts();
+        }
+        Dispatcher.Dispatch(new SetEditingSessionAction(ProgramState.Value.SessionBlueprints[SessionIndex]));
         base.OnInitialized();
     }
 
