@@ -25,8 +25,8 @@
 
     public static string GetShareUrl(Guid id, RsaPublicKey publicKey, string? name) =>
 #if DEBUG
-        $"https://0.0.0.0:5001/feed/share?pub={publicKey.SpkiPublicKeyBytes.ToUrlSafeHexString()}&id={id}{(name is null ? "" : $"&name={name}")}";
+        $"https://0.0.0.0:5001/feed/share?pub={publicKey.SpkiPublicKeyBytes.ToUrlSafeHexString()}&id={id}{(name is null ? "" : $"&name={Uri.EscapeDataString(name)}")}";
 #else
-        $"https://app.liftlog.online/feed/share?pub={publicKey.SpkiPublicKeyBytes.ToUrlSafeHexString()}&id={id}{(name is null ? "" : $"&name={name}")}";
+        $"https://app.liftlog.online/feed/share?pub={publicKey.SpkiPublicKeyBytes.ToUrlSafeHexString()}&id={id}{(name is null ? "" : $"&name={Uri.EscapeDataString(name)}")}";
 #endif
 }

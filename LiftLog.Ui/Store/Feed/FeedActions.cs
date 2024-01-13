@@ -29,7 +29,7 @@ public record ReplaceFeedItemsAction(ImmutableListValue<FeedItem> Items);
 
 public record DeleteFeedIdentityAction();
 
-public record RequestFollowUserAction(FeedUser FeedUser);
+public record RequestFollowUserAction();
 
 public record FetchInboxItemsAction();
 

@@ -35,15 +35,17 @@ public partial class FeedEffects(
     )
     {
         var identity = state.Value.Identity;
-        if (identity == null)
+        if (identity == null || state.Value.SharedFeedUser == null)
         {
             return;
         }
-        var result = await feedFollowService.RequestToFollowAUserAsync(identity, action.FeedUser);
+        var sharedFeedUser = state.Value.SharedFeedUser;
+        var result = await feedFollowService.RequestToFollowAUserAsync(identity, sharedFeedUser);
 
         if (result.IsSuccess)
         {
-            dispatcher.Dispatch(new PutFollowedUsersAction(action.FeedUser));
+            dispatcher.Dispatch(new PutFollowedUsersAction(sharedFeedUser));
+            dispatcher.Dispatch(new SetSharedFeedUserAction(null));
         }
         else
         {

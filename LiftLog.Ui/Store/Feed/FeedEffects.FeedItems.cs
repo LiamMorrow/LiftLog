@@ -21,24 +21,23 @@ public partial class FeedEffects
         IDispatcher dispatcher
     )
     {
-        var followedUsers = state.Value.FollowedUsers;
-        if (followedUsers.IsEmpty)
+        var originalFollowedUsers = state.Value.FollowedUsers;
+        var followedUsersWithFollowSecret = originalFollowedUsers
+            .Where(x => x.Value.FollowSecret is not null)
+            .Select(x => new GetUserEventRequest(x.Key, x.Value.FollowSecret!));
+        if (!followedUsersWithFollowSecret.Any())
         {
             return;
         }
         var feedResponseTask = feedApiService.GetUserEventsAsync(
             new GetEventsRequest(
-                Users: followedUsers
-                    .Where(x => x.Value.FollowSecret is not null)
-                    .Select(x => new GetUserEventRequest(x.Key, x.Value.FollowSecret!))
-                    .ToArray(),
+                Users: [.. followedUsersWithFollowSecret],
                 Since: state.Value.Feed.MaxBy(x => x.Timestamp)?.Timestamp
                     ?? DateTimeOffset.MinValue
             )
         );
-        var originalFollowedUsers = followedUsers;
         var userResponseTask = feedApiService.GetUsersAsync(
-            new GetUsersRequest(originalFollowedUsers.Keys.ToArray())
+            new GetUsersRequest(followedUsersWithFollowSecret.Select(x => x.UserId).ToArray())
         );
 
         var feedResponse = await feedResponseTask;
@@ -48,7 +47,7 @@ public partial class FeedEffects
         {
             // TODO handle properly
             logger.LogError(
-                "Failed to request follow user with error {UserResponse} {FeedResponse}",
+                "Failed to fetch session feed items UserResponse:{UserResponse} FeedResponse:{FeedResponse}",
                 usersResponse,
                 feedResponse
             );
@@ -76,6 +75,11 @@ public partial class FeedEffects
             )
         )
             .WhereNotNull()
+            .Concat(
+                state
+                    .Value.FollowedUsers.Where(x => x.Value.FollowSecret is null)
+                    .Select(x => x.Value)
+            )
             .Where(x => !invalidFollowSecrets.Contains(x.FollowSecret))
             .ToImmutableList();
         dispatcher.Dispatch(new ReplaceFeedFollowedUsersAction(newUsers));

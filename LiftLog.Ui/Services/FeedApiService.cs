@@ -198,7 +198,7 @@ public record ApiResult<T> : ApiResult
     public T? Data { get; }
 
     [MemberNotNullWhen(true, nameof(Data))]
-    public new bool IsSuccess => Error is null;
+    public override bool IsSuccess => Error is null;
 
     public ApiResult(T data)
         : base(default(ApiError))
@@ -215,7 +215,7 @@ public record ApiResult<T> : ApiResult
 public record ApiResult(ApiError? Error)
 {
     [MemberNotNullWhen(false, nameof(Error))]
-    public bool IsSuccess => Error is null;
+    public virtual bool IsSuccess => Error is null;
 
     public static ApiResult<T> Success<T>(T data) => new ApiResult<T>(data);
 }
