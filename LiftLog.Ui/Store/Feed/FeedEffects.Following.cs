@@ -25,7 +25,6 @@ public partial class FeedEffects(
     FeedFollowService feedFollowService,
     FeedIdentityService feedIdentityService,
     IEncryptionService encryptionService,
-    IKeyValueStore keyValueStore,
     ILogger<FeedEffects> logger
 )
 {
@@ -82,7 +81,6 @@ public partial class FeedEffects(
     [EffectMethod]
     public async Task UnfollowFeedUser(UnfollowFeedUserAction action, IDispatcher dispatcher)
     {
-        await PersistFeedState();
         var identity = state.Value.Identity;
         if (identity is null)
         {
@@ -199,45 +197,6 @@ public partial class FeedEffects(
             dispatcher.Dispatch(new RemoveFollowerAction(action.User));
         });
 
-    [EffectMethod]
-    public Task PutFeedUser(PutFollowedUsersAction action, IDispatcher dispatcher)
-    {
-        return PersistFeedState();
-    }
-
-    [EffectMethod]
-    public Task ReplaceFeedUsers(ReplaceFeedFollowedUsersAction action, IDispatcher dispatcher)
-    {
-        return PersistFeedState();
-    }
-
-    [EffectMethod]
-    public Task AppendNewFollowRequests(
-        AppendNewFollowRequestsAction action,
-        IDispatcher dispatcher
-    )
-    {
-        return PersistFeedState();
-    }
-
-    [EffectMethod]
-    public Task ProcessFollowResponses(RemoveFollowerAction action, IDispatcher dispatcher)
-    {
-        return PersistFeedState();
-    }
-
-    [EffectMethod]
-    public Task AddFollowerAction(AddFollowerAction action, IDispatcher dispatcher)
-    {
-        return PersistFeedState();
-    }
-
-    [EffectMethod]
-    public Task RemoveFollowRequestAction(RemoveFollowRequestAction action, IDispatcher dispatcher)
-    {
-        return PersistFeedState();
-    }
-
     private async Task<InboxMessageDao?> DecryptIfValid(
         GetInboxMessageResponse inboxMessage,
         RsaPrivateKey privateKey
@@ -256,14 +215,5 @@ public partial class FeedEffects(
             logger.LogError(e, "Failed to decrypt inbox message");
             return null;
         }
-    }
-
-    private async Task PersistFeedState()
-    {
-        await keyValueStore.SetItemAsync($"{FeedStateInitMiddleware.StorageKey}Version", "1");
-        await keyValueStore.SetItemAsync(
-            FeedStateInitMiddleware.StorageKey,
-            ((FeedStateDaoV1)state.Value).ToByteArray()
-        );
     }
 }

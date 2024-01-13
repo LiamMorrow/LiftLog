@@ -131,30 +131,6 @@ public partial class FeedEffects
         }
     }
 
-    [EffectMethod]
-    public Task ReplaceFeedItems(ReplaceFeedItemsAction action, IDispatcher dispatcher)
-    {
-        return PersistFeedState();
-    }
-
-    [EffectMethod]
-    public Task RemoveUnpublishedSessionId(
-        RemoveUnpublishedSessionIdAction action,
-        IDispatcher dispatcher
-    )
-    {
-        return PersistFeedState();
-    }
-
-    [EffectMethod]
-    public Task AddUnpublishedSessionId(
-        AddUnpublishedSessionIdAction action,
-        IDispatcher dispatcher
-    )
-    {
-        return PersistFeedState();
-    }
-
     private async Task<ApiResult> PublishSessionAsync(FeedIdentity identity, Session session)
     {
         var (encryptedPayload, iv) = await encryptionService.SignRsa256PssAndEncryptAesCbcAsync(

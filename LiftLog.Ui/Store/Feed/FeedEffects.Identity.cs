@@ -123,12 +123,6 @@ public partial class FeedEffects
             dispatcher.Dispatch(new ReplaceFeedFollowedUsersAction([]));
         });
 
-    [EffectMethod]
-    public Task PutFeedIdentity(PutFeedIdentityAction action, IDispatcher dispatcher)
-    {
-        return PersistFeedState();
-    }
-
     private Task IfIdentityExists(
         Func<FeedIdentity, Task> whenIdentityExists,
         Func<Task>? whenNoIdentity = null

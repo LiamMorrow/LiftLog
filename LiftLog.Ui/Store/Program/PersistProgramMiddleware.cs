@@ -8,6 +8,7 @@ namespace LiftLog.Ui.Store.Program;
 public class PersistProgramMiddleware(ICurrentProgramRepository programRepository) : Middleware
 {
     private IStore? _store;
+    private ProgramState? _prevState;
 
     public override async Task InitializeAsync(IDispatcher dispatch, IStore store)
     {
@@ -27,7 +28,14 @@ public class PersistProgramMiddleware(ICurrentProgramRepository programRepositor
         {
             return;
         }
-
-        _ = programRepository.PersistSessionsInProgramAsync(currentState.SessionBlueprints);
+        if (_prevState is not null && _prevState.Equals(currentState))
+        {
+            return;
+        }
+        _prevState = currentState;
+        _ = Task.Run(async () =>
+        {
+            await programRepository.PersistSessionsInProgramAsync(currentState.SessionBlueprints);
+        });
     }
 }
