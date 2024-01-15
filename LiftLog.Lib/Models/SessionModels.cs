@@ -58,7 +58,7 @@ public record Session(
             .OrderByDescending(x => x.LastRecordedSet?.Set?.CompletionTime)
             .FirstOrDefault();
 
-    public bool IsStarted => RecordedExercises.Any(x => x.LastRecordedSet is not null);
+    public bool IsStarted => RecordedExercises.Any(x => x.LastRecordedSet?.Set is not null);
 
     public bool IsComplete =>
         RecordedExercises.All(x => x.PotentialSets.All(set => set.Set is not null));
@@ -87,7 +87,7 @@ public record RecordedExercise(
     public PotentialSet? LastRecordedSet =>
         PotentialSets
             .OrderByDescending(x => x.Set?.CompletionTime)
-            .FirstOrDefault(x => x is not null);
+            .FirstOrDefault(x => x.Set is not null);
 
     public decimal OneRepMax => Math.Floor(Weight / (1.0278m - (0.0278m * Blueprint.RepsPerSet)));
 
