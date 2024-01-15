@@ -9,6 +9,7 @@ using LiftLog.Api.Validators;
 using LiftLog.Lib.Serialization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,12 +23,14 @@ builder.Services.AddDbContext<UserDataContext>(
     options =>
         options
             .UseNpgsql(builder.Configuration.GetConnectionString("UserDataContext"))
+            .ReplaceService<IHistoryRepository, CamelCaseHistoryContext>()
             .UseSnakeCaseNamingConvention()
 );
 builder.Services.AddDbContext<RateLimitContext>(
     options =>
         options
             .UseNpgsql(builder.Configuration.GetConnectionString("RateLimitContext"))
+            .ReplaceService<IHistoryRepository, CamelCaseHistoryContext>()
             .UseSnakeCaseNamingConvention()
 );
 builder.Services.AddCors(options =>
