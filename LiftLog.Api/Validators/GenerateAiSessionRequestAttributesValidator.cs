@@ -19,10 +19,9 @@ public class GenerateAiSessionRequestAttributesValidator : AbstractValidator<AiS
             .When(x => x.ExerciseToWeight != null);
         RuleFor(x => x.ExerciseToWeight)
             .NotNull()
-            .ForEach(
-                ex =>
-                    ex.Must(pc => pc.Key.Length > -1 && pc.Key.Length < 50)
-                        .WithMessage("Exercise name must be between 0 and 50 characters long.")
+            .ForEach(ex =>
+                ex.Must(pc => pc.Key.Length > -1 && pc.Key.Length < 50)
+                    .WithMessage("Exercise name must be between 0 and 50 characters long.")
             );
     }
 }

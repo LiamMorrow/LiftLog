@@ -19,9 +19,10 @@ using INotificationService = LiftLog.Ui.Services.INotificationService;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<ThemedWebApplication>("#app");
-builder.Services.AddScoped(
-    _ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) }
-);
+builder.Services.AddScoped(_ => new HttpClient
+{
+    BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+});
 
 builder.Services.AddBlazoredLocalStorage();
 
@@ -29,13 +30,10 @@ builder.Services.AddNotifications();
 
 builder.Services.AddBlazorDownloadFile();
 
-builder.Services.AddSingleton(
-    svc =>
-        new WebAppPurchaseServiceConfiguration(
-            svc.GetRequiredService<IConfiguration>().GetValue<string>("WebAuthApiKey")
-                ?? throw new Exception("WebAuthApiKey configuration is not set.")
-        )
-);
+builder.Services.AddSingleton(svc => new WebAppPurchaseServiceConfiguration(
+    svc.GetRequiredService<IConfiguration>().GetValue<string>("WebAuthApiKey")
+        ?? throw new Exception("WebAuthApiKey configuration is not set.")
+));
 
 builder.Services.RegisterUiServices<
     LocalStorageKeyValueStore,

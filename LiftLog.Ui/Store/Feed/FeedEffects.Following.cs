@@ -66,15 +66,14 @@ public partial class FeedEffects(
             .Select(x => x.UserId)
             .ToHashSet();
         var usersAfterResponses = state
-            .Value.FollowedUsers.Select(
-                x =>
-                    acceptResponses.TryGetValue(x.Key, out var value)
-                        ? x.Value with
-                        {
-                            FollowSecret = value.FollowSecret,
-                            AesKey = value.AesKey,
-                        }
-                        : x.Value
+            .Value.FollowedUsers.Select(x =>
+                acceptResponses.TryGetValue(x.Key, out var value)
+                    ? x.Value with
+                    {
+                        FollowSecret = value.FollowSecret,
+                        AesKey = value.AesKey,
+                    }
+                    : x.Value
             )
             .Where(x => !rejectedUsers.Contains(x.Id))
             .ToImmutableList();

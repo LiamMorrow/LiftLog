@@ -12,13 +12,12 @@ namespace LiftLog.Api.Migrations
         {
             migrationBuilder.CreateTable(
                 name: "UserFollowSecrets",
-                columns: table =>
-                    new
-                    {
-                        Id = table.Column<Guid>(type: "uuid", nullable: false),
-                        UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                        Value = table.Column<string>(type: "text", nullable: false)
-                    },
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Value = table.Column<string>(type: "text", nullable: false)
+                },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserFollowSecrets", x => x.Id);
@@ -34,13 +33,12 @@ namespace LiftLog.Api.Migrations
 
             migrationBuilder.CreateTable(
                 name: "UserInboxItems",
-                columns: table =>
-                    new
-                    {
-                        Id = table.Column<Guid>(type: "uuid", nullable: false),
-                        UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                        EncryptedMessage = table.Column<byte[][]>(type: "bytea[]", nullable: false)
-                    },
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    EncryptedMessage = table.Column<byte[][]>(type: "bytea[]", nullable: false)
+                },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserInboxItems", x => x.Id);

@@ -28,8 +28,8 @@ public partial class MainPage : ContentPage
             return;
         }
 
-        var couldNavigate = await BlazorWebView.TryDispatchAsync(
-            svc => svc.GetRequiredService<NavigationManager>().NavigateTo(url)
+        var couldNavigate = await BlazorWebView.TryDispatchAsync(svc =>
+            svc.GetRequiredService<NavigationManager>().NavigateTo(url)
         );
 
         if (!couldNavigate)

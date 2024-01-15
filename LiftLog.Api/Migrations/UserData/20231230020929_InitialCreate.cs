@@ -12,19 +12,15 @@ namespace LiftLog.Api.Migrations
         {
             migrationBuilder.CreateTable(
                 name: "Users",
-                columns: table =>
-                    new
-                    {
-                        Id = table.Column<Guid>(type: "uuid", nullable: false),
-                        HashedPassword = table.Column<string>(type: "text", nullable: false),
-                        Salt = table.Column<byte[]>(type: "bytea", nullable: false),
-                        EncryptedCurrentPlan = table.Column<byte[]>(type: "bytea", nullable: true),
-                        EncryptedProfilePicture = table.Column<byte[]>(
-                            type: "bytea",
-                            nullable: true
-                        ),
-                        EncryptedName = table.Column<byte[]>(type: "bytea", nullable: true)
-                    },
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    HashedPassword = table.Column<string>(type: "text", nullable: false),
+                    Salt = table.Column<byte[]>(type: "bytea", nullable: false),
+                    EncryptedCurrentPlan = table.Column<byte[]>(type: "bytea", nullable: true),
+                    EncryptedProfilePicture = table.Column<byte[]>(type: "bytea", nullable: true),
+                    EncryptedName = table.Column<byte[]>(type: "bytea", nullable: true)
+                },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
@@ -33,25 +29,24 @@ namespace LiftLog.Api.Migrations
 
             migrationBuilder.CreateTable(
                 name: "UserEvents",
-                columns: table =>
-                    new
-                    {
-                        Id = table.Column<Guid>(type: "uuid", nullable: false),
-                        UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                        Timestamp = table.Column<DateTimeOffset>(
-                            type: "timestamp with time zone",
-                            nullable: false
-                        ),
-                        LastAccessed = table.Column<DateTimeOffset>(
-                            type: "timestamp with time zone",
-                            nullable: false
-                        ),
-                        Expiry = table.Column<DateTimeOffset>(
-                            type: "timestamp with time zone",
-                            nullable: false
-                        ),
-                        EncryptedEvent = table.Column<byte[]>(type: "bytea", nullable: false)
-                    },
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Timestamp = table.Column<DateTimeOffset>(
+                        type: "timestamp with time zone",
+                        nullable: false
+                    ),
+                    LastAccessed = table.Column<DateTimeOffset>(
+                        type: "timestamp with time zone",
+                        nullable: false
+                    ),
+                    Expiry = table.Column<DateTimeOffset>(
+                        type: "timestamp with time zone",
+                        nullable: false
+                    ),
+                    EncryptedEvent = table.Column<byte[]>(type: "bytea", nullable: false)
+                },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserEvents", x => x.Id);

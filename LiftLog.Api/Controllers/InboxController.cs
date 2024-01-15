@@ -70,13 +70,10 @@ public class InboxController(UserDataContext db) : ControllerBase
         return Ok(
             new GetInboxMessagesResponse(
                 inboxItems
-                    .Select(
-                        x =>
-                            new GetInboxMessageResponse(
-                                Id: x.Id,
-                                EncryptedMessage: x.EncryptedMessage
-                            )
-                    )
+                    .Select(x => new GetInboxMessageResponse(
+                        Id: x.Id,
+                        EncryptedMessage: x.EncryptedMessage
+                    ))
                     .ToArray()
             )
         );

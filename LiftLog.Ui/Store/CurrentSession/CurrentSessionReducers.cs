@@ -109,10 +109,9 @@ public static class CurrentSessionReducers
             PotentialSets = Enumerable
                 // Keep existing sets, but add new ones if the new exercise has more sets
                 .Range(0, newExerciseBlueprint.Sets)
-                .Select(
-                    index =>
-                        existingExercise.PotentialSets.ElementAtOrDefault(index)
-                        ?? new PotentialSet(null, action.Exercise.Weight)
+                .Select(index =>
+                    existingExercise.PotentialSets.ElementAtOrDefault(index)
+                    ?? new PotentialSet(null, action.Exercise.Weight)
                 )
                 .ToImmutableList()
         };
@@ -272,15 +271,13 @@ public static class CurrentSessionReducers
         var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
         var previousWeight = exerciseAtIndex.Weight;
         var newPotentialSets = exerciseAtIndex
-            .PotentialSets.Select(
-                set =>
-                    !exerciseAtIndex.PerSetWeight
-                    || (set.Weight == previousWeight && set.Set is null)
-                        ? set with
-                        {
-                            Weight = action.Weight
-                        }
-                        : set
+            .PotentialSets.Select(set =>
+                !exerciseAtIndex.PerSetWeight || (set.Weight == previousWeight && set.Set is null)
+                    ? set with
+                    {
+                        Weight = action.Weight
+                    }
+                    : set
             )
             .ToImmutableList();
         return WithActiveSession(

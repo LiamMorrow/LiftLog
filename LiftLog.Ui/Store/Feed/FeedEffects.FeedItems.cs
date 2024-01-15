@@ -59,18 +59,17 @@ public partial class FeedEffects
 
         var newUsers = (
             await Task.WhenAll(
-                users.Select(
-                    x =>
-                        originalFollowedUsers[x.Key].AesKey is null
-                            ? Task.FromResult((FeedUser?)originalFollowedUsers[x.Key])
-                            : GetDecryptedUserAsync(
-                                x.Key,
-                                originalFollowedUsers[x.Key].PublicKey,
-                                originalFollowedUsers[x.Key].AesKey!,
-                                originalFollowedUsers[x.Key].Nickname,
-                                x.Value,
-                                originalFollowedUsers[x.Key].FollowSecret
-                            )
+                users.Select(x =>
+                    originalFollowedUsers[x.Key].AesKey is null
+                        ? Task.FromResult((FeedUser?)originalFollowedUsers[x.Key])
+                        : GetDecryptedUserAsync(
+                            x.Key,
+                            originalFollowedUsers[x.Key].PublicKey,
+                            originalFollowedUsers[x.Key].AesKey!,
+                            originalFollowedUsers[x.Key].Nickname,
+                            x.Value,
+                            originalFollowedUsers[x.Key].FollowSecret
+                        )
                 )
             )
         )
@@ -101,11 +100,10 @@ public partial class FeedEffects
                     .Where(ev => newUsers.Any(us => us.Id == ev.UserId))
                     .GroupBy(x => (x.UserId, x.EventId))
                     .Select(x => x.OrderByDescending(x => x.Timestamp).First())
-                    .OrderByDescending(
-                        x =>
-                            x is SessionFeedItem sessionFeedItem
-                                ? sessionFeedItem.Session.Date.ToDateTime(TimeOnly.MinValue)
-                                : x.Timestamp
+                    .OrderByDescending(x =>
+                        x is SessionFeedItem sessionFeedItem
+                            ? sessionFeedItem.Session.Date.ToDateTime(TimeOnly.MinValue)
+                            : x.Timestamp
                     )
                     .ThenByDescending(x => x.Timestamp)
                     .ToImmutableList()

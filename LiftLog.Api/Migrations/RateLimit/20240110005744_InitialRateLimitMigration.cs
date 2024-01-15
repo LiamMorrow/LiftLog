@@ -12,15 +12,14 @@ namespace LiftLog.Api.Migrations.RateLimit
         {
             migrationBuilder.CreateTable(
                 name: "RateLimitConsumptions",
-                columns: table =>
-                    new
-                    {
-                        Key = table.Column<string>(type: "text", nullable: false),
-                        Requests = table.Column<List<DateTimeOffset>>(
-                            type: "timestamp with time zone[]",
-                            nullable: false
-                        )
-                    },
+                columns: table => new
+                {
+                    Key = table.Column<string>(type: "text", nullable: false),
+                    Requests = table.Column<List<DateTimeOffset>>(
+                        type: "timestamp with time zone[]",
+                        nullable: false
+                    )
+                },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RateLimitConsumptions", x => x.Key);

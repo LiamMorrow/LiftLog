@@ -65,8 +65,8 @@ public class FollowSecretController(UserDataContext db, PasswordService password
         {
             return Unauthorized();
         }
-        var userFollowSecret = await db.UserFollowSecrets.Where(
-            x => x.UserId == request.UserId && x.Value == request.FollowSecret
+        var userFollowSecret = await db.UserFollowSecrets.Where(x =>
+            x.UserId == request.UserId && x.Value == request.FollowSecret
         )
             .ToListAsync();
         db.UserFollowSecrets.RemoveRange(userFollowSecret);

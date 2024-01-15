@@ -64,8 +64,8 @@ public record Session(
         RecordedExercises.All(x => x.PotentialSets.All(set => set.Set is not null));
 
     public decimal TotalWeightLifted =>
-        RecordedExercises.Sum(
-            ex => ex.PotentialSets.Sum(set => (set.Set?.RepsCompleted ?? 0) * set.Weight)
+        RecordedExercises.Sum(ex =>
+            ex.PotentialSets.Sum(set => (set.Set?.RepsCompleted ?? 0) * set.Weight)
         );
 }
 

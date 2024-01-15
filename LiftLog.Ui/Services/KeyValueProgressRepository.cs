@@ -150,25 +150,20 @@ namespace LiftLog.Ui.Services
         > GetLatestOrderedRecordedExercisesAsync()
         {
             return GetOrderedSessions()
-                .SelectMany(
-                    x =>
-                        x.RecordedExercises.Where(x => x.LastRecordedSet?.Set is not null)
-                            .Select(
-                                ex =>
-                                    new DatedRecordedExercise(
-                                        x.Date.ToDateTime(ex.LastRecordedSet!.Set!.CompletionTime),
-                                        ex
-                                    )
-                            )
-                            .ToAsyncEnumerable()
+                .SelectMany(x =>
+                    x.RecordedExercises.Where(x => x.LastRecordedSet?.Set is not null)
+                        .Select(ex => new DatedRecordedExercise(
+                            x.Date.ToDateTime(ex.LastRecordedSet!.Set!.CompletionTime),
+                            ex
+                        ))
+                        .ToAsyncEnumerable()
                 )
                 .GroupBy(x => (KeyedExerciseBlueprint)x.RecordedExercise.Blueprint)
                 .ToImmutableDictionaryAwaitAsync(
                     x => ValueTask.FromResult(x.Key),
-                    async x =>
-                        new ImmutableListValue<DatedRecordedExercise>(
-                            await x.ToImmutableListAsync()
-                        )
+                    async x => new ImmutableListValue<DatedRecordedExercise>(
+                        await x.ToImmutableListAsync()
+                    )
                 );
         }
 

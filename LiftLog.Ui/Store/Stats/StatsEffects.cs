@@ -33,16 +33,12 @@ public class StatsEffects(IState<StatsState> state, IProgressRepository progress
                 .ToImmutableList();
 
             var exerciseStats = sessions
-                .SelectMany(
-                    x =>
-                        x.RecordedExercises.Where(x => x.LastRecordedSet?.Set is not null)
-                            .Select(
-                                ex =>
-                                    new DatedRecordedExercise(
-                                        x.Date.ToDateTime(ex.LastRecordedSet!.Set!.CompletionTime),
-                                        ex
-                                    )
-                            )
+                .SelectMany(x =>
+                    x.RecordedExercises.Where(x => x.LastRecordedSet?.Set is not null)
+                        .Select(ex => new DatedRecordedExercise(
+                            x.Date.ToDateTime(ex.LastRecordedSet!.Set!.CompletionTime),
+                            ex
+                        ))
                 )
                 .GroupBy(x => NormalizeName(x.RecordedExercise.Blueprint.Name))
                 .Select(CreateExerciseStatistic)
@@ -80,13 +76,10 @@ public class StatsEffects(IState<StatsState> state, IProgressRepository progress
             "Bodyweight",
             sessions
                 .Where(x => x.Bodyweight is not null)
-                .Select(
-                    session =>
-                        new TimeTrackedStatistic(
-                            session.Date.ToDateTime(TimeOnly.MinValue),
-                            session.Bodyweight!.Value
-                        )
-                )
+                .Select(session => new TimeTrackedStatistic(
+                    session.Date.ToDateTime(TimeOnly.MinValue),
+                    session.Bodyweight!.Value
+                ))
                 .ToImmutableList()
         );
     }
@@ -96,13 +89,10 @@ public class StatsEffects(IState<StatsState> state, IProgressRepository progress
         return new StatisticOverTime(
             sessions.Key,
             sessions
-                .Select(
-                    session =>
-                        new TimeTrackedStatistic(
-                            session.Date.ToDateTime(TimeOnly.MinValue),
-                            session.TotalWeightLifted
-                        )
-                )
+                .Select(session => new TimeTrackedStatistic(
+                    session.Date.ToDateTime(TimeOnly.MinValue),
+                    session.TotalWeightLifted
+                ))
                 .ToImmutableList()
         );
     }
@@ -114,13 +104,10 @@ public class StatsEffects(IState<StatsState> state, IProgressRepository progress
         return new ExerciseStatisticOverTime(
             exercises.First().RecordedExercise.Blueprint.Name,
             Statistics: exercises
-                .Select(
-                    exercise =>
-                        new TimeTrackedStatistic(
-                            exercise.DateTime,
-                            exercise.RecordedExercise.Weight
-                        )
-                )
+                .Select(exercise => new TimeTrackedStatistic(
+                    exercise.DateTime,
+                    exercise.RecordedExercise.Weight
+                ))
                 .ToImmutableList(),
             OneRepMax: exercises.First().RecordedExercise.OneRepMax
         );

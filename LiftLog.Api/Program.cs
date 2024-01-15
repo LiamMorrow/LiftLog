@@ -19,19 +19,17 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateUserRequestValidator>
 
 // Add services to the container.
 
-builder.Services.AddDbContext<UserDataContext>(
-    options =>
-        options
-            .UseNpgsql(builder.Configuration.GetConnectionString("UserDataContext"))
-            .ReplaceService<IHistoryRepository, CamelCaseHistoryContext>()
-            .UseSnakeCaseNamingConvention()
+builder.Services.AddDbContext<UserDataContext>(options =>
+    options
+        .UseNpgsql(builder.Configuration.GetConnectionString("UserDataContext"))
+        .ReplaceService<IHistoryRepository, CamelCaseHistoryContext>()
+        .UseSnakeCaseNamingConvention()
 );
-builder.Services.AddDbContext<RateLimitContext>(
-    options =>
-        options
-            .UseNpgsql(builder.Configuration.GetConnectionString("RateLimitContext"))
-            .ReplaceService<IHistoryRepository, CamelCaseHistoryContext>()
-            .UseSnakeCaseNamingConvention()
+builder.Services.AddDbContext<RateLimitContext>(options =>
+    options
+        .UseNpgsql(builder.Configuration.GetConnectionString("RateLimitContext"))
+        .ReplaceService<IHistoryRepository, CamelCaseHistoryContext>()
+        .UseSnakeCaseNamingConvention()
 );
 builder.Services.AddCors(options =>
 {

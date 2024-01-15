@@ -47,11 +47,13 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
             new(
                 Role.User,
                 $"""
-            I am a {attributes.Age} year old {genderText} who weighs {attributes.WeightRange} {(attributes.UseImperialUnits ? "pounds" : "kilograms")}. I would like to work on {goalsText}.
-            I would like to work out {attributes.DaysPerWeek} days per week.
-            My skill level with weight training is {attributes.Experience}.
-            Please make me a workout plan.
-            """
+                I am a {attributes.Age} year old {genderText} who weighs {attributes.WeightRange} {(
+                    attributes.UseImperialUnits ? "pounds" : "kilograms"
+                )}. I would like to work on {goalsText}.
+                I would like to work out {attributes.DaysPerWeek} days per week.
+                My skill level with weight training is {attributes.Experience}.
+                Please make me a workout plan.
+                """
             ),
         };
         var chatRequest = new ChatRequest(
@@ -71,35 +73,23 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
             return new AiWorkoutPlan(
                 gptPlan.Description,
                 gptPlan
-                    .Sessions.Select(
-                        s =>
-                            new SessionBlueprint(
-                                s.Name,
-                                s.Exercises.Select(
-                                    e =>
-                                        new ExerciseBlueprint(
-                                            e.Name,
-                                            e.Sets,
-                                            e.RepsPerSet,
-                                            e.InitialWeight,
-                                            e.WeightIncreaseOnSuccess,
-                                            new Rest(
-                                                TimeSpan.FromSeconds(
-                                                    e.RestBetweenSets.MinRestSeconds
-                                                ),
-                                                TimeSpan.FromSeconds(
-                                                    e.RestBetweenSets.MaxRestSeconds
-                                                ),
-                                                TimeSpan.FromSeconds(
-                                                    e.RestBetweenSets.FailureRestSeconds
-                                                )
-                                            ),
-                                            false
-                                        )
-                                )
-                                    .ToImmutableList()
-                            )
-                    )
+                    .Sessions.Select(s => new SessionBlueprint(
+                        s.Name,
+                        s.Exercises.Select(e => new ExerciseBlueprint(
+                            e.Name,
+                            e.Sets,
+                            e.RepsPerSet,
+                            e.InitialWeight,
+                            e.WeightIncreaseOnSuccess,
+                            new Rest(
+                                TimeSpan.FromSeconds(e.RestBetweenSets.MinRestSeconds),
+                                TimeSpan.FromSeconds(e.RestBetweenSets.MaxRestSeconds),
+                                TimeSpan.FromSeconds(e.RestBetweenSets.FailureRestSeconds)
+                            ),
+                            false
+                        ))
+                            .ToImmutableList()
+                    ))
                     .ToImmutableList()
             );
         }
@@ -118,9 +108,8 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
         var areasToWorkout = string.Join(" and ", attributes.AreasToWorkout);
         var exerciseText = string.Join(
             "\n",
-            attributes.ExerciseToWeight.Select(
-                pc =>
-                    $"{pc.Key} at {pc.Value} {(attributes.UseImperialUnits ? "pounds" : "kilograms")}"
+            attributes.ExerciseToWeight.Select(pc =>
+                $"{pc.Key} at {pc.Value} {(attributes.UseImperialUnits ? "pounds" : "kilograms")}"
             )
         );
 
@@ -156,9 +145,9 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
             new(
                 Role.User,
                 $"""
-            I'd like to workout today at the gym. The areas I'd like to work on {areasToWorkout}. I'd like it to have at lease {volumeText} exercises. Exercises I'm familiar with are as follows: {exerciseText}.
-            Please suggest me a workout.
-            """
+                I'd like to workout today at the gym. The areas I'd like to work on {areasToWorkout}. I'd like it to have at lease {volumeText} exercises. Exercises I'm familiar with are as follows: {exerciseText}.
+                Please suggest me a workout.
+                """
             ),
         };
         var chatRequest = new ChatRequest(
@@ -178,22 +167,19 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
             return new SessionBlueprint(
                 gptPlan.Name,
                 gptPlan
-                    .Exercises.Select(
-                        e =>
-                            new ExerciseBlueprint(
-                                e.Name,
-                                e.Sets,
-                                e.RepsPerSet,
-                                e.InitialWeight,
-                                e.WeightIncreaseOnSuccess,
-                                new Rest(
-                                    TimeSpan.FromSeconds(e.RestBetweenSets.MinRestSeconds),
-                                    TimeSpan.FromSeconds(e.RestBetweenSets.MaxRestSeconds),
-                                    TimeSpan.FromSeconds(e.RestBetweenSets.FailureRestSeconds)
-                                ),
-                                false
-                            )
-                    )
+                    .Exercises.Select(e => new ExerciseBlueprint(
+                        e.Name,
+                        e.Sets,
+                        e.RepsPerSet,
+                        e.InitialWeight,
+                        e.WeightIncreaseOnSuccess,
+                        new Rest(
+                            TimeSpan.FromSeconds(e.RestBetweenSets.MinRestSeconds),
+                            TimeSpan.FromSeconds(e.RestBetweenSets.MaxRestSeconds),
+                            TimeSpan.FromSeconds(e.RestBetweenSets.FailureRestSeconds)
+                        ),
+                        false
+                    ))
                     .ToImmutableList()
             );
         }

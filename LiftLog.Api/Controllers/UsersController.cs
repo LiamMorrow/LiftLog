@@ -31,13 +31,12 @@ public class UsersController(UserDataContext db) : ControllerBase
             new GetUsersResponse(
                 users.ToDictionary(
                     x => x.Id,
-                    x =>
-                        new GetUserResponse(
-                            EncryptedCurrentPlan: x.EncryptedCurrentPlan,
-                            EncryptedProfilePicture: x.EncryptedProfilePicture,
-                            EncryptedName: x.EncryptedName,
-                            EncryptionIV: x.EncryptionIV
-                        )
+                    x => new GetUserResponse(
+                        EncryptedCurrentPlan: x.EncryptedCurrentPlan,
+                        EncryptedProfilePicture: x.EncryptedProfilePicture,
+                        EncryptedName: x.EncryptedName,
+                        EncryptionIV: x.EncryptionIV
+                    )
                 )
             )
         );

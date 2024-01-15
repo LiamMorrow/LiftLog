@@ -43,61 +43,50 @@ public partial class FeedEffects
         ).WhereNotNull();
 
         ImmutableListValue<FollowRequest> newFollowRequests = inboxItems
-            .Where(
-                x => x.MessagePayloadCase == InboxMessageDao.MessagePayloadOneofCase.FollowRequest
+            .Where(x =>
+                x.MessagePayloadCase == InboxMessageDao.MessagePayloadOneofCase.FollowRequest
             )
-            .Select(
-                x =>
-                    new FollowRequest(
-                        UserId: x.FromUserId,
-                        Name: x.FollowRequest.Name?.ToString() ?? "Anonymous User",
-                        ProfilePicture: x.FollowRequest.ProfilePicture.IsEmpty
-                            ? null
-                            : x.FollowRequest.ProfilePicture.ToByteArray(),
-                        PublicKey: new RsaPublicKey(x.FollowRequest.PublicKey.ToByteArray())
-                    )
-            )
+            .Select(x => new FollowRequest(
+                UserId: x.FromUserId,
+                Name: x.FollowRequest.Name?.ToString() ?? "Anonymous User",
+                ProfilePicture: x.FollowRequest.ProfilePicture.IsEmpty
+                    ? null
+                    : x.FollowRequest.ProfilePicture.ToByteArray(),
+                PublicKey: new RsaPublicKey(x.FollowRequest.PublicKey.ToByteArray())
+            ))
             .ToImmutableList();
         dispatcher.Dispatch(new AppendNewFollowRequestsAction(newFollowRequests));
 
         var newFollowResponses = inboxItems
-            .Where(
-                x => x.MessagePayloadCase == InboxMessageDao.MessagePayloadOneofCase.FollowResponse
+            .Where(x =>
+                x.MessagePayloadCase == InboxMessageDao.MessagePayloadOneofCase.FollowResponse
             )
-            .Select(
-                x =>
-                    new FollowResponse(
-                        UserId: x.FromUserId,
-                        Accepted: x.FollowResponse.ResponsePayloadCase
-                            == FollowResponseDao.ResponsePayloadOneofCase.Accepted,
-                        AesKey: x.FollowResponse.ResponsePayloadCase
-                        == FollowResponseDao.ResponsePayloadOneofCase.Accepted
-                            ? new AesKey(x.FollowResponse.Accepted.AesKey.ToByteArray())
-                            : null,
-                        FollowSecret: x.FollowResponse.ResponsePayloadCase
-                        == FollowResponseDao.ResponsePayloadOneofCase.Accepted
-                            ? x.FollowResponse.Accepted.FollowSecret
-                            : null
-                    )
-            )
+            .Select(x => new FollowResponse(
+                UserId: x.FromUserId,
+                Accepted: x.FollowResponse.ResponsePayloadCase
+                    == FollowResponseDao.ResponsePayloadOneofCase.Accepted,
+                AesKey: x.FollowResponse.ResponsePayloadCase
+                == FollowResponseDao.ResponsePayloadOneofCase.Accepted
+                    ? new AesKey(x.FollowResponse.Accepted.AesKey.ToByteArray())
+                    : null,
+                FollowSecret: x.FollowResponse.ResponsePayloadCase
+                == FollowResponseDao.ResponsePayloadOneofCase.Accepted
+                    ? x.FollowResponse.Accepted.FollowSecret
+                    : null
+            ))
             .ToImmutableList();
 
         dispatcher.Dispatch(new ProcessFollowResponsesAction(newFollowResponses));
 
         var followers = state.Value.Followers;
         var unfollowNotifications = inboxItems
-            .Where(
-                x =>
-                    x.MessagePayloadCase
-                    == InboxMessageDao.MessagePayloadOneofCase.UnfollowNotification
+            .Where(x =>
+                x.MessagePayloadCase == InboxMessageDao.MessagePayloadOneofCase.UnfollowNotification
             )
-            .SelectMany(
-                x =>
-                    followers.Values.Where(
-                        f =>
-                            f.Id == x.FromUserId
-                            && f.FollowSecret == x.UnfollowNotification.FollowSecret
-                    )
+            .SelectMany(x =>
+                followers.Values.Where(f =>
+                    f.Id == x.FromUserId && f.FollowSecret == x.UnfollowNotification.FollowSecret
+                )
             );
 
         foreach (var unfollowNotification in unfollowNotifications)

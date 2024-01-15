@@ -33,19 +33,18 @@ public static class ServiceRegistration
         where TPurchaseService : class, IAppPurchaseService
         where TEncryptionService : class, IEncryptionService
     {
-        services.AddFluxor(
-            o =>
-                o.ScanAssemblies(typeof(CurrentSessionReducers).Assembly)
-                    .AddMiddleware<PersistSessionMiddleware>()
-                    .AddMiddleware<PersistProgramMiddleware>()
-                    .AddMiddleware<AppStateInitMiddleware>()
-                    .AddMiddleware<SettingsStateInitMiddleware>()
-                    .AddMiddleware<FeedStateInitMiddleware>()
+        services.AddFluxor(o =>
+            o.ScanAssemblies(typeof(CurrentSessionReducers).Assembly)
+                .AddMiddleware<PersistSessionMiddleware>()
+                .AddMiddleware<PersistProgramMiddleware>()
+                .AddMiddleware<AppStateInitMiddleware>()
+                .AddMiddleware<SettingsStateInitMiddleware>()
+                .AddMiddleware<FeedStateInitMiddleware>()
 #if DEBUG
-                    .UseReduxDevTools(options =>
-                    {
-                        options.UseSystemTextJson(_ => JsonSerializerSettings.LiftLog);
-                    })
+                .UseReduxDevTools(options =>
+                {
+                    options.UseSystemTextJson(_ => JsonSerializerSettings.LiftLog);
+                })
 #endif
         );
 
