@@ -41,10 +41,12 @@ public class MainActivity : MauiAppCompatActivity
     {
         base.OnCreate(savedInstanceState);
         WindowCompat.SetDecorFitsSystemWindows(Window, false);
-        var insetsManager = MauiApplication.Current.Services.GetRequiredService<InsetsManager>();
+        var insetsManager = IPlatformApplication
+            .Current?.Services
+            .GetRequiredService<InsetsManager>();
         ViewCompat.SetOnApplyWindowInsetsListener(
             Window.DecorView,
-            new WindowInsetsListener(insetsManager, Resources.DisplayMetrics.Density)
+            new WindowInsetsListener(insetsManager!, Resources!.DisplayMetrics!.Density)
         );
     }
 
