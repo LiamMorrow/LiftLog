@@ -36,3 +36,7 @@ Cypress.Commands.add('containsA', (selector, opts) => {
 Cypress.Commands.add('navigate', (navButtonText) => {
     return cy.get('nav').contains(navButtonText).click()
 })
+
+Cypress.Commands.add('dialog', () => {
+    return cy.get('md-dialog')
+});

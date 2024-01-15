@@ -12,9 +12,9 @@ describe('Completing a session', () => {
 
     it('can complete a freeform workout', () => {
       cy.containsA('Add Exercise', { includeShadowDom: true }).click()
-      cy.getA('[data-cy="session-exercise-editor"] md-outlined-text-field').find('input', { includeShadowDom: true }).first().click().type('Squat')
+      cy.dialog().find('md-outlined-text-field').find('input', { includeShadowDom: true }).first().click().type('Squat')
 
-      cy.getA('[data-cy="session-exercise-editor-actions"]').contains("Save").click()
+      cy.dialog().contains("Save").click()
 
 
       cy.getA('.repcount').first().click()
@@ -23,9 +23,9 @@ describe('Completing a session', () => {
 
       cy.getA('[data-cy=weight-display]').first().click()
 
-      cy.getA('[data-cy=increment-weight]').first().click().click().click()
+      cy.dialog().find('[data-cy=increment-weight]').first().click().click().click()
 
-      cy.getA('[slot="actions"]').contains("Save").click()
+      cy.dialog().contains("Save").click()
 
       cy.getA('md-fab').click()
 
@@ -42,7 +42,7 @@ describe('Completing a session', () => {
       cy.containsA('Show tips').click()
       cy.containsA('Select a plan').click()
       cy.containsA("Starting Strength").click()
-      cy.getA('[slot="actions"]').contains("Select").click()
+      cy.dialog().find("[slot=actions]").contains("Select").click()
     })
 
 
@@ -87,15 +87,15 @@ describe('Completing a session', () => {
 
         // Update the weight of the second set to be lower than the top level weight
         cy.getA('[data-cy=set-weight-button]').eq(1).click()
-        cy.getA('[data-cy=decrement-weight]:visible').click()
-        cy.getA('[slot="actions"]:visible').contains("Save").click()
+        cy.dialog().find('[data-cy=decrement-weight]:visible').click()
+        cy.dialog().find('[slot="actions"]:visible').contains("Save").click()
         cy.getA('[data-cy=set-weight-button]').eq(1).should('contain.text', '17.5kg')
         cy.getA('[data-cy=set-weight-button]').eq(2).should('contain.text', '20kg')
 
         // Update top level weight - which should update all sets which aren't completed and have the same weight (i.e. the last set)
         cy.getA('[data-cy=weight-display]').first().click()
-        cy.getA('[data-cy=decrement-weight]').first().click().click().click()
-        cy.getA('[slot="actions"]:visible').contains("Save").click()
+        cy.dialog().find('[data-cy=decrement-weight]').first().click().click().click()
+        cy.dialog().find('[slot="actions"]:visible').contains("Save").click()
         cy.getA('[data-cy=set-weight-button]').eq(0).should('contain.text', '20kg')
         cy.getA('[data-cy=set-weight-button]').eq(1).should('contain.text', '17.5kg')
         cy.getA('[data-cy=set-weight-button]').eq(2).should('contain.text', '12.5kg')
@@ -123,8 +123,8 @@ describe('Completing a session', () => {
         cy.containsA('Workout A').click()
 
         cy.getA('[data-cy=exercise-notes-btn]').first().click()
-        cy.getA('md-outlined-text-field').find('textarea', { includeShadowDom: true }).first().click().type('I am NoteTaker, master of notes')
-        cy.getA('[data-cy=notes-dialog-actions]').contains("Save").click()
+        cy.dialog().find('md-outlined-text-field').find('textarea', { includeShadowDom: true }).first().click().type('I am NoteTaker, master of notes')
+        cy.dialog().find('[data-cy=notes-dialog-actions]').contains("Save").click()
 
         cy.getA('md-fab').click()
 
@@ -133,11 +133,11 @@ describe('Completing a session', () => {
         cy.getA('.cardlist .card').first('.card').should('contain.text', 'Workout A').click()
 
         cy.getA('[data-cy=exercise-notes-btn]').first().click()
-        cy.getA('md-outlined-text-field').find('textarea', { includeShadowDom: true })
+        cy.dialog().find('md-outlined-text-field').find('textarea', { includeShadowDom: true })
           .first()
           .should('have.value', 'I am NoteTaker, master of notes')
           .type('Replace notes but do not save')
-        cy.getA('[data-cy=notes-dialog-actions]').contains("Cancel").click()
+        cy.dialog().find('[data-cy=notes-dialog-actions]').contains("Cancel").click()
 
         cy.navigate('Workout')
         cy.containsA('Workout A').click()

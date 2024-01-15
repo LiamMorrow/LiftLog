@@ -23,5 +23,7 @@ declare namespace Cypress {
      * Navigate using the nav buttons
      */
     navigate(navButtonText: string): Chainable<JQuery<E>>;
+
+    dialog(): Chainable<JQuery<E>>;
   }
 }
