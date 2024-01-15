@@ -7,6 +7,7 @@ public class CurrentSessionReducerTests
 {
     private static readonly CurrentSessionState _initialState =
         new(
+            IsHydrated: true,
             WorkoutSession: Sessions.CreateSession(
                 null,
                 session =>
