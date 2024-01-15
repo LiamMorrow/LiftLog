@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using LiftLog.Api.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LiftLog.Api.Migrations.RateLimit
 {
     [DbContext(typeof(RateLimitContext))]
-    partial class RateLimitContextModelSnapshot : ModelSnapshot
+    [Migration("20240115012913_SnakeCase")]
+    partial class SnakeCase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
