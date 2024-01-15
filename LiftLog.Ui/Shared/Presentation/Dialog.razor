@@ -1,12 +1,21 @@
 @inject IJSRuntime JSRuntime
-<md-dialog
-    @ondialog-close="()=>OnClose?.Invoke()"
-    @attributes="AdditionalAttributes"
-    @ref="dialog">
-    @ChildContent
-</md-dialog>
+
+@if(opened){
+
+@* Put the dialog into a section in the main layout so that the scrim covers parent elements on ios *@
+<Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="Dialog">
+    <md-dialog
+        @ondialog-close="HandleDialogClose"
+        @attributes="AdditionalAttributes"
+        @ref="dialog">
+        @ChildContent
+    </md-dialog>
+</Microsoft.AspNetCore.Components.Sections.SectionContent>
+
+}
 @code
 {
+    private bool opened = false;
     private ElementReference dialog;
 
     [Parameter(CaptureUnmatchedValues = true)]
@@ -18,20 +27,26 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    override protected async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSRuntime.InvokeVoidAsync("AppUtils.onCloseMdPopup", dialog);
-        }
-    }
     public async void Open()
     {
+        opened = true;
+        StateHasChanged();
+        await Task.Yield();
+        await JSRuntime.InvokeVoidAsync("AppUtils.onCloseMdPopup", dialog);
         await JSRuntime.InvokeVoidAsync("AppUtils.showMdPopup", dialog);
     }
 
     public async void Close()
     {
+        opened = false;
         await JSRuntime.InvokeVoidAsync("AppUtils.hideMdPopup", dialog);
+    }
+
+    private async Task HandleDialogClose()
+    {
+        await Task.Delay(500);
+        opened = false;
+        await InvokeAsync(StateHasChanged);
+        OnClose?.Invoke();
     }
 }

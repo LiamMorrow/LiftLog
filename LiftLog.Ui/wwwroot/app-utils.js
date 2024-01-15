@@ -56,7 +56,8 @@ AppUtils.hideMdPopup = function (element) {
 };
 
 AppUtils.setValue = function (element, value) {
-    element.value = value;
+    if (element)
+        element.value = value;
 }
 
 AppUtils.getValue = function (element) {
