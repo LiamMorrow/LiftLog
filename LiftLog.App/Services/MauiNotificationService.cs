@@ -1,5 +1,6 @@
 using Fluxor;
 using LiftLog.Lib.Models;
+using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.CurrentSession;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
@@ -47,6 +48,7 @@ public class MauiNotificationService(
                 {
                     return;
                 }
+                dispatcher.Dispatch(new NavigateAction("/session"));
                 notificationService.Cancel(NextSetNotificationHandle.Id);
                 switch (e.ActionId)
                 {
