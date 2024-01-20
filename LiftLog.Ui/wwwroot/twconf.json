@@ -72,7 +72,7 @@
         "on-error-container": "rgb(var(--color-on-error-container) / <alpha-value>)"
       },
       "borderRadius": {
-        "card": "20px"
+        "card": "12px"
       }
     }
   },
