@@ -118,7 +118,8 @@ else
         Name: "",
         Sets: 3,
         Reps: 10,
-        Weight: 0
+        Weight: 0,
+        Rest: Rest.Medium
         );
     private int? _exerciseToEditIndex;
     private int? _exerciseToRemoveIndex;
@@ -256,7 +257,8 @@ else
             Name: "",
             Sets: 3,
             Reps: 10,
-            Weight: 0
+            Weight: 0,
+            Rest: Rest.Medium
             );
         _editExerciseDialog?.Open();
     }
@@ -281,7 +283,8 @@ else
             exercise.Blueprint.Name,
             exercise.Blueprint.Sets,
             exercise.Blueprint.RepsPerSet,
-            exercise.Weight);
+            exercise.Weight,
+            exercise.Blueprint.RestBetweenSets);
         StateHasChanged();
         _editExerciseDialog?.Open();
     }

@@ -21,6 +21,7 @@
         Increment="() => OnExerciseUpdate(Exercise with {Reps = Exercise.Reps + 1})"
         Decrement="() => OnExerciseUpdate(Exercise with {Reps = Math.Max(Exercise.Reps - 1, 1)})"
         Value="Exercise.Reps" />
+    <RestEditorGroup Rest="Exercise.Rest" OnRestUpdated="(rest) => OnExerciseUpdate(Exercise with { Rest = rest })" />
 </div>
 @code {
     [Parameter]

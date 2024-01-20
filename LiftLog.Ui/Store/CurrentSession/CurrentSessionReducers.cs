@@ -99,7 +99,8 @@ public static class CurrentSessionReducers
         {
             Name = action.Exercise.Name,
             Sets = action.Exercise.Sets,
-            RepsPerSet = action.Exercise.Reps
+            RepsPerSet = action.Exercise.Reps,
+            RestBetweenSets = action.Exercise.Rest
         };
         var existingExercise = session.RecordedExercises[action.ExerciseIndex];
         var newExercise = existingExercise with
@@ -148,7 +149,7 @@ public static class CurrentSessionReducers
             RepsPerSet: action.Exercise.Reps,
             InitialWeight: action.Exercise.Weight,
             WeightIncreaseOnSuccess: 0,
-            RestBetweenSets: Rest.Medium,
+            RestBetweenSets: action.Exercise.Rest,
             false
         );
         var newExercise = new RecordedExercise(
