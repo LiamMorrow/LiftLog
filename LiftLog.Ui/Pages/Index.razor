@@ -45,7 +45,7 @@ else
     </div>
 <CardList Items="ProgramState.Value.UpcomingSessions.IndexedTuples()" OnClick="x=>SelectSession(x.Item)"
     ShouldHighlight="session => session.Index == 0">
-    <SessionSummary IsFilled="context.Item.IsStarted" Session="context.Item"></SessionSummary>
+    <SessionSummary IsFilled="context.Item.IsStarted" ShowSets=true Session="context.Item"></SessionSummary>
 </CardList>
 }
 

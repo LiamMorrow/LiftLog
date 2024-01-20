@@ -8,22 +8,22 @@
     }
 </div>
 
-@foreach (var exercise in Session.RecordedExercises)
-{
-    <div class="flex justify-between w-full">
+<div class="grid @GridRows gap-x-4 text-start">
+    @foreach (var exercise in Session.RecordedExercises)
+    {
         <span>@exercise.Blueprint.Name</span>
-        <span class="flex gap-2">
-            @if(ShowSets)
-            {
-                <span>@(exercise.Blueprint.Sets) x @(exercise.Blueprint.RepsPerSet) </span>
-            }
-            @if(ShowWeight)
-            {
+        @if(ShowSets)
+        {
+            <span>@(exercise.Blueprint.Sets)x@(exercise.Blueprint.RepsPerSet) </span>
+        }
+        @if(ShowWeight)
+        {
+            <span class="flex justify-end">
                 <WeightFormat Weight="@exercise.Weight" />
-            }
-        </span>
-    </div>
-}
+            </span>
+        }
+    }
+</div>
 
 @code
 {
@@ -43,4 +43,12 @@
     private string FormattedDate => Session.Date.Year == DateTime.Now.Year
         ? Session.Date.ToString("M", CultureInfo.InvariantCulture)
         : Session.Date.ToString("M", CultureInfo.InvariantCulture) + " " + Session.Date.Year;
+
+    private string GridRows => (ShowSets, ShowWeight) switch
+    {
+        (true, true) => "grid-cols-[1fr,max-content,max-content]",
+        (true, false) => "grid-cols-[1fr,max-content]",
+        (false, true) => "grid-cols-[1fr,max-content]",
+        (false, false) => "grid-cols-1",
+    };
 }
