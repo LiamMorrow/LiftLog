@@ -1,5 +1,5 @@
 @typeparam TItem
-<div @attributes="AdditionalAttributes" class=" @(AdditionalAttributes?.GetValueOrDefault("class")) flex flex-col gap-2 cardlist">
+<div @attributes="AdditionalAttributes" class=" @(AdditionalAttributes?.GetValueOrDefault("class")) flex flex-col gap-2 py-2 cardlist">
 @foreach (var item in Items)
 {
     <Card IsHighlighted="ShouldHighlight?.Invoke(item) ?? false" OnClick=@(OnClick != null ? _=> OnClick(item) : null)>
