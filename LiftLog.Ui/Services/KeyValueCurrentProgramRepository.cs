@@ -16,6 +16,7 @@ public class KeyValueCurrentProgramRepository(IKeyValueStore keyValueStore)
 {
     private const string StorageKey = "Program";
     private bool _initialised;
+
     private ImmutableListValue<SessionBlueprint> _sessions =
         ImmutableList.Create<SessionBlueprint>();
 
@@ -46,6 +47,7 @@ public class KeyValueCurrentProgramRepository(IKeyValueStore keyValueStore)
                 version = "2";
                 await keyValueStore.SetItemAsync($"{StorageKey}-Version", "2");
             }
+
             var storedData = version switch
             {
                 "1"

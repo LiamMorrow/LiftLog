@@ -4,7 +4,7 @@
     class="w-full mb-2 text-xl"
     Label="Exercise Name"
     Value="@Exercise.Name"
-    OnChange="val => SetExerciseName(val!)" >
+    OnChange="@(val => SetExerciseName(val!))">
 </TextField>
 <div class="flex flex-wrap justify-around w-full gap-4">
     <div class="flex flex-col items-center gap-1">
@@ -13,23 +13,20 @@
             Value="Exercise.Sets"
             Increment="() => IncrementExerciseSets()"
             Decrement="() => DecrementExerciseSets()"
-            Label="Sets"
-        />
+            Label="Sets"/>
         <FixedIncrementer
             data-cy="exercise-reps"
             Value="Exercise.RepsPerSet"
             Increment="() => IncrementExerciseRepsPerSet()"
             Decrement="() => DecrementExerciseRepsPerSet()"
-            Label="Reps"
-        />
+            Label="Reps"/>
     </div>
     <EditableIncrementer
-        Increment=@Math.Max(Exercise.WeightIncreaseOnSuccess, 0.1m)
+        Increment="@Math.Max(Exercise.WeightIncreaseOnSuccess, 0.1m)"
         Label="Initial Weight"
         data-cy="exercise-initial-weight"
-        Value=@Exercise.InitialWeight
-        OnChange="e => SetExerciseInitialWeight(e)"
-    />
+        Value="@Exercise.InitialWeight"
+        OnChange="e => SetExerciseInitialWeight(e)"/>
     <EditableIncrementer
         Increment="0.1m"
         Label="Auto Increase"
@@ -37,20 +34,16 @@
         Value="Exercise.WeightIncreaseOnSuccess"
         OnChange="e => SetExerciseSuccessWeight(e)"/>
 
-    <Switch Label="Superset With Next Exercise" data-cy="exercise-superset" Value=Exercise.SupersetWithNext OnSwitched="supersets=>SetExerciseSupersetsNext(supersets)"/>
+    <Switch Label="Superset With Next Exercise" data-cy="exercise-superset" Value="Exercise.SupersetWithNext" OnSwitched="supersets => SetExerciseSupersetsNext(supersets)"/>
 
     <RestEditorGroup Rest="Exercise.RestBetweenSets" OnRestUpdated="rest => OnRestUpdated(rest)"/>
 </div>
 
 @code
 {
-    [Parameter]
-    [EditorRequired]
-    public Action<ExerciseBlueprint> UpdateExercise { get; set; } = null!;
+    [Parameter] [EditorRequired] public Action<ExerciseBlueprint> UpdateExercise { get; set; } = null!;
 
-    [Parameter]
-    [EditorRequired]
-    public ExerciseBlueprint Exercise { get; set; } = null!;
+    [Parameter] [EditorRequired] public ExerciseBlueprint Exercise { get; set; } = null!;
 
     void DecrementExerciseSets() => UpdateExercise(Exercise with { Sets = Math.Max(Exercise.Sets - 1, 1) });
 
@@ -60,14 +53,14 @@
 
     void IncrementExerciseRepsPerSet() => UpdateExercise(Exercise with { RepsPerSet = Exercise.RepsPerSet + 1 });
 
-    void SetExerciseName( string name) => UpdateExercise(Exercise with { Name = name });
+    void SetExerciseName(string name) => UpdateExercise(Exercise with { Name = name });
 
-    void SetExerciseSupersetsNext( bool supersets)
+    void SetExerciseSupersetsNext(bool supersets)
         => UpdateExercise(Exercise with { SupersetWithNext = supersets });
 
 
     void SetExerciseInitialWeight(decimal initialWeight)
-        => UpdateExercise(Exercise with { InitialWeight = initialWeight});
+        => UpdateExercise(Exercise with { InitialWeight = initialWeight });
 
     void SetExerciseSuccessWeight(decimal weight)
         => UpdateExercise(Exercise with { WeightIncreaseOnSuccess = weight });

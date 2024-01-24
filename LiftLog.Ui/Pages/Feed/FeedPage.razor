@@ -11,38 +11,41 @@
 @implements IDisposable
 
 <div class="sticky top-0 z-10 @TopNavColorClass -mx-2 transition-colors">
-    <md-tabs @ref=tabs @onchange=HandleTabChange >
-        <md-primary-tab  id="mainfeed-tab" active=@(GetTabActiveClass("mainfeed-panel")) aria-controls="mainfeed-panel" >Feed</md-primary-tab>
-        <md-primary-tab  id="following-tab" active=@(GetTabActiveClass("following-panel")) aria-controls="following-panel" >Following</md-primary-tab>
-        <md-primary-tab  id="followers-tab" active=@(GetTabActiveClass("followers-panel")) aria-controls="followers-panel" >
-            <span class="flex items-center gap-1"><span>Followers</span>
-            @if(FeedState.Value.FollowRequests is {Count: > 0})
-            {
-                <div class="w-2 h-2 bg-error rounded-full"></div>
-            }
+    <md-tabs @ref="tabs" @onchange="HandleTabChange">
+        <md-primary-tab id="mainfeed-tab" active=@(GetTabActiveClass("mainfeed-panel")) aria-controls="mainfeed-panel">Feed</md-primary-tab>
+        <md-primary-tab id="following-tab" active=@(GetTabActiveClass("following-panel")) aria-controls="following-panel">Following</md-primary-tab>
+        <md-primary-tab id="followers-tab" active=@(GetTabActiveClass("followers-panel")) aria-controls="followers-panel">
+            <span class="flex items-center gap-1">
+                <span>Followers</span>
+                @if (FeedState.Value.FollowRequests is { Count: > 0 })
+                {
+                    <div class="w-2 h-2 bg-error rounded-full"></div>
+                }
             </span>
         </md-primary-tab>
     </md-tabs>
 </div>
 
 <div class="mt-2 flex-grow">
-    <div id="mainfeed-panel" role="tabpanel" aria-labelledby="mainfeed-tab" class="@(GetTabClass("mainfeed-panel")) min-h-full" @onpull-to-refresh=OnPullToRefresh >
-        @if(FeedState.Value.Identity is null)
+    <div id="mainfeed-panel" role="tabpanel" aria-labelledby="mainfeed-tab" class="@(GetTabClass("mainfeed-panel")) min-h-full" @onpull-to-refresh="OnPullToRefresh">
+        @if (FeedState.Value.Identity is null)
         {
-            <Card IsHighlighted=true class="mb-4" >
+            <Card IsHighlighted=true class="mb-4">
                 <div class="flex flex-col gap-2">
                     <h2 class="text-xl self-start">Start publishing to your feed</h2>
                     <p class="self-start text-left">You're not currently publishing your workouts for your friends to see</p>
-                    <AppButton class="self-end" Type=AppButtonType.Text OnClick=NavigateToCreateFeedIdentity >Start</AppButton>
+                    <AppButton class="self-end" Type=AppButtonType.Text OnClick=NavigateToCreateFeedIdentity>Start</AppButton>
                 </div>
             </Card>
-        }else {
+        }
+        else
+        {
             <div class="flex justify-end">
-                <AppButton Type=AppButtonType.Text OnClick=NavigateToCreateFeedIdentity >Your details</AppButton>
+                <AppButton Type=AppButtonType.Text OnClick=NavigateToCreateFeedIdentity>Your details</AppButton>
             </div>
         }
 
-        @if(FeedState.Value.Feed is {Count: 0})
+        @if (FeedState.Value.Feed is { Count: 0 })
         {
             <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
                 <md-icon>info</md-icon>
@@ -51,13 +54,13 @@
                 </span>
             </div>
         }
-        <VirtualizedCardList Items=@(FeedState.Value.Feed.Select(x=>(Item: x, User: FeedState.Value.FollowedUsers.GetValueOrDefault(x.UserId))).Where(x=>x.User is not null).ToList()) OnClick=@(x=>ViewFeedSession(x.Item)) CardClass="animate-fade-zoom-in">
-            <FeedItemCardContent Item=context.Item User=@(context.User) />
+        <VirtualizedCardList Items="@(FeedState.Value.Feed.Select(x => (Item: x, User: FeedState.Value.FollowedUsers.GetValueOrDefault(x.UserId))).Where(x => x.User is not null).ToList())" OnClick="@(x => ViewFeedSession(x.Item))" CardClass="animate-fade-zoom-in">
+            <FeedItemCardContent Item="context.Item" User="@(context.User)"/>
         </VirtualizedCardList>
     </div>
 
     <div id="following-panel" role="tabpanel" aria-labelledby="following-tab" class="@(GetTabClass("following-panel"))">
-        @if(FeedState.Value.FollowedUsers is {Count: 0})
+        @if (FeedState.Value.FollowedUsers is { Count: 0 })
         {
             <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
                 <md-icon>info</md-icon>
@@ -66,28 +69,27 @@
                 </span>
             </div>
         }
-        <VirtualizedCardList Items=@(FeedState.Value.FollowedUsers.Values.ToList()) CardClass="animate-fade-zoom-in">
-            <FeedUserCardContent User=context UpdateUser="UpdateUser" DeleteUser="() => BeginDeleteUser(context)" ViewUserPlan="() => ViewUserPlan(context)" />
+        <VirtualizedCardList Items="@(FeedState.Value.FollowedUsers.Values.ToList())" CardClass="animate-fade-zoom-in">
+            <FeedUserCardContent User="context" UpdateUser="UpdateUser" DeleteUser="() => BeginDeleteUser(context)" ViewUserPlan="() => ViewUserPlan(context)"/>
         </VirtualizedCardList>
     </div>
 
 
-
     <div id="followers-panel" role="tabpanel" aria-labelledby="followers-tab" class="@(GetTabClass("followers-panel"))">
-        @if(FeedState.Value.Identity is null)
+        @if (FeedState.Value.Identity is null)
         {
-            <Card IsHighlighted=true class="mb-4" >
+            <Card IsHighlighted=true class="mb-4">
                 <div class="flex flex-col gap-2">
                     <h2 class="text-xl self-start">Start publishing to your feed</h2>
                     <p class="self-start text-left">You're not currently publishing your workouts for your friends to see</p>
-                    <AppButton class="self-end" Type=AppButtonType.Text OnClick=NavigateToCreateFeedIdentity >Start</AppButton>
+                    <AppButton class="self-end" Type=AppButtonType.Text OnClick=NavigateToCreateFeedIdentity>Start</AppButton>
                 </div>
             </Card>
         }
         <div class="flex flex-col my-4">
-        <FeedShareUrl/>
+            <FeedShareUrl/>
         </div>
-        @if(FeedState.Value.Followers is {Count: 0} && FeedState.Value.FollowRequests is {Count: 0})
+        @if (FeedState.Value.Followers is { Count: 0 } && FeedState.Value.FollowRequests is { Count: 0 })
         {
             <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
                 <md-icon>info</md-icon>
@@ -96,35 +98,35 @@
                 </span>
             </div>
         }
-        <VirtualizedCardList Items=@(FeedState.Value.FollowRequests.ToList()) CardClass="animate-fade-zoom-in">
-            <FollowRequestCardContent FollowRequest=context Accept=@(()=>AcceptFollowRequest(context)) Deny=@(()=>DenyFollowRequest(context)) />
+        <VirtualizedCardList Items="@(FeedState.Value.FollowRequests.ToList())" CardClass="animate-fade-zoom-in">
+            <FollowRequestCardContent FollowRequest="context" Accept="@(() => AcceptFollowRequest(context))" Deny="@(() => DenyFollowRequest(context))"/>
         </VirtualizedCardList>
-        <VirtualizedCardList Items=@(FeedState.Value.Followers.Values.ToList()) CardClass="animate-fade-zoom-in">
-            <FollowerCardContent User=context RemoveFollower=@(()=> StartRemoveFollower(context)) ShowFollowBack=@(!FeedState.Value.FollowedUsers.ContainsKey(context.Id)) OnFollowBack=@(()=>RedirectToFollowUserUrl(context))/>
+        <VirtualizedCardList Items="@(FeedState.Value.Followers.Values.ToList())" CardClass="animate-fade-zoom-in">
+            <FollowerCardContent User="context" RemoveFollower="@(() => StartRemoveFollower(context))" ShowFollowBack="@(!FeedState.Value.FollowedUsers.ContainsKey(context.Id))" OnFollowBack="@(() => RedirectToFollowUserUrl(context))"/>
         </VirtualizedCardList>
     </div>
 </div>
-<Dialog @ref=deleteUserDialog>
+<Dialog @ref="deleteUserDialog">
     <span slot="headline">Unfollow user</span>
     <span slot="content" class="block text-left">This will unfollow <span class="text-primary font-bold">@(userToDelete?.Nickname ?? userToDelete?.Name ?? "Anonymous User")</span> and remove all their content on your device.</span>
     <div slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick=@(()=>deleteUserDialog?.Close())>Cancel</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick=DeleteUser>Unfollow</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="@(() => deleteUserDialog?.Close())">Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="DeleteUser">Unfollow</AppButton>
     </div>
 </Dialog>
-<Dialog @ref=removeFollowerDialog>
+<Dialog @ref="removeFollowerDialog">
     <span slot="headline">Remove follower</span>
     <span slot="content" class="block text-left">This will stop <span class="text-primary font-bold">@(userToDelete?.Nickname ?? userToDelete?.Name ?? "Anonymous User")</span> from following you and remove all your content from their device.</span>
     <div slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick=@(()=>removeFollowerDialog?.Close())>Cancel</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick=RemoveFollower>Unfollow</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="@(() => removeFollowerDialog?.Close())">Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="RemoveFollower">Unfollow</AppButton>
     </div>
 </Dialog>
 
 @code
 {
 
-    [CascadingParameter(Name="TopNavColorClass")]
+    [CascadingParameter(Name = "TopNavColorClass")]
     public string TopNavColorClass { get; set; } = null!;
 
 
@@ -145,10 +147,11 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if(firstRender)
+        if (firstRender)
         {
             await JSRuntime.InvokeVoidAsync("AppUtils.setupPullToRefresh", "#mainfeed-panel");
         }
+
         await base.OnAfterRenderAsync(firstRender);
     }
 
@@ -188,9 +191,11 @@
     private void RemoveFollower()
     {
         removeFollowerDialog?.Close();
-        if(userToDelete != null){
+        if (userToDelete != null)
+        {
             Dispatcher.Dispatch(new StartRemoveFollowerAction(userToDelete));
         }
+
         userToDelete = null;
     }
 
@@ -204,10 +209,11 @@
     private void DeleteUser()
     {
         deleteUserDialog?.Close();
-        if(userToDelete is not null)
+        if (userToDelete is not null)
         {
             Dispatcher.Dispatch(new UnfollowFeedUserAction(userToDelete));
         }
+
         userToDelete = null;
     }
 
@@ -234,7 +240,8 @@
 
     private void ViewFeedSession(FeedItem item)
     {
-        if(item is SessionFeedItem sessionItem){
+        if (item is SessionFeedItem sessionItem)
+        {
             NavigationManager.NavigateTo($"/feed/view-session/{sessionItem.EventId}");
         }
     }
@@ -244,7 +251,8 @@
         NavigationManager.NavigateTo(FeedShareUrl.GetShareUrl(user.Id, user.PublicKey, user.Name));
     }
 
-    protected override void Dispose(bool disposing){
+    protected override void Dispose(bool disposing)
+    {
         _ = JSRuntime.InvokeVoidAsync("AppUtils.destroyPullToRefresh");
         base.Dispose(disposing);
     }

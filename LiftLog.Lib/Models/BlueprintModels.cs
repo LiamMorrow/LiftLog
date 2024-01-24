@@ -57,8 +57,10 @@ public record Rest(TimeSpan MinRest, TimeSpan MaxRest, TimeSpan FailureRest)
 {
     public static readonly Rest Short =
         new(TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(90), TimeSpan.FromSeconds(180));
+
     public static readonly Rest Medium =
         new(TimeSpan.FromSeconds(90), TimeSpan.FromSeconds(180), TimeSpan.FromSeconds(300));
+
     public static readonly Rest Long =
         new(TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(8));
 }

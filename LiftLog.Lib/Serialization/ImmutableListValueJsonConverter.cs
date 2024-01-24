@@ -46,6 +46,7 @@ namespace LiftLog.Lib.Serialization
                 {
                     return null;
                 }
+
                 return ListOf<T>(list);
             }
 

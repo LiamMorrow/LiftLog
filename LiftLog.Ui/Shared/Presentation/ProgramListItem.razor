@@ -19,24 +19,21 @@
         }
     }
 
-    [Parameter]
-    [EditorRequired]
-    public ProgramBlueprint ProgramBlueprint { get; set; } = null!;
+    [Parameter] [EditorRequired] public ProgramBlueprint ProgramBlueprint { get; set; } = null!;
 
-    [Parameter]
-    [EditorRequired]
-    public EventCallback OnClick { get; set; }
+    [Parameter] [EditorRequired] public EventCallback OnClick { get; set; }
 
     private string SupportingText => $"{ProgramBlueprint.Tag} - {ExperienceLevelText}";
     private string TrailingSupportingText => $"{ProgramBlueprint.DaysPerWeek} days";
 
     private string ExperienceLevelText
-    => ProgramBlueprint.ExperienceLevel switch
-    {
-        Experience.Beginner => "Recommended for beginner lifters",
-        Experience.Intermediate => "Recommended for intermediate lifters",
-        Experience.Advanced => "Recommended for advanced lifters",
-        Experience.Professional => "Recommended for professional lifters",
-        _ => ""
-    };
+        => ProgramBlueprint.ExperienceLevel switch
+        {
+            Experience.Beginner => "Recommended for beginner lifters",
+            Experience.Intermediate => "Recommended for intermediate lifters",
+            Experience.Advanced => "Recommended for advanced lifters",
+            Experience.Professional => "Recommended for professional lifters",
+            _ => ""
+        };
+
 }

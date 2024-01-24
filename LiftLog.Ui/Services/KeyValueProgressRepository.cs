@@ -22,6 +22,7 @@ namespace LiftLog.Ui.Services
         private const string StorageKey = "Progress";
         private bool _initialised;
         private bool _initialising;
+
         private ImmutableDictionary<Guid, Session> _storedSessions = ImmutableDictionary<
             Guid,
             Session
@@ -73,6 +74,7 @@ namespace LiftLog.Ui.Services
                     await InitialiseAsync();
                     return;
                 }
+
                 _initialising = true;
                 var sw = Stopwatch.StartNew();
                 logger.LogInformation("Initialising progress repository");
@@ -82,6 +84,7 @@ namespace LiftLog.Ui.Services
                     version = "2";
                     await keyValueStore.SetItemAsync($"{StorageKey}-Version", "2");
                 }
+
                 var versionCheckTime = sw.ElapsedMilliseconds;
                 sw.Restart();
 
@@ -108,6 +111,7 @@ namespace LiftLog.Ui.Services
                 {
                     _storedSessions = storedData.CompletedSessions;
                 }
+
                 var convertTime = sw.ElapsedMilliseconds;
                 sw.Stop();
                 logger.LogInformation(

@@ -1,33 +1,25 @@
 @inject IJSRuntime JSRuntime
 
-<md-slider @ref="slider" step=@Step min=@Min max=@Max value=@Value labeled=@(Label != null) value-label=@Label
-    @onslider-change="OnSliderChange"></md-slider>
+<md-slider @ref="slider" step="@Step" min="@Min" max="@Max" value="@Value" labeled="@(Label != null)" value-label="@Label
+         "@onslider-change="OnSliderChange">
+</md-slider>
 
 
 @code {
 
     private ElementReference slider;
 
-    [Parameter]
-    [EditorRequired]
-    public int Value { get; set; }
+    [Parameter] [EditorRequired] public int Value { get; set; }
 
-    [Parameter]
-    [EditorRequired]
-    public int Min { get; set; }
+    [Parameter] [EditorRequired] public int Min { get; set; }
 
-    [Parameter]
-    [EditorRequired]
-    public int Max { get; set; }
+    [Parameter] [EditorRequired] public int Max { get; set; }
 
-    [Parameter]
-    public int? Step { get; set; }
+    [Parameter] public int? Step { get; set; }
 
-    [Parameter]
-    public string? Label { get; set; }
+    [Parameter] public string? Label { get; set; }
 
-    [Parameter]
-    public EventCallback<int> ValueChanged { get; set; }
+    [Parameter] public EventCallback<int> ValueChanged { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -37,10 +29,11 @@
         }
     }
 
-    private async  Task OnSliderChange()
+    private async Task OnSliderChange()
     {
         await Task.Yield();
-        var value = await JSRuntime.InvokeAsync<int>("AppUtils.getValue",slider);
+        var value = await JSRuntime.InvokeAsync<int>("AppUtils.getValue", slider);
         await ValueChanged.InvokeAsync(value);
     }
+
 }

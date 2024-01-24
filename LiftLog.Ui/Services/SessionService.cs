@@ -24,6 +24,7 @@ public class SessionService(
         {
             yield break;
         }
+
         var latestRecordedExercises = await progressRepository.GetLatestRecordedExercisesAsync();
         var currentSession = currentSessionState.Value.WorkoutSession;
         if (currentSession?.IsStarted == true)

@@ -27,6 +27,7 @@ public class FeedStateInitMiddleware(IKeyValueStore keyValueStore) : Middleware
                 }
             }
         }
+
         dispatch.Dispatch(new SetFeedIsHydratedAction());
     }
 
@@ -38,10 +39,12 @@ public class FeedStateInitMiddleware(IKeyValueStore keyValueStore) : Middleware
         {
             return;
         }
+
         if (prevState is not null && prevState.Equals(state))
         {
             return;
         }
+
         prevState = state;
         _ = Task.Run(async () =>
         {

@@ -1,91 +1,71 @@
 ﻿@using LiftLog.Ui.Util
 
-@if(!IsReadonly)
+@if (!IsReadonly)
 {
     <SplitCardControl>
         <MainContent>
             @RenderMainContent()
         </MainContent>
         <SideContent>
-            <IconButton Type="IconButtonType.FilledTonal" OnClick="()=>{_menu?.Open();}" Icon="more_horiz" />
+            <IconButton Type="IconButtonType.FilledTonal" OnClick="() => { _menu?.Open(); }" Icon="more_horiz"/>
             <Menu @ref="_menu">
-                <MenuItem Label="Edit" Icon="edit" OnClick="OnEditExercise" />
-                <MenuItem Label="Remove" Icon="delete" OnClick="OnRemoveExercise" />
+                <MenuItem Label="Edit" Icon="edit" OnClick="OnEditExercise"/>
+                <MenuItem Label="Remove" Icon="delete" OnClick="OnRemoveExercise"/>
             </Menu>
             <IconButton data-cy="per-rep-weight-btn" Type=IconButtonType.FilledTonal Icon=weight OnClick="ToggleExercisePerSetWeight"></IconButton>
-            @if(PreviousRecordedExercises?.Any() == true)
+            @if (PreviousRecordedExercises?.Any() == true)
             {
-                <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.FilledTonal" Icon="history" OnStartHold="()=> _holdingPrevious=true" OnEndHold="()=>_holdingPrevious = false" />
+                <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.FilledTonal" Icon="history" OnStartHold="() => _holdingPrevious = true" OnEndHold="() => _holdingPrevious = false"/>
             }
         </SideContent>
     </SplitCardControl>
-}else{
+}
+else
+{
     @RenderMainContent()
 }
 
-<Dialog @ref=notesDialog>
+<Dialog @ref="notesDialog">
     <span slot="headline">@(RecordedExercise.Blueprint.Name) Notes</span>
     <div slot="content">
-        <TextField label="Notes" TextFieldType="TextFieldType.Outline" Value=@EditorNotes OnChange="HandleNotesChange"  type="textarea"  />
+        <TextField label="Notes" TextFieldType="TextFieldType.Outline" Value="@EditorNotes" OnChange="HandleNotesChange" type="textarea"/>
     </div>
     <div slot="actions" data-cy="notes-dialog-actions">
-        <AppButton Type="AppButtonType.Text" OnClick=@(()=>notesDialog?.Close())>Cancel</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick=HandleNotesSave>Save</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="@(() => notesDialog?.Close())">Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="HandleNotesSave">Save</AppButton>
     </div>
 </Dialog>
+
 @code {
     private bool _holdingPrevious = false;
     private Menu? _menu;
     private Dialog? notesDialog;
 
-    private string EditorNotes {get;set;} = "";
+    private string EditorNotes { get; set; } = "";
 
-    [EditorRequired]
-    [Parameter]
-    public RecordedExercise RecordedExercise { get; set; } = null!;
+    [EditorRequired] [Parameter] public RecordedExercise RecordedExercise { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public ImmutableListValue<DatedRecordedExercise> PreviousRecordedExercises { get; set; } = null!;
+    [EditorRequired] [Parameter] public ImmutableListValue<DatedRecordedExercise> PreviousRecordedExercises { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public bool ToStartNext { get; set; }
+    [EditorRequired] [Parameter] public bool ToStartNext { get; set; }
 
-    [EditorRequired]
-    [Parameter]
-    public Action<int> CycleRepCountForSet { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<int> CycleRepCountForSet { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public Action<int> ClearRepCountForSet { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<int> ClearRepCountForSet { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public Action<int, decimal> UpdateWeightForSet { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<int, decimal> UpdateWeightForSet { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public Action<decimal> UpdateWeightForExercise { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<decimal> UpdateWeightForExercise { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public Action<string?> UpdateNotesForExercise { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<string?> UpdateNotesForExercise { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public Action OnEditExercise { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action OnEditExercise { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public Action ToggleExercisePerSetWeight { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action ToggleExercisePerSetWeight { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public Action OnRemoveExercise { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action OnRemoveExercise { get; set; } = null!;
 
-    [Parameter]
-    public bool IsReadonly { get; set;} = false;
+    [Parameter] public bool IsReadonly { get; set; } = false;
 
     private void HandleNotesChange(string value)
     {
@@ -104,13 +84,14 @@
         notesDialog?.Open();
     }
 
-    private StatisticOverTime GetStatistics(){
-            return new StatisticOverTime(
-                RecordedExercise.Blueprint.Name,
-                PreviousRecordedExercises
-                    .Select(x => new TimeTrackedStatistic(x.DateTime ,x.RecordedExercise.Weight))
-                    .ToImmutableList()
-                );
+    private StatisticOverTime GetStatistics()
+    {
+        return new StatisticOverTime(
+            RecordedExercise.Blueprint.Name,
+            PreviousRecordedExercises
+                .Select(x => new TimeTrackedStatistic(x.DateTime, x.RecordedExercise.Weight))
+                .ToImmutableList()
+        );
     }
 
     private RenderFragment RenderMainContent()
@@ -119,7 +100,7 @@
         {
             (true, null) => (RecordedExercise, -1, RecordedExercise.Notes),
             (true, var previous) => (previous, -1, previous.Notes),
-            (false, _) => (RecordedExercise, RecordedExercise.PotentialSets.IndexOf(x => x.Set is null),  RecordedExercise.Notes)
+            (false, _) => (RecordedExercise, RecordedExercise.PotentialSets.IndexOf(x => x.Set is null), RecordedExercise.Notes)
         };
         return @<div class="flex flex-col gap-4">
             <div class="flex justify-between gap-2">
@@ -128,9 +109,9 @@
                     <WeightDisplay
                         Weight="displayedExercise.Weight"
                         Increment="displayedExercise.Blueprint.WeightIncreaseOnSuccess"
-                        UpdateWeight="w => {if (w is not null) UpdateWeightForExercise(w.Value);}"
-                        IsReadonly=IsReadonly/>
-                    @if(!IsReadonly)
+                        UpdateWeight="w => { if (w is not null) UpdateWeightForExercise(w.Value); }"
+                        IsReadonly="IsReadonly"/>
+                    @if (!IsReadonly)
                     {
                         <IconButton data-cy="exercise-notes-btn" Icon="notes" OnClick="OnOpenNotesButtonClick" Type="IconButtonType.Outlined"/>
                     }
@@ -147,18 +128,19 @@
                         WeightIncrement="displayedExercise.Blueprint.WeightIncreaseOnSuccess"
                         CycleRepCount=@(() => CycleRepCountForSet(i))
                         ClearRepCount=@(() => ClearRepCountForSet(i))
-                        UpdateWeight=@((weight)=>UpdateWeightForSet(i, weight))
-                        ToStartNext=@(ToStartNext && repToStartNext == i && !IsReadonly) />
+                        UpdateWeight=@((weight) => UpdateWeightForSet(i, weight))
+                        ToStartNext=@(ToStartNext && repToStartNext == i && !IsReadonly)/>
                 }
             </div>
-            @if(notesToShow is not null)
+            @if (notesToShow is not null)
             {
                 <span data-cy="exercise-notes">@notesToShow</span>
             }
-            @if(_holdingPrevious && PreviousRecordedExercises?.Any() == true)
+            @if (_holdingPrevious && PreviousRecordedExercises?.Any() == true)
             {
-                <StatGraphCardContent Statistics=GetStatistics() RenderDelay=TimeSpan.Zero ShowTitle=false ></StatGraphCardContent>
+                <StatGraphCardContent Statistics=GetStatistics() RenderDelay=TimeSpan.Zero ShowTitle=false></StatGraphCardContent>
             }
         </div>;
     }
+
 }

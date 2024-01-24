@@ -2,7 +2,10 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "description": "A session to perform.",
-  "required": ["Name", "Exercises"],
+  "required": [
+    "Name",
+    "Exercises"
+  ],
   "properties": {
     "Name": {
       "type": "string",
@@ -14,7 +17,14 @@
       "items": {
         "type": "object",
         "description": "An exercise to perform.",
-        "required": ["Name", "Sets", "RepsPerSet", "InitialKilograms", "KilogramsIncreaseOnSuccess", "Rest"],
+        "required": [
+          "Name",
+          "Sets",
+          "RepsPerSet",
+          "InitialKilograms",
+          "KilogramsIncreaseOnSuccess",
+          "Rest"
+        ],
         "properties": {
           "Name": {
             "type": "string",
@@ -39,7 +49,11 @@
           "RestBetweenSets": {
             "type": "object",
             "description": "The rest time to use for the exercise.",
-            "required": ["MinRest", "MaxRest", "FailureRest"],
+            "required": [
+              "MinRest",
+              "MaxRest",
+              "FailureRest"
+            ],
             "properties": {
               "MinRestSeconds": {
                 "type": "integer",

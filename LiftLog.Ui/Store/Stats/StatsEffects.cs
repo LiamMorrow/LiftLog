@@ -17,6 +17,7 @@ public class StatsEffects(IState<StatsState> state, IProgressRepository progress
         {
             return;
         }
+
         dispatcher.Dispatch(new SetStatsIsLoadingAction(true));
 
         await Task.Run(async () =>

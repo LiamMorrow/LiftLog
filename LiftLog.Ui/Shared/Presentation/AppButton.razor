@@ -2,20 +2,28 @@
 {
     case AppButtonType.Primary:
         <md-filled-button
-            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class"))  pointer-events-auto"  @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@LessRoundedStyle @FullHeightStyle">@ChildContent</md-filled-button>
+            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class"))  pointer-events-auto" @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@LessRoundedStyle @FullHeightStyle">
+            @ChildContent
+        </md-filled-button>
         break;
     case AppButtonType.Secondary:
         <md-filled-tonal-button
-            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class"))  pointer-events-auto"  @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@LessRoundedStyle @FullHeightStyle">@ChildContent</md-filled-tonal-button>
+            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class"))  pointer-events-auto" @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@LessRoundedStyle @FullHeightStyle">
+            @ChildContent
+        </md-filled-tonal-button>
         break;
     case AppButtonType.OutlineSecondary:
         <md-outlined-button
-            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class"))  pointer-events-auto"  @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true"
-            style="@LessRoundedStyle @FilledWithPrimaryStyle @FullHeightStyle">@ChildContent</md-outlined-button>
+            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class"))  pointer-events-auto" @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true"
+            style="@LessRoundedStyle @FilledWithPrimaryStyle @FullHeightStyle">
+            @ChildContent
+        </md-outlined-button>
         break;
     case AppButtonType.Text:
         <md-text-button
-            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class"))  pointer-events-auto"  @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@LessRoundedStyle @FullHeightStyle">@ChildContent</md-text-button>
+            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class"))  pointer-events-auto" @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@LessRoundedStyle @FullHeightStyle">
+            @ChildContent
+        </md-text-button>
         break;
     default:
         throw new ArgumentOutOfRangeException();
@@ -24,49 +32,42 @@
 
 @code {
 
-    [EditorRequired]
-    [Parameter]
-    public RenderFragment ChildContent { get; set; } = null!;
+    [EditorRequired] [Parameter] public RenderFragment ChildContent { get; set; } = null!;
 
-    [Parameter]
-    public EventCallback<MouseEventArgs> OnClick { get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
 
-    [Parameter]
-    public AppButtonType Type { get; set; } = AppButtonType.Primary;
+    [Parameter] public AppButtonType Type { get; set; } = AppButtonType.Primary;
 
-    [Parameter]
-    public bool FullHeight { get; set; }
+    [Parameter] public bool FullHeight { get; set; }
 
-    [Parameter]
-    public bool FilledWithPrimary { get; set; }
+    [Parameter] public bool FilledWithPrimary { get; set; }
 
-    [Parameter]
-    public bool LessRounded { get; set; }
+    [Parameter] public bool LessRounded { get; set; }
 
-    [Parameter]
-    public bool Disabled { get; set; }
+    [Parameter] public bool Disabled { get; set; }
 
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private string FullHeightStyle => FullHeight ? $"--md-{MdButtonStyle}-button-container-height:100%;": "";
+    private string FullHeightStyle => FullHeight ? $"--md-{MdButtonStyle}-button-container-height:100%;" : "";
 
     private string FilledWithPrimaryStyle => FilledWithPrimary
-    ? $""""
-        background-color: var(--md-sys-color-primary);
-        border-radius: 0.75rem;
-        --md-{MdButtonStyle}-button-container-color: var(--md-sys-color-primary);
-        --md-{MdButtonStyle}-button-focus-label-text-color:var(--md-sys-color-on-primary);
-        --md-{MdButtonStyle}-button-with-icon-icon-color: var(--md-sys-color-on-primary);
-        --md-{MdButtonStyle}-button-with-icon-pressed-icon-color: var(--md-sys-color-on-primary);
-        --md-{MdButtonStyle}-button-with-icon-hover-icon-color: var(--md-sys-color-on-primary);
-        --md-{MdButtonStyle}-button-pressed-label-text-color: var(--md-sys-color-on-primary);
-        --md-{MdButtonStyle}-button-hover-label-text-color: var(--md-sys-color-on-primary);
-        --md-{MdButtonStyle}-button-label-text-color: var(--md-sys-color-on-primary);
-        """"
-    : "";
+        ? $"""
+           background-color: var(--md-sys-color-primary);
+           border-radius: 0.75rem;
+           --md-{MdButtonStyle}-button-container-color: var(--md-sys-color-primary);
+           --md-{MdButtonStyle}-button-focus-label-text-color:var(--md-sys-color-on-primary);
+           --md-{MdButtonStyle}-button-with-icon-icon-color: var(--md-sys-color-on-primary);
+           --md-{MdButtonStyle}-button-with-icon-pressed-icon-color: var(--md-sys-color-on-primary);
+           --md-{MdButtonStyle}-button-with-icon-hover-icon-color: var(--md-sys-color-on-primary);
+           --md-{MdButtonStyle}-button-pressed-label-text-color: var(--md-sys-color-on-primary);
+           --md-{MdButtonStyle}-button-hover-label-text-color: var(--md-sys-color-on-primary);
+           --md-{MdButtonStyle}-button-label-text-color: var(--md-sys-color-on-primary);
+           """
+        : "";
 
-    private string MdButtonStyle => Type switch {
+    private string MdButtonStyle => Type switch
+    {
         AppButtonType.Primary => "filled",
         AppButtonType.Secondary => "tonal",
         AppButtonType.OutlineSecondary => "outlined",
@@ -76,8 +77,10 @@
 
     private string LessRoundedStyle => LessRounded ? $"--md-{MdButtonStyle}-button-container-shape: 0.75rem;" : "";
 
-    private void Clicked(){
-        if(Disabled) return;
+    private void Clicked()
+    {
+        if (Disabled) return;
         OnClick.InvokeAsync(null);
     }
+
 }

@@ -21,6 +21,7 @@ public class EventsController(UserDataContext db) : ControllerBase
         {
             return BadRequest(validationResult.Errors);
         }
+
         var validFollowSecrets = await db.UserFollowSecrets.Where(x =>
             request.Users.Select(x => x.FollowSecret).Contains(x.Value)
         )
@@ -48,6 +49,7 @@ public class EventsController(UserDataContext db) : ControllerBase
         {
             userEvent.LastAccessed = DateTimeOffset.UtcNow;
         }
+
         await db.SaveChangesAsync();
         return Ok(new GetEventsResponse(userEvents, invalidFollowSecrets));
     }

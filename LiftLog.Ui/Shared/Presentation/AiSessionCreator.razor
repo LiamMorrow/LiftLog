@@ -14,19 +14,16 @@
 </div>
 <div class="flex flex-col gap-2">
     <span class="text-lg text-center">How much volume?</span>
-    <Slider Min="0" Max="100" Value="Value.Volume" ValueChanged="i=>OnChange.InvokeAsync(Value with {Volume = i})"
-        Label="@VolumeLabel"></Slider>
+    <Slider Min="0" Max="100" Value="Value.Volume" ValueChanged="i => OnChange.InvokeAsync(Value with { Volume = i })"
+            Label="@VolumeLabel">
+    </Slider>
 </div>
 
 @code {
 
-    [EditorRequired]
-    [Parameter]
-    public EventCallback<AiSessionCreatorModel> OnChange { get; set; }
+    [EditorRequired] [Parameter] public EventCallback<AiSessionCreatorModel> OnChange { get; set; }
 
-    [EditorRequired]
-    [Parameter]
-    public AiSessionCreatorModel Value { get; set; } = null!;
+    [EditorRequired] [Parameter] public AiSessionCreatorModel Value { get; set; } = null!;
 
     private string VolumeLabel
         => Value.Volume switch
@@ -40,17 +37,18 @@
     private void HandleSelectedChanged(string label, bool currentlySelected)
     {
         OnChange.InvokeAsync(Value with
+        {
+            AreasToWorkout = currentlySelected switch
             {
-                AreasToWorkout = currentlySelected switch
-                {
-                    true => Value.AreasToWorkout.Add(label),
-                    false => Value.AreasToWorkout.Remove(label)
-                }
-            });
+                true => Value.AreasToWorkout.Add(label),
+                false => Value.AreasToWorkout.Remove(label)
+            }
+        });
     }
 
     private RenderFragment RenderFilterChip(string label)
     {
-        return @<FilterChip OnSelectedChange=@((selected)=> HandleSelectedChanged(label,selected)) Label=@label Selected=@(Value.AreasToWorkout.Contains(label)) />;
+        return @<FilterChip OnSelectedChange="@((selected) => HandleSelectedChanged(label, selected))" Label="@label" Selected="@(Value.AreasToWorkout.Contains(label))"/>;
     }
+
 }

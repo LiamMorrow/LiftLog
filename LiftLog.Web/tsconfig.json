@@ -2,7 +2,12 @@
   "compilerOptions": {
     "strict": true,
     "target": "ES2021",
-    "lib": ["ES2021", "DOM"]
+    "lib": [
+      "ES2021",
+      "DOM"
+    ]
   },
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

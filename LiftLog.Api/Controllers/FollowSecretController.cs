@@ -24,15 +24,18 @@ public class FollowSecretController(UserDataContext db, PasswordService password
         {
             return BadRequest(validationResult.Errors);
         }
+
         var user = await db.Users.FindAsync(request.UserId);
         if (user == null)
         {
             return NotFound();
         }
+
         if (!passwordService.VerifyPassword(request.Password, user.HashedPassword, user.Salt))
         {
             return Unauthorized();
         }
+
         var userFollowSecret = new UserFollowSecret
         {
             Id = Guid.NewGuid(),
@@ -56,15 +59,18 @@ public class FollowSecretController(UserDataContext db, PasswordService password
         {
             return BadRequest(validationResult.Errors);
         }
+
         var user = await db.Users.FindAsync(request.UserId);
         if (user == null)
         {
             return NotFound();
         }
+
         if (!passwordService.VerifyPassword(request.Password, user.HashedPassword, user.Salt))
         {
             return Unauthorized();
         }
+
         var userFollowSecret = await db.UserFollowSecrets.Where(x =>
             x.UserId == request.UserId && x.Value == request.FollowSecret
         )

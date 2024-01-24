@@ -39,6 +39,7 @@ public partial class FeedEffects(
         {
             return;
         }
+
         var sharedFeedUser = state.Value.SharedFeedUser;
         var result = await feedFollowService.RequestToFollowAUserAsync(identity, sharedFeedUser);
 
@@ -92,10 +93,12 @@ public partial class FeedEffects(
         {
             return;
         }
+
         if (action.FeedUser.FollowSecret is null)
         {
             return;
         }
+
         var inboxMessage = new InboxMessageDao
         {
             FromUserId = identity.Id,
@@ -179,6 +182,7 @@ public partial class FeedEffects(
                     result.Error
                 );
             }
+
             dispatcher.Dispatch(new RemoveFollowRequestAction(action.Request));
         });
 
@@ -207,6 +211,7 @@ public partial class FeedEffects(
                     return;
                 }
             }
+
             dispatcher.Dispatch(new RemoveFollowerAction(action.User));
         });
 

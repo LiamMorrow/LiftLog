@@ -11,35 +11,35 @@
 @inject IDispatcher Dispatcher
 @inject ILogger<HistoryPage> logger
 
-@if(!_latestSessions.Any())
+@if (!_latestSessions.Any())
 {
-<div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
-    <md-icon>info</md-icon>
-    <span>
-        <p>Nothing recorded yet!<br> Complete a session and check again.</p>
-    </span>
-</div>
+    <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
+        <md-icon>info</md-icon>
+        <span>
+            <p>Nothing recorded yet!<br> Complete a session and check again.</p>
+        </span>
+    </div>
 }
-else{
-<VirtualizedCardList Items="_latestSessions" OnClick="HandleSessionClick">
-    <SplitCardControl>
-        <MainContent>
-            <SessionSummary IsFilled="true" Session="context"></SessionSummary>
-        </MainContent>
+else
+{
+    <VirtualizedCardList Items="_latestSessions" OnClick="HandleSessionClick">
+        <SplitCardControl>
+            <MainContent>
+                <SessionSummary IsFilled="true" Session="context"></SessionSummary>
+            </MainContent>
 
-        <SideContent>
-            <IconButton Type="IconButtonType.FilledTonal" OnClick=@(() => {_selectedSession = context;
-                _deleteDialog?.Open();}) Icon="delete" />
-        </SideContent>
-    </SplitCardControl>
-</VirtualizedCardList>
+            <SideContent>
+                <IconButton Type="IconButtonType.FilledTonal" OnClick=@(() => { _selectedSession = context; _deleteDialog?.Open(); }) Icon="delete"/>
+            </SideContent>
+        </SplitCardControl>
+    </VirtualizedCardList>
 }
 
 <Dialog @ref="_deleteDialog">
     <span slot="headline">Delete Session?</span>
     <span slot="content" class="block text-left">Session will be deleted from history, this cannot be undone.</span>
     <div slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick="()=>{_deleteDialog?.Close();}">Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="() => { _deleteDialog?.Close(); }">Cancel</AppButton>
         <AppButton Type="AppButtonType.Text" OnClick="DeleteSession">Delete</AppButton>
     </div>
 </Dialog>
@@ -57,6 +57,7 @@ else{
         {
             return;
         }
+
         Dispatcher.Dispatch(new DeleteSessionAction(_selectedSession));
         Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
         Dispatcher.Dispatch(new PublishUnpublishedSessionsAction());
@@ -79,8 +80,8 @@ else{
         Dispatcher.Dispatch(new SetPageTitleAction("History"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
         this._latestSessions = await SessionService
-        .GetLatestSessionsAsync()
-        .ToListAsync();
+            .GetLatestSessionsAsync()
+            .ToListAsync();
         await base.OnInitializedAsync();
         sw.Stop();
         logger.LogInformation($"History page initialized in {sw.ElapsedMilliseconds} ms");

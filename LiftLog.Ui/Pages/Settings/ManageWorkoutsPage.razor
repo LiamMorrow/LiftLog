@@ -22,8 +22,7 @@
         OnMoveSessionUp="() => MoveSessionUp(session)"
         OnMoveSessionDown="() => MoveSessionDown(session)"
         OnRemoveSession="() => RemoveSession(session)"
-        OnDuplicateSession="() => DuplicateSession(session)"
-    />
+        OnDuplicateSession="() => DuplicateSession(session)"/>
 </CardList>
 
 <div class="flex justify-center mt-2">
@@ -51,10 +50,12 @@
 
     void DuplicateSession(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(
         new AddProgramSessionAction(
-            sessionBlueprint with {
-                Name = $"Session {ProgramState.Value.SessionBlueprints.Count + 1}"}
-            )
-        );
+            sessionBlueprint with
+            {
+                Name = $"Session {ProgramState.Value.SessionBlueprints.Count + 1}"
+            }
+        )
+    );
 
     protected override void OnInitialized()
     {

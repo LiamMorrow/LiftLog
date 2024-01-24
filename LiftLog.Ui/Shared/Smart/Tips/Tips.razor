@@ -3,31 +3,34 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 
-@if(SettingsState.Value.ShowTips && SettingsState.Value.TipToShow <= totalTips){
+@if (SettingsState.Value.ShowTips && SettingsState.Value.TipToShow <= totalTips)
+{
     <Card class="flex flex-col gap-4" IsHighlighted=true>
-       <div class="flex justify-between"><h1 class="text-xl">Tip</h1><AppButton Type="AppButtonType.OutlineSecondary" OnClick="()=>HandleNextClick()">@NextText</AppButton></div>
-        @switch(SettingsState.Value.TipToShow)
+        <div class="flex justify-between">
+            <h1 class="text-xl">Tip</h1><AppButton Type="AppButtonType.OutlineSecondary" OnClick="() => HandleNextClick()">@NextText</AppButton>
+        </div>
+        @switch (SettingsState.Value.TipToShow)
         {
             case 1:
                 <DisablingTipsTip/>
                 break;
             case 2:
-                <GeneralButtonInfoTip />
+                <GeneralButtonInfoTip/>
                 break;
             case 3:
-                <HoldingRepCounterTip />
+                <HoldingRepCounterTip/>
                 break;
             case 4:
                 <NotesButtonTip/>
                 break;
             case 5:
-                <PreviousButtonTip />
+                <PreviousButtonTip/>
                 break;
             case 6:
-                <RestoringASessionTip />
+                <RestoringASessionTip/>
                 break;
             case 7:
-                <FeedTip />
+                <FeedTip/>
                 break;
         }
     </Card>
@@ -37,8 +40,9 @@
 {
     private static readonly int totalTips = 7;
 
-    private void HandleNextClick(){
-        Dispatcher.Dispatch(new SetTipToShowAction(SettingsState.Value.TipToShow+1));
+    private void HandleNextClick()
+    {
+        Dispatcher.Dispatch(new SetTipToShowAction(SettingsState.Value.TipToShow + 1));
         StateHasChanged();
     }
 

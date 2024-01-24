@@ -12,7 +12,8 @@ AppUtils.getMiddleElementAttribute = function (element, attribute) {
     const middleX = absolutePositionOfElement.left + (absolutePositionOfElement.width / 2);
     const elementAtMiddle = document.elementFromPoint(middleX, middle);
     return elementAtMiddle?.getAttribute(attribute);
-}/**
+}
+/**
  *
  * @param {HTMLElement} element
  */
@@ -88,8 +89,8 @@ AppUtils.selectAllText = function (element) {
 }
 
 /**
-* @param {HTMLElement} element
-*/
+ * @param {HTMLElement} element
+ */
 AppUtils.scrollToTop = function (element) {
     element?.scrollTo({
         top: 0,

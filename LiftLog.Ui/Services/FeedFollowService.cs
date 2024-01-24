@@ -113,6 +113,7 @@ public class FeedFollowService(
                 new ApiError(ApiErrorType.EncryptionError, "Failed to encrypt inbox message", e)
             );
         }
+
         var putResponse = await feedApiService.PutInboxMessageAsync(
             new PutInboxMessageRequest(
                 ToUserId: request.UserId,

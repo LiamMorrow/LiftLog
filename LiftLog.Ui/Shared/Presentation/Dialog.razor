@@ -1,18 +1,18 @@
 @inject IJSRuntime JSRuntime
 
-@if(opened){
-
-@* Put the dialog into a section in the main layout so that the scrim covers parent elements on ios *@
-<Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="Dialog">
-    <md-dialog
-        @ondialog-close="HandleDialogClose"
-        @attributes="AdditionalAttributes"
-        @ref="dialog">
-        @ChildContent
-    </md-dialog>
-</Microsoft.AspNetCore.Components.Sections.SectionContent>
-
+@if (opened)
+{
+    @* Put the dialog into a section in the main layout so that the scrim covers parent elements on ios *@
+    <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="Dialog">
+        <md-dialog
+            @ondialog-close="HandleDialogClose"
+            @attributes="AdditionalAttributes"
+            @ref="dialog">
+            @ChildContent
+        </md-dialog>
+    </Microsoft.AspNetCore.Components.Sections.SectionContent>
 }
+
 @code
 {
     private bool opened = false;
@@ -21,11 +21,9 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    [Parameter]
-    public Action? OnClose { get; set; }
+    [Parameter] public Action? OnClose { get; set; }
 
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     public async void Open()
     {

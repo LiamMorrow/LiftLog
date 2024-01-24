@@ -16,14 +16,14 @@
 @if (CurrentSessionState.Value.HistorySession is not null)
 {
     <div class="flex w-full my-2">
-    <TextField
-        Label="Date"
-        class="w-full"
-        TextFieldType="TextFieldType.Filled"
-        Value=@(CurrentSessionState.Value.HistorySession.Date.ToString("o"))
-        OnChange=SetSessionDate
-        type="date" />
-        </div>
+        <TextField
+            Label="Date"
+            class="w-full"
+            TextFieldType="TextFieldType.Filled"
+            Value=@(CurrentSessionState.Value.HistorySession.Date.ToString("o"))
+            OnChange=SetSessionDate
+            type="date"/>
+    </div>
     <SessionComponent
         ShowRestTimer=false
         CycleRepcountForExercise=CycleRepcountForExercise
@@ -42,19 +42,20 @@
         UpdateWeightForSet=UpdateWeightForSet
         ExerciseNames="ProgramState.Value.ExerciseNames"
         SessionInPlan=@(ProgramState.Value.SessionBlueprints.Contains(CurrentSessionState.Value.HistorySession.Blueprint))
-        SessionWithSameNameInPlan=@(ProgramState.Value.SessionBlueprints.Any(x=>x.Name == CurrentSessionState.Value.HistorySession.Blueprint.Name))
+        SessionWithSameNameInPlan=@(ProgramState.Value.SessionBlueprints.Any(x => x.Name == CurrentSessionState.Value.HistorySession.Blueprint.Name))
         AddSessionToPlan="AddSessionToPlan"
         UpdateSessionInPlan="UpdateSessionInPlan"
-        UpdateBodyweight="UpdateBodyweight" />
+        UpdateBodyweight="UpdateBodyweight"/>
 }
 
 @code
 {
     private ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>> previouslyCompleted = ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>>.Empty;
     private bool initted = false;
+
     private void Init(Session session)
     {
-        if(!initted)
+        if (!initted)
         {
             initted = true;
         }
@@ -62,7 +63,7 @@
 
     private void SetSessionDate(string dateString)
     {
-        if(DateOnly.TryParse(dateString, out var date))
+        if (DateOnly.TryParse(dateString, out var date))
             Dispatcher.Dispatch(
                 new SetActiveSessionDateAction(SessionTarget.HistorySession, DateOnly.Parse(dateString))
             );
@@ -100,20 +101,23 @@
 
     private void AddSessionToPlan()
     {
-        if(CurrentSessionState.Value.HistorySession?.Blueprint is SessionBlueprint blueprint)
+        if (CurrentSessionState.Value.HistorySession?.Blueprint is SessionBlueprint blueprint)
         {
-            var existingSessionWithSameName = ProgramState.Value.SessionBlueprints.Any(x=>x.Name ==blueprint.Name);
-            if(existingSessionWithSameName){
+            var existingSessionWithSameName = ProgramState.Value.SessionBlueprints.Any(x => x.Name == blueprint.Name);
+            if (existingSessionWithSameName)
+            {
                 var blueprintNameWithoutNumber = System.Text.RegularExpressions.Regex.Replace(blueprint.Name, @" \(\d+\)$", "");
                 var newName = blueprint.Name;
                 var i = 1;
-                while(ProgramState.Value.SessionBlueprints.Any(x=>x.Name == newName))
+                while (ProgramState.Value.SessionBlueprints.Any(x => x.Name == newName))
                 {
                     newName = $"{blueprintNameWithoutNumber} ({i})";
                     i++;
                 }
+
                 blueprint = blueprint with { Name = newName };
             }
+
             Dispatcher.Dispatch(new AddProgramSessionAction(blueprint));
             Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.HistorySession, CurrentSessionState.Value.HistorySession with { Blueprint = blueprint }));
             Dispatcher.Dispatch(new SetPageTitleAction(blueprint.Name));
@@ -122,9 +126,9 @@
 
     private void UpdateSessionInPlan()
     {
-        if(CurrentSessionState.Value.HistorySession?.Blueprint is SessionBlueprint blueprint)
+        if (CurrentSessionState.Value.HistorySession?.Blueprint is SessionBlueprint blueprint)
         {
-            var blueprintIndex = ProgramState.Value.SessionBlueprints.IndexedTuples().First(x=>x.Item.Name ==blueprint.Name).Index;
+            var blueprintIndex = ProgramState.Value.SessionBlueprints.IndexedTuples().First(x => x.Item.Name == blueprint.Name).Index;
             Dispatcher.Dispatch(new SetProgramSessionAction(blueprintIndex, blueprint));
         }
     }
@@ -150,11 +154,13 @@
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/history"));
         if (CurrentSessionState.Value.HistorySession is null)
         {
-                NavigationManager.NavigateTo("/history");
-        }else
+            NavigationManager.NavigateTo("/history");
+        }
+        else
         {
             Dispatcher.Dispatch(new SetPageTitleAction(CurrentSessionState.Value.HistorySession.Blueprint.Name));
         }
+
         base.OnInitialized();
     }
 }

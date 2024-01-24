@@ -22,6 +22,7 @@ public partial class FeedEffects
         {
             return;
         }
+
         var inboxItemsResponse = await feedApiService.GetInboxMessagesAsync(
             new GetInboxMessagesRequest(identity.Id, identity.Password)
         );

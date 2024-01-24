@@ -33,6 +33,7 @@ public class GooglePlayPurchaseVerificationService(
                 );
                 return false;
             }
+
             throw;
         }
     }

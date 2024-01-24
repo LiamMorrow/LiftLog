@@ -1,29 +1,30 @@
 <div class="flex flex-col justify-around h-full">
-<h2 class="text-2xl">Summary</h2>
-<span>
-<p>You are a <span class="font-bold text-primary">@Attributes.Age year</span> old<span class="font-bold text-primary"> @GenderText</span> who weighs <span class="font-bold text-primary">@Attributes.WeightRange kilograms</span>.</p>
-<p>You would like to work on <span class="font-bold text-primary">@GoalsText</span>.
-You would like to work out <span class="font-bold text-primary">@Attributes.DaysPerWeek days</span> per week.
-Your skill level with weight training is <span class="font-bold text-primary">@Attributes.Experience</span>.</p>
-</span>
-<p>Is this correct?</p>
-<div class="flex justify-around">
-    <AppButton  OnClick="() => OnConfirm(false)"><md-icon slot="icon">close</md-icon>No</AppButton>
-    <AppButton  OnClick="() => OnConfirm(true)"><md-icon slot="icon">auto_awesome</md-icon>Yes</AppButton>
+    <h2 class="text-2xl">Summary</h2>
+    <span>
+        <p>You are a <span class="font-bold text-primary">@Attributes.Age year</span> old<span class="font-bold text-primary"> @GenderText</span> who weighs <span class="font-bold text-primary">@Attributes.WeightRange kilograms</span>.</p>
+        <p>
+            You would like to work on <span class="font-bold text-primary">@GoalsText</span>.
+            You would like to work out <span class="font-bold text-primary">@Attributes.DaysPerWeek days</span> per week.
+            Your skill level with weight training is <span class="font-bold text-primary">@Attributes.Experience</span>.
+        </p>
+    </span>
+    <p>Is this correct?</p>
+    <div class="flex justify-around">
+        <AppButton OnClick="() => OnConfirm(false)"><md-icon slot="icon">close</md-icon>No</AppButton>
+        <AppButton OnClick="() => OnConfirm(true)"><md-icon slot="icon">auto_awesome</md-icon>Yes</AppButton>
+    </div>
 </div>
-</div>
-@code {
-    [EditorRequired]
-    [Parameter] public AiWorkoutAttributes Attributes { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public Action<bool> OnConfirm { get; set; } = null!;
+@code {
+    [EditorRequired] [Parameter] public AiWorkoutAttributes Attributes { get; set; } = null!;
+
+    [EditorRequired] [Parameter] public Action<bool> OnConfirm { get; set; } = null!;
 
     [CascadingParameter(Name = "UseImperial")]
     public bool UseImperial { get; set; }
 
-    private string GenderText => Attributes.Gender switch {
+    private string GenderText => Attributes.Gender switch
+    {
         Gender.Male => " male",
         Gender.Female => " female",
         Gender.Other => " with a gender other than male or female",

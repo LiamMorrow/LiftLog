@@ -15,6 +15,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
     private readonly JsonNode aiWorkoutPlanJsonSchema = JsonNode.Parse(
         File.ReadAllText("./AiWorkoutPlan.json")
     )!;
+
     private readonly JsonNode sessionBlueprintJsonSchema = JsonNode.Parse(
         File.ReadAllText("./AiSessionBlueprint.json")
     )!;
@@ -47,13 +48,13 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
             new(
                 Role.User,
                 $"""
-                I am a {attributes.Age} year old {genderText} who weighs {attributes.WeightRange} {(
+                 I am a {attributes.Age} year old {genderText} who weighs {attributes.WeightRange} {(
                     attributes.UseImperialUnits ? "pounds" : "kilograms"
                 )}. I would like to work on {goalsText}.
-                I would like to work out {attributes.DaysPerWeek} days per week.
-                My skill level with weight training is {attributes.Experience}.
-                Please make me a workout plan.
-                """
+                 I would like to work out {attributes.DaysPerWeek} days per week.
+                 My skill level with weight training is {attributes.Experience}.
+                 Please make me a workout plan.
+                 """
             ),
         };
         var chatRequest = new ChatRequest(

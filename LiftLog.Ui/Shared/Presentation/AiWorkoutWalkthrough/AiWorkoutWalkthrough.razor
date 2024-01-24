@@ -7,33 +7,33 @@
     @switch (step)
     {
         case 1:
-            <GenderSelector OnGenderSelect="OnGenderSelect" />
+            <GenderSelector OnGenderSelect="OnGenderSelect"/>
             canPrevious = false;
             canNext = false;
             break;
         case 2:
-            <WeightSelector OnWeightSelect="OnWeightSelect" />
+            <WeightSelector OnWeightSelect="OnWeightSelect"/>
             break;
         case 3:
-            <AgeSelector OnAgeSelect="OnAgeSelect" />
+            <AgeSelector OnAgeSelect="OnAgeSelect"/>
             break;
         case 4:
-            <NumberOfDaysSelector OnNumberOfDaysSelect="OnNumberOfDaysSelect" />
+            <NumberOfDaysSelector OnNumberOfDaysSelect="OnNumberOfDaysSelect"/>
             canNext = false;
             break;
         case 5:
-            <GoalsSelector OnGoalsSelected="OnGoalsSelected" />
+            <GoalsSelector OnGoalsSelected="OnGoalsSelected"/>
             canNext = attributes.Goals.Any();
             break;
         case 6:
-            <ExperienceLevelSelector OnExperienceSelect="OnExperienceSelect" />
+            <ExperienceLevelSelector OnExperienceSelect="OnExperienceSelect"/>
             canNext = false;
             break;
         case 7:
             <Summary OnConfirm="OnSummaryConfirm" Attributes="attributes"/>
             break;
     }
-    @if(step != 7)
+    @if (step != 7)
     {
         <div class="flex justify-between p-4">
             <AppButton Disabled=@(!canPrevious) Type="AppButtonType.Secondary" OnClick="OnPrevious">
@@ -44,19 +44,21 @@
                 <md-icon>arrow_right</md-icon>
             </AppButton>
         </div>
-        }
+    }
 </div>
 
 @code {
     private int step = 1;
-    private AiWorkoutAttributes attributes = new AiWorkoutAttributes(Gender.PreferNotToSay,"", 0, 0, new ImmutableListValue<string>(), Experience.Beginner, false);
-    [Parameter][EditorRequired] public Action<AiWorkoutAttributes> OnAttributesSelected { get; set; } = null!;
+    private AiWorkoutAttributes attributes = new AiWorkoutAttributes(Gender.PreferNotToSay, "", 0, 0, new ImmutableListValue<string>(), Experience.Beginner, false);
+    [Parameter] [EditorRequired] public Action<AiWorkoutAttributes> OnAttributesSelected { get; set; } = null!;
 
     private void OnPrevious()
     {
-        if(step is 1){
+        if (step is 1)
+        {
             return;
         }
+
         step--;
     }
 
@@ -71,6 +73,7 @@
         attributes = attributes with { Gender = gender };
         StateHasChanged();
     }
+
     private void OnWeightSelect(string weightRange)
     {
         attributes = attributes with { WeightRange = weightRange };
@@ -80,6 +83,7 @@
     {
         attributes = attributes with { Age = age };
     }
+
     private void OnNumberOfDaysSelect(int numberOfDays)
     {
         attributes = attributes with { DaysPerWeek = numberOfDays };
@@ -100,14 +104,18 @@
         StateHasChanged();
     }
 
-    private void OnSummaryConfirm(bool confirmed){
+    private void OnSummaryConfirm(bool confirmed)
+    {
         if (confirmed)
         {
             OnAttributesSelected(attributes);
-        } else
+        }
+        else
         {
             step--;
         }
+
         StateHasChanged();
     }
+
 }

@@ -7,29 +7,24 @@
 
 @code
 {
-    [EditorRequired]
-    [Parameter]
-    public ICollection<TItem> Items { get; set; } = null!;
+    [EditorRequired] [Parameter] public ICollection<TItem> Items { get; set; } = null!;
 
-    [Parameter]
-    public RenderFragment<TItem>? ChildContent { get; set; } = null!;
+    [Parameter] public RenderFragment<TItem>? ChildContent { get; set; } = null!;
 
-    [Parameter]
-    public Action<TItem>? OnClick { get; set; }
+    [Parameter] public Action<TItem>? OnClick { get; set; }
 
-    [Parameter]
-    public Func<TItem, bool>? ShouldHighlight { get; set; }
+    [Parameter] public Func<TItem, bool>? ShouldHighlight { get; set; }
 
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    [Parameter]
-    public string? CardClass { get; set; }
+    [Parameter] public string? CardClass { get; set; }
 
 
-    private RenderFragment RenderCard(TItem item){
-        return @<Card IsHighlighted="ShouldHighlight?.Invoke(item) ?? false" OnClick=@(OnClick != null ? _=> OnClick(item) : null) class="@CardClass">
-                @ChildContent?.Invoke(item)
-            </Card>;
-        }
+    private RenderFragment RenderCard(TItem item)
+    {
+        return @<Card IsHighlighted="ShouldHighlight?.Invoke(item) ?? false" OnClick="@(OnClick != null ? _ => OnClick(item) : null)" class="@CardClass">
+            @ChildContent?.Invoke(item)
+        </Card>;
+    }
 }

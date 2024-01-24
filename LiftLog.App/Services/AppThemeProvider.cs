@@ -23,6 +23,7 @@ public class AppThemeProvider(ThemeColorUpdateService colorUpdateService) : IThe
         {
             return Task.CompletedTask;
         }
+
         Microsoft.Maui.Controls.Application.Current.UserAppTheme = themePreference switch
         {
             ThemePreference.FollowSystem => AppTheme.Unspecified,
@@ -47,6 +48,7 @@ public class AppThemeProvider(ThemeColorUpdateService colorUpdateService) : IThe
             colorUpdateService.EnableDynamicColor = true;
             Preferences.Default.Set("EnableDynamicColor", true);
         }
+
         return Task.CompletedTask;
     }
 

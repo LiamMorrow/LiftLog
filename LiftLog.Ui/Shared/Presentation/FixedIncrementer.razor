@@ -1,28 +1,20 @@
 @typeparam T
 
-<div @attributes=@AdditionalAttributes class="flex items-center @(AdditionalAttributes?.GetValueOrDefault("class"))">
-    <IconButton data-cy="fixed-decrement" Type="IconButtonType.Outlined" OnClick="Decrement" Icon="remove" />
+<div @attributes="@AdditionalAttributes" class="flex items-center @(AdditionalAttributes?.GetValueOrDefault("class"))">
+    <IconButton data-cy="fixed-decrement" Type="IconButtonType.Outlined" OnClick="Decrement" Icon="remove"/>
     <span class="inline-block w-20 mx-2 text-center">@Value @Label</span>
-    <IconButton data-cy="fixed-increment" Type="IconButtonType.Outlined" OnClick="Increment" Icon="add" />
+    <IconButton data-cy="fixed-increment" Type="IconButtonType.Outlined" OnClick="Increment" Icon="add"/>
 </div>
 
 @code
 {
-    [Parameter]
-    [EditorRequired]
-    public T Value { get; set; } = default!;
+    [Parameter] [EditorRequired] public T Value { get; set; } = default!;
 
-    [Parameter]
-    [EditorRequired]
-    public string Label { get; set; } = null!;
+    [Parameter] [EditorRequired] public string Label { get; set; } = null!;
 
-    [Parameter]
-    [EditorRequired]
-    public Action Increment { get; set; } = null!;
+    [Parameter] [EditorRequired] public Action Increment { get; set; } = null!;
 
-    [Parameter]
-    [EditorRequired]
-    public Action Decrement { get; set; } = null!;
+    [Parameter] [EditorRequired] public Action Decrement { get; set; } = null!;
 
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; } = null!;

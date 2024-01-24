@@ -10,9 +10,11 @@ namespace LiftLog.Ui.Repository
         ValueTask<
             ImmutableDictionary<KeyedExerciseBlueprint, RecordedExercise>
         > GetLatestRecordedExercisesAsync();
+
         ValueTask<
             ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>>
         > GetLatestOrderedRecordedExercisesAsync();
+
         IAsyncEnumerable<Session> GetOrderedSessions();
         ValueTask SaveCompletedSessionAsync(Session session);
         ValueTask SaveCompletedSessionsAsync(IEnumerable<Session> sessions);

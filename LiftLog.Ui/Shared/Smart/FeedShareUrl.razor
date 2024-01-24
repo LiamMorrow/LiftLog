@@ -1,15 +1,17 @@
 @inject IStringSharer StringSharer
 @inject IState<FeedState> FeedState
 
-@if(FeedState.Value.Identity is not null){
-    <TextField Value="@GetShareUrl()" label="Share Link" readonly="readonly" OnClick="HandleShareUrlClick" />
+@if (FeedState.Value.Identity is not null)
+{
+    <TextField Value="@GetShareUrl()" label="Share Link" readonly="readonly" OnClick="HandleShareUrlClick"/>
     <span class="text-sm text-on-surface">Only those with the link can see what you've shared.</span>
 }
+
 @code {
 
     private string? GetShareUrl()
     {
-        if(FeedState.Value.Identity == null)
+        if (FeedState.Value.Identity == null)
             return null;
         var identity = FeedState.Value.Identity;
         return GetShareUrl(identity.Id, identity.RsaKeyPair.PublicKey, identity.Name);
@@ -18,7 +20,7 @@
     private async Task HandleShareUrlClick()
     {
         var shareUrl = GetShareUrl();
-        if(shareUrl == null)
+        if (shareUrl == null)
             return;
         await StringSharer.ShareAsync(shareUrl);
     }

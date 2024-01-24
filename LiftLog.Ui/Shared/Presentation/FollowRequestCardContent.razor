@@ -1,22 +1,16 @@
-
-    <div class="flex flex-col gap-4">
-        <span><span class="text-primary font-bold">@(FollowRequest.Name ?? "Anonymous User")</span> wants to follow you!</span>
-        <div class="flex gap-4 justify-around">
-            <AppButton Type=AppButtonType.Text OnClick="Deny">Deny</AppButton>
-            <AppButton Type=AppButtonType.Primary OnClick="Accept">Accept</AppButton>
-        </div>
+<div class="flex flex-col gap-4">
+    <span><span class="text-primary font-bold">@(FollowRequest.Name ?? "Anonymous User")</span> wants to follow you!</span>
+    <div class="flex gap-4 justify-around">
+        <AppButton Type="AppButtonType.Text" OnClick="Deny">Deny</AppButton>
+        <AppButton Type="AppButtonType.Primary" OnClick="Accept">Accept</AppButton>
     </div>
+</div>
+
 @code{
 
-    [Parameter]
-    [EditorRequired]
-    public FollowRequest FollowRequest { get; set; } = null!;
+    [Parameter] [EditorRequired] public FollowRequest FollowRequest { get; set; } = null!;
 
-    [Parameter]
-    [EditorRequired]
-    public Action Accept { get; set; } = null!;
+    [Parameter] [EditorRequired] public Action Accept { get; set; } = null!;
 
-    [Parameter]
-    [EditorRequired]
-    public Action Deny { get; set; } = null!;
+    [Parameter] [EditorRequired] public Action Deny { get; set; } = null!;
 }

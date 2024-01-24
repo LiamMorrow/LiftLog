@@ -65,6 +65,7 @@ public class SettingsEffects(
                     {
                         return null;
                     }
+
                     return new SettingsStorageDaoV2(
                         v1.Sessions.Select(x => x.ToModel()).Select(SessionDaoV2.FromModel),
                         v1.Program.Select(x => x.ToModel()).Select(SessionBlueprintDaoV2.FromModel)
@@ -81,6 +82,7 @@ public class SettingsEffects(
                 }
             }
         }
+
         try
         {
             var importBytes = await textExporter.ImportBytesAsync();

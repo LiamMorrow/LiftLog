@@ -59,6 +59,7 @@ namespace LiftLog.Ui.Store.CurrentSession
             {
                 logger.LogError(e, "Failed to deserialize current session state");
             }
+
             dispatch.Dispatch(new SetCurrentSessionHydratedAction());
         }
 

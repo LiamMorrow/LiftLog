@@ -13,24 +13,23 @@
 <nav class="flex flex-col bg-surface-container text-on-surface">
     <div class="flex justify-around py-3">
         <NavButton IsActive=@IsRouteMatch("(/$|^$|/session/?)") Navigate="NavigateToWorkout" Icon="fitness_center" Text="Workout"></NavButton>
-        @if(SettingsState.Value.ShowFeed){
-            <NavButton IsActive=@IsRouteMatch("/feed(/?.*)") Navigate="NavigateToFeed" Icon="diversity_3" Text="Feed" ShowBadge=@(FeedState.Value.FollowRequests.Any()) ></NavButton>
+        @if (SettingsState.Value.ShowFeed)
+        {
+            <NavButton IsActive=@IsRouteMatch("/feed(/?.*)") Navigate="NavigateToFeed" Icon="diversity_3" Text="Feed" ShowBadge=@(FeedState.Value.FollowRequests.Any())></NavButton>
         }
-        <NavButton IsActive=@IsRouteMatch("/stats(/?.*)") Navigate="NavigateToStats" Icon="show_chart" Text="Stats" ></NavButton>
-        <NavButton IsActive=@IsRouteMatch("/history(/?.*)") Navigate="NavigateToHistory" Icon="history" Text="History" ></NavButton>
+        <NavButton IsActive=@IsRouteMatch("/stats(/?.*)") Navigate="NavigateToStats" Icon="show_chart" Text="Stats"></NavButton>
+        <NavButton IsActive=@IsRouteMatch("/history(/?.*)") Navigate="NavigateToHistory" Icon="history" Text="History"></NavButton>
         <NavButton IsActive=@IsRouteMatch("/settings(/?.*)") Navigate="NavigateToSettings" Icon="settings" Text="Settings"></NavButton>
     </div>
     <div style="height: @InsetsManager.SystemSafeInsetBottom"></div>
-   </nav>
+</nav>
+
 @code {
 
     protected override void OnInitialized()
     {
         NavigationManager.LocationChanged += LocationChanged;
-        InsetsManager.InsetsChanged += (_,_)=>
-        {
-            InvokeAsync(StateHasChanged);
-        };
+        InsetsManager.InsetsChanged += (_, _) => { InvokeAsync(StateHasChanged); };
         base.OnInitialized();
     }
 
@@ -43,7 +42,7 @@
 
     private void NavigateToWorkout()
     {
-        if(CurrentSessionState.Value.WorkoutSession != null
+        if (CurrentSessionState.Value.WorkoutSession != null
             && AppState.Value.ReopenCurrentSession
             && !IsRouteMatch("/session/?$"))
         {
@@ -51,6 +50,7 @@
             StateHasChanged();
             return;
         }
+
         NavigationManager.NavigateTo("/");
         StateHasChanged();
     }
@@ -89,4 +89,5 @@
         NavigationManager.LocationChanged -= LocationChanged;
         base.Dispose(disposing);
     }
+
 }

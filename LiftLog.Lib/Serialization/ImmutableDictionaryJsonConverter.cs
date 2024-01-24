@@ -49,6 +49,7 @@ namespace LiftLog.Lib.Serialization
                 {
                     return null;
                 }
+
                 return dict.ToImmutableDictionary();
             }
 

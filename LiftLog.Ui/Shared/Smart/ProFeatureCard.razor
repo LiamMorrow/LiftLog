@@ -15,12 +15,12 @@
         <span class="text-lg text-center">Pro Features</span>
         @RenderLockedPro()
     </div>
-    <AppButton Disabled=!AppState.Value.ProState.IsPro Type="AppButtonType.Primary" OnClick="NavigateToAiPlanner">
+    <AppButton Disabled="!AppState.Value.ProState.IsPro" Type="AppButtonType.Primary" OnClick="NavigateToAiPlanner">
         <md-icon slot="icon">auto_awesome</md-icon>
         AI Program Planner
     </AppButton>
-    <AppButton Disabled=!AppState.Value.ProState.IsPro Type="AppButtonType.Secondary"
-        OnClick="NavigateToAiSessionCreator">
+    <AppButton Disabled="!AppState.Value.ProState.IsPro" Type="AppButtonType.Secondary"
+               OnClick="NavigateToAiSessionCreator">
         <md-icon slot="icon">auto_awesome</md-icon>
         AI Session Creator
     </AppButton>
@@ -28,14 +28,17 @@
 
 <Dialog @ref="upgradeDialog">
     <span slot="headline">Upgrade to Pro</span>
-    <span slot="content" class="block text-left">This will unlock the AI planner, which will generate a plan tailored
-        specifically to you and your goals. <br />This is a one time purchase of @RenderPrice().</span>
+    <span slot="content" class="block text-left">
+        This will unlock the AI planner, which will generate a plan tailored
+        specifically to you and your goals. <br/>This is a one time purchase of @RenderPrice().
+    </span>
     <div slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick="()=>upgradeDialog?.Close()">Close</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="() => upgradeDialog?.Close()">Close</AppButton>
         <AppButton Type="AppButtonType.Text" OnClick="UpgradeToPro">Upgrade</AppButton>
     </div>
 
 </Dialog>
+
 @code {
     private Price? price;
     private Dialog? upgradeDialog;
@@ -52,15 +55,19 @@
         {
             return @<md-icon>verified</md-icon>;
         }
-        return @<AppButton OnClick="()=>{upgradeDialog?.Open();}"><md-icon slot="icon">lock</md-icon>Unlock</AppButton>;
+
+        return @<AppButton OnClick="() => { upgradeDialog?.Open(); }"><md-icon slot="icon">lock</md-icon>Unlock</AppButton>;
     }
 
     private RenderFragment RenderPrice()
     {
         if (price == null)
         {
-            return @<span class="animate-pulse"><span class="inline-block min-h-[1em] w-[4rem] flex-auto cursor-wait bg-current align-middle text-base text-neutral-700 opacity-50 dark:text-neutral-50"></span></span>;
+            return @<span class="animate-pulse">
+                       <span class="inline-block min-h-[1em] w-[4rem] flex-auto cursor-wait bg-current align-middle text-base text-neutral-700 opacity-50 dark:text-neutral-50"></span>
+                   </span>;
         }
+
         return @<span>@(price?.LocalizedPrice) @(price?.Currency)</span>;
     }
 
@@ -84,6 +91,7 @@
         {
             Dispatcher.Dispatch(new SetProTokenAction(proKey));
         }
+
         await InvokeAsync(() => upgradeDialog?.Close());
     }
 

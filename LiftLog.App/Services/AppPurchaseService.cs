@@ -47,6 +47,7 @@ public class AppPurchaseService(ILogger<AppPurchaseService> logger) : IAppPurcha
             {
                 return null;
             }
+
             if (purchaseEx.PurchaseError == PurchaseError.AlreadyOwned)
             {
                 var purchases = await billing.GetPurchasesAsync(ItemType.InAppPurchase);
@@ -56,6 +57,7 @@ public class AppPurchaseService(ILogger<AppPurchaseService> logger) : IAppPurcha
                     return proPurchase.PurchaseToken;
                 }
             }
+
             //Billing Exception handle this based on the type
             logger.LogError(purchaseEx, "Error purchasing pro");
             return null;

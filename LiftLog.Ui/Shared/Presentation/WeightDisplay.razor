@@ -3,7 +3,7 @@
         <WeightFormat Weight="Weight"/>
     </AppButton>
 
-    @if(!IsReadonly)
+    @if (!IsReadonly)
     {
         <WeightDialog
             @ref="dialog"
@@ -11,8 +11,7 @@
             Label="@Label"
             UpdateWeight="UpdateWeight"
             Increment="Increment"
-            AllowNull="AllowNull"
-        />
+            AllowNull="AllowNull"/>
     }
 </div>
 
@@ -20,29 +19,21 @@
 
     private WeightDialog? dialog;
 
-    [EditorRequired]
-    [Parameter]
-    public decimal? Weight { get; set; } = null!;
+    [EditorRequired] [Parameter] public decimal? Weight { get; set; } = null!;
 
-    [Parameter]
-    public string Label { get; set; } = "Weight";
+    [Parameter] public string Label { get; set; } = "Weight";
 
-    [EditorRequired]
-    [Parameter]
-    public decimal Increment { get; set; } = 2.5m;
+    [EditorRequired] [Parameter] public decimal Increment { get; set; } = 2.5m;
 
-    [EditorRequired]
-    [Parameter]
-    public Action<decimal?> UpdateWeight { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<decimal?> UpdateWeight { get; set; } = null!;
 
-    [Parameter]
-    public bool IsReadonly { get; set; } = false;
+    [Parameter] public bool IsReadonly { get; set; } = false;
 
-    [Parameter]
-    public bool AllowNull { get; set; } = false;
+    [Parameter] public bool AllowNull { get; set; } = false;
 
     private void OnOpenClick()
     {
         dialog?.Open();
     }
+
 }

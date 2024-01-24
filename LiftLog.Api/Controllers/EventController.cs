@@ -22,15 +22,18 @@ public class EventController(UserDataContext db, PasswordService passwordService
         {
             return BadRequest(validationResult.Errors);
         }
+
         var user = await db.Users.FindAsync(request.UserId);
         if (user == null)
         {
             return NotFound();
         }
+
         if (!passwordService.VerifyPassword(request.Password, user.HashedPassword, user.Salt))
         {
             return Unauthorized();
         }
+
         var userEvent = new UserEvent
         {
             Id = request.EventId,
@@ -48,6 +51,7 @@ public class EventController(UserDataContext db, PasswordService passwordService
         {
             db.UserEvents.Remove(existingEvent);
         }
+
         db.UserEvents.Add(userEvent);
 
         await db.SaveChangesAsync();

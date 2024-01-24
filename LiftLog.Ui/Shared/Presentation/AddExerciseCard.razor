@@ -1,4 +1,4 @@
-<Card OnClick="@(_=>OnClick())" IsHighlighted=true>
+<Card OnClick="@(_ => OnClick())" IsHighlighted="true">
     <div>
         <md-icon class="text-5xl h-12 w-12">add</md-icon>
     </div>
@@ -9,7 +9,5 @@
 
 @code
 {
-    [Parameter]
-    [EditorRequired]
-    public Action OnClick { get; set; } = null!;
+    [Parameter] [EditorRequired] public Action OnClick { get; set; } = null!;
 }

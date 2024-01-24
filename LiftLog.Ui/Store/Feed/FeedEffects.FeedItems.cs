@@ -29,6 +29,7 @@ public partial class FeedEffects
         {
             return;
         }
+
         var feedResponseTask = feedApiService.GetUserEventsAsync(
             new GetEventsRequest(
                 Users: [.. followedUsersWithFollowSecret],
@@ -53,6 +54,7 @@ public partial class FeedEffects
             );
             return;
         }
+
         var feedEvents = feedResponse.Data.Events;
         var invalidFollowSecrets = feedResponse.Data.InvalidFollowSecrets;
         var users = usersResponse.Data.Users;
@@ -134,6 +136,7 @@ public partial class FeedEffects
                     continue;
                 }
             }
+
             dispatcher.Dispatch(new RemoveUnpublishedSessionIdAction(sessionId));
         }
     }
@@ -245,6 +248,7 @@ public partial class FeedEffects
         {
             return null;
         }
+
         return new SessionFeedItem(
             UserId: userEvent.UserId,
             EventId: userEvent.EventId,
@@ -267,6 +271,7 @@ public partial class FeedEffects
         {
             return null;
         }
+
         byte[] decrypted;
         try
         {
@@ -281,6 +286,7 @@ public partial class FeedEffects
             logger.LogError(e, "Failed to decrypt feed item. Skipping.");
             return null;
         }
+
         return UserEventPayload.Parser.ParseFrom(decrypted);
     }
 }

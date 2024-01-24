@@ -48,6 +48,7 @@ public class MauiNotificationService(
                 {
                     return;
                 }
+
                 dispatcher.Dispatch(new NavigateAction("/session"));
                 notificationService.Cancel(NextSetNotificationHandle.Id);
                 switch (e.ActionId)
@@ -57,6 +58,7 @@ public class MauiNotificationService(
                         break;
                 }
             }
+
             var request = new NotificationRequest
             {
                 NotificationId = NextSetNotificationHandle.Id,

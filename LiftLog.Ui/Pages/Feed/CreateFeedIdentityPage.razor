@@ -8,11 +8,11 @@
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-@if(FeedState.Value.Identity == null)
+@if (FeedState.Value.Identity == null)
 {
     <div class="text-on-surface flex flex-col gap-4 p-4">
         <span class="text-lg">Create a new account to start using the feed!</span>
-        <TextField Value="@name" label="Your name (optional)" OnChange=@SetName />
+        <TextField Value="@name" label="Your name (optional)" OnChange=@SetName/>
         <div>
             <Switch Label="Publish workouts" Value=@publishWorkouts OnSwitched="SetPublishWorkouts"/>
         </div>
@@ -31,7 +31,7 @@ else
     <div class="text-on-surface flex flex-col gap-4 p-4">
         <span class="text-lg">Share this link to let others track your progress!</span>
 
-        <TextField Value="@name" label="Your name (optional)" OnChange=@SetName />
+        <TextField Value="@name" label="Your name (optional)" OnChange=@SetName/>
         <FeedShareUrl/>
         <div>
             <Switch Label="Publish workouts" Value=@publishWorkouts OnSwitched="SetPublishWorkouts"/>
@@ -42,16 +42,16 @@ else
         <div>
             <Switch Label="Publish plan" Value=@publishPlan OnSwitched="SetPublishPlan"/>
         </div>
-        <AppButton Type=AppButtonType.Text OnClick="@(()=>stopPublishingDialog?.Open())">Delete account</AppButton>
+        <AppButton Type=AppButtonType.Text OnClick="@(() => stopPublishingDialog?.Open())">Delete account</AppButton>
     </div>
 }
 
-<Dialog @ref=stopPublishingDialog>
+<Dialog @ref="stopPublishingDialog">
     <span slot="headline">Delete account</span>
-    <span slot="content" class="block text-left">This will delete your account on the servers and unsubscribe you from all feeds.  You will need to resubscribe and share a new link if you want to enable the feed again.</span>
+    <span slot="content" class="block text-left">This will delete your account on the servers and unsubscribe you from all feeds. You will need to resubscribe and share a new link if you want to enable the feed again.</span>
     <div slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick=@(()=>stopPublishingDialog?.Close())>Cancel</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick=StopPublishing>Delete</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="@(() => stopPublishingDialog?.Close())">Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="StopPublishing">Delete</AppButton>
     </div>
 </Dialog>
 
@@ -63,7 +63,7 @@ else
     private bool publishPlan;
     private Dialog? stopPublishingDialog;
 
-    [SupplyParameterFromQuery(Name="from")]
+    [SupplyParameterFromQuery(Name = "from")]
     public string From { get; set; } = "";
 
     protected override void OnInitialized()
@@ -84,7 +84,7 @@ else
 
     private void UpdatePublishingDetails()
     {
-        if(FeedState.Value.Identity is null)
+        if (FeedState.Value.Identity is null)
             return;
         Dispatcher.Dispatch(new UpdateFeedIdentityAction(string.IsNullOrEmpty(name) ? null : name, null, publishBodyweight, publishPlan, publishWorkouts));
     }
@@ -113,7 +113,8 @@ else
         UpdatePublishingDetails();
     }
 
-    private void StopPublishing(){
+    private void StopPublishing()
+    {
         Dispatcher.Dispatch(new DeleteFeedIdentityAction());
         stopPublishingDialog?.Close();
     }

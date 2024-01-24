@@ -87,6 +87,7 @@ public class OsEncryptionService : IEncryptionService
             {
                 aes.GenerateIV();
             }
+
             aes.Key = key.Value;
 
             using var encryptor = aes.CreateEncryptor();

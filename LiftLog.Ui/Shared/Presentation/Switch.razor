@@ -1,22 +1,18 @@
 @inject IJSRuntime JSRuntime
-<label class="flex justify-between gap-3 items-center"> @Label
-<md-switch @attributes=AdditionalAttributes @ref=_switchRef @onchange=HandleInput selected=@Value ></md-switch>
+<label class="flex justify-between gap-3 items-center">
+    @Label
+    <md-switch @attributes="AdditionalAttributes" @ref="_switchRef" @onchange="HandleInput" selected="@Value"></md-switch>
 </label>
+
 @code{
 
     private ElementReference _switchRef;
 
-    [EditorRequired]
-    [Parameter]
-    public string Label {get;set;} = null!;
+    [EditorRequired] [Parameter] public string Label { get; set; } = null!;
 
-    [Parameter]
-    [EditorRequired]
-    public bool Value { get;set; }
+    [Parameter] [EditorRequired] public bool Value { get; set; }
 
-    [Parameter]
-    [EditorRequired]
-    public EventCallback<bool> OnSwitched {get;set;}
+    [Parameter] [EditorRequired] public EventCallback<bool> OnSwitched { get; set; }
 
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
@@ -26,9 +22,11 @@
         await base.OnParametersSetAsync();
     }
 
-        private async Task HandleInput(){
+    private async Task HandleInput()
+    {
         await Task.Yield();
         var selected = await JSRuntime.InvokeAsync<bool>("AppUtils.getSelected", _switchRef);
         await OnSwitched.InvokeAsync(selected);
     }
+
 }

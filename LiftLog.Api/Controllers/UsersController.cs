@@ -21,11 +21,13 @@ public class UsersController(UserDataContext db) : ControllerBase
         {
             return BadRequest(validationResult.Errors);
         }
+
         var users = await db.Users.Where(x => request.Ids.Contains(x.Id)).ToArrayAsync();
         foreach (var user in users)
         {
             user.LastAccessed = DateTimeOffset.UtcNow;
         }
+
         await db.SaveChangesAsync();
         return Ok(
             new GetUsersResponse(

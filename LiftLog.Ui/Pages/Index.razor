@@ -13,12 +13,14 @@
 
 @if (ProgramState.Value.IsLoadingUpcomingSessions)
 {
-<div class="flex flex-col justify-center h-full gap-4 text-on-surface">
-    <div><md-circular-progress aria-label="Session loading" indeterminate four-color></md-circular-progress></div>
-    <span>
-        <p>Loading Sessions...</p>
-    </span>
-</div>
+    <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
+        <div>
+            <md-circular-progress aria-label="Session loading" indeterminate four-color></md-circular-progress>
+        </div>
+        <span>
+            <p>Loading Sessions...</p>
+        </span>
+    </div>
 }
 else if (ProgramState.Value.UpcomingSessions.Count == 0)
 {
@@ -29,13 +31,21 @@ else if (ProgramState.Value.UpcomingSessions.Count == 0)
                 <md-icon>info</md-icon>
             </div>
             <div class="grid grid-cols-2 gap-2">
-                <AppButton Type="AppButtonType.Secondary" OnClick=@(()=>NavigationManager.NavigateTo("/settings"))><md-icon
-                        slot="icon">add</md-icon>Create</AppButton>
-                <AppButton OnClick=@(()=>NavigationManager.NavigateTo("/settings/program-list"))><md-icon
-                        slot="icon">assignment</md-icon>Use built in</AppButton>
+                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => NavigationManager.NavigateTo("/settings"))>
+                    <md-icon
+                        slot="icon">
+                        add
+                    </md-icon>Create
+                </AppButton>
+                <AppButton OnClick=@(() => NavigationManager.NavigateTo("/settings/program-list"))>
+                    <md-icon
+                        slot="icon">
+                        assignment
+                    </md-icon>Use built in
+                </AppButton>
             </div>
         </Card>
-        <ProFeatureCard />
+        <ProFeatureCard/>
     </div>
 }
 else
@@ -43,27 +53,30 @@ else
     <div class="mb-2">
         <Tips/>
     </div>
-<CardList Items="ProgramState.Value.UpcomingSessions.IndexedTuples()" OnClick="x=>SelectSession(x.Item)"
-    ShouldHighlight="session => session.Index == 0">
-    <SessionSummary IsFilled="context.Item.IsStarted" ShowSets=true Session="context.Item"></SessionSummary>
-</CardList>
+    <CardList Items="ProgramState.Value.UpcomingSessions.IndexedTuples()" OnClick="x => SelectSession(x.Item)"
+              ShouldHighlight="session => session.Index == 0">
+        <SessionSummary IsFilled="context.Item.IsStarted" ShowSets=true Session="context.Item"></SessionSummary>
+    </CardList>
 }
 
 
 <FloatingBottomContainer>
     <Fab>
-        <FloatingButton variant="secondary" has-icon OnClick=StartFreeformSession Label="Freeform Session"><md-icon slot="icon">fitness_center</md-icon>
+        <FloatingButton variant="secondary" has-icon OnClick="StartFreeformSession" Label="Freeform Session">
+            <md-icon slot="icon">fitness_center</md-icon>
         </FloatingButton>
     </Fab>
 </FloatingBottomContainer>
 
-<Dialog @ref=replaceCurrentSesisonDialog>
+<Dialog @ref="replaceCurrentSesisonDialog">
     <span slot="headline">Replace current session</span>
-    <span slot="content" class="block text-left">There is already a current session in progress, start a new one without
-        saving?</span>
+    <span slot="content" class="block text-left">
+        There is already a current session in progress, start a new one without
+        saving?
+    </span>
     <div slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick=@(()=>replaceCurrentSesisonDialog?.Close())>Cancel</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick=ReplaceSession>Replace</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="@(() => replaceCurrentSesisonDialog?.Close())">Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="ReplaceSession">Replace</AppButton>
     </div>
 </Dialog>
 
@@ -71,6 +84,7 @@ else
 
     private Dialog? replaceCurrentSesisonDialog;
     private Session? selectedSession;
+
     protected override async Task OnInitializedAsync()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Upcoming Workouts"));
@@ -85,7 +99,7 @@ else
     {
         selectedSession = session;
         if (CurrentSessionState.Value.WorkoutSession is { IsStarted: true } && CurrentSessionState.Value.WorkoutSession !=
-        session)
+            session)
         {
             replaceCurrentSesisonDialog?.Open();
         }
@@ -101,6 +115,7 @@ else
         {
             return;
         }
+
         Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, selectedSession));
         NavigationManager.NavigateTo("/session");
     }
@@ -119,4 +134,5 @@ else
             NavigationManager.NavigateTo("/session");
         }
     }
+
 }

@@ -13,6 +13,7 @@ public class RateLimitService(RateLimitContext rateLimitContext)
         {
             return new RateLimitResult(false, DateTimeOffset.UtcNow);
         }
+
         var hasher = SHA256.Create();
         hasher.Initialize();
         var hash = hasher.ComputeHash(Encoding.UTF8.GetBytes(rateLimitKey));

@@ -19,9 +19,12 @@
 </div>
 
 @code {
-    private string transitioningClass => Transition.FirstRender ? "" : Transition.IntoView
-        ? $"animate-fade-zoom-in"
-         : $"animate-fade-zoom-out";
+
+    private string transitioningClass => Transition.FirstRender
+        ? ""
+        : Transition.IntoView
+            ? $"animate-fade-zoom-in"
+            : $"animate-fade-zoom-out";
 
 
 }

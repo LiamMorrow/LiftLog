@@ -31,6 +31,7 @@ public class GenerateAiWorkoutController(
         {
             return authResponse;
         }
+
         if (request == null)
         {
             return BadRequest();

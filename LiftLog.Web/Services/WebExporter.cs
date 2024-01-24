@@ -15,6 +15,7 @@ public class WebExporter(IBlazorDownloadFileService downloadFileService, HttpCli
         {
             await gzip.WriteAsync(bytes);
         }
+
         await downloadFileService.DownloadFile(
             fileName: "export.liftlogbackup.gz",
             bytes: stream.ToArray(),

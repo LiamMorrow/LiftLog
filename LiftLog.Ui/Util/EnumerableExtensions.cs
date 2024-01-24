@@ -41,6 +41,7 @@ public static class LinqExtensions
         {
             immutableListBuilder.Add(item);
         }
+
         return immutableListBuilder.ToImmutable();
     }
 
@@ -62,6 +63,7 @@ public static class LinqExtensions
             var value = valueSelector(item);
             immutableDictionaryBuilder.Add(await key, await value);
         }
+
         return immutableDictionaryBuilder.ToImmutable();
     }
 }

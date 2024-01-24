@@ -16,7 +16,7 @@
     <md-list>
         @foreach (var program in BuiltInProgramService.BuiltInPrograms)
         {
-            <ProgramListItem ProgramBlueprint="@program" OnClick=@(()=> BeginSelectProgram(program)) />
+            <ProgramListItem ProgramBlueprint="@program" OnClick=@(() => BeginSelectProgram(program))/>
             @if (program != BuiltInProgramService.BuiltInPrograms.Last())
             {
                 <md-divider></md-divider>
@@ -25,23 +25,25 @@
     </md-list>
 </section>
 
-<Dialog @ref=selectedProgramDialog>
+<Dialog @ref="selectedProgramDialog">
     <span slot="headline">Select Program</span>
     @if (selectedProgram != null)
     {
-
-        <span slot="content" class="block text-left">Would you like to use the program
-            <strong>@selectedProgram.Name</strong>?<br />This will replace the existing program.</span>
+        <span slot="content" class="block text-left">
+            Would you like to use the program
+            <strong>@selectedProgram.Name</strong>?<br/>This will replace the existing program.
+        </span>
         <div class="flex gap-1" slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick="()=>selectedProgramDialog?.Close()">Close</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="SelectProgram">Select</AppButton>
-    </div>
+            <AppButton Type="AppButtonType.Text" OnClick="() => selectedProgramDialog?.Close()">Close</AppButton>
+            <AppButton Type="AppButtonType.Text" OnClick="SelectProgram">Select</AppButton>
+        </div>
     }
-    </Dialog>
+</Dialog>
 
-    @code {
+@code {
     private ProgramBlueprint? selectedProgram;
     private Dialog? selectedProgramDialog;
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -63,8 +65,10 @@
         {
             return;
         }
+
         Dispatcher.Dispatch(new SetProgramSessionsAction(selectedProgram.Sessions));
         Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, null));
         NavigationManager.NavigateTo("/");
     }
+
 }

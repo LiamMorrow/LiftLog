@@ -39,6 +39,7 @@ public partial class MainPage : ContentPage
             await NavigateWhenLoaded(url);
             return;
         }
+
         toNavigate = null;
     }
 
@@ -53,7 +54,10 @@ public partial class MainPage : ContentPage
 #if IOS
         if (blazorWebView.Handler.PlatformView is WebKit.WKWebView view)
         {
-            if (OperatingSystem.IsIOSVersionAtLeast(16, 4) || OperatingSystem.IsMacCatalystVersionAtLeast(13, 3))
+            if (
+                OperatingSystem.IsIOSVersionAtLeast(16, 4)
+                || OperatingSystem.IsMacCatalystVersionAtLeast(13, 3)
+            )
             {
                 view.SetValueForKey(
                     Foundation.NSObject.FromObject(true),

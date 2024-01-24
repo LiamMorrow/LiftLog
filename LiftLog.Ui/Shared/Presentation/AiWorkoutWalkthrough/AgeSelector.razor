@@ -2,27 +2,32 @@
 
 <h2 class="text-2xl">How old are you?</h2>
 <div class="overflow-hidden">
-    <ol @ref=_scrollContainer @onscroll="OnScroll" class="w-full h-full overflow-auto text-5xl select-none snap-mandatory snap-y"  style="mask:linear-gradient(rgba(0, 0, 0, 0) 5%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 95%, rgba(0, 0, 0, 0) 0)">
+    <ol @ref="_scrollContainer" @onscroll="OnScroll" class="w-full h-full overflow-auto text-5xl select-none snap-mandatory snap-y" style="mask:linear-gradient(rgba(0, 0, 0, 0) 5%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 95%, rgba(0, 0, 0, 0) 0)">
         <div class="h-[45%]"></div>
-        @for (var age = 13; age <= 120; age ++)
+        @for (var age = 13; age <= 120; age++)
         {
             var ageString = age.ToString();
-            <li @onclick="()=>OnClick(ageString)" class="snap-center @(_age==age ? "text-primary":"")" data-age="@age">@age</li>
+            <li @onclick="() => OnClick(ageString)" class="snap-center @(_age == age ? "text-primary" : "")" data-age="@age">@age</li>
         }
         <div class="h-[45%]"></div>
     </ol>
 </div>
+
 @code {
 
 
-    [Parameter][EditorRequired] public Action<int> OnAgeSelect { get; set; } = null!;
+    [Parameter] [EditorRequired] public Action<int> OnAgeSelect { get; set; } = null!;
     private int _age = 13;
 
     private ElementReference _scrollContainer;
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if(firstRender) { OnAgeSelect(_age); }
+        if (firstRender)
+        {
+            OnAgeSelect(_age);
+        }
+
         base.OnAfterRender(firstRender);
     }
 

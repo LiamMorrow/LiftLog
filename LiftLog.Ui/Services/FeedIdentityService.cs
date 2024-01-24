@@ -30,6 +30,7 @@ public class FeedIdentityService(
         {
             return ApiResult<FeedIdentity>.FromFailure(response);
         }
+
         var aesKey = await encryptionService.GenerateAesKeyAsync();
         var rsaKeyPair = await encryptionService.GenerateRsaKeysAsync();
         return await UpdateFeedIdentityAsync(

@@ -28,10 +28,12 @@ public class PersistProgramMiddleware(ICurrentProgramRepository programRepositor
         {
             return;
         }
+
         if (_prevState is not null && _prevState.Equals(currentState))
         {
             return;
         }
+
         _prevState = currentState;
         _ = Task.Run(async () =>
         {

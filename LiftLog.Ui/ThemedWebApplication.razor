@@ -6,7 +6,7 @@
 @inject IThemeProvider ThemeProvider
 <LiftLog.Ui.WebApplication/>
 
-@if(_scheme is not null)
+@if (_scheme is not null)
 {
     <style>
         :root{
@@ -84,6 +84,7 @@
         }
     </style>
 }
+
 @code {
 
     private Scheme<uint>? _scheme;
@@ -101,6 +102,7 @@
         {
             ThemeProvider.SeedChanged += HandleThemeChange;
         }
+
         base.OnAfterRender(firstRender);
     }
 

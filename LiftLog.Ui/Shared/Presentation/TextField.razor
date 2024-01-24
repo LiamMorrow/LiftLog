@@ -1,44 +1,40 @@
 @inject IJSRuntime JSRuntime
 
-@switch(TextFieldType){
+@switch (TextFieldType)
+{
     case TextFieldType.Outline:
-        <md-outlined-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange?.Invoke((string)e.Value!)) @onfocusin=SelectOnFocus @onclick=OnClick >
+        <md-outlined-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange?.Invoke((string)e.Value!))@onfocusin=SelectOnFocus @onclick=OnClick>
             @ChildContent
         </md-outlined-text-field>
         break;
     case TextFieldType.Filled:
-        <md-filled-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange?.Invoke((string)e.Value!)) @onfocusin=SelectOnFocus @onclick=OnClick >
+        <md-filled-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange?.Invoke((string)e.Value!))@onfocusin=SelectOnFocus @onclick=OnClick>
             @ChildContent
         </md-filled-text-field>
         break;
 }
+
 @code {
 
     private ElementReference _textField;
 
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    [Parameter]
-    [EditorRequired]
-    public string Value { get; set; } = "";
+    [Parameter] [EditorRequired] public string Value { get; set; } = "";
 
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    [Parameter]
-    public Action<string?>? OnChange { get; set; } = null!;
+    [Parameter] public Action<string?>? OnChange { get; set; } = null!;
 
-    [Parameter]
-    public EventCallback OnClick { get; set; }
+    [Parameter] public EventCallback OnClick { get; set; }
 
-    [Parameter]
-    public TextFieldType TextFieldType {get;set;} = TextFieldType.Outline;
+    [Parameter] public TextFieldType TextFieldType { get; set; } = TextFieldType.Outline;
 
     protected override async Task OnParametersSetAsync()
     {
         await JSRuntime.InvokeVoidAsync("AppUtils.setValue", _textField, Value);
-        await  base.OnParametersSetAsync();
+        await base.OnParametersSetAsync();
     }
 
     private async Task SelectOnFocus(FocusEventArgs args)

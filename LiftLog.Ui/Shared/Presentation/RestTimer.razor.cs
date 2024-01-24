@@ -31,6 +31,7 @@ public partial class RestTimer : IDisposable
             {
                 _timer?.Dispose();
             }
+
             _disposedValue = true;
         }
     }

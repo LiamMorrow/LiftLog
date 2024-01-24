@@ -1,6 +1,6 @@
 @using LiftLog.Ui.Util
 
-@if(!Session.RecordedExercises.Any())
+@if (!Session.RecordedExercises.Any())
 {
     <div class="flex flex-col justify-center items-center gap-4 text-on-surface">
         <md-icon>info</md-icon>
@@ -20,12 +20,12 @@ else
             ClearRepCountForSet=ClearRepCountForExerciseSet(context.Index)
             UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index)
             PreviousRecordedExercises=@(PreviouslyCompleted.GetValueOrDefault(context.Item.Blueprint, []))
-            ToggleExercisePerSetWeight=@(() =>ToggleExercisePerSetWeight(context.Index))
+            ToggleExercisePerSetWeight=@(() => ToggleExercisePerSetWeight(context.Index))
             UpdateWeightForSet=@((setIndex, weight) => UpdateWeightForSet(context.Index, setIndex, weight))
-            UpdateNotesForExercise=@((notes)=>UpdateNotesForExercise(context.Index, notes))
+            UpdateNotesForExercise=@((notes) => UpdateNotesForExercise(context.Index, notes))
             OnEditExercise=@(() => BeginEditExercise(context.Index))
-            OnRemoveExercise=@(()=> BeginRemoveExercise(context.Index))
-            IsReadonly=IsReadonly />
+            OnRemoveExercise=@(() => BeginRemoveExercise(context.Index))
+            IsReadonly=IsReadonly/>
     </CardList>
 }
 @if (ShowBodyweight)
@@ -34,75 +34,87 @@ else
         <Card>
             <div class="flex justify-between items-center">
                 <span class="text-xl">Bodyweight</span>
-                <WeightDisplay AllowNull=true Weight=Session.Bodyweight UpdateWeight="UpdateBodyweight" Increment="0.1m" Label="Bodyweight" />
+                <WeightDisplay AllowNull=true Weight=Session.Bodyweight UpdateWeight="UpdateBodyweight" Increment="0.1m" Label="Bodyweight"/>
             </div>
         </Card>
     </div>
 }
 
-@if(!IsReadonly)
+@if (!IsReadonly)
 {
     <div class="flex  justify-center gap-2 mt-6">
         <AppButton OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon>Add Exercise</AppButton>
         @if (!SessionInPlan && Session.RecordedExercises.Any())
         {
-            <AppButton Type="AppButtonType.Secondary" OnClick="@(()=>_updatePlanDialog?.Open())"><md-icon
-                    slot="icon">assignment_add</md-icon>Update Plan
+            <AppButton Type="AppButtonType.Secondary" OnClick="@(() => _updatePlanDialog?.Open())">
+                <md-icon
+                    slot="icon">
+                    assignment_add
+                </md-icon>Update Plan
             </AppButton>
         }
     </div>
 }
 @if (Session.RecordedExercises.Any())
 {
-    @if(!IsReadonly){
-    <FloatingBottomContainer>
-        <Fab>
-            <FloatingButton variant="secondary" has-icon OnClick=SaveSession Label="Save"><md-icon slot="icon">save</md-icon>
-            </FloatingButton>
-        </Fab>
-        <AdditionalContent>@RenderSnackBar()</AdditionalContent>
-    </FloatingBottomContainer>
-    } else {
-    <FloatingBottomContainer>
-        <AdditionalContent>@RenderSnackBar()</AdditionalContent>
-    </FloatingBottomContainer>
+    @if (!IsReadonly)
+    {
+        <FloatingBottomContainer>
+            <Fab>
+                <FloatingButton variant="secondary" has-icon OnClick=SaveSession Label="Save">
+                    <md-icon slot="icon">save</md-icon>
+                </FloatingButton>
+            </Fab>
+            <AdditionalContent>@RenderSnackBar()</AdditionalContent>
+        </FloatingBottomContainer>
+    }
+    else
+    {
+        <FloatingBottomContainer>
+            <AdditionalContent>@RenderSnackBar()</AdditionalContent>
+        </FloatingBottomContainer>
     }
 }
 
-<Dialog @ref="_editExerciseDialog" OnClose=@(()=> _exerciseToEditIndex = null)>
+<Dialog @ref="_editExerciseDialog" OnClose="@(() => _exerciseToEditIndex = null)">
     <span slot="headline">@(_exerciseToEditIndex is null ? "Add" : "Edit") Exercise</span>
     <div slot="content">
-        <SessionExerciseEditor Exercise=_editingExercise ExerciseNames="ExerciseNames" OnExerciseUpdate=@((e) =>
-            {_editingExercise = e; StateHasChanged();} ) />
+        <SessionExerciseEditor Exercise="_editingExercise" ExerciseNames="ExerciseNames" OnExerciseUpdate="@((e) => { _editingExercise = e; StateHasChanged(); })"/>
     </div>
     <div slot="actions" data-cy="session-exercise-editor-actions">
-        <AppButton Type="AppButtonType.Text" OnClick="()=>{_editExerciseDialog?.Close(); }">Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="() => { _editExerciseDialog?.Close(); }">Cancel</AppButton>
         <AppButton Type="AppButtonType.Text" OnClick="EditExerciseHandler">Save</AppButton>
     </div>
 </Dialog>
 
 <Dialog @ref="_removeExerciseDialog">
     <span slot="headline">Remove Exercise?</span>
-    <span slot="content" class="block text-left">Exercise will be removed from the current session, future sessions will
-        not be impacted.</span>
+    <span slot="content" class="block text-left">
+        Exercise will be removed from the current session, future sessions will
+        not be impacted.
+    </span>
     <div slot="actions">
-        <AppButton Type="AppButtonType.Text" slot="footer" OnClick="()=>{_removeExerciseDialog?.Close();}">Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" slot="footer" OnClick="() => { _removeExerciseDialog?.Close(); }">Cancel</AppButton>
         <AppButton Type="AppButtonType.Text" slot="footer" OnClick="RemoveExerciseHandler">Remove</AppButton>
     </div>
 </Dialog>
 
 <Dialog @ref="_updatePlanDialog">
     <span slot="headline">Update Plan</span>
-    <span slot="content" class="block text-left">The plan will be updated with the current session's exercises.
-        @if(SessionWithSameNameInPlan){
+    <span slot="content" class="block text-left">
+        The plan will be updated with the current session's exercises.
+        @if (SessionWithSameNameInPlan)
+        {
             <span>Would you like to update the existing session <span class="font-bold text-primary">@Session.Blueprint.Name</span>, or add a new session?</span>
-        }</span>
+        }
+    </span>
     <div slot="actions">
         <div class="flex justify-between flex-grow">
             <AppButton Type="AppButtonType.Text" slot="footer" OnClick="@(() => _updatePlanDialog?.Close())">Cancel</AppButton>
             <div>
                 <AppButton Type="AppButtonType.Text" slot="footer" OnClick="HandleAddAsNewSession">Add</AppButton>
-                @if(SessionWithSameNameInPlan){
+                @if (SessionWithSameNameInPlan)
+                {
                     <AppButton Type="AppButtonType.Text" slot="footer" OnClick="HandleUpdateInPlan">
                         <span>Update</span>
                     </AppButton>
@@ -120,98 +132,57 @@ else
         Reps: 10,
         Weight: 0,
         Rest: Rest.Medium
-        );
+    );
+
     private int? _exerciseToEditIndex;
     private int? _exerciseToRemoveIndex;
     private Dialog? _editExerciseDialog;
     private Dialog? _removeExerciseDialog;
     private Dialog? _updatePlanDialog;
 
-    [EditorRequired]
-    [Parameter]
-    public Session Session { get; set; } = null!;
+    [EditorRequired] [Parameter] public Session Session { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>> PreviouslyCompleted { get; set; } = null!;
+    [EditorRequired] [Parameter] public ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>> PreviouslyCompleted { get; set; } = null!;
 
-    [Parameter]
-    public bool ShowRestTimer { get; set; } = true;
+    [Parameter] public bool ShowRestTimer { get; set; } = true;
 
-    [EditorRequired]
-    [Parameter]
-    public Action<int, int> CycleRepcountForExercise { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<int, int> CycleRepcountForExercise { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public Action<int, int> ClearRepCountForExercise { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<int, int> ClearRepCountForExercise { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public Action<int, decimal> UpdateWeightForExercise { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<int, decimal> UpdateWeightForExercise { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public Action<int, string?> UpdateNotesForExercise { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<int, string?> UpdateNotesForExercise { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public Action<int> ToggleExercisePerSetWeight { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<int> ToggleExercisePerSetWeight { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public Action<int,int,decimal> UpdateWeightForSet { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<int, int, decimal> UpdateWeightForSet { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public Action<decimal?> UpdateBodyweight { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<decimal?> UpdateBodyweight { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public Action<int, SessionExerciseEditModel> EditExercise { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<int, SessionExerciseEditModel> EditExercise { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public Action<SessionExerciseEditModel> AddExercise { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<SessionExerciseEditModel> AddExercise { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public Action<int> RemoveExercise { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<int> RemoveExercise { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public Action SaveSession { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action SaveSession { get; set; } = null!;
 
-    [EditorRequired]
-    [Parameter]
-    public Action CloseSession { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action CloseSession { get; set; } = null!;
 
-    [Parameter]
-    [EditorRequired]
-    public ImmutableListValue<string> ExerciseNames { get; set; } = null!;
+    [Parameter] [EditorRequired] public ImmutableListValue<string> ExerciseNames { get; set; } = null!;
 
-    [Parameter]
-    [EditorRequired]
-    public bool SessionInPlan { get; set; }
+    [Parameter] [EditorRequired] public bool SessionInPlan { get; set; }
 
-    [Parameter]
-    [EditorRequired]
-    public bool SessionWithSameNameInPlan { get; set; }
+    [Parameter] [EditorRequired] public bool SessionWithSameNameInPlan { get; set; }
 
-    [Parameter]
-    [EditorRequired]
-    public Action AddSessionToPlan { get; set; } = null!;
+    [Parameter] [EditorRequired] public Action AddSessionToPlan { get; set; } = null!;
 
-    [Parameter]
-    [EditorRequired]
-    public Action UpdateSessionInPlan { get; set; } = null!;
+    [Parameter] [EditorRequired] public Action UpdateSessionInPlan { get; set; } = null!;
 
-    [Parameter]
-    [EditorRequired]
-    public bool ShowBodyweight { get; set; }
+    [Parameter] [EditorRequired] public bool ShowBodyweight { get; set; }
 
-    [Parameter]
-    public bool IsReadonly { get; set; } = false;
+    [Parameter] public bool IsReadonly { get; set; } = false;
 
     private Action<int> CycleRepCountForExerciseSet(int exerciseIndex)
         => (int set) => CycleRepcountForExercise(exerciseIndex, set);
@@ -222,7 +193,6 @@ else
 
     private Action<decimal> UpdateWeightForExerciseWrapper(int exerciseIndex)
         => (decimal weight) => UpdateWeightForExercise(exerciseIndex, weight);
-
 
 
     private void EditExerciseHandler()
@@ -239,8 +209,10 @@ else
                 AddExercise(_editingExercise);
             }
         }
+
         _editExerciseDialog?.Close();
     }
+
     private void RemoveExerciseHandler()
     {
         if (_exerciseToRemoveIndex is not null)
@@ -248,6 +220,7 @@ else
             RemoveExercise(_exerciseToRemoveIndex.Value);
             _exerciseToRemoveIndex = null;
         }
+
         _removeExerciseDialog?.Close();
     }
 
@@ -259,7 +232,7 @@ else
             Reps: 10,
             Weight: 0,
             Rest: Rest.Medium
-            );
+        );
         _editExerciseDialog?.Open();
     }
 
@@ -298,25 +271,29 @@ else
     private RenderFragment? RenderSnackBar()
     {
         var lastRecordedSet = Session.LastExercise?.LastRecordedSet;
-        if (ShowRestTimer && Session.NextExercise is not null && Session.LastExercise is not null && lastRecordedSet is {Set : {}} lrs)
+        if (ShowRestTimer && Session.NextExercise is not null && Session.LastExercise is not null && lastRecordedSet is { Set : { } } lrs)
         {
             var lastSetFailed = lrs.Set.RepsCompleted < Session.LastExercise.Blueprint.RepsPerSet;
 
             return @<RestTimer
-                Rest=Session.LastExercise.Blueprint.RestBetweenSets
-                StartTime=lrs.Set.CompletionTime
-                Failed=lastSetFailed />;
+                        Rest="Session.LastExercise.Blueprint.RestBetweenSets"
+                        StartTime="lrs.Set.CompletionTime"
+                        Failed="lastSetFailed"/>;
         }
         else if (Session.IsComplete)
         {
             return @<SnackBar>
                 <span class="flex flex-col justify-start">
                     <span class="flex justify-between">
-                        <span>This session you lifted </span><span class="font-bold"><WeightFormat Weight="Session.TotalWeightLifted" /></span>
+                        <span>This session you lifted </span>
+                        <span class="font-bold">
+                            <WeightFormat Weight="Session.TotalWeightLifted"/>
+                        </span>
                     </span>
                 </span>
-                </SnackBar>;
+            </SnackBar>;
         }
+
         return null;
     }
 

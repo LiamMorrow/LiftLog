@@ -38,6 +38,7 @@ public record Session(
             {
                 return RecordedExercises[latestExerciseIndex + 1];
             }
+
             if (
                 latestExerciseSupersetsWithPrevious
                 && RecordedExercises[latestExerciseIndex - 1].HasRemainingSets
@@ -45,6 +46,7 @@ public record Session(
             {
                 return RecordedExercises[latestExerciseIndex - 1];
             }
+
             return RecordedExercises
                 .Where(x => x.HasRemainingSets)
                 .OrderByDescending(x => x.LastRecordedSet?.Set?.CompletionTime)

@@ -23,10 +23,12 @@ public class UserController(UserDataContext db, PasswordService passwordService)
         {
             return BadRequest(validationResult.Errors);
         }
+
         if (await db.Users.AnyAsync(x => x.Id == request.Id))
         {
             return BadRequest(new string[] { "User already exists" });
         }
+
         var password = Guid.NewGuid().ToString();
         var hashedPassword = passwordService.HashPassword(password, out var salt);
         var user = new User
@@ -52,6 +54,7 @@ public class UserController(UserDataContext db, PasswordService passwordService)
         {
             return NotFound();
         }
+
         user.LastAccessed = DateTimeOffset.UtcNow;
         await db.SaveChangesAsync();
         return Ok(
@@ -76,15 +79,18 @@ public class UserController(UserDataContext db, PasswordService passwordService)
         {
             return BadRequest(validationResult.Errors);
         }
+
         var user = await db.Users.FindAsync(request.Id);
         if (user == null)
         {
             return NotFound();
         }
+
         if (!passwordService.VerifyPassword(request.Password, user.HashedPassword, user.Salt))
         {
             return Unauthorized();
         }
+
         db.Users.Remove(user);
         await db.SaveChangesAsync();
         return Ok();
@@ -102,15 +108,18 @@ public class UserController(UserDataContext db, PasswordService passwordService)
         {
             return BadRequest(validationResult.Errors);
         }
+
         var user = await db.Users.FindAsync(request.Id);
         if (user == null)
         {
             return NotFound();
         }
+
         if (!passwordService.VerifyPassword(request.Password, user.HashedPassword, user.Salt))
         {
             return Unauthorized();
         }
+
         user.EncryptedCurrentPlan = request.EncryptedCurrentPlan;
         user.EncryptedProfilePicture = request.EncryptedProfilePicture;
         user.EncryptedName = request.EncryptedName;

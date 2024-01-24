@@ -1,27 +1,22 @@
 @typeparam TItem
 <div @attributes="AdditionalAttributes" class=" @(AdditionalAttributes?.GetValueOrDefault("class")) flex flex-col gap-2 py-2 cardlist">
-@foreach (var item in Items)
-{
-    <Card IsHighlighted="ShouldHighlight?.Invoke(item) ?? false" OnClick=@(OnClick != null ? _=> OnClick(item) : null)>
-        @ChildContent?.Invoke(item)
-    </Card>
-}
+    @foreach (var item in Items)
+    {
+        <Card IsHighlighted="ShouldHighlight?.Invoke(item) ?? false" OnClick=@(OnClick != null ? _ => OnClick(item) : null)>
+            @ChildContent?.Invoke(item)
+        </Card>
+    }
 </div>
 
 @code
 {
-    [EditorRequired]
-    [Parameter]
-    public IEnumerable<TItem> Items { get; set; } = null!;
+    [EditorRequired] [Parameter] public IEnumerable<TItem> Items { get; set; } = null!;
 
-    [Parameter]
-    public RenderFragment<TItem>? ChildContent { get; set; } = null!;
+    [Parameter] public RenderFragment<TItem>? ChildContent { get; set; } = null!;
 
-    [Parameter]
-    public Action<TItem>? OnClick { get; set; }
+    [Parameter] public Action<TItem>? OnClick { get; set; }
 
-    [Parameter]
-    public Func<TItem, bool>? ShouldHighlight { get; set; }
+    [Parameter] public Func<TItem, bool>? ShouldHighlight { get; set; }
 
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }

@@ -9,46 +9,56 @@
 @inject IState<StatsState> StatsState;
 @inject IDispatcher Dispatcher;
 
-@if(StatsState.Value.SessionStats.Count == 0)
+@if (StatsState.Value.SessionStats.Count == 0)
 {
-<div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
-    <md-icon>info</md-icon>
-    <span>
-        <p>Nothing recorded yet!<br> Complete a session and check again.</p>
-    </span>
-</div>
+    <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
+        <md-icon>info</md-icon>
+        <span>
+            <p>Nothing recorded yet!<br> Complete a session and check again.</p>
+        </span>
+    </div>
 }
 else
 {
     <div class="flex flex-col gap-2">
-        @if(SettingsState.Value.ShowBodyweight && StatsState.Value.BodyweightStats.Statistics.Any()){
+        @if (SettingsState.Value.ShowBodyweight && StatsState.Value.BodyweightStats.Statistics.Any())
+        {
             <Card>
                 <StatGraphCardContent Statistics="StatsState.Value.BodyweightStats" RenderDelay="TimeSpan.FromMilliseconds(100)"/>
             </Card>
         }
         <CardList Items="@(StatsState.Value.SessionStats.IndexedTuples())">
-            <StatGraphCardContent Statistics="context.Item" RenderDelay="TimeSpan.FromMilliseconds(200 + context.Index*200 )"/>
+            <StatGraphCardContent Statistics="context.Item" RenderDelay="TimeSpan.FromMilliseconds(200 + context.Index * 200)"/>
         </CardList>
         <CardList Items="@(StatsState.Value.ExerciseStats.IndexedTuples())" OnClick=@HandleCardClick>
-            <StatGraphCardContent Statistics="context.Item" RenderDelay="TimeSpan.FromMilliseconds(200 +context.Index*200)"/>
+            <StatGraphCardContent Statistics="context.Item" RenderDelay="TimeSpan.FromMilliseconds(200 + context.Index * 200)"/>
         </CardList>
     </div>
 }
-<Dialog @ref=dialog>
-    @if(_selectedExercise is not null)
+<Dialog @ref="dialog">
+    @if (_selectedExercise is not null)
     {
         <span slot="headline">@(_selectedExercise.Title)</span>
         <div slot="content" class="flex flex-col">
-            <span class="flex justify-between text-on-surface"><span>Current: </span><WeightFormat Weight=@(_selectedExercise.Current)/></span>
-            <span class="flex justify-between text-on-surface"><span>Max: </span><WeightFormat Weight=@(_selectedExercise.Max)/></span>
-            <span class="flex justify-between text-on-surface"><span>One Rep Max: </span><WeightFormat Weight=@(_selectedExercise.OneRepMax)/></span>
-            <span class="flex justify-between text-on-surface"><span>Total Lifted: </span><WeightFormat Weight=@(_selectedExercise.TotalLifted)/></span>
+            <span class="flex justify-between text-on-surface">
+                <span>Current: </span><WeightFormat Weight=@(_selectedExercise.Current)/>
+            </span>
+            <span class="flex justify-between text-on-surface">
+                <span>Max: </span><WeightFormat Weight=@(_selectedExercise.Max)/>
+            </span>
+            <span class="flex justify-between text-on-surface">
+                <span>One Rep Max: </span><WeightFormat Weight=@(_selectedExercise.OneRepMax)/>
+            </span>
+            <span class="flex justify-between text-on-surface">
+                <span>Total Lifted: </span><WeightFormat Weight=@(_selectedExercise.TotalLifted)/>
+            </span>
         </div>
-    <div slot="actions">
-        <AppButton Type=AppButtonType.Text OnClick=@(()=>dialog?.Close())>Close</AppButton>
-    </div>
+        <div slot="actions">
+            <AppButton Type=AppButtonType.Text OnClick=@(() => dialog?.Close())>Close</AppButton>
+        </div>
     }
 </Dialog>
+
 @code {
     private Dialog? dialog;
     private ExerciseStatisticOverTime? _selectedExercise;
@@ -61,10 +71,11 @@ else
         base.OnInitialized();
     }
 
-    private void HandleCardClick((ExerciseStatisticOverTime  exerciseStatistics, int Index) item)
+    private void HandleCardClick((ExerciseStatisticOverTime exerciseStatistics, int Index) item)
     {
         _selectedExercise = item.exerciseStatistics;
         StateHasChanged();
         dialog?.Open();
     }
+
 }

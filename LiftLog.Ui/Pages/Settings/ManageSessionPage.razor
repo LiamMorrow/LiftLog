@@ -20,7 +20,8 @@
             class="w-full mb-4"
             Label="Session Name"
             Value="@SessionEditorState.Value.SessionBlueprint.Name"
-            OnChange="@((val) => SetName(val!))"></TextField>
+            OnChange="@((val) => SetName(val!))">
+        </TextField>
         <CardList Items="SessionEditorState.Value.SessionBlueprint.Exercises.IndexedTuples()">
             @{
                 var exercise = context.Item;
@@ -28,12 +29,12 @@
             }
             <SplitCardControl>
                 <MainContent>
-                    <ExerciseEditor Exercise="@exercise" UpdateExercise=@(ex => UpdateExercise(index, ex)) />
+                    <ExerciseEditor Exercise="@exercise" UpdateExercise=@(ex => UpdateExercise(index, ex))/>
                 </MainContent>
                 <SideContent>
-                    <IconButton Type="IconButtonType.FilledTonal" OnClick=@(() => RemoveExercise(exercise)) Icon="delete" />
-                    <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveExerciseUp(exercise)) Icon="arrow_upward" />
-                    <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveExerciseDown(exercise)) Icon="arrow_downward" />
+                    <IconButton Type="IconButtonType.FilledTonal" OnClick=@(() => RemoveExercise(exercise)) Icon="delete"/>
+                    <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveExerciseUp(exercise)) Icon="arrow_upward"/>
+                    <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveExerciseDown(exercise)) Icon="arrow_downward"/>
                 </SideContent>
             </SplitCardControl>
         </CardList>
@@ -43,14 +44,16 @@
     </div>
     <FloatingBottomContainer>
         <Fab>
-            <FloatingButton has-icon variant="secondary" OnClick=SaveSession Label="Save"><md-icon slot="icon">save</md-icon></FloatingButton>
+            <FloatingButton has-icon variant="secondary" OnClick=SaveSession Label="Save">
+                <md-icon slot="icon">save</md-icon>
+            </FloatingButton>
         </Fab>
     </FloatingBottomContainer>
 }
+
 @code {
 
-    [Parameter]
-    public int SessionIndex { get; set; }
+    [Parameter] public int SessionIndex { get; set; }
 
     void BackToManageWorkouts() => NavigationManager.NavigateTo("/settings/manage-workouts");
 
@@ -66,11 +69,12 @@
         {
             Dispatcher.Dispatch(new SetProgramSessionAction(SessionIndex, SessionEditorState.Value.SessionBlueprint));
         }
+
         BackToManageWorkouts();
     }
 
     void AddExercise()
-    => Dispatcher.Dispatch(
+        => Dispatcher.Dispatch(
             new AddExerciseAction(
                 new ExerciseBlueprint(
                     $"Exercise {SessionEditorState.Value.SessionBlueprint?.Exercises.Count + 1}",
@@ -98,6 +102,7 @@
         {
             BackToManageWorkouts();
         }
+
         Dispatcher.Dispatch(new SetEditingSessionAction(ProgramState.Value.SessionBlueprints[SessionIndex]));
         base.OnInitialized();
     }

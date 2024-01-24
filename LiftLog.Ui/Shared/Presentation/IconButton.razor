@@ -5,28 +5,36 @@
             @attributes="AdditionalAttributes"
             @onpointerdown="OnPointerDown"
             @onpointerleave="OnPointerLeave"
-            @onpointerup="OnPointerUp" class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=""><md-icon>@Icon</md-icon></md-icon-button>
+            @onpointerup="OnPointerUp" class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">
+            <md-icon>@Icon</md-icon>
+        </md-icon-button>
         break;
     case IconButtonType.Filled:
         <md-filled-icon-button
             @attributes="AdditionalAttributes"
             @onpointerdown="OnPointerDown"
             @onpointerleave="OnPointerLeave"
-            @onpointerup="OnPointerUp" class="pointer-events-auto"  @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=""><md-icon>@Icon</md-icon></md-filled-icon-button>
+            @onpointerup="OnPointerUp" class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">
+            <md-icon>@Icon</md-icon>
+        </md-filled-icon-button>
         break;
     case IconButtonType.FilledTonal:
         <md-filled-tonal-icon-button
             @attributes="AdditionalAttributes"
             @onpointerdown="OnPointerDown"
             @onpointerleave="OnPointerLeave"
-            @onpointerup="OnPointerUp" class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=""><md-icon>@Icon</md-icon></md-filled-tonal-icon-button>
+            @onpointerup="OnPointerUp" class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">
+            <md-icon>@Icon</md-icon>
+        </md-filled-tonal-icon-button>
         break;
     case IconButtonType.Outlined:
         <md-outlined-icon-button
             @attributes="AdditionalAttributes"
             @onpointerdown="OnPointerDown"
             @onpointerleave="OnPointerLeave"
-            @onpointerup="OnPointerUp" class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style=""><md-icon>@Icon</md-icon></md-outlined-icon-button>
+            @onpointerup="OnPointerUp" class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" style="">
+            <md-icon>@Icon</md-icon>
+        </md-outlined-icon-button>
         break;
     default:
         throw new ArgumentOutOfRangeException();
@@ -35,24 +43,17 @@
 
 @code {
 
-    [EditorRequired]
-    [Parameter]
-    public string Icon { get; set; } = null!;
+    [EditorRequired] [Parameter] public string Icon { get; set; } = null!;
 
-    [Parameter]
-    public EventCallback<MouseEventArgs> OnClick { get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
 
-    [Parameter]
-    public EventCallback<PointerEventArgs> OnStartHold { get; set; }
+    [Parameter] public EventCallback<PointerEventArgs> OnStartHold { get; set; }
 
-    [Parameter]
-    public EventCallback<PointerEventArgs> OnEndHold { get; set; }
+    [Parameter] public EventCallback<PointerEventArgs> OnEndHold { get; set; }
 
-    [Parameter]
-    public IconButtonType Type { get; set; } = IconButtonType.Filled;
+    [Parameter] public IconButtonType Type { get; set; } = IconButtonType.Filled;
 
-    [Parameter]
-    public bool Disabled { get; set; }
+    [Parameter] public bool Disabled { get; set; }
 
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
@@ -71,4 +72,5 @@
     {
         OnEndHold.InvokeAsync(args);
     }
+
 }

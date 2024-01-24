@@ -4,5 +4,5 @@
 
 input[type="text"],
 input[type="number"] {
-  @apply p-2 border-b rounded-sm caret-primary bg-surface-container-highest text-on-surface border-on-surface-variant focus:border-primary focus:outline-none;
+    @apply p-2 border-b rounded-sm caret-primary bg-surface-container-highest text-on-surface border-on-surface-variant focus:border-primary focus:outline-none;
 }

@@ -183,10 +183,12 @@ public static class MauiProgram
         {
             return;
         }
+
         if (!Uri.TryCreate(link, UriKind.Absolute, out var uri))
         {
             return;
         }
+
         var path = uri.AbsolutePath;
         var query = uri.Query;
         MainThread.BeginInvokeOnMainThread(() =>

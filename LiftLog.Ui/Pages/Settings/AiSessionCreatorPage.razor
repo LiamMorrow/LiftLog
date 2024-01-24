@@ -11,18 +11,22 @@
 @if (AiSessionCreatorState.Value.IsLoading)
 {
     <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
-    <div><md-circular-progress aria-label="Ai planning progress" indeterminate four-color></md-circular-progress></div>
-    <span>
-        <p>Generating Session...</p>
-    </span>
-</div>
+        <div>
+            <md-circular-progress aria-label="Ai planning progress" indeterminate four-color></md-circular-progress>
+        </div>
+        <span>
+            <p>Generating Session...</p>
+        </span>
+    </div>
 }
 else if (AiSessionCreatorState.Value.ErrorMessage is not null)
 {
     <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
-    <div><md-icon>error</md-icon></div>
-    <span>
-        <p>@AiSessionCreatorState.Value.ErrorMessage</p>
+        <div>
+            <md-icon>error</md-icon>
+        </div>
+        <span>
+            <p>@AiSessionCreatorState.Value.ErrorMessage</p>
         </span>
         <div class="grid grid-cols-2 gap-2">
             <AppButton Type=AppButtonType.Text OnClick=@HandleCancel>Back</AppButton>
@@ -33,33 +37,39 @@ else if (AiSessionCreatorState.Value.ErrorMessage is not null)
 else if (AiSessionCreatorState.Value.GeneratedSession is not null)
 {
     <div class="flex flex-col gap-5 text-on-surface h-full">
-    <Card class="flex flex-col gap-2">
-        <SessionBlueprintSummary SessionBlueprint="AiSessionCreatorState.Value.GeneratedSession" />
-        <div class="grid  gap-2">
-            <AppButton Type=AppButtonType.Text OnClick=@HandleGenerateSession>Regenerate</AppButton>
-        </div>
-    </Card>
-    <div class="flex flex-col gap-2 justify-end h-full">
-        <div class="grid grid-cols-2 gap-2">
-            <AppButton Type=AppButtonType.Secondary OnClick=@AddToPlan><md-icon slot="icon">assignment_add</md-icon>Add
-                To Plan
-            </AppButton>
-            <AppButton OnClick=@StartSession><md-icon slot="icon">fitness_center</md-icon>Start</AppButton>
+        <Card class="flex flex-col gap-2">
+            <SessionBlueprintSummary SessionBlueprint="AiSessionCreatorState.Value.GeneratedSession"/>
+            <div class="grid  gap-2">
+                <AppButton Type=AppButtonType.Text OnClick=@HandleGenerateSession>Regenerate</AppButton>
+            </div>
+        </Card>
+        <div class="flex flex-col gap-2 justify-end h-full">
+            <div class="grid grid-cols-2 gap-2">
+                <AppButton Type=AppButtonType.Secondary OnClick=@AddToPlan>
+                    <md-icon slot="icon">assignment_add</md-icon>Add
+                    To Plan
+                </AppButton>
+                <AppButton OnClick=@StartSession><md-icon slot="icon">fitness_center</md-icon>Start</AppButton>
+            </div>
         </div>
     </div>
-</div>
 }
 else
 {
     <div class="flex flex-col gap-5 text-on-surface h-full">
-    <AiSessionCreator Value="Model" OnChange="(v)=>Model =v" />
-    @if (ValidationError is not null)
+        <AiSessionCreator Value="Model" OnChange="(v) => Model = v"/>
+        @if (ValidationError is not null)
         {
-            <span class="flex items-center justify-center gap-2"><md-icon>info</md-icon>@ValidationError</span>
+            <span class="flex items-center justify-center gap-2">
+                <md-icon>info</md-icon>@ValidationError
+            </span>
         }
         <div class="flex flex-col justify-end h-full">
-            <AppButton OnClick=@HandleGenerateSession Disabled=@(ValidationError != null)><md-icon
-                    slot="icon">auto_awesome</md-icon>Generate
+            <AppButton OnClick=@HandleGenerateSession Disabled=@(ValidationError != null)>
+                <md-icon
+                    slot="icon">
+                    auto_awesome
+                </md-icon>Generate
             </AppButton>
         </div>
     </div>
@@ -67,7 +77,7 @@ else
 
 @code {
 
-    private AiSessionCreatorModel Model { get; set; } = new AiSessionCreatorModel([ ], 50);
+    private AiSessionCreatorModel Model { get; set; } = new AiSessionCreatorModel([], 50);
 
     private string? ValidationError => Model switch
     {
@@ -98,6 +108,7 @@ else
         {
             return;
         }
+
         Dispatcher.Dispatch(new AddProgramSessionAction(AiSessionCreatorState.Value.GeneratedSession));
         NavigationManager.NavigateTo("/settings/manage-workouts");
         Dispatcher.Dispatch(new ClearAiGeneratedSessionStateAction());
@@ -109,9 +120,11 @@ else
         {
             return;
         }
+
         Dispatcher.Dispatch(new SetCurrentSessionFromBlueprintAction(SessionTarget.WorkoutSession,
-        AiSessionCreatorState.Value.GeneratedSession));
+            AiSessionCreatorState.Value.GeneratedSession));
         NavigationManager.NavigateTo("/session");
         Dispatcher.Dispatch(new ClearAiGeneratedSessionStateAction());
     }
+
 }

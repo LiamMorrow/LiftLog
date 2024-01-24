@@ -22,6 +22,7 @@ public partial class FeedEffects
         {
             return;
         }
+
         dispatcher.Dispatch(new SetIsLoadingIdentityAction(true));
         var identityResult = await feedIdentityService.CreateFeedIdentityAsync(
             action.Name,
@@ -72,6 +73,7 @@ public partial class FeedEffects
                 logger.LogError("Failed to update user with error {Error}", result.Error);
                 return;
             }
+
             dispatcher.Dispatch(new PutFeedIdentityAction(result.Data));
         });
 
@@ -85,6 +87,7 @@ public partial class FeedEffects
         {
             return;
         }
+
         await feedIdentityService.UpdateFeedIdentityAsync(
             state.Value.Identity.Id,
             state.Value.Identity.Password,
@@ -120,6 +123,7 @@ public partial class FeedEffects
                 logger.LogError("Failed to delete user with error {Error}", response.Error);
                 return;
             }
+
             dispatcher.Dispatch(new PutFeedIdentityAction(null));
             dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
             dispatcher.Dispatch(new ReplaceFeedItemsAction([]));
@@ -136,6 +140,7 @@ public partial class FeedEffects
         {
             return whenNoIdentity?.Invoke() ?? Task.CompletedTask;
         }
+
         return whenIdentityExists(identity);
     }
 }

@@ -13,6 +13,7 @@ public class WebNotificationService(
     private static readonly NotificationHandle NextSetNotificationHandle = new NotificationHandle(
         "NEXT_SET"
     );
+
     private readonly ConcurrentDictionary<
         NotificationHandle,
         CancellationTokenSource
@@ -70,6 +71,7 @@ public class WebNotificationService(
         {
             cancellation.Cancel();
         }
+
         return Task.CompletedTask;
     }
 
@@ -84,6 +86,7 @@ public class WebNotificationService(
         {
             return;
         }
+
         if (notificationService.PermissionStatus != PermissionType.Granted)
         {
             if (await notificationService.RequestPermissionAsync() != PermissionType.Granted)
@@ -91,6 +94,7 @@ public class WebNotificationService(
                 return;
             }
         }
+
         await ClearNotificationAsync(handle);
         var source = new CancellationTokenSource();
         if (_scheduledNotifications.TryAdd(handle, source))

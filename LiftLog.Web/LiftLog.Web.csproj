@@ -1,32 +1,32 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <ImplicitUsings>enable</ImplicitUsings>
 
-    <!-- <RunAOTCompilation>true</RunAOTCompilation>
-    <RunAOTCompilationAfterBuild>true</RunAOTCompilationAfterBuild>
-    <WasmNativeStrip>false</WasmNativeStrip> -->
-  </PropertyGroup>
+        <!-- <RunAOTCompilation>true</RunAOTCompilation>
+        <RunAOTCompilationAfterBuild>true</RunAOTCompilationAfterBuild>
+        <WasmNativeStrip>false</WasmNativeStrip> -->
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Append.Blazor.Notifications" Version="1.1.0" />
-    <PackageReference Include="BlazorDownloadFile" Version="2.4.0.2" />
-    <PackageReference Include="Blazored.LocalStorage" Version="4.4.0" />
-    <PackageReference Include="BlazorTransitionableRoute" Version="4.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.1" PrivateAssets="all" />
-    <PackageReference Include="RealGoodApps.BlazorJavascript.Interop" Version="1.1.0" />
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.3.3">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Append.Blazor.Notifications" Version="1.1.0"/>
+        <PackageReference Include="BlazorDownloadFile" Version="2.4.0.2"/>
+        <PackageReference Include="Blazored.LocalStorage" Version="4.4.0"/>
+        <PackageReference Include="BlazorTransitionableRoute" Version="4.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.1"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.1" PrivateAssets="all"/>
+        <PackageReference Include="RealGoodApps.BlazorJavascript.Interop" Version="1.1.0"/>
+        <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.3.3">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\LiftLog.Lib\LiftLog.Lib.csproj" />
-    <ProjectReference Include="..\LiftLog.Ui\LiftLog.Ui.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\LiftLog.Lib\LiftLog.Lib.csproj"/>
+        <ProjectReference Include="..\LiftLog.Ui\LiftLog.Ui.csproj"/>
+    </ItemGroup>
 </Project>

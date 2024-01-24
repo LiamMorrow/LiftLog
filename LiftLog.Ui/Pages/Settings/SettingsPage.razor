@@ -30,12 +30,12 @@
             <md-icon slot="icon">construction</md-icon>
             Manage workouts
         </AppButton>
-        <AppButton Type=AppButtonType.Secondary OnClick="NavigateToProgramList">
+        <AppButton Type="AppButtonType.Secondary" OnClick="NavigateToProgramList">
             <md-icon slot="icon">assignment</md-icon>
             Select a plan
         </AppButton>
     </Card>
-    <ProFeatureCard />
+    <ProFeatureCard/>
 
     <Card>
         <div class="flex flex-col gap-4">
@@ -44,25 +44,24 @@
                 <md-icon>settings</md-icon>
             </div>
             <div>
-                <Switch Label="Use imperial units" Value=@SettingsState.Value.UseImperialUnits OnSwitched="SetUseImperialUnits"/>
+                <Switch Label="Use imperial units" Value="@SettingsState.Value.UseImperialUnits" OnSwitched="SetUseImperialUnits"/>
             </div>
             <div>
-                <Switch Label="Show bodyweight" Value=@SettingsState.Value.ShowBodyweight OnSwitched="SetShowBodyweight"/>
+                <Switch Label="Show bodyweight" Value="@SettingsState.Value.ShowBodyweight" OnSwitched="SetShowBodyweight"/>
             </div>
             <div>
-                <Switch Label="Show feed" Value=@SettingsState.Value.ShowFeed OnSwitched="SetShowFeed"/>
+                <Switch Label="Show feed" Value="@SettingsState.Value.ShowFeed" OnSwitched="SetShowFeed"/>
             </div>
             <md-divider></md-divider>
             <div>
-                <Switch Label="Show tips" Value=@SettingsState.Value.ShowTips OnSwitched="SetShowTips"/>
-                <AppButton Type=AppButtonType.OutlineSecondary OnClick=ResetTips>Reset tips</AppButton>
+                <Switch Label="Show tips" Value="@SettingsState.Value.ShowTips" OnSwitched="SetShowTips"/>
+                <AppButton Type="AppButtonType.OutlineSecondary" OnClick="ResetTips">Reset tips</AppButton>
             </div>
             <md-divider></md-divider>
             <ThemeChooser
                 Seed="@ThemeProvider.GetSeed()"
                 ThemePreference="@ThemeProvider.GetThemePreference()"
-                OnUpdateTheme="@(async a=>await HandleThemeUpdate(a))"
-            />
+                OnUpdateTheme="@(async a => await HandleThemeUpdate(a))"/>
         </div>
     </Card>
 </div>
@@ -107,6 +106,7 @@
 
     private void SetShowBodyweight(bool value)
         => Dispatcher.Dispatch(new SetShowBodyweightAction(value));
+
     private void SetShowFeed(bool value)
         => Dispatcher.Dispatch(new SetShowFeedAction(value));
 
@@ -117,10 +117,10 @@
         => Dispatcher.Dispatch(new SetTipToShowAction(1));
 
     private async Task HandleThemeUpdate((uint? Seed, ThemePreference ThemePreference) value)
-        {
-            Dispatcher.Dispatch(new SetThemeAction(value.Seed, value.ThemePreference));
-            await Task.Delay(100);
-            StateHasChanged();
-        }
+    {
+        Dispatcher.Dispatch(new SetThemeAction(value.Seed, value.ThemePreference));
+        await Task.Delay(100);
+        StateHasChanged();
+    }
 
 }

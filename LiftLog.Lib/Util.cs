@@ -16,6 +16,7 @@ internal static class Util
         {
             return ims;
         }
+
         if (items is ImmutableList<T> il)
         {
             return new ImmutableListValue<T>(il);

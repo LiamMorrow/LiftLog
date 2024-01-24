@@ -23,6 +23,7 @@ public class InboxController(UserDataContext db) : ControllerBase
         {
             return BadRequest(validationResult.Errors);
         }
+
         var user = await db.Users.FindAsync(request.ToUserId);
         if (user == null)
         {
@@ -54,15 +55,18 @@ public class InboxController(UserDataContext db) : ControllerBase
         {
             return BadRequest(validationResult.Errors);
         }
+
         var user = await db.Users.FindAsync(request.UserId);
         if (user == null)
         {
             return NotFound();
         }
+
         if (!passwordService.VerifyPassword(request.Password, user.HashedPassword, user.Salt))
         {
             return Unauthorized();
         }
+
         var inboxItems = await db.UserInboxItems.Where(x => x.UserId == request.UserId)
             .ToArrayAsync();
         db.UserInboxItems.RemoveRange(inboxItems);

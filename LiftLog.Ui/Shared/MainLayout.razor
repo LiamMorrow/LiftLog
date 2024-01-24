@@ -14,53 +14,56 @@
 @inject NavigationManager NavigationManager
 
 <CascadingValue Name="UseImperial" Value="SettingsState.Value.UseImperialUnits">
-<CascadingValue Name="TopNavColorClass" Value="_topNavColorClass">
-<div class="h-full page bg-surface">
-    <section class="relative h-full content">
-        <div class="grid grid-cols-1 h-full grid-rows-[min-content_1fr_min-content]">
-            <div class="flex flex-col @_topNavColorClass transition-colors">
-                <div style="height: @InsetsManager.SystemSafeInsetTop"></div>
-                <div class="flex items-center px-4 py-4 gap-2 text-2xl @Justify ">
-                    @RenderBackButton()
-                    <div class="h-[40px] flex items-center">
-                        <span class="m-0 text-on-surface">@AppState.Value.Title</span>
+    <CascadingValue Name="TopNavColorClass" Value="_topNavColorClass">
+        <div class="h-full page bg-surface">
+            <section class="relative h-full content">
+                <div class="grid grid-cols-1 h-full grid-rows-[min-content_1fr_min-content]">
+                    <div class="flex flex-col @_topNavColorClass transition-colors">
+                        <div style="height: @InsetsManager.SystemSafeInsetTop"></div>
+                        <div class="flex items-center px-4 py-4 gap-2 text-2xl @Justify ">
+                            @RenderBackButton()
+                            <div class="h-[40px] flex items-center">
+                                <span class="m-0 text-on-surface">@AppState.Value.Title</span>
+                            </div>
+                        </div>
                     </div>
+                    <div @ref="_contentElementRef" id="scrollingElement" class="px-2 pb-2 overflow-auto bg-surface flex flex-col" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
+                        @if (StateIsHydrated)
+                        {
+                            @Body
+                        }
+                        else
+                        {
+                            <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
+                                <div>
+                                    <md-circular-progress aria-label="Session loading" indeterminate four-color></md-circular-progress>
+                                </div>
+                                <span>
+                                    <p>Loading...</p>
+                                </span>
+                            </div>
+                        }
+                    </div>
+                    <NavBar></NavBar>
                 </div>
-            </div>
-            <div @ref="_contentElementRef" id="scrollingElement" class="px-2 pb-2 overflow-auto bg-surface flex flex-col" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
-                @if(StateIsHydrated){
-                    @Body
-                }
-                else
-                {
-                    <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
-                        <div><md-circular-progress aria-label="Session loading" indeterminate four-color></md-circular-progress></div>
-                        <span>
-                            <p>Loading...</p>
-                        </span>
-                    </div>
-                }
-            </div>
-            <NavBar></NavBar>
+            </section>
         </div>
-    </section>
-</div>
-</CascadingValue>
+    </CascadingValue>
 </CascadingValue>
 <Microsoft.AspNetCore.Components.Sections.SectionOutlet SectionName="Dialog"></Microsoft.AspNetCore.Components.Sections.SectionOutlet>
 <div class="hidden">
- <ApexChart
+    <ApexChart
         TItem="DummyChartType"
         Title=""
         XAxisType="XAxisType.Datetime">
 
         <ApexPointSeries TItem="DummyChartType"
-                            Items="new DummyChartType[0]"
-                            Name="Placeholder to load apex charts so it doesn't freeze on load"
-                            SeriesType="SeriesType.Line"
-                            XValue="@(e => DateTime.Now)"
-                            YAggregate="@(e => e.Max(e => e.X))"
-                            OrderByDescending="e=>e.X" />
+                         Items="new DummyChartType[0]"
+                         Name="Placeholder to load apex charts so it doesn't freeze on load"
+                         SeriesType="SeriesType.Line"
+                         XValue="@(e => DateTime.Now)"
+                         YAggregate="@(e => e.Max(e => e.X))"
+                         OrderByDescending="e => e.X"/>
     </ApexChart>
 </div>
 
@@ -76,10 +79,7 @@
 
     protected override void OnInitialized()
     {
-        InsetsManager.InsetsChanged += (_,_)=>
-        {
-            InvokeAsync(StateHasChanged);
-        };
+        InsetsManager.InsetsChanged += (_, _) => { InvokeAsync(StateHasChanged); };
         base.OnInitialized();
     }
 
@@ -95,6 +95,7 @@
         {
             NavigationManager.LocationChanged += HandleLocationChanged;
         }
+
         await base.OnAfterRenderAsync(firstRender);
     }
 
@@ -106,27 +107,28 @@
 
     private bool StateIsHydrated
         => ProgramState.Value.IsHydrated
-            && FeedState.Value.IsHydrated
-            && CurrentSessionState.Value.IsHydrated
-            && SettingsState.Value.IsHydrated;
+           && FeedState.Value.IsHydrated
+           && CurrentSessionState.Value.IsHydrated
+           && SettingsState.Value.IsHydrated;
 
     private async void OnContentScroll()
     {
         var scrollTop = await Js.InvokeAsync<double>("AppUtils.getScrollTop", _contentElementRef);
         var previousTopNavColorClass = _topNavColorClass;
-        _topNavColorClass = scrollTop switch {
+        _topNavColorClass = scrollTop switch
+        {
             // make it coloured after scrolling past 2px
-            (<=2) => "bg-surface",
+            (<= 2) => "bg-surface",
             _ => "bg-surface-container"
-            };
-            if(previousTopNavColorClass != _topNavColorClass)
+        };
+        if (previousTopNavColorClass != _topNavColorClass)
+        {
+            await InvokeAsync(async () =>
             {
-                await InvokeAsync(async ()=>
-                {
-                    StateHasChanged();
-                    await Task.Yield();
-                });
-            }
+                StateHasChanged();
+                await Task.Yield();
+            });
+        }
     }
 
     private string Justify => AppState.Value.BackNavigationUrl is null ? "justify-center" : "justify-start";
@@ -139,9 +141,10 @@
             return null;
         }
 
-        return @<IconButton Icon="arrow_back" Type=IconButtonType.Standard OnClick="() => NavigationManager.NavigateTo(backButtonUrl)" />;
+        return @<IconButton Icon="arrow_back" Type="IconButtonType.Standard" OnClick="() => NavigationManager.NavigateTo(backButtonUrl)"/>;
     }
 
 
     private record DummyChartType(int X);
+
 }

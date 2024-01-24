@@ -13,6 +13,7 @@ public class AppDataFileStorageKeyValueStore : IKeyValueStore
             var content = await File.ReadAllTextAsync(fileName);
             return content;
         }
+
         return null;
     }
 
@@ -25,6 +26,7 @@ public class AppDataFileStorageKeyValueStore : IKeyValueStore
             var content = await File.ReadAllBytesAsync(fileName);
             return content;
         }
+
         return null;
     }
 
