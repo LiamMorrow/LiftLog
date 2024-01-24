@@ -1,12 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
-       <TargetFrameworks>net8.0-android;net8.0</TargetFrameworks>
+        <TargetFrameworks>net8.0-android;net8.0</TargetFrameworks>
 
-        <!--This wild business is so that when I open vscode it doesn't try and open the project as an android or ios one, which causes weird locks when building from the cli-->
-        <TargetFramework Condition="'$(BuildFor)' == 'ios'">net8.0-ios</TargetFramework>
-        <TargetFramework Condition="'$(BuildFor)' == 'android'">net8.0-android</TargetFramework>
-        <TargetFramework Condition="'$(BuildFor)' != 'ios' And '$(BuildFor)' != 'android'">net8.0</TargetFramework>
         <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx'))">$(TargetFrameworks);net8.0-ios;</TargetFrameworks>
 
         <OutputType>Exe</OutputType>

@@ -4,13 +4,13 @@
         Value=@(Exercise.Name)
         label="Exercise Name"
         required
-        OnChange="value => OnExerciseUpdate(Exercise with { Name = value })">
+        OnChange="value => OnExerciseUpdate(Exercise with { Name = value! })">
     </TextField>
     <EditableIncrementer
         Label="Weight"
         Value="Exercise.Weight"
         Increment="2.5m"
-        OnChange="(val) => OnExerciseUpdate(Exercise with {Weight = val })" />
+        OnChange="(val) => OnExerciseUpdate(Exercise with {Weight = val! })" />
     <FixedIncrementer
         Label="Sets"
         Increment="() => OnExerciseUpdate(Exercise with {Sets = Exercise.Sets + 1})"

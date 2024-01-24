@@ -20,7 +20,7 @@
             class="w-full mb-4"
             Label="Session Name"
             Value="@SessionEditorState.Value.SessionBlueprint.Name"
-            OnChange="@((val) => SetName(val))"></TextField>
+            OnChange="@((val) => SetName(val!))"></TextField>
         <CardList Items="SessionEditorState.Value.SessionBlueprint.Exercises.IndexedTuples()">
             @{
                 var exercise = context.Item;

@@ -53,10 +53,13 @@ public partial class MainPage : ContentPage
 #if IOS
         if (blazorWebView.Handler.PlatformView is WebKit.WKWebView view)
         {
-            view.SetValueForKey(
-                Foundation.NSObject.FromObject(true),
-                new Foundation.NSString("inspectable")
-            );
+            if (OperatingSystem.IsIOSVersionAtLeast(16, 4) || OperatingSystem.IsMacCatalystVersionAtLeast(13, 3))
+            {
+                view.SetValueForKey(
+                    Foundation.NSObject.FromObject(true),
+                    new Foundation.NSString("inspectable")
+                );
+            }
         }
 #endif
 #endif

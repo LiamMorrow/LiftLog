@@ -146,14 +146,14 @@ internal partial class FeedStateDaoV1
                 Feed: value.FeedItems.Select(x => (FeedItem?)x).WhereNotNull().ToImmutableList(),
                 FollowedUsers: value.FollowedUsers.ToImmutableDictionary(
                     feedUserDao => (Guid)feedUserDao.Id,
-                    x => (FeedUser)x
+                    x => (FeedUser)x!
                 ),
                 SharedFeedUser: null,
                 FollowRequests: value
-                    .FollowRequests.Select(x => (FollowRequest)x)
+                    .FollowRequests.Select(x => (FollowRequest)x!)
                     .ToImmutableList(),
                 Followers: value
-                    .Followers.Select(x => (FeedUser)x)
+                    .Followers.Select(x => (FeedUser)x!)
                     .ToImmutableDictionary(x => x.Id),
                 ActiveTab: "mainfeed-panel",
                 UnpublishedSessionIds: value
