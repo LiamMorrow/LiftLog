@@ -4,7 +4,7 @@
     <label class="text-lg text-center">@Label</label>
     <div class="flex items-center justify-center gap-2">
         <IconButton data-cy="editable-decrement" Type="IconButtonType.Outlined" OnClick="@(() => { OnChange(Value - Increment); })" Icon="remove"/>
-        <TextField data-cy="editable-field" class="w-20" type="text" inputmode="decimal" Value="@(Value.ToString())" OnChange="@(value => OnChanged(value!))"/>
+        <TextField data-cy="editable-field" class="w-20" type="text" inputmode="decimal" Value="@(Value.ToString())" OnChange="@(value => OnChanged(value))"/>
         <IconButton data-cy="editable-increment" Type="IconButtonType.Outlined" OnClick="@(() => { OnChange(Value + Increment); })" Icon="add"/>
     </div>
 </div>
@@ -23,10 +23,9 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private void OnChanged(string value)
+    private void OnChanged(string? value)
     {
-        if (value is string valueStr
-            && T.TryParse(valueStr, System.Globalization.NumberStyles.Any,
+        if (value != null && T.TryParse(value, System.Globalization.NumberStyles.Any,
                 System.Globalization.CultureInfo.CurrentCulture, out var result))
         {
             OnChange(result);
