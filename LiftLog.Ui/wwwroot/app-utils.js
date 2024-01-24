@@ -73,11 +73,12 @@ AppUtils.getActiveTabControls = function (tabs) {
 }
 
 AppUtils.setSelected = function (element, selected) {
+    if(element)
     element.selected = selected;
 }
 
 AppUtils.getSelected = function (element) {
-    return element.selected;
+    return element?.selected;
 }
 
 AppUtils.selectAllText = function (element) {
