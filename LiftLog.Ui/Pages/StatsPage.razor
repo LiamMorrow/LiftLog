@@ -1,14 +1,26 @@
 @page "/stats"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
-@using LiftLog.Ui.Services;
-@using Fluxor;
-@using LiftLog.Ui.Store.App;
 
 @inject SessionService SessionService;
 @inject IState<SettingsState> SettingsState;
 @inject IState<StatsState> StatsState;
 @inject IDispatcher Dispatcher;
 
+<div class="flex justify-between my-2">
+    <Select T="string" Options="SessionSelectOptions" Value="StatsState.Value.OverallViewSessionName" ValueChanged="v => {  Dispatcher.Dispatch(new SetOverallViewSessionAction(v)); Dispatcher.Dispatch(new SetStatsIsDirtyAction(true)); Dispatcher.Dispatch(new FetchOverallStatsAction());}"></Select>
+    <Select T="TimeSpan" Options="SelectTimeOptions" Value="StatsState.Value.OverallViewTime" ValueChanged="v => { Dispatcher.Dispatch(new SetOverallViewTimeAction(v)); Dispatcher.Dispatch(new SetStatsIsDirtyAction(true)); Dispatcher.Dispatch(new FetchOverallStatsAction()); }"></Select>
+</div>
+@if (StatsState.Value.IsLoading)
+{
+    <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
+        <div>
+            <md-circular-progress aria-label="Session loading" indeterminate four-color></md-circular-progress>
+        </div>
+        <span>
+            <p>Calculating...</p>
+        </span>
+    </div>
+}
 @if (StatsState.Value.OverallView?.SessionStats.Count == 0)
 {
     <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
@@ -18,14 +30,35 @@
         </span>
     </div>
 }
-else if(!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null)
+else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null)
 {
     var overallStats = StatsState.Value.OverallView;
     <div class="grid grid-rows-2 grid-cols-2 gap-2 mb-2">
-        <SingleValueStatisticsCard><Title>Average time between sets</Title> <Body><TimeSpanFormat TimeSpan="@overallStats.AverageTimeBetweenSets" /></Body></SingleValueStatisticsCard>
-        <SingleValueStatisticsCard><Title>Average session length</Title> <Body><TimeSpanFormat TimeSpan="@overallStats.AverageSessionLength" TruncateToMins="true" /></Body></SingleValueStatisticsCard>
-        <SingleValueStatisticsCard><Title>Most time spent</Title> <Body>@overallStats.ExerciseMostTimeSpent?.ExerciseName</Body></SingleValueStatisticsCard>
-        <SingleValueStatisticsCard><Title>Heaviest lift</Title> <Body><WeightFormat Weight="@overallStats.HeaviestLift?.Weight" /></Body></SingleValueStatisticsCard>
+        <SingleValueStatisticsCard>
+            <Title>Average time between sets</Title>
+            <Body>
+            <TimeSpanFormat TimeSpan="@overallStats.AverageTimeBetweenSets"/>
+            </Body>
+        </SingleValueStatisticsCard>
+        <SingleValueStatisticsCard>
+            <Title>Average session length</Title>
+            <Body>
+            <TimeSpanFormat TimeSpan="@overallStats.AverageSessionLength" TruncateToMins="true"/>
+            </Body>
+        </SingleValueStatisticsCard>
+        <SingleValueStatisticsCard>
+            <Title>Most time spent</Title>
+            <Body>@overallStats.ExerciseMostTimeSpent?.ExerciseName</Body>
+        </SingleValueStatisticsCard>
+        <SingleValueStatisticsCard>
+            <Title>Heaviest lift</Title>
+            <Body>
+            <div class="flex flex-col justify-center items-center">
+                <WeightFormat Weight="@overallStats.HeaviestLift?.Weight"/>
+                <span>@overallStats.HeaviestLift?.Blueprint.Name</span>
+            </div>
+            </Body>
+        </SingleValueStatisticsCard>
     </div>
     <div class="flex flex-col gap-2">
         @if (SettingsState.Value.ShowBodyweight && overallStats.BodyweightStats.Statistics.Any())
@@ -70,12 +103,33 @@ else if(!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null)
     private Dialog? dialog;
     private ExerciseStatisticOverTime? _selectedExercise;
 
+    private List<Select<TimeSpan>.SelectOption> SelectTimeOptions =
+    [
+        new("30 days", TimeSpan.FromDays(30)),
+        new("90 days", TimeSpan.FromDays(90)),
+        new("180 days", TimeSpan.FromDays(180)),
+        new("365 days", TimeSpan.FromDays(365)),
+        new("All time", TimeSpan.FromDays(36500)),
+    ];
+
+    private List<Select<string>.SelectOption> SessionSelectOptions = [];
+
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new FetchOverallStatsAction());
         Dispatcher.Dispatch(new SetPageTitleAction("Statistics"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
         base.OnInitialized();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        SessionSelectOptions = await SessionService.GetLatestSessionsAsync()
+            .Select(x => new Select<string>.SelectOption(x.Blueprint.Name, x.Blueprint.Name))
+            .Distinct()
+            .Prepend(new Select<string>.SelectOption("All sessions", null!))
+            .ToListAsync();
+        await base.OnInitializedAsync();
     }
 
     private void HandleCardClick((ExerciseStatisticOverTime exerciseStatistics, int Index) item)

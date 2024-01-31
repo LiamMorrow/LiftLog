@@ -9,6 +9,8 @@ public record SetPinnedStatsAction(ImmutableListValue<PinnedStatistic> Stats);
 
 public record SetOverallViewTimeAction(TimeSpan Time);
 
+public record SetOverallViewSessionAction(string? SessionName);
+
 public record FetchOverallStatsAction();
 
 public record SetStatsIsLoadingAction(bool IsLoading);

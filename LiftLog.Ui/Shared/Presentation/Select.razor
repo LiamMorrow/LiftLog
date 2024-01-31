@@ -1,0 +1,29 @@
+@inject IJSRuntime JsRuntime
+@typeparam T where T : IEquatable<T>
+
+<div class="relative">
+    <AppButton id="@btnId" trailing-icon Type="AppButtonType.Text" OnClick="@(() => JsRuntime.InvokeVoidAsync("AppUtils.toggleOpen", menuRef))">
+        @(Options.FirstOrDefault(x => (x.Value == null && Value is null) || x.Value?.Equals(Value) == true)?.Title) <md-icon slot="icon">keyboard_arrow_down</md-icon>
+    </AppButton>
+
+    <md-menu @ref="menuRef" id="usage-menu" anchor="@btnId">
+        @foreach (var option in Options)
+        {
+            <md-menu-item @onclick="() => ValueChanged.InvokeAsync(option.Value)">
+                <div slot="headline">@option.Title</div>
+            </md-menu-item>
+        }
+    </md-menu>
+</div>
+
+@code {
+    private string btnId = "btn-" + Guid.NewGuid().ToString("N");
+    private ElementReference menuRef;
+    [Parameter] [EditorRequired] public T Value { get; set; } = default!;
+
+    [Parameter] [EditorRequired] public List<SelectOption> Options { get; set; } = null!;
+
+    [Parameter] [EditorRequired] public EventCallback<T> ValueChanged { get; set; }
+
+    public record SelectOption(string Title, T Value);
+}

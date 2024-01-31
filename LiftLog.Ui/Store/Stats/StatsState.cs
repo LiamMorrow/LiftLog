@@ -6,6 +6,7 @@ namespace LiftLog.Ui.Store.Stats;
 public record StatsState(
     bool IsDirty,
     bool IsLoading,
+    string? OverallViewSessionName,
     TimeSpan OverallViewTime,
     GranularStatisticView? OverallView,
     ImmutableListValue<PinnedStatistic> PinnedStatistics

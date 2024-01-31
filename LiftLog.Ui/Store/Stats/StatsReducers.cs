@@ -37,4 +37,10 @@ public static class StatsReducers
         {
             PinnedStatistics = action.Stats,
         };
+
+    [ReducerMethod]
+    public static StatsState SetOverallViewSession(
+        StatsState state,
+        SetOverallViewSessionAction action
+    ) => state with { OverallViewSessionName = action.SessionName, };
 }

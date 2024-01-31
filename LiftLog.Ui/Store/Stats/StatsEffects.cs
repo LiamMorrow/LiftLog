@@ -31,6 +31,10 @@ public class StatsEffects(IState<StatsState> state, IProgressRepository progress
             var sessions = await progressRepository
                 .GetOrderedSessions()
                 .Where(session => session.Date >= earliestTime && session.Date <= latestTime)
+                .Where(session =>
+                    state.Value.OverallViewSessionName is null
+                    || session.Blueprint.Name == state.Value.OverallViewSessionName
+                )
                 .Where(x => x.RecordedExercises.Any())
                 .ToListAsync();
 
