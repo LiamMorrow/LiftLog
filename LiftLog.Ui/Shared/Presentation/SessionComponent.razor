@@ -1,4 +1,3 @@
-@using LiftLog.Ui.Util
 
 @if (!Session.RecordedExercises.Any())
 {
@@ -25,7 +24,7 @@ else
             UpdateNotesForExercise=@((notes) => UpdateNotesForExercise(context.Index, notes))
             OnEditExercise=@(() => BeginEditExercise(context.Index))
             OnRemoveExercise=@(() => BeginRemoveExercise(context.Index))
-            IsReadonly=IsReadonly/>
+            IsReadonly=IsReadonly />
     </CardList>
 }
 @if (ShowBodyweight)

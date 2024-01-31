@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 
 namespace LiftLog.Lib.Models;
 
@@ -49,18 +50,23 @@ public record Session(
 
             return RecordedExercises
                 .Where(x => x.HasRemainingSets)
-                .OrderByDescending(x => x.LastRecordedSet?.Set?.CompletionTime)
-                .FirstOrDefault();
+                .MaxBy(x => x.LastRecordedSet?.Set?.CompletionTime);
         }
     }
 
     public RecordedExercise? LastExercise =>
         RecordedExercises
             .Where(x => x.PotentialSets.Any(set => set.Set is not null))
-            .OrderByDescending(x => x.LastRecordedSet?.Set?.CompletionTime)
-            .FirstOrDefault();
+            .MaxBy(x => x.LastRecordedSet?.Set?.CompletionTime);
 
     public bool IsStarted => RecordedExercises.Any(x => x.LastRecordedSet?.Set is not null);
+
+    public TimeSpan SessionLength =>
+        RecordedExercises.Select(x => x.LastRecordedSet?.Set?.CompletionTime).WhereNotNull().Max()
+        - RecordedExercises
+            .Select(x => x.FirstRecordedSet?.Set?.CompletionTime)
+            .WhereNotNull()
+            .Min();
 
     public bool IsComplete =>
         RecordedExercises.All(x => x.PotentialSets.All(set => set.Set is not null));
@@ -86,10 +92,19 @@ public record RecordedExercise(
         PotentialSets.All(x => x.Set is not null && x.Set.RepsCompleted >= Blueprint.RepsPerSet)
         && PotentialSets.Any(x => x.Weight >= Weight);
 
+    [NotNullIfNotNull("FirstRecordedSet")]
     public PotentialSet? LastRecordedSet =>
         PotentialSets
             .OrderByDescending(x => x.Set?.CompletionTime)
             .FirstOrDefault(x => x.Set is not null);
+
+    [NotNullIfNotNull("LastRecordedSet")]
+    public PotentialSet? FirstRecordedSet =>
+        PotentialSets.OrderBy(x => x.Set?.CompletionTime).FirstOrDefault(x => x.Set is not null);
+
+    public TimeSpan TimeSpent =>
+        LastRecordedSet?.Set?.CompletionTime - FirstRecordedSet?.Set?.CompletionTime
+        ?? TimeSpan.Zero;
 
     public decimal OneRepMax => Math.Floor(Weight / (1.0278m - (0.0278m * Blueprint.RepsPerSet)));
 

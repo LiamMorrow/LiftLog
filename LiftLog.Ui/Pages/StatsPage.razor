@@ -9,7 +9,7 @@
 @inject IState<StatsState> StatsState;
 @inject IDispatcher Dispatcher;
 
-@if (StatsState.Value.SessionStats.Count == 0)
+@if (StatsState.Value.OverallView?.SessionStats.Count == 0)
 {
     <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
         <md-icon>info</md-icon>
@@ -18,19 +18,26 @@
         </span>
     </div>
 }
-else
+else if(!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null)
 {
+    var overallStats = StatsState.Value.OverallView;
+    <div class="grid grid-rows-2 grid-cols-2 gap-2 mb-2">
+        <SingleValueStatisticsCard><Title>Average time between sets</Title> <Body><TimeSpanFormat TimeSpan="@overallStats.AverageTimeBetweenSets" /></Body></SingleValueStatisticsCard>
+        <SingleValueStatisticsCard><Title>Average session length</Title> <Body><TimeSpanFormat TimeSpan="@overallStats.AverageSessionLength" TruncateToMins="true" /></Body></SingleValueStatisticsCard>
+        <SingleValueStatisticsCard><Title>Most time spent</Title> <Body>@overallStats.ExerciseMostTimeSpent?.ExerciseName</Body></SingleValueStatisticsCard>
+        <SingleValueStatisticsCard><Title>Heaviest lift</Title> <Body><WeightFormat Weight="@overallStats.HeaviestLift?.Weight" /></Body></SingleValueStatisticsCard>
+    </div>
     <div class="flex flex-col gap-2">
-        @if (SettingsState.Value.ShowBodyweight && StatsState.Value.BodyweightStats.Statistics.Any())
+        @if (SettingsState.Value.ShowBodyweight && overallStats.BodyweightStats.Statistics.Any())
         {
             <Card>
-                <StatGraphCardContent Statistics="StatsState.Value.BodyweightStats" RenderDelay="TimeSpan.FromMilliseconds(100)"/>
+                <StatGraphCardContent Statistics="overallStats.BodyweightStats" RenderDelay="TimeSpan.FromMilliseconds(100)"/>
             </Card>
         }
-        <CardList Items="@(StatsState.Value.SessionStats.IndexedTuples())">
+        <CardList Items="@(overallStats.SessionStats.IndexedTuples())">
             <StatGraphCardContent Statistics="context.Item" RenderDelay="TimeSpan.FromMilliseconds(200 + context.Index * 200)"/>
         </CardList>
-        <CardList Items="@(StatsState.Value.ExerciseStats.IndexedTuples())" OnClick=@HandleCardClick>
+        <CardList Items="@(overallStats.ExerciseStats.IndexedTuples())" OnClick=@HandleCardClick>
             <StatGraphCardContent Statistics="context.Item" RenderDelay="TimeSpan.FromMilliseconds(200 + context.Index * 200)"/>
         </CardList>
     </div>
@@ -65,7 +72,7 @@ else
 
     protected override void OnInitialized()
     {
-        Dispatcher.Dispatch(new FetchStatsAction());
+        Dispatcher.Dispatch(new FetchOverallStatsAction());
         Dispatcher.Dispatch(new SetPageTitleAction("Statistics"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
         base.OnInitialized();

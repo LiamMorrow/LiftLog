@@ -1,17 +1,24 @@
-using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 
 namespace LiftLog.Ui.Store.Stats;
 
 public record StatsState(
-    ImmutableListValue<ExerciseStatisticOverTime> ExerciseStats,
-    ImmutableListValue<StatisticOverTime> SessionStats,
-    StatisticOverTime BodyweightStats,
     bool IsDirty,
-    bool IsLoading
+    bool IsLoading,
+    TimeSpan OverallViewTime,
+    GranularStatisticView? OverallView,
+    ImmutableListValue<PinnedStatistic> PinnedStatistics
 );
+
+public enum StatisticType
+{
+    Bodyweight = 0,
+    Exercise = 1,
+    Session = 2,
+}
+
+public record PinnedStatistic(StatisticType Type, string Title);
 
 public record StatisticOverTime(string Title, ImmutableListValue<TimeTrackedStatistic> Statistics);
 
@@ -29,3 +36,15 @@ public record ExerciseStatisticOverTime(
 }
 
 public record TimeTrackedStatistic(DateTime DateTime, decimal Value);
+
+public record GranularStatisticView(
+    TimeSpan AverageTimeBetweenSets,
+    TimeSpan AverageSessionLength,
+    RecordedExercise? HeaviestLift,
+    TimeSpentExercise? ExerciseMostTimeSpent,
+    ImmutableListValue<ExerciseStatisticOverTime> ExerciseStats,
+    ImmutableListValue<StatisticOverTime> SessionStats,
+    StatisticOverTime BodyweightStats
+);
+
+public record TimeSpentExercise(string ExerciseName, TimeSpan TimeSpent);

@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using Fluxor;
+using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Store.Stats;
 
@@ -11,10 +12,10 @@ public class StatsFeature : Feature<StatsState>
 
     protected override StatsState GetInitialState() =>
         new(
-            ExerciseStats: [],
-            SessionStats: [],
-            BodyweightStats: new StatisticOverTime("Bodyweight", []),
             IsDirty: true,
-            IsLoading: false
+            IsLoading: false,
+            OverallViewTime: TimeSpan.FromDays(30),
+            OverallView: null,
+            PinnedStatistics: []
         );
 }

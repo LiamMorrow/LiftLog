@@ -11,7 +11,7 @@ using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.Program;
-using LiftLog.Ui.Util;
+
 using Microsoft.Extensions.Logging;
 using static LiftLog.Ui.Models.UserEventPayload;
 
