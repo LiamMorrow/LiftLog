@@ -20,7 +20,7 @@ internal partial class SessionHistoryDaoV2
 internal partial class SessionDaoV2
 {
     public SessionDaoV2(
-        UUIDDao id,
+        UuidDao id,
         SessionBlueprintDaoV2 sessionBlueprint,
         IEnumerable<RecordedExerciseDaoV2> recordedExercises,
         DateOnlyDao date,

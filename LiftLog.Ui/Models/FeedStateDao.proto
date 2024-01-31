@@ -9,7 +9,7 @@ import "Models/SessionBlueprintDao/SessionBlueprintDaoV2.proto";
 import "Models/UserEvent.proto";
 
 message FeedIdentityDaoV1 {
-    LiftLog.Ui.Models.UUIDDao id = 1;
+    LiftLog.Ui.Models.UuidDao id = 1;
     bytes aes_key = 2;
     bytes public_key = 9;
     bytes private_key = 10;
@@ -22,7 +22,7 @@ message FeedIdentityDaoV1 {
 }
 
 message FeedUserDaoV1 {
-    LiftLog.Ui.Models.UUIDDao id = 1;
+    LiftLog.Ui.Models.UuidDao id = 1;
     bytes public_key = 8;
 
     optional google.protobuf.StringValue name = 2;
@@ -40,8 +40,8 @@ message CurrentPlanDaoV1 {
 }
 
 message FeedItemDaoV1 {
-    LiftLog.Ui.Models.UUIDDao user_id = 1;
-    LiftLog.Ui.Models.UUIDDao event_id = 2;
+    LiftLog.Ui.Models.UuidDao user_id = 1;
+    LiftLog.Ui.Models.UuidDao event_id = 2;
     google.protobuf.Timestamp timestamp = 3;
     google.protobuf.Timestamp expiry = 4;
     oneof payload {
@@ -55,5 +55,5 @@ message FeedStateDaoV1 {
     optional LiftLog.Ui.Models.FeedIdentityDaoV1 identity = 3;
     repeated LiftLog.Ui.Models.InboxMessageDao follow_requests = 4;
     repeated LiftLog.Ui.Models.FeedUserDaoV1 followers = 5;
-    repeated LiftLog.Ui.Models.UUIDDao unpublished_session_ids = 6;
+    repeated LiftLog.Ui.Models.UuidDao unpublished_session_ids = 6;
 }

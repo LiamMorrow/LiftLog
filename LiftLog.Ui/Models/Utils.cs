@@ -76,19 +76,19 @@ internal partial class TimeOnlyDao
         value is null ? null : (TimeOnlyDao)value.Value;
 }
 
-internal partial class UUIDDao
+internal partial class UuidDao
 {
-    public UUIDDao(Guid value)
+    public UuidDao(Guid value)
     {
         Value = ByteString.CopyFrom(value.ToByteArray());
     }
 
-    public static implicit operator UUIDDao(Guid value) => new(value);
+    public static implicit operator UuidDao(Guid value) => new(value);
 
-    public static implicit operator Guid(UUIDDao dao) => new(dao.Value.ToByteArray());
+    public static implicit operator Guid(UuidDao dao) => new(dao.Value.ToByteArray());
 
-    public static implicit operator UUIDDao?(Guid? value) =>
-        value is null ? null : (UUIDDao)value.Value;
+    public static implicit operator UuidDao?(Guid? value) =>
+        value is null ? null : (UuidDao)value.Value;
 
-    public static implicit operator Guid?(UUIDDao? dao) => dao is null ? null : (Guid)dao;
+    public static implicit operator Guid?(UuidDao? dao) => dao is null ? null : (Guid)dao;
 }

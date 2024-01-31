@@ -2,7 +2,7 @@ syntax = "proto3";
 package LiftLog.Ui.Models;
 
 
-message UUIDDao {
+message UuidDao {
     bytes value = 1;
 }
 

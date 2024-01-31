@@ -172,7 +172,7 @@ internal partial class FeedStateDaoV1
                 FollowedUsers = { value.FollowedUsers.Values.Select(x => (FeedUserDaoV1)x) },
                 FollowRequests = { value.FollowRequests.Select(x => (InboxMessageDao)x) },
                 Followers = { value.Followers.Values.Select(x => (FeedUserDaoV1)x) },
-                UnpublishedSessionIds = { value.UnpublishedSessionIds.Select(x => (UUIDDao)x) }
+                UnpublishedSessionIds = { value.UnpublishedSessionIds.Select(x => (UuidDao)x) }
             };
 }
 
