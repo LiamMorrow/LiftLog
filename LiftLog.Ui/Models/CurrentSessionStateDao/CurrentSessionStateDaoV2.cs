@@ -8,7 +8,7 @@ internal partial class CurrentSessionStateDaoV2
     public CurrentSessionStateDaoV2(
         SessionDaoV2? workoutSession,
         SessionDaoV2? historySession,
-        UUIDDao? latestSetTimerNotificationId
+        UuidDao? latestSetTimerNotificationId
     )
     {
         WorkoutSession = workoutSession;

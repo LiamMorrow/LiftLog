@@ -10,7 +10,7 @@ message SessionHistoryDaoV2 {
 }
 
 message SessionDaoV2 {
-    LiftLog.Ui.Models.UUIDDao id = 1;
+    LiftLog.Ui.Models.UuidDao id = 1;
     string session_name = 2;
     repeated RecordedExerciseDaoV2 recorded_exercises = 3;
     LiftLog.Ui.Models.DateOnlyDao date = 4;

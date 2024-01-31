@@ -19,7 +19,7 @@ message SessionUserEvent {
 }
 
 message InboxMessageDao {
-    LiftLog.Ui.Models.UUIDDao from_user_id = 1;
+    LiftLog.Ui.Models.UuidDao from_user_id = 1;
     oneof message_payload {
         FollowRequestDao follow_request = 2;
         FollowResponseDao follow_response = 3;

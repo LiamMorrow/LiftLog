@@ -9,7 +9,7 @@
 @inject NavigationManager NavigationManager
 @inject IState<CurrentSessionState> CurrentSessionState
 @inject IDispatcher Dispatcher
-@inject ILogger<HistoryPage> logger
+@inject ILogger<HistoryPage> Logger
 
 @if (!_latestSessions.Any())
 {
@@ -22,10 +22,10 @@
 }
 else
 {
-    <VirtualizedCardList Items="_latestSessions" OnClick="HandleSessionClick">
+    <VirtualizedCardList Items="_latestSessions" OnClick="@HandleSessionClick">
         <SplitCardControl>
             <MainContent>
-                <SessionSummary IsFilled="true" Session="context"></SessionSummary>
+                <SessionSummary IsFilled="true" Session="context" ShowSets="true"></SessionSummary>
             </MainContent>
 
             <SideContent>
@@ -84,6 +84,6 @@ else
             .ToListAsync();
         await base.OnInitializedAsync();
         sw.Stop();
-        logger.LogInformation($"History page initialized in {sw.ElapsedMilliseconds} ms");
+        Logger.LogInformation($"History page initialized in {sw.ElapsedMilliseconds} ms");
     }
 }
