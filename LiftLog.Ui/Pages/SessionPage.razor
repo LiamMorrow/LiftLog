@@ -125,6 +125,7 @@
     private void SaveSession()
     {
         Dispatcher.Dispatch(new PersistCurrentSessionAction(SessionTarget.WorkoutSession));
+        var id = CurrentSessionState.Value.WorkoutSession?.Id;
         if (CurrentSessionState.Value.WorkoutSession is not null)
         {
             Dispatcher.Dispatch(new AddUnpublishedSessionIdAction(CurrentSessionState.Value.WorkoutSession.Id));
@@ -133,7 +134,7 @@
         Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, null));
         Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
 
-        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/post-session/"+id);
     }
 
     private void CloseSession()

@@ -32,9 +32,9 @@
                     <ExerciseEditor Exercise="@exercise" UpdateExercise=@(ex => UpdateExercise(index, ex))/>
                 </MainContent>
                 <SideContent>
-                    <IconButton Type="IconButtonType.FilledTonal" OnClick=@(() => RemoveExercise(exercise)) Icon="delete"/>
-                    <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveExerciseUp(exercise)) Icon="arrow_upward"/>
-                    <IconButton Type="IconButtonType.Outlined" OnClick=@(() => MoveExerciseDown(exercise)) Icon="arrow_downward"/>
+                    <IconButton Type="IconButtonType.Standard" OnClick=@(() => RemoveExercise(exercise)) Icon="delete"/>
+                    <IconButton Type="IconButtonType.Standard" OnClick=@(() => MoveExerciseUp(exercise)) Icon="arrow_upward"/>
+                    <IconButton Type="IconButtonType.Standard" OnClick=@(() => MoveExerciseDown(exercise)) Icon="arrow_downward"/>
                 </SideContent>
             </SplitCardControl>
         </CardList>
@@ -44,7 +44,7 @@
     </div>
     <FloatingBottomContainer>
         <Fab>
-            <FloatingButton has-icon variant="secondary" OnClick=SaveSession Label="Save">
+            <FloatingButton has-icon variant="tertiary" OnClick=SaveSession Label="Save">
                 <md-icon slot="icon">save</md-icon>
             </FloatingButton>
         </Fab>

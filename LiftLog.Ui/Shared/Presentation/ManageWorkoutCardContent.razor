@@ -3,13 +3,13 @@
         <SessionSummary Session="SessionBlueprint.GetEmptySession()" ShowSets="true" ShowWeight="false"/>
     </MainContent>
     <SideContent>
-        <IconButton Type="IconButtonType.FilledTonal" OnClick="@(() => _menu?.Open())" Icon="more_horiz"/>
+        <IconButton Type="IconButtonType.Standard" OnClick="@(() => _menu?.Open())" Icon="more_horiz"/>
         <Menu @ref="_menu">
             <MenuItem Icon="delete" Label="Remove" OnClick="() => OnRemoveSession()"/>
             <MenuItem Icon="content_copy" Label="Duplicate" OnClick="() => OnDuplicateSession()"/>
         </Menu>
-        <IconButton Type="IconButtonType.Outlined" OnClick="@(() => OnMoveSessionUp())" Icon="arrow_upward"/>
-        <IconButton Type="IconButtonType.Outlined" OnClick="@(() => OnMoveSessionDown())" Icon="arrow_downward"/>
+        <IconButton Type="IconButtonType.Standard" OnClick="@(() => OnMoveSessionUp())" Icon="arrow_upward"/>
+        <IconButton Type="IconButtonType.Standard" OnClick="@(() => OnMoveSessionDown())" Icon="arrow_downward"/>
     </SideContent>
 </SplitCardControl>
 

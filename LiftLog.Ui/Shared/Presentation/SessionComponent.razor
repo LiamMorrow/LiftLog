@@ -25,7 +25,7 @@ else
             UpdateNotesForExercise=@((notes) => UpdateNotesForExercise(context.Index, notes))
             OnEditExercise=@(() => BeginEditExercise(context.Index))
             OnRemoveExercise=@(() => BeginRemoveExercise(context.Index))
-            IsReadonly=IsReadonly/>
+            IsReadonly=IsReadonly />
     </CardList>
 }
 @if (ShowBodyweight)
@@ -61,8 +61,8 @@ else
     {
         <FloatingBottomContainer>
             <Fab>
-                <FloatingButton variant="secondary" has-icon OnClick=SaveSession Label="Save">
-                    <md-icon slot="icon">save</md-icon>
+                <FloatingButton variant="tertiary" has-icon OnClick=SaveSession Label="Complete Workout">
+                    <md-icon slot="icon">check_circle</md-icon>
                 </FloatingButton>
             </Fab>
             <AdditionalContent>@RenderSnackBar()</AdditionalContent>
@@ -271,7 +271,10 @@ else
     private RenderFragment? RenderSnackBar()
     {
         var lastRecordedSet = Session.LastExercise?.LastRecordedSet;
-        if (ShowRestTimer && Session.NextExercise is not null && Session.LastExercise is not null && lastRecordedSet is { Set : { } } lrs)
+        if (ShowRestTimer
+            && Session.NextExercise is not null
+            && Session.LastExercise is not null
+            && lastRecordedSet is { Set : not null } lrs)
         {
             var lastSetFailed = lrs.Set.RepsCompleted < Session.LastExercise.Blueprint.RepsPerSet;
 

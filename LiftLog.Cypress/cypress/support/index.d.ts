@@ -8,22 +8,22 @@ declare namespace Cypress {
      *
      * Required because when we transition between pages, we keep the old page rendered in the dom
      */
-    getA(selector: string, options: Partial<Loggable & Timeoutable & CaseMatchable & Shadow>): Chainable<JQuery<E>>;
+    getA<E>(selector: string, options?: Partial<Loggable & Timeoutable & CaseMatchable & Shadow>): Chainable<JQuery<E>>;
     /**
      * Identical to contains, but looks in the currently transitioned to page.
      * Use this when looking for content which will be animated (i.e. within pages).
      *
      * Required because when we transition between pages, we keep the old page rendered in the dom
      */
-    containsA(
+    containsA<E>(
       selector: string,
-      options: Partial<Loggable & Timeoutable & CaseMatchable & Shadow>
+      options?: Partial<Loggable & Timeoutable & CaseMatchable & Shadow>
     ): Chainable<JQuery<E>>;
     /**
      * Navigate using the nav buttons
      */
-    navigate(navButtonText: string): Chainable<JQuery<E>>;
+    navigate<E>(navButtonText: string): Chainable<JQuery<E>>;
 
-    dialog(): Chainable<JQuery<E>>;
+    dialog<E>(): Chainable<JQuery<E>>;
   }
 }
