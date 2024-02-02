@@ -89,6 +89,11 @@ AppUtils.selectAllText = function (element) {
     }
 }
 
+AppUtils.toggleOpen = function (element) {
+    if(!element) return;
+    element.open = !element.open;
+}
+
 /**
  * @param {HTMLElement} element
  */

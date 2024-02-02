@@ -5,12 +5,10 @@ namespace LiftLog.Ui.Store.Stats;
 public static class StatsReducers
 {
     [ReducerMethod]
-    public static StatsState SetStats(StatsState state, SetStatsAction action) =>
+    public static StatsState SetOverallStats(StatsState state, SetOverallStatsAction action) =>
         state with
         {
-            BodyweightStats = action.BodyweightStats,
-            ExerciseStats = action.ExerciseStats,
-            SessionStats = action.SessionStats,
+            OverallView = action.Stats
         };
 
     [ReducerMethod]
@@ -26,4 +24,23 @@ public static class StatsReducers
         {
             IsDirty = action.IsDirty,
         };
+
+    [ReducerMethod]
+    public static StatsState SetOverallViewTime(
+        StatsState state,
+        SetOverallViewTimeAction action
+    ) => state with { OverallViewTime = action.Time, };
+
+    [ReducerMethod]
+    public static StatsState SetPinnedStats(StatsState state, SetPinnedStatsAction action) =>
+        state with
+        {
+            PinnedStatistics = action.Stats,
+        };
+
+    [ReducerMethod]
+    public static StatsState SetOverallViewSession(
+        StatsState state,
+        SetOverallViewSessionAction action
+    ) => state with { OverallViewSessionName = action.SessionName, };
 }

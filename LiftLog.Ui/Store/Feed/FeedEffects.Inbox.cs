@@ -6,7 +6,7 @@ using LiftLog.Lib.Models;
 using LiftLog.Lib.Services;
 using LiftLog.Ui.Models;
 using LiftLog.Ui.Models.SessionHistoryDao;
-using LiftLog.Ui.Util;
+
 using Microsoft.Extensions.Logging;
 using static LiftLog.Ui.Models.UserEventPayload;
 

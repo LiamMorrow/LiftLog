@@ -1,7 +1,7 @@
 @inject IJSRuntime JsRuntime
 
 <div
-    class="@(AdditionalAttributes?.GetValueOrDefault("class")) p-5 relative border @(IsHighlighted ? "border-primary bg-surface-container-high" : "border-outline-variant bg-surface-container-low") rounded-card text-on-surface card"
+    class="@(AdditionalAttributes?.GetValueOrDefault("class")) p-5 relative @(Border ? "border":"") @(IsHighlighted ? "border-primary bg-surface-container-high" : Border ? "border-outline-variant bg-surface-container-low" : "bg-surface-container-highest") rounded-card text-on-surface card"
     @onclick="HandleOnClick">
     @if (OnClick != null)
     {
@@ -20,6 +20,8 @@
     [Parameter] public Action<MouseEventArgs>? OnClick { get; set; }
 
     [Parameter] public bool IsHighlighted { get; set; }
+    
+    [Parameter] public bool Border { get; set; } = true;
 
     private void HandleOnClick(MouseEventArgs args)
     {
