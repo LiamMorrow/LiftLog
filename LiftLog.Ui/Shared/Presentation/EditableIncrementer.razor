@@ -3,9 +3,9 @@
 <div @attributes="AdditionalAttributes" class="flex flex-col gap-2 @(AdditionalAttributes?.GetValueOrDefault("class"))">
     <label class="text-lg text-center">@Label</label>
     <div class="flex items-center justify-center gap-2">
-        <IconButton data-cy="editable-decrement" Type="IconButtonType.Outlined" OnClick="@(() => { OnChange(Value - Increment); })" Icon="remove"/>
+        <IconButton data-cy="editable-decrement" Type="IconButtonType.FilledTonal" OnClick="@(() => { OnChange(Value - Increment); })" Icon="remove"/>
         <TextField data-cy="editable-field" class="w-20" type="text" inputmode="decimal" Value="@(Value.ToString())" OnChange="@(value => OnChanged(value))"/>
-        <IconButton data-cy="editable-increment" Type="IconButtonType.Outlined" OnClick="@(() => { OnChange(Value + Increment); })" Icon="add"/>
+        <IconButton data-cy="editable-increment" Type="IconButtonType.FilledTonal" OnClick="@(() => { OnChange(Value + Increment); })" Icon="add"/>
     </div>
 </div>
 

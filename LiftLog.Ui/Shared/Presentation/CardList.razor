@@ -2,7 +2,7 @@
 <div @attributes="AdditionalAttributes" class=" @(AdditionalAttributes?.GetValueOrDefault("class")) flex flex-col gap-2 py-2 cardlist">
     @foreach (var item in Items)
     {
-        <Card IsHighlighted="ShouldHighlight?.Invoke(item) ?? false" OnClick=@(OnClick != null ? _ => OnClick(item) : null)>
+        <Card class="@CardClass" IsHighlighted="ShouldHighlight?.Invoke(item) ?? false" OnClick=@(OnClick != null ? _ => OnClick(item) : null)>
             @ChildContent?.Invoke(item)
         </Card>
     }
@@ -17,6 +17,8 @@
     [Parameter] public Action<TItem>? OnClick { get; set; }
 
     [Parameter] public Func<TItem, bool>? ShouldHighlight { get; set; }
+    
+    [Parameter] public string? CardClass { get; set; }
 
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }

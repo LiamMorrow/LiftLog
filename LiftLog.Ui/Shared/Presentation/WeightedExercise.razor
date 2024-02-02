@@ -6,15 +6,16 @@
             @RenderMainContent()
         </MainContent>
         <SideContent>
-            <IconButton Type="IconButtonType.FilledTonal" OnClick="() => { _menu?.Open(); }" Icon="more_horiz"/>
+            <IconButton Type="IconButtonType.Standard" OnClick="() => { _menu?.Open(); }" Icon="more_horiz"/>
             <Menu @ref="_menu">
+                <MenuItem Label="Notes" Icon="notes" OnClick="OnOpenNotesButtonClick"/>
                 <MenuItem Label="Edit" Icon="edit" OnClick="OnEditExercise"/>
                 <MenuItem Label="Remove" Icon="delete" OnClick="OnRemoveExercise"/>
             </Menu>
-            <IconButton data-cy="per-rep-weight-btn" Type=IconButtonType.FilledTonal Icon=weight OnClick="ToggleExercisePerSetWeight"></IconButton>
+            <IconButton data-cy="per-rep-weight-btn" Type=IconButtonType.Standard Icon=weight OnClick="ToggleExercisePerSetWeight"></IconButton>
             @if (PreviousRecordedExercises?.Any() == true)
             {
-                <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.FilledTonal" Icon="history" OnStartHold="() => _holdingPrevious = true" OnEndHold="() => _holdingPrevious = false"/>
+                <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.Standard" Icon="history" OnStartHold="() => _holdingPrevious = true" OnEndHold="() => _holdingPrevious = false"/>
             }
         </SideContent>
     </SplitCardControl>
@@ -102,21 +103,15 @@ else
             (false, _) => (RecordedExercise, RecordedExercise.PotentialSets.IndexOf(x => x.Set is null), RecordedExercise.Notes)
         };
         return @<div class="flex flex-col gap-4">
-            <div class="flex justify-between gap-2">
-                <span class="text-xl">@RecordedExercise.Blueprint.Name</span>
-                <div class="flex gap-2">
-                    <WeightDisplay
-                        Weight="displayedExercise.Weight"
-                        Increment="displayedExercise.Blueprint.WeightIncreaseOnSuccess"
-                        UpdateWeight="w => { if (w is not null) UpdateWeightForExercise(w.Value); }"
-                        IsReadonly="IsReadonly"/>
-                    @if (!IsReadonly)
-                    {
-                        <IconButton data-cy="exercise-notes-btn" Icon="notes" OnClick="OnOpenNotesButtonClick" Type="IconButtonType.Outlined"/>
-                    }
-                </div>
+            <div class="flex justify-between items-center gap-2">
+                <span class="text-lg font-bold">@RecordedExercise.Blueprint.Name</span>
+                <WeightDisplay
+                    Weight="displayedExercise.Weight"
+                    Increment="displayedExercise.Blueprint.WeightIncreaseOnSuccess"
+                    UpdateWeight="w => { if (w is not null) UpdateWeightForExercise(w.Value); }"
+                    IsReadonly="IsReadonly"/>
             </div>
-            <div class="flex flex-wrap justify-center gap-2">
+            <div class="flex justify-start flex-wrap gap-2">
                 @foreach (var (set, i) in displayedExercise.PotentialSets.IndexedTuples())
                 {
                     <PotentialSetCounter
@@ -133,7 +128,7 @@ else
             </div>
             @if (notesToShow is not null)
             {
-                <span data-cy="exercise-notes">@notesToShow</span>
+                <span data-cy="exercise-notes" class="text-tertiary font-bold">@notesToShow</span>
             }
             @if (_holdingPrevious && PreviousRecordedExercises?.Any() == true)
             {

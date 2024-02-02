@@ -21,7 +21,7 @@
                 <HoldingRepCounterTip/>
                 break;
             case 4:
-                <NotesButtonTip/>
+                HandleNextClick();
                 break;
             case 5:
                 <PreviousButtonTip/>
@@ -32,18 +32,20 @@
             case 7:
                 <FeedTip/>
                 break;
+            case 8:
+                <WeightTip/>
+                break;
         }
     </Card>
 }
 
 @code
 {
-    private static readonly int totalTips = 7;
+    private static readonly int totalTips = 8;
 
     private void HandleNextClick()
     {
         Dispatcher.Dispatch(new SetTipToShowAction(SettingsState.Value.TipToShow + 1));
-        StateHasChanged();
     }
 
     private string NextText => SettingsState.Value.TipToShow >= totalTips ? "Close" : "Next";
