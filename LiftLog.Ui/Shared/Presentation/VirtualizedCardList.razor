@@ -2,6 +2,7 @@
 <div @attributes="AdditionalAttributes" class=" @(AdditionalAttributes?.GetValueOrDefault("class")) flex flex-col gap-2 cardlist">
     <Virtualize Items="Items" Context="item" ItemSize="250">
         @RenderCard(item)
+        <md-divider></md-divider>
     </Virtualize>
 </div>
 

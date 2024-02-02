@@ -1,7 +1,7 @@
 @inject IJSRuntime JsRuntime
 
 <div
-    class="@(AdditionalAttributes?.GetValueOrDefault("class")) @(HasPadding ?"py-5 px-4":"") relative @Style rounded-card text-on-surface card"
+    class="@(AdditionalAttributes?.GetValueOrDefault("class")) @(HasPadding ?"p-5":"") relative @Style rounded-card text-on-surface card"
     @onclick="HandleOnClick">
     @if (OnClick != null)
     {
@@ -21,17 +21,15 @@
     [Parameter] public Action<MouseEventArgs>? OnClick { get; set; }
 
     [Parameter] public bool IsHighlighted { get; set; }
-    
-    [Parameter] public bool Border { get; set; } = true;
 
     [Parameter] public CardType Type { get; set;  } = CardType.Outlined;
-    
+
     [Parameter] public bool HasPadding { get; set; } = true;
 
     private string Style => Type switch
     {
         CardType.Outlined when IsHighlighted => "border border-2 border-primary bg-surface",
-        CardType.Outlined when !IsHighlighted => "border border-outline-variant bg-surface",
+        CardType.Outlined when !IsHighlighted => "border-outline-variant bg-surface",
         CardType.Filled => "bg-surface-container-highest",
         CardType.Elevated => "bg-surface-container-low",
         _ => "",

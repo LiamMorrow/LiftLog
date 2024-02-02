@@ -1,29 +1,67 @@
-﻿
-@if (!IsReadonly)
-{
-    <SplitCardControl>
-        <MainContent>
-            @RenderMainContent()
-        </MainContent>
-        <SideContent>
-            <IconButton Type="IconButtonType.Standard" OnClick="() => { _menu?.Open(); }" Icon="more_horiz"/>
+﻿@{
+    var (displayedExercise, repToStartNext, notesToShow) = (_holdingPrevious, PreviousRecordedExercises?.FirstOrDefault()?.RecordedExercise) switch
+    {
+        (true, null) => (RecordedExercise, -1, RecordedExercise.Notes),
+        (true, var previous) => (previous, -1, previous.Notes),
+        (false, _) => (RecordedExercise, RecordedExercise.PotentialSets.IndexOf(x => x.Set is null), RecordedExercise.Notes)
+    };
+}
+<div class="flex flex-col gap-4">
+    <div class="flex justify-between">
+        <div class="flex justify-start gap-2 items-center flex-shrink  min-w-0">
+            <div class="flex flex-col items-start">
+                <span class="text-xl font-bold flex-shrink text-ellipsis text-nowrap whitespace-nowrap overflow-hidden min-w-0">@RecordedExercise.Blueprint.Name</span>
+                <div class="-m-3">
+                    <WeightDisplay
+                        Weight="displayedExercise.Weight"
+                        Increment="displayedExercise.Blueprint.WeightIncreaseOnSuccess"
+                        UpdateWeight="w => { if (w is not null) UpdateWeightForExercise(w.Value); }"
+                        IsReadonly="IsReadonly"/>
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-end -m-2">
+            @if (PreviousRecordedExercises?.Any() == true)
+            {
+                <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.Standard" Icon="history" OnStartHold="() => _holdingPrevious = true" OnEndHold="() => _holdingPrevious = false"/>
+            }
+            <IconButton data-cy="per-rep-weight-btn" Type=IconButtonType.Standard Icon=weight OnClick="ToggleExercisePerSetWeight"></IconButton>
+            <div>
+            <IconButton class="self-end" Type="IconButtonType.Standard" OnClick="() => { _menu?.Open(); }" Icon="more_horiz"/>
             <Menu @ref="_menu">
                 <MenuItem Label="Notes" Icon="notes" OnClick="OnOpenNotesButtonClick"/>
                 <MenuItem Label="Edit" Icon="edit" OnClick="OnEditExercise"/>
                 <MenuItem Label="Remove" Icon="delete" OnClick="OnRemoveExercise"/>
             </Menu>
-            <IconButton data-cy="per-rep-weight-btn" Type=IconButtonType.Standard Icon=weight OnClick="ToggleExercisePerSetWeight"></IconButton>
-            @if (PreviousRecordedExercises?.Any() == true)
-            {
-                <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.Standard" Icon="history" OnStartHold="() => _holdingPrevious = true" OnEndHold="() => _holdingPrevious = false"/>
-            }
-        </SideContent>
-    </SplitCardControl>
-}
-else
-{
-    @RenderMainContent()
-}
+            </div>
+        </div>
+    </div>
+    <div class="flex justify-start flex-wrap gap-2">
+        @foreach (var (set, i) in displayedExercise.PotentialSets.IndexedTuples())
+        {
+            <PotentialSetCounter
+                @key=i
+                Set="set"
+                ShowWeight=displayedExercise.PerSetWeight
+                MaxReps="displayedExercise.Blueprint.RepsPerSet"
+                WeightIncrement="displayedExercise.Blueprint.WeightIncreaseOnSuccess"
+                CycleRepCount=@(() => CycleRepCountForSet(i))
+                ClearRepCount=@(() => ClearRepCountForSet(i))
+                UpdateWeight=@((weight) => UpdateWeightForSet(i, weight))
+                ToStartNext=@(ToStartNext && repToStartNext == i && !IsReadonly)/>
+        }
+    </div>
+    @if (notesToShow is not null)
+    {
+        <span data-cy="exercise-notes" class="text-tertiary font-bold">@notesToShow</span>
+    }
+    @if (_holdingPrevious && PreviousRecordedExercises?.Any() == true)
+    {
+        <div class="-m-4 -mr-1">
+            <StatGraphCardContent Statistics=GetStatistics() RenderDelay=TimeSpan.Zero ShowTitle=false></StatGraphCardContent>
+        </div>
+    }
+</div>
 
 <Dialog @ref="notesDialog">
     <span slot="headline">@(RecordedExercise.Blueprint.Name) Notes</span>
@@ -92,49 +130,6 @@ else
                 .Select(x => new TimeTrackedStatistic(x.DateTime, x.RecordedExercise.Weight))
                 .ToImmutableList()
         );
-    }
-
-    private RenderFragment RenderMainContent()
-    {
-        var (displayedExercise, repToStartNext, notesToShow) = (_holdingPrevious, PreviousRecordedExercises?.FirstOrDefault()?.RecordedExercise) switch
-        {
-            (true, null) => (RecordedExercise, -1, RecordedExercise.Notes),
-            (true, var previous) => (previous, -1, previous.Notes),
-            (false, _) => (RecordedExercise, RecordedExercise.PotentialSets.IndexOf(x => x.Set is null), RecordedExercise.Notes)
-        };
-        return @<div class="flex flex-col gap-4">
-            <div class="flex justify-between items-center gap-2">
-                <span class="text-lg font-bold">@RecordedExercise.Blueprint.Name</span>
-                <WeightDisplay
-                    Weight="displayedExercise.Weight"
-                    Increment="displayedExercise.Blueprint.WeightIncreaseOnSuccess"
-                    UpdateWeight="w => { if (w is not null) UpdateWeightForExercise(w.Value); }"
-                    IsReadonly="IsReadonly"/>
-            </div>
-            <div class="flex justify-start flex-wrap gap-2">
-                @foreach (var (set, i) in displayedExercise.PotentialSets.IndexedTuples())
-                {
-                    <PotentialSetCounter
-                        @key=i
-                        Set="set"
-                        ShowWeight=displayedExercise.PerSetWeight
-                        MaxReps="displayedExercise.Blueprint.RepsPerSet"
-                        WeightIncrement="displayedExercise.Blueprint.WeightIncreaseOnSuccess"
-                        CycleRepCount=@(() => CycleRepCountForSet(i))
-                        ClearRepCount=@(() => ClearRepCountForSet(i))
-                        UpdateWeight=@((weight) => UpdateWeightForSet(i, weight))
-                        ToStartNext=@(ToStartNext && repToStartNext == i && !IsReadonly)/>
-                }
-            </div>
-            @if (notesToShow is not null)
-            {
-                <span data-cy="exercise-notes" class="text-tertiary font-bold">@notesToShow</span>
-            }
-            @if (_holdingPrevious && PreviousRecordedExercises?.Any() == true)
-            {
-                <StatGraphCardContent Statistics=GetStatistics() RenderDelay=TimeSpan.Zero ShowTitle=false></StatGraphCardContent>
-            }
-        </div>;
     }
 
 }

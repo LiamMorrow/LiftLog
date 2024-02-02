@@ -62,10 +62,15 @@ public record Session(
     public bool IsStarted => RecordedExercises.Any(x => x.LastRecordedSet?.Set is not null);
 
     public TimeSpan SessionLength =>
-        RecordedExercises.Select(x => x.LastRecordedSet?.Set?.CompletionTime).WhereNotNull().Max()
+        RecordedExercises
+            .Select(x => x.LastRecordedSet?.Set?.CompletionTime)
+            .WhereNotNull()
+            .DefaultIfEmpty(TimeOnly.MinValue)
+            .Max()
         - RecordedExercises
             .Select(x => x.FirstRecordedSet?.Set?.CompletionTime)
             .WhereNotNull()
+            .DefaultIfEmpty(TimeOnly.MinValue)
             .Min();
 
     public bool IsComplete =>
