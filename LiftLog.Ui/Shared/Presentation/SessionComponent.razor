@@ -1,4 +1,3 @@
-@using LiftLog.Ui.Util
 
 @if (!Session.RecordedExercises.Any())
 {
@@ -61,7 +60,7 @@ else
     {
         <FloatingBottomContainer>
             <Fab>
-                <FloatingButton variant="tertiary" has-icon OnClick=SaveSession Label="Complete Workout">
+                <FloatingButton variant="tertiary" has-icon OnClick=SaveSession Label="Complete workout">
                     <md-icon slot="icon">check_circle</md-icon>
                 </FloatingButton>
             </Fab>

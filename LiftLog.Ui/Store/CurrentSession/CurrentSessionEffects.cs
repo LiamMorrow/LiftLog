@@ -3,7 +3,7 @@ using Fluxor;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
-using LiftLog.Ui.Util;
+
 
 namespace LiftLog.Ui.Store.CurrentSession;
 

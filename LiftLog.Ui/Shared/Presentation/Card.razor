@@ -21,6 +21,8 @@
     [Parameter] public Action<MouseEventArgs>? OnClick { get; set; }
 
     [Parameter] public bool IsHighlighted { get; set; }
+    
+    [Parameter] public bool Border { get; set; } = true;
 
     [Parameter] public CardType Type { get; set;  } = CardType.Outlined;
     

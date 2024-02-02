@@ -9,7 +9,7 @@ using LiftLog.Lib.Serialization;
 using LiftLog.Ui.Models;
 using LiftLog.Ui.Models.SessionHistoryDao;
 using LiftLog.Ui.Repository;
-using LiftLog.Ui.Util;
+
 using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Ui.Services
