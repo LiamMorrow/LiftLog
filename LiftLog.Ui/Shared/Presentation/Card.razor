@@ -29,7 +29,7 @@
     private string Style => Type switch
     {
         CardType.Outlined when IsHighlighted => "border border-2 border-primary bg-surface",
-        CardType.Outlined when !IsHighlighted => "border-outline-variant bg-surface",
+        CardType.Outlined when !IsHighlighted => "border border-outline-variant bg-surface",
         CardType.Filled => "bg-surface-container-highest",
         CardType.Elevated => "bg-surface-container-low",
         _ => "",

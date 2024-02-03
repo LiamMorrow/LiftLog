@@ -6,34 +6,32 @@
         (false, _) => (RecordedExercise, RecordedExercise.PotentialSets.IndexOf(x => x.Set is null), RecordedExercise.Notes)
     };
 }
-<div class="flex flex-col gap-4">
-    <div class="flex justify-between">
-        <div class="flex justify-start gap-2 items-center flex-shrink  min-w-0">
-            <div class="flex flex-col items-start">
-                <span class="text-xl font-bold flex-shrink text-ellipsis text-nowrap whitespace-nowrap overflow-hidden min-w-0">@RecordedExercise.Blueprint.Name</span>
-                <div class="-m-3">
-                    <WeightDisplay
-                        Weight="displayedExercise.Weight"
-                        Increment="displayedExercise.Blueprint.WeightIncreaseOnSuccess"
-                        UpdateWeight="w => { if (w is not null) UpdateWeightForExercise(w.Value); }"
-                        IsReadonly="IsReadonly"/>
+<div class="flex flex-col gap-4 py-4 pl-5 pr-0 w-full">
+    <div class="flex flex-col">
+        <div class="flex justify-between">
+            <span class="text-xl font-bold flex-shrink text-ellipsis text-nowrap whitespace-nowrap overflow-hidden min-w-0">@RecordedExercise.Blueprint.Name</span>
+            <div class="flex justify-end">
+                @if (PreviousRecordedExercises?.Any() == true)
+                {
+                    <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.Standard" Icon="history" OnStartHold="() => _holdingPrevious = true" OnEndHold="() => _holdingPrevious = false"/>
+                }
+                <IconButton data-cy="per-rep-weight-btn" Type=IconButtonType.Standard Icon=weight OnClick="ToggleExercisePerSetWeight"></IconButton>
+                <div>
+                    <IconButton class="self-end" Type="IconButtonType.Standard" OnClick="() => { _menu?.Open(); }" Icon="more_horiz"/>
+                    <Menu @ref="_menu">
+                        <MenuItem Label="Notes" Icon="notes" OnClick="OnOpenNotesButtonClick"/>
+                        <MenuItem Label="Edit" Icon="edit" OnClick="OnEditExercise"/>
+                        <MenuItem Label="Remove" Icon="delete" OnClick="OnRemoveExercise"/>
+                    </Menu>
                 </div>
             </div>
         </div>
-        <div class="flex justify-end -m-2">
-            @if (PreviousRecordedExercises?.Any() == true)
-            {
-                <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.Standard" Icon="history" OnStartHold="() => _holdingPrevious = true" OnEndHold="() => _holdingPrevious = false"/>
-            }
-            <IconButton data-cy="per-rep-weight-btn" Type=IconButtonType.Standard Icon=weight OnClick="ToggleExercisePerSetWeight"></IconButton>
-            <div>
-            <IconButton class="self-end" Type="IconButtonType.Standard" OnClick="() => { _menu?.Open(); }" Icon="more_horiz"/>
-            <Menu @ref="_menu">
-                <MenuItem Label="Notes" Icon="notes" OnClick="OnOpenNotesButtonClick"/>
-                <MenuItem Label="Edit" Icon="edit" OnClick="OnEditExercise"/>
-                <MenuItem Label="Remove" Icon="delete" OnClick="OnRemoveExercise"/>
-            </Menu>
-            </div>
+        <div class="self-start -m-3 -mt-6">
+            <WeightDisplay
+                Weight="displayedExercise.Weight"
+                Increment="displayedExercise.Blueprint.WeightIncreaseOnSuccess"
+                UpdateWeight="w => { if (w is not null) UpdateWeightForExercise(w.Value); }"
+                IsReadonly="IsReadonly"/>
         </div>
     </div>
     <div class="flex justify-start flex-wrap gap-2">

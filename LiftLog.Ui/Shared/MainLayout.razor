@@ -12,6 +12,7 @@
 @inject IThemeProvider ThemeProvider
 @inject InsetsManager InsetsManager
 @inject NavigationManager NavigationManager
+@inject IDispatcher Dispatcher
 
 <CascadingValue Name="UseImperial" Value="SettingsState.Value.UseImperialUnits">
     <CascadingValue Name="TopNavColorClass" Value="_topNavColorClass">
@@ -20,10 +21,15 @@
                 <div class="grid grid-cols-1 h-full grid-rows-[min-content_1fr_min-content]">
                     <div class="flex flex-col @_topNavColorClass transition-colors">
                         <div style="height: @InsetsManager.SystemSafeInsetTop"></div>
-                        <div class="flex items-center px-4 py-4 gap-2 text-2xl @Justify ">
-                            @RenderBackButton()
-                            <div class="h-[40px] flex items-center">
-                                <span class="m-0 text-on-surface">@AppState.Value.Title</span>
+                        <div class="flex justify-between">
+                            <div class="flex items-center p-4 gap-2 text-2xl @Justify ">
+                                @RenderBackButton()
+                                <div class="h-[40px] flex items-center">
+                                    <span class="m-0 text-on-surface">@AppState.Value.Title</span>
+                                </div>
+                            </div>
+                            <div class="flex pr-4">
+                                <Microsoft.AspNetCore.Components.Sections.SectionOutlet SectionName="TrailingTitleButton"></Microsoft.AspNetCore.Components.Sections.SectionOutlet>
                             </div>
                         </div>
                     </div>
@@ -51,6 +57,7 @@
     </CascadingValue>
 </CascadingValue>
 <Microsoft.AspNetCore.Components.Sections.SectionOutlet SectionName="Dialog"></Microsoft.AspNetCore.Components.Sections.SectionOutlet>
+
 <div class="hidden">
     <ApexChart
         TItem="DummyChartType"
@@ -141,9 +148,16 @@
             return null;
         }
 
-        return @<IconButton Icon="arrow_back" Type="IconButtonType.Standard" OnClick="() => NavigationManager.NavigateTo(backButtonUrl)"/>;
+        return @<IconButton Icon="arrow_back" Type="IconButtonType.Standard" OnClick="HandleBackButtonPress"/>;
     }
 
+    private void HandleBackButtonPress()
+    {
+        if(AppState.Value.BackNavigationUrl is not null)
+        {
+            Dispatcher.Dispatch(new NavigateAction(AppState.Value.BackNavigationUrl));
+        }
+    }
 
     private record DummyChartType(int X);
 

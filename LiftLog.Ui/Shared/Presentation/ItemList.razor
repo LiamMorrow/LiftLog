@@ -1,0 +1,20 @@
+@typeparam TItem
+<div @attributes="AdditionalAttributes" class=" @(AdditionalAttributes?.GetValueOrDefault("class")) flex flex-col gap-2 py-2">
+    @foreach (var item in Items)
+    {
+        <div>
+            @ChildContent?.Invoke(item)
+        </div>
+        <md-divider></md-divider>
+    }
+</div>
+
+@code
+{
+    [EditorRequired] [Parameter] public IEnumerable<TItem> Items { get; set; } = null!;
+
+    [Parameter] public RenderFragment<TItem>? ChildContent { get; set; } = null!;
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

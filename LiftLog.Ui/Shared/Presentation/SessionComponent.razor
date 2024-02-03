@@ -10,7 +10,7 @@
 }
 else
 {
-    <CardList Items="Session.RecordedExercises.IndexedTuples()">
+    <ItemList Items="Session.RecordedExercises.IndexedTuples()">
         <WeightedExercise
             @key=context.Index
             RecordedExercise="context.Item"
@@ -25,7 +25,7 @@ else
             OnEditExercise=@(() => BeginEditExercise(context.Index))
             OnRemoveExercise=@(() => BeginRemoveExercise(context.Index))
             IsReadonly=IsReadonly />
-    </CardList>
+    </ItemList>
 }
 @if (ShowBodyweight)
 {
@@ -59,11 +59,6 @@ else
     @if (!IsReadonly)
     {
         <FloatingBottomContainer>
-            <Fab>
-                <FloatingButton variant="tertiary" has-icon OnClick=SaveSession Label="Complete workout">
-                    <md-icon slot="icon">check_circle</md-icon>
-                </FloatingButton>
-            </Fab>
             <AdditionalContent>@RenderSnackBar()</AdditionalContent>
         </FloatingBottomContainer>
     }
@@ -73,6 +68,13 @@ else
             <AdditionalContent>@RenderSnackBar()</AdditionalContent>
         </FloatingBottomContainer>
     }
+}
+
+@if(IsInActiveScreen)
+{
+    <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="TrailingTitleButton">
+        <AppButton class="text-lg" Type=AppButtonType.Text OnClick=SaveSession>Finish</AppButton>
+    </Microsoft.AspNetCore.Components.Sections.SectionContent>
 }
 
 <Dialog @ref="_editExerciseDialog" OnClose="@(() => _exerciseToEditIndex = null)">
@@ -182,6 +184,9 @@ else
     [Parameter] [EditorRequired] public bool ShowBodyweight { get; set; }
 
     [Parameter] public bool IsReadonly { get; set; } = false;
+
+    [CascadingParameter(Name = "IsInActiveScreen")]
+    public bool IsInActiveScreen { get; set; }
 
     private Action<int> CycleRepCountForExerciseSet(int exerciseIndex)
         => (int set) => CycleRepcountForExercise(exerciseIndex, set);

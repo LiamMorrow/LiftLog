@@ -50,7 +50,7 @@ public class WebThemeProvider(IJSRuntime jsRuntime, IPreferenceStore preferenceS
         BlazorJavascriptInitialization.Initialize(jsInProcessRuntime);
 
         var window = jsInProcessRuntime.GetWindow()!;
-        var windowThemePrefersDark = !window
+        var windowThemePrefersDark = window
             .matchMedia(jsInProcessRuntime.CreateString("(prefers-color-scheme: dark)"))
             .matches.ConvertToValue<bool>();
 

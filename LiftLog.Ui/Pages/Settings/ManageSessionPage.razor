@@ -22,46 +22,56 @@
             Value="@SessionEditorState.Value.SessionBlueprint.Name"
             OnChange="@((val) => SetName(val!))">
         </TextField>
-        <CardList Items="SessionEditorState.Value.SessionBlueprint.Exercises.IndexedTuples()">
+        <ItemList Items="SessionEditorState.Value.SessionBlueprint.Exercises.IndexedTuples()">
             @{
                 var exercise = context.Item;
                 var index = context.Index;
             }
-            <SplitCardControl>
-                <MainContent>
-                    <ExerciseEditor Exercise="@exercise" UpdateExercise=@(ex => UpdateExercise(index, ex))/>
-                </MainContent>
-                <SideContent>
-                    <IconButton Type="IconButtonType.Standard" OnClick=@(() => RemoveExercise(exercise)) Icon="delete"/>
-                    <IconButton Type="IconButtonType.Standard" OnClick=@(() => MoveExerciseUp(exercise)) Icon="arrow_upward"/>
-                    <IconButton Type="IconButtonType.Standard" OnClick=@(() => MoveExerciseDown(exercise)) Icon="arrow_downward"/>
-                </SideContent>
-            </SplitCardControl>
-        </CardList>
+            <div class="py-4 pl-5 pr-0">
+                <SplitCardControl>
+                    <MainContent>
+                        <ExerciseEditor Exercise="@exercise" UpdateExercise=@(ex => UpdateExercise(index, ex))/>
+                    </MainContent>
+                    <SideContent>
+                        <IconButton Type="IconButtonType.Standard" OnClick=@(() => RemoveExercise(exercise)) Icon="delete"/>
+                        <IconButton Type="IconButtonType.Standard" OnClick=@(() => MoveExerciseUp(exercise)) Icon="arrow_upward"/>
+                        <IconButton Type="IconButtonType.Standard" OnClick=@(() => MoveExerciseDown(exercise)) Icon="arrow_downward"/>
+                    </SideContent>
+                </SplitCardControl>
+            </div>
+        </ItemList>
     </div>
     <div class="flex justify-center pointer-events-none w-full mt-2">
         <AppButton Type="AppButtonType.Primary" OnClick=AddExercise>Add Exercise</AppButton>
     </div>
-    <FloatingBottomContainer>
-        <Fab>
-            <FloatingButton has-icon variant="tertiary" OnClick=SaveSession Label="Save">
-                <md-icon slot="icon">save</md-icon>
-            </FloatingButton>
-        </Fab>
-    </FloatingBottomContainer>
 }
 
 @code {
 
     [Parameter] public int SessionIndex { get; set; }
 
+    [CascadingParameter(Name = "IsInActiveScreen")]
+    public bool IsInActiveScreen { get; set; }
+
     void BackToManageWorkouts() => NavigationManager.NavigateTo("/settings/manage-workouts");
 
-    void MoveExerciseUp(ExerciseBlueprint exerciseBlueprint) => Dispatcher.Dispatch(new MoveExerciseUpAction(exerciseBlueprint));
+    void MoveExerciseUp(ExerciseBlueprint exerciseBlueprint)
+    {
+        Dispatcher.Dispatch(new MoveExerciseUpAction(exerciseBlueprint));
+        SaveSession();
+    }
 
-    void MoveExerciseDown(ExerciseBlueprint exerciseBlueprint) => Dispatcher.Dispatch(new MoveExerciseDownAction(exerciseBlueprint));
+    void MoveExerciseDown(ExerciseBlueprint exerciseBlueprint)
+    {
+        Dispatcher.Dispatch(new MoveExerciseDownAction(exerciseBlueprint));
+        SaveSession();
+    }
 
-    void RemoveExercise(ExerciseBlueprint exerciseBlueprint) => Dispatcher.Dispatch(new RemoveExerciseAction(exerciseBlueprint));
+    void RemoveExercise(ExerciseBlueprint exerciseBlueprint)
+    {
+        Dispatcher.Dispatch(new RemoveExerciseAction(exerciseBlueprint));
+        SaveSession();
+    }
 
     void SaveSession()
     {
@@ -69,28 +79,34 @@
         {
             Dispatcher.Dispatch(new SetProgramSessionAction(SessionIndex, SessionEditorState.Value.SessionBlueprint));
         }
-
-        BackToManageWorkouts();
     }
 
     void AddExercise()
-        => Dispatcher.Dispatch(
-            new AddExerciseAction(
-                new ExerciseBlueprint(
-                    $"Exercise {SessionEditorState.Value.SessionBlueprint?.Exercises.Count + 1}",
-                    3,
-                    10,
-                    20,
-                    2.5m,
-                    new Rest(TimeSpan.FromSeconds(90), TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(5)),
-                    false)));
+    {
+        Dispatcher.Dispatch(
+        new AddExerciseAction(
+            new ExerciseBlueprint(
+                $"Exercise {SessionEditorState.Value.SessionBlueprint?.Exercises.Count + 1}",
+                3,
+                10,
+                20,
+                2.5m,
+                new Rest(TimeSpan.FromSeconds(90), TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(5)),
+                false)));
+        SaveSession();
+    }
 
     void UpdateExercise(int index, ExerciseBlueprint exercise)
-        => Dispatcher.Dispatch(new UpdateSessionExerciseAction(index, exercise));
+    {
+        Dispatcher.Dispatch(new UpdateSessionExerciseAction(index, exercise));
+        SaveSession();
+    }
+
 
     void SetName(string name)
     {
         Dispatcher.Dispatch(new SetEditingSessionNameAction(name));
+        SaveSession();
     }
 
     protected override void OnInitialized()

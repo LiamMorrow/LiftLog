@@ -5,7 +5,6 @@
         <Card class="@CardClass" Type="CardType" IsHighlighted="ShouldHighlight?.Invoke(item) ?? false" OnClick=@(OnClick != null ? _ => OnClick(item) : null)>
             @ChildContent?.Invoke(item)
         </Card>
-        <md-divider></md-divider>
     }
 </div>
 
