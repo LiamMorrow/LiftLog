@@ -8,7 +8,6 @@ using LiftLog.Ui.Models.SessionBlueprintDao;
 using LiftLog.Ui.Models.SessionHistoryDao;
 using LiftLog.Ui.Store.Feed;
 
-
 namespace LiftLog.Ui.Models;
 
 internal partial class FeedIdentityDaoV1

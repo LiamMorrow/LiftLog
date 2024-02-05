@@ -11,9 +11,9 @@ describe('Creating a plan', () => {
       // Disable tips
       cy.containsA('Show tips').click()
       cy.containsA('Manage workouts').click()
-      cy.containsA('Add Session').click()
+      cy.containsA('Add Session', {includeShadowDom: true}).click()
       cy.containsA('Session 1').click()
-      cy.containsA('Add Exercise').click()
+      cy.containsA('Add Exercise', {includeShadowDom: true}).click()
       cy.getA('[data-cy=exercise-name]').find('input', { includeShadowDom: true }).clear().type('Bench Press')
       cy.getA('[data-cy=exercise-sets]').should('contain.text', '3').find('[data-cy=fixed-increment]').click()
       cy.getA('[data-cy=exercise-reps]').should('contain.text', '10').find('[data-cy=fixed-decrement]').click()
@@ -22,7 +22,7 @@ describe('Creating a plan', () => {
       cy.getA('[data-cy=exercise-superset]').click()
       cy.containsA('Long', { includeShadowDom: true }).click().parent('md-filter-chip').should('have.class', 'selected')
 
-      cy.containsA('Save', { includeShadowDom: true }).click()
+      cy.get('[data-cy=back-btn]', { includeShadowDom: true }).click()
     })
     it('should have saved that plan', () => {
       cy.containsA('Session 1').click()

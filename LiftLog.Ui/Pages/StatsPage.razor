@@ -105,6 +105,8 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
 
     private List<Select<TimeSpan>.SelectOption> SelectTimeOptions =
     [
+        new("7 days", TimeSpan.FromDays(7)),
+        new("14 days", TimeSpan.FromDays(14)),
         new("30 days", TimeSpan.FromDays(30)),
         new("90 days", TimeSpan.FromDays(90)),
         new("180 days", TimeSpan.FromDays(180)),

@@ -14,7 +14,6 @@ using LiftLog.Ui.Models.SettingsStorageDao;
 using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.Program;
-
 using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Ui.Store.Settings;

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Immutable;
 
 namespace System.Linq;
@@ -9,6 +10,13 @@ public static class LinqExtensions
     )
     {
         return source.Select((item, index) => (item, index));
+    }
+
+    public static IReadOnlyList<(TSource Item, int Index)> IndexedTuples<TSource>(
+        this IReadOnlyList<TSource> source
+    )
+    {
+        return new IndexedTupleList<TSource>(source);
     }
 
     public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> source)
@@ -89,5 +97,22 @@ public static class LinqExtensions
         }
 
         return immutableDictionaryBuilder.ToImmutable();
+    }
+
+    private class IndexedTupleList<T>(IReadOnlyList<T> source) : IReadOnlyList<(T Item, int Index)>
+    {
+        public (T Item, int Index) this[int index] => (source[index], index);
+
+        public int Count => source.Count;
+
+        public IEnumerator<(T Item, int Index)> GetEnumerator()
+        {
+            return ((IEnumerable<T>)source).IndexedTuples().GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

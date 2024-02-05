@@ -6,7 +6,6 @@ using LiftLog.Lib;
 using LiftLog.Lib.Services;
 using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
-
 using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Ui.Store.AiSessionCreator;

@@ -11,6 +11,7 @@
 @inject IState<ProgramState> ProgramState
 @inject NavigationManager NavigationManager
 @inject IDispatcher Dispatcher
+@inject IJSRuntime JSRuntime
 
 <CardList Items="ProgramState.Value.SessionBlueprints.IndexedTuples()" OnClick="(item) => SelectSession(item.Item, item.Index)">
     @{
@@ -25,9 +26,11 @@
         OnDuplicateSession="() => DuplicateSession(session)"/>
 </CardList>
 
-<div class="flex justify-center mt-2">
-    <AppButton Type="AppButtonType.Primary" OnClick="AddSession">Add Session</AppButton>
-</div>
+<FloatingBottomContainer>
+    <Fab>
+        <FloatingButton size="small" variant="tertiary" aria-label="Add Session" label="Add Session" OnClick="AddSession"><md-icon slot="icon">add</md-icon></FloatingButton>
+    </Fab>
+</FloatingBottomContainer>
 
 @code {
     void MoveSessionUp(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new MoveSessionBlueprintUpInProgramAction(sessionBlueprint));
@@ -44,9 +47,14 @@
         NavigationManager.NavigateTo($"/settings/manage-workouts/manage-session/{index}");
     }
 
-    void AddSession() => Dispatcher.Dispatch(
-        new AddProgramSessionAction(
-            new SessionBlueprint($"Session {ProgramState.Value.SessionBlueprints.Count + 1}", new ImmutableListValue<ExerciseBlueprint>())));
+    async Task AddSession()
+    {
+        Dispatcher.Dispatch(
+            new AddProgramSessionAction(
+                new SessionBlueprint($"Session {ProgramState.Value.SessionBlueprints.Count + 1}", new ImmutableListValue<ExerciseBlueprint>())));
+            await Task.Yield();
+            await JSRuntime.InvokeVoidAsync("AppUtils.smoothScrollAndFocusLast", ".card");
+        }
 
     void DuplicateSession(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(
         new AddProgramSessionAction(

@@ -1,7 +1,7 @@
 
 @if (!Session.RecordedExercises.Any())
 {
-    <div class="flex flex-col justify-center items-center gap-4 text-on-surface">
+    <div class="flex flex-col justify-center items-center gap-4 my-8 text-on-surface">
         <md-icon>info</md-icon>
         <span>
             <p>Session contains no exercises.</p>
@@ -10,7 +10,7 @@
 }
 else
 {
-    <CardList Items="Session.RecordedExercises.IndexedTuples()">
+    <ItemList Items="Session.RecordedExercises.IndexedTuples()">
         <WeightedExercise
             @key=context.Index
             RecordedExercise="context.Item"
@@ -25,24 +25,19 @@ else
             OnEditExercise=@(() => BeginEditExercise(context.Index))
             OnRemoveExercise=@(() => BeginRemoveExercise(context.Index))
             IsReadonly=IsReadonly />
-    </CardList>
+    </ItemList>
 }
 @if (ShowBodyweight)
 {
-    <div class="flex-col flex justify-center gap-2 mt-2">
-        <Card>
-            <div class="flex justify-between items-center">
-                <span class="text-xl">Bodyweight</span>
-                <WeightDisplay AllowNull=true Weight=Session.Bodyweight UpdateWeight="UpdateBodyweight" Increment="0.1m" Label="Bodyweight"/>
-            </div>
-        </Card>
-    </div>
+    <Card class="flex justify-between items-center" Type=Card.CardType.Filled >
+        <span class="text-xl font-bold">Bodyweight</span>
+        <WeightDisplay AllowNull=true Weight=Session.Bodyweight UpdateWeight="UpdateBodyweight" Increment="0.1m" Label="Bodyweight"/>
+    </Card>
 }
 
 @if (!IsReadonly)
 {
     <div class="flex  justify-center gap-2 mt-6">
-        <AppButton OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon>Add Exercise</AppButton>
         @if (!SessionInPlan && Session.RecordedExercises.Any())
         {
             <AppButton Type="AppButtonType.Secondary" OnClick="@(() => _updatePlanDialog?.Open())">
@@ -54,25 +49,27 @@ else
         }
     </div>
 }
-@if (Session.RecordedExercises.Any())
+@if (!IsReadonly)
 {
-    @if (!IsReadonly)
-    {
-        <FloatingBottomContainer>
-            <Fab>
-                <FloatingButton variant="tertiary" has-icon OnClick=SaveSession Label="Complete workout">
-                    <md-icon slot="icon">check_circle</md-icon>
-                </FloatingButton>
-            </Fab>
-            <AdditionalContent>@RenderSnackBar()</AdditionalContent>
-        </FloatingBottomContainer>
-    }
-    else
-    {
-        <FloatingBottomContainer>
-            <AdditionalContent>@RenderSnackBar()</AdditionalContent>
-        </FloatingBottomContainer>
-    }
+    <FloatingBottomContainer>
+        <Fab>
+            <FloatingButton size="small" variant="tertiary" aria-label="Add Exercise" label="Add Exercise" OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon></FloatingButton>
+        </Fab>
+        <AdditionalContent>@RenderSnackBar()</AdditionalContent>
+    </FloatingBottomContainer>
+}
+else
+{
+    <FloatingBottomContainer>
+        <AdditionalContent>@RenderSnackBar()</AdditionalContent>
+    </FloatingBottomContainer>
+}
+
+@if(IsInActiveScreen)
+{
+    <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="TrailingTitleButton">
+        <AppButton class="text-lg" Type=AppButtonType.Text OnClick=SaveSession>Finish</AppButton>
+    </Microsoft.AspNetCore.Components.Sections.SectionContent>
 }
 
 <Dialog @ref="_editExerciseDialog" OnClose="@(() => _exerciseToEditIndex = null)">
@@ -182,6 +179,9 @@ else
     [Parameter] [EditorRequired] public bool ShowBodyweight { get; set; }
 
     [Parameter] public bool IsReadonly { get; set; } = false;
+
+    [CascadingParameter(Name = "IsInActiveScreen")]
+    public bool IsInActiveScreen { get; set; }
 
     private Action<int> CycleRepCountForExerciseSet(int exerciseIndex)
         => (int set) => CycleRepcountForExercise(exerciseIndex, set);

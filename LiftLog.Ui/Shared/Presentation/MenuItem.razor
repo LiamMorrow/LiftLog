@@ -1,4 +1,4 @@
-<li @onclick="() => OnClick()" class="relative flex gap-2 p-4 rounded-md cursor-default">
+<li @attributes="AdditionalAttributes" @onclick="() => OnClick()" class="relative flex gap-2 p-4 rounded-md cursor-default">
     <md-ripple></md-ripple>
     <md-icon>@Icon</md-icon>
     @Label
@@ -8,4 +8,6 @@
     [EditorRequired] [Parameter] public string Icon { get; set; } = null!;
     [EditorRequired] [Parameter] public string Label { get; set; } = null!;
     [EditorRequired] [Parameter] public Action OnClick { get; set; } = null!;
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
 }

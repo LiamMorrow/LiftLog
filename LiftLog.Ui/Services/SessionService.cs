@@ -4,7 +4,6 @@ using LiftLog.Lib.Models;
 using LiftLog.Ui.Repository;
 using LiftLog.Ui.Store.CurrentSession;
 
-
 namespace LiftLog.Ui.Services;
 
 public class SessionService(
