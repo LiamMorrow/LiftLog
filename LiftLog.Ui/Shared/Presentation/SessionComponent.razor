@@ -29,20 +29,15 @@ else
 }
 @if (ShowBodyweight)
 {
-    <div class="flex-col flex justify-center gap-2 mt-2">
-        <Card>
-            <div class="flex justify-between items-center">
-                <span class="text-xl">Bodyweight</span>
-                <WeightDisplay AllowNull=true Weight=Session.Bodyweight UpdateWeight="UpdateBodyweight" Increment="0.1m" Label="Bodyweight"/>
-            </div>
-        </Card>
-    </div>
+    <Card class="flex justify-between items-center" Type=Card.CardType.Filled >
+        <span class="text-xl font-bold">Bodyweight</span>
+        <WeightDisplay AllowNull=true Weight=Session.Bodyweight UpdateWeight="UpdateBodyweight" Increment="0.1m" Label="Bodyweight"/>
+    </Card>
 }
 
 @if (!IsReadonly)
 {
     <div class="flex  justify-center gap-2 mt-6">
-        <AppButton OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon>Add Exercise</AppButton>
         @if (!SessionInPlan && Session.RecordedExercises.Any())
         {
             <AppButton Type="AppButtonType.Secondary" OnClick="@(() => _updatePlanDialog?.Open())">
@@ -59,6 +54,9 @@ else
     @if (!IsReadonly)
     {
         <FloatingBottomContainer>
+            <Fab>
+                <FloatingButton size="small" variant="tertiary" aria-label="Add Exercise" label="Add Exercise" OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon></FloatingButton>
+            </Fab>
             <AdditionalContent>@RenderSnackBar()</AdditionalContent>
         </FloatingBottomContainer>
     }

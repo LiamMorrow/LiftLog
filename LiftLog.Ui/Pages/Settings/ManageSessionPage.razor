@@ -11,6 +11,7 @@
 @inject IState<SessionEditorState> SessionEditorState
 @inject IState<ProgramState> ProgramState
 @inject IDispatcher Dispatcher
+@inject IJSRuntime JSRuntime
 
 @if (SessionEditorState.Value.SessionBlueprint is not null)
 {
@@ -41,9 +42,11 @@
             </div>
         </ItemList>
     </div>
-    <div class="flex justify-center pointer-events-none w-full mt-2">
-        <AppButton Type="AppButtonType.Primary" OnClick=AddExercise>Add Exercise</AppButton>
-    </div>
+    <FloatingBottomContainer>
+        <Fab>
+            <FloatingButton size="small" variant="tertiary" aria-label="Add Exercise" label="Add Exercise" OnClick="AddExercise"><md-icon slot="icon">add</md-icon></FloatingButton>
+        </Fab>
+    </FloatingBottomContainer>
 }
 
 @code {
@@ -81,7 +84,7 @@
         }
     }
 
-    void AddExercise()
+    async Task AddExercise()
     {
         Dispatcher.Dispatch(
         new AddExerciseAction(
@@ -94,6 +97,8 @@
                 new Rest(TimeSpan.FromSeconds(90), TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(5)),
                 false)));
         SaveSession();
+        await Task.Yield();
+        await JSRuntime.InvokeVoidAsync("AppUtils.smoothScrollAndFocusLast", "[data-cy=\"exercise-name\"]");
     }
 
     void UpdateExercise(int index, ExerciseBlueprint exercise)

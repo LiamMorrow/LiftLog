@@ -1,17 +1,19 @@
 @typeparam TItem
 <div @attributes="AdditionalAttributes" class=" @(AdditionalAttributes?.GetValueOrDefault("class")) flex flex-col gap-2 py-2">
-    @foreach (var item in Items)
+    @for (var i = 0; i < Items.Count; i++)
     {
         <div>
-            @ChildContent?.Invoke(item)
+            @ChildContent?.Invoke(Items[i])
         </div>
-        <md-divider></md-divider>
+        @if(i < Items.Count - 1){
+            <md-divider></md-divider>
+        }
     }
 </div>
 
 @code
 {
-    [EditorRequired] [Parameter] public IEnumerable<TItem> Items { get; set; } = null!;
+    [EditorRequired] [Parameter] public IReadOnlyList<TItem> Items { get; set; } = null!;
 
     [Parameter] public RenderFragment<TItem>? ChildContent { get; set; } = null!;
 

@@ -73,8 +73,8 @@ AppUtils.getActiveTabControls = function (tabs) {
 }
 
 AppUtils.setSelected = function (element, selected) {
-    if(element)
-    element.selected = selected;
+    if (element)
+        element.selected = selected;
 }
 
 AppUtils.getSelected = function (element) {
@@ -90,7 +90,7 @@ AppUtils.selectAllText = function (element) {
 }
 
 AppUtils.toggleOpen = function (element) {
-    if(!element) return;
+    if (!element) return;
     element.open = !element.open;
 }
 
@@ -143,6 +143,24 @@ AppUtils.scrollElementToMiddle = function (elementSelector) {
         block: 'center',
         inline: 'center'
     });
+}
+
+AppUtils.smoothScrollAndFocusLast = function (elementSelector) {
+    const items = document.querySelectorAll(elementSelector);
+    /**
+     * @type {HTMLElement}
+     */
+    const lastItem = items[items.length - 1];
+    lastItem?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'center'
+    });
+
+    // Hack for chrome
+    setTimeout(() => {
+        lastItem?.focus({ preventScroll: true })
+    }, 500);
 }
 
 
