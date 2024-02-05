@@ -1,7 +1,7 @@
 
 @if (!Session.RecordedExercises.Any())
 {
-    <div class="flex flex-col justify-center items-center gap-4 text-on-surface">
+    <div class="flex flex-col justify-center items-center gap-4 my-8 text-on-surface">
         <md-icon>info</md-icon>
         <span>
             <p>Session contains no exercises.</p>
@@ -49,23 +49,20 @@ else
         }
     </div>
 }
-@if (Session.RecordedExercises.Any())
+@if (!IsReadonly)
 {
-    @if (!IsReadonly)
-    {
-        <FloatingBottomContainer>
-            <Fab>
-                <FloatingButton size="small" variant="tertiary" aria-label="Add Exercise" label="Add Exercise" OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon></FloatingButton>
-            </Fab>
-            <AdditionalContent>@RenderSnackBar()</AdditionalContent>
-        </FloatingBottomContainer>
-    }
-    else
-    {
-        <FloatingBottomContainer>
-            <AdditionalContent>@RenderSnackBar()</AdditionalContent>
-        </FloatingBottomContainer>
-    }
+    <FloatingBottomContainer>
+        <Fab>
+            <FloatingButton size="small" variant="tertiary" aria-label="Add Exercise" label="Add Exercise" OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon></FloatingButton>
+        </Fab>
+        <AdditionalContent>@RenderSnackBar()</AdditionalContent>
+    </FloatingBottomContainer>
+}
+else
+{
+    <FloatingBottomContainer>
+        <AdditionalContent>@RenderSnackBar()</AdditionalContent>
+    </FloatingBottomContainer>
 }
 
 @if(IsInActiveScreen)

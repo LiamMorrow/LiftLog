@@ -146,7 +146,7 @@
             return @<div class="mr-auto flex-1 flex justify-start"></div>;
         }
 
-        return @<IconButton Icon="arrow_back" Type="IconButtonType.Standard" OnClick="HandleBackButtonPress"/>;
+        return @<IconButton data-cy="back-btn" Icon="arrow_back" Type="IconButtonType.Standard" OnClick="HandleBackButtonPress"/>;
     }
 
     private void HandleBackButtonPress()

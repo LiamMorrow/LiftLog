@@ -27,7 +27,7 @@ describe('Completing a session', () => {
 
       cy.dialog().contains("Save").click()
 
-      cy.getA('md-fab').click()
+      cy.contains('Finish').click()
 
       cy.navigate('History')
 
@@ -60,7 +60,7 @@ describe('Completing a session', () => {
 
         cy.getA('.snackbar').should('be.visible').should('contain.text', 'This session you lifted').should('contain.text', '680')
 
-        cy.getA('md-fab').click()
+        cy.contains('Finish').click()
 
         cy.getA('.cardlist .card').first().should('contain.text', 'Workout B')
 
@@ -70,7 +70,7 @@ describe('Completing a session', () => {
 
         cy.getA('md-filled-text-field[type=date]').get('input', { includeShadowDom: true }).first().click().type('2020-12-13')
 
-        cy.getA('md-fab').click()
+        cy.contains('Finish').click()
 
         cy.getA('.cardlist .card').first().should('contain.text', 'Workout A').should('contain.text', 'December 13 2020')
       })
@@ -81,7 +81,7 @@ describe('Completing a session', () => {
         cy.getA('.repcount').first().click().should('contain.text', '5/5')
         cy.getA('.snackbar').contains('Rest between').should('be.visible')
 
-        cy.getA('.cardlist .card').eq(0).should('contain.text', 'Squat')
+        cy.getA('.itemlist div').eq(0).should('contain.text', 'Squat')
         cy.getA('[data-cy=weight-display]').first().should('contain.text', '20kg')
         cy.getA('[data-cy=per-rep-weight-btn]').first().click()
 
@@ -109,12 +109,12 @@ describe('Completing a session', () => {
         }
 
         cy.getA('.snackbar').should('be.visible').should('contain.text', 'This session you lifted').should('contain.text', '650')
-        cy.getA('md-fab').click()
+        cy.contains('Finish').click()
 
         cy.getA('.cardlist .card').eq(0).should('contain.text', 'Workout B')
         cy.getA('.cardlist .card').eq(1).should('contain.text', 'Workout A').click()
 
-        cy.getA('.cardlist .card').eq(0).should('contain.text', 'Squat')
+        cy.getA('.itemlist div').eq(0).should('contain.text', 'Squat')
         // Since all sets were completed - with at least one of the sets having equal or higher weight than the top level, the weight should have increased
         cy.getA('[data-cy=weight-display]').first().should('contain.text', '15kg')
       })
@@ -122,16 +122,18 @@ describe('Completing a session', () => {
       it('can add notes to an exercise and see them the next time they do that exercise', () => {
         cy.containsA('Workout A').click()
 
+        cy.getA('[data-cy=more-exercise-btn]').first().click()
         cy.getA('[data-cy=exercise-notes-btn]').first().click()
         cy.dialog().find('md-outlined-text-field').find('textarea', { includeShadowDom: true }).first().click().type('I am NoteTaker, master of notes')
         cy.dialog().find('[data-cy=notes-dialog-actions]').contains("Save").click()
 
-        cy.getA('md-fab').click()
+        cy.contains('Finish').click()
 
         cy.navigate('History')
 
         cy.getA('.cardlist .card').first('.card').should('contain.text', 'Workout A').click()
 
+        cy.getA('[data-cy=more-exercise-btn]').first().click()
         cy.getA('[data-cy=exercise-notes-btn]').first().click()
         cy.dialog().find('md-outlined-text-field').find('textarea', { includeShadowDom: true })
           .first()

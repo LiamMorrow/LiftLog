@@ -74,7 +74,8 @@ public record Session(
             .Min();
 
     public bool IsComplete =>
-        RecordedExercises.All(x => x.PotentialSets.All(set => set.Set is not null));
+        RecordedExercises.Any()
+        && RecordedExercises.All(x => x.PotentialSets.All(set => set.Set is not null));
 
     public decimal TotalWeightLifted =>
         RecordedExercises.Sum(ex =>
