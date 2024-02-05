@@ -2,11 +2,5 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:base", "group:allNonMajor"],
   "schedule": ["before 4am every monday"],
-  "automerge": true,
-  "postUpgradeTasks": {
-    "commands": ["dotnet tool restore", "dotnet csharpier ."],
-    "fileFilters": ["**/*.csproj", "**/*.cs"],
-    "executionMode": "update"
-  },
-  "allowedPostUpgradeCommands": ["^dotnet tool restore$", "^dotnet csharpier \\.$"]
+  "automerge": true
 }
