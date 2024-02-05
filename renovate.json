@@ -8,5 +8,5 @@
     "fileFilters": ["**/*.csproj", "**/*.cs"],
     "executionMode": "update"
   },
-  "allowedPostUpgradeCommands": ["^dotnet tool restore$", "^dotnet csharpier .$"]
+  "allowedPostUpgradeCommands": ["^dotnet tool restore$", "^dotnet csharpier \\.$"]
 }
