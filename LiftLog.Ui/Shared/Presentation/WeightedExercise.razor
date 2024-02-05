@@ -51,7 +51,9 @@
     </div>
     @if (notesToShow is not null)
     {
-        <span data-cy="exercise-notes" class="text-tertiary font-bold">@notesToShow</span>
+        <div class="flex justify-start">
+            <span data-cy="exercise-notes" class="text-tertiary font-bold">@notesToShow</span>
+        </div>
     }
     @if (_holdingPrevious && PreviousRecordedExercises?.Any() == true)
     {
