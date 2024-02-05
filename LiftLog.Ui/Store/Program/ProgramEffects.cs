@@ -5,7 +5,6 @@ using Fluxor;
 using LiftLog.Lib;
 using LiftLog.Ui.Services;
 
-
 namespace LiftLog.Ui.Store.Program;
 
 public class ProgramEffects(SessionService sessionService, IState<ProgramState> state)

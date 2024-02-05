@@ -8,7 +8,6 @@ using LiftLog.Lib.Serialization;
 using LiftLog.Ui.Models.SessionBlueprintDao;
 using LiftLog.Ui.Repository;
 
-
 namespace LiftLog.Ui.Services;
 
 public class KeyValueCurrentProgramRepository(IKeyValueStore keyValueStore)
