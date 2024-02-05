@@ -37,6 +37,11 @@ public class StatsEffects(IState<StatsState> state, IProgressRepository progress
                 )
                 .Where(x => x.RecordedExercises.Any())
                 .ToListAsync();
+            if (sessions.Count == 0)
+            {
+                dispatcher.Dispatch(new SetStatsIsLoadingAction(false));
+                return;
+            }
 
             var bodyweightStats = CreateBodyweightStatistic(sessions);
             var sessionStats = sessions
