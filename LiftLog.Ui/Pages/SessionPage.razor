@@ -134,7 +134,7 @@
         Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, null));
         Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
 
-        NavigationManager.NavigateTo("/post-session/"+id);
+        NavigationManager.NavigateTo("/");
     }
 
     private void CloseSession()
