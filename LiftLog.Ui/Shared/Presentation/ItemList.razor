@@ -2,7 +2,7 @@
 <div @attributes="AdditionalAttributes" class=" @(AdditionalAttributes?.GetValueOrDefault("class")) flex flex-col gap-2 py-2 itemlist">
     @for (var i = 0; i < Items.Count; i++)
     {
-        <div>
+        <div class="text-on-surface">
             @ChildContent?.Invoke(Items[i])
         </div>
         @if(i < Items.Count - 1){
