@@ -163,6 +163,12 @@ AppUtils.smoothScrollAndFocusLast = function (elementSelector) {
     }, 500);
 }
 
+AppUtils.closeActiveDialog = function () {
+    const dialog = document.querySelector('md-dialog[open]');
+    dialog?.close();
+    return !!dialog;
+}
+
 
 AppUtils.setupPullToRefresh = function (elementSelector) {
     const pullToRefresh = PullToRefresh.init({

@@ -85,6 +85,15 @@
     protected override void OnInitialized()
     {
         InsetsManager.InsetsChanged += (_, _) => { InvokeAsync(StateHasChanged); };
+        NavigationManager.RegisterLocationChangingHandler(async context =>
+        {
+            var closedDialog = await Js.InvokeAsync<bool>("AppUtils.closeActiveDialog");
+
+            if (closedDialog)
+            {
+                context.PreventNavigation();
+            }
+        });
         base.OnInitialized();
     }
 
