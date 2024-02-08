@@ -1,10 +1,11 @@
+using LiftLog.Ui.Models;
 using MaterialColorUtilities.Schemes;
 
 namespace LiftLog.Ui.Services;
 
 public interface IThemeProvider
 {
-    ValueTask<Scheme<uint>> GetColorSchemeAsync();
+    ValueTask<AppColorScheme<uint>> GetColorSchemeAsync();
 
     /// <summary>
     /// Set the seed for the theme color generator.

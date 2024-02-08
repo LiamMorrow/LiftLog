@@ -1,4 +1,6 @@
+using LiftLog.Ui.Models;
 using MaterialColorUtilities.Maui;
+using MaterialColorUtilities.Schemes;
 using Microsoft.Extensions.Options;
 using Microsoft.Maui.Platform;
 #if ANDROID
@@ -12,7 +14,14 @@ public class ThemeColorUpdateService(
     IOptions<MaterialColorOptions> options,
     IDynamicColorService dynamicColorService,
     IPreferences preferences
-) : MaterialColorService(options, dynamicColorService, preferences)
+)
+    : MaterialColorService<
+        AppCorePalette,
+        AppColorScheme<uint>,
+        Scheme<Color>,
+        AppLightSchemeMapper,
+        AppDarkSchemeMapper
+    >(options, dynamicColorService, preferences)
 {
     // Sometimes it does not update the theme until the device is rotated
     // I have a feeling that the weak event has released the listener

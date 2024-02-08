@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using LiftLog.Ui.Models;
 using LiftLog.Ui.Services;
 using MaterialColorUtilities.Palettes;
 using MaterialColorUtilities.Schemes;
@@ -13,13 +14,13 @@ public class WebThemeProvider(IJSRuntime jsRuntime, IPreferenceStore preferenceS
 {
     const uint DEFAULT_SEED = 0xF44336;
 
-    private Scheme<uint>? _scheme;
+    private AppColorScheme<uint>? _scheme;
     private uint? _seed;
 
-    public async ValueTask<Scheme<uint>> GetColorSchemeAsync() =>
+    public async ValueTask<AppColorScheme<uint>> GetColorSchemeAsync() =>
         _scheme ??= await GetInitialColorScheme();
 
-    private async ValueTask<Scheme<uint>> GetInitialColorScheme()
+    private async ValueTask<AppColorScheme<uint>> GetInitialColorScheme()
     {
         var seedAndPref = await Task.WhenAll(
             preferenceStore.GetItemAsync("THEME_SEED").AsTask(),
@@ -38,7 +39,7 @@ public class WebThemeProvider(IJSRuntime jsRuntime, IPreferenceStore preferenceS
     public async Task SetSeedColor(uint? seed, ThemePreference themePreference)
     {
         _seed = seed;
-        var _corePalette = new CorePalette();
+        var _corePalette = new AppCorePalette();
 
         _corePalette.Fill(seed ?? DEFAULT_SEED);
 
@@ -50,12 +51,12 @@ public class WebThemeProvider(IJSRuntime jsRuntime, IPreferenceStore preferenceS
         BlazorJavascriptInitialization.Initialize(jsInProcessRuntime);
 
         var window = jsInProcessRuntime.GetWindow()!;
-        var windowThemePrefersDark = window
+        var windowThemePrefersDark = !window
             .matchMedia(jsInProcessRuntime.CreateString("(prefers-color-scheme: dark)"))
             .matches.ConvertToValue<bool>();
 
-        Scheme<uint> Light() => new LightSchemeMapper().Map(_corePalette);
-        Scheme<uint> Dark() => new DarkSchemeMapper().Map(_corePalette);
+        AppColorScheme<uint> Light() => new AppLightSchemeMapper().Map(_corePalette);
+        AppColorScheme<uint> Dark() => new AppDarkSchemeMapper().Map(_corePalette);
         _scheme = themePreference switch
         {
             ThemePreference.FollowSystem => windowThemePrefersDark ? Dark() : Light(),

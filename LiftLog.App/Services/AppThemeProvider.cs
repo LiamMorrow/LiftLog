@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using LiftLog.Ui.Models;
 using LiftLog.Ui.Services;
 using MaterialColorUtilities.Schemes;
 using Microsoft.Maui.ApplicationModel;
@@ -8,7 +9,7 @@ namespace LiftLog.App.Services;
 
 public class AppThemeProvider(ThemeColorUpdateService colorUpdateService) : IThemeProvider
 {
-    public ValueTask<Scheme<uint>> GetColorSchemeAsync() =>
+    public ValueTask<AppColorScheme<uint>> GetColorSchemeAsync() =>
         ValueTask.FromResult(colorUpdateService.SchemeInt);
 
     public event EventHandler SeedChanged

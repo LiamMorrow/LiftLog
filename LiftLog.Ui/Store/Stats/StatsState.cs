@@ -23,17 +23,19 @@ public record PinnedStatistic(StatisticType Type, string Title);
 
 public record StatisticOverTime(string Title, ImmutableListValue<TimeTrackedStatistic> Statistics);
 
-public record ExerciseStatisticOverTime(
-    string Title,
-    ImmutableListValue<TimeTrackedStatistic> Statistics,
-    decimal OneRepMax
-) : StatisticOverTime(Title, Statistics)
+public record ExerciseStatistics(
+    string ExerciseName,
+    StatisticOverTime Statistics,
+    StatisticOverTime OneRepMaxStatistics
+)
 {
-    public decimal TotalLifted { get; } = Statistics.Sum(x => x.Value);
+    public decimal TotalLifted { get; } = Statistics.Statistics.Sum(x => x.Value);
 
-    public decimal Max { get; } = Statistics.Max(x => x.Value);
+    public decimal Max { get; } = Statistics.Statistics.Max(x => x.Value);
 
-    public decimal Current => Statistics[^1].Value;
+    public decimal Current => Statistics.Statistics[^1].Value;
+
+    public decimal OneRepMax => OneRepMaxStatistics.Statistics[^1].Value;
 }
 
 public record TimeTrackedStatistic(DateTime DateTime, decimal Value);
@@ -43,7 +45,7 @@ public record GranularStatisticView(
     TimeSpan AverageSessionLength,
     RecordedExercise? HeaviestLift,
     TimeSpentExercise? ExerciseMostTimeSpent,
-    ImmutableListValue<ExerciseStatisticOverTime> ExerciseStats,
+    ImmutableListValue<ExerciseStatistics> ExerciseStats,
     ImmutableListValue<StatisticOverTime> SessionStats,
     StatisticOverTime BodyweightStats
 );

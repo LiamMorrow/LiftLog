@@ -14,7 +14,7 @@ public class StatsFeature : Feature<StatsState>
         new(
             IsDirty: true,
             IsLoading: false,
-            OverallViewSessionName: null,
+            OverallViewSessionName: "CURRENT_SESSIONS",
             OverallViewTime: TimeSpan.FromDays(30),
             OverallView: null,
             PinnedStatistics: []

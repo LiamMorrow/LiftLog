@@ -6,10 +6,15 @@ using LiftLog.Lib.Models;
 using LiftLog.Ui.Models;
 using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
+using LiftLog.Ui.Store.Program;
 
 namespace LiftLog.Ui.Store.Stats;
 
-public class StatsEffects(IState<StatsState> state, IProgressRepository progressRepository)
+public class StatsEffects(
+    IState<StatsState> state,
+    IProgressRepository progressRepository,
+    IState<ProgramState> programState
+)
 {
     [EffectMethod]
     public async Task HandleFetchStats(FetchOverallStatsAction _, IDispatcher dispatcher)
@@ -26,6 +31,13 @@ public class StatsEffects(IState<StatsState> state, IProgressRepository progress
             latestTime.ToDateTime(TimeOnly.MinValue) - state.Value.OverallViewTime
         );
 
+        var filteringToCurrentSessions = "CURRENT_SESSIONS".Equals(
+            state.Value.OverallViewSessionName
+        );
+        var currentSessionNames = programState
+            .Value.SessionBlueprints.Select(x => x.Name)
+            .ToHashSet();
+
         await Task.Run(async () =>
         {
             var sessions = await progressRepository
@@ -34,6 +46,10 @@ public class StatsEffects(IState<StatsState> state, IProgressRepository progress
                 .Where(session =>
                     state.Value.OverallViewSessionName is null
                     || session.Blueprint.Name == state.Value.OverallViewSessionName
+                    || (
+                        filteringToCurrentSessions
+                        && currentSessionNames.Contains(session.Blueprint.Name)
+                    )
                 )
                 .Where(x => x.RecordedExercises.Any())
                 .ToListAsync();
@@ -159,19 +175,30 @@ public class StatsEffects(IState<StatsState> state, IProgressRepository progress
         );
     }
 
-    private static ExerciseStatisticOverTime CreateExerciseStatistic<T>(
+    private static ExerciseStatistics CreateExerciseStatistic<T>(
         IGrouping<T, DatedRecordedExercise> exercises
     )
     {
-        return new ExerciseStatisticOverTime(
+        return new ExerciseStatistics(
             exercises.First().RecordedExercise.Blueprint.Name,
-            Statistics: exercises
-                .Select(exercise => new TimeTrackedStatistic(
-                    exercise.DateTime,
-                    exercise.RecordedExercise.Weight
-                ))
-                .ToImmutableList(),
-            OneRepMax: exercises.First().RecordedExercise.OneRepMax
+            Statistics: new StatisticOverTime(
+                exercises.First().RecordedExercise.Blueprint.Name,
+                exercises
+                    .Select(exercise => new TimeTrackedStatistic(
+                        exercise.DateTime,
+                        exercise.RecordedExercise.Weight
+                    ))
+                    .ToImmutableList()
+            ),
+            OneRepMaxStatistics: new StatisticOverTime(
+                "One Rep Max",
+                exercises
+                    .Select(exercise => new TimeTrackedStatistic(
+                        exercise.DateTime,
+                        exercise.RecordedExercise.OneRepMax
+                    ))
+                    .ToImmutableList()
+            )
         );
     }
 }

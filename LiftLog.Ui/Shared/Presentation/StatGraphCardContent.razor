@@ -9,7 +9,7 @@
 
 @if (ShowTitle)
 {
-    <h2 class="text-xl text-on-surface self-start">@(Statistics.Title)</h2>
+    <h2 class="text-xl text-on-surface self-start">@(Statistics.First().Title)</h2>
 }
 @if (IsLoading)
 {
@@ -30,18 +30,21 @@ else
         Options="options"
         XAxisType="XAxisType.Datetime">
 
-        <ApexPointSeries TItem="TimeTrackedStatistic"
-                         Items="Statistics.Statistics"
-                         Name="Weight"
-                         SeriesType="SeriesType.Line"
-                         XValue="@(e => e.DateTime)"
-                         YAggregate="@(e => e.Max(e => e.Value))"
-                         OrderByDescending="e => e.X"/>
+        @foreach(var statistics in Statistics)
+        {
+            <ApexPointSeries TItem="TimeTrackedStatistic"
+                Items="statistics.Statistics"
+                Name="@statistics.Title"
+                SeriesType="SeriesType.Line"
+                XValue="@(e => e.DateTime)"
+                YAggregate="@(e => e.Max(e => e.Value))"
+                OrderByDescending="e => e.X"/>
+        }
     </ApexChart>
 }
 
 @code {
-    [Parameter] [EditorRequired] public StatisticOverTime Statistics { get; set; } = null!;
+    [Parameter] [EditorRequired] public ImmutableListValue<StatisticOverTime> Statistics { get; set; } = null!;
 
     [Parameter]
     [EditorRequired]
@@ -70,6 +73,21 @@ else
     protected override async Task OnInitializedAsync()
     {
         var scheme = await ThemeProvider.GetColorSchemeAsync();
+        Color LineColors =  new()
+        {
+            GetColorString(scheme.Blue),
+            GetColorString(scheme.Green),
+            GetColorString(scheme.Red),
+            GetColorString(scheme.Yellow),
+            GetColorString(scheme.Purple),
+            GetColorString(scheme.Cyan),
+            GetColorString(scheme.Pink),
+            GetColorString(scheme.Indigo),
+            GetColorString(scheme.Teal),
+            GetColorString(scheme.Lime),
+            GetColorString(scheme.Orange),
+        };
+
         options = new ApexChartOptions<TimeTrackedStatistic>
         {
             Chart = new Chart
@@ -95,10 +113,10 @@ else
             },
             Stroke = new Stroke
             {
-                Curve = Curve.Straight,
-                Width = 4
+                Curve = Curve.Smooth,
+                Width = 6
             },
-            Colors = new() { GetColorString(scheme.Primary) },
+            Colors = LineColors,
             Title = new()
             {
                 Style = new()
@@ -144,9 +162,16 @@ else
             },
             Markers = new()
             {
-                Size = 2,
-                StrokeColors = new Color(GetColorString(scheme.Primary)),
+                Size = 6,
+                StrokeColors = LineColors,
                 StrokeWidth = 4,
+            },
+            Legend = new()
+            {
+                Labels = new()
+                {
+                    Colors = GetColorString(scheme.OnSurface)
+                }
             }
         };
 

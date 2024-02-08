@@ -64,21 +64,21 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
         @if (SettingsState.Value.ShowBodyweight && overallStats.BodyweightStats.Statistics.Any())
         {
             <Card>
-                <StatGraphCardContent Statistics="overallStats.BodyweightStats" RenderDelay="TimeSpan.FromMilliseconds(100)"/>
+                <StatGraphCardContent Statistics="[overallStats.BodyweightStats]" RenderDelay="TimeSpan.FromMilliseconds(100)"/>
             </Card>
         }
-        <CardList Items="@(overallStats.SessionStats.IndexedTuples())">
-            <StatGraphCardContent Statistics="context.Item" RenderDelay="TimeSpan.FromMilliseconds(200 + context.Index * 200)"/>
-        </CardList>
+        <Card>
+            <StatGraphCardContent Statistics="overallStats.SessionStats" RenderDelay="TimeSpan.FromMilliseconds(200)"/>
+        </Card>
         <CardList Items="@(overallStats.ExerciseStats.IndexedTuples())" OnClick=@HandleCardClick>
-            <StatGraphCardContent Statistics="context.Item" RenderDelay="TimeSpan.FromMilliseconds(200 + context.Index * 200)"/>
+            <StatGraphCardContent Statistics="[context.Item.Statistics, context.Item.OneRepMaxStatistics]" RenderDelay="TimeSpan.FromMilliseconds(200 + context.Index * 200)"/>
         </CardList>
     </div>
 }
 <Dialog @ref="dialog">
     @if (_selectedExercise is not null)
     {
-        <span slot="headline">@(_selectedExercise.Title)</span>
+        <span slot="headline">@(_selectedExercise.ExerciseName)</span>
         <div slot="content" class="flex flex-col">
             <span class="flex justify-between text-on-surface">
                 <span>Current: </span><WeightFormat Weight=@(_selectedExercise.Current)/>
@@ -101,7 +101,7 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
 
 @code {
     private Dialog? dialog;
-    private ExerciseStatisticOverTime? _selectedExercise;
+    private ExerciseStatistics? _selectedExercise;
 
     private List<Select<TimeSpan>.SelectOption> SelectTimeOptions =
     [
@@ -130,11 +130,12 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
             .Select(x => new Select<string>.SelectOption(x.Blueprint.Name, x.Blueprint.Name))
             .Distinct()
             .Prepend(new Select<string>.SelectOption("All sessions", null!))
+            .Prepend(new Select<string>.SelectOption("Current sessions", "CURRENT_SESSIONS"))
             .ToListAsync();
         await base.OnInitializedAsync();
     }
 
-    private void HandleCardClick((ExerciseStatisticOverTime exerciseStatistics, int Index) item)
+    private void HandleCardClick((ExerciseStatistics exerciseStatistics, int Index) item)
     {
         _selectedExercise = item.exerciseStatistics;
         StateHasChanged();
