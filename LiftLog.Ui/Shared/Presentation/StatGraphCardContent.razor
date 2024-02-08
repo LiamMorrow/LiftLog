@@ -9,7 +9,7 @@
 
 @if (ShowTitle)
 {
-    <h2 class="text-xl text-on-surface self-start">@(Statistics.First().Title)</h2>
+    <h2 class="text-xl text-on-surface self-start">@(Title)</h2>
 }
 @if (IsLoading)
 {
@@ -45,6 +45,8 @@ else
 
 @code {
     [Parameter] [EditorRequired] public ImmutableListValue<StatisticOverTime> Statistics { get; set; } = null!;
+
+    [Parameter] [EditorRequired] public string Title { get; set; } = string.Empty;
 
     [Parameter]
     [EditorRequired]

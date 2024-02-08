@@ -64,14 +64,14 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
         @if (SettingsState.Value.ShowBodyweight && overallStats.BodyweightStats.Statistics.Any())
         {
             <Card>
-                <StatGraphCardContent Statistics="[overallStats.BodyweightStats]" RenderDelay="TimeSpan.FromMilliseconds(100)"/>
+                <StatGraphCardContent Title="Bodyweight" Statistics="[overallStats.BodyweightStats]" RenderDelay="TimeSpan.FromMilliseconds(100)"/>
             </Card>
         }
         <Card>
-            <StatGraphCardContent Statistics="overallStats.SessionStats" RenderDelay="TimeSpan.FromMilliseconds(200)"/>
+            <StatGraphCardContent Title="Sessions" Statistics="overallStats.SessionStats" RenderDelay="TimeSpan.FromMilliseconds(200)"/>
         </Card>
         <CardList Items="@(overallStats.ExerciseStats.IndexedTuples())" OnClick=@HandleCardClick>
-            <StatGraphCardContent Statistics="[context.Item.Statistics, context.Item.OneRepMaxStatistics]" RenderDelay="TimeSpan.FromMilliseconds(200 + context.Index * 200)"/>
+            <StatGraphCardContent Title="@context.Item.ExerciseName" Statistics="[context.Item.Statistics, context.Item.OneRepMaxStatistics]" RenderDelay="TimeSpan.FromMilliseconds(200 + context.Index * 200)"/>
         </CardList>
     </div>
 }
