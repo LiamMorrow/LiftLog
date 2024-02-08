@@ -59,6 +59,7 @@ else
 
     [Parameter] public bool ShowTitle { get; set; } = true;
 
+    private AppColorScheme<uint> scheme = null!;
 
     private bool IsLoading { get; set; } = true;
 
@@ -74,7 +75,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var scheme = await ThemeProvider.GetColorSchemeAsync();
+        scheme = await ThemeProvider.GetColorSchemeAsync();
         Color LineColors =  new()
         {
             GetColorString(scheme.Blue),
@@ -156,7 +157,7 @@ else
             },
             Tooltip = new()
             {
-                Enabled = false
+                Enabled = true,
             },
             Grid = new()
             {
@@ -191,3 +192,35 @@ else
 
     private string WeightSuffix => UseImperial ? " lbs" : " kg";
 }
+<style>
+
+  .apexcharts-tooltip {
+    background: @GetColorString(scheme.Surface) !important;
+    color: @GetColorString(scheme.OnSurface) !important;
+    border-color: @GetColorString(scheme.OutlineVariant)!important;
+    box-shadow: none !important;
+  }
+  .apexcharts-tooltip-series-group{
+    background: @GetColorString(scheme.Surface) !important;
+    border-color: @GetColorString(scheme.Outline)!important;
+  }
+  .apexcharts-tooltip-title{
+    background: @GetColorString(scheme.SurfaceContainer) !important;
+    border-color: @GetColorString(scheme.OutlineVariant)!important;
+    border-bottom: none!important;
+  }
+
+  .apexcharts-xaxistooltip {
+    background: @GetColorString(scheme.Surface) !important;
+    color: @GetColorString(scheme.OnSurface) !important;
+    border-color: @GetColorString(scheme.OutlineVariant)!important;
+    box-shadow: none !important;
+  }
+  .apexcharts-tooltip-text-y-value {
+    color: @GetColorString(scheme.Primary);
+  }
+
+  .apexcharts-xaxistooltip:before, .apexcharts-xaxistooltip:after {
+    border-bottom-color: @GetColorString(scheme.OutlineVariant)!important;
+  }
+</style>

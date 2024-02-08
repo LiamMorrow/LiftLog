@@ -70,38 +70,13 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
         <Card>
             <StatGraphCardContent Title="Sessions" Statistics="overallStats.SessionStats" RenderDelay="TimeSpan.FromMilliseconds(200)"/>
         </Card>
-        <CardList Items="@(overallStats.ExerciseStats.IndexedTuples())" OnClick=@HandleCardClick>
+        <CardList Items="@(overallStats.ExerciseStats.IndexedTuples())">
             <StatGraphCardContent Title="@context.Item.ExerciseName" Statistics="[context.Item.Statistics, context.Item.OneRepMaxStatistics]" RenderDelay="TimeSpan.FromMilliseconds(200 + context.Index * 200)"/>
         </CardList>
     </div>
 }
-<Dialog @ref="dialog">
-    @if (_selectedExercise is not null)
-    {
-        <span slot="headline">@(_selectedExercise.ExerciseName)</span>
-        <div slot="content" class="flex flex-col">
-            <span class="flex justify-between text-on-surface">
-                <span>Current: </span><WeightFormat Weight=@(_selectedExercise.Current)/>
-            </span>
-            <span class="flex justify-between text-on-surface">
-                <span>Max: </span><WeightFormat Weight=@(_selectedExercise.Max)/>
-            </span>
-            <span class="flex justify-between text-on-surface">
-                <span>One Rep Max: </span><WeightFormat Weight=@(_selectedExercise.OneRepMax)/>
-            </span>
-            <span class="flex justify-between text-on-surface">
-                <span>Total Lifted: </span><WeightFormat Weight=@(_selectedExercise.TotalLifted)/>
-            </span>
-        </div>
-        <div slot="actions">
-            <AppButton Type=AppButtonType.Text OnClick=@(() => dialog?.Close())>Close</AppButton>
-        </div>
-    }
-</Dialog>
 
 @code {
-    private Dialog? dialog;
-    private ExerciseStatistics? _selectedExercise;
 
     private List<Select<TimeSpan>.SelectOption> SelectTimeOptions =
     [
@@ -133,13 +108,6 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
             .Prepend(new Select<string>.SelectOption("Current sessions", "CURRENT_SESSIONS"))
             .ToListAsync();
         await base.OnInitializedAsync();
-    }
-
-    private void HandleCardClick((ExerciseStatistics exerciseStatistics, int Index) item)
-    {
-        _selectedExercise = item.exerciseStatistics;
-        StateHasChanged();
-        dialog?.Open();
     }
 
 }
