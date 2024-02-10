@@ -88,7 +88,7 @@ public partial class FeedEffects
             await Task.WhenAll(
                 feedEvents
                     .Where(ev => newUsers.Any(us => us.Id == ev.UserId))
-                    .Select(x => ToFeedItemAsync(x).AsTask())
+                    .Select(x => ToFeedItemAsync(x))
             )
         ).WhereNotNull();
 
@@ -107,6 +107,7 @@ public partial class FeedEffects
                             : x.Timestamp
                     )
                     .ThenByDescending(x => x.Timestamp)
+                    .Where(x => x is not RemovedSessionFeedItem)
                     .ToImmutableList()
             )
         );
@@ -130,6 +131,14 @@ public partial class FeedEffects
             if (session is not null)
             {
                 var result = await PublishSessionAsync(state.Value.Identity, session);
+                if (!result.IsSuccess)
+                {
+                    continue;
+                }
+            }
+            else
+            {
+                var result = await RemovePublishedSessionAsync(state.Value.Identity, sessionId);
                 if (!result.IsSuccess)
                 {
                     continue;
@@ -163,6 +172,28 @@ public partial class FeedEffects
                 UserId: identity.Id,
                 Password: identity.Password,
                 EventId: session.Id,
+                EncryptedEventPayload: encryptedPayload,
+                EncryptedEventIV: iv.Value,
+                Expiry: DateTimeOffset.UtcNow.AddDays(90)
+            )
+        );
+    }
+
+    private async Task<ApiResult> RemovePublishedSessionAsync(FeedIdentity identity, Guid sessionId)
+    {
+        var (encryptedPayload, iv) = await encryptionService.SignRsa256PssAndEncryptAesCbcAsync(
+            new UserEventPayload
+            {
+                RemovedSessionPayload = new RemovedSessionUserEvent { SessionId = sessionId }
+            }.ToByteArray(),
+            identity.AesKey,
+            identity.RsaKeyPair.PrivateKey
+        );
+        return await feedApiService.PutUserEventAsync(
+            new PutUserEventRequest(
+                UserId: identity.Id,
+                Password: identity.Password,
+                EventId: sessionId,
                 EncryptedEventPayload: encryptedPayload,
                 EncryptedEventIV: iv.Value,
                 Expiry: DateTimeOffset.UtcNow.AddDays(90)
@@ -233,7 +264,7 @@ public partial class FeedEffects
         }
     }
 
-    private async ValueTask<FeedItem?> ToFeedItemAsync(UserEventResponse userEvent)
+    private async Task<FeedItem?> ToFeedItemAsync(UserEventResponse userEvent)
     {
         var userId = userEvent.UserId;
         var encryptedPayload = userEvent.EncryptedEventPayload;
@@ -242,19 +273,27 @@ public partial class FeedEffects
             new AesIV(userEvent.EncryptedEventIV),
             encryptedPayload
         );
-        // We only support session events rn
-        if (payload is not { EventPayloadCase: EventPayloadOneofCase.SessionPayload })
-        {
-            return null;
-        }
 
-        return new SessionFeedItem(
-            UserId: userEvent.UserId,
-            EventId: userEvent.EventId,
-            Timestamp: userEvent.Timestamp,
-            Expiry: userEvent.Expiry,
-            Session: payload.SessionPayload.Session.ToModel()
-        );
+        return payload switch
+        {
+            { EventPayloadCase: EventPayloadOneofCase.SessionPayload }
+                => new SessionFeedItem(
+                    UserId: userEvent.UserId,
+                    EventId: userEvent.EventId,
+                    Timestamp: userEvent.Timestamp,
+                    Expiry: userEvent.Expiry,
+                    Session: payload.SessionPayload.Session.ToModel()
+                ),
+            { EventPayloadCase: EventPayloadOneofCase.RemovedSessionPayload }
+                => new RemovedSessionFeedItem(
+                    UserId: userEvent.UserId,
+                    EventId: userEvent.EventId,
+                    Timestamp: userEvent.Timestamp,
+                    Expiry: userEvent.Expiry,
+                    SessionId: payload.RemovedSessionPayload.SessionId
+                ),
+            _ => null
+        };
     }
 
     private async ValueTask<UserEventPayload?> DecryptUserEventPayloadAsync(

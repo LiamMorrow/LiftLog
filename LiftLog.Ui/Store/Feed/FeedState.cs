@@ -58,6 +58,14 @@ public record SessionFeedItem(
     Session Session
 ) : FeedItem(UserId, EventId, Timestamp, Expiry);
 
+public record RemovedSessionFeedItem(
+    Guid UserId,
+    Guid EventId,
+    DateTimeOffset Timestamp,
+    DateTimeOffset Expiry,
+    Guid SessionId
+) : FeedItem(UserId, EventId, Timestamp, Expiry);
+
 public record FeedIdentity(
     Guid Id,
     AesKey AesKey,

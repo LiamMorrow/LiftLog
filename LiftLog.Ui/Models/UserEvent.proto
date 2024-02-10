@@ -11,11 +11,15 @@ message UserEventPayload {
     // so we can add additional fields in the future if needed
     oneof event_payload {
         SessionUserEvent session_payload = 1;
+        RemovedSessionUserEvent removed_session_payload = 2;
     }
 }
 
 message SessionUserEvent {
     LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2 session = 1;
+}
+message RemovedSessionUserEvent {
+    LiftLog.Ui.Models.UuidDao session_id = 1;
 }
 
 message InboxMessageDao {

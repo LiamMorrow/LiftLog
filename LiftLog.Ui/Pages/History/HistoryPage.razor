@@ -59,6 +59,7 @@ else
         }
 
         Dispatcher.Dispatch(new DeleteSessionAction(_selectedSession));
+        Dispatcher.Dispatch(new AddUnpublishedSessionIdAction(_selectedSession.Id));
         Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
         Dispatcher.Dispatch(new PublishUnpublishedSessionsAction());
         _selectedSession = null;
