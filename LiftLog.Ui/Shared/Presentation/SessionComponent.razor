@@ -53,7 +53,7 @@ else
 {
     <FloatingBottomContainer>
         <Fab>
-            <FloatingButton size="small" variant="tertiary" aria-label="Add Exercise" label="Add Exercise" OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon></FloatingButton>
+            <FloatingButton size="small" variant="surface" aria-label="Add Exercise" label="Add Exercise" OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon></FloatingButton>
         </Fab>
         <AdditionalContent>@RenderSnackBar()</AdditionalContent>
     </FloatingBottomContainer>
@@ -65,7 +65,7 @@ else
     </FloatingBottomContainer>
 }
 
-@if(IsInActiveScreen)
+@if(IsInActiveScreen && !IsReadonly)
 {
     <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="TrailingTitleButton">
         <AppButton class="text-lg" Type=AppButtonType.Text OnClick=SaveSession>Finish</AppButton>
