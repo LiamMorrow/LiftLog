@@ -48,7 +48,7 @@ jobs:
         env:
           KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
       - name: Upload Android Release to Play Store
-        uses: r0adkll/upload-google-play@v1.1.2
+        uses: r0adkll/upload-google-play@v1.1.3
         with:
           packageName: com.limajuice.liftlog
           releaseFiles: LiftLog.App/bin/Release/net8.0-android/publish/com.limajuice.liftlog-Signed.aab
