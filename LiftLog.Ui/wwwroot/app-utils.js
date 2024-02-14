@@ -167,7 +167,6 @@ AppUtils.closeActiveDialog = function () {
     const dialog = document.querySelector('md-dialog[open]');
     dialog?.close();
     const fullscreenDialog = document.querySelector('.fullscreen-dialog[data-open]');
-    debugger;
     fullscreenDialog?.dispatchEvent(new Event('close', {
         bubbles: true,
         cancelable: true,

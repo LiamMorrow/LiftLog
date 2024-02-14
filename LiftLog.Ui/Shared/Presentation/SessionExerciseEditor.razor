@@ -1,8 +1,9 @@
 <div class="flex flex-col items-center gap-2 py-2" data-cy="session-exercise-editor">
     <TextField
+        class="w-full"
         TextFieldType="TextFieldType.Outline"
         Value="@(Exercise.Name)"
-        label="Exercise Name"
+        label="Exercise"
         required
         OnChange="value => OnExerciseUpdate(Exercise with { Name = value! })">
     </TextField>

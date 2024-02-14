@@ -72,16 +72,10 @@ else
     </Microsoft.AspNetCore.Components.Sections.SectionContent>
 }
 
-<Dialog @ref="_editExerciseDialog" OnClose="@(() => _exerciseToEditIndex = null)">
-    <span slot="headline">@(_exerciseToEditIndex is null ? "Add" : "Edit") Exercise</span>
-    <div slot="content">
-        <SessionExerciseEditor Exercise="_editingExercise" ExerciseNames="ExerciseNames" OnExerciseUpdate="@((e) => { _editingExercise = e; StateHasChanged(); })"/>
-    </div>
-    <div slot="actions" data-cy="session-exercise-editor-actions">
-        <AppButton Type="AppButtonType.Text" OnClick="() => { _editExerciseDialog?.Close(); }">Cancel</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="EditExerciseHandler">Save</AppButton>
-    </div>
-</Dialog>
+<FullScreenDialog @ref=_editExerciseDialog Title=@(_exerciseToEditIndex is null ? "Add Exercise" : "Edit Exercise") Action="Update" OnAction="EditExerciseHandler" OnClose="@(() => _exerciseToEditIndex = null)">
+    <SessionExerciseEditor Exercise="_editingExercise" ExerciseNames="ExerciseNames" OnExerciseUpdate="@((e) => { _editingExercise = e; StateHasChanged(); })"/>
+</FullScreenDialog>
+
 
 <Dialog @ref="_removeExerciseDialog">
     <span slot="headline">Remove Exercise?</span>
@@ -132,7 +126,7 @@ else
 
     private int? _exerciseToEditIndex;
     private int? _exerciseToRemoveIndex;
-    private Dialog? _editExerciseDialog;
+    private FullScreenDialog? _editExerciseDialog;
     private Dialog? _removeExerciseDialog;
     private Dialog? _updatePlanDialog;
 
