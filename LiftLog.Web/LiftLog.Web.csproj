@@ -14,10 +14,10 @@
     <ItemGroup>
         <PackageReference Include="Append.Blazor.Notifications" Version="1.1.0"/>
         <PackageReference Include="BlazorDownloadFile" Version="2.4.0.2"/>
-        <PackageReference Include="Blazored.LocalStorage" Version="4.4.0"/>
+        <PackageReference Include="Blazored.LocalStorage" Version="4.5.0"/>
         <PackageReference Include="BlazorTransitionableRoute" Version="4.0.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.1"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.1" PrivateAssets="all"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.2"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.2" PrivateAssets="all"/>
         <PackageReference Include="RealGoodApps.BlazorJavascript.Interop" Version="1.1.0"/>
         <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.3.3">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
