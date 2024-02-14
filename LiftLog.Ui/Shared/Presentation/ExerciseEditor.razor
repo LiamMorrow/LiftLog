@@ -24,13 +24,6 @@
             Label="Reps"/>
     </div>
     <EditableIncrementer
-        Increment="@Math.Max(Exercise.WeightIncreaseOnSuccess, 0.1m)"
-        Label="Minimum Weight"
-        data-cy="exercise-initial-weight"
-        Value="@Exercise.InitialWeight"
-        Suffix=@WeightSuffix
-        OnChange="e => SetExerciseInitialWeight(e)"/>
-    <EditableIncrementer
         Increment="0.1m"
         Label="Progressive Overload Amount"
         data-cy="exercise-auto-increase"
@@ -66,10 +59,6 @@
 
     void SetExerciseSupersetsNext(bool supersets)
         => UpdateExercise(Exercise with { SupersetWithNext = supersets });
-
-
-    void SetExerciseInitialWeight(decimal initialWeight)
-        => UpdateExercise(Exercise with { InitialWeight = initialWeight });
 
     void SetExerciseSuccessWeight(decimal weight)
         => UpdateExercise(Exercise with { WeightIncreaseOnSuccess = weight });

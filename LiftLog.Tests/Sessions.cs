@@ -32,7 +32,7 @@ public static class Sessions
         return (transform ?? (e => e)).Invoke(
             new RecordedExercise(
                 Blueprint: exerciseBlueprint,
-                Weight: exerciseBlueprint.InitialWeight,
+                Weight: 0m,
                 PotentialSets: Enumerable
                     .Range(0, exerciseBlueprint.Sets)
                     .Select(
@@ -45,9 +45,9 @@ public static class Sessions
                                             RepsCompleted: exerciseBlueprint.RepsPerSet,
                                             CompletionTime: TimeOnly.Parse("14:32:00")
                                         ),
-                                        exerciseBlueprint.InitialWeight
+                                        0
                                     ),
-                                _ => new PotentialSet(null, exerciseBlueprint.InitialWeight)
+                                _ => new PotentialSet(null, 0)
                             }
                     )
                     .ToImmutableList(),

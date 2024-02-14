@@ -47,7 +47,7 @@ internal record ExerciseBlueprintDaoV1(
             blueprint.Name,
             blueprint.Sets,
             blueprint.RepsPerSet,
-            blueprint.InitialWeight,
+            0,
             blueprint.WeightIncreaseOnSuccess,
             RestDaoV1.FromModel(blueprint.RestBetweenSets),
             blueprint.SupersetWithNext
@@ -58,7 +58,6 @@ internal record ExerciseBlueprintDaoV1(
             Name,
             Sets,
             RepsPerSet,
-            InitialKilograms,
             KilogramsIncreaseOnSuccess,
             RestBetweenSets.ToModel(),
             SupersetWithNext

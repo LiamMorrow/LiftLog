@@ -134,12 +134,9 @@ public static class CurrentSessionReducers
         var newExerciseBlueprint = action.ExerciseBlueprint;
         var newExercise = new RecordedExercise(
             newExerciseBlueprint,
-            newExerciseBlueprint.InitialWeight,
+            0,
             Enumerable
-                .Repeat(
-                    new PotentialSet(null, action.ExerciseBlueprint.InitialWeight),
-                    newExerciseBlueprint.Sets
-                )
+                .Repeat(new PotentialSet(null, 0), newExerciseBlueprint.Sets)
                 .ToImmutableList(),
             null,
             false
