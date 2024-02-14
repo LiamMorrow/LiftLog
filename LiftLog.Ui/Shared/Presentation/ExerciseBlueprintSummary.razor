@@ -1,0 +1,45 @@
+<div class="py-4 pl-5 pr-2 relative" @onclick="OnEdit">
+    <md-ripple></md-ripple>
+    <div class="flex flex-col">
+        <div class="flex justify-between items-center">
+            <span class="text-xl font-bold flex-shrink text-ellipsis text-nowrap whitespace-nowrap overflow-hidden min-w-0">@Blueprint.Name</span>
+            <div class="flex justify-end">
+                <IconButton Type="IconButtonType.Standard" OnClick=OnMoveUp Icon="arrow_upward"/>
+                <IconButton Type="IconButtonType.Standard" OnClick=OnMoveDown Icon="arrow_downward"/>
+                <IconButton Type="IconButtonType.Standard" OnClick=OnRemove Icon="delete"/>
+            </div>
+        </div>
+        <div class="flex flex-col items-start">
+            <span class="text-lg"><span class="font-bold text-primary">@Blueprint.Sets</span> @(Pluralize(@Blueprint.Sets, "set")) of <span class="font-bold text-primary">@Blueprint.RepsPerSet</span> @(Pluralize(@Blueprint.RepsPerSet, "rep"))</span>
+            <span class="text-lg">Rest between <span class="font-bold text-primary">@(Blueprint.RestBetweenSets.MinRest.ToString(TimespanFormatStr))</span> and <span class="font-bold  text-primary">@(Blueprint.RestBetweenSets.MaxRest.ToString(TimespanFormatStr))</span></span>
+        </div>
+    </div>
+</div>
+@code
+{
+    private const string TimespanFormatStr = @"m\:ss";
+    [Parameter]
+    [EditorRequired]
+    public ExerciseBlueprint Blueprint { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback OnRemove { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback OnMoveUp { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback OnMoveDown { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback OnEdit { get; set; }
+
+    private string Pluralize(int count, string singular)
+    {
+        return count == 1 ? singular : singular + "s";
+    }
+}

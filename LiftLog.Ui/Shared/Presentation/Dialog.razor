@@ -36,6 +36,11 @@
 
     public async void Close()
     {
+        await CloseWait();
+    }
+
+    public async Task CloseWait()
+    {
         await JSRuntime.InvokeVoidAsync("AppUtils.hideMdPopup", dialog);
     }
 
