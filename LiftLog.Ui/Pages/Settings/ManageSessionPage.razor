@@ -15,9 +15,8 @@
 
 @if (SessionEditorState.Value.SessionBlueprint is not null)
 {
-    <div class="bg-surface">
+    <div class="bg-surface pt-2">
         <TextField
-            TextFieldType="TextFieldType.Filled"
             class="w-full mb-4"
             Label="Session Name"
             Value="@SessionEditorState.Value.SessionBlueprint.Name"
