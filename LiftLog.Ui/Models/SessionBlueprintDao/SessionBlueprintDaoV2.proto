@@ -18,7 +18,7 @@ message ExerciseBlueprintDaoV2 {
     string name = 1;
     int32 sets  = 2;
     int32 reps_per_set = 3;
-    reserved 4;
+    reserved 4; // was initial weight
     LiftLog.Ui.Models.DecimalValue weight_increase_on_success = 5;
     RestDaoV2 rest_between_sets = 6;
     bool superset_with_next = 7;
