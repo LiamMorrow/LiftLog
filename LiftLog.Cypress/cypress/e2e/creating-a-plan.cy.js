@@ -19,7 +19,7 @@ describe('Creating a plan', () => {
       cy.dialog().find('[data-cy=exercise-reps]').should('contain.text', '10').find('[data-cy=fixed-decrement]').click()
       cy.dialog().find('[data-cy=exercise-auto-increase]').find('[data-cy=editable-field]').find('input', { includeShadowDom: true }).clear().type('4.5')
       cy.dialog().find('[data-cy=exercise-superset]').click()
-      cy.dialog().contains('Long', { includeShadowDom: true }).click().parent('md-filter-chip').should('have.class', 'selected')
+      cy.dialog().contains('Long', { includeShadowDom: true }).click().parent('md-outlined-segmented-button').should('have.attr', 'selected')
 
       cy.dialog().contains("Save").click()
 
@@ -35,7 +35,7 @@ describe('Creating a plan', () => {
 
       cy.dialog().find('[data-cy=exercise-auto-increase]').find('[data-cy=editable-field]').find('input', { includeShadowDom: true }).should('have.value', '4.5')
       cy.dialog().find('[data-cy=exercise-superset]').should('have.attr', 'selected')
-      cy.dialog().contains('Long', { includeShadowDom: true }).parent('md-filter-chip').should('have.class', 'selected')
+      cy.dialog().contains('Long', { includeShadowDom: true }).parent('md-outlined-segmented-button').should('have.attr', 'selected')
     })
 
   })
