@@ -1,9 +1,14 @@
 @typeparam T
 
-<div @attributes="@AdditionalAttributes" class="flex items-center @(AdditionalAttributes?.GetValueOrDefault("class"))">
-    <IconButton data-cy="fixed-decrement" Type="IconButtonType.FilledTonal" OnClick="Decrement" Icon="remove"/>
-    <span class="inline-block w-20 mx-2 text-center">@Value @Label</span>
-    <IconButton data-cy="fixed-increment" Type="IconButtonType.FilledTonal" OnClick="Increment" Icon="add"/>
+<div @attributes="@AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class"))">
+    <div class="flex flex-col gap-2">
+        <label class="text-lg">@Label</label>
+        <div class="flex items-center ">
+            <IconButton data-cy="fixed-decrement" Type="IconButtonType.Standard" OnClick="Decrement" Icon="remove"/>
+            <span class="inline-block mx-2 text-center font-bold text-primary text-3xl">@Value</span>
+            <IconButton data-cy="fixed-increment" Type="IconButtonType.Standard" OnClick="Increment" Icon="add"/>
+        </div>
+    </div>
 </div>
 
 @code

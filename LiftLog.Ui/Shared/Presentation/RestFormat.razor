@@ -1,0 +1,20 @@
+
+@if (Rest.MinRest >= Rest.MaxRest)
+{
+    <span>Rest <span class="font-bold @(Highlight ? "text-primary" :"")">@(Rest.MinRest.ToString(TimespanFormatStr))</span></span>
+}
+else
+{
+    <span>Rest between <span class="font-bold @(Highlight ? "text-primary" :"")">@(Rest.MinRest.ToString(TimespanFormatStr))</span> and <span class="font-bold @(Highlight ? "text-primary" :"")">@(Rest.MaxRest.ToString(TimespanFormatStr))</span></span>
+}
+@code {
+
+    private const string TimespanFormatStr = @"m\:ss";
+
+    [Parameter]
+    [EditorRequired]
+    public Rest Rest { get; set; } = null!;
+
+    [Parameter]
+    public bool Highlight { get; set; } = true;
+}

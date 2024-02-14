@@ -17,11 +17,12 @@
 {
     <div class="bg-surface pt-2">
         <TextField
-            class="w-full mb-4"
+            class="w-full mb-4 text-start"
             Label="Session Name"
             Value="@SessionEditorState.Value.SessionBlueprint.Name"
             OnChange="@((val) => SetName(val!))">
         </TextField>
+        <md-divider></md-divider>
         <ItemList Items="SessionEditorState.Value.SessionBlueprint.Exercises.IndexedTuples()">
             @{
                 var exercise = context.Item;

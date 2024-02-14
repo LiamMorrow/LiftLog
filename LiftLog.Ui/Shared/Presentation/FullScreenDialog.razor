@@ -5,7 +5,7 @@
 {
     @* Put the dialog into a section in the main layout so that the scrim covers parent elements on ios *@
     <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="Dialog">
-        <div @ref=dialog class="@Animation fullscreen-dialog fixed top-0 bottom-0 left-0 right-0 bg-surface z-30 grid grid-cols-1 h-full grid-rows-[min-content_1fr_min-content]" data-open="@opened" @onclose=Close>
+        <div @ref=dialog class="@Animation text-on-surface fullscreen-dialog fixed top-0 bottom-0 left-0 right-0 bg-surface z-30 grid grid-cols-1 h-full grid-rows-[min-content_1fr_min-content]" data-open="@opened" @onclose=Close>
             <div class="@topNavColorClass flex justify-start items-center gap-2 p-2 transition-colors">
                 <div style="height: @InsetsManager.SystemSafeInsetTop"></div>
                 <IconButton Type="IconButtonType.Standard" Icon="close" OnClick="Close"/>
