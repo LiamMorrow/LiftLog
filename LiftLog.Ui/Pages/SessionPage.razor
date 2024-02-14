@@ -67,12 +67,12 @@
         Dispatcher.Dispatch(new UpdateExerciseWeightAction(SessionTarget.WorkoutSession, exerciseIndex, weight));
     }
 
-    private void EditExercise(int exerciseIndex, SessionExerciseEditModel exercise)
+    private void EditExercise(int exerciseIndex, ExerciseBlueprint exercise)
     {
         Dispatcher.Dispatch(new EditExerciseInActiveSessionAction(SessionTarget.WorkoutSession, exerciseIndex, exercise));
     }
 
-    private void AddExercise(SessionExerciseEditModel exercise)
+    private void AddExercise(ExerciseBlueprint exercise)
     {
         Dispatcher.Dispatch(new AddExerciseToActiveSessionAction(SessionTarget.WorkoutSession, exercise));
     }

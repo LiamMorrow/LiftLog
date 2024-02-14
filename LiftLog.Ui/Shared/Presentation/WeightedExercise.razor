@@ -21,8 +21,8 @@
                     <div>
                         <IconButton data-cy="more-exercise-btn" class="self-end" Type="IconButtonType.Standard" OnClick="() => { _menu?.Open(); }" Icon="more_horiz"/>
                         <Menu @ref="_menu">
-                            <MenuItem data-cy="exercise-notes-btn" Label="Notes" Icon="notes" OnClick="OnOpenNotesButtonClick"/>
                             <MenuItem Label="Edit" Icon="edit" OnClick="OnEditExercise"/>
+                            <MenuItem data-cy="exercise-notes-btn" Label="Notes" Icon="notes" OnClick="OnOpenNotesButtonClick"/>
                             <MenuItem Label="Remove" Icon="delete" OnClick="OnRemoveExercise"/>
                         </Menu>
                     </div>

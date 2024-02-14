@@ -78,10 +78,10 @@
     private void UpdateWeightForExercise(int exerciseIndex, decimal weight)
         => Dispatcher.Dispatch(new UpdateExerciseWeightAction(SessionTarget.HistorySession, exerciseIndex, weight));
 
-    private void EditExercise(int exerciseIndex, SessionExerciseEditModel exercise)
+    private void EditExercise(int exerciseIndex, ExerciseBlueprint exercise)
         => Dispatcher.Dispatch(new EditExerciseInActiveSessionAction(SessionTarget.HistorySession, exerciseIndex, exercise));
 
-    private void AddExercise(SessionExerciseEditModel exercise)
+    private void AddExercise(ExerciseBlueprint exercise)
         => Dispatcher.Dispatch(new AddExerciseToActiveSessionAction(SessionTarget.HistorySession, exercise));
 
     private void RemoveExercise(int exerciseIndex)

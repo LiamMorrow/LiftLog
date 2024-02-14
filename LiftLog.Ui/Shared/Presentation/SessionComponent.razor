@@ -73,7 +73,7 @@ else
 }
 
 <FullScreenDialog @ref=_editExerciseDialog Title=@(_exerciseToEditIndex is null ? "Add Exercise" : "Edit Exercise") Action="Update" OnAction="EditExerciseHandler" OnClose="@(() => _exerciseToEditIndex = null)">
-    <SessionExerciseEditor Exercise="_editingExercise" ExerciseNames="ExerciseNames" OnExerciseUpdate="@((e) => { _editingExercise = e; StateHasChanged(); })"/>
+        <ExerciseEditor Exercise="editingExerciseBlueprint" UpdateExercise="(ex) => {editingExerciseBlueprint = ex; StateHasChanged();}" />
 </FullScreenDialog>
 
 
@@ -116,12 +116,14 @@ else
 
 @code {
 
-    private SessionExerciseEditModel _editingExercise = new SessionExerciseEditModel(
+    private ExerciseBlueprint editingExerciseBlueprint = new ExerciseBlueprint(
         Name: "",
         Sets: 3,
-        Reps: 10,
-        Weight: 0,
-        Rest: Rest.Medium
+        RepsPerSet: 10,
+        InitialWeight: 20,
+        WeightIncreaseOnSuccess: 0,
+        RestBetweenSets: Rest.Medium,
+        SupersetWithNext: false
     );
 
     private int? _exerciseToEditIndex;
@@ -150,9 +152,9 @@ else
 
     [EditorRequired] [Parameter] public Action<decimal?> UpdateBodyweight { get; set; } = null!;
 
-    [EditorRequired] [Parameter] public Action<int, SessionExerciseEditModel> EditExercise { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<int, ExerciseBlueprint> EditExercise { get; set; } = null!;
 
-    [EditorRequired] [Parameter] public Action<SessionExerciseEditModel> AddExercise { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<ExerciseBlueprint> AddExercise { get; set; } = null!;
 
     [EditorRequired] [Parameter] public Action<int> RemoveExercise { get; set; } = null!;
 
@@ -190,16 +192,16 @@ else
 
     private void EditExerciseHandler()
     {
-        if (_editingExercise is not null)
+        if (editingExerciseBlueprint is not null)
         {
             if (_exerciseToEditIndex is not null)
             {
-                EditExercise(_exerciseToEditIndex.Value, _editingExercise);
+                EditExercise(_exerciseToEditIndex.Value, editingExerciseBlueprint);
                 _exerciseToEditIndex = null;
             }
             else
             {
-                AddExercise(_editingExercise);
+                AddExercise(editingExerciseBlueprint);
             }
         }
 
@@ -219,12 +221,14 @@ else
 
     private void BeginAddExercise()
     {
-        _editingExercise = new SessionExerciseEditModel(
+        editingExerciseBlueprint = new ExerciseBlueprint(
             Name: "",
             Sets: 3,
-            Reps: 10,
-            Weight: 0,
-            Rest: Rest.Medium
+            RepsPerSet: 10,
+            InitialWeight: 20,
+            WeightIncreaseOnSuccess: 0,
+            RestBetweenSets: Rest.Medium,
+            SupersetWithNext: false
         );
         _editExerciseDialog?.Open();
     }
@@ -245,12 +249,7 @@ else
     {
         var exercise = Session.RecordedExercises[index];
         _exerciseToEditIndex = index;
-        _editingExercise = new SessionExerciseEditModel(
-            exercise.Blueprint.Name,
-            exercise.Blueprint.Sets,
-            exercise.Blueprint.RepsPerSet,
-            exercise.Weight,
-            exercise.Blueprint.RestBetweenSets);
+        editingExerciseBlueprint = exercise.Blueprint;
         StateHasChanged();
         _editExerciseDialog?.Open();
     }

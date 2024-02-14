@@ -35,12 +35,12 @@ public record UpdateWeightForSetAction(
 public record EditExerciseInActiveSessionAction(
     SessionTarget Target,
     int ExerciseIndex,
-    SessionExerciseEditModel Exercise
+    ExerciseBlueprint NewBlueprint
 );
 
 public record AddExerciseToActiveSessionAction(
     SessionTarget Target,
-    SessionExerciseEditModel Exercise
+    ExerciseBlueprint ExerciseBlueprint
 );
 
 public record RemoveExerciseFromActiveSessionAction(SessionTarget Target, int ExerciseIndex);

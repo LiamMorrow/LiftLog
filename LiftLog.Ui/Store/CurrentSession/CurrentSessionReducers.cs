@@ -89,30 +89,18 @@ public static class CurrentSessionReducers
         EditExerciseInActiveSessionAction action
     )
     {
-        // Updating the weight of an exercise is necessary, because we need to update the weight of all sets
-        state = UpdateExerciseWeight(
-            state,
-            new(action.Target, action.ExerciseIndex, action.Exercise.Weight)
-        );
         var session = ActiveSession(state, action.Target) ?? throw new Exception();
-        var newExerciseBlueprint = session.Blueprint.Exercises[action.ExerciseIndex] with
-        {
-            Name = action.Exercise.Name,
-            Sets = action.Exercise.Sets,
-            RepsPerSet = action.Exercise.Reps,
-            RestBetweenSets = action.Exercise.Rest
-        };
+        var newExerciseBlueprint = action.NewBlueprint;
         var existingExercise = session.RecordedExercises[action.ExerciseIndex];
         var newExercise = existingExercise with
         {
             Blueprint = newExerciseBlueprint,
-            Weight = action.Exercise.Weight,
             PotentialSets = Enumerable
                 // Keep existing sets, but add new ones if the new exercise has more sets
                 .Range(0, newExerciseBlueprint.Sets)
                 .Select(index =>
                     existingExercise.PotentialSets.ElementAtOrDefault(index)
-                    ?? new PotentialSet(null, action.Exercise.Weight)
+                    ?? new PotentialSet(null, existingExercise.Weight)
                 )
                 .ToImmutableList()
         };
@@ -143,20 +131,15 @@ public static class CurrentSessionReducers
     )
     {
         var session = ActiveSession(state, action.Target) ?? throw new Exception();
-        var newExerciseBlueprint = new ExerciseBlueprint(
-            Name: action.Exercise.Name,
-            Sets: action.Exercise.Sets,
-            RepsPerSet: action.Exercise.Reps,
-            InitialWeight: action.Exercise.Weight,
-            WeightIncreaseOnSuccess: 0,
-            RestBetweenSets: action.Exercise.Rest,
-            false
-        );
+        var newExerciseBlueprint = action.ExerciseBlueprint;
         var newExercise = new RecordedExercise(
             newExerciseBlueprint,
-            action.Exercise.Weight,
+            newExerciseBlueprint.InitialWeight,
             Enumerable
-                .Repeat(new PotentialSet(null, action.Exercise.Weight), newExerciseBlueprint.Sets)
+                .Repeat(
+                    new PotentialSet(null, action.ExerciseBlueprint.InitialWeight),
+                    newExerciseBlueprint.Sets
+                )
                 .ToImmutableList(),
             null,
             false

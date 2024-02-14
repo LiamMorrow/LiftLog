@@ -4,7 +4,7 @@
     <label class="text-lg text-center">@Label</label>
     <div class="flex items-center justify-center gap-2">
         <IconButton data-cy="editable-decrement" Type="IconButtonType.FilledTonal" OnClick="@(() => { OnChange(Value - Increment); })" Icon="remove"/>
-        <TextField data-cy="editable-field" class="w-20" type="text" inputmode="decimal" Value="@(Value.ToString())" OnChange="@(value => OnChanged(value))"/>
+        <TextField suffix-text="@Suffix" data-cy="editable-field" class="w-20" type="text" inputmode="decimal" Value="@(Value.ToString())" OnChange="@(value => OnChanged(value))"/>
         <IconButton data-cy="editable-increment" Type="IconButtonType.FilledTonal" OnClick="@(() => { OnChange(Value + Increment); })" Icon="add"/>
     </div>
 </div>
@@ -19,6 +19,8 @@
     [Parameter] [EditorRequired] public string Label { get; set; } = null!;
 
     [Parameter] [EditorRequired] public Action<T> OnChange { get; set; } = null!;
+
+    [Parameter] public string? Suffix { get; set; }
 
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
