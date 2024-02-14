@@ -89,7 +89,7 @@ public class StatsEffects(
                 .Aggregate(
                     (TimeSpan.Zero, 0),
                     (acc, x) => (acc.Item1 + x, acc.Item2 + 1),
-                    acc => acc.Item1 / acc.Item2
+                    acc => acc.Item2 != 0 ? acc.Item1 / acc.Item2 : TimeSpan.Zero
                 );
 
             var averageSessionLength = sessions
@@ -98,7 +98,7 @@ public class StatsEffects(
                 .Aggregate(
                     (TimeSpan.Zero, 0),
                     (acc, x) => (acc.Item1 + x, acc.Item2 + 1),
-                    acc => acc.Item1 / acc.Item2
+                    acc => acc.Item2 != 0 ? acc.Item1 / acc.Item2 : TimeSpan.Zero
                 );
 
             var exerciseMostTimeSpent = sessions

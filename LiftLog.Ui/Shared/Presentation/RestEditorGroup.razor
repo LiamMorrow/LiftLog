@@ -1,14 +1,16 @@
-<div class="flex flex-col gap-2">
-    <span class="text-lg text-center">Rest</span>
-    <div class="flex flex-wrap justify-center gap-2">
-        <FilterChip OnSelectedChange="HandleSelectedChanged(Rest.Short)" Label="Short" Selected="@(!_isCustom && Rest == Rest.Short)"/>
-        <FilterChip OnSelectedChange="HandleSelectedChanged(Rest.Medium)" Label="Medium" Selected="@(!_isCustom && Rest == Rest.Medium)"/>
-        <FilterChip OnSelectedChange="HandleSelectedChanged(Rest.Long)" Label="Long" Selected="@(!_isCustom && Rest == Rest.Long)"/>
-        <FilterChip OnSelectedChange="HandleCustomSelectedChanged" Label="Custom" Selected="@(_isCustom)"/>
+<div class="flex flex-col items-start gap-5 text-on-surface">
+    <span class="text-lg">Rest</span>
+    <div class="w-full flex justify-center">
+        <md-outlined-segmented-button-set>
+            <md-outlined-segmented-button @onsegmented-button-interaction="HandleSelectedChanged(Rest.Short)"  selected="@(!_isCustom && Rest == Rest.Short)" label="Short"></md-outlined-segmented-button>
+            <md-outlined-segmented-button @onsegmented-button-interaction="HandleSelectedChanged(Rest.Medium)" selected="@(!_isCustom && Rest == Rest.Medium)" label="Medium"></md-outlined-segmented-button>
+            <md-outlined-segmented-button @onsegmented-button-interaction="HandleSelectedChanged(Rest.Long)"   selected="@(!_isCustom && Rest == Rest.Long)" label="Long"></md-outlined-segmented-button>
+            <md-outlined-segmented-button @onsegmented-button-interaction="HandleCustomSelectedChanged"        selected="@(_isCustom)" label="Custom"></md-outlined-segmented-button>
+        </md-outlined-segmented-button-set>
     </div>
     @if (_isCustom)
     {
-        <div class="flex flex-col justify-between gap-2">
+        <div class="flex flex-col w-full items-center justify-between gap-2">
             <RestEditor Label="Min Rest" Rest="Rest.MinRest" OnRestUpdated="rest => OnRestUpdated(Rest with { MinRest = rest })"></RestEditor>
             <RestEditor Label="Max Rest" Rest="Rest.MaxRest" OnRestUpdated="rest => OnRestUpdated(Rest with { MaxRest = rest })"></RestEditor>
             <RestEditor Label="Failure Rest" Rest="Rest.FailureRest" OnRestUpdated="rest => OnRestUpdated(Rest with { FailureRest = rest })"></RestEditor>
@@ -16,15 +18,8 @@
     }
     else
     {
-        <div class="flex flex-col justify-between gap-2">
-            <div class="flex flex-col items-start">
-                <div class="flex justify-between w-full">
-                    <span>Success:</span><span>@Rest.MinRest.ToString("m\\:ss") - @Rest.MaxRest.ToString("m\\:ss")</span>
-                </div>
-                <div class="flex justify-between w-full">
-                    <span>Failure:</span><span>@Rest.FailureRest.ToString("m\\:ss")</span>
-                </div>
-            </div>
+        <div class="w-full text-start">
+            <RestFormat Rest="Rest" />
         </div>
     }
 </div>

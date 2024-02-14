@@ -4,13 +4,8 @@
         {
             <span>Rest <span class="font-bold">@(Rest.FailureRest.ToString(TimespanFormatStr))</span></span>
         }
-        else if (Rest.MinRest >= Rest.MaxRest)
-        {
-            <span>Rest <span class="font-bold">@(Rest.MinRest.ToString(TimespanFormatStr))</span></span>
-        }
-        else
-        {
-            <span>Rest between <span class="font-bold">@(Rest.MinRest.ToString(TimespanFormatStr))</span> and <span class="font-bold">@(Rest.MaxRest.ToString(TimespanFormatStr))</span></span>
+        else {
+            <RestFormat Highlight=false Rest="@Rest" />
         }
         <span class="font-bold">@(TimeSinceStart.ToString(TimespanFormatStr))</span>
     </div>

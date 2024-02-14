@@ -12,7 +12,7 @@ describe('Completing a session', () => {
 
     it('can complete a freeform workout', () => {
       cy.containsA('Add Exercise', { includeShadowDom: true }).click()
-      cy.dialog().find('md-outlined-text-field').find('input', { includeShadowDom: true }).first().click().type('Squat')
+      cy.dialog().find('md-filled-text-field').find('input', { includeShadowDom: true }).first().click().type('Squat')
 
       cy.dialog().contains("Update").click()
 

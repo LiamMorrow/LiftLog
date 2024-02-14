@@ -26,4 +26,10 @@ namespace LiftLog.Ui.Shared;
     enableStopPropagation: false,
     enablePreventDefault: false
 )]
+[EventHandler(
+    "onsegmented-button-interaction",
+    typeof(object),
+    enableStopPropagation: false,
+    enablePreventDefault: false
+)]
 public static class EventHandlers { }
