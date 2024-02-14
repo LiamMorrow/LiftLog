@@ -14,7 +14,6 @@ public static class Blueprints
                 Name: "Test Exercise",
                 Sets: 3,
                 RepsPerSet: 10,
-                InitialWeight: 20,
                 WeightIncreaseOnSuccess: 2.5m,
                 RestBetweenSets: Rest.Medium,
                 SupersetWithNext: false

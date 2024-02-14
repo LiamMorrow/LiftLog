@@ -38,5 +38,5 @@ Cypress.Commands.add('navigate', (navButtonText) => {
 })
 
 Cypress.Commands.add('dialog', () => {
-    return cy.get('md-dialog')
+    return cy.get('md-dialog,.fullscreen-dialog')
 });

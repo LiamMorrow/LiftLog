@@ -3,8 +3,9 @@
     data-cy="exercise-name"
     TextFieldType="TextFieldType.Outline"
     class="w-full mb-2 text-xl"
-    Label="Exercise Name"
+    Label="Exercise"
     Value="@Exercise.Name"
+    required
     OnChange="@(val => SetExerciseName(val!))">
 </TextField>
 <div class="flex flex-wrap justify-around w-full gap-4">
@@ -23,15 +24,10 @@
             Label="Reps"/>
     </div>
     <EditableIncrementer
-        Increment="@Math.Max(Exercise.WeightIncreaseOnSuccess, 0.1m)"
-        Label="Initial Weight"
-        data-cy="exercise-initial-weight"
-        Value="@Exercise.InitialWeight"
-        OnChange="e => SetExerciseInitialWeight(e)"/>
-    <EditableIncrementer
         Increment="0.1m"
-        Label="Auto Increase"
+        Label="Progressive Overload Amount"
         data-cy="exercise-auto-increase"
+        Suffix=@WeightSuffix
         Value="Exercise.WeightIncreaseOnSuccess"
         OnChange="e => SetExerciseSuccessWeight(e)"/>
 
@@ -46,6 +42,11 @@
 
     [Parameter] [EditorRequired] public ExerciseBlueprint Exercise { get; set; } = null!;
 
+    [CascadingParameter(Name = "UseImperial")]
+    public bool UseImperialUnits { get; set; }
+
+    private string WeightSuffix => UseImperialUnits ? "lbs" : "kg";
+
     void DecrementExerciseSets() => UpdateExercise(Exercise with { Sets = Math.Max(Exercise.Sets - 1, 1) });
 
     void IncrementExerciseSets() => UpdateExercise(Exercise with { Sets = Exercise.Sets + 1 });
@@ -58,10 +59,6 @@
 
     void SetExerciseSupersetsNext(bool supersets)
         => UpdateExercise(Exercise with { SupersetWithNext = supersets });
-
-
-    void SetExerciseInitialWeight(decimal initialWeight)
-        => UpdateExercise(Exercise with { InitialWeight = initialWeight });
 
     void SetExerciseSuccessWeight(decimal weight)
         => UpdateExercise(Exercise with { WeightIncreaseOnSuccess = weight });

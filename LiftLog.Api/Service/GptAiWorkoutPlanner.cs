@@ -80,7 +80,6 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
                             e.Name,
                             e.Sets,
                             e.RepsPerSet,
-                            e.InitialWeight,
                             e.WeightIncreaseOnSuccess,
                             new Rest(
                                 TimeSpan.FromSeconds(e.RestBetweenSets.MinRestSeconds),
@@ -172,7 +171,6 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
                         e.Name,
                         e.Sets,
                         e.RepsPerSet,
-                        e.InitialWeight,
                         e.WeightIncreaseOnSuccess,
                         new Rest(
                             TimeSpan.FromSeconds(e.RestBetweenSets.MinRestSeconds),
@@ -208,7 +206,6 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
         string Name,
         int Sets,
         int RepsPerSet,
-        decimal InitialWeight,
         decimal WeightIncreaseOnSuccess,
         GptRest RestBetweenSets
     );

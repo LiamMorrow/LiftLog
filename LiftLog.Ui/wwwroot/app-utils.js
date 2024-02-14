@@ -166,7 +166,12 @@ AppUtils.smoothScrollAndFocusLast = function (elementSelector) {
 AppUtils.closeActiveDialog = function () {
     const dialog = document.querySelector('md-dialog[open]');
     dialog?.close();
-    return !!dialog;
+    const fullscreenDialog = document.querySelector('.fullscreen-dialog[data-open]');
+    fullscreenDialog?.dispatchEvent(new Event('close', {
+        bubbles: true,
+        cancelable: true,
+    }));
+    return !!dialog || !!fullscreenDialog;
 }
 
 

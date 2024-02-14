@@ -14,7 +14,7 @@ describe('Completing a session', () => {
       cy.containsA('Add Exercise', { includeShadowDom: true }).click()
       cy.dialog().find('md-outlined-text-field').find('input', { includeShadowDom: true }).first().click().type('Squat')
 
-      cy.dialog().contains("Save").click()
+      cy.dialog().contains("Update").click()
 
 
       cy.getA('.repcount').first().click()
@@ -50,6 +50,9 @@ describe('Completing a session', () => {
       it('can complete a workout and update its date', () => {
         cy.containsA('Workout A').click()
         cy.containsA('Rest between').should('not.exist')
+        updateWeight(0, 20)
+        updateWeight(1, 20)
+        updateWeight(2, 20)
         cy.getA('.repcount').first().click()
         cy.getA('.snackbar').contains('Rest between').should('be.visible')
         cy.getA('.repcount').first().click().should('contain.text', '4/5')
@@ -78,6 +81,9 @@ describe('Completing a session', () => {
       it('can complete a workout while switching to per set weights with it progressing properly', () => {
         cy.containsA('Workout A').click()
         cy.containsA('Rest between').should('not.exist')
+        updateWeight(0, 20)
+        updateWeight(1, 20)
+        updateWeight(2, 20)
         cy.getA('.repcount').first().click().should('contain.text', '5/5')
         cy.getA('.snackbar').contains('Rest between').should('be.visible')
 
@@ -151,3 +157,10 @@ describe('Completing a session', () => {
     })
   })
 })
+
+
+function updateWeight(index, amount) {
+  cy.getA('[data-cy=weight-display]').eq(index).click()
+  cy.dialog().find('[data-cy=weight-input]:visible').find('input', { includeShadowDom: true }).click().type(amount.toString())
+  cy.dialog().find('[slot="actions"]:visible').contains("Save").click()
+}

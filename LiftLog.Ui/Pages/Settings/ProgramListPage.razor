@@ -5,7 +5,6 @@
 
 @page "/settings/program-list"
 
-@inject NavigationManager NavigationManager;
 @inject IDispatcher Dispatcher;
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
@@ -31,7 +30,7 @@
     {
         <span slot="content" class="block text-left">
             Would you like to use the program
-            <strong>@selectedProgram.Name</strong>?<br/>This will replace the existing program.
+            <span class="font-bold text-primary">@selectedProgram.Name</span>?<br/>This will replace the existing program.
         </span>
         <div class="flex gap-1" slot="actions">
             <AppButton Type="AppButtonType.Text" OnClick="() => selectedProgramDialog?.Close()">Close</AppButton>
@@ -58,17 +57,15 @@
         selectedProgramDialog?.Open();
     }
 
-    private void SelectProgram()
+    private async Task SelectProgram()
     {
-        selectedProgramDialog?.Close();
-        if (selectedProgram == null)
+        await selectedProgramDialog!.CloseWait();
+        if (selectedProgram != null)
         {
-            return;
+            Dispatcher.Dispatch(new SetProgramSessionsAction(selectedProgram.Sessions));
+            Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, null));
+            Dispatcher.Dispatch(new NavigateAction("/"));
         }
-
-        Dispatcher.Dispatch(new SetProgramSessionsAction(selectedProgram.Sessions));
-        Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, null));
-        NavigationManager.NavigateTo("/");
     }
 
 }

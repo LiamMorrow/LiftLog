@@ -1,0 +1,81 @@
+
+@inject InsetsManager InsetsManager
+@inject IJSRuntime Js
+@if(opened)
+{
+    @* Put the dialog into a section in the main layout so that the scrim covers parent elements on ios *@
+    <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="Dialog">
+        <div @ref=dialog class="@Animation fullscreen-dialog fixed top-0 bottom-0 left-0 right-0 bg-surface z-30 grid grid-cols-1 h-full grid-rows-[min-content_1fr_min-content]" data-open="@opened" @onclose=Close>
+            <div class="@topNavColorClass flex justify-start items-center gap-2 p-2 transition-colors">
+                <div style="height: @InsetsManager.SystemSafeInsetTop"></div>
+                <IconButton Type="IconButtonType.Standard" Icon="close" OnClick="Close"/>
+                <span class="text-xl mr-auto">@Title</span>
+                <AppButton Type="AppButtonType.Text" OnClick="()=>{OnAction.InvokeAsync();Close();}">@Action</AppButton>
+            </div>
+            <div @ref="_contentElementRef" class="px-6 py-2 overflow-y-auto" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
+                @ChildContent
+                <div style="height: @InsetsManager.SystemSafeInsetBottom"></div>
+            </div>
+        </div>
+    </Microsoft.AspNetCore.Components.Sections.SectionContent>
+}
+@code
+{
+
+    private bool opened = false;
+    private bool closing = false;
+    private ElementReference dialog;
+    private string topNavColorClass = "bg-surface";
+    private ElementReference _contentElementRef;
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    [Parameter][EditorRequired] public string Title { get; set; } = null!;
+
+    [Parameter][EditorRequired] public string Action { get; set; } = null!;
+
+    [Parameter] public EventCallback OnAction { get; set; }
+
+    public void Open()
+    {
+        opened = true;
+        StateHasChanged();
+    }
+
+    public void Close()
+    {
+        InvokeAsync(async ()=>{
+            closing = true;
+            StateHasChanged();
+            await Task.Delay(200);
+            opened = false;
+            StateHasChanged();
+            closing = false;
+        });
+    }
+
+    private string Animation => closing ? "animate-fade-zoom-out" : "animate-fade-zoom-in";
+
+    private async void OnContentScroll()
+    {
+        var scrollTop = await Js.InvokeAsync<double>("AppUtils.getScrollTop", _contentElementRef);
+        var previousTopNavColorClass = topNavColorClass;
+        topNavColorClass = scrollTop switch
+        {
+            // make it coloured after scrolling past 2px
+            (<= 2) => "bg-surface",
+            _ => "bg-surface-container"
+        };
+        if (previousTopNavColorClass != topNavColorClass)
+        {
+            await InvokeAsync(async () =>
+            {
+                StateHasChanged();
+                await Task.Yield();
+            });
+        }
+    }
+}

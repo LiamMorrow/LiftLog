@@ -15,9 +15,8 @@
 
 @if (SessionEditorState.Value.SessionBlueprint is not null)
 {
-    <div class="bg-surface">
+    <div class="bg-surface pt-2">
         <TextField
-            TextFieldType="TextFieldType.Filled"
             class="w-full mb-4"
             Label="Session Name"
             Value="@SessionEditorState.Value.SessionBlueprint.Name"
@@ -28,26 +27,32 @@
                 var exercise = context.Item;
                 var index = context.Index;
             }
-            <div class="py-4 pl-5 pr-0">
-                <SplitCardControl>
-                    <MainContent>
-                        <ExerciseEditor Exercise="@exercise" UpdateExercise=@(ex => UpdateExercise(index, ex))/>
-                    </MainContent>
-                    <SideContent>
-                        <IconButton Type="IconButtonType.Standard" OnClick=@(() => RemoveExercise(exercise)) Icon="delete"/>
-                        <IconButton Type="IconButtonType.Standard" OnClick=@(() => MoveExerciseUp(exercise)) Icon="arrow_upward"/>
-                        <IconButton Type="IconButtonType.Standard" OnClick=@(() => MoveExerciseDown(exercise)) Icon="arrow_downward"/>
-                    </SideContent>
-                </SplitCardControl>
-            </div>
+            <ExerciseBlueprintSummary Blueprint="@exercise" OnEdit="()=>BeginEditExercise(exercise,index)" OnMoveDown="()=>MoveExerciseDown(exercise)" OnMoveUp="()=>MoveExerciseUp(exercise)" OnRemove="()=>BeginRemoveExercise(exercise)" />
         </ItemList>
     </div>
     <FloatingBottomContainer>
         <Fab>
-            <FloatingButton size="small" variant="tertiary" aria-label="Add Exercise" label="Add Exercise" OnClick="AddExercise"><md-icon slot="icon">add</md-icon></FloatingButton>
+            <FloatingButton size="small" variant="surface" aria-label="Add Exercise" label="Add Exercise" OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon></FloatingButton>
         </Fab>
     </FloatingBottomContainer>
 }
+
+<FullScreenDialog @ref=editDialog Title=@(isAddingExercise ? "Add Exercise" : "Edit Exercise") Action="Save" OnAction="UpdateExercise" >
+    @if(selectedExercise is not null)
+    {
+        <ExerciseEditor Exercise="selectedExercise" UpdateExercise="(ex) => {selectedExercise = ex; StateHasChanged();}" />
+    }
+</FullScreenDialog>
+
+<Dialog @ref="deleteDialog">
+    <span slot="headline">Remove Exercise?</span>
+    <span slot="content" class="block text-left">This will remove the exercise <span class="font-bold text-primary">"@(selectedExercise?.Name)"</span> from <span class="font-bold text-primary">@SessionEditorState.Value.SessionBlueprint?.Name</span>.</span>
+    <div slot="actions">
+        <AppButton Type="AppButtonType.Text" OnClick="() => { deleteDialog?.Close(); }">Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="RemoveExercise">Remove</AppButton>
+    </div>
+</Dialog>
+
 
 @code {
 
@@ -55,6 +60,14 @@
 
     [CascadingParameter(Name = "IsInActiveScreen")]
     public bool IsInActiveScreen { get; set; }
+
+    private bool isAddingExercise;
+    private int selectedExerciseIndex;
+    private ExerciseBlueprint? selectedExercise;
+    private Dialog? deleteDialog;
+
+    private FullScreenDialog? editDialog;
+
 
     void BackToManageWorkouts() => NavigationManager.NavigateTo("/settings/manage-workouts");
 
@@ -70,10 +83,28 @@
         SaveSession();
     }
 
-    void RemoveExercise(ExerciseBlueprint exerciseBlueprint)
+    void BeginEditExercise(ExerciseBlueprint exerciseBlueprint, int index)
     {
-        Dispatcher.Dispatch(new RemoveExerciseAction(exerciseBlueprint));
-        SaveSession();
+        selectedExerciseIndex = index;
+        selectedExercise = exerciseBlueprint;
+        isAddingExercise = false;
+        editDialog?.Open();
+    }
+
+    void BeginRemoveExercise(ExerciseBlueprint exerciseBlueprint)
+    {
+        selectedExercise = exerciseBlueprint;
+        deleteDialog?.Open();
+    }
+
+    void RemoveExercise()
+    {
+        if(selectedExercise is not null)
+        {
+            Dispatcher.Dispatch(new RemoveExerciseAction(selectedExercise));
+            SaveSession();
+        }
+        deleteDialog?.Close();
     }
 
     void SaveSession()
@@ -84,27 +115,41 @@
         }
     }
 
-    async Task AddExercise()
+    void BeginAddExercise()
     {
-        Dispatcher.Dispatch(
-        new AddExerciseAction(
-            new ExerciseBlueprint(
+        selectedExercise = new ExerciseBlueprint(
                 $"Exercise {SessionEditorState.Value.SessionBlueprint?.Exercises.Count + 1}",
                 3,
                 10,
-                20,
                 2.5m,
                 new Rest(TimeSpan.FromSeconds(90), TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(5)),
-                false)));
-        SaveSession();
-        await Task.Yield();
-        await JSRuntime.InvokeVoidAsync("AppUtils.smoothScrollAndFocusLast", "[data-cy=\"exercise-name\"]");
+                false);
+        isAddingExercise = true;
+        editDialog?.Open();
     }
 
-    void UpdateExercise(int index, ExerciseBlueprint exercise)
+    async Task AddExercise()
     {
-        Dispatcher.Dispatch(new UpdateSessionExerciseAction(index, exercise));
-        SaveSession();
+        if(selectedExercise is not null)
+        {
+            Dispatcher.Dispatch(new AddExerciseAction(selectedExercise));
+            SaveSession();
+            await Task.Yield();
+            await JSRuntime.InvokeVoidAsync("AppUtils.smoothScrollAndFocusLast", "[data-cy=\"exercise-name\"]");
+        }
+    }
+
+    async void UpdateExercise()
+    {
+        if (selectedExercise is not null && !isAddingExercise)
+        {
+            Dispatcher.Dispatch(new UpdateSessionExerciseAction(selectedExerciseIndex, selectedExercise));
+            SaveSession();
+        }
+        else if(selectedExercise is not null && isAddingExercise)
+        {
+            await AddExercise();
+        }
     }
 
 

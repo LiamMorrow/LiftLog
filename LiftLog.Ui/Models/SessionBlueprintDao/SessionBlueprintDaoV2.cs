@@ -43,7 +43,6 @@ internal partial class ExerciseBlueprintDaoV2
         string name,
         int sets,
         int repsPerSet,
-        DecimalValue initialWeight,
         DecimalValue weightIncreaseOnSuccess,
         RestDaoV2 restBetweenSets,
         bool supersetWithNext
@@ -52,7 +51,6 @@ internal partial class ExerciseBlueprintDaoV2
         Name = name;
         Sets = sets;
         RepsPerSet = repsPerSet;
-        InitialWeight = initialWeight;
         WeightIncreaseOnSuccess = weightIncreaseOnSuccess;
         RestBetweenSets = restBetweenSets;
         SupersetWithNext = supersetWithNext;
@@ -63,7 +61,6 @@ internal partial class ExerciseBlueprintDaoV2
             model.Name,
             model.Sets,
             model.RepsPerSet,
-            model.InitialWeight,
             model.WeightIncreaseOnSuccess,
             RestDaoV2.FromModel(model.RestBetweenSets),
             model.SupersetWithNext
@@ -74,7 +71,6 @@ internal partial class ExerciseBlueprintDaoV2
             Name,
             Sets,
             RepsPerSet,
-            InitialWeight,
             WeightIncreaseOnSuccess,
             RestBetweenSets.ToModel(),
             SupersetWithNext
