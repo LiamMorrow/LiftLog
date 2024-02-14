@@ -10,37 +10,39 @@
 </TextField>
 <div class="flex flex-wrap justify-around w-full gap-4">
     <div class="flex items-center w-full gap-4">
-
-    <Card Type=Card.CardType.Filled class="flex-grow  flex-shrink flex justify-center">
-        <FixedIncrementer
-            data-cy="exercise-sets"
-            Value="Exercise.Sets"
-            Increment="() => IncrementExerciseSets()"
-            Decrement="() => DecrementExerciseSets()"
-            Label="Sets"/>
-    </Card>
-    <Card Type=Card.CardType.Filled class="flex-grow flex-shrink flex  justify-center">
-        <FixedIncrementer
-            data-cy="exercise-reps"
-            Value="Exercise.RepsPerSet"
-            Increment="() => IncrementExerciseRepsPerSet()"
-            Decrement="() => DecrementExerciseRepsPerSet()"
-            Label="Reps"/>
-    </Card>
+        <Card Type=Card.CardType.Filled class="flex-grow  flex-shrink flex justify-center">
+            <FixedIncrementer
+                data-cy="exercise-sets"
+                Value="Exercise.Sets"
+                Increment="() => IncrementExerciseSets()"
+                Decrement="() => DecrementExerciseSets()"
+                Label="Sets"/>
+        </Card>
+        <Card Type=Card.CardType.Filled class="flex-grow flex-shrink flex  justify-center">
+            <FixedIncrementer
+                data-cy="exercise-reps"
+                Value="Exercise.RepsPerSet"
+                Increment="() => IncrementExerciseRepsPerSet()"
+                Decrement="() => DecrementExerciseRepsPerSet()"
+                Label="Reps"/>
+        </Card>
     </div>
     <Card Type=Card.CardType.Filled class="w-full flex flex-col gap-6 items-start">
-    <EditableIncrementer
-        Increment="0.1m"
-        Label="Progressive Overload"
-        data-cy="exercise-auto-increase"
-        Suffix=@WeightSuffix
-        Value="Exercise.WeightIncreaseOnSuccess"
-        OnChange="e => SetExerciseSuccessWeight(e)"/>
+        <div class="-mr-2">
+            <EditableIncrementer
+                Increment="0.1m"
+                Label="Progressive Overload"
+                data-cy="exercise-auto-increase"
+                Suffix=@WeightSuffix
+                Value="Exercise.WeightIncreaseOnSuccess"
+                OnChange="e => SetExerciseSuccessWeight(e)"/>
+        </div>
         <md-divider></md-divider>
+
         <div class="w-full">
             <Switch Label="Superset next exercise" data-cy="exercise-superset" Value="Exercise.SupersetWithNext" OnSwitched="supersets => SetExerciseSupersetsNext(supersets)"/>
         </div>
-        </Card>
+    </Card>
 
     <Card Type=Card.CardType.Filled class="w-full flex flex-col gap-6 items-start">
         <RestEditorGroup Rest="Exercise.RestBetweenSets" OnRestUpdated="rest => OnRestUpdated(rest)"/>
