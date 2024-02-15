@@ -108,15 +108,16 @@ else
         }
     }
 
-    private void ReplaceSession()
+    private async void ReplaceSession()
     {
         if (selectedSession is null)
         {
             return;
         }
 
+        await (replaceCurrentSesisonDialog?.CloseWait() ?? Task.CompletedTask);
         Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, selectedSession));
-        NavigationManager.NavigateTo("/session");
+        Dispatcher.Dispatch(new NavigateAction("/session"));
     }
 
     private void StartFreeformSession()
