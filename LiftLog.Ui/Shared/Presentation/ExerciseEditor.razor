@@ -42,9 +42,9 @@
         <div class="w-full">
             <Switch Label="Superset next exercise" data-cy="exercise-superset" Value="Exercise.SupersetWithNext" OnSwitched="supersets => SetExerciseSupersetsNext(supersets)"/>
         </div>
-    </Card>
 
-    <Card Type=Card.CardType.Filled class="w-full flex flex-col gap-6 items-start">
+        <md-divider></md-divider>
+
         <RestEditorGroup Rest="Exercise.RestBetweenSets" OnRestUpdated="rest => OnRestUpdated(rest)"/>
     </Card>
 </div>

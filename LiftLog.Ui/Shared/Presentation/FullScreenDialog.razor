@@ -13,7 +13,7 @@
                 <span class="text-xl mr-auto">@Title</span>
                 <AppButton Type="AppButtonType.Text" OnClick="()=>{OnAction.InvokeAsync();Close();}">@Action</AppButton>
             </div>
-            <div @ref="_contentElementRef" class="px-6 py-2 overflow-y-auto" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
+            <div @ref="_contentElementRef" class="px-2 py-2 overflow-y-auto" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
                 @ChildContent
                 <div style="height: @(InsetsManager.SystemSafeInsetBottom)"></div>
             </div>
