@@ -76,5 +76,5 @@ body {
 }
 
 md-icon[filled] {
-    --md-icon-font-variation-settings: "FILL" 1;
+    font-variation-settings: "FILL" 1;
 }
