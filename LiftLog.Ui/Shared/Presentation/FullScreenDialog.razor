@@ -7,15 +7,17 @@
     @* Put the dialog into a section in the main layout so that the scrim covers parent elements on ios *@
     <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="Dialog">
         <div @ref=dialog class="@Animation text-on-surface fullscreen-dialog fixed top-0 bottom-0 left-0 right-0 bg-surface z-30 grid grid-cols-1 h-full grid-rows-[min-content_1fr_min-content]" data-open="@opened" @onclose=Close>
-            <div class="@topNavColorClass flex justify-start items-center gap-2 p-2 transition-colors">
+            <div class="@topNavColorClass  transition-colors flex flex-col">
                 <div style="height: @(InsetsManager.SystemSafeInsetTop)"></div>
-                <IconButton Type="IconButtonType.Standard" Icon="close" OnClick="Close"/>
-                <span class="text-xl mr-auto">@Title</span>
-                <AppButton Type="AppButtonType.Text" OnClick="()=>{OnAction.InvokeAsync();Close();}">@Action</AppButton>
+                <div class="flex justify-start items-center gap-2 p-2">
+                    <IconButton Type="IconButtonType.Standard" Icon="close" OnClick="Close"/>
+                    <span class="text-xl mr-auto">@Title</span>
+                    <AppButton Type="AppButtonType.Text" OnClick="()=>{OnAction.InvokeAsync();Close();}">@Action</AppButton>
+                </div>
             </div>
             <div @ref="_contentElementRef" class="px-2 py-2 overflow-y-auto" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
                 @ChildContent
-                <div style="height: @(InsetsManager.SystemSafeInsetBottom)"></div>
+                <div style="height: @(InsetsManager.SystemSafeInsetBottom)" class="w-full"></div>
             </div>
         </div>
     </Microsoft.AspNetCore.Components.Sections.SectionContent>
