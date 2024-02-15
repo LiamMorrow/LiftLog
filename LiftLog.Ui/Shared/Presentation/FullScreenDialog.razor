@@ -1,4 +1,5 @@
 
+@implements IDisposable
 @inject InsetsManager InsetsManager
 @inject IJSRuntime Js
 @if(opened)
@@ -7,14 +8,14 @@
     <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="Dialog">
         <div @ref=dialog class="@Animation text-on-surface fullscreen-dialog fixed top-0 bottom-0 left-0 right-0 bg-surface z-30 grid grid-cols-1 h-full grid-rows-[min-content_1fr_min-content]" data-open="@opened" @onclose=Close>
             <div class="@topNavColorClass flex justify-start items-center gap-2 p-2 transition-colors">
-                <div style="height: @InsetsManager.SystemSafeInsetTop"></div>
+                <div style="height: @(InsetsManager.SystemSafeInsetTop)"></div>
                 <IconButton Type="IconButtonType.Standard" Icon="close" OnClick="Close"/>
                 <span class="text-xl mr-auto">@Title</span>
                 <AppButton Type="AppButtonType.Text" OnClick="()=>{OnAction.InvokeAsync();Close();}">@Action</AppButton>
             </div>
             <div @ref="_contentElementRef" class="px-6 py-2 overflow-y-auto" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
                 @ChildContent
-                <div style="height: @InsetsManager.SystemSafeInsetBottom"></div>
+                <div style="height: @(InsetsManager.SystemSafeInsetBottom)"></div>
             </div>
         </div>
     </Microsoft.AspNetCore.Components.Sections.SectionContent>
@@ -38,6 +39,23 @@
     [Parameter][EditorRequired] public string Action { get; set; } = null!;
 
     [Parameter] public EventCallback OnAction { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        InsetsManager.InsetsChanged += OnSafeAreaInsetsChanged;
+    }
+
+    public void Dispose()
+    {
+        InsetsManager.InsetsChanged -= OnSafeAreaInsetsChanged;
+    }
+
+    private async void OnSafeAreaInsetsChanged(object? sender, EventArgs e)
+    {
+        await InvokeAsync(() => StateHasChanged());
+    }
 
     public void Open()
     {
