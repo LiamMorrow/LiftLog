@@ -19,7 +19,7 @@ using Microsoft.Extensions.Logging;
 namespace LiftLog.Ui.Store.Settings;
 
 public class SettingsEffects(
-    IProgressRepository ProgressRepository,
+    ProgressRepository ProgressRepository,
     ICurrentProgramRepository ProgramRepository,
     IExporter textExporter,
     IAiWorkoutPlanner aiWorkoutPlanner,

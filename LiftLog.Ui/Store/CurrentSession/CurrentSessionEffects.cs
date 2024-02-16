@@ -7,7 +7,7 @@ using LiftLog.Ui.Services;
 namespace LiftLog.Ui.Store.CurrentSession;
 
 public class CurrentSessionEffects(
-    IProgressRepository progressRepository,
+    ProgressRepository progressRepository,
     IState<CurrentSessionState> state,
     INotificationService notificationService,
     SessionService sessionService

@@ -8,7 +8,7 @@ namespace LiftLog.Ui.Services;
 
 public class SessionService(
     IState<CurrentSessionState> currentSessionState,
-    IProgressRepository progressRepository,
+    ProgressRepository progressRepository,
     ICurrentProgramRepository programRepository
 )
 {

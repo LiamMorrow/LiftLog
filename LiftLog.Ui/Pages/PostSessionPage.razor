@@ -3,7 +3,7 @@
 @using LiftLog.Ui.Repository
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-@inject IProgressRepository ProgressRepository
+@inject ProgressRepository ProgressRepository
 @inject IDispatcher Dispatcher
 
 @if (Session is not null)
@@ -11,7 +11,7 @@
     <div class="text-left">
         <h1 class="text-2xl">Congratulations!</h1>
         <span class="text-lg">You completed <span class="font-bold text-primary">@Session.Blueprint.Name!</span></span>
-        
+
     </div>
 }
 

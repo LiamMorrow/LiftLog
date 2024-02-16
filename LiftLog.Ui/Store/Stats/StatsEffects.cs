@@ -12,7 +12,7 @@ namespace LiftLog.Ui.Store.Stats;
 
 public class StatsEffects(
     IState<StatsState> state,
-    IProgressRepository progressRepository,
+    ProgressRepository progressRepository,
     IState<ProgramState> programState
 )
 {

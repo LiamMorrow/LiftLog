@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace LiftLog.Ui.Store.AiSessionCreator;
 
 public class ProgramEffects(
-    IProgressRepository progressRepository,
+    ProgressRepository progressRepository,
     IAiWorkoutPlanner aiWorkoutPlanner,
     ILogger<ProgramEffects> logger
 )

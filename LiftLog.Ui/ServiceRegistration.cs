@@ -49,7 +49,7 @@ public static class ServiceRegistration
         );
 
         services.AddScoped<ICurrentProgramRepository, KeyValueCurrentProgramRepository>();
-        services.AddScoped<IProgressRepository, KeyValueProgressRepository>();
+        services.AddScoped<ProgressRepository>();
         services.AddScoped<PreferencesRepository>();
 
         services.AddScoped<

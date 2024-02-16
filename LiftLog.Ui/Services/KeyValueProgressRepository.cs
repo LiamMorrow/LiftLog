@@ -13,10 +13,10 @@ using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Ui.Services
 {
-    public class KeyValueProgressRepository(
+    public class ProgressRepository(
         IKeyValueStore keyValueStore,
-        ILogger<KeyValueProgressRepository> logger
-    ) : IProgressRepository
+        ILogger<ProgressRepository> logger
+    )
     {
         private const string StorageKey = "Progress";
         private bool _initialised;

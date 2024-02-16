@@ -19,7 +19,7 @@ namespace LiftLog.Ui.Store.Feed;
 public partial class FeedEffects(
     IState<FeedState> state,
     IState<ProgramState> programState,
-    IProgressRepository progressRepository,
+    ProgressRepository progressRepository,
     FeedApiService feedApiService,
     FeedFollowService feedFollowService,
     FeedIdentityService feedIdentityService,
