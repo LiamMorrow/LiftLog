@@ -150,7 +150,7 @@ namespace LiftLog.Ui.Services
 
         public ValueTask<
             ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>>
-        > GetLatestOrderedRecordedExercisesAsync()
+        > GetLatestOrderedRecordedExercisesAsync(int maxRecordsPerExercise)
         {
             return GetOrderedSessions()
                 .SelectMany(x =>
@@ -165,7 +165,7 @@ namespace LiftLog.Ui.Services
                 .ToImmutableDictionaryAwaitAsync(
                     x => ValueTask.FromResult(x.Key),
                     async x => new ImmutableListValue<DatedRecordedExercise>(
-                        await x.ToImmutableListAsync()
+                        await x.Take(maxRecordsPerExercise).ToImmutableListAsync()
                     )
                 );
         }

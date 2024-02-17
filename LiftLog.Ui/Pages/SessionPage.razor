@@ -155,7 +155,7 @@
         else
         {
             var sw = System.Diagnostics.Stopwatch.StartNew();
-            previouslyCompleted = await ProgressRepository.GetLatestOrderedRecordedExercisesAsync();
+            previouslyCompleted = await ProgressRepository.GetLatestOrderedRecordedExercisesAsync(maxRecordsPerExercise: 10);
             Dispatcher.Dispatch(new SetPageTitleAction(CurrentSessionState.Value.WorkoutSession.Blueprint.Name));
             sw.Stop();
             logger.LogInformation($"Session init initialized completed in {sw.ElapsedMilliseconds}ms");
