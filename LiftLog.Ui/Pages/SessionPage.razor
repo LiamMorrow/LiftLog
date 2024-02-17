@@ -150,7 +150,7 @@
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/"));
         if (CurrentSessionState.Value.WorkoutSession is null)
         {
-            NavigationManager.NavigateTo("/");
+            Dispatcher.Dispatch(new NavigateAction("/"));
         }
         else
         {
