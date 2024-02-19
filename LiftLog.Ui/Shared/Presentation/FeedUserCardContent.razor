@@ -1,7 +1,7 @@
 <SplitCardControl>
     <TitleContent>
         <div class="flex justify-between items-center">
-            <ItemTitle Title="@(User.Name ?? "Anonymous User")" />\
+            <ItemTitle Title="@(User.Name ?? "Anonymous User")" />
             @if (User.AesKey is null)
             {
                 <span class="text-xs text-tertiary">Awaiting Response</span>
