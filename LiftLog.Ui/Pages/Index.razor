@@ -7,6 +7,7 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @inject IState<ProgramState> ProgramState
+@inject IState<AppState> AppState
 @inject IState<CurrentSessionState> CurrentSessionState
 @inject IDispatcher Dispatcher
 @inject NavigationManager NavigationManager
@@ -68,9 +69,17 @@ else
 
 <FloatingBottomContainer>
     <Fab>
-        <FloatingButton variant="primary" has-icon OnClick="StartFreeformSession" Label="Freeform Session">
-            <md-icon slot="icon">fitness_center</md-icon>
-        </FloatingButton>
+        <div class="flex flex-col gap-2 items-end">
+            @if(AppState.Value.ProState.IsPro)
+            {
+                <FloatingButton variant="secondary" size=medium has-icon OnClick=AiSessionCreator >
+                    <md-icon slot="icon">auto_awesome</md-icon>
+                </FloatingButton>
+            }
+            <FloatingButton variant="primary" has-icon OnClick="StartFreeformSession" Label="Freeform Session">
+                <md-icon slot="icon">fitness_center</md-icon>
+            </FloatingButton>
+        </div>
     </Fab>
 </FloatingBottomContainer>
 
@@ -142,4 +151,8 @@ else
         }
     }
 
+    private void AiSessionCreator()
+    {
+        Dispatcher.Dispatch(new NavigateAction("/settings/ai-session-creator"));
+    }
 }
