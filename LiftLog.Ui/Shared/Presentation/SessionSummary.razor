@@ -1,12 +1,3 @@
-@using System.Globalization
-
-<div class="flex flex-col items-start mb-4">
-    <span class="text-xl">@Session.Blueprint.Name</span>
-    @if (IsFilled)
-    {
-        <span class="text-sm">@FormattedDate</span>
-    }
-</div>
 
 <div class="grid @GridRows gap-x-4 text-start">
     @foreach (var exercise in Session.RecordedExercises)
@@ -14,7 +5,7 @@
         <span>@exercise.Blueprint.Name</span>
         @if (ShowSets)
         {
-            <span>@(exercise.Blueprint.Sets)x@(exercise.Blueprint.RepsPerSet) </span>
+            <span class="flex items-center">@(exercise.Blueprint.Sets)x@(exercise.Blueprint.RepsPerSet) </span>
         }
 
         @if (ShowWeight)
@@ -30,15 +21,9 @@
 {
     [EditorRequired] [Parameter] public Session Session { get; set; } = null!;
 
-    [Parameter] public bool IsFilled { get; set; }
-
     [Parameter] public bool ShowSets { get; set; }
 
     [Parameter] public bool ShowWeight { get; set; } = true;
-
-    private string FormattedDate => Session.Date.Year == DateTime.Now.Year
-        ? Session.Date.ToString("M", CultureInfo.InvariantCulture)
-        : Session.Date.ToString("M", CultureInfo.InvariantCulture) + " " + Session.Date.Year;
 
     private string GridRows => (ShowSets, ShowWeight) switch
     {

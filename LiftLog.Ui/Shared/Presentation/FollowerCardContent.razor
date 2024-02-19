@@ -1,17 +1,18 @@
 <SplitCardControl>
-    <MainContent>
+    <TitleContent>
         <div class="flex flex-col gap-4">
             <span><span class="text-primary font-bold">@(User.Name ?? "Anonymous User")</span> is following you!</span>
-
-            @if (ShowFollowBack)
-            {
-                <AppButton Type=AppButtonType.Text OnClick=@OnFollowBack>Request to follow @(User.Name ?? "Anonymous User")</AppButton>
-            }
         </div>
+    </TitleContent>
+    <MainContent>
+        @if (ShowFollowBack)
+        {
+            <AppButton Type=AppButtonType.Text OnClick=@OnFollowBack>Follow @(User.Name ?? "Anonymous User") back</AppButton>
+        }
     </MainContent>
-    <SideContent>
-        <IconButton Type="IconButtonType.FilledTonal" OnClick="@RemoveFollower" Icon="person_remove"/>
-    </SideContent>
+    <Actions>
+        <IconButton Type="IconButtonType.Standard" OnClick="@RemoveFollower" Icon="person_remove"/>
+    </Actions>
 </SplitCardControl>
 
 

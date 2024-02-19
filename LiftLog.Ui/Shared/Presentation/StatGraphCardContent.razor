@@ -6,10 +6,11 @@
 @implements IDisposable
 
 @inject IThemeProvider ThemeProvider
-
+<div class="flex flex-col gap-2 items-start">
 @if (ShowTitle)
 {
-    <h2 class="text-xl text-on-surface self-start">@(Title)</h2>
+
+    <ItemTitle Title="@(Title)" />
 }
 @if (IsLoading)
 {
@@ -42,7 +43,7 @@ else
         }
     </ApexChart>
 }
-
+</div>
 @code {
     [Parameter] [EditorRequired] public ImmutableListValue<StatisticOverTime> Statistics { get; set; } = null!;
 

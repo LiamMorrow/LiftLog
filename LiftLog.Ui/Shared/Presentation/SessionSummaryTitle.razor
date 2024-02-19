@@ -1,0 +1,21 @@
+@using System.Globalization
+
+<div class="flex flex-col items-start">
+    <ItemTitle Title="@Session.Blueprint.Name" />
+    @if (IsFilled)
+    {
+        <span class="text-sm">@FormattedDate</span>
+    }
+</div>
+
+@code{
+    [Parameter]
+    [EditorRequired]
+    public Session Session {get;set;} = null!;
+
+    [Parameter] public bool IsFilled { get; set; }
+
+    private string FormattedDate => Session.Date.Year == DateTime.Now.Year
+        ? Session.Date.ToString("M", CultureInfo.InvariantCulture)
+        : Session.Date.ToString("M", CultureInfo.InvariantCulture) + " " + Session.Date.Year;
+}

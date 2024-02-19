@@ -24,13 +24,16 @@ else
 {
     <VirtualizedCardList Items="_latestSessions" OnClick="@HandleSessionClick" CardClass="animate-fade-zoom-in">
         <SplitCardControl>
+            <TitleContent>
+                <SessionSummaryTitle IsFilled="true" Session="context" ></SessionSummaryTitle>
+            </TitleContent>
+            <Actions>
+                <IconButton Type="IconButtonType.Standard" OnClick=@(() => { _selectedSession = context; _deleteDialog?.Open(); }) Icon="delete"/>
+            </Actions>
             <MainContent>
-                <SessionSummary IsFilled="true" Session="context" ShowSets="true"></SessionSummary>
+                <SessionSummary Session="context" ShowSets="true"></SessionSummary>
             </MainContent>
 
-            <SideContent>
-                <IconButton Type="IconButtonType.Standard" OnClick=@(() => { _selectedSession = context; _deleteDialog?.Open(); }) Icon="delete"/>
-            </SideContent>
         </SplitCardControl>
     </VirtualizedCardList>
 }

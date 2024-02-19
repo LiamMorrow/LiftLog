@@ -1,15 +1,18 @@
-<div class="grid grid-cols-[1fr,_min-content] grid-rows-1">
-    <div class="flex flex-col pr-2">
-        @MainContent
+<div class="grid grid-cols-[1fr,_min-content] grid-rows-[min-content,min-content]" >
+    <div class="mb-2 text-start">
+        @TitleContent
     </div>
-
-    <div class="flex flex-col justify-around gap-2 ml-2 h-min">
-        @SideContent
+    <div class="flex ml-2 items-start -mt-2 -mr-2">
+        @Actions
+    </div>
+    <div class="flex flex-col pr-2 col-span-2">
+        @MainContent
     </div>
 </div>
 
 @code
 {
+    [Parameter] public RenderFragment? TitleContent { get; set; }
     [Parameter] public RenderFragment? MainContent { get; set; }
-    [Parameter] public RenderFragment? SideContent { get; set; }
+    [Parameter] public RenderFragment? Actions { get; set; }
 }

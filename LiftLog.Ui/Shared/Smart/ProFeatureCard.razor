@@ -10,20 +10,29 @@
 @inject IState<AppState> AppState
 @inject IDispatcher Dispatcher
 
-<Card class="flex flex-col gap-4">
-    <div class="flex justify-between">
-        <span class="text-lg text-center">Pro Features</span>
-        @RenderLockedPro()
-    </div>
-    <AppButton Disabled="!AppState.Value.ProState.IsPro" Type="AppButtonType.Primary" OnClick="NavigateToAiPlanner">
-        <md-icon slot="icon">auto_awesome</md-icon>
-        AI Program Planner
-    </AppButton>
-    <AppButton Disabled="!AppState.Value.ProState.IsPro" Type="AppButtonType.Secondary"
-               OnClick="NavigateToAiSessionCreator">
-        <md-icon slot="icon">auto_awesome</md-icon>
-        AI Session Creator
-    </AppButton>
+<Card >
+    <SplitCardControl>
+        <TitleContent>
+            <ItemTitle Title="Pro Features" />
+        </TitleContent>
+        <Actions>
+            @RenderLockedPro()
+        </Actions>
+        <MainContent>
+            <div class="flex flex-col gap-4">
+
+                <AppButton Disabled="!AppState.Value.ProState.IsPro" Type="AppButtonType.Primary" OnClick="NavigateToAiPlanner">
+                    <md-icon slot="icon">auto_awesome</md-icon>
+                    AI Program Planner
+                </AppButton>
+                <AppButton Disabled="!AppState.Value.ProState.IsPro" Type="AppButtonType.Secondary"
+                        OnClick="NavigateToAiSessionCreator">
+                    <md-icon slot="icon">auto_awesome</md-icon>
+                    AI Session Creator
+                </AppButton>
+            </div>
+        </MainContent>
+    </SplitCardControl>
 </Card>
 
 <Dialog @ref="upgradeDialog">
@@ -49,11 +58,11 @@
         await base.OnInitializedAsync();
     }
 
-    private RenderFragment RenderLockedPro()
+    private RenderFragment? RenderLockedPro()
     {
         if (AppState.Value.ProState.IsPro)
         {
-            return @<md-icon>verified</md-icon>;
+            return null;
         }
 
         return @<AppButton OnClick="() => { upgradeDialog?.Open(); }"><md-icon slot="icon">lock</md-icon>Unlock</AppButton>;

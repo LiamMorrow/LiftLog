@@ -1,13 +1,18 @@
 <SplitCardControl>
+    <TitleContent>
+        <div class="flex justify-between items-center">
+            <ItemTitle Title="@(User.Name ?? "Anonymous User")" />\
+            @if (User.AesKey is null)
+            {
+                <span class="text-xs text-tertiary">Awaiting Response</span>
+            }
+        </div>
+    </TitleContent>
+    <Actions>
+        <IconButton Type="IconButtonType.Standard" OnClick="@DeleteUser" Icon="person_remove"/>
+    </Actions>
     <MainContent>
         <div class="flex flex-col gap-4">
-            <div class="flex justify-between items-center">
-                <span class=" text-lg text-primary font-bold">@(User.Name ?? "Anonymous User")</span>
-                @if (User.AesKey is null)
-                {
-                    <span class="text-xs text-tertiary">Awaiting Response</span>
-                }
-            </div>
             <TextField Value=@(User.Nickname ?? "") OnChange="val => UpdateUser(User with { Nickname = val })" label="Nickname"/>
 
             @if (User.CurrentPlan is not [])
@@ -18,9 +23,6 @@
             }
         </div>
     </MainContent>
-    <SideContent>
-        <IconButton Type="IconButtonType.FilledTonal" OnClick="@DeleteUser" Icon="person_remove"/>
-    </SideContent>
 </SplitCardControl>
 
 
