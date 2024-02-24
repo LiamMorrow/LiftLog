@@ -56,7 +56,7 @@
 
 
 @code {
-
+    [Parameter][SupplyParameterFromQuery(Name="editingExercise")] public int? EditingExerciseIndexParam { get; set; }
     [Parameter] public int SessionIndex { get; set; }
 
     [CascadingParameter(Name = "IsInActiveScreen")]
@@ -68,6 +68,14 @@
     private Dialog? deleteDialog;
 
     private FullScreenDialog? editDialog;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && EditingExerciseIndexParam is not null && SessionEditorState is {Value: {SessionBlueprint: not null}})
+        {
+            BeginEditExercise(SessionEditorState.Value.SessionBlueprint.Exercises[EditingExerciseIndexParam.Value], EditingExerciseIndexParam.Value);
+        }
+    }
 
 
     void BackToManageWorkouts() => NavigationManager.NavigateTo("/settings/manage-workouts");
