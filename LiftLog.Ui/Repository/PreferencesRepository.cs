@@ -74,6 +74,6 @@ public class PreferencesRepository(IPreferenceStore preferenceStore)
 
     public async Task<bool> GetShowFeedAsync()
     {
-        return await preferenceStore.GetItemAsync("showTips") is "True" or null;
+        return await preferenceStore.GetItemAsync("showFeed") is "True" or null;
     }
 }
