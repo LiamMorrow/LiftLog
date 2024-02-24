@@ -26,4 +26,9 @@ public class LocalStorageKeyValueStore(ILocalStorageService localStorageService)
     {
         return localStorageService.SetItemAsync(key, value);
     }
+
+    public ValueTask RemoveItemAsync(string key)
+    {
+        return localStorageService.RemoveItemAsync(key);
+    }
 }

@@ -40,6 +40,17 @@ public class AppDataFileStorageKeyValueStore : IKeyValueStore
         await File.WriteAllBytesAsync(GetFileName(key), value);
     }
 
+    public ValueTask RemoveItemAsync(string key)
+    {
+        var fileName = GetFileName(key);
+        var exists = File.Exists(fileName);
+        if (exists)
+        {
+            File.Delete(fileName);
+        }
+        return ValueTask.CompletedTask;
+    }
+
     private string GetFileName(string key)
     {
         var dataDir = FileSystem.Current.AppDataDirectory;

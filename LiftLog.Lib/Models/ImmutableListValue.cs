@@ -39,9 +39,15 @@ namespace LiftLog.Lib
 
         private int? _precomputedHashcode;
 
-        public int Count => ((IReadOnlyCollection<T>)Items).Count;
+        public int Count => Items.Count;
 
-        public T this[int index] => ((IReadOnlyList<T>)Items)[index];
+        public T this[int index] => Items[index];
+
+        public ImmutableListValue<T> this[Range range] =>
+            Items.GetRange(
+                range.GetOffsetAndLength(Count).Offset,
+                range.GetOffsetAndLength(Count).Length
+            );
 
         public static implicit operator ImmutableListValue<T>(ImmutableList<T> source)
         {

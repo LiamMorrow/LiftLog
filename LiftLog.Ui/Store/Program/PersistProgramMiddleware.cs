@@ -1,11 +1,11 @@
 using Fluxor;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
-using LiftLog.Ui.Repository;
+using LiftLog.Ui.Services;
 
 namespace LiftLog.Ui.Store.Program;
 
-public class PersistProgramMiddleware(ICurrentProgramRepository programRepository) : Middleware
+public class PersistProgramMiddleware(CurrentProgramRepository programRepository) : Middleware
 {
     private IStore? _store;
     private ProgramState? _prevState;

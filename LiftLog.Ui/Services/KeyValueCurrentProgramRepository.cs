@@ -6,12 +6,10 @@ using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
 using LiftLog.Ui.Models.SessionBlueprintDao;
-using LiftLog.Ui.Repository;
 
 namespace LiftLog.Ui.Services;
 
-public class KeyValueCurrentProgramRepository(IKeyValueStore keyValueStore)
-    : ICurrentProgramRepository
+public class CurrentProgramRepository(IKeyValueStore keyValueStore)
 {
     private const string StorageKey = "Program";
     private bool _initialised;

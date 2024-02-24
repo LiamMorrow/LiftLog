@@ -8,7 +8,6 @@ using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
 using LiftLog.Ui.Models;
 using LiftLog.Ui.Models.SessionHistoryDao;
-using LiftLog.Ui.Repository;
 using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Ui.Services
@@ -174,6 +173,13 @@ namespace LiftLog.Ui.Services
         {
             await InitialiseAsync();
             return _storedSessions.GetValueOrDefault(sessionId);
+        }
+
+        public async Task ClearAsync()
+        {
+            await keyValueStore.RemoveItemAsync(StorageKey);
+            await keyValueStore.RemoveItemAsync($"{StorageKey}-Version");
+            _storedSessions = ImmutableDictionary<Guid, Session>.Empty;
         }
     }
 }

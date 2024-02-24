@@ -6,7 +6,6 @@ using Fluxor;
 using LiftLog.Lib.Serialization;
 using LiftLog.Lib.Services;
 using LiftLog.Ui;
-using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.CurrentSession;

@@ -42,6 +42,7 @@
         <Content Remove="wwwroot\load-tailwind.js"/>
         <Content Remove="wwwroot\tailwind.js"/>
         <Content Remove="wwwroot\twconf.json"/>
+        <Content Remove="Pages\Screenshot\ScreenshotCollectorPage.razor"/>
     </ItemGroup>
 
     <ItemGroup>
