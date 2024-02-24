@@ -42,7 +42,13 @@ public class SettingsEffects(
     }
 
     [EffectMethod]
-    public async Task ImportData(ImportDataAction action, IDispatcher dispatcher)
+    public async Task ImportData(ImportDataAction _, IDispatcher dispatcher)
+    {
+        dispatcher.Dispatch(new ImportDataBytesAction(await textExporter.ImportBytesAsync()));
+    }
+
+    [EffectMethod]
+    public async Task ImportDataBytes(ImportDataBytesAction action, IDispatcher dispatcher)
     {
         SettingsStorageDaoV2? Deserialize(byte[] bytes)
         {
@@ -80,32 +86,24 @@ public class SettingsEffects(
                 }
             }
         }
-
-        try
+        var importBytes = action.Bytes;
+        if (importBytes is null || importBytes.Length == 0)
+            return;
+        var deserialized = Deserialize(importBytes);
+        if (deserialized != null)
         {
-            var importBytes = await textExporter.ImportBytesAsync();
-            if (importBytes is null || importBytes.Length == 0)
-                return;
-            var deserialized = Deserialize(importBytes);
-            if (deserialized != null)
-            {
-                await ProgressRepository.SaveCompletedSessionsAsync(
-                    deserialized.Sessions.Select(x => x.ToModel())
-                );
-                dispatcher.Dispatch(
-                    new SetProgramSessionsAction(
-                        deserialized.Program.Select(x => x.ToModel()).ToImmutableList()
-                    )
-                );
-            }
-            else
-            {
-                logger.LogError("Could not deserialize data for import {data}", importBytes);
-            }
+            await ProgressRepository.SaveCompletedSessionsAsync(
+                deserialized.Sessions.Select(x => x.ToModel())
+            );
+            dispatcher.Dispatch(
+                new SetProgramSessionsAction(
+                    deserialized.Program.Select(x => x.ToModel()).ToImmutableList()
+                )
+            );
         }
-        catch (JsonException ex)
+        else
         {
-            logger.LogError(ex, "Error importing");
+            logger.LogError("Could not deserialize data for import {data}", importBytes);
         }
     }
 

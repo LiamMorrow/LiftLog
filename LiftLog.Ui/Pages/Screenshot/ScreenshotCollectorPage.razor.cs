@@ -48,6 +48,9 @@ public partial class ScreenshotCollectorPage : ComponentBase
             case "exerciseeditor":
                 await HandleExerciseEditorScreenshotCollection();
                 break;
+            case "stats":
+                await HandleStatsScreenshotCollection();
+                break;
         }
         await base.OnInitializedAsync();
     }
