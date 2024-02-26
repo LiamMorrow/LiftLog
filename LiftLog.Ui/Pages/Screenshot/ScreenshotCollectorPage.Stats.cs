@@ -13,10 +13,13 @@ public partial class ScreenshotCollectorPage
     [Inject]
     public HttpClient HttpClient { get; set; } = null!;
 
+    [Inject]
+    public IScreenshotStatsImportsProvider ScreenshotStatsImportsProvider { get; set; } = null!;
+
     private async Task HandleStatsScreenshotCollection()
     {
-        var imported = await HttpClient.GetAsync("/_content/LiftLog.Ui/export.liftlogbackup.gz");
-        using GZipStream gzip = new(imported.Content.ReadAsStream(), CompressionMode.Decompress);
+        var imported = await ScreenshotStatsImportsProvider.GetImportBytesAsync();
+        using GZipStream gzip = new(imported, CompressionMode.Decompress);
         using MemoryStream memoryStream = new();
         await gzip.CopyToAsync(memoryStream);
         var bytes = memoryStream.ToArray();
@@ -36,5 +39,10 @@ public partial class ScreenshotCollectorPage
         Dispatcher.Dispatch(new SetShowBodyweightAction(false));
         Dispatcher.Dispatch(new NavigateAction("/stats"));
     }
+}
+
+public interface IScreenshotStatsImportsProvider
+{
+    Task<Stream> GetImportBytesAsync();
 }
 #endif

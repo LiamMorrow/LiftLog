@@ -45,4 +45,11 @@ builder.Services.RegisterUiServices<
     JsEncryptionService
 >();
 
+#if DEBUG
+builder.Services.AddSingleton<
+    LiftLog.Ui.Pages.Screenshot.IScreenshotStatsImportsProvider,
+    WebScreenshotStatsImportsProvider
+>();
+#endif
+
 await builder.Build().RunAsync();
