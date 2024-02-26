@@ -32,11 +32,10 @@ public static class StatsReducers
     ) => state with { OverallViewTime = action.Time, };
 
     [ReducerMethod]
-    public static StatsState SetPinnedStats(StatsState state, SetPinnedStatsAction action) =>
-        state with
-        {
-            PinnedStatistics = action.Stats,
-        };
+    public static StatsState SetPinnedStats(
+        StatsState state,
+        SetPinnedExerciseStatsAction action
+    ) => state with { PinnedExerciseStatistics = action.Stats, };
 
     [ReducerMethod]
     public static StatsState SetOverallViewSession(

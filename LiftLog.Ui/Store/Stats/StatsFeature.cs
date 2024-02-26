@@ -17,6 +17,6 @@ public class StatsFeature : Feature<StatsState>
             OverallViewSessionName: "CURRENT_SESSIONS",
             OverallViewTime: TimeSpan.FromDays(30),
             OverallView: null,
-            PinnedStatistics: []
+            PinnedExerciseStatistics: []
         );
 }

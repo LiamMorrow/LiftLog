@@ -5,7 +5,7 @@ namespace LiftLog.Ui.Store.Stats;
 
 public record SetOverallStatsAction(GranularStatisticView? Stats);
 
-public record SetPinnedStatsAction(ImmutableListValue<PinnedStatistic> Stats);
+public record SetPinnedExerciseStatsAction(ImmutableListValue<PinnedExerciseStatistic> Stats);
 
 public record SetOverallViewTimeAction(TimeSpan Time);
 
