@@ -4,6 +4,7 @@ using LiftLog.Lib.Models;
 using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.CurrentSession;
 using LiftLog.Ui.Store.Settings;
+using LiftLog.Ui.Store.Stats;
 using Microsoft.AspNetCore.Components;
 
 namespace LiftLog.Ui.Pages.Screenshot;
@@ -36,6 +37,7 @@ public partial class ScreenshotCollectorPage
 
         await ProgressRepository.SaveCompletedSessionsAsync(remappedToTodaySessions);
 
+        Dispatcher.Dispatch(new SetPinnedExerciseStatsAction([new("Bench Press")]));
         Dispatcher.Dispatch(new SetShowBodyweightAction(false));
         Dispatcher.Dispatch(new NavigateAction("/stats"));
     }
