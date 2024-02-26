@@ -63,10 +63,10 @@
   dependencies:
     "@lit-labs/ssr-dom-shim" "^1.0.0"
 
-"@material/web@1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@material/web/-/web-1.2.0.tgz#113eb0fe4f709cc3f1b5c0cf50abb85f57f4ab53"
-  integrity sha512-1+s9J7K2wtZid8HpNstGoFwNFE0/4bXgSYZx2Hy01aZL/8oOMZ6rN733onTJMgf3zz9xKizDQUscxB28ZtkDFQ==
+"@material/web@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@material/web/-/web-1.3.0.tgz#7c3163e6d42d5991b6020a73427f7466cf1b3283"
+  integrity sha512-yUqF35yygXreiPXQneD3l210UoSMlbgHZrJ0V1dUiEizGpWfVmuAKp9LnLnV/Qx5MhJlNOZddsGJOGR9lU8R/w==
   dependencies:
     lit "^2.7.4 || ^3.0.0"
     tslib "^2.4.0"
