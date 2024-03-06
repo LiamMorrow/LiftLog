@@ -22,7 +22,7 @@
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2"/>
-        <PackageReference Include="OpenAI-DotNet" Version="7.7.1"/>
+        <PackageReference Include="OpenAI-DotNet" Version="7.7.5"/>
         <PackageReference Include="Google.Apis.AndroidPublisher.v3" Version="1.67.0.3339"/>
     </ItemGroup>
 
