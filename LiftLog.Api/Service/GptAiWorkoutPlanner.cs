@@ -59,7 +59,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
         };
         var chatRequest = new ChatRequest(
             messages,
-            model: "gpt-3.5-turbo-0613",
+            model: OpenAI.Models.Model.GPT4,
             toolChoice: "auto",
             tools: tools
         );
@@ -152,7 +152,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
         };
         var chatRequest = new ChatRequest(
             messages,
-            model: "gpt-3.5-turbo-0613",
+            model: OpenAI.Models.Model.GPT4,
             toolChoice: "auto",
             tools: tools
         );
