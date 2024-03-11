@@ -51,16 +51,6 @@
 @code
 {
     private ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>> previouslyCompleted = ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>>.Empty;
-    private bool initted = false;
-
-    private void Init(Session session)
-    {
-        if (!initted)
-        {
-            initted = true;
-        }
-    }
-
     private void SetSessionDate(string dateString)
     {
         if (DateOnly.TryParse(dateString, out var date))
@@ -136,6 +126,10 @@
     private void SaveSession()
     {
         Dispatcher.Dispatch(new PersistCurrentSessionAction(SessionTarget.HistorySession));
+        if (CurrentSessionState.Value.HistorySession is not null)
+        {
+            Dispatcher.Dispatch(new AddUnpublishedSessionIdAction(CurrentSessionState.Value.HistorySession.Id));
+        }
         Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.HistorySession, null));
         Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
 
