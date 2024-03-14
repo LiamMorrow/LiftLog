@@ -29,7 +29,6 @@ public static class MauiProgram
 
         builder.UseLocalNotification(notificationBuilder =>
         {
-            notificationBuilder.SetSerializer(new NotificationSerializer());
             notificationBuilder.AddCategory(
                 new NotificationCategory(NotificationCategoryType.Status)
                 {
