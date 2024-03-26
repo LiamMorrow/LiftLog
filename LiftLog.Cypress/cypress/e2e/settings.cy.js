@@ -37,13 +37,15 @@ describe('Settings', () => {
 function assertShowsBodyweightOnAllPages(shouldShow) {
   const classify = shouldShow ? 'contain.text' : 'not.contain.text'
   cy.navigate('Stats')
+  cy.getA('[data-cy=stats-time-selector]').click()
+  cy.containsA('All time').click()
   cy.getA('.card').eq(4).should(classify, 'Bodyweight')
   cy.navigate('Workout')
   cy.navigate('Workout')
   cy.getA('.cardlist .card').first().click()
-  if(shouldShow) {
+  if (shouldShow) {
     cy.getA('.card').last().should(classify, 'Bodyweight')
-  }else{
+  } else {
     cy.getA('.card').should('not.exist')
   }
 }
@@ -52,6 +54,8 @@ function assertCorrectWeightUnitsOnAllPages(units) {
   cy.navigate('History')
   cy.getA('.cardlist .card').first().should('contain.text', units)
   cy.navigate('Stats')
+  cy.getA('[data-cy=stats-time-selector]').click()
+  cy.containsA('All time').click()
   cy.getA('.cardlist .card').first().should('contain.text', units)
   cy.navigate('Workout')
   cy.navigate('Workout')
