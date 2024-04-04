@@ -111,8 +111,9 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 
-app.MapGet(
+app.MapMethods(
     "/health",
+    ["GET", "HEAD"],
     () =>
     {
         return "healthy";
