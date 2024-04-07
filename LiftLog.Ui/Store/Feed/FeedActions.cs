@@ -37,7 +37,7 @@ public record PutFollowedUsersAction(FeedUser User);
 
 public record SetSharedFeedUserAction(FeedUser? User);
 
-public record FetchAndSetSharedFeedUserAction(Guid Id, string? Name);
+public record FetchAndSetSharedFeedUserAction(string IdOrLookup, string? Name);
 
 public record PublishIdentityIfEnabledAction();
 

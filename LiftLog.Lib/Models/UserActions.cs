@@ -22,6 +22,8 @@ public record PutUserDataRequest(
 );
 
 public record GetUserResponse(
+    Guid Id,
+    string Lookup,
     byte[]? EncryptedCurrentPlan,
     byte[]? EncryptedProfilePicture,
     byte[]? EncryptedName,

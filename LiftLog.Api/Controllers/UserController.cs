@@ -10,7 +10,11 @@ using Microsoft.EntityFrameworkCore;
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
-public class UserController(UserDataContext db, PasswordService passwordService) : ControllerBase
+public class UserController(
+    UserDataContext db,
+    PasswordService passwordService,
+    IdEncodingService idEncodingService
+) : ControllerBase
 {
     [Route("[controller]/create")]
     [HttpPost]
@@ -49,9 +53,18 @@ public class UserController(UserDataContext db, PasswordService passwordService)
 
     [Route("[controller]/{id}")]
     [HttpGet]
-    public async Task<IActionResult> GetUser(Guid id)
+    public async Task<IActionResult> GetUser(string idOrLookup)
     {
-        var user = await db.Users.FindAsync(id);
+        User? user;
+        if (Guid.TryParse(idOrLookup, out var id))
+        {
+            user = await db.Users.FindAsync(id);
+        }
+        else
+        {
+            var userNumber = idEncodingService.DecodeId(idOrLookup);
+            user = await db.Users.FirstOrDefaultAsync(x => x.UserNumber == userNumber);
+        }
         if (user == null)
         {
             return NotFound();
@@ -61,6 +74,8 @@ public class UserController(UserDataContext db, PasswordService passwordService)
         await db.SaveChangesAsync();
         return Ok(
             new GetUserResponse(
+                Id: user.Id,
+                Lookup: idEncodingService.EncodeId(user.UserNumber),
                 EncryptedCurrentPlan: user.EncryptedCurrentPlan,
                 EncryptedProfilePicture: user.EncryptedProfilePicture,
                 EncryptedName: user.EncryptedName,

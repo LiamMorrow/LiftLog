@@ -45,12 +45,12 @@ public class FeedApiService(HttpClient httpClient
         });
     }
 
-    public Task<ApiResult<GetUserResponse>> GetUserAsync(Guid id)
+    public Task<ApiResult<GetUserResponse>> GetUserAsync(string idOrLookup)
     {
         return GetApiResultAsync(async () =>
         {
             var result = (
-                await httpClient.GetAsync($"{baseUrl}user/{id}")
+                await httpClient.GetAsync($"{baseUrl}user/{idOrLookup}")
             ).EnsureSuccessStatusCode();
             return (await result.Content.ReadFromJsonAsync<GetUserResponse>())!;
         });
