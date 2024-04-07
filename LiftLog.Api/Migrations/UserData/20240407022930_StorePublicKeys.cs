@@ -14,15 +14,14 @@ namespace LiftLog.Api.Migrations
                 name: "rsa_public_key",
                 table: "users",
                 type: "bytea",
-                nullable: true);
+                nullable: true
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "rsa_public_key",
-                table: "users");
+            migrationBuilder.DropColumn(name: "rsa_public_key", table: "users");
         }
     }
 }
