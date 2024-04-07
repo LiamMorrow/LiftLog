@@ -20,11 +20,8 @@ Personal Information that is NOT encrypted is limited to:
 - Timestamp of request - this is the timestamp of when a feed item was submitted. This could correlate to a time of workout, and therefore could be considered PII.
 - User ID (a UUID) - this is stored on the device, but is not linked to it (i.e. The LiftLog servers cannot trace userId to device)
 
-Data is encrypted by the user before sending to the LiftLog server. It is encrypted via AES-CBC, and signed via RSA-PSS to guarantee authenticity (see [Payload Encryption](#payload-encryption)). At no point does the server store the unencrypted private keys. Public keys _may_ reach the CDN server via the share url, the risk here is minimal, as:
-
-    A. they are public keys which would only allow inbox messages to be sent to a user
-    B. the CDN servers are separate from the api servers which store data, and
-    C. the share urls usually open directly in the app, bypassing even the CDN servers.
+Data is encrypted by the user before sending to the LiftLog server. It is encrypted via AES-CBC, and signed via RSA-PSS to guarantee authenticity (see [Payload Encryption](#payload-encryption)). At no point does the server store the unencrypted private keys.
+Public keys are stored alongside the user's information.
 
 ### How following is accomplished
 
@@ -38,22 +35,21 @@ As mentioned, interacting with a feed is opt in. To opt in, a user will generate
 
 The client will register their identity with the LiftLog servers by sending ONLY their UserId to the createUser endpoint. If a user does not already exist with that ID the server will generate a random `Password`, and send that `Password` back to the client. The `Password` is salted and hashed then stored against the user's ID on the server. This `Password` must be provided when publishing any data for that `UserId` to the server.
 
-Using this identity, the client can create a `SHARE_URL`. This url consists of 3 unique parts from the identity:
+Using this identity, the client can create a `SHARE_URL`. This url consists of 2 unique parts from the identity:
 
 - UserId
 - Name (still optional)
-- RSA Public key in Spki format
 
 An example share url could look like this (note this is non functional):
 
 ```
-https://app.liftlog.online/feed/share?pub=30820122300D06092A864886F70D01010105000382010F003082010A0282010100C4F7583802DB987F9C27242D598986818C89A47E40D5C3E51F0DE49EDDAFB43D11C00D9A05BC409E67B507684D0DAE47DB38BEFE8C94D6D4DD9A5BEEAD7C970ED3F2824467D82362521CC24B8D7AF64D9E3A39E258E8DE0941F980B8BFE41A019BDE2A78A93F917A94C82E6DA78F432B9C9429CBADF7892A66313F16D9928F03D1937DA1ACA9C668ECB2D48042F05FC384CB315E78EF75BA705639A8C6464A586191B62E717C3F3E6009C7E92958428F5160D733DC3254E34C94AE90F4A77BE75D6558DB042616527BF9ED47177C45E48A93EBE30D2080CB0D9D5A1E7F996D6B7520FD1FC5FECBA51F3842AAB486C2539521C8CE2663DB35E3084176643B1BBF0203010001&id=95e80409-dd6e-4cdb-b382-fb85b154350f&name=Liam
+https://app.liftlog.online/feed/share?id=95e80409-dd6e-4cdb-b382-fb85b154350f&name=Liam
 ```
 
 The structure of the url being:
-`https://app.liftlog.online/feed/share?pub=HEX_ENCODED_PUBLIC_KEY_SPKI&id=USER_ID&name=Name`
+`https://app.liftlog.online/feed/share?id=USER_ID&name=Name`
 
-When a user (the follower) clicks this link, it will open directly in the LiftLog app, or in the web app. The app parses out the three parameters and displays a message asking if they would like to request to subscribe to the feed. Note the follower must also have an identity setup prior to making the request. If they accept they create an `InboxMessage` (of type `FollowRequest`) payload consisting of:
+When a user (the follower) clicks this link, it will open directly in the LiftLog app, or in the web app. The app parses out the 2 parameters and displays a message asking if they would like to request to subscribe to the feed. The public key of the client will be fetched with the specified UserID. Note the follower must also have an identity setup prior to making the request. If they accept they create an `InboxMessage` (of type `FollowRequest`) payload consisting of:
 
 - The follower's RSA Public Key
 - An optional name
@@ -86,7 +82,10 @@ sequenceDiagram
     Alice->>LiftLog: UserId
     LiftLog-->>Alice: Password
     Alice->>Alice: Aes128 Key + Rsa Keypair
-    Alice->>Bob: SHARE_URL Public RSA Key + UserId
+    Alice->>LiftLog: RSA Public Key
+    Alice->>Bob: SHARE_URL: UserId
+    Bob->>LiftLog: Get Alice's Public Key
+    LiftLog->>Bob: Alice's RSA Public Key
     Bob->>Bob: Store Alice's Public RSA key + UserId
     Bob->>LiftLog: FollowRequest: <br/> Alice's UserId <br/>(Bob's Public Key)<br/>(Bob's UserId)
     Alice->>LiftLog: Request InboxMessages
@@ -135,7 +134,7 @@ Since RSA has a rather small max paylaod length, these messages are split into c
 
 ### Payload Encryption
 
-As mentioned, Feed Item payloads are first signed, then encrypted with AES-CBC. AES-CBC makes no guarantees about the authenticity of encrypted payloads, and as such it is possible (however of extremely small risk in liftlog's case) for an attacker to modify messages without the original key assuming they know some constant part of the unencrypted payload. This is described well by [this post by Seald](https://www.seald.io/blog/3-common-mistakes-when-implementing-encryption), of which LiftLog has no affiliation.
+As mentioned, Feed Item payloads are first signed, then encrypted with AES-CBC. AES-CBC makes no guarantees about the authenticity of encrypted payloads, and as such it is possible for an attacker to modify messages without the original key assuming they know some constant part of the unencrypted payload. This is described well by [this post by Seald](https://www.seald.io/blog/3-common-mistakes-when-implementing-encryption).
 
 Why not use AES-GCM, which DOES provide authenticity of messages? Simply because it was not available at the time of writing on iOS. This is tracked here https://github.com/dotnet/runtime/issues/94848. We may revisit this when it becomes available.
 
