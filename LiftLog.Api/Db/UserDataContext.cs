@@ -15,12 +15,12 @@ public class UserDataContext(DbContextOptions<UserDataContext> options) : DbCont
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasSequence<int>("user_number_sequence");
+        modelBuilder.HasSequence<int>("user_lookup_sequence");
 
         modelBuilder
             .Entity<User>()
-            .Property(x => x.UserNumber)
-            .HasDefaultValueSql("nextval('user_number_sequence')");
+            .Property(x => x.UserLookup)
+            .HasDefaultValueSql("nextval('user_lookup_sequence')");
 
         modelBuilder
             .Entity<User>()

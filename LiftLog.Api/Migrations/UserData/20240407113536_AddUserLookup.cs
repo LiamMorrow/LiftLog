@@ -5,25 +5,25 @@
 namespace LiftLog.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class AddUserIndex : Migration
+    public partial class AddUserLookup : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateSequence<int>(
-                name: "user_number_sequence");
+                name: "user_lookup_sequence");
 
             migrationBuilder.AddColumn<int>(
-                name: "user_number",
+                name: "user_lookup",
                 table: "users",
                 type: "integer",
                 nullable: false,
-                defaultValueSql: "nextval('user_number_sequence')");
+                defaultValueSql: "nextval('user_lookup_sequence')");
 
             migrationBuilder.CreateIndex(
-                name: "ix_users_user_number",
+                name: "ix_users_user_lookup",
                 table: "users",
-                column: "user_number",
+                column: "user_lookup",
                 unique: true);
         }
 
@@ -31,15 +31,15 @@ namespace LiftLog.Api.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(
-                name: "ix_users_user_number",
+                name: "ix_users_user_lookup",
                 table: "users");
 
             migrationBuilder.DropColumn(
-                name: "user_number",
+                name: "user_lookup",
                 table: "users");
 
             migrationBuilder.DropSequence(
-                name: "user_number_sequence");
+                name: "user_lookup_sequence");
         }
     }
 }

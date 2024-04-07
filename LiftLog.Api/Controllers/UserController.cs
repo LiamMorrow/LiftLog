@@ -63,7 +63,7 @@ public class UserController(
         else
         {
             var userNumber = idEncodingService.DecodeId(idOrLookup);
-            user = await db.Users.FirstOrDefaultAsync(x => x.UserNumber == userNumber);
+            user = await db.Users.FirstOrDefaultAsync(x => x.UserLookup == userNumber);
         }
         if (user == null)
         {
@@ -75,7 +75,7 @@ public class UserController(
         return Ok(
             new GetUserResponse(
                 Id: user.Id,
-                Lookup: idEncodingService.EncodeId(user.UserNumber),
+                Lookup: idEncodingService.EncodeId(user.UserLookup),
                 EncryptedCurrentPlan: user.EncryptedCurrentPlan,
                 EncryptedProfilePicture: user.EncryptedProfilePicture,
                 EncryptedName: user.EncryptedName,

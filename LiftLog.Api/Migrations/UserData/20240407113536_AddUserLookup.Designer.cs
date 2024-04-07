@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LiftLog.Api.Migrations
 {
     [DbContext(typeof(UserDataContext))]
-    [Migration("20240407111718_AddUserIndex")]
-    partial class AddUserIndex
+    [Migration("20240407113536_AddUserLookup")]
+    partial class AddUserLookup
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace LiftLog.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.HasSequence<int>("user_number_sequence");
+            modelBuilder.HasSequence<int>("user_lookup_sequence");
 
             modelBuilder.Entity("LiftLog.Api.Models.User", b =>
                 {
@@ -69,18 +69,18 @@ namespace LiftLog.Api.Migrations
                         .HasColumnType("bytea")
                         .HasColumnName("salt");
 
-                    b.Property<int>("UserNumber")
+                    b.Property<int>("UserLookup")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("user_number")
-                        .HasDefaultValueSql("nextval('user_number_sequence')");
+                        .HasColumnName("user_lookup")
+                        .HasDefaultValueSql("nextval('user_lookup_sequence')");
 
                     b.HasKey("Id")
                         .HasName("pk_users");
 
-                    b.HasIndex("UserNumber")
+                    b.HasIndex("UserLookup")
                         .IsUnique()
-                        .HasDatabaseName("ix_users_user_number");
+                        .HasDatabaseName("ix_users_user_lookup");
 
                     b.ToTable("users", (string)null);
                 });
