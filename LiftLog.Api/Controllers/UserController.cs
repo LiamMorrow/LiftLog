@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using FluentValidation;
 using LiftLog.Api.Db;
 using LiftLog.Api.Models;
@@ -38,6 +39,7 @@ public class UserController(UserDataContext db, PasswordService passwordService)
             Salt = salt,
             LastAccessed = DateTimeOffset.UtcNow,
             EncryptionIV = [],
+            RsaPublicKey = []
         };
 
         await db.Users.AddAsync(user);
@@ -62,7 +64,8 @@ public class UserController(UserDataContext db, PasswordService passwordService)
                 EncryptedCurrentPlan: user.EncryptedCurrentPlan,
                 EncryptedProfilePicture: user.EncryptedProfilePicture,
                 EncryptedName: user.EncryptedName,
-                EncryptionIV: user.EncryptionIV
+                EncryptionIV: user.EncryptionIV,
+                RsaPublicKey: user.RsaPublicKey
             )
         );
     }
@@ -124,6 +127,7 @@ public class UserController(UserDataContext db, PasswordService passwordService)
         user.EncryptedProfilePicture = request.EncryptedProfilePicture;
         user.EncryptedName = request.EncryptedName;
         user.EncryptionIV = request.EncryptionIV;
+        user.RsaPublicKey = request.RsaPublicKey;
         await db.SaveChangesAsync();
         return Ok();
     }

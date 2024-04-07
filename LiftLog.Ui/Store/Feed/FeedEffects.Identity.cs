@@ -49,6 +49,31 @@ public partial class FeedEffects
     }
 
     [EffectMethod]
+    public Task HandlePublishRsaPublicKeyIfNeededAction(
+        PublishRsaPublicKeyIfNeededAction _,
+        IDispatcher dispatcher
+    )
+    {
+        if (state.Value.HasPublishedRsaPublicKey)
+        {
+            return Task.CompletedTask;
+        }
+
+        var identity = state.Value.Identity;
+        if (identity is null)
+        {
+            return Task.CompletedTask;
+        }
+        var rsaPublicKey = identity.RsaKeyPair.PublicKey;
+        if (rsaPublicKey is null)
+        {
+            return Task.CompletedTask;
+        }
+        dispatcher.Dispatch(new PublishIdentityIfEnabledAction());
+        return Task.CompletedTask;
+    }
+
+    [EffectMethod]
     public Task HandleUpdateFeedIdentityAction(
         UpdateFeedIdentityAction action,
         IDispatcher dispatcher
@@ -88,7 +113,7 @@ public partial class FeedEffects
             return;
         }
 
-        await feedIdentityService.UpdateFeedIdentityAsync(
+        var result = await feedIdentityService.UpdateFeedIdentityAsync(
             state.Value.Identity.Id,
             state.Value.Identity.Password,
             state.Value.Identity.AesKey,
@@ -100,6 +125,10 @@ public partial class FeedEffects
             state.Value.Identity.PublishWorkouts,
             programState.Value.SessionBlueprints
         );
+        if (result.IsSuccess)
+        {
+            dispatcher.Dispatch(new SetHasPublishedRsaPublicKeyAction(true));
+        }
     }
 
     [EffectMethod]

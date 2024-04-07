@@ -37,7 +37,8 @@ public class UsersController(UserDataContext db) : ControllerBase
                         EncryptedCurrentPlan: x.EncryptedCurrentPlan,
                         EncryptedProfilePicture: x.EncryptedProfilePicture,
                         EncryptedName: x.EncryptedName,
-                        EncryptionIV: x.EncryptionIV
+                        EncryptionIV: x.EncryptionIV,
+                        RsaPublicKey: x.RsaPublicKey
                     )
                 )
             )

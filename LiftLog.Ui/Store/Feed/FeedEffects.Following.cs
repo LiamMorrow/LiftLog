@@ -28,6 +28,32 @@ public partial class FeedEffects(
 )
 {
     [EffectMethod]
+    public async Task HandleFetchAndSetSharedFeedUserAction(
+        FetchAndSetSharedFeedUserAction action,
+        IDispatcher dispatcher
+    )
+    {
+        var result = await feedApiService.GetUserAsync(action.Id);
+        if (result is { IsSuccess: true, Data.RsaPublicKey: not null })
+        {
+            dispatcher.Dispatch(
+                new SetSharedFeedUserAction(
+                    FeedUser.FromShared(
+                        action.Id,
+                        new RsaPublicKey(result.Data.RsaPublicKey),
+                        action.Name
+                    )
+                )
+            );
+        }
+        else
+        {
+            // TODO handle properly
+            logger.LogError("Failed to fetch shared feed user with error {Error}", result.Error);
+        }
+    }
+
+    [EffectMethod]
     public async Task HandleRequestFollowSharedUserAction(
         RequestFollowUserAction action,
         IDispatcher dispatcher

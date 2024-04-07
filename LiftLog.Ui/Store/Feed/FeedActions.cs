@@ -37,6 +37,8 @@ public record PutFollowedUsersAction(FeedUser User);
 
 public record SetSharedFeedUserAction(FeedUser? User);
 
+public record FetchAndSetSharedFeedUserAction(Guid Id, string? Name);
+
 public record PublishIdentityIfEnabledAction();
 
 public record SaveSharedFeedUserAction();
@@ -44,6 +46,10 @@ public record SaveSharedFeedUserAction();
 public record FetchSessionFeedItemsAction();
 
 public record PublishUnpublishedSessionsAction();
+
+public record SetHasPublishedRsaPublicKeyAction(bool HasPublishedRsaPublicKey);
+
+public record PublishRsaPublicKeyIfNeededAction();
 
 public record ReplaceFeedFollowedUsersAction(ImmutableListValue<FeedUser> FollowedUsers);
 
