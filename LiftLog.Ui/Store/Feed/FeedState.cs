@@ -16,7 +16,8 @@ public record FeedState(
     ImmutableListValue<FollowRequest> FollowRequests,
     ImmutableDictionary<Guid, FeedUser> Followers,
     string ActiveTab,
-    ImmutableHashSet<Guid> UnpublishedSessionIds
+    ImmutableHashSet<Guid> UnpublishedSessionIds,
+    bool HasPublishedRsaPublicKey
 );
 
 public record FeedUser(

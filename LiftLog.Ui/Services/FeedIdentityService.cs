@@ -108,7 +108,8 @@ public class FeedIdentityService(
                 EncryptedCurrentPlan: encryptedPlan,
                 EncryptedName: encryptedName,
                 EncryptedProfilePicture: encryptedProfilePicture,
-                EncryptionIV: iv.Value
+                EncryptionIV: iv.Value,
+                RsaPublicKey: rsaKeyPair.PublicKey.SpkiPublicKeyBytes
             )
         );
         if (!result.IsSuccess)

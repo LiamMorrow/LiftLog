@@ -51,7 +51,7 @@ else
 @code
 {
     [SupplyParameterFromQuery(Name = "pub")]
-    public string PublicKey { get; set; } = "";
+    public string? PublicKey { get; set; } = "";
 
     [SupplyParameterFromQuery(Name = "id")]
     public Guid id { get; set; }
@@ -63,28 +63,27 @@ else
 
     private AppStore phoneAppStore;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Subscribe to a feed"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/feed"));
-        if (String.IsNullOrEmpty(PublicKey) || id == Guid.Empty)
+        if (FeedState.Value.Identity is null)
+        {
+            Dispatcher.Dispatch(new NavigateAction("/feed/create-identity?from=" + Uri.EscapeDataString("/feed/share?pub=" + PublicKey + "&id=" + id + "&name=" + Name ?? "")));
+        }
+        else if (id == Guid.Empty)
         {
             Dispatcher.Dispatch(new NavigateAction("/feed"));
         }
-        else if (FeedState.Value.Identity is null)
+        else if (string.IsNullOrEmpty(PublicKey))
         {
-            Dispatcher.Dispatch(new NavigateAction("/feed/create-identity?from=" + Uri.EscapeDataString("/feed/share?pub=" + PublicKey + "&id=" + id + "&name=" + Name ?? "")));
+            Dispatcher.Dispatch(new FetchAndSetSharedFeedUserAction(id, Name));
         }
         else
         {
             Dispatcher.Dispatch(new SetSharedFeedUserAction(FeedUser.FromShared(id, new RsaPublicKey(PublicKey.FromUrlSafeHexString()), Name)));
         }
 
-        base.OnInitialized();
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
         await base.OnInitializedAsync();
         phoneAppStore = await GetAppStoreFromUserAgent();
     }

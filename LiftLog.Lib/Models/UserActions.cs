@@ -17,7 +17,8 @@ public record PutUserDataRequest(
     byte[]? EncryptedProfilePicture,
     byte[]? EncryptedName,
     // The IV can be considered public, as long as the encryption key is kept secret
-    byte[] EncryptionIV
+    byte[] EncryptionIV,
+    byte[] RsaPublicKey
 );
 
 public record GetUserResponse(
@@ -25,7 +26,8 @@ public record GetUserResponse(
     byte[]? EncryptedProfilePicture,
     byte[]? EncryptedName,
     // The IV can be considered public, as long as the encryption key is kept secret
-    byte[] EncryptionIV
+    byte[] EncryptionIV,
+    byte[]? RsaPublicKey
 );
 
 public record PutUserEventRequest(
