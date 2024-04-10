@@ -37,7 +37,11 @@ public record PutFollowedUsersAction(FeedUser User);
 
 public record SetSharedFeedUserAction(FeedUser? User);
 
-public record FetchAndSetSharedFeedUserAction(string IdOrLookup, string? Name);
+public record FetchAndSetSharedFeedUserAction(
+    string IdOrLookup,
+    string? Name,
+    byte[]? RsaPublicKey
+);
 
 public record PublishIdentityIfEnabledAction();
 

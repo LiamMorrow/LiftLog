@@ -18,6 +18,7 @@ internal partial class FeedIdentityDaoV1
             ? null
             : new FeedIdentity(
                 Id: value.Id,
+                Lookup: value.Lookup,
                 AesKey: new Lib.Services.AesKey(value.AesKey.ToByteArray()),
                 RsaKeyPair: new Lib.Services.RsaKeyPair(
                     new Lib.Services.RsaPublicKey(value.PublicKey.ToByteArray()),
@@ -40,6 +41,7 @@ internal partial class FeedIdentityDaoV1
             : new FeedIdentityDaoV1
             {
                 Id = value.Id,
+                Lookup = value.Lookup,
                 AesKey = ByteString.CopyFrom(value.AesKey.Value),
                 PrivateKey = ByteString.CopyFrom(value.RsaKeyPair.PrivateKey.Pkcs8PrivateKeyBytes),
                 PublicKey = ByteString.CopyFrom(value.RsaKeyPair.PublicKey.SpkiPublicKeyBytes),
@@ -69,9 +71,8 @@ internal partial class FeedUserDaoV1
                     : new Lib.Services.AesKey(value.AesKey.ToByteArray()),
                 PublicKey: new Lib.Services.RsaPublicKey(value.PublicKey.ToByteArray()),
                 CurrentPlan: value
-                    .CurrentPlan?.Sessions.Select(sessionBlueprintDao =>
-                        sessionBlueprintDao.ToModel()
-                    )
+                    .CurrentPlan?.Sessions
+                    .Select(sessionBlueprintDao => sessionBlueprintDao.ToModel())
                     .ToImmutableList() ?? [],
                 ProfilePicture: value.ProfilePicture.IsEmpty
                     ? null

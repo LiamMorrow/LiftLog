@@ -43,7 +43,7 @@ Using this identity, the client can create a `SHARE_URL`. This url consists of 2
 An example share url could look like this (note this is non functional):
 
 ```
-https://app.liftlog.online/feed/share?id=95e80409-dd6e-4cdb-b382-fb85b154350f&name=Liam
+https://app.liftlog.online/feed/share?id=aDf00f&name=Liam
 ```
 
 The structure of the url being:

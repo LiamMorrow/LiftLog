@@ -34,13 +34,16 @@ public partial class FeedEffects(
     )
     {
         var result = await feedApiService.GetUserAsync(action.IdOrLookup);
-        if (result is { IsSuccess: true, Data.RsaPublicKey: not null })
+        if (
+            result is { IsSuccess: true }
+            && new[] { result.Data.RsaPublicKey, action.RsaPublicKey }.Any(x => x != null)
+        )
         {
             dispatcher.Dispatch(
                 new SetSharedFeedUserAction(
                     FeedUser.FromShared(
                         result.Data.Id,
-                        new RsaPublicKey(result.Data.RsaPublicKey),
+                        new RsaPublicKey(result.Data.RsaPublicKey ?? action.RsaPublicKey!),
                         action.Name
                     )
                 )

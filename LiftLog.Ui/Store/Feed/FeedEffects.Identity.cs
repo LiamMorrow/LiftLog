@@ -82,6 +82,7 @@ public partial class FeedEffects
         {
             var result = await feedIdentityService.UpdateFeedIdentityAsync(
                 identity.Id,
+                identity.Lookup,
                 identity.Password,
                 identity.AesKey,
                 identity.RsaKeyPair,
@@ -115,6 +116,7 @@ public partial class FeedEffects
 
         var result = await feedIdentityService.UpdateFeedIdentityAsync(
             state.Value.Identity.Id,
+            state.Value.Identity.Lookup,
             state.Value.Identity.Password,
             state.Value.Identity.AesKey,
             state.Value.Identity.RsaKeyPair,

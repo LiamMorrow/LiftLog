@@ -69,6 +69,7 @@ public record RemovedSessionFeedItem(
 
 public record FeedIdentity(
     Guid Id,
+    string Lookup,
     AesKey AesKey,
     RsaKeyPair RsaKeyPair,
     string Password,

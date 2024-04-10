@@ -48,7 +48,12 @@ public class UserController(
 
         await db.Users.AddAsync(user);
         await db.SaveChangesAsync();
-        return Ok(new CreateUserResponse(password));
+        return Ok(
+            new CreateUserResponse(
+                Lookup: idEncodingService.EncodeId(user.UserLookup),
+                Password: password
+            )
+        );
     }
 
     [Route("[controller]/{id}")]

@@ -8,7 +8,7 @@ public record DeleteUserRequest(Guid Id, string Password);
 
 public record GetUsersResponse(Dictionary<Guid, GetUserResponse> Users);
 
-public record CreateUserResponse(string Password);
+public record CreateUserResponse(string Lookup, string Password);
 
 public record PutUserDataRequest(
     Guid Id,
