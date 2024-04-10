@@ -57,9 +57,9 @@
     "@types/node" "*"
 
 "@types/node@*":
-  version "20.11.30"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.11.30.tgz#9c33467fc23167a347e73834f788f4b9f399d66f"
-  integrity sha512-dHM6ZxwlmuZaRmUPfv1p+KrdD1Dci04FbdEm/9wEMouFqxYoFl5aMkt0VMAUtYRQDyYvD41WJLukhq/ha3YuTw==
+  version "20.12.7"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.12.7.tgz#04080362fa3dd6c5822061aa3124f5c152cff384"
+  integrity sha512-wq0cICSkRLVaf3UGLMGItu/PtdY7oaXaI/RVU+xliKVOtRna3PRY57ZDfztpDL0n11vfymMUnXv8QwYCO7L1wg==
   dependencies:
     undici-types "~5.26.4"
 
@@ -521,9 +521,9 @@ cross-spawn@^7.0.0, cross-spawn@^7.0.3:
     which "^2.0.1"
 
 cypress@^13.5.0:
-  version "13.7.1"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.7.1.tgz#d1208eb04efd46ef52a30480a5da71a03373261a"
-  integrity sha512-4u/rpFNxOFCoFX/Z5h+uwlkBO4mWzAjveURi3vqdSu56HPvVdyGTxGw4XKGWt399Y1JwIn9E1L9uMXQpc0o55w==
+  version "13.7.2"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.7.2.tgz#61e841382abb20e0a9a063086ee0d850af3ef6bc"
+  integrity sha512-FF5hFI5wlRIHY8urLZjJjj/YvfCBrRpglbZCLr/cYcL9MdDe0+5usa8kTIrDHthlEc9lwihbkb5dmwqBDNS2yw==
   dependencies:
     "@cypress/request" "^3.0.0"
     "@cypress/xvfb" "^1.2.4"
