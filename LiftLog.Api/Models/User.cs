@@ -1,8 +1,14 @@
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+
 namespace LiftLog.Api.Models;
 
+[Index(nameof(UserLookup), IsUnique = true)]
 public class User
 {
     public Guid Id { get; set; }
+
+    public int UserLookup { get; set; }
 
     // Hashed and salted password used for authentication
     public string HashedPassword { get; set; } = null!;

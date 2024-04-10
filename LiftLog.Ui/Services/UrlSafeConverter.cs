@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace LiftLog.Ui.Services;
 
 public static class UrlSafeConverter
@@ -7,8 +9,12 @@ public static class UrlSafeConverter
         return Convert.ToHexString(bytes).Replace("-", "");
     }
 
-    public static byte[] FromUrlSafeHexString(this string hexString)
+    public static byte[]? FromUrlSafeHexString(this string? hexString)
     {
+        if (string.IsNullOrEmpty(hexString))
+        {
+            return null;
+        }
         return Enumerable
             .Range(0, hexString.Length)
             .Where(x => x % 2 == 0)

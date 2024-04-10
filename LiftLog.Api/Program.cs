@@ -44,6 +44,11 @@ var openAiApiKey =
     ?? throw new Exception("OpenAiApiKey configuration is not set.");
 builder.Services.RegisterGptAiWorkoutPlanner(openAiApiKey);
 
+builder.Services.Configure<IdEncodingServiceConfiguration>(
+    builder.Configuration.GetSection("IdEncodingService")
+);
+builder.Services.AddSingleton<IdEncodingService>();
+
 builder.Services.AddSingleton<PasswordService>();
 builder.Services.AddHttpClient<AppleAppStorePurchaseVerificationService>();
 builder.Services.AddScoped<RateLimitService>();

@@ -51,10 +51,10 @@ else
 @code
 {
     [SupplyParameterFromQuery(Name = "pub")]
-    public string? PublicKey { get; set; } = "";
+    public string? PublicKey { get; set; }
 
     [SupplyParameterFromQuery(Name = "id")]
-    public Guid id { get; set; }
+    public string? id { get; set; }
 
     [SupplyParameterFromQuery(Name = "name")]
     public string? Name { get; set; }
@@ -71,17 +71,13 @@ else
         {
             Dispatcher.Dispatch(new NavigateAction("/feed/create-identity?from=" + Uri.EscapeDataString("/feed/share?pub=" + PublicKey + "&id=" + id + "&name=" + Name ?? "")));
         }
-        else if (id == Guid.Empty)
+        else if (string.IsNullOrWhiteSpace(id))
         {
             Dispatcher.Dispatch(new NavigateAction("/feed"));
         }
-        else if (string.IsNullOrEmpty(PublicKey))
-        {
-            Dispatcher.Dispatch(new FetchAndSetSharedFeedUserAction(id, Name));
-        }
         else
         {
-            Dispatcher.Dispatch(new SetSharedFeedUserAction(FeedUser.FromShared(id, new RsaPublicKey(PublicKey.FromUrlSafeHexString()), Name)));
+            Dispatcher.Dispatch(new FetchAndSetSharedFeedUserAction(id, Name, PublicKey?.FromUrlSafeHexString()));
         }
 
         await base.OnInitializedAsync();
@@ -96,7 +92,7 @@ else
             _alertWebAppDialog?.Open();
         }
 
-        if (FeedState.Value.FollowedUsers.ContainsKey(id))
+        if (Guid.TryParse(id, out var idGuid) && FeedState.Value.FollowedUsers.ContainsKey(idGuid))
         {
             Dispatcher.Dispatch(new NavigateAction("/feed"));
         }
@@ -119,6 +115,7 @@ else
 
         Dispatcher.Dispatch(new RequestFollowUserAction());
         Dispatcher.Dispatch(new SetSharedFeedUserAction(null));
+        Dispatcher.Dispatch(new NavigateAction("/feed"));
     }
 
     private void UpdateNickname(string value)
