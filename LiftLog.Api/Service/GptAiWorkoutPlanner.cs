@@ -77,17 +77,17 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
                     .Sessions.Select(s => new SessionBlueprint(
                         s.Name,
                         s.Exercises.Select(e => new ExerciseBlueprint(
-                            e.Name,
-                            e.Sets,
-                            e.RepsPerSet,
-                            e.WeightIncreaseOnSuccess,
-                            new Rest(
-                                TimeSpan.FromSeconds(e.RestBetweenSets.MinRestSeconds),
-                                TimeSpan.FromSeconds(e.RestBetweenSets.MaxRestSeconds),
-                                TimeSpan.FromSeconds(e.RestBetweenSets.FailureRestSeconds)
-                            ),
-                            false
-                        ))
+                                e.Name,
+                                e.Sets,
+                                e.RepsPerSet,
+                                e.WeightIncreaseOnSuccess,
+                                new Rest(
+                                    TimeSpan.FromSeconds(e.RestBetweenSets.MinRestSeconds),
+                                    TimeSpan.FromSeconds(e.RestBetweenSets.MaxRestSeconds),
+                                    TimeSpan.FromSeconds(e.RestBetweenSets.FailureRestSeconds)
+                                ),
+                                false
+                            ))
                             .ToImmutableList()
                     ))
                     .ToImmutableList()
