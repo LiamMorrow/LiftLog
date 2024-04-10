@@ -104,6 +104,31 @@ public partial class FeedEffects
         });
 
     [EffectMethod]
+    public async Task HandleGetLookupIfNeededAction(
+        GetLookupIfNeededAction _,
+        IDispatcher dispatcher
+    )
+    {
+        var identity = state.Value.Identity;
+        if (identity is null || identity is not { Lookup: null or "" })
+        {
+            return;
+        }
+
+        var result = await feedApiService.GetUserAsync(identity.Id.ToString());
+        if (!result.IsSuccess)
+        {
+            // TODO handle properly
+            logger.LogError("Failed to get user with error {Error}", result.Error);
+            return;
+        }
+
+        dispatcher.Dispatch(
+            new PutFeedIdentityAction(identity with { Lookup = result.Data.Lookup })
+        );
+    }
+
+    [EffectMethod]
     public async Task HandlePublishIdentityIfEnabledAction(
         PublishIdentityIfEnabledAction _,
         IDispatcher dispatcher

@@ -108,6 +108,7 @@ else
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
         Dispatcher.Dispatch(new PublishUnpublishedSessionsAction());
         Dispatcher.Dispatch(new PublishRsaPublicKeyIfNeededAction());
+        Dispatcher.Dispatch(new GetLookupIfNeededAction());
         await base.OnInitializedAsync();
     }
 

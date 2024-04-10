@@ -55,6 +55,8 @@ public record SetHasPublishedRsaPublicKeyAction(bool HasPublishedRsaPublicKey);
 
 public record PublishRsaPublicKeyIfNeededAction();
 
+public record GetLookupIfNeededAction();
+
 public record ReplaceFeedFollowedUsersAction(ImmutableListValue<FeedUser> FollowedUsers);
 
 public record UnfollowFeedUserAction(FeedUser FeedUser);

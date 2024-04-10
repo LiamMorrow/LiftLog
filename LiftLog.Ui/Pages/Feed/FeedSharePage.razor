@@ -115,6 +115,7 @@ else
 
         Dispatcher.Dispatch(new RequestFollowUserAction());
         Dispatcher.Dispatch(new SetSharedFeedUserAction(null));
+        Dispatcher.Dispatch(new NavigateAction("/feed"));
     }
 
     private void UpdateNickname(string value)

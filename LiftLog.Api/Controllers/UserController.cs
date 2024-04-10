@@ -56,7 +56,7 @@ public class UserController(
         );
     }
 
-    [Route("[controller]/{id}")]
+    [Route("[controller]/{idOrLookup}")]
     [HttpGet]
     public async Task<IActionResult> GetUser(string idOrLookup)
     {
