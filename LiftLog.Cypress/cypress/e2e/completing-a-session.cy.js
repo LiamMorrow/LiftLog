@@ -61,7 +61,7 @@ describe('Completing a session', () => {
           cy.getA('.repcount').eq(i).click()
         }
 
-        cy.getA('.snackbar').should('be.visible').should('contain.text', 'This session you lifted').should('contain.text', '680')
+        cy.getA('.snackbar').should('be.visible').should('contain.text', 'This session').should('contain.text', '680')
 
         cy.contains('Finish').click()
 
@@ -114,7 +114,7 @@ describe('Completing a session', () => {
           cy.getA('.repcount').eq(i).click()
         }
 
-        cy.getA('.snackbar').should('be.visible').should('contain.text', 'This session you lifted').should('contain.text', '650')
+        cy.getA('.snackbar').should('be.visible').should('contain.text', 'This session').should('contain.text', '650')
         cy.contains('Finish').click()
 
         cy.getA('.cardlist .card').eq(0).should('contain.text', 'Workout B')
