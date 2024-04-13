@@ -92,7 +92,8 @@ else
             _alertWebAppDialog?.Open();
         }
 
-        if (Guid.TryParse(id, out var idGuid) && FeedState.Value.FollowedUsers.ContainsKey(idGuid))
+        if (FeedState.Value.SharedFeedUser is not null
+            && FeedState.Value.FollowedUsers.ContainsKey(FeedState.Value.SharedFeedUser.Id))
         {
             Dispatcher.Dispatch(new NavigateAction("/feed"));
         }
