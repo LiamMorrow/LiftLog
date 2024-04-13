@@ -1,16 +1,14 @@
 @if (Item is SessionFeedItem sessionFeedItem)
 {
-    <div class="flex flex-col gap-2 items-start">
-        <span><span class="text-primary font-bold">@(User.Nickname ?? User.Name ?? "Anonymous User")</span> completed a workout!</span>
-        <SplitCardControl>
-            <TitleContent>
-                <SessionSummaryTitle IsFilled="true" Session="sessionFeedItem.Session" />
-            </TitleContent>
-            <MainContent>
-                <SessionSummary ShowSets=true Session="sessionFeedItem.Session"></SessionSummary>
-            </MainContent>
-        </SplitCardControl>
-    </div>
+    <SplitCardControl>
+        <TitleContent>
+            <span><span class="text-primary font-bold">@(User.Nickname ?? User.Name ?? "Anonymous User")</span> completed a workout!</span>
+            <SessionSummaryTitle IsFilled="true" Session="sessionFeedItem.Session" />
+        </TitleContent>
+        <MainContent>
+            <SessionSummary ShowSets=true Session="sessionFeedItem.Session"></SessionSummary>
+        </MainContent>
+    </SplitCardControl>
 }
 
 

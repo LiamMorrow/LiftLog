@@ -175,6 +175,8 @@ else
 
     [Parameter] public bool IsReadonly { get; set; } = false;
 
+    [Parameter] public string? Username { get; set; }
+
     [CascadingParameter(Name = "IsInActiveScreen")]
     public bool IsInActiveScreen { get; set; }
 
@@ -273,12 +275,18 @@ else
                         StartTime="lrs.Set.CompletionTime"
                         Failed="lastSetFailed"/>;
         }
-        else if (Session.IsComplete)
+        else if (Session.IsComplete || IsReadonly)
         {
             return @<SnackBar>
                 <span class="flex flex-col justify-start">
                     <span class="flex justify-between">
-                        <span>This session you lifted </span>
+                        <span>This session
+                            @if(Username is not null)
+                            {
+                                <span class="font-bold">@Username</span>
+                            } else{
+                                @("you");
+                            } lifted </span>
                         <span class="font-bold">
                             <WeightFormat Weight="Session.TotalWeightLifted"/>
                         </span>

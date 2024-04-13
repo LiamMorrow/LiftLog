@@ -42,6 +42,8 @@ public record FeedUser(
             AesKey: null,
             FollowSecret: null
         );
+
+    public string DisplayName => Nickname ?? Name ?? "Anonymous User";
 }
 
 public abstract record FeedItem(
