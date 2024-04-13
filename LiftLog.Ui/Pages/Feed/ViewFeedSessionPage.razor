@@ -34,7 +34,8 @@
             AddSessionToPlan="AddSessionToPlan"
             UpdateSessionInPlan="UpdateSessionInPlan"
             UpdateBodyweight="@(_ => { })"
-            IsReadonly=true/>
+            IsReadonly=true
+            Username="@username"/>
     </div>
 }
 
@@ -45,6 +46,8 @@
 
     [Parameter] public string EventId { get; set; } = "";
 
+    string? username;
+
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Feed Session"));
@@ -52,10 +55,15 @@
 
         if (Guid.TryParse(EventId, out var eventId))
         {
-            session = FeedState
+            var feedItem = FeedState
                 .Value.Feed.OfType<SessionFeedItem>()
-                .FirstOrDefault(x => x.EventId == eventId)
-                ?.Session;
+                .FirstOrDefault(x => x.EventId == eventId);
+            Console.WriteLine("username: " + username);
+            if(feedItem is not null)
+            {
+                session = feedItem.Session;
+                username = FeedState.Value.FollowedUsers.TryGetValue(feedItem.UserId, out var user) ? user.DisplayName : null;
+            }
             if (session is not null)
                 Dispatcher.Dispatch(new SetPageTitleAction(session.Blueprint.Name));
         }
