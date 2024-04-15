@@ -94,8 +94,8 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1"/>
         <PackageReference Include="Plugin.InAppBilling" Version="7.1.0"/>
-        <PackageReference Include="Plugin.LocalNotification" Version="11.1.1"/>
-        <PackageReference Include="Sentry.Extensions.Logging" Version="4.2.1"/>
+        <PackageReference Include="Plugin.LocalNotification" Version="11.1.2"/>
+        <PackageReference Include="Sentry.Extensions.Logging" Version="4.4.0"/>
         <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.20"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.20"/>
         <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Annotation" Version="1.7.1.1"/>
