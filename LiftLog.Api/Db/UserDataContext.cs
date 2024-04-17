@@ -13,8 +13,18 @@ public class UserDataContext(DbContextOptions<UserDataContext> options) : DbCont
 
     public DbSet<UserInboxItem> UserInboxItems { get; set; } = null!;
 
+    /// <summary>
+    /// Used to register the user event filter tuple type as a DbSet for use in FromSqlRaw.
+    /// </summary>
+    public DbSet<UserEventFilter> UserEventFilterStubDbSet { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder
+            .Entity<UserEventFilter>()
+            .HasNoKey()
+            .ToTable("tmp_stub_table", t => t.ExcludeFromMigrations());
+
         modelBuilder.HasSequence<int>("user_lookup_sequence");
 
         modelBuilder
