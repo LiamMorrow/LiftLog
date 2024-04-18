@@ -1,5 +1,6 @@
 using FluentValidation;
 using LiftLog.Api.Db;
+using LiftLog.Api.Models;
 using LiftLog.Lib.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -31,12 +32,27 @@ public class EventsController(UserDataContext db) : ControllerBase
             .Users.Select(x => x.FollowSecret)
             .Except(validFollowSecrets.Select(x => x.Value))
             .ToArray();
-        var userIds = validFollowSecrets.Select(x => x.UserId).ToArray();
+        var userIdsAndSince = validFollowSecrets
+            .Select(x => new UserEventFilter
+            {
+                UserId = x.UserId,
+                Since =
+                    request.Users.Single(y => y.UserId == x.UserId).Since ?? request.Since!.Value
+            })
+            .ToArray();
+
         var events = await db
-            .UserEvents.Where(x => userIds.Contains(x.UserId))
-            .Where(x => x.Timestamp > request.Since)
-            .Where(x => x.Expiry > DateTimeOffset.UtcNow)
+            .UserEvents.Join(
+                db.UserEventFilterStubDbSet.CreateResultSetFromData(userIdsAndSince),
+                x => x.UserId,
+                x => x.UserId,
+                (Event, Request) => new { Event, Request }
+            )
+            .Where(x => x.Event.Expiry > DateTimeOffset.UtcNow)
+            .Where(x => x.Event.Timestamp > x.Request.Since)
+            .Select(x => x.Event)
             .ToArrayAsync();
+
         var userEvents = events
             .Select(x => new UserEventResponse(
                 UserId: x.UserId,
