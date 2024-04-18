@@ -14,6 +14,10 @@ namespace LiftLog.Ui.Store.Feed;
 
 public partial class FeedEffects
 {
+    private static readonly DateTimeOffset MinTimestamp = DateTimeOffset.Parse(
+        "2000-01-01T00:00:00Z"
+    );
+
     [EffectMethod]
     public async Task HandleFetchSessionFeedItemsAction(
         FetchSessionFeedItemsAction _,
@@ -21,20 +25,23 @@ public partial class FeedEffects
     )
     {
         var originalFollowedUsers = state.Value.FollowedUsers;
+        var userIdToLatestEvent = state
+            .Value.Feed.GroupBy(x => x.UserId)
+            .ToDictionary(x => x.Key, x => x.Max(x => x.Timestamp));
         var followedUsersWithFollowSecret = originalFollowedUsers
             .Where(x => x.Value.FollowSecret is not null)
-            .Select(x => new GetUserEventRequest(x.Key, x.Value.FollowSecret!));
+            .Select(x => new GetUserEventRequest(
+                UserId: x.Key,
+                FollowSecret: x.Value.FollowSecret!,
+                Since: userIdToLatestEvent.GetValueOrDefault(x.Key, MinTimestamp)
+            ));
         if (!followedUsersWithFollowSecret.Any())
         {
             return;
         }
 
         var feedResponseTask = feedApiService.GetUserEventsAsync(
-            new GetEventsRequest(
-                Users: [.. followedUsersWithFollowSecret],
-                Since: state.Value.Feed.MaxBy(x => x.Timestamp)?.Timestamp
-                    ?? DateTimeOffset.MinValue
-            )
+            new GetEventsRequest(Users: [.. followedUsersWithFollowSecret])
         );
         var userResponseTask = feedApiService.GetUsersAsync(
             new GetUsersRequest(followedUsersWithFollowSecret.Select(x => x.UserId).ToArray())
