@@ -14,6 +14,7 @@ public class ProgramFeature : Feature<ProgramState>
             IsHydrated: false,
             SessionBlueprints: [],
             UpcomingSessions: [],
-            IsLoadingUpcomingSessions: true
+            IsLoadingUpcomingSessions: true,
+            SavedPlans: ImmutableDictionary<Guid, Plan>.Empty
         );
 }

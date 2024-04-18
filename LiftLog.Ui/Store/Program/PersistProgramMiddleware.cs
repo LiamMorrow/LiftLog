@@ -1,11 +1,12 @@
+using System.Collections.Immutable;
 using Fluxor;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
-using LiftLog.Ui.Repository;
+using LiftLog.Ui.Services;
 
 namespace LiftLog.Ui.Store.Program;
 
-public class PersistProgramMiddleware(ICurrentProgramRepository programRepository) : Middleware
+public class PersistProgramMiddleware(CurrentProgramRepository programRepository) : Middleware
 {
     private IStore? _store;
     private ProgramState? _prevState;
@@ -16,7 +17,9 @@ public class PersistProgramMiddleware(ICurrentProgramRepository programRepositor
         var programs = await programRepository.GetSessionsInProgramAsync();
         store
             .Features[nameof(ProgramFeature)]
-            .RestoreState(new ProgramState(true, programs, [], true));
+            .RestoreState(
+                new ProgramState(true, programs, [], true, ImmutableDictionary<Guid, Plan>.Empty)
+            );
 
         dispatch.Dispatch(new SetProgramIsHydratedAction());
     }

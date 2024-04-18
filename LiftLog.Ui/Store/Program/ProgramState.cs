@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 
@@ -7,5 +8,8 @@ public record ProgramState(
     bool IsHydrated,
     ImmutableListValue<SessionBlueprint> SessionBlueprints,
     ImmutableListValue<Session> UpcomingSessions,
-    bool IsLoadingUpcomingSessions
+    bool IsLoadingUpcomingSessions,
+    ImmutableDictionary<Guid, Plan> SavedPlans
 );
+
+public record Plan(string Name, ImmutableListValue<SessionBlueprint> SessionBlueprints);

@@ -11,7 +11,6 @@ using LiftLog.Lib.Services;
 using LiftLog.Ui.Models.SessionBlueprintDao;
 using LiftLog.Ui.Models.SessionHistoryDao;
 using LiftLog.Ui.Models.SettingsStorageDao;
-using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.Program;
 using Microsoft.Extensions.Logging;
@@ -20,7 +19,7 @@ namespace LiftLog.Ui.Store.Settings;
 
 public class SettingsEffects(
     ProgressRepository ProgressRepository,
-    ICurrentProgramRepository ProgramRepository,
+    CurrentProgramRepository ProgramRepository,
     IExporter textExporter,
     IAiWorkoutPlanner aiWorkoutPlanner,
     IThemeProvider themeProvider,
