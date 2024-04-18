@@ -144,7 +144,6 @@
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Session"));
-        Dispatcher.Dispatch(new FetchExerciseNamesAction());
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/history"));
         if (CurrentSessionState.Value.HistorySession is null)
         {

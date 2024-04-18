@@ -7,6 +7,5 @@ public record ProgramState(
     bool IsHydrated,
     ImmutableListValue<SessionBlueprint> SessionBlueprints,
     ImmutableListValue<Session> UpcomingSessions,
-    bool IsLoadingUpcomingSessions,
-    ImmutableListValue<string> ExerciseNames
+    bool IsLoadingUpcomingSessions
 );

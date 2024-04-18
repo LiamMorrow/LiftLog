@@ -14,7 +14,6 @@ public class ProgramFeature : Feature<ProgramState>
             IsHydrated: false,
             SessionBlueprints: [],
             UpcomingSessions: [],
-            IsLoadingUpcomingSessions: true,
-            ExerciseNames: []
+            IsLoadingUpcomingSessions: true
         );
 }

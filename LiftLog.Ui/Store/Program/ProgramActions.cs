@@ -7,10 +7,6 @@ public record SetProgramIsHydratedAction();
 
 public record FetchUpcomingSessionsAction();
 
-public record FetchExerciseNamesAction();
-
-public record SetExerciseNamesAction(ImmutableListValue<string> ExerciseNames);
-
 public record SetUpcomingSessionsAction(ImmutableListValue<Session> UpcomingSessions);
 
 public record SetProgramSessionsAction(ImmutableListValue<SessionBlueprint> SessionBlueprints);

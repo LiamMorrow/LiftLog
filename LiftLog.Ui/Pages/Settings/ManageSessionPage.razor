@@ -163,7 +163,6 @@
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Manage Session"));
-        Dispatcher.Dispatch(new FetchExerciseNamesAction());
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings/manage-workouts"));
         if (ProgramState.Value.SessionBlueprints.Count - 1 < SessionIndex)
         {

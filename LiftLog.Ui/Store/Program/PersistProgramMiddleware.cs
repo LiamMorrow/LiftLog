@@ -16,7 +16,7 @@ public class PersistProgramMiddleware(ICurrentProgramRepository programRepositor
         var programs = await programRepository.GetSessionsInProgramAsync();
         store
             .Features[nameof(ProgramFeature)]
-            .RestoreState(new ProgramState(true, programs, [], true, []));
+            .RestoreState(new ProgramState(true, programs, [], true));
 
         dispatch.Dispatch(new SetProgramIsHydratedAction());
     }

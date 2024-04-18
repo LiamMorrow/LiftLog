@@ -19,20 +19,4 @@ public class ProgramEffects(SessionService sessionService, IState<ProgramState> 
             .ToImmutableListAsync();
         dispatcher.Dispatch(new SetUpcomingSessionsAction(sessions));
     }
-
-    [EffectMethod(typeof(FetchExerciseNamesAction))]
-    public async Task FetchExerciseNames(IDispatcher dispatcher)
-    {
-        var exerciseNames = await sessionService
-            .GetLatestSessionsAsync()
-            .SelectMany(x => x.Blueprint.Exercises.Select(ex => ex.Name).ToAsyncEnumerable())
-            .Concat(
-                state
-                    .Value.SessionBlueprints.SelectMany(x => x.Exercises.Select(ex => ex.Name))
-                    .ToAsyncEnumerable()
-            )
-            .Distinct()
-            .ToImmutableListAsync();
-        dispatcher.Dispatch(new SetExerciseNamesAction(exerciseNames));
-    }
 }

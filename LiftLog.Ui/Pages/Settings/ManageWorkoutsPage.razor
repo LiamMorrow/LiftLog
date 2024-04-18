@@ -33,11 +33,14 @@
 </FloatingBottomContainer>
 
 @code {
-    void MoveSessionUp(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new MoveSessionBlueprintUpInProgramAction(sessionBlueprint));
+    void MoveSessionUp(SessionBlueprint sessionBlueprint)
+        => Dispatcher.Dispatch(new MoveSessionBlueprintUpInProgramAction(sessionBlueprint));
 
-    void MoveSessionDown(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new MoveSessionBlueprintDownInProgramAction(sessionBlueprint));
+    void MoveSessionDown(SessionBlueprint sessionBlueprint)
+        => Dispatcher.Dispatch(new MoveSessionBlueprintDownInProgramAction(sessionBlueprint));
 
-    void RemoveSession(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new RemoveSessionFromProgramAction(sessionBlueprint));
+    void RemoveSession(SessionBlueprint sessionBlueprint)
+        => Dispatcher.Dispatch(new RemoveSessionFromProgramAction(sessionBlueprint));
 
     void BackToSettings() => NavigationManager.NavigateTo("/settings");
 

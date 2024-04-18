@@ -14,12 +14,6 @@ public static class ProgramReducers
         };
 
     [ReducerMethod]
-    public static ProgramState SetExerciseNames(
-        ProgramState state,
-        SetExerciseNamesAction action
-    ) => state with { ExerciseNames = action.ExerciseNames };
-
-    [ReducerMethod]
     public static ProgramState FetchUpcomingSessions(
         ProgramState state,
         FetchUpcomingSessionsAction _
