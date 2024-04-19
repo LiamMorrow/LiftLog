@@ -106,7 +106,7 @@
                 blueprint = blueprint with { Name = newName };
             }
 
-            Dispatcher.Dispatch(new AddProgramSessionAction(Plan.ActivePlanId, blueprint));
+            Dispatcher.Dispatch(new AddProgramSessionAction(Guid.Empty, blueprint));
             Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.HistorySession, CurrentSessionState.Value.HistorySession with { Blueprint = blueprint }));
             Dispatcher.Dispatch(new SetPageTitleAction(blueprint.Name));
         }
@@ -117,7 +117,7 @@
         if (CurrentSessionState.Value.HistorySession?.Blueprint is SessionBlueprint blueprint)
         {
             var blueprintIndex = ProgramState.Value.SessionBlueprints.IndexedTuples().First(x => x.Item.Name == blueprint.Name).Index;
-            Dispatcher.Dispatch(new SetProgramSessionAction(Plan.ActivePlanId, blueprintIndex, blueprint));
+            Dispatcher.Dispatch(new SetProgramSessionAction(Guid.Empty, blueprintIndex, blueprint));
         }
     }
 

@@ -77,7 +77,7 @@ else
 
     private void AcceptAiPlan(AiWorkoutPlan plan)
     {
-        Dispatcher.Dispatch(new SetProgramSessionsAction(Plan.ActivePlanId, plan.Sessions));
+        Dispatcher.Dispatch(new SetProgramSessionsAction(Guid.Empty, plan.Sessions));
         Dispatcher.Dispatch(new SetAiPlanAction(null));
         Dispatcher.Dispatch(new PublishIdentityIfEnabledAction());
         NavigationManager.NavigateTo("/");

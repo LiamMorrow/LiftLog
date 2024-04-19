@@ -9,10 +9,5 @@ public record ProgramState(
     ImmutableListValue<SessionBlueprint> SessionBlueprints,
     ImmutableListValue<Session> UpcomingSessions,
     bool IsLoadingUpcomingSessions,
-    ImmutableDictionary<Guid, Plan> SavedPlans
+    ImmutableDictionary<Guid, ProgramBlueprint> SavedPrograms
 );
-
-public record Plan(string Name, ImmutableListValue<SessionBlueprint> SessionBlueprints)
-{
-    public static readonly Guid ActivePlanId = Guid.Empty;
-}

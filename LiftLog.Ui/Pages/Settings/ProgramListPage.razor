@@ -62,7 +62,7 @@
         await selectedProgramDialog!.CloseWait();
         if (selectedProgram != null)
         {
-            Dispatcher.Dispatch(new SetProgramSessionsAction(Plan.ActivePlanId, selectedProgram.Sessions));
+            Dispatcher.Dispatch(new SetProgramSessionsAction(Guid.Empty, selectedProgram.Sessions));
             Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, null));
             Dispatcher.Dispatch(new NavigateAction("/"));
         }

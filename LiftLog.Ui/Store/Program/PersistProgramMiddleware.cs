@@ -23,7 +23,7 @@ public class PersistProgramMiddleware(CurrentProgramRepository programRepository
                     SessionBlueprints: sessionsInCurrentProgram,
                     UpcomingSessions: [],
                     IsLoadingUpcomingSessions: true,
-                    SavedPlans: ImmutableDictionary<Guid, Plan>.Empty
+                    SavedPrograms: ImmutableDictionary<Guid, ProgramBlueprint>.Empty
                 )
             );
 

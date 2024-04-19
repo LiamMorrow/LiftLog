@@ -61,7 +61,7 @@
 
     private void UsePlan()
     {
-        Dispatcher.Dispatch(new SetProgramSessionsAction(Plan.ActivePlanId, plan));
+        Dispatcher.Dispatch(new SetProgramSessionsAction(Guid.Empty, plan));
         usePlanDialog?.Close();
     }
 

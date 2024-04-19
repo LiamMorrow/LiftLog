@@ -134,13 +134,11 @@ public static class ProgramReducers
             _
                 => state with
                 {
-                    SavedPlans = state.SavedPlans.SetItem(
+                    SavedPrograms = state.SavedPrograms.SetItem(
                         planId,
-                        state.SavedPlans[planId] with
+                        state.SavedPrograms[planId] with
                         {
-                            SessionBlueprints = sessionBlueprints(
-                                state.SavedPlans[planId].SessionBlueprints
-                            )
+                            Sessions = sessionBlueprints(state.SavedPrograms[planId].Sessions)
                         }
                     )
                 }

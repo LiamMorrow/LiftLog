@@ -112,7 +112,7 @@
     {
         if (SessionEditorState.Value.SessionBlueprint is not null)
         {
-            Dispatcher.Dispatch(new SetProgramSessionAction(Plan.ActivePlanId, SessionIndex, SessionEditorState.Value.SessionBlueprint));
+            Dispatcher.Dispatch(new SetProgramSessionAction(Guid.Empty, SessionIndex, SessionEditorState.Value.SessionBlueprint));
         }
     }
 

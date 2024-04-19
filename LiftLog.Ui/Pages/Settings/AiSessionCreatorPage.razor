@@ -108,7 +108,7 @@ else
             return;
         }
 
-        Dispatcher.Dispatch(new AddProgramSessionAction(Plan.ActivePlanId, AiSessionCreatorState.Value.GeneratedSession));
+        Dispatcher.Dispatch(new AddProgramSessionAction(Guid.Empty, AiSessionCreatorState.Value.GeneratedSession));
         NavigationManager.NavigateTo("/settings/manage-workouts");
         Dispatcher.Dispatch(new ClearAiGeneratedSessionStateAction());
     }
