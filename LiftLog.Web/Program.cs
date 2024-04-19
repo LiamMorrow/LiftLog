@@ -1,21 +1,9 @@
-using System.Text.Json;
 using Append.Blazor.Notifications;
 using BlazorDownloadFile;
 using Blazored.LocalStorage;
-using Fluxor;
-using LiftLog.Lib.Serialization;
-using LiftLog.Lib.Services;
 using LiftLog.Ui;
-using LiftLog.Ui.Repository;
-using LiftLog.Ui.Services;
-using LiftLog.Ui.Store.App;
-using LiftLog.Ui.Store.CurrentSession;
-using LiftLog.Ui.Store.Feed;
-using LiftLog.Ui.Store.Program;
-using LiftLog.Ui.Store.Settings;
 using LiftLog.Web.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using INotificationService = LiftLog.Ui.Services.INotificationService;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<ThemedWebApplication>("#app");

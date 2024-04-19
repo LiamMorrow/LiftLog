@@ -34,13 +34,13 @@
 
 @code {
     void MoveSessionUp(SessionBlueprint sessionBlueprint)
-        => Dispatcher.Dispatch(new MoveSessionBlueprintUpInProgramAction(sessionBlueprint));
+        => Dispatcher.Dispatch(new MoveSessionBlueprintUpInProgramAction(Plan.ActivePlanId, sessionBlueprint));
 
     void MoveSessionDown(SessionBlueprint sessionBlueprint)
-        => Dispatcher.Dispatch(new MoveSessionBlueprintDownInProgramAction(sessionBlueprint));
+        => Dispatcher.Dispatch(new MoveSessionBlueprintDownInProgramAction(Plan.ActivePlanId, sessionBlueprint));
 
     void RemoveSession(SessionBlueprint sessionBlueprint)
-        => Dispatcher.Dispatch(new RemoveSessionFromProgramAction(sessionBlueprint));
+        => Dispatcher.Dispatch(new RemoveSessionFromProgramAction(Plan.ActivePlanId, sessionBlueprint));
 
     void BackToSettings() => NavigationManager.NavigateTo("/settings");
 
@@ -54,6 +54,7 @@
     {
         Dispatcher.Dispatch(
             new AddProgramSessionAction(
+                Plan.ActivePlanId,
                 new SessionBlueprint($"Session {ProgramState.Value.SessionBlueprints.Count + 1}", new ImmutableListValue<ExerciseBlueprint>())));
             await Task.Yield();
             await JSRuntime.InvokeVoidAsync("AppUtils.smoothScrollAndFocusLast", ".card");
@@ -61,6 +62,7 @@
 
     void DuplicateSession(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(
         new AddProgramSessionAction(
+            Plan.ActivePlanId,
             sessionBlueprint with
             {
                 Name = $"Session {ProgramState.Value.SessionBlueprints.Count + 1}"

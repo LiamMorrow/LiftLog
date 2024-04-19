@@ -1,7 +1,6 @@
 ﻿@page "/session"
 @using LiftLog.Ui.Store.CurrentSession
 @using LiftLog.Ui.Store.App
-@using LiftLog.Ui.Repository
 @using LiftLog.Ui.Store.Program
 @using Fluxor;
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
@@ -28,7 +27,6 @@
         EditExercise="EditExercise"
         AddExercise="AddExercise"
         UpdateNotesForExercise="UpdateNotesForExercise"
-        ExerciseNames="ProgramState.Value.ExerciseNames"
         ShowBodyweight="SettingsState.Value.ShowBodyweight"
         ToggleExercisePerSetWeight=ToggleExercisePerSetWeight
         UpdateWeightForSet=UpdateWeightForSet
@@ -107,7 +105,7 @@
                 blueprint = blueprint with { Name = newName };
             }
 
-            Dispatcher.Dispatch(new AddProgramSessionAction(blueprint));
+            Dispatcher.Dispatch(new AddProgramSessionAction(Plan.ActivePlanId, blueprint));
             Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, CurrentSessionState.Value.WorkoutSession with { Blueprint = blueprint }));
             Dispatcher.Dispatch(new SetPageTitleAction(blueprint.Name));
         }
@@ -118,7 +116,7 @@
         if (CurrentSessionState.Value.WorkoutSession?.Blueprint is SessionBlueprint blueprint)
         {
             var blueprintIndex = ProgramState.Value.SessionBlueprints.IndexedTuples().First(x => x.Item.Name == blueprint.Name).Index;
-            Dispatcher.Dispatch(new SetProgramSessionAction(blueprintIndex, blueprint));
+            Dispatcher.Dispatch(new SetProgramSessionAction(Plan.ActivePlanId, blueprintIndex, blueprint));
         }
     }
 

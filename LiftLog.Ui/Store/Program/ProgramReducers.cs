@@ -1,6 +1,8 @@
 // ReSharper disable UnusedMember.Global
 
 using Fluxor;
+using LiftLog.Lib;
+using LiftLog.Lib.Models;
 
 namespace LiftLog.Ui.Store.Program;
 
@@ -34,78 +36,113 @@ public static class ProgramReducers
     public static ProgramState SetProgramSessions(
         ProgramState state,
         SetProgramSessionsAction action
-    ) => state with { SessionBlueprints = action.SessionBlueprints };
+    ) => WithSessionBlueprints(state, action.PlanId, _ => action.SessionBlueprints);
 
     [ReducerMethod]
     public static ProgramState SetProgramSession(ProgramState state, SetProgramSessionAction action)
     {
-        if (action.SessionIndex < 0 || action.SessionIndex >= state.SessionBlueprints.Count)
+        if (action.SessionIndex < 0)
         {
             return state;
         }
 
-        return state with
-        {
-            SessionBlueprints = state.SessionBlueprints.SetItem(
-                action.SessionIndex,
-                action.SessionBlueprint
-            )
-        };
+        return WithSessionBlueprints(
+            state,
+            action.PlanId,
+            s =>
+                action.SessionIndex >= s.Count
+                    ? s
+                    : s.SetItem(action.SessionIndex, action.SessionBlueprint)
+        );
     }
 
     [ReducerMethod]
     public static ProgramState AddProgramSession(
         ProgramState state,
         AddProgramSessionAction action
-    ) => state with { SessionBlueprints = state.SessionBlueprints.Add(action.SessionBlueprint) };
+    ) => WithSessionBlueprints(state, action.PlanId, s => s.Add(action.SessionBlueprint));
 
     [ReducerMethod]
     public static ProgramState MoveSessionBlueprintUpInProgram(
         ProgramState state,
         MoveSessionBlueprintUpInProgramAction action
-    )
-    {
-        var index = state.SessionBlueprints.IndexOf(action.SessionBlueprint);
-        if (index <= 0)
-        {
-            return state;
-        }
+    ) =>
+        WithSessionBlueprints(
+            state,
+            action.PlanId,
+            s =>
+            {
+                var index = s.IndexOf(action.SessionBlueprint);
+                if (index <= 0)
+                {
+                    return s;
+                }
 
-        var toSwap = state.SessionBlueprints[index - 1];
+                var toSwap = s[index - 1];
 
-        return state with
-        {
-            SessionBlueprints = state
-                .SessionBlueprints.SetItem(index, toSwap)
-                .SetItem(index - 1, action.SessionBlueprint)
-        };
-    }
+                return state
+                    .SessionBlueprints.SetItem(index, toSwap)
+                    .SetItem(index - 1, action.SessionBlueprint);
+            }
+        );
 
     [ReducerMethod]
     public static ProgramState MoveSessionBlueprintDownInProgram(
         ProgramState state,
         MoveSessionBlueprintDownInProgramAction action
-    )
-    {
-        var index = state.SessionBlueprints.IndexOf(action.SessionBlueprint);
-        if (index < 0 || index == state.SessionBlueprints.Count - 1)
-        {
-            return state;
-        }
+    ) =>
+        WithSessionBlueprints(
+            state,
+            action.PlanId,
+            s =>
+            {
+                var index = s.IndexOf(action.SessionBlueprint);
+                if (index < 0 || index == s.Count - 1)
+                {
+                    return s;
+                }
 
-        var toSwap = state.SessionBlueprints[index + 1];
+                var toSwap = s[index + 1];
 
-        return state with
-        {
-            SessionBlueprints = state
-                .SessionBlueprints.SetItem(index, toSwap)
-                .SetItem(index + 1, action.SessionBlueprint)
-        };
-    }
+                return state
+                    .SessionBlueprints.SetItem(index, toSwap)
+                    .SetItem(index + 1, action.SessionBlueprint);
+            }
+        );
 
     [ReducerMethod]
     public static ProgramState RemoveSessionFromProgram(
         ProgramState state,
         RemoveSessionFromProgramAction action
-    ) => state with { SessionBlueprints = state.SessionBlueprints.Remove(action.SessionBlueprint) };
+    ) => WithSessionBlueprints(state, action.PlanId, s => s.Remove(action.SessionBlueprint));
+
+    private static ProgramState WithSessionBlueprints(
+        ProgramState state,
+        Guid planId,
+        Func<
+            ImmutableListValue<SessionBlueprint>,
+            ImmutableListValue<SessionBlueprint>
+        > sessionBlueprints
+    ) =>
+        planId switch
+        {
+            var s when s == Guid.Empty
+                => state with
+                {
+                    SessionBlueprints = sessionBlueprints(state.SessionBlueprints)
+                },
+            _
+                => state with
+                {
+                    SavedPlans = state.SavedPlans.SetItem(
+                        planId,
+                        state.SavedPlans[planId] with
+                        {
+                            SessionBlueprints = sessionBlueprints(
+                                state.SavedPlans[planId].SessionBlueprints
+                            )
+                        }
+                    )
+                }
+        };
 }

@@ -12,4 +12,7 @@ public record ProgramState(
     ImmutableDictionary<Guid, Plan> SavedPlans
 );
 
-public record Plan(string Name, ImmutableListValue<SessionBlueprint> SessionBlueprints);
+public record Plan(string Name, ImmutableListValue<SessionBlueprint> SessionBlueprints)
+{
+    public static readonly Guid ActivePlanId = Guid.Empty;
+}

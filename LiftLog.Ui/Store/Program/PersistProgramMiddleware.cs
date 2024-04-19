@@ -14,11 +14,17 @@ public class PersistProgramMiddleware(CurrentProgramRepository programRepository
     public override async Task InitializeAsync(IDispatcher dispatch, IStore store)
     {
         _store = store;
-        var programs = await programRepository.GetSessionsInProgramAsync();
+        var sessionsInCurrentProgram = await programRepository.GetSessionsInProgramAsync();
         store
             .Features[nameof(ProgramFeature)]
             .RestoreState(
-                new ProgramState(true, programs, [], true, ImmutableDictionary<Guid, Plan>.Empty)
+                new ProgramState(
+                    IsHydrated: true,
+                    SessionBlueprints: sessionsInCurrentProgram,
+                    UpcomingSessions: [],
+                    IsLoadingUpcomingSessions: true,
+                    SavedPlans: ImmutableDictionary<Guid, Plan>.Empty
+                )
             );
 
         dispatch.Dispatch(new SetProgramIsHydratedAction());

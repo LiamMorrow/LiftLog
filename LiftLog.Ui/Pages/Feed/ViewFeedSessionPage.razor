@@ -25,7 +25,6 @@
             AddExercise="@((_) => { })"
             UpdateNotesForExercise="@((_, _) => { })"
             ShowRestTimer="false"
-            ExerciseNames="[]"
             ShowBodyweight="session.Bodyweight is not null"
             ToggleExercisePerSetWeight=@((_) => { })
             UpdateWeightForSet=@((_, _, _) => { })
@@ -96,7 +95,7 @@
                 blueprint = blueprint with { Name = newName };
             }
 
-            Dispatcher.Dispatch(new AddProgramSessionAction(blueprint));
+            Dispatcher.Dispatch(new AddProgramSessionAction(Plan.ActivePlanId, blueprint));
         }
     }
 
@@ -105,7 +104,7 @@
         if (session?.Blueprint is SessionBlueprint blueprint)
         {
             var blueprintIndex = ProgramState.Value.SessionBlueprints.IndexedTuples().First(x => x.Item.Name == blueprint.Name).Index;
-            Dispatcher.Dispatch(new SetProgramSessionAction(blueprintIndex, blueprint));
+            Dispatcher.Dispatch(new SetProgramSessionAction(Plan.ActivePlanId, blueprintIndex, blueprint));
         }
     }
 }

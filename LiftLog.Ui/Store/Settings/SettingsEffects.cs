@@ -94,6 +94,7 @@ public class SettingsEffects(
                 );
                 dispatcher.Dispatch(
                     new SetProgramSessionsAction(
+                        Guid.Empty,
                         deserialized.Program.Select(x => x.ToModel()).ToImmutableList()
                     )
                 );
