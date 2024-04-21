@@ -13,7 +13,7 @@
 @inject IDispatcher Dispatcher
 @inject IJSRuntime JSRuntime
 
-<CardList Items="ProgramState.Value.SessionBlueprints.IndexedTuples()" OnClick="(item) => SelectSession(item.Item, item.Index)">
+<CardList Items="ProgramState.Value.GetSessionBlueprints(PlanId).IndexedTuples()" OnClick="(item) => SelectSession(item.Item, item.Index)">
     @{
         var session = context.Item;
         var index = context.Index;
@@ -33,39 +33,42 @@
 </FloatingBottomContainer>
 
 @code {
+    [SupplyParameterFromQuery(Name = "planId")]
+    [Parameter] public Guid PlanId { get; set; }
+
     void MoveSessionUp(SessionBlueprint sessionBlueprint)
-        => Dispatcher.Dispatch(new MoveSessionBlueprintUpInProgramAction(Guid.Empty, sessionBlueprint));
+        => Dispatcher.Dispatch(new MoveSessionBlueprintUpInProgramAction(PlanId, sessionBlueprint));
 
     void MoveSessionDown(SessionBlueprint sessionBlueprint)
-        => Dispatcher.Dispatch(new MoveSessionBlueprintDownInProgramAction(Guid.Empty, sessionBlueprint));
+        => Dispatcher.Dispatch(new MoveSessionBlueprintDownInProgramAction(PlanId, sessionBlueprint));
 
     void RemoveSession(SessionBlueprint sessionBlueprint)
-        => Dispatcher.Dispatch(new RemoveSessionFromProgramAction(Guid.Empty, sessionBlueprint));
+        => Dispatcher.Dispatch(new RemoveSessionFromProgramAction(PlanId, sessionBlueprint));
 
     void BackToSettings() => NavigationManager.NavigateTo("/settings");
 
     void SelectSession(SessionBlueprint sessionBlueprint, int index)
     {
         Dispatcher.Dispatch(new SetEditingSessionAction(sessionBlueprint));
-        NavigationManager.NavigateTo($"/settings/manage-workouts/manage-session/{index}");
+        NavigationManager.NavigateTo($"/settings/manage-workouts/manage-session/{index}?planId={PlanId}");
     }
 
     async Task AddSession()
     {
         Dispatcher.Dispatch(
             new AddProgramSessionAction(
-                Guid.Empty,
-                new SessionBlueprint($"Session {ProgramState.Value.SessionBlueprints.Count + 1}", new ImmutableListValue<ExerciseBlueprint>())));
+                PlanId,
+                new SessionBlueprint($"Session {ProgramState.Value.GetSessionBlueprints(PlanId).Count + 1}", new ImmutableListValue<ExerciseBlueprint>())));
             await Task.Yield();
             await JSRuntime.InvokeVoidAsync("AppUtils.smoothScrollAndFocusLast", ".card");
         }
 
     void DuplicateSession(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(
         new AddProgramSessionAction(
-            Guid.Empty,
+            PlanId,
             sessionBlueprint with
             {
-                Name = $"Session {ProgramState.Value.SessionBlueprints.Count + 1}"
+                Name = $"Session {ProgramState.Value.GetSessionBlueprints(PlanId).Count + 1}"
             }
         )
     );
