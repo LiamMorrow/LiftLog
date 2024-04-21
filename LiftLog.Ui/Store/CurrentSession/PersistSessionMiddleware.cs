@@ -22,45 +22,53 @@ namespace LiftLog.Ui.Store.CurrentSession
 
         public override async Task InitializeAsync(IDispatcher dispatch, IStore store)
         {
-            _store = store;
-            var sw = Stopwatch.StartNew();
-            var currentSessionVersion =
-                await keyValueStore.GetItemAsync($"{StorageKey}-Version") ?? "1";
             try
             {
-                var currentSessionState = currentSessionVersion switch
+                _store = store;
+                var sw = Stopwatch.StartNew();
+                var currentSessionVersion =
+                    await keyValueStore.GetItemAsync($"{StorageKey}-Version") ?? "1";
+                try
                 {
-                    "1"
-                        => JsonSerializer
-                            .Deserialize<CurrentSessionStateDaoV1>(
-                                await keyValueStore.GetItemAsync(StorageKey) ?? "null",
-                                StorageJsonContext.Context.CurrentSessionStateDaoV1
-                            )
-                            ?.ToModel(),
-                    "2"
-                        => CurrentSessionStateDaoV2
-                            .Parser.ParseFrom(
-                                await keyValueStore.GetItemBytesAsync(StorageKey) ?? []
-                            )
-                            .ToModel(),
-                    _ => null
-                };
-                var deserializationTime = sw.ElapsedMilliseconds;
-                sw.Stop();
-                logger.LogInformation(
-                    $"Deserialized current session state in {deserializationTime}ms"
-                );
-                if (currentSessionState is not null)
-                {
-                    store.Features["CurrentSession"].RestoreState(currentSessionState);
+                    var currentSessionState = currentSessionVersion switch
+                    {
+                        "1"
+                            => JsonSerializer
+                                .Deserialize<CurrentSessionStateDaoV1>(
+                                    await keyValueStore.GetItemAsync(StorageKey) ?? "null",
+                                    StorageJsonContext.Context.CurrentSessionStateDaoV1
+                                )
+                                ?.ToModel(),
+                        "2"
+                            => CurrentSessionStateDaoV2
+                                .Parser.ParseFrom(
+                                    await keyValueStore.GetItemBytesAsync(StorageKey) ?? []
+                                )
+                                .ToModel(),
+                        _ => null
+                    };
+                    var deserializationTime = sw.ElapsedMilliseconds;
+                    sw.Stop();
+                    logger.LogInformation(
+                        $"Deserialized current session state in {deserializationTime}ms"
+                    );
+                    if (currentSessionState is not null)
+                    {
+                        store.Features["CurrentSession"].RestoreState(currentSessionState);
+                    }
                 }
-            }
-            catch (JsonException e)
-            {
-                logger.LogError(e, "Failed to deserialize current session state");
-            }
+                catch (JsonException e)
+                {
+                    logger.LogError(e, "Failed to deserialize current session state");
+                }
 
-            dispatch.Dispatch(new SetCurrentSessionHydratedAction());
+                dispatch.Dispatch(new SetCurrentSessionHydratedAction());
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Failed to initialize current session state");
+                throw;
+            }
         }
 
         public override async void AfterDispatch(object action)

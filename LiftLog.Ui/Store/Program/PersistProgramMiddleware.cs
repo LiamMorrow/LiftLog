@@ -2,21 +2,33 @@ using Fluxor;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Repository;
+using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Ui.Store.Program;
 
-public class PersistProgramMiddleware(ICurrentProgramRepository programRepository) : Middleware
+public class PersistProgramMiddleware(
+    ICurrentProgramRepository programRepository,
+    ILogger<PersistProgramMiddleware> logger
+) : Middleware
 {
     private IStore? _store;
     private ProgramState? _prevState;
 
     public override async Task InitializeAsync(IDispatcher dispatch, IStore store)
     {
-        _store = store;
-        var programs = await programRepository.GetSessionsInProgramAsync();
-        store
-            .Features[nameof(ProgramFeature)]
-            .RestoreState(new ProgramState(true, programs, [], true, []));
+        try
+        {
+            _store = store;
+            var programs = await programRepository.GetSessionsInProgramAsync();
+            store
+                .Features[nameof(ProgramFeature)]
+                .RestoreState(new ProgramState(true, programs, [], true, []));
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed to restore program state");
+            throw;
+        }
 
         dispatch.Dispatch(new SetProgramIsHydratedAction());
     }
