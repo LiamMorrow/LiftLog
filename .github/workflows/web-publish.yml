@@ -29,7 +29,7 @@ jobs:
         with:
           dotnet-version: 8.0.x
       - name: Build Tailwind
-        run: yarn && yarn build
+        run: npm i && npm run build
         working-directory: ./LiftLog.Ui
       - name: Build
         run: dotnet publish -c Release

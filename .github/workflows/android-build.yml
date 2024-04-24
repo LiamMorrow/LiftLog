@@ -35,7 +35,7 @@ jobs:
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v3.2.1
       - name: Build Tailwind
-        run: yarn && yarn build
+        run: npm i && npm run build
         working-directory: ./LiftLog.Ui
       - name: Build
         run: dotnet build -p:TargetFramework=net8.0-android -f net8.0-android -p:BuildFor=android
