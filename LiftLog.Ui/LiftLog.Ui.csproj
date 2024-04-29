@@ -18,7 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Blazor-ApexCharts" Version="3.2.0"/>
+        <PackageReference Include="Blazor-ApexCharts" Version="3.3.0"/>
         <PackageReference Include="BlazorTransitionableRoute" Version="4.0.0"/>
         <PackageReference Include="MaterialColorUtilities" Version="0.3.0"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.4"/>
