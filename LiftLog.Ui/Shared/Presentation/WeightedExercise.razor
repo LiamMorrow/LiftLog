@@ -19,8 +19,8 @@
                     }
                     <IconButton data-cy="per-rep-weight-btn" Type=IconButtonType.Standard Icon=weight OnClick="ToggleExercisePerSetWeight"></IconButton>
                     <div>
-                        <IconButton data-cy="more-exercise-btn" class="self-end" Type="IconButtonType.Standard" OnClick="() => { _menu?.Open(); }" Icon="more_horiz"/>
-                        <Menu @ref="_menu">
+                        <IconButton data-cy="more-exercise-btn" class="self-end" Type="IconButtonType.Standard" OnClick="() => { _menu?.Open(); }" Icon="more_horiz" id="@moreButtonId"/>
+                        <Menu @ref="_menu" anchor="@moreButtonId">
                             <MenuItem Label="Edit" Icon="edit" OnClick="OnEditExercise"/>
                             <MenuItem data-cy="exercise-notes-btn" Label="Notes" Icon="notes" OnClick="OnOpenNotesButtonClick"/>
                             <MenuItem Label="Remove" Icon="delete" OnClick="OnRemoveExercise"/>
@@ -83,6 +83,7 @@
 </Dialog>
 
 @code {
+    private string moreButtonId = "a" + Guid.NewGuid();
     private bool _holdingPrevious = false;
     private Menu? _menu;
     private Dialog? notesDialog;

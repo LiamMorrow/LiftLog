@@ -1,25 +1,22 @@
-<div class="relative z-10 -my-1">
-    <div class="fixed cursor-default @(_open ? "right-0 top-0 bottom-0 left-0" : "")" @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick="() => _open = false"></div>
-    <ul @onclick:stopPropagation="true" @onclick:preventDefault="true" @onclick="() => _open = false"
-        class="absolute top-0 right-0 bg-surface-container text-on-surface rounded-md shadow-md flex flex-col text-left transition-all origin-top-right @OverflowStyle">
-        @ChildContent
-    </ul>
-</div>
+@inject IJSRuntime JSRuntime
+
+<md-menu @attributes="AdditionalAttributes" positioning="popover" @ref="menu">
+    @ChildContent
+</md-menu>
 
 @code {
 
-    private bool _open = false;
+    private ElementReference menu;
 
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
     public void Open()
     {
-        _open = true;
-        StateHasChanged();
+        JSRuntime.InvokeVoidAsync("AppUtils.callOn", menu, "show");
     }
 
-    string OverflowStyle => _open
-        ? "scale-100"
-        : "scale-0";
 
 }

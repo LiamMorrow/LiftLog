@@ -5,8 +5,8 @@
     <Actions>
         <IconButton Type="IconButtonType.Standard" OnClick="@(() => OnMoveSessionUp())" Icon="arrow_upward"/>
         <IconButton Type="IconButtonType.Standard" OnClick="@(() => OnMoveSessionDown())" Icon="arrow_downward"/>
-        <IconButton Type="IconButtonType.Standard" OnClick="@(() => _menu?.Open())" Icon="more_horiz"/>
-        <Menu @ref="_menu">
+        <IconButton Type="IconButtonType.Standard" OnClick="@(() => _menu?.Open())" Icon="more_horiz" id="@moreButtonId" />
+        <Menu @ref="_menu" anchor="@moreButtonId" >
             <MenuItem Icon="delete" Label="Remove" OnClick="() => OnRemoveSession()"/>
             <MenuItem Icon="content_copy" Label="Duplicate" OnClick="() => OnDuplicateSession()"/>
         </Menu>
@@ -17,6 +17,7 @@
 </SplitCardControl>
 
 @code {
+    private string moreButtonId = "a" + Guid.NewGuid();
     private Menu? _menu;
     [Parameter] [EditorRequired] public SessionBlueprint SessionBlueprint { get; set; } = null!;
 
