@@ -22,8 +22,8 @@
         <ApplicationIdGuid>71733E37-6FDD-4EEF-A0BF-DE32634D58EC</ApplicationIdGuid>
 
         <!-- Versions -->
-        <ApplicationDisplayVersion>2.5.0</ApplicationDisplayVersion>
-        <ApplicationVersion>60</ApplicationVersion>
+        <ApplicationDisplayVersion>2.5.1</ApplicationDisplayVersion>
+        <ApplicationVersion>61</ApplicationVersion>
 
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
@@ -96,8 +96,8 @@
         <PackageReference Include="Plugin.InAppBilling" Version="7.1.0"/>
         <PackageReference Include="Plugin.LocalNotification" Version="11.1.2"/>
         <PackageReference Include="Sentry.Extensions.Logging" Version="4.4.0"/>
-        <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.20"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.20"/>
+        <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.21"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.21"/>
         <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Annotation" Version="1.7.1.1"/>
     </ItemGroup>
 

@@ -1,7 +1,7 @@
 #! /bin/bash
 
 cd ../LiftLog.Ui
-yarn build
+npm run build
 cd ../LiftLog.App
 
 # If -r we want release build

@@ -40,7 +40,7 @@ jobs:
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v3.2.1
       - name: Build Tailwind
-        run: yarn && yarn build
+        run: npm i && npm run build
         working-directory: ./LiftLog.Ui
       - name: Build
         run: dotnet publish -p:TargetFramework=net8.0-android -f net8.0-android -c Release -p:BuildFor=android -p:AndroidKeyStore=true -p:AndroidSigningKeyStore=liftlog.keystore -p:AndroidSigningKeyAlias=liftlog -p:AndroidSigningKeyPass=env:KEYSTORE_PASS -p:AndroidSigningStorePass=env:KEYSTORE_PASS

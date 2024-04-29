@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-13
+    runs-on: macos-14
     env:
       KEYCHAIN: job-${{ github.job }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
 
@@ -44,7 +44,7 @@ jobs:
       - name: Setup MAUI
         run: dotnet workload install maui
       - name: Build Tailwind
-        run: yarn && yarn build
+        run: npm i && npm run build
         working-directory: ./LiftLog.Ui
       - name: Build
         run: 'dotnet publish -c Release -f:net8.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}" -p:CodesignProvision="LiftLog"'

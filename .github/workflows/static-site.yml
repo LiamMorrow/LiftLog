@@ -22,10 +22,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install
-        run: yarn install
+        run: npm i
         working-directory: ./site
       - name: Build
-        run: yarn build
+        run: npm run build
         working-directory: ./site
 
       - name: Set up QEMU
