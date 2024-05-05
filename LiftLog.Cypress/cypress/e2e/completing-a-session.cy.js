@@ -42,7 +42,7 @@ describe('Completing a session', () => {
       cy.containsA('Show tips').click()
       cy.containsA('Manage plans').click()
       cy.containsA("Starting Strength").click()
-      cy.dialog().find("[slot=actions]").contains("Select").click()
+      cy.dialog().find("[slot=actions]").contains("Use").click()
     })
 
 
