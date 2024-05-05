@@ -3,8 +3,10 @@ package LiftLog.Ui.Models.SettingsStorageDao;
 
 import "Models/SessionHistoryDao/SessionHistoryDaoV2.proto";
 import "Models/SessionBlueprintDao/SessionBlueprintDaoV2.proto";
+import "Models/ProgramBlueprintDao/ProgramBlueprintDaoV1.proto";
 
 message SettingsStorageDaoV2 {
     repeated LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2 sessions = 1;
     repeated LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2 program = 2;
+    map<string, LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1> saved_programs = 3;
 }

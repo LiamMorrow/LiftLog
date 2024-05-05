@@ -8,6 +8,7 @@ using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
 using LiftLog.Lib.Services;
+using LiftLog.Ui.Models.ProgramBlueprintDao;
 using LiftLog.Ui.Models.SessionBlueprintDao;
 using LiftLog.Ui.Models.SessionHistoryDao;
 using LiftLog.Ui.Models.SettingsStorageDao;
@@ -18,8 +19,9 @@ using Microsoft.Extensions.Logging;
 namespace LiftLog.Ui.Store.Settings;
 
 public class SettingsEffects(
-    ProgressRepository ProgressRepository,
-    CurrentProgramRepository ProgramRepository,
+    ProgressRepository progressRepository,
+    CurrentProgramRepository programRepository,
+    SavedProgramRepository savedProgramRepository,
     IExporter textExporter,
     IAiWorkoutPlanner aiWorkoutPlanner,
     IThemeProvider themeProvider,
@@ -30,13 +32,18 @@ public class SettingsEffects(
     [EffectMethod]
     public async Task ExportData(ExportDataAction _, IDispatcher __)
     {
-        var sessions = await ProgressRepository.GetOrderedSessions().ToListAsync();
-        var program = await ProgramRepository.GetSessionsInProgramAsync();
+        var sessions = await progressRepository.GetOrderedSessions().ToListAsync();
+        var program = await programRepository.GetSessionsInProgramAsync();
+        var savedPrograms = await savedProgramRepository.GetSavedProgramsAsync();
 
         await textExporter.ExportBytesAsync(
             new SettingsStorageDaoV2(
                 sessions.Select(SessionDaoV2.FromModel),
-                program.Select(SessionBlueprintDaoV2.FromModel)
+                program.Select(SessionBlueprintDaoV2.FromModel),
+                savedPrograms.ToDictionary(
+                    x => x.Key.ToString(),
+                    x => ProgramBlueprintDaoV1.FromModel(x.Value)
+                )
             ).ToByteArray()
         );
     }
@@ -66,7 +73,8 @@ public class SettingsEffects(
 
                     return new SettingsStorageDaoV2(
                         v1.Sessions.Select(x => x.ToModel()).Select(SessionDaoV2.FromModel),
-                        v1.Program.Select(x => x.ToModel()).Select(SessionBlueprintDaoV2.FromModel)
+                        v1.Program.Select(x => x.ToModel()).Select(SessionBlueprintDaoV2.FromModel),
+                        new Dictionary<string, ProgramBlueprintDaoV1>()
                     );
                 }
                 catch (Exception ex)
@@ -89,13 +97,21 @@ public class SettingsEffects(
             var deserialized = Deserialize(importBytes);
             if (deserialized != null)
             {
-                await ProgressRepository.SaveCompletedSessionsAsync(
+                await progressRepository.SaveCompletedSessionsAsync(
                     deserialized.Sessions.Select(x => x.ToModel())
                 );
                 dispatcher.Dispatch(
                     new SetProgramSessionsAction(
                         Guid.Empty,
                         deserialized.Program.Select(x => x.ToModel()).ToImmutableList()
+                    )
+                );
+                dispatcher.Dispatch(
+                    new SetSavedPlansAction(
+                        deserialized.SavedPrograms.ToImmutableDictionary(
+                            x => Guid.Parse(x.Key),
+                            x => x.Value.ToModel()
+                        )
                     )
                 );
             }

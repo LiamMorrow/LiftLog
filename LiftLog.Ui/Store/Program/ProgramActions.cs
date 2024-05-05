@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 
@@ -41,3 +42,5 @@ public record CreateSavedPlanAction(Guid PlanId, string Name);
 public record DeleteSavedPlanAction(Guid PlanId);
 
 public record SetSavedPlanNameAction(Guid PlanId, string Name);
+
+public record SetSavedPlansAction(ImmutableDictionary<Guid, ProgramBlueprint> SavedPlans);
