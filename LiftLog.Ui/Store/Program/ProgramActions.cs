@@ -41,3 +41,5 @@ public record CreateSavedPlanAction(Guid PlanId, string Name);
 public record DeleteSavedPlanAction(Guid PlanId);
 
 public record SetSavedPlanNameAction(Guid PlanId, string Name);
+
+public record SetSavedPlansAction(Dictionary<Guid, ProgramBlueprint> SavedPlans);
