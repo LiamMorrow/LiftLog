@@ -108,7 +108,7 @@ public class SettingsEffects(
                 );
                 dispatcher.Dispatch(
                     new SetSavedPlansAction(
-                        deserialized.SavedPrograms.ToDictionary(
+                        deserialized.SavedPrograms.ToImmutableDictionary(
                             x => Guid.Parse(x.Key),
                             x => x.Value.ToModel()
                         )
