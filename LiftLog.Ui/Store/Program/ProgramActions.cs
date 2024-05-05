@@ -33,11 +33,14 @@ public record MoveSessionBlueprintDownInProgramAction(
 
 public record RemoveSessionFromProgramAction(Guid PlanId, SessionBlueprint SessionBlueprint);
 
+
+// Plans
+public record SavePlanAction(Guid PlanId, ProgramBlueprint ProgramBlueprint);
+
 public record CreateSavedPlanAction(Guid PlanId, string Name);
 
 public record DeleteSavedPlanAction(Guid PlanId);
 
-public record SetSavedPlanNameAction(Guid PlanId, string Name);
+public record DuplicateSavedPlanAction(Guid PlanId);
 
-// Plans
-public record SavePlanAction(Guid PlanId, ProgramBlueprint ProgramBlueprint);
+public record SetSavedPlanNameAction(Guid PlanId, string Name);

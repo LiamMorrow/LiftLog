@@ -63,6 +63,26 @@ public static class ProgramReducers
     ) => WithSessionBlueprints(state, action.PlanId, s => s.Add(action.SessionBlueprint));
 
     [ReducerMethod]
+    public static ProgramState DeleteSavedPlan(ProgramState state, DeleteSavedPlanAction action) =>
+        state with
+        {
+            SavedPrograms = state.SavedPrograms.Remove(action.PlanId)
+        };
+
+    [ReducerMethod]
+    public static ProgramState DuplicateSavedPlan(
+        ProgramState state,
+        DuplicateSavedPlanAction action
+    ) =>
+        state with
+        {
+            SavedPrograms = state.SavedPrograms.SetItem(
+                Guid.NewGuid(),
+                state.SavedPrograms[action.PlanId]
+            )
+        };
+
+    [ReducerMethod]
     public static ProgramState MoveSessionBlueprintUpInProgram(
         ProgramState state,
         MoveSessionBlueprintUpInProgramAction action

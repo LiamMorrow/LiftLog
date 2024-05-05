@@ -39,7 +39,7 @@
     [Parameter] public EventCallback OnRemove { get; set; }
     [Parameter] public EventCallback OnDuplicate { get; set; }
 
-    private string SupportingText => $"{ProgramBlueprint.Tag} - {ExperienceLevelText}";
+    private string SupportingText => ProgramBlueprint.Tag is null  ? ExperienceLevelText : $"{ProgramBlueprint.Tag} - {ExperienceLevelText}";
     private string TrailingSupportingText => $"{ProgramBlueprint.DaysPerWeek} days";
 
     private string ExperienceLevelText

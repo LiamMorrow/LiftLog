@@ -20,6 +20,8 @@
                     class="animate-fade-zoom-in"
                     ProgramBlueprint="@program"
                     OnClick=@(() => OpenEditProgram(id))
+                    OnRemove="@(() => Dispatcher.Dispatch(new DeleteSavedPlanAction(id)))"
+                    OnDuplicate="@(() => Dispatcher.Dispatch(new DuplicateSavedPlanAction(id)))"
                     BuiltIn=false/>
                 <md-divider></md-divider>
             }
@@ -32,7 +34,11 @@
     <md-list>
         @foreach (var program in BuiltInProgramService.BuiltInPrograms)
         {
-            <ProgramListItem ProgramBlueprint="@program" OnClick=@(() => BeginSelectProgram(program)) BuiltIn=true/>
+            <ProgramListItem
+                    class="animate-fade-zoom-in"
+                    ProgramBlueprint="@program"
+                    OnClick=@(() => BeginSelectProgram(program))
+                    BuiltIn=true/>
             @if (program != BuiltInProgramService.BuiltInPrograms.Last())
             {
                 <md-divider></md-divider>
