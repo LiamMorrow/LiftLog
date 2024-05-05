@@ -61,5 +61,6 @@
         <Protobuf Include="Models\SettingStorageDao\SettingsStorageDaoV2.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
         <Protobuf Include="Models\CurrentSessionStateDao\CurrentSessionStateDaoV2.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
         <Protobuf Include="Models\FeedStateDao.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
+        <Protobuf Include="Models\ProgramBlueprintDao\ProgramBlueprintDaoV1.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
     </ItemGroup>
 </Project>

@@ -9,8 +9,6 @@
 @inject IState<ProgramState> ProgramState
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-@* TODO: Section for Saved Programs *@
-
 @if(ProgramState.Value.SavedPrograms.Any())
 {
     <section class="text-left text-on-surface mb-4 flex flex-col">
@@ -108,7 +106,7 @@
                 Guid.NewGuid(),
                 new ProgramBlueprint(
                     Name: "New Plan",
-                    ExperienceLevel: null,
+                    ExperienceLevel: Experience.Beginner,
                     Tag: null,
                     DaysPerWeek: 0,
                     Sessions: [])));

@@ -117,7 +117,7 @@ public static class ProgramReducers
     ) => WithSessionBlueprints(state, action.PlanId, s => s.Remove(action.SessionBlueprint));
 
     [ReducerMethod]
-    public static ProgramState  SavePlan(ProgramState state, SavePlanAction action) =>
+    public static ProgramState SavePlan(ProgramState state, SavePlanAction action) =>
         state with
         {
             SavedPrograms = state.SavedPrograms.SetItem(action.PlanId, action.ProgramBlueprint)

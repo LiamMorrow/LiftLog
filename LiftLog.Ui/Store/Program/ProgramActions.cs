@@ -39,6 +39,5 @@ public record DeleteSavedPlanAction(Guid PlanId);
 
 public record SetSavedPlanNameAction(Guid PlanId, string Name);
 
-
 // Plans
 public record SavePlanAction(Guid PlanId, ProgramBlueprint ProgramBlueprint);

@@ -48,6 +48,7 @@ public static class ServiceRegistration
         );
 
         services.AddScoped<CurrentProgramRepository>();
+        services.AddScoped<SavedProgramRepository>();
         services.AddScoped<ProgressRepository>();
         services.AddScoped<PreferencesRepository>();
 

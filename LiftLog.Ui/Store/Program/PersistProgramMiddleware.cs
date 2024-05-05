@@ -9,6 +9,7 @@ namespace LiftLog.Ui.Store.Program;
 
 public class PersistProgramMiddleware(
     CurrentProgramRepository programRepository,
+    SavedProgramRepository savedProgramRepository,
     ILogger<PersistProgramMiddleware> logger
 ) : Middleware
 {
@@ -20,7 +21,11 @@ public class PersistProgramMiddleware(
         try
         {
             _store = store;
-            var sessionsInCurrentProgram = await programRepository.GetSessionsInProgramAsync();
+            var savedProgramsTask =  savedProgramRepository.GetSavedProgramsAsync();
+            var sessionsInCurrentProgramTask = programRepository.GetSessionsInProgramAsync();
+            var savedPrograms =  await savedProgramsTask;
+            var sessionsInCurrentProgram = await sessionsInCurrentProgramTask;
+
             store
                 .Features[nameof(ProgramFeature)]
                 .RestoreState(
@@ -29,7 +34,7 @@ public class PersistProgramMiddleware(
                         SessionBlueprints: sessionsInCurrentProgram,
                         UpcomingSessions: [],
                         IsLoadingUpcomingSessions: true,
-                        SavedPrograms: ImmutableDictionary<Guid, ProgramBlueprint>.Empty
+                        SavedPrograms: savedPrograms
                     )
                 );
         }
@@ -59,6 +64,7 @@ public class PersistProgramMiddleware(
         _ = Task.Run(async () =>
         {
             await programRepository.PersistSessionsInProgramAsync(currentState.SessionBlueprints);
+            await savedProgramRepository.PersistProgramsAsync(currentState.SavedPrograms);
         });
     }
 }

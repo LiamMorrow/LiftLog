@@ -1,0 +1,24 @@
+syntax = "proto3";
+package LiftLog.Ui.Models.ProgramBlueprintDao;
+
+import "google/protobuf/wrappers.proto";
+import "Models/SessionBlueprintDao/SessionBlueprintDaoV2.proto";
+
+message ProgramBlueprintDaoContainerV1 {
+    map<string,ProgramBlueprintDaoV1> program_blueprints = 1;
+}
+
+message ProgramBlueprintDaoV1 {
+    string name = 1;
+    optional Experience experience_level = 2;
+    optional google.protobuf.StringValue tag = 3;
+    int32 days_per_week = 4;
+    repeated LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2 sessions = 5;
+}
+
+enum Experience {
+    BEGINNER = 0;
+    INTERMEDIATE = 1;
+    ADVANCED = 2;
+    PROFESSIONAL = 3;
+}
