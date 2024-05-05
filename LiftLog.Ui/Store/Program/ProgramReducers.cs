@@ -83,6 +83,22 @@ public static class ProgramReducers
         };
 
     [ReducerMethod]
+    public static ProgramState SetSavedPlanName(
+        ProgramState state,
+        SetSavedPlanNameAction action
+    ) =>
+        state with
+        {
+            SavedPrograms = state.SavedPrograms.SetItem(
+                action.PlanId,
+                state.SavedPrograms[action.PlanId] with
+                {
+                    Name = action.Name
+                }
+            )
+        };
+
+    [ReducerMethod]
     public static ProgramState MoveSessionBlueprintUpInProgram(
         ProgramState state,
         MoveSessionBlueprintUpInProgramAction action

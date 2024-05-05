@@ -17,9 +17,9 @@
             @foreach (var (id, program) in ProgramState.Value.SavedPrograms.OrderBy(x=>x.Value.Name))
             {
                 <ProgramListItem
-                    class="animate-fade-zoom-in"
                     ProgramBlueprint="@program"
                     OnClick=@(() => OpenEditProgram(id))
+                    OnUse="@(() => BeginSelectProgram(program))"
                     OnRemove="@(() => Dispatcher.Dispatch(new DeleteSavedPlanAction(id)))"
                     OnDuplicate="@(() => Dispatcher.Dispatch(new DuplicateSavedPlanAction(id)))"
                     BuiltIn=false/>
@@ -35,7 +35,6 @@
         @foreach (var program in BuiltInProgramService.BuiltInPrograms)
         {
             <ProgramListItem
-                    class="animate-fade-zoom-in"
                     ProgramBlueprint="@program"
                     OnClick=@(() => BeginSelectProgram(program))
                     BuiltIn=true/>
@@ -53,7 +52,7 @@
     {
         <span slot="content" class="block text-left">
             Would you like to use the program
-            <span class="font-bold text-primary">@selectedProgram.Name</span>?<br/>This will replace the existing program.
+            <span class="font-bold text-primary">@selectedProgram.Name</span>?<br/>This will replace your existing workouts.
         </span>
         <div class="flex gap-1" slot="actions">
             <AppButton Type="AppButtonType.Text" OnClick="() => selectedProgramDialog?.Close()">Close</AppButton>
@@ -107,15 +106,18 @@
 
     private void AddNewPlan()
     {
+        var planId = Guid.NewGuid();
         Dispatcher.Dispatch(
             new SavePlanAction(
-                Guid.NewGuid(),
+                planId,
                 new ProgramBlueprint(
                     Name: "New Plan",
                     ExperienceLevel: Experience.Beginner,
                     Tag: null,
                     DaysPerWeek: 0,
-                    Sessions: [])));
+                    Sessions: [],
+                    LastEdited: DateOnly.FromDateTime(DateTime.Now))));
+        Dispatcher.Dispatch(new NavigateAction("/settings/manage-workouts?planId=" + planId));
     }
 
     private void OpenEditProgram(Guid id)

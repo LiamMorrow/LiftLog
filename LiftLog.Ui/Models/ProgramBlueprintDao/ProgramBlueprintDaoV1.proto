@@ -2,6 +2,7 @@ syntax = "proto3";
 package LiftLog.Ui.Models.ProgramBlueprintDao;
 
 import "google/protobuf/wrappers.proto";
+import "Models/Utils.proto";
 import "Models/SessionBlueprintDao/SessionBlueprintDaoV2.proto";
 
 message ProgramBlueprintDaoContainerV1 {
@@ -14,6 +15,7 @@ message ProgramBlueprintDaoV1 {
     optional google.protobuf.StringValue tag = 3;
     int32 days_per_week = 4;
     repeated LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2 sessions = 5;
+    optional Models.DateOnlyDao last_edited = 6;
 }
 
 enum Experience {

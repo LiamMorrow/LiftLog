@@ -8,6 +8,7 @@
         <div slot="end">
             <IconButton id="@_iconButtonId" Type="IconButtonType.Standard" Icon="more_horiz" OnClick=@(() => _menu?.Open())></IconButton>
             <Menu  anchor="@_iconButtonId" @ref="_menu">
+                <MenuItem Icon="fitness_center" Label="Use" OnClick="() => OnUse.InvokeAsync()"/>
                 <MenuItem Icon="delete" Label="Remove" OnClick="() => OnRemove.InvokeAsync()"/>
                 <MenuItem Icon="content_copy" Label="Duplicate" OnClick="() => OnDuplicate.InvokeAsync()"/>
             </Menu>
@@ -36,10 +37,13 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
+    [Parameter] public EventCallback OnUse { get; set; }
     [Parameter] public EventCallback OnRemove { get; set; }
     [Parameter] public EventCallback OnDuplicate { get; set; }
 
-    private string SupportingText => ProgramBlueprint.Tag is null  ? ExperienceLevelText : $"{ProgramBlueprint.Tag} - {ExperienceLevelText}";
+    private string SupportingText => BuiltIn
+        ? $"{ProgramBlueprint.Tag} - {ExperienceLevelText}"
+        : $"Edited: {ProgramBlueprint.LastEdited.ToShortDateString()}";
     private string TrailingSupportingText => $"{ProgramBlueprint.DaysPerWeek} days";
 
     private string ExperienceLevelText

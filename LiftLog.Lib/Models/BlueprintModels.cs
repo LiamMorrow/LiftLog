@@ -7,7 +7,8 @@ public record ProgramBlueprint(
     Experience ExperienceLevel,
     string? Tag,
     int DaysPerWeek,
-    ImmutableListValue<SessionBlueprint> Sessions
+    ImmutableListValue<SessionBlueprint> Sessions,
+    DateOnly LastEdited
 );
 
 public record SessionBlueprint(string Name, ImmutableListValue<ExerciseBlueprint> Exercises)
