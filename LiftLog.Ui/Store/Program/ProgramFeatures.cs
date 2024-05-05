@@ -15,6 +15,6 @@ public class ProgramFeature : Feature<ProgramState>
             SessionBlueprints: [],
             UpcomingSessions: [],
             IsLoadingUpcomingSessions: true,
-            ExerciseNames: []
+            SavedPrograms: ImmutableDictionary<Guid, ProgramBlueprint>.Empty
         );
 }

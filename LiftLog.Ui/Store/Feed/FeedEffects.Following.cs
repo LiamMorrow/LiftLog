@@ -7,7 +7,6 @@ using LiftLog.Lib.Models;
 using LiftLog.Lib.Services;
 using LiftLog.Ui.Models;
 using LiftLog.Ui.Models.SessionHistoryDao;
-using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.Program;

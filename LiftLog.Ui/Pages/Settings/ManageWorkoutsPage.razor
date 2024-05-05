@@ -13,7 +13,25 @@
 @inject IDispatcher Dispatcher
 @inject IJSRuntime JSRuntime
 
-<CardList Items="ProgramState.Value.SessionBlueprints.IndexedTuples()" OnClick="(item) => SelectSession(item.Item, item.Index)">
+@if(PlanId != Guid.Empty)
+{
+    <TextField
+        Label="Plan Name"
+        TextFieldType="TextFieldType.Filled"
+        Value="@ProgramState.Value.SavedPrograms[PlanId].Name"
+        OnChange="@((val) => Dispatcher.Dispatch(new SetSavedPlanNameAction(PlanId, val??"")))" />
+}
+
+@if (!ProgramState.Value.GetSessionBlueprints(PlanId).Any())
+{
+    <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
+        <md-icon>info</md-icon>
+        <span>
+            <p>No sessions in plan<br> Add a session to get started.</p>
+        </span>
+    </div>
+}
+<CardList Items="ProgramState.Value.GetSessionBlueprints(PlanId).IndexedTuples()" OnClick="(item) => SelectSession(item.Item, item.Index)">
     @{
         var session = context.Item;
         var index = context.Index;
@@ -33,42 +51,52 @@
 </FloatingBottomContainer>
 
 @code {
-    void MoveSessionUp(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new MoveSessionBlueprintUpInProgramAction(sessionBlueprint));
+    [SupplyParameterFromQuery(Name = "planId")]
+    [Parameter] public Guid PlanId { get; set; }
 
-    void MoveSessionDown(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new MoveSessionBlueprintDownInProgramAction(sessionBlueprint));
+    void MoveSessionUp(SessionBlueprint sessionBlueprint)
+        => Dispatcher.Dispatch(new MoveSessionBlueprintUpInProgramAction(PlanId, sessionBlueprint));
 
-    void RemoveSession(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new RemoveSessionFromProgramAction(sessionBlueprint));
+    void MoveSessionDown(SessionBlueprint sessionBlueprint)
+        => Dispatcher.Dispatch(new MoveSessionBlueprintDownInProgramAction(PlanId, sessionBlueprint));
+
+    void RemoveSession(SessionBlueprint sessionBlueprint)
+        => Dispatcher.Dispatch(new RemoveSessionFromProgramAction(PlanId, sessionBlueprint));
 
     void BackToSettings() => NavigationManager.NavigateTo("/settings");
 
     void SelectSession(SessionBlueprint sessionBlueprint, int index)
     {
         Dispatcher.Dispatch(new SetEditingSessionAction(sessionBlueprint));
-        NavigationManager.NavigateTo($"/settings/manage-workouts/manage-session/{index}");
+        NavigationManager.NavigateTo($"/settings/manage-workouts/manage-session/{index}?planId={PlanId}");
     }
 
     async Task AddSession()
     {
         Dispatcher.Dispatch(
             new AddProgramSessionAction(
-                new SessionBlueprint($"Session {ProgramState.Value.SessionBlueprints.Count + 1}", new ImmutableListValue<ExerciseBlueprint>())));
+                PlanId,
+                new SessionBlueprint($"Session {ProgramState.Value.GetSessionBlueprints(PlanId).Count + 1}", new ImmutableListValue<ExerciseBlueprint>())));
             await Task.Yield();
             await JSRuntime.InvokeVoidAsync("AppUtils.smoothScrollAndFocusLast", ".card");
         }
 
     void DuplicateSession(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(
         new AddProgramSessionAction(
+            PlanId,
             sessionBlueprint with
             {
-                Name = $"Session {ProgramState.Value.SessionBlueprints.Count + 1}"
+                Name = $"Session {ProgramState.Value.GetSessionBlueprints(PlanId).Count + 1}"
             }
         )
     );
 
     protected override void OnInitialized()
     {
-        Dispatcher.Dispatch(new SetPageTitleAction("Manage Workouts"));
-        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
+        var title = PlanId == Guid.Empty ? "Manage Workouts" : ProgramState.Value.SavedPrograms[PlanId].Name;
+        Dispatcher.Dispatch(new SetPageTitleAction(title));
+        var backUrl = PlanId == Guid.Empty ? "/settings" : $"/settings/program-list";
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction(backUrl));
         base.OnInitialized();
     }
 

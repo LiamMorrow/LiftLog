@@ -59,6 +59,9 @@
 
     [Parameter] public int SessionIndex { get; set; }
 
+    [SupplyParameterFromQuery(Name = "planId")]
+    [Parameter] public Guid PlanId { get; set; }
+
     [CascadingParameter(Name = "IsInActiveScreen")]
     public bool IsInActiveScreen { get; set; }
 
@@ -69,8 +72,6 @@
 
     private FullScreenDialog? editDialog;
 
-
-    void BackToManageWorkouts() => NavigationManager.NavigateTo("/settings/manage-workouts");
 
     void MoveExerciseUp(ExerciseBlueprint exerciseBlueprint)
     {
@@ -112,7 +113,7 @@
     {
         if (SessionEditorState.Value.SessionBlueprint is not null)
         {
-            Dispatcher.Dispatch(new SetProgramSessionAction(SessionIndex, SessionEditorState.Value.SessionBlueprint));
+            Dispatcher.Dispatch(new SetProgramSessionAction(PlanId, SessionIndex, SessionEditorState.Value.SessionBlueprint));
         }
     }
 
@@ -163,14 +164,16 @@
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Manage Session"));
-        Dispatcher.Dispatch(new FetchExerciseNamesAction());
-        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings/manage-workouts"));
-        if (ProgramState.Value.SessionBlueprints.Count - 1 < SessionIndex)
+        var backPath = "/settings/manage-workouts?planId=" + PlanId;
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction(backPath));
+        if (ProgramState.Value.GetSessionBlueprints(PlanId).Count - 1 < SessionIndex)
         {
-            BackToManageWorkouts();
+            Dispatcher.Dispatch(new NavigateAction(backPath));
         }
-
-        Dispatcher.Dispatch(new SetEditingSessionAction(ProgramState.Value.SessionBlueprints[SessionIndex]));
+        else
+        {
+            Dispatcher.Dispatch(new SetEditingSessionAction(ProgramState.Value.GetSessionBlueprints(PlanId)[SessionIndex]));
+        }
         base.OnInitialized();
     }
 

@@ -2,7 +2,6 @@
 @using LiftLog.Ui.Store.CurrentSession
 @using LiftLog.Ui.Store.App
 @using LiftLog.Ui.Store.Program
-@using LiftLog.Ui.Repository
 @using Fluxor;
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
@@ -40,7 +39,6 @@
         ShowBodyweight="SettingsState.Value.ShowBodyweight"
         ToggleExercisePerSetWeight=ToggleExercisePerSetWeight
         UpdateWeightForSet=UpdateWeightForSet
-        ExerciseNames="ProgramState.Value.ExerciseNames"
         SessionInPlan=@(ProgramState.Value.SessionBlueprints.Contains(CurrentSessionState.Value.HistorySession.Blueprint))
         SessionWithSameNameInPlan=@(ProgramState.Value.SessionBlueprints.Any(x => x.Name == CurrentSessionState.Value.HistorySession.Blueprint.Name))
         AddSessionToPlan="AddSessionToPlan"
@@ -108,7 +106,7 @@
                 blueprint = blueprint with { Name = newName };
             }
 
-            Dispatcher.Dispatch(new AddProgramSessionAction(blueprint));
+            Dispatcher.Dispatch(new AddProgramSessionAction(Guid.Empty, blueprint));
             Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.HistorySession, CurrentSessionState.Value.HistorySession with { Blueprint = blueprint }));
             Dispatcher.Dispatch(new SetPageTitleAction(blueprint.Name));
         }
@@ -119,7 +117,7 @@
         if (CurrentSessionState.Value.HistorySession?.Blueprint is SessionBlueprint blueprint)
         {
             var blueprintIndex = ProgramState.Value.SessionBlueprints.IndexedTuples().First(x => x.Item.Name == blueprint.Name).Index;
-            Dispatcher.Dispatch(new SetProgramSessionAction(blueprintIndex, blueprint));
+            Dispatcher.Dispatch(new SetProgramSessionAction(Guid.Empty, blueprintIndex, blueprint));
         }
     }
 
@@ -144,7 +142,6 @@
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Session"));
-        Dispatcher.Dispatch(new FetchExerciseNamesAction());
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/history"));
         if (CurrentSessionState.Value.HistorySession is null)
         {

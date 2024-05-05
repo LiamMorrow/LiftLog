@@ -1,13 +1,15 @@
+using System.Collections.Immutable;
 using Fluxor;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
-using LiftLog.Ui.Repository;
+using LiftLog.Ui.Services;
 using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Ui.Store.Program;
 
 public class PersistProgramMiddleware(
-    ICurrentProgramRepository programRepository,
+    CurrentProgramRepository programRepository,
+    SavedProgramRepository savedProgramRepository,
     ILogger<PersistProgramMiddleware> logger
 ) : Middleware
 {
@@ -19,10 +21,22 @@ public class PersistProgramMiddleware(
         try
         {
             _store = store;
-            var programs = await programRepository.GetSessionsInProgramAsync();
+            var savedProgramsTask = savedProgramRepository.GetSavedProgramsAsync();
+            var sessionsInCurrentProgramTask = programRepository.GetSessionsInProgramAsync();
+            var savedPrograms = await savedProgramsTask;
+            var sessionsInCurrentProgram = await sessionsInCurrentProgramTask;
+
             store
                 .Features[nameof(ProgramFeature)]
-                .RestoreState(new ProgramState(true, programs, [], true, []));
+                .RestoreState(
+                    new ProgramState(
+                        IsHydrated: true,
+                        SessionBlueprints: sessionsInCurrentProgram,
+                        UpcomingSessions: [],
+                        IsLoadingUpcomingSessions: true,
+                        SavedPrograms: savedPrograms
+                    )
+                );
         }
         catch (Exception e)
         {
@@ -50,6 +64,7 @@ public class PersistProgramMiddleware(
         _ = Task.Run(async () =>
         {
             await programRepository.PersistSessionsInProgramAsync(currentState.SessionBlueprints);
+            await savedProgramRepository.PersistProgramsAsync(currentState.SavedPrograms);
         });
     }
 }

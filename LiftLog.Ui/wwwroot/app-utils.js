@@ -109,19 +109,6 @@ AppUtils.callOn = function (element, funcName) {
 }
 
 /**
- * Creates a new event for the list item clicked event.
- * This new event has bubbles, which allows blazor components to intercept it
- * @param {HTMLElement} element
- */
-AppUtils.onClickedListItem = function (element) {
-    element?.addEventListener('click', () => {
-        element?.dispatchEvent(new Event('list-item-click', {
-            bubbles: true,
-            cancelable: true,
-        }))
-    });
-}
-/**
  * Creates a new event for the slider changed event.
  * This new event just emits a number directly, as the value is incompatible with blazor ChangeEventArgs
  * @param {HTMLElement} element

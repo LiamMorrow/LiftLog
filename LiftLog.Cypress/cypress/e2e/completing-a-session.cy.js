@@ -40,9 +40,9 @@ describe('Completing a session', () => {
       cy.navigate('Settings')
       // Disable tips
       cy.containsA('Show tips').click()
-      cy.containsA('Select a plan').click()
+      cy.containsA('Manage plans').click()
       cy.containsA("Starting Strength").click()
-      cy.dialog().find("[slot=actions]").contains("Select").click()
+      cy.dialog().find("[slot=actions]").contains("Use").click()
     })
 
 

@@ -29,7 +29,8 @@ public static class BuiltInProgramService
                         new("Deadlift", 1, 5, 5m, Rest.Medium, false)
                     ]
                 )
-            ]
+            ],
+            LastEdited: new(2024, 1, 1)
         ),
         new ProgramBlueprint(
             "Stronglifts 5x5",
@@ -53,7 +54,8 @@ public static class BuiltInProgramService
                         new("Deadlift", 1, 5, 5m, Rest.Medium, false)
                     ]
                 )
-            ]
+            ],
+            LastEdited: new(2024, 1, 1)
         ),
         new ProgramBlueprint(
             "PPL",
@@ -88,7 +90,8 @@ public static class BuiltInProgramService
                         new("Leg Curl", 4, 8, 2.5m, Rest.Medium, false)
                     ]
                 )
-            ]
+            ],
+            LastEdited: new(2024, 1, 1)
         ),
         new ProgramBlueprint(
             "PHUL",
@@ -139,7 +142,8 @@ public static class BuiltInProgramService
                         new("Calf Raise", 3, 10, 2.5m, Rest.Medium, false)
                     ]
                 )
-            ]
+            ],
+            LastEdited: new(2024, 1, 1)
         ),
         new ProgramBlueprint(
             "Light Calisthenics",
@@ -171,7 +175,8 @@ public static class BuiltInProgramService
                         new("Calf Raises", 3, 10, 0m, Rest.Medium, false)
                     ]
                 )
-            ]
+            ],
+            LastEdited: new(2024, 1, 1)
         ),
         new ProgramBlueprint(
             "Heavy Calisthenics",
@@ -206,7 +211,8 @@ public static class BuiltInProgramService
                         new("Pistol Squats", 3, 10, 0m, Rest.Medium, false)
                     ]
                 )
-            ]
+            ],
+            LastEdited: new(2024, 1, 1)
         )
     ];
 }

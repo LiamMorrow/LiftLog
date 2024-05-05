@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using Fluxor;
 using LiftLog.Lib.Models;
-using LiftLog.Ui.Repository;
 using LiftLog.Ui.Store.CurrentSession;
 
 namespace LiftLog.Ui.Services;
@@ -9,7 +8,7 @@ namespace LiftLog.Ui.Services;
 public class SessionService(
     IState<CurrentSessionState> currentSessionState,
     ProgressRepository progressRepository,
-    ICurrentProgramRepository programRepository
+    CurrentProgramRepository programRepository
 )
 {
     /// <summary>

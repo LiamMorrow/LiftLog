@@ -7,20 +7,37 @@ public record SetProgramIsHydratedAction();
 
 public record FetchUpcomingSessionsAction();
 
-public record FetchExerciseNamesAction();
-
-public record SetExerciseNamesAction(ImmutableListValue<string> ExerciseNames);
-
 public record SetUpcomingSessionsAction(ImmutableListValue<Session> UpcomingSessions);
 
-public record SetProgramSessionsAction(ImmutableListValue<SessionBlueprint> SessionBlueprints);
+// PlanId is the key to the SavedPlans dictionary in ProgramState
+// If it is Guid.Empty, it is the current plan
+public record SetProgramSessionsAction(
+    Guid PlanId,
+    ImmutableListValue<SessionBlueprint> SessionBlueprints
+);
 
-public record SetProgramSessionAction(int SessionIndex, SessionBlueprint SessionBlueprint);
+public record SetProgramSessionAction(
+    Guid PlanId,
+    int SessionIndex,
+    SessionBlueprint SessionBlueprint
+);
 
-public record AddProgramSessionAction(SessionBlueprint SessionBlueprint);
+public record AddProgramSessionAction(Guid PlanId, SessionBlueprint SessionBlueprint);
 
-public record MoveSessionBlueprintUpInProgramAction(SessionBlueprint SessionBlueprint);
+public record MoveSessionBlueprintUpInProgramAction(Guid PlanId, SessionBlueprint SessionBlueprint);
 
-public record MoveSessionBlueprintDownInProgramAction(SessionBlueprint SessionBlueprint);
+public record MoveSessionBlueprintDownInProgramAction(
+    Guid PlanId,
+    SessionBlueprint SessionBlueprint
+);
 
-public record RemoveSessionFromProgramAction(SessionBlueprint SessionBlueprint);
+public record RemoveSessionFromProgramAction(Guid PlanId, SessionBlueprint SessionBlueprint);
+
+// Plans
+public record SavePlanAction(Guid PlanId, ProgramBlueprint ProgramBlueprint);
+
+public record CreateSavedPlanAction(Guid PlanId, string Name);
+
+public record DeleteSavedPlanAction(Guid PlanId);
+
+public record SetSavedPlanNameAction(Guid PlanId, string Name);

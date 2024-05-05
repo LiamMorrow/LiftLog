@@ -1,6 +1,5 @@
 @page "/post-session/{IdStr}"
 
-@using LiftLog.Ui.Repository
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @inject ProgressRepository ProgressRepository
@@ -30,7 +29,6 @@
         }
 
         Dispatcher.Dispatch(new SetPageTitleAction("Session Summary"));
-        Dispatcher.Dispatch(new FetchExerciseNamesAction());
         Dispatcher.Dispatch(new SetReopenCurrentSessionAction(false));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
         Session = await ProgressRepository.GetSessionAsync(id);

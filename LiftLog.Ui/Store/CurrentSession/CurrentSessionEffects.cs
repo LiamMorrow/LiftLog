@@ -1,7 +1,6 @@
 using System.IO.Compression;
 using Fluxor;
 using LiftLog.Lib.Models;
-using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
 
 namespace LiftLog.Ui.Store.CurrentSession;

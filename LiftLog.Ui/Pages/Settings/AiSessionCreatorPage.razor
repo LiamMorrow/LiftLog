@@ -1,7 +1,6 @@
 @page "/settings/ai-session-creator"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 @using LiftLog.Lib.Services;
-@using LiftLog.Ui.Repository;
 
 @inject NavigationManager NavigationManager
 @inject IDispatcher Dispatcher
@@ -109,7 +108,7 @@ else
             return;
         }
 
-        Dispatcher.Dispatch(new AddProgramSessionAction(AiSessionCreatorState.Value.GeneratedSession));
+        Dispatcher.Dispatch(new AddProgramSessionAction(Guid.Empty, AiSessionCreatorState.Value.GeneratedSession));
         NavigationManager.NavigateTo("/settings/manage-workouts");
         Dispatcher.Dispatch(new ClearAiGeneratedSessionStateAction());
     }

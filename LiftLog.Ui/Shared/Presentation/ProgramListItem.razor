@@ -1,29 +1,49 @@
 @inject IJSRuntime JSRuntime
 
-<md-list-item @ref="_listItem" class="text-left" multi-line-supporting-text @onlist-item-click="OnClick">
+<md-list-item @ref="_listItem" @attributes="AdditionalAttributes" type="button" class="text-left @(AdditionalAttributes?.GetValueOrDefault("class")) " multi-line-supporting-text @onclick="OnClick">
     <span slot="headline">@ProgramBlueprint.Name</span>
     <span slot="supporting-text">@SupportingText</span>
-    <span slot="trailing-supporting-text">@TrailingSupportingText</span>
+    @if (!BuiltIn)
+    {
+        <div slot="end">
+            <IconButton id="@_iconButtonId" Type="IconButtonType.Standard" Icon="more_horiz" OnClick=@(() => _menu?.Open())></IconButton>
+            <Menu  anchor="@_iconButtonId" @ref="_menu">
+                <MenuItem Icon="fitness_center" Label="Use" OnClick="() => OnUse.InvokeAsync()"/>
+                <MenuItem Icon="delete" Label="Remove" OnClick="() => OnRemove.InvokeAsync()"/>
+                <MenuItem Icon="content_copy" Label="Duplicate" OnClick="() => OnDuplicate.InvokeAsync()"/>
+            </Menu>
+        </div>
+    }
+    else
+    {
+        <span slot="trailing-supporting-text">@TrailingSupportingText</span>
+    }
 </md-list-item>
 
 
 @code {
+    private string _iconButtonId ="a"+Guid.NewGuid();
+
+    private Menu? _menu;
 
     private ElementReference _listItem;
-
-    override protected async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSRuntime.InvokeVoidAsync("AppUtils.onClickedListItem", _listItem);
-        }
-    }
 
     [Parameter] [EditorRequired] public ProgramBlueprint ProgramBlueprint { get; set; } = null!;
 
     [Parameter] [EditorRequired] public EventCallback OnClick { get; set; }
 
-    private string SupportingText => $"{ProgramBlueprint.Tag} - {ExperienceLevelText}";
+    [Parameter] [EditorRequired] public bool BuiltIn { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    [Parameter] public EventCallback OnUse { get; set; }
+    [Parameter] public EventCallback OnRemove { get; set; }
+    [Parameter] public EventCallback OnDuplicate { get; set; }
+
+    private string SupportingText => BuiltIn
+        ? $"{ProgramBlueprint.Tag} - {ExperienceLevelText}"
+        : $"Edited: {ProgramBlueprint.LastEdited.ToShortDateString()}";
     private string TrailingSupportingText => $"{ProgramBlueprint.DaysPerWeek} days";
 
     private string ExperienceLevelText

@@ -4,7 +4,6 @@ using Google.Protobuf.WellKnownTypes;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Models;
-using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.Program;
 

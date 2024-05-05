@@ -6,16 +6,42 @@
 @page "/settings/program-list"
 
 @inject IDispatcher Dispatcher;
+@inject IState<ProgramState> ProgramState
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-@* TODO: Section for Saved Programs *@
+@if(ProgramState.Value.SavedPrograms.Any())
+{
+    var orderedPrograms = ProgramState.Value.SavedPrograms.OrderBy(x=>x.Value.Name).ToList();
+    <section class="text-left text-on-surface mb-4 flex flex-col -mx-2">
+        <h2 class="pl-4 text-xl font-bold">Saved Plans</h2>
+        <md-list>
+            @foreach (var (id, program) in orderedPrograms)
+            {
+                <ProgramListItem
+                    ProgramBlueprint="@program"
+                    OnClick=@(() => OpenEditProgram(id))
+                    OnUse="@(() => BeginSelectProgram(program))"
+                    OnDuplicate="@(() => Dispatcher.Dispatch(new SavePlanAction(Guid.NewGuid(), program)))"
+                    OnRemove="@(() => Dispatcher.Dispatch(new DeleteSavedPlanAction(id)))"
+                    BuiltIn=false/>
+                @if(id != orderedPrograms.Last().Key)
+                {
+                    <md-divider></md-divider>
+                }
+            }
+        </md-list>
+    </section>
+}
 
-<section class="text-left text-on-surface">
-    <h2 class="pl-4 text-xl">Built in Programs</h2>
+<section class="text-left text-on-surface -mx-2">
+    <h2 class="pl-4 text-xl font-bold">Built in Plans</h2>
     <md-list>
         @foreach (var program in BuiltInProgramService.BuiltInPrograms)
         {
-            <ProgramListItem ProgramBlueprint="@program" OnClick=@(() => BeginSelectProgram(program))/>
+            <ProgramListItem
+                    ProgramBlueprint="@program"
+                    OnClick=@(() => BeginSelectProgram(program))
+                    BuiltIn=true/>
             @if (program != BuiltInProgramService.BuiltInPrograms.Last())
             {
                 <md-divider></md-divider>
@@ -30,14 +56,28 @@
     {
         <span slot="content" class="block text-left">
             Would you like to use the program
-            <span class="font-bold text-primary">@selectedProgram.Name</span>?<br/>This will replace the existing program.
+            <span class="font-bold text-primary">@selectedProgram.Name</span>?<br/>This will replace your existing workouts.
         </span>
         <div class="flex gap-1" slot="actions">
             <AppButton Type="AppButtonType.Text" OnClick="() => selectedProgramDialog?.Close()">Close</AppButton>
-            <AppButton Type="AppButtonType.Text" OnClick="SelectProgram">Select</AppButton>
+            <AppButton Type="AppButtonType.Text" OnClick="SelectProgram">Use</AppButton>
         </div>
     }
 </Dialog>
+
+
+
+<FloatingBottomContainer>
+    <Fab>
+        <div class="flex flex-col gap-2 items-end">
+            <FloatingButton variant="primary" has-icon OnClick="AddNewPlan" Label="Add plan">
+                <md-icon slot="icon">add</md-icon>
+            </FloatingButton>
+        </div>
+    </Fab>
+</FloatingBottomContainer>
+
+
 
 @code {
     private ProgramBlueprint? selectedProgram;
@@ -62,10 +102,31 @@
         await selectedProgramDialog!.CloseWait();
         if (selectedProgram != null)
         {
-            Dispatcher.Dispatch(new SetProgramSessionsAction(selectedProgram.Sessions));
+            Dispatcher.Dispatch(new SetProgramSessionsAction(Guid.Empty, selectedProgram.Sessions));
             Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, null));
             Dispatcher.Dispatch(new NavigateAction("/"));
         }
+    }
+
+    private void AddNewPlan()
+    {
+        var planId = Guid.NewGuid();
+        Dispatcher.Dispatch(
+            new SavePlanAction(
+                planId,
+                new ProgramBlueprint(
+                    Name: "New Plan",
+                    ExperienceLevel: Experience.Beginner,
+                    Tag: null,
+                    DaysPerWeek: 0,
+                    Sessions: [],
+                    LastEdited: DateOnly.FromDateTime(DateTime.Now))));
+        Dispatcher.Dispatch(new NavigateAction("/settings/manage-workouts?planId=" + planId));
+    }
+
+    private void OpenEditProgram(Guid id)
+    {
+        Dispatcher.Dispatch(new NavigateAction("/settings/manage-workouts?planId=" + id));
     }
 
 }

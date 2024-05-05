@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 
@@ -8,5 +9,9 @@ public record ProgramState(
     ImmutableListValue<SessionBlueprint> SessionBlueprints,
     ImmutableListValue<Session> UpcomingSessions,
     bool IsLoadingUpcomingSessions,
-    ImmutableListValue<string> ExerciseNames
-);
+    ImmutableDictionary<Guid, ProgramBlueprint> SavedPrograms
+)
+{
+    public ImmutableListValue<SessionBlueprint> GetSessionBlueprints(Guid planId) =>
+        planId == Guid.Empty ? SessionBlueprints : SavedPrograms[planId].Sessions;
+}

@@ -52,6 +52,7 @@
 
 @code
 {
+    private ExerciseBlueprint exercise = null!;
     [Parameter] [EditorRequired] public Action<ExerciseBlueprint> UpdateExercise { get; set; } = null!;
 
     [Parameter] [EditorRequired] public ExerciseBlueprint Exercise { get; set; } = null!;
@@ -61,22 +62,33 @@
 
     private string WeightSuffix => UseImperialUnits ? "lbs" : "kg";
 
-    void DecrementExerciseSets() => UpdateExercise(Exercise with { Sets = Math.Max(Exercise.Sets - 1, 1) });
+    protected override void OnParametersSet()
+    {
+        exercise = Exercise;
+    }
 
-    void IncrementExerciseSets() => UpdateExercise(Exercise with { Sets = Exercise.Sets + 1 });
+    void DecrementExerciseSets() => UpdateExerciseHandler(exercise with { Sets = Math.Max(exercise.Sets - 1, 1) });
 
-    void DecrementExerciseRepsPerSet() => UpdateExercise(Exercise with { RepsPerSet = Math.Max(Exercise.RepsPerSet - 1, 1) });
+    void IncrementExerciseSets() => UpdateExerciseHandler(exercise with { Sets = exercise.Sets + 1 });
 
-    void IncrementExerciseRepsPerSet() => UpdateExercise(Exercise with { RepsPerSet = Exercise.RepsPerSet + 1 });
+    void DecrementExerciseRepsPerSet() => UpdateExerciseHandler(exercise with { RepsPerSet = Math.Max(exercise.RepsPerSet - 1, 1) });
 
-    void SetExerciseName(string name) => UpdateExercise(Exercise with { Name = name });
+    void IncrementExerciseRepsPerSet() => UpdateExerciseHandler(exercise with { RepsPerSet = exercise.RepsPerSet + 1 });
+
+    void SetExerciseName(string name) => UpdateExerciseHandler(exercise with { Name = name });
 
     void SetExerciseSupersetsNext(bool supersets)
-        => UpdateExercise(Exercise with { SupersetWithNext = supersets });
+        => UpdateExerciseHandler(exercise with { SupersetWithNext = supersets });
 
     void SetExerciseSuccessWeight(decimal weight)
-        => UpdateExercise(Exercise with { WeightIncreaseOnSuccess = weight });
+        => UpdateExerciseHandler(exercise with { WeightIncreaseOnSuccess = weight });
 
-    void OnRestUpdated(Rest rest) => UpdateExercise(Exercise with { RestBetweenSets = rest });
+    void OnRestUpdated(Rest rest) => UpdateExerciseHandler(exercise with { RestBetweenSets = rest });
+
+    private void UpdateExerciseHandler(ExerciseBlueprint updatedExercise)
+    {
+        exercise = updatedExercise;
+        UpdateExercise(exercise);
+    }
 
 }

@@ -1,7 +1,6 @@
 using Fluxor;
 using LiftLog.Lib.Serialization;
 using LiftLog.Lib.Services;
-using LiftLog.Ui.Repository;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.CurrentSession;
@@ -48,7 +47,8 @@ public static class ServiceRegistration
 #endif
         );
 
-        services.AddScoped<ICurrentProgramRepository, KeyValueCurrentProgramRepository>();
+        services.AddScoped<CurrentProgramRepository>();
+        services.AddScoped<SavedProgramRepository>();
         services.AddScoped<ProgressRepository>();
         services.AddScoped<PreferencesRepository>();
 
