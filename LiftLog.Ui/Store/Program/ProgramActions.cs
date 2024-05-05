@@ -41,6 +41,4 @@ public record CreateSavedPlanAction(Guid PlanId, string Name);
 
 public record DeleteSavedPlanAction(Guid PlanId);
 
-public record DuplicateSavedPlanAction(Guid PlanId);
-
 public record SetSavedPlanNameAction(Guid PlanId, string Name);

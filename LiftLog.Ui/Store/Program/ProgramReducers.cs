@@ -70,19 +70,6 @@ public static class ProgramReducers
         };
 
     [ReducerMethod]
-    public static ProgramState DuplicateSavedPlan(
-        ProgramState state,
-        DuplicateSavedPlanAction action
-    ) =>
-        state with
-        {
-            SavedPrograms = state.SavedPrograms.SetItem(
-                Guid.NewGuid(),
-                state.SavedPrograms[action.PlanId]
-            )
-        };
-
-    [ReducerMethod]
     public static ProgramState SetSavedPlanName(
         ProgramState state,
         SetSavedPlanNameAction action
