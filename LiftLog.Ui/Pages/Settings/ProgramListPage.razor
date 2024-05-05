@@ -18,7 +18,6 @@
             @foreach (var (id, program) in orderedPrograms)
             {
                 <ProgramListItem
-                    class="mx-2"
                     ProgramBlueprint="@program"
                     OnClick=@(() => OpenEditProgram(id))
                     OnUse="@(() => BeginSelectProgram(program))"
@@ -40,7 +39,6 @@
         @foreach (var program in BuiltInProgramService.BuiltInPrograms)
         {
             <ProgramListItem
-                    class="mx-2"
                     ProgramBlueprint="@program"
                     OnClick=@(() => BeginSelectProgram(program))
                     BuiltIn=true/>
