@@ -73,7 +73,7 @@ else
 }
 
 <FullScreenDialog @ref=_editExerciseDialog Title=@(_exerciseToEditIndex is null ? "Add Exercise" : "Edit Exercise") Action="Update" OnAction="EditExerciseHandler" OnClose="@(() => _exerciseToEditIndex = null)">
-        <ExerciseEditor Exercise="editingExerciseBlueprint" UpdateExercise="(ex) => {editingExerciseBlueprint = ex; StateHasChanged();}" />
+        <ExerciseEditor Exercise="editingExerciseBlueprint" UpdateExercise="(ex) => {editingExerciseBlueprint = ex(editingExerciseBlueprint); StateHasChanged();}" />
 </FullScreenDialog>
 
 

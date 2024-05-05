@@ -3,12 +3,12 @@
 @switch (TextFieldType)
 {
     case TextFieldType.Outline:
-        <md-outlined-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @oninput=@((e) => OnChange?.Invoke((string)e.Value!)) @onfocusin=SelectOnFocus @onclick=OnClick>
+        <md-outlined-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange?.Invoke((string)e.Value!)) @onfocusin=SelectOnFocus @onclick=OnClick>
             @ChildContent
         </md-outlined-text-field>
         break;
     case TextFieldType.Filled:
-        <md-filled-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @oninput=@((e) => OnChange?.Invoke((string)e.Value!)) @onfocusin=SelectOnFocus @onclick=OnClick>
+        <md-filled-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange?.Invoke((string)e.Value!)) @onfocusin=SelectOnFocus @onclick=OnClick>
             @ChildContent
         </md-filled-text-field>
         break;

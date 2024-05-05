@@ -52,7 +52,7 @@
 
 @code
 {
-    [Parameter] [EditorRequired] public Action<ExerciseBlueprint> UpdateExercise { get; set; } = null!;
+    [Parameter] [EditorRequired] public Action<Func<ExerciseBlueprint, ExerciseBlueprint>> UpdateExercise { get; set; } = null!;
 
     [Parameter] [EditorRequired] public ExerciseBlueprint Exercise { get; set; } = null!;
 
@@ -61,22 +61,22 @@
 
     private string WeightSuffix => UseImperialUnits ? "lbs" : "kg";
 
-    void DecrementExerciseSets() => UpdateExercise(Exercise with { Sets = Math.Max(Exercise.Sets - 1, 1) });
+    void DecrementExerciseSets() => UpdateExercise(e=> e with { Sets = Math.Max(e.Sets - 1, 1) });
 
-    void IncrementExerciseSets() => UpdateExercise(Exercise with { Sets = Exercise.Sets + 1 });
+    void IncrementExerciseSets() => UpdateExercise(e=> e with { Sets = e.Sets + 1 });
 
-    void DecrementExerciseRepsPerSet() => UpdateExercise(Exercise with { RepsPerSet = Math.Max(Exercise.RepsPerSet - 1, 1) });
+    void DecrementExerciseRepsPerSet() => UpdateExercise(e=> e with { RepsPerSet = Math.Max(e.RepsPerSet - 1, 1) });
 
-    void IncrementExerciseRepsPerSet() => UpdateExercise(Exercise with { RepsPerSet = Exercise.RepsPerSet + 1 });
+    void IncrementExerciseRepsPerSet() => UpdateExercise(e=> e with { RepsPerSet = e.RepsPerSet + 1 });
 
-    void SetExerciseName(string name) => UpdateExercise(Exercise with { Name = name });
+    void SetExerciseName(string name) => UpdateExercise(e=> e with { Name = name });
 
     void SetExerciseSupersetsNext(bool supersets)
-        => UpdateExercise(Exercise with { SupersetWithNext = supersets });
+        => UpdateExercise(e=> e with { SupersetWithNext = supersets });
 
     void SetExerciseSuccessWeight(decimal weight)
-        => UpdateExercise(Exercise with { WeightIncreaseOnSuccess = weight });
+        => UpdateExercise(e=> e with { WeightIncreaseOnSuccess = weight });
 
-    void OnRestUpdated(Rest rest) => UpdateExercise(Exercise with { RestBetweenSets = rest });
+    void OnRestUpdated(Rest rest) => UpdateExercise(e=> e with { RestBetweenSets = rest });
 
 }

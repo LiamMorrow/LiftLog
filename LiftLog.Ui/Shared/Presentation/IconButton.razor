@@ -5,21 +5,7 @@
             @attributes="AdditionalAttributes"
             @onpointerdown="OnPointerDown"
             @onpointerleave="OnPointerLeave"
-            @onpointerup="OnPointerUp" class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true"
-
-  @oncontextmenu:stopPropagation="true"
-  @oncontextmenu:preventDefault="true"
-  @onpointercancel:stopPropagation="true"
-  @onpointercancel:preventDefault="true"
-  @onpointerdown:stopPropagation="true"
-  @onpointerdown:preventDefault="true"
-  @onpointerenter:stopPropagation="true"
-  @onpointerenter:preventDefault="true"
-  @onpointerleave:stopPropagation="true"
-  @onpointerleave:preventDefault="true"
-  @onpointerup:stopPropagation="true"
-  @onpointerup:preventDefault="true"
-  >
+            @onpointerup="OnPointerUp" class="pointer-events-auto" @onclick="OnClick" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true">
             <md-icon>@Icon</md-icon>
         </md-icon-button>
         break;
