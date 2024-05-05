@@ -33,7 +33,7 @@ describe('Creating a plan', () => {
       assertPlanFromEditPage('benchFromNewPlan')
     })
 
-    it.only('should be able to use the new plan', () => {
+    it('should be able to use the new plan', () => {
       cy.get('[data-cy=back-btn]', { includeShadowDom: true }).click()
       cy.getA('md-list-item').should('contain.text', 'I am a new plan').find('md-icon-button').click()
       cy.containsA('Use').click()
