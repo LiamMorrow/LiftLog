@@ -21,9 +21,9 @@ public class PersistProgramMiddleware(
         try
         {
             _store = store;
-            var savedProgramsTask =  savedProgramRepository.GetSavedProgramsAsync();
+            var savedProgramsTask = savedProgramRepository.GetSavedProgramsAsync();
             var sessionsInCurrentProgramTask = programRepository.GetSessionsInProgramAsync();
-            var savedPrograms =  await savedProgramsTask;
+            var savedPrograms = await savedProgramsTask;
             var sessionsInCurrentProgram = await sessionsInCurrentProgramTask;
 
             store
