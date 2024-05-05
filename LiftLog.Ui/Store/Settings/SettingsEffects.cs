@@ -40,7 +40,10 @@ public class SettingsEffects(
             new SettingsStorageDaoV2(
                 sessions.Select(SessionDaoV2.FromModel),
                 program.Select(SessionBlueprintDaoV2.FromModel),
-                savedPrograms.ToDictionary(x=>x.Key.ToString(), x=>ProgramBlueprintDaoV1.FromModel(x.Value))
+                savedPrograms.ToDictionary(
+                    x => x.Key.ToString(),
+                    x => ProgramBlueprintDaoV1.FromModel(x.Value)
+                )
             ).ToByteArray()
         );
     }
@@ -103,12 +106,14 @@ public class SettingsEffects(
                         deserialized.Program.Select(x => x.ToModel()).ToImmutableList()
                     )
                 );
-                dispatcher.Dispatch(new SetSavedPlansAction(
-                    deserialized.SavedPrograms.ToDictionary(
-                        x => Guid.Parse(x.Key),
-                        x => x.Value.ToModel()
+                dispatcher.Dispatch(
+                    new SetSavedPlansAction(
+                        deserialized.SavedPrograms.ToDictionary(
+                            x => Guid.Parse(x.Key),
+                            x => x.Value.ToModel()
+                        )
                     )
-                ));
+                );
             }
             else
             {
