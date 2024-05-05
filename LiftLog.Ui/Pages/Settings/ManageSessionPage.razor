@@ -41,7 +41,7 @@
 <FullScreenDialog @ref=editDialog Title=@(isAddingExercise ? "Add Exercise" : "Edit Exercise") Action="Save" OnAction="UpdateExercise" >
     @if(selectedExercise is not null)
     {
-        <ExerciseEditor Exercise="selectedExercise" UpdateExercise="(ex) => {selectedExercise = ex(selectedExercise); StateHasChanged();}" />
+        <ExerciseEditor Exercise="selectedExercise" UpdateExercise="(ex) => {selectedExercise = ex; StateHasChanged();}" />
     }
 </FullScreenDialog>
 
