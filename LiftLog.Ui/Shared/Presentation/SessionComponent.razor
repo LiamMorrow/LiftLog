@@ -29,7 +29,7 @@ else
 }
 @if (ShowBodyweight)
 {
-    <Card class="flex justify-between items-center" Type=Card.CardType.Filled >
+    <Card class="flex justify-between items-center mx-2" Type=Card.CardType.Filled >
         <span class="text-xl font-bold">Bodyweight</span>
         <WeightDisplay AllowNull=true Weight=Session.Bodyweight UpdateWeight="UpdateBodyweight" Increment="0.1m" Label="Bodyweight"/>
     </Card>

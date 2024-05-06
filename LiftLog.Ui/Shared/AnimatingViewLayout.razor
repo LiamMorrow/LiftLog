@@ -14,7 +14,7 @@
     }
 </style>
 
-<div class="bg-surface h-full flex flex-col transitionable @transitioningClass @(Transition.IntoView ? "transitioned" : "transitioned_behind")">
+<div class="bg-surface min-h-full flex flex-col transitionable @transitioningClass @(Transition.IntoView ? "transitioned" : "transitioned_behind")">
     <CascadingValue Name="IsInActiveScreen" Value="Transition.IntoView">
         @Body
     </CascadingValue>

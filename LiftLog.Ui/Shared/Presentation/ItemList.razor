@@ -1,5 +1,5 @@
 @typeparam TItem
-<div @attributes="AdditionalAttributes" class=" @(AdditionalAttributes?.GetValueOrDefault("class")) flex flex-col gap-2 py-2 itemlist">
+<div @attributes="AdditionalAttributes" class=" @(AdditionalAttributes?.GetValueOrDefault("class")) flex flex-col py-2 itemlist">
     @for (var i = 0; i < Items.Count; i++)
     {
         <div class="text-on-surface">

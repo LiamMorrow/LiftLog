@@ -1,10 +1,18 @@
 @inject IJSRuntime JSRuntime
 
-<md-menu @attributes="AdditionalAttributes" positioning="popover" @ref="menu">
+<md-menu @attributes="AdditionalAttributes" positioning="popover" @ref="menu" @ondialog-close=@(()=>{_open = false;StateHasChanged();}) >
     @ChildContent
 </md-menu>
 
+@*Scrim*@
+@if(_open){
+    <div class="fixed z-20 bg-transparent top-0 right-0 left-0 bottom-0"
+        @onclick:stopPropagation="true" @onclick:preventDefault="true"
+        @onpointerdown:preventDefault="true" @onpointerdown:stopPropagation="true"
+        @onpointerdown=@(_=>JSRuntime.InvokeVoidAsync("AppUtils.callOn", menu, "close"))></div>
+}
 @code {
+    private bool _open = false;
 
     private ElementReference menu;
 
@@ -13,8 +21,16 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender){
+        if(firstRender){
+            await JSRuntime.InvokeVoidAsync("AppUtils.onClosedMenu", menu);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
     public void Open()
     {
+        _open = true;
         JSRuntime.InvokeVoidAsync("AppUtils.callOn", menu, "show");
     }
 

@@ -31,7 +31,7 @@
                             </div>
                         </div>
                     </div>
-                    <div @ref="_contentElementRef" id="scrollingElement" class="px-2 pb-2 overflow-auto bg-surface flex flex-col" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
+                    <div @ref="_contentElementRef" id="scrollingElement" class="pb-2 overflow-auto bg-surface" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
                         @if (StateIsHydrated)
                         {
                             @Body

@@ -12,7 +12,7 @@
 @if(ProgramState.Value.SavedPrograms.Any())
 {
     var orderedPrograms = ProgramState.Value.SavedPrograms.OrderBy(x=>x.Value.Name).ToList();
-    <section class="text-left text-on-surface mb-4 flex flex-col -mx-2">
+    <section class="text-left text-on-surface mb-4 flex flex-col">
         <h2 class="pl-4 text-xl font-bold">Saved Plans</h2>
         <md-list>
             @foreach (var (id, program) in orderedPrograms)
@@ -33,7 +33,7 @@
     </section>
 }
 
-<section class="text-left text-on-surface -mx-2">
+<section class="text-left text-on-surface">
     <h2 class="pl-4 text-xl font-bold">Built in Plans</h2>
     <md-list>
         @foreach (var program in BuiltInProgramService.BuiltInPrograms)

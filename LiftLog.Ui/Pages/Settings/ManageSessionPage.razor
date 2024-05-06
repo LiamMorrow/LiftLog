@@ -16,13 +16,15 @@
 @if (SessionEditorState.Value.SessionBlueprint is not null)
 {
     <div class="bg-surface pt-2">
-        <TextField
-            class="w-full mb-4 text-start"
-            Label="Session Name"
-            TextFieldType="TextFieldType.Filled"
-            Value="@SessionEditorState.Value.SessionBlueprint.Name"
-            OnChange="@((val) => SetName(val!))">
-        </TextField>
+        <div class="px-2">
+            <TextField
+                class="w-full mb-4 text-start"
+                Label="Session Name"
+                TextFieldType="TextFieldType.Filled"
+                Value="@SessionEditorState.Value.SessionBlueprint.Name"
+                OnChange="@((val) => SetName(val!))">
+            </TextField>
+        </div>
         <ItemList Items="SessionEditorState.Value.SessionBlueprint.Exercises.IndexedTuples()">
             @{
                 var exercise = context.Item;
