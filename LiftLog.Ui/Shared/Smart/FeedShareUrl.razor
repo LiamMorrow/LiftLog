@@ -4,7 +4,7 @@
 @if (FeedState.Value.Identity is not null)
 {
     <TextField Value="@GetShareUrl()" label="Share Link" readonly="readonly" OnClick="HandleShareUrlClick"/>
-    <span class="text-sm text-on-surface">Only those with the link can see what you've shared.</span>
+    <span class="text-sm text-on-surface mt-1">Only those with the link can see what you've shared.</span>
 }
 
 @code {
