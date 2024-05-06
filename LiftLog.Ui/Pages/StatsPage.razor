@@ -33,7 +33,7 @@ else if ((StatsState.Value.OverallView?.SessionStats.Count ?? 0) == 0)
 else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null)
 {
     var overallStats = StatsState.Value.OverallView;
-    <div class="grid grid-rows-2 grid-cols-2 gap-2 mb-2">
+    <div class="grid grid-rows-2 grid-cols-2 gap-2 mb-2 px-2">
         <SingleValueStatisticsCard>
             <Title>Average time between sets</Title>
             <Body>
@@ -63,11 +63,11 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
     <div class="flex flex-col gap-2">
         @if (SettingsState.Value.ShowBodyweight && overallStats.BodyweightStats.Statistics.Any())
         {
-            <Card>
+            <Card class="mx-2">
                 <StatGraphCardContent Title="Bodyweight" Statistics="[overallStats.BodyweightStats]" RenderDelay="TimeSpan.FromMilliseconds(100)"/>
             </Card>
         }
-        <Card>
+        <Card class="mx-2">
             <StatGraphCardContent Title="Sessions" Statistics="overallStats.SessionStats" RenderDelay="TimeSpan.FromMilliseconds(200)"/>
         </Card>
         <CardList Items="@(overallStats.ExerciseStats.IndexedTuples())">

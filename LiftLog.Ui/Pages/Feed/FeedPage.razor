@@ -10,7 +10,7 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 @implements IDisposable
 
-<div class="sticky top-0 z-10 @TopNavColorClass -mx-2 transition-colors">
+<div class="sticky top-0 z-10 @TopNavColorClass transition-colors">
     <md-tabs @ref="tabs" @onchange="HandleTabChange">
         <md-primary-tab id="mainfeed-tab" active=@(GetTabActiveClass("mainfeed-panel")) aria-controls="mainfeed-panel">Feed</md-primary-tab>
         <md-primary-tab id="following-tab" active=@(GetTabActiveClass("following-panel")) aria-controls="following-panel">Following</md-primary-tab>
