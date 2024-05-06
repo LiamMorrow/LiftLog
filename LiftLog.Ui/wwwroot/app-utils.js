@@ -51,6 +51,15 @@ AppUtils.onCloseMdPopup = function (element) {
     });
 };
 
+AppUtils.onClosedMenu = function (element) {
+    element?.addEventListener('closed', () => {
+        element?.dispatchEvent(new Event('dialog-close', {
+            bubbles: true,
+            cancelable: true,
+        }))
+    });
+};
+
 
 AppUtils.hideMdPopup = function (element) {
     return element?.close();
@@ -65,6 +74,10 @@ AppUtils.getValue = function (element) {
     return element.value;
 }
 
+
+AppUtils.isOpen = function (element) {
+    return element.open;
+}
 
 AppUtils.getActiveTabControls = function (tabs) {
     /** @type {HTMLElement }*/
