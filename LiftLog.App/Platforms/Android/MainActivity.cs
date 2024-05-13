@@ -40,11 +40,11 @@ public class MainActivity : MauiAppCompatActivity
     protected override void OnCreate(Bundle? savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
-        WindowCompat.SetDecorFitsSystemWindows(Window, false);
+        WindowCompat.SetDecorFitsSystemWindows(Window!, false);
         var insetsManager =
             IPlatformApplication.Current?.Services.GetRequiredService<InsetsManager>();
         ViewCompat.SetOnApplyWindowInsetsListener(
-            Window.DecorView,
+            Window!.DecorView,
             new WindowInsetsListener(insetsManager!, Resources!.DisplayMetrics!.Density)
         );
     }
@@ -53,7 +53,6 @@ public class MainActivity : MauiAppCompatActivity
         : Java.Lang.Object,
             IOnApplyWindowInsetsListener
     {
-
         public WindowInsetsCompat OnApplyWindowInsets(
             Android.Views.View v,
             WindowInsetsCompat insets

@@ -20,7 +20,7 @@
             <section class="relative h-full content">
                 <div class="grid grid-cols-1 h-full grid-rows-[min-content_1fr_min-content]">
                     <div class="flex flex-col @_topNavColorClass transition-colors">
-                        <div style="height: @InsetsManager.SystemSafeInsetTop"></div>
+                        <div style="height: @TopInset"></div>
                         <div class="flex items-center gap-2 p-4 text-2xl">
                             @RenderBackButton()
                             <div class="h-[48px] flex items-center justify-center">
@@ -146,6 +146,8 @@
     }
 
     private string Justify => AppState.Value.BackNavigationUrl is null ? "justify-center" : "justify-start";
+
+    private string TopInset => SettingsState.Value.StatusBarFix ? "46px" : InsetsManager.SystemSafeInsetTop;
 
     private RenderFragment? RenderBackButton()
     {

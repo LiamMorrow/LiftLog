@@ -188,4 +188,10 @@ public class SettingsEffects(
     {
         await preferencesRepository.SetShowFeedAsync(action.ShowFeed);
     }
+
+    [EffectMethod]
+    public async Task HandleStatusBarFixAction(SetStatusBarFixAction action, IDispatcher dispatcher)
+    {
+        await preferencesRepository.SetStatusBarFixAsync(action.StatusBarFix);
+    }
 }
