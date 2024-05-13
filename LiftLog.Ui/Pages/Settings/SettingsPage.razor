@@ -58,6 +58,9 @@
             <div>
                 <Switch Label="Show feed" Value="@SettingsState.Value.ShowFeed" OnSwitched="SetShowFeed"/>
             </div>
+            <div>
+                <Switch Label="Status bar fix" Value="@SettingsState.Value.StatusBarFix" OnSwitched="SetStatusBarFix"/>
+            </div>
             <md-divider></md-divider>
             <div>
                 <Switch Label="Show tips" Value="@SettingsState.Value.ShowTips" OnSwitched="SetShowTips"/>
@@ -119,6 +122,9 @@
 
     private void SetShowTips(bool value)
         => Dispatcher.Dispatch(new SetShowTipsAction(value));
+
+    private void SetStatusBarFix(bool value)
+        => Dispatcher.Dispatch(new SetStatusBarFixAction(value));
 
     private void ResetTips()
         => Dispatcher.Dispatch(new SetTipToShowAction(1));

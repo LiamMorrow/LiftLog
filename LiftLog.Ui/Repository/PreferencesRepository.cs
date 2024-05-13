@@ -76,4 +76,14 @@ public class PreferencesRepository(IPreferenceStore preferenceStore)
     {
         return await preferenceStore.GetItemAsync("showFeed") is "True" or null;
     }
+
+    public async Task SetStatusBarFixAsync(bool statusBarFix)
+    {
+        await preferenceStore.SetItemAsync("statusBarFix", statusBarFix.ToString());
+    }
+
+    public async Task<bool> GetStatusBarFixAsync()
+    {
+        return await preferenceStore.GetItemAsync("statusBarFix") is "True";
+    }
 }

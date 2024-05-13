@@ -33,3 +33,5 @@ public record SetShowTipsAction(bool ShowTips);
 public record SetTipToShowAction(int TipToShow);
 
 public record SetShowFeedAction(bool ShowFeed);
+
+public record SetStatusBarFixAction(bool StatusBarFix);

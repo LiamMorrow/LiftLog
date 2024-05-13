@@ -17,6 +17,7 @@ public class SettingsFeature : Feature<SettingsState>
             ShowBodyweight: true,
             ShowTips: true,
             TipToShow: 1,
-            ShowFeed: true
+            ShowFeed: true,
+            StatusBarFix: false
         );
 }
