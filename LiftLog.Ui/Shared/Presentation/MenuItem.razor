@@ -1,4 +1,4 @@
-<md-menu-item @attributes="AdditionalAttributes" @onclick="() => OnClick()" @onclick:stopPropagation=true>
+<md-menu-item @attributes="AdditionalAttributes" @onclick="() => OnClick()" @onclick:stopPropagation=true @onclick:preventDefault=true>
     <md-icon slot="start">@Icon</md-icon>
     <div slot="headline">@Label</div>
 </md-menu-item>

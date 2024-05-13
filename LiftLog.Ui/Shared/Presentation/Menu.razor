@@ -1,8 +1,5 @@
 @inject IJSRuntime JSRuntime
 
-<md-menu @attributes="AdditionalAttributes" positioning="popover" @ref="menu" @ondialog-close=@(()=>{_open = false;StateHasChanged();}) >
-    @ChildContent
-</md-menu>
 
 @*Scrim*@
 @if(_open){
@@ -11,6 +8,9 @@
         @onpointerdown:preventDefault="true" @onpointerdown:stopPropagation="true"
         @onpointerdown=@(_=>JSRuntime.InvokeVoidAsync("AppUtils.callOn", menu, "close"))></div>
 }
+<md-menu @attributes="AdditionalAttributes" positioning="popover" @ref="menu" @ondialog-close=@(()=>{_open = false;StateHasChanged();}) >
+    @ChildContent
+</md-menu>
 @code {
     private bool _open = false;
 

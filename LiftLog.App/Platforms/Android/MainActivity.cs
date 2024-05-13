@@ -53,8 +53,6 @@ public class MainActivity : MauiAppCompatActivity
         : Java.Lang.Object,
             IOnApplyWindowInsetsListener
     {
-        private readonly InsetsManager _insetsManager = insetsManager;
-        private readonly float density = density;
 
         public WindowInsetsCompat OnApplyWindowInsets(
             Android.Views.View v,
@@ -64,9 +62,9 @@ public class MainActivity : MauiAppCompatActivity
             // convert android px to css px
             var top = insets.SystemWindowInsetTop / density;
             var bottom = insets.SystemWindowInsetBottom / density;
-            _insetsManager.SystemSafeInsetTop = $"{top}px";
-            _insetsManager.SystemSafeInsetBottom = $"{bottom}px";
-            _insetsManager.NotifyInsetsChanged();
+            insetsManager.SystemSafeInsetTop = $"{top}px";
+            insetsManager.SystemSafeInsetBottom = $"{bottom}px";
+            insetsManager.NotifyInsetsChanged();
             return insets;
         }
     }
