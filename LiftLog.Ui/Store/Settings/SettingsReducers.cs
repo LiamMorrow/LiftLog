@@ -72,9 +72,8 @@ public static class SettingsReducers
         };
 
     [ReducerMethod]
-    public static SettingsState SetStatusBarFix(SettingsState state, SetStatusBarFixAction action) =>
-        state with
-        {
-            StatusBarFix = action.StatusBarFix
-        };
+    public static SettingsState SetStatusBarFix(
+        SettingsState state,
+        SetStatusBarFixAction action
+    ) => state with { StatusBarFix = action.StatusBarFix };
 }

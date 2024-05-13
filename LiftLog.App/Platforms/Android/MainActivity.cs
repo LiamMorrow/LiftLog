@@ -53,7 +53,6 @@ public class MainActivity : MauiAppCompatActivity
         : Java.Lang.Object,
             IOnApplyWindowInsetsListener
     {
-
         public WindowInsetsCompat OnApplyWindowInsets(
             Android.Views.View v,
             WindowInsetsCompat insets
