@@ -19,6 +19,7 @@
         Label="Plan Name"
         TextFieldType="TextFieldType.Filled"
         Value="@ProgramState.Value.SavedPrograms[PlanId].Name"
+        class="mb-2"
         OnChange="@((val) => Dispatcher.Dispatch(new SetSavedPlanNameAction(PlanId, val??"")))" />
 }
 
