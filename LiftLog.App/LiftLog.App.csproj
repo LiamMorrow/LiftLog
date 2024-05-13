@@ -54,6 +54,10 @@
         <UseInterpreter>True</UseInterpreter>
     </PropertyGroup>
 
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+        <AndroidResource Include="Platforms\Android\Resources\xml\auto_backup_rules.xml"/>
+    </ItemGroup>
+
     <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' Or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
 
         <!-- For debugging, use '?mode=developer' for debug to bypass apple's CDN cache -->
