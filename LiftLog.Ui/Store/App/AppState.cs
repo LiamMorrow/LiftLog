@@ -8,7 +8,8 @@ public record AppState(
     string Title,
     ProState ProState,
     bool ReopenCurrentSession,
-    string? BackNavigationUrl
+    string? BackNavigationUrl,
+    string? LatestSettingsUrl
 );
 
 public record ProState(string? ProToken)
