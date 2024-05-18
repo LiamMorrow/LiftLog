@@ -8,7 +8,6 @@
         @RenderActiveBadge()
         <IconButton id="@_iconButtonId" Type="IconButtonType.Standard" Icon="more_horiz" OnClick=@(() => _menu?.Open())></IconButton>
         <Menu  anchor="@_iconButtonId" @ref="_menu">
-            <MenuItem Icon="fitness_center" Label="Use" OnClick="() => OnUse.InvokeAsync()"/>
             <MenuItem Icon="delete" Label="Remove" OnClick="() => OnRemove.InvokeAsync()"/>
             <MenuItem Icon="content_copy" Label="Duplicate" OnClick="() => OnDuplicate.InvokeAsync()"/>
         </Menu>
@@ -46,10 +45,10 @@
     {
         if (IsActive)
         {
-            return @<div class="flex flex-col justify-center"><span class="rounded-full bg-primary text-on-primary px-2 py-1 text-xs">Active</span></div>;
+            return @<div class="flex flex-col justify-center"><span class="rounded-full bg-secondary-container text-on-secondary-container px-3 py-2 text-md">Active</span></div>;
         }
 
-        return null;
+        return @<AppButton Type="AppButtonType.Text" OnClick="()=>OnUse.InvokeAsync()">Use</AppButton>;
     }
 
 }
