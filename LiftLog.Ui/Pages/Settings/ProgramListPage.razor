@@ -11,7 +11,7 @@
 
 @if(ProgramState.Value.SavedPrograms.Any())
 {
-    var orderedPrograms = ProgramState.Value.SavedPrograms.OrderBy(x=>x.Key == ProgramState.Value.ActivePlanId ? " " : x.Value.Name).ToList();
+    var orderedPrograms = ProgramState.Value.SavedPrograms.OrderBy(x=>x.Value.Name).ToList();
     <section class="text-left text-on-surface mb-4 flex flex-col">
         <h2 class="pl-4 text-xl font-bold">Saved Plans</h2>
         <md-list>
@@ -88,8 +88,6 @@
         if (selectedProgram != null)
         {
             Dispatcher.Dispatch(new SetActiveProgramAction(selectedProgram.Value.Id));
-            Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, null));
-            Dispatcher.Dispatch(new NavigateAction("/"));
         }
     }
 
