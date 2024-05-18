@@ -4,6 +4,7 @@
 
 @inject IJSRuntime JSRuntime
 @inject IState<FeedState> FeedState
+@inject IState<ProgramState> ProgramState
 @inject NavigationManager NavigationManager
 @inject IDispatcher Dispatcher
 
@@ -15,19 +16,19 @@
         <SessionSummary Session="context.GetEmptySession()" ShowSets="true" ShowWeight="false"/>
     </CardList>
     <div>
-        <AppButton OnClick="() => usePlanDialog?.Open()"><md-icon slot="icon">assignment</md-icon>Use their plan</AppButton>
+        <AppButton OnClick="() => importPlanDialog?.Open()"><md-icon slot="icon">assignment</md-icon>Import their plan</AppButton>
     </div>
 </div>
 
 @if (user != null)
 {
-    <Dialog @ref="usePlanDialog">
+    <Dialog @ref="importPlanDialog">
 
-        <span slot="headline">Use their plan</span>
-        <span slot="content" class="block text-left">This will overwrite your current plan and import <span class="font-bold text-primary">@(user.Nickname ?? user.Name)'s</span> plan</span>
+        <span slot="headline">Import their plan</span>
+        <span slot="content" class="block text-left">This will import <span class="font-bold text-primary">@(user.DisplayName)'s</span> plan.  It will not overwrite your existing plan.</span>
         <div slot="actions">
-            <AppButton Type="AppButtonType.Text" OnClick=@(() => usePlanDialog?.Close())>Cancel</AppButton>
-            <AppButton Type="AppButtonType.Text" OnClick=UsePlan>Overwrite</AppButton>
+            <AppButton Type="AppButtonType.Text" OnClick=@(() => importPlanDialog?.Close())>Cancel</AppButton>
+            <AppButton Type="AppButtonType.Text" OnClick=ImportPlan>Import</AppButton>
         </div>
     </Dialog>
 }
@@ -36,7 +37,7 @@
 {
     [Parameter] public string UserIdStr { get; set; } = null!;
 
-    private Dialog? usePlanDialog;
+    private Dialog? importPlanDialog;
 
     private FeedUser? user;
 
@@ -59,10 +60,12 @@
         base.OnInitialized();
     }
 
-    private void UsePlan()
+    private void ImportPlan()
     {
-        Dispatcher.Dispatch(new SetProgramSessionsAction(Guid.Empty, plan));
-        usePlanDialog?.Close();
+        var planId = Guid.NewGuid();
+        Dispatcher.Dispatch(new CreateSavedPlanAction(planId, $"{user?.DisplayName}'s Plan"));
+        Dispatcher.Dispatch(new SetProgramSessionsAction(planId, plan));
+        importPlanDialog?.Close();
     }
 
 }

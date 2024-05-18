@@ -22,19 +22,35 @@ public class PersistProgramMiddleware(
         {
             _store = store;
             var savedProgramsTask = savedProgramRepository.GetSavedProgramsAsync();
-            var sessionsInCurrentProgramTask = programRepository.GetSessionsInProgramAsync();
+            var activeProgramId = await savedProgramRepository.GetActivePlanIdAsync();
             var savedPrograms = await savedProgramsTask;
-            var sessionsInCurrentProgram = await sessionsInCurrentProgramTask;
+            // Legacy path where there could exist a non named program.
+            if (activeProgramId is null)
+            {
+                var sessionsInCurrentProgram = await programRepository.GetSessionsInProgramAsync();
+                activeProgramId = Guid.NewGuid();
+                savedPrograms = savedPrograms.Add(
+                    activeProgramId.Value,
+                    new ProgramBlueprint(
+                        Name: "My Program",
+                        ExperienceLevel: Experience.Beginner,
+                        Tag: null,
+                        DaysPerWeek: sessionsInCurrentProgram.Count,
+                        Sessions: sessionsInCurrentProgram,
+                        LastEdited: DateOnly.FromDateTime(DateTime.Now)
+                    )
+                );
+            }
 
             store
                 .Features[nameof(ProgramFeature)]
                 .RestoreState(
                     new ProgramState(
                         IsHydrated: true,
-                        SessionBlueprints: sessionsInCurrentProgram,
                         UpcomingSessions: [],
                         IsLoadingUpcomingSessions: true,
-                        SavedPrograms: savedPrograms
+                        SavedPrograms: savedPrograms,
+                        ActivePlanId: activeProgramId.Value
                     )
                 );
         }
@@ -50,7 +66,7 @@ public class PersistProgramMiddleware(
     public override void AfterDispatch(object action)
     {
         var currentState = (ProgramState?)_store?.Features[nameof(ProgramFeature)].GetState();
-        if (currentState?.SessionBlueprints is null)
+        if (currentState is null)
         {
             return;
         }
@@ -63,8 +79,10 @@ public class PersistProgramMiddleware(
         _prevState = currentState;
         _ = Task.Run(async () =>
         {
-            await programRepository.PersistSessionsInProgramAsync(currentState.SessionBlueprints);
-            await savedProgramRepository.PersistProgramsAsync(currentState.SavedPrograms);
+            await savedProgramRepository.Persist(
+                currentState.SavedPrograms,
+                currentState.ActivePlanId
+            );
         });
     }
 }

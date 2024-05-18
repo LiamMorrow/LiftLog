@@ -32,11 +32,11 @@ else if (ProgramState.Value.UpcomingSessions.Count == 0)
                 <md-icon>info</md-icon>
             </div>
             <div class="grid grid-cols-2 gap-2">
-                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => NavigationManager.NavigateTo("/settings"))>
+                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => Dispatcher.Dispatch(new NavigateAction("/settings/manage-workouts?planId="+ProgramState.Value.ActivePlanId)))>
                     <md-icon
                         slot="icon">
                         add
-                    </md-icon>Create
+                    </md-icon>Add Workouts
                 </AppButton>
                 <AppButton OnClick=@(() => NavigationManager.NavigateTo("/settings/program-list"))>
                     <md-icon
@@ -109,6 +109,7 @@ else
         Dispatcher.Dispatch(new PublishUnpublishedSessionsAction());
         Dispatcher.Dispatch(new PublishRsaPublicKeyIfNeededAction());
         Dispatcher.Dispatch(new GetLookupIfNeededAction());
+        Console.WriteLine("dsdffsd {0}", ProgramState.Value.ActivePlanId);
         await base.OnInitializedAsync();
     }
 

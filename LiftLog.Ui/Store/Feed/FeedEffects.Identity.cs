@@ -30,7 +30,7 @@ public partial class FeedEffects
             action.PublishBodyweight,
             action.PublishPlan,
             action.PublishWorkouts,
-            programState.Value.SessionBlueprints
+            programState.Value.GetActivePlanSessionBlueprints()
         );
         dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
         if (!identityResult.IsSuccess)
@@ -91,7 +91,7 @@ public partial class FeedEffects
                 action.PublishBodyweight,
                 action.PublishPlan,
                 action.PublishWorkouts,
-                programState.Value.SessionBlueprints
+                programState.Value.GetActivePlanSessionBlueprints()
             );
             if (!result.IsSuccess)
             {
@@ -150,7 +150,7 @@ public partial class FeedEffects
             state.Value.Identity.PublishBodyweight,
             state.Value.Identity.PublishPlan,
             state.Value.Identity.PublishWorkouts,
-            programState.Value.SessionBlueprints
+            programState.Value.GetActivePlanSessionBlueprints()
         );
         if (result.IsSuccess)
         {

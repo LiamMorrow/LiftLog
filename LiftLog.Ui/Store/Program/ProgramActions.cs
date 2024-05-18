@@ -10,12 +10,12 @@ public record FetchUpcomingSessionsAction();
 
 public record SetUpcomingSessionsAction(ImmutableListValue<Session> UpcomingSessions);
 
-// PlanId is the key to the SavedPlans dictionary in ProgramState
-// If it is Guid.Empty, it is the current plan
 public record SetProgramSessionsAction(
     Guid PlanId,
     ImmutableListValue<SessionBlueprint> SessionBlueprints
 );
+
+public record SetActiveProgramAction(Guid PlanId);
 
 public record SetProgramSessionAction(
     Guid PlanId,

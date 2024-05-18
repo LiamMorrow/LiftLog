@@ -6,12 +6,15 @@ namespace LiftLog.Ui.Store.Program;
 
 public record ProgramState(
     bool IsHydrated,
-    ImmutableListValue<SessionBlueprint> SessionBlueprints,
+    Guid ActivePlanId,
     ImmutableListValue<Session> UpcomingSessions,
     bool IsLoadingUpcomingSessions,
     ImmutableDictionary<Guid, ProgramBlueprint> SavedPrograms
 )
 {
     public ImmutableListValue<SessionBlueprint> GetSessionBlueprints(Guid planId) =>
-        planId == Guid.Empty ? SessionBlueprints : SavedPrograms[planId].Sessions;
+        SavedPrograms[planId].Sessions;
+
+    public ImmutableListValue<SessionBlueprint> GetActivePlanSessionBlueprints() =>
+        GetSessionBlueprints(ActivePlanId);
 }

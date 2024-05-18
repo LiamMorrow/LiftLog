@@ -1,11 +1,12 @@
 @inject IJSRuntime JSRuntime
 
 <md-list-item @ref="_listItem" @attributes="AdditionalAttributes" type="button" class="text-left @(AdditionalAttributes?.GetValueOrDefault("class")) " multi-line-supporting-text @onclick="OnClick">
-    <span slot="headline">@ProgramBlueprint.Name</span>
+    <span slot="headline" >@ProgramBlueprint.Name</span>
     <span slot="supporting-text">@SupportingText</span>
     @if (!BuiltIn)
     {
-        <div slot="end">
+        <div slot="end" class="flex align-middle">
+            @RenderActiveBadge()
             <IconButton id="@_iconButtonId" Type="IconButtonType.Standard" Icon="more_horiz" OnClick=@(() => _menu?.Open())></IconButton>
             <Menu  anchor="@_iconButtonId" @ref="_menu">
                 <MenuItem Icon="fitness_center" Label="Use" OnClick="() => OnUse.InvokeAsync()"/>
@@ -34,6 +35,8 @@
 
     [Parameter] [EditorRequired] public bool BuiltIn { get; set; }
 
+    [Parameter] [EditorRequired] public bool IsActive { get; set; }
+
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -55,5 +58,15 @@
             Experience.Professional => "Recommended for professional lifters",
             _ => ""
         };
+
+    private RenderFragment? RenderActiveBadge()
+    {
+        if (IsActive)
+        {
+            return @<div class="flex flex-col justify-center"><span class="rounded-full bg-primary text-on-primary px-2 py-1 text-xs">Active</span></div>;
+        }
+
+        return null;
+    }
 
 }

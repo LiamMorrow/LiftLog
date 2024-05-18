@@ -110,9 +110,7 @@ public static class ProgramReducers
 
                 var toSwap = s[index - 1];
 
-                return state
-                    .SessionBlueprints.SetItem(index, toSwap)
-                    .SetItem(index - 1, action.SessionBlueprint);
+                return s.SetItem(index, toSwap).SetItem(index - 1, action.SessionBlueprint);
             }
         );
 
@@ -134,11 +132,16 @@ public static class ProgramReducers
 
                 var toSwap = s[index + 1];
 
-                return state
-                    .SessionBlueprints.SetItem(index, toSwap)
-                    .SetItem(index + 1, action.SessionBlueprint);
+                return s.SetItem(index, toSwap).SetItem(index + 1, action.SessionBlueprint);
             }
         );
+
+    [ReducerMethod]
+    public static ProgramState SetActivePlan(ProgramState state, SetActiveProgramAction action) =>
+        state with
+        {
+            ActivePlanId = action.PlanId
+        };
 
     [ReducerMethod]
     public static ProgramState RemoveSessionFromProgram(
@@ -161,23 +164,14 @@ public static class ProgramReducers
             ImmutableListValue<SessionBlueprint>
         > sessionBlueprints
     ) =>
-        planId switch
+        state with
         {
-            var s when s == Guid.Empty
-                => state with
+            SavedPrograms = state.SavedPrograms.SetItem(
+                planId,
+                state.SavedPrograms[planId] with
                 {
-                    SessionBlueprints = sessionBlueprints(state.SessionBlueprints)
-                },
-            _
-                => state with
-                {
-                    SavedPrograms = state.SavedPrograms.SetItem(
-                        planId,
-                        state.SavedPrograms[planId] with
-                        {
-                            Sessions = sessionBlueprints(state.SavedPrograms[planId].Sessions)
-                        }
-                    )
+                    Sessions = sessionBlueprints(state.SavedPrograms[planId].Sessions)
                 }
+            )
         };
 }
