@@ -29,4 +29,10 @@ public static class AppReducers
         AppState state,
         SetBackNavigationUrlAction action
     ) => state with { BackNavigationUrl = action.BackNavigationUrl };
+
+    [ReducerMethod]
+    public static AppState SetLatestSettingsUrl(
+        AppState state,
+        SetLatestSettingsUrlAction action
+    ) => state with { LatestSettingsUrl = action.LatestSettingsUrl };
 }
