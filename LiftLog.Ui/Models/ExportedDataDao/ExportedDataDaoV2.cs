@@ -27,9 +27,6 @@ internal partial class ExportedDataDaoV2
             [activePlanId.ToString()] = ProgramBlueprintDaoV1.FromModel(
                 new ProgramBlueprint(
                     "My Plan",
-                    Lib.Models.Experience.Beginner,
-                    null,
-                    v1.Program.Count,
                     v1.Program.Select(x => x.ToModel()).ToImmutableList(),
                     DateOnly.FromDateTime(DateTime.Now)
                 )

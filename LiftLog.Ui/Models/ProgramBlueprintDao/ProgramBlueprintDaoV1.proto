@@ -12,16 +12,7 @@ message ProgramBlueprintDaoContainerV1 {
 
 message ProgramBlueprintDaoV1 {
     string name = 1;
-    optional Experience experience_level = 2;
-    optional google.protobuf.StringValue tag = 3;
-    int32 days_per_week = 4;
+    reserved 2, 3, 4;
     repeated LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2 sessions = 5;
     optional Models.DateOnlyDao last_edited = 6;
-}
-
-enum Experience {
-    BEGINNER = 0;
-    INTERMEDIATE = 1;
-    ADVANCED = 2;
-    PROFESSIONAL = 3;
 }

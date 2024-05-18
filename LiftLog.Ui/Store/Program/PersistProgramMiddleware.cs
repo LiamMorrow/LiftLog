@@ -23,6 +23,7 @@ public class PersistProgramMiddleware(
             _store = store;
             var savedProgramsTask = savedProgramRepository.GetSavedProgramsAsync();
             var activeProgramId = await savedProgramRepository.GetActivePlanIdAsync();
+            var builtInPrograms = BuiltInProgramService.BuiltInPrograms;
             var savedPrograms = await savedProgramsTask;
             // Legacy path where there could exist a non named program.
             if (activeProgramId is null)
@@ -33,13 +34,18 @@ public class PersistProgramMiddleware(
                     activeProgramId.Value,
                     new ProgramBlueprint(
                         Name: "My Program",
-                        ExperienceLevel: Experience.Beginner,
-                        Tag: null,
-                        DaysPerWeek: sessionsInCurrentProgram.Count,
                         Sessions: sessionsInCurrentProgram,
                         LastEdited: DateOnly.FromDateTime(DateTime.Now)
                     )
                 );
+            }
+            foreach (var (id, program) in builtInPrograms)
+            {
+                if (savedPrograms.ContainsKey(id))
+                {
+                    continue;
+                }
+                savedPrograms = savedPrograms.Add(id, program);
             }
 
             store

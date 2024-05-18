@@ -34,22 +34,6 @@
     </section>
 }
 
-@* <section class="text-left text-on-surface">
-    <h2 class="pl-4 text-xl font-bold">Built in Plans</h2>
-    <md-list>
-        @foreach (var program in BuiltInProgramService.BuiltInPrograms)
-        {
-            <ProgramListItem
-                    ProgramBlueprint="@program"
-                    OnClick=@(() => BeginSelectProgram(program))
-                    BuiltIn=true/>
-            @if (program != BuiltInProgramService.BuiltInPrograms.Last())
-            {
-                <md-divider></md-divider>
-            }
-        }
-    </md-list>
-</section> *@
 
 <Dialog @ref="selectedProgramDialog">
     <span slot="headline">Select Program</span>
@@ -117,9 +101,6 @@
                 planId,
                 new ProgramBlueprint(
                     Name: "New Plan",
-                    ExperienceLevel: Experience.Beginner,
-                    Tag: null,
-                    DaysPerWeek: 0,
                     Sessions: [],
                     LastEdited: DateOnly.FromDateTime(DateTime.Now))));
         Dispatcher.Dispatch(new NavigateAction("/settings/manage-workouts?planId=" + planId));

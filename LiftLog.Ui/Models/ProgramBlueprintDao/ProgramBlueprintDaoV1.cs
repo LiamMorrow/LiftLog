@@ -31,9 +31,6 @@ internal partial class ProgramBlueprintDaoV1
         new()
         {
             Name = model.Name,
-            ExperienceLevel = (Experience)model.ExperienceLevel,
-            Tag = model.Tag,
-            DaysPerWeek = model.DaysPerWeek,
             Sessions = { model.Sessions.Select(SessionBlueprintDaoV2.FromModel).ToImmutableList() },
             LastEdited = model.LastEdited
         };
@@ -41,9 +38,6 @@ internal partial class ProgramBlueprintDaoV1
     public Lib.Models.ProgramBlueprint ToModel() =>
         new(
             Name,
-            (Lib.Models.Experience)ExperienceLevel,
-            Tag,
-            DaysPerWeek,
             Sessions.Select(x => x.ToModel()).ToImmutableList(),
             LastEdited ?? DateOnly.FromDateTime(DateTime.Now)
         );
