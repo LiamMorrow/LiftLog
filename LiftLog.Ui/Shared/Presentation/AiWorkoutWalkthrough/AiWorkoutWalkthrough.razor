@@ -1,6 +1,6 @@
 <LabelledForm>
     <GenderSelector OnGenderSelect="OnGenderSelect" Value="attributes.Gender"/>
-    <WeightSelector OnWeightSelect="OnWeightSelect" Value="Decimal.Parse(attributes.WeightRange)"/>
+    <WeightSelector OnWeightSelect="OnWeightSelect" Value="@(Decimal.Parse(attributes.WeightRange.Split("-")[0]))"/>
     <AgeSelector OnAgeSelect="OnAgeSelect" Value="attributes.Age"/>
     <NumberOfDaysSelector OnNumberOfDaysSelect="OnNumberOfDaysSelect" Value="@attributes.DaysPerWeek"/>
     <GoalsSelector OnGoalsSelected="OnGoalsSelected" Value="@attributes.Goals" />
@@ -16,7 +16,7 @@
 }
 
 @code {
-    private AiWorkoutAttributes attributes = new AiWorkoutAttributes(Gender.PreferNotToSay, "70", 28, 0, new ImmutableListValue<string>(), Experience.Beginner, false, "");
+    private AiWorkoutAttributes attributes = new AiWorkoutAttributes(Gender.PreferNotToSay, "70-70", 28, 0, new ImmutableListValue<string>(), Experience.Beginner, false, "");
     [Parameter] [EditorRequired] public Action<AiWorkoutAttributes> OnAttributesSelected { get; set; } = null!;
 
     [CascadingParameter(Name = "IsInActiveScreen")]
@@ -31,7 +31,7 @@
 
     private void OnWeightSelect(decimal weight)
     {
-        attributes = attributes with { WeightRange = weight.ToString() };
+        attributes = attributes with { WeightRange = weight.ToString()+"-"+weight.ToString() };
         StateHasChanged();
     }
 
@@ -66,6 +66,10 @@
 
     private void OnGenerate()
     {
+        if(!attributes.Goals.Any() || attributes.DaysPerWeek == 0)
+        {
+            return;
+        }
         OnAttributesSelected(attributes);
     }
 

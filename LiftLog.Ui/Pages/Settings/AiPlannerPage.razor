@@ -81,6 +81,7 @@ else
         Dispatcher.Dispatch(new SetProgramSessionsAction(Guid.Empty, plan.Sessions));
         Dispatcher.Dispatch(new SetAiPlanAction(null));
         Dispatcher.Dispatch(new PublishIdentityIfEnabledAction());
+        Dispatcher.Dispatch(new SetLatestSettingsUrlAction(null));
         NavigationManager.NavigateTo("/");
     }
 
