@@ -5,6 +5,7 @@
 @inject NavigationManager NavigationManager
 @inject IDispatcher Dispatcher
 @inject IState<AiSessionCreatorState> AiSessionCreatorState
+@inject IState<ProgramState> ProgramState
 @inject IState<SettingsState> SettingsState
 
 @if (AiSessionCreatorState.Value.IsLoading)
@@ -110,8 +111,8 @@ else
             return;
         }
 
-        Dispatcher.Dispatch(new AddProgramSessionAction(Guid.Empty, AiSessionCreatorState.Value.GeneratedSession));
-        NavigationManager.NavigateTo("/settings/manage-workouts");
+        Dispatcher.Dispatch(new AddProgramSessionAction(ProgramState.Value.ActivePlanId, AiSessionCreatorState.Value.GeneratedSession));
+        NavigationManager.NavigateTo("/settings/manage-workouts?planId=" + ProgramState.Value.ActivePlanId);
         Dispatcher.Dispatch(new ClearAiGeneratedSessionStateAction());
     }
 

@@ -34,7 +34,8 @@ public class StatsEffects(
             state.Value.OverallViewSessionName
         );
         var currentSessionNames = programState
-            .Value.SessionBlueprints.Select(x => x.Name)
+            .Value.GetActivePlanSessionBlueprints()
+            .Select(x => x.Name)
             .ToHashSet();
 
         await Task.Run(async () =>

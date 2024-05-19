@@ -3,9 +3,9 @@ using LiftLog.Lib;
 using LiftLog.Ui.Models.SessionBlueprintDao;
 using LiftLog.Ui.Models.SessionHistoryDao;
 
-namespace LiftLog.Ui.Models.SettingsStorageDao;
+namespace LiftLog.Ui.Models.ExportedDataDao;
 
-internal record SettingsStorageDaoV1(
+internal record ExportedDataDaoV1(
     List<SessionDaoV1> Sessions,
     ImmutableListValue<SessionBlueprintDaoV1> Program
 );

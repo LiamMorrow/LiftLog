@@ -1,23 +1,17 @@
 @inject IJSRuntime JSRuntime
 
-<md-list-item @ref="_listItem" @attributes="AdditionalAttributes" type="button" class="text-left @(AdditionalAttributes?.GetValueOrDefault("class")) " multi-line-supporting-text @onclick="OnClick">
-    <span slot="headline">@ProgramBlueprint.Name</span>
+<md-list-item @ref="_listItem" @attributes="AdditionalAttributes" type="button" class="text-left @(AdditionalAttributes?.GetValueOrDefault("class")) @FocusClass" multi-line-supporting-text @onclick="OnClick">
+    <span slot="headline" >@ProgramBlueprint.Name</span>
     <span slot="supporting-text">@SupportingText</span>
-    @if (!BuiltIn)
-    {
-        <div slot="end">
-            <IconButton id="@_iconButtonId" Type="IconButtonType.Standard" Icon="more_horiz" OnClick=@(() => _menu?.Open())></IconButton>
-            <Menu  anchor="@_iconButtonId" @ref="_menu">
-                <MenuItem Icon="fitness_center" Label="Use" OnClick="() => OnUse.InvokeAsync()"/>
-                <MenuItem Icon="delete" Label="Remove" OnClick="() => OnRemove.InvokeAsync()"/>
-                <MenuItem Icon="content_copy" Label="Duplicate" OnClick="() => OnDuplicate.InvokeAsync()"/>
-            </Menu>
-        </div>
-    }
-    else
-    {
-        <span slot="trailing-supporting-text">@TrailingSupportingText</span>
-    }
+
+    <div slot="end" class="flex align-middle">
+        @RenderActiveBadge()
+        <IconButton id="@_iconButtonId" Type="IconButtonType.Standard" Icon="more_horiz" OnClick=@(() => _menu?.Open())></IconButton>
+        <Menu  anchor="@_iconButtonId" @ref="_menu">
+            <MenuItem Icon="delete" disabled="@IsActive" Label="Remove" OnClick="() => OnRemove.InvokeAsync()"/>
+            <MenuItem Icon="content_copy" Label="Duplicate" OnClick="() => OnDuplicate.InvokeAsync()"/>
+        </Menu>
+    </div>
 </md-list-item>
 
 
@@ -34,6 +28,10 @@
 
     [Parameter] [EditorRequired] public bool BuiltIn { get; set; }
 
+    [Parameter] [EditorRequired] public bool IsActive { get; set; }
+
+    [Parameter] [EditorRequired] public bool IsFocused { get; set; }
+
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -41,19 +39,18 @@
     [Parameter] public EventCallback OnRemove { get; set; }
     [Parameter] public EventCallback OnDuplicate { get; set; }
 
-    private string SupportingText => BuiltIn
-        ? $"{ProgramBlueprint.Tag} - {ExperienceLevelText}"
-        : $"Edited: {ProgramBlueprint.LastEdited.ToShortDateString()}";
-    private string TrailingSupportingText => $"{ProgramBlueprint.DaysPerWeek} days";
+    private string SupportingText => $"Edited: {ProgramBlueprint.LastEdited.ToShortDateString()}";
 
-    private string ExperienceLevelText
-        => ProgramBlueprint.ExperienceLevel switch
+    private string FocusClass => IsFocused ? "bg-secondary-container text-on-secondary-container " : "";
+
+    private RenderFragment? RenderActiveBadge()
+    {
+        if (IsActive)
         {
-            Experience.Beginner => "Recommended for beginner lifters",
-            Experience.Intermediate => "Recommended for intermediate lifters",
-            Experience.Advanced => "Recommended for advanced lifters",
-            Experience.Professional => "Recommended for professional lifters",
-            _ => ""
-        };
+            return @<div class="flex flex-col justify-center"><span class="rounded-full bg-secondary-container text-on-secondary-container px-3 py-2 text-md">Active</span></div>;
+        }
+
+        return @<AppButton Type="AppButtonType.Text" OnClick="()=>OnUse.InvokeAsync()">Use</AppButton>;
+    }
 
 }

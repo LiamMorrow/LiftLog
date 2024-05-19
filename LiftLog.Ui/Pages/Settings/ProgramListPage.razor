@@ -12,7 +12,7 @@
 @if(ProgramState.Value.SavedPrograms.Any())
 {
     var orderedPrograms = ProgramState.Value.SavedPrograms.OrderBy(x=>x.Value.Name).ToList();
-    <section class="text-left text-on-surface mb-4 flex flex-col">
+    <section class="text-left text-on-surface flex flex-col">
         <h2 class="pl-4 text-xl font-bold">Saved Plans</h2>
         <md-list>
             @foreach (var (id, program) in orderedPrograms)
@@ -20,9 +20,11 @@
                 <ProgramListItem
                     ProgramBlueprint="@program"
                     OnClick=@(() => OpenEditProgram(id))
-                    OnUse="@(() => BeginSelectProgram(program))"
+                    OnUse="@(() => BeginSelectProgram(id, program))"
                     OnDuplicate="@(() => Dispatcher.Dispatch(new SavePlanAction(Guid.NewGuid(), program)))"
-                    OnRemove="@(() => Dispatcher.Dispatch(new DeleteSavedPlanAction(id)))"
+                    OnRemove="()=>HandleRemove(id)"
+                    IsActive="ProgramState.Value.ActivePlanId == id"
+                    IsFocused="FocusPlanId == id"
                     BuiltIn=false/>
                 @if(id != orderedPrograms.Last().Key)
                 {
@@ -33,22 +35,6 @@
     </section>
 }
 
-<section class="text-left text-on-surface">
-    <h2 class="pl-4 text-xl font-bold">Built in Plans</h2>
-    <md-list>
-        @foreach (var program in BuiltInProgramService.BuiltInPrograms)
-        {
-            <ProgramListItem
-                    ProgramBlueprint="@program"
-                    OnClick=@(() => BeginSelectProgram(program))
-                    BuiltIn=true/>
-            @if (program != BuiltInProgramService.BuiltInPrograms.Last())
-            {
-                <md-divider></md-divider>
-            }
-        }
-    </md-list>
-</section>
 
 <Dialog @ref="selectedProgramDialog">
     <span slot="headline">Select Program</span>
@@ -56,7 +42,7 @@
     {
         <span slot="content" class="block text-left">
             Would you like to use the program
-            <span class="font-bold text-primary">@selectedProgram.Name</span>?<br/>This will replace your existing workouts.
+            <span class="font-bold text-primary">@selectedProgram.Value.Blueprint.Name</span>?<br/>This will replace your existing workouts.
         </span>
         <div class="flex gap-1" slot="actions">
             <AppButton Type="AppButtonType.Text" OnClick="() => selectedProgramDialog?.Close()">Close</AppButton>
@@ -80,20 +66,23 @@
 
 
 @code {
-    private ProgramBlueprint? selectedProgram;
+    private (Guid Id, ProgramBlueprint Blueprint)? selectedProgram;
     private Dialog? selectedProgramDialog;
+
+    [SupplyParameterFromQuery]
+    public Guid FocusPlanId { get; set; }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Dispatcher.Dispatch(new SetPageTitleAction("Programs"));
+        Dispatcher.Dispatch(new SetPageTitleAction("Plans"));
         Dispatcher.Dispatch(new FetchSavedProgramsAction());
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
     }
 
-    private void BeginSelectProgram(ProgramBlueprint program)
+    private void BeginSelectProgram(Guid id, ProgramBlueprint program)
     {
-        selectedProgram = program;
+        selectedProgram = (id, program);
         selectedProgramDialog?.Open();
     }
 
@@ -102,9 +91,7 @@
         await selectedProgramDialog!.CloseWait();
         if (selectedProgram != null)
         {
-            Dispatcher.Dispatch(new SetProgramSessionsAction(Guid.Empty, selectedProgram.Sessions));
-            Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, null));
-            Dispatcher.Dispatch(new NavigateAction("/"));
+            Dispatcher.Dispatch(new SetActiveProgramAction(selectedProgram.Value.Id));
         }
     }
 
@@ -116,12 +103,18 @@
                 planId,
                 new ProgramBlueprint(
                     Name: "New Plan",
-                    ExperienceLevel: Experience.Beginner,
-                    Tag: null,
-                    DaysPerWeek: 0,
                     Sessions: [],
                     LastEdited: DateOnly.FromDateTime(DateTime.Now))));
         Dispatcher.Dispatch(new NavigateAction("/settings/manage-workouts?planId=" + planId));
+    }
+
+    private void HandleRemove(Guid id)
+    {
+        if(ProgramState.Value.ActivePlanId == id)
+        {
+            return;
+        }
+        Dispatcher.Dispatch(new DeleteSavedPlanAction(id));
     }
 
     private void OpenEditProgram(Guid id)

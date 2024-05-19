@@ -58,7 +58,7 @@
         <Protobuf Include="Models\UserEvent.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
         <Protobuf Include="Models\SessionHistoryDao\SessionHistoryDaoV2.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
         <Protobuf Include="Models\SessionBlueprintDao\SessionBlueprintDaoV2.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
-        <Protobuf Include="Models\SettingStorageDao\SettingsStorageDaoV2.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
+        <Protobuf Include="Models\ExportedDataDao\ExportedDataDaoV2.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
         <Protobuf Include="Models\CurrentSessionStateDao\CurrentSessionStateDaoV2.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
         <Protobuf Include="Models\FeedStateDao.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
         <Protobuf Include="Models\ProgramBlueprintDao\ProgramBlueprintDaoV1.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>

@@ -6,7 +6,8 @@ namespace LiftLog.Ui.Models.ProgramBlueprintDao;
 internal partial class ProgramBlueprintDaoContainerV1
 {
     public static ProgramBlueprintDaoContainerV1 FromModel(
-        ImmutableDictionary<Guid, Lib.Models.ProgramBlueprint> model
+        ImmutableDictionary<Guid, Lib.Models.ProgramBlueprint> model,
+        Guid activeProgramId
     ) =>
         new()
         {
@@ -15,8 +16,9 @@ internal partial class ProgramBlueprintDaoContainerV1
                 model.ToDictionary(
                     x => x.Key.ToString(),
                     x => ProgramBlueprintDaoV1.FromModel(x.Value)
-                )
-            }
+                ),
+            },
+            ActiveProgramId = activeProgramId.ToString()
         };
 
     public ImmutableDictionary<Guid, Lib.Models.ProgramBlueprint> ToModel() =>
@@ -29,9 +31,6 @@ internal partial class ProgramBlueprintDaoV1
         new()
         {
             Name = model.Name,
-            ExperienceLevel = (Experience)model.ExperienceLevel,
-            Tag = model.Tag,
-            DaysPerWeek = model.DaysPerWeek,
             Sessions = { model.Sessions.Select(SessionBlueprintDaoV2.FromModel).ToImmutableList() },
             LastEdited = model.LastEdited
         };
@@ -39,9 +38,6 @@ internal partial class ProgramBlueprintDaoV1
     public Lib.Models.ProgramBlueprint ToModel() =>
         new(
             Name,
-            (Lib.Models.Experience)ExperienceLevel,
-            Tag,
-            DaysPerWeek,
             Sessions.Select(x => x.ToModel()).ToImmutableList(),
             LastEdited ?? DateOnly.FromDateTime(DateTime.Now)
         );

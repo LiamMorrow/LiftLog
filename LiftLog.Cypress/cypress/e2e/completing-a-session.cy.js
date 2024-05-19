@@ -41,8 +41,9 @@ describe('Completing a session', () => {
       // Disable tips
       cy.containsA('Show tips').click()
       cy.containsA('Manage plans').click()
-      cy.containsA("Starting Strength").click()
+      cy.containsA("Starting Strength").parent('md-list-item').contains('Use').click()
       cy.dialog().find("[slot=actions]").contains("Use").click()
+      cy.navigate('Workout')
     })
 
 

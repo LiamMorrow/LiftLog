@@ -4,14 +4,10 @@ using System.Collections.Immutable;
 using System.Text.Json;
 using Fluxor;
 using Google.Protobuf;
-using LiftLog.Lib;
-using LiftLog.Lib.Models;
-using LiftLog.Lib.Serialization;
 using LiftLog.Lib.Services;
+using LiftLog.Ui.Models.ExportedDataDao;
 using LiftLog.Ui.Models.ProgramBlueprintDao;
-using LiftLog.Ui.Models.SessionBlueprintDao;
 using LiftLog.Ui.Models.SessionHistoryDao;
-using LiftLog.Ui.Models.SettingsStorageDao;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.Program;
 using Microsoft.Extensions.Logging;
@@ -20,8 +16,7 @@ namespace LiftLog.Ui.Store.Settings;
 
 public class SettingsEffects(
     ProgressRepository progressRepository,
-    CurrentProgramRepository programRepository,
-    SavedProgramRepository savedProgramRepository,
+    IState<ProgramState> programState,
     IExporter textExporter,
     IAiWorkoutPlanner aiWorkoutPlanner,
     IThemeProvider themeProvider,
@@ -33,17 +28,17 @@ public class SettingsEffects(
     public async Task ExportData(ExportDataAction _, IDispatcher __)
     {
         var sessions = await progressRepository.GetOrderedSessions().ToListAsync();
-        var program = await programRepository.GetSessionsInProgramAsync();
-        var savedPrograms = await savedProgramRepository.GetSavedProgramsAsync();
+        var savedPrograms = programState.Value.SavedPrograms;
+        var activeProgramId = programState.Value.ActivePlanId;
 
         await textExporter.ExportBytesAsync(
-            new SettingsStorageDaoV2(
+            new ExportedDataDaoV2(
                 sessions.Select(SessionDaoV2.FromModel),
-                program.Select(SessionBlueprintDaoV2.FromModel),
                 savedPrograms.ToDictionary(
                     x => x.Key.ToString(),
                     x => ProgramBlueprintDaoV1.FromModel(x.Value)
-                )
+                ),
+                activeProgramId
             ).ToByteArray()
         );
     }
@@ -51,31 +46,27 @@ public class SettingsEffects(
     [EffectMethod]
     public async Task ImportData(ImportDataAction action, IDispatcher dispatcher)
     {
-        SettingsStorageDaoV2? Deserialize(byte[] bytes)
+        ExportedDataDaoV2? Deserialize(byte[] bytes)
         {
             try
             {
-                return SettingsStorageDaoV2.Parser.ParseFrom(bytes);
+                return ExportedDataDaoV2.Parser.ParseFrom(bytes);
             }
             catch (InvalidProtocolBufferException v2Ex)
             {
                 // Try to deserialize as v1
                 try
                 {
-                    var v1 = JsonSerializer.Deserialize<SettingsStorageDaoV1>(
+                    var v1 = JsonSerializer.Deserialize(
                         bytes,
-                        StorageJsonContext.Context.SettingsStorageDaoV1
+                        StorageJsonContext.Context.ExportedDataDaoV1
                     );
                     if (v1 is null)
                     {
                         return null;
                     }
 
-                    return new SettingsStorageDaoV2(
-                        v1.Sessions.Select(x => x.ToModel()).Select(SessionDaoV2.FromModel),
-                        v1.Program.Select(x => x.ToModel()).Select(SessionBlueprintDaoV2.FromModel),
-                        new Dictionary<string, ProgramBlueprintDaoV1>()
-                    );
+                    return ExportedDataDaoV2.FromV1(v1);
                 }
                 catch (Exception ex)
                 {
@@ -101,12 +92,6 @@ public class SettingsEffects(
                     deserialized.Sessions.Select(x => x.ToModel())
                 );
                 dispatcher.Dispatch(
-                    new SetProgramSessionsAction(
-                        Guid.Empty,
-                        deserialized.Program.Select(x => x.ToModel()).ToImmutableList()
-                    )
-                );
-                dispatcher.Dispatch(
                     new SetSavedPlansAction(
                         deserialized.SavedPrograms.ToImmutableDictionary(
                             x => Guid.Parse(x.Key),
@@ -114,6 +99,25 @@ public class SettingsEffects(
                         )
                     )
                 );
+                // Will be null when an old export which did not have an active program is imported
+                // In this case, it will have an unnamed program, which will be set as the active program
+                if (deserialized.ActiveProgramId is null)
+                {
+                    var newId = Guid.NewGuid();
+                    dispatcher.Dispatch(new CreateSavedPlanAction(newId, "My Program"));
+                    dispatcher.Dispatch(
+                        new SetProgramSessionsAction(
+                            newId,
+                            deserialized.Program.Select(x => x.ToModel()).ToImmutableList()
+                        )
+                    );
+                    dispatcher.Dispatch(new SetActiveProgramAction(newId));
+                }
+                else
+                {
+                    var id = Guid.Parse(deserialized.ActiveProgramId);
+                    dispatcher.Dispatch(new SetActiveProgramAction(id));
+                }
             }
             else
             {

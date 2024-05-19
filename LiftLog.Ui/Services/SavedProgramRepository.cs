@@ -20,22 +20,32 @@ public class SavedProgramRepository(IKeyValueStore keyValueStore)
         ProgramBlueprint
     >.Empty;
 
+    private Guid? _activePlanId;
+
     public async ValueTask<ImmutableDictionary<Guid, ProgramBlueprint>> GetSavedProgramsAsync()
     {
         await InitialiseAsync();
         return _programs;
     }
 
-    public async ValueTask PersistProgramsAsync(
-        ImmutableDictionary<Guid, ProgramBlueprint> programs
+    public async ValueTask<Guid?> GetActivePlanIdAsync()
+    {
+        await InitialiseAsync();
+        return _activePlanId;
+    }
+
+    public async ValueTask Persist(
+        ImmutableDictionary<Guid, ProgramBlueprint> programs,
+        Guid activePlanId
     )
     {
         await InitialiseAsync();
         _programs = programs;
+        _activePlanId = activePlanId;
         await keyValueStore.SetItemAsync($"{StorageKey}-Version", "1");
         await keyValueStore.SetItemAsync(
             StorageKey,
-            ProgramBlueprintDaoContainerV1.FromModel(_programs).ToByteArray()
+            ProgramBlueprintDaoContainerV1.FromModel(_programs, activePlanId).ToByteArray()
         );
     }
 
@@ -53,12 +63,14 @@ public class SavedProgramRepository(IKeyValueStore keyValueStore)
             var storedData = version switch
             {
                 "1"
-                    => ProgramBlueprintDaoContainerV1
-                        .Parser.ParseFrom(await keyValueStore.GetItemBytesAsync(StorageKey) ?? [])
-                        .ToModel(),
+                    => ProgramBlueprintDaoContainerV1.Parser.ParseFrom(
+                        await keyValueStore.GetItemBytesAsync(StorageKey) ?? []
+                    ),
                 _ => throw new Exception($"Unknown version {version} of {StorageKey}"),
             };
-            _programs = storedData;
+            _programs = storedData.ToModel();
+            _activePlanId =
+                storedData.ActiveProgramId == null ? null : Guid.Parse(storedData.ActiveProgramId);
             _initialised = true;
         }
     }

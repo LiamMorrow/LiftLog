@@ -12,9 +12,9 @@ public class ProgramFeature : Feature<ProgramState>
     protected override ProgramState GetInitialState() =>
         new(
             IsHydrated: false,
-            SessionBlueprints: [],
             UpcomingSessions: [],
             IsLoadingUpcomingSessions: true,
-            SavedPrograms: ImmutableDictionary<Guid, ProgramBlueprint>.Empty
+            SavedPrograms: ImmutableDictionary<Guid, ProgramBlueprint>.Empty,
+            ActivePlanId: Guid.Empty
         );
 }

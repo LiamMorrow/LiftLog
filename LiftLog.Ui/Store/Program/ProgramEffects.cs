@@ -12,9 +12,12 @@ public class ProgramEffects(SessionService sessionService, IState<ProgramState> 
     [EffectMethod(typeof(FetchUpcomingSessionsAction))]
     public async Task FetchUpcomingSessions(IDispatcher dispatcher)
     {
-        var numberOfUpcomingSessions = Math.Max(state.Value.SessionBlueprints.Count, 3);
+        var numberOfUpcomingSessions = Math.Max(
+            state.Value.GetActivePlanSessionBlueprints().Count,
+            3
+        );
         var sessions = await sessionService
-            .GetUpcomingSessionsAsync()
+            .GetUpcomingSessionsAsync(state.Value.GetActivePlanSessionBlueprints())
             .Take(numberOfUpcomingSessions)
             .ToImmutableListAsync();
         dispatcher.Dispatch(new SetUpcomingSessionsAction(sessions));

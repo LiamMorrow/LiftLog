@@ -30,8 +30,8 @@
         ShowBodyweight="SettingsState.Value.ShowBodyweight"
         ToggleExercisePerSetWeight=ToggleExercisePerSetWeight
         UpdateWeightForSet=UpdateWeightForSet
-        SessionInPlan=@(ProgramState.Value.SessionBlueprints.Contains(CurrentSessionState.Value.WorkoutSession.Blueprint))
-        SessionWithSameNameInPlan=@(ProgramState.Value.SessionBlueprints.Any(x => x.Name == CurrentSessionState.Value.WorkoutSession.Blueprint.Name))
+        SessionInPlan=@(ProgramState.Value.GetActivePlanSessionBlueprints().Contains(CurrentSessionState.Value.WorkoutSession.Blueprint))
+        SessionWithSameNameInPlan=@(ProgramState.Value.GetActivePlanSessionBlueprints().Any(x => x.Name == CurrentSessionState.Value.WorkoutSession.Blueprint.Name))
         AddSessionToPlan="AddSessionToPlan"
         UpdateSessionInPlan="UpdateSessionInPlan"
         UpdateBodyweight="UpdateBodyweight"/>
@@ -90,13 +90,13 @@
     {
         if (CurrentSessionState.Value.WorkoutSession?.Blueprint is SessionBlueprint blueprint)
         {
-            var existingSessionWithSameName = ProgramState.Value.SessionBlueprints.Any(x => x.Name == blueprint.Name);
+            var existingSessionWithSameName = ProgramState.Value.GetActivePlanSessionBlueprints().Any(x => x.Name == blueprint.Name);
             if (existingSessionWithSameName)
             {
                 var blueprintNameWithoutNumber = System.Text.RegularExpressions.Regex.Replace(blueprint.Name, @" \(\d+\)$", "");
                 var newName = blueprint.Name;
                 var i = 1;
-                while (ProgramState.Value.SessionBlueprints.Any(x => x.Name == newName))
+                while (ProgramState.Value.GetActivePlanSessionBlueprints().Any(x => x.Name == newName))
                 {
                     newName = $"{blueprintNameWithoutNumber} ({i})";
                     i++;
@@ -105,7 +105,7 @@
                 blueprint = blueprint with { Name = newName };
             }
 
-            Dispatcher.Dispatch(new AddProgramSessionAction(Guid.Empty, blueprint));
+            Dispatcher.Dispatch(new AddProgramSessionAction(ProgramState.Value.ActivePlanId, blueprint));
             Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, CurrentSessionState.Value.WorkoutSession with { Blueprint = blueprint }));
             Dispatcher.Dispatch(new SetPageTitleAction(blueprint.Name));
         }
@@ -115,8 +115,8 @@
     {
         if (CurrentSessionState.Value.WorkoutSession?.Blueprint is SessionBlueprint blueprint)
         {
-            var blueprintIndex = ProgramState.Value.SessionBlueprints.IndexedTuples().First(x => x.Item.Name == blueprint.Name).Index;
-            Dispatcher.Dispatch(new SetProgramSessionAction(Guid.Empty, blueprintIndex, blueprint));
+            var blueprintIndex = ProgramState.Value.GetActivePlanSessionBlueprints().IndexedTuples().First(x => x.Item.Name == blueprint.Name).Index;
+            Dispatcher.Dispatch(new SetProgramSessionAction(ProgramState.Value.ActivePlanId, blueprintIndex, blueprint));
         }
     }
 
