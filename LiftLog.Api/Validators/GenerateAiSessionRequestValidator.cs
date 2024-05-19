@@ -9,5 +9,6 @@ public class GenerateAiSessionRequestValidator : AbstractValidator<GenerateAiSes
     {
         RuleFor(x => x.Attributes).NotNull();
         RuleFor(x => x.Attributes).SetValidator(new GenerateAiSessionRequestAttributesValidator());
+        RuleFor(x => x.AdditionalInfo).MaximumLength(200);
     }
 }

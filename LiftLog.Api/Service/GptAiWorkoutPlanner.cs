@@ -47,6 +47,13 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
 
         var tools = new List<Tool> { GetGymPlanFunction };
 
+        string? AdditionalInfo()
+        {
+            if (attributes.AdditionalInfo is null)
+                return null;
+            return $"Additionally, I have the following information: {attributes.AdditionalInfo}";
+        }
+
         var messages = new List<Message>
         {
             new(Role.System, "You only cater to requests to create gym plans."),
@@ -58,6 +65,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
                 )}. I would like to work on {goalsText}.
                  I would like to work out {attributes.DaysPerWeek} days per week.
                  My skill level with weight training is {attributes.Experience}.
+                 {AdditionalInfo()}
                  Please make me a workout plan.
                  """
             ),
@@ -128,6 +136,12 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
         };
 
         var tools = new List<Tool> { GetSessionFunction };
+        string? AdditionalInfo()
+        {
+            if (attributes.AdditionalInfo is null)
+                return null;
+            return $"Additionally, I have the following information: {attributes.AdditionalInfo}";
+        }
 
         var messages = new List<Message>
         {
@@ -144,6 +158,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
                 Role.User,
                 $"""
                 I'd like to workout today at the gym. The areas I'd like to work on {areasToWorkout}. I'd like it to have at lease {volumeText} exercises. Exercises I'm familiar with are as follows: {exerciseText}.
+                {AdditionalInfo()}
                 Please suggest me a workout.
                 """
             ),
