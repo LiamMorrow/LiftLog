@@ -8,7 +8,7 @@
         @RenderActiveBadge()
         <IconButton id="@_iconButtonId" Type="IconButtonType.Standard" Icon="more_horiz" OnClick=@(() => _menu?.Open())></IconButton>
         <Menu  anchor="@_iconButtonId" @ref="_menu">
-            <MenuItem Icon="delete" Label="Remove" OnClick="() => OnRemove.InvokeAsync()"/>
+            <MenuItem Icon="delete" disabled="@IsActive" Label="Remove" OnClick="() => OnRemove.InvokeAsync()"/>
             <MenuItem Icon="content_copy" Label="Duplicate" OnClick="() => OnDuplicate.InvokeAsync()"/>
         </Menu>
     </div>

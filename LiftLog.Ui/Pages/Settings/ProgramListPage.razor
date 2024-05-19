@@ -22,7 +22,7 @@
                     OnClick=@(() => OpenEditProgram(id))
                     OnUse="@(() => BeginSelectProgram(id, program))"
                     OnDuplicate="@(() => Dispatcher.Dispatch(new SavePlanAction(Guid.NewGuid(), program)))"
-                    OnRemove="@(() => Dispatcher.Dispatch(new DeleteSavedPlanAction(id)))"
+                    OnRemove="()=>HandleRemove(id)"
                     IsActive="ProgramState.Value.ActivePlanId == id"
                     IsFocused="FocusPlanId == id"
                     BuiltIn=false/>
@@ -106,6 +106,15 @@
                     Sessions: [],
                     LastEdited: DateOnly.FromDateTime(DateTime.Now))));
         Dispatcher.Dispatch(new NavigateAction("/settings/manage-workouts?planId=" + planId));
+    }
+
+    private void HandleRemove(Guid id)
+    {
+        if(ProgramState.Value.ActivePlanId == id)
+        {
+            return;
+        }
+        Dispatcher.Dispatch(new DeleteSavedPlanAction(id));
     }
 
     private void OpenEditProgram(Guid id)
