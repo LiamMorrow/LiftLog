@@ -109,9 +109,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
         catch (Exception e)
         {
             Console.WriteLine(e);
-            Console.WriteLine(
-                result.FirstChoice.Message.ToolCalls.First().Function.Arguments.ToString()
-            );
+            Console.WriteLine(result.FirstChoice.Message);
             throw;
         }
     }
@@ -198,9 +196,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
         catch (Exception e)
         {
             Console.WriteLine(e);
-            Console.WriteLine(
-                result.FirstChoice.Message.ToolCalls.First().Function.Arguments.ToString()
-            );
+            Console.WriteLine(result.FirstChoice.Message);
             throw;
         }
     }
