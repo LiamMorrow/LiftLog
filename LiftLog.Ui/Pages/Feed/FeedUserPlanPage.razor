@@ -25,7 +25,7 @@
     <Dialog @ref="usePlanDialog">
 
         <span slot="headline">Use their plan</span>
-        <span slot="content" class="block text-left">This will overwrite your current plan and import <span class="font-bold text-primary">@(user.Nickname ?? user.Name)'s</span> plan</span>
+        <span slot="content" class="block text-left">This will overwrite your current plan and import <span class="font-bold text-primary">@(user.DisplayName)'s</span> plan</span>
         <div slot="actions">
             <AppButton Type="AppButtonType.Text" OnClick=@(() => usePlanDialog?.Close())>Cancel</AppButton>
             <AppButton Type="AppButtonType.Text" OnClick=UsePlan>Overwrite</AppButton>
@@ -53,7 +53,7 @@
         }
         else
         {
-            Dispatcher.Dispatch(new SetPageTitleAction($"{user.Nickname ?? user.Name}'s Plan"));
+            Dispatcher.Dispatch(new SetPageTitleAction($"{user.DisplayName}'s Plan"));
             plan = user.CurrentPlan;
         }
 
