@@ -61,12 +61,13 @@
         base.OnInitialized();
     }
 
-    private void ImportPlan()
+    private async void ImportPlan()
     {
         var planId = Guid.NewGuid();
         Dispatcher.Dispatch(new CreateSavedPlanAction(planId, $"{user?.DisplayName}'s Plan"));
         Dispatcher.Dispatch(new SetProgramSessionsAction(planId, plan));
-        importPlanDialog?.Close();
+        await importPlanDialog!.CloseWait();
+        Dispatcher.Dispatch(new NavigateAction("/settings/program-list?FocusPlanId="+planId));
     }
 
 }

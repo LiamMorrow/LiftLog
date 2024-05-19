@@ -12,7 +12,7 @@
 @if(ProgramState.Value.SavedPrograms.Any())
 {
     var orderedPrograms = ProgramState.Value.SavedPrograms.OrderBy(x=>x.Value.Name).ToList();
-    <section class="text-left text-on-surface mb-4 flex flex-col">
+    <section class="text-left text-on-surface flex flex-col">
         <h2 class="pl-4 text-xl font-bold">Saved Plans</h2>
         <md-list>
             @foreach (var (id, program) in orderedPrograms)
@@ -75,7 +75,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Dispatcher.Dispatch(new SetPageTitleAction("Programs"));
+        Dispatcher.Dispatch(new SetPageTitleAction("Plans"));
         Dispatcher.Dispatch(new FetchSavedProgramsAction());
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
     }
