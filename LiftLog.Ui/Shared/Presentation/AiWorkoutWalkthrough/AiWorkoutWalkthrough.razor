@@ -1,82 +1,38 @@
-@{
-    var canNext = true;
-    var canPrevious = true;
+<LabelledForm>
+    <GenderSelector OnGenderSelect="OnGenderSelect" Value="attributes.Gender"/>
+    <WeightSelector OnWeightSelect="OnWeightSelect" Value="Decimal.Parse(attributes.WeightRange)"/>
+    <AgeSelector OnAgeSelect="OnAgeSelect" Value="attributes.Age"/>
+    <NumberOfDaysSelector OnNumberOfDaysSelect="OnNumberOfDaysSelect" Value="@attributes.DaysPerWeek"/>
+    <GoalsSelector OnGoalsSelected="OnGoalsSelected" Value="@attributes.Goals" />
+    <ExperienceLevelSelector OnExperienceSelect="OnExperienceSelect" Value="@attributes.Experience"/>
+    <AdditionalInfoInput OnUpdateAdditionalInfo="OnUpdateAdditionalInfo" Value="@attributes.AdditionalInfo"/>
+</LabelledForm>
+
+@if(IsInActiveScreen)
+{
+    <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="TrailingTitleButton">
+        <AppButton class="text-lg" Type=AppButtonType.Text OnClick=OnGenerate>Generate</AppButton>
+    </Microsoft.AspNetCore.Components.Sections.SectionContent>
 }
 
-<div class="flex flex-col justify-between h-full text-on-surface">
-    @switch (step)
-    {
-        case 1:
-            <GenderSelector OnGenderSelect="OnGenderSelect"/>
-            canPrevious = false;
-            canNext = false;
-            break;
-        case 2:
-            <WeightSelector OnWeightSelect="OnWeightSelect"/>
-            break;
-        case 3:
-            <AgeSelector OnAgeSelect="OnAgeSelect"/>
-            break;
-        case 4:
-            <NumberOfDaysSelector OnNumberOfDaysSelect="OnNumberOfDaysSelect"/>
-            canNext = false;
-            break;
-        case 5:
-            <GoalsSelector OnGoalsSelected="OnGoalsSelected"/>
-            canNext = attributes.Goals.Any();
-            break;
-        case 6:
-            <ExperienceLevelSelector OnExperienceSelect="OnExperienceSelect"/>
-            canNext = false;
-            break;
-        case 7:
-            <Summary OnConfirm="OnSummaryConfirm" Attributes="attributes"/>
-            break;
-    }
-    @if (step != 7)
-    {
-        <div class="flex justify-between p-4">
-            <AppButton Disabled=@(!canPrevious) Type="AppButtonType.Secondary" OnClick="OnPrevious">
-                <md-icon>arrow_left</md-icon>
-            </AppButton>
-            <span class="self-center">Step @step of 6</span>
-            <AppButton Disabled=@(!canNext) Type="AppButtonType.Secondary" OnClick="OnNext">
-                <md-icon>arrow_right</md-icon>
-            </AppButton>
-        </div>
-    }
-</div>
-
 @code {
-    private int step = 1;
-    private AiWorkoutAttributes attributes = new AiWorkoutAttributes(Gender.PreferNotToSay, "", 0, 0, new ImmutableListValue<string>(), Experience.Beginner, false);
+    private AiWorkoutAttributes attributes = new AiWorkoutAttributes(Gender.PreferNotToSay, "70", 28, 0, new ImmutableListValue<string>(), Experience.Beginner, false, "");
     [Parameter] [EditorRequired] public Action<AiWorkoutAttributes> OnAttributesSelected { get; set; } = null!;
 
-    private void OnPrevious()
-    {
-        if (step is 1)
-        {
-            return;
-        }
-
-        step--;
-    }
-
-    private void OnNext()
-    {
-        step++;
-    }
+    [CascadingParameter(Name = "IsInActiveScreen")]
+    public bool IsInActiveScreen { get; set; }
 
     private void OnGenderSelect(Gender gender)
     {
-        step = 2;
         attributes = attributes with { Gender = gender };
         StateHasChanged();
     }
 
-    private void OnWeightSelect(string weightRange)
+
+    private void OnWeightSelect(decimal weight)
     {
-        attributes = attributes with { WeightRange = weightRange };
+        attributes = attributes with { WeightRange = weight.ToString() };
+        StateHasChanged();
     }
 
     private void OnAgeSelect(int age)
@@ -87,7 +43,6 @@
     private void OnNumberOfDaysSelect(int numberOfDays)
     {
         attributes = attributes with { DaysPerWeek = numberOfDays };
-        step = 5;
         StateHasChanged();
     }
 
@@ -100,22 +55,18 @@
     private void OnExperienceSelect(Experience experience)
     {
         attributes = attributes with { Experience = experience };
-        step = 7;
         StateHasChanged();
     }
 
-    private void OnSummaryConfirm(bool confirmed)
+    private void OnUpdateAdditionalInfo(string info)
     {
-        if (confirmed)
-        {
-            OnAttributesSelected(attributes);
-        }
-        else
-        {
-            step--;
-        }
-
+        attributes = attributes with { AdditionalInfo = info };
         StateHasChanged();
+    }
+
+    private void OnGenerate()
+    {
+        OnAttributesSelected(attributes);
     }
 
 }

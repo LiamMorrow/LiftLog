@@ -1,52 +1,35 @@
-<div class="flex flex-col justify-around h-full">
-    <h2 class="text-2xl">What are your goals? You can select more than one.</h2>
-    <div class="grid grid-cols-2 gap-4 px-4  flex-grow max-h-[70%]">
-        <AppButton LessRounded="true" FullHeight="true" Type="AppButtonType.OutlineSecondary" FilledWithPrimary=@(GetIsFilled("Strength")) OnClick=@(() => ToggleGoal("Strength"))>
-            <div class="flex flex-col gap-2">
-                <span class="text-4xl material-symbols-outlined">heart_plus</span><span class="text-lg">Strength</span>
-            </div>
-        </AppButton>
-        <AppButton LessRounded="true" FullHeight="true" Type="AppButtonType.OutlineSecondary" FilledWithPrimary=@(GetIsFilled("Gaining Muscle")) OnClick=@(() => ToggleGoal("Gaining Muscle"))>
-            <div class="flex flex-col gap-2">
-                <span class="text-4xl material-symbols-outlined">exercise</span><span class="text-lg">Gaining Muscle</span>
-            </div>
-        </AppButton>
-        <AppButton LessRounded="true" FullHeight="true" Type="AppButtonType.OutlineSecondary" FilledWithPrimary=@(GetIsFilled("Losing Weight")) OnClick=@(() => ToggleGoal("Losing Weight"))>
-            <div class="flex flex-col gap-2">
-                <span class="text-4xl material-symbols-outlined">monitor_weight</span><span class="text-lg">Losing Weight</span>
-            </div>
-        </AppButton>
-        <AppButton LessRounded="true" FullHeight="true" Type="AppButtonType.OutlineSecondary" FilledWithPrimary=@(GetIsFilled("Toning")) OnClick=@(() => ToggleGoal("Toning"))>
-            <div class="flex flex-col gap-2">
-                <span class="text-4xl material-symbols-outlined">body_system</span><span class="text-lg">Toning</span>
-            </div>
-        </AppButton>
-    </div>
-</div>
+
+<LabelledFormRow Label="What are your goals?" Icon="speed">
+    <ChipContainer>
+        @RenderFilterChip("Strength")
+        @RenderFilterChip("Gaining Muscle")
+        @RenderFilterChip("Losing Weight")
+        @RenderFilterChip("Toning")
+    </ChipContainer>
+</LabelledFormRow>
 
 @code {
-
-    private ImmutableListValue<string> _goals = new ImmutableListValue<string>();
-
     [EditorRequired] [Parameter] public Action<ImmutableListValue<string>> OnGoalsSelected { get; set; } = null!;
 
-    private bool GetIsFilled(string goal)
-    {
-        return _goals.Contains(goal);
-    }
+    [EditorRequired] [Parameter] public ImmutableListValue<string> Value { get; set; } = [];
 
     private void ToggleGoal(string goal)
     {
-        if (_goals.Contains(goal))
+        if (Value.Contains(goal))
         {
-            _goals = _goals.Remove(goal);
+            OnGoalsSelected(Value.Remove(goal));
         }
         else
         {
-            _goals = _goals.Add(goal);
+            OnGoalsSelected(Value.Add(goal));
         }
 
-        OnGoalsSelected(_goals);
+
+    }
+
+    private RenderFragment RenderFilterChip(string value)
+    {
+        return @<FilterChip OnSelectedChange="@((selected) => ToggleGoal(value))" Label="@value" Selected="@Value.Contains(value)"/>;
     }
 
 }

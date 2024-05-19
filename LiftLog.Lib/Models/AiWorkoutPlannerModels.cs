@@ -33,7 +33,8 @@ public record AiWorkoutAttributes(
     int DaysPerWeek,
     ImmutableListValue<string> Goals,
     Experience Experience,
-    bool UseImperialUnits
+    bool UseImperialUnits,
+    string AdditionalInfo
 );
 
 public record AiWorkoutPlan(string Description, ImmutableListValue<SessionBlueprint> Sessions);
@@ -44,5 +45,6 @@ public record AiSessionAttributes(
     // TODO: Legacy name
     [property: JsonPropertyName("exerciseToKilograms")]
         ImmutableDictionary<string, decimal> ExerciseToWeight,
-    bool UseImperialUnits
+    bool UseImperialUnits,
+    string AdditionalInfo
 );

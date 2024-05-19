@@ -1,0 +1,9 @@
+<LabelledFormRow Label="Any additional information?" Icon="info">
+    <TextField TextFieldType=TextFieldType.Outline type="textarea" inputmode="text" Value="@Value" maxlength=200 OnChange="@(value => OnUpdateAdditionalInfo(value))"/>
+</LabelledFormRow>
+
+@code {
+    [Parameter] [EditorRequired] public Action<string> OnUpdateAdditionalInfo { get; set; } = null!;
+
+    [Parameter] [EditorRequired] public string Value { get; set; } = "";
+}
