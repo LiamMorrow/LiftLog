@@ -13,6 +13,7 @@
 
 <div class="flex flex-col gap-4">
     <CardList Items="plan">
+        <SessionSummaryTitle Session="context.GetEmptySession()" IsFilled="false"/>
         <SessionSummary Session="context.GetEmptySession()" ShowSets="true" ShowWeight="false"/>
     </CardList>
     <div>
@@ -53,7 +54,7 @@
         }
         else
         {
-            Dispatcher.Dispatch(new SetPageTitleAction($"{user.Nickname ?? user.Name}'s Plan"));
+            Dispatcher.Dispatch(new SetPageTitleAction($"{user.DisplayName}'s Plan"));
             plan = user.CurrentPlan;
         }
 

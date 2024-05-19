@@ -1,0 +1,11 @@
+<div class="flex flex-col gap-3">
+    <h2 class="text-xl flex align-middle gap-2"><md-icon class="text-primary" filled="true" >@Icon</md-icon>@Label</h2>
+    @ChildContent
+</div>
+
+@code {
+    [EditorRequired] [Parameter] public string Label { get; set; } = null!;
+    [EditorRequired] [Parameter] public string Icon { get; set; } = null!;
+
+    [Parameter] public RenderFragment ChildContent { get; set; } = null!;
+}

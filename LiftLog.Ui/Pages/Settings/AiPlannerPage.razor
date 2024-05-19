@@ -72,6 +72,7 @@ else
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("AI Planner"));
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
         base.OnInitialized();
     }
 
@@ -82,6 +83,7 @@ else
         Dispatcher.Dispatch(new SetProgramSessionsAction(planId, plan.Sessions));
         Dispatcher.Dispatch(new SetAiPlanAction(null));
         Dispatcher.Dispatch(new PublishIdentityIfEnabledAction());
+        Dispatcher.Dispatch(new SetLatestSettingsUrlAction(null));
         Dispatcher.Dispatch(new NavigateAction("/settings/program-list?FocusPlanId="+planId));
     }
 

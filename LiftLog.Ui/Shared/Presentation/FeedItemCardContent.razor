@@ -2,11 +2,11 @@
 {
     <SplitCardControl>
         <TitleContent>
-            <span><span class="text-primary font-bold">@(User.Nickname ?? User.Name ?? "Anonymous User")</span> completed a workout!</span>
             <SessionSummaryTitle IsFilled="true" Session="sessionFeedItem.Session" />
         </TitleContent>
         <MainContent>
             <SessionSummary ShowSets=true Session="sessionFeedItem.Session"></SessionSummary>
+            <span class="text-start mt-2"><span class="text-primary font-bold">@(User.DisplayName)</span> completed a workout!</span>
         </MainContent>
     </SplitCardControl>
 }
