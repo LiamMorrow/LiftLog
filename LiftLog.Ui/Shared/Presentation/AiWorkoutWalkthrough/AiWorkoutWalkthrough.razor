@@ -8,14 +8,22 @@
     <AdditionalInfoInput OnUpdateAdditionalInfo="OnUpdateAdditionalInfo" Value="@attributes.AdditionalInfo"/>
 </LabelledForm>
 
+@if (ValidationError is not null)
+{
+    <span class="flex items-center justify-center gap-2 my-4">
+        <md-icon>info</md-icon>@ValidationError
+    </span>
+}
+
 @if(IsInActiveScreen)
 {
     <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="TrailingTitleButton">
-        <AppButton class="text-lg" Type=AppButtonType.Text OnClick=OnGenerate>Generate</AppButton>
+        <AppButton class="text-lg" Type=AppButtonType.Text OnClick=OnGenerate Disabled="ValidationError is not null">Generate</AppButton>
     </Microsoft.AspNetCore.Components.Sections.SectionContent>
 }
 
-@code {
+@code
+{
     private AiWorkoutAttributes attributes = new AiWorkoutAttributes(Gender.PreferNotToSay, "70-70", 28, 0, new ImmutableListValue<string>(), Experience.Beginner, false, "");
     [Parameter] [EditorRequired] public Action<AiWorkoutAttributes> OnAttributesSelected { get; set; } = null!;
 
@@ -27,7 +35,6 @@
         attributes = attributes with { Gender = gender };
         StateHasChanged();
     }
-
 
     private void OnWeightSelect(decimal weight)
     {
@@ -66,11 +73,18 @@
 
     private void OnGenerate()
     {
-        if(!attributes.Goals.Any() || attributes.DaysPerWeek == 0)
+        if(ValidationError is not null)
         {
             return;
         }
         OnAttributesSelected(attributes);
     }
+
+    private string? ValidationError => attributes switch
+    {
+        {DaysPerWeek: 0} => "Please select the number of days per week",
+        {Goals.Count: 0} => "Please select at least one goal",
+        _ => null
+    };
 
 }
