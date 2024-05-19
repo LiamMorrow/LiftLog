@@ -10,7 +10,8 @@ describe('Creating a plan', () => {
       cy.navigate('Settings')
       // Disable tips
       cy.containsA('Show tips').click()
-      cy.containsA('Manage workouts').click()
+      cy.containsA('Manage plans').click()
+      cy.containsA('Active').click()
       populatePlanFromEditPage('benchFromCurrentPlan')
     })
     it('should have saved that plan', () => {
@@ -35,10 +36,10 @@ describe('Creating a plan', () => {
 
     it('should be able to use the new plan', () => {
       cy.get('[data-cy=back-btn]', { includeShadowDom: true }).click()
-      cy.getA('md-list-item').should('contain.text', 'I am a new plan').find('md-icon-button').click()
-      cy.containsA('Use').click()
+      cy.containsA('I am a new plan').parent('md-list-item').contains('Use').click()
       cy.dialog().find('[slot=actions]').contains("Use").click()
 
+      cy.navigate('Workout')
       cy.containsA('benchFromNewPlan').click()
     })
   })
@@ -47,7 +48,6 @@ describe('Creating a plan', () => {
 function populatePlanFromEditPage(exerciseName) {
 
   cy.containsA('Add Session', { includeShadowDom: true }).click()
-  cy.containsA('Session 1').click()
   cy.containsA('Add Exercise', { includeShadowDom: true }).click()
   cy.dialog().find('[data-cy=exercise-name]').find('input', { includeShadowDom: true }).clear().type(exerciseName)
   cy.dialog().find('[data-cy=exercise-sets]').should('contain.text', '3').find('[data-cy=fixed-increment]').click()
