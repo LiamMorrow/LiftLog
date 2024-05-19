@@ -54,9 +54,13 @@
             <div>
                 <Switch Label="Show feed" Value="@SettingsState.Value.ShowFeed" OnSwitched="SetShowFeed"/>
             </div>
-            <div>
-                <Switch Label="Status bar fix" Value="@SettingsState.Value.StatusBarFix" OnSwitched="SetStatusBarFix"/>
-            </div>
+            @* If android, we need a status bar fix sometimes *@
+            @if(AppPurchaseService.GetAppStore() == AppStore.Google)
+            {
+                <div>
+                    <Switch Label="Status bar fix" Value="@SettingsState.Value.StatusBarFix" OnSwitched="SetStatusBarFix"/>
+                </div>
+            }
             <md-divider></md-divider>
             <div>
                 <Switch Label="Show tips" Value="@SettingsState.Value.ShowTips" OnSwitched="SetShowTips"/>
