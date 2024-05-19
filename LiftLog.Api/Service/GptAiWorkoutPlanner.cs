@@ -12,13 +12,25 @@ using OpenAI.Chat;
 
 public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
 {
-    private readonly JsonNode aiWorkoutPlanJsonSchema = JsonNode.Parse(
+    private static readonly JsonNode aiWorkoutPlanJsonSchema = JsonNode.Parse(
         File.ReadAllText("./AiWorkoutPlan.json")
     )!;
+    private static readonly Function GetGymPlanFunction =
+        new(
+            "GetGymPlan",
+            "Gets a gym plan based on the user's goals and attributes.",
+            aiWorkoutPlanJsonSchema
+        );
 
-    private readonly JsonNode sessionBlueprintJsonSchema = JsonNode.Parse(
+    private static readonly JsonNode sessionBlueprintJsonSchema = JsonNode.Parse(
         File.ReadAllText("./AiSessionBlueprint.json")
     )!;
+    private static readonly Function GetSessionFunction =
+        new(
+            "GetSession",
+            "Gets a gym session based on the user's goals and attributes.",
+            sessionBlueprintJsonSchema
+        );
 
     public async Task<AiWorkoutPlan> GenerateWorkoutPlanAsync(AiWorkoutAttributes attributes)
     {
@@ -33,14 +45,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
 
         var goalsText = string.Join(" and ", attributes.Goals);
 
-        var tools = new List<Tool>
-        {
-            new Function(
-                "GetGymPlan",
-                "Gets a gym plan based on the user's goals and attributes.",
-                aiWorkoutPlanJsonSchema
-            )
-        };
+        var tools = new List<Tool> { GetGymPlanFunction };
 
         var messages = new List<Message>
         {
@@ -122,14 +127,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
             _ => "ten"
         };
 
-        var tools = new List<Tool>
-        {
-            new Function(
-                "GetSession",
-                "Gets a gym session based on the user's goals and attributes.",
-                sessionBlueprintJsonSchema
-            )
-        };
+        var tools = new List<Tool> { GetSessionFunction };
 
         var messages = new List<Message>
         {
