@@ -24,6 +24,7 @@
                     OnDuplicate="@(() => Dispatcher.Dispatch(new SavePlanAction(Guid.NewGuid(), program)))"
                     OnRemove="@(() => Dispatcher.Dispatch(new DeleteSavedPlanAction(id)))"
                     IsActive="ProgramState.Value.ActivePlanId == id"
+                    IsFocused="FocusPlanId == id"
                     BuiltIn=false/>
                 @if(id != orderedPrograms.Last().Key)
                 {
@@ -67,6 +68,9 @@
 @code {
     private (Guid Id, ProgramBlueprint Blueprint)? selectedProgram;
     private Dialog? selectedProgramDialog;
+
+    [SupplyParameterFromQuery]
+    public Guid FocusPlanId { get; set; }
 
     protected override void OnInitialized()
     {

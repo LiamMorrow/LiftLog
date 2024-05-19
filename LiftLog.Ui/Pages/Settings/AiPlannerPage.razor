@@ -82,7 +82,7 @@ else
         Dispatcher.Dispatch(new SetProgramSessionsAction(planId, plan.Sessions));
         Dispatcher.Dispatch(new SetAiPlanAction(null));
         Dispatcher.Dispatch(new PublishIdentityIfEnabledAction());
-        Dispatcher.Dispatch(new NavigateAction("/settings/program-list?focus="+planId));
+        Dispatcher.Dispatch(new NavigateAction("/settings/program-list?FocusPlanId="+planId));
     }
 
 }

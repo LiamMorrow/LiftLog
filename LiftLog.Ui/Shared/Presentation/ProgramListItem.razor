@@ -1,6 +1,6 @@
 @inject IJSRuntime JSRuntime
 
-<md-list-item @ref="_listItem" @attributes="AdditionalAttributes" type="button" class="text-left @(AdditionalAttributes?.GetValueOrDefault("class")) " multi-line-supporting-text @onclick="OnClick">
+<md-list-item @ref="_listItem" @attributes="AdditionalAttributes" type="button" class="text-left @(AdditionalAttributes?.GetValueOrDefault("class")) @FocusClass" multi-line-supporting-text @onclick="OnClick">
     <span slot="headline" >@ProgramBlueprint.Name</span>
     <span slot="supporting-text">@SupportingText</span>
 
@@ -30,6 +30,8 @@
 
     [Parameter] [EditorRequired] public bool IsActive { get; set; }
 
+    [Parameter] [EditorRequired] public bool IsFocused { get; set; }
+
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -39,7 +41,7 @@
 
     private string SupportingText => $"Edited: {ProgramBlueprint.LastEdited.ToShortDateString()}";
 
-
+    private string FocusClass => IsFocused ? "bg-secondary-container text-on-secondary-container " : "";
 
     private RenderFragment? RenderActiveBadge()
     {
