@@ -1,46 +1,22 @@
 @inject IJSRuntime Js
 
-<h2 class="text-2xl">How old are you?</h2>
-<div class="overflow-hidden">
-    <ol @ref="_scrollContainer" @onscroll="OnScroll" class="w-full h-full overflow-auto text-5xl select-none snap-mandatory snap-y" style="mask:linear-gradient(rgba(0, 0, 0, 0) 5%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 95%, rgba(0, 0, 0, 0) 0)">
-        <div class="h-[45%]"></div>
-        @for (var age = 13; age <= 120; age++)
-        {
-            var ageString = age.ToString();
-            <li @onclick="() => OnClick(ageString)" class="snap-center @(_age == age ? "text-primary" : "")" data-age="@age">@age</li>
-        }
-        <div class="h-[45%]"></div>
-    </ol>
-</div>
+<LabelledFormRow Label="How old are you?" Icon="cake">
+    <TextField TextFieldType=TextFieldType.Outline type="text" inputmode="numeric" Value="@(Value.ToString())" required OnChange="@(value => OnChanged(value))"/>
+</LabelledFormRow>
 
 @code {
 
 
     [Parameter] [EditorRequired] public Action<int> OnAgeSelect { get; set; } = null!;
-    private int _age = 13;
 
-    private ElementReference _scrollContainer;
+    [Parameter] [EditorRequired] public int Value { get; set; }
 
-    protected override void OnAfterRender(bool firstRender)
+    private void OnChanged(string? value)
     {
-        if (firstRender)
+        if (value != null && int.TryParse(value, out var result))
         {
-            OnAgeSelect(_age);
+            OnAgeSelect(result);
         }
-
-        base.OnAfterRender(firstRender);
-    }
-
-    private async void OnScroll()
-    {
-        _age = int.Parse(await Js.InvokeAsync<string>("AppUtils.getMiddleElementAttribute", _scrollContainer, "data-age"));
-        OnAgeSelect(_age);
-        StateHasChanged();
-    }
-
-    private async Task OnClick(string age)
-    {
-        await Js.InvokeVoidAsync("AppUtils.scrollElementToMiddle", $"[data-age='{age}']");
     }
 
 }

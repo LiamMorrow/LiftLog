@@ -1,24 +1,25 @@
-<div class="flex flex-col gap-2">
-    <span class="text-lg text-center">Which areas would you like to workout?</span>
-    <div class="flex flex-wrap justify-center gap-2">
-        @RenderFilterChip("Arms")
-        @RenderFilterChip("Chest")
-        @RenderFilterChip("Back")
-        @RenderFilterChip("Legs")
-        @RenderFilterChip("Triceps")
-        @RenderFilterChip("Biceps")
-        @RenderFilterChip("Quads")
-        @RenderFilterChip("Hamstrings")
-        @RenderFilterChip("Calves")
-    </div>
-</div>
-<div class="flex flex-col gap-2">
-    <span class="text-lg text-center">How much volume?</span>
-    <Slider Min="0" Max="100" Value="Value.Volume" ValueChanged="i => OnChange.InvokeAsync(Value with { Volume = i })"
-            Label="@VolumeLabel">
-    </Slider>
-</div>
+<LabelledForm>
+    <LabelledFormRow Label="What are we working out?" Icon="physical_therapy">
+        <ChipContainer>
+            @RenderFilterChip("Arms")
+            @RenderFilterChip("Chest")
+            @RenderFilterChip("Back")
+            @RenderFilterChip("Legs")
+            @RenderFilterChip("Triceps")
+            @RenderFilterChip("Biceps")
+            @RenderFilterChip("Quads")
+            @RenderFilterChip("Hamstrings")
+            @RenderFilterChip("Calves")
+        </ChipContainer>
+    </LabelledFormRow>
+    <LabelledFormRow Label="How much volume?" Icon="bar_chart">
+        <Slider Min="0" Max="100" Value="Value.Volume" ValueChanged="i => OnChange.InvokeAsync(Value with { Volume = i })"
+                Label="@VolumeLabel">
+        </Slider>
+    </LabelledFormRow>
 
+    <AdditionalInfoInput Value="@Value.AdditionalInfo" OnUpdateAdditionalInfo="info => OnChange.InvokeAsync(Value with { AdditionalInfo = info })"/>
+</LabelledForm>
 @code {
 
     [EditorRequired] [Parameter] public EventCallback<AiSessionCreatorModel> OnChange { get; set; }

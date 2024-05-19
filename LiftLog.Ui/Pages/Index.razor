@@ -155,6 +155,7 @@ else
 
     private void AiSessionCreator()
     {
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/"));
         Dispatcher.Dispatch(new NavigateAction("/settings/ai-session-creator"));
     }
 }
