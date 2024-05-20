@@ -10,11 +10,11 @@
 @inject IState<AppState> AppState
 @inject IDispatcher Dispatcher
 
-<div class="flex justify-between items-center">
-    <ListTitle Title="Pro Features" />
-    @RenderLockedPro()
-</div>
 <md-list>
+    <div class="flex justify-between items-center">
+        <ListTitle Title="Pro Features" />
+        @RenderLockedPro()
+    </div>
     <md-list-item type="button" class="text-left" multi-line-supporting-text disabled=@(!AppState.Value.ProState.IsPro) @onclick="NavigateToAiPlanner">
         <md-icon slot="start">bolt</md-icon>
         <span slot="headline">AI Program Planner</span>

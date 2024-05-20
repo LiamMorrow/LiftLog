@@ -39,10 +39,11 @@ describe('Completing a session', () => {
     beforeEach(() => {
       cy.navigate('Settings')
       // Disable tips
+      cy.containsA('App Configuration').click()
       cy.containsA('Show tips').click()
+      cy.navigate('Settings')
       cy.containsA('Manage plans').click()
       cy.containsA("Starting Strength").parent('md-list-item').contains('Use').click()
-      cy.dialog().find("[slot=actions]").contains("Use").click()
       cy.navigate('Workout')
     })
 
