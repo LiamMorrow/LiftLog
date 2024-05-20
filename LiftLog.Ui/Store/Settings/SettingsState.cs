@@ -14,5 +14,6 @@ public record SettingsState(
     bool ShowTips,
     int TipToShow,
     bool ShowFeed,
-    bool StatusBarFix
+    bool StatusBarFix,
+    bool RestNotifications
 );

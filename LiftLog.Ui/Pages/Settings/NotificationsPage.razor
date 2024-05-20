@@ -1,0 +1,22 @@
+@page "/settings/notifications"
+@inject IState<SettingsState> SettingsState
+@inject IDispatcher Dispatcher
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<md-list class="text-left">
+    <ListSwitch Headline="Rest notifications" SupportingText="Show a notification when the rest timer is up" Value="@SettingsState.Value.RestNotifications" OnSwitched="SetRestNotifications" />
+</md-list>
+
+
+@code {
+    protected override void OnInitialized()
+    {
+        Dispatcher.Dispatch(new SetPageTitleAction("Notifications"));
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
+        base.OnInitialized();
+    }
+
+    private void SetRestNotifications(bool value)
+    => Dispatcher.Dispatch(new SetRestNotificationsAction(value));
+}

@@ -10,6 +10,6 @@ public record SetReopenCurrentSessionAction(bool ReopenCurrentSession);
 
 public record SetBackNavigationUrlAction(string? BackNavigationUrl);
 
-public record NavigateAction(string Path);
+public record NavigateAction(string Path, bool ClearPageStack = true);
 
 public record SetLatestSettingsUrlAction(string? LatestSettingsUrl);

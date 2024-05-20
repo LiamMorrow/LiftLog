@@ -47,12 +47,12 @@
             && AppState.Value.ReopenCurrentSession
             && !IsRouteMatch("/session/?$"))
         {
-            Dispatcher.Dispatch(new NavigateAction("/session"));
+            Dispatcher.Dispatch(new NavigateAction("/session", ClearPageStack: false));
             StateHasChanged();
             return;
         }
 
-        Dispatcher.Dispatch(new NavigateAction("/"));
+        Dispatcher.Dispatch(new NavigateAction("/", ClearPageStack: false));
         StateHasChanged();
     }
 
@@ -64,25 +64,25 @@
             StateHasChanged();
             return;
         }
-        Dispatcher.Dispatch(new NavigateAction("/settings"));
+        Dispatcher.Dispatch(new NavigateAction("/settings", ClearPageStack: true));
         StateHasChanged();
     }
 
     private void NavigateToFeed()
     {
-        Dispatcher.Dispatch(new NavigateAction("/feed"));
+        Dispatcher.Dispatch(new NavigateAction("/feed", ClearPageStack: false));
         StateHasChanged();
     }
 
     private void NavigateToHistory()
     {
-        Dispatcher.Dispatch(new NavigateAction("/history"));
+        Dispatcher.Dispatch(new NavigateAction("/history", ClearPageStack: false));
         StateHasChanged();
     }
 
     private void NavigateToStats()
     {
-        Dispatcher.Dispatch(new NavigateAction("/stats"));
+        Dispatcher.Dispatch(new NavigateAction("/stats", ClearPageStack: false));
         StateHasChanged();
     }
 

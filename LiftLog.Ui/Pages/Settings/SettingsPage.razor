@@ -12,21 +12,27 @@
 
 <md-list class="text-left">
     <ListTitle Title="Configuration" />
-    <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="NavigateToBackupAndRestore">
+    <md-list-item type="button" multi-line-supporting-text @onclick="NavigateToBackupAndRestore">
         <md-icon slot="start">settings_backup_restore</md-icon>
         <span slot="headline" >Backup and restore</span>
         <span slot="supporting-text">Create and export backups for transfering between devices</span>
     </md-list-item>
-    <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="NavigateToProgramList">
+    <md-list-item type="button" multi-line-supporting-text @onclick="NavigateToProgramList">
         <md-icon slot="start">assignment</md-icon>
         <span slot="headline" >Manage plans</span>
         <span slot="supporting-text">Setup your workout plans</span>
     </md-list-item>
 
-    <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="NavigateToAppConfiguration">
+    <md-list-item type="button" multi-line-supporting-text @onclick="NavigateToAppConfiguration">
         <md-icon slot="start">settings</md-icon>
         <span slot="headline" >App Configuration</span>
         <span slot="supporting-text">Adjust weight units, theme, and other misc. settings</span>
+    </md-list-item>
+
+    <md-list-item type="button" multi-line-supporting-text @onclick="NavigateToNotifications">
+        <md-icon slot="start">notifications</md-icon>
+        <span slot="headline" >Notifications</span>
+        <span slot="supporting-text">Adjust notification settings for rest timers</span>
     </md-list-item>
 </md-list>
 <ProFeatures/>
@@ -53,5 +59,10 @@
     private void NavigateToAppConfiguration()
     {
         Dispatcher.Dispatch(new NavigateAction("/settings/app-config"));
+    }
+
+    private void NavigateToNotifications()
+    {
+        Dispatcher.Dispatch(new NavigateAction("/settings/notifications"));
     }
 }

@@ -18,6 +18,10 @@ public class AppEffects(
     [EffectMethod]
     public Task HandleNavigateAction(NavigateAction action, IDispatcher dispatcher)
     {
+        if (action.ClearPageStack)
+        {
+            dispatcher.Dispatch(new SetLatestSettingsUrlAction(null));
+        }
         navigationManager.NavigateTo(action.Path);
         return Task.CompletedTask;
     }

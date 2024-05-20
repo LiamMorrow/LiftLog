@@ -18,6 +18,7 @@ public class SettingsFeature : Feature<SettingsState>
             ShowTips: true,
             TipToShow: 1,
             ShowFeed: true,
-            StatusBarFix: false
+            StatusBarFix: false,
+            RestNotifications: true
         );
 }

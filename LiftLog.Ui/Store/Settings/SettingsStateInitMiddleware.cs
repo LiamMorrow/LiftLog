@@ -26,6 +26,8 @@ public class SettingsStateInitMiddleware(
             dispatch.Dispatch(new SetShowFeedAction(showFeed));
             var statusBarFix = await preferencesRepository.GetStatusBarFixAsync();
             dispatch.Dispatch(new SetStatusBarFixAction(statusBarFix));
+            var restNotifications = await preferencesRepository.GetRestNotificationsAsync();
+            dispatch.Dispatch(new SetRestNotificationsAction(restNotifications));
             dispatch.Dispatch(new SetSettingsIsHydratedAction());
         }
         catch (Exception e)

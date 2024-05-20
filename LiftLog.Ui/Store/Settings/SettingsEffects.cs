@@ -158,6 +158,15 @@ public class SettingsEffects(
     }
 
     [EffectMethod]
+    public async Task HandleSetRestNotificationsAction(
+        SetRestNotificationsAction action,
+        IDispatcher dispatcher
+    )
+    {
+        await preferencesRepository.SetRestNotificationsAsync(action.RestNotifications);
+    }
+
+    [EffectMethod]
     public async Task HandleSetUseImperialUnitsAction(
         SetUseImperialUnitsAction action,
         IDispatcher dispatcher
