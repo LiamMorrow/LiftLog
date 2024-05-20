@@ -9,8 +9,12 @@ describe('Settings', () => {
     beforeEach(() => {
       cy.navigate('Settings')
       // Disable tips
+      cy.containsA('App Configuration').click()
       cy.containsA('Show tips').click()
-      cy.getA('[data-cy=restore-button]').click()
+
+      cy.navigate('Settings')
+      cy.containsA('Backup and restore').click()
+      cy.containsA('Import data').click()
     })
 
 
@@ -18,6 +22,9 @@ describe('Settings', () => {
       it('should display weights in the correct units on all pages', () => {
         assertCorrectWeightUnitsOnAllPages('kg')
         cy.navigate('Settings')
+        // Navigate twice, because settings remembers its last page when you click it
+        cy.navigate('Settings')
+        cy.containsA('App Configuration').click()
         cy.containsA('Use imperial units').click()
         assertCorrectWeightUnitsOnAllPages('lbs')
       })
@@ -27,6 +34,9 @@ describe('Settings', () => {
       it('should hide and show it on all pages', () => {
         assertShowsBodyweightOnAllPages(true)
         cy.navigate('Settings')
+        // Navigate twice, because settings remembers its last page when you click it
+        cy.navigate('Settings')
+        cy.containsA('App Configuration').click()
         cy.containsA('Show bodyweight').click()
         assertShowsBodyweightOnAllPages(false)
       })

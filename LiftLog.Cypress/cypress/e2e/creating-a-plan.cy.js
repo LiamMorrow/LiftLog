@@ -9,9 +9,11 @@ describe('Creating a plan', () => {
     beforeEach(() => {
       cy.navigate('Settings')
       // Disable tips
+      cy.containsA('App Configuration').click()
       cy.containsA('Show tips').click()
+      cy.navigate('Settings')
       cy.containsA('Manage plans').click()
-      cy.containsA('Active').click()
+      cy.containsA('My Program').parent('md-list-item').click()
       populatePlanFromEditPage('benchFromCurrentPlan')
     })
     it('should have saved that plan', () => {
@@ -22,7 +24,9 @@ describe('Creating a plan', () => {
     beforeEach(() => {
       cy.navigate('Settings')
       // Disable tips
+      cy.containsA('App Configuration').click()
       cy.containsA('Show tips').click()
+      cy.navigate('Settings')
       cy.containsA('Manage plans').click()
       cy.getA('md-fab').click()
       cy.getA('md-filled-text-field').find('input', { includeShadowDom: true }).first().click().type('I am a new plan')
@@ -37,7 +41,6 @@ describe('Creating a plan', () => {
     it('should be able to use the new plan', () => {
       cy.get('[data-cy=back-btn]', { includeShadowDom: true }).click()
       cy.containsA('I am a new plan').parent('md-list-item').contains('Use').click()
-      cy.dialog().find('[slot=actions]').contains("Use").click()
 
       cy.navigate('Workout')
       cy.containsA('benchFromNewPlan').click()

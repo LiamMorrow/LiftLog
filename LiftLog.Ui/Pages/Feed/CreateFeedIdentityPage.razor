@@ -28,20 +28,18 @@
 }
 else
 {
-    <div class="text-on-surface flex flex-col gap-4 p-4">
-        <span class="text-lg">Share this link to let others track your progress!</span>
-
-        <TextField Value="@name" label="Your name (optional)" OnChange=@SetName/>
+    <div class="text-on-surface flex flex-col gap-4">
+    <LabelledForm>
+        <LabelledFormRow Label="Your Name" Icon="person">
+        <TextField Value="@name" label="Optional" OnChange=@SetName/>
+        </LabelledFormRow>
         <FeedShareUrl/>
-        <div>
-            <Switch Label="Publish workouts" Value=@publishWorkouts OnSwitched="SetPublishWorkouts"/>
-        </div>
-        <div>
-            <Switch Label="Publish bodyweight" Value=@publishBodyweight OnSwitched="SetPublishBodyweight"/>
-        </div>
-        <div>
-            <Switch Label="Publish plan" Value=@publishPlan OnSwitched="SetPublishPlan"/>
-        </div>
+        </LabelledForm>
+        <md-list>
+            <ListSwitch Headline="Publish workouts" SupportingText="Publish workouts as you complete them" Value=@publishWorkouts OnSwitched="SetPublishWorkouts"/>
+            <ListSwitch Headline="Publish bodyweight" SupportingText="Publish your bodyweight with your workouts"  Value=@publishBodyweight OnSwitched="SetPublishBodyweight"/>
+            <ListSwitch Headline="Publish plan" SupportingText="Publish your current plan for your followers to see and import" Value=@publishPlan OnSwitched="SetPublishPlan"/>
+        </md-list>
         <AppButton Type=AppButtonType.Text OnClick="@(() => stopPublishingDialog?.Open())">Delete account</AppButton>
     </div>
 }
