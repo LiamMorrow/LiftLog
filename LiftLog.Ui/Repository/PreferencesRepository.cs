@@ -33,6 +33,16 @@ public class PreferencesRepository(IPreferenceStore preferenceStore)
         await preferenceStore.SetItemAsync("useImperialUnits", useImperialUnits.ToString());
     }
 
+    public async Task<bool> GetRestNotificationsAsync()
+    {
+        return await preferenceStore.GetItemAsync("restNotifications") is "True" or null;
+    }
+
+    public async Task SetRestNotificationsAsync(bool restNotifications)
+    {
+        await preferenceStore.SetItemAsync("restNotifications", restNotifications.ToString());
+    }
+
     public async Task SetShowBodyweightAsync(bool showBodyweight)
     {
         await preferenceStore.SetItemAsync("showBodyweight", showBodyweight.ToString());

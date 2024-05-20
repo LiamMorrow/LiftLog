@@ -2,12 +2,14 @@ using System.IO.Compression;
 using Fluxor;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Services;
+using LiftLog.Ui.Store.Settings;
 
 namespace LiftLog.Ui.Store.CurrentSession;
 
 public class CurrentSessionEffects(
     ProgressRepository progressRepository,
     IState<CurrentSessionState> state,
+    IState<SettingsState> settingsState,
     INotificationService notificationService,
     SessionService sessionService
 )
@@ -33,6 +35,10 @@ public class CurrentSessionEffects(
     public async Task NotifySetTimer(NotifySetTimerAction action, IDispatcher dispatcher)
     {
         await notificationService.CancelNextSetNotificationAsync();
+        if (!settingsState.Value.RestNotifications)
+        {
+            return;
+        }
         var session = action.Target switch
         {
             SessionTarget.WorkoutSession => state.Value.WorkoutSession,

@@ -76,4 +76,10 @@ public static class SettingsReducers
         SettingsState state,
         SetStatusBarFixAction action
     ) => state with { StatusBarFix = action.StatusBarFix };
+
+    [ReducerMethod]
+    public static SettingsState SetRestNotifications(
+        SettingsState state,
+        SetRestNotificationsAction action
+    ) => state with { RestNotifications = action.RestNotifications };
 }
