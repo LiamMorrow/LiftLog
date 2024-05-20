@@ -4,7 +4,7 @@
     <span slot="headline" >@ProgramBlueprint.Name</span>
     <span slot="supporting-text">@SupportingText</span>
 
-    <div slot="end" class="flex align-middle">
+    <div slot="end" class="flex items-center">
         @RenderActiveBadge()
         <IconButton id="@_iconButtonId" Type="IconButtonType.Standard" Icon="more_horiz" OnClick=@(() => _menu?.Open())></IconButton>
         <Menu  anchor="@_iconButtonId" @ref="_menu">
@@ -47,7 +47,7 @@
     {
         if (IsActive)
         {
-            return @<div class="flex flex-col justify-center"><span class="rounded-full bg-secondary-container text-on-secondary-container px-3 py-2 text-md">Active</span></div>;
+            return @<div class="flex flex-col justify-center"><span class="rounded-full relative bg-secondary-container text-on-secondary-container px-3 py-2 text-md" @onclick:stopPropagation="true" @onclick:preventDefault="true" >Active<md-ripple></md-ripple></span></div>;
         }
 
         return @<AppButton Type="AppButtonType.Text" OnClick="()=>OnUse.InvokeAsync()">Use</AppButton>;

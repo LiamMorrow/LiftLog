@@ -13,44 +13,23 @@
 {
     var orderedPrograms = ProgramState.Value.SavedPrograms.OrderBy(x=>x.Value.Name).ToList();
     <section class="text-left text-on-surface flex flex-col">
-        <h2 class="pl-4 text-xl font-bold">Saved Plans</h2>
         <md-list>
+            <ListTitle Title="Saved Plans" />
             @foreach (var (id, program) in orderedPrograms)
             {
                 <ProgramListItem
                     ProgramBlueprint="@program"
                     OnClick=@(() => OpenEditProgram(id))
-                    OnUse="@(() => BeginSelectProgram(id, program))"
+                    OnUse="@(() => SelectProgram(id))"
                     OnDuplicate="@(() => Dispatcher.Dispatch(new SavePlanAction(Guid.NewGuid(), program)))"
                     OnRemove="()=>HandleRemove(id)"
                     IsActive="ProgramState.Value.ActivePlanId == id"
                     IsFocused="FocusPlanId == id"
                     BuiltIn=false/>
-                @if(id != orderedPrograms.Last().Key)
-                {
-                    <md-divider></md-divider>
-                }
             }
         </md-list>
     </section>
 }
-
-
-<Dialog @ref="selectedProgramDialog">
-    <span slot="headline">Select Program</span>
-    @if (selectedProgram != null)
-    {
-        <span slot="content" class="block text-left">
-            Would you like to use the program
-            <span class="font-bold text-primary">@selectedProgram.Value.Blueprint.Name</span>?<br/>This will replace your existing workouts.
-        </span>
-        <div class="flex gap-1" slot="actions">
-            <AppButton Type="AppButtonType.Text" OnClick="() => selectedProgramDialog?.Close()">Close</AppButton>
-            <AppButton Type="AppButtonType.Text" OnClick="SelectProgram">Use</AppButton>
-        </div>
-    }
-</Dialog>
-
 
 
 <FloatingBottomContainer>
@@ -66,8 +45,6 @@
 
 
 @code {
-    private (Guid Id, ProgramBlueprint Blueprint)? selectedProgram;
-    private Dialog? selectedProgramDialog;
 
     [SupplyParameterFromQuery]
     public Guid FocusPlanId { get; set; }
@@ -80,19 +57,9 @@
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
     }
 
-    private void BeginSelectProgram(Guid id, ProgramBlueprint program)
+    private void SelectProgram(Guid id)
     {
-        selectedProgram = (id, program);
-        selectedProgramDialog?.Open();
-    }
-
-    private async Task SelectProgram()
-    {
-        await selectedProgramDialog!.CloseWait();
-        if (selectedProgram != null)
-        {
-            Dispatcher.Dispatch(new SetActiveProgramAction(selectedProgram.Value.Id));
-        }
+        Dispatcher.Dispatch(new SetActiveProgramAction(id));
     }
 
     private void AddNewPlan()

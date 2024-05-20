@@ -8,74 +8,29 @@
 
 @inject IDispatcher Dispatcher
 @inject IAppPurchaseService AppPurchaseService
-@inject IThemeProvider ThemeProvider
 @inject IState<SettingsState> SettingsState
-@inject NavigationManager NavigationManager
 
+<md-list class="text-left">
+    <ListTitle Title="Configuration" />
+    <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="NavigateToBackupAndRestore">
+        <md-icon slot="start">settings_backup_restore</md-icon>
+        <span slot="headline" >Backup and restore</span>
+        <span slot="supporting-text">Create and export backups for transfering between devices</span>
+    </md-list-item>
+    <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="NavigateToProgramList">
+        <md-icon slot="start">assignment</md-icon>
+        <span slot="headline" >Manage plans</span>
+        <span slot="supporting-text">Setup your workout plans</span>
+    </md-list-item>
+
+    <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="NavigateToAppConfiguration">
+        <md-icon slot="start">settings</md-icon>
+        <span slot="headline" >App Configuration</span>
+        <span slot="supporting-text">Adjust weight units, theme, and other misc. settings</span>
+    </md-list-item>
+</md-list>
 <div class="flex flex-col gap-2 pb-2 px-2">
-    <Card>
-        <SplitCardControl>
-            <TitleContent>
-                <ItemTitle Title="Data Management" />
-            </TitleContent>
-            <MainContent>
-                <div class="flex flex-col gap-4">
-                    <div class="flex justify-between">
-                        <AppButton OnClick="ExportData" Type="AppButtonType.OutlineSecondary">
-                            <md-icon slot="icon">upload</md-icon>Backup
-                        </AppButton>
-                        <AppButton data-cy="restore-button" OnClick="ImportData" Type="AppButtonType.OutlineSecondary">
-                            <md-icon slot="icon">download</md-icon>Restore
-                        </AppButton>
-                    </div>
-                    <AppButton Type="AppButtonType.Primary" OnClick="NavigateToProgramList">
-                        <md-icon slot="icon">assignment</md-icon>
-                        Manage plans
-                    </AppButton>
-                </div>
-            </MainContent>
-        </SplitCardControl>
-    </Card>
-    <ProFeatureCard/>
-
-    <Card>
-        <SplitCardControl>
-            <TitleContent>
-                <ItemTitle Title="Configuration" />
-            </TitleContent>
-            <MainContent>
-                <div class="flex flex-col gap-4">
-            <div>
-                <Switch Label="Use imperial units" Value="@SettingsState.Value.UseImperialUnits" OnSwitched="SetUseImperialUnits"/>
-            </div>
-            <div>
-                <Switch Label="Show bodyweight" Value="@SettingsState.Value.ShowBodyweight" OnSwitched="SetShowBodyweight"/>
-            </div>
-            <div>
-                <Switch Label="Show feed" Value="@SettingsState.Value.ShowFeed" OnSwitched="SetShowFeed"/>
-            </div>
-            @* If android, we need a status bar fix sometimes *@
-            @if(AppPurchaseService.GetAppStore() == AppStore.Google)
-            {
-                <div>
-                    <Switch Label="Status bar fix" Value="@SettingsState.Value.StatusBarFix" OnSwitched="SetStatusBarFix"/>
-                </div>
-            }
-            <md-divider></md-divider>
-            <div>
-                <Switch Label="Show tips" Value="@SettingsState.Value.ShowTips" OnSwitched="SetShowTips"/>
-                <AppButton Type="AppButtonType.OutlineSecondary" OnClick="ResetTips">Reset tips</AppButton>
-            </div>
-            <md-divider></md-divider>
-            <ThemeChooser
-                Seed="@ThemeProvider.GetSeed()"
-                ThemePreference="@ThemeProvider.GetThemePreference()"
-                OnUpdateTheme="@(async a => await HandleThemeUpdate(a))"/>
-                </div>
-            </MainContent>
-        </SplitCardControl>
-
-    </Card>
+    <ProFeatures/>
 </div>
 
 
@@ -87,53 +42,18 @@
         base.OnInitialized();
     }
 
-    protected override async Task OnInitializedAsync()
+    private void NavigateToBackupAndRestore()
     {
-        await base.OnInitializedAsync();
-    }
-
-
-    private void NavigateToManage()
-    {
-        NavigationManager.NavigateTo("/settings/manage-workouts");
+        Dispatcher.Dispatch(new NavigateAction("/settings/backup-and-restore"));
     }
 
     private void NavigateToProgramList()
     {
-        NavigationManager.NavigateTo("/settings/program-list");
+        Dispatcher.Dispatch(new NavigateAction("/settings/program-list"));
     }
 
-    private void ImportData()
+    private void NavigateToAppConfiguration()
     {
-        Dispatcher.Dispatch(new ImportDataAction());
-        Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
+        Dispatcher.Dispatch(new NavigateAction("/settings/app-config"));
     }
-
-    private void ExportData() => Dispatcher.Dispatch(new ExportDataAction());
-
-    private void SetUseImperialUnits(bool value)
-        => Dispatcher.Dispatch(new SetUseImperialUnitsAction(value));
-
-    private void SetShowBodyweight(bool value)
-        => Dispatcher.Dispatch(new SetShowBodyweightAction(value));
-
-    private void SetShowFeed(bool value)
-        => Dispatcher.Dispatch(new SetShowFeedAction(value));
-
-    private void SetShowTips(bool value)
-        => Dispatcher.Dispatch(new SetShowTipsAction(value));
-
-    private void SetStatusBarFix(bool value)
-        => Dispatcher.Dispatch(new SetStatusBarFixAction(value));
-
-    private void ResetTips()
-        => Dispatcher.Dispatch(new SetTipToShowAction(1));
-
-    private async Task HandleThemeUpdate((uint? Seed, ThemePreference ThemePreference) value)
-    {
-        Dispatcher.Dispatch(new SetThemeAction(value.Seed, value.ThemePreference));
-        await Task.Delay(100);
-        StateHasChanged();
-    }
-
 }

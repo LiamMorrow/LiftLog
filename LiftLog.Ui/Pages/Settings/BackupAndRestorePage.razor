@@ -1,0 +1,38 @@
+@page "/settings/backup-and-restore"
+@inject IState<SettingsState> SettingsState
+@inject IDispatcher Dispatcher
+@inject IThemeProvider ThemeProvider
+@inject IAppPurchaseService AppPurchaseService
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<md-list>
+    <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="ExportData">
+        <md-icon slot="start">backup</md-icon>
+        <span slot="headline">Export data</span>
+        <span slot="supporting-text">Export your data to a file for backup or transfer</span>
+    </md-list-item>
+    <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="ImportData">
+        <md-icon slot="start">restore</md-icon>
+        <span slot="headline">Import data</span>
+        <span slot="supporting-text">Import data from a file to restore</span>
+    </md-list-item>
+</md-list>
+
+@code {
+    protected override void OnInitialized()
+    {
+        Dispatcher.Dispatch(new SetPageTitleAction("Backup and Restore"));
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
+        base.OnInitialized();
+    }
+
+
+    private void ImportData()
+    {
+        Dispatcher.Dispatch(new ImportDataAction());
+        Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
+    }
+
+    private void ExportData() => Dispatcher.Dispatch(new ExportDataAction());
+}
