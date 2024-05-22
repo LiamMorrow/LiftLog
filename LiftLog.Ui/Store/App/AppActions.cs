@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using LiftLog.Lib.Models;
 
 namespace LiftLog.Ui.Store.App;
@@ -10,6 +11,10 @@ public record SetReopenCurrentSessionAction(bool ReopenCurrentSession);
 
 public record SetBackNavigationUrlAction(string? BackNavigationUrl);
 
-public record NavigateAction(string Path, bool ClearPageStack = true);
+public record NavigateAction(
+    string Path,
+    bool ClearPageStack = true,
+    Regex? IfCurrentPathMatches = null
+);
 
 public record SetLatestSettingsUrlAction(string? LatestSettingsUrl);

@@ -5,7 +5,7 @@ namespace LiftLog.Ui.Store.App;
 
 public class AppEffects(
     PreferencesRepository preferencesRepository,
-    NavigationManagerProvider navigationManager
+    NavigationManagerProvider navigationManagerProvider
 )
 {
     [EffectMethod]
@@ -21,6 +21,15 @@ public class AppEffects(
         {
             dispatcher.Dispatch(new SetLatestSettingsUrlAction(null));
         }
-        (await navigationManager.GetNavigationManager()).NavigateTo(action.Path);
+
+        var navigationManager = await navigationManagerProvider.GetNavigationManager();
+        if (
+            action.IfCurrentPathMatches is not null
+            && !action.IfCurrentPathMatches.IsMatch(navigationManager.Uri)
+        )
+        {
+            return;
+        }
+        navigationManager.NavigateTo(action.Path);
     }
 }
