@@ -1,14 +1,11 @@
 using System.Collections.Concurrent;
-using Append.Blazor.Notifications;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Store.CurrentSession;
 using INotificationService = LiftLog.Ui.Services.INotificationService;
 
 namespace LiftLog.Web.Services;
 
-public class WebNotificationService(
-    Append.Blazor.Notifications.INotificationService notificationService
-) : INotificationService
+public class WebNotificationService() : INotificationService
 {
     private static readonly NotificationHandle NextSetNotificationHandle = new NotificationHandle(
         "NEXT_SET"
@@ -48,23 +45,6 @@ public class WebNotificationService(
         return ClearNotificationAsync(NextSetNotificationHandle);
     }
 
-    private async Task UpdateNotificationAsync(
-        NotificationHandle handle,
-        string title,
-        string message
-    )
-    {
-        await notificationService.CreateAsync(
-            title,
-            new NotificationOptions()
-            {
-                Tag = handle.Id,
-                Body = message,
-                Renotify = false
-            }
-        );
-    }
-
     private Task ClearNotificationAsync(NotificationHandle handle)
     {
         if (_scheduledNotifications.TryGetValue(handle, out var cancellation))
@@ -82,19 +62,6 @@ public class WebNotificationService(
         string message
     )
     {
-        if (!await notificationService.IsSupportedByBrowserAsync())
-        {
-            return;
-        }
-
-        if (notificationService.PermissionStatus != PermissionType.Granted)
-        {
-            if (await notificationService.RequestPermissionAsync() != PermissionType.Granted)
-            {
-                return;
-            }
-        }
-
         await ClearNotificationAsync(handle);
         var source = new CancellationTokenSource();
         if (_scheduledNotifications.TryAdd(handle, source))
@@ -106,7 +73,7 @@ public class WebNotificationService(
                     {
                         if (result.IsCompletedSuccessfully)
                         {
-                            _ = UpdateNotificationAsync(handle, title, message);
+                            Console.WriteLine($"Notification: {title} - {message}");
                         }
                     }
                 );

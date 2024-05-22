@@ -4,6 +4,9 @@
 @using MaterialColorUtilities.Schemes
 
 @inject IThemeProvider ThemeProvider
+@inject NavigationManagerProvider NavigationManagerProvider
+@inject NavigationManager NavigationManager
+
 <LiftLog.Ui.WebApplication/>
 
 @if (_scheme is not null)
@@ -101,6 +104,7 @@
         if (firstRender)
         {
             ThemeProvider.SeedChanged += HandleThemeChange;
+            NavigationManagerProvider.SetNavigationManager(NavigationManager);
         }
 
         base.OnAfterRender(firstRender);

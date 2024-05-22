@@ -34,49 +34,54 @@ public static class ServiceRegistration
     {
         services.AddFluxor(o =>
             o.ScanAssemblies(typeof(CurrentSessionReducers).Assembly)
+                .WithLifetime(StoreLifetime.Singleton)
                 .AddMiddleware<PersistSessionMiddleware>()
                 .AddMiddleware<PersistProgramMiddleware>()
                 .AddMiddleware<AppStateInitMiddleware>()
                 .AddMiddleware<SettingsStateInitMiddleware>()
                 .AddMiddleware<FeedStateInitMiddleware>()
 #if DEBUG
-                .UseReduxDevTools(options =>
-                {
-                    options.UseSystemTextJson(_ => JsonSerializerSettings.LiftLog);
-                })
+        // .UseReduxDevTools(options =>
+        // {
+        //     options.UseSystemTextJson(_ => JsonSerializerSettings.LiftLog);
+        // })
 #endif
         );
 
-        services.AddScoped<CurrentProgramRepository>();
-        services.AddScoped<SavedProgramRepository>();
-        services.AddScoped<ProgressRepository>();
-        services.AddScoped<PreferencesRepository>();
+        services.AddSingleton<NavigationManagerProvider>();
 
-        services.AddScoped<
+        services.AddSingleton<CurrentProgramRepository>();
+        services.AddSingleton<SavedProgramRepository>();
+        services.AddSingleton<ProgressRepository>();
+        services.AddSingleton<PreferencesRepository>();
+
+        services.AddSingleton<
             BlazorTransitionableRoute.IRouteTransitionInvoker,
             BlazorTransitionableRoute.DefaultRouteTransitionInvoker
         >();
 
-        services.AddScoped<IKeyValueStore, TKeyValueStore>();
-        services.AddScoped<IPreferenceStore, TPreferenceStore>();
-        services.AddScoped<INotificationService, TNotificationService>();
-        services.AddScoped<IExporter, TExporter>();
+        services.AddSingleton<IKeyValueStore, TKeyValueStore>();
+        services.AddSingleton<IPreferenceStore, TPreferenceStore>();
+        services.AddSingleton<INotificationService, TNotificationService>();
+        services.AddSingleton<IExporter, TExporter>();
 
-        services.AddScoped<IAiWorkoutPlanner, ApiBasedAiWorkoutPlanner>();
+        services.AddSingleton<IAiWorkoutPlanner, ApiBasedAiWorkoutPlanner>();
 
-        services.AddScoped<SessionService>();
+        services.AddSingleton<SessionService>();
 
-        services.AddScoped<IThemeProvider, TThemeProvider>();
+        services.AddSingleton<IThemeProvider, TThemeProvider>();
 
-        services.AddScoped<IStringSharer, TStringSharer>();
+        services.AddSingleton<IStringSharer, TStringSharer>();
 
-        services.AddScoped<IAppPurchaseService, TPurchaseService>();
+        services.AddSingleton<IAppPurchaseService, TPurchaseService>();
 
-        services.AddScoped<IEncryptionService, TEncryptionService>();
+        services.AddSingleton<IEncryptionService, TEncryptionService>();
 
-        services.AddScoped<FeedApiService>();
-        services.AddScoped<FeedIdentityService>();
-        services.AddScoped<FeedFollowService>();
+        services.AddSingleton<FeedApiService>();
+        services.AddSingleton<FeedIdentityService>();
+        services.AddSingleton<FeedFollowService>();
+
+        services.AddSingleton<NavigationManagerProvider>();
 
         services.AddSingleton<InsetsManager>();
 

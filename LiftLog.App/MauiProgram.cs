@@ -2,6 +2,7 @@
 using LiftLog.App.Services;
 using LiftLog.Lib.Services;
 using LiftLog.Ui;
+using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.App;
 using MaterialColorUtilities.Maui;
 using Microsoft.AspNetCore.Components;

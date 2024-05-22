@@ -1,4 +1,10 @@
-﻿using MaterialColorUtilities.Maui;
+﻿using Fluxor;
+using LiftLog.Ui.Services;
+using LiftLog.Ui.Store.App;
+using LiftLog.Ui.Store.Program;
+using LiftLog.Ui.Store.Settings;
+using MaterialColorUtilities.Maui;
+using Microsoft.AspNetCore.Components;
 
 namespace LiftLog.App;
 
@@ -14,14 +20,16 @@ public partial class App : Application
     {
         Window window = base.CreateWindow(activationState);
 
-        window.Created += (s, e) =>
+        window.Activated += (sender, args) =>
         {
             IMaterialColorService.Current.Initialize(Resources);
-        };
-
-        window.Resumed += (sender, args) =>
-        {
-            IMaterialColorService.Current.Initialize(Resources);
+            LiftLog.App.MainPage.BlazorWebView?.TryDispatchAsync(svc =>
+            {
+                Console.WriteLine(
+                    "FROMBLAZOR: "
+                        + svc.GetRequiredService<IState<ProgramState>>().Value.ActivePlanId
+                );
+            });
         };
 
         return window;

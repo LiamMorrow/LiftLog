@@ -11,7 +11,7 @@ public partial class MainPage : ContentPage
         Loaded += MainPage_Loaded;
     }
 
-    private static BlazorWebView? BlazorWebView { get; set; }
+    internal static BlazorWebView? BlazorWebView { get; set; }
 
     private static string? toNavigate;
 
