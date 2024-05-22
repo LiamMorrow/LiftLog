@@ -11,8 +11,6 @@ public partial class MainPage : ContentPage
         Loaded += MainPage_Loaded;
     }
 
-    private static BlazorWebView? BlazorWebView { get; set; }
-
     private void MainPage_Loaded(object? sender, EventArgs e)
     {
 #if DEBUG
