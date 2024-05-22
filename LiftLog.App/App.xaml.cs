@@ -23,13 +23,6 @@ public partial class App : Application
         window.Activated += (sender, args) =>
         {
             IMaterialColorService.Current.Initialize(Resources);
-            LiftLog.App.MainPage.BlazorWebView?.TryDispatchAsync(svc =>
-            {
-                Console.WriteLine(
-                    "FROMBLAZOR: "
-                        + svc.GetRequiredService<IState<ProgramState>>().Value.ActivePlanId
-                );
-            });
         };
 
         return window;

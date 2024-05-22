@@ -193,7 +193,9 @@ public static class MauiProgram
         var query = uri.Query;
         MainThread.BeginInvokeOnMainThread(() =>
         {
-            _ = MainPage.NavigateWhenLoaded(path + query);
+            Application
+                .Current?.Handler.MauiContext?.Services.GetRequiredService<Fluxor.IDispatcher>()
+                .Dispatch(new NavigateAction(path + query));
         });
     }
 }
