@@ -26,7 +26,7 @@
     <SessionComponent
         ShowRestTimer=false
         CycleRepcountForExercise=CycleRepcountForExercise
-        ClearRepCountForExercise="ClearRepCountForExercise"
+        SetRepCountForExercise="SetRepCountForExercise"
         UpdateWeightForExercise=UpdateWeightForExercise
         Session=@(CurrentSessionState.Value.HistorySession)
         SaveSession=SaveSession
@@ -57,8 +57,8 @@
             );
     }
 
-    private void ClearRepCountForExercise(int exerciseIndex, int setIndex)
-        => Dispatcher.Dispatch(new ClearExerciseRepsAction(SessionTarget.HistorySession, exerciseIndex, setIndex));
+    private void SetRepCountForExercise(int exerciseIndex, int setIndex, int? repCount)
+        => Dispatcher.Dispatch(new SetExerciseRepsAction(SessionTarget.HistorySession, exerciseIndex, setIndex, repCount));
 
     private void CycleRepcountForExercise(int exerciseIndex, int setIndex)
         => Dispatcher.Dispatch(new CycleExerciseRepsAction(SessionTarget.HistorySession, exerciseIndex, setIndex));

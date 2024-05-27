@@ -52,10 +52,15 @@
                 MaxReps="displayedExercise.Blueprint.RepsPerSet"
                 WeightIncrement="displayedExercise.Blueprint.WeightIncreaseOnSuccess"
                 OnTap=@(() => CycleRepCountForSet(i))
-                OnHold=@(() => ClearRepCountForSet(i))
+                OnHold=@(() => SetRepCountForSet(i, null))
                 OnUpdateWeight=@((weight) => UpdateWeightForSet(i, weight))
                 ToStartNext=@(ToStartNext && repToStartNext == i && !IsReadonly)/>
         }
+
+        <PotentialSetAdditionalActions
+            Set="displayedExercise.PotentialSets[0]"
+            MaxReps=displayedExercise.Blueprint.RepsPerSet
+            OnSelectRepCount="@((reps)=>SetRepCountForSet(0,reps))" ></PotentialSetAdditionalActions>
     </div>
     @if (notesToShow is not null)
     {
@@ -98,7 +103,7 @@
 
     [EditorRequired] [Parameter] public Action<int> CycleRepCountForSet { get; set; } = null!;
 
-    [EditorRequired] [Parameter] public Action<int> ClearRepCountForSet { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<int, int?> SetRepCountForSet { get; set; } = null!;
 
     [EditorRequired] [Parameter] public Action<int, decimal> UpdateWeightForSet { get; set; } = null!;
 

@@ -17,7 +17,7 @@
 {
     <SessionComponent
         CycleRepcountForExercise=CycleRepcountForExercise
-        ClearRepCountForExercise="ClearRepCountForExercise"
+        SetRepCountForExercise="SetRepCountForExercise"
         UpdateWeightForExercise=UpdateWeightForExercise
         Session=@(CurrentSessionState.Value.WorkoutSession)
         SaveSession=SaveSession
@@ -42,9 +42,9 @@
 {
     private ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>> previouslyCompleted = ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>>.Empty;
 
-    private void ClearRepCountForExercise(int exerciseIndex, int setIndex)
+    private void SetRepCountForExercise(int exerciseIndex, int setIndex, int? reps)
     {
-        Dispatcher.Dispatch(new ClearExerciseRepsAction(SessionTarget.WorkoutSession, exerciseIndex, setIndex));
+        Dispatcher.Dispatch(new SetExerciseRepsAction(SessionTarget.WorkoutSession, exerciseIndex, setIndex, reps));
         Dispatcher.Dispatch(new NotifySetTimerAction(SessionTarget.WorkoutSession));
     }
 

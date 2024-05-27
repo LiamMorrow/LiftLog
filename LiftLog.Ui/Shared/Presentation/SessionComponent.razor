@@ -16,7 +16,7 @@ else
             RecordedExercise="context.Item"
             ToStartNext=@(Session.NextExercise == context.Item)
             CycleRepCountForSet=CycleRepCountForExerciseSet(context.Index)
-            ClearRepCountForSet=ClearRepCountForExerciseSet(context.Index)
+            SetRepCountForSet=@(SetRepCountForExcerciseSet(context.Index))
             UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index)
             PreviousRecordedExercises=@(PreviouslyCompleted.GetValueOrDefault(context.Item.Blueprint, []))
             ToggleExercisePerSetWeight=@(() => ToggleExercisePerSetWeight(context.Index))
@@ -139,7 +139,7 @@ else
 
     [EditorRequired] [Parameter] public Action<int, int> CycleRepcountForExercise { get; set; } = null!;
 
-    [EditorRequired] [Parameter] public Action<int, int> ClearRepCountForExercise { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<int, int, int?> SetRepCountForExercise { get; set; } = null!;
 
     [EditorRequired] [Parameter] public Action<int, decimal> UpdateWeightForExercise { get; set; } = null!;
 
@@ -182,8 +182,8 @@ else
         => (int set) => CycleRepcountForExercise(exerciseIndex, set);
 
 
-    private Action<int> ClearRepCountForExerciseSet(int exerciseIndex)
-        => (int set) => ClearRepCountForExercise(exerciseIndex, set);
+    private Action<int, int?> SetRepCountForExcerciseSet(int exerciseIndex)
+        => (int set, int? reps) => SetRepCountForExercise(exerciseIndex, set, reps);
 
     private Action<decimal> UpdateWeightForExerciseWrapper(int exerciseIndex)
         => (decimal weight) => UpdateWeightForExercise(exerciseIndex, weight);

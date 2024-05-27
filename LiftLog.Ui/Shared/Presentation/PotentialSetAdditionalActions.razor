@@ -1,0 +1,40 @@
+<div class="flex flex-wrap gap-2">
+    @for(int i = 0; i < MaxReps + 1; i++)
+    {
+        var reps = i;
+<div class="flex flex-col items-center relative">
+
+    @* The box shadow is shown when the rep ISN'T completed.  The background colour is also animated to ensure that it remains visible in both transition directions *@
+    <button
+        @onclick="() => OnSelectRepCount.InvokeAsync(reps)"
+        class="
+            repcount
+            flex-shrink-0
+            w-14
+            h-14
+            rounded-xl
+            relative
+            text-center
+            text-xl
+            flex
+            justify-center
+            align-middle
+            items-center
+            bg-secondary-container
+            text-on-secondary-container">
+        <md-ripple style="--md-ripple-pressed-color: var(--md-sys-color-on-primary-container)"></md-ripple>
+        <span class="font-bold">@(reps)</span><span class="inline text-sm align-text-top"></span>
+    </button>
+</div>
+
+    }
+
+</div>
+
+@code {
+
+    [Parameter] [EditorRequired] public PotentialSet Set { get; set; } = null!;
+    [EditorRequired] [Parameter] public int MaxReps { get; set; }
+
+    [EditorRequired] [ Parameter] public EventCallback<int?> OnSelectRepCount { get; set; }
+}
