@@ -108,7 +108,6 @@ else
         Dispatcher.Dispatch(new PublishUnpublishedSessionsAction());
         Dispatcher.Dispatch(new PublishRsaPublicKeyIfNeededAction());
         Dispatcher.Dispatch(new GetLookupIfNeededAction());
-        Console.WriteLine("dsdffsd {0}", ProgramState.Value.ActivePlanId);
         await base.OnInitializedAsync();
     }
 
