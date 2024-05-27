@@ -8,9 +8,9 @@
         ShowWeight="false"
         MaxReps="8"
         WeightIncrement="0.25m"
-        CycleRepCount="@(() => CycleRepCountForSet())"
-        ClearRepCount="@(() => ClearRepCountForSet())"
-        UpdateWeight="@((_) => { })"
+        OnTap="@(() => CycleRepCountForSet())"
+        OnHold="@(() => ClearRepCountForSet())"
+        OnUpdateWeight="@((_) => { })"
         ToStartNext="@(set.Set is null)"/>
 </div>
 

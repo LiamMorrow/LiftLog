@@ -56,7 +56,7 @@
     @ref="dialog"
     Weight="Set.Weight"
     Label="Set Weight"
-    UpdateWeight="d => UpdateWeight(d!.Value)"
+    UpdateWeight="d => OnUpdateWeight.InvokeAsync(d!.Value)"
     Increment="WeightIncrement"
     AllowNull="false"/>
 
@@ -67,15 +67,15 @@
 
     [Parameter] [EditorRequired] public bool ShowWeight { get; set; }
 
-    [Parameter] [EditorRequired] public Action<decimal> UpdateWeight { get; set; } = null!;
+    [Parameter] [EditorRequired] public EventCallback<decimal> OnUpdateWeight { get; set; }
 
     [Parameter] [EditorRequired] public decimal WeightIncrement { get; set; }
 
     [EditorRequired] [Parameter] public int MaxReps { get; set; }
 
-    [EditorRequired] [Parameter] public Action CycleRepCount { get; set; } = null!;
+    [EditorRequired] [Parameter] public EventCallback OnTap { get; set; }
 
-    [EditorRequired] [Parameter] public Action ClearRepCount { get; set; } = null!;
+    [EditorRequired] [Parameter] public EventCallback OnHold { get; set; }
 
     [EditorRequired] [Parameter] public bool ToStartNext { get; set; }
 
@@ -84,7 +84,7 @@
     private string RepCountRounding => ShowWeight ? "rounded-t-xl" : "rounded-xl";
 
     private DateTime? _lastPointerDownTime;
-    private DateTime? _clearRepCountTime;
+    private DateTime? _holdTime;
     private ElementReference _focusRing;
     private ElementReference _button;
 
@@ -103,8 +103,8 @@
         _lastPointerDownTime = DateTime.Now;
         await Task.Delay(500);
         if (_lastPointerDownTime is null || _lastPointerDownTime.Value.AddMilliseconds(500) > DateTime.Now) return;
-        _clearRepCountTime = DateTime.Now;
-        ClearRepCount();
+        _holdTime = DateTime.Now;
+        await OnHold.InvokeAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -122,16 +122,16 @@
         _lastPointerDownTime = null;
     }
 
-    private void OnPointerUp(PointerEventArgs args)
+    private async void OnPointerUp(PointerEventArgs args)
     {
         // On desktop holding down opens a right click menu - so this does not fire
         // This results in needing to click the repcount twice after cycling.  Not an issue on mobile
-        if (_clearRepCountTime is null)
+        if (_holdTime is null)
         {
-            CycleRepCount();
+            await OnTap.InvokeAsync();
         }
 
-        _clearRepCountTime = null;
+        _holdTime = null;
         _lastPointerDownTime = null;
     }
 
