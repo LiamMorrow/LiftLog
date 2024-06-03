@@ -16,7 +16,7 @@ else
             RecordedExercise="context.Item"
             ToStartNext=@(Session.NextExercise == context.Item)
             CycleRepCountForSet=CycleRepCountForExerciseSet(context.Index)
-            SetRepCountForSet=@(SetRepCountForExcerciseSet(context.Index))
+            ShowAdditionalActionsForSet=@(ShowAdditionalActionsForExerciseSet(context.Index))
             UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index)
             PreviousRecordedExercises=@(PreviouslyCompleted.GetValueOrDefault(context.Item.Blueprint, []))
             ToggleExercisePerSetWeight=@(() => ToggleExercisePerSetWeight(context.Index))
@@ -76,6 +76,25 @@ else
         <ExerciseEditor Exercise="editingExerciseBlueprint" UpdateExercise="(ex) => {editingExerciseBlueprint = ex; StateHasChanged();}" />
 </FullScreenDialog>
 
+<Dialog @ref="setAdditionalActionsDialog">
+    @if(setAdditionalActions != null)
+    {
+        var exercise = Session.RecordedExercises[setAdditionalActions.Value.ExerciseIndex];
+        var set = exercise.PotentialSets[setAdditionalActions.Value.PotentialSetIndex];
+        <span slot="headline">Additional Actions</span>
+        <span slot="content" >
+        <PotentialSetAdditionalActions
+            Set="set"
+            MaxReps=exercise.Blueprint.RepsPerSet
+            OnSelectRepCount="@((reps)=>{
+                SetRepCountForExercise(setAdditionalActions.Value.ExerciseIndex, setAdditionalActions.Value.PotentialSetIndex,reps);
+                setAdditionalActionsDialog?.Close();
+                })"
+            OnDeleteSet=@(()=>{})></PotentialSetAdditionalActions>
+        </span>
+    }
+</Dialog>
+
 
 <Dialog @ref="_removeExerciseDialog">
     <span slot="headline">Remove Exercise?</span>
@@ -125,11 +144,13 @@ else
         SupersetWithNext: false
     );
 
+    private (int ExerciseIndex, int PotentialSetIndex)? setAdditionalActions;
     private int? _exerciseToEditIndex;
     private int? _exerciseToRemoveIndex;
     private FullScreenDialog? _editExerciseDialog;
     private Dialog? _removeExerciseDialog;
     private Dialog? _updatePlanDialog;
+    private Dialog? setAdditionalActionsDialog;
 
     [EditorRequired] [Parameter] public Session Session { get; set; } = null!;
 
@@ -182,12 +203,17 @@ else
         => (int set) => CycleRepcountForExercise(exerciseIndex, set);
 
 
-    private Action<int, int?> SetRepCountForExcerciseSet(int exerciseIndex)
-        => (int set, int? reps) => SetRepCountForExercise(exerciseIndex, set, reps);
+    private Action<int> ShowAdditionalActionsForExerciseSet(int exerciseIndex)
+        => (int setIndex) =>
+        {
+            setAdditionalActions = (exerciseIndex, setIndex);
+            setAdditionalActionsDialog?.Open();
+        };
+
+
 
     private Action<decimal> UpdateWeightForExerciseWrapper(int exerciseIndex)
         => (decimal weight) => UpdateWeightForExercise(exerciseIndex, weight);
-
 
     private void EditExerciseHandler()
     {
