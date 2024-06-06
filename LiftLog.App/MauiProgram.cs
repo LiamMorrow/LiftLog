@@ -89,6 +89,7 @@ public static class MauiProgram
 
         builder.Services.AddSingleton(Share.Default);
         builder.Services.AddSingleton(FilePicker.Default);
+        builder.Services.AddSingleton(HapticFeedback.Default);
 
         builder.Services.RegisterUiServices<
             AppDataFileStorageKeyValueStore,
@@ -98,7 +99,8 @@ public static class MauiProgram
             AppThemeProvider,
             MauiStringSharer,
             AppPurchaseService,
-            OsEncryptionService
+            OsEncryptionService,
+            AppHapticFeedbackService
         >();
 
         builder.UseMaterialColors<ThemeColorUpdateService>(opts =>

@@ -1,5 +1,5 @@
 @inject IJSRuntime JSRuntime
-@inject IVibrationService VibrateService
+@inject IHapticFeedbackService HapticFeedback
 
 <div class="flex flex-col items-center relative">
 
@@ -19,7 +19,7 @@
             flex
             justify-center
             align-middle
-            [transition:box-shadow_150ms_cubic-bezier(0.4,0,0.2,1),_border-radius_150ms_cubic-bezier(0.4,0,0.2,1),background-color_150ms_cubic-bezier(0.4,0,0.2,1),transform_300ms]
+            [transition:box-shadow_150ms_cubic-bezier(0.4,0,0.2,1),_border-radius_150ms_cubic-bezier(0.4,0,0.2,1),background-color_150ms_cubic-bezier(0.4,0,0.2,1),transform_400ms]
             items-center
             @HoldingClass
             @ColorClass
@@ -31,14 +31,14 @@
         <md-ripple style="--md-ripple-pressed-color: var(--md-sys-color-on-primary-container)"></md-ripple>
         <span class="font-bold">@(RepCountValue?.ToString() ?? "-")</span><span class="inline text-sm align-text-top">/@MaxReps</span>
     </button>
-    <md-focus-ring @ref="_focusRing" visible="@ToStartNext" class="@HoldingClass duration-300" style="--md-focus-ring-shape: 0.75rem"></md-focus-ring>
+    <md-focus-ring @ref="_focusRing" visible="@ToStartNext" class="@HoldingClass duration-[400ms]" style="--md-focus-ring-shape: 0.75rem"></md-focus-ring>
     <button
         @onclick="HandleWeightClick"
         data-cy="set-weight-button"
         class="
             relative
             rounded-b-xl
-            [transition:height_150ms_cubic-bezier(0.4,0,0.2,1),padding_150ms_cubic-bezier(0.4,0,0.2,1),width_150ms_cubic-bezier(0.4,0,0.2,1),transform_300ms]
+            [transition:height_150ms_cubic-bezier(0.4,0,0.2,1),padding_150ms_cubic-bezier(0.4,0,0.2,1),width_150ms_cubic-bezier(0.4,0,0.2,1),transform_400ms]
             @scale
             overflow-hidden
             @HoldingClass
@@ -109,7 +109,7 @@
         if (_lastPointerDownTime is null || _lastPointerDownTime.Value.AddMilliseconds(400) > DateTime.Now) return;
         _holdTime = DateTime.Now;
         _lastPointerDownTime = null;
-        await VibrateService.VibrateAsync(VibrationAmount.Short);
+        await HapticFeedback.PerformAsync(HapticFeedbackType.LongPress);
         await OnHold.InvokeAsync();
         _holdTime = null;
     }

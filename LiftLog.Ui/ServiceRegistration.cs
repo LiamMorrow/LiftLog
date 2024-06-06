@@ -32,7 +32,7 @@ public static class ServiceRegistration
         where TStringSharer : class, IStringSharer
         where TPurchaseService : class, IAppPurchaseService
         where TEncryptionService : class, IEncryptionService
-        where TVibrationService: class, IVibrationService
+        where TVibrationService : class, IHapticFeedbackService
     {
         services.AddFluxor(o =>
             o.ScanAssemblies(typeof(CurrentSessionReducers).Assembly)
@@ -79,7 +79,7 @@ public static class ServiceRegistration
 
         services.AddSingleton<IEncryptionService, TEncryptionService>();
 
-        services.AddSingleton<IVibrationService, TVibrationService>();
+        services.AddSingleton<IHapticFeedbackService, TVibrationService>();
 
         services.AddSingleton<FeedApiService>();
         services.AddSingleton<FeedIdentityService>();
