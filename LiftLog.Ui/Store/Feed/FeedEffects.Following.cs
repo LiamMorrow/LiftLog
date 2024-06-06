@@ -173,12 +173,6 @@ public partial class FeedEffects(
             }
             var user = userResponse.Data;
 
-            if (user.RsaPublicKey is null)
-            {
-                logger.LogError("User {UserId} has no public key", user.Id);
-                return;
-            }
-
             var followSecretResponse = await feedFollowService.AcceptFollowRequestAsync(
                 identity,
                 action.Request,
@@ -218,7 +212,7 @@ public partial class FeedEffects(
         IfIdentityExists(async identity =>
         {
             var userResponse = await feedApiService.GetUserAsync(action.Request.UserId.ToString());
-            if (!userResponse.IsSuccess || userResponse.Data.RsaPublicKey is null)
+            if (!userResponse.IsSuccess)
             {
                 // TODO handle properly
                 logger.LogError(
