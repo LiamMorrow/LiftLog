@@ -1,21 +1,38 @@
 <div class="flex gap-4">
     <span>
-        You can tap and hold on any set's rep counter to clear it.
+        You can tap and hold on any set's rep counter to select a different number of reps, or to clear it
         Try it now!
     </span>
-    <PotentialSetCounter
-        Set="set"
-        ShowWeight="false"
-        MaxReps="8"
-        WeightIncrement="0.25m"
-        OnTap="@(() => CycleRepCountForSet())"
-        OnHold="@(() => ClearRepCountForSet())"
-        OnUpdateWeight="@((_) => { })"
-        ToStartNext="@(set.Set is null)"/>
+    <div>
+        <PotentialSetCounter
+            Set="set"
+            ShowWeight="false"
+            MaxReps="8"
+            WeightIncrement="0.25m"
+            OnTap="@(() => CycleRepCountForSet())"
+            OnHold="@(() => ShowDialog())"
+            OnUpdateWeight="@((_) => { })"
+            ToStartNext="@(set.Set is null)"/>
+    </div>
 </div>
+
+<Dialog @ref="setAdditionalActionsDialog">
+        <span slot="headline" class="select-none">Select Reps</span>
+        <span slot="content" >
+        <PotentialSetAdditionalActions
+            Set="set"
+            MaxReps=8
+            OnSelectRepCount="@((reps)=>{SetRepCount(reps);setAdditionalActionsDialog?.Close();})"
+            OnDeleteSet=@(()=>{})></PotentialSetAdditionalActions>
+        </span>
+        <div slot="actions">
+            <AppButton Type="AppButtonType.Text" OnClick="@(() => setAdditionalActionsDialog?.Close())">Cancel</AppButton>
+        </div>
+</Dialog>
 
 @code{
     private PotentialSet set = new PotentialSet(new RecordedSet(8, TimeOnly.MinValue), 10m);
+    private Dialog? setAdditionalActionsDialog;
 
     private void CycleRepCountForSet()
     {
@@ -34,9 +51,17 @@
         StateHasChanged();
     }
 
-    private void ClearRepCountForSet()
+    private void SetRepCount(int? reps)
     {
-        set = set with { Set = null };
+        set = reps is null
+            ? set with { Set = null }
+            : set with { Set = new RecordedSet(reps.Value, TimeOnly.FromDateTime(DateTime.Now)) };
+        StateHasChanged();
+    }
+
+    private void ShowDialog()
+    {
+        setAdditionalActionsDialog?.Open();
         StateHasChanged();
     }
 

@@ -1,16 +1,24 @@
 <div class="flex flex-wrap gap-2 justify-center mb-2 mx-4">
-    @for(int i = 0; i < MaxReps + 4; i++)
+    @for(int i = 0; i < MaxReps + 1; i++)
     {
         var reps = i;
         @GetRepButton(@<span class="font-bold">@reps</span>,
             () => OnSelectRepCount.InvokeAsync(reps),
-            "bg-secondary-container text-on-secondary-container");
+            "bg-primary-container text-on-primary-container");
     }
 </div>
 <div class="flex flex-grow gap-2 justify-center">
     @GetRepButton(@<span>-</span>,
         () => OnSelectRepCount.InvokeAsync(null),
         "bg-secondary-container text-on-secondary-container")
+
+    @for(int i = MaxReps+1; i < MaxReps + 4; i++)
+    {
+        var reps = i;
+        @GetRepButton(@<span class="font-bold">@reps</span>,
+            () => OnSelectRepCount.InvokeAsync(reps),
+            "bg-secondary-container text-on-secondary-container");
+    }
 </div>
 
 @code {
@@ -42,6 +50,7 @@
                     justify-center
                     align-middle
                     items-center
+                    select-none
                     @color">
                 <md-ripple style="--md-ripple-pressed-color: var(--md-sys-color-on-primary-container)"></md-ripple>
                 @childContent
