@@ -1,0 +1,60 @@
+<div class="flex flex-wrap gap-2 justify-center mb-2 mx-4">
+    @for(int i = 0; i < MaxReps + 1; i++)
+    {
+        var reps = i;
+        @GetRepButton(@<span class="font-bold">@reps</span>,
+            () => OnSelectRepCount.InvokeAsync(reps),
+            "bg-primary-container text-on-primary-container");
+    }
+</div>
+<div class="flex flex-grow gap-2 justify-center">
+    @GetRepButton(@<span>-</span>,
+        () => OnSelectRepCount.InvokeAsync(null),
+        "bg-secondary-container text-on-secondary-container")
+
+    @for(int i = MaxReps+1; i < MaxReps + 4; i++)
+    {
+        var reps = i;
+        @GetRepButton(@<span class="font-bold">@reps</span>,
+            () => OnSelectRepCount.InvokeAsync(reps),
+            "bg-secondary-container text-on-secondary-container");
+    }
+</div>
+
+@code {
+
+    [EditorRequired] [Parameter] public PotentialSet Set { get; set; } = null!;
+
+    [EditorRequired] [Parameter] public int MaxReps { get; set; }
+
+    [EditorRequired] [Parameter] public EventCallback<int?> OnSelectRepCount { get; set; }
+
+    [EditorRequired] [Parameter] public EventCallback OnDeleteSet { get; set; }
+
+
+    private RenderFragment GetRepButton(RenderFragment childContent, Action onClick, string color)
+    {
+        return @<div class="flex flex-col items-center relative">
+            <button
+                @onclick="onClick"
+                class="
+                    repcount
+                    flex-shrink-0
+                    w-14
+                    h-14
+                    rounded-xl
+                    relative
+                    text-center
+                    text-xl
+                    flex
+                    justify-center
+                    align-middle
+                    items-center
+                    select-none
+                    @color">
+                <md-ripple style="--md-ripple-pressed-color: var(--md-sys-color-on-primary-container)"></md-ripple>
+                @childContent
+            </button>
+        </div>;
+    }
+}

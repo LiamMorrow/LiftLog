@@ -6,9 +6,9 @@ using Android.Runtime;
 [assembly: UsesPermission(Manifest.Permission.ReceiveBootCompleted)]
 [assembly: UsesPermission(Manifest.Permission.Vibrate)]
 
-[assembly: UsesPermission("android.permission.SCHEDULE_EXACT_ALARM")]
-[assembly: UsesPermission("android.permission.USE_EXACT_ALARM")]
-[assembly: UsesPermission("android.permission.POST_NOTIFICATIONS")]
+[assembly: UsesPermission(Manifest.Permission.ScheduleExactAlarm)]
+[assembly: UsesPermission(Manifest.Permission.UseExactAlarm)]
+[assembly: UsesPermission(Manifest.Permission.PostNotifications)]
 
 namespace LiftLog.App;
 

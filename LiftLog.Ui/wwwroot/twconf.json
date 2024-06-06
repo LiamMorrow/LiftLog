@@ -1,7 +1,5 @@
 {
-  "content": [
-    "../**/*.{razor,html,cshtml}"
-  ],
+  "content": ["../**/*.{razor,html,cshtml}"],
   "theme": {
     "//": "This has come from running withMT https://github.com/creativetimofficial/material-tailwind",
     "boxShadow": {
@@ -61,6 +59,8 @@
         "on-primary": "rgb(var(--color-on-primary) / <alpha-value>)",
         "secondary": "rgb(var(--color-secondary) / <alpha-value>)",
         "on-secondary": "rgb(var(--color-on-secondary) / <alpha-value>)",
+        "primary-container": "rgb(var(--color-primary-container) / <alpha-value>)",
+        "on-primary-container": "rgb(var(--color-on-primary-container) / <alpha-value>)",
         "secondary-container": "rgb(var(--color-secondary-container) / <alpha-value>)",
         "on-secondary-container": "rgb(var(--color-on-secondary-container) / <alpha-value>)",
         "tertiary": "rgb(var(--color-tertiary) / <alpha-value>)",
@@ -74,6 +74,7 @@
         "on-surface": "rgb(var(--color-on-surface) / <alpha-value>)",
         "inverse-surface": "rgb(var(--color-inverse-surface) / <alpha-value>)",
         "inverse-on-surface": "rgb(var(--color-inverse-on-surface) / <alpha-value>)",
+        "inverse-primary": "rgb(var(--color-inverse-primary) / <alpha-value>)",
         "surface-container": "rgb(var(--color-surface-container) / <alpha-value>)",
         "surface-container-high": "rgb(var(--color-surface-container-high) / <alpha-value>)",
         "surface-container-low": "rgb(var(--color-surface-container-low) / <alpha-value>)",

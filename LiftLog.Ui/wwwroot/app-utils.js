@@ -7,6 +7,10 @@ AppUtils.showMdPopup = function (element) {
     return element?.show();
 };
 
+AppUtils.vibrate = function (ms) {
+    navigator.vibrate?.(ms);
+}
+
 /**
  * Creates a new event for the dialog close event.
  * This new event has bubbles, which allows blazor components to intercept it

@@ -18,7 +18,7 @@
                 <GeneralButtonInfoTip/>
                 break;
             case 3:
-                <HoldingRepCounterTip/>
+                HandleNextClick();
                 break;
             case 4:
                 HandleNextClick();
@@ -35,13 +35,16 @@
             case 8:
                 <WeightTip/>
                 break;
+            case 9:
+                <HoldingRepCounterTip/>
+                break;
         }
     </Card>
 }
 
 @code
 {
-    private static readonly int totalTips = 8;
+    private static readonly int totalTips = 9;
 
     private void HandleNextClick()
     {

@@ -156,9 +156,9 @@ public static class CurrentSessionReducers
     }
 
     [ReducerMethod]
-    public static CurrentSessionState ClearExerciseReps(
+    public static CurrentSessionState SetExerciseReps(
         CurrentSessionState state,
-        ClearExerciseRepsAction action
+        SetExerciseRepsAction action
     )
     {
         var session = ActiveSession(state, action.Target) ?? throw new Exception();
@@ -178,7 +178,12 @@ public static class CurrentSessionReducers
                             action.SetIndex,
                             potentialSetAtIndex with
                             {
-                                Set = null
+                                Set = action.Reps is null
+                                    ? null
+                                    : new RecordedSet(
+                                        action.Reps.Value,
+                                        TimeOnly.FromDateTime(DateTime.Now)
+                                    )
                             }
                         )
                     }

@@ -12,11 +12,6 @@
 
 <md-list class="text-left">
     <ListTitle Title="Configuration" />
-    <md-list-item type="button" multi-line-supporting-text @onclick="NavigateToBackupAndRestore">
-        <md-icon slot="start">settings_backup_restore</md-icon>
-        <span slot="headline" >Backup and restore</span>
-        <span slot="supporting-text">Create and export backups for transfering between devices</span>
-    </md-list-item>
     <md-list-item type="button" multi-line-supporting-text @onclick="NavigateToProgramList">
         <md-icon slot="start">assignment</md-icon>
         <span slot="headline" >Manage plans</span>
@@ -33,6 +28,12 @@
         <md-icon slot="start">notifications</md-icon>
         <span slot="headline" >Notifications</span>
         <span slot="supporting-text">Adjust notification settings for rest timers</span>
+    </md-list-item>
+
+    <md-list-item type="button" multi-line-supporting-text @onclick="NavigateToBackupAndRestore">
+        <md-icon slot="start">settings_backup_restore</md-icon>
+        <span slot="headline" >Backup and restore</span>
+        <span slot="supporting-text">Create and export backups for transfering between devices</span>
     </md-list-item>
 </md-list>
 <ProFeatures/>

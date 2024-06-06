@@ -17,4 +17,6 @@ public record ProgramState(
 
     public ImmutableListValue<SessionBlueprint> GetActivePlanSessionBlueprints() =>
         GetSessionBlueprints(ActivePlanId);
+
+    public ProgramBlueprint GetActivePlan() => SavedPrograms[ActivePlanId];
 }

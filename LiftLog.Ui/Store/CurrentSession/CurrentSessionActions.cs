@@ -15,7 +15,12 @@ public record SetActiveSessionDateAction(SessionTarget Target, DateOnly Date);
 
 public record CycleExerciseRepsAction(SessionTarget Target, int ExerciseIndex, int SetIndex);
 
-public record ClearExerciseRepsAction(SessionTarget Target, int ExerciseIndex, int SetIndex);
+public record SetExerciseRepsAction(
+    SessionTarget Target,
+    int ExerciseIndex,
+    int SetIndex,
+    int? Reps
+);
 
 public record UpdateExerciseWeightAction(SessionTarget Target, int ExerciseIndex, decimal Weight);
 
