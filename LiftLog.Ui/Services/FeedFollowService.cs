@@ -18,12 +18,7 @@ public class FeedFollowService(
         var inboxMessage = new InboxMessageDao
         {
             FromUserId = identity.Id,
-            FollowRequest = new FollowRequestDao
-            {
-                Name = identity.Name,
-                ProfilePicture = ByteString.CopyFrom(identity.ProfilePicture ?? []),
-                PublicKey = ByteString.CopyFrom(identity.RsaKeyPair.PublicKey.SpkiPublicKeyBytes)
-            }
+            FollowRequest = new FollowRequestDao { Name = identity.Name, }
         };
         var response = await feedApiService.PutInboxMessageAsync(
             new PutInboxMessageRequest(
@@ -41,7 +36,8 @@ public class FeedFollowService(
 
     public async Task<ApiResult<string>> AcceptFollowRequestAsync(
         FeedIdentity identity,
-        FollowRequest request
+        FollowRequest request,
+        RsaPublicKey userPublicKey
     )
     {
         var followSecret = Guid.NewGuid().ToString();
@@ -71,7 +67,7 @@ public class FeedFollowService(
         };
         var encryptedMessage = await encryptionService.EncryptRsaOaepSha256Async(
             inboxMessage.ToByteArray(),
-            request.PublicKey
+            userPublicKey
         );
         var putResponse = await feedApiService.PutInboxMessageAsync(
             new PutInboxMessageRequest(
@@ -90,7 +86,8 @@ public class FeedFollowService(
 
     public async Task<ApiResult> DenyFollowRequestAsync(
         FeedIdentity identity,
-        FollowRequest request
+        FollowRequest request,
+        RsaPublicKey userPublicKey
     )
     {
         var inboxMessage = new InboxMessageDao
@@ -103,7 +100,7 @@ public class FeedFollowService(
         {
             encryptedMessage = await encryptionService.EncryptRsaOaepSha256Async(
                 inboxMessage.ToByteArray(),
-                request.PublicKey
+                userPublicKey
             );
         }
         catch (Exception e)

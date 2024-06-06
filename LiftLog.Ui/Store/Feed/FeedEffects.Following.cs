@@ -164,9 +164,25 @@ public partial class FeedEffects(
                 );
             }
 
+            var userResponse = await feedApiService.GetUserAsync(action.Request.UserId.ToString());
+            if (!userResponse.IsSuccess)
+            {
+                // TODO handle properly
+                logger.LogError("Failed to fetch user with error {Error}", userResponse.Error);
+                return;
+            }
+            var user = userResponse.Data;
+
+            if (user.RsaPublicKey is null)
+            {
+                logger.LogError("User {UserId} has no public key", user.Id);
+                return;
+            }
+
             var followSecretResponse = await feedFollowService.AcceptFollowRequestAsync(
                 identity,
-                action.Request
+                action.Request,
+                new RsaPublicKey(user.RsaPublicKey)
             );
 
             if (!followSecretResponse.IsSuccess)
@@ -183,7 +199,7 @@ public partial class FeedEffects(
                 new AddFollowerAction(
                     FeedUser.FromShared(
                         action.Request.UserId,
-                        action.Request.PublicKey,
+                        new RsaPublicKey(user.RsaPublicKey),
                         action.Request.Name
                     ) with
                     {
@@ -201,7 +217,22 @@ public partial class FeedEffects(
     ) =>
         IfIdentityExists(async identity =>
         {
-            var result = await feedFollowService.DenyFollowRequestAsync(identity, action.Request);
+            var userResponse = await feedApiService.GetUserAsync(action.Request.UserId.ToString());
+            if (!userResponse.IsSuccess || userResponse.Data.RsaPublicKey is null)
+            {
+                // TODO handle properly
+                logger.LogError(
+                    "Failed to deny follow request with error {Error}. Removing request anyway.",
+                    userResponse.Error
+                );
+                dispatcher.Dispatch(new RemoveFollowRequestAction(action.Request));
+                return;
+            }
+            var result = await feedFollowService.DenyFollowRequestAsync(
+                identity,
+                action.Request,
+                new RsaPublicKey(userResponse.Data.RsaPublicKey)
+            );
             if (!result.IsSuccess && result.Error.Type != ApiErrorType.NotFound)
             {
                 logger.LogError(

@@ -42,18 +42,11 @@ public partial class FeedEffects
             )
         ).WhereNotNull();
 
-        ImmutableListValue<FollowRequest> newFollowRequests = inboxItems
+        var newFollowRequests = inboxItems
             .Where(x =>
                 x.MessagePayloadCase == InboxMessageDao.MessagePayloadOneofCase.FollowRequest
             )
-            .Select(x => new FollowRequest(
-                UserId: x.FromUserId,
-                Name: x.FollowRequest.Name?.ToString() ?? "Anonymous User",
-                ProfilePicture: x.FollowRequest.ProfilePicture.IsEmpty
-                    ? null
-                    : x.FollowRequest.ProfilePicture.ToByteArray(),
-                PublicKey: new RsaPublicKey(x.FollowRequest.PublicKey.ToByteArray())
-            ))
+            .Select(x => new FollowRequest(UserId: x.FromUserId, x.FollowRequest.Name))
             .ToImmutableList();
         dispatcher.Dispatch(new AppendNewFollowRequestsAction(newFollowRequests));
 

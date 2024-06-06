@@ -82,13 +82,7 @@ public record FeedIdentity(
     bool PublishWorkouts
 );
 
-public record FollowRequest(
-    Guid UserId,
-    string Name,
-    byte[]? ProfilePicture,
-    // Used to encrypt the follow response
-    RsaPublicKey PublicKey
-);
+public record FollowRequest(Guid UserId, string? Name);
 
 public record FollowResponse(
     Guid UserId,

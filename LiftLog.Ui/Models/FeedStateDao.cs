@@ -207,16 +207,7 @@ internal partial class InboxMessageDao
     public static implicit operator FollowRequest?(InboxMessageDao? value) =>
         value is null
             ? null
-            : new FollowRequest(
-                UserId: value.FromUserId,
-                Name: value.FollowRequest.Name,
-                ProfilePicture: value.FollowRequest.ProfilePicture.IsEmpty
-                    ? null
-                    : value.FollowRequest.ProfilePicture.ToByteArray(),
-                PublicKey: new Lib.Services.RsaPublicKey(
-                    value.FollowRequest.PublicKey.ToByteArray()
-                )
-            );
+            : new FollowRequest(UserId: value.FromUserId, Name: value.FollowRequest.Name);
 
     [return: NotNullIfNotNull(nameof(value))]
     public static implicit operator InboxMessageDao?(FollowRequest? value) =>
@@ -225,13 +216,6 @@ internal partial class InboxMessageDao
             : new InboxMessageDao
             {
                 FromUserId = value.UserId,
-                FollowRequest = new FollowRequestDao
-                {
-                    Name = value.Name,
-                    ProfilePicture = value.ProfilePicture is null
-                        ? ByteString.Empty
-                        : ByteString.CopyFrom(value.ProfilePicture),
-                    PublicKey = ByteString.CopyFrom(value.PublicKey.SpkiPublicKeyBytes)
-                }
+                FollowRequest = new FollowRequestDao { Name = value.Name, }
             };
 }
