@@ -2,6 +2,7 @@ using BlazorDownloadFile;
 using Blazored.LocalStorage;
 using LiftLog.Ui;
 using LiftLog.Ui.Services;
+using LiftLog.Web;
 using LiftLog.Web.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -30,7 +31,8 @@ builder.Services.RegisterUiServices<
     WebThemeProvider,
     ClipboardStringSharer,
     WebAppPurchaseService,
-    JsEncryptionService
+    JsEncryptionService,
+    JsVibrationService
 >();
 
 await builder.Build().RunAsync();

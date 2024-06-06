@@ -21,7 +21,8 @@ public static class ServiceRegistration
         TThemeProvider,
         TStringSharer,
         TPurchaseService,
-        TEncryptionService
+        TEncryptionService,
+        TVibrationService
     >(this IServiceCollection services)
         where TKeyValueStore : class, IKeyValueStore
         where TPreferenceStore : class, IPreferenceStore
@@ -31,6 +32,7 @@ public static class ServiceRegistration
         where TStringSharer : class, IStringSharer
         where TPurchaseService : class, IAppPurchaseService
         where TEncryptionService : class, IEncryptionService
+        where TVibrationService: class, IVibrationService
     {
         services.AddFluxor(o =>
             o.ScanAssemblies(typeof(CurrentSessionReducers).Assembly)
@@ -76,6 +78,8 @@ public static class ServiceRegistration
         services.AddSingleton<IAppPurchaseService, TPurchaseService>();
 
         services.AddSingleton<IEncryptionService, TEncryptionService>();
+
+        services.AddSingleton<IVibrationService, TVibrationService>();
 
         services.AddSingleton<FeedApiService>();
         services.AddSingleton<FeedIdentityService>();
