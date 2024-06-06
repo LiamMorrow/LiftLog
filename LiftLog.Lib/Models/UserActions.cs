@@ -29,7 +29,7 @@ public record GetUserResponse(
     byte[]? EncryptedName,
     // The IV can be considered public, as long as the encryption key is kept secret
     byte[] EncryptionIV,
-    byte[]? RsaPublicKey
+    byte[] RsaPublicKey
 );
 
 public record PutUserEventRequest(
