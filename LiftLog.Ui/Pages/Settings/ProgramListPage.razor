@@ -40,6 +40,17 @@
             </FloatingButton>
         </div>
     </Fab>
+    <AdditionalContent>
+        @if(ShowSnackBar)
+        {
+            <SnackBar>
+                <div class="flex justify-between items-center">
+                    <span>Selected <span class="font-bold">@ProgramState.Value.GetActivePlan().Name</span></span>
+                    <SnackBarButton OnClick=@(()=>Dispatcher.Dispatch(new NavigateAction("/")))>Go to workouts</SnackBarButton>
+                </div>
+            </SnackBar>
+        }
+    </AdditionalContent>
 </FloatingBottomContainer>
 
 
@@ -48,6 +59,8 @@
 
     [SupplyParameterFromQuery]
     public Guid FocusPlanId { get; set; }
+
+    private bool ShowSnackBar { get; set; }
 
     protected override void OnInitialized()
     {
@@ -60,6 +73,7 @@
     private void SelectProgram(Guid id)
     {
         Dispatcher.Dispatch(new SetActiveProgramAction(id));
+        ShowSnackBar = true;
     }
 
     private void AddNewPlan()

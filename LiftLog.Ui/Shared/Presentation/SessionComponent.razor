@@ -81,7 +81,7 @@ else
     {
         var exercise = Session.RecordedExercises[setAdditionalActions.Value.ExerciseIndex];
         var set = exercise.PotentialSets[setAdditionalActions.Value.PotentialSetIndex];
-        <span slot="headline">Additional Actions</span>
+        <span slot="headline" class="select-none">Select Reps</span>
         <span slot="content" >
         <PotentialSetAdditionalActions
             Set="set"
