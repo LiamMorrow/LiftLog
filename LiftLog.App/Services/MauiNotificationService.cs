@@ -44,7 +44,7 @@ public class MauiNotificationService(
             void Current_NotificationActionTapped(NotificationActionEventArgs e)
             {
                 notificationService.NotificationActionTapped -= Current_NotificationActionTapped;
-                if (state.Value.LatestSetTimerNotificationId != id)
+                if (state.Value.LatestSetTimerNotificationId != id || e.IsDismissed)
                 {
                     return;
                 }
