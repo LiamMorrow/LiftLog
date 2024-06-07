@@ -29,33 +29,14 @@ public partial class App : Application
     {
         Window window = base.CreateWindow(activationState);
 
-        window.Activated += (sender, args) =>
+        window.Created += (s, e) =>
         {
             IMaterialColorService.Current.Initialize(Resources);
-            // // Complete a finished session if it has been more than half an hour since the last set
-            // // And there are no more sets to complete
-            // if (
-            //     currentSessionState.Value.WorkoutSession is
-            //     { IsComplete: true, LastExercise.LastRecordedSet.Set: not null } session
-            // )
-            // {
-            //     var lastSet = session.LastExercise.LastRecordedSet!.Set!;
-            //     var lastSetTime = session.Date.ToDateTime(lastSet.CompletionTime);
-            //     var timeSinceLastSet = DateTime.Now - lastSetTime;
-            //     if (timeSinceLastSet > TimeSpan.FromMinutes(30))
-            //     {
-            //         dispatcher.Dispatch(
-            //             new PersistCurrentSessionAction(SessionTarget.WorkoutSession)
-            //         );
-            //         dispatcher.Dispatch(new AddUnpublishedSessionIdAction(session.Id));
-            //         dispatcher.Dispatch(
-            //             new SetCurrentSessionAction(SessionTarget.WorkoutSession, null)
-            //         );
-            //         dispatcher.Dispatch(
-            //             new NavigateAction("/", IfCurrentPathMatches: SessionPathRegex())
-            //         );
-            //     }
-            // }
+        };
+
+        window.Resumed += (sender, args) =>
+        {
+            IMaterialColorService.Current.Initialize(Resources);
         };
 
         return window;
