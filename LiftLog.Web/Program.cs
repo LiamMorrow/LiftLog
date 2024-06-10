@@ -32,7 +32,8 @@ builder.Services.RegisterUiServices<
     ClipboardStringSharer,
     WebAppPurchaseService,
     JsEncryptionService,
-    JsHapticFeedbackService
+    JsHapticFeedbackService,
+    WebDeviceService
 >();
 
 await builder.Build().RunAsync();

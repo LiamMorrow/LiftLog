@@ -79,7 +79,6 @@ public static class MauiProgram
             // Set TracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
             // We recommend adjusting this value in production.
             options.TracesSampleRate = 0;
-            options.EnableTracing = false;
             options.CaptureFailedRequests = true;
 
             // Other Sentry options can be set here.
@@ -100,7 +99,8 @@ public static class MauiProgram
             MauiStringSharer,
             AppPurchaseService,
             OsEncryptionService,
-            AppHapticFeedbackService
+            AppHapticFeedbackService,
+            AppDeviceService
         >();
 
         builder.UseMaterialColors<ThemeColorUpdateService>(opts =>
