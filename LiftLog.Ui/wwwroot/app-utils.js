@@ -31,6 +31,12 @@ AppUtils.onCloseMdPopup = function (element) {
             cancelable: true,
         }))
     });
+    element?.addEventListener('cancel', () => {
+        element?.dispatchEvent(new Event('dialog-cancel', {
+            bubbles: true,
+            cancelable: true,
+        }))
+    });
 };
 
 AppUtils.onClosedMenu = function (element) {

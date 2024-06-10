@@ -15,6 +15,17 @@ public class AppEffects(
     }
 
     [EffectMethod]
+    public async Task HandleSetHasRequestedNotificationPermissionAction(
+        SetHasRequestedNotificationPermissionAction action,
+        IDispatcher dispatcher
+    )
+    {
+        await preferencesRepository.SetHasRequestedNotificationPermissionAsync(
+            action.HasRequestedNotificationPermission
+        );
+    }
+
+    [EffectMethod]
     public async Task HandleNavigateAction(NavigateAction action, IDispatcher dispatcher)
     {
         if (action.ClearPageStack)

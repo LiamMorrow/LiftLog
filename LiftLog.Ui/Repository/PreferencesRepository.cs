@@ -96,4 +96,19 @@ public class PreferencesRepository(IPreferenceStore preferenceStore)
     {
         return await preferenceStore.GetItemAsync("statusBarFix") is "True";
     }
+
+    public async Task<bool> GetHasRequestedNotificationPermissionAsync()
+    {
+        return await preferenceStore.GetItemAsync("hasRequestedNotificationPermission") is "True";
+    }
+
+    public async Task SetHasRequestedNotificationPermissionAsync(
+        bool hasRequestedNotificationPermission
+    )
+    {
+        await preferenceStore.SetItemAsync(
+            "hasRequestedNotificationPermission",
+            hasRequestedNotificationPermission.ToString()
+        );
+    }
 }

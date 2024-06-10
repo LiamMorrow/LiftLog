@@ -8,6 +8,7 @@
     <ListSwitch Headline="Rest notifications" SupportingText="Show a notification when the rest timer is up" Value="@SettingsState.Value.RestNotifications" OnSwitched="SetRestNotifications" />
 </md-list>
 
+<AndroidNotificationAlert ForceShow="true" />
 
 @code {
     protected override void OnInitialized()

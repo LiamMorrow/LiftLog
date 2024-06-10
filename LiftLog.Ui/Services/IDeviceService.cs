@@ -10,4 +10,8 @@ public enum DeviceType
 public interface IDeviceService
 {
     DeviceType GetDeviceType();
+
+    bool CanScheduleExactNotifications();
+
+    void RequestExactNotificationPermission();
 }

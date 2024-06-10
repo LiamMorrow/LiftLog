@@ -35,4 +35,20 @@ public static class AppReducers
         AppState state,
         SetLatestSettingsUrlAction action
     ) => state with { LatestSettingsUrl = action.LatestSettingsUrl };
+
+    [ReducerMethod]
+    public static AppState SetHasRequestedNotificationPermission(
+        AppState state,
+        SetHasRequestedNotificationPermissionAction action
+    ) =>
+        state with
+        {
+            HasRequestedNotificationPermission = action.HasRequestedNotificationPermission
+        };
+
+    [ReducerMethod]
+    public static AppState SetAppStateIsHydrated(
+        AppState state,
+        SetAppStateIsHydratedAction action
+    ) => state with { IsHydrated = action.IsHydrated };
 }

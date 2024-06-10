@@ -6,6 +6,7 @@
     <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="Dialog">
         <md-dialog
             @ondialog-close="HandleDialogClose"
+            @ondialog-cancel="HandleDialogCancel"
             @attributes="AdditionalAttributes"
             @ref="dialog">
             @ChildContent
@@ -22,6 +23,8 @@
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     [Parameter] public Action? OnClose { get; set; }
+
+    [Parameter] public Action? OnCancel { get; set; }
 
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
@@ -54,5 +57,10 @@
         opened = false;
         await InvokeAsync(StateHasChanged);
         OnClose?.Invoke();
+    }
+
+    private void HandleDialogCancel()
+    {
+        OnCancel?.Invoke();
     }
 }

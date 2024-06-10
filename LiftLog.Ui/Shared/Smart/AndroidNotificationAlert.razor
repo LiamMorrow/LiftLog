@@ -1,0 +1,47 @@
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+@inject IDispatcher Dispatcher
+
+@inject IState<AppState> AppState
+@inject IState<SettingsState> SettingsState
+
+
+@inject IDeviceService DeviceService
+
+<Dialog @ref="androidNotificationDialog" OnCancel="DisableNotifications">
+    <span slot="headline">Enable Notifications?</span>
+    <span slot="content" class="block text-left">Newer Android devices require an additional permission to ensure that rest notifications are delivered on time.
+        Without this permission, they will arrive late and largely be useless.
+        On the next screen, please grant LiftLog the permission.</span>
+    <div slot="actions">
+        <AppButton Type="AppButtonType.Text" OnClick="() => { androidNotificationDialog?.Close(); DisableNotifications(); }">Disable Notifications</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="() => { androidNotificationDialog?.Close(); DeviceService.RequestExactNotificationPermission(); Dispatcher.Dispatch(new SetHasRequestedNotificationPermissionAction(true)); }">Grant</AppButton>
+    </div>
+</Dialog>
+
+@code
+{
+    [Parameter]
+    public bool ForceShow { get; set; }
+
+    private Dialog? androidNotificationDialog;
+
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if(DeviceService.GetDeviceType() == DeviceType.Android
+            && SettingsState.Value.RestNotifications
+            && !DeviceService.CanScheduleExactNotifications()
+            && (!AppState.Value.HasRequestedNotificationPermission || ForceShow))
+        {
+            androidNotificationDialog?.Open();
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+    private void DisableNotifications()
+    {
+        Dispatcher.Dispatch(new SetHasRequestedNotificationPermissionAction(true));
+        Dispatcher.Dispatch(new SetRestNotificationsAction(false));
+    }
+}
