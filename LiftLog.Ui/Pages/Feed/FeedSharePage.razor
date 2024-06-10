@@ -80,8 +80,8 @@ else
             Dispatcher.Dispatch(new FetchAndSetSharedFeedUserAction(id, Name, PublicKey?.FromUrlSafeHexString()));
         }
 
-        await base.OnInitializedAsync();
         phoneAppStore = await GetAppStoreFromUserAgent();
+        await base.OnInitializedAsync();
     }
 
     protected override void OnAfterRender(bool firstRender)

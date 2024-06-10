@@ -11,6 +11,12 @@
 @inject IState<CurrentSessionState> CurrentSessionState
 @inject IDispatcher Dispatcher
 @inject NavigationManager NavigationManager
+@inject IDeviceService DeviceService
+
+@if(DeviceService.GetDeviceType() == DeviceType.Android)
+{
+    <AndroidNotificationAlert />
+}
 
 @if (ProgramState.Value.IsLoadingUpcomingSessions)
 {

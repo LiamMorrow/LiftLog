@@ -35,4 +35,10 @@ public static class AppReducers
         AppState state,
         SetLatestSettingsUrlAction action
     ) => state with { LatestSettingsUrl = action.LatestSettingsUrl };
+
+    [ReducerMethod]
+    public static AppState SetAppStateIsHydrated(
+        AppState state,
+        SetAppStateIsHydratedAction action
+    ) => state with { IsHydrated = action.IsHydrated };
 }

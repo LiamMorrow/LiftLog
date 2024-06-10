@@ -18,3 +18,5 @@ public record NavigateAction(
 );
 
 public record SetLatestSettingsUrlAction(string? LatestSettingsUrl);
+
+public record SetAppStateIsHydratedAction(bool IsHydrated);

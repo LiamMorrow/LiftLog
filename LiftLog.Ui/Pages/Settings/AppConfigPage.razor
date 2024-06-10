@@ -2,7 +2,7 @@
 @inject IState<SettingsState> SettingsState
 @inject IDispatcher Dispatcher
 @inject IThemeProvider ThemeProvider
-@inject IAppPurchaseService AppPurchaseService
+@inject IDeviceService DeviceService
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
@@ -11,7 +11,7 @@
     <ListSwitch Headline="Show bodyweight" SupportingText="Enable bodyweight tracking and statistics" Value="@SettingsState.Value.ShowBodyweight" OnSwitched="SetShowBodyweight" />
     <ListSwitch Headline="Show feed" SupportingText="Display the feed in the navigation bar" Value="@SettingsState.Value.ShowFeed" OnSwitched="SetShowFeed" />
     @* If android, we need a status bar fix sometimes *@
-    @if(AppPurchaseService.GetAppStore() == AppStore.Google)
+    @if(DeviceService.GetDeviceType() == DeviceType.Android)
     {
         <ListSwitch Headline="Status bar fix" SupportingText="Fixes the status bar overlapping the page title controls on some devices" Value="@SettingsState.Value.StatusBarFix" OnSwitched="SetStatusBarFix" />
     }

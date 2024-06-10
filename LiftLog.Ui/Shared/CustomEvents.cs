@@ -9,6 +9,12 @@ namespace LiftLog.Ui.Shared;
     enablePreventDefault: false
 )]
 [EventHandler(
+    "ondialog-cancel",
+    typeof(Object),
+    enableStopPropagation: false,
+    enablePreventDefault: false
+)]
+[EventHandler(
     "onslider-change",
     typeof(object),
     enableStopPropagation: false,
