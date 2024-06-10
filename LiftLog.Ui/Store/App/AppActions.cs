@@ -17,8 +17,6 @@ public record NavigateAction(
     Regex? IfCurrentPathMatches = null
 );
 
-public record SetHasRequestedNotificationPermissionAction(bool HasRequestedNotificationPermission);
-
 public record SetLatestSettingsUrlAction(string? LatestSettingsUrl);
 
 public record SetAppStateIsHydratedAction(bool IsHydrated);

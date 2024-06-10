@@ -2,7 +2,6 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 @inject IDispatcher Dispatcher
 
-@inject IState<AppState> AppState
 @inject IState<SettingsState> SettingsState
 
 
@@ -15,7 +14,7 @@
         On the next screen, please grant LiftLog the permission.</span>
     <div slot="actions">
         <AppButton Type="AppButtonType.Text" OnClick="() => { androidNotificationDialog?.Close(); DisableNotifications(); }">Disable Notifications</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="() => { androidNotificationDialog?.Close(); DeviceService.RequestExactNotificationPermission(); Dispatcher.Dispatch(new SetHasRequestedNotificationPermissionAction(true)); }">Grant</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="() => { androidNotificationDialog?.Close(); DeviceService.RequestExactNotificationPermission(); }">Grant</AppButton>
     </div>
 </Dialog>
 
@@ -31,8 +30,7 @@
     {
         if(DeviceService.GetDeviceType() == DeviceType.Android
             && SettingsState.Value.RestNotifications
-            && !DeviceService.CanScheduleExactNotifications()
-            && (!AppState.Value.HasRequestedNotificationPermission || ForceShow))
+            && !DeviceService.CanScheduleExactNotifications())
         {
             androidNotificationDialog?.Open();
         }
@@ -41,7 +39,6 @@
 
     private void DisableNotifications()
     {
-        Dispatcher.Dispatch(new SetHasRequestedNotificationPermissionAction(true));
         Dispatcher.Dispatch(new SetRestNotificationsAction(false));
     }
 }

@@ -151,7 +151,7 @@ public static class MauiProgram
     }
 
 #if ANDROID
-    private static async void HandleIntent(Android.Content.Intent? intent)
+    private static void HandleIntent(Android.Content.Intent? intent)
     {
         var data = intent?.Data?.ToString();
         if (data is not null)

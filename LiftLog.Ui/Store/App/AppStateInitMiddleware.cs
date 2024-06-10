@@ -15,12 +15,6 @@ public class AppStateInitMiddleware(PreferencesRepository preferencesRepository)
         dispatch.Dispatch(new SetProTokenAction(proToken));
 #endif
 
-        var hasRequestedNotificationPermission =
-            await preferencesRepository.GetHasRequestedNotificationPermissionAsync();
-        dispatch.Dispatch(
-            new SetHasRequestedNotificationPermissionAction(hasRequestedNotificationPermission)
-        );
-
         dispatch.Dispatch(new SetAppStateIsHydratedAction(true));
     }
 }
