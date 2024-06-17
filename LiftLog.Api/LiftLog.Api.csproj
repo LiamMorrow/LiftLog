@@ -15,15 +15,15 @@
 
     <ItemGroup>
         <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
-        <PackageReference Include="FluentValidation" Version="11.9.1" />
-        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.1" />
+        <PackageReference Include="FluentValidation" Version="11.9.2" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.2" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.6">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
         <PackageReference Include="OpenAI-DotNet" Version="7.7.8" />
-        <PackageReference Include="Google.Apis.AndroidPublisher.v3" Version="1.68.0.3423" />
+        <PackageReference Include="Google.Apis.AndroidPublisher.v3" Version="1.68.0.3449" />
         <PackageReference Include="Sqids" Version="3.1.0" />
     </ItemGroup>
 

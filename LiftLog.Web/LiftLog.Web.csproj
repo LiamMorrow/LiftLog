@@ -18,7 +18,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.6"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.6" PrivateAssets="all"/>
         <PackageReference Include="RealGoodApps.BlazorJavascript.Interop" Version="1.1.0"/>
-        <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.4.4">
+        <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.4.5">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
