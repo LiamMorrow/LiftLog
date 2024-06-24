@@ -23,7 +23,7 @@
         <PackageReference Include="MaterialColorUtilities" Version="0.3.0"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.6"/>
         <PackageReference Include="Fluxor" Version="6.0.0"/>
-        <PackageReference Include="Fluxor.Blazor.Web" Version="5.9.1"/>
+        <PackageReference Include="Fluxor.Blazor.Web" Version="6.0.0"/>
         <PackageReference Include="System.Linq.Async" Version="6.0.1"/>
 
         <PackageReference Include="Google.Protobuf" Version="3.27.1"/>
