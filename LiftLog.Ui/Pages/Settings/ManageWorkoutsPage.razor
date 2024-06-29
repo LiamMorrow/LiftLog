@@ -6,7 +6,6 @@
 
 @page "/settings/manage-workouts"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
-@implements IDisposable
 
 @inject IState<ProgramState> ProgramState
 @inject NavigationManager NavigationManager
@@ -114,10 +113,10 @@
         base.OnInitialized();
     }
 
-    protected override void Dispose(bool disposing)
+    protected override ValueTask DisposeAsyncCore(bool disposing)
     {
         Dispatcher.Dispatch(new PublishIdentityIfEnabledAction());
-        base.Dispose(disposing);
+        return  base.DisposeAsyncCore(disposing);
     }
 
 }

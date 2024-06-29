@@ -1,5 +1,5 @@
 @using System.Text.RegularExpressions
-@implements IDisposable
+
 @inject NavigationManager NavigationManager
 @inject IState<CurrentSessionState> CurrentSessionState
 @inject IState<AppState> AppState
@@ -94,10 +94,10 @@
         InvokeAsync(StateHasChanged);
     }
 
-    protected override void Dispose(bool disposing)
+    protected override ValueTask DisposeAsyncCore(bool disposing)
     {
         NavigationManager.LocationChanged -= LocationChanged;
-        base.Dispose(disposing);
+        return base.DisposeAsyncCore(disposing);
     }
 
 }

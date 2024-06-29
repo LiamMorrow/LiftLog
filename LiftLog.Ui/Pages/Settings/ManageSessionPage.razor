@@ -5,7 +5,6 @@
 
 @page "/settings/manage-workouts/manage-session/{sessionIndex:int}"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
-@implements IDisposable
 
 @inject NavigationManager NavigationManager
 @inject IState<SessionEditorState> SessionEditorState
@@ -179,10 +178,10 @@
         base.OnInitialized();
     }
 
-    protected override void Dispose(bool disposing)
+    protected override ValueTask DisposeAsyncCore(bool disposing)
     {
         Dispatcher.Dispatch(new PublishIdentityIfEnabledAction());
-        base.Dispose(disposing);
+        return base.DisposeAsyncCore(disposing);
     }
 
 }

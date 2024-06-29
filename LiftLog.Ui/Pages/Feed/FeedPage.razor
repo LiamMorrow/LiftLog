@@ -8,7 +8,6 @@
 @inject IDispatcher Dispatcher
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
-@implements IDisposable
 
 <div class="sticky top-0 z-10 @TopNavColorClass transition-colors">
     <md-tabs @ref="tabs" @onchange="HandleTabChange">
@@ -251,9 +250,9 @@
         NavigationManager.NavigateTo(FeedShareUrl.GetShareUrl(user.Id.ToString(), user.PublicKey, user.Name));
     }
 
-    protected override void Dispose(bool disposing)
+    protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
-        _ = JSRuntime.InvokeVoidAsync("AppUtils.destroyPullToRefresh");
-        base.Dispose(disposing);
+        await JSRuntime.InvokeVoidAsync("AppUtils.destroyPullToRefresh");
+        await base.DisposeAsyncCore(disposing);
     }
 }
