@@ -17,7 +17,7 @@
 {
     <SessionComponent
         CycleRepcountForExercise=CycleRepcountForExercise
-        ClearRepCountForExercise="ClearRepCountForExercise"
+        SetRepCountForExercise="SetRepCountForExercise"
         UpdateWeightForExercise=UpdateWeightForExercise
         Session=@(CurrentSessionState.Value.WorkoutSession)
         SaveSession=SaveSession
@@ -27,12 +27,11 @@
         EditExercise="EditExercise"
         AddExercise="AddExercise"
         UpdateNotesForExercise="UpdateNotesForExercise"
-        ExerciseNames="ProgramState.Value.ExerciseNames"
         ShowBodyweight="SettingsState.Value.ShowBodyweight"
         ToggleExercisePerSetWeight=ToggleExercisePerSetWeight
         UpdateWeightForSet=UpdateWeightForSet
-        SessionInPlan=@(ProgramState.Value.SessionBlueprints.Contains(CurrentSessionState.Value.WorkoutSession.Blueprint))
-        SessionWithSameNameInPlan=@(ProgramState.Value.SessionBlueprints.Any(x => x.Name == CurrentSessionState.Value.WorkoutSession.Blueprint.Name))
+        SessionInPlan=@(ProgramState.Value.GetActivePlanSessionBlueprints().Contains(CurrentSessionState.Value.WorkoutSession.Blueprint))
+        SessionWithSameNameInPlan=@(ProgramState.Value.GetActivePlanSessionBlueprints().Any(x => x.Name == CurrentSessionState.Value.WorkoutSession.Blueprint.Name))
         AddSessionToPlan="AddSessionToPlan"
         UpdateSessionInPlan="UpdateSessionInPlan"
         UpdateBodyweight="UpdateBodyweight"/>
@@ -43,9 +42,9 @@
 {
     private ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>> previouslyCompleted = ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>>.Empty;
 
-    private void ClearRepCountForExercise(int exerciseIndex, int setIndex)
+    private void SetRepCountForExercise(int exerciseIndex, int setIndex, int? reps)
     {
-        Dispatcher.Dispatch(new ClearExerciseRepsAction(SessionTarget.WorkoutSession, exerciseIndex, setIndex));
+        Dispatcher.Dispatch(new SetExerciseRepsAction(SessionTarget.WorkoutSession, exerciseIndex, setIndex, reps));
         Dispatcher.Dispatch(new NotifySetTimerAction(SessionTarget.WorkoutSession));
     }
 
@@ -91,13 +90,13 @@
     {
         if (CurrentSessionState.Value.WorkoutSession?.Blueprint is SessionBlueprint blueprint)
         {
-            var existingSessionWithSameName = ProgramState.Value.SessionBlueprints.Any(x => x.Name == blueprint.Name);
+            var existingSessionWithSameName = ProgramState.Value.GetActivePlanSessionBlueprints().Any(x => x.Name == blueprint.Name);
             if (existingSessionWithSameName)
             {
                 var blueprintNameWithoutNumber = System.Text.RegularExpressions.Regex.Replace(blueprint.Name, @" \(\d+\)$", "");
                 var newName = blueprint.Name;
                 var i = 1;
-                while (ProgramState.Value.SessionBlueprints.Any(x => x.Name == newName))
+                while (ProgramState.Value.GetActivePlanSessionBlueprints().Any(x => x.Name == newName))
                 {
                     newName = $"{blueprintNameWithoutNumber} ({i})";
                     i++;
@@ -106,7 +105,7 @@
                 blueprint = blueprint with { Name = newName };
             }
 
-            Dispatcher.Dispatch(new AddProgramSessionAction(blueprint));
+            Dispatcher.Dispatch(new AddProgramSessionAction(ProgramState.Value.ActivePlanId, blueprint));
             Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, CurrentSessionState.Value.WorkoutSession with { Blueprint = blueprint }));
             Dispatcher.Dispatch(new SetPageTitleAction(blueprint.Name));
         }
@@ -116,8 +115,8 @@
     {
         if (CurrentSessionState.Value.WorkoutSession?.Blueprint is SessionBlueprint blueprint)
         {
-            var blueprintIndex = ProgramState.Value.SessionBlueprints.IndexedTuples().First(x => x.Item.Name == blueprint.Name).Index;
-            Dispatcher.Dispatch(new SetProgramSessionAction(blueprintIndex, blueprint));
+            var blueprintIndex = ProgramState.Value.GetActivePlanSessionBlueprints().IndexedTuples().First(x => x.Item.Name == blueprint.Name).Index;
+            Dispatcher.Dispatch(new SetProgramSessionAction(ProgramState.Value.ActivePlanId, blueprintIndex, blueprint));
         }
     }
 
@@ -144,7 +143,6 @@
     protected override async Task OnInitializedAsync()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Session"));
-        Dispatcher.Dispatch(new FetchExerciseNamesAction());
         Dispatcher.Dispatch(new SetReopenCurrentSessionAction(true));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/"));
         if (CurrentSessionState.Value.WorkoutSession is null)

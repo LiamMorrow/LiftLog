@@ -1,10 +1,11 @@
 @using System.Text.RegularExpressions
-@implements IDisposable
+
 @inject NavigationManager NavigationManager
 @inject IState<CurrentSessionState> CurrentSessionState
 @inject IState<AppState> AppState
 @inject IState<FeedState> FeedState
 @inject IState<SettingsState> SettingsState
+@inject IDispatcher Dispatcher
 @inject IThemeProvider ThemeProvider
 @inject InsetsManager InsetsManager
 
@@ -46,48 +47,57 @@
             && AppState.Value.ReopenCurrentSession
             && !IsRouteMatch("/session/?$"))
         {
-            NavigationManager.NavigateTo("/session");
+            Dispatcher.Dispatch(new NavigateAction("/session", ClearPageStack: false));
             StateHasChanged();
             return;
         }
 
-        NavigationManager.NavigateTo("/");
+        Dispatcher.Dispatch(new NavigateAction("/", ClearPageStack: false));
         StateHasChanged();
     }
 
     private void NavigateToSettings()
     {
-        NavigationManager.NavigateTo("/settings");
+        if (AppState.Value.LatestSettingsUrl != null && !IsRouteMatch("/settings.*"))
+        {
+            Dispatcher.Dispatch(new NavigateAction(AppState.Value.LatestSettingsUrl));
+            StateHasChanged();
+            return;
+        }
+        Dispatcher.Dispatch(new NavigateAction("/settings", ClearPageStack: true));
         StateHasChanged();
     }
 
     private void NavigateToFeed()
     {
-        NavigationManager.NavigateTo("/feed");
+        Dispatcher.Dispatch(new NavigateAction("/feed", ClearPageStack: false));
         StateHasChanged();
     }
 
     private void NavigateToHistory()
     {
-        NavigationManager.NavigateTo("/history");
+        Dispatcher.Dispatch(new NavigateAction("/history", ClearPageStack: false));
         StateHasChanged();
     }
 
     private void NavigateToStats()
     {
-        NavigationManager.NavigateTo("/stats");
+        Dispatcher.Dispatch(new NavigateAction("/stats", ClearPageStack: false));
         StateHasChanged();
     }
 
     private void LocationChanged(object? sender, LocationChangedEventArgs locationChangedEventArgs)
     {
+        if(locationChangedEventArgs.Location.Contains("settings")){
+            Dispatcher.Dispatch(new SetLatestSettingsUrlAction(locationChangedEventArgs.Location));
+        }
         InvokeAsync(StateHasChanged);
     }
 
-    protected override void Dispose(bool disposing)
+    protected override ValueTask DisposeAsyncCore(bool disposing)
     {
         NavigationManager.LocationChanged -= LocationChanged;
-        base.Dispose(disposing);
+        return base.DisposeAsyncCore(disposing);
     }
 
 }

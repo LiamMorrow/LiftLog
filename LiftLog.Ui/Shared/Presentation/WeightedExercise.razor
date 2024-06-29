@@ -6,7 +6,7 @@
         (false, _) => (RecordedExercise, RecordedExercise.PotentialSets.IndexOf(x => x.Set is null), RecordedExercise.Notes)
     };
 }
-<div class="flex flex-col gap-4 py-4 pl-5 pr-0 w-full">
+<div class="flex flex-col gap-4 py-4 pl-7 pr-2 w-full">
     <div class="flex flex-col">
         <div class="flex justify-between">
             <ItemTitle Title="@RecordedExercise.Blueprint.Name" />
@@ -19,8 +19,8 @@
                     }
                     <IconButton data-cy="per-rep-weight-btn" Type=IconButtonType.Standard Icon=weight OnClick="ToggleExercisePerSetWeight"></IconButton>
                     <div>
-                        <IconButton data-cy="more-exercise-btn" class="self-end" Type="IconButtonType.Standard" OnClick="() => { _menu?.Open(); }" Icon="more_horiz"/>
-                        <Menu @ref="_menu">
+                        <IconButton data-cy="more-exercise-btn" class="self-end" Type="IconButtonType.Standard" OnClick="() => { _menu?.Open(); }" Icon="more_horiz" id="@moreButtonId"/>
+                        <Menu @ref="_menu" anchor="@moreButtonId">
                             <MenuItem Label="Edit" Icon="edit" OnClick="OnEditExercise"/>
                             <MenuItem data-cy="exercise-notes-btn" Label="Notes" Icon="notes" OnClick="OnOpenNotesButtonClick"/>
                             <MenuItem Label="Remove" Icon="delete" OnClick="OnRemoveExercise"/>
@@ -51,9 +51,9 @@
                 ShowWeight=displayedExercise.PerSetWeight
                 MaxReps="displayedExercise.Blueprint.RepsPerSet"
                 WeightIncrement="displayedExercise.Blueprint.WeightIncreaseOnSuccess"
-                CycleRepCount=@(() => CycleRepCountForSet(i))
-                ClearRepCount=@(() => ClearRepCountForSet(i))
-                UpdateWeight=@((weight) => UpdateWeightForSet(i, weight))
+                OnTap=@(() => CycleRepCountForSet(i))
+                OnHold=@(() => ShowAdditionalActionsForSet(i))
+                OnUpdateWeight=@((weight) => UpdateWeightForSet(i, weight))
                 ToStartNext=@(ToStartNext && repToStartNext == i && !IsReadonly)/>
         }
     </div>
@@ -83,6 +83,7 @@
 </Dialog>
 
 @code {
+    private string moreButtonId = "a" + Guid.NewGuid();
     private bool _holdingPrevious = false;
     private Menu? _menu;
     private Dialog? notesDialog;
@@ -97,7 +98,7 @@
 
     [EditorRequired] [Parameter] public Action<int> CycleRepCountForSet { get; set; } = null!;
 
-    [EditorRequired] [Parameter] public Action<int> ClearRepCountForSet { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<int> ShowAdditionalActionsForSet { get; set; } = null!;
 
     [EditorRequired] [Parameter] public Action<int, decimal> UpdateWeightForSet { get; set; } = null!;
 

@@ -6,66 +6,101 @@
 @page "/settings/program-list"
 
 @inject IDispatcher Dispatcher;
+@inject IState<ProgramState> ProgramState
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-@* TODO: Section for Saved Programs *@
-
-<section class="text-left text-on-surface">
-    <h2 class="pl-4 text-xl">Built in Programs</h2>
-    <md-list>
-        @foreach (var program in BuiltInProgramService.BuiltInPrograms)
-        {
-            <ProgramListItem ProgramBlueprint="@program" OnClick=@(() => BeginSelectProgram(program))/>
-            @if (program != BuiltInProgramService.BuiltInPrograms.Last())
+@if(ProgramState.Value.SavedPrograms.Any())
+{
+    var orderedPrograms = ProgramState.Value.SavedPrograms.OrderBy(x=>x.Value.Name).ToList();
+    <section class="text-left text-on-surface flex flex-col">
+        <md-list>
+            <ListTitle Title="Saved Plans" />
+            @foreach (var (id, program) in orderedPrograms)
             {
-                <md-divider></md-divider>
+                <ProgramListItem
+                    ProgramBlueprint="@program"
+                    OnClick=@(() => OpenEditProgram(id))
+                    OnUse="@(() => SelectProgram(id))"
+                    OnDuplicate="@(() => Dispatcher.Dispatch(new SavePlanAction(Guid.NewGuid(), program)))"
+                    OnRemove="()=>HandleRemove(id)"
+                    IsActive="ProgramState.Value.ActivePlanId == id"
+                    IsFocused="FocusPlanId == id"
+                    BuiltIn=false/>
             }
-        }
-    </md-list>
-</section>
+        </md-list>
+    </section>
+}
 
-<Dialog @ref="selectedProgramDialog">
-    <span slot="headline">Select Program</span>
-    @if (selectedProgram != null)
-    {
-        <span slot="content" class="block text-left">
-            Would you like to use the program
-            <span class="font-bold text-primary">@selectedProgram.Name</span>?<br/>This will replace the existing program.
-        </span>
-        <div class="flex gap-1" slot="actions">
-            <AppButton Type="AppButtonType.Text" OnClick="() => selectedProgramDialog?.Close()">Close</AppButton>
-            <AppButton Type="AppButtonType.Text" OnClick="SelectProgram">Select</AppButton>
+
+<FloatingBottomContainer>
+    <Fab>
+        <div class="flex flex-col gap-2 items-end">
+            <FloatingButton variant="primary" has-icon OnClick="AddNewPlan" Label="Add plan">
+                <md-icon slot="icon">add</md-icon>
+            </FloatingButton>
         </div>
-    }
-</Dialog>
+    </Fab>
+    <AdditionalContent>
+        @if(ShowSnackBar)
+        {
+            <SnackBar>
+                <div class="flex justify-between items-center">
+                    <span>Selected <span class="font-bold">@ProgramState.Value.GetActivePlan().Name</span></span>
+                    <SnackBarButton OnClick=@(()=>Dispatcher.Dispatch(new NavigateAction("/")))>Go to workouts</SnackBarButton>
+                </div>
+            </SnackBar>
+        }
+    </AdditionalContent>
+</FloatingBottomContainer>
+
+
 
 @code {
-    private ProgramBlueprint? selectedProgram;
-    private Dialog? selectedProgramDialog;
+
+    [SupplyParameterFromQuery]
+    public Guid FocusPlanId { get; set; }
+
+    private bool ShowSnackBar { get; set; }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Dispatcher.Dispatch(new SetPageTitleAction("Programs"));
+        Dispatcher.Dispatch(new SetPageTitleAction("Plans"));
         Dispatcher.Dispatch(new FetchSavedProgramsAction());
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
     }
 
-    private void BeginSelectProgram(ProgramBlueprint program)
+    private void SelectProgram(Guid id)
     {
-        selectedProgram = program;
-        selectedProgramDialog?.Open();
+        Dispatcher.Dispatch(new SetActiveProgramAction(id));
+        ShowSnackBar = true;
     }
 
-    private async Task SelectProgram()
+    private void AddNewPlan()
     {
-        await selectedProgramDialog!.CloseWait();
-        if (selectedProgram != null)
+        var planId = Guid.NewGuid();
+        Dispatcher.Dispatch(
+            new SavePlanAction(
+                planId,
+                new ProgramBlueprint(
+                    Name: "New Plan",
+                    Sessions: [],
+                    LastEdited: DateOnly.FromDateTime(DateTime.Now))));
+        Dispatcher.Dispatch(new NavigateAction("/settings/manage-workouts?planId=" + planId));
+    }
+
+    private void HandleRemove(Guid id)
+    {
+        if(ProgramState.Value.ActivePlanId == id)
         {
-            Dispatcher.Dispatch(new SetProgramSessionsAction(selectedProgram.Sessions));
-            Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, null));
-            Dispatcher.Dispatch(new NavigateAction("/"));
+            return;
         }
+        Dispatcher.Dispatch(new DeleteSavedPlanAction(id));
+    }
+
+    private void OpenEditProgram(Guid id)
+    {
+        Dispatcher.Dispatch(new NavigateAction("/settings/manage-workouts?planId=" + id));
     }
 
 }

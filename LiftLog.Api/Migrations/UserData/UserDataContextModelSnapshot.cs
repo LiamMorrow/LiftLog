@@ -17,10 +17,12 @@ namespace LiftLog.Api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.1")
+                .HasAnnotation("ProductVersion", "8.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.HasSequence<int>("user_lookup_sequence");
 
             modelBuilder.Entity("LiftLog.Api.Models.User", b =>
                 {
@@ -55,13 +57,28 @@ namespace LiftLog.Api.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_accessed");
 
+                    b.Property<byte[]>("RsaPublicKey")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("rsa_public_key");
+
                     b.Property<byte[]>("Salt")
                         .IsRequired()
                         .HasColumnType("bytea")
                         .HasColumnName("salt");
 
+                    b.Property<int>("UserLookup")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("user_lookup")
+                        .HasDefaultValueSql("nextval('user_lookup_sequence')");
+
                     b.HasKey("Id")
                         .HasName("pk_users");
+
+                    b.HasIndex("UserLookup")
+                        .IsUnique()
+                        .HasDatabaseName("ix_users_user_lookup");
 
                     b.ToTable("users", (string)null);
                 });
@@ -106,6 +123,22 @@ namespace LiftLog.Api.Migrations
                         .HasDatabaseName("ix_user_events_expiry");
 
                     b.ToTable("user_events", (string)null);
+                });
+
+            modelBuilder.Entity("LiftLog.Api.Models.UserEventFilter", b =>
+                {
+                    b.Property<DateTimeOffset>("Since")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("since");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.ToTable("tmp_stub_table", null, t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("LiftLog.Api.Models.UserFollowSecret", b =>

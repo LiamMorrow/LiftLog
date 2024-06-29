@@ -6,76 +6,117 @@
 
 @page "/settings/manage-workouts"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
-@implements IDisposable
 
 @inject IState<ProgramState> ProgramState
 @inject NavigationManager NavigationManager
 @inject IDispatcher Dispatcher
 @inject IJSRuntime JSRuntime
 
-<CardList Items="ProgramState.Value.SessionBlueprints.IndexedTuples()" OnClick="(item) => SelectSession(item.Item, item.Index)">
-    @{
-        var session = context.Item;
-        var index = context.Index;
+@if(ProgramState.Value.SavedPrograms.ContainsKey(PlanId)){
+    <TextField
+        Label="Plan Name"
+        TextFieldType="TextFieldType.Filled"
+        Value="@ProgramState.Value.SavedPrograms[PlanId].Name"
+        class="m-2"
+        OnChange="@((val) => Dispatcher.Dispatch(new SetSavedPlanNameAction(PlanId, val??"")))" />
+
+
+    @if (!ProgramState.Value.GetSessionBlueprints(PlanId).Any())
+    {
+        <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
+            <md-icon>info</md-icon>
+            <span>
+                <p>No sessions in plan<br> Add a session to get started.</p>
+            </span>
+        </div>
     }
-    <ManageWorkoutCardContent
-        SessionBlueprint="session"
-        OnMoveSessionUp="() => MoveSessionUp(session)"
-        OnMoveSessionDown="() => MoveSessionDown(session)"
-        OnRemoveSession="() => RemoveSession(session)"
-        OnDuplicateSession="() => DuplicateSession(session)"/>
-</CardList>
+    <CardList Items="ProgramState.Value.GetSessionBlueprints(PlanId).IndexedTuples()" OnClick="(item) => SelectSession(item.Item, item.Index)">
+        @{
+            var session = context.Item;
+            var index = context.Index;
+        }
+        <ManageWorkoutCardContent
+            SessionBlueprint="session"
+            OnMoveSessionUp="() => MoveSessionUp(session)"
+            OnMoveSessionDown="() => MoveSessionDown(session)"
+            OnRemoveSession="() => RemoveSession(session)"
+            OnDuplicateSession="() => DuplicateSession(session)"/>
+    </CardList>
 
-<FloatingBottomContainer>
-    <Fab>
-        <FloatingButton size="small" variant="surface" aria-label="Add Session" label="Add Session" OnClick="AddSession"><md-icon slot="icon">add</md-icon></FloatingButton>
-    </Fab>
-</FloatingBottomContainer>
+    <FloatingBottomContainer>
+        <Fab>
+            <FloatingButton size="small" variant="surface" aria-label="Add Session" label="Add Session" OnClick="AddSession"><md-icon slot="icon">add</md-icon></FloatingButton>
+        </Fab>
+    </FloatingBottomContainer>
 
+    @if(IsInActiveScreen && ProgramState.Value.ActivePlanId != PlanId)
+    {
+        <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="TrailingTitleButton">
+            <AppButton class="text-lg" Type=AppButtonType.Text OnClick=UseSession>Use</AppButton>
+        </Microsoft.AspNetCore.Components.Sections.SectionContent>
+    }
+}
 @code {
-    void MoveSessionUp(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new MoveSessionBlueprintUpInProgramAction(sessionBlueprint));
+    [SupplyParameterFromQuery(Name = "planId")]
+    [Parameter] public Guid PlanId { get; set; }
 
-    void MoveSessionDown(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new MoveSessionBlueprintDownInProgramAction(sessionBlueprint));
+    [CascadingParameter(Name = "IsInActiveScreen")]
+    public bool IsInActiveScreen { get; set; }
 
-    void RemoveSession(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(new RemoveSessionFromProgramAction(sessionBlueprint));
+    void MoveSessionUp(SessionBlueprint sessionBlueprint)
+        => Dispatcher.Dispatch(new MoveSessionBlueprintUpInProgramAction(PlanId, sessionBlueprint));
+
+    void MoveSessionDown(SessionBlueprint sessionBlueprint)
+        => Dispatcher.Dispatch(new MoveSessionBlueprintDownInProgramAction(PlanId, sessionBlueprint));
+
+    void RemoveSession(SessionBlueprint sessionBlueprint)
+        => Dispatcher.Dispatch(new RemoveSessionFromProgramAction(PlanId, sessionBlueprint));
 
     void BackToSettings() => NavigationManager.NavigateTo("/settings");
 
     void SelectSession(SessionBlueprint sessionBlueprint, int index)
     {
         Dispatcher.Dispatch(new SetEditingSessionAction(sessionBlueprint));
-        NavigationManager.NavigateTo($"/settings/manage-workouts/manage-session/{index}");
+        NavigationManager.NavigateTo($"/settings/manage-workouts/manage-session/{index}?planId={PlanId}");
     }
 
-    async Task AddSession()
+    void AddSession()
     {
         Dispatcher.Dispatch(
             new AddProgramSessionAction(
-                new SessionBlueprint($"Session {ProgramState.Value.SessionBlueprints.Count + 1}", new ImmutableListValue<ExerciseBlueprint>())));
-            await Task.Yield();
-            await JSRuntime.InvokeVoidAsync("AppUtils.smoothScrollAndFocusLast", ".card");
-        }
+                PlanId,
+                new SessionBlueprint($"Session {ProgramState.Value.GetSessionBlueprints(PlanId).Count + 1}", new ImmutableListValue<ExerciseBlueprint>())));
+        SelectSession(ProgramState.Value.GetSessionBlueprints(PlanId).Last(), ProgramState.Value.GetSessionBlueprints(PlanId).Count - 1);
+    }
 
     void DuplicateSession(SessionBlueprint sessionBlueprint) => Dispatcher.Dispatch(
         new AddProgramSessionAction(
+            PlanId,
             sessionBlueprint with
             {
-                Name = $"Session {ProgramState.Value.SessionBlueprints.Count + 1}"
+                Name = $"Session {ProgramState.Value.GetSessionBlueprints(PlanId).Count + 1}"
             }
         )
     );
 
+    void UseSession()
+    {
+        Dispatcher.Dispatch(new SetActiveProgramAction(PlanId));
+        Dispatcher.Dispatch(new NavigateAction("/"));
+    }
+
     protected override void OnInitialized()
     {
-        Dispatcher.Dispatch(new SetPageTitleAction("Manage Workouts"));
-        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
+        var title = "Manage " + ProgramState.Value.SavedPrograms[PlanId].Name;
+        Dispatcher.Dispatch(new SetPageTitleAction(title));
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings/program-list"));
         base.OnInitialized();
     }
 
-    protected override void Dispose(bool disposing)
+    protected override ValueTask DisposeAsyncCore(bool disposing)
     {
         Dispatcher.Dispatch(new PublishIdentityIfEnabledAction());
-        base.Dispose(disposing);
+        return  base.DisposeAsyncCore(disposing);
     }
 
 }

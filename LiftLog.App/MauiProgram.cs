@@ -2,6 +2,7 @@
 using LiftLog.App.Services;
 using LiftLog.Lib.Services;
 using LiftLog.Ui;
+using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.App;
 using MaterialColorUtilities.Maui;
 using Microsoft.AspNetCore.Components;
@@ -29,7 +30,6 @@ public static class MauiProgram
 
         builder.UseLocalNotification(notificationBuilder =>
         {
-            notificationBuilder.SetSerializer(new NotificationSerializer());
             notificationBuilder.AddCategory(
                 new NotificationCategory(NotificationCategoryType.Status)
                 {
@@ -83,7 +83,6 @@ public static class MauiProgram
             // Set TracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
             // We recommend adjusting this value in production.
             options.TracesSampleRate = 0;
-            options.EnableTracing = false;
             options.CaptureFailedRequests = true;
 
             // Other Sentry options can be set here.
@@ -93,6 +92,7 @@ public static class MauiProgram
 
         builder.Services.AddSingleton(Share.Default);
         builder.Services.AddSingleton(FilePicker.Default);
+        builder.Services.AddSingleton(HapticFeedback.Default);
 
         builder.Services.RegisterUiServices<
             AppDataFileStorageKeyValueStore,
@@ -102,7 +102,9 @@ public static class MauiProgram
             AppThemeProvider,
             MauiStringSharer,
             AppPurchaseService,
-            OsEncryptionService
+            OsEncryptionService,
+            AppHapticFeedbackService,
+            AppDeviceService
         >();
 
         builder.UseMaterialColors<ThemeColorUpdateService>(opts =>
@@ -153,7 +155,7 @@ public static class MauiProgram
     }
 
 #if ANDROID
-    private static async void HandleIntent(Android.Content.Intent? intent)
+    private static void HandleIntent(Android.Content.Intent? intent)
     {
         var data = intent?.Data?.ToString();
         if (data is not null)
@@ -197,7 +199,9 @@ public static class MauiProgram
         var query = uri.Query;
         MainThread.BeginInvokeOnMainThread(() =>
         {
-            _ = MainPage.NavigateWhenLoaded(path + query);
+            Application
+                .Current?.Handler.MauiContext?.Services.GetRequiredService<Fluxor.IDispatcher>()
+                .Dispatch(new NavigateAction(path + query));
         });
     }
 }

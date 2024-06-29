@@ -33,9 +33,8 @@ message InboxMessageDao {
 
 message FollowRequestDao {
     optional google.protobuf.StringValue name = 1;
-    optional bytes profile_picture = 2;
-    // Used to encrypt the follow response
-    bytes public_key = 3;
+    reserved 2; // profile picture
+    reserved 3; // public key
 }
 
 // Encrypted with the public key of the user who sent the follow request

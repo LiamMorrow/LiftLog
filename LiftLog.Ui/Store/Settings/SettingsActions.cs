@@ -28,6 +28,8 @@ public record SetThemeAction(uint? Seed, ThemePreference ThemePreference);
 
 public record SetUseImperialUnitsAction(bool UseImperialUnits);
 
+public record SetRestNotificationsAction(bool RestNotifications);
+
 public record SetShowBodyweightAction(bool ShowBodyweight);
 
 public record SetShowTipsAction(bool ShowTips);
@@ -35,3 +37,5 @@ public record SetShowTipsAction(bool ShowTips);
 public record SetTipToShowAction(int TipToShow);
 
 public record SetShowFeedAction(bool ShowFeed);
+
+public record SetStatusBarFixAction(bool StatusBarFix);

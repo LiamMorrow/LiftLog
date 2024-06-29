@@ -8,9 +8,8 @@
 @inject IDispatcher Dispatcher
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
-@implements IDisposable
 
-<div class="sticky top-0 z-10 @TopNavColorClass -mx-2 transition-colors">
+<div class="sticky top-0 z-10 @TopNavColorClass transition-colors">
     <md-tabs @ref="tabs" @onchange="HandleTabChange">
         <md-primary-tab id="mainfeed-tab" active=@(GetTabActiveClass("mainfeed-panel")) aria-controls="mainfeed-panel">Feed</md-primary-tab>
         <md-primary-tab id="following-tab" active=@(GetTabActiveClass("following-panel")) aria-controls="following-panel">Following</md-primary-tab>
@@ -30,7 +29,7 @@
     <div id="mainfeed-panel" role="tabpanel" aria-labelledby="mainfeed-tab" class="@(GetTabClass("mainfeed-panel")) min-h-full" @onpull-to-refresh="OnPullToRefresh">
         @if (FeedState.Value.Identity is null)
         {
-            <Card IsHighlighted=true class="mb-4">
+            <Card IsHighlighted=true class="mb-4 mx-2">
                 <div class="flex flex-col gap-2">
                     <h2 class="text-xl self-start">Start publishing to your feed</h2>
                     <p class="self-start text-left">You're not currently publishing your workouts for your friends to see</p>
@@ -62,7 +61,7 @@
     <div id="following-panel" role="tabpanel" aria-labelledby="following-tab" class="@(GetTabClass("following-panel"))">
         @if (FeedState.Value.FollowedUsers is { Count: 0 })
         {
-            <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
+            <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface mx-2">
                 <md-icon>info</md-icon>
                 <span>
                     <p>Start following someone!<br>You're not currently following anyone, ask a friend for their share link to start!</p>
@@ -78,7 +77,7 @@
     <div id="followers-panel" role="tabpanel" aria-labelledby="followers-tab" class="@(GetTabClass("followers-panel"))">
         @if (FeedState.Value.Identity is null)
         {
-            <Card IsHighlighted=true class="mb-4">
+            <Card IsHighlighted=true class="mb-4  mx-2">
                 <div class="flex flex-col gap-2">
                     <h2 class="text-xl self-start">Start publishing to your feed</h2>
                     <p class="self-start text-left">You're not currently publishing your workouts for your friends to see</p>
@@ -86,7 +85,7 @@
                 </div>
             </Card>
         }
-        <div class="flex flex-col my-4">
+        <div class="flex flex-col my-4 mx-2">
             <FeedShareUrl/>
         </div>
         @if (FeedState.Value.Followers is { Count: 0 } && FeedState.Value.FollowRequests is { Count: 0 })
@@ -248,12 +247,12 @@
 
     private void RedirectToFollowUserUrl(FeedUser user)
     {
-        NavigationManager.NavigateTo(FeedShareUrl.GetShareUrl(user.Id, user.PublicKey, user.Name));
+        NavigationManager.NavigateTo(FeedShareUrl.GetShareUrl(user.Id.ToString(), user.PublicKey, user.Name));
     }
 
-    protected override void Dispose(bool disposing)
+    protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
-        _ = JSRuntime.InvokeVoidAsync("AppUtils.destroyPullToRefresh");
-        base.Dispose(disposing);
+        await JSRuntime.InvokeVoidAsync("AppUtils.destroyPullToRefresh");
+        await base.DisposeAsyncCore(disposing);
     }
 }

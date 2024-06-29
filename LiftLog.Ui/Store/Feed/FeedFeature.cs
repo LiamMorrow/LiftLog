@@ -18,6 +18,7 @@ public class FeedFeature : Feature<FeedState>
             FollowRequests: [],
             Followers: ImmutableDictionary<Guid, FeedUser>.Empty,
             ActiveTab: "mainfeed-panel",
-            UnpublishedSessionIds: []
+            UnpublishedSessionIds: [],
+            HasPublishedRsaPublicKey: false
         );
 }

@@ -1,5 +1,6 @@
 using FluentValidation;
 using LiftLog.Api.Db;
+using LiftLog.Api.Service;
 using LiftLog.Lib.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,8 @@ using Microsoft.EntityFrameworkCore;
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
-public class UsersController(UserDataContext db) : ControllerBase
+public class UsersController(UserDataContext db, IdEncodingService idEncodingService)
+    : ControllerBase
 {
     [HttpPost]
     [Route("[controller]")]
@@ -34,10 +36,13 @@ public class UsersController(UserDataContext db) : ControllerBase
                 users.ToDictionary(
                     x => x.Id,
                     x => new GetUserResponse(
+                        Id: x.Id,
+                        Lookup: idEncodingService.EncodeId(x.UserLookup),
                         EncryptedCurrentPlan: x.EncryptedCurrentPlan,
                         EncryptedProfilePicture: x.EncryptedProfilePicture,
                         EncryptedName: x.EncryptedName,
-                        EncryptionIV: x.EncryptionIV
+                        EncryptionIV: x.EncryptionIV,
+                        RsaPublicKey: x.RsaPublicKey
                     )
                 )
             )

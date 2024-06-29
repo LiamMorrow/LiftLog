@@ -13,5 +13,7 @@ public record SettingsState(
     bool ShowBodyweight,
     bool ShowTips,
     int TipToShow,
-    bool ShowFeed
+    bool ShowFeed,
+    bool StatusBarFix,
+    bool RestNotifications
 );

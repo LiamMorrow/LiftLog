@@ -16,7 +16,8 @@ public record FeedState(
     ImmutableListValue<FollowRequest> FollowRequests,
     ImmutableDictionary<Guid, FeedUser> Followers,
     string ActiveTab,
-    ImmutableHashSet<Guid> UnpublishedSessionIds
+    ImmutableHashSet<Guid> UnpublishedSessionIds,
+    bool HasPublishedRsaPublicKey
 );
 
 public record FeedUser(
@@ -41,6 +42,8 @@ public record FeedUser(
             AesKey: null,
             FollowSecret: null
         );
+
+    public string DisplayName => Nickname ?? Name ?? "Anonymous User";
 }
 
 public abstract record FeedItem(
@@ -68,6 +71,7 @@ public record RemovedSessionFeedItem(
 
 public record FeedIdentity(
     Guid Id,
+    string Lookup,
     AesKey AesKey,
     RsaKeyPair RsaKeyPair,
     string Password,
@@ -78,13 +82,7 @@ public record FeedIdentity(
     bool PublishWorkouts
 );
 
-public record FollowRequest(
-    Guid UserId,
-    string Name,
-    byte[]? ProfilePicture,
-    // Used to encrypt the follow response
-    RsaPublicKey PublicKey
-);
+public record FollowRequest(Guid UserId, string? Name);
 
 public record FollowResponse(
     Guid UserId,

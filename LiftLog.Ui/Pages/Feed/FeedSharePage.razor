@@ -51,10 +51,10 @@ else
 @code
 {
     [SupplyParameterFromQuery(Name = "pub")]
-    public string PublicKey { get; set; } = "";
+    public string? PublicKey { get; set; }
 
     [SupplyParameterFromQuery(Name = "id")]
-    public Guid id { get; set; }
+    public string? id { get; set; }
 
     [SupplyParameterFromQuery(Name = "name")]
     public string? Name { get; set; }
@@ -63,30 +63,25 @@ else
 
     private AppStore phoneAppStore;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Subscribe to a feed"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/feed"));
-        if (String.IsNullOrEmpty(PublicKey) || id == Guid.Empty)
-        {
-            Dispatcher.Dispatch(new NavigateAction("/feed"));
-        }
-        else if (FeedState.Value.Identity is null)
+        if (FeedState.Value.Identity is null)
         {
             Dispatcher.Dispatch(new NavigateAction("/feed/create-identity?from=" + Uri.EscapeDataString("/feed/share?pub=" + PublicKey + "&id=" + id + "&name=" + Name ?? "")));
         }
+        else if (string.IsNullOrWhiteSpace(id))
+        {
+            Dispatcher.Dispatch(new NavigateAction("/feed"));
+        }
         else
         {
-            Dispatcher.Dispatch(new SetSharedFeedUserAction(FeedUser.FromShared(id, new RsaPublicKey(PublicKey.FromUrlSafeHexString()), Name)));
+            Dispatcher.Dispatch(new FetchAndSetSharedFeedUserAction(id, Name, PublicKey?.FromUrlSafeHexString()));
         }
 
-        base.OnInitialized();
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
         phoneAppStore = await GetAppStoreFromUserAgent();
+        await base.OnInitializedAsync();
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -97,7 +92,8 @@ else
             _alertWebAppDialog?.Open();
         }
 
-        if (FeedState.Value.FollowedUsers.ContainsKey(id))
+        if (FeedState.Value.SharedFeedUser is not null
+            && FeedState.Value.FollowedUsers.ContainsKey(FeedState.Value.SharedFeedUser.Id))
         {
             Dispatcher.Dispatch(new NavigateAction("/feed"));
         }
@@ -120,6 +116,7 @@ else
 
         Dispatcher.Dispatch(new RequestFollowUserAction());
         Dispatcher.Dispatch(new SetSharedFeedUserAction(null));
+        Dispatcher.Dispatch(new NavigateAction("/feed"));
     }
 
     private void UpdateNickname(string value)

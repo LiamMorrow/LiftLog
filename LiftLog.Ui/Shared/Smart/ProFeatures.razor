@@ -10,30 +10,22 @@
 @inject IState<AppState> AppState
 @inject IDispatcher Dispatcher
 
-<Card >
-    <SplitCardControl>
-        <TitleContent>
-            <ItemTitle Title="Pro Features" />
-        </TitleContent>
-        <Actions>
-            @RenderLockedPro()
-        </Actions>
-        <MainContent>
-            <div class="flex flex-col gap-4">
-
-                <AppButton Disabled="!AppState.Value.ProState.IsPro" Type="AppButtonType.Primary" OnClick="NavigateToAiPlanner">
-                    <md-icon slot="icon">auto_awesome</md-icon>
-                    AI Program Planner
-                </AppButton>
-                <AppButton Disabled="!AppState.Value.ProState.IsPro" Type="AppButtonType.Secondary"
-                        OnClick="NavigateToAiSessionCreator">
-                    <md-icon slot="icon">auto_awesome</md-icon>
-                    AI Session Creator
-                </AppButton>
-            </div>
-        </MainContent>
-    </SplitCardControl>
-</Card>
+<md-list>
+    <div class="flex justify-between items-center">
+        <ListTitle Title="Pro Features" />
+        @RenderLockedPro()
+    </div>
+    <md-list-item type="button" class="text-left" multi-line-supporting-text disabled=@(!AppState.Value.ProState.IsPro) @onclick="NavigateToAiPlanner">
+        <md-icon slot="start">bolt</md-icon>
+        <span slot="headline">AI Program Planner</span>
+        <span slot="supporting-text">Use AI to generate an entire program suited to your goals</span>
+    </md-list-item>
+    <md-list-item type="button" class="text-left" multi-line-supporting-text disabled=@(!AppState.Value.ProState.IsPro) @onclick="NavigateToAiSessionCreator">
+        <md-icon slot="start">auto_awesome</md-icon>
+        <span slot="headline">AI Session Creator</span>
+        <span slot="supporting-text">Generate a workout session to import into your plan or complete now!</span>
+    </md-list-item>
+</md-list>
 
 <Dialog @ref="upgradeDialog">
     <span slot="headline">Upgrade to Pro</span>
@@ -65,7 +57,7 @@
             return null;
         }
 
-        return @<AppButton OnClick="() => { upgradeDialog?.Open(); }"><md-icon slot="icon">lock</md-icon>Unlock</AppButton>;
+        return @<AppButton class="mr-2" OnClick="() => { upgradeDialog?.Open(); }"><md-icon slot="icon">lock</md-icon>Unlock</AppButton>;
     }
 
     private RenderFragment RenderPrice()
@@ -82,12 +74,20 @@
 
     private void NavigateToAiPlanner()
     {
+        if(!AppState.Value.ProState.IsPro)
+        {
+            return;
+        }
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(NavigationManager.Uri));
         NavigationManager.NavigateTo("/settings/ai-planner");
     }
 
     private void NavigateToAiSessionCreator()
     {
+        if(!AppState.Value.ProState.IsPro)
+        {
+            return;
+        }
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(NavigationManager.Uri));
         NavigationManager.NavigateTo("/settings/ai-session-creator");
     }

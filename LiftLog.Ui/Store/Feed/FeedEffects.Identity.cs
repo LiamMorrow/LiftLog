@@ -30,7 +30,7 @@ public partial class FeedEffects
             action.PublishBodyweight,
             action.PublishPlan,
             action.PublishWorkouts,
-            programState.Value.SessionBlueprints
+            programState.Value.GetActivePlanSessionBlueprints()
         );
         dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
         if (!identityResult.IsSuccess)
@@ -57,6 +57,7 @@ public partial class FeedEffects
         {
             var result = await feedIdentityService.UpdateFeedIdentityAsync(
                 identity.Id,
+                identity.Lookup,
                 identity.Password,
                 identity.AesKey,
                 identity.RsaKeyPair,
@@ -65,7 +66,7 @@ public partial class FeedEffects
                 action.PublishBodyweight,
                 action.PublishPlan,
                 action.PublishWorkouts,
-                programState.Value.SessionBlueprints
+                programState.Value.GetActivePlanSessionBlueprints()
             );
             if (!result.IsSuccess)
             {
@@ -78,6 +79,31 @@ public partial class FeedEffects
         });
 
     [EffectMethod]
+    public async Task HandleGetLookupIfNeededAction(
+        GetLookupIfNeededAction _,
+        IDispatcher dispatcher
+    )
+    {
+        var identity = state.Value.Identity;
+        if (identity is null || identity is not { Lookup: null or "" })
+        {
+            return;
+        }
+
+        var result = await feedApiService.GetUserAsync(identity.Id.ToString());
+        if (!result.IsSuccess)
+        {
+            // TODO handle properly
+            logger.LogError("Failed to get user with error {Error}", result.Error);
+            return;
+        }
+
+        dispatcher.Dispatch(
+            new PutFeedIdentityAction(identity with { Lookup = result.Data.Lookup })
+        );
+    }
+
+    [EffectMethod]
     public async Task HandlePublishIdentityIfEnabledAction(
         PublishIdentityIfEnabledAction _,
         IDispatcher dispatcher
@@ -88,8 +114,9 @@ public partial class FeedEffects
             return;
         }
 
-        await feedIdentityService.UpdateFeedIdentityAsync(
+        var result = await feedIdentityService.UpdateFeedIdentityAsync(
             state.Value.Identity.Id,
+            state.Value.Identity.Lookup,
             state.Value.Identity.Password,
             state.Value.Identity.AesKey,
             state.Value.Identity.RsaKeyPair,
@@ -98,7 +125,7 @@ public partial class FeedEffects
             state.Value.Identity.PublishBodyweight,
             state.Value.Identity.PublishPlan,
             state.Value.Identity.PublishWorkouts,
-            programState.Value.SessionBlueprints
+            programState.Value.GetActivePlanSessionBlueprints()
         );
     }
 

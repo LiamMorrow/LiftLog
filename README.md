@@ -20,7 +20,7 @@ Checkout [the app website](https://liftlog.online) for screenshots and features.
 ### Prerequisites
 
 Ensure the dotnet sdk is installed and on the latest version. You can do that by following the instructions [here](https://dotnet.microsoft.com/en-us/download).
-[Yarn](https://classic.yarnpkg.com/lang/en/docs/install/) is also required to build some of the web assets.
+npm is also required to build some of the web assets.
 
 ### Running
 
@@ -28,8 +28,8 @@ Before running, you must build the web assets once, after they are built it is r
 
 ```bash
 cd ./LiftLog.Ui
-yarn
-yarn build
+npm i
+npm run build
 ```
 
 Then, to run the app in the browser simply run:

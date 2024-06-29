@@ -30,7 +30,8 @@ public class ProgramEffects(
                     action.Attributes.AreasToWorkout,
                     action.Attributes.Volume,
                     latestExercises,
-                    action.UseImperialUnits
+                    action.UseImperialUnits,
+                    action.Attributes.AdditionalInfo
                 )
             );
 

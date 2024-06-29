@@ -2,10 +2,14 @@ using Fluxor;
 using Google.Protobuf;
 using LiftLog.Ui.Models;
 using LiftLog.Ui.Services;
+using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Ui.Store.Feed;
 
-public class FeedStateInitMiddleware(IKeyValueStore keyValueStore) : Middleware
+public class FeedStateInitMiddleware(
+    IKeyValueStore keyValueStore,
+    ILogger<FeedStateInitMiddleware> logger
+) : Middleware
 {
     public static readonly string StorageKey = "FeedState";
     private FeedState? prevState;
@@ -14,21 +18,29 @@ public class FeedStateInitMiddleware(IKeyValueStore keyValueStore) : Middleware
     public override async Task InitializeAsync(IDispatcher dispatch, IStore store)
     {
         this.store = store;
-        var state = await keyValueStore.GetItemBytesAsync(StorageKey);
-        if (state is not null)
+        try
         {
-            var version = await keyValueStore.GetItemAsync($"{StorageKey}Version");
-            if (version is null or "1")
+            var state = await keyValueStore.GetItemBytesAsync(StorageKey);
+            if (state is not null)
             {
-                FeedStateDaoV1 feedState = FeedStateDaoV1.Parser.ParseFrom(state);
-                if (feedState is not null)
+                var version = await keyValueStore.GetItemAsync($"{StorageKey}Version");
+                if (version is null or "1")
                 {
-                    store.Features[nameof(FeedFeature)].RestoreState((FeedState)feedState);
+                    FeedStateDaoV1 feedState = FeedStateDaoV1.Parser.ParseFrom(state);
+                    if (feedState is not null)
+                    {
+                        store.Features[nameof(FeedFeature)].RestoreState((FeedState)feedState);
+                    }
                 }
             }
-        }
 
-        dispatch.Dispatch(new SetFeedIsHydratedAction());
+            dispatch.Dispatch(new SetFeedIsHydratedAction());
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed to initialize feed state");
+            throw;
+        }
     }
 
     public override void AfterDispatch(object action)

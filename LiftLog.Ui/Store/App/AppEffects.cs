@@ -1,12 +1,11 @@
 using Fluxor;
 using LiftLog.Ui.Services;
-using Microsoft.AspNetCore.Components;
 
 namespace LiftLog.Ui.Store.App;
 
 public class AppEffects(
     PreferencesRepository preferencesRepository,
-    NavigationManager navigationManager
+    NavigationManagerProvider navigationManagerProvider
 )
 {
     [EffectMethod]
@@ -16,9 +15,21 @@ public class AppEffects(
     }
 
     [EffectMethod]
-    public Task HandleNavigateAction(NavigateAction action, IDispatcher dispatcher)
+    public async Task HandleNavigateAction(NavigateAction action, IDispatcher dispatcher)
     {
+        if (action.ClearPageStack)
+        {
+            dispatcher.Dispatch(new SetLatestSettingsUrlAction(null));
+        }
+
+        var navigationManager = await navigationManagerProvider.GetNavigationManager();
+        if (
+            action.IfCurrentPathMatches is not null
+            && !action.IfCurrentPathMatches.IsMatch(navigationManager.Uri)
+        )
+        {
+            return;
+        }
         navigationManager.NavigateTo(action.Path);
-        return Task.CompletedTask;
     }
 }

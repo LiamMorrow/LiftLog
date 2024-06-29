@@ -9,7 +9,7 @@ namespace LiftLog.Ui.Shared;
     enablePreventDefault: false
 )]
 [EventHandler(
-    "onlist-item-click",
+    "ondialog-cancel",
     typeof(Object),
     enableStopPropagation: false,
     enablePreventDefault: false

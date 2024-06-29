@@ -35,6 +35,7 @@ public class FeedIdentityService(
         var rsaKeyPair = await encryptionService.GenerateRsaKeysAsync();
         return await UpdateFeedIdentityAsync(
             id: id,
+            lookup: response.Data.Lookup,
             password: response.Data.Password,
             aesKey: aesKey,
             rsaKeyPair: rsaKeyPair,
@@ -49,6 +50,7 @@ public class FeedIdentityService(
 
     public async Task<ApiResult<FeedIdentity>> UpdateFeedIdentityAsync(
         Guid id,
+        string lookup,
         string password,
         AesKey aesKey,
         RsaKeyPair rsaKeyPair,
@@ -60,7 +62,6 @@ public class FeedIdentityService(
         ImmutableListValue<SessionBlueprint> currentPlan
     )
     {
-        var publicKey = rsaKeyPair.PublicKey;
         var privateKey = rsaKeyPair.PrivateKey;
         var (_, iv) = await encryptionService.SignRsa256PssAndEncryptAesCbcAsync(
             [1],
@@ -108,7 +109,8 @@ public class FeedIdentityService(
                 EncryptedCurrentPlan: encryptedPlan,
                 EncryptedName: encryptedName,
                 EncryptedProfilePicture: encryptedProfilePicture,
-                EncryptionIV: iv.Value
+                EncryptionIV: iv.Value,
+                RsaPublicKey: rsaKeyPair.PublicKey.SpkiPublicKeyBytes
             )
         );
         if (!result.IsSuccess)
@@ -124,6 +126,7 @@ public class FeedIdentityService(
         return ApiResult.Success(
             new FeedIdentity(
                 Id: id,
+                Lookup: lookup,
                 AesKey: aesKey,
                 RsaKeyPair: rsaKeyPair,
                 Password: password,

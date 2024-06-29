@@ -1,7 +1,7 @@
 @inject IJSRuntime JsRuntime
 @typeparam T where T : IEquatable<T>
 
-<div class="relative">
+<div class="relative" @attributes="AdditionalAttributes">
     <AppButton id="@btnId" trailing-icon Type="AppButtonType.Text" OnClick="@(() => JsRuntime.InvokeVoidAsync("AppUtils.toggleOpen", menuRef))">
         @(Options.FirstOrDefault(x => (x.Value == null && Value is null) || x.Value?.Equals(Value) == true)?.Title) <md-icon slot="icon">keyboard_arrow_down</md-icon>
     </AppButton>
@@ -24,6 +24,8 @@
     [Parameter] [EditorRequired] public List<SelectOption> Options { get; set; } = null!;
 
     [Parameter] [EditorRequired] public EventCallback<T> ValueChanged { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     public record SelectOption(string Title, T Value);
 }

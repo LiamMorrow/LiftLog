@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-13
+    runs-on: macos-14
     env:
       KEYCHAIN: job-${{ github.job }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
 
@@ -28,14 +28,14 @@ jobs:
           APPLE_DISTRIBUTION_CERT_P12_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERT_P12_BASE64 }}
         run: echo "${APPLE_DISTRIBUTION_CERT_P12_BASE64}" | base64 -d > liftlog.p12
       - name: Import Code-Signing Certificates
-        uses: Apple-Actions/import-codesign-certs@v2
+        uses: Apple-Actions/import-codesign-certs@v3
         with:
           p12-filepath: "liftlog.p12"
           p12-password: ${{ secrets.APPLE_DISTRIBUTION_CERT_PASS }}
           keychain: ${{ env.KEYCHAIN }}
       - name: Download Apple Provisioning Profiles
         id: provision
-        uses: Apple-Actions/download-provisioning-profiles@v2
+        uses: Apple-Actions/download-provisioning-profiles@v3
         with:
           bundle-id: "com.limajuice.liftlog"
           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
@@ -44,7 +44,7 @@ jobs:
       - name: Setup MAUI
         run: dotnet workload install maui
       - name: Build Tailwind
-        run: yarn && yarn build
+        run: npm i && npm run build
         working-directory: ./LiftLog.Ui
       - name: Build
         run: 'dotnet publish -c Release -f:net8.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}" -p:CodesignProvision="LiftLog"'

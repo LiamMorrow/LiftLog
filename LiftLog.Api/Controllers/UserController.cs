@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using FluentValidation;
 using LiftLog.Api.Db;
 using LiftLog.Api.Models;
@@ -9,7 +10,11 @@ using Microsoft.EntityFrameworkCore;
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
-public class UserController(UserDataContext db, PasswordService passwordService) : ControllerBase
+public class UserController(
+    UserDataContext db,
+    PasswordService passwordService,
+    IdEncodingService idEncodingService
+) : ControllerBase
 {
     [Route("[controller]/create")]
     [HttpPost]
@@ -38,18 +43,33 @@ public class UserController(UserDataContext db, PasswordService passwordService)
             Salt = salt,
             LastAccessed = DateTimeOffset.UtcNow,
             EncryptionIV = [],
+            RsaPublicKey = []
         };
 
         await db.Users.AddAsync(user);
         await db.SaveChangesAsync();
-        return Ok(new CreateUserResponse(password));
+        return Ok(
+            new CreateUserResponse(
+                Lookup: idEncodingService.EncodeId(user.UserLookup),
+                Password: password
+            )
+        );
     }
 
-    [Route("[controller]/{id}")]
+    [Route("[controller]/{idOrLookup}")]
     [HttpGet]
-    public async Task<IActionResult> GetUser(Guid id)
+    public async Task<IActionResult> GetUser(string idOrLookup)
     {
-        var user = await db.Users.FindAsync(id);
+        User? user;
+        if (Guid.TryParse(idOrLookup, out var id))
+        {
+            user = await db.Users.FindAsync(id);
+        }
+        else
+        {
+            var userNumber = idEncodingService.DecodeId(idOrLookup);
+            user = await db.Users.FirstOrDefaultAsync(x => x.UserLookup == userNumber);
+        }
         if (user == null)
         {
             return NotFound();
@@ -59,10 +79,13 @@ public class UserController(UserDataContext db, PasswordService passwordService)
         await db.SaveChangesAsync();
         return Ok(
             new GetUserResponse(
+                Id: user.Id,
+                Lookup: idEncodingService.EncodeId(user.UserLookup),
                 EncryptedCurrentPlan: user.EncryptedCurrentPlan,
                 EncryptedProfilePicture: user.EncryptedProfilePicture,
                 EncryptedName: user.EncryptedName,
-                EncryptionIV: user.EncryptionIV
+                EncryptionIV: user.EncryptionIV,
+                RsaPublicKey: user.RsaPublicKey
             )
         );
     }
@@ -124,6 +147,7 @@ public class UserController(UserDataContext db, PasswordService passwordService)
         user.EncryptedProfilePicture = request.EncryptedProfilePicture;
         user.EncryptedName = request.EncryptedName;
         user.EncryptionIV = request.EncryptionIV;
+        user.RsaPublicKey = request.RsaPublicKey;
         await db.SaveChangesAsync();
         return Ok();
     }

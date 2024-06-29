@@ -30,7 +30,7 @@ else if (SettingsState.Value.AiPlan != null)
         <CardList Items="SettingsState.Value.AiPlan.Sessions">
             <SessionBlueprintSummary SessionBlueprint="context"/>
         </CardList>
-        <p class="text-on-surface">Note: you can tweak this plan after you accept it. Just head to the settings page.</p>
+        <p class="text-on-surface">Note: you can tweak this plan after you accept it. Just head to the Manage Plan page in settings.</p>
         <div class="flex flex-col gap-2 mt-2">
             <AppButton OnClick="() => AcceptAiPlan(SettingsState.Value.AiPlan)">
                 <md-icon slot="icon">done</md-icon>Accept
@@ -69,18 +69,24 @@ else
 
 @code {
 
+
+
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("AI Planner"));
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
         base.OnInitialized();
     }
 
     private void AcceptAiPlan(AiWorkoutPlan plan)
     {
-        Dispatcher.Dispatch(new SetProgramSessionsAction(plan.Sessions));
+        var planId = Guid.NewGuid();
+        Dispatcher.Dispatch(new CreateSavedPlanAction(planId, "AI Plan"));
+        Dispatcher.Dispatch(new SetProgramSessionsAction(planId, plan.Sessions));
         Dispatcher.Dispatch(new SetAiPlanAction(null));
         Dispatcher.Dispatch(new PublishIdentityIfEnabledAction());
-        NavigationManager.NavigateTo("/");
+        Dispatcher.Dispatch(new SetLatestSettingsUrlAction(null));
+        Dispatcher.Dispatch(new NavigateAction("/settings/program-list?FocusPlanId="+planId));
     }
 
 }

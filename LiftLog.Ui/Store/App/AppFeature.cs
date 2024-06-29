@@ -12,8 +12,11 @@ public class AppFeature : Feature<AppState>
     protected override AppState GetInitialState() =>
         new(
             Title: "LiftLog",
+            IsHydrated: false,
             ProState: new ProState(ProToken: null),
             ReopenCurrentSession: true,
-            BackNavigationUrl: null
+            BackNavigationUrl: null,
+            LatestSettingsUrl: null,
+            HasRequestedNotificationPermission: false
         );
 }

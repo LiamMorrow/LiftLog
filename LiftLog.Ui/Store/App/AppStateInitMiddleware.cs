@@ -14,5 +14,7 @@ public class AppStateInitMiddleware(PreferencesRepository preferencesRepository)
 #else
         dispatch.Dispatch(new SetProTokenAction(proToken));
 #endif
+
+        dispatch.Dispatch(new SetAppStateIsHydratedAction(true));
     }
 }

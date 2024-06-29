@@ -1,0 +1,18 @@
+syntax = "proto3";
+package LiftLog.Ui.Models.ProgramBlueprintDao;
+
+import "google/protobuf/wrappers.proto";
+import "Models/Utils.proto";
+import "Models/SessionBlueprintDao/SessionBlueprintDaoV2.proto";
+
+message ProgramBlueprintDaoContainerV1 {
+    map<string,ProgramBlueprintDaoV1> program_blueprints = 1;
+    optional google.protobuf.StringValue active_program_id = 2;
+}
+
+message ProgramBlueprintDaoV1 {
+    string name = 1;
+    reserved 2, 3, 4;
+    repeated LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2 sessions = 5;
+    optional Models.DateOnlyDao last_edited = 6;
+}

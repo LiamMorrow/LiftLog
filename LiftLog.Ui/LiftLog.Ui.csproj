@@ -18,16 +18,16 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Blazor-ApexCharts" Version="2.3.3"/>
+        <PackageReference Include="Blazor-ApexCharts" Version="3.3.0"/>
         <PackageReference Include="BlazorTransitionableRoute" Version="4.0.0"/>
         <PackageReference Include="MaterialColorUtilities" Version="0.3.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.2"/>
-        <PackageReference Include="Fluxor" Version="5.9.1"/>
-        <PackageReference Include="Fluxor.Blazor.Web" Version="5.9.1"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.6"/>
+        <PackageReference Include="Fluxor" Version="6.0.0"/>
+        <PackageReference Include="Fluxor.Blazor.Web" Version="6.0.0"/>
         <PackageReference Include="System.Linq.Async" Version="6.0.1"/>
 
-        <PackageReference Include="Google.Protobuf" Version="3.25.3"/>
-        <PackageReference Include="Grpc.Tools" Version="2.61.0">
+        <PackageReference Include="Google.Protobuf" Version="3.27.2"/>
+        <PackageReference Include="Grpc.Tools" Version="2.64.0">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
@@ -35,7 +35,7 @@
 
 
     <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="5.9.1"/>
+        <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="6.0.0"/>
     </ItemGroup>
 
     <ItemGroup Condition=" '$(Configuration)' != 'Debug' ">
@@ -60,8 +60,9 @@
         <Protobuf Include="Models\UserEvent.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
         <Protobuf Include="Models\SessionHistoryDao\SessionHistoryDaoV2.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
         <Protobuf Include="Models\SessionBlueprintDao\SessionBlueprintDaoV2.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
-        <Protobuf Include="Models\SettingStorageDao\SettingsStorageDaoV2.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
+        <Protobuf Include="Models\ExportedDataDao\ExportedDataDaoV2.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
         <Protobuf Include="Models\CurrentSessionStateDao\CurrentSessionStateDaoV2.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
         <Protobuf Include="Models\FeedStateDao.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
+        <Protobuf Include="Models\ProgramBlueprintDao\ProgramBlueprintDaoV1.proto" GrpcServices="None" AdditionalProtocArguments="--csharp_opt=internal_access=true"/>
     </ItemGroup>
 </Project>

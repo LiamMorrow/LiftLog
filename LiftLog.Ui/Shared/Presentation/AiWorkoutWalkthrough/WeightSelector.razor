@@ -1,51 +1,25 @@
 @inject IJSRuntime Js
 
-<h2 class="text-2xl">How many @WeightUnit do you weigh?</h2>
-<div class="overflow-hidden">
-    <ol @ref="_scrollContainer" @onscroll="OnScroll" class="w-full h-full overflow-auto text-5xl select-none snap-mandatory snap-y" style="mask:linear-gradient(rgba(0, 0, 0, 0) 5%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 95%, rgba(0, 0, 0, 0) 0)">
-        <div class="h-[45%]"></div>
-        @for (var weight = 20m; weight < 500; weight += 5)
-        {
-            var weightRange = $"{weight}-{weight + 5}";
-            <li @onclick="() => OnClick(weightRange)" class="snap-center @(_weightRange == weightRange ? "text-primary" : "")" data-weight="@weightRange">@weightRange</li>
-        }
-        <div class="h-[45%]"></div>
-    </ol>
-</div>
-
+<LabelledFormRow Label="How much do you weigh?" Icon="monitor_weight">
+    <TextField suffix-text="@WeightUnit" TextFieldType=TextFieldType.Outline type="text" inputmode="decimal" Value="@(Value.ToString())"  required OnChange="@(value => OnChanged(value))"/>
+</LabelledFormRow>
 @code {
 
 
-    [Parameter] [EditorRequired] public Action<string> OnWeightSelect { get; set; } = null!;
+    [Parameter] [EditorRequired] public Action<decimal> OnWeightSelect { get; set; } = null!;
+
+    [Parameter] [EditorRequired] public decimal Value { get; set; }
 
     [CascadingParameter(Name = "UseImperial")]
     public bool UseImperial { get; set; }
 
-    private string _weightRange = "20-25";
+    private string WeightUnit => UseImperial ? "lb" : "kg";
 
-    private ElementReference _scrollContainer;
-
-    protected override void OnAfterRender(bool firstRender)
+    private void OnChanged(string? value)
     {
-        if (firstRender)
+        if (value != null && decimal.TryParse(value, out var result))
         {
-            OnWeightSelect(_weightRange);
+            OnWeightSelect(result);
         }
-
-        base.OnAfterRender(firstRender);
     }
-
-    private async void OnScroll()
-    {
-        _weightRange = await Js.InvokeAsync<string>("AppUtils.getMiddleElementAttribute", _scrollContainer, "data-weight");
-        OnWeightSelect(_weightRange);
-        StateHasChanged();
-    }
-
-    private async Task OnClick(string weightRange)
-    {
-        await Js.InvokeVoidAsync("AppUtils.scrollElementToMiddle", $"[data-weight='{weightRange}']");
-    }
-
-    private string WeightUnit => UseImperial ? "pounds" : "kilograms";
 }

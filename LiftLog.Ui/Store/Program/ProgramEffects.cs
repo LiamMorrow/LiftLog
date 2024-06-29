@@ -12,27 +12,14 @@ public class ProgramEffects(SessionService sessionService, IState<ProgramState> 
     [EffectMethod(typeof(FetchUpcomingSessionsAction))]
     public async Task FetchUpcomingSessions(IDispatcher dispatcher)
     {
-        var numberOfUpcomingSessions = Math.Max(state.Value.SessionBlueprints.Count, 3);
+        var numberOfUpcomingSessions = Math.Max(
+            state.Value.GetActivePlanSessionBlueprints().Count,
+            3
+        );
         var sessions = await sessionService
-            .GetUpcomingSessionsAsync()
+            .GetUpcomingSessionsAsync(state.Value.GetActivePlanSessionBlueprints())
             .Take(numberOfUpcomingSessions)
             .ToImmutableListAsync();
         dispatcher.Dispatch(new SetUpcomingSessionsAction(sessions));
-    }
-
-    [EffectMethod(typeof(FetchExerciseNamesAction))]
-    public async Task FetchExerciseNames(IDispatcher dispatcher)
-    {
-        var exerciseNames = await sessionService
-            .GetLatestSessionsAsync()
-            .SelectMany(x => x.Blueprint.Exercises.Select(ex => ex.Name).ToAsyncEnumerable())
-            .Concat(
-                state
-                    .Value.SessionBlueprints.SelectMany(x => x.Exercises.Select(ex => ex.Name))
-                    .ToAsyncEnumerable()
-            )
-            .Distinct()
-            .ToImmutableListAsync();
-        dispatcher.Dispatch(new SetExerciseNamesAction(exerciseNames));
     }
 }

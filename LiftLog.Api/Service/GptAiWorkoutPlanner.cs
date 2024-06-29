@@ -12,13 +12,25 @@ using OpenAI.Chat;
 
 public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
 {
-    private readonly JsonNode aiWorkoutPlanJsonSchema = JsonNode.Parse(
+    private static readonly JsonNode aiWorkoutPlanJsonSchema = JsonNode.Parse(
         File.ReadAllText("./AiWorkoutPlan.json")
     )!;
+    private static readonly Function GetGymPlanFunction =
+        new(
+            "GetGymPlan",
+            "Gets a gym plan based on the user's goals and attributes.",
+            aiWorkoutPlanJsonSchema
+        );
 
-    private readonly JsonNode sessionBlueprintJsonSchema = JsonNode.Parse(
+    private static readonly JsonNode sessionBlueprintJsonSchema = JsonNode.Parse(
         File.ReadAllText("./AiSessionBlueprint.json")
     )!;
+    private static readonly Function GetSessionFunction =
+        new(
+            "GetSession",
+            "Gets a gym session based on the user's goals and attributes.",
+            sessionBlueprintJsonSchema
+        );
 
     public async Task<AiWorkoutPlan> GenerateWorkoutPlanAsync(AiWorkoutAttributes attributes)
     {
@@ -33,14 +45,14 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
 
         var goalsText = string.Join(" and ", attributes.Goals);
 
-        var tools = new List<Tool>
+        var tools = new List<Tool> { GetGymPlanFunction };
+
+        string? AdditionalInfo()
         {
-            new Function(
-                "GetGymPlan",
-                "Gets a gym plan based on the user's goals and attributes.",
-                aiWorkoutPlanJsonSchema
-            )
-        };
+            if (attributes.AdditionalInfo is null)
+                return null;
+            return $"Additionally, I have the following information: {attributes.AdditionalInfo}";
+        }
 
         var messages = new List<Message>
         {
@@ -53,13 +65,14 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
                 )}. I would like to work on {goalsText}.
                  I would like to work out {attributes.DaysPerWeek} days per week.
                  My skill level with weight training is {attributes.Experience}.
+                 {AdditionalInfo()}
                  Please make me a workout plan.
                  """
             ),
         };
         var chatRequest = new ChatRequest(
             messages,
-            model: "gpt-3.5-turbo-0613",
+            model: OpenAI.Models.Model.GPT4,
             toolChoice: "auto",
             tools: tools
         );
@@ -77,17 +90,17 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
                     .Sessions.Select(s => new SessionBlueprint(
                         s.Name,
                         s.Exercises.Select(e => new ExerciseBlueprint(
-                            e.Name,
-                            e.Sets,
-                            e.RepsPerSet,
-                            e.WeightIncreaseOnSuccess,
-                            new Rest(
-                                TimeSpan.FromSeconds(e.RestBetweenSets.MinRestSeconds),
-                                TimeSpan.FromSeconds(e.RestBetweenSets.MaxRestSeconds),
-                                TimeSpan.FromSeconds(e.RestBetweenSets.FailureRestSeconds)
-                            ),
-                            false
-                        ))
+                                e.Name,
+                                e.Sets,
+                                e.RepsPerSet,
+                                e.WeightIncreaseOnSuccess,
+                                new Rest(
+                                    TimeSpan.FromSeconds(e.RestBetweenSets.MinRestSeconds),
+                                    TimeSpan.FromSeconds(e.RestBetweenSets.MaxRestSeconds),
+                                    TimeSpan.FromSeconds(e.RestBetweenSets.FailureRestSeconds)
+                                ),
+                                false
+                            ))
                             .ToImmutableList()
                     ))
                     .ToImmutableList()
@@ -96,9 +109,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
         catch (Exception e)
         {
             Console.WriteLine(e);
-            Console.WriteLine(
-                result.FirstChoice.Message.ToolCalls.First().Function.Arguments.ToString()
-            );
+            Console.WriteLine(result.FirstChoice.Message);
             throw;
         }
     }
@@ -122,14 +133,13 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
             _ => "ten"
         };
 
-        var tools = new List<Tool>
+        var tools = new List<Tool> { GetSessionFunction };
+        string? AdditionalInfo()
         {
-            new Function(
-                "GetSession",
-                "Gets a gym session based on the user's goals and attributes.",
-                sessionBlueprintJsonSchema
-            )
-        };
+            if (attributes.AdditionalInfo is null)
+                return null;
+            return $"Additionally, I have the following information: {attributes.AdditionalInfo}";
+        }
 
         var messages = new List<Message>
         {
@@ -146,13 +156,14 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
                 Role.User,
                 $"""
                 I'd like to workout today at the gym. The areas I'd like to work on {areasToWorkout}. I'd like it to have at lease {volumeText} exercises. Exercises I'm familiar with are as follows: {exerciseText}.
+                {AdditionalInfo()}
                 Please suggest me a workout.
                 """
             ),
         };
         var chatRequest = new ChatRequest(
             messages,
-            model: "gpt-3.5-turbo-0613",
+            model: OpenAI.Models.Model.GPT4,
             toolChoice: "auto",
             tools: tools
         );
@@ -185,9 +196,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
         catch (Exception e)
         {
             Console.WriteLine(e);
-            Console.WriteLine(
-                result.FirstChoice.Message.ToolCalls.First().Function.Arguments.ToString()
-            );
+            Console.WriteLine(result.FirstChoice.Message);
             throw;
         }
     }

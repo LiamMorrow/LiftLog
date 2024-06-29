@@ -33,6 +33,16 @@ public class PreferencesRepository(IPreferenceStore preferenceStore)
         await preferenceStore.SetItemAsync("useImperialUnits", useImperialUnits.ToString());
     }
 
+    public async Task<bool> GetRestNotificationsAsync()
+    {
+        return await preferenceStore.GetItemAsync("restNotifications") is "True" or null;
+    }
+
+    public async Task SetRestNotificationsAsync(bool restNotifications)
+    {
+        await preferenceStore.SetItemAsync("restNotifications", restNotifications.ToString());
+    }
+
     public async Task SetShowBodyweightAsync(bool showBodyweight)
     {
         await preferenceStore.SetItemAsync("showBodyweight", showBodyweight.ToString());
@@ -75,5 +85,30 @@ public class PreferencesRepository(IPreferenceStore preferenceStore)
     public async Task<bool> GetShowFeedAsync()
     {
         return await preferenceStore.GetItemAsync("showFeed") is "True" or null;
+    }
+
+    public async Task SetStatusBarFixAsync(bool statusBarFix)
+    {
+        await preferenceStore.SetItemAsync("statusBarFix", statusBarFix.ToString());
+    }
+
+    public async Task<bool> GetStatusBarFixAsync()
+    {
+        return await preferenceStore.GetItemAsync("statusBarFix") is "True";
+    }
+
+    public async Task<bool> GetHasRequestedNotificationPermissionAsync()
+    {
+        return await preferenceStore.GetItemAsync("hasRequestedNotificationPermission") is "True";
+    }
+
+    public async Task SetHasRequestedNotificationPermissionAsync(
+        bool hasRequestedNotificationPermission
+    )
+    {
+        await preferenceStore.SetItemAsync(
+            "hasRequestedNotificationPermission",
+            hasRequestedNotificationPermission.ToString()
+        );
     }
 }

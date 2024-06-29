@@ -5,7 +5,6 @@
 
 @page "/settings/manage-workouts/manage-session/{sessionIndex:int}"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
-@implements IDisposable
 
 @inject NavigationManager NavigationManager
 @inject IState<SessionEditorState> SessionEditorState
@@ -16,13 +15,15 @@
 @if (SessionEditorState.Value.SessionBlueprint is not null)
 {
     <div class="bg-surface pt-2">
-        <TextField
-            class="w-full mb-4 text-start"
-            Label="Session Name"
-            TextFieldType="TextFieldType.Filled"
-            Value="@SessionEditorState.Value.SessionBlueprint.Name"
-            OnChange="@((val) => SetName(val!))">
-        </TextField>
+        <div class="px-2 pb-2">
+            <TextField
+                class="w-full mb-4 text-start"
+                Label="Session Name"
+                TextFieldType="TextFieldType.Filled"
+                Value="@SessionEditorState.Value.SessionBlueprint.Name"
+                OnChange="@((val) => SetName(val!))">
+            </TextField>
+        </div>
         <ItemList Items="SessionEditorState.Value.SessionBlueprint.Exercises.IndexedTuples()">
             @{
                 var exercise = context.Item;
@@ -59,6 +60,9 @@
     [Parameter][SupplyParameterFromQuery(Name="editingExercise")] public int? EditingExerciseIndexParam { get; set; }
     [Parameter] public int SessionIndex { get; set; }
 
+    [SupplyParameterFromQuery(Name = "planId")]
+    [Parameter] public Guid PlanId { get; set; }
+
     [CascadingParameter(Name = "IsInActiveScreen")]
     public bool IsInActiveScreen { get; set; }
 
@@ -77,8 +81,6 @@
         }
     }
 
-
-    void BackToManageWorkouts() => NavigationManager.NavigateTo("/settings/manage-workouts");
 
     void MoveExerciseUp(ExerciseBlueprint exerciseBlueprint)
     {
@@ -120,7 +122,7 @@
     {
         if (SessionEditorState.Value.SessionBlueprint is not null)
         {
-            Dispatcher.Dispatch(new SetProgramSessionAction(SessionIndex, SessionEditorState.Value.SessionBlueprint));
+            Dispatcher.Dispatch(new SetProgramSessionAction(PlanId, SessionIndex, SessionEditorState.Value.SessionBlueprint));
         }
     }
 
@@ -171,21 +173,23 @@
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Manage Session"));
-        Dispatcher.Dispatch(new FetchExerciseNamesAction());
-        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings/manage-workouts"));
-        if (ProgramState.Value.SessionBlueprints.Count - 1 < SessionIndex)
+        var backPath = "/settings/manage-workouts?planId=" + PlanId;
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction(backPath));
+        if (ProgramState.Value.GetSessionBlueprints(PlanId).Count - 1 < SessionIndex)
         {
-            BackToManageWorkouts();
+            Dispatcher.Dispatch(new NavigateAction(backPath));
         }
-
-        Dispatcher.Dispatch(new SetEditingSessionAction(ProgramState.Value.SessionBlueprints[SessionIndex]));
+        else
+        {
+            Dispatcher.Dispatch(new SetEditingSessionAction(ProgramState.Value.GetSessionBlueprints(PlanId)[SessionIndex]));
+        }
         base.OnInitialized();
     }
 
-    protected override void Dispose(bool disposing)
+    protected override ValueTask DisposeAsyncCore(bool disposing)
     {
         Dispatcher.Dispatch(new PublishIdentityIfEnabledAction());
-        base.Dispose(disposing);
+        return base.DisposeAsyncCore(disposing);
     }
 
 }

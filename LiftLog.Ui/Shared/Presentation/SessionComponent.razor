@@ -16,7 +16,7 @@ else
             RecordedExercise="context.Item"
             ToStartNext=@(Session.NextExercise == context.Item)
             CycleRepCountForSet=CycleRepCountForExerciseSet(context.Index)
-            ClearRepCountForSet=ClearRepCountForExerciseSet(context.Index)
+            ShowAdditionalActionsForSet=@(ShowAdditionalActionsForExerciseSet(context.Index))
             UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index)
             PreviousRecordedExercises=@(PreviouslyCompleted.GetValueOrDefault(context.Item.Blueprint, []))
             ToggleExercisePerSetWeight=@(() => ToggleExercisePerSetWeight(context.Index))
@@ -29,7 +29,7 @@ else
 }
 @if (ShowBodyweight)
 {
-    <Card class="flex justify-between items-center" Type=Card.CardType.Filled >
+    <Card class="flex justify-between items-center mx-2" Type=Card.CardType.Filled >
         <span class="text-xl font-bold">Bodyweight</span>
         <WeightDisplay AllowNull=true Weight=Session.Bodyweight UpdateWeight="UpdateBodyweight" Increment="0.1m" Label="Bodyweight"/>
     </Card>
@@ -75,6 +75,28 @@ else
 <FullScreenDialog @ref=_editExerciseDialog Title=@(_exerciseToEditIndex is null ? "Add Exercise" : "Edit Exercise") Action="Update" OnAction="EditExerciseHandler" OnClose="@(() => _exerciseToEditIndex = null)">
         <ExerciseEditor Exercise="editingExerciseBlueprint" UpdateExercise="(ex) => {editingExerciseBlueprint = ex; StateHasChanged();}" />
 </FullScreenDialog>
+
+<Dialog @ref="setAdditionalActionsDialog">
+    @if(setAdditionalActions != null)
+    {
+        var exercise = Session.RecordedExercises[setAdditionalActions.Value.ExerciseIndex];
+        var set = exercise.PotentialSets[setAdditionalActions.Value.PotentialSetIndex];
+        <span slot="headline" class="select-none">Select Reps</span>
+        <span slot="content" >
+        <PotentialSetAdditionalActions
+            Set="set"
+            MaxReps=exercise.Blueprint.RepsPerSet
+            OnSelectRepCount="@((reps)=>{
+                SetRepCountForExercise(setAdditionalActions.Value.ExerciseIndex, setAdditionalActions.Value.PotentialSetIndex,reps);
+                setAdditionalActionsDialog?.Close();
+                })"
+            OnDeleteSet=@(()=>{})></PotentialSetAdditionalActions>
+        </span>
+        <div slot="actions">
+            <AppButton Type="AppButtonType.Text" OnClick="@(() => setAdditionalActionsDialog?.Close())">Cancel</AppButton>
+        </div>
+    }
+</Dialog>
 
 
 <Dialog @ref="_removeExerciseDialog">
@@ -125,11 +147,13 @@ else
         SupersetWithNext: false
     );
 
+    private (int ExerciseIndex, int PotentialSetIndex)? setAdditionalActions;
     private int? _exerciseToEditIndex;
     private int? _exerciseToRemoveIndex;
     private FullScreenDialog? _editExerciseDialog;
     private Dialog? _removeExerciseDialog;
     private Dialog? _updatePlanDialog;
+    private Dialog? setAdditionalActionsDialog;
 
     [EditorRequired] [Parameter] public Session Session { get; set; } = null!;
 
@@ -139,7 +163,7 @@ else
 
     [EditorRequired] [Parameter] public Action<int, int> CycleRepcountForExercise { get; set; } = null!;
 
-    [EditorRequired] [Parameter] public Action<int, int> ClearRepCountForExercise { get; set; } = null!;
+    [EditorRequired] [Parameter] public Action<int, int, int?> SetRepCountForExercise { get; set; } = null!;
 
     [EditorRequired] [Parameter] public Action<int, decimal> UpdateWeightForExercise { get; set; } = null!;
 
@@ -161,8 +185,6 @@ else
 
     [EditorRequired] [Parameter] public Action CloseSession { get; set; } = null!;
 
-    [Parameter] [EditorRequired] public ImmutableListValue<string> ExerciseNames { get; set; } = null!;
-
     [Parameter] [EditorRequired] public bool SessionInPlan { get; set; }
 
     [Parameter] [EditorRequired] public bool SessionWithSameNameInPlan { get; set; }
@@ -175,6 +197,8 @@ else
 
     [Parameter] public bool IsReadonly { get; set; } = false;
 
+    [Parameter] public string? Username { get; set; }
+
     [CascadingParameter(Name = "IsInActiveScreen")]
     public bool IsInActiveScreen { get; set; }
 
@@ -182,12 +206,17 @@ else
         => (int set) => CycleRepcountForExercise(exerciseIndex, set);
 
 
-    private Action<int> ClearRepCountForExerciseSet(int exerciseIndex)
-        => (int set) => ClearRepCountForExercise(exerciseIndex, set);
+    private Action<int> ShowAdditionalActionsForExerciseSet(int exerciseIndex)
+        => (int setIndex) =>
+        {
+            setAdditionalActions = (exerciseIndex, setIndex);
+            setAdditionalActionsDialog?.Open();
+        };
+
+
 
     private Action<decimal> UpdateWeightForExerciseWrapper(int exerciseIndex)
         => (decimal weight) => UpdateWeightForExercise(exerciseIndex, weight);
-
 
     private void EditExerciseHandler()
     {
@@ -273,12 +302,18 @@ else
                         StartTime="lrs.Set.CompletionTime"
                         Failed="lastSetFailed"/>;
         }
-        else if (Session.IsComplete)
+        else if (Session.IsComplete || IsReadonly)
         {
             return @<SnackBar>
                 <span class="flex flex-col justify-start">
                     <span class="flex justify-between">
-                        <span>This session you lifted </span>
+                        <span>This session
+                            @if(Username is not null)
+                            {
+                                <span class="font-bold">@Username</span>
+                            } else{
+                                @("you");
+                            } lifted </span>
                         <span class="font-bold">
                             <WeightFormat Weight="Session.TotalWeightLifted"/>
                         </span>

@@ -1,8 +1,7 @@
-<li @attributes="AdditionalAttributes" @onclick="() => OnClick()" class="relative flex gap-2 p-4 rounded-md cursor-default">
-    <md-ripple></md-ripple>
-    <md-icon>@Icon</md-icon>
-    @Label
-</li>
+<md-menu-item @attributes="AdditionalAttributes" @onclick="() => OnClick()" @onclick:stopPropagation=true @onclick:preventDefault=true>
+    <md-icon slot="start">@Icon</md-icon>
+    <div slot="headline">@Label</div>
+</md-menu-item>
 
 @code {
     [EditorRequired] [Parameter] public string Icon { get; set; } = null!;

@@ -18,6 +18,7 @@ internal partial class FeedIdentityDaoV1
             ? null
             : new FeedIdentity(
                 Id: value.Id,
+                Lookup: value.Lookup,
                 AesKey: new Lib.Services.AesKey(value.AesKey.ToByteArray()),
                 RsaKeyPair: new Lib.Services.RsaKeyPair(
                     new Lib.Services.RsaPublicKey(value.PublicKey.ToByteArray()),
@@ -40,6 +41,7 @@ internal partial class FeedIdentityDaoV1
             : new FeedIdentityDaoV1
             {
                 Id = value.Id,
+                Lookup = value.Lookup,
                 AesKey = ByteString.CopyFrom(value.AesKey.Value),
                 PrivateKey = ByteString.CopyFrom(value.RsaKeyPair.PrivateKey.Pkcs8PrivateKeyBytes),
                 PublicKey = ByteString.CopyFrom(value.RsaKeyPair.PublicKey.SpkiPublicKeyBytes),
@@ -158,7 +160,8 @@ internal partial class FeedStateDaoV1
                 ActiveTab: "mainfeed-panel",
                 UnpublishedSessionIds: value
                     .UnpublishedSessionIds.Select(x => (Guid)x)
-                    .ToImmutableHashSet()
+                    .ToImmutableHashSet(),
+                HasPublishedRsaPublicKey: value.PublishedRsaKey
             );
 
     [return: NotNullIfNotNull(nameof(value))]
@@ -172,7 +175,8 @@ internal partial class FeedStateDaoV1
                 FollowedUsers = { value.FollowedUsers.Values.Select(x => (FeedUserDaoV1)x) },
                 FollowRequests = { value.FollowRequests.Select(x => (InboxMessageDao)x) },
                 Followers = { value.Followers.Values.Select(x => (FeedUserDaoV1)x) },
-                UnpublishedSessionIds = { value.UnpublishedSessionIds.Select(x => (UuidDao)x) }
+                UnpublishedSessionIds = { value.UnpublishedSessionIds.Select(x => (UuidDao)x) },
+                PublishedRsaKey = value.HasPublishedRsaPublicKey
             };
 }
 
@@ -203,16 +207,7 @@ internal partial class InboxMessageDao
     public static implicit operator FollowRequest?(InboxMessageDao? value) =>
         value is null
             ? null
-            : new FollowRequest(
-                UserId: value.FromUserId,
-                Name: value.FollowRequest.Name,
-                ProfilePicture: value.FollowRequest.ProfilePicture.IsEmpty
-                    ? null
-                    : value.FollowRequest.ProfilePicture.ToByteArray(),
-                PublicKey: new Lib.Services.RsaPublicKey(
-                    value.FollowRequest.PublicKey.ToByteArray()
-                )
-            );
+            : new FollowRequest(UserId: value.FromUserId, Name: value.FollowRequest.Name);
 
     [return: NotNullIfNotNull(nameof(value))]
     public static implicit operator InboxMessageDao?(FollowRequest? value) =>
@@ -221,13 +216,6 @@ internal partial class InboxMessageDao
             : new InboxMessageDao
             {
                 FromUserId = value.UserId,
-                FollowRequest = new FollowRequestDao
-                {
-                    Name = value.Name,
-                    ProfilePicture = value.ProfilePicture is null
-                        ? ByteString.Empty
-                        : ByteString.CopyFrom(value.ProfilePicture),
-                    PublicKey = ByteString.CopyFrom(value.PublicKey.SpkiPublicKeyBytes)
-                }
+                FollowRequest = new FollowRequestDao { Name = value.Name, }
             };
 }

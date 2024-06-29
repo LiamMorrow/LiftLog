@@ -22,10 +22,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install
-        run: yarn install
+        run: npm i
         working-directory: ./site
       - name: Build
-        run: yarn build
+        run: npm run build
         working-directory: ./site
 
       - name: Set up QEMU
@@ -61,7 +61,7 @@ jobs:
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
         id: build-and-push-signalr
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: site
           file: site/Dockerfile

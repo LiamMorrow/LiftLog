@@ -9,14 +9,14 @@ namespace LiftLog.Ui.Services;
 
 public class FeedApiService(HttpClient httpClient
 #if DEBUG
-    , IAppPurchaseService appPurchaseService
+    , IDeviceService deviceService
 #endif
 )
 {
 #if DEBUG
     // Android emulator needs a special loopback address - hacky but works
     private readonly string baseUrl =
-        appPurchaseService.GetAppStore() == AppStore.Google
+        deviceService.GetDeviceType() == DeviceType.Android
             ? "http://10.0.2.2:5264/"
             : "http://127.0.0.1:5264/";
 #else
@@ -45,12 +45,12 @@ public class FeedApiService(HttpClient httpClient
         });
     }
 
-    public Task<ApiResult<GetUserResponse>> GetUserAsync(Guid id)
+    public Task<ApiResult<GetUserResponse>> GetUserAsync(string idOrLookup)
     {
         return GetApiResultAsync(async () =>
         {
             var result = (
-                await httpClient.GetAsync($"{baseUrl}user/{id}")
+                await httpClient.GetAsync($"{baseUrl}user/{idOrLookup}")
             ).EnsureSuccessStatusCode();
             return (await result.Content.ReadFromJsonAsync<GetUserResponse>())!;
         });

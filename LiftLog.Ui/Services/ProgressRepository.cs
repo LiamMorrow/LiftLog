@@ -41,25 +41,28 @@ namespace LiftLog.Ui.Services
             }
         }
 
-        public ValueTask SaveCompletedSessionAsync(Session session)
+        public async ValueTask SaveCompletedSessionAsync(Session session)
         {
+            await InitialiseAsync();
             _storedSessions = _storedSessions.SetItem(session.Id, session);
-            return PersistAsync();
+            await PersistAsync();
         }
 
-        public ValueTask SaveCompletedSessionsAsync(IEnumerable<Session> sessions)
+        public async ValueTask SaveCompletedSessionsAsync(IEnumerable<Session> sessions)
         {
+            await InitialiseAsync();
             _storedSessions = _storedSessions.SetItems(
                 sessions.Select(x => new KeyValuePair<Guid, Session>(x.Id, x))
             );
 
-            return PersistAsync();
+            await PersistAsync();
         }
 
-        public ValueTask DeleteSessionAsync(Session session)
+        public async ValueTask DeleteSessionAsync(Session session)
         {
+            await InitialiseAsync();
             _storedSessions = _storedSessions.Remove(session.Id);
-            return PersistAsync();
+            await PersistAsync();
         }
 
         private async ValueTask InitialiseAsync()

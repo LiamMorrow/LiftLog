@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using Fluxor;
+using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Store.CurrentSession;
 
@@ -7,18 +8,18 @@ namespace LiftLog.Ui.Services;
 
 public class SessionService(
     IState<CurrentSessionState> currentSessionState,
-    ProgressRepository progressRepository,
-    CurrentProgramRepository programRepository
+    ProgressRepository progressRepository
 )
 {
     /// <summary>
     /// Returns all future sessions in order, including the current session if there is one.
     /// This enumerable is infinite, so ensure to limit output when consuming.
     /// </summary>
-    public async IAsyncEnumerable<Session> GetUpcomingSessionsAsync()
+    public async IAsyncEnumerable<Session> GetUpcomingSessionsAsync(
+        ImmutableListValue<SessionBlueprint> sessionBlueprints
+    )
     {
-        var sessionBluePrints = await programRepository.GetSessionsInProgramAsync();
-        if (!sessionBluePrints.Any())
+        if (!sessionBlueprints.Any())
         {
             yield break;
         }
@@ -35,7 +36,7 @@ public class SessionService(
         };
         if (latestSession == null)
         {
-            latestSession = CreateNewSession(sessionBluePrints[0], latestRecordedExercises);
+            latestSession = CreateNewSession(sessionBlueprints[0], latestRecordedExercises);
             yield return latestSession;
         }
 
@@ -44,7 +45,7 @@ public class SessionService(
         {
             latestSession = GetNextSession(
                 latestSession,
-                sessionBluePrints,
+                sessionBlueprints,
                 latestRecordedExercises
             );
             yield return latestSession;

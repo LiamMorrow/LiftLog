@@ -22,8 +22,8 @@
         <ApplicationIdGuid>71733E37-6FDD-4EEF-A0BF-DE32634D58EC</ApplicationIdGuid>
 
         <!-- Versions -->
-        <ApplicationDisplayVersion>2.4.1</ApplicationDisplayVersion>
-        <ApplicationVersion>57</ApplicationVersion>
+        <ApplicationDisplayVersion>2.9.6</ApplicationDisplayVersion>
+        <ApplicationVersion>72</ApplicationVersion>
 
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
@@ -53,6 +53,10 @@
         <MtouchLink>SdkOnly</MtouchLink>
         <UseInterpreter>True</UseInterpreter>
     </PropertyGroup>
+
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+        <AndroidResource Include="Platforms\Android\Resources\xml\auto_backup_rules.xml"/>
+    </ItemGroup>
 
     <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' Or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
 
@@ -92,13 +96,13 @@
         <PackageReference Include="BlazorTransitionableRoute" Version="4.0.0"/>
         <PackageReference Include="MaterialColorUtilities.Maui" Version="0.3.0"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0"/>
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1"/>
         <PackageReference Include="Plugin.InAppBilling" Version="7.1.0"/>
-        <PackageReference Include="Plugin.LocalNotification" Version="10.1.8"/>
-        <PackageReference Include="Sentry.Extensions.Logging" Version="4.1.1"/>
-        <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.7"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.7"/>
-        <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Annotation" Version="1.7.1"/>
+        <PackageReference Include="Plugin.LocalNotification" Version="11.1.3"/>
+        <PackageReference Include="Sentry.Extensions.Logging" Version="4.8.0"/>
+        <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.61"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.61"/>
+        <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Annotation" Version="1.8.0"/>
     </ItemGroup>
 
     <ItemGroup>

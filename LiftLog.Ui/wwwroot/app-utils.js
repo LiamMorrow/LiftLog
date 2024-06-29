@@ -2,32 +2,14 @@ var AppUtils = {};
 AppUtils.getScrollTop = function (element) {
     return element?.scrollTop
 };
-/**
- *
- * @param {HTMLElement} element
- */
-AppUtils.getMiddleElementAttribute = function (element, attribute) {
-    const absolutePositionOfElement = element.getBoundingClientRect();
-    const middle = absolutePositionOfElement.top + (absolutePositionOfElement.height / 2);
-    const middleX = absolutePositionOfElement.left + (absolutePositionOfElement.width / 2);
-    const elementAtMiddle = document.elementFromPoint(middleX, middle);
-    return elementAtMiddle?.getAttribute(attribute);
-}
-/**
- *
- * @param {HTMLElement} element
- */
-AppUtils.setMiddleElementAttribute = function (element, attribute, value) {
-    const absolutePositionOfElement = element.getBoundingClientRect();
-    const middle = absolutePositionOfElement.top + (absolutePositionOfElement.height / 2);
-    const middleX = absolutePositionOfElement.left + (absolutePositionOfElement.width / 2);
-    const elementAtMiddle = document.elementFromPoint(middleX, middle);
-    elementAtMiddle?.setAttribute(attribute, value);
-}
 
 AppUtils.showMdPopup = function (element) {
     return element?.show();
 };
+
+AppUtils.vibrate = function (ms) {
+    navigator.vibrate?.(ms);
+}
 
 /**
  * Creates a new event for the dialog close event.
@@ -49,6 +31,21 @@ AppUtils.onCloseMdPopup = function (element) {
             cancelable: true,
         }))
     });
+    element?.addEventListener('cancel', () => {
+        element?.dispatchEvent(new Event('dialog-cancel', {
+            bubbles: true,
+            cancelable: true,
+        }))
+    });
+};
+
+AppUtils.onClosedMenu = function (element) {
+    element?.addEventListener('closed', () => {
+        element?.dispatchEvent(new Event('dialog-close', {
+            bubbles: true,
+            cancelable: true,
+        }))
+    });
 };
 
 
@@ -65,6 +62,10 @@ AppUtils.getValue = function (element) {
     return element.value;
 }
 
+
+AppUtils.isOpen = function (element) {
+    return element.open;
+}
 
 AppUtils.getActiveTabControls = function (tabs) {
     /** @type {HTMLElement }*/
@@ -109,19 +110,6 @@ AppUtils.callOn = function (element, funcName) {
 }
 
 /**
- * Creates a new event for the list item clicked event.
- * This new event has bubbles, which allows blazor components to intercept it
- * @param {HTMLElement} element
- */
-AppUtils.onClickedListItem = function (element) {
-    element?.addEventListener('click', () => {
-        element?.dispatchEvent(new Event('list-item-click', {
-            bubbles: true,
-            cancelable: true,
-        }))
-    });
-}
-/**
  * Creates a new event for the slider changed event.
  * This new event just emits a number directly, as the value is incompatible with blazor ChangeEventArgs
  * @param {HTMLElement} element
@@ -137,13 +125,6 @@ AppUtils.onSliderChange = function (element) {
     });
 }
 
-AppUtils.scrollElementToMiddle = function (elementSelector) {
-    document.querySelector(elementSelector).scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-        inline: 'center'
-    });
-}
 
 AppUtils.smoothScrollAndFocusLast = function (elementSelector) {
     const items = document.querySelectorAll(elementSelector);
@@ -166,7 +147,7 @@ AppUtils.smoothScrollAndFocusLast = function (elementSelector) {
 AppUtils.closeActiveDialog = function () {
     const dialog = document.querySelector('md-dialog[open]');
     dialog?.close();
-    const fullscreenDialog = document.querySelector('.fullscreen-dialog[data-open]');
+    const fullscreenDialog = document.querySelector('.fullscreen-dialog[data-open]:not([data-closing])');
     fullscreenDialog?.dispatchEvent(new Event('close', {
         bubbles: true,
         cancelable: true,

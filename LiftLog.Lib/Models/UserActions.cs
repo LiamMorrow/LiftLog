@@ -8,7 +8,7 @@ public record DeleteUserRequest(Guid Id, string Password);
 
 public record GetUsersResponse(Dictionary<Guid, GetUserResponse> Users);
 
-public record CreateUserResponse(string Password);
+public record CreateUserResponse(string Lookup, string Password);
 
 public record PutUserDataRequest(
     Guid Id,
@@ -17,15 +17,19 @@ public record PutUserDataRequest(
     byte[]? EncryptedProfilePicture,
     byte[]? EncryptedName,
     // The IV can be considered public, as long as the encryption key is kept secret
-    byte[] EncryptionIV
+    byte[] EncryptionIV,
+    byte[] RsaPublicKey
 );
 
 public record GetUserResponse(
+    Guid Id,
+    string Lookup,
     byte[]? EncryptedCurrentPlan,
     byte[]? EncryptedProfilePicture,
     byte[]? EncryptedName,
     // The IV can be considered public, as long as the encryption key is kept secret
-    byte[] EncryptionIV
+    byte[] EncryptionIV,
+    byte[] RsaPublicKey
 );
 
 public record PutUserEventRequest(
@@ -42,9 +46,9 @@ public record PutUserEventRequest(
     DateTimeOffset Expiry
 );
 
-public record GetUserEventRequest(Guid UserId, string FollowSecret);
+public record GetUserEventRequest(Guid UserId, string FollowSecret, DateTimeOffset? Since = null);
 
-public record GetEventsRequest(GetUserEventRequest[] Users, DateTimeOffset Since);
+public record GetEventsRequest(GetUserEventRequest[] Users, DateTimeOffset? Since = null);
 
 public record UserEventResponse(
     Guid UserId,

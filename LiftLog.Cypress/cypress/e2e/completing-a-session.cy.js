@@ -39,10 +39,12 @@ describe('Completing a session', () => {
     beforeEach(() => {
       cy.navigate('Settings')
       // Disable tips
+      cy.containsA('App Configuration').click()
       cy.containsA('Show tips').click()
-      cy.containsA('Select a plan').click()
-      cy.containsA("Starting Strength").click()
-      cy.dialog().find("[slot=actions]").contains("Select").click()
+      cy.navigate('Settings')
+      cy.containsA('Manage plans').click()
+      cy.containsA("Starting Strength").parent('md-list-item').contains('Use').click()
+      cy.navigate('Workout')
     })
 
 
@@ -61,7 +63,7 @@ describe('Completing a session', () => {
           cy.getA('.repcount').eq(i).click()
         }
 
-        cy.getA('.snackbar').should('be.visible').should('contain.text', 'This session you lifted').should('contain.text', '680')
+        cy.getA('.snackbar').should('be.visible').should('contain.text', 'This session').should('contain.text', '680')
 
         cy.contains('Finish').click()
 
@@ -114,7 +116,7 @@ describe('Completing a session', () => {
           cy.getA('.repcount').eq(i).click()
         }
 
-        cy.getA('.snackbar').should('be.visible').should('contain.text', 'This session you lifted').should('contain.text', '650')
+        cy.getA('.snackbar').should('be.visible').should('contain.text', 'This session').should('contain.text', '650')
         cy.contains('Finish').click()
 
         cy.getA('.cardlist .card').eq(0).should('contain.text', 'Workout B')

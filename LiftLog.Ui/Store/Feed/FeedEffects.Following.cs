@@ -27,6 +27,35 @@ public partial class FeedEffects(
 )
 {
     [EffectMethod]
+    public async Task HandleFetchAndSetSharedFeedUserAction(
+        FetchAndSetSharedFeedUserAction action,
+        IDispatcher dispatcher
+    )
+    {
+        var result = await feedApiService.GetUserAsync(action.IdOrLookup);
+        if (
+            result is { IsSuccess: true }
+            && new[] { result.Data.RsaPublicKey, action.RsaPublicKey }.Any(x => x != null)
+        )
+        {
+            dispatcher.Dispatch(
+                new SetSharedFeedUserAction(
+                    FeedUser.FromShared(
+                        result.Data.Id,
+                        new RsaPublicKey(result.Data.RsaPublicKey ?? action.RsaPublicKey!),
+                        action.Name
+                    )
+                )
+            );
+        }
+        else
+        {
+            // TODO handle properly
+            logger.LogError("Failed to fetch shared feed user with error {Error}", result.Error);
+        }
+    }
+
+    [EffectMethod]
     public async Task HandleRequestFollowSharedUserAction(
         RequestFollowUserAction action,
         IDispatcher dispatcher
@@ -135,9 +164,19 @@ public partial class FeedEffects(
                 );
             }
 
+            var userResponse = await feedApiService.GetUserAsync(action.Request.UserId.ToString());
+            if (!userResponse.IsSuccess)
+            {
+                // TODO handle properly
+                logger.LogError("Failed to fetch user with error {Error}", userResponse.Error);
+                return;
+            }
+            var user = userResponse.Data;
+
             var followSecretResponse = await feedFollowService.AcceptFollowRequestAsync(
                 identity,
-                action.Request
+                action.Request,
+                new RsaPublicKey(user.RsaPublicKey)
             );
 
             if (!followSecretResponse.IsSuccess)
@@ -154,7 +193,7 @@ public partial class FeedEffects(
                 new AddFollowerAction(
                     FeedUser.FromShared(
                         action.Request.UserId,
-                        action.Request.PublicKey,
+                        new RsaPublicKey(user.RsaPublicKey),
                         action.Request.Name
                     ) with
                     {
@@ -172,7 +211,22 @@ public partial class FeedEffects(
     ) =>
         IfIdentityExists(async identity =>
         {
-            var result = await feedFollowService.DenyFollowRequestAsync(identity, action.Request);
+            var userResponse = await feedApiService.GetUserAsync(action.Request.UserId.ToString());
+            if (!userResponse.IsSuccess)
+            {
+                // TODO handle properly
+                logger.LogError(
+                    "Failed to deny follow request with error {Error}. Removing request anyway.",
+                    userResponse.Error
+                );
+                dispatcher.Dispatch(new RemoveFollowRequestAction(action.Request));
+                return;
+            }
+            var result = await feedFollowService.DenyFollowRequestAsync(
+                identity,
+                action.Request,
+                new RsaPublicKey(userResponse.Data.RsaPublicKey)
+            );
             if (!result.IsSuccess && result.Error.Type != ApiErrorType.NotFound)
             {
                 logger.LogError(
