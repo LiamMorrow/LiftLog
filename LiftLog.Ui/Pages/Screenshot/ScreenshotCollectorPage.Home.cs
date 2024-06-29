@@ -1,5 +1,6 @@
 #if DEBUG
 using LiftLog.Lib.Models;
+using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.CurrentSession;
 using LiftLog.Ui.Store.Program;
@@ -40,10 +41,18 @@ public partial class ScreenshotCollectorPage
             ]
         );
 
-    private async Task HandleProgramEditorScreenshotCollection()
+    private async Task HandleHomeScreenshotCollection()
     {
-        Dispatcher.Dispatch(new SetProgramSessionsAction([demoSessionBlueprint]));
-        Dispatcher.Dispatch(new NavigateAction("/settings/manage-workouts/manage-session/0"));
+        var builtInProgram = BuiltInProgramService.BuiltInPrograms.First();
+        Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, null));
+        Dispatcher.Dispatch(new SetActiveProgramAction(builtInProgram.Key));
+        Dispatcher.Dispatch(
+            new SetProgramSessionsAction(
+                ProgramState.Value.ActivePlanId,
+                builtInProgram.Value.Sessions
+            )
+        );
+        Dispatcher.Dispatch(new NavigateAction($"/"));
         await Task.Yield();
     }
 }

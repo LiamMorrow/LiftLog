@@ -25,7 +25,7 @@ public partial class ScreenshotCollectorPage : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         await ProgressRepository.ClearAsync();
-        Dispatcher.Dispatch(new SetProgramSessionsAction([]));
+        Dispatcher.Dispatch(new SetProgramSessionsAction(ProgramState.Value.ActivePlanId, []));
         Dispatcher.Dispatch(new SetUseImperialUnitsAction(false));
         Dispatcher.Dispatch(new SetShowBodyweightAction(true));
         Dispatcher.Dispatch(new SetShowFeedAction(true));
@@ -42,14 +42,17 @@ public partial class ScreenshotCollectorPage : ComponentBase
             case "workoutpage":
                 await HandleWorkoutPageScreenshotCollection();
                 break;
-            case "programeditor":
-                await HandleProgramEditorScreenshotCollection();
+            case "home":
+                await HandleHomeScreenshotCollection();
                 break;
             case "exerciseeditor":
                 await HandleExerciseEditorScreenshotCollection();
                 break;
             case "stats":
                 await HandleStatsScreenshotCollection();
+                break;
+            case "ai":
+                await HandleAiPageScreenshotCollection();
                 break;
         }
         await base.OnInitializedAsync();

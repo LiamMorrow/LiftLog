@@ -26,7 +26,7 @@ public class PersistProgramMiddleware(
             var builtInPrograms = BuiltInProgramService.BuiltInPrograms;
             var savedPrograms = await savedProgramsTask;
             // Legacy path where there could exist a non named program.
-            if (activeProgramId is null)
+            if (activeProgramId is null || !savedPrograms.ContainsKey(activeProgramId.Value))
             {
                 var sessionsInCurrentProgram = await programRepository.GetSessionsInProgramAsync();
                 activeProgramId = Guid.NewGuid();

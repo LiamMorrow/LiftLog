@@ -10,9 +10,13 @@ public partial class ScreenshotCollectorPage
 {
     private async Task HandleExerciseEditorScreenshotCollection()
     {
-        Dispatcher.Dispatch(new SetProgramSessionsAction([demoSessionBlueprint]));
         Dispatcher.Dispatch(
-            new NavigateAction("/settings/manage-workouts/manage-session/0?editingExercise=0")
+            new SetProgramSessionsAction(ProgramState.Value.ActivePlanId, [demoSessionBlueprint])
+        );
+        Dispatcher.Dispatch(
+            new NavigateAction(
+                $"/settings/manage-workouts/manage-session/0?editingExercise=0&planId={ProgramState.Value.ActivePlanId}"
+            )
         );
         await Task.Yield();
     }
