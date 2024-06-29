@@ -62,6 +62,10 @@ AppUtils.getValue = function (element) {
     return element.value;
 }
 
+AppUtils.getWidth = function (element) {
+    return element?.offsetWidth ?? 0;
+}
+
 
 AppUtils.isOpen = function (element) {
     return element.open;

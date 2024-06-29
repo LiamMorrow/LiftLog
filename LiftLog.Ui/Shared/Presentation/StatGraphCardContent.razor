@@ -6,7 +6,9 @@
 @implements IDisposable
 
 @inject IThemeProvider ThemeProvider
-<div class="flex flex-col gap-2 items-start">
+@inject IJSRuntime JSRuntime
+
+<div class="flex flex-col gap-2 items-start" @ref="cardContent" >
 @if (ShowTitle)
 {
 
@@ -14,7 +16,7 @@
 }
 @if (IsLoading)
 {
-    <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
+    <div class="flex flex-col justify-center h-full gap-4 text-on-surface mx-auto">
         <div>
             <md-circular-progress aria-label="Stats progress" indeterminate four-color></md-circular-progress>
         </div>
@@ -29,7 +31,10 @@ else
         TItem="TimeTrackedStatistic"
         Title=""
         Options="options"
-        XAxisType="XAxisType.Datetime">
+        Width="@width"
+        Height="230"
+        XAxisType="XAxisType.Datetime"
+        @ref="chart">
 
         @foreach(var statistics in Statistics)
         {
@@ -65,6 +70,12 @@ else
     private bool IsLoading { get; set; } = true;
 
     private bool _disposed = false;
+
+    private ElementReference cardContent;
+    private ApexChart<TimeTrackedStatistic> chart = null!;
+
+    private string width = "100%";
+
 
 
     private ApexChartOptions<TimeTrackedStatistic> options = null!;
@@ -189,6 +200,17 @@ else
                 InvokeAsync(StateHasChanged);
             }
         });
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var cardContentWidth = await JSRuntime.InvokeAsync<double>("AppUtils.getWidth", cardContent);
+            width = $"{cardContentWidth}px";
+            await InvokeAsync(StateHasChanged);
+        }
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     private string GetColorString(uint color) => "#" + color.ToString("X").Substring(2, 6);
