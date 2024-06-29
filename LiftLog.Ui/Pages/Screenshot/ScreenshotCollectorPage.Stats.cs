@@ -17,7 +17,7 @@ public partial class ScreenshotCollectorPage
     [Inject]
     public IScreenshotStatsImportsProvider ScreenshotStatsImportsProvider { get; set; } = null!;
 
-    private async Task HandleStatsScreenshotCollection()
+    private async Task HandleStatsScreenshotCollection(string navigateTo)
     {
         var imported = await ScreenshotStatsImportsProvider.GetImportBytesAsync();
         using GZipStream gzip = new(imported, CompressionMode.Decompress);
@@ -39,7 +39,7 @@ public partial class ScreenshotCollectorPage
 
         Dispatcher.Dispatch(new SetPinnedExerciseStatsAction([new("Bench Press")]));
         Dispatcher.Dispatch(new SetShowBodyweightAction(false));
-        Dispatcher.Dispatch(new NavigateAction("/stats"));
+        Dispatcher.Dispatch(new NavigateAction(navigateTo));
     }
 }
 

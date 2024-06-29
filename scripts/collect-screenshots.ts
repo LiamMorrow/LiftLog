@@ -1,3 +1,4 @@
+#!bun run
 import { $, sleep } from "bun";
 
 async function collectIosScreenshot(fileName: string, simulatorId: string) {
@@ -46,18 +47,20 @@ function getAndroidEmulatorIpAndPort(device: string) {
 }
 const screenshotCoords = [
   //
-  "workoutpage",
-  "exerciseeditor",
-  "ai",
-  "home",
-  "stats",
+  // "workoutpage",
+  // "exerciseeditor",
+  // "ai",
+  // "home",
+  // "stats",
+  // "history",
+  "ai-session",
 ];
 const iosDevices = [
   //
-  "iPhone SE 2nd generation",
-  "iPhone 14 Plus",
-  "iPad Pro 13-inch",
-  "iPhone 15 Pro Max",
+  // "iPhone SE 2nd generation",
+  // "iPhone 14 Plus",
+  // "iPad Pro 13-inch",
+  // "iPhone 15 Pro Max",
 ];
 
 const androidDevices = [

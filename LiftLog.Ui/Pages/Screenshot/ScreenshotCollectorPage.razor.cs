@@ -49,10 +49,16 @@ public partial class ScreenshotCollectorPage : ComponentBase
                 await HandleExerciseEditorScreenshotCollection();
                 break;
             case "stats":
-                await HandleStatsScreenshotCollection();
+                await HandleStatsScreenshotCollection("/stats");
+                break;
+            case "history":
+                await HandleStatsScreenshotCollection("/history");
                 break;
             case "ai":
                 await HandleAiPageScreenshotCollection();
+                break;
+            case "ai-session":
+                await HandleAiSessionScreenshotCollection();
                 break;
         }
         await base.OnInitializedAsync();

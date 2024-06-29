@@ -12,5 +12,11 @@ public partial class ScreenshotCollectorPage
         Dispatcher.Dispatch(new NavigateAction("/settings/ai-planner"));
         await Task.Yield();
     }
+
+    private async Task HandleAiSessionScreenshotCollection()
+    {
+        Dispatcher.Dispatch(new NavigateAction("/settings/ai-session-creator"));
+        await Task.Yield();
+    }
 }
 #endif
