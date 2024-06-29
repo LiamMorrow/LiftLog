@@ -1,4 +1,7 @@
 <div class="flex flex-wrap gap-2 justify-center mb-2 mx-4">
+    @GetRepButton(@<span>-</span>,
+        () => OnSelectRepCount.InvokeAsync(null),
+        "bg-secondary-container text-on-secondary-container")
     @for(int i = 0; i < MaxReps + 1; i++)
     {
         var reps = i;
@@ -8,9 +11,6 @@
     }
 </div>
 <div class="flex flex-grow gap-2 justify-center">
-    @GetRepButton(@<span>-</span>,
-        () => OnSelectRepCount.InvokeAsync(null),
-        "bg-secondary-container text-on-secondary-container")
 
     @for(int i = MaxReps+1; i < MaxReps + 4; i++)
     {
@@ -36,7 +36,7 @@
     {
         return @<div class="flex flex-col items-center relative">
             <button
-                @onclick="onClick"
+                @onpointerdown="onClick"
                 class="
                     repcount
                     flex-shrink-0
