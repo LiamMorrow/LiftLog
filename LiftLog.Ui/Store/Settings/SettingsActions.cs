@@ -10,6 +10,8 @@ public record ExportDataAction();
 
 public record ImportDataAction();
 
+public record ImportDataBytesAction(byte[] Bytes);
+
 public record GenerateAiPlanAction(AiWorkoutAttributes Attributes);
 
 public record SetAiPlanAction(AiWorkoutPlan? Plan);

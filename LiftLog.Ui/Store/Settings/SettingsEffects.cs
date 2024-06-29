@@ -44,7 +44,13 @@ public class SettingsEffects(
     }
 
     [EffectMethod]
-    public async Task ImportData(ImportDataAction action, IDispatcher dispatcher)
+    public async Task ImportData(ImportDataAction _, IDispatcher dispatcher)
+    {
+        dispatcher.Dispatch(new ImportDataBytesAction(await textExporter.ImportBytesAsync()));
+    }
+
+    [EffectMethod]
+    public async Task ImportDataBytes(ImportDataBytesAction action, IDispatcher dispatcher)
     {
         ExportedDataDaoV2? Deserialize(byte[] bytes)
         {
@@ -79,54 +85,46 @@ public class SettingsEffects(
                 }
             }
         }
-
-        try
+        var importBytes = action.Bytes;
+        if (importBytes is null || importBytes.Length == 0)
+            return;
+        var deserialized = Deserialize(importBytes);
+        if (deserialized != null)
         {
-            var importBytes = await textExporter.ImportBytesAsync();
-            if (importBytes is null || importBytes.Length == 0)
-                return;
-            var deserialized = Deserialize(importBytes);
-            if (deserialized != null)
+            await progressRepository.SaveCompletedSessionsAsync(
+                deserialized.Sessions.Select(x => x.ToModel())
+            );
+            dispatcher.Dispatch(
+                new SetSavedPlansAction(
+                    deserialized.SavedPrograms.ToImmutableDictionary(
+                        x => Guid.Parse(x.Key),
+                        x => x.Value.ToModel()
+                    )
+                )
+            );
+            // Will be null when an old export which did not have an active program is imported
+            // In this case, it will have an unnamed program, which will be set as the active program
+            if (deserialized.ActiveProgramId is null)
             {
-                await progressRepository.SaveCompletedSessionsAsync(
-                    deserialized.Sessions.Select(x => x.ToModel())
-                );
+                var newId = Guid.NewGuid();
+                dispatcher.Dispatch(new CreateSavedPlanAction(newId, "My Program"));
                 dispatcher.Dispatch(
-                    new SetSavedPlansAction(
-                        deserialized.SavedPrograms.ToImmutableDictionary(
-                            x => Guid.Parse(x.Key),
-                            x => x.Value.ToModel()
-                        )
+                    new SetProgramSessionsAction(
+                        newId,
+                        deserialized.Program.Select(x => x.ToModel()).ToImmutableList()
                     )
                 );
-                // Will be null when an old export which did not have an active program is imported
-                // In this case, it will have an unnamed program, which will be set as the active program
-                if (deserialized.ActiveProgramId is null)
-                {
-                    var newId = Guid.NewGuid();
-                    dispatcher.Dispatch(new CreateSavedPlanAction(newId, "My Program"));
-                    dispatcher.Dispatch(
-                        new SetProgramSessionsAction(
-                            newId,
-                            deserialized.Program.Select(x => x.ToModel()).ToImmutableList()
-                        )
-                    );
-                    dispatcher.Dispatch(new SetActiveProgramAction(newId));
-                }
-                else
-                {
-                    var id = Guid.Parse(deserialized.ActiveProgramId);
-                    dispatcher.Dispatch(new SetActiveProgramAction(id));
-                }
+                dispatcher.Dispatch(new SetActiveProgramAction(newId));
             }
             else
             {
-                logger.LogError("Could not deserialize data for import {data}", importBytes);
+                var id = Guid.Parse(deserialized.ActiveProgramId);
+                dispatcher.Dispatch(new SetActiveProgramAction(id));
             }
         }
-        catch (JsonException ex)
+        else
         {
-            logger.LogError(ex, "Error importing");
+            logger.LogError("Could not deserialize data for import {data}", importBytes);
         }
     }
 

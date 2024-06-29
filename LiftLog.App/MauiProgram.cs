@@ -66,6 +66,10 @@ public static class MauiProgram
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
+        builder.Services.AddSingleton<
+            Ui.Pages.Screenshot.IScreenshotStatsImportsProvider,
+            AppScreenshotStatsImportsProvider
+        >();
 #endif
         // Add this section anywhere on the builder:
         builder.Logging.AddSentry(options =>

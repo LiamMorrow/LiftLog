@@ -9,17 +9,22 @@ public record StatsState(
     string? OverallViewSessionName,
     TimeSpan OverallViewTime,
     GranularStatisticView? OverallView,
-    ImmutableListValue<PinnedStatistic> PinnedStatistics
-);
-
-public enum StatisticType
+    ImmutableListValue<PinnedExerciseStatistic> PinnedExerciseStatistics
+)
 {
-    Bodyweight = 0,
-    Exercise = 1,
-    Session = 2,
+    public bool IsExercisePinned(ExerciseStatistics exerciseStatistics) =>
+        PinnedExerciseStatistics
+            .Select(x => x.ExerciseName == exerciseStatistics.ExerciseName)
+            .Any();
+
+    public IEnumerable<ExerciseStatistics> GetPinnedExercises() =>
+        PinnedExerciseStatistics
+            .Select(x => x.ExerciseName)
+            .Select(x => OverallView?.ExerciseStats.FirstOrDefault(y => y.ExerciseName == x))
+            .WhereNotNull();
 }
 
-public record PinnedStatistic(StatisticType Type, string Title);
+public record PinnedExerciseStatistic(string ExerciseName);
 
 public record StatisticOverTime(string Title, ImmutableListValue<TimeTrackedStatistic> Statistics);
 

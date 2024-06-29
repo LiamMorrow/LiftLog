@@ -52,6 +52,9 @@ public static class ServiceRegistration
 #endif
         );
 
+        services.AddScoped<CurrentProgramRepository>();
+        services.AddScoped<ProgressRepository>();
+        services.AddScoped<PreferencesRepository>();
         services.AddSingleton<NavigationManagerProvider>();
 
         services.AddSingleton<CurrentProgramRepository>();

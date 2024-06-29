@@ -177,5 +177,12 @@ namespace LiftLog.Ui.Services
             await InitialiseAsync();
             return _storedSessions.GetValueOrDefault(sessionId);
         }
+
+        public async Task ClearAsync()
+        {
+            await keyValueStore.RemoveItemAsync(StorageKey);
+            await keyValueStore.RemoveItemAsync($"{StorageKey}-Version");
+            _storedSessions = ImmutableDictionary<Guid, Session>.Empty;
+        }
     }
 }
