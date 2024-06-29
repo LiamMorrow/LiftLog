@@ -1,7 +1,7 @@
 import { $, sleep } from "bun";
 
-async function collectIosScreenshot(fileName: string) {
-  await $`xcrun simctl io booted screenshot ${fileName}`;
+async function collectIosScreenshot(fileName: string, simulatorId: string) {
+  await $`xcrun simctl io ${simulatorId} screenshot ${fileName}`;
 }
 
 async function collectAndroidScreenshot(fileName: string) {
@@ -44,7 +44,14 @@ async function getIosSimulatorId(device: string) {
 function getAndroidEmulatorIpAndPort(device: string) {
   return $`adb devices | grep "${device}" | awk '{print $1}'`.text();
 }
-const screenshotCoords = ["workoutpage", "exerciseeditor", "ai", "home", "stats"];
+const screenshotCoords = [
+  //
+  "workoutpage",
+  "exerciseeditor",
+  "ai",
+  "home",
+  "stats",
+];
 const iosDevices = [
   //
   "iPhone SE 2nd generation",
@@ -76,15 +83,15 @@ for (const device of androidDevices) {
 
 for (const device of iosDevices) {
   await $`mkdir -p ${getDeviceFolder(device)}`;
-  // startSimulator(device);
+  startSimulator(device);
   await $`echo Press enter when simulator loaded`;
-  await $`read`;
+  // await $`read`;
   const simulatorId = await getIosSimulatorId(device);
   // $`dotnet build ../LiftLog.App -t:Run -f net8.0-ios -p:RuntimeIdentifiers=iossimulator-x64 -c Debug -p:ExtraDefineConstants=DEBUG_IOSSIM -p:_DeviceName=:v2:udid=${simulatorId}`.text();
-  await sleep(25000);
+  await sleep(2000);
   for (const coords of screenshotCoords) {
     goToScreenshotUrlIos(coords, simulatorId);
     await sleep(10000);
-    collectIosScreenshot(getFileName(coords, device));
+    collectIosScreenshot(getFileName(coords, device), simulatorId);
   }
 }

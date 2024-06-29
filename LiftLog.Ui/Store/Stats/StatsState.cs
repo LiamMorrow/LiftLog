@@ -13,9 +13,7 @@ public record StatsState(
 )
 {
     public bool IsExercisePinned(ExerciseStatistics exerciseStatistics) =>
-        PinnedExerciseStatistics
-            .Select(x => x.ExerciseName == exerciseStatistics.ExerciseName)
-            .Any();
+        PinnedExerciseStatistics.Any(x => x.ExerciseName == exerciseStatistics.ExerciseName);
 
     public IEnumerable<ExerciseStatistics> GetPinnedExercises() =>
         PinnedExerciseStatistics

@@ -63,7 +63,7 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
     <div class="flex flex-col gap-2">
         @foreach(var pinnedStat in StatsState.Value.GetPinnedExercises().IndexedTuples())
         {
-            <Card>
+            <Card class="mx-2">
                 <StatGraphCardContent Title="@pinnedStat.Item.ExerciseName" Statistics="[pinnedStat.Item.Statistics, pinnedStat.Item.OneRepMaxStatistics]" RenderDelay="TimeSpan.FromMilliseconds(200 + pinnedStat.Index * 200)"/>
             </Card>
         }
