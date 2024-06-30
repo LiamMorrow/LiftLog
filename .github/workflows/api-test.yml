@@ -1,0 +1,49 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Api Tests
+
+on:
+  push:
+    branches-ignore: [main]
+
+jobs:
+  api-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: liftlog
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+    env:
+      ConnectionStrings__UserDataContext: Host=localhost;Port=5432;Database=liftlog;Username=postgres;Password=password
+      ConnectionStrings__RateLimitContext: Host=localhost;Port=5432;Database=liftlog;Username=postgres;Password=password
+      OpenAiApiKey: "sk-123"
+      WebAuthApiKey: "1234"
+      GooglePlayServiceAccountEmail: "123"
+      GooglePlayServiceAccountKeyBase64: "123"
+      IdEncodingService__Alphabet: "123abc"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: ./tests/LiftLog.Tests.Api
+      - name: Build
+        run: dotnet build
+        working-directory: ./tests/LiftLog.Tests.Api
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
+        working-directory: ./tests/LiftLog.Tests.Api

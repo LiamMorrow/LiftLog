@@ -23,8 +23,15 @@ public class IdEncodingService
         return encoder.Encode(id);
     }
 
-    public int DecodeId(string encodedId)
+    public bool TryDecodeId(string encodedId, out int decodedId)
     {
-        return encoder.Decode(encodedId)[0];
+        var decoded = encoder.Decode(encodedId);
+        if (decoded.Count == 0)
+        {
+            decodedId = 0;
+            return false;
+        }
+        decodedId = decoded[0];
+        return true;
     }
 }

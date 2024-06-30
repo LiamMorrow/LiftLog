@@ -13,6 +13,8 @@ public class UserDataContext(DbContextOptions<UserDataContext> options) : DbCont
 
     public DbSet<UserInboxItem> UserInboxItems { get; set; } = null!;
 
+    public DbSet<SharedItem> SharedItems { get; set; } = null!;
+
     /// <summary>
     /// Used to register the user event filter tuple type as a DbSet for use in FromSqlRaw.
     /// </summary>
@@ -47,6 +49,12 @@ public class UserDataContext(DbContextOptions<UserDataContext> options) : DbCont
         modelBuilder
             .Entity<User>()
             .HasMany<UserInboxItem>()
+            .WithOne(x => x.User)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<User>()
+            .HasMany<SharedItem>()
             .WithOne(x => x.User)
             .OnDelete(DeleteBehavior.Cascade);
 
