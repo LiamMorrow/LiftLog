@@ -30,7 +30,11 @@ async function goToScreenshotUrlAndroid(coords: string, emulator: string) {
 }
 
 async function startSimulator(device: string) {
-  await $`xcrun simctl boot ${device}`;
+  const boot = (await $`xcrun simctl boot ${device}`).stderr.toString();
+  if (boot.includes("Unable to boot device in current state: Booted")) {
+    return;
+  }
+  await sleep(5000);
 }
 
 function startEmulator(device: string) {
@@ -47,20 +51,20 @@ function getAndroidEmulatorIpAndPort(device: string) {
 }
 const screenshotCoords = [
   //
-  // "workoutpage",
-  // "exerciseeditor",
-  // "ai",
-  // "home",
-  // "stats",
-  // "history",
+  "workoutpage",
+  "exerciseeditor",
+  "ai",
+  "home",
+  "stats",
+  "history",
   "ai-session",
 ];
 const iosDevices = [
   //
-  // "iPhone SE 2nd generation",
-  // "iPhone 14 Plus",
-  // "iPad Pro 13-inch",
-  // "iPhone 15 Pro Max",
+  "iPhone SE 2nd generation",
+  "iPhone 14 Plus",
+  "iPad Pro 13-inch",
+  "iPhone 15 Pro Max",
 ];
 
 const androidDevices = [
@@ -86,12 +90,10 @@ for (const device of androidDevices) {
 
 for (const device of iosDevices) {
   await $`mkdir -p ${getDeviceFolder(device)}`;
-  startSimulator(device);
-  await $`echo Press enter when simulator loaded`;
-  // await $`read`;
+  await startSimulator(device);
   const simulatorId = await getIosSimulatorId(device);
-  // $`dotnet build ../LiftLog.App -t:Run -f net8.0-ios -p:RuntimeIdentifiers=iossimulator-x64 -c Debug -p:ExtraDefineConstants=DEBUG_IOSSIM -p:_DeviceName=:v2:udid=${simulatorId}`.text();
-  await sleep(2000);
+  $`dotnet build ../LiftLog.App -t:Run -f net8.0-ios -p:RuntimeIdentifiers=iossimulator-x64 -c Debug -p:ExtraDefineConstants=DEBUG_IOSSIM -p:_DeviceName=:v2:udid=${simulatorId}`;
+  await sleep(25000);
   for (const coords of screenshotCoords) {
     goToScreenshotUrlIos(coords, simulatorId);
     await sleep(10000);
