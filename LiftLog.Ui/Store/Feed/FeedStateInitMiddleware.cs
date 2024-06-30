@@ -17,6 +17,7 @@ public class FeedStateInitMiddleware(
 
     public override async Task InitializeAsync(IDispatcher dispatch, IStore store)
     {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
         this.store = store;
         try
         {
@@ -31,11 +32,6 @@ public class FeedStateInitMiddleware(
                     if (feedState is not null)
                     {
                         store.Features[nameof(FeedFeature)].RestoreState(feedState);
-                        Console.WriteLine(
-                            "Restoring feed state from storage {0} {1}",
-                            feedState,
-                            feedStateDao
-                        );
                         if (feedState.Identity is null)
                         {
                             dispatch.Dispatch(
@@ -52,8 +48,12 @@ public class FeedStateInitMiddleware(
                     }
                 }
             }
-
             dispatch.Dispatch(new SetFeedIsHydratedAction());
+            sw.Stop();
+            logger.LogInformation(
+                "Feed state initialized in {ElapsedMilliseconds}ms",
+                sw.ElapsedMilliseconds
+            );
         }
         catch (Exception e)
         {

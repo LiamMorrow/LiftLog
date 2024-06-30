@@ -7,12 +7,6 @@ namespace LiftLog.Ui.Store.Settings;
 public static class SettingsReducers
 {
     [ReducerMethod]
-    public static SettingsState SetSettingsIsHydrated(
-        SettingsState state,
-        SetSettingsIsHydratedAction _
-    ) => state with { IsHydrated = true };
-
-    [ReducerMethod]
     public static SettingsState SetIsGeneratingAiPlan(
         SettingsState state,
         SetIsGeneratingAiPlanAction action

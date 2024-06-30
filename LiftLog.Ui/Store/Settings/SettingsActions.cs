@@ -4,8 +4,6 @@ using LiftLog.Ui.Services;
 
 namespace LiftLog.Ui.Store.Settings;
 
-public record SetSettingsIsHydratedAction();
-
 public record ExportDataAction();
 
 public record ImportDataAction();

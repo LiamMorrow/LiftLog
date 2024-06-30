@@ -14,6 +14,7 @@ public class SettingsStateInitMiddleware(
     {
         try
         {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
             var (
                 useImperialUnits,
                 showBodyweight,
@@ -31,15 +32,24 @@ public class SettingsStateInitMiddleware(
                 preferencesRepository.GetStatusBarFixAsync(),
                 preferencesRepository.GetRestNotificationsAsync()
             );
-            dispatch.Dispatch(new SetUseImperialUnitsAction(useImperialUnits));
-            dispatch.Dispatch(new SetShowBodyweightAction(showBodyweight));
-            dispatch.Dispatch(new SetShowTipsAction(showTips));
-            dispatch.Dispatch(new SetTipToShowAction(tipToShow));
-            dispatch.Dispatch(new SetShowFeedAction(showFeed));
-            dispatch.Dispatch(new SetStatusBarFixAction(statusBarFix));
-            dispatch.Dispatch(new SetRestNotificationsAction(restNotifications));
 
-            dispatch.Dispatch(new SetSettingsIsHydratedAction());
+            var state = (SettingsState)store.Features[nameof(SettingsFeature)].GetState() with
+            {
+                IsHydrated = true,
+                UseImperialUnits = useImperialUnits,
+                ShowBodyweight = showBodyweight,
+                ShowTips = showTips,
+                TipToShow = tipToShow,
+                ShowFeed = showFeed,
+                StatusBarFix = statusBarFix,
+                RestNotifications = restNotifications
+            };
+            store.Features[nameof(SettingsFeature)].RestoreState(state);
+            sw.Stop();
+            logger.LogInformation(
+                "Settings state initialized in {ElapsedMilliseconds}ms",
+                sw.ElapsedMilliseconds
+            );
         }
         catch (Exception e)
         {
