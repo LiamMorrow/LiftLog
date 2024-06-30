@@ -40,7 +40,7 @@ else
             <ListSwitch Headline="Publish bodyweight" SupportingText="Publish your bodyweight with your workouts"  Value=@publishBodyweight OnSwitched="SetPublishBodyweight"/>
             <ListSwitch Headline="Publish plan" SupportingText="Publish your current plan for your followers to see and import" Value=@publishPlan OnSwitched="SetPublishPlan"/>
         </md-list>
-        <AppButton Type=AppButtonType.Text OnClick="@(() => stopPublishingDialog?.Open())">Delete account</AppButton>
+        <AppButton Type=AppButtonType.Text OnClick="@(() => stopPublishingDialog?.Open())">Delete account data</AppButton>
     </div>
 }
 

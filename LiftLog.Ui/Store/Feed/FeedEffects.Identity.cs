@@ -155,6 +155,9 @@ public partial class FeedEffects
             dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
             dispatcher.Dispatch(new ReplaceFeedItemsAction([]));
             dispatcher.Dispatch(new ReplaceFeedFollowedUsersAction([]));
+            dispatcher.Dispatch(
+                new CreateFeedIdentityAction(null, null, false, false, false, null)
+            );
         });
 
     private Task IfIdentityExists(
