@@ -3,7 +3,7 @@ using LiftLog.Api.Service;
 using LiftLog.Api.Validators;
 using Microsoft.Extensions.Logging;
 
-namespace LiftLog.Tests.Backend;
+namespace LiftLog.Tests.Api;
 
 public class AppleAppStorePurchaseVerificationServiceTests
 {

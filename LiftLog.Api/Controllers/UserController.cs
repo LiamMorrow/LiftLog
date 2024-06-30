@@ -62,14 +62,13 @@ public class UserController(
     [HttpGet]
     public async Task<IActionResult> GetUser(string idOrLookup)
     {
-        User? user;
+        User? user = null;
         if (Guid.TryParse(idOrLookup, out var id))
         {
             user = await db.Users.FindAsync(id);
         }
-        else
+        else if (idEncodingService.TryDecodeId(idOrLookup, out var userNumber))
         {
-            var userNumber = idEncodingService.DecodeId(idOrLookup);
             user = await db.Users.FirstOrDefaultAsync(x => x.UserLookup == userNumber);
         }
         if (user == null)
