@@ -85,10 +85,12 @@ public class PersistProgramMiddleware(
         _prevState = currentState;
         _ = Task.Run(async () =>
         {
-            await savedProgramRepository.Persist(
-                currentState.SavedPrograms,
-                currentState.ActivePlanId
-            );
+            var curState = (ProgramState?)_store?.Features[nameof(ProgramFeature)].GetState();
+            if (curState is null)
+            {
+                return;
+            }
+            await savedProgramRepository.Persist(curState.SavedPrograms, curState.ActivePlanId);
         });
     }
 }

@@ -14,20 +14,31 @@ public class SettingsStateInitMiddleware(
     {
         try
         {
-            var useImperialUnits = await preferencesRepository.GetUseImperialUnitsAsync();
+            var (
+                useImperialUnits,
+                showBodyweight,
+                showTips,
+                tipToShow,
+                showFeed,
+                statusBarFix,
+                restNotifications
+            ) = await (
+                preferencesRepository.GetUseImperialUnitsAsync(),
+                preferencesRepository.GetShowBodyweightAsync(),
+                preferencesRepository.GetShowTipsAsync(),
+                preferencesRepository.GetTipToShowAsync(),
+                preferencesRepository.GetShowFeedAsync(),
+                preferencesRepository.GetStatusBarFixAsync(),
+                preferencesRepository.GetRestNotificationsAsync()
+            );
             dispatch.Dispatch(new SetUseImperialUnitsAction(useImperialUnits));
-            var showBodyweight = await preferencesRepository.GetShowBodyweightAsync();
             dispatch.Dispatch(new SetShowBodyweightAction(showBodyweight));
-            var showTips = await preferencesRepository.GetShowTipsAsync();
             dispatch.Dispatch(new SetShowTipsAction(showTips));
-            var tipToShow = await preferencesRepository.GetTipToShowAsync();
             dispatch.Dispatch(new SetTipToShowAction(tipToShow));
-            var showFeed = await preferencesRepository.GetShowFeedAsync();
             dispatch.Dispatch(new SetShowFeedAction(showFeed));
-            var statusBarFix = await preferencesRepository.GetStatusBarFixAsync();
             dispatch.Dispatch(new SetStatusBarFixAction(statusBarFix));
-            var restNotifications = await preferencesRepository.GetRestNotificationsAsync();
             dispatch.Dispatch(new SetRestNotificationsAction(restNotifications));
+
             dispatch.Dispatch(new SetSettingsIsHydratedAction());
         }
         catch (Exception e)

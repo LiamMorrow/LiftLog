@@ -26,28 +26,34 @@ public class FeedStateInitMiddleware(
                 var version = await keyValueStore.GetItemAsync($"{StorageKey}Version");
                 if (version is null or "1")
                 {
-                    FeedStateDaoV1 feedState = FeedStateDaoV1.Parser.ParseFrom(state);
+                    FeedStateDaoV1 feedStateDao = FeedStateDaoV1.Parser.ParseFrom(state);
+                    var feedState = (FeedState?)feedStateDao;
                     if (feedState is not null)
                     {
-                        store.Features[nameof(FeedFeature)].RestoreState((FeedState)feedState);
+                        store.Features[nameof(FeedFeature)].RestoreState(feedState);
+                        Console.WriteLine(
+                            "Restoring feed state from storage {0} {1}",
+                            feedState,
+                            feedStateDao
+                        );
+                        if (feedState.Identity is null)
+                        {
+                            dispatch.Dispatch(
+                                new CreateFeedIdentityAction(
+                                    Name: null,
+                                    ProfilePicture: null,
+                                    PublishBodyweight: false,
+                                    PublishPlan: false,
+                                    PublishWorkouts: false,
+                                    RedirectAfterCreation: null
+                                )
+                            );
+                        }
                     }
                 }
             }
 
             dispatch.Dispatch(new SetFeedIsHydratedAction());
-            if (((FeedState)store.Features[nameof(FeedFeature)].GetState()) is { Identity: null })
-            {
-                dispatch.Dispatch(
-                    new CreateFeedIdentityAction(
-                        Name: null,
-                        ProfilePicture: null,
-                        PublishBodyweight: false,
-                        PublishPlan: false,
-                        PublishWorkouts: false,
-                        RedirectAfterCreation: null
-                    )
-                );
-            }
         }
         catch (Exception e)
         {
@@ -73,8 +79,13 @@ public class FeedStateInitMiddleware(
         prevState = state;
         _ = Task.Run(async () =>
         {
+            var curState = (FeedState?)store?.Features[nameof(FeedFeature)].GetState();
+            if (curState is null)
+            {
+                return;
+            }
+            await keyValueStore.SetItemAsync(StorageKey, ((FeedStateDaoV1)curState).ToByteArray());
             await keyValueStore.SetItemAsync($"{StorageKey}Version", "1");
-            await keyValueStore.SetItemAsync(StorageKey, ((FeedStateDaoV1)state).ToByteArray());
         });
     }
 }
