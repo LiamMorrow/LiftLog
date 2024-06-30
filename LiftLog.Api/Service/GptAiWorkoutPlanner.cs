@@ -10,7 +10,8 @@ using LiftLog.Lib.Services;
 using OpenAI;
 using OpenAI.Chat;
 
-public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
+public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkoutPlanner> logger)
+    : IAiWorkoutPlanner
 {
     private static readonly JsonNode aiWorkoutPlanJsonSchema = JsonNode.Parse(
         File.ReadAllText("./AiWorkoutPlan.json")
@@ -108,8 +109,8 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            Console.WriteLine(result.FirstChoice.Message);
+            logger.LogError(e, "Error generating workout plan");
+            logger.LogWarning("{Msg}", result.FirstChoice.Message);
             throw;
         }
     }
@@ -195,8 +196,8 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient) : IAiWorkoutPlanner
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            Console.WriteLine(result.FirstChoice.Message);
+            logger.LogError(e, "Error generating workout session");
+            logger.LogWarning("{Msg}", result.FirstChoice.Message);
             throw;
         }
     }

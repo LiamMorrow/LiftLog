@@ -77,7 +77,6 @@ else
 
     private void StartPublishing()
     {
-        Console.WriteLine("Starting publishing from page");
         Dispatcher.Dispatch(new CreateFeedIdentityAction(string.IsNullOrEmpty(name) ? null : name, null, publishBodyweight, publishPlan, publishWorkouts, From == null ? null : From));
     }
 
