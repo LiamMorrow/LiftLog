@@ -35,6 +35,19 @@ public class FeedStateInitMiddleware(
             }
 
             dispatch.Dispatch(new SetFeedIsHydratedAction());
+            if (((FeedState)store.Features[nameof(FeedFeature)].GetState()) is { Identity: null })
+            {
+                dispatch.Dispatch(
+                    new CreateFeedIdentityAction(
+                        Name: null,
+                        ProfilePicture: null,
+                        PublishBodyweight: false,
+                        PublishPlan: false,
+                        PublishWorkouts: false,
+                        RedirectAfterCreation: null
+                    )
+                );
+            }
         }
         catch (Exception e)
         {

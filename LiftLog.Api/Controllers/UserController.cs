@@ -36,9 +36,10 @@ public class UserController(
 
         var password = Guid.NewGuid().ToString();
         var hashedPassword = passwordService.HashPassword(password, out var salt);
+        var id = request.Id ?? Guid.NewGuid();
         var user = new User
         {
-            Id = request.Id,
+            Id = id,
             HashedPassword = hashedPassword,
             Salt = salt,
             LastAccessed = DateTimeOffset.UtcNow,
@@ -50,6 +51,7 @@ public class UserController(
         await db.SaveChangesAsync();
         return Ok(
             new CreateUserResponse(
+                Id: id,
                 Lookup: idEncodingService.EncodeId(user.UserLookup),
                 Password: password
             )
