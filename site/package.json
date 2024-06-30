@@ -4,10 +4,13 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "tailwindcss": "^3.3.3"
+    "tailwindcss": "^3.4.4"
+  },
+  "devDependencies": {
+    "five-server": "^0.3.3"
   },
   "scripts": {
     "build": "tailwindcss --config tailwind.config.js -i ./css/app.css -o ./css/app.min.css && ./build.sh",
-    "watch": "tailwindcss --config tailwind.config.js -i ./css/app.css -o ./css/app.min.css --watch"
+    "watch": "tailwindcss --config tailwind.config.js -i ./css/app.css -o ./css/app.min.css --watch & five-server ./"
   }
 }
