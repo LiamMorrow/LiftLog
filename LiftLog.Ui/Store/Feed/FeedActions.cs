@@ -6,7 +6,6 @@ namespace LiftLog.Ui.Store.Feed;
 public record SetFeedIsHydratedAction();
 
 public record CreateFeedIdentityAction(
-    Guid Id,
     string? Name,
     byte[]? ProfilePicture,
     bool PublishBodyweight,

@@ -77,7 +77,7 @@ else
 
     private void StartPublishing()
     {
-        Dispatcher.Dispatch(new CreateFeedIdentityAction(Guid.NewGuid(), string.IsNullOrEmpty(name) ? null : name, null, publishBodyweight, publishPlan, publishWorkouts, From == null ? null : From));
+        Dispatcher.Dispatch(new CreateFeedIdentityAction(string.IsNullOrEmpty(name) ? null : name, null, publishBodyweight, publishPlan, publishWorkouts, From == null ? null : From));
     }
 
     private void UpdatePublishingDetails()

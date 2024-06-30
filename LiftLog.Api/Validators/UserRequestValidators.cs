@@ -6,10 +6,7 @@ namespace LiftLog.Api.Validators;
 
 public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
 {
-    public CreateUserRequestValidator()
-    {
-        RuleFor(x => x.Id).NotEmpty();
-    }
+    public CreateUserRequestValidator() { }
 }
 
 public class GetUsersRequestValidator : AbstractValidator<GetUsersRequest>

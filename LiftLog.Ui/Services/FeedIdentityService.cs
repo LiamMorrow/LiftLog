@@ -24,8 +24,7 @@ public class FeedIdentityService(
         ImmutableListValue<SessionBlueprint> currentPlan
     )
     {
-        var id = Guid.NewGuid();
-        var response = await feedApiService.CreateUserAsync(new CreateUserRequest(id));
+        var response = await feedApiService.CreateUserAsync(new CreateUserRequest(null));
         if (!response.IsSuccess)
         {
             return ApiResult<FeedIdentity>.FromFailure(response);
@@ -34,7 +33,7 @@ public class FeedIdentityService(
         var aesKey = await encryptionService.GenerateAesKeyAsync();
         var rsaKeyPair = await encryptionService.GenerateRsaKeysAsync();
         return await UpdateFeedIdentityAsync(
-            id: id,
+            id: response.Data.Id,
             lookup: response.Data.Lookup,
             password: response.Data.Password,
             aesKey: aesKey,
