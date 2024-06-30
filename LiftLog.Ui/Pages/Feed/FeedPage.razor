@@ -39,8 +39,17 @@
         }
         else
         {
-            <div class="flex justify-end">
-                <AppButton Type=AppButtonType.Text OnClick=NavigateToCreateFeedIdentity>Your details</AppButton>
+            <div class="flex justify-center">
+            @if(!FeedState.Value.Identity.PublishWorkouts)
+            {
+                <div class="flex  justify-center">
+                    <AppButton Type=AppButtonType.Text OnClick=NavigateToCreateFeedIdentity>You're not currently publishing your workouts for your friends to see. Tap to start!</AppButton>
+                </div>
+            }else{
+                <div class="ml-auto">
+                    <AppButton Type=AppButtonType.Text OnClick=NavigateToCreateFeedIdentity>Your details</AppButton>
+                </div>
+            }
             </div>
         }
 
