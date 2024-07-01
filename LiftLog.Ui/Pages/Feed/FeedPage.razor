@@ -70,19 +70,16 @@
 
 
     <div id="followers-panel" role="tabpanel" aria-labelledby="followers-tab" class="@(GetTabClass("followers-panel"))">
-        @if (FeedState.Value.Identity is null)
+        @if(FeedState.Value.Identity?.PublishWorkouts is true)
         {
-            <Card IsHighlighted=true class="mb-4  mx-2">
-                <div class="flex flex-col gap-2">
-                    <h2 class="text-xl self-start">Start publishing to your feed</h2>
-                    <p class="self-start text-left">You're not currently publishing your workouts for your friends to see</p>
-                    <AppButton class="self-end" Type=AppButtonType.Text OnClick=NavigateToCreateFeedIdentity>Start</AppButton>
-                </div>
+            <div class="mx-2 my-4 flex flex-col"><FeedShareUrl/></div>
+        }else {
+            <Card class="flex flex-col items-center justify-between m-2" Type=Card.CardType.Filled>
+                <md-icon class="mb-4">error</md-icon>
+                <span class="text-on-surface">You are not publishing your workouts</span>
+                <AppButton Type=AppButtonType.Text OnClick="@(async ()=>{settingsDialog?.Open(); await Task.Delay(500); SetPublishWorkouts(true); })">Start publishing</AppButton>
             </Card>
         }
-        <div class="flex flex-col my-4 mx-2">
-            <FeedShareUrl/>
-        </div>
         @if (FeedState.Value.Followers is { Count: 0 } && FeedState.Value.FollowRequests is { Count: 0 })
         {
             <div class="flex flex-col justify-center items-center h-full gap-4 mt-10 text-on-surface">
@@ -155,6 +152,18 @@
         Dispatcher.Dispatch(new FetchSessionFeedItemsAction());
         Dispatcher.Dispatch(new FetchInboxItemsAction());
         Dispatcher.Dispatch(new PublishUnpublishedSessionsAction());
+        if (FeedState.Value.Identity is null)
+        {
+            Dispatcher.Dispatch(
+                new CreateFeedIdentityAction(
+                    Name: null,
+                    ProfilePicture: null,
+                    PublishBodyweight: false,
+                    PublishPlan: false,
+                    PublishWorkouts: false
+                )
+            );
+        }
         base.OnInitialized();
     }
 
