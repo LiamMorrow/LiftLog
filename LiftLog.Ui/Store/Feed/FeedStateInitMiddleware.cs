@@ -40,8 +40,7 @@ public class FeedStateInitMiddleware(
                                     ProfilePicture: null,
                                     PublishBodyweight: false,
                                     PublishPlan: false,
-                                    PublishWorkouts: false,
-                                    RedirectAfterCreation: null
+                                    PublishWorkouts: false
                                 )
                             );
                         }

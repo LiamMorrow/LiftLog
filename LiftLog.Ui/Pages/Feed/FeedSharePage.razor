@@ -69,7 +69,7 @@ else
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/feed"));
         if (FeedState.Value.Identity is null)
         {
-            Dispatcher.Dispatch(new NavigateAction("/feed/create-identity?from=" + Uri.EscapeDataString("/feed/share?pub=" + PublicKey + "&id=" + id + "&name=" + Name ?? "")));
+            Dispatcher.Dispatch(new CreateFeedIdentityAction(null, null, false, false, false));
         }
         else if (string.IsNullOrWhiteSpace(id))
         {

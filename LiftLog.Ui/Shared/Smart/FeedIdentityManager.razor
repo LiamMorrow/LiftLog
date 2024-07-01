@@ -1,0 +1,90 @@
+
+
+@inject IState<FeedState> FeedState
+@inject IStringSharer StringSharer
+@inject IDispatcher Dispatcher
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+@if (FeedState.Value.Identity == null)
+{
+    <div class="flex flex-col justify-center h-full gap-4 text-on-surface ">
+        <div>
+            <md-circular-progress aria-label="Loading" indeterminate four-color></md-circular-progress>
+        </div>
+        <span>
+            <p>Loading...</p>
+        </span>
+    </div>
+}
+else
+{
+    <div class="text-on-surface flex flex-col gap-4">
+    <LabelledForm>
+        <LabelledFormRow Label="Your Name" Icon="person">
+        <TextField Value="@FeedState.Value.Identity.Name" label="Optional" OnChange=@SetName/>
+        </LabelledFormRow>
+        <FeedShareUrl/>
+        </LabelledForm>
+        <md-list>
+            <ListSwitch Headline="Publish workouts" SupportingText="Publish workouts as you complete them" Value=@FeedState.Value.Identity.PublishWorkouts OnSwitched="SetPublishWorkouts"/>
+            <ListSwitch Headline="Publish bodyweight" SupportingText="Publish your bodyweight with your workouts"  Value=@FeedState.Value.Identity.PublishBodyweight OnSwitched="SetPublishBodyweight"/>
+            <ListSwitch Headline="Publish plan" SupportingText="Publish your current plan for your followers to see and import" Value=@FeedState.Value.Identity.PublishPlan OnSwitched="SetPublishPlan"/>
+        </md-list>
+        <AppButton Type=AppButtonType.Text OnClick="@(() => stopPublishingDialog?.Open())">Reset account</AppButton>
+    </div>
+}
+
+<Dialog @ref="stopPublishingDialog">
+    <span slot="headline">Reset account</span>
+    <span slot="content" class="block text-left">This will delete your data on the servers and unsubscribe you from all feeds. You will need to resubscribe and share a new link if you want to share your workouts again.</span>
+    <div slot="actions">
+        <AppButton Type="AppButtonType.Text" OnClick="@(() => stopPublishingDialog?.Close())">Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="StopPublishing">Delete</AppButton>
+    </div>
+</Dialog>
+
+
+@code {
+    private Dialog? stopPublishingDialog;
+
+    private UpdateFeedIdentityAction GetUpdateAction()
+    {
+        if (FeedState.Value.Identity is null)
+            return new UpdateFeedIdentityAction(null, null, false, false, false);
+
+        return new UpdateFeedIdentityAction(
+                FeedState.Value.Identity.Name ?? "",
+                FeedState.Value.Identity.ProfilePicture,
+                FeedState.Value.Identity.PublishBodyweight,
+                FeedState.Value.Identity.PublishPlan,
+                FeedState.Value.Identity.PublishWorkouts);
+    }
+
+    private void SetName(string value)
+    {
+        Dispatcher.Dispatch(GetUpdateAction() with { Name = value == "" ? null : value });
+    }
+
+    private void SetPublishBodyweight(bool value)
+    {
+        Dispatcher.Dispatch(GetUpdateAction() with { PublishBodyweight = value });
+    }
+
+    private void SetPublishWorkouts(bool value)
+    {
+        Dispatcher.Dispatch(GetUpdateAction() with { PublishWorkouts = value });
+    }
+
+    private void SetPublishPlan(bool value)
+    {
+        Dispatcher.Dispatch(GetUpdateAction() with { PublishPlan = value });
+    }
+
+    private void StopPublishing()
+    {
+        Dispatcher.Dispatch(new DeleteFeedIdentityAction());
+        stopPublishingDialog?.Close();
+    }
+
+}

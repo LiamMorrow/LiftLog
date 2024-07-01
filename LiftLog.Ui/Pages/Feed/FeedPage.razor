@@ -27,35 +27,21 @@
 
 <div class="mt-2 flex-grow">
     <div id="mainfeed-panel" role="tabpanel" aria-labelledby="mainfeed-tab" class="@(GetTabClass("mainfeed-panel")) min-h-full" @onpull-to-refresh="OnPullToRefresh">
-        @if (FeedState.Value.Identity is null)
+
+        @if(FeedState.Value.Identity?.PublishWorkouts is true)
         {
-            <Card IsHighlighted=true class="mb-4 mx-2">
-                <div class="flex flex-col gap-2">
-                    <h2 class="text-xl self-start">Start publishing to your feed</h2>
-                    <p class="self-start text-left">You're not currently publishing your workouts for your friends to see</p>
-                    <AppButton class="self-end" Type=AppButtonType.Text OnClick=NavigateToCreateFeedIdentity>Start</AppButton>
-                </div>
+            <div class="mx-2 my-4 flex flex-col"><FeedShareUrl/></div>
+        }else {
+            <Card class="flex flex-col items-center justify-between m-2" Type=Card.CardType.Filled>
+                <md-icon class="mb-4">error</md-icon>
+                <span class="text-on-surface">You are not publishing your workouts</span>
+                <AppButton Type=AppButtonType.Text OnClick="@(async ()=>{settingsDialog?.Open(); await Task.Delay(500); SetPublishWorkouts(true); })">Start publishing</AppButton>
             </Card>
-        }
-        else
-        {
-            <div class="flex justify-center">
-            @if(!FeedState.Value.Identity.PublishWorkouts)
-            {
-                <div class="flex justify-center">
-                    <AppButton Type=AppButtonType.Text OnClick=NavigateToCreateFeedIdentity>Publish Settings</AppButton>
-                </div>
-            }else{
-                <div class="ml-auto">
-                    <AppButton Type=AppButtonType.Text OnClick=NavigateToCreateFeedIdentity>Your details</AppButton>
-                </div>
-            }
-            </div>
         }
 
         @if (FeedState.Value.Feed is { Count: 0 })
         {
-            <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
+            <div class="flex flex-col justify-center items-center h-full mt-10 mx-4 gap-4 text-on-surface">
                 <md-icon>info</md-icon>
                 <span>
                     <p>Nothing here yet!<br> Nobody you're following has published anything yet! Come back later.</p>
@@ -70,7 +56,7 @@
     <div id="following-panel" role="tabpanel" aria-labelledby="following-tab" class="@(GetTabClass("following-panel"))">
         @if (FeedState.Value.FollowedUsers is { Count: 0 })
         {
-            <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface mx-2">
+            <div class="flex flex-col justify-center items-center h-full gap-4 mt-10 text-on-surface mx-2">
                 <md-icon>info</md-icon>
                 <span>
                     <p>Start following someone!<br>You're not currently following anyone, ask a friend for their share link to start!</p>
@@ -99,7 +85,7 @@
         </div>
         @if (FeedState.Value.Followers is { Count: 0 } && FeedState.Value.FollowRequests is { Count: 0 })
         {
-            <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
+            <div class="flex flex-col justify-center items-center h-full gap-4 mt-10 text-on-surface">
                 <md-icon>info</md-icon>
                 <span>
                     <p>Nobody is following you yet!<br>Share your link with friends to get followers</p>
@@ -114,6 +100,20 @@
         </VirtualizedCardList>
     </div>
 </div>
+
+<FullScreenDialog @ref=settingsDialog Title="Manage Feed" Action=@null >
+    <FeedIdentityManager @ref=feedIdentityManager />
+</FullScreenDialog>
+
+
+@if(IsInActiveScreen)
+{
+    <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="TrailingTitleButton">
+        <IconButton Type=IconButtonType.Standard Icon="manage_accounts" OnClick="@(()=>settingsDialog?.Open())"/>
+    </Microsoft.AspNetCore.Components.Sections.SectionContent>
+}
+
+
 <Dialog @ref="deleteUserDialog">
     <span slot="headline">Unfollow user</span>
     <span slot="content" class="block text-left">This will unfollow <span class="text-primary font-bold">@(userToDelete?.Nickname ?? userToDelete?.Name ?? "Anonymous User")</span> and remove all their content on your device.</span>
@@ -137,11 +137,16 @@
     [CascadingParameter(Name = "TopNavColorClass")]
     public string TopNavColorClass { get; set; } = null!;
 
+    [CascadingParameter(Name = "IsInActiveScreen")]
+    public bool IsInActiveScreen { get; set; }
+
 
     private ElementReference tabs;
     private Dialog? deleteUserDialog;
     private Dialog? removeFollowerDialog;
     private FeedUser? userToDelete;
+    private FullScreenDialog? settingsDialog;
+    private FeedIdentityManager? feedIdentityManager;
 
     protected override void OnInitialized()
     {
@@ -257,6 +262,19 @@
     private void RedirectToFollowUserUrl(FeedUser user)
     {
         NavigationManager.NavigateTo(FeedShareUrl.GetShareUrl(user.Id.ToString(), user.PublicKey, user.Name));
+    }
+
+    private void SetPublishWorkouts(bool value)
+    {
+        if (FeedState.Value.Identity is null)
+            return;
+        Dispatcher.Dispatch(
+            new UpdateFeedIdentityAction(
+                FeedState.Value.Identity.Name,
+                FeedState.Value.Identity.ProfilePicture,
+                FeedState.Value.Identity.PublishBodyweight,
+                FeedState.Value.Identity.PublishPlan,
+                value));
     }
 
     protected override async ValueTask DisposeAsyncCore(bool disposing)
