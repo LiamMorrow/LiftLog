@@ -41,12 +41,20 @@ public class MainActivity : MauiAppCompatActivity
     {
         base.OnCreate(savedInstanceState);
         WindowCompat.SetDecorFitsSystemWindows(Window!, false);
+        WebViewSoftInputPatch.Initialize();
         var insetsManager =
             IPlatformApplication.Current?.Services.GetRequiredService<InsetsManager>();
-        ViewCompat.SetOnApplyWindowInsetsListener(
-            Window!.DecorView,
-            new WindowInsetsListener(insetsManager!, Resources!.DisplayMetrics!.Density)
-        );
+        if (insetsManager is not null)
+        {
+            insetsManager.SystemSafeInsetBottom =
+                $"{WebViewSoftInputPatch.GetNavBarHeight() / Resources!.DisplayMetrics!.Density}px";
+            insetsManager.SystemSafeInsetTop =
+                $"{WebViewSoftInputPatch.GetStatusBarHeight() / Resources.DisplayMetrics.Density}px";
+            ViewCompat.SetOnApplyWindowInsetsListener(
+                Window!.DecorView,
+                new WindowInsetsListener(insetsManager!, Resources.DisplayMetrics.Density)
+            );
+        }
     }
 
     private class WindowInsetsListener(InsetsManager insetsManager, float density)
@@ -59,8 +67,18 @@ public class MainActivity : MauiAppCompatActivity
         )
         {
             // convert android px to css px
+
             var top = insets.SystemWindowInsetTop / density;
             var bottom = insets.SystemWindowInsetBottom / density;
+            if (top == 0 || bottom == 0)
+            {
+                insetsManager.SystemSafeInsetBottom =
+                    $"{WebViewSoftInputPatch.GetNavBarHeight() / density}px";
+                insetsManager.SystemSafeInsetTop =
+                    $"{WebViewSoftInputPatch.GetStatusBarHeight() / density}px";
+                insetsManager.NotifyInsetsChanged();
+                return insets;
+            }
             insetsManager.SystemSafeInsetTop = $"{top}px";
             insetsManager.SystemSafeInsetBottom = $"{bottom}px";
             insetsManager.NotifyInsetsChanged();
