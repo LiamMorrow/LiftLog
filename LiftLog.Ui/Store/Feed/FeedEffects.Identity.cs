@@ -41,11 +41,6 @@ public partial class FeedEffects
         }
 
         dispatcher.Dispatch(new PutFeedIdentityAction(identityResult.Data));
-
-        if (action.RedirectAfterCreation is not null or "")
-        {
-            dispatcher.Dispatch(new NavigateAction(action.RedirectAfterCreation));
-        }
     }
 
     [EffectMethod]
@@ -55,6 +50,18 @@ public partial class FeedEffects
     ) =>
         IfIdentityExists(async identity =>
         {
+            dispatcher.Dispatch(
+                new PutFeedIdentityAction(
+                    identity with
+                    {
+                        Name = action.Name,
+                        ProfilePicture = action.ProfilePicture,
+                        PublishBodyweight = action.PublishBodyweight,
+                        PublishPlan = action.PublishPlan,
+                        PublishWorkouts = action.PublishWorkouts
+                    }
+                )
+            );
             var result = await feedIdentityService.UpdateFeedIdentityAsync(
                 identity.Id,
                 identity.Lookup,
@@ -70,6 +77,7 @@ public partial class FeedEffects
             );
             if (!result.IsSuccess)
             {
+                dispatcher.Dispatch(new PutFeedIdentityAction(identity));
                 // TODO handle properly
                 logger.LogError("Failed to update user with error {Error}", result.Error);
                 return;
@@ -155,9 +163,7 @@ public partial class FeedEffects
             dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
             dispatcher.Dispatch(new ReplaceFeedItemsAction([]));
             dispatcher.Dispatch(new ReplaceFeedFollowedUsersAction([]));
-            dispatcher.Dispatch(
-                new CreateFeedIdentityAction(null, null, false, false, false, null)
-            );
+            dispatcher.Dispatch(new CreateFeedIdentityAction(null, null, false, false, false));
         });
 
     private Task IfIdentityExists(
