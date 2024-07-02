@@ -9,6 +9,7 @@ using View = Android.Views.View;
 
 namespace LiftLog.App;
 
+#nullable disable
 [SupportedOSPlatform("Android")]
 public static class WebViewSoftInputPatch
 {

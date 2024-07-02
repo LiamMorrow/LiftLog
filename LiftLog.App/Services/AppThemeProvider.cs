@@ -60,7 +60,7 @@ public class AppThemeProvider(ThemeColorUpdateService colorUpdateService) : IThe
 
     public ThemePreference GetThemePreference()
     {
-        return Microsoft.Maui.Controls.Application.Current.UserAppTheme switch
+        return Microsoft.Maui.Controls.Application.Current!.UserAppTheme switch
         {
             AppTheme.Unspecified => ThemePreference.FollowSystem,
             AppTheme.Light => ThemePreference.Light,
