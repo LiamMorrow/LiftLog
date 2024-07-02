@@ -3,6 +3,8 @@ using Android.App;
 using Android.Content.PM;
 using Android.Content.Res;
 using Android.OS;
+using Android.Renderscripts;
+using Android.Views;
 using AndroidX.Core.View;
 using LiftLog.Ui.Services;
 
@@ -67,9 +69,21 @@ public class MainActivity : MauiAppCompatActivity
         )
         {
             // convert android px to css px
-
-            var top = insets.SystemWindowInsetTop / density;
-            var bottom = insets.SystemWindowInsetBottom / density;
+            float top,
+                bottom;
+            if (OperatingSystem.IsAndroidVersionAtLeast(30))
+            {
+                var systemInsets = insets.GetInsets(WindowInsets.Type.SystemBars());
+                top = systemInsets.Top / density;
+                bottom = systemInsets.Bottom / density;
+            }
+            else
+            {
+#pragma warning disable CS0618 // Type or member is obsolete
+                top = insets.SystemWindowInsetTop / density;
+                bottom = insets.SystemWindowInsetBottom / density;
+#pragma warning restore CS0618 // Type or member is obsolete
+            }
             if (top == 0 || bottom == 0)
             {
                 insetsManager.SystemSafeInsetBottom =
