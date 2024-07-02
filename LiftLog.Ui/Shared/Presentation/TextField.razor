@@ -3,12 +3,12 @@
 @switch (TextFieldType)
 {
     case TextFieldType.Outline:
-        <md-outlined-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange?.Invoke((string)e.Value!)) @onfocusin=SelectOnFocus @onclick=OnClick>
+        <md-outlined-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @oninput=@((e) => OnChange?.Invoke((string?)e.Value!)) @onfocusin=SelectOnFocus @onclick=OnClick @onblur=@(_=>SetValueOnElement())>
             @ChildContent
         </md-outlined-text-field>
         break;
     case TextFieldType.Filled:
-        <md-filled-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @onchange=@((e) => OnChange?.Invoke((string)e.Value!)) @onfocusin=SelectOnFocus @onclick=OnClick>
+        <md-filled-text-field @ref="_textField" @attributes="AdditionalAttributes" value=@Value @oninput=@((e) => OnChange?.Invoke((string?)e.Value!)) @onfocusin=SelectOnFocus @onclick=OnClick @onblur=@(_=>SetValueOnElement())>
             @ChildContent
         </md-filled-text-field>
         break;
@@ -33,13 +33,18 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        await JSRuntime.InvokeVoidAsync("AppUtils.setValue", _textField, Value);
+        await JSRuntime.InvokeVoidAsync("AppUtils.setValueIfNotFocused", _textField, Value);
         await base.OnParametersSetAsync();
     }
 
     private async Task SelectOnFocus(FocusEventArgs args)
     {
         await JSRuntime.InvokeVoidAsync("AppUtils.selectAllText", _textField);
+    }
+
+    private async Task SetValueOnElement()
+    {
+        await JSRuntime.InvokeVoidAsync("AppUtils.setValue", _textField, Value);
     }
 
 }
