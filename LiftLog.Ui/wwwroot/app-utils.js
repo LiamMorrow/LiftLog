@@ -58,6 +58,11 @@ AppUtils.setValue = function (element, value) {
         element.value = value;
 }
 
+AppUtils.setValueIfNotFocused = function (element, value) {
+    if (element && document.activeElement !== element)
+        element.value = value;
+}
+
 AppUtils.getValue = function (element) {
     return element.value;
 }

@@ -11,7 +11,6 @@
 
 @code
 {
-
     [Parameter] [EditorRequired] public T Value { get; set; } = default!;
 
     [Parameter] [EditorRequired] public T Increment { get; set; } = default!;
@@ -27,7 +26,7 @@
 
     private void OnChanged(string? value)
     {
-        if (value != null && T.TryParse(value, System.Globalization.NumberStyles.Any,
+        if (value != null && T.TryParse(value, System.Globalization.NumberStyles.Float,
                 System.Globalization.CultureInfo.CurrentCulture, out var result))
         {
             OnChange(result);
