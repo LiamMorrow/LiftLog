@@ -62,7 +62,13 @@ public class SharedItemController(
             return NotFound();
         }
         var sharedItem = await db
-            .SharedItems.Include(x => x.User)
+            .SharedItems.Select(x => new
+            {
+                x.Id,
+                x.User.RsaPublicKey,
+                x.EncryptedPayload,
+                x.EncryptionIV
+            })
             .FirstOrDefaultAsync(x => x.Id == idNumber);
         if (sharedItem == null)
         {
@@ -71,7 +77,7 @@ public class SharedItemController(
 
         return Ok(
             new GetSharedItemResponse(
-                RsaPublicKey: new Lib.Services.RsaPublicKey(sharedItem.User.RsaPublicKey),
+                RsaPublicKey: new RsaPublicKey(sharedItem.RsaPublicKey),
                 EncryptedPayload: new(
                     sharedItem.EncryptedPayload,
                     new AesIV(sharedItem.EncryptionIV)
