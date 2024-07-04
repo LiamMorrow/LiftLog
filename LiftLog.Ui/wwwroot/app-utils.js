@@ -136,13 +136,14 @@ AppUtils.onSliderChange = function (element) {
 
 /**
  *
- * @param {HTMLElement} element
+ * @param {string} id
  */
-AppUtils.scrollIntoView = function (element) {
-    element?.scrollIntoView({
-        block: 'center',
-        inline: 'center',
-    });
+AppUtils.scrollIntoViewById = function (id) {
+    const element = document.getElementById(id);
+    const scrollingElement = document.getElementById('scrollingElement');
+    // scroll to center
+    if (element && scrollingElement)
+        scrollingElement.scroll({ top: element.offsetTop - scrollingElement.clientHeight / 2, behavior: 'smooth' });
 }
 
 

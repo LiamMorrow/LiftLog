@@ -54,7 +54,7 @@
         if (firstRender && IsFocused)
         {
             await Task.Delay(100);
-            await JSRuntime.InvokeVoidAsync("AppUtils.scrollIntoView", _listItem);
+            await JSRuntime.InvokeVoidAsync("AppUtils.scrollIntoViewById", _iconButtonId);
         }
     }
 
