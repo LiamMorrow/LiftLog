@@ -1,3 +1,8 @@
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+@inject IState<ProgramState> ProgramState
+@inject IState<CurrentSessionState> CurrentSessionState
+@inject IDispatcher Dispatcher
 
 @if (!Session.RecordedExercises.Any())
 {
@@ -155,43 +160,20 @@ else
     private Dialog? _updatePlanDialog;
     private Dialog? setAdditionalActionsDialog;
 
-    [EditorRequired] [Parameter] public Session Session { get; set; } = null!;
+    private Session Session => SessionTarget switch {
+        SessionTarget.WorkoutSession => CurrentSessionState.Value.WorkoutSession,
+        SessionTarget.HistorySession => CurrentSessionState.Value.HistorySession,
+        SessionTarget.FeedSession => CurrentSessionState.Value.FeedSession,
+        _ => throw new InvalidOperationException("Invalid session target")
+    } ?? throw new InvalidOperationException("Session is null");
 
     [EditorRequired] [Parameter] public ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>> PreviouslyCompleted { get; set; } = null!;
 
     [Parameter] public bool ShowRestTimer { get; set; } = true;
 
-    [EditorRequired] [Parameter] public Action<int, int> CycleRepcountForExercise { get; set; } = null!;
+    [Parameter] [EditorRequired] public string NavigateOnClose { get; set; } = null!;
 
-    [EditorRequired] [Parameter] public Action<int, int, int?> SetRepCountForExercise { get; set; } = null!;
-
-    [EditorRequired] [Parameter] public Action<int, decimal> UpdateWeightForExercise { get; set; } = null!;
-
-    [EditorRequired] [Parameter] public Action<int, string?> UpdateNotesForExercise { get; set; } = null!;
-
-    [EditorRequired] [Parameter] public Action<int> ToggleExercisePerSetWeight { get; set; } = null!;
-
-    [EditorRequired] [Parameter] public Action<int, int, decimal> UpdateWeightForSet { get; set; } = null!;
-
-    [EditorRequired] [Parameter] public Action<decimal?> UpdateBodyweight { get; set; } = null!;
-
-    [EditorRequired] [Parameter] public Action<int, ExerciseBlueprint> EditExercise { get; set; } = null!;
-
-    [EditorRequired] [Parameter] public Action<ExerciseBlueprint> AddExercise { get; set; } = null!;
-
-    [EditorRequired] [Parameter] public Action<int> RemoveExercise { get; set; } = null!;
-
-    [EditorRequired] [Parameter] public Action SaveSession { get; set; } = null!;
-
-    [EditorRequired] [Parameter] public Action CloseSession { get; set; } = null!;
-
-    [Parameter] [EditorRequired] public bool SessionInPlan { get; set; }
-
-    [Parameter] [EditorRequired] public bool SessionWithSameNameInPlan { get; set; }
-
-    [Parameter] [EditorRequired] public Action AddSessionToPlan { get; set; } = null!;
-
-    [Parameter] [EditorRequired] public Action UpdateSessionInPlan { get; set; } = null!;
+    [Parameter] [EditorRequired] public SessionTarget SessionTarget { get; set; }
 
     [Parameter] [EditorRequired] public bool ShowBodyweight { get; set; }
 
@@ -201,6 +183,49 @@ else
 
     [CascadingParameter(Name = "IsInActiveScreen")]
     public bool IsInActiveScreen { get; set; }
+
+    public bool SessionInPlan => ProgramState.Value.GetActivePlanSessionBlueprints().Contains(Session.Blueprint);
+
+    public bool SessionWithSameNameInPlan => ProgramState.Value.GetActivePlanSessionBlueprints().Any(x => x.Name == Session.Blueprint.Name);
+
+    private void CycleRepcountForExercise(int exerciseIndex, int setIndex)
+    {
+        Dispatcher.Dispatch(new CycleExerciseRepsAction(SessionTarget, exerciseIndex, setIndex));
+        if(ShowRestTimer)
+            Dispatcher.Dispatch(new NotifySetTimerAction(SessionTarget));
+    }
+
+    private void SetRepCountForExercise(int exerciseIndex, int setIndex, int? reps)
+    {
+        Dispatcher.Dispatch(new SetExerciseRepsAction(SessionTarget, exerciseIndex, setIndex, reps));
+        if(ShowRestTimer)
+            Dispatcher.Dispatch(new NotifySetTimerAction(SessionTarget));
+    }
+
+    private void UpdateBodyweight(decimal? bodyweight)
+        => Dispatcher.Dispatch(new UpdateBodyweightAction(SessionTarget, bodyweight));
+
+    private void UpdateNotesForExercise(int exerciseIndex, string? notes)
+        => Dispatcher.Dispatch(new UpdateNotesForExerciseAction(SessionTarget, exerciseIndex, notes));
+
+    private void UpdateWeightForExercise(int exerciseIndex, decimal weight)
+        => Dispatcher.Dispatch(new UpdateExerciseWeightAction(SessionTarget, exerciseIndex, weight));
+
+    private void ToggleExercisePerSetWeight(int exerciseIndex)
+        => Dispatcher.Dispatch(new ToggleExercisePerSetWeightAction(SessionTarget, exerciseIndex));
+
+    private void UpdateWeightForSet(int exerciseIndex, int setIndex, decimal weight)
+        => Dispatcher.Dispatch(new UpdateWeightForSetAction(SessionTarget, exerciseIndex, setIndex, weight));
+
+    private void EditExercise(int exerciseIndex, ExerciseBlueprint exercise)
+        => Dispatcher.Dispatch(new EditExerciseInActiveSessionAction(SessionTarget, exerciseIndex, exercise));
+
+    private void AddExercise(ExerciseBlueprint exercise)
+        => Dispatcher.Dispatch(new AddExerciseToActiveSessionAction(SessionTarget, exercise));
+
+    private void RemoveExercise(int exerciseIndex)
+        => Dispatcher.Dispatch(new RemoveExerciseFromActiveSessionAction(SessionTarget, exerciseIndex));
+
 
     private Action<int> CycleRepCountForExerciseSet(int exerciseIndex)
         => (int set) => CycleRepcountForExercise(exerciseIndex, set);
@@ -323,6 +348,62 @@ else
         }
 
         return null;
+    }
+
+    private void AddSessionToPlan()
+    {
+        if (Session?.Blueprint is SessionBlueprint blueprint)
+        {
+            var existingSessionWithSameName = ProgramState.Value.GetActivePlanSessionBlueprints().Any(x => x.Name == blueprint.Name);
+            if (existingSessionWithSameName)
+            {
+                var blueprintNameWithoutNumber = System.Text.RegularExpressions.Regex.Replace(blueprint.Name, @" \(\d+\)$", "");
+                var newName = blueprint.Name;
+                var i = 1;
+                while (ProgramState.Value.GetActivePlanSessionBlueprints().Any(x => x.Name == newName))
+                {
+                    newName = $"{blueprintNameWithoutNumber} ({i})";
+                    i++;
+                }
+
+                blueprint = blueprint with { Name = newName };
+            }
+
+            Dispatcher.Dispatch(new AddProgramSessionAction(ProgramState.Value.ActivePlanId, blueprint));
+            Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget, Session with { Blueprint = blueprint }));
+        }
+    }
+
+    private void UpdateSessionInPlan()
+    {
+        if (Session.Blueprint is SessionBlueprint blueprint)
+        {
+            var blueprintIndex = ProgramState.Value.GetActivePlanSessionBlueprints().IndexedTuples().First(x => x.Item.Name == blueprint.Name).Index;
+            Dispatcher.Dispatch(new SetProgramSessionAction(ProgramState.Value.ActivePlanId, blueprintIndex, blueprint));
+        }
+    }
+
+    private void SaveSession()
+    {
+        Dispatcher.Dispatch(new PersistCurrentSessionAction(SessionTarget));
+        var id = CurrentSessionState.Value.WorkoutSession?.Id;
+        if (Session is not null)
+        {
+            Dispatcher.Dispatch(new AddUnpublishedSessionIdAction(Session.Id));
+        }
+
+        Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget, null));
+        Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
+
+        if(ShowRestTimer)
+            Dispatcher.Dispatch(new ClearSetTimerNotificationAction());
+
+        Dispatcher.Dispatch(new NavigateAction(NavigateOnClose));
+    }
+
+    private void CloseSession()
+    {
+        Dispatcher.Dispatch(new NavigateAction(NavigateOnClose));
     }
 
 }

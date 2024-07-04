@@ -28,6 +28,7 @@ internal partial class CurrentSessionStateDaoV2
             IsHydrated: true,
             WorkoutSession?.ToModel(),
             HistorySession?.ToModel(),
+            FeedSession: null,
             LatestSetTimerNotificationId
         );
 }

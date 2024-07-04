@@ -6,6 +6,7 @@ namespace LiftLog.Ui.Store.CurrentSession
         bool IsHydrated,
         Session? WorkoutSession,
         Session? HistorySession,
+        Session? FeedSession,
         Guid? LatestSetTimerNotificationId
     );
 }
