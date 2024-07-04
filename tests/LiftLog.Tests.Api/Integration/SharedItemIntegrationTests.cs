@@ -1,6 +1,7 @@
 using System.Net;
 using LiftLog.Api.Service;
 using LiftLog.Lib.Models;
+using LiftLog.Lib.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace LiftLog.Tests.ApiErrorType.Integration;
@@ -9,8 +10,8 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
     : IClassFixture<WebApplicationFactory<Program>>
 {
     const string url = "/shareditem";
-    private static readonly byte[] encryptedPayload = new byte[] { 0x01, 0x02, 0x03 };
-    private static readonly byte[] encryptionIV = Enumerable.Repeat((byte)0x04, 16).ToArray();
+    private static readonly AesEncryptedAndRsaSignedData encryptedPayload =
+        new([0x01, 0x02, 0x03], new(Enumerable.Repeat((byte)0x04, 16).ToArray()));
     private static readonly byte[] rsaPublicKey = Enumerable.Repeat((byte)0x05, 16).ToArray();
     private readonly WebApplicationFactory<Program> _factory = factory;
 
@@ -22,14 +23,14 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
 
         var createUserResponse = await UserHelper.CreateUserAsync(
             client,
-            encryptionIV,
+            encryptedPayload.IV.Value,
             rsaPublicKey
         );
 
         var sharedItemCreateRequest = new CreateSharedItemRequest(
             createUserResponse.Id,
             createUserResponse.Password,
-            new(encryptedPayload, new(encryptionIV)),
+            encryptedPayload,
             DateTimeOffset.UtcNow.AddDays(1)
         );
 
@@ -51,10 +52,7 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
         getSharedItemResponse!
             .RsaPublicKey.SpkiPublicKeyBytes.Should()
             .BeEquivalentTo(rsaPublicKey);
-        getSharedItemResponse
-            .EncryptedPayload.EncryptedPayload.Should()
-            .BeEquivalentTo(encryptedPayload);
-        getSharedItemResponse.EncryptedPayload.IV.Should().BeEquivalentTo(encryptionIV);
+        getSharedItemResponse.EncryptedPayload.Should().BeEquivalentTo(encryptedPayload);
     }
 
     [Fact]
@@ -66,7 +64,7 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
         var sharedItemCreateRequest = new CreateSharedItemRequest(
             Guid.NewGuid(),
             "password",
-            new(encryptedPayload, new(encryptionIV)),
+            encryptedPayload,
             DateTimeOffset.UtcNow.AddDays(1)
         );
 
@@ -85,14 +83,14 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
 
         var createUserResponse = await UserHelper.CreateUserAsync(
             client,
-            encryptionIV,
+            encryptedPayload.IV.Value,
             rsaPublicKey
         );
 
         var sharedItemCreateRequest = new CreateSharedItemRequest(
             createUserResponse.Id,
             new string('a', 29),
-            new(encryptedPayload, new(encryptionIV)),
+            encryptedPayload,
             DateTimeOffset.UtcNow.AddDays(1)
         );
 
