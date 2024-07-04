@@ -25,10 +25,20 @@ public class CurrentSessionEffects(
         {
             SessionTarget.WorkoutSession => state.Value.WorkoutSession,
             SessionTarget.HistorySession => state.Value.HistorySession,
+            SessionTarget.FeedSession => state.Value.FeedSession,
             _ => throw new Exception()
         };
         if (session is not null)
             await progressRepository.SaveCompletedSessionAsync(session);
+    }
+
+    [EffectMethod]
+    public async Task ClearSetTimerNotification(
+        ClearSetTimerNotificationAction action,
+        IDispatcher dispatcher
+    )
+    {
+        await notificationService.CancelNextSetNotificationAsync();
     }
 
     [EffectMethod]
@@ -43,6 +53,7 @@ public class CurrentSessionEffects(
         {
             SessionTarget.WorkoutSession => state.Value.WorkoutSession,
             SessionTarget.HistorySession => state.Value.HistorySession,
+            SessionTarget.FeedSession => state.Value.FeedSession,
             _ => throw new Exception()
         };
         if (session?.NextExercise is not null && session.LastExercise is not null)
@@ -65,6 +76,7 @@ public class CurrentSessionEffects(
         {
             SessionTarget.WorkoutSession => state.Value.WorkoutSession,
             SessionTarget.HistorySession => state.Value.HistorySession,
+            SessionTarget.FeedSession => state.Value.FeedSession,
             _ => throw new Exception()
         };
         if (session?.NextExercise is not null)

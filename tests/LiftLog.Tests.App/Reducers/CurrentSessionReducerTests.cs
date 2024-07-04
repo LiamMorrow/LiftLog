@@ -49,6 +49,7 @@ public class CurrentSessionReducerTests
                     }
             ),
             HistorySession: null,
+            FeedSession: null,
             LatestSetTimerNotificationId: null
         );
 

@@ -51,9 +51,9 @@
                 ShowWeight=displayedExercise.PerSetWeight
                 MaxReps="displayedExercise.Blueprint.RepsPerSet"
                 WeightIncrement="displayedExercise.Blueprint.WeightIncreaseOnSuccess"
-                OnTap=@(() => CycleRepCountForSet(i))
-                OnHold=@(() => ShowAdditionalActionsForSet(i))
-                OnUpdateWeight=@((weight) => UpdateWeightForSet(i, weight))
+                OnTap=@(() => {if(!IsReadonly) CycleRepCountForSet(i);})
+                OnHold=@(() => {if(!IsReadonly) ShowAdditionalActionsForSet(i);})
+                OnUpdateWeight=@((weight) => {if(!IsReadonly) UpdateWeightForSet(i, weight);})
                 ToStartNext=@(ToStartNext && repToStartNext == i && !IsReadonly)/>
         }
     </div>

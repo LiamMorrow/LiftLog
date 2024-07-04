@@ -27,6 +27,7 @@ internal record CurrentSessionStateDaoV1(
             IsHydrated: true,
             WorkoutSession: WorkoutSession?.ToModel(),
             HistorySession: HistorySession?.ToModel(),
+            FeedSession: null,
             LatestSetTimerNotificationId: LatestSetTimerNotificationId
         );
 }

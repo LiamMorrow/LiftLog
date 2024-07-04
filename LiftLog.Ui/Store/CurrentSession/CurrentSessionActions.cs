@@ -6,7 +6,8 @@ namespace LiftLog.Ui.Store.CurrentSession;
 public enum SessionTarget
 {
     WorkoutSession,
-    HistorySession
+    HistorySession,
+    FeedSession
 }
 
 public record SetCurrentSessionHydratedAction();
@@ -60,6 +61,8 @@ public record SetCurrentSessionFromBlueprintAction(
 public record PersistCurrentSessionAction(SessionTarget Target);
 
 public record NotifySetTimerAction(SessionTarget Target);
+
+public record ClearSetTimerNotificationAction();
 
 public record SetLatestSetTimerNotificationIdAction(Guid Id);
 

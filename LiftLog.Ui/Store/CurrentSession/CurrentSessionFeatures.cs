@@ -11,6 +11,7 @@ namespace LiftLog.Ui.Store.CurrentSession
                 IsHydrated: false,
                 WorkoutSession: null,
                 HistorySession: null,
+                FeedSession: null,
                 LatestSetTimerNotificationId: null
             );
     }

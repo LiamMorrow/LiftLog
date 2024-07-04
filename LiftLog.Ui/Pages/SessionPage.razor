@@ -3,6 +3,7 @@
 @using LiftLog.Ui.Store.App
 @using LiftLog.Ui.Store.Program
 @using Fluxor;
+
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @inject IState<CurrentSessionState> CurrentSessionState
@@ -16,25 +17,11 @@
 @if (CurrentSessionState.Value.WorkoutSession is not null)
 {
     <SessionComponent
-        CycleRepcountForExercise=CycleRepcountForExercise
-        SetRepCountForExercise="SetRepCountForExercise"
-        UpdateWeightForExercise=UpdateWeightForExercise
-        Session=@(CurrentSessionState.Value.WorkoutSession)
-        SaveSession=SaveSession
-        CloseSession=CloseSession
         PreviouslyCompleted=@(previouslyCompleted)
-        RemoveExercise=RemoveExercise
-        EditExercise="EditExercise"
-        AddExercise="AddExercise"
-        UpdateNotesForExercise="UpdateNotesForExercise"
         ShowBodyweight="SettingsState.Value.ShowBodyweight"
-        ToggleExercisePerSetWeight=ToggleExercisePerSetWeight
-        UpdateWeightForSet=UpdateWeightForSet
-        SessionInPlan=@(ProgramState.Value.GetActivePlanSessionBlueprints().Contains(CurrentSessionState.Value.WorkoutSession.Blueprint))
-        SessionWithSameNameInPlan=@(ProgramState.Value.GetActivePlanSessionBlueprints().Any(x => x.Name == CurrentSessionState.Value.WorkoutSession.Blueprint.Name))
-        AddSessionToPlan="AddSessionToPlan"
-        UpdateSessionInPlan="UpdateSessionInPlan"
-        UpdateBodyweight="UpdateBodyweight"/>
+        SessionTarget=@SessionTarget.WorkoutSession
+        NavigateOnClose="/"
+    />
 }
 
 
@@ -42,103 +29,6 @@
 {
     private ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>> previouslyCompleted = ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>>.Empty;
 
-    private void SetRepCountForExercise(int exerciseIndex, int setIndex, int? reps)
-    {
-        Dispatcher.Dispatch(new SetExerciseRepsAction(SessionTarget.WorkoutSession, exerciseIndex, setIndex, reps));
-        Dispatcher.Dispatch(new NotifySetTimerAction(SessionTarget.WorkoutSession));
-    }
-
-    private void CycleRepcountForExercise(int exerciseIndex, int setIndex)
-    {
-        Dispatcher.Dispatch(new CycleExerciseRepsAction(SessionTarget.WorkoutSession, exerciseIndex, setIndex));
-        Dispatcher.Dispatch(new NotifySetTimerAction(SessionTarget.WorkoutSession));
-    }
-
-    private void ToggleExercisePerSetWeight(int exerciseIndex)
-        => Dispatcher.Dispatch(new ToggleExercisePerSetWeightAction(SessionTarget.WorkoutSession, exerciseIndex));
-
-    private void UpdateWeightForSet(int exerciseIndex, int setIndex, decimal weight)
-        => Dispatcher.Dispatch(new UpdateWeightForSetAction(SessionTarget.WorkoutSession, exerciseIndex, setIndex, weight));
-
-    private void UpdateWeightForExercise(int exerciseIndex, decimal weight)
-    {
-        Dispatcher.Dispatch(new UpdateExerciseWeightAction(SessionTarget.WorkoutSession, exerciseIndex, weight));
-    }
-
-    private void EditExercise(int exerciseIndex, ExerciseBlueprint exercise)
-    {
-        Dispatcher.Dispatch(new EditExerciseInActiveSessionAction(SessionTarget.WorkoutSession, exerciseIndex, exercise));
-    }
-
-    private void AddExercise(ExerciseBlueprint exercise)
-    {
-        Dispatcher.Dispatch(new AddExerciseToActiveSessionAction(SessionTarget.WorkoutSession, exercise));
-    }
-
-    private void RemoveExercise(int exerciseIndex)
-    {
-        Dispatcher.Dispatch(new RemoveExerciseFromActiveSessionAction(SessionTarget.WorkoutSession, exerciseIndex));
-    }
-
-    private void UpdateBodyweight(decimal? bodyweight)
-        => Dispatcher.Dispatch(new UpdateBodyweightAction(SessionTarget.WorkoutSession, bodyweight));
-
-    private void UpdateNotesForExercise(int exerciseIndex, string? notes)
-        => Dispatcher.Dispatch(new UpdateNotesForExerciseAction(SessionTarget.WorkoutSession, exerciseIndex, notes));
-
-    private void AddSessionToPlan()
-    {
-        if (CurrentSessionState.Value.WorkoutSession?.Blueprint is SessionBlueprint blueprint)
-        {
-            var existingSessionWithSameName = ProgramState.Value.GetActivePlanSessionBlueprints().Any(x => x.Name == blueprint.Name);
-            if (existingSessionWithSameName)
-            {
-                var blueprintNameWithoutNumber = System.Text.RegularExpressions.Regex.Replace(blueprint.Name, @" \(\d+\)$", "");
-                var newName = blueprint.Name;
-                var i = 1;
-                while (ProgramState.Value.GetActivePlanSessionBlueprints().Any(x => x.Name == newName))
-                {
-                    newName = $"{blueprintNameWithoutNumber} ({i})";
-                    i++;
-                }
-
-                blueprint = blueprint with { Name = newName };
-            }
-
-            Dispatcher.Dispatch(new AddProgramSessionAction(ProgramState.Value.ActivePlanId, blueprint));
-            Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, CurrentSessionState.Value.WorkoutSession with { Blueprint = blueprint }));
-            Dispatcher.Dispatch(new SetPageTitleAction(blueprint.Name));
-        }
-    }
-
-    private void UpdateSessionInPlan()
-    {
-        if (CurrentSessionState.Value.WorkoutSession?.Blueprint is SessionBlueprint blueprint)
-        {
-            var blueprintIndex = ProgramState.Value.GetActivePlanSessionBlueprints().IndexedTuples().First(x => x.Item.Name == blueprint.Name).Index;
-            Dispatcher.Dispatch(new SetProgramSessionAction(ProgramState.Value.ActivePlanId, blueprintIndex, blueprint));
-        }
-    }
-
-    private void SaveSession()
-    {
-        Dispatcher.Dispatch(new PersistCurrentSessionAction(SessionTarget.WorkoutSession));
-        var id = CurrentSessionState.Value.WorkoutSession?.Id;
-        if (CurrentSessionState.Value.WorkoutSession is not null)
-        {
-            Dispatcher.Dispatch(new AddUnpublishedSessionIdAction(CurrentSessionState.Value.WorkoutSession.Id));
-        }
-
-        Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.WorkoutSession, null));
-        Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
-
-        NavigationManager.NavigateTo("/");
-    }
-
-    private void CloseSession()
-    {
-        NavigationManager.NavigateTo("/");
-    }
 
     protected override async Task OnInitializedAsync()
     {
