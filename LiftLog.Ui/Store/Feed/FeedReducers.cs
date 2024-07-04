@@ -134,4 +134,11 @@ public static class FeedReducers
         {
             UnpublishedSessionIds = state.UnpublishedSessionIds.Remove(action.SessionId)
         };
+
+    [ReducerMethod]
+    public static FeedState SetSharedItem(FeedState state, SetSharedItemAction action) =>
+        state with
+        {
+            SharedItem = action.SharedItem
+        };
 }

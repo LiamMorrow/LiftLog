@@ -1,0 +1,48 @@
+@page "/feed/shared-item/{id}"
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+@inject IState<FeedState> FeedState
+@inject IDispatcher Dispatcher
+
+@if(SharedItem is { IsLoading: true })
+{
+    <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
+        <div>
+            <md-circular-progress aria-label="Loading" indeterminate four-color></md-circular-progress>
+        </div>
+        <span>
+            <p>Loading...</p>
+        </span>
+    </div>
+}
+else if(SharedItem is { IsError: true })
+{
+    <p class="text-on-surface">@SharedItem.Error</p>
+}
+else if(SharedItem is { IsSuccess: true })
+{
+    <SharedItemComponent SharedItem="SharedItem.Data" />
+}
+
+
+@code {
+    [Parameter] public string Id { get; set; } = null!;
+
+    [SupplyParameterFromQuery(Name="k")] public string? Key { get; set; }
+
+    private RemoteData<SharedItem> SharedItem => FeedState.Value.SharedItem;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if(Key.FromUrlSafeHexString() is {} key)
+        {
+            Dispatcher.Dispatch(new FetchSharedItemAction(Id, new AesKey(key)));
+        }
+        else
+        {
+            Dispatcher.Dispatch(new SetSharedItemAction(RemoteData.Errored("Could not load shared item. Bad key provided.")));
+        }
+    }
+}

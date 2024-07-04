@@ -1,5 +1,6 @@
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
+using LiftLog.Lib.Services;
 
 namespace LiftLog.Ui.Store.Feed;
 
@@ -78,3 +79,9 @@ public record SetActiveTabAction(string TabId);
 public record AddUnpublishedSessionIdAction(Guid SessionId);
 
 public record RemoveUnpublishedSessionIdAction(Guid SessionId);
+
+public record EncryptAndShareAction(SharedItem SharedItem);
+
+public record SetSharedItemAction(RemoteData<SharedItem> SharedItem);
+
+public record FetchSharedItemAction(string Id, AesKey AesKey);

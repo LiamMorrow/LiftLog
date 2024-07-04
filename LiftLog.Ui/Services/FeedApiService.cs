@@ -143,6 +143,19 @@ public class FeedApiService(HttpClient httpClient
         });
     }
 
+    public Task<ApiResult<CreateSharedItemResponse>> PostSharedItemAsync(
+        CreateSharedItemRequest request
+    )
+    {
+        return GetApiResultAsync(async () =>
+        {
+            var result = (
+                await httpClient.PostAsJsonAsync($"{baseUrl}shareditem", request)
+            ).EnsureSuccessStatusCode();
+            return (await result.Content.ReadFromJsonAsync<CreateSharedItemResponse>())!;
+        });
+    }
+
     private static async Task<ApiResult<T>> GetApiResultAsync<T>(Func<Task<T>> action)
     {
         try
@@ -174,10 +187,19 @@ public class FeedApiService(HttpClient httpClient
     private static async Task<ApiResult> GetApiResultAsync(Func<Task> action)
     {
         // Be explicit here with generic to avoid accidental recursion
-        return await GetApiResultAsync(async () =>
+        return await GetApiResultAsync<int>(async () =>
         {
             await action();
             return 1;
+        });
+    }
+
+    public Task<ApiResult<GetSharedItemResponse>> GetSharedItemAsync(string sharedItemId)
+    {
+        return GetApiResultAsync(async () =>
+        {
+            var response = await httpClient.GetAsync($"{baseUrl}shareditem/{sharedItemId}");
+            return (await response.Content.ReadFromJsonAsync<GetSharedItemResponse>())!;
         });
     }
 }

@@ -1,0 +1,45 @@
+@inject IDispatcher Dispatcher
+
+<div class="text-on-surface text-left">
+    <h2 class="text-xl font-bold text-primary mx-4">@ProgramBlueprint.Name</h2>
+    <p class=" mx-4">This plan has been shared with you.</p>
+    <CardList Items="ProgramBlueprint.Sessions">
+        <SplitCardControl>
+            <TitleContent>
+                <SessionSummaryTitle Session="context.GetEmptySession()" />
+            </TitleContent>
+            <MainContent>
+                <SessionSummary Session="context.GetEmptySession()" ShowSets="true" ShowWeight="false"/>
+            </MainContent>
+        </SplitCardControl>
+    </CardList>
+</div>
+
+@if(IsInActiveScreen)
+{
+    <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="TrailingTitleButton">
+        <AppButton class="text-lg" Type=AppButtonType.Text OnClick=OnImport >Import</AppButton>
+    </Microsoft.AspNetCore.Components.Sections.SectionContent>
+}
+@code {
+    [Parameter][EditorRequired] public SharedProgramBlueprint SharedProgramBlueprint { get; set; } = null!;
+
+    [CascadingParameter(Name = "IsInActiveScreen")]
+    public bool IsInActiveScreen { get; set; }
+
+    private ProgramBlueprint ProgramBlueprint => SharedProgramBlueprint.ProgramBlueprint;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Dispatcher.Dispatch(new SetPageTitleAction("Shared Plan"));
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/"));
+    }
+
+    private void OnImport()
+    {
+        var id = Guid.NewGuid();
+        Dispatcher.Dispatch(new SavePlanAction(id, ProgramBlueprint));
+        Dispatcher.Dispatch(new NavigateAction("/settings/program-list?focusPlanId=" + id));
+    }
+}

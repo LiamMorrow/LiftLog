@@ -134,6 +134,17 @@ AppUtils.onSliderChange = function (element) {
     });
 }
 
+/**
+ *
+ * @param {HTMLElement} element
+ */
+AppUtils.scrollIntoView = function (element) {
+    element?.scrollIntoView({
+        block: 'center',
+        inline: 'center',
+    });
+}
+
 
 AppUtils.smoothScrollAndFocusLast = function (elementSelector) {
     const items = document.querySelectorAll(elementSelector);

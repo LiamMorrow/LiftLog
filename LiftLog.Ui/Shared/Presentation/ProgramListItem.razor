@@ -7,9 +7,10 @@
     <div slot="end" class="flex items-center">
         @RenderActiveBadge()
         <IconButton id="@_iconButtonId" Type="IconButtonType.Standard" Icon="more_horiz" OnClick=@(() => _menu?.Open())></IconButton>
-        <Menu  anchor="@_iconButtonId" @ref="_menu">
+        <Menu anchor="@_iconButtonId" @ref="_menu">
             <MenuItem Icon="delete" disabled="@IsActive" Label="Remove" OnClick="() => OnRemove.InvokeAsync()"/>
             <MenuItem Icon="content_copy" Label="Duplicate" OnClick="() => OnDuplicate.InvokeAsync()"/>
+            <MenuItem Icon="share" Label="Share" OnClick="() => OnShare.InvokeAsync()"/>
         </Menu>
     </div>
 </md-list-item>
@@ -36,12 +37,26 @@
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     [Parameter] public EventCallback OnUse { get; set; }
+
     [Parameter] public EventCallback OnRemove { get; set; }
+
     [Parameter] public EventCallback OnDuplicate { get; set; }
+
+    [Parameter] public EventCallback OnShare { get; set; }
 
     private string SupportingText => $"Edited: {ProgramBlueprint.LastEdited.ToShortDateString()}";
 
     private string FocusClass => IsFocused ? "bg-secondary-container text-on-secondary-container " : "";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender && IsFocused)
+        {
+            await Task.Delay(100);
+            await JSRuntime.InvokeVoidAsync("AppUtils.scrollIntoView", _listItem);
+        }
+    }
 
     private RenderFragment? RenderActiveBadge()
     {
