@@ -31,7 +31,6 @@ jobs:
       WebAuthApiKey: "1234"
       GooglePlayServiceAccountEmail: "123"
       GooglePlayServiceAccountKeyBase64: "123"
-      IdEncodingService__Alphabet: "123abc"
     steps:
       - uses: actions/checkout@v4
       - name: Setup .NET
