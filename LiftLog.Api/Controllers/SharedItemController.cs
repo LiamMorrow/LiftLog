@@ -7,15 +7,13 @@ using LiftLog.Lib.Models;
 using LiftLog.Lib.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Visus.Cuid;
 
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
-public class SharedItemController(
-    UserDataContext db,
-    PasswordService passwordService,
-    IdEncodingService idEncodingService
-) : ControllerBase
+public class SharedItemController(UserDataContext db, PasswordService passwordService)
+    : ControllerBase
 {
     [Route("[controller]")]
     [HttpPost]
@@ -42,6 +40,7 @@ public class SharedItemController(
 
         var sharedItem = new SharedItem
         {
+            Id = new Cuid2(12).ToString(),
             UserId = request.UserId,
             EncryptedPayload = request.EncryptedPayload.EncryptedPayload,
             EncryptionIV = request.EncryptedPayload.IV.Value,
@@ -50,17 +49,13 @@ public class SharedItemController(
 
         await db.SharedItems.AddAsync(sharedItem);
         await db.SaveChangesAsync();
-        return Ok(new CreateSharedItemResponse(Id: idEncodingService.EncodeId(sharedItem.Id)));
+        return Ok(new CreateSharedItemResponse(Id: sharedItem.Id));
     }
 
     [Route("[controller]/{id}")]
     [HttpGet]
     public async Task<IActionResult> GetSharedItem(string id)
     {
-        if (!idEncodingService.TryDecodeId(id, out var idNumber))
-        {
-            return NotFound();
-        }
         var sharedItem = await db
             .SharedItems.Select(x => new
             {
@@ -69,7 +64,7 @@ public class SharedItemController(
                 x.EncryptedPayload,
                 x.EncryptionIV
             })
-            .FirstOrDefaultAsync(x => x.Id == idNumber);
+            .FirstOrDefaultAsync(x => x.Id == id);
         if (sharedItem == null)
         {
             return NotFound();

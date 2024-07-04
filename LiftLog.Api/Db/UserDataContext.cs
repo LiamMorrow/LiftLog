@@ -27,13 +27,6 @@ public class UserDataContext(DbContextOptions<UserDataContext> options) : DbCont
             .HasNoKey()
             .ToTable("tmp_stub_table", t => t.ExcludeFromMigrations());
 
-        modelBuilder.HasSequence<int>("user_lookup_sequence");
-
-        modelBuilder
-            .Entity<User>()
-            .Property(x => x.UserLookup)
-            .HasDefaultValueSql("nextval('user_lookup_sequence')");
-
         modelBuilder
             .Entity<User>()
             .HasMany<UserEvent>()

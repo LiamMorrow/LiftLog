@@ -8,7 +8,7 @@ public class User
 {
     public Guid Id { get; set; }
 
-    public int UserLookup { get; set; }
+    public string UserLookup { get; set; } = null!;
 
     // Hashed and salted password used for authentication
     public string HashedPassword { get; set; } = null!;
