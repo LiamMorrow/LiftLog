@@ -26,7 +26,10 @@ internal partial class SharedItemPayload
     {
         return this switch
         {
-            { SharedProgramBlueprint.ProgramBlueprint: { } programBlueprint }
+            {
+                PayloadCase: PayloadOneofCase.SharedProgramBlueprint,
+                SharedProgramBlueprint.ProgramBlueprint: { } programBlueprint
+            }
                 => new SharedProgramBlueprint(programBlueprint.ToModel()),
             _ => null
         };
