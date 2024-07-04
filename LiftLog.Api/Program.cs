@@ -45,11 +45,6 @@ var openAiApiKey =
     ?? throw new Exception("OpenAiApiKey configuration is not set.");
 builder.Services.RegisterGptAiWorkoutPlanner(openAiApiKey);
 
-builder.Services.Configure<IdEncodingServiceConfiguration>(
-    builder.Configuration.GetSection("IdEncodingService")
-);
-builder.Services.AddSingleton<IdEncodingService>();
-
 builder.Services.AddSingleton<PasswordService>();
 builder.Services.AddHttpClient<AppleAppStorePurchaseVerificationService>();
 builder.Services.AddScoped<RateLimitService>();
@@ -129,30 +124,7 @@ app.MapMethods(
 using (var scope = app.Services.CreateScope())
 {
     var userDb = scope.ServiceProvider.GetRequiredService<UserDataContext>();
-    var idEncoder = scope.ServiceProvider.GetRequiredService<IdEncodingService>();
     await userDb.Database.MigrateAsync();
-    var allUsers = await userDb.Users.ToListAsync();
-    foreach (var user in allUsers)
-    {
-        if (int.TryParse(user.UserLookup, out var lookup))
-        {
-            user.UserLookup = idEncoder.EncodeId(lookup);
-        }
-    }
-
-    await userDb.SaveChangesAsync();
-
-    var allSharedItems = await userDb.SharedItems.ToListAsync();
-    foreach (var sharedItem in allSharedItems)
-    {
-        if (int.TryParse(sharedItem.Id, out var lookup))
-        {
-            await userDb.Database.ExecuteSqlAsync(
-                $"UPDATE shared_items SET id = {idEncoder.EncodeId(lookup)} WHERE id = {sharedItem.Id}"
-            );
-        }
-    }
-
     var rateLimitDb = scope.ServiceProvider.GetRequiredService<RateLimitContext>();
     await rateLimitDb.Database.MigrateAsync();
 }

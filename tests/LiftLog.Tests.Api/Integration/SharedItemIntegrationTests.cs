@@ -3,6 +3,7 @@ using LiftLog.Api.Service;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Visus.Cuid;
 
 namespace LiftLog.Tests.ApiErrorType.Integration;
 
@@ -102,29 +103,13 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
     }
 
     [Fact]
-    public async Task Get_SharedItemWithInvalidId_ReturnsNotFound()
+    public async Task Get_SharedItemWithNonExistantId_ReturnsNotFound()
     {
         // Arrange
         var client = _factory.CreateClient();
 
         // Act
-        var response = await client.GetAsync(url + "/" + Guid.NewGuid());
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-    }
-
-    [Fact]
-    public async Task Get_SharedItemWithValidNonExistantId_ReturnsNotFound()
-    {
-        // Arrange
-        var client = _factory.CreateClient();
-        var encodedId = _factory
-            .Services.GetRequiredService<IdEncodingService>()
-            .EncodeId(int.MaxValue);
-
-        // Act
-        var response = await client.GetAsync(url + "/" + encodedId);
+        var response = await client.GetAsync(url + "/" + new Cuid2(12).ToString());
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
