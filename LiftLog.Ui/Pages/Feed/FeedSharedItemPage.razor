@@ -5,26 +5,25 @@
 @inject IState<FeedState> FeedState
 @inject IDispatcher Dispatcher
 
-@if(SharedItem is { IsLoading: true })
+@switch(SharedItem)
 {
-    <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
-        <div>
-            <md-circular-progress aria-label="Loading" indeterminate four-color></md-circular-progress>
+    case { IsLoading: true }:
+        <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
+            <div>
+                <md-circular-progress aria-label="Loading" indeterminate four-color></md-circular-progress>
+            </div>
+            <span>
+                <p>Loading...</p>
+            </span>
         </div>
-        <span>
-            <p>Loading...</p>
-        </span>
-    </div>
+        break;
+    case { IsError: true }:
+        <p class="text-on-surface">@SharedItem.Error</p>
+        break;
+    case { IsSuccess: true }:
+        <SharedItemComponent SharedItem="SharedItem.Data" />
+        break;
 }
-else if(SharedItem is { IsError: true })
-{
-    <p class="text-on-surface">@SharedItem.Error</p>
-}
-else if(SharedItem is { IsSuccess: true })
-{
-    <SharedItemComponent SharedItem="SharedItem.Data" />
-}
-
 
 @code {
     [Parameter] public string Id { get; set; } = null!;

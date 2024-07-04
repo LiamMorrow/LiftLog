@@ -29,8 +29,7 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
         var sharedItemCreateRequest = new CreateSharedItemRequest(
             createUserResponse.Id,
             createUserResponse.Password,
-            encryptedPayload,
-            encryptionIV,
+            new(encryptedPayload, new(encryptionIV)),
             DateTimeOffset.UtcNow.AddDays(1)
         );
 
@@ -52,8 +51,10 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
         getSharedItemResponse!
             .RsaPublicKey.SpkiPublicKeyBytes.Should()
             .BeEquivalentTo(rsaPublicKey);
-        getSharedItemResponse.EncryptedPayload.Should().BeEquivalentTo(encryptedPayload);
-        getSharedItemResponse.EncryptionIV.Should().BeEquivalentTo(encryptionIV);
+        getSharedItemResponse
+            .EncryptedPayload.EncryptedPayload.Should()
+            .BeEquivalentTo(encryptedPayload);
+        getSharedItemResponse.EncryptedPayload.IV.Should().BeEquivalentTo(encryptionIV);
     }
 
     [Fact]
@@ -65,8 +66,7 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
         var sharedItemCreateRequest = new CreateSharedItemRequest(
             Guid.NewGuid(),
             "password",
-            encryptedPayload,
-            encryptionIV,
+            new(encryptedPayload, new(encryptionIV)),
             DateTimeOffset.UtcNow.AddDays(1)
         );
 
@@ -92,8 +92,7 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
         var sharedItemCreateRequest = new CreateSharedItemRequest(
             createUserResponse.Id,
             new string('a', 29),
-            encryptedPayload,
-            encryptionIV,
+            new(encryptedPayload, new(encryptionIV)),
             DateTimeOffset.UtcNow.AddDays(1)
         );
 
