@@ -44,6 +44,7 @@ public class SharedItemController(UserDataContext db, PasswordService passwordSe
             UserId = request.UserId,
             EncryptedPayload = request.EncryptedPayload.EncryptedPayload,
             EncryptionIV = request.EncryptedPayload.IV.Value,
+            Timestamp = DateTimeOffset.UtcNow,
             Expiry = request.Expiry,
         };
 
