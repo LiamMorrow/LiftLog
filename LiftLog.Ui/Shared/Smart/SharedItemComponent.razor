@@ -1,0 +1,9 @@
+@if(SharedItem is SharedProgramBlueprint sharedProgramBlueprint)
+{
+    <SharedProgramBlueprintComponent SharedProgramBlueprint="sharedProgramBlueprint" />
+}
+
+
+@code {
+    [Parameter][EditorRequired] public SharedItem SharedItem { get; set; } = null!;
+}

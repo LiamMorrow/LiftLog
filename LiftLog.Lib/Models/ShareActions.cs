@@ -5,8 +5,7 @@ namespace LiftLog.Lib.Models;
 public record CreateSharedItemRequest(
     Guid UserId,
     string Password,
-    byte[] EncryptedPayload,
-    byte[] EncryptionIV,
+    AesEncryptedAndRsaSignedData EncryptedPayload,
     DateTimeOffset Expiry
 );
 
@@ -14,6 +13,5 @@ public record CreateSharedItemResponse(string Id);
 
 public record GetSharedItemResponse(
     RsaPublicKey RsaPublicKey,
-    byte[] EncryptedPayload,
-    byte[] EncryptionIV
+    AesEncryptedAndRsaSignedData EncryptedPayload
 );

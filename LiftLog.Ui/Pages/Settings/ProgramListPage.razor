@@ -18,10 +18,12 @@
             @foreach (var (id, program) in orderedPrograms)
             {
                 <ProgramListItem
+                    @key="id"
                     ProgramBlueprint="@program"
                     OnClick=@(() => OpenEditProgram(id))
                     OnUse="@(() => SelectProgram(id))"
                     OnDuplicate="@(() => Dispatcher.Dispatch(new SavePlanAction(Guid.NewGuid(), program)))"
+                    OnShare="@(() => Dispatcher.Dispatch(new EncryptAndShareAction(new SharedProgramBlueprint(program))))"
                     OnRemove="()=>HandleRemove(id)"
                     IsActive="ProgramState.Value.ActivePlanId == id"
                     IsFocused="FocusPlanId == id"

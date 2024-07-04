@@ -17,7 +17,7 @@ public record FeedState(
     ImmutableDictionary<Guid, FeedUser> Followers,
     string ActiveTab,
     ImmutableHashSet<Guid> UnpublishedSessionIds,
-    bool HasPublishedRsaPublicKey
+    RemoteData<SharedItem> SharedItem
 );
 
 public record FeedUser(
@@ -92,3 +92,7 @@ public record FollowResponse(
     AesKey? AesKey,
     string? FollowSecret
 );
+
+public abstract record SharedItem();
+
+public record SharedProgramBlueprint(ProgramBlueprint ProgramBlueprint) : SharedItem;

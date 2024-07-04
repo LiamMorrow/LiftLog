@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package LiftLog.Ui.Models;
+
+import "Models/ProgramBlueprintDao/ProgramBlueprintDaoV1.proto";
+
+message SharedItemPayload {
+    // Note that messages shouldn't just be raw data, but should be a wrapper around the data
+    // so we can add additional fields in the future if needed
+    oneof payload {
+        SharedProgramBlueprintPayload shared_program_blueprint = 1;
+    }
+}
+
+message SharedProgramBlueprintPayload {
+    LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1 program_blueprint = 1;
+}

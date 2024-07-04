@@ -270,7 +270,7 @@
 
     private void RedirectToFollowUserUrl(FeedUser user)
     {
-        NavigationManager.NavigateTo(FeedShareUrl.GetShareUrl(user.Id.ToString(), user.PublicKey, user.Name));
+        NavigationManager.NavigateTo(FeedShareUrl.GetShareUrl(user.Id.ToString(), user.Name));
     }
 
     private void SetPublishWorkouts(bool value)

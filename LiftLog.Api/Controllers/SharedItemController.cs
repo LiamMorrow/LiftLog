@@ -4,6 +4,7 @@ using LiftLog.Api.Db;
 using LiftLog.Api.Models;
 using LiftLog.Api.Service;
 using LiftLog.Lib.Models;
+using LiftLog.Lib.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,8 +43,8 @@ public class SharedItemController(
         var sharedItem = new SharedItem
         {
             UserId = request.UserId,
-            EncryptedPayload = request.EncryptedPayload,
-            EncryptionIV = request.EncryptionIV,
+            EncryptedPayload = request.EncryptedPayload.EncryptedPayload,
+            EncryptionIV = request.EncryptedPayload.IV.Value,
             Expiry = request.Expiry,
         };
 
@@ -71,8 +72,10 @@ public class SharedItemController(
         return Ok(
             new GetSharedItemResponse(
                 RsaPublicKey: new Lib.Services.RsaPublicKey(sharedItem.User.RsaPublicKey),
-                EncryptedPayload: sharedItem.EncryptedPayload,
-                EncryptionIV: sharedItem.EncryptionIV
+                EncryptedPayload: new(
+                    sharedItem.EncryptedPayload,
+                    new AesIV(sharedItem.EncryptionIV)
+                )
             )
         );
     }

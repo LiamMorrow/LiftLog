@@ -14,7 +14,7 @@
         if (FeedState.Value.Identity == null)
             return null;
         var identity = FeedState.Value.Identity;
-        return GetShareUrl(identity.Lookup, identity.RsaKeyPair.PublicKey, identity.Name);
+        return GetShareUrl(identity.Lookup, identity.Name);
     }
 
     private async Task HandleShareUrlClick()
@@ -25,7 +25,7 @@
         await StringSharer.ShareAsync(shareUrl);
     }
 
-    public static string GetShareUrl(string id, RsaPublicKey publicKey, string? name) =>
+    public static string GetShareUrl(string id, string? name) =>
 #if DEBUG
         $"https://0.0.0.0:5001/feed/share?id={id}{(name is null ? "" : $"&name={Uri.EscapeDataString(name)}")}";
 #else

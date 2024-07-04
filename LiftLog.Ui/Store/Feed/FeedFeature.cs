@@ -19,6 +19,6 @@ public class FeedFeature : Feature<FeedState>
             Followers: ImmutableDictionary<Guid, FeedUser>.Empty,
             ActiveTab: "mainfeed-panel",
             UnpublishedSessionIds: [],
-            HasPublishedRsaPublicKey: false
+            SharedItem: RemoteData.Loading()
         );
 }

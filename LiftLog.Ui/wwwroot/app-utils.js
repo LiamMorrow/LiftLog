@@ -134,6 +134,18 @@ AppUtils.onSliderChange = function (element) {
     });
 }
 
+/**
+ *
+ * @param {string} id
+ */
+AppUtils.scrollIntoViewById = function (id) {
+    const element = document.getElementById(id);
+    const scrollingElement = document.getElementById('scrollingElement');
+    // scroll to center
+    if (element && scrollingElement)
+        scrollingElement.scroll({ top: element.offsetTop - scrollingElement.clientHeight / 2, behavior: 'smooth' });
+}
+
 
 AppUtils.smoothScrollAndFocusLast = function (elementSelector) {
     const items = document.querySelectorAll(elementSelector);

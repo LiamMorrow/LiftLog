@@ -6,6 +6,7 @@ using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Models.SessionBlueprintDao;
 using LiftLog.Ui.Models.SessionHistoryDao;
+using LiftLog.Ui.Store;
 using LiftLog.Ui.Store.Feed;
 
 namespace LiftLog.Ui.Models;
@@ -161,7 +162,7 @@ internal partial class FeedStateDaoV1
                 UnpublishedSessionIds: value
                     .UnpublishedSessionIds.Select(x => (Guid)x)
                     .ToImmutableHashSet(),
-                HasPublishedRsaPublicKey: value.PublishedRsaKey
+                SharedItem: RemoteData.Loading()
             );
 
     [return: NotNullIfNotNull(nameof(value))]
@@ -176,7 +177,6 @@ internal partial class FeedStateDaoV1
                 FollowRequests = { value.FollowRequests.Select(x => (InboxMessageDao)x) },
                 Followers = { value.Followers.Values.Select(x => (FeedUserDaoV1)x) },
                 UnpublishedSessionIds = { value.UnpublishedSessionIds.Select(x => (UuidDao)x) },
-                PublishedRsaKey = value.HasPublishedRsaPublicKey
             };
 }
 
