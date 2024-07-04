@@ -8,8 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
-public class UsersController(UserDataContext db, IdEncodingService idEncodingService)
-    : ControllerBase
+public class UsersController(UserDataContext db) : ControllerBase
 {
     [HttpPost]
     [Route("[controller]")]
@@ -37,7 +36,7 @@ public class UsersController(UserDataContext db, IdEncodingService idEncodingSer
                     x => x.Id,
                     x => new GetUserResponse(
                         Id: x.Id,
-                        Lookup: idEncodingService.EncodeId(x.UserLookup),
+                        Lookup: x.UserLookup,
                         EncryptedCurrentPlan: x.EncryptedCurrentPlan,
                         EncryptedProfilePicture: x.EncryptedProfilePicture,
                         EncryptedName: x.EncryptedName,

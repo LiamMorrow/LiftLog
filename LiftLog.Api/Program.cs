@@ -10,6 +10,7 @@ using LiftLog.Lib.Serialization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -128,7 +129,30 @@ app.MapMethods(
 using (var scope = app.Services.CreateScope())
 {
     var userDb = scope.ServiceProvider.GetRequiredService<UserDataContext>();
+    var idEncoder = scope.ServiceProvider.GetRequiredService<IdEncodingService>();
     await userDb.Database.MigrateAsync();
+    var allUsers = await userDb.Users.ToListAsync();
+    foreach (var user in allUsers)
+    {
+        if (int.TryParse(user.UserLookup, out var lookup))
+        {
+            user.UserLookup = idEncoder.EncodeId(lookup);
+        }
+    }
+
+    await userDb.SaveChangesAsync();
+
+    var allSharedItems = await userDb.SharedItems.ToListAsync();
+    foreach (var sharedItem in allSharedItems)
+    {
+        if (int.TryParse(sharedItem.Id, out var lookup))
+        {
+            await userDb.Database.ExecuteSqlAsync(
+                $"UPDATE shared_items SET id = {idEncoder.EncodeId(lookup)} WHERE id = {sharedItem.Id}"
+            );
+        }
+    }
+
     var rateLimitDb = scope.ServiceProvider.GetRequiredService<RateLimitContext>();
     await rateLimitDb.Database.MigrateAsync();
 }

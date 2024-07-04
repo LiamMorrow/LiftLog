@@ -4,7 +4,7 @@ namespace LiftLog.Api.Models;
 
 public class SharedItem
 {
-    public int Id { get; set; }
+    public string Id { get; set; } = null!;
     public Guid UserId { get; set; }
     public User User { get; set; } = null!;
 

@@ -6,15 +6,12 @@ using LiftLog.Api.Service;
 using LiftLog.Lib.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Visus.Cuid;
 
 namespace LiftLog.Api.Controllers;
 
 [ApiController]
-public class UserController(
-    UserDataContext db,
-    PasswordService passwordService,
-    IdEncodingService idEncodingService
-) : ControllerBase
+public class UserController(UserDataContext db, PasswordService passwordService) : ControllerBase
 {
     [Route("[controller]/create")]
     [HttpPost]
@@ -41,6 +38,7 @@ public class UserController(
         {
             Id = id,
             HashedPassword = hashedPassword,
+            UserLookup = new Cuid2(12).ToString(),
             Salt = salt,
             LastAccessed = DateTimeOffset.UtcNow,
             EncryptionIV = [],
@@ -49,13 +47,7 @@ public class UserController(
 
         await db.Users.AddAsync(user);
         await db.SaveChangesAsync();
-        return Ok(
-            new CreateUserResponse(
-                Id: id,
-                Lookup: idEncodingService.EncodeId(user.UserLookup),
-                Password: password
-            )
-        );
+        return Ok(new CreateUserResponse(Id: id, Lookup: user.UserLookup, Password: password));
     }
 
     [Route("[controller]/{idOrLookup}")]
@@ -67,9 +59,9 @@ public class UserController(
         {
             user = await db.Users.FindAsync(id);
         }
-        else if (idEncodingService.TryDecodeId(idOrLookup, out var userNumber))
+        else
         {
-            user = await db.Users.FirstOrDefaultAsync(x => x.UserLookup == userNumber);
+            user = await db.Users.FirstOrDefaultAsync(x => x.UserLookup == idOrLookup);
         }
         if (user == null)
         {
@@ -81,7 +73,7 @@ public class UserController(
         return Ok(
             new GetUserResponse(
                 Id: user.Id,
-                Lookup: idEncodingService.EncodeId(user.UserLookup),
+                Lookup: user.UserLookup,
                 EncryptedCurrentPlan: user.EncryptedCurrentPlan,
                 EncryptedProfilePicture: user.EncryptedProfilePicture,
                 EncryptedName: user.EncryptedName,
