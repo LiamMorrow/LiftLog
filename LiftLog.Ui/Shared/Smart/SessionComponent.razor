@@ -165,7 +165,7 @@ else
         SessionTarget.HistorySession => CurrentSessionState.Value.HistorySession,
         SessionTarget.FeedSession => CurrentSessionState.Value.FeedSession,
         _ => throw new InvalidOperationException("Invalid session target")
-    } ?? throw new InvalidOperationException("Session is null");
+    } ?? Session.Empty;
 
     [EditorRequired] [Parameter] public ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>> PreviouslyCompleted { get; set; } = null!;
 

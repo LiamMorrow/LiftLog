@@ -10,6 +10,8 @@ public record ProgramBlueprint(
 
 public record SessionBlueprint(string Name, ImmutableListValue<ExerciseBlueprint> Exercises)
 {
+    public static readonly SessionBlueprint Empty = new SessionBlueprint(string.Empty, []);
+
     public Session GetEmptySession()
     {
         static RecordedExercise GetNextExercise(ExerciseBlueprint e)

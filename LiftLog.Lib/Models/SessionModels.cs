@@ -11,6 +11,13 @@ public record Session(
     decimal? Bodyweight
 )
 {
+    public static readonly Session Empty = new Session(
+        Guid.Empty,
+        SessionBlueprint.Empty,
+        [],
+        DateOnly.MinValue,
+        null
+    );
     public RecordedExercise? NextExercise
     {
         get
