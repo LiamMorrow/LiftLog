@@ -8,6 +8,7 @@ using LiftLog.Ui.Store.Feed;
 using LiftLog.Ui.Store.Program;
 using LiftLog.Ui.Store.Settings;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace LiftLog.Ui;
 
@@ -24,7 +25,7 @@ public static class ServiceRegistration
         TEncryptionService,
         TVibrationService,
         TDeviceService
-    >(this IServiceCollection services)
+    >(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Singleton)
         where TKeyValueStore : class, IKeyValueStore
         where TPreferenceStore : class, IPreferenceStore
         where TNotificationService : class, INotificationService
@@ -38,7 +39,11 @@ public static class ServiceRegistration
     {
         services.AddFluxor(o =>
             o.ScanAssemblies(typeof(CurrentSessionReducers).Assembly)
-                .WithLifetime(StoreLifetime.Singleton)
+                .WithLifetime(
+                    lifetime == ServiceLifetime.Singleton
+                        ? StoreLifetime.Singleton
+                        : StoreLifetime.Scoped
+                )
                 .AddMiddleware<PersistSessionMiddleware>()
                 .AddMiddleware<PersistProgramMiddleware>()
                 .AddMiddleware<AppStateInitMiddleware>()
@@ -52,50 +57,66 @@ public static class ServiceRegistration
 #endif
         );
 
-        services.AddScoped<CurrentProgramRepository>();
-        services.AddScoped<ProgressRepository>();
-        services.AddScoped<PreferencesRepository>();
-        services.AddSingleton<NavigationManagerProvider>();
+        services.Add<CurrentProgramRepository>(lifetime);
+        services.Add<ProgressRepository>(lifetime);
+        services.Add<PreferencesRepository>(lifetime);
+        services.Add<NavigationManagerProvider>(lifetime);
 
-        services.AddSingleton<CurrentProgramRepository>();
-        services.AddSingleton<SavedProgramRepository>();
-        services.AddSingleton<ProgressRepository>();
-        services.AddSingleton<PreferencesRepository>();
-
-        services.AddSingleton<
+        services.Add<
             BlazorTransitionableRoute.IRouteTransitionInvoker,
             BlazorTransitionableRoute.DefaultRouteTransitionInvoker
-        >();
+        >(lifetime);
 
-        services.AddSingleton<IKeyValueStore, TKeyValueStore>();
-        services.AddSingleton<IPreferenceStore, TPreferenceStore>();
-        services.AddSingleton<INotificationService, TNotificationService>();
-        services.AddSingleton<IExporter, TExporter>();
+        services.Add<CurrentProgramRepository>(lifetime);
+        services.Add<SavedProgramRepository>(lifetime);
+        services.Add<ProgressRepository>(lifetime);
+        services.Add<PreferencesRepository>(lifetime);
 
-        services.AddSingleton<IAiWorkoutPlanner, ApiBasedAiWorkoutPlanner>();
+        services.Add<IKeyValueStore, TKeyValueStore>(lifetime);
+        services.Add<IPreferenceStore, TPreferenceStore>(lifetime);
+        services.Add<INotificationService, TNotificationService>(lifetime);
+        services.Add<IExporter, TExporter>(lifetime);
 
-        services.AddSingleton<SessionService>();
+        services.Add<IAiWorkoutPlanner, ApiBasedAiWorkoutPlanner>(lifetime);
 
-        services.AddSingleton<IThemeProvider, TThemeProvider>();
+        services.Add<SessionService>(lifetime);
 
-        services.AddSingleton<IStringSharer, TStringSharer>();
+        services.Add<IThemeProvider, TThemeProvider>(lifetime);
 
-        services.AddSingleton<IAppPurchaseService, TPurchaseService>();
+        services.Add<IStringSharer, TStringSharer>(lifetime);
 
-        services.AddSingleton<IEncryptionService, TEncryptionService>();
+        services.Add<IAppPurchaseService, TPurchaseService>(lifetime);
 
-        services.AddSingleton<IHapticFeedbackService, TVibrationService>();
+        services.Add<IEncryptionService, TEncryptionService>(lifetime);
 
-        services.AddSingleton<FeedApiService>();
-        services.AddSingleton<FeedIdentityService>();
-        services.AddSingleton<FeedFollowService>();
+        services.Add<IHapticFeedbackService, TVibrationService>(lifetime);
 
-        services.AddSingleton<NavigationManagerProvider>();
+        services.Add<FeedApiService>(lifetime);
+        services.Add<FeedIdentityService>(lifetime);
+        services.Add<FeedFollowService>(lifetime);
 
-        services.AddSingleton<IDeviceService, TDeviceService>();
+        services.Add<NavigationManagerProvider>(lifetime);
 
-        services.AddSingleton<InsetsManager>();
+        services.Add<IDeviceService, TDeviceService>(lifetime);
+
+        services.Add<InsetsManager>(lifetime);
 
         return services;
+    }
+
+    private static void Add<T, TImplementation>(
+        this IServiceCollection services,
+        ServiceLifetime lifetime
+    )
+        where T : class
+        where TImplementation : class, T
+    {
+        services.Add(new ServiceDescriptor(typeof(T), typeof(TImplementation), lifetime));
+    }
+
+    private static void Add<T>(this IServiceCollection services, ServiceLifetime lifetime)
+        where T : class
+    {
+        services.Add(new ServiceDescriptor(typeof(T), typeof(T), lifetime));
     }
 }

@@ -1,15 +1,20 @@
 ﻿@{
-    var (displayedExercise, repToStartNext, notesToShow) = (_holdingPrevious, PreviousRecordedExercises?.FirstOrDefault()?.RecordedExercise) switch
+    var (displayedExercise, repToStartNext) = (_holdingPrevious, PreviousRecordedExercises?.FirstOrDefault()?.RecordedExercise) switch
     {
-        (true, null) => (RecordedExercise, -1, RecordedExercise.Notes),
-        (true, var previous) => (previous, -1, previous.Notes),
-        (false, _) => (RecordedExercise, RecordedExercise.PotentialSets.IndexOf(x => x.Set is null), RecordedExercise.Notes)
+        (true, null) => (RecordedExercise, -1),
+        (true, var previous) => (previous, -1),
+        (false, _) => (RecordedExercise, RecordedExercise.PotentialSets.IndexOf(x => x.Set is null))
     };
+    var previousNotes = PreviousRecordedExercises?.FirstOrDefault()?.RecordedExercise?.Notes ?? "";
+    var thisNotes = RecordedExercise.Notes ?? "";
+    var blueprintNotes = RecordedExercise.Blueprint.Notes;
 }
 <div class="flex flex-col gap-4 py-4 pl-7 pr-2 w-full">
     <div class="flex flex-col">
         <div class="flex justify-between">
-            <ItemTitle Title="@RecordedExercise.Blueprint.Name" />
+            <div>
+                <ItemTitle Title="@RecordedExercise.Blueprint.Name" />
+            </div>
             @if(!IsReadonly)
             {
                 <div class="flex justify-end">
@@ -57,10 +62,31 @@
                 ToStartNext=@(ToStartNext && repToStartNext == i && !IsReadonly)/>
         }
     </div>
-    @if (notesToShow is not null)
+    @if((blueprintNotes ,previousNotes , thisNotes) is not ("","",""))
     {
-        <div class="flex justify-start">
-            <span data-cy="exercise-notes" class="text-tertiary font-bold">@notesToShow</span>
+        <div class="grid grid-cols-[min-content_1fr] gap-2 text-left">
+            <IconButton Type=IconButtonType.Standard OnClick=@(()=>showNotes = !showNotes) Icon="notes" />
+            <div class="flex flex-col">
+                @if (showNotes && blueprintNotes is not "")
+                {
+                    <div class="flex justify-start">
+                        <span data-cy="exercise-blueprint-notes" class="text-tertiary">@blueprintNotes</span>
+                    </div>
+                }
+                @if (showNotes && previousNotes is not "")
+                {
+                    <div class="flex justify-start">
+                        <span data-cy="exercise-previous-notes" class="text-secondary">Last time: @previousNotes</span>
+                    </div>
+                }
+                @if (showNotes && thisNotes is not "")
+                {
+                    <div class="flex justify-start">
+                        <span data-cy="exercise-notes" class="text-primary">@thisNotes</span>
+                    </div>
+                }
+
+            </div>
         </div>
     }
     @if (_holdingPrevious && PreviousRecordedExercises?.Any() == true)
@@ -87,6 +113,7 @@
     private bool _holdingPrevious = false;
     private Menu? _menu;
     private Dialog? notesDialog;
+    private bool showNotes = true;
 
     private string EditorNotes { get; set; } = "";
 

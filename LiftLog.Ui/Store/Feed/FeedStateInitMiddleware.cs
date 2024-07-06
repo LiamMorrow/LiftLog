@@ -48,6 +48,7 @@ public class FeedStateInitMiddleware(
                 }
             }
             dispatch.Dispatch(new SetFeedIsHydratedAction());
+            dispatch.Dispatch(new FetchInboxItemsAction());
             sw.Stop();
             logger.LogInformation(
                 "Feed state initialized in {ElapsedMilliseconds}ms",

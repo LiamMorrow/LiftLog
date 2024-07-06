@@ -1,5 +1,5 @@
 @typeparam TItem
-<div @attributes="AdditionalAttributes" class=" @(AdditionalAttributes?.GetValueOrDefault("class")) flex flex-col py-2 itemlist">
+<div @attributes="AdditionalAttributes" class=" @(AdditionalAttributes?.GetValueOrDefault("class")) flex flex-col @VerticalPaddingClass itemlist">
     @for (var i = 0; i < Items.Count; i++)
     {
         <div class="text-on-surface">
@@ -17,6 +17,10 @@
 
     [Parameter] public RenderFragment<TItem>? ChildContent { get; set; } = null!;
 
+    [Parameter] public bool VerticalPadding { get; set; } = true;
+
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string VerticalPaddingClass => VerticalPadding ? "py-2" : "";
 }

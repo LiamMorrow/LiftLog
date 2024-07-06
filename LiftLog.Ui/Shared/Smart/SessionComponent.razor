@@ -4,6 +4,14 @@
 @inject IState<CurrentSessionState> CurrentSessionState
 @inject IDispatcher Dispatcher
 
+@if(Session.Blueprint.Notes != "")
+{
+    <Card class="m-2 gap-4 text-start flex items-center" Type=Card.CardType.Filled>
+        <md-icon>notes</md-icon>
+        <p>@Session.Blueprint.Notes</p>
+    </Card>
+}
+
 @if (!Session.RecordedExercises.Any())
 {
     <div class="flex flex-col justify-center items-center gap-4 my-8 text-on-surface">

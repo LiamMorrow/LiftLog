@@ -1,4 +1,4 @@
-<div class="py-4 pl-5 pr-2 relative" @onclick="OnEdit">
+<div class="pb-4 @TopPadding relative" @onclick="OnEdit">
     <md-ripple></md-ripple>
     <div class="flex flex-col">
         <div class="flex justify-between items-center">
@@ -37,8 +37,13 @@
     [EditorRequired]
     public EventCallback OnEdit { get; set; }
 
+    [Parameter]
+    public bool PadTop { get; set; } = true;
+
     private string Pluralize(int count, string singular)
     {
         return count == 1 ? singular : singular + "s";
     }
+
+    private string TopPadding => PadTop ? "pt-4" : "";
 }

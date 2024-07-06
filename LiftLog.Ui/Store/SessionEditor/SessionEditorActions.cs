@@ -6,6 +6,8 @@ public record SetEditingSessionAction(SessionBlueprint SessionBlueprint);
 
 public record SetEditingSessionNameAction(string Name);
 
+public record SetEditingSessionNotesAction(string Notes);
+
 public record MoveExerciseUpAction(ExerciseBlueprint ExerciseBlueprint);
 
 public record MoveExerciseDownAction(ExerciseBlueprint ExerciseBlueprint);
