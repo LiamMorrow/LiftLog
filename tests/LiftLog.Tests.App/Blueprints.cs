@@ -16,7 +16,8 @@ public static class Blueprints
                 RepsPerSet: 10,
                 WeightIncreaseOnSuccess: 2.5m,
                 RestBetweenSets: Rest.Medium,
-                SupersetWithNext: false
+                SupersetWithNext: false,
+                Notes: "My exercise notes"
             )
         );
     }
@@ -29,8 +30,9 @@ public static class Blueprints
             [
                 CreateExerciseBlueprint(),
                 CreateExerciseBlueprint(e => e with { Name = "Test Exercise 2", RepsPerSet = 4 }),
-                CreateExerciseBlueprint(e => e with { Name = "Test Exercise 3", Sets = 4 })
-            ]
+                CreateExerciseBlueprint(e => e with { Name = "Test Exercise 3", Sets = 4 }),
+            ],
+            Notes: "My notes"
         );
     }
 }

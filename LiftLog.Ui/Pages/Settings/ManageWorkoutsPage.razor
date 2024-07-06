@@ -85,7 +85,8 @@
         Dispatcher.Dispatch(
             new AddProgramSessionAction(
                 PlanId,
-                new SessionBlueprint($"Session {ProgramState.Value.GetSessionBlueprints(PlanId).Count + 1}", new ImmutableListValue<ExerciseBlueprint>())));
+                SessionBlueprint.Empty with { Name = $"Session {ProgramState.Value.GetSessionBlueprints(PlanId).Count + 1}" })
+        );
         SelectSession(ProgramState.Value.GetSessionBlueprints(PlanId).Last(), ProgramState.Value.GetSessionBlueprints(PlanId).Count - 1);
     }
 

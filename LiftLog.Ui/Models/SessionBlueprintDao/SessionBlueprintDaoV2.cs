@@ -23,18 +23,24 @@ internal partial class SessionBlueprintDaoV2
 {
     public SessionBlueprintDaoV2(
         string name,
-        IEnumerable<ExerciseBlueprintDaoV2> exerciseBlueprints
+        IEnumerable<ExerciseBlueprintDaoV2> exerciseBlueprints,
+        string notes
     )
     {
         Name = name;
         ExerciseBlueprints.AddRange(exerciseBlueprints);
+        Notes = notes;
     }
 
     public static SessionBlueprintDaoV2 FromModel(Lib.Models.SessionBlueprint model) =>
-        new(model.Name, model.Exercises.Select(ExerciseBlueprintDaoV2.FromModel).ToImmutableList());
+        new(
+            model.Name,
+            model.Exercises.Select(ExerciseBlueprintDaoV2.FromModel).ToImmutableList(),
+            model.Notes
+        );
 
     public Lib.Models.SessionBlueprint ToModel() =>
-        new(Name, ExerciseBlueprints.Select(x => x.ToModel()).ToImmutableList());
+        new(Name, ExerciseBlueprints.Select(x => x.ToModel()).ToImmutableList(), Notes);
 }
 
 internal partial class ExerciseBlueprintDaoV2
@@ -45,7 +51,8 @@ internal partial class ExerciseBlueprintDaoV2
         int repsPerSet,
         DecimalValue weightIncreaseOnSuccess,
         RestDaoV2 restBetweenSets,
-        bool supersetWithNext
+        bool supersetWithNext,
+        string notes
     )
     {
         Name = name;
@@ -54,6 +61,7 @@ internal partial class ExerciseBlueprintDaoV2
         WeightIncreaseOnSuccess = weightIncreaseOnSuccess;
         RestBetweenSets = restBetweenSets;
         SupersetWithNext = supersetWithNext;
+        Notes = notes;
     }
 
     public static ExerciseBlueprintDaoV2 FromModel(Lib.Models.ExerciseBlueprint model) =>
@@ -63,7 +71,8 @@ internal partial class ExerciseBlueprintDaoV2
             model.RepsPerSet,
             model.WeightIncreaseOnSuccess,
             RestDaoV2.FromModel(model.RestBetweenSets),
-            model.SupersetWithNext
+            model.SupersetWithNext,
+            model.Notes
         );
 
     public Lib.Models.ExerciseBlueprint ToModel() =>
@@ -73,7 +82,8 @@ internal partial class ExerciseBlueprintDaoV2
             RepsPerSet,
             WeightIncreaseOnSuccess,
             RestBetweenSets.ToModel(),
-            SupersetWithNext
+            SupersetWithNext,
+            Notes
         );
 }
 

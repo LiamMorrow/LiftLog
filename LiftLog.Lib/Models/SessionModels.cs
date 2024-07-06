@@ -11,13 +11,18 @@ public record Session(
     decimal? Bodyweight
 )
 {
-    public static readonly Session Empty = new Session(
-        Guid.Empty,
-        SessionBlueprint.Empty,
-        [],
-        DateOnly.MinValue,
-        null
-    );
+    public static readonly Session Empty =
+        new(Guid.Empty, SessionBlueprint.Empty, [], DateOnly.MinValue, null);
+
+    public static Session FreeformSession(DateOnly date, decimal? bodyweight) =>
+        Empty with
+        {
+            Bodyweight = bodyweight,
+            Id = Guid.NewGuid(),
+            Blueprint = SessionBlueprint.Empty with { Name = "Freeform Session" },
+            Date = date
+        };
+
     public RecordedExercise? NextExercise
     {
         get
