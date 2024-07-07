@@ -134,6 +134,7 @@ describe('Completing a session', () => {
         cy.getA('[data-cy=exercise-notes-btn]').first().click()
         cy.dialog().find('md-outlined-text-field').find('textarea', { includeShadowDom: true }).first().click().type('I am NoteTaker, master of notes')
         cy.dialog().find('[data-cy=notes-dialog-actions]').contains("Save").click()
+        cy.getA('.repcount').first().click().should('contain.text', '5/5')
 
         cy.contains('Finish').click()
 
@@ -152,9 +153,7 @@ describe('Completing a session', () => {
         cy.navigate('Workout')
         cy.containsA('Workout A').click()
 
-        // TODO: this is failing because it does not actually trigger a pointerdown properly in blazor
-        // cy.getA('[data-cy=prev-exercise-btn]').first().find('button', { includeShadowDom: true }).trigger('pointerdown')
-        // cy.getA('[data-cy=exercise-notes]').should('contain.text', 'I am NoteTaker, master of notes')
+        cy.getA('[data-cy=exercise-previous-notes]').should('contain.text', 'I am NoteTaker, master of notes')
       })
     })
   })
