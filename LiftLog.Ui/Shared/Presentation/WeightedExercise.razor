@@ -70,7 +70,7 @@
                 @if (blueprintNotes is not "")
                 {
                     <div class="flex justify-start">
-                        <span data-cy="exercise-blueprint-notes" >@blueprintNotes</span>
+                        <span data-cy="exercise-blueprint-notes" ><MultilineString Value="@blueprintNotes" /></span>
                     </div>
                 }
                 @if (previousNotes is not "")
@@ -79,7 +79,7 @@
                         <md-divider></md-divider>
                     }
                     <div class="flex justify-start">
-                        <span data-cy="exercise-previous-notes" >Last time: @previousNotes</span>
+                        <span data-cy="exercise-previous-notes" >Last time: <MultilineString Value="@previousNotes" /></span>
                     </div>
                 }
                 @if (thisNotes is not "")
@@ -88,7 +88,7 @@
                         <md-divider></md-divider>
                     }
                     <div class="flex justify-start">
-                        <span data-cy="exercise-notes" >@thisNotes</span>
+                        <span data-cy="exercise-notes" ><MultilineString Value="@thisNotes" /></span>
                     </div>
                 }
 
