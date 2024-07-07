@@ -104,8 +104,8 @@
 </div>
 
 <Dialog @ref="notesDialog">
-    <span slot="headline">@(RecordedExercise.Blueprint.Name) Notes</span>
-    <div slot="content">
+    <span slot="headline">Session Notes for @(RecordedExercise.Blueprint.Name)</span>
+    <div slot="content" class="flex flex-col">
         <TextField label="Notes" TextFieldType="TextFieldType.Outline" Value="@EditorNotes" OnChange="HandleNotesChange" type="textarea"/>
     </div>
     <div slot="actions" data-cy="notes-dialog-actions">

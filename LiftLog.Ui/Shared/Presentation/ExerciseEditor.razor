@@ -12,7 +12,10 @@
     data-cy="exercise-notes"
     TextFieldType="TextFieldType.Filled"
     class="w-full mb-2 text-xl text-start"
-    Label="Notes"
+    Label="Plan Notes"
+    type="textarea"
+    SelectAllOnFocus="false"
+    class="resize-y"
     Value="@Exercise.Notes"
     OnChange="@(val => SetExerciseNotes(val!))"/>
 <div class="flex flex-wrap justify-around w-full gap-4">
