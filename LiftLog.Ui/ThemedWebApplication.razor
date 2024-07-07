@@ -7,7 +7,7 @@
 @inject NavigationManagerProvider NavigationManagerProvider
 @inject NavigationManager NavigationManager
 
-<LiftLog.Ui.WebApplication/>
+<LiftLog.Ui.WebApp/>
 
 @if (_scheme is not null)
 {
@@ -97,10 +97,6 @@
 
     string GetColorStr(uint color) => $"{ColorUtils.RedFromArgb(color)} {ColorUtils.GreenFromArgb(color)} {ColorUtils.BlueFromArgb(color)}";
 
-    protected override async Task OnInitializedAsync()
-    {
-        _scheme = await ThemeProvider.GetColorSchemeAsync();
-    }
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -111,6 +107,16 @@
         }
 
         base.OnAfterRender(firstRender);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _scheme = await ThemeProvider.GetColorSchemeAsync();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     public void Dispose()

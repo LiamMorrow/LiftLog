@@ -20,7 +20,8 @@ public partial class ScreenshotCollectorPage
                     RepsPerSet: 10,
                     WeightIncreaseOnSuccess: 2.5m,
                     RestBetweenSets: Rest.Medium,
-                    SupersetWithNext: false
+                    SupersetWithNext: false,
+                    Notes: ""
                 ),
                 new ExerciseBlueprint(
                     Name: "Bench Press",
@@ -28,7 +29,8 @@ public partial class ScreenshotCollectorPage
                     RepsPerSet: 10,
                     WeightIncreaseOnSuccess: 2.5m,
                     RestBetweenSets: Rest.Medium,
-                    SupersetWithNext: false
+                    SupersetWithNext: false,
+                    Notes: ""
                 ),
                 new ExerciseBlueprint(
                     Name: "Deadlift",
@@ -36,9 +38,11 @@ public partial class ScreenshotCollectorPage
                     RepsPerSet: 10,
                     WeightIncreaseOnSuccess: 2.5m,
                     RestBetweenSets: Rest.Medium,
-                    SupersetWithNext: false
+                    SupersetWithNext: false,
+                    Notes: ""
                 )
-            ]
+            ],
+            Notes: ""
         );
 
     private async Task HandleHomeScreenshotCollection()

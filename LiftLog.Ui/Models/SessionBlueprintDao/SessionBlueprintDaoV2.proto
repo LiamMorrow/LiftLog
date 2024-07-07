@@ -11,6 +11,7 @@ message SessionBlueprintContainerDaoV2 {
 message SessionBlueprintDaoV2 {
     string name = 1;
     repeated ExerciseBlueprintDaoV2 exercise_blueprints = 2;
+    string notes = 3;
 }
 
 
@@ -22,6 +23,7 @@ message ExerciseBlueprintDaoV2 {
     LiftLog.Ui.Models.DecimalValue weight_increase_on_success = 5;
     RestDaoV2 rest_between_sets = 6;
     bool superset_with_next = 7;
+    string notes = 8;
 }
 
 message RestDaoV2 {

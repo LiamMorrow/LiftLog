@@ -1,15 +1,20 @@
 ﻿@{
-    var (displayedExercise, repToStartNext, notesToShow) = (_holdingPrevious, PreviousRecordedExercises?.FirstOrDefault()?.RecordedExercise) switch
+    var (displayedExercise, repToStartNext) = (_holdingPrevious, PreviousRecordedExercises?.FirstOrDefault()?.RecordedExercise) switch
     {
-        (true, null) => (RecordedExercise, -1, RecordedExercise.Notes),
-        (true, var previous) => (previous, -1, previous.Notes),
-        (false, _) => (RecordedExercise, RecordedExercise.PotentialSets.IndexOf(x => x.Set is null), RecordedExercise.Notes)
+        (true, null) => (RecordedExercise, -1),
+        (true, var previous) => (previous, -1),
+        (false, _) => (RecordedExercise, RecordedExercise.PotentialSets.IndexOf(x => x.Set is null))
     };
+    var previousNotes = PreviousRecordedExercises?.FirstOrDefault()?.RecordedExercise?.Notes ?? "";
+    var thisNotes = RecordedExercise.Notes ?? "";
+    var blueprintNotes = RecordedExercise.Blueprint.Notes;
 }
 <div class="flex flex-col gap-4 py-4 pl-7 pr-2 w-full">
     <div class="flex flex-col">
         <div class="flex justify-between">
-            <ItemTitle Title="@RecordedExercise.Blueprint.Name" />
+            <div>
+                <ItemTitle Title="@RecordedExercise.Blueprint.Name" />
+            </div>
             @if(!IsReadonly)
             {
                 <div class="flex justify-end">
@@ -57,11 +62,38 @@
                 ToStartNext=@(ToStartNext && repToStartNext == i && !IsReadonly)/>
         }
     </div>
-    @if (notesToShow is not null)
+    @if((blueprintNotes ,previousNotes , thisNotes) is not ("","",""))
     {
-        <div class="flex justify-start">
-            <span data-cy="exercise-notes" class="text-tertiary font-bold">@notesToShow</span>
-        </div>
+        <Card Type=Card.CardType.Filled class="grid grid-cols-[min-content_1fr] mr-5 gap-2 text-left">
+            <md-icon>notes</md-icon>
+            <div class="flex flex-col gap-1">
+                @if (blueprintNotes is not "")
+                {
+                    <div class="flex justify-start">
+                        <span data-cy="exercise-blueprint-notes" >@blueprintNotes</span>
+                    </div>
+                }
+                @if (previousNotes is not "")
+                {
+                    if(blueprintNotes is not ""){
+                        <md-divider></md-divider>
+                    }
+                    <div class="flex justify-start">
+                        <span data-cy="exercise-previous-notes" >Last time: @previousNotes</span>
+                    </div>
+                }
+                @if (thisNotes is not "")
+                {
+                    if(previousNotes is not "" || blueprintNotes is not ""){
+                        <md-divider></md-divider>
+                    }
+                    <div class="flex justify-start">
+                        <span data-cy="exercise-notes" >@thisNotes</span>
+                    </div>
+                }
+
+            </div>
+        </Card>
     }
     @if (_holdingPrevious && PreviousRecordedExercises?.Any() == true)
     {
@@ -72,8 +104,8 @@
 </div>
 
 <Dialog @ref="notesDialog">
-    <span slot="headline">@(RecordedExercise.Blueprint.Name) Notes</span>
-    <div slot="content">
+    <span slot="headline">Session Notes for @(RecordedExercise.Blueprint.Name)</span>
+    <div slot="content" class="flex flex-col">
         <TextField label="Notes" TextFieldType="TextFieldType.Outline" Value="@EditorNotes" OnChange="HandleNotesChange" type="textarea"/>
     </div>
     <div slot="actions" data-cy="notes-dialog-actions">

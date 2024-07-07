@@ -24,7 +24,8 @@ internal partial class SessionDaoV2
         SessionBlueprintDaoV2 sessionBlueprint,
         IEnumerable<RecordedExerciseDaoV2> recordedExercises,
         DateOnlyDao date,
-        decimal? bodyweight
+        decimal? bodyweight,
+        string blueprintNotes
     )
     {
         Id = id;
@@ -32,6 +33,7 @@ internal partial class SessionDaoV2
         Date = date;
         Bodyweight = bodyweight;
         SessionName = sessionBlueprint.Name;
+        BlueprintNotes = blueprintNotes;
     }
 
     public static SessionDaoV2 FromModel(Lib.Models.Session model) =>
@@ -40,7 +42,8 @@ internal partial class SessionDaoV2
             SessionBlueprintDaoV2.FromModel(model.Blueprint),
             model.RecordedExercises.Select(RecordedExerciseDaoV2.FromModel).ToImmutableList(),
             model.Date,
-            model.Bodyweight
+            model.Bodyweight,
+            model.Blueprint.Notes
         );
 
     public Lib.Models.Session ToModel() =>
@@ -48,7 +51,8 @@ internal partial class SessionDaoV2
             Id,
             new Lib.Models.SessionBlueprint(
                 SessionName,
-                RecordedExercises.Select(x => x.ToModel().Blueprint).ToImmutableList()
+                RecordedExercises.Select(x => x.ToModel().Blueprint).ToImmutableList(),
+                BlueprintNotes
             ),
             RecordedExercises.Select(x => x.ToModel()).ToImmutableList(),
             Date,

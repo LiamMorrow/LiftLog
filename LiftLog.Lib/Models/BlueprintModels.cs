@@ -8,9 +8,13 @@ public record ProgramBlueprint(
     DateOnly LastEdited
 );
 
-public record SessionBlueprint(string Name, ImmutableListValue<ExerciseBlueprint> Exercises)
+public record SessionBlueprint(
+    string Name,
+    ImmutableListValue<ExerciseBlueprint> Exercises,
+    string Notes
+)
 {
-    public static readonly SessionBlueprint Empty = new SessionBlueprint(string.Empty, []);
+    public static readonly SessionBlueprint Empty = new(string.Empty, [], string.Empty);
 
     public Session GetEmptySession()
     {
@@ -41,7 +45,8 @@ public record ExerciseBlueprint(
     int RepsPerSet,
     decimal WeightIncreaseOnSuccess,
     Rest RestBetweenSets,
-    bool SupersetWithNext
+    bool SupersetWithNext,
+    string Notes
 );
 
 public record KeyedExerciseBlueprint(string Name, int Sets, int RepsPerSet)

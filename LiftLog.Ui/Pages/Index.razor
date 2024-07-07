@@ -145,7 +145,7 @@ else
     private void StartFreeformSession()
     {
         var latestBodyweight = ProgramState.Value.UpcomingSessions.FirstOrDefault()?.Bodyweight;
-        selectedSession = new Session(Guid.NewGuid(), new SessionBlueprint("Freeform Session", []), [], DateOnly.FromDateTime(DateTime.Now), latestBodyweight);
+        selectedSession = Session.FreeformSession(DateOnly.FromDateTime(DateTime.Now), latestBodyweight);
         if (CurrentSessionState.Value.WorkoutSession is { IsStarted: true })
         {
             replaceCurrentSesisonDialog?.Open();

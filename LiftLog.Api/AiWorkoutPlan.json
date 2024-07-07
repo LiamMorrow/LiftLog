@@ -20,6 +20,10 @@
             "type": "string",
             "description": "The name of the session.  This might relate to the day of the week, or the type of session (e.g. 'Legs')."
           },
+          "Description": {
+            "type": "string",
+            "description": "A description of the session. (e.g. 'A session to work the legs')."
+          },
           "Exercises": {
             "type": "array",
             "description": "An array of exercises to perform.",

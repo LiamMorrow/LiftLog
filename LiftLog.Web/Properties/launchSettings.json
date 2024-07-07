@@ -3,7 +3,7 @@
     "LiftLog.Web": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "https://0.0.0.0:5001/feed/shared-item/NsOZ7u?k=F632120748D66CA8B35D10DDD6222955",
+      "launchUrl": "https://0.0.0.0:5001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

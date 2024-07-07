@@ -15,6 +15,7 @@ message SessionDaoV2 {
     repeated RecordedExerciseDaoV2 recorded_exercises = 3;
     LiftLog.Ui.Models.DateOnlyDao date = 4;
     optional LiftLog.Ui.Models.DecimalValue bodyweight = 5;
+    string blueprint_notes = 6;
 }
 
 

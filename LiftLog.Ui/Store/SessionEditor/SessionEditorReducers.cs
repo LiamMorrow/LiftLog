@@ -18,7 +18,7 @@ public static class SessionEditorReducers
         SessionEditorState state,
         SetEditingSessionNameAction action
     ) =>
-        new SessionEditorState(
+        new(
             state.SessionBlueprint == null
                 ? null
                 : state.SessionBlueprint with
@@ -28,11 +28,25 @@ public static class SessionEditorReducers
         );
 
     [ReducerMethod]
+    public static SessionEditorState SetEditingSessionNotes(
+        SessionEditorState state,
+        SetEditingSessionNotesAction action
+    ) =>
+        new(
+            state.SessionBlueprint == null
+                ? null
+                : state.SessionBlueprint with
+                {
+                    Notes = action.Notes
+                }
+        );
+
+    [ReducerMethod]
     public static SessionEditorState AddExerciseAction(
         SessionEditorState state,
         AddExerciseAction action
     ) =>
-        new SessionEditorState(
+        new(
             state.SessionBlueprint == null
                 ? null
                 : state.SessionBlueprint with
@@ -46,7 +60,7 @@ public static class SessionEditorReducers
         SessionEditorState state,
         RemoveExerciseAction action
     ) =>
-        new SessionEditorState(
+        new(
             state.SessionBlueprint == null
                 ? null
                 : state.SessionBlueprint with

@@ -45,6 +45,8 @@
 
     [Parameter] public TextFieldType TextFieldType { get; set; } = TextFieldType.Outline;
 
+    [Parameter] public bool SelectAllOnFocus { get; set; } = true;
+
     protected override async Task OnParametersSetAsync()
     {
         await JSRuntime.InvokeVoidAsync("AppUtils.setValueIfNotFocused", _textField, Value);
@@ -53,7 +55,8 @@
 
     private async Task SelectOnFocus(FocusEventArgs args)
     {
-        await JSRuntime.InvokeVoidAsync("AppUtils.selectAllText", _textField);
+        if (SelectAllOnFocus)
+            await JSRuntime.InvokeVoidAsync("AppUtils.selectAllText", _textField);
     }
 
     private async Task SetValueOnElement()

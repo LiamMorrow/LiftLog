@@ -4,6 +4,14 @@
 @inject IState<CurrentSessionState> CurrentSessionState
 @inject IDispatcher Dispatcher
 
+@if(Session.Blueprint.Notes != "")
+{
+    <Card class="my-2 mx-7 gap-4 text-start flex items-center" Type=Card.CardType.Filled>
+        <md-icon>notes</md-icon>
+        <p>@Session.Blueprint.Notes</p>
+    </Card>
+}
+
 @if (!Session.RecordedExercises.Any())
 {
     <div class="flex flex-col justify-center items-center gap-4 my-8 text-on-surface">
@@ -149,7 +157,8 @@ else
         RepsPerSet: 10,
         WeightIncreaseOnSuccess: 0,
         RestBetweenSets: Rest.Medium,
-        SupersetWithNext: false
+        SupersetWithNext: false,
+        Notes: ""
     );
 
     private (int ExerciseIndex, int PotentialSetIndex)? setAdditionalActions;
@@ -280,7 +289,8 @@ else
             RepsPerSet: 10,
             WeightIncreaseOnSuccess: 0,
             RestBetweenSets: Rest.Medium,
-            SupersetWithNext: false
+            SupersetWithNext: false,
+            Notes: ""
         );
         _editExerciseDialog?.Open();
     }

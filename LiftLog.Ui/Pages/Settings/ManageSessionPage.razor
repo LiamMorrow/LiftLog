@@ -15,22 +15,44 @@
 @if (SessionEditorState.Value.SessionBlueprint is not null)
 {
     <div class="bg-surface pt-2">
-        <div class="px-2 pb-2">
-            <TextField
-                class="w-full mb-4 text-start"
-                Label="Session Name"
-                TextFieldType="TextFieldType.Filled"
-                Value="@SessionEditorState.Value.SessionBlueprint.Name"
-                OnChange="@((val) => SetName(val!))">
-            </TextField>
-        </div>
-        <ItemList Items="SessionEditorState.Value.SessionBlueprint.Exercises.IndexedTuples()">
-            @{
-                var exercise = context.Item;
-                var index = context.Index;
-            }
-            <ExerciseBlueprintSummary Blueprint="@exercise" OnEdit="()=>BeginEditExercise(exercise,index)" OnMoveDown="()=>MoveExerciseDown(exercise)" OnMoveUp="()=>MoveExerciseUp(exercise)" OnRemove="()=>BeginRemoveExercise(exercise)" />
-        </ItemList>
+
+        <LabelledForm>
+            <LabelledFormRow Label="Session Name" Icon="assignment">
+                <TextField
+                    TextFieldType="TextFieldType.Filled"
+                    Value="@SessionEditorState.Value.SessionBlueprint.Name"
+                    OnChange="@((val) => SetName(val!))">
+                </TextField>
+            </LabelledFormRow>
+            <LabelledFormRow Label="Session Notes" Icon="notes">
+                <TextField
+                    TextFieldType="TextFieldType.Filled"
+                    Value="@SessionEditorState.Value.SessionBlueprint.Notes"
+                    type="textarea"
+                    SelectAllOnFocus="false"
+                    class="resize-y"
+                    OnChange="@((val) => SetNotes(val!))">
+                </TextField>
+            </LabelledFormRow>
+            <LabelledFormRow Label="Exercises" Icon="fitness_center">
+                @if(SessionEditorState.Value.SessionBlueprint.Exercises.Count == 0)
+                {
+                    <Card Type="Card.CardType.Filled">
+                        <div class="flex flex-col items-center">
+                            <span class="text-on-surface">No exercises added yet</span>
+                        </div>
+                    </Card>
+                }
+                <ItemList Items="SessionEditorState.Value.SessionBlueprint.Exercises.IndexedTuples()" VerticalPadding=false >
+                    @{
+                        var exercise = context.Item;
+                        var index = context.Index;
+                    }
+                    <ExerciseBlueprintSummary PadTop=@(index!=0) Blueprint="@exercise" OnEdit="()=>BeginEditExercise(exercise,index)" OnMoveDown="()=>MoveExerciseDown(exercise)" OnMoveUp="()=>MoveExerciseUp(exercise)" OnRemove="()=>BeginRemoveExercise(exercise)" />
+                </ItemList>
+            </LabelledFormRow>
+        </LabelledForm>
+
     </div>
     <FloatingBottomContainer>
         <Fab>
@@ -135,7 +157,8 @@
                 10,
                 2.5m,
                 new Rest(TimeSpan.FromSeconds(90), TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(5)),
-                false);
+                false,
+                "");
         isAddingExercise = true;
         editDialog?.Open();
     }
@@ -168,6 +191,11 @@
     void SetName(string name)
     {
         Dispatcher.Dispatch(new SetEditingSessionNameAction(name));
+        SaveSession();
+    }
+
+    void SetNotes(string notes){
+        Dispatcher.Dispatch(new SetEditingSessionNotesAction(notes));
         SaveSession();
     }
 
