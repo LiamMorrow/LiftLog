@@ -100,9 +100,11 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
                                     TimeSpan.FromSeconds(e.RestBetweenSets.MaxRestSeconds),
                                     TimeSpan.FromSeconds(e.RestBetweenSets.FailureRestSeconds)
                                 ),
-                                false
+                                false,
+                                Notes: ""
                             ))
-                            .ToImmutableList()
+                            .ToImmutableList(),
+                        Notes: s.Description
                     ))
                     .ToImmutableList()
             );
@@ -189,9 +191,11 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
                             TimeSpan.FromSeconds(e.RestBetweenSets.MaxRestSeconds),
                             TimeSpan.FromSeconds(e.RestBetweenSets.FailureRestSeconds)
                         ),
-                        false
+                        false,
+                        Notes: ""
                     ))
-                    .ToImmutableList()
+                    .ToImmutableList(),
+                Notes: gptPlan.Description
             );
         }
         catch (Exception e)
@@ -209,7 +213,8 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
 
     private record GptSessionBlueprint(
         string Name,
-        ImmutableListValue<GptExerciseBlueprint> Exercises
+        ImmutableListValue<GptExerciseBlueprint> Exercises,
+        string Description
     );
 
     private record GptExerciseBlueprint(
