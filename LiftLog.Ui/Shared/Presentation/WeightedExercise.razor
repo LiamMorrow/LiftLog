@@ -64,30 +64,36 @@
     </div>
     @if((blueprintNotes ,previousNotes , thisNotes) is not ("","",""))
     {
-        <div class="grid grid-cols-[min-content_1fr] gap-2 text-left">
-            <IconButton Type=IconButtonType.Standard OnClick=@(()=>showNotes = !showNotes) Icon="notes" />
-            <div class="flex flex-col">
-                @if (showNotes && blueprintNotes is not "")
+        <Card Type=Card.CardType.Filled class="grid grid-cols-[min-content_1fr] mr-5 gap-2 text-left">
+            <md-icon>notes</md-icon>
+            <div class="flex flex-col gap-1">
+                @if (blueprintNotes is not "")
                 {
                     <div class="flex justify-start">
-                        <span data-cy="exercise-blueprint-notes" class="text-tertiary">@blueprintNotes</span>
+                        <span data-cy="exercise-blueprint-notes" >@blueprintNotes</span>
                     </div>
                 }
-                @if (showNotes && previousNotes is not "")
+                @if (previousNotes is not "")
                 {
+                    if(blueprintNotes is not ""){
+                        <md-divider></md-divider>
+                    }
                     <div class="flex justify-start">
-                        <span data-cy="exercise-previous-notes" class="text-secondary">Last time: @previousNotes</span>
+                        <span data-cy="exercise-previous-notes" >Last time: @previousNotes</span>
                     </div>
                 }
-                @if (showNotes && thisNotes is not "")
+                @if (thisNotes is not "")
                 {
+                    if(previousNotes is not "" || blueprintNotes is not ""){
+                        <md-divider></md-divider>
+                    }
                     <div class="flex justify-start">
-                        <span data-cy="exercise-notes" class="text-primary">@thisNotes</span>
+                        <span data-cy="exercise-notes" >@thisNotes</span>
                     </div>
                 }
 
             </div>
-        </div>
+        </Card>
     }
     @if (_holdingPrevious && PreviousRecordedExercises?.Any() == true)
     {
@@ -113,7 +119,6 @@
     private bool _holdingPrevious = false;
     private Menu? _menu;
     private Dialog? notesDialog;
-    private bool showNotes = true;
 
     private string EditorNotes { get; set; } = "";
 
