@@ -2,8 +2,8 @@
 
 
 @*Scrim*@
-@if(_open){
-    <div class="fixed z-20 bg-transparent top-0 right-0 left-0 bottom-0"
+@if(_open && ShowScrim){
+    <div class="fixed z-20 bg-transparent top-0 right-0 left-0 bottom-0 menu-scrim"
         @onclick:stopPropagation="true" @onclick:preventDefault="true"
         @onpointerdown:preventDefault="true" @onpointerdown:stopPropagation="true"
         @onpointerdown=@(_=>JSRuntime.InvokeVoidAsync("AppUtils.callOn", menu, "close"))></div>
@@ -17,6 +17,8 @@
     private ElementReference menu;
 
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    [Parameter] public bool ShowScrim { get; set; } = true;
 
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }

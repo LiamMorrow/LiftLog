@@ -9,7 +9,7 @@
             @oninput=@((e) => OnChange?.Invoke((string?)e.Value!))
             @onfocusin=SelectOnFocus
             @onclick=OnClick
-            @onblur=@(async _=>{await SetValueOnElement(); await OnBlur.InvokeAsync();})
+            @onfocusout=@(async _=>{await SetValueOnElement(); await OnBlur.InvokeAsync();})
         >
             @ChildContent
         </md-outlined-text-field>
@@ -21,7 +21,7 @@
             @oninput=@((e) => OnChange?.Invoke((string?)e.Value!))
             @onfocusin=SelectOnFocus
             @onclick=OnClick
-            @onblur=@(async _=>{await SetValueOnElement(); await OnBlur.InvokeAsync();})
+            @onfocusout=@(async _=>{await SetValueOnElement(); await OnBlur.InvokeAsync();})
         >
             @ChildContent
         </md-filled-text-field>
