@@ -4,10 +4,18 @@
     TextFieldType="TextFieldType.Filled"
     class="w-full mb-2 text-xl text-start"
     Label="Exercise"
+    type="combobox"
+    aria-controls="menu"
+    aria-autocomplete="list"
+    aria-expanded="true"
     Value="@Exercise.Name"
+    id="exerciseTextField"
     required
-    OnChange="@(val => SetExerciseName(val!))">
+    OnChange="@(val => {SetExerciseName(val!); exerciseListMenu!.Open();})"
+    OnFocus=@(()=>{exerciseListMenu!.Open();})
+    OnBlur="()=>exerciseListMenu!.Close()">
 </TextField>
+<ExerciseSearcher @ref="exerciseListMenu" Value="@Exercise.Name" Anchor="exerciseTextField"  ValueChanged=@(v=>SetExerciseName(v)) />
 <TextField
     data-cy="exercise-notes"
     TextFieldType="TextFieldType.Filled"
@@ -62,6 +70,7 @@
 @code
 {
     private ExerciseBlueprint exercise = null!;
+    private ExerciseSearcher? exerciseListMenu;
     [Parameter] [EditorRequired] public Action<ExerciseBlueprint> UpdateExercise { get; set; } = null!;
 
     [Parameter] [EditorRequired] public ExerciseBlueprint Exercise { get; set; } = null!;
@@ -74,6 +83,7 @@
     protected override void OnParametersSet()
     {
         exercise = Exercise;
+        base.OnParametersSet();
     }
 
     void DecrementExerciseSets() => UpdateExerciseHandler(exercise with { Sets = Math.Max(exercise.Sets - 1, 1) });
@@ -84,7 +94,10 @@
 
     void IncrementExerciseRepsPerSet() => UpdateExerciseHandler(exercise with { RepsPerSet = exercise.RepsPerSet + 1 });
 
-    void SetExerciseName(string name) => UpdateExerciseHandler(exercise with { Name = name });
+    void SetExerciseName(string name)
+    {
+        UpdateExerciseHandler(exercise with { Name = name });
+    }
 
     void SetExerciseNotes(string notes) => UpdateExerciseHandler(exercise with { Notes = notes });
 

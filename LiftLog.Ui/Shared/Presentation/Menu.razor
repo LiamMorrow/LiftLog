@@ -34,5 +34,11 @@
         JSRuntime.InvokeVoidAsync("AppUtils.callOn", menu, "show");
     }
 
+    public void Close()
+    {
+        _open = false;
+        JSRuntime.InvokeVoidAsync("AppUtils.callOn", menu, "close");
+    }
+
 
 }

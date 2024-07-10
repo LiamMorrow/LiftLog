@@ -1,0 +1,61 @@
+@inject IState<ExercisesState> State
+@inject IDispatcher Dispatcher
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<Menu
+    @ref="exerciseListMenu"
+    default-focus="none"
+    role="listbox"
+    anchor="@Anchor"
+    skip-restore-focus=true
+    stay-open-on-outside-click=true
+    stay-open-on-focusout=true
+    anchor-corner="end-start"
+    menu-corner="start-start"
+    class="text-left">
+    @foreach (var describedExercise in filteredExercises)
+    {
+        <MenuItem Label="@describedExercise.Name" Icon="" OnClick="() => ValueChanged.InvokeAsync(describedExercise.Name)"/>
+    }
+</Menu>
+
+@code {
+    private Menu? exerciseListMenu;
+    [Parameter] public string Anchor { get; set; } = "";
+
+    [Parameter] public string Value { get; set; } = "";
+
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+
+    private IReadOnlyList<DescribedExercise> filteredExercises { get; set; } = new List<DescribedExercise>();
+
+    protected override void OnParametersSet()
+    {
+        var searchTerm = Value.Replace(" ", "");
+        var pattern = String.Join(".*", searchTerm.AsEnumerable());
+        filteredExercises = State.Value.DescribedExercises
+            .Where(e => IsMatch(e.Name, pattern))
+            .OrderByDescending(e => MostConsecutiveMatches(e.Name, searchTerm))
+            .ThenBy(e=>DistanceOfFirstCharacterFromStartOfPattern(e.Name, searchTerm))
+            .Take(5)
+            .ToList();
+
+        base.OnParametersSet();
+    }
+
+    protected override void OnInitialized(){
+
+        base.OnInitialized();
+        Dispatcher.Dispatch(new FetchDescribedExercisesAction());
+    }
+
+
+    public void Open(){
+        exerciseListMenu?.Open();
+    }
+
+    public void Close(){
+        exerciseListMenu?.Close();
+    }
+}

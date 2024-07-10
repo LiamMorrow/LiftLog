@@ -24,7 +24,8 @@ public static class ServiceRegistration
         TPurchaseService,
         TEncryptionService,
         TVibrationService,
-        TDeviceService
+        TDeviceService,
+        TBuiltInExerciseService
     >(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Singleton)
         where TKeyValueStore : class, IKeyValueStore
         where TPreferenceStore : class, IPreferenceStore
@@ -36,6 +37,7 @@ public static class ServiceRegistration
         where TEncryptionService : class, IEncryptionService
         where TVibrationService : class, IHapticFeedbackService
         where TDeviceService : class, IDeviceService
+        where TBuiltInExerciseService : class, IBuiltInExerciseLoader
     {
         services.AddFluxor(o =>
             o.ScanAssemblies(typeof(CurrentSessionReducers).Assembly)
@@ -90,6 +92,8 @@ public static class ServiceRegistration
         services.Add<IEncryptionService, TEncryptionService>(lifetime);
 
         services.Add<IHapticFeedbackService, TVibrationService>(lifetime);
+
+        services.Add<IBuiltInExerciseLoader, TBuiltInExerciseService>(lifetime);
 
         services.Add<FeedApiService>(lifetime);
         services.Add<FeedIdentityService>(lifetime);
