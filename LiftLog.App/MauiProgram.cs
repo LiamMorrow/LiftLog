@@ -104,7 +104,8 @@ public static class MauiProgram
             AppPurchaseService,
             OsEncryptionService,
             AppHapticFeedbackService,
-            AppDeviceService
+            AppDeviceService,
+            AppBuiltInExerciseLoader
         >();
 
         builder.UseMaterialColors<ThemeColorUpdateService>(opts =>

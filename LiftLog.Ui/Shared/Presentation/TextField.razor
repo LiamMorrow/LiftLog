@@ -9,7 +9,7 @@
             @oninput=@((e) => OnChange?.Invoke((string?)e.Value!))
             @onfocusin=SelectOnFocus
             @onclick=OnClick
-            @onblur=@(_=>SetValueOnElement())
+            @onfocusout=@(async _=>{await SetValueOnElement(); await OnBlur.InvokeAsync();})
         >
             @ChildContent
         </md-outlined-text-field>
@@ -21,7 +21,7 @@
             @oninput=@((e) => OnChange?.Invoke((string?)e.Value!))
             @onfocusin=SelectOnFocus
             @onclick=OnClick
-            @onblur=@(_=>SetValueOnElement())
+            @onfocusout=@(async _=>{await SetValueOnElement(); await OnBlur.InvokeAsync();})
         >
             @ChildContent
         </md-filled-text-field>
@@ -43,6 +43,10 @@
 
     [Parameter] public EventCallback OnClick { get; set; }
 
+    [Parameter] public EventCallback OnFocus { get; set; }
+
+    [Parameter] public EventCallback OnBlur { get; set; }
+
     [Parameter] public TextFieldType TextFieldType { get; set; } = TextFieldType.Outline;
 
     [Parameter] public bool SelectAllOnFocus { get; set; } = true;
@@ -57,6 +61,7 @@
     {
         if (SelectAllOnFocus)
             await JSRuntime.InvokeVoidAsync("AppUtils.selectAllText", _textField);
+        await OnFocus.InvokeAsync();
     }
 
     private async Task SetValueOnElement()

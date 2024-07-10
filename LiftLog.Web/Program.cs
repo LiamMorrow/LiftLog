@@ -33,7 +33,8 @@ builder.Services.RegisterUiServices<
     WebAppPurchaseService,
     JsEncryptionService,
     JsHapticFeedbackService,
-    WebDeviceService
+    WebDeviceService,
+    WebBuiltInExerciseLoader
 >();
 
 #if DEBUG
