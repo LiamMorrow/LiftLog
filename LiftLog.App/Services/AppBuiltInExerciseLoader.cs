@@ -10,7 +10,7 @@ public class AppBuiltInExerciseLoader : IBuiltInExerciseLoader
 {
     public async Task<IReadOnlyList<DescribedExercise>> LoadBuiltInExercisesAsync()
     {
-        using var stream = await FileSystem.OpenAppPackageFileAsync("exercises.json");
+        using var stream = await FileSystem.OpenAppPackageFileAsync("exercises.txt");
         if (stream == null)
             return [];
 

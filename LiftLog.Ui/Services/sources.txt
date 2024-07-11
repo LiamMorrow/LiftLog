@@ -1,7 +1,7 @@
 This file contains the sources and licenses of included files.  Each file is labelled and attached with its license.
 These licenses only apply to the specified files.
 
-File Name: exercises.json:
+File Name: exercises.txt:
 Source: https://github.com/yuhonas/free-exercise-db
 License:
 This is free and unencumbered software released into the public domain.

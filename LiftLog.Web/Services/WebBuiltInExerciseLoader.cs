@@ -7,7 +7,7 @@ public class WebBuiltInExerciseLoader(HttpClient httpClient) : IBuiltInExerciseL
 {
     public async Task<IReadOnlyList<DescribedExercise>> LoadBuiltInExercisesAsync()
     {
-        var response = await httpClient.GetAsync("/exercises.json");
+        var response = await httpClient.GetAsync("/exercises.txt");
         if (!response.IsSuccessStatusCode)
             return [];
         return await response.Content.ReadFromJsonAsync<List<DescribedExercise>>() ?? [];
