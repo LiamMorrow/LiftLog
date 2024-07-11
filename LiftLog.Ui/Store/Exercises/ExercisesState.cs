@@ -4,4 +4,7 @@ using LiftLog.Ui.Services;
 
 namespace LiftLog.Ui.Store.Exercises;
 
-public record ExercisesState(ImmutableListValue<DescribedExercise> DescribedExercises);
+public record ExercisesState(
+    ImmutableListValue<DescribedExercise> DescribedExercises,
+    ImmutableListValue<string> ExerciseNames
+);

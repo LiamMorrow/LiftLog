@@ -6,5 +6,5 @@ public class ExercisesFeature : Feature<ExercisesState>
 {
     public override string GetName() => nameof(ExercisesFeature);
 
-    protected override ExercisesState GetInitialState() => new([]);
+    protected override ExercisesState GetInitialState() => new([], []);
 }

@@ -17,32 +17,36 @@
     class="text-left">
     @foreach (var describedExercise in filteredExercises)
     {
-        <MenuItem Label="@describedExercise.Name" Icon="" OnClick="() => ValueChanged.InvokeAsync(describedExercise.Name)"/>
+        <MenuItem Label="@describedExercise" Icon="" OnClick="() => ValueChanged.InvokeAsync(describedExercise)"/>
     }
 </Menu>
 
 @code {
     private Menu? exerciseListMenu;
+    private string previousValue = "";
     [Parameter] public string Anchor { get; set; } = "";
 
     [Parameter] public string Value { get; set; } = "";
 
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
 
-    private IReadOnlyList<DescribedExercise> filteredExercises { get; set; } = new List<DescribedExercise>();
+    private IReadOnlyList<string> filteredExercises { get; set; } = new List<string>();
 
-    protected override void OnParametersSet()
+    protected override async void OnParametersSet()
     {
-        var searchTerm = Value.Replace(" ", "");
-        var pattern = String.Join(".*", searchTerm.AsEnumerable());
-        filteredExercises = State.Value.DescribedExercises
-            .Where(e => IsMatch(e.Name, pattern))
-            .OrderByDescending(e => MostConsecutiveMatches(e.Name, searchTerm))
-            .ThenBy(e=>DistanceOfFirstCharacterFromStartOfPattern(e.Name, searchTerm))
-            .Take(5)
-            .ToList();
-
         base.OnParametersSet();
+        if(previousValue == Value){
+            previousValue = Value;
+            return;
+        }
+        previousValue = Value;
+        var val = Value;
+        var fe = await Task.Run(()=>GetTopMatches(val, State.Value.ExerciseNames));
+        if(val == Value)
+        {
+            filteredExercises = fe;
+            StateHasChanged();
+        }
     }
 
     protected override void OnInitialized(){

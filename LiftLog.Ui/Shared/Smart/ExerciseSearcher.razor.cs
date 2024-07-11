@@ -1,47 +1,24 @@
 using System.Text.RegularExpressions;
+using FuzzySharp;
+using FuzzySharp.SimilarityRatio;
+using FuzzySharp.SimilarityRatio.Scorer.Composite;
 
 namespace LiftLog.Ui.Shared.Smart;
 
 public partial class ExerciseSearcher
 {
-    private static bool IsMatch(string? exerciseName, string pattern)
+    private static List<string> GetTopMatches(string searchTerm, IEnumerable<string> exerciseNames)
     {
-        if (string.IsNullOrWhiteSpace(exerciseName))
-            return false;
-        return Regex.IsMatch(exerciseName, pattern, RegexOptions.IgnoreCase);
-    }
-
-    private static int DistanceOfFirstCharacterFromStartOfPattern(
-        string exerciseName,
-        string pattern
-    )
-    {
-        if (pattern.Length == 0)
-            return int.MaxValue;
-        var firstLetter = pattern[0];
-        var index = exerciseName.IndexOf(firstLetter, StringComparison.CurrentCultureIgnoreCase);
-        return index == -1 ? int.MaxValue : index;
-    }
-
-    private static int MostConsecutiveMatches(string exerciseName, string pattern)
-    {
-        if (pattern.Length == 0)
-            return 0;
-        var patternIndex = 0;
-        var matches = 0;
-        for (var i = 0; i < exerciseName.Length; i++)
-        {
-            if (char.ToLower(exerciseName[i]) == char.ToLower(pattern[patternIndex]))
-            {
-                patternIndex++;
-                if (patternIndex == pattern.Length)
-                    return pattern.Length;
-            }
-            else
-            {
-                patternIndex = 0;
-            }
-        }
-        return matches;
+        return Process
+            .ExtractTop(
+                searchTerm,
+                exerciseNames,
+                scorer: ScorerCache.Get<WeightedRatioScorer>(),
+                cutoff: 30
+            )
+            .OrderByDescending(x => x.Score)
+            .ThenByDescending(x => Fuzz.Ratio(x.Value, searchTerm))
+            .Select(x => x.Value)
+            .ToList();
     }
 }
