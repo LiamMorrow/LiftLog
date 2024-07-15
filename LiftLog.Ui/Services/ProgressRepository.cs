@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Google.Protobuf;
 using LiftLog.Lib;
@@ -19,12 +20,9 @@ namespace LiftLog.Ui.Services
     {
         private const string StorageKey = "Progress";
         private bool _initialised;
-        private bool _initialising;
+        private int _initialising;
 
-        private ImmutableDictionary<Guid, Session> _storedSessions = ImmutableDictionary<
-            Guid,
-            Session
-        >.Empty;
+        private ImmutableDictionary<Guid, Session>? _storedSessions = null;
 
         public async IAsyncEnumerable<Session> GetOrderedSessions()
         {
@@ -65,20 +63,22 @@ namespace LiftLog.Ui.Services
             await PersistAsync();
         }
 
+        [MemberNotNull(nameof(_storedSessions))]
         private async ValueTask InitialiseAsync()
+#pragma warning disable CS8774 // Member must have a non-null value when exiting.
         {
             if (!_initialised)
             {
-                if (_initialising)
+                // If another thread is already initialising, wait for it to finish
+                if (Interlocked.CompareExchange(ref _initialising, 1, 0) == 1)
                 {
                     await Task.Delay(20);
                     await InitialiseAsync();
                     return;
                 }
 
-                _initialising = true;
+                _storedSessions = null!;
                 var sw = Stopwatch.StartNew();
-                logger.LogInformation("Initialising progress repository");
                 var version = await keyValueStore.GetItemAsync($"{StorageKey}-Version");
                 if (version is null)
                 {
@@ -116,14 +116,22 @@ namespace LiftLog.Ui.Services
                 var convertTime = sw.ElapsedMilliseconds;
                 sw.Stop();
                 logger.LogInformation(
-                    $"Initialised progress repository in ({versionCheckTime}ms, {deserialiseTime}ms, {convertTime}ms))"
+                    "Initialised progress repository in ({versionCheckTime}ms, {deserialiseTime}ms, {convertTime}ms))",
+                    versionCheckTime,
+                    deserialiseTime,
+                    convertTime
                 );
                 _initialised = true;
             }
         }
+#pragma warning restore CS8774 // Member must have a non-null value when exiting.
 
         private async ValueTask PersistAsync()
         {
+            if (_storedSessions is null)
+            {
+                throw new InvalidOperationException("Cannot persist null sessions");
+            }
             await Task.WhenAll(
                 keyValueStore.SetItemAsync($"{StorageKey}-Version", "2").AsTask(),
                 keyValueStore

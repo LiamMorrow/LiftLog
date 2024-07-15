@@ -39,6 +39,37 @@ public partial class App : Application
             IMaterialColorService.Current.Initialize(Resources);
         };
 
+        window.Activated += (sender, args) =>
+        {
+            var session = currentSessionState.Value.WorkoutSession;
+            // Complete a finished session if it has been more than half an hour since the last set
+            // And there are no more sets to complete
+            // OR
+            // It has been more than 12 hours since the last set
+            if (session?.LastExercise?.LastRecordedSet?.Set is not null)
+            {
+                var lastSet = session.LastExercise.LastRecordedSet.Set;
+                var lastSetTime = session.Date.ToDateTime(lastSet.CompletionTime);
+                var timeSinceLastSet = DateTime.Now - lastSetTime;
+                if (
+                    (timeSinceLastSet > TimeSpan.FromMinutes(30) && session.IsComplete)
+                    || (timeSinceLastSet > TimeSpan.FromHours(12))
+                )
+                {
+                    dispatcher.Dispatch(
+                        new PersistCurrentSessionAction(SessionTarget.WorkoutSession)
+                    );
+                    dispatcher.Dispatch(new AddUnpublishedSessionIdAction(session.Id));
+                    dispatcher.Dispatch(
+                        new SetCurrentSessionAction(SessionTarget.WorkoutSession, null)
+                    );
+                    dispatcher.Dispatch(
+                        new NavigateAction("/", IfCurrentPathMatches: SessionPathRegex())
+                    );
+                }
+            }
+        };
+
         return window;
     }
 
