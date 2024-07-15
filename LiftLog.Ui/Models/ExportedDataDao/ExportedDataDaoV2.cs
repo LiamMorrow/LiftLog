@@ -18,25 +18,4 @@ internal partial class ExportedDataDaoV2
         ActiveProgramId = activeProgramId.ToString();
         SavedPrograms.Add(savedPrograms);
     }
-
-    public static ExportedDataDaoV2 FromV1(ExportedDataDaoV1 v1)
-    {
-        var activePlanId = Guid.NewGuid();
-        var plans = new Dictionary<string, ProgramBlueprintDaoV1>
-        {
-            [activePlanId.ToString()] = ProgramBlueprintDaoV1.FromModel(
-                new ProgramBlueprint(
-                    "My Plan",
-                    v1.Program.Select(x => x.ToModel()).ToImmutableList(),
-                    DateOnly.FromDateTime(DateTime.Now)
-                )
-            )
-        };
-
-        return new ExportedDataDaoV2(
-            v1.Sessions.Select(x => x.ToModel()).Select(SessionDaoV2.FromModel),
-            plans,
-            activePlanId
-        );
-    }
 }

@@ -91,13 +91,6 @@ namespace LiftLog.Ui.Services
 
                 SessionHistoryDaoContainer? storedData = version switch
                 {
-                    "1"
-                        => JsonSerializer
-                            .Deserialize<SessionHistoryDaoV1>(
-                                await keyValueStore.GetItemAsync(StorageKey) ?? "null",
-                                StorageJsonContext.Context.SessionHistoryDaoV1
-                            )
-                            ?.ToModel(),
                     "2"
                         => SessionHistoryDaoV2
                             .Parser.ParseFrom(
