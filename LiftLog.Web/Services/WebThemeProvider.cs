@@ -9,18 +9,28 @@ using RealGoodApps.BlazorJavascript.Interop.Extensions;
 
 namespace LiftLog.Web.Services;
 
-public class WebThemeProvider(
-    IJSRuntime jsRuntime,
-    IPreferenceStore preferenceStore,
-    IDispatcher dispatcher
-) : IThemeProvider
+public class WebThemeProvider : IThemeProvider
 {
     const uint DEFAULT_SEED = 0xF44336;
-
+    private readonly IJSRuntime jsRuntime;
+    private readonly IPreferenceStore preferenceStore;
+    private readonly IDispatcher dispatcher;
     private AppColorScheme<uint>? _scheme;
     private uint? _seed;
 
-    private async ValueTask<AppColorScheme<uint>> GetInitialColorScheme()
+    public WebThemeProvider(
+        IJSRuntime jsRuntime,
+        IPreferenceStore preferenceStore,
+        IDispatcher dispatcher
+    )
+    {
+        this.jsRuntime = jsRuntime;
+        this.preferenceStore = preferenceStore;
+        this.dispatcher = dispatcher;
+        _ = GetInitialColorScheme();
+    }
+
+    private async Task GetInitialColorScheme()
     {
         var seedAndPref = await Task.WhenAll(
             preferenceStore.GetItemAsync("THEME_SEED").AsTask(),
@@ -32,7 +42,6 @@ public class WebThemeProvider(
             seed == "null" ? null : uint.Parse(seed, System.Globalization.NumberStyles.HexNumber),
             Enum.Parse<ThemePreference>(pref)
         );
-        return _scheme;
     }
 
     [MemberNotNull(nameof(_scheme))]
