@@ -23,21 +23,12 @@ public partial class App : Application
         MainPage = new MainPage();
         this.dispatcher = dispatcher;
         this.currentSessionState = currentSessionState;
+        IMaterialColorService.Current.Initialize(Resources);
     }
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
         Window window = base.CreateWindow(activationState);
-
-        window.Created += (s, e) =>
-        {
-            IMaterialColorService.Current.Initialize(Resources);
-        };
-
-        window.Resumed += (sender, args) =>
-        {
-            IMaterialColorService.Current.Initialize(Resources);
-        };
 
         window.Activated += (sender, args) =>
         {

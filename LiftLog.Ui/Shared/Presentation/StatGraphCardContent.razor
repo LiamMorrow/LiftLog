@@ -3,9 +3,9 @@
 @using MaterialColorUtilities.Utils;
 @using MaterialColorUtilities.Schemes;
 
-@implements IDisposable
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-@inject IThemeProvider ThemeProvider
+@inject IState<AppState> AppState
 @inject IJSRuntime JSRuntime
 
 <div class="flex flex-col gap-2 items-start" @ref="cardContent" >
@@ -65,8 +65,6 @@ else
 
     [Parameter] public bool ShowTitle { get; set; } = true;
 
-    private AppColorScheme<uint> scheme = null!;
-
     private bool IsLoading { get; set; } = true;
 
     private bool _disposed = false;
@@ -80,27 +78,26 @@ else
 
     private ApexChartOptions<TimeTrackedStatistic> options = null!;
 
-    public void Dispose()
+    protected override ValueTask DisposeAsyncCore(bool disposing)
     {
         _disposed = true;
+        return base.DisposeAsyncCore(disposing);
     }
-
     protected override async Task OnInitializedAsync()
     {
-        scheme = await ThemeProvider.GetColorSchemeAsync();
         Color LineColors =  new()
         {
-            GetColorString(scheme.Blue),
-            GetColorString(scheme.Green),
-            GetColorString(scheme.Red),
-            GetColorString(scheme.Yellow),
-            GetColorString(scheme.Purple),
-            GetColorString(scheme.Cyan),
-            GetColorString(scheme.Pink),
-            GetColorString(scheme.Indigo),
-            GetColorString(scheme.Teal),
-            GetColorString(scheme.Lime),
-            GetColorString(scheme.Orange),
+            GetColorString(AppState.Value.ColorScheme.Blue),
+            GetColorString(AppState.Value.ColorScheme.Green),
+            GetColorString(AppState.Value.ColorScheme.Red),
+            GetColorString(AppState.Value.ColorScheme.Yellow),
+            GetColorString(AppState.Value.ColorScheme.Purple),
+            GetColorString(AppState.Value.ColorScheme.Cyan),
+            GetColorString(AppState.Value.ColorScheme.Pink),
+            GetColorString(AppState.Value.ColorScheme.Indigo),
+            GetColorString(AppState.Value.ColorScheme.Teal),
+            GetColorString(AppState.Value.ColorScheme.Lime),
+            GetColorString(AppState.Value.ColorScheme.Orange),
         };
 
         options = new ApexChartOptions<TimeTrackedStatistic>
@@ -137,7 +134,7 @@ else
             {
                 Style = new()
                 {
-                    Color = GetColorString(scheme.OnSurface),
+                    Color = GetColorString(AppState.Value.ColorScheme.OnSurface),
                 }
             },
             Xaxis = new()
@@ -146,12 +143,12 @@ else
                 {
                     Style = new()
                     {
-                        Colors = new Color(GetColorString(scheme.OnSurface)),
+                        Colors = new Color(GetColorString(AppState.Value.ColorScheme.OnSurface)),
                     }
                 },
                 AxisBorder = new()
                 {
-                    Color = GetColorString(scheme.OutlineVariant),
+                    Color = GetColorString(AppState.Value.ColorScheme.OutlineVariant),
                 },
             },
             Yaxis = new()
@@ -162,7 +159,7 @@ else
                     {
                         Style = new()
                         {
-                            Colors = new Color(GetColorString(scheme.OnSurface)),
+                            Colors = new Color(GetColorString(AppState.Value.ColorScheme.OnSurface)),
                         },
                         Formatter = $"(value)=>parseFloat(parseFloat(value).toFixed(3)) + ' {WeightSuffix}'",
                     },
@@ -174,7 +171,7 @@ else
             },
             Grid = new()
             {
-                BorderColor = GetColorString(scheme.OutlineVariant),
+                BorderColor = GetColorString(AppState.Value.ColorScheme.OutlineVariant),
             },
             Markers = new()
             {
@@ -187,7 +184,7 @@ else
                 Show = true,
                 Labels = new()
                 {
-                    Colors = GetColorString(scheme.OnSurface)
+                    Colors = GetColorString(AppState.Value.ColorScheme.OnSurface)
                 }
             }
         };
@@ -220,30 +217,30 @@ else
 <style>
 
   .apexcharts-tooltip {
-    background: @GetColorString(scheme.Surface) !important;
-    color: @GetColorString(scheme.OnSurface) !important;
-    border-color: @GetColorString(scheme.OutlineVariant)!important;
+    background: @GetColorString(AppState.Value.ColorScheme.Surface) !important;
+    color: @GetColorString(AppState.Value.ColorScheme.OnSurface) !important;
+    border-color: @GetColorString(AppState.Value.ColorScheme.OutlineVariant)!important;
     box-shadow: none !important;
   }
 
   .apexcharts-tooltip-series-group{
-    background: @GetColorString(scheme.Surface) !important;
-    border-color: @GetColorString(scheme.Outline)!important;
+    background: @GetColorString(AppState.Value.ColorScheme.Surface) !important;
+    border-color: @GetColorString(AppState.Value.ColorScheme.Outline)!important;
   }
 
   .apexcharts-tooltip-title{
-    background: @GetColorString(scheme.SurfaceContainer) !important;
-    border-color: @GetColorString(scheme.OutlineVariant)!important;
+    background: @GetColorString(AppState.Value.ColorScheme.SurfaceContainer) !important;
+    border-color: @GetColorString(AppState.Value.ColorScheme.OutlineVariant)!important;
     border-bottom: none!important;
   }
 
   .apexcharts-xaxistooltip {
-    background: @GetColorString(scheme.Surface) !important;
-    color: @GetColorString(scheme.OnSurface) !important;
-    border-color: @GetColorString(scheme.OutlineVariant)!important;
+    background: @GetColorString(AppState.Value.ColorScheme.Surface) !important;
+    color: @GetColorString(AppState.Value.ColorScheme.OnSurface) !important;
+    border-color: @GetColorString(AppState.Value.ColorScheme.OutlineVariant)!important;
     box-shadow: none !important;
   }
   .apexcharts-xaxistooltip:before, .apexcharts-xaxistooltip:after {
-    border-bottom-color: @GetColorString(scheme.OutlineVariant)!important;
+    border-bottom-color: @GetColorString(AppState.Value.ColorScheme.OutlineVariant)!important;
   }
 </style>

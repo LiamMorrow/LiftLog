@@ -35,7 +35,7 @@ builder.Services.RegisterUiServices<
     JsHapticFeedbackService,
     WebDeviceService,
     WebBuiltInExerciseLoader
->();
+>(typeof(WebThemeProvider).Assembly);
 
 #if DEBUG
 builder.Services.AddSingleton<

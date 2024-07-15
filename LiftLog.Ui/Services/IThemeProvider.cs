@@ -5,8 +5,6 @@ namespace LiftLog.Ui.Services;
 
 public interface IThemeProvider
 {
-    ValueTask<AppColorScheme<uint>> GetColorSchemeAsync();
-
     /// <summary>
     /// Set the seed for the theme color generator.
     /// This should persist between app restarts
@@ -17,8 +15,6 @@ public interface IThemeProvider
     public uint? GetSeed();
 
     public ThemePreference GetThemePreference();
-
-    event EventHandler SeedChanged;
 }
 
 public enum ThemePreference

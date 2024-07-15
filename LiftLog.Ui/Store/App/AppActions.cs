@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using LiftLog.Lib.Models;
+using LiftLog.Ui.Models;
 
 namespace LiftLog.Ui.Store.App;
 
@@ -20,3 +21,5 @@ public record NavigateAction(
 public record SetLatestSettingsUrlAction(string? LatestSettingsUrl);
 
 public record SetAppStateIsHydratedAction(bool IsHydrated);
+
+public record ThemeColorUpdatedAction(AppColorScheme<uint> Scheme, bool IsDark);

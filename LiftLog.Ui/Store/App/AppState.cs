@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
+using LiftLog.Ui.Models;
 
 namespace LiftLog.Ui.Store.App;
 
@@ -11,7 +12,8 @@ public record AppState(
     bool ReopenCurrentSession,
     string? BackNavigationUrl,
     string? LatestSettingsUrl,
-    bool HasRequestedNotificationPermission
+    bool HasRequestedNotificationPermission,
+    AppColorScheme<uint> ColorScheme
 );
 
 public record ProState(string? ProToken)

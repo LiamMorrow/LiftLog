@@ -1,4 +1,6 @@
+using System.Reflection;
 using Fluxor;
+using Fluxor.DependencyInjection;
 using LiftLog.Lib.Serialization;
 using LiftLog.Lib.Services;
 using LiftLog.Ui.Services;
@@ -26,7 +28,7 @@ public static class ServiceRegistration
         TVibrationService,
         TDeviceService,
         TBuiltInExerciseService
-    >(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Singleton)
+    >(this IServiceCollection services, Assembly fluxorScanAssembly)
         where TKeyValueStore : class, IKeyValueStore
         where TPreferenceStore : class, IPreferenceStore
         where TNotificationService : class, INotificationService
@@ -39,8 +41,9 @@ public static class ServiceRegistration
         where TDeviceService : class, IDeviceService
         where TBuiltInExerciseService : class, IBuiltInExerciseLoader
     {
+        var lifetime = ServiceLifetime.Singleton;
         services.AddFluxor(o =>
-            o.ScanAssemblies(typeof(CurrentSessionReducers).Assembly)
+            o.ScanAssemblies(typeof(CurrentSessionReducers).Assembly, fluxorScanAssembly)
                 .WithLifetime(
                     lifetime == ServiceLifetime.Singleton
                         ? StoreLifetime.Singleton

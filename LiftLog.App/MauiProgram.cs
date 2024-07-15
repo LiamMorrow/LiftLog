@@ -106,9 +106,9 @@ public static class MauiProgram
             AppHapticFeedbackService,
             AppDeviceService,
             AppBuiltInExerciseLoader
-        >();
+        >(typeof(ThemeEffects).Assembly);
 
-        builder.UseMaterialColors<ThemeColorUpdateService>(opts =>
+        builder.UseMaterialColors<AppColorService>(opts =>
         {
             opts.FallbackSeed = 0xF44336;
             opts.EnableDynamicColor = Preferences.Default.Get("EnableDynamicColor", true);

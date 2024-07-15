@@ -7,17 +7,8 @@ using Microsoft.Maui.Storage;
 
 namespace LiftLog.App.Services;
 
-public class AppThemeProvider(ThemeColorUpdateService colorUpdateService) : IThemeProvider
+public class AppThemeProvider(AppColorService colorUpdateService) : IThemeProvider
 {
-    public ValueTask<AppColorScheme<uint>> GetColorSchemeAsync() =>
-        ValueTask.FromResult(colorUpdateService.SchemeInt);
-
-    public event EventHandler SeedChanged
-    {
-        add => colorUpdateService.SeedChanged += value;
-        remove => colorUpdateService.SeedChanged -= value;
-    }
-
     public Task SetSeedColor(uint? seed, ThemePreference themePreference)
     {
         if (Microsoft.Maui.Controls.Application.Current is null)

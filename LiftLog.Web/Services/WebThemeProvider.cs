@@ -1,24 +1,24 @@
 using System.Diagnostics.CodeAnalysis;
+using Fluxor;
 using LiftLog.Ui.Models;
 using LiftLog.Ui.Services;
-using MaterialColorUtilities.Palettes;
-using MaterialColorUtilities.Schemes;
+using LiftLog.Ui.Store.App;
 using Microsoft.JSInterop;
 using RealGoodApps.BlazorJavascript.Interop;
 using RealGoodApps.BlazorJavascript.Interop.Extensions;
 
 namespace LiftLog.Web.Services;
 
-public class WebThemeProvider(IJSRuntime jsRuntime, IPreferenceStore preferenceStore)
-    : IThemeProvider
+public class WebThemeProvider(
+    IJSRuntime jsRuntime,
+    IPreferenceStore preferenceStore,
+    IDispatcher dispatcher
+) : IThemeProvider
 {
     const uint DEFAULT_SEED = 0xF44336;
 
     private AppColorScheme<uint>? _scheme;
     private uint? _seed;
-
-    public async ValueTask<AppColorScheme<uint>> GetColorSchemeAsync() =>
-        _scheme ??= await GetInitialColorScheme();
 
     private async ValueTask<AppColorScheme<uint>> GetInitialColorScheme()
     {
@@ -69,7 +69,13 @@ public class WebThemeProvider(IJSRuntime jsRuntime, IPreferenceStore preferenceS
                     null
                 )
         };
-        SeedChanged?.Invoke(this, EventArgs.Empty);
+        dispatcher.Dispatch(
+            new ThemeColorUpdatedAction(
+                _scheme,
+                themePreference == ThemePreference.Dark
+                    || (windowThemePrefersDark && themePreference == ThemePreference.FollowSystem)
+            )
+        );
         await Task.WhenAll(
             preferenceStore.SetItemAsync("THEME_SEED", seed?.ToString("X") ?? "null").AsTask(),
             preferenceStore.SetItemAsync("THEME_PREF", themePreference.ToString()).AsTask()
@@ -85,6 +91,4 @@ public class WebThemeProvider(IJSRuntime jsRuntime, IPreferenceStore preferenceS
     {
         return ThemePreference.FollowSystem;
     }
-
-    public event EventHandler? SeedChanged;
 }

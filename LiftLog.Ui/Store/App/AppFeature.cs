@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using Fluxor;
 using LiftLog.Lib.Models;
+using LiftLog.Ui.Models;
 using LiftLog.Ui.Store.App;
 
 namespace LiftLog.Ui.Store.App;
@@ -17,6 +18,7 @@ public class AppFeature : Feature<AppState>
             ReopenCurrentSession: true,
             BackNavigationUrl: null,
             LatestSettingsUrl: null,
-            HasRequestedNotificationPermission: false
+            HasRequestedNotificationPermission: false,
+            ColorScheme: new AppColorScheme<uint>()
         );
 }

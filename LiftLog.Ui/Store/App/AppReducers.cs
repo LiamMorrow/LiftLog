@@ -19,6 +19,13 @@ public static class AppReducers
         };
 
     [ReducerMethod]
+    public static AppState SetThemeColor(AppState state, ThemeColorUpdatedAction action) =>
+        state with
+        {
+            ColorScheme = action.Scheme
+        };
+
+    [ReducerMethod]
     public static AppState SetReopenCurrentSession(
         AppState state,
         SetReopenCurrentSessionAction action
