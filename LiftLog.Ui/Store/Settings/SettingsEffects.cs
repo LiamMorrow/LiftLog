@@ -60,8 +60,29 @@ public class SettingsEffects(
             }
             catch (InvalidProtocolBufferException v2Ex)
             {
-                logger.LogWarning("Could not deserialize v2, Exception {v2Ex}", v2Ex);
-                return null;
+                // Try to deserialize as v1
+                try
+                {
+                    var v1 = JsonSerializer.Deserialize(
+                        bytes,
+                        StorageJsonContext.Context.ExportedDataDaoV1
+                    );
+                    if (v1 is null)
+                    {
+                        return null;
+                    }
+
+                    return ExportedDataDaoV2.FromV1(v1);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(
+                        "Could not deserialize as v1 or v2: V1 Exception:{ex}, \nV2 Exception {v2Ex}",
+                        ex,
+                        v2Ex
+                    );
+                    return null;
+                }
             }
         }
         var importBytes = action.Bytes;
