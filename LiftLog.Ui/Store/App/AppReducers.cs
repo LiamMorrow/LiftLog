@@ -26,6 +26,20 @@ public static class AppReducers
         };
 
     [ReducerMethod]
+    public static AppState SetAppLaunchCount(AppState state, SetAppLaunchCountAction action) =>
+        state with
+        {
+            AppLaunchCount = action.AppLaunchCount
+        };
+
+    [ReducerMethod]
+    public static AppState SetAppRatingResult(AppState state, SetAppRatingResultAction action) =>
+        state with
+        {
+            AppRatingResult = action.AppRatingResult
+        };
+
+    [ReducerMethod]
     public static AppState SetReopenCurrentSession(
         AppState state,
         SetReopenCurrentSessionAction action

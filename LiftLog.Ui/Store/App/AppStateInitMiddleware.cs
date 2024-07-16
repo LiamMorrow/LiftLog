@@ -15,6 +15,13 @@ public class AppStateInitMiddleware(PreferencesRepository preferencesRepository)
         dispatch.Dispatch(new SetProTokenAction(proToken));
 #endif
 
+        var (appLaunchCount, addRatingResult) = await (
+            preferencesRepository.GetAppOpenedCountAsync(),
+            preferencesRepository.GetAppRatingResultAsync()
+        );
+        dispatch.Dispatch(new SetAppLaunchCountAction(appLaunchCount));
+        dispatch.Dispatch(new SetAppRatingResultAction(addRatingResult));
+
         dispatch.Dispatch(new SetAppStateIsHydratedAction(true));
     }
 }

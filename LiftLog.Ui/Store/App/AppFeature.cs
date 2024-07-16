@@ -19,6 +19,8 @@ public class AppFeature : Feature<AppState>
             BackNavigationUrl: null,
             LatestSettingsUrl: null,
             HasRequestedNotificationPermission: false,
-            ColorScheme: new AppColorScheme<uint>()
+            ColorScheme: new AppColorScheme<uint>(),
+            AppLaunchCount: 0,
+            AppRatingResult: AppRatingResult.NotRated
         );
 }

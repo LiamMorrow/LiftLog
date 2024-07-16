@@ -33,6 +33,7 @@
                     <div @ref="_contentElementRef" id="scrollingElement" class="pb-2 overflow-auto bg-surface scroll-smooth" @onscroll="OnContentScroll" style="-webkit-overflow-scrolling: touch;">
                         @if (StateIsHydrated)
                         {
+                            <AppReviewRequest/>
                             @Body
                         }
                         else
