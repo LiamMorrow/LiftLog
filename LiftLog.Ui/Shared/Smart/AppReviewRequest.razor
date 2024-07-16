@@ -1,0 +1,75 @@
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+@inject IDeviceService DeviceService
+
+@inject IState<AppState> AppState
+@inject IDispatcher Dispatcher
+
+<Dialog @ref="rateDialog">
+    <span slot="headline">Enjoying LiftLog?</span>
+    <span slot="content" class="block text-left">If so, would you take a minute to leave a @ReviewType on @AppStore?</span>
+    <div slot="actions" class="flex">
+        <AppButton Type="AppButtonType.Text" class="mr-auto" OnClick="Never">Never</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="()=>rateDialog?.Close()">Not Now</AppButton>
+        @if(DeviceService.GetDeviceType() == DeviceType.Web)
+        {
+            <AppButton Type="AppButtonType.Text" OnClick="Rate" target="_blank" href="https://github.com/LiamMorrow/LiftLog">Rate</AppButton>
+        }
+        else
+        {
+            <AppButton Type="AppButtonType.Text" OnClick="Rate">Rate</AppButton>
+        }
+    </div>
+</Dialog>
+
+@code
+{
+    private Dialog? rateDialog;
+
+    private string AppStore => DeviceService.GetDeviceType() switch
+    {
+        DeviceType.Android => "the Google Play Store",
+        DeviceType.Ios => "the App Store",
+        _ => "Github"
+    };
+
+    private string ReviewType => DeviceService.GetDeviceType() switch
+    {
+        DeviceType.Web => "star",
+        _ => "review"
+    };
+
+    private void Never()
+    {
+        Dispatcher.Dispatch(new SetAppRatingResultAction(AppRatingResult.Declined));
+        rateDialog?.Close();
+    }
+
+    private void Rate()
+    {
+        Dispatcher.Dispatch(new SetAppRatingResultAction(AppRatingResult.Rated));
+        Dispatcher.Dispatch(new RequestReviewAction());
+        rateDialog?.Close();
+    }
+
+    protected override void OnInitialized()
+    {
+        AppState.StateChanged += HandleAppStateChange;
+        Dispatcher.Dispatch(new IncrementAppLaunchCountAction());
+    }
+
+    private void HandleAppStateChange(object? sender, EventArgs e)
+    {
+        if (AppState.Value.IsHydrated && AppState.Value.AppRatingResult == AppRatingResult.NotRated
+            && AppState.Value.AppLaunchCount >= 5
+            && AppState.Value.AppLaunchCount % 5 == 0)
+        {
+            rateDialog?.Open();
+        }
+    }
+
+    protected override ValueTask DisposeAsyncCore(bool disposing)
+    {
+        AppState.StateChanged -= HandleAppStateChange;
+        return base.DisposeAsyncCore(disposing);
+    }
+}

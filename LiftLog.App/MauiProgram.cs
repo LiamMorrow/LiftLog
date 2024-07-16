@@ -14,6 +14,7 @@ using Microsoft.Maui.LifecycleEvents;
 using Microsoft.Maui.Storage;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
+using Plugin.Maui.AppRating;
 using Sentry.Extensions.Logging.Extensions.DependencyInjection;
 using INotificationService = LiftLog.Ui.Services.INotificationService;
 
@@ -93,6 +94,7 @@ public static class MauiProgram
         builder.Services.AddSingleton(Share.Default);
         builder.Services.AddSingleton(FilePicker.Default);
         builder.Services.AddSingleton(HapticFeedback.Default);
+        builder.Services.AddSingleton(AppRating.Default!);
 
         builder.Services.RegisterUiServices<
             AppDataFileStorageKeyValueStore,

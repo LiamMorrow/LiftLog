@@ -23,3 +23,11 @@ public record SetLatestSettingsUrlAction(string? LatestSettingsUrl);
 public record SetAppStateIsHydratedAction(bool IsHydrated);
 
 public record ThemeColorUpdatedAction(AppColorScheme<uint> Scheme, bool IsDark);
+
+public record IncrementAppLaunchCountAction();
+
+public record SetAppLaunchCountAction(int AppLaunchCount);
+
+public record RequestReviewAction();
+
+public record SetAppRatingResultAction(AppRatingResult AppRatingResult);

@@ -1,3 +1,5 @@
+using LiftLog.Ui.Store.App;
+
 namespace LiftLog.Ui.Services;
 
 public class PreferencesRepository(IPreferenceStore preferenceStore)
@@ -110,5 +112,33 @@ public class PreferencesRepository(IPreferenceStore preferenceStore)
             "hasRequestedNotificationPermission",
             hasRequestedNotificationPermission.ToString()
         );
+    }
+
+    public async Task<int> GetAppOpenedCountAsync()
+    {
+        var appOpenedCount = await preferenceStore.GetItemAsync("appOpenedCount");
+        if (int.TryParse(appOpenedCount, out var appOpenedCountInt))
+            return appOpenedCountInt;
+        else
+            return 0;
+    }
+
+    public async Task SetAppOpenedCountAsync(int appOpenedCount)
+    {
+        await preferenceStore.SetItemAsync("appOpenedCount", appOpenedCount.ToString());
+    }
+
+    public async Task SetAppRatingResultAsync(AppRatingResult appRatingResult)
+    {
+        await preferenceStore.SetItemAsync("appRatingResult", appRatingResult.ToString());
+    }
+
+    public async Task<AppRatingResult> GetAppRatingResultAsync()
+    {
+        var appRatingResult = await preferenceStore.GetItemAsync("appRatingResult");
+        if (Enum.TryParse<AppRatingResult>(appRatingResult, out var result))
+            return result;
+        else
+            return AppRatingResult.NotRated;
     }
 }

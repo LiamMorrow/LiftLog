@@ -13,8 +13,17 @@ public record AppState(
     string? BackNavigationUrl,
     string? LatestSettingsUrl,
     bool HasRequestedNotificationPermission,
-    AppColorScheme<uint> ColorScheme
+    AppColorScheme<uint> ColorScheme,
+    int AppLaunchCount,
+    AppRatingResult AppRatingResult
 );
+
+public enum AppRatingResult
+{
+    NotRated,
+    Rated,
+    Declined
+}
 
 public record ProState(string? ProToken)
 {

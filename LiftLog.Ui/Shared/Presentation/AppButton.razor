@@ -2,25 +2,25 @@
 {
     case AppButtonType.Primary:
         <md-filled-button
-            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class"))  pointer-events-auto" @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" >
+            @attributes="AdditionalAttributes" class="@(AdditionalAttributes.GetValueOrDefault("class"))  pointer-events-auto" @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="@(!AdditionalAttributes.ContainsKey("href"))" >
             @ChildContent
         </md-filled-button>
         break;
     case AppButtonType.Secondary:
         <md-filled-tonal-button
-            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class"))  pointer-events-auto" @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" >
+            @attributes="AdditionalAttributes" class="@(AdditionalAttributes.GetValueOrDefault("class"))  pointer-events-auto" @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="@(!AdditionalAttributes.ContainsKey("href"))" >
             @ChildContent
         </md-filled-tonal-button>
         break;
     case AppButtonType.OutlineSecondary:
         <md-outlined-button
-            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class"))  pointer-events-auto" @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" >
+            @attributes="AdditionalAttributes" class="@(AdditionalAttributes.GetValueOrDefault("class"))  pointer-events-auto" @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="@(!AdditionalAttributes.ContainsKey("href"))" >
             @ChildContent
         </md-outlined-button>
         break;
     case AppButtonType.Text:
         <md-text-button
-            @attributes="AdditionalAttributes" class="@(AdditionalAttributes?.GetValueOrDefault("class"))  pointer-events-auto" @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="true" >
+            @attributes="AdditionalAttributes" class="@(AdditionalAttributes.GetValueOrDefault("class"))  pointer-events-auto" @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="@(!AdditionalAttributes.ContainsKey("href"))" >
             @ChildContent
         </md-text-button>
         break;
@@ -40,7 +40,7 @@
     [Parameter] public bool Disabled { get; set; }
 
     [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+    public Dictionary<string, object> AdditionalAttributes { get; set; } = new();
 
     private void Clicked()
     {
