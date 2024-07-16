@@ -10,85 +10,87 @@
 
 <LiftLog.Ui.WebApp/>
 
-<style>
-    :root{
-        --color-primary: @GetColorStr(Scheme.Primary);
-        --color-on-primary: @GetColorStr(Scheme.OnPrimary);
-        --color-secondary: @GetColorStr(Scheme.Secondary);
-        --color-on-secondary: @GetColorStr(Scheme.OnSecondary);
-        --color-primary-container: @GetColorStr(Scheme.PrimaryContainer);
-        --color-on-primary-container: @GetColorStr(Scheme.OnPrimaryContainer);
-        --color-secondary-container: @GetColorStr(Scheme.SecondaryContainer);
-        --color-on-secondary-container: @GetColorStr(Scheme.OnSecondaryContainer);
-        --color-tertiary: @GetColorStr(Scheme.Tertiary);
-        --color-on-tertiary: @GetColorStr(Scheme.OnTertiary);
-        --color-tertiary-container: @GetColorStr(Scheme.TertiaryContainer);
-        --color-on-tertiary-container: @GetColorStr(Scheme.OnTertiaryContainer);
-        --color-background: @GetColorStr(Scheme.Background);
-        --color-on-background: @GetColorStr(Scheme.OnBackground);
-        --color-surface: @GetColorStr(Scheme.Surface);
-        --color-surface-container-highest: @GetColorStr(Scheme.SurfaceContainerHighest);
-        --color-on-surface: @GetColorStr(Scheme.OnSurface);
-        --color-on-surface-variant: @GetColorStr(Scheme.OnSurfaceVariant);
-        --color-inverse-surface: @GetColorStr(Scheme.InverseSurface);
-        --color-inverse-on-surface: @GetColorStr(Scheme.InverseOnSurface);
-        --color-surface-container: @GetColorStr(Scheme.SurfaceContainer);
-        --color-surface-container-high: @GetColorStr(Scheme.SurfaceContainerHigh);
-        --color-surface-container-low: @GetColorStr(Scheme.SurfaceContainerLow);
-        --color-inverse-primary: @GetColorStr(Scheme.InversePrimary);
-        --color-outline: @GetColorStr(Scheme.Outline);
-        --color-outline-variant: @GetColorStr(Scheme.OutlineVariant);
-        --color-error: @GetColorStr(Scheme.Error);
-        --color-error-container: @GetColorStr(Scheme.ErrorContainer);
-        --color-on-error: @GetColorStr(Scheme.OnError);
-        --color-on-error-container: @GetColorStr(Scheme.OnErrorContainer);
+@if(AppState.Value.IsHydrated)
+{
+    <style>
+        :root{
+            --color-primary: @GetColorStr(Scheme.Primary);
+            --color-on-primary: @GetColorStr(Scheme.OnPrimary);
+            --color-secondary: @GetColorStr(Scheme.Secondary);
+            --color-on-secondary: @GetColorStr(Scheme.OnSecondary);
+            --color-primary-container: @GetColorStr(Scheme.PrimaryContainer);
+            --color-on-primary-container: @GetColorStr(Scheme.OnPrimaryContainer);
+            --color-secondary-container: @GetColorStr(Scheme.SecondaryContainer);
+            --color-on-secondary-container: @GetColorStr(Scheme.OnSecondaryContainer);
+            --color-tertiary: @GetColorStr(Scheme.Tertiary);
+            --color-on-tertiary: @GetColorStr(Scheme.OnTertiary);
+            --color-tertiary-container: @GetColorStr(Scheme.TertiaryContainer);
+            --color-on-tertiary-container: @GetColorStr(Scheme.OnTertiaryContainer);
+            --color-background: @GetColorStr(Scheme.Background);
+            --color-on-background: @GetColorStr(Scheme.OnBackground);
+            --color-surface: @GetColorStr(Scheme.Surface);
+            --color-surface-container-highest: @GetColorStr(Scheme.SurfaceContainerHighest);
+            --color-on-surface: @GetColorStr(Scheme.OnSurface);
+            --color-on-surface-variant: @GetColorStr(Scheme.OnSurfaceVariant);
+            --color-inverse-surface: @GetColorStr(Scheme.InverseSurface);
+            --color-inverse-on-surface: @GetColorStr(Scheme.InverseOnSurface);
+            --color-surface-container: @GetColorStr(Scheme.SurfaceContainer);
+            --color-surface-container-high: @GetColorStr(Scheme.SurfaceContainerHigh);
+            --color-surface-container-low: @GetColorStr(Scheme.SurfaceContainerLow);
+            --color-inverse-primary: @GetColorStr(Scheme.InversePrimary);
+            --color-outline: @GetColorStr(Scheme.Outline);
+            --color-outline-variant: @GetColorStr(Scheme.OutlineVariant);
+            --color-error: @GetColorStr(Scheme.Error);
+            --color-error-container: @GetColorStr(Scheme.ErrorContainer);
+            --color-on-error: @GetColorStr(Scheme.OnError);
+            --color-on-error-container: @GetColorStr(Scheme.OnErrorContainer);
 
 
-        --md-sys-color-primary: rgb(@GetColorStr(Scheme.Primary));
-        --md-sys-color-on-primary: rgb(@GetColorStr(Scheme.OnPrimary));
-        --md-sys-color-primary-container: rgb(@GetColorStr(Scheme.PrimaryContainer));
-        --md-sys-color-on-primary-container: rgb(@GetColorStr(Scheme.OnPrimaryContainer));
-        --md-sys-color-secondary: rgb(@GetColorStr(Scheme.Secondary));
-        --md-sys-color-on-secondary: rgb(@GetColorStr(Scheme.OnSecondary));
-        --md-sys-color-secondary-container: rgb(@GetColorStr(Scheme.SecondaryContainer));
-        --md-sys-color-on-secondary-container: rgb(@GetColorStr(Scheme.OnSecondaryContainer));
-        --md-sys-color-tertiary: rgb(@GetColorStr(Scheme.Tertiary));
-        --md-sys-color-on-tertiary: rgb(@GetColorStr(Scheme.OnTertiary));
-        --md-sys-color-tertiary-container: rgb(@GetColorStr(Scheme.TertiaryContainer));
-        --md-sys-color-on-tertiary-container: rgb(@GetColorStr(Scheme.OnTertiaryContainer));
-        --md-sys-color-error: rgb(@GetColorStr(Scheme.Error));
-        --md-sys-color-on-error: rgb(@GetColorStr(Scheme.OnError));
-        --md-sys-color-error-container: rgb(@GetColorStr(Scheme.ErrorContainer));
-        --md-sys-color-on-error-container: rgb(@GetColorStr(Scheme.OnErrorContainer));
-        --md-sys-color-background: rgb(@GetColorStr(Scheme.Background));
-        --md-sys-color-on-background: rgb(@GetColorStr(Scheme.OnBackground));
-        --md-sys-color-surface: rgb(@GetColorStr(Scheme.Surface));
-        --md-sys-color-on-surface: rgb(@GetColorStr(Scheme.OnSurface));
-        --md-sys-color-surface-variant: rgb(@GetColorStr(Scheme.SurfaceVariant));
-        --md-sys-color-on-surface-variant: rgb(@GetColorStr(Scheme.OnSurfaceVariant));
-        --md-sys-color-outline: rgb(@GetColorStr(Scheme.Outline));
-        --md-sys-color-outline-variant: rgb(@GetColorStr(Scheme.OutlineVariant));
-        --md-sys-color-inverse-surface: rgb(@GetColorStr(Scheme.InverseSurface));
-        --md-sys-color-on-inverse-surface: rgb(@GetColorStr(Scheme.InverseOnSurface));
-        --md-sys-color-inverse-primary: rgb(@GetColorStr(Scheme.InversePrimary));
-        --md-sys-color-shadow: rgb(@GetColorStr(Scheme.Shadow));
-        --md-sys-color-surface-tint: rgb(@GetColorStr(Scheme.SurfaceBright));
-        --md-sys-color-surface-container-lowest: rgb(@GetColorStr(Scheme.SurfaceContainerLowest));
-        --md-sys-color-surface-container-low: rgb(@GetColorStr(Scheme.SurfaceContainerLow));
-        --md-sys-color-surface-container: rgb(@GetColorStr(Scheme.SurfaceContainer));
-        --md-sys-color-surface-container-high: rgb(@GetColorStr(Scheme.SurfaceContainerHigh));
-        --md-sys-color-surface-container-highest: rgb(@GetColorStr(Scheme.SurfaceContainerHighest));
-        --md-sys-color-surface-dim: rgb(@GetColorStr(Scheme.SurfaceDim));
-        --md-sys-color-shadow: rgb(@GetColorStr(Scheme.Shadow));
+            --md-sys-color-primary: rgb(@GetColorStr(Scheme.Primary));
+            --md-sys-color-on-primary: rgb(@GetColorStr(Scheme.OnPrimary));
+            --md-sys-color-primary-container: rgb(@GetColorStr(Scheme.PrimaryContainer));
+            --md-sys-color-on-primary-container: rgb(@GetColorStr(Scheme.OnPrimaryContainer));
+            --md-sys-color-secondary: rgb(@GetColorStr(Scheme.Secondary));
+            --md-sys-color-on-secondary: rgb(@GetColorStr(Scheme.OnSecondary));
+            --md-sys-color-secondary-container: rgb(@GetColorStr(Scheme.SecondaryContainer));
+            --md-sys-color-on-secondary-container: rgb(@GetColorStr(Scheme.OnSecondaryContainer));
+            --md-sys-color-tertiary: rgb(@GetColorStr(Scheme.Tertiary));
+            --md-sys-color-on-tertiary: rgb(@GetColorStr(Scheme.OnTertiary));
+            --md-sys-color-tertiary-container: rgb(@GetColorStr(Scheme.TertiaryContainer));
+            --md-sys-color-on-tertiary-container: rgb(@GetColorStr(Scheme.OnTertiaryContainer));
+            --md-sys-color-error: rgb(@GetColorStr(Scheme.Error));
+            --md-sys-color-on-error: rgb(@GetColorStr(Scheme.OnError));
+            --md-sys-color-error-container: rgb(@GetColorStr(Scheme.ErrorContainer));
+            --md-sys-color-on-error-container: rgb(@GetColorStr(Scheme.OnErrorContainer));
+            --md-sys-color-background: rgb(@GetColorStr(Scheme.Background));
+            --md-sys-color-on-background: rgb(@GetColorStr(Scheme.OnBackground));
+            --md-sys-color-surface: rgb(@GetColorStr(Scheme.Surface));
+            --md-sys-color-on-surface: rgb(@GetColorStr(Scheme.OnSurface));
+            --md-sys-color-surface-variant: rgb(@GetColorStr(Scheme.SurfaceVariant));
+            --md-sys-color-on-surface-variant: rgb(@GetColorStr(Scheme.OnSurfaceVariant));
+            --md-sys-color-outline: rgb(@GetColorStr(Scheme.Outline));
+            --md-sys-color-outline-variant: rgb(@GetColorStr(Scheme.OutlineVariant));
+            --md-sys-color-inverse-surface: rgb(@GetColorStr(Scheme.InverseSurface));
+            --md-sys-color-on-inverse-surface: rgb(@GetColorStr(Scheme.InverseOnSurface));
+            --md-sys-color-inverse-primary: rgb(@GetColorStr(Scheme.InversePrimary));
+            --md-sys-color-shadow: rgb(@GetColorStr(Scheme.Shadow));
+            --md-sys-color-surface-tint: rgb(@GetColorStr(Scheme.SurfaceBright));
+            --md-sys-color-surface-container-lowest: rgb(@GetColorStr(Scheme.SurfaceContainerLowest));
+            --md-sys-color-surface-container-low: rgb(@GetColorStr(Scheme.SurfaceContainerLow));
+            --md-sys-color-surface-container: rgb(@GetColorStr(Scheme.SurfaceContainer));
+            --md-sys-color-surface-container-high: rgb(@GetColorStr(Scheme.SurfaceContainerHigh));
+            --md-sys-color-surface-container-highest: rgb(@GetColorStr(Scheme.SurfaceContainerHighest));
+            --md-sys-color-surface-dim: rgb(@GetColorStr(Scheme.SurfaceDim));
+            --md-sys-color-shadow: rgb(@GetColorStr(Scheme.Shadow));
 
 
-        --md-outlined-button-label-text-type: 'Roboto Flex';
+            --md-outlined-button-label-text-type: 'Roboto Flex';
 
-        /* We put tabs in the main header, which animates its change of colour, we can just make the bg transparent to inherit it */
-        --md-primary-tab-container-color: transparent;
-    }
-</style>
-
+            /* We put tabs in the main header, which animates its change of colour, we can just make the bg transparent to inherit it */
+            --md-primary-tab-container-color: transparent;
+        }
+    </style>
+}
 @code {
 
     private Scheme<uint> Scheme => AppState.Value.ColorScheme;

@@ -9,7 +9,7 @@
     <span slot="content" class="block text-left">If so, would you take a minute to leave a @ReviewType on @AppStore?</span>
     <div slot="actions" class="flex">
         <AppButton Type="AppButtonType.Text" class="mr-auto" OnClick="Never">Never</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="()=>rateDialog.Close()">Not Now</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="()=>rateDialog?.Close()">Not Now</AppButton>
         @if(DeviceService.GetDeviceType() == DeviceType.Web)
         {
             <AppButton Type="AppButtonType.Text" OnClick="Rate" target="_blank" href="https://github.com/LiamMorrow/LiftLog">Rate</AppButton>
@@ -23,7 +23,7 @@
 
 @code
 {
-    private Dialog rateDialog = null!;
+    private Dialog? rateDialog;
 
     private string AppStore => DeviceService.GetDeviceType() switch
     {
@@ -41,14 +41,14 @@
     private void Never()
     {
         Dispatcher.Dispatch(new SetAppRatingResultAction(AppRatingResult.Declined));
-        rateDialog.Close();
+        rateDialog?.Close();
     }
 
     private void Rate()
     {
         Dispatcher.Dispatch(new SetAppRatingResultAction(AppRatingResult.Rated));
         Dispatcher.Dispatch(new RequestReviewAction());
-        rateDialog.Close();
+        rateDialog?.Close();
     }
 
     protected override void OnInitialized()
@@ -59,11 +59,11 @@
 
     private void HandleAppStateChange(object? sender, EventArgs e)
     {
-        if (AppState.Value.AppRatingResult == AppRatingResult.NotRated
+        if (AppState.Value.IsHydrated && AppState.Value.AppRatingResult == AppRatingResult.NotRated
             && AppState.Value.AppLaunchCount >= 5
             && AppState.Value.AppLaunchCount % 5 == 0)
         {
-            rateDialog.Open();
+            rateDialog?.Open();
         }
     }
 
