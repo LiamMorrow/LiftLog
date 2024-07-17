@@ -16,11 +16,26 @@
     </md-list-item>
 </md-list>
 
+
+<ConfirmationDialog @ref="importFeedDialog" OkText="Import" CancelText="No" OnOk="ImportFeedData">
+    <Headline>Import Feed Data?</Headline>
+    <TextContent>
+        <p>This backup includes a feed account. Would you like to import it?</p>
+        <p>You will lose access to your current account without a backup.</p>
+        <p class="text-error font-bold">This will replace your current account and cannot be undone!</p>
+    </TextContent>
+</ConfirmationDialog>
+
+
 @code {
+
+    private FeedState? importedFeedState;
+    private ConfirmationDialog? importFeedDialog;
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Backup and Restore"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
+        SubscribeToAction<BeginFeedImportAction>(OnBeginFeedImport);
         base.OnInitialized();
     }
 
@@ -31,5 +46,23 @@
         Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
     }
 
-    private void ExportData() => Dispatcher.Dispatch(new ExportDataAction());
+    private void ExportData() => Dispatcher.Dispatch(new ExportDataAction(true));
+
+    private void OnBeginFeedImport(BeginFeedImportAction action)
+    {
+        importedFeedState = action.FeedState;
+        importFeedDialog?.Open();
+    }
+
+    private void ImportFeedData()
+    {
+        if (importedFeedState is null)
+        {
+            return;
+        }
+
+        Dispatcher.Dispatch(new SetFeedStateAction(importedFeedState));
+        importedFeedState = null;
+        importFeedDialog?.Close();
+    }
 }

@@ -63,3 +63,5 @@
 #*.RTF   diff=astextplain
 *.cs linguist-language=C#
 *.razor linguist-language=C#
+
+LiftLog.Ui/wwwroot/tailwind.js linguist-vendored

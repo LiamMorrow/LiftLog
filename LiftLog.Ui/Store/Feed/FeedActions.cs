@@ -36,6 +36,8 @@ public record PutFollowedUsersAction(FeedUser User);
 
 public record SetSharedFeedUserAction(FeedUser? User);
 
+public record SetFeedStateAction(FeedState FeedState);
+
 public record FetchAndSetSharedFeedUserAction(
     string IdOrLookup,
     string? Name,

@@ -88,21 +88,17 @@ else
     </Fab>
 </FloatingBottomContainer>
 
-<Dialog @ref="replaceCurrentSesisonDialog">
-    <span slot="headline">Replace current session</span>
-    <span slot="content" class="block text-left">
+<ConfirmationDialog @ref="replaceCurrentSesisonDialog" OkText="Replace" OnOk="ReplaceSession">
+    <Headline>Replace current session</Headline>
+    <TextContent>
         There is already a current session in progress, start a new one without
         saving?
-    </span>
-    <div slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick="@(() => replaceCurrentSesisonDialog?.Close())">Cancel</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="ReplaceSession">Replace</AppButton>
-    </div>
-</Dialog>
+    </TextContent>
+</ConfirmationDialog>
 
 @code {
 
-    private Dialog? replaceCurrentSesisonDialog;
+    private ConfirmationDialog? replaceCurrentSesisonDialog;
     private Session? selectedSession;
 
     protected override async Task OnInitializedAsync()

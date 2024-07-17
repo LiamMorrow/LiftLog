@@ -7,7 +7,7 @@
 
 @inject IDeviceService DeviceService
 
-<Dialog @ref="androidNotificationDialog" OnCancel="DisableNotifications">
+<Dialog @ref="androidNotificationDialog" OnCancel="DisableNotifications" SectionName="AndroidNotificationDialog">
     <span slot="headline">Enable Notifications?</span>
     <span slot="content" class="block text-left">Newer Android devices require an additional permission to ensure that rest notifications are delivered on time.
         Without this permission, they will arrive late and largely be useless.

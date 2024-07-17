@@ -111,22 +111,15 @@
 }
 
 
-<Dialog @ref="deleteUserDialog">
-    <span slot="headline">Unfollow user</span>
-    <span slot="content" class="block text-left">This will unfollow <span class="text-primary font-bold">@(userToDelete?.Nickname ?? userToDelete?.Name ?? "Anonymous User")</span> and remove all their content on your device.</span>
-    <div slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick="@(() => deleteUserDialog?.Close())">Cancel</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="DeleteUser">Unfollow</AppButton>
-    </div>
-</Dialog>
-<Dialog @ref="removeFollowerDialog">
-    <span slot="headline">Remove follower</span>
-    <span slot="content" class="block text-left">This will stop <span class="text-primary font-bold">@(userToDelete?.Nickname ?? userToDelete?.Name ?? "Anonymous User")</span> from following you and remove all your content from their device.</span>
-    <div slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick="@(() => removeFollowerDialog?.Close())">Cancel</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="RemoveFollower">Unfollow</AppButton>
-    </div>
-</Dialog>
+<ConfirmationDialog @ref="deleteUserDialog" OkText="Unfollow" OnOk="DeleteUser">
+    <Headline>Unfollow user</Headline>
+    <TextContent>This will unfollow <span class="text-primary font-bold">@(userToDelete?.Nickname ?? userToDelete?.Name ?? "Anonymous User")</span> and remove all their content on your device.</TextContent>
+</ConfirmationDialog>
+
+<ConfirmationDialog @ref="removeFollowerDialog" OkText="Remove" OnOk="RemoveFollower">
+    <Headline>Remove follower</Headline>
+    <TextContent>This will stop <span class="text-primary font-bold">@(userToDelete?.Nickname ?? userToDelete?.Name ?? "Anonymous User")</span> from following you and remove all your content from their device.</TextContent>
+</ConfirmationDialog>
 
 @code
 {
@@ -139,8 +132,8 @@
 
 
     private ElementReference tabs;
-    private Dialog? deleteUserDialog;
-    private Dialog? removeFollowerDialog;
+    private ConfirmationDialog? deleteUserDialog;
+    private ConfirmationDialog? removeFollowerDialog;
     private FeedUser? userToDelete;
     private FullScreenDialog? settingsDialog;
     private FeedIdentityManager? feedIdentityManager;

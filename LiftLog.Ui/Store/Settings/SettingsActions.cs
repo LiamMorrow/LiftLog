@@ -1,14 +1,17 @@
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Services;
+using LiftLog.Ui.Store.Feed;
 
 namespace LiftLog.Ui.Store.Settings;
 
-public record ExportDataAction();
+public record ExportDataAction(bool ExportFeed);
 
 public record ImportDataAction();
 
 public record ImportDataBytesAction(byte[] Bytes);
+
+public record BeginFeedImportAction(FeedState FeedState);
 
 public record GenerateAiPlanAction(AiWorkoutAttributes Attributes);
 

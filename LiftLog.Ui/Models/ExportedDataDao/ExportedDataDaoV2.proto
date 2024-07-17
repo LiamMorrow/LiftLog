@@ -4,6 +4,7 @@ package LiftLog.Ui.Models.ExportedDataDao;
 import "Models/SessionHistoryDao/SessionHistoryDaoV2.proto";
 import "Models/SessionBlueprintDao/SessionBlueprintDaoV2.proto";
 import "Models/ProgramBlueprintDao/ProgramBlueprintDaoV1.proto";
+import "Models/FeedStateDao.proto";
 import "google/protobuf/wrappers.proto";
 
 message ExportedDataDaoV2 {
@@ -11,4 +12,5 @@ message ExportedDataDaoV2 {
     repeated LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2 program = 2;
     map<string, LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1> saved_programs = 3;
     google.protobuf.StringValue active_program_id = 4;
+    LiftLog.Ui.Models.FeedStateDaoV1 feed_state = 5;
 }

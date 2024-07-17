@@ -11,12 +11,14 @@ internal partial class ExportedDataDaoV2
     public ExportedDataDaoV2(
         IEnumerable<SessionDaoV2> sessions,
         IDictionary<string, ProgramBlueprintDaoV1> savedPrograms,
-        Guid activeProgramId
+        Guid activeProgramId,
+        FeedStateDaoV1? feedState
     )
     {
         Sessions.AddRange(sessions);
         ActiveProgramId = activeProgramId.ToString();
         SavedPrograms.Add(savedPrograms);
+        FeedState = feedState;
     }
 
     public static ExportedDataDaoV2 FromV1(ExportedDataDaoV1 v1)
@@ -36,7 +38,8 @@ internal partial class ExportedDataDaoV2
         return new ExportedDataDaoV2(
             v1.Sessions.Select(x => x.ToModel()).Select(SessionDaoV2.FromModel),
             plans,
-            activePlanId
+            activePlanId,
+            null
         );
     }
 }
