@@ -3,7 +3,7 @@
 @if (opened)
 {
     @* Put the dialog into a section in the main layout so that the scrim covers parent elements on ios *@
-    <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="Dialog">
+    <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="@SectionName">
         <md-dialog
             @ondialog-close="HandleDialogClose"
             @ondialog-cancel="HandleDialogCancel"
@@ -27,6 +27,8 @@
     [Parameter] public Action? OnCancel { get; set; }
 
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    [Parameter] public string SectionName { get; set; } = "Dialog";
 
     public async void Open()
     {

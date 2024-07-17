@@ -5,10 +5,12 @@ using System.Text.Json;
 using Fluxor;
 using Google.Protobuf;
 using LiftLog.Lib.Services;
+using LiftLog.Ui.Models;
 using LiftLog.Ui.Models.ExportedDataDao;
 using LiftLog.Ui.Models.ProgramBlueprintDao;
 using LiftLog.Ui.Models.SessionHistoryDao;
 using LiftLog.Ui.Services;
+using LiftLog.Ui.Store.Feed;
 using LiftLog.Ui.Store.Program;
 using Microsoft.Extensions.Logging;
 
@@ -17,6 +19,7 @@ namespace LiftLog.Ui.Store.Settings;
 public class SettingsEffects(
     ProgressRepository progressRepository,
     IState<ProgramState> programState,
+    IState<FeedState> feedState,
     IExporter textExporter,
     IAiWorkoutPlanner aiWorkoutPlanner,
     IThemeProvider themeProvider,
@@ -25,11 +28,12 @@ public class SettingsEffects(
 )
 {
     [EffectMethod]
-    public async Task ExportData(ExportDataAction _, IDispatcher __)
+    public async Task ExportData(ExportDataAction action, IDispatcher __)
     {
         var sessions = await progressRepository.GetOrderedSessions().ToListAsync();
         var savedPrograms = programState.Value.SavedPrograms;
         var activeProgramId = programState.Value.ActivePlanId;
+        var feedStateDao = action.ExportFeed ? (FeedStateDaoV1)feedState.Value : null;
 
         await textExporter.ExportBytesAsync(
             new ExportedDataDaoV2(
@@ -38,7 +42,8 @@ public class SettingsEffects(
                     x => x.Key.ToString(),
                     x => ProgramBlueprintDaoV1.FromModel(x.Value)
                 ),
-                activeProgramId
+                activeProgramId,
+                feedStateDao
             ).ToByteArray()
         );
     }
@@ -120,6 +125,10 @@ public class SettingsEffects(
             {
                 var id = Guid.Parse(deserialized.ActiveProgramId);
                 dispatcher.Dispatch(new SetActiveProgramAction(id));
+            }
+            if (deserialized.FeedState != null)
+            {
+                dispatcher.Dispatch(new BeginFeedImportAction(deserialized.FeedState));
             }
         }
         else

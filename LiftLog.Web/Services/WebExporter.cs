@@ -25,7 +25,7 @@ public class WebExporter(IBlazorDownloadFileService downloadFileService, HttpCli
 
     public async Task<byte[]> ImportBytesAsync()
     {
-        var imported = await httpClient.GetAsync("/_content/LiftLog.Ui/export.liftlogbackup.gz");
+        var imported = await httpClient.GetAsync("/export.liftlogbackup.gz");
         using GZipStream gzip = new(imported.Content.ReadAsStream(), CompressionMode.Decompress);
         using MemoryStream memoryStream = new();
         await gzip.CopyToAsync(memoryStream);

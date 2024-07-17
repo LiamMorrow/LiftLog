@@ -141,4 +141,8 @@ public static class FeedReducers
         {
             SharedItem = action.SharedItem
         };
+
+    [ReducerMethod]
+    public static FeedState SetFeedState(FeedState state, SetFeedStateAction action) =>
+        action.FeedState;
 }

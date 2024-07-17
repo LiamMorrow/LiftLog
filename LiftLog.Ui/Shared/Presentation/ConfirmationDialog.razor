@@ -1,0 +1,51 @@
+
+<Dialog @ref="dialog" @ondialog-cancel="OnCancel">
+    <span slot="headline">@Headline</span>
+    <span slot="content" class="block text-left">
+        @TextContent
+    </span>
+    <div slot="actions">
+        <AppButton Type="AppButtonType.Text" OnClick="async () => { dialog?.Close(); await OnCancel.InvokeAsync(); }">@CancelText</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="async () => { dialog?.Close(); await OnOk.InvokeAsync(); }">@OkText</AppButton>
+    </div>
+</Dialog>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public RenderFragment Headline {get;set;} = null!;
+    [Parameter]
+    [EditorRequired]
+    public RenderFragment TextContent {get;set;} = null!;
+
+    [Parameter]
+    public string CancelText {get;set;} = "Cancel";
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    [Parameter]
+    public string OkText { get; set; } = "Ok";
+
+    [Parameter]
+    public EventCallback OnOk { get; set; }
+
+    [Parameter] public string SectionName { get; set; } = "Dialog";
+
+    private Dialog? dialog;
+
+    public void Open()
+    {
+        dialog?.Open();
+    }
+
+    public void Close()
+    {
+        dialog?.Close();
+    }
+
+    public Task CloseWait()
+    {
+        return dialog?.CloseWait() ?? Task.CompletedTask;
+    }
+}
