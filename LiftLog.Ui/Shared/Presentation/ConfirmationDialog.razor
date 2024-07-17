@@ -6,7 +6,7 @@
     </span>
     <div slot="actions">
         <AppButton Type="AppButtonType.Text" OnClick="async () => { dialog?.Close(); await OnCancel.InvokeAsync(); }">@CancelText</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="OnOk">@OkText</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="async () => { dialog?.Close(); await OnOk.InvokeAsync(); }">@OkText</AppButton>
     </div>
 </Dialog>
 
