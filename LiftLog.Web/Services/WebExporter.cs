@@ -21,7 +21,7 @@ public class WebExporter(IBlazorDownloadFileService downloadFileService) : IExpo
         );
     }
 
-    public async Task<byte[]> ImportBytesAsync()
+    public Task<byte[]> ImportBytesAsync()
     {
         throw new NotImplementedException();
     }
