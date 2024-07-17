@@ -7,24 +7,22 @@
 
 @inject IDeviceService DeviceService
 
-<Dialog @ref="androidNotificationDialog" OnCancel="DisableNotifications" SectionName="AndroidNotificationDialog">
-    <span slot="headline">Enable Notifications?</span>
-    <span slot="content" class="block text-left">Newer Android devices require an additional permission to ensure that rest notifications are delivered on time.
+<ConfirmationDialog @ref="androidNotificationDialog"
+    OkText="Grant"
+    OnOk="DeviceService.RequestExactNotificationPermission"
+    CancelText="Disable Notifications"
+    OnCancel="DisableNotifications"
+    SectionName="AndroidNotificationDialog">
+    <Headline>Enable Notifications?</Headline>
+    <TextContent>Newer Android devices require an additional permission to ensure that rest notifications are delivered on time.
         Without this permission, they will arrive late and largely be useless.
-        On the next screen, please grant LiftLog the permission.</span>
-    <div slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick="() => { androidNotificationDialog?.Close(); DisableNotifications(); }">Disable Notifications</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="() => { androidNotificationDialog?.Close(); DeviceService.RequestExactNotificationPermission(); }">Grant</AppButton>
-    </div>
-</Dialog>
+        On the next screen, please grant LiftLog the permission.</TextContent>
+</ConfirmationDialog>
 
 @code
 {
-    [Parameter]
-    public bool ForceShow { get; set; }
 
-    private Dialog? androidNotificationDialog;
-
+    private ConfirmationDialog? androidNotificationDialog;
 
     protected override void OnAfterRender(bool firstRender)
     {

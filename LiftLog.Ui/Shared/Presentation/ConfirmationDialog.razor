@@ -30,6 +30,8 @@
     [Parameter]
     public EventCallback OnOk { get; set; }
 
+    [Parameter] public string SectionName { get; set; } = "Dialog";
+
     private Dialog? dialog;
 
     public void Open()
