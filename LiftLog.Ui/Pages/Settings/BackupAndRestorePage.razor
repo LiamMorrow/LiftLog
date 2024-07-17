@@ -4,7 +4,7 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <md-list>
-    <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="ExportData">
+    <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="()=>exportFeedDialog?.Open()">
         <md-icon slot="start">backup</md-icon>
         <span slot="headline">Export data</span>
         <span slot="supporting-text">Export your data to a file for backup or transfer</span>
@@ -26,11 +26,20 @@
     </TextContent>
 </ConfirmationDialog>
 
+<ConfirmationDialog @ref="exportFeedDialog" OkText="Include Feed" CancelText="Just my data" OnOk="()=>ExportData(true)" OnCancel="()=>ExportData(false)">
+    <Headline>Backup Feed Account</Headline>
+    <TextContent>
+        <p>Include your feed account and followed users in this backup?</p>
+        <p class="text-error font-bold">Caution: This would allow anyone with this backup to post feed content with your account</p>
+    </TextContent>
+</ConfirmationDialog>
+
 
 @code {
 
     private FeedState? importedFeedState;
     private ConfirmationDialog? importFeedDialog;
+    private ConfirmationDialog? exportFeedDialog;
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Backup and Restore"));
@@ -46,7 +55,7 @@
         Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
     }
 
-    private void ExportData() => Dispatcher.Dispatch(new ExportDataAction(true));
+    private void ExportData(bool includeFeed) => Dispatcher.Dispatch(new ExportDataAction(includeFeed));
 
     private void OnBeginFeedImport(BeginFeedImportAction action)
     {
