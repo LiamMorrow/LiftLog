@@ -1,5 +1,7 @@
 @page "/settings/backup-and-restore"
 @inject IDispatcher Dispatcher
+@inject IJSRuntime JSRuntime
+@inject IDeviceService DeviceService
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
@@ -35,11 +37,17 @@
 </ConfirmationDialog>
 
 
+@if(DeviceService.GetDeviceType() == DeviceType.Web)
+{
+    <InputFile OnChange="LoadFiles" class="hidden" @ref=fileInput />
+}
+
 @code {
 
     private FeedState? importedFeedState;
     private ConfirmationDialog? importFeedDialog;
     private ConfirmationDialog? exportFeedDialog;
+    private InputFile? fileInput;
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Backup and Restore"));
@@ -48,9 +56,21 @@
         base.OnInitialized();
     }
 
-
-    private void ImportData()
+    private async Task LoadFiles(InputFileChangeEventArgs e)
     {
+        using System.IO.Compression.GZipStream gzip = new(e.File.OpenReadStream(), System.IO.Compression.CompressionMode.Decompress);
+        using MemoryStream memoryStream = new();
+        await gzip.CopyToAsync(memoryStream);
+        Dispatcher.Dispatch(new ImportDataBytesAction(memoryStream.ToArray()));
+        Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
+    }
+
+    private async Task ImportData()
+    {
+        if(DeviceService.GetDeviceType() == DeviceType.Web){
+            await JSRuntime.InvokeVoidAsync("AppUtils.callOn", fileInput!.Element!.Value!, "click");
+            return;
+        }
         Dispatcher.Dispatch(new ImportDataAction());
         Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
     }
