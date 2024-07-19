@@ -1,0 +1,38 @@
+// 
+// Navbar
+// 
+
+#mainNav {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    background-color: $white;
+
+    .navbar-brand {
+        font-family: $alt-font-family;
+
+        &:hover,
+        &:active {
+            color: $primary;
+        }
+    }
+
+    .navbar-toggler {
+        font-size: $font-size-sm;
+        padding: 0.75rem 1rem;
+        color: $gray-900;
+    }
+
+    .navbar-nav {
+        .nav-item {
+            .nav-link {
+                color: $gray-900;
+                &:hover {
+                    color: $gray-600;
+                }
+                &.active {
+                    color: $primary;
+                }
+            }
+        }
+    }
+}

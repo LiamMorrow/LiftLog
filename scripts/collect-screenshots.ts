@@ -78,7 +78,7 @@ for (const device of androidDevices) {
   const emulator = startEmulator(device).text();
   await $`echo Press enter when emulator loaded`;
   await $`read`;
-  await $`dotnet build ../LiftLog.App -t:Run -c Debug -f net8.0-android -p:TargetFramework=net8.0-android -p:BuildFor=android -p:Device=${device}`;
+  // await $`dotnet build ../LiftLog.App -t:Run -c Debug -f net8.0-android -p:TargetFramework=net8.0-android -p:BuildFor=android -p:Device=${device}`;
   await sleep(5000);
 
   for (const coords of screenshotCoords) {
@@ -92,8 +92,8 @@ for (const device of iosDevices) {
   await $`mkdir -p ${getDeviceFolder(device)}`;
   await startSimulator(device);
   const simulatorId = await getIosSimulatorId(device);
-  $`dotnet build ../LiftLog.App -t:Run -f net8.0-ios -p:RuntimeIdentifiers=iossimulator-x64 -c Debug -p:ExtraDefineConstants=DEBUG_IOSSIM -p:_DeviceName=:v2:udid=${simulatorId}`;
-  await sleep(25000);
+  // $`dotnet build ../LiftLog.App -t:Run -f net8.0-ios -p:RuntimeIdentifiers=iossimulator-x64 -c Debug -p:ExtraDefineConstants=DEBUG_IOSSIM -p:_DeviceName=:v2:udid=${simulatorId}`.text();
+  // await sleep(25000);
   for (const coords of screenshotCoords) {
     goToScreenshotUrlIos(coords, simulatorId);
     await sleep(10000);
