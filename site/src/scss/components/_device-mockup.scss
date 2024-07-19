@@ -1,0 +1,60 @@
+/*!
+ * html5-device-mockups (https://github.com/pixelsign/html5-device-mockups)
+ * Copyright 2013 - 2017 pixelsign
+ * Licensed under MIT (https://github.com/pixelsign/html5-device-mockups/blob/master/LICENSE.txt)
+ * Last Build: Tue Nov 14 2017 12:40:57
+ */
+
+.device-wrapper {
+    max-width: 300px;
+    width: 100%;
+}
+
+.device {
+    position: relative;
+    background-size: cover;
+}
+
+.device::after {
+    position: absolute;
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.device .screen {
+    position: absolute;
+    background-size: cover;
+    pointer-events: auto;
+}
+
+.device .button {
+    position: absolute;
+    cursor: pointer;
+}
+
+
+.device[data-device="iPhone 14 Plus"][data-orientation="portrait"][data-color="black"] {
+    padding-bottom: 203.898071625%;
+}
+
+.device[data-device="iPhone 14 Plus"][data-orientation="portrait"][data-color="black"] .screen {
+    top: 2.2855955679%;
+    left: 4.8870523416%;
+    width: 90.2258953168%;
+    height: 95.6288088643%;
+}
+
+.device[data-device="iPhone 14 Plus"][data-orientation="portrait"][data-color="black"]::after {
+    content: '';
+    background-image: url('../assets/img/portrait_black.png');
+}
+
+.device[data-device="iPhone 14 Plus"][data-orientation="portrait"][data-color="black"] .button {
+    display: none;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+}

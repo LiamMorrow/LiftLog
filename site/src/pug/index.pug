@@ -1,0 +1,184 @@
+doctype html
+html(lang='en')
+
+    head
+
+        meta(charset='utf-8')
+        meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
+        meta(name='description', content='')
+        meta(name='author', content='')
+
+        title LiftLog - The Best Open Source Workout Tracker
+
+        link(rel='icon', type='image/x-icon', href='assets/favicon.ico')
+
+        // Bootstrap icons
+        link(href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css', rel='stylesheet')
+
+        // Google fonts
+        link(rel='preconnect', href='https://fonts.gstatic.com')
+        link(href='https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,600;1,600&display=swap', rel='stylesheet')
+        link(href='https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,500;0,600;0,700;1,300;1,500;1,600;1,700&display=swap', rel='stylesheet')
+        link(href='https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,400;1,400&display=swap', rel='stylesheet')
+
+        // Core theme CSS (includes Bootstrap)
+        link(href='css/styles.css', rel='stylesheet')
+
+    body#page-top
+
+        // Navigation
+        nav#mainNav.navbar.navbar-expand-lg.navbar-light.fixed-top.shadow-sm
+            .container.px-5
+                a.navbar-brand.fw-bold(href='#page-top') LiftLog
+                button.navbar-toggler(type='button', data-bs-toggle='collapse', data-bs-target='#navbarResponsive', aria-controls='navbarResponsive', aria-expanded='false', aria-label='Toggle navigation')
+                    | Menu
+                    i.bi-list
+                #navbarResponsive.collapse.navbar-collapse
+                    ul.navbar-nav.ms-auto.me-4.my-3.my-lg-0
+                        li.nav-item
+                            a.nav-link.me-lg-3(href='#features') Features
+                        li.nav-item
+                            a.nav-link.me-lg-3(href='#download') Download
+                    a.btn.btn-primary.rounded-pill.px-3.mb-2.mb-lg-0(href='https://github.com/LiamMorrow/LiftLog')
+                        span.d-flex.align-items-center
+                            i.bi-github.me-2
+                            span.small View Source
+
+        // Mashead header
+        header.masthead
+            .container.px-5
+                .row.gx-5.align-items-center
+                    .col-lg-6
+                        // Mashead text and app badges
+                        .mb-5.mb-lg-0.text-center.text-lg-start
+                            h1.display-1.lh-1.mb-3 Simple gym tracking, free for everyone.
+                            p.lead.fw-normal.text-muted.mb-5 LiftLog is a free and open source workout tracker that makes it easy to log your workouts, track your progress, and stay motivated. Download it today on the App Store or Google Play!
+                            .d-flex.flex-column.flex-lg-row.align-items-center.gap-3
+                                a(href='https://play.google.com/store/apps/details?id=com.limajuice.liftlog&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1')
+                                    img.app-badge(src='assets/img/google-play-badge.svg', alt='Download on Google Play')
+                                a(href='https://apps.apple.com/au/app/liftlog/id6467372581?itsct=apps_box_badge&amp;itscg=30200')
+                                    img.app-badge(src='assets/img/app-store-badge.svg', alt='Download on the App Store')
+                                a.ml-2(href='https://app.liftlog.online')
+                                    img.app-badge(src='assets/img/web-badge.png', alt='Try the Web App')
+                    .col-lg-6
+                        // Masthead device mockup feature
+                        .masthead-device-mockup
+                            include includes/gradient-circle
+                            include includes/shape-1
+                            include includes/shape-2
+                            .device-wrapper
+                                .device(data-device='iPhone 14 Plus', data-orientation='portrait', data-color='black')
+                                    .screen.bg-black
+                                        #car.carousel.slide(data-bs-ride='carousel')
+                                            .carousel-inner
+                                                .carousel-item.active
+                                                    img.d-block.w-100(src='assets/img/workoutpage.png' alt='Workout Page')
+                                                .carousel-item
+                                                    img.d-block.w-100(src='assets/img/stats.png' alt='Stats')
+                                                .carousel-item
+                                                    img.d-block.w-100(src='assets/img/ai.png' alt='AI planner')
+
+
+
+        // App features section
+        section#features
+            .container.px-5
+                .row.gx-5.align-items-center
+                    .col-lg-8.order-lg-1.mb-5.mb-lg-0
+                        .container-fluid.px-5
+                            .row.gx-5
+                                .col-md-6.mb-5
+                                    // Feature item
+                                    .text-center
+                                        i.bi-phone.icon-feature.text-gradient.d-block.mb-3
+                                        h3.font-alt Local Storage
+                                        p.text-muted.mb-0 All your data is stored locally on your device, so you can access it anytime, anywhere!
+                                .col-md-6.mb-5
+                                    // Feature item
+                                    .text-center
+                                        i.bi-clipboard.icon-feature.text-gradient.d-block.mb-3
+                                        h3.font-alt One tap logging
+                                        p.text-muted.mb-0 Completed a set? Just tap the screen to log it!
+                            .row
+                                .col-md-6.mb-5.mb-md-0
+                                    // Feature item
+                                    .text-center
+                                        i.bi-clock.icon-feature.text-gradient.d-block.mb-3
+                                        h3.font-alt Time your rest
+                                        p.text-muted.mb-0 LiftLog will automatically time your rest periods, so you can focus on your workout!
+                                .col-md-6
+                                    // Feature item
+                                    .text-center
+                                        i.bi-patch-check.icon-feature.text-gradient.d-block.mb-3
+                                        h3.font-alt Open Source
+                                        p.text-muted.mb-0 LiftLog is open source, so you can view the code and contribute on GitHub!
+                    .col-lg-4.order-lg-0
+                        // Features section device mockup
+                        .features-device-mockup
+                            include includes/gradient-circle
+                            include includes/shape-1
+                            include includes/shape-2
+                            .device-wrapper
+                                .device(data-device='iPhoneX', data-orientation='portrait', data-color='black')
+                                    .screen.bg-black
+                                        // PUT CONTENTS HERE:
+                                        // * * This can be a video, image, or just about anything else.
+                                        // * * Set the max width of your media to 100% and the height to
+                                        // * * 100% like the demo example below.
+                                        video(muted='muted', autoplay='', loop='', style='max-width: 100%; height: 100%;')
+                                            source(src='assets/img/demo-screen.mp4', type='video/mp4')
+
+        // Basic features section
+        section.bg-light
+            .container.px-5
+                .row.gx-5.align-items-center.justify-content-center.justify-content-lg-between
+                    .col-12.col-lg-5
+                        h2.display-4.lh-1.mb-4 Track your workouts with ease
+                        p.lead.fw-normal.text-muted.mb-5.mb-lg-0 Sick of spreadsheets and notebooks? Log your sets with a single tap and let LiftLog do the rest.
+                    .col-sm-8.col-md-6
+                        .px-5.px-sm-0
+                            img.img-fluid(src='assets/img/exercise.png', alt='...')
+
+        // Call to action section
+        section.cta
+            .cta-content
+                .container.px-5
+                    h2.text-white.display-1.lh-1.mb-4
+                        | Simple.
+                        br
+                        | Powerful.
+                    a.btn.btn-outline-light.py-3.px-4.rounded-pill(href='#download') Download for free
+
+        // App badge section
+        section#download.bg-gradient-primary-to-secondary
+            .container.px-5
+                h2.text-center.text-white.font-alt.mb-4 Get the app now!
+                .d-flex.flex-column.flex-lg-row.align-items-center.justify-content-center.gap-3
+                    a(href='https://play.google.com/store/apps/details?id=com.limajuice.liftlog&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1')
+                        img.app-badge(src='assets/img/google-play-badge.svg', alt='Get it on Google Play')
+                    a(href='https://apps.apple.com/au/app/liftlog/id6467372581?itsct=apps_box_badge&amp;itscg=30200')
+                        img.app-badge(src='assets/img/app-store-badge.svg', alt='Download on the App Store')
+                    a(href='https://app.liftlog.online')
+                        img.app-badge(src='assets/img/web-badge.png', alt='Try the Web App')
+
+        // Footer
+        footer.bg-black.text-center.py-5
+            .container.px-5
+                .text-white-50.small
+                    .mb-2 &copy; LiftLog 2024. All Rights Reserved.
+                    a(href='/privacypolicy.html') Privacy
+
+        include includes/feedback-modal.pug
+
+        // Bootstrap core JS
+        script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js')
+
+        // Core theme JS
+        script(src='js/scripts.js')
+
+        // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        // * *                               SB Forms JS                               * *
+        // * * Activate your form at https://startbootstrap.com/solution/contact-forms * *
+        // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+        script(src='https://cdn.startbootstrap.com/sb-forms-latest.js')
