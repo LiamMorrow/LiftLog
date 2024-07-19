@@ -1,13 +1,19 @@
+using System.Diagnostics;
 using Fluxor;
 using LiftLog.Ui.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Ui.Store.App;
 
-public class AppStateInitMiddleware(PreferencesRepository preferencesRepository) : Middleware
+public class AppStateInitMiddleware(
+    PreferencesRepository preferencesRepository,
+    ILogger<AppStateInitMiddleware> logger
+) : Middleware
 {
     public override async Task InitializeAsync(IDispatcher dispatch, IStore store)
     {
+        var sw = Stopwatch.StartNew();
         var proToken = await preferencesRepository.GetProTokenAsync();
 #if TEST_MODE
         await Task.Yield();
@@ -23,5 +29,10 @@ public class AppStateInitMiddleware(PreferencesRepository preferencesRepository)
         dispatch.Dispatch(new SetAppRatingResultAction(addRatingResult));
 
         dispatch.Dispatch(new SetAppStateIsHydratedAction(true));
+        sw.Stop();
+        logger.LogInformation(
+            "AppStateInitMiddleware took {ElapsedMilliseconds}ms",
+            sw.ElapsedMilliseconds
+        );
     }
 }
