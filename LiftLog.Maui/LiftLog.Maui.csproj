@@ -100,7 +100,7 @@
     <ItemGroup>
         <PackageReference Include="BlazorTransitionableRoute" Version="4.0.0" />
         <PackageReference Include="MaterialColorUtilities.Maui" Version="0.3.0" />
-        <PackageReference Include="Plugin.InAppBilling" Version="7.1.0" />
+        <PackageReference Include="Plugin.InAppBilling" Version="7.1.3" />
         <PackageReference Include="Plugin.LocalNotification" Version="11.1.3" />
         <PackageReference Include="Plugin.Maui.AppRating" Version="1.2.0" />
         <PackageReference Include="Sentry.Extensions.Logging" Version="4.8.1" />
