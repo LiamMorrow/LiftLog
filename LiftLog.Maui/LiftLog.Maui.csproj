@@ -3,8 +3,7 @@
     <PropertyGroup>
         <TargetFrameworks>net8.0-android;net8.0</TargetFrameworks>
 
-        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx'))">
-            $(TargetFrameworks);net8.0-ios;</TargetFrameworks>
+        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx'))">$(TargetFrameworks);net8.0-ios;</TargetFrameworks>
 
         <OutputType>Exe</OutputType>
         <RootNamespace>LiftLog.Maui</RootNamespace>
@@ -24,12 +23,8 @@
         <ApplicationDisplayVersion>2.14.0</ApplicationDisplayVersion>
         <ApplicationVersion>83</ApplicationVersion>
 
-        <SupportedOSPlatformVersion
-            Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
-            14.2</SupportedOSPlatformVersion>
-        <SupportedOSPlatformVersion
-            Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
-            24.0</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
         <Nullable>enable</Nullable>
         <PackageId>LiftLog</PackageId>
         <Title>LiftLog</Title>
@@ -38,8 +33,7 @@
         <Product>LiftLog</Product>
         <Version>$(ApplicationDisplayVersion)</Version>
 
-        <DefineConstants Condition=" '$(ExtraDefineConstants)' != '' ">
-            $(DefineConstants);$(ExtraDefineConstants)</DefineConstants>
+        <DefineConstants Condition=" '$(ExtraDefineConstants)' != '' ">$(DefineConstants);$(ExtraDefineConstants)</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -53,39 +47,30 @@
         <EnableLLVM>true</EnableLLVM>
     </PropertyGroup>
 
-    <PropertyGroup
-        Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Release'">
+    <PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Release'">
         <MtouchLink>SdkOnly</MtouchLink>
         <UseInterpreter>True</UseInterpreter>
     </PropertyGroup>
 
-    <ItemGroup
-        Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
         <AndroidResource Include="Platforms\Android\Resources\xml\auto_backup_rules.xml" />
     </ItemGroup>
 
-    <ItemGroup
-        Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' Or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' Or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
 
         <!-- For debugging, use '?mode=developer' for debug to bypass apple's CDN cache -->
-        <CustomEntitlements Condition="$(Configuration) == 'Debug'"
-            Include="com.apple.developer.associated-domains" Type="StringArray"
-            Value="applinks:app.liftlog.online?mode=developer" />
+        <CustomEntitlements Condition="$(Configuration) == 'Debug'" Include="com.apple.developer.associated-domains" Type="StringArray" Value="applinks:app.liftlog.online?mode=developer" />
 
         <!-- Non debugging, use normal applinks:url value -->
-        <CustomEntitlements Condition="$(Configuration) != 'Debug'"
-            Include="com.apple.developer.associated-domains" Type="StringArray"
-            Value="applinks:app.liftlog.online" />
+        <CustomEntitlements Condition="$(Configuration) != 'Debug'" Include="com.apple.developer.associated-domains" Type="StringArray" Value="applinks:app.liftlog.online" />
 
     </ItemGroup>
     <ItemGroup>
         <!-- App Icon -->
-        <MauiIcon Include="Resources\AppIcon\appicon.svg"
-            ForegroundFile="Resources\AppIcon\appiconfg.svg" ForegroundScale="0.50" Color="#FEF1EF" />
+        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" ForegroundScale="0.50" Color="#FEF1EF" />
 
         <!-- Splash Screen -->
-        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#FEF1EF" TintColor="#904A42"
-            BaseSize="48,48" />
+        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#FEF1EF" TintColor="#904A42" BaseSize="48,48" />
 
         <!-- Images -->
         <MauiImage Include="Resources\Images\*" />
@@ -106,24 +91,21 @@
         <PackageReference Include="Sentry.Extensions.Logging" Version="4.8.1" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.61" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.61" />
-        <PackageReference
-            Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'"
-            Include="Xamarin.AndroidX.Annotation" Version="1.8.0" />
+        <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Annotation" Version="1.8.0" />
     </ItemGroup>
 
-    <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <ItemGroup  Condition=" '$(Configuration)' == 'Debug' ">
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
     </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-android'">
-        <PackageReference Include="Xamarin.Android.Google.BillingClient">
-            <Version>6.2.1</Version>
-        </PackageReference>
-        <PackageReference Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.8.1">
-            <Version>1.7.0.2</Version>
-        </PackageReference>
-        <PackageReference Include="Xamarin.GooglePlayServices.Base" Version="118.4.0" />
-    </ItemGroup>
+<ItemGroup Condition="'$(TargetFramework)' == 'net8.0-android'">
+    <PackageReference Include="Xamarin.Android.Google.BillingClient">
+        <Version>6.2.1</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.AndroidX.Fragment.Ktx">
+        <Version>1.7.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.GooglePlayServices.Base" Version="118.4.0" />
+</ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\LiftLog.Ui\LiftLog.Ui.csproj" />
