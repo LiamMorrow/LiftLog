@@ -1,4 +1,4 @@
-name: Upload site as docker image to ghcr.io
+name: Build static site
 on:
   push:
     paths:
