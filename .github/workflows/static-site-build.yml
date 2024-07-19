@@ -1,6 +1,7 @@
 name: Build static site
 on:
   push:
+    branches-ignore: [main]
     paths:
       - "site/**"
       - ".github/workflows/static-site-build.yml"
