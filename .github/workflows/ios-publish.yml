@@ -48,9 +48,9 @@ jobs:
         working-directory: ./LiftLog.Ui
       - name: Build
         run: 'dotnet publish -c Release -f:net8.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}" -p:CodesignProvision="LiftLog"'
-        working-directory: ./LiftLog.App
+        working-directory: ./LiftLog.Maui
       - name: Upload with altool
-        run: xcrun altool --upload-app -f LiftLog.App/bin/Release/net8.0-ios/ios-arm64/publish/LiftLog.App.ipa -t ios -p '${{secrets.APPLE_UPLOAD_PASS}}' -u ${{secrets.APPLE_UPLOAD_USER}}
+        run: xcrun altool --upload-app -f LiftLog.Maui/bin/Release/net8.0-ios/ios-arm64/publish/LiftLog.Maui.ipa -t ios -p '${{secrets.APPLE_UPLOAD_PASS}}' -u ${{secrets.APPLE_UPLOAD_USER}}
       - name: Delete keychain
         if: always() # Always run this step to ensure the keychain is properly disposed of for self hosted runners
         run: |

@@ -31,7 +31,7 @@ jobs:
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: echo "${ANDROID_KEYSTORE_BASE64}" | base64 -d > liftlog.keystore
-        working-directory: ./LiftLog.App
+        working-directory: ./LiftLog.Maui
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
@@ -44,14 +44,14 @@ jobs:
         working-directory: ./LiftLog.Ui
       - name: Build
         run: dotnet publish -p:TargetFramework=net8.0-android -f net8.0-android -c Release -p:BuildFor=android -p:AndroidKeyStore=true -p:AndroidSigningKeyStore=liftlog.keystore -p:AndroidSigningKeyAlias=liftlog -p:AndroidSigningKeyPass=env:KEYSTORE_PASS -p:AndroidSigningStorePass=env:KEYSTORE_PASS
-        working-directory: ./LiftLog.App
+        working-directory: ./LiftLog.Maui
         env:
           KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
       - name: Upload Android Release to Play Store
         uses: r0adkll/upload-google-play@v1.1.3
         with:
           packageName: com.limajuice.liftlog
-          releaseFiles: LiftLog.App/bin/Release/net8.0-android/publish/com.limajuice.liftlog-Signed.aab
+          releaseFiles: LiftLog.Maui/bin/Release/net8.0-android/publish/com.limajuice.liftlog-Signed.aab
           track: internal
           status: completed
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}

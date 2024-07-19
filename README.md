@@ -59,9 +59,9 @@ There are several services which are defined and used by LiftLog.Ui, some of whi
 
 LiftLog.Web is a Blazor Webassembly application which can be used for local development. It implements the required services which are defined in LiftLog.Ui to run in a web environment. While this is useful for development, new features should be tested on emulated and real devices before release, as there are some differences between the webassembly runtime and the MAUI runtime.
 
-#### [LiftLog.App](./LiftLog.App/)
+#### [LiftLog.Maui](./LiftLog.Maui/)
 
-LiftLog.App is a MAUI application utilizing a BlazorWebView to display the UI defined in LiftLog.Ui. It implements the specific services required for running the UI on an iOS or Android device.
+LiftLog.Maui is a MAUI application utilizing a BlazorWebView to display the UI defined in LiftLog.Ui. It implements the specific services required for running the UI on an iOS or Android device.
 This is the application which is published to the relevant app store.
 
 ### Backend

@@ -1,0 +1,104 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <TargetFrameworks>net8.0-android;net8.0</TargetFrameworks>
+
+        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx'))">$(TargetFrameworks);net8.0-ios;</TargetFrameworks>
+
+        <OutputType>Exe</OutputType>
+        <RootNamespace>LiftLog.Maui</RootNamespace>
+        <UseMaui>true</UseMaui>
+        <SingleProject>true</SingleProject>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <EnableDefaultCssItems>false</EnableDefaultCssItems>
+
+        <!-- Display name -->
+        <ApplicationTitle>LiftLog</ApplicationTitle>
+
+        <!-- App Identifier -->
+        <ApplicationId>com.limajuice.liftlog</ApplicationId>
+        <ApplicationIdGuid>71733E37-6FDD-4EEF-A0BF-DE32634D58EC</ApplicationIdGuid>
+
+        <!-- Versions -->
+        <ApplicationDisplayVersion>2.14.0</ApplicationDisplayVersion>
+        <ApplicationVersion>83</ApplicationVersion>
+
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
+        <Nullable>enable</Nullable>
+        <PackageId>LiftLog</PackageId>
+        <Title>LiftLog</Title>
+        <Authors>Liam Morrow</Authors>
+        <Company>LiftLog</Company>
+        <Product>LiftLog</Product>
+        <Version>$(ApplicationDisplayVersion)</Version>
+
+        <DefineConstants Condition=" '$(ExtraDefineConstants)' != '' ">$(DefineConstants);$(ExtraDefineConstants)</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+        <AndroidFastDeploymentType>Assemblies</AndroidFastDeploymentType>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <RunAOTCompilation>true</RunAOTCompilation>
+        <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+        <EnableLLVM>true</EnableLLVM>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Release'">
+        <MtouchLink>SdkOnly</MtouchLink>
+        <UseInterpreter>True</UseInterpreter>
+    </PropertyGroup>
+
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+        <AndroidResource Include="Platforms\Android\Resources\xml\auto_backup_rules.xml" />
+    </ItemGroup>
+
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' Or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+
+        <!-- For debugging, use '?mode=developer' for debug to bypass apple's CDN cache -->
+        <CustomEntitlements Condition="$(Configuration) == 'Debug'" Include="com.apple.developer.associated-domains" Type="StringArray" Value="applinks:app.liftlog.online?mode=developer" />
+
+        <!-- Non debugging, use normal applinks:url value -->
+        <CustomEntitlements Condition="$(Configuration) != 'Debug'" Include="com.apple.developer.associated-domains" Type="StringArray" Value="applinks:app.liftlog.online" />
+
+    </ItemGroup>
+    <ItemGroup>
+        <!-- App Icon -->
+        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" ForegroundScale="0.50" Color="#FEF1EF" />
+
+        <!-- Splash Screen -->
+        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#FEF1EF" TintColor="#904A42" BaseSize="48,48" />
+
+        <!-- Images -->
+        <MauiImage Include="Resources\Images\*" />
+
+        <!-- Custom Fonts -->
+        <MauiFont Include="Resources\Fonts\*" />
+
+        <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="BlazorTransitionableRoute" Version="4.0.0" />
+        <PackageReference Include="MaterialColorUtilities.Maui" Version="0.3.0" />
+        <PackageReference Include="Plugin.InAppBilling" Version="7.1.0" />
+        <PackageReference Include="Plugin.LocalNotification" Version="11.1.3" />
+        <PackageReference Include="Plugin.Maui.AppRating" Version="1.2.0" />
+        <PackageReference Include="Sentry.Extensions.Logging" Version="4.8.1" />
+        <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.61" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.61" />
+        <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Annotation" Version="1.8.0" />
+    </ItemGroup>
+
+    <ItemGroup  Condition=" '$(Configuration)' == 'Debug' ">
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\LiftLog.Ui\LiftLog.Ui.csproj" />
+    </ItemGroup>
+</Project>

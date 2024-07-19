@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+             xmlns:local="clr-namespace:LiftLog.Maui"
+             xmlns:ui="clr-namespace:LiftLog.Ui;assembly=LiftLog.Ui"
+             x:Class="LiftLog.Maui.MainPage"
+             ios:Page.UseSafeArea="False"
+             Shell.NavBarIsVisible="False">
+
+    <BlazorWebView x:Name="blazorWebView"
+            HostPage="wwwroot/index.html">
+        <BlazorWebView.RootComponents>
+            <RootComponent Selector="#app"
+                    ComponentType="{x:Type ui:ThemedWebApplication}"/>
+        </BlazorWebView.RootComponents>
+    </BlazorWebView>
+
+</ContentPage>
