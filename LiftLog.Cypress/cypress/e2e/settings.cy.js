@@ -15,6 +15,7 @@ describe('Settings', () => {
       cy.navigate('Settings')
       cy.containsA('Backup and restore').click()
       cy.containsA('Import data').click()
+      cy.get('input[type=file]').selectFile('export.liftlogbackup.gz', { force: true })
     })
 
 
