@@ -119,7 +119,7 @@
         <PackageReference Include="Xamarin.Android.Google.BillingClient">
             <Version>6.2.1</Version>
         </PackageReference>
-        <PackageReference Include="Xamarin.AndroidX.Fragment.Ktx">
+        <PackageReference Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.8.1">
             <Version>1.7.0.2</Version>
         </PackageReference>
         <PackageReference Include="Xamarin.GooglePlayServices.Base" Version="118.4.0" />
