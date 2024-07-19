@@ -1,0 +1,21 @@
+name: Upload site as docker image to ghcr.io
+on:
+  push:
+    paths:
+      - "site/**"
+      - ".github/workflows/static-site-build.yml"
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install
+        run: npm i
+        working-directory: ./site
+      - name: Build
+        run: npm run build
+        working-directory: ./site
