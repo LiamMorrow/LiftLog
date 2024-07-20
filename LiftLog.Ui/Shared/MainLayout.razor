@@ -73,7 +73,9 @@
                          OrderByDescending="e => e.X"/>
     </ApexChart>
 </div>
-
+<div id="toast" class="fixed bottom-28 hidden mx-auto flex flex-col items-center right-0 left-0 z-40">
+    <div id="toast-content" class="bg-gray-800 text-white text-center p-2 rounded-lg"></div>
+</div>
 <HeadContent>
     <title>@AppState.Value.Title</title>
 </HeadContent>
