@@ -10,7 +10,7 @@ AppUtils.showMdPopup = function (element) {
 AppUtils.vibrate = function (ms) {
   navigator.vibrate?.(ms);
 };
-var toastTimeout;
+var toastTimeout: number | null = null;
 AppUtils.showToast = (message) => {
   const toast = document.getElementById("toast");
   const toastContent = toast?.querySelector("#toast-content");

@@ -9,7 +9,7 @@ public class ToastService(IJSRuntime jSRuntime)
     {
         try
         {
-            await jSRuntime.InvokeVoidAsync("WebUtils.showToast", message);
+            await jSRuntime.InvokeVoidAsync("AppUtils.showToast", message);
         }
         catch
         {
