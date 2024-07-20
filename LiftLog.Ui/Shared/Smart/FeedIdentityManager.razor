@@ -3,37 +3,29 @@
 @inject IState<FeedState> FeedState
 @inject IStringSharer StringSharer
 @inject IDispatcher Dispatcher
+@inject ToastService ToastService
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-@if (FeedState.Value.Identity == null)
-{
-    <div class="flex flex-col justify-center h-full gap-4 text-on-surface ">
-        <div>
-            <md-circular-progress aria-label="Loading" indeterminate four-color></md-circular-progress>
+
+<div class="h-full flex flex-col">
+    <Remote Value="FeedIdentity" Retry="CreateFeedIdentity">
+        <div class="text-on-surface flex flex-col gap-4">
+            <LabelledForm>
+                <LabelledFormRow Label="Your Name" Icon="person">
+                <TextField Value="@context.Name" label="Optional" OnChange=@SetName/>
+                </LabelledFormRow>
+                <FeedShareUrl/>
+                </LabelledForm>
+            <md-list>
+                <ListSwitch Headline="Publish workouts" SupportingText="Publish workouts as you complete them" Value=@context.PublishWorkouts OnSwitched="SetPublishWorkouts"/>
+                <ListSwitch Headline="Publish bodyweight" SupportingText="Publish your bodyweight with your workouts"  Value=@context.PublishBodyweight OnSwitched="SetPublishBodyweight"/>
+                <ListSwitch Headline="Publish plan" SupportingText="Publish your current plan for your followers to see and import" Value=@context.PublishPlan OnSwitched="SetPublishPlan"/>
+            </md-list>
+            <AppButton Type=AppButtonType.Text OnClick="@(() => stopPublishingDialog?.Open())">Reset account</AppButton>
         </div>
-        <span>
-            <p>Loading...</p>
-        </span>
-    </div>
-}
-else
-{
-    <div class="text-on-surface flex flex-col gap-4">
-    <LabelledForm>
-        <LabelledFormRow Label="Your Name" Icon="person">
-        <TextField Value="@FeedState.Value.Identity.Name" label="Optional" OnChange=@SetName/>
-        </LabelledFormRow>
-        <FeedShareUrl/>
-        </LabelledForm>
-        <md-list>
-            <ListSwitch Headline="Publish workouts" SupportingText="Publish workouts as you complete them" Value=@FeedState.Value.Identity.PublishWorkouts OnSwitched="SetPublishWorkouts"/>
-            <ListSwitch Headline="Publish bodyweight" SupportingText="Publish your bodyweight with your workouts"  Value=@FeedState.Value.Identity.PublishBodyweight OnSwitched="SetPublishBodyweight"/>
-            <ListSwitch Headline="Publish plan" SupportingText="Publish your current plan for your followers to see and import" Value=@FeedState.Value.Identity.PublishPlan OnSwitched="SetPublishPlan"/>
-        </md-list>
-        <AppButton Type=AppButtonType.Text OnClick="@(() => stopPublishingDialog?.Open())">Reset account</AppButton>
-    </div>
-}
+    </Remote>
+</div>
 
 <Dialog @ref="stopPublishingDialog">
     <span slot="headline">Reset account</span>
@@ -47,6 +39,23 @@ else
 
 @code {
     private Dialog? stopPublishingDialog;
+
+    private RemoteData<FeedIdentity> FeedIdentity =>
+        FeedState.Value.Identity is null
+            ? Error is not null
+                ? RemoteData.Errored(Error)
+                : RemoteData.Loading
+            : RemoteData.Success(FeedState.Value.Identity);
+
+    private string? Error;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        SubscribeToAction<FeedApiErrorAction>(OnError);
+        if(FeedState.Value.Identity is null)
+            CreateFeedIdentity();
+    }
 
     private UpdateFeedIdentityAction GetUpdateAction()
     {
@@ -86,6 +95,18 @@ else
     {
         Dispatcher.Dispatch(new DeleteFeedIdentityAction());
         stopPublishingDialog?.Close();
+    }
+
+    private void CreateFeedIdentity()
+    {
+        Dispatcher.Dispatch(new CreateFeedIdentityAction(null, null, false, false, false, FromUserAction: true));
+    }
+
+    private void OnError(FeedApiErrorAction action)
+    {
+        Error = action.Message;
+        ToastService.ShowToast(action.Message);
+        StateHasChanged();
     }
 
 }

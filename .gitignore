@@ -383,3 +383,4 @@ purchaseToken.txt
 appsettings.development.json
 
 LiftLog.Web/wwwroot/crypto-utils.js
+LiftLog.Ui/wwwroot/app-utils.js

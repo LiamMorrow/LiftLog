@@ -47,7 +47,7 @@ public partial class FeedEffects
             new GetUsersRequest(followedUsersWithFollowSecret.Select(x => x.UserId).ToArray())
         );
 
-        var feedResponse = await feedResponseTask;
+        var (feedResponse, usersResponse) = await (feedResponseTask, userResponseTask);
         if (!feedResponse.IsSuccess)
         {
             dispatcher.Dispatch(
@@ -55,7 +55,6 @@ public partial class FeedEffects
             );
             return;
         }
-        var usersResponse = await userResponseTask;
 
         if (!usersResponse.IsSuccess)
         {

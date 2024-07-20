@@ -105,6 +105,7 @@ public static class ServiceRegistration
         services.Add<NavigationManagerProvider>(lifetime);
 
         services.Add<IDeviceService, TDeviceService>(lifetime);
+        services.Add<ToastService>(lifetime);
 
         services.Add<InsetsManager>(lifetime);
 
