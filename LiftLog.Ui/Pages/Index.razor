@@ -108,7 +108,6 @@ else
         Dispatcher.Dispatch(new SetReopenCurrentSessionAction(false));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
         Dispatcher.Dispatch(new PublishUnpublishedSessionsAction());
-        Dispatcher.Dispatch(new GetLookupIfNeededAction());
         await base.OnInitializedAsync();
     }
 

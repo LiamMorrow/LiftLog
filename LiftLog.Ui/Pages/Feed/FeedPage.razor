@@ -142,8 +142,8 @@
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Feed"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
-        Dispatcher.Dispatch(new FetchSessionFeedItemsAction());
-        Dispatcher.Dispatch(new FetchInboxItemsAction());
+        Dispatcher.Dispatch(new FetchSessionFeedItemsAction(FromUserAction: false));
+        Dispatcher.Dispatch(new FetchInboxItemsAction(FromUserAction: false));
         Dispatcher.Dispatch(new PublishUnpublishedSessionsAction());
         if (FeedState.Value.Identity is null)
         {
@@ -153,7 +153,8 @@
                     ProfilePicture: null,
                     PublishBodyweight: false,
                     PublishPlan: false,
-                    PublishWorkouts: false
+                    PublishWorkouts: false,
+                    FromUserAction: false
                 )
             );
         }
@@ -172,8 +173,8 @@
 
     private void OnPullToRefresh()
     {
-        Dispatcher.Dispatch(new FetchSessionFeedItemsAction());
-        Dispatcher.Dispatch(new FetchInboxItemsAction());
+        Dispatcher.Dispatch(new FetchSessionFeedItemsAction(FromUserAction: true));
+        Dispatcher.Dispatch(new FetchInboxItemsAction(FromUserAction: true));
     }
 
     private void NavigateToCreateFeedIdentity()
@@ -276,7 +277,8 @@
                 FeedState.Value.Identity.ProfilePicture,
                 FeedState.Value.Identity.PublishBodyweight,
                 FeedState.Value.Identity.PublishPlan,
-                value));
+                value,
+                FromUserAction: true));
     }
 
     protected override async ValueTask DisposeAsyncCore(bool disposing)

@@ -50,8 +50,6 @@ else
 
 @code
 {
-    [SupplyParameterFromQuery(Name = "pub")]
-    public string? PublicKey { get; set; }
 
     [SupplyParameterFromQuery(Name = "id")]
     public string? id { get; set; }
@@ -69,7 +67,7 @@ else
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/feed"));
         if (FeedState.Value.Identity is null)
         {
-            Dispatcher.Dispatch(new CreateFeedIdentityAction(null, null, false, false, false));
+            Dispatcher.Dispatch(new CreateFeedIdentityAction(null, null, false, false, false, FromUserAction: false));
         }
         else if (string.IsNullOrWhiteSpace(id))
         {
@@ -77,7 +75,7 @@ else
         }
         else
         {
-            Dispatcher.Dispatch(new FetchAndSetSharedFeedUserAction(id, Name, PublicKey?.FromUrlSafeHexString()));
+            Dispatcher.Dispatch(new FetchAndSetSharedFeedUserAction(id, Name));
         }
 
         phoneAppStore = await GetAppStoreFromUserAgent();

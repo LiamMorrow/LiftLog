@@ -35,8 +35,9 @@ public partial class FeedEffects
         dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
         if (!identityResult.IsSuccess)
         {
-            // TODO handle properly
-            logger.LogError("Failed to create user with error {Error}", identityResult.Error);
+            dispatcher.Dispatch(
+                new FeedApiErrorAction("Failed to create user", identityResult.Error, action)
+            );
             return;
         }
 
@@ -78,8 +79,10 @@ public partial class FeedEffects
             if (!result.IsSuccess)
             {
                 dispatcher.Dispatch(new PutFeedIdentityAction(identity));
-                // TODO handle properly
-                logger.LogError("Failed to update user with error {Error}", result.Error);
+
+                dispatcher.Dispatch(
+                    new FeedApiErrorAction("Failed to update user", result.Error, action)
+                );
                 return;
             }
 
@@ -87,33 +90,8 @@ public partial class FeedEffects
         });
 
     [EffectMethod]
-    public async Task HandleGetLookupIfNeededAction(
-        GetLookupIfNeededAction _,
-        IDispatcher dispatcher
-    )
-    {
-        var identity = state.Value.Identity;
-        if (identity is null || identity is not { Lookup: null or "" })
-        {
-            return;
-        }
-
-        var result = await feedApiService.GetUserAsync(identity.Id.ToString());
-        if (!result.IsSuccess)
-        {
-            // TODO handle properly
-            logger.LogError("Failed to get user with error {Error}", result.Error);
-            return;
-        }
-
-        dispatcher.Dispatch(
-            new PutFeedIdentityAction(identity with { Lookup = result.Data.Lookup })
-        );
-    }
-
-    [EffectMethod]
     public async Task HandlePublishIdentityIfEnabledAction(
-        PublishIdentityIfEnabledAction _,
+        PublishIdentityIfEnabledAction action,
         IDispatcher dispatcher
     )
     {
@@ -135,11 +113,18 @@ public partial class FeedEffects
             state.Value.Identity.PublishWorkouts,
             programState.Value.GetActivePlanSessionBlueprints()
         );
+        if (!result.IsSuccess)
+        {
+            dispatcher.Dispatch(
+                new FeedApiErrorAction("Failed to publish user", result.Error, action)
+            );
+            return;
+        }
     }
 
     [EffectMethod]
     public Task HandleDeleteFeedIdentityAction(
-        DeleteFeedIdentityAction _,
+        DeleteFeedIdentityAction action,
         IDispatcher dispatcher
     ) =>
         IfIdentityExists(async identity =>
@@ -149,13 +134,9 @@ public partial class FeedEffects
             );
             if (!response.IsSuccess && response.Error.Type != ApiErrorType.NotFound)
             {
-                logger.LogError(
-                    "Failed to delete user {Id} with error {Error}",
-                    identity.Id,
-                    response.Error
+                dispatcher.Dispatch(
+                    new FeedApiErrorAction("Failed to delete account", response.Error, action)
                 );
-                // TODO handle properly
-                logger.LogError("Failed to delete user with error {Error}", response.Error);
                 return;
             }
 
@@ -163,7 +144,9 @@ public partial class FeedEffects
             dispatcher.Dispatch(new SetIsLoadingIdentityAction(false));
             dispatcher.Dispatch(new ReplaceFeedItemsAction([]));
             dispatcher.Dispatch(new ReplaceFeedFollowedUsersAction([]));
-            dispatcher.Dispatch(new CreateFeedIdentityAction(null, null, false, false, false));
+            dispatcher.Dispatch(
+                new CreateFeedIdentityAction(null, null, false, false, false, false)
+            );
         });
 
     private Task IfIdentityExists(

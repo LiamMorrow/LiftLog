@@ -51,14 +51,15 @@ else
     private UpdateFeedIdentityAction GetUpdateAction()
     {
         if (FeedState.Value.Identity is null)
-            return new UpdateFeedIdentityAction(null, null, false, false, false);
+            return new UpdateFeedIdentityAction(null, null, false, false, false, FromUserAction: true);
 
         return new UpdateFeedIdentityAction(
                 FeedState.Value.Identity.Name ?? "",
                 FeedState.Value.Identity.ProfilePicture,
                 FeedState.Value.Identity.PublishBodyweight,
                 FeedState.Value.Identity.PublishPlan,
-                FeedState.Value.Identity.PublishWorkouts);
+                FeedState.Value.Identity.PublishWorkouts,
+                FromUserAction: true);
     }
 
     private void SetName(string value)

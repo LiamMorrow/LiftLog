@@ -20,7 +20,7 @@ public partial class FeedEffects
 
     [EffectMethod]
     public async Task HandleFetchSessionFeedItemsAction(
-        FetchSessionFeedItemsAction _,
+        FetchSessionFeedItemsAction action,
         IDispatcher dispatcher
     )
     {
@@ -48,15 +48,19 @@ public partial class FeedEffects
         );
 
         var feedResponse = await feedResponseTask;
+        if (!feedResponse.IsSuccess)
+        {
+            dispatcher.Dispatch(
+                new FeedApiErrorAction("Failed to fetch feed items", feedResponse.Error, action)
+            );
+            return;
+        }
         var usersResponse = await userResponseTask;
 
-        if (!usersResponse.IsSuccess || !feedResponse.IsSuccess)
+        if (!usersResponse.IsSuccess)
         {
-            // TODO handle properly
-            logger.LogError(
-                "Failed to fetch session feed items UserResponse:{UserResponse} FeedResponse:{FeedResponse}",
-                usersResponse,
-                feedResponse
+            dispatcher.Dispatch(
+                new FeedApiErrorAction("Failed to fetch users", usersResponse.Error, action)
             );
             return;
         }
