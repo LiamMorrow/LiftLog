@@ -32,15 +32,18 @@ public partial class FeedEffects(
         IDispatcher dispatcher
     )
     {
+        dispatcher.Dispatch(new SetSharedFeedUserAction(RemoteData.Loading));
         var result = await feedApiService.GetUserAsync(action.IdOrLookup);
         if (result.IsSuccess)
         {
             dispatcher.Dispatch(
                 new SetSharedFeedUserAction(
-                    FeedUser.FromShared(
-                        result.Data.Id,
-                        new RsaPublicKey(result.Data.RsaPublicKey),
-                        action.Name
+                    RemoteData.Success(
+                        FeedUser.FromShared(
+                            result.Data.Id,
+                            new RsaPublicKey(result.Data.RsaPublicKey),
+                            action.Name
+                        )
                     )
                 )
             );
@@ -49,6 +52,9 @@ public partial class FeedEffects(
         {
             dispatcher.Dispatch(
                 new FeedApiErrorAction("Failed to fetch user", result.Error, action)
+            );
+            dispatcher.Dispatch(
+                new SetSharedFeedUserAction(RemoteData.Errored("Failed to fetch user"))
             );
         }
     }
@@ -60,18 +66,18 @@ public partial class FeedEffects(
     )
     {
         var identity = state.Value.Identity;
-        if (identity == null || state.Value.SharedFeedUser == null)
+        if (identity == null || !state.Value.SharedFeedUser.IsSuccess)
         {
             return;
         }
 
-        var sharedFeedUser = state.Value.SharedFeedUser;
+        var sharedFeedUser = state.Value.SharedFeedUser.Data;
         var result = await feedFollowService.RequestToFollowAUserAsync(identity, sharedFeedUser);
 
         if (result.IsSuccess)
         {
             dispatcher.Dispatch(new PutFollowedUsersAction(sharedFeedUser));
-            dispatcher.Dispatch(new SetSharedFeedUserAction(null));
+            dispatcher.Dispatch(new SetSharedFeedUserAction(RemoteData.NotAsked));
         }
         else
         {

@@ -11,7 +11,7 @@ namespace LiftLog.Web.Services;
 
 public class WebThemeProvider : IThemeProvider
 {
-    const uint DEFAULT_SEED = 0xF44336;
+    const uint DEFAULT_SEED = 0x00FF00;
     private readonly IJSRuntime jsRuntime;
     private readonly IPreferenceStore preferenceStore;
     private readonly IDispatcher dispatcher;

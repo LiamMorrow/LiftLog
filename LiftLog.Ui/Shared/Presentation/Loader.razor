@@ -1,0 +1,13 @@
+<div class="flex flex-col justify-center my-auto gap-4 text-on-surface">
+    <div>
+        <md-circular-progress aria-label="Loading" indeterminate four-color></md-circular-progress>
+    </div>
+    <span>
+        <p>@LoadingText</p>
+    </span>
+</div>
+
+@code {
+    [Parameter]
+    public string LoadingText { get; set; } = "Loading...";
+}

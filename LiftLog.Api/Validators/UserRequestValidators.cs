@@ -76,11 +76,7 @@ public class GetEventsRequestValidator : AbstractValidator<GetEventsRequest>
         RuleForEach(x => x.Users).ChildRules(x => x.RuleFor(y => y.UserId)).NotEmpty();
         RuleForEach(x => x.Users).ChildRules(x => x.RuleFor(y => y.FollowSecret)).NotEmpty();
 
-        RuleFor(x => x.Since).NotEmpty().When(x => x.Users.Any(user => user.Since == null));
-
-        RuleForEach(x => x.Users)
-            .ChildRules(x => x.RuleFor(user => user.Since).NotEmpty())
-            .When(request => request.Since == null);
+        RuleForEach(x => x.Users).ChildRules(x => x.RuleFor(user => user.Since).NotEmpty());
     }
 }
 

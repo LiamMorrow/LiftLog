@@ -3,16 +3,16 @@
 @page "/feed/share"
 
 @inject IState<FeedState> FeedState
-@inject IAppPurchaseService AppPurchaseService
+@inject IDeviceService DeviceService
 @inject IJSRuntime JSRuntime
 @inject IStringSharer StringSharer
 @inject IDispatcher Dispatcher
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-@if (AppPurchaseService.GetAppStore() == AppStore.Web && phoneAppStore != AppStore.Web)
+@if (DeviceService.GetDeviceType() == DeviceType.Web && phoneOsFromUserAgent != DeviceType.Web)
 {
-    <Dialog @ref="_alertWebAppDialog">
+    <Dialog @ref="_alertWebAppDialog" open>
         <span slot="headline">Download App</span>
         <span slot="content" class="block text-left">This content is better in the app. If you have the app installed and you are seeing this, please update LiftLog in your phone's app store.</span>
         <div slot="actions">
@@ -22,11 +22,9 @@
     </Dialog>
 }
 
-
-@if (FeedState.Value.SharedFeedUser != null)
-{
+<Remote Value="FeedState.Value.SharedFeedUser" Retry="Fetch">
     <div class="text-on-surface flex flex-col justify-center gap-4 p-4 h-full">
-        <TextField label="Give them a nickname?" Value=@(FeedState.Value.SharedFeedUser.Nickname ?? "") OnChange="UpdateNickname"/>
+        <TextField label="Give them a nickname?" Value=@(context.Nickname ?? "") OnChange="UpdateNickname"/>
         <span class="text-lg"><span class="font-bold text-primary">@ResolvedName</span> wants to share their workouts with you!</span>
         <span class="text-sm">Would you like to see their workouts in your feed? <span class="font-bold text-primary">@ResolvedName</span> will need to approve your request on their device.</span>
         <div class="grid grid-rows-2 gap-2">
@@ -34,18 +32,7 @@
             <AppButton Type=AppButtonType.Text OnClick=HandleNoThanksClick>No thanks</AppButton>
         </div>
     </div>
-}
-else
-{
-    <div class="flex flex-col justify-center h-full gap-4 text-on-surface ">
-        <div>
-            <md-circular-progress aria-label="Session loading" indeterminate four-color></md-circular-progress>
-        </div>
-        <span>
-            <p>Loading User Info...</p>
-        </span>
-    </div>
-}
+</Remote>
 
 
 @code
@@ -59,7 +46,7 @@ else
 
     private Dialog? _alertWebAppDialog;
 
-    private AppStore phoneAppStore;
+    private DeviceType phoneOsFromUserAgent;
 
     protected override async Task OnInitializedAsync()
     {
@@ -75,23 +62,29 @@ else
         }
         else
         {
-            Dispatcher.Dispatch(new FetchAndSetSharedFeedUserAction(id, Name));
+            Fetch();
         }
 
-        phoneAppStore = await GetAppStoreFromUserAgent();
+        phoneOsFromUserAgent = await GetDeviceTypeFromUserAgent();
         await base.OnInitializedAsync();
+    }
+
+    private void Fetch()
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            Dispatcher.Dispatch(new NavigateAction("/feed"));
+            return;
+        }
+        Dispatcher.Dispatch(new FetchAndSetSharedFeedUserAction(id, Name));
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
         base.OnAfterRender(firstRender);
-        if (firstRender)
-        {
-            _alertWebAppDialog?.Open();
-        }
 
-        if (FeedState.Value.SharedFeedUser is not null
-            && FeedState.Value.FollowedUsers.ContainsKey(FeedState.Value.SharedFeedUser.Id))
+        if (FeedState.Value.SharedFeedUser.IsSuccess
+            && FeedState.Value.FollowedUsers.ContainsKey(FeedState.Value.SharedFeedUser.Data.Id))
         {
             Dispatcher.Dispatch(new NavigateAction("/feed"));
         }
@@ -101,40 +94,36 @@ else
 
     private void HandleNoThanksClick()
     {
-        Dispatcher.Dispatch(new SetSharedFeedUserAction(null));
+        Dispatcher.Dispatch(new SetSharedFeedUserAction(RemoteData.NotAsked));
         Dispatcher.Dispatch(new NavigateAction("/feed"));
     }
 
     private void HandleSureClick()
     {
-        if (FeedState.Value.SharedFeedUser == null)
+        if (!FeedState.Value.SharedFeedUser.IsSuccess)
         {
             return;
         }
 
         Dispatcher.Dispatch(new RequestFollowUserAction());
-        Dispatcher.Dispatch(new SetSharedFeedUserAction(null));
+        Dispatcher.Dispatch(new SetSharedFeedUserAction(RemoteData.NotAsked));
         Dispatcher.Dispatch(new NavigateAction("/feed"));
     }
 
     private void UpdateNickname(string value)
     {
-        if (FeedState.Value.SharedFeedUser == null)
-        {
-            return;
-        }
-
-        Dispatcher.Dispatch(new SetSharedFeedUserAction(FeedState.Value.SharedFeedUser with { Nickname = value }));
+        Dispatcher.Dispatch(
+            new SetSharedFeedUserAction(FeedState.Value.SharedFeedUser.Map(x=>x with { Nickname = value })));
     }
 
     private void OpenAppStore()
     {
-        switch (phoneAppStore)
+        switch (phoneOsFromUserAgent)
         {
-            case AppStore.Apple:
+            case DeviceType.Ios:
                 Dispatcher.Dispatch(new NavigateAction("https://apps.apple.com/au/app/liftlog/id6467372581"));
                 break;
-            case AppStore.Google:
+            case DeviceType.Web:
                 Dispatcher.Dispatch(new NavigateAction("https://play.google.com/store/apps/details?id=com.limajuice.liftlog"));
                 break;
             default:
@@ -142,17 +131,17 @@ else
         }
     }
 
-    private async Task<AppStore> GetAppStoreFromUserAgent()
+    private async Task<DeviceType> GetDeviceTypeFromUserAgent()
     {
         var os = await JSRuntime.InvokeAsync<string>("AppUtils.getOs");
         switch (os)
         {
             case "iOS":
-                return AppStore.Apple;
+                return DeviceType.Ios;
             case "Android":
-                return AppStore.Google;
+                return DeviceType.Android;
             default:
-                return AppStore.Web;
+                return DeviceType.Web;
         }
     }
 }

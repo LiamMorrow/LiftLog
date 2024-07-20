@@ -46,9 +46,9 @@ public record PutUserEventRequest(
     DateTimeOffset Expiry
 );
 
-public record GetUserEventRequest(Guid UserId, string FollowSecret, DateTimeOffset? Since = null);
+public record GetUserEventRequest(Guid UserId, string FollowSecret, DateTimeOffset Since);
 
-public record GetEventsRequest(GetUserEventRequest[] Users, DateTimeOffset? Since = null);
+public record GetEventsRequest(GetUserEventRequest[] Users);
 
 public record UserEventResponse(
     Guid UserId,

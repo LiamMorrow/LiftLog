@@ -10,8 +10,7 @@ public partial class FeedEffects
     {
         logger.LogError(
             action.ApiError.Exception,
-            "{Message}. {ActionName}. {Action}. {ApiError}",
-            action.Action.GetType().Name,
+            "{Message}. {Action}. {ApiError}",
             action.Message,
             action.Action,
             action.ApiError

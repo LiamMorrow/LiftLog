@@ -4,11 +4,13 @@ namespace LiftLog.Ui.Store;
 
 public static class RemoteData
 {
-    public static RemoteLoading Loading() => new();
+    public static RemoteLoading Loading => new();
 
     public static RemoteError Errored(string error) => new(error);
 
     public static RemoteData<T> Success<T>(T data) => new RemoteSuccess<T>(data);
+
+    public static RemoteNotAsked NotAsked => new();
 }
 
 public abstract class RemoteData<T>
@@ -16,6 +18,8 @@ public abstract class RemoteData<T>
     public static implicit operator RemoteData<T>(RemoteLoading _) => new RemoteLoading<T>();
 
     public static implicit operator RemoteData<T>(RemoteError err) => new RemoteError<T>(err.Error);
+
+    public static implicit operator RemoteData<T>(RemoteNotAsked _) => new RemoteNotAsked<T>();
 
     public abstract T? Data { get; }
 
@@ -28,6 +32,11 @@ public abstract class RemoteData<T>
 
     [MemberNotNullWhen(true, nameof(Data))]
     public abstract bool IsSuccess { get; }
+
+    public bool IsNotAsked => !IsLoading && !IsError && !IsSuccess;
+
+    public virtual RemoteData<T> Map(Func<T, T> mapper) =>
+        IsSuccess ? RemoteData.Success(mapper(Data)) : this;
 }
 
 public class RemoteSuccess<T>(T data) : RemoteData<T>
@@ -68,3 +77,18 @@ public class RemoteLoading<T> : RemoteData<T>
 }
 
 public readonly struct RemoteLoading { }
+
+public class RemoteNotAsked<T> : RemoteData<T>
+{
+    public override T? Data =>
+        throw new InvalidOperationException("Cannot access data on a not-asked RemoteData");
+
+    public override string? Error =>
+        throw new InvalidOperationException("Cannot access error on a not-asked RemoteData");
+
+    public override bool IsLoading => false;
+    public override bool IsError => false;
+    public override bool IsSuccess => false;
+}
+
+public readonly struct RemoteNotAsked { }

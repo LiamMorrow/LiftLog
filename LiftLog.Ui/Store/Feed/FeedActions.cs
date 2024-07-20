@@ -39,7 +39,7 @@ public record FetchInboxItemsAction(bool FromUserAction) : FeedApiAction(FromUse
 
 public record PutFollowedUsersAction(FeedUser User);
 
-public record SetSharedFeedUserAction(FeedUser? User);
+public record SetSharedFeedUserAction(RemoteData<FeedUser> User);
 
 public record SetFeedStateAction(FeedState FeedState);
 

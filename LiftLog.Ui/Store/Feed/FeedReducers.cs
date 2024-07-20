@@ -42,15 +42,15 @@ public static class FeedReducers
 
     [ReducerMethod]
     public static FeedState SaveSharedFeedUser(FeedState state, SaveSharedFeedUserAction _) =>
-        state.SharedFeedUser is null
+        !state.SharedFeedUser.IsSuccess
             ? state
             : state with
             {
                 FollowedUsers = state.FollowedUsers.SetItem(
-                    state.SharedFeedUser.Id,
-                    state.SharedFeedUser
+                    state.SharedFeedUser.Data.Id,
+                    state.SharedFeedUser.Data
                 ),
-                SharedFeedUser = null
+                SharedFeedUser = RemoteData.NotAsked
             };
 
     [ReducerMethod]

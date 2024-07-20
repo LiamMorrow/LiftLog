@@ -112,7 +112,7 @@ public static class MauiProgram
 
         builder.UseMaterialColors<AppColorService>(opts =>
         {
-            opts.FallbackSeed = 0xF44336;
+            opts.FallbackSeed = 0x00FF00;
             opts.EnableDynamicColor = Preferences.Default.Get("EnableDynamicColor", true);
         });
 

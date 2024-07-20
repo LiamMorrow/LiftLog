@@ -151,7 +151,7 @@ internal partial class FeedStateDaoV1
                     feedUserDao => (Guid)feedUserDao.Id,
                     x => (FeedUser)x!
                 ),
-                SharedFeedUser: null,
+                SharedFeedUser: RemoteData.NotAsked,
                 FollowRequests: value
                     .FollowRequests.Select(x => (FollowRequest)x!)
                     .ToImmutableList(),
@@ -162,7 +162,7 @@ internal partial class FeedStateDaoV1
                 UnpublishedSessionIds: value
                     .UnpublishedSessionIds.Select(x => (Guid)x)
                     .ToImmutableHashSet(),
-                SharedItem: RemoteData.Loading()
+                SharedItem: RemoteData.NotAsked
             );
 
     [return: NotNullIfNotNull(nameof(value))]

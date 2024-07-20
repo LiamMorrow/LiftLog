@@ -65,7 +65,7 @@ public class FeedSharingEffects(
         IDispatcher dispatcher
     )
     {
-        dispatcher.Dispatch(new SetSharedItemAction(RemoteData.Loading()));
+        dispatcher.Dispatch(new SetSharedItemAction(RemoteData.Loading));
         var result = await feedApiService.GetSharedItemAsync(action.Id);
         if (!result.IsSuccess)
         {
