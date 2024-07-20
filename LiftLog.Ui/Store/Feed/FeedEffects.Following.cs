@@ -32,26 +32,30 @@ public partial class FeedEffects(
         IDispatcher dispatcher
     )
     {
+        dispatcher.Dispatch(new SetSharedFeedUserAction(RemoteData.Loading));
         var result = await feedApiService.GetUserAsync(action.IdOrLookup);
-        if (
-            result is { IsSuccess: true }
-            && new[] { result.Data.RsaPublicKey, action.RsaPublicKey }.Any(x => x != null)
-        )
+        if (result.IsSuccess)
         {
             dispatcher.Dispatch(
                 new SetSharedFeedUserAction(
-                    FeedUser.FromShared(
-                        result.Data.Id,
-                        new RsaPublicKey(result.Data.RsaPublicKey ?? action.RsaPublicKey!),
-                        action.Name
+                    RemoteData.Success(
+                        FeedUser.FromShared(
+                            result.Data.Id,
+                            new RsaPublicKey(result.Data.RsaPublicKey),
+                            action.Name
+                        )
                     )
                 )
             );
         }
         else
         {
-            // TODO handle properly
-            logger.LogError("Failed to fetch shared feed user with error {Error}", result.Error);
+            dispatcher.Dispatch(
+                new FeedApiErrorAction("Failed to fetch user", result.Error, action)
+            );
+            dispatcher.Dispatch(
+                new SetSharedFeedUserAction(RemoteData.Errored("Failed to fetch user"))
+            );
         }
     }
 
@@ -62,23 +66,24 @@ public partial class FeedEffects(
     )
     {
         var identity = state.Value.Identity;
-        if (identity == null || state.Value.SharedFeedUser == null)
+        if (identity == null || !state.Value.SharedFeedUser.IsSuccess)
         {
             return;
         }
 
-        var sharedFeedUser = state.Value.SharedFeedUser;
+        var sharedFeedUser = state.Value.SharedFeedUser.Data;
         var result = await feedFollowService.RequestToFollowAUserAsync(identity, sharedFeedUser);
 
         if (result.IsSuccess)
         {
             dispatcher.Dispatch(new PutFollowedUsersAction(sharedFeedUser));
-            dispatcher.Dispatch(new SetSharedFeedUserAction(null));
+            dispatcher.Dispatch(new SetSharedFeedUserAction(RemoteData.NotAsked));
         }
         else
         {
-            // TODO handle properly
-            logger.LogError("Failed to request follow user with error {Error}", result.Error);
+            dispatcher.Dispatch(
+                new FeedApiErrorAction("Failed to request follow user", result.Error, action)
+            );
         }
     }
 
@@ -107,7 +112,7 @@ public partial class FeedEffects(
             .ToImmutableList();
 
         dispatcher.Dispatch(new ReplaceFeedFollowedUsersAction(usersAfterResponses));
-        dispatcher.Dispatch(new FetchSessionFeedItemsAction());
+        dispatcher.Dispatch(new FetchSessionFeedItemsAction(false));
 
         return Task.CompletedTask;
     }
@@ -167,8 +172,9 @@ public partial class FeedEffects(
             var userResponse = await feedApiService.GetUserAsync(action.Request.UserId.ToString());
             if (!userResponse.IsSuccess)
             {
-                // TODO handle properly
-                logger.LogError("Failed to fetch user with error {Error}", userResponse.Error);
+                dispatcher.Dispatch(
+                    new FeedApiErrorAction("Failed to fetch user", userResponse.Error, action)
+                );
                 return;
             }
             var user = userResponse.Data;
@@ -181,10 +187,12 @@ public partial class FeedEffects(
 
             if (!followSecretResponse.IsSuccess)
             {
-                // TODO handle properly
-                logger.LogError(
-                    "Failed to accept follow request with error {Error}",
-                    followSecretResponse.Error
+                dispatcher.Dispatch(
+                    new FeedApiErrorAction(
+                        "Failed to accept follow request",
+                        followSecretResponse.Error,
+                        action
+                    )
                 );
                 return;
             }
@@ -214,7 +222,6 @@ public partial class FeedEffects(
             var userResponse = await feedApiService.GetUserAsync(action.Request.UserId.ToString());
             if (!userResponse.IsSuccess)
             {
-                // TODO handle properly
                 logger.LogError(
                     "Failed to deny follow request with error {Error}. Removing request anyway.",
                     userResponse.Error
@@ -256,9 +263,12 @@ public partial class FeedEffects(
                     && deleteFollowSecretResponse.Error.Type != ApiErrorType.NotFound
                 )
                 {
-                    logger.LogError(
-                        "Failed to delete follow secret with error {Error}",
-                        deleteFollowSecretResponse.Error
+                    dispatcher.Dispatch(
+                        new FeedApiErrorAction(
+                            "Failed to remove follower",
+                            deleteFollowSecretResponse.Error,
+                            action
+                        )
                     );
                     return;
                 }

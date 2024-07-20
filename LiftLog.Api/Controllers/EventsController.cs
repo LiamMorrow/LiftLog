@@ -36,8 +36,7 @@ public class EventsController(UserDataContext db) : ControllerBase
             .Select(x => new UserEventFilter
             {
                 UserId = x.UserId,
-                Since =
-                    request.Users.Single(y => y.UserId == x.UserId).Since ?? request.Since!.Value
+                Since = request.Users.Single(y => y.UserId == x.UserId).Since
             })
             .ToArray();
 

@@ -105,7 +105,6 @@ builder
     });
 
 var app = builder.Build();
-
 app.UseCors();
 
 app.UseHttpsRedirection();

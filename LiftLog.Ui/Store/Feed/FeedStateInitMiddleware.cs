@@ -40,7 +40,8 @@ public class FeedStateInitMiddleware(
                                     ProfilePicture: null,
                                     PublishBodyweight: false,
                                     PublishPlan: false,
-                                    PublishWorkouts: false
+                                    PublishWorkouts: false,
+                                    FromUserAction: false
                                 )
                             );
                         }
@@ -48,7 +49,7 @@ public class FeedStateInitMiddleware(
                 }
             }
             dispatch.Dispatch(new SetFeedIsHydratedAction());
-            dispatch.Dispatch(new FetchInboxItemsAction());
+            dispatch.Dispatch(new FetchInboxItemsAction(FromUserAction: false));
             sw.Stop();
             logger.LogInformation(
                 "Feed state initialized in {ElapsedMilliseconds}ms",

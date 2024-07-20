@@ -11,8 +11,7 @@ namespace LiftLog.Ui.Services;
 
 public class FeedIdentityService(
     FeedApiService feedApiService,
-    IEncryptionService encryptionService,
-    ILogger<FeedIdentityService> logger
+    IEncryptionService encryptionService
 )
 {
     public async Task<ApiResult<FeedIdentity>> CreateFeedIdentityAsync(
@@ -114,11 +113,6 @@ public class FeedIdentityService(
         );
         if (!result.IsSuccess)
         {
-            logger.LogError(
-                "Failed to put user data for user {Id} with error {Error}",
-                id,
-                result.Error
-            );
             return ApiResult<FeedIdentity>.FromFailure(result);
         }
 

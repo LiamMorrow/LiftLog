@@ -12,7 +12,7 @@ public record FeedState(
     FeedIdentity? Identity,
     ImmutableListValue<FeedItem> Feed,
     ImmutableDictionary<Guid, FeedUser> FollowedUsers,
-    FeedUser? SharedFeedUser,
+    RemoteData<FeedUser> SharedFeedUser,
     ImmutableListValue<FollowRequest> FollowRequests,
     ImmutableDictionary<Guid, FeedUser> Followers,
     string ActiveTab,

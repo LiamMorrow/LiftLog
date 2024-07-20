@@ -57,7 +57,8 @@
                 OnTap=@(() => {if(!IsReadonly) CycleRepCountForSet(i);})
                 OnHold=@(() => {if(!IsReadonly) ShowAdditionalActionsForSet(i);})
                 OnUpdateWeight=@((weight) => {if(!IsReadonly) UpdateWeightForSet(i, weight);})
-                ToStartNext=@(ToStartNext && repToStartNext == i && !IsReadonly)/>
+                ToStartNext=@(ToStartNext && repToStartNext == i && !IsReadonly)
+                IsReadonly=@IsReadonly />
         }
     </div>
     @if((blueprintNotes ,previousNotes , thisNotes) is not ("","",""))

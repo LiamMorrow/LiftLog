@@ -6,6 +6,7 @@
 @inject IState<FeedState> FeedState
 @inject NavigationManager NavigationManager
 @inject IDispatcher Dispatcher
+@inject ToastService ToastService
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
@@ -142,8 +143,8 @@
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Feed"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
-        Dispatcher.Dispatch(new FetchSessionFeedItemsAction());
-        Dispatcher.Dispatch(new FetchInboxItemsAction());
+        Dispatcher.Dispatch(new FetchSessionFeedItemsAction(FromUserAction: false));
+        Dispatcher.Dispatch(new FetchInboxItemsAction(FromUserAction: false));
         Dispatcher.Dispatch(new PublishUnpublishedSessionsAction());
         if (FeedState.Value.Identity is null)
         {
@@ -153,11 +154,14 @@
                     ProfilePicture: null,
                     PublishBodyweight: false,
                     PublishPlan: false,
-                    PublishWorkouts: false
+                    PublishWorkouts: false,
+                    FromUserAction: false
                 )
             );
         }
         base.OnInitialized();
+
+        SubscribeToAction<FeedApiErrorAction>(OnFeedApiError);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -172,8 +176,8 @@
 
     private void OnPullToRefresh()
     {
-        Dispatcher.Dispatch(new FetchSessionFeedItemsAction());
-        Dispatcher.Dispatch(new FetchInboxItemsAction());
+        Dispatcher.Dispatch(new FetchSessionFeedItemsAction(FromUserAction: true));
+        Dispatcher.Dispatch(new FetchInboxItemsAction(FromUserAction: false));
     }
 
     private void NavigateToCreateFeedIdentity()
@@ -276,12 +280,20 @@
                 FeedState.Value.Identity.ProfilePicture,
                 FeedState.Value.Identity.PublishBodyweight,
                 FeedState.Value.Identity.PublishPlan,
-                value));
+                value,
+                FromUserAction: true));
     }
 
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
         await JSRuntime.InvokeVoidAsync("AppUtils.destroyPullToRefresh");
         await base.DisposeAsyncCore(disposing);
+    }
+
+    private void OnFeedApiError(FeedApiErrorAction action)
+    {
+        if(!action.Action.FromUserAction)
+            return;
+        ToastService.ShowToast(action.Message);
     }
 }

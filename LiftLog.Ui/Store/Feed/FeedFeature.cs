@@ -14,11 +14,11 @@ public class FeedFeature : Feature<FeedState>
             Identity: null,
             Feed: [],
             FollowedUsers: ImmutableDictionary<Guid, FeedUser>.Empty,
-            SharedFeedUser: null,
+            SharedFeedUser: RemoteData.NotAsked,
             FollowRequests: [],
             Followers: ImmutableDictionary<Guid, FeedUser>.Empty,
             ActiveTab: "mainfeed-panel",
             UnpublishedSessionIds: [],
-            SharedItem: RemoteData.Loading()
+            SharedItem: RemoteData.NotAsked
         );
 }

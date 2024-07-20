@@ -14,7 +14,10 @@ namespace LiftLog.Ui.Store.Feed;
 public partial class FeedEffects
 {
     [EffectMethod]
-    public async Task HandleFetchInboxItemsAction(FetchInboxItemsAction _, IDispatcher dispatcher)
+    public async Task HandleFetchInboxItemsAction(
+        FetchInboxItemsAction action,
+        IDispatcher dispatcher
+    )
     {
         var identity = state.Value.Identity;
         if (identity is null)
@@ -27,10 +30,12 @@ public partial class FeedEffects
         );
         if (!inboxItemsResponse.IsSuccess)
         {
-            // TODO handle properly
-            logger.LogError(
-                "Failed to fetch inbox items with error {Error}",
-                inboxItemsResponse.Error
+            dispatcher.Dispatch(
+                new FeedApiErrorAction(
+                    "Failed to fetch inbox items",
+                    inboxItemsResponse.Error,
+                    action
+                )
             );
             return;
         }

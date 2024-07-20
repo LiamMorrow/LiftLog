@@ -1,15 +1,30 @@
 var AppUtils = {};
 AppUtils.getScrollTop = function (element) {
-    return element?.scrollTop
+  return element?.scrollTop;
 };
 
 AppUtils.showMdPopup = function (element) {
-    return element?.show();
+  return element?.show();
 };
 
 AppUtils.vibrate = function (ms) {
-    navigator.vibrate?.(ms);
-}
+  navigator.vibrate?.(ms);
+};
+var toastTimeout = null;
+AppUtils.showToast = (message) => {
+  const toast = document.getElementById("toast");
+  const toastContent = toast?.querySelector("#toast-content");
+  if (toast && toastContent) {
+    toastContent.textContent = message;
+    toast.classList.remove("hidden");
+    if (toastTimeout) {
+      clearTimeout(toastTimeout);
+    }
+    toastTimeout = setTimeout(() => {
+      toast.classList.add("hidden");
+    }, 3000);
+  }
+};
 
 /**
  * Creates a new event for the dialog close event.
@@ -17,106 +32,107 @@ AppUtils.vibrate = function (ms) {
  * @param {HTMLElement} element
  */
 AppUtils.onCloseMdPopup = function (element) {
-    element?.addEventListener('open', () => {
-        if (element?.shadowRoot) {
-            const scrim = element.shadowRoot.querySelector('.scrim');
-            if (scrim) {
-                scrim.style.zIndex = '99';
-            }
-        }
-    });
-    element?.addEventListener('close', () => {
-        element?.dispatchEvent(new Event('dialog-close', {
-            bubbles: true,
-            cancelable: true,
-        }))
-    });
-    element?.addEventListener('cancel', () => {
-        element?.dispatchEvent(new Event('dialog-cancel', {
-            bubbles: true,
-            cancelable: true,
-        }))
-    });
+  element?.addEventListener("open", () => {
+    if (element?.shadowRoot) {
+      const scrim = element.shadowRoot.querySelector(".scrim");
+      if (scrim) {
+        scrim.style.zIndex = "99";
+      }
+    }
+  });
+  element?.addEventListener("close", () => {
+    element?.dispatchEvent(
+      new Event("dialog-close", {
+        bubbles: true,
+        cancelable: true,
+      })
+    );
+  });
+  element?.addEventListener("cancel", () => {
+    element?.dispatchEvent(
+      new Event("dialog-cancel", {
+        bubbles: true,
+        cancelable: true,
+      })
+    );
+  });
 };
 
 AppUtils.onClosedMenu = function (element) {
-    element?.addEventListener('closed', () => {
-        element?.dispatchEvent(new Event('dialog-close', {
-            bubbles: true,
-            cancelable: true,
-        }))
-    });
+  element?.addEventListener("closed", () => {
+    element?.dispatchEvent(
+      new Event("dialog-close", {
+        bubbles: true,
+        cancelable: true,
+      })
+    );
+  });
 };
 
-
 AppUtils.hideMdPopup = function (element) {
-    return element?.close();
+  return element?.close();
 };
 
 AppUtils.setValue = function (element, value) {
-    if (element)
-        element.value = value;
-}
+  if (element) element.value = value;
+};
 
 AppUtils.setValueIfNotFocused = function (element, value) {
-    if (element && document.activeElement !== element)
-        element.value = value;
-}
+  if (element && document.activeElement !== element) element.value = value;
+};
 
 AppUtils.getValue = function (element) {
-    return element.value;
-}
+  return element.value;
+};
 
 AppUtils.getWidth = function (element) {
-    return element?.offsetWidth ?? 0;
-}
-
+  return element?.offsetWidth ?? 0;
+};
 
 AppUtils.isOpen = function (element) {
-    return element.open;
-}
+  return element.open;
+};
 
 AppUtils.getActiveTabControls = function (tabs) {
-    /** @type {HTMLElement }*/
-    const activeTab = tabs.activeTab;
-    return activeTab.getAttribute('aria-controls');
-}
+  /** @type {HTMLElement }*/
+  const activeTab = tabs.activeTab;
+  return activeTab.getAttribute("aria-controls");
+};
 
 AppUtils.setSelected = function (element, selected) {
-    if (element)
-        element.selected = selected;
-}
+  if (element) element.selected = selected;
+};
 
 AppUtils.getSelected = function (element) {
-    return element?.selected;
-}
+  return element?.selected;
+};
 
 AppUtils.selectAllText = function (element) {
-    try {
-        element?.setSelectionRange(0, element?.value.length)
-    } catch {
-        // quick n dirty, not all inputs support selecting: e.g. date
-    }
-}
+  try {
+    element?.setSelectionRange(0, element?.value.length);
+  } catch {
+    // quick n dirty, not all inputs support selecting: e.g. date
+  }
+};
 
 AppUtils.toggleOpen = function (element) {
-    if (!element) return;
-    element.open = !element.open;
-}
+  if (!element) return;
+  element.open = !element.open;
+};
 
 /**
  * @param {HTMLElement} element
  */
 AppUtils.scrollToTop = function (element) {
-    element?.scrollTo({
-        top: 0,
-        behavior: 'instant'
-    });
-}
+  element?.scrollTo({
+    top: 0,
+    behavior: "instant",
+  });
+};
 
 AppUtils.callOn = function (element, funcName) {
-    element[funcName]();
-}
+  element[funcName]();
+};
 
 /**
  * Creates a new event for the slider changed event.
@@ -124,68 +140,68 @@ AppUtils.callOn = function (element, funcName) {
  * @param {HTMLElement} element
  */
 AppUtils.onSliderChange = function (element) {
-    element?.addEventListener('input', () => {
-        const event = new Event('slider-change', {
-            bubbles: true,
-            cancelable: true,
-            composed: true
-        });
-        element?.dispatchEvent(event);
+  element?.addEventListener("input", () => {
+    const event = new Event("slider-change", {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
     });
-}
+    element?.dispatchEvent(event);
+  });
+};
 
 /**
  *
  * @param {string} id
  */
 AppUtils.scrollIntoViewById = function (id) {
-    const element = document.getElementById(id);
-    const scrollingElement = document.getElementById('scrollingElement');
-    // scroll to center
-    if (element && scrollingElement)
-        scrollingElement.scroll({ top: element.offsetTop - scrollingElement.clientHeight / 2, behavior: 'smooth' });
-}
-
+  const element = document.getElementById(id);
+  const scrollingElement = document.getElementById("scrollingElement");
+  // scroll to center
+  if (element && scrollingElement)
+    scrollingElement.scroll({ top: element.offsetTop - scrollingElement.clientHeight / 2, behavior: "smooth" });
+};
 
 AppUtils.smoothScrollAndFocusLast = function (elementSelector) {
-    const items = document.querySelectorAll(elementSelector);
-    /**
-     * @type {HTMLElement}
-     */
-    const lastItem = items[items.length - 1];
-    lastItem?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-        inline: 'center'
-    });
+  const items = document.querySelectorAll(elementSelector);
+  /**
+   * @type {HTMLElement}
+   */
+  const lastItem = items[items.length - 1];
+  lastItem?.scrollIntoView({
+    behavior: "smooth",
+    block: "center",
+    inline: "center",
+  });
 
-    // Hack for chrome
-    setTimeout(() => {
-        lastItem?.focus({ preventScroll: true })
-    }, 500);
-}
+  // Hack for chrome
+  setTimeout(() => {
+    lastItem?.focus({ preventScroll: true });
+  }, 500);
+};
 
 AppUtils.closeActiveDialog = function () {
-    const dialog = document.querySelector('md-dialog[open]');
-    dialog?.close();
-    const fullscreenDialog = document.querySelector('.fullscreen-dialog[data-open]:not([data-closing])');
-    fullscreenDialog?.dispatchEvent(new Event('close', {
-        bubbles: true,
-        cancelable: true,
-    }));
-    return !!dialog || !!fullscreenDialog;
-}
-
+  const dialog = document.querySelector("md-dialog[open]");
+  dialog?.close();
+  const fullscreenDialog = document.querySelector(".fullscreen-dialog[data-open]:not([data-closing])");
+  fullscreenDialog?.dispatchEvent(
+    new Event("close", {
+      bubbles: true,
+      cancelable: true,
+    })
+  );
+  return !!dialog || !!fullscreenDialog;
+};
 
 AppUtils.setupPullToRefresh = function (elementSelector) {
-    const pullToRefresh = PullToRefresh.init({
-        mainElement: elementSelector,
-        triggerElement: "#scrollingElement",
-        shouldPullToRefresh() {
-            return AppUtils.getScrollTop(document.querySelector("#scrollingElement")) <= 1;
-        },
-        getStyles() {
-            return `.__PREFIX__ptr {
+  const pullToRefresh = PullToRefresh.init({
+    mainElement: elementSelector,
+    triggerElement: "#scrollingElement",
+    shouldPullToRefresh() {
+      return AppUtils.getScrollTop(document.querySelector("#scrollingElement")) <= 1;
+    },
+    getStyles() {
+      return `.__PREFIX__ptr {
     pointer-events: none;
     top: 0;
     height: 0;
@@ -229,28 +245,32 @@ AppUtils.setupPullToRefresh = function (elementSelector) {
   .__PREFIX__release .__PREFIX__icon {
     transform: rotate(180deg);
   }`;
-        },
-        async onRefresh() {
-            document.querySelector(elementSelector)?.dispatchEvent(new Event('pull-to-refresh', {
-                bubbles: true,
-                cancelable: true,
-            }));
-        }
-    });
-}
+    },
+    async onRefresh() {
+      document.querySelector(elementSelector)?.dispatchEvent(
+        new Event("pull-to-refresh", {
+          bubbles: true,
+          cancelable: true,
+        })
+      );
+    },
+  });
+};
 
 AppUtils.destroyPullToRefresh = function () {
-    PullToRefresh.destroyAll();
-}
+  PullToRefresh.destroyAll();
+};
 
 AppUtils.getOs = function () {
-    // Look at user agent to determine OS
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    if (/android/i.test(userAgent)) {
-        return 'Android';
-    }
-    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-        return 'iOS';
-    }
-    return 'unknown';
-}
+  // Look at user agent to determine OS
+  //@ts-ignore
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  if (/android/i.test(userAgent)) {
+    return "Android";
+  }
+  // @ts-ignore
+  if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+    return "iOS";
+  }
+  return "unknown";
+};
