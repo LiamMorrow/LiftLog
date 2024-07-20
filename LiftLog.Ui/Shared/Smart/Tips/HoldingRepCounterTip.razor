@@ -12,7 +12,8 @@
             OnTap="@(() => CycleRepCountForSet())"
             OnHold="@(() => ShowDialog())"
             OnUpdateWeight="@((_) => { })"
-            ToStartNext="@(set.Set is null)"/>
+            ToStartNext="@(set.Set is null)"
+            IsReadonly=false />
     </div>
 </div>
 

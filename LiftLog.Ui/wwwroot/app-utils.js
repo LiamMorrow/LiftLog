@@ -1,4 +1,4 @@
-var AppUtils: any = {};
+var AppUtils = {};
 AppUtils.getScrollTop = function (element) {
   return element?.scrollTop;
 };
@@ -10,11 +10,10 @@ AppUtils.showMdPopup = function (element) {
 AppUtils.vibrate = function (ms) {
   navigator.vibrate?.(ms);
 };
-var toastTimeout: number | null = null;
+var toastTimeout = null;
 AppUtils.showToast = (message) => {
   const toast = document.getElementById("toast");
   const toastContent = toast?.querySelector("#toast-content");
-  console.log(toastContent, toast, message);
   if (toast && toastContent) {
     toastContent.textContent = message;
     toast.classList.remove("hidden");
@@ -182,7 +181,7 @@ AppUtils.smoothScrollAndFocusLast = function (elementSelector) {
 };
 
 AppUtils.closeActiveDialog = function () {
-  const dialog: any = document.querySelector("md-dialog[open]");
+  const dialog = document.querySelector("md-dialog[open]");
   dialog?.close();
   const fullscreenDialog = document.querySelector(".fullscreen-dialog[data-open]:not([data-closing])");
   fullscreenDialog?.dispatchEvent(
@@ -195,8 +194,7 @@ AppUtils.closeActiveDialog = function () {
 };
 
 AppUtils.setupPullToRefresh = function (elementSelector) {
-  // @ts-ignore
-  const pullToRefresh: any = PullToRefresh.init({
+  const pullToRefresh = PullToRefresh.init({
     mainElement: elementSelector,
     triggerElement: "#scrollingElement",
     shouldPullToRefresh() {
@@ -260,7 +258,6 @@ AppUtils.setupPullToRefresh = function (elementSelector) {
 };
 
 AppUtils.destroyPullToRefresh = function () {
-  // @ts-ignore
   PullToRefresh.destroyAll();
 };
 

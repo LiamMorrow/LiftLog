@@ -29,7 +29,10 @@
         @onpointerleave="OnPointerLeave"
         @onclick="OnPointerUp"
         style="box-shadow: inset 0 0 0 @BoxShadowFill var(--md-sys-color-secondary-container);">
-        <md-ripple style="--md-ripple-pressed-color: var(--md-sys-color-on-primary-container)"></md-ripple>
+        @if(!IsReadonly)
+        {
+            <md-ripple style="--md-ripple-pressed-color: var(--md-sys-color-on-primary-container)"></md-ripple>
+        }
         <span class="font-bold">@(RepCountValue?.ToString() ?? "-")</span><span class="inline text-sm align-text-top">/@MaxReps</span>
     </button>
     <md-focus-ring @ref="_focusRing" visible="@ToStartNext" class="@HoldingClass duration-[400ms]" style="--md-focus-ring-shape: 0.75rem"></md-focus-ring>
@@ -50,7 +53,10 @@
             border-outline
             bg-surface-container-high
             text-on-surface-variant">
-        <md-ripple></md-ripple>
+        @if(!IsReadonly)
+        {
+            <md-ripple></md-ripple>
+        }
         <WeightFormat Weight="Set.Weight" SuffixClass=""/>
     </button>
 </div>
@@ -82,6 +88,8 @@
 
     [EditorRequired] [Parameter] public bool ToStartNext { get; set; }
 
+    [EditorRequired] [Parameter] public bool IsReadonly { get; set; }
+
     private int? RepCountValue => Set.Set?.RepsCompleted;
 
     private string RepCountRounding => ShowWeight ? "rounded-t-xl" : "rounded-xl";
@@ -105,6 +113,7 @@
 
     private async void OnPointerDown(PointerEventArgs args)
     {
+        if(IsReadonly) return;
         _lastPointerDownTime = DateTime.Now;
         await Task.Delay(400);
         if (_lastPointerDownTime is null || _lastPointerDownTime.Value.AddMilliseconds(400) > DateTime.Now) return;
@@ -127,12 +136,14 @@
 
     private void OnPointerLeave(PointerEventArgs args)
     {
+        if(IsReadonly) return;
         _holdTime = null;
         _lastPointerDownTime = null;
     }
 
     private async void OnPointerUp(MouseEventArgs args)
     {
+        if(IsReadonly) return;
         // On desktop holding down opens a right click menu - so this does not fire
         // This results in needing to click the repcount twice after cycling.  Not an issue on mobile
         if (_holdTime is null)
@@ -146,6 +157,7 @@
 
     private void HandleWeightClick()
     {
+        if(IsReadonly) return;
         dialog?.Open();
     }
 
