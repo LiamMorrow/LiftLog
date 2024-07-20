@@ -6,6 +6,7 @@
 @inject IState<FeedState> FeedState
 @inject NavigationManager NavigationManager
 @inject IDispatcher Dispatcher
+@inject ToastService ToastService
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
@@ -159,6 +160,8 @@
             );
         }
         base.OnInitialized();
+
+        SubscribeToAction<FeedApiErrorAction>(OnFeedApiError);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -174,7 +177,7 @@
     private void OnPullToRefresh()
     {
         Dispatcher.Dispatch(new FetchSessionFeedItemsAction(FromUserAction: true));
-        Dispatcher.Dispatch(new FetchInboxItemsAction(FromUserAction: true));
+        Dispatcher.Dispatch(new FetchInboxItemsAction(FromUserAction: false));
     }
 
     private void NavigateToCreateFeedIdentity()
@@ -285,5 +288,12 @@
     {
         await JSRuntime.InvokeVoidAsync("AppUtils.destroyPullToRefresh");
         await base.DisposeAsyncCore(disposing);
+    }
+
+    private void OnFeedApiError(FeedApiErrorAction action)
+    {
+        if(!action.Action.FromUserAction)
+            return;
+        ToastService.ShowToast(action.Message);
     }
 }
