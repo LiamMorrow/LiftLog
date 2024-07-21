@@ -5,7 +5,6 @@ name: UI Unit Tests
 
 on:
   push:
-    branches-ignore: [main]
 
 jobs:
   test:

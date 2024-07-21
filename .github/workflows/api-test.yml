@@ -5,7 +5,6 @@ name: Api Tests
 
 on:
   push:
-    branches-ignore: [main]
 
 jobs:
   api-test:
