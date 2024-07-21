@@ -11,7 +11,7 @@ public static class UserHelper
         byte[] rsaPublicKey
     )
     {
-        var userCreateRequest = new CreateUserRequest(null);
+        var userCreateRequest = new CreateUserRequest();
         var createUserResponse = await (
             await client.PostAsJsonAsync("/user/create", userCreateRequest)
         ).Content.ReadFromJsonAsync<CreateUserResponse>()!;
