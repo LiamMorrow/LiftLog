@@ -7,8 +7,7 @@ namespace LiftLog.Ui.Store.Program;
 public record ProgramState(
     bool IsHydrated,
     Guid ActivePlanId,
-    ImmutableListValue<Session> UpcomingSessions,
-    bool IsLoadingUpcomingSessions,
+    RemoteData<ImmutableListValue<Session>> UpcomingSessions,
     ImmutableDictionary<Guid, ProgramBlueprint> SavedPrograms
 )
 {

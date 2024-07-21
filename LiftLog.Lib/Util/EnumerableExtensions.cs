@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Immutable;
+using LiftLog.Lib;
 
 namespace System.Linq;
 
@@ -60,11 +61,11 @@ public static class LinqExtensions
         var matchingTuple = tuples
             .Where(x => predicate(x.Item))
             .Cast<(TSource?, int)>()
-            .DefaultIfEmpty((default(TSource), -1));
+            .DefaultIfEmpty((default, -1));
         return matchingTuple.First().Item2;
     }
 
-    public static async Task<ImmutableList<T>> ToImmutableListAsync<T>(
+    public static async Task<ImmutableListValue<T>> ToImmutableListValueAsync<T>(
         this IAsyncEnumerable<T> source
     )
     {

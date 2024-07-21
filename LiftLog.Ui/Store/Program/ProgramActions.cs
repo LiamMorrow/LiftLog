@@ -8,7 +8,7 @@ public record SetProgramIsHydratedAction();
 
 public record FetchUpcomingSessionsAction();
 
-public record SetUpcomingSessionsAction(ImmutableListValue<Session> UpcomingSessions);
+public record SetUpcomingSessionsAction(RemoteData<ImmutableListValue<Session>> UpcomingSessions);
 
 public record SetProgramSessionsAction(
     Guid PlanId,

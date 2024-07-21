@@ -1,5 +1,6 @@
 using System.Reflection;
 using Fluxor;
+using Fluxor.Blazor.Web.ReduxDevTools;
 using Fluxor.DependencyInjection;
 using LiftLog.Lib.Serialization;
 using LiftLog.Lib.Services;
@@ -55,10 +56,7 @@ public static class ServiceRegistration
                 .AddMiddleware<SettingsStateInitMiddleware>()
                 .AddMiddleware<FeedStateInitMiddleware>()
 #if DEBUG
-        // .UseReduxDevTools(options =>
-        // {
-        //     options.UseSystemTextJson(_ => JsonSerializerSettings.LiftLog);
-        // })
+                .UseReduxDevTools()
 #endif
         );
 

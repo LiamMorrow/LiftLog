@@ -18,18 +18,8 @@
     <AndroidNotificationAlert />
 }
 
-@if (ProgramState.Value.IsLoadingUpcomingSessions)
-{
-    <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
-        <div>
-            <md-circular-progress aria-label="Session loading" indeterminate four-color></md-circular-progress>
-        </div>
-        <span>
-            <p>Loading Sessions...</p>
-        </span>
-    </div>
-}
-else if (ProgramState.Value.UpcomingSessions.Count == 0)
+<Remote Value="ProgramState.Value.UpcomingSessions" Context="upcoming">
+@if (upcoming.Count == 0)
 {
     <div class="flex flex-col gap-2 px-2">
         <Card class="flex flex-col gap-4">
@@ -59,7 +49,7 @@ else
     <div class="m-2">
         <Tips/>
     </div>
-    <CardList Items="ProgramState.Value.UpcomingSessions.IndexedTuples()" OnClick="x => SelectSession(x.Item)">
+    <CardList Items="upcoming.IndexedTuples()" OnClick="x => SelectSession(x.Item)">
         <SplitCardControl>
             <TitleContent>
                 <SessionSummaryTitle IsFilled="context.Item.IsStarted" Session="context.Item" />
@@ -87,6 +77,7 @@ else
         </div>
     </Fab>
 </FloatingBottomContainer>
+</Remote>
 
 <ConfirmationDialog @ref="replaceCurrentSesisonDialog" OkText="Replace" OnOk="ReplaceSession">
     <Headline>Replace current session</Headline>
@@ -139,7 +130,10 @@ else
 
     private void StartFreeformSession()
     {
-        var latestBodyweight = ProgramState.Value.UpcomingSessions.FirstOrDefault()?.Bodyweight;
+        if(!ProgramState.Value.UpcomingSessions.IsSuccess){
+            return;
+        }
+        var latestBodyweight = ProgramState.Value.UpcomingSessions.Data.FirstOrDefault()?.Bodyweight;
         selectedSession = Session.FreeformSession(DateOnly.FromDateTime(DateTime.Now), latestBodyweight);
         if (CurrentSessionState.Value.WorkoutSession is { IsStarted: true })
         {

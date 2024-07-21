@@ -53,8 +53,7 @@ public class PersistProgramMiddleware(
                 .RestoreState(
                     new ProgramState(
                         IsHydrated: true,
-                        UpcomingSessions: [],
-                        IsLoadingUpcomingSessions: true,
+                        UpcomingSessions: RemoteData.NotAsked,
                         SavedPrograms: savedPrograms,
                         ActivePlanId: activeProgramId.Value
                     )

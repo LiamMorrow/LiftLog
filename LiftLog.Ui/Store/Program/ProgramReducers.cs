@@ -16,21 +16,10 @@ public static class ProgramReducers
         };
 
     [ReducerMethod]
-    public static ProgramState FetchUpcomingSessions(
-        ProgramState state,
-        FetchUpcomingSessionsAction _
-    ) => state with { IsLoadingUpcomingSessions = true };
-
-    [ReducerMethod]
     public static ProgramState SetUpcomingSessions(
         ProgramState state,
         SetUpcomingSessionsAction action
-    ) =>
-        state with
-        {
-            UpcomingSessions = action.UpcomingSessions,
-            IsLoadingUpcomingSessions = false
-        };
+    ) => state with { UpcomingSessions = action.UpcomingSessions, };
 
     [ReducerMethod]
     public static ProgramState SetProgramSessions(

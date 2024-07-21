@@ -15,6 +15,8 @@ public class User
 
     public DateTimeOffset LastAccessed { get; set; }
 
+    public DateTimeOffset Created { get; set; }
+
     public byte[] Salt { get; set; } = null!;
 
     public byte[]? EncryptedCurrentPlan { get; set; }

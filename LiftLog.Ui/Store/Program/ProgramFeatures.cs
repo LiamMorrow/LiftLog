@@ -12,8 +12,7 @@ public class ProgramFeature : Feature<ProgramState>
     protected override ProgramState GetInitialState() =>
         new(
             IsHydrated: false,
-            UpcomingSessions: [],
-            IsLoadingUpcomingSessions: true,
+            UpcomingSessions: RemoteData.NotAsked,
             SavedPrograms: ImmutableDictionary<Guid, ProgramBlueprint>.Empty,
             ActivePlanId: Guid.Empty
         );

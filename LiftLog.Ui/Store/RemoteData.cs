@@ -46,8 +46,7 @@ public class RemoteSuccess<T>(T data) : RemoteData<T>
     public override bool IsError => false;
     public override bool IsSuccess => true;
 
-    public override string? Error =>
-        throw new InvalidOperationException("Cannot access error on a successful RemoteData");
+    public override string? Error => null;
 }
 
 public readonly record struct RemoteError(string Error);
@@ -56,8 +55,7 @@ public class RemoteError<T>(string error) : RemoteData<T>
 {
     public override string Error => error;
 
-    public override T? Data =>
-        throw new InvalidOperationException("Cannot access data on an errored RemoteData");
+    public override T? Data => default;
     public override bool IsLoading => false;
     public override bool IsError => true;
     public override bool IsSuccess => false;
@@ -65,11 +63,9 @@ public class RemoteError<T>(string error) : RemoteData<T>
 
 public class RemoteLoading<T> : RemoteData<T>
 {
-    public override T? Data =>
-        throw new InvalidOperationException("Cannot access data on a loading RemoteData");
+    public override T? Data => default;
 
-    public override string? Error =>
-        throw new InvalidOperationException("Cannot access error on a loading RemoteData");
+    public override string? Error => null;
 
     public override bool IsLoading => true;
     public override bool IsError => false;
@@ -80,11 +76,9 @@ public readonly struct RemoteLoading { }
 
 public class RemoteNotAsked<T> : RemoteData<T>
 {
-    public override T? Data =>
-        throw new InvalidOperationException("Cannot access data on a not-asked RemoteData");
+    public override T? Data => default;
 
-    public override string? Error =>
-        throw new InvalidOperationException("Cannot access error on a not-asked RemoteData");
+    public override string? Error => null;
 
     public override bool IsLoading => false;
     public override bool IsError => false;

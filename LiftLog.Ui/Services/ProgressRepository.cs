@@ -174,9 +174,7 @@ namespace LiftLog.Ui.Services
                 .GroupBy(x => (KeyedExerciseBlueprint)x.RecordedExercise.Blueprint)
                 .ToImmutableDictionaryAwaitAsync(
                     x => ValueTask.FromResult(x.Key),
-                    async x => new ImmutableListValue<DatedRecordedExercise>(
-                        await x.Take(maxRecordsPerExercise).ToImmutableListAsync()
-                    )
+                    async x => await x.Take(maxRecordsPerExercise).ToImmutableListValueAsync()
                 );
         }
 
