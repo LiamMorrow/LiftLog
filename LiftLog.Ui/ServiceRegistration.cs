@@ -1,6 +1,5 @@
 using System.Reflection;
 using Fluxor;
-using Fluxor.Blazor.Web.ReduxDevTools;
 using Fluxor.DependencyInjection;
 using LiftLog.Lib.Serialization;
 using LiftLog.Lib.Services;
@@ -12,6 +11,10 @@ using LiftLog.Ui.Store.Program;
 using LiftLog.Ui.Store.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+#if DEBUG
+using Fluxor.Blazor.Web.ReduxDevTools;
+#endif
+
 
 namespace LiftLog.Ui;
 
