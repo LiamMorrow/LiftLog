@@ -1,6 +1,6 @@
 namespace LiftLog.Lib.Models;
 
-public record CreateUserRequest(Guid? Id);
+public record CreateUserRequest();
 
 public record GetUsersRequest(Guid[] Ids);
 

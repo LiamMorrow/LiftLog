@@ -23,7 +23,7 @@ public class FeedIdentityService(
         ImmutableListValue<SessionBlueprint> currentPlan
     )
     {
-        var response = await feedApiService.CreateUserAsync(new CreateUserRequest(null));
+        var response = await feedApiService.CreateUserAsync(new CreateUserRequest());
         if (!response.IsSuccess)
         {
             return ApiResult<FeedIdentity>.FromFailure(response);

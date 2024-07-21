@@ -26,14 +26,9 @@ public class UserController(UserDataContext db, PasswordService passwordService)
             return BadRequest(validationResult.Errors);
         }
 
-        if (await db.Users.AnyAsync(x => x.Id == request.Id))
-        {
-            return BadRequest(new string[] { "User already exists" });
-        }
-
         var password = Guid.NewGuid().ToString();
         var hashedPassword = passwordService.HashPassword(password, out var salt);
-        var id = request.Id ?? Guid.NewGuid();
+        var id = Guid.NewGuid();
         var user = new User
         {
             Id = id,
