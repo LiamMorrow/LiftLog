@@ -8,12 +8,21 @@ namespace LiftLog.Ui.Store.App;
 
 public class AppStateInitMiddleware(
     PreferencesRepository preferencesRepository,
+    IThemeProvider themeProvider,
     ILogger<AppStateInitMiddleware> logger
 ) : Middleware
 {
     public override async Task InitializeAsync(IDispatcher dispatch, IStore store)
     {
         var sw = Stopwatch.StartNew();
+        store
+            .Features[nameof(AppFeature)]
+            .RestoreState(
+                (AppState)store.Features[nameof(AppFeature)].GetState() with
+                {
+                    ColorScheme = themeProvider.GetColorScheme()
+                }
+            );
         var proToken = await preferencesRepository.GetProTokenAsync();
 #if TEST_MODE
         await Task.Yield();

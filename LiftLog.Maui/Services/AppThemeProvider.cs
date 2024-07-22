@@ -64,4 +64,9 @@ public class AppThemeProvider(AppColorService colorUpdateService) : IThemeProvid
                 )
         };
     }
+
+    public AppColorScheme<uint> GetColorScheme()
+    {
+        return colorUpdateService.SchemeInt;
+    }
 }
