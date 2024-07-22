@@ -130,7 +130,7 @@
         <PackageReference Include="Xamarin.AndroidX.Fragment.Ktx">
             <Version>1.8.1.1</Version>
         </PackageReference>
-        <PackageReference Include="Xamarin.GooglePlayServices.Base" Version="118.4.0" />
+        <PackageReference Include="Xamarin.GooglePlayServices.Base" Version="118.5.0" />
     </ItemGroup>
 
     <ItemGroup>
