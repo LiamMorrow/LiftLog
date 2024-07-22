@@ -15,6 +15,8 @@ public interface IThemeProvider
     public uint? GetSeed();
 
     public ThemePreference GetThemePreference();
+
+    public AppColorScheme<uint> GetColorScheme();
 }
 
 public enum ThemePreference

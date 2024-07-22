@@ -100,4 +100,9 @@ public class WebThemeProvider : IThemeProvider
     {
         return ThemePreference.FollowSystem;
     }
+
+    public AppColorScheme<uint> GetColorScheme()
+    {
+        return _scheme ?? new AppColorScheme<uint>();
+    }
 }
