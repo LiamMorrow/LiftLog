@@ -15,7 +15,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Fluxor.Blazor.Web.ReduxDevTools;
 #endif
 
-
 namespace LiftLog.Ui;
 
 public static class ServiceRegistration
@@ -59,7 +58,7 @@ public static class ServiceRegistration
                 .AddMiddleware<SettingsStateInitMiddleware>()
                 .AddMiddleware<FeedStateInitMiddleware>()
 #if DEBUG
-                .UseReduxDevTools()
+        // .UseReduxDevTools()  // Fails to load
 #endif
         );
 

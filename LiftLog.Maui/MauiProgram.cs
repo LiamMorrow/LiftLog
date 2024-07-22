@@ -15,6 +15,7 @@ using Microsoft.Maui.Storage;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
 using Plugin.Maui.AppRating;
+using Sentry.Extensions.Logging;
 using Sentry.Extensions.Logging.Extensions.DependencyInjection;
 using INotificationService = LiftLog.Ui.Services.INotificationService;
 
@@ -25,7 +26,19 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
-        builder.UseMauiApp<App>();
+        builder
+            .UseMauiApp<App>()
+            .UseSentry(options =>
+            {
+                // The DSN is the only required setting.
+                options.Dsn =
+                    "https://94068122cc0e9b1bc7bf65b20bd88bfe@o4505937515249664.ingest.sentry.io/4505937523769344";
+
+                options.Debug = false;
+
+                options.TracesSampleRate = 1.0;
+                options.CaptureFailedRequests = true;
+            });
 
         builder.Services.AddMauiBlazorWebView();
 
@@ -72,22 +85,6 @@ public static class MauiProgram
             AppScreenshotStatsImportsProvider
         >();
 #endif
-        // Add this section anywhere on the builder:
-        builder.Logging.AddSentry(options =>
-        {
-            // The DSN is the only required setting.
-            options.Dsn =
-                "https://94068122cc0e9b1bc7bf65b20bd88bfe@o4505937515249664.ingest.sentry.io/4505937523769344";
-
-            options.Debug = false;
-
-            // Set TracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-            // We recommend adjusting this value in production.
-            options.TracesSampleRate = 0;
-            options.CaptureFailedRequests = true;
-
-            // Other Sentry options can be set here.
-        });
 
         builder.Services.AddSingleton(new HttpClient());
 
