@@ -36,6 +36,31 @@
         <DefineConstants Condition=" '$(ExtraDefineConstants)' != '' ">$(DefineConstants);$(ExtraDefineConstants)</DefineConstants>
     </PropertyGroup>
 
+    <!-- We recommend only using these features for release builds. -->
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+
+        <!-- Configure Sentry org and project -->
+        <SentryOrg>liftlog</SentryOrg>
+        <SentryProject>liflog-app</SentryProject>
+
+        <!--
+            Each of the below features are opt-in.
+            Enable the features you wish to use.
+        -->
+
+        <!-- Sends symbols to Sentry, enabling symbolication of stack traces. -->
+        <SentryUploadSymbols>true</SentryUploadSymbols>
+
+        <!-- Sends sources to Sentry, enabling display of source context. -->
+        <SentryUploadSources>true</SentryUploadSources>
+
+        <!-- If you are targeting Android, sends proguard mapping file to Sentry. -->
+        <SentryUploadAndroidProguardMapping
+        >true</SentryUploadAndroidProguardMapping>
+
+    </PropertyGroup>
+
+
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
         <AndroidFastDeploymentType>Assemblies</AndroidFastDeploymentType>

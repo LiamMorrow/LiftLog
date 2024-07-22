@@ -47,6 +47,7 @@ jobs:
         working-directory: ./LiftLog.Maui
         env:
           KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: Upload Android Release to Play Store
         uses: r0adkll/upload-google-play@v1.1.3
         with:
