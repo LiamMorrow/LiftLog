@@ -47,7 +47,7 @@ jobs:
         run: npm i && npm run build
         working-directory: ./LiftLog.Ui
       - name: Build
-        run: 'dotnet publish -c Release -f:net8.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}" -p:CodesignProvision="LiftLog"'
+        run: 'dotnet publish -c Release -f:net8.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}" -p:CodesignProvision="LiftLog" -p:UseSentryCLI=true'
         working-directory: ./LiftLog.Maui
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}

@@ -42,6 +42,7 @@
         <!-- Configure Sentry org and project -->
         <SentryOrg>liftlog</SentryOrg>
         <SentryProject>liflog-app</SentryProject>
+        <UseSentryCLI>false</UseSentryCLI>
 
         <!--
             Each of the below features are opt-in.
