@@ -22,7 +22,11 @@
 }
 else
 {
-    <VirtualizedCardList Items="_latestSessions" OnClick="@HandleSessionClick" CardClass="animate-fade-zoom-in">
+
+<Card class="mx-2" Type=Card.CardType.Filled>
+    <HistoryCalendar Sessions="_latestSessions" OnSessionClick="HandleSessionClick"/>
+</Card>
+    <VirtualizedCardList Items="_latestSessions" TItem="Session" OnClick="@HandleSessionClick" CardClass="animate-fade-zoom-in">
         <SplitCardControl>
             <TitleContent>
                 <SessionSummaryTitle IsFilled="true" Session="context" ></SessionSummaryTitle>
@@ -50,7 +54,7 @@ else
 @code
 {
 
-    private ICollection<Session> _latestSessions = new List<Session>();
+    private List<Session> _latestSessions = new List<Session>();
     private Session? _selectedSession;
     private Dialog? _deleteDialog;
 
