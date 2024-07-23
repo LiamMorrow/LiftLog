@@ -6,7 +6,6 @@
 @inject IState<FeedState> FeedState
 @inject NavigationManager NavigationManager
 @inject IDispatcher Dispatcher
-@inject ToastService ToastService
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
@@ -294,6 +293,6 @@
     {
         if(!action.Action.FromUserAction)
             return;
-        ToastService.ShowToast(action.Message);
+        Dispatcher.Dispatch(new ToastAction(action.Message));
     }
 }

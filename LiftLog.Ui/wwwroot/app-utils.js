@@ -10,21 +10,6 @@ AppUtils.showMdPopup = function (element) {
 AppUtils.vibrate = function (ms) {
   navigator.vibrate?.(ms);
 };
-var toastTimeout = null;
-AppUtils.showToast = (message) => {
-  const toast = document.getElementById("toast");
-  const toastContent = toast?.querySelector("#toast-content");
-  if (toast && toastContent) {
-    toastContent.textContent = message;
-    toast.classList.remove("hidden");
-    if (toastTimeout) {
-      clearTimeout(toastTimeout);
-    }
-    toastTimeout = setTimeout(() => {
-      toast.classList.add("hidden");
-    }, 3000);
-  }
-};
 
 /**
  * Creates a new event for the dialog close event.

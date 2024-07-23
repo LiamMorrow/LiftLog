@@ -10,6 +10,8 @@ public record SetProTokenAction(string? ProToken);
 
 public record SetReopenCurrentSessionAction(bool ReopenCurrentSession);
 
+public record ToastAction(string Message);
+
 public record SetBackNavigationUrlAction(string? BackNavigationUrl);
 
 public record NavigateAction(
