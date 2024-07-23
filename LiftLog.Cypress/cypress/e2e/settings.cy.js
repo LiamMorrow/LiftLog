@@ -53,7 +53,7 @@ function assertShowsBodyweightOnAllPages(shouldShow) {
   cy.getA('.card').eq(4).should(classify, 'Bodyweight')
   cy.navigate('Workout')
   cy.navigate('Workout')
-  cy.getA('.cardlist .card').first().click()
+  cy.getA('.itemlist .item').first().click()
   if (shouldShow) {
     cy.getA('.card').last().should(classify, 'Bodyweight')
   } else {
@@ -63,14 +63,21 @@ function assertShowsBodyweightOnAllPages(shouldShow) {
 
 function assertCorrectWeightUnitsOnAllPages(units) {
   cy.navigate('History')
-  cy.getA('.cardlist .card').first().should('contain.text', units)
+  // We know there's a workout in September 2023
+  cy.recursionLoop(() => {
+    if (Cypress.$('[data-cy=calendar-month]').text().includes('September 2023')) {
+      return false
+    }
+    cy.getA('[data-cy=calendar-nav-previous-month]').first().click()
+  }, 200)
+  cy.getA('.itemlist .item').first().should('contain.text', units)
   cy.navigate('Stats')
   cy.getA('[data-cy=stats-time-selector]').click()
   cy.containsA('All time').click()
   cy.getA('.cardlist .card').first().should('contain.text', units)
   cy.navigate('Workout')
   cy.navigate('Workout')
-  cy.getA('.cardlist .card').first().should('contain.text', units).click()
+  cy.getA('.itemlist .item').first().should('contain.text', units).click()
   cy.getA('[data-cy=weight-display]').first().should('contain.text', units).click()
   cy.dialog().find('md-outlined-text-field').get('.suffix', { includeShadowDom: true }).should('contain.text', units)
   cy.dialog().find('[slot=actions]').contains("Close").click()

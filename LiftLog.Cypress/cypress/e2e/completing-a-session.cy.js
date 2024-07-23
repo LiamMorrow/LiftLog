@@ -31,7 +31,7 @@ describe('Completing a session', () => {
 
       cy.navigate('History')
 
-      cy.getA('.cardlist .card').first('.card').should('contain.text', 'Freeform Session').should('contain.text', '7.5kg')
+      cy.getA('.itemlist .item').first('.item').should('contain.text', 'Freeform Session').should('contain.text', '7.5kg')
     })
   })
 
@@ -67,17 +67,24 @@ describe('Completing a session', () => {
 
         cy.contains('Finish').click()
 
-        cy.getA('.cardlist .card').first().should('contain.text', 'Workout B')
+        cy.getA('.itemlist .item').first('.item').first().should('contain.text', 'Workout B')
 
         cy.navigate('History')
 
-        cy.getA('.cardlist .card').first('.card').should('contain.text', 'Workout A').click()
+        cy.getA('.itemlist .item').first('.item').first('.card').should('contain.text', 'Workout A').click()
 
-        cy.getA('md-filled-text-field[type=date]').get('input', { includeShadowDom: true }).first().click().type('2020-12-13')
+        cy.getA('md-filled-text-field[type=date]').get('input', { includeShadowDom: true }).first().click().type('2023-05-22')
 
         cy.contains('Finish').click()
 
-        cy.getA('.cardlist .card').first().should('contain.text', 'Workout A').should('contain.text', 'December 13 2020')
+        cy.recursionLoop(() => {
+          if (Cypress.$('[data-cy=calendar-month]').text().includes('May 2023')) {
+            return false
+          }
+          cy.getA('[data-cy=calendar-nav-previous-month]').first().click()
+        }, 200)
+
+        cy.getA('.itemlist .item').first('.item').first().should('contain.text', 'Workout A').should('contain.text', '22 May 2023')
       })
 
       it('can complete a workout while switching to per set weights with it progressing properly', () => {
@@ -119,8 +126,8 @@ describe('Completing a session', () => {
         cy.getA('.snackbar').should('be.visible').should('contain.text', 'This session').should('contain.text', '650')
         cy.contains('Finish').click()
 
-        cy.getA('.cardlist .card').eq(0).should('contain.text', 'Workout B')
-        cy.getA('.cardlist .card').eq(1).should('contain.text', 'Workout A').click()
+        cy.getA('.itemlist .item').eq(0).should('contain.text', 'Workout B')
+        cy.getA('.itemlist .item').eq(1).should('contain.text', 'Workout A').click()
 
         cy.getA('.itemlist div').eq(0).should('contain.text', 'Squat')
         // Since all sets were completed - with at least one of the sets having equal or higher weight than the top level, the weight should have increased
@@ -140,7 +147,7 @@ describe('Completing a session', () => {
 
         cy.navigate('History')
 
-        cy.getA('.cardlist .card').first('.card').should('contain.text', 'Workout A').click()
+        cy.getA('.itemlist .item').first('.item').should('contain.text', 'Workout A').click()
 
         cy.getA('[data-cy=more-exercise-btn]').first().click()
         cy.getA('[data-cy=exercise-notes-btn]').first().click()

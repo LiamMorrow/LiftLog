@@ -2,7 +2,7 @@
 <div @attributes="AdditionalAttributes" class=" @(AdditionalAttributes?.GetValueOrDefault("class")) flex flex-col @VerticalPaddingClass itemlist">
     @for (var i = 0; i < Items.Count; i++)
     {
-        <div class="text-on-surface" >
+        <div class="text-on-surface item" >
             @ChildContent?.Invoke(Items[i])
         </div>
         @if(Dividers && i < Items.Count - 1){

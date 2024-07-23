@@ -25,5 +25,7 @@ declare namespace Cypress {
     navigate<E>(navButtonText: string): Chainable<JQuery<E>>;
 
     dialog<E>(): Chainable<JQuery<E>>;
+
+    recursionLoop<E>(fn: (times: number) => boolean, times?: number): Chainable<JQuery<E>>;
   }
 }
