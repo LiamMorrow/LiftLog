@@ -8,6 +8,7 @@
 @inject SessionService SessionService
 @inject NavigationManager NavigationManager
 @inject IState<CurrentSessionState> CurrentSessionState
+@inject IState<ProgramState> ProgramState
 @inject IDispatcher Dispatcher
 @inject ILogger<HistoryPage> Logger
 
@@ -23,7 +24,12 @@
 else
 {
     <Card class="mx-2" Type=Card.CardType.Filled>
-        <HistoryCalendar Sessions="_latestSessions" OnSessionClick="HandleSessionClick" OnMonthChange="HandleMonthChange"/>
+        <HistoryCalendar
+            Sessions="_latestSessions"
+            OnSessionClick="HandleSessionClick"
+            OnMonthChange="HandleMonthChange"
+            OnDateSelect=CreateSessionAtDate
+            OnSessionLongPress=@((session)=>{_selectedSession = session; _deleteDialog?.Open();}) />
     </Card>
     <ItemList CardType=Card.CardType.Filled Items="filteredToMonthSessions" TItem="Session" Dividers=false >
         <button class="p-6 relative w-full"  @onclick=@(()=>HandleSessionClick(context)) @oncontextmenu=@(()=>{_selectedSession = context; _deleteDialog?.Open();}) @oncontextmenu:preventDefault=true >
@@ -41,37 +47,30 @@ else
     </ItemList>
 }
 
-<Dialog @ref="_deleteDialog">
-    <span slot="headline">Delete Session?</span>
-    <span slot="content" class="block text-left">Session will be deleted from history, this cannot be undone.</span>
-    <div slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick="() => { _deleteDialog?.Close(); }">Cancel</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="DeleteSession">Delete</AppButton>
-    </div>
-</Dialog>
+<ConfirmationDialog @ref="_deleteDialog" OkText="Delete" OnOk=DeleteSession>
+    <Headline>Delete Session?</Headline>
+    <TextContent>
+        The session named <span class="font-bold text-primary">@_selectedSession.Blueprint.Name</span>,
+        on @(_selectedSession.Date) will be deleted from history. This cannot be undone.
+    </TextContent>
+</ConfirmationDialog>
 
 @code
 {
 
     private List<Session> _latestSessions = new List<Session>();
     private List<Session> filteredToMonthSessions = new List<Session>();
-    private DateTime currentMonth = DateTime.Now;
-    private Session? _selectedSession;
-    private Dialog? _deleteDialog;
+    private DateOnly currentMonth = DateOnly.FromDateTime(DateTime.Now);
+    private Session _selectedSession = Session.Empty;
+    private ConfirmationDialog? _deleteDialog;
 
     private async void DeleteSession()
     {
-        if (_selectedSession == null)
-        {
-            return;
-        }
-
         Dispatcher.Dispatch(new DeleteSessionAction(_selectedSession));
         Dispatcher.Dispatch(new AddUnpublishedSessionIdAction(_selectedSession.Id));
         Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
         Dispatcher.Dispatch(new PublishUnpublishedSessionsAction());
-        _selectedSession = null;
-        _deleteDialog?.Close();
+        _selectedSession = Session.Empty;
         this._latestSessions = await SessionService
             .GetLatestSessionsAsync()
             .ToListAsync();
@@ -84,10 +83,18 @@ else
         NavigationManager.NavigateTo("/history/edit");
     }
 
-    private void HandleMonthChange(DateTime date)
+    private void HandleMonthChange(DateOnly date)
     {
         currentMonth = date;
         filteredToMonthSessions = _latestSessions.Where(s => s.Date.Month == date.Month && s.Date.Year == date.Year).ToList();
+    }
+
+    private void CreateSessionAtDate(DateOnly date)
+    {
+        var latestBodyweight = ProgramState.Value.UpcomingSessions.Map(x=>x.FirstOrDefault()?.Bodyweight).UnwrapOr(null);
+        var session = Session.FreeformSession(date, latestBodyweight);
+        Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.HistorySession, session));
+        Dispatcher.Dispatch(new NavigateAction("/history/edit"));
     }
 
     protected override async Task OnInitializedAsync()
@@ -98,7 +105,7 @@ else
         this._latestSessions = await SessionService
             .GetLatestSessionsAsync()
             .ToListAsync();
-        HandleMonthChange(DateTime.Now);
+        HandleMonthChange(DateOnly.FromDateTime(DateTime.Now));
         await base.OnInitializedAsync();
         sw.Stop();
         Logger.LogInformation($"History page initialized in {sw.ElapsedMilliseconds} ms");

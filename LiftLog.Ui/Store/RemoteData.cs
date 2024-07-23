@@ -35,8 +35,9 @@ public abstract class RemoteData<T>
 
     public bool IsNotAsked => !IsLoading && !IsError && !IsSuccess;
 
-    public virtual RemoteData<T> Map(Func<T, T> mapper) =>
-        IsSuccess ? RemoteData.Success(mapper(Data)) : this;
+    public abstract RemoteData<TResult> Map<TResult>(Func<T, TResult> mapper);
+
+    public T UnwrapOr(T defaultValue) => IsSuccess ? Data : defaultValue;
 }
 
 public class RemoteSuccess<T>(T data) : RemoteData<T>
@@ -47,6 +48,9 @@ public class RemoteSuccess<T>(T data) : RemoteData<T>
     public override bool IsSuccess => true;
 
     public override string? Error => null;
+
+    public override RemoteData<TResult> Map<TResult>(Func<T, TResult> mapper) =>
+        new RemoteSuccess<TResult>(mapper(Data));
 }
 
 public readonly record struct RemoteError(string Error);
@@ -59,6 +63,9 @@ public class RemoteError<T>(string error) : RemoteData<T>
     public override bool IsLoading => false;
     public override bool IsError => true;
     public override bool IsSuccess => false;
+
+    public override RemoteData<TResult> Map<TResult>(Func<T, TResult> mapper) =>
+        new RemoteError<TResult>(error);
 }
 
 public class RemoteLoading<T> : RemoteData<T>
@@ -70,6 +77,9 @@ public class RemoteLoading<T> : RemoteData<T>
     public override bool IsLoading => true;
     public override bool IsError => false;
     public override bool IsSuccess => false;
+
+    public override RemoteData<TResult> Map<TResult>(Func<T, TResult> mapper) =>
+        new RemoteLoading<TResult>();
 }
 
 public readonly struct RemoteLoading { }
@@ -83,6 +93,9 @@ public class RemoteNotAsked<T> : RemoteData<T>
     public override bool IsLoading => false;
     public override bool IsError => false;
     public override bool IsSuccess => false;
+
+    public override RemoteData<TResult> Map<TResult>(Func<T, TResult> mapper) =>
+        new RemoteNotAsked<TResult>();
 }
 
 public readonly struct RemoteNotAsked { }
