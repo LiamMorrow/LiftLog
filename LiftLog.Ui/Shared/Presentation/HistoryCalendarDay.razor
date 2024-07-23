@@ -1,0 +1,85 @@
+@inject IHapticFeedbackService HapticFeedback
+
+<div style="animation-delay: @Delay;" @onpointerdown=SetIsHolding @onpointerup=ClearIsHolding @onpointerleave=ClearIsHolding @onpointercancel=ClearIsHolding class="@HoldingClass transition-transform @AnimationClass justify-center items-center flex" >
+    <div class="grid  w-12 aspect-square">
+    <div class="@HasSessionsPillClass @IsTodayClass relative col-start-1 col-end-1 row-start-1 row-end-1">
+    </div>
+    <button disabled=@IsFuture @oncontextmenu:preventDefault=true @oncontextmenu=HandleDayLongPress @onclick=HandleDayClick class="@HasSessionsButtonClass @IsTodayClass flex col-start-1 col-end-1 row-start-1 row-end-1 items-center justify-center rounded-full relative" >
+        @(Day.Day)
+        @if(!IsFuture)
+        {
+            <md-ripple></md-ripple>
+        }
+    </button>
+</div>
+</div>
+@code {
+
+
+    [Parameter]
+    [EditorRequired]
+    public IEnumerable<Session> Sessions {get;set;} = [];
+
+    [Parameter]
+    [EditorRequired]
+    public int Index {get;set;}
+    [Parameter]
+    [EditorRequired]
+    public DateOnly Day {get;set;} = default!;
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback OnDayClick {get;set;}
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback OnDayLongPress {get;set;}
+
+    string AnimationClass = "scale-0 animate-zoom-in";
+
+    bool isHolding = false;
+    bool HasSessions => Sessions.Any();
+    bool IsToday => Day == DateOnly.FromDateTime(DateTime.Today);
+    bool IsFuture => Day > DateOnly.FromDateTime(DateTime.Today);
+    string HasSessionsButtonClass => HasSessions ? "text-on-primary" : "";
+    string HasSessionsPillClass => HasSessions ? "bg-primary rounded-full text-on-primary " : "";
+    string IsTodayClass => IsToday && !HasSessions ? "border-primary border border-solid rounded-full text-primary" : "";
+    string Delay => Index * 10 + "ms";
+    int DelayMs => Index * 10;
+
+    string HoldingClass => isHolding ? "scale-110" : "scale-100";
+
+    void SetIsHolding ()=>isHolding = true;
+    void ClearIsHolding ()=>isHolding = false;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if(firstRender)
+        {
+            Task.Delay(DelayMs).ContinueWith(async _=>
+            {
+                AnimationClass = "";
+                await InvokeAsync(StateHasChanged);
+            });
+        }
+    }
+
+    async Task HandleDayClick()
+    {
+        if(IsFuture)
+        {
+            return;
+        }
+       await OnDayClick.InvokeAsync();
+    }
+
+    async Task HandleDayLongPress()
+    {
+        if(IsFuture)
+        {
+            return;
+        }
+        await HapticFeedback.PerformAsync(HapticFeedbackType.LongPress);
+        await OnDayLongPress.InvokeAsync();
+    }
+}

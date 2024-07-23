@@ -9,6 +9,9 @@ AppUtils.showMdPopup = function (element) {
 
 AppUtils.vibrate = function (ms) {
   navigator.vibrate?.(ms);
+  if (AppUtils.getOs() === "unknown") {
+    console.log("Vibrating for " + ms + "ms");
+  }
 };
 
 /**

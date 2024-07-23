@@ -7,7 +7,7 @@
     var lastDayOfPreviousMonth = firstDayOfMonth.AddDays(-1);
     var index = 0;
 }
-<div class="grid grid-cols-7 gap-2">
+<div class="grid grid-cols-7 gap-2 justify-center items-center">
     <div class="col-span-1 my-2">
         <IconButton Type=IconButtonType.Standard @onclick="PreviousMonth" Icon="chevron_left" />
     </div>
@@ -27,13 +27,14 @@
     <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Saturday))</span>
     @for (int i = 0; i < firstDayOfWeek; i++)
     {
-        @RenderDay(lastDayOfPreviousMonth.AddDays(-i), index++)
+        var date = lastDayOfPreviousMonth.AddDays(-i);
+        <HistoryCalendarDay @key=@(date.ToString()+index) Index="index++" Day=date Sessions=_sessionsByDate[date] OnDayClick=@(()=>HandleDayClick(date)) OnDayLongPress=@(()=>HandleDayLongPress(date)) />
     }
     @for (int i = 1; i <= DateTime.DaysInMonth(_currentYear, _currentMonth); i++)
     {
         var date = new DateOnly(_currentYear, _currentMonth, i);
 
-        @RenderDay(date, index++)
+        <HistoryCalendarDay @key=@(date.ToString()+index) Index="index++" Day=date Sessions=_sessionsByDate[date] OnDayClick=@(()=>HandleDayClick(date)) OnDayLongPress=@(()=>HandleDayLongPress(date)) />
     }
 
 </div>
@@ -106,32 +107,6 @@
     {
         _currentMonth = DateTime.Now.Month;
         _currentYear = DateTime.Now.Year;
-    }
-
-    private RenderFragment RenderDay(DateOnly date, int index)
-    {
-        var sessions = _sessionsByDate[date];
-        var hasSessions = sessions.Any();
-        var isToday = date == DateOnly.FromDateTime(DateTime.Today);
-
-        var hasSessionsButtonClass = hasSessions ? "text-on-primary" : "";
-        var hasSessionsPillClass = hasSessions ? "bg-primary rounded-full text-on-primary " : "";
-        var isTodayClass = isToday ? "border-primary border border-solid rounded-full text-primary" : "";
-        var delay = index * 10 + "ms";
-
-        return
-            @<div style="animation-delay: @delay;" class=" scale-0 animate-zoom-in justify-center items-center grid grid-rows-1 grid-cols-1" @key=date>
-                <div  class="@hasSessionsPillClass @isTodayClass relative col-start-1 col-end-1 row-start-1 row-end-1 w-12 aspect-square">
-                    @if(hasSessions)
-                    {
-                        <md-ripple></md-ripple>
-                    }
-                </div>
-                <button @oncontextmenu:preventDefault=true @oncontextmenu=@(()=>HandleDayLongPress(date)) @onclick=@(()=>HandleDayClick(date)) class="@hasSessionsButtonClass @isTodayClass flex col-start-1 col-end-1 row-start-1 row-end-1 items-center justify-center w-12 aspect-square relative" >
-                    @date.Day
-                </button>
-
-            </div>;
     }
 
     private async Task HandleDayLongPress(DateOnly date)
