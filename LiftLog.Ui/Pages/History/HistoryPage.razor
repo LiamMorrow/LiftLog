@@ -22,24 +22,23 @@
 }
 else
 {
+    <Card class="mx-2" Type=Card.CardType.Filled>
+        <HistoryCalendar Sessions="_latestSessions" OnSessionClick="HandleSessionClick" OnMonthChange="HandleMonthChange"/>
+    </Card>
+    <ItemList CardType=Card.CardType.Filled Items="filteredToMonthSessions" TItem="Session" Dividers=false >
+        <button class="p-6 relative w-full"  @onclick=@(()=>HandleSessionClick(context)) @oncontextmenu=@(()=>{_selectedSession = context; _deleteDialog?.Open();}) @oncontextmenu:preventDefault=true >
+            <md-ripple></md-ripple>
+            <SplitCardControl>
+                <TitleContent>
+                    <SessionSummaryTitle IsFilled="true" Session="context" ></SessionSummaryTitle>
+                </TitleContent>
+                <MainContent>
+                    <SessionSummary Session="context" ShowSets="true"></SessionSummary>
+                </MainContent>
 
-<Card class="mx-2" Type=Card.CardType.Filled>
-    <HistoryCalendar Sessions="_latestSessions" OnSessionClick="HandleSessionClick"/>
-</Card>
-    <VirtualizedCardList Items="_latestSessions" TItem="Session" OnClick="@HandleSessionClick" CardClass="animate-fade-zoom-in">
-        <SplitCardControl>
-            <TitleContent>
-                <SessionSummaryTitle IsFilled="true" Session="context" ></SessionSummaryTitle>
-            </TitleContent>
-            <Actions>
-                <IconButton Type="IconButtonType.Standard" OnClick=@(() => { _selectedSession = context; _deleteDialog?.Open(); }) Icon="delete"/>
-            </Actions>
-            <MainContent>
-                <SessionSummary Session="context" ShowSets="true"></SessionSummary>
-            </MainContent>
-
-        </SplitCardControl>
-    </VirtualizedCardList>
+            </SplitCardControl>
+        </button>
+    </ItemList>
 }
 
 <Dialog @ref="_deleteDialog">
@@ -55,6 +54,8 @@ else
 {
 
     private List<Session> _latestSessions = new List<Session>();
+    private List<Session> filteredToMonthSessions = new List<Session>();
+    private DateTime currentMonth = DateTime.Now;
     private Session? _selectedSession;
     private Dialog? _deleteDialog;
 
@@ -74,12 +75,19 @@ else
         this._latestSessions = await SessionService
             .GetLatestSessionsAsync()
             .ToListAsync();
+        HandleMonthChange(currentMonth);
     }
 
     private void HandleSessionClick(Session session)
     {
         Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.HistorySession, session));
         NavigationManager.NavigateTo("/history/edit");
+    }
+
+    private void HandleMonthChange(DateTime date)
+    {
+        currentMonth = date;
+        filteredToMonthSessions = _latestSessions.Where(s => s.Date.Month == date.Month && s.Date.Year == date.Year).ToList();
     }
 
     protected override async Task OnInitializedAsync()
@@ -90,6 +98,7 @@ else
         this._latestSessions = await SessionService
             .GetLatestSessionsAsync()
             .ToListAsync();
+        HandleMonthChange(DateTime.Now);
         await base.OnInitializedAsync();
         sw.Stop();
         Logger.LogInformation($"History page initialized in {sw.ElapsedMilliseconds} ms");

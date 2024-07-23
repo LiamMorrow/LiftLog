@@ -53,6 +53,9 @@
     [EditorRequired]
     public EventCallback<Session> OnSessionClick { get; set; }
 
+    [Parameter]
+    public EventCallback<DateTime> OnMonthChange { get; set; }
+
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -61,6 +64,9 @@
 
     private void NextMonth()
     {
+        if(DisableNext){
+            return;
+        }
         if (_currentMonth == 12)
         {
             _currentMonth = 1;
@@ -70,6 +76,7 @@
         {
             _currentMonth++;
         }
+        OnMonthChange.InvokeAsync(new DateTime(_currentYear, _currentMonth, 1));
     }
 
     private void PreviousMonth()
@@ -83,6 +90,8 @@
         {
             _currentMonth--;
         }
+
+        OnMonthChange.InvokeAsync(new DateTime(_currentYear, _currentMonth, 1));
     }
 
     private void GoToToday()
@@ -98,9 +107,10 @@
         var isToday = date.Date == DateTime.Today;
 
         var hasSessionsClass = hasSessions ? "bg-primary rounded-full text-on-primary" : "";
+        var isTodayClass = isToday ? "border-primary border border-solid rounded-full text-primary" : "";
 
         return @<div class="flex justify-center items-center">
-                <button @onclick=@(()=>HandleDayClick(date)) class="@hasSessionsClass flex items-center justify-center w-12 aspect-square relative" >
+                <button @onclick=@(()=>HandleDayClick(date)) class="@hasSessionsClass @isTodayClass flex items-center justify-center w-12 aspect-square relative" >
                     @date.Day
                     @if(hasSessions){
                         <md-ripple></md-ripple>
