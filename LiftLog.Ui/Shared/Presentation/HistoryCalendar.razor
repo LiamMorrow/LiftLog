@@ -123,13 +123,9 @@
     private async Task HandleDayClick(DateTime date)
     {
         var sessions = _sessionsByDate[DateOnly.FromDateTime(date)];
-        if (sessions.Count() == 1)
+        if (sessions.Any())
         {
             await OnSessionClick.InvokeAsync(sessions.First());
-        }
-        else if (sessions.Count() > 1)
-        {
-            // Show sessions
         }
     }
 
