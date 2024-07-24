@@ -23,10 +23,9 @@ public class EventsController(UserDataContext db) : ControllerBase
             return BadRequest(validationResult.Errors);
         }
 
-        var validFollowSecrets = await db
-            .UserFollowSecrets.Where(x =>
-                request.Users.Select(x => x.FollowSecret).Contains(x.Value)
-            )
+        var validFollowSecrets = await db.UserFollowSecrets.Where(x =>
+            request.Users.Select(x => x.FollowSecret).Contains(x.Value)
+        )
             .ToArrayAsync();
         var invalidFollowSecrets = request
             .Users.Select(x => x.FollowSecret)
@@ -40,13 +39,12 @@ public class EventsController(UserDataContext db) : ControllerBase
             })
             .ToArray();
 
-        var events = await db
-            .UserEvents.Join(
-                db.UserEventFilterStubDbSet.CreateResultSetFromData(userIdsAndSince),
-                x => x.UserId,
-                x => x.UserId,
-                (Event, Request) => new { Event, Request }
-            )
+        var events = await db.UserEvents.Join(
+            db.UserEventFilterStubDbSet.CreateResultSetFromData(userIdsAndSince),
+            x => x.UserId,
+            x => x.UserId,
+            (Event, Request) => new { Event, Request }
+        )
             .Where(x => x.Event.Expiry > DateTimeOffset.UtcNow)
             .Where(x => x.Event.Timestamp > x.Request.Since)
             .Select(x => x.Event)

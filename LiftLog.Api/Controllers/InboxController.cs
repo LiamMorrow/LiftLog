@@ -67,8 +67,7 @@ public class InboxController(UserDataContext db) : ControllerBase
             return Unauthorized();
         }
 
-        var inboxItems = await db
-            .UserInboxItems.Where(x => x.UserId == request.UserId)
+        var inboxItems = await db.UserInboxItems.Where(x => x.UserId == request.UserId)
             .ToArrayAsync();
         db.UserInboxItems.RemoveRange(inboxItems);
         await db.SaveChangesAsync();

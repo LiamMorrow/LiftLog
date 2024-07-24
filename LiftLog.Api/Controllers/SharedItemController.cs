@@ -57,14 +57,13 @@ public class SharedItemController(UserDataContext db, PasswordService passwordSe
     [HttpGet]
     public async Task<IActionResult> GetSharedItem(string id)
     {
-        var sharedItem = await db
-            .SharedItems.Select(x => new
-            {
-                x.Id,
-                x.User.RsaPublicKey,
-                x.EncryptedPayload,
-                x.EncryptionIV
-            })
+        var sharedItem = await db.SharedItems.Select(x => new
+        {
+            x.Id,
+            x.User.RsaPublicKey,
+            x.EncryptedPayload,
+            x.EncryptionIV
+        })
             .FirstOrDefaultAsync(x => x.Id == id);
         if (sharedItem == null)
         {

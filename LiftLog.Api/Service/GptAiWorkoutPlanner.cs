@@ -91,18 +91,18 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
                     .Sessions.Select(s => new SessionBlueprint(
                         s.Name,
                         s.Exercises.Select(e => new ExerciseBlueprint(
-                                e.Name,
-                                e.Sets,
-                                e.RepsPerSet,
-                                e.WeightIncreaseOnSuccess,
-                                new Rest(
-                                    TimeSpan.FromSeconds(e.RestBetweenSets.MinRestSeconds),
-                                    TimeSpan.FromSeconds(e.RestBetweenSets.MaxRestSeconds),
-                                    TimeSpan.FromSeconds(e.RestBetweenSets.FailureRestSeconds)
-                                ),
-                                false,
-                                Notes: ""
-                            ))
+                            e.Name,
+                            e.Sets,
+                            e.RepsPerSet,
+                            e.WeightIncreaseOnSuccess,
+                            new Rest(
+                                TimeSpan.FromSeconds(e.RestBetweenSets.MinRestSeconds),
+                                TimeSpan.FromSeconds(e.RestBetweenSets.MaxRestSeconds),
+                                TimeSpan.FromSeconds(e.RestBetweenSets.FailureRestSeconds)
+                            ),
+                            false,
+                            Notes: ""
+                        ))
                             .ToImmutableList(),
                         Notes: s.Description
                     ))

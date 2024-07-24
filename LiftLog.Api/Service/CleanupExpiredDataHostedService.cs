@@ -14,8 +14,7 @@ public class CleanupExpiredDataHostedService(IServiceProvider services) : Backgr
                 using var scope = services.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<UserDataContext>();
                 var now = DateTimeOffset.UtcNow;
-                var expiredEvents = await db
-                    .UserEvents.Where(e => e.Expiry < now)
+                var expiredEvents = await db.UserEvents.Where(e => e.Expiry < now)
                     .ToListAsync(cancellationToken: stoppingToken);
                 db.UserEvents.RemoveRange(expiredEvents);
                 await db.SaveChangesAsync(stoppingToken);

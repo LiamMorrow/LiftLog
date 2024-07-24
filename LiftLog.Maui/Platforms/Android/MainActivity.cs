@@ -44,8 +44,9 @@ public class MainActivity : MauiAppCompatActivity
         base.OnCreate(savedInstanceState);
         WindowCompat.SetDecorFitsSystemWindows(Window!, false);
         WebViewSoftInputPatch.Initialize();
-        var insetsManager =
-            IPlatformApplication.Current?.Services.GetRequiredService<InsetsManager>();
+        var insetsManager = IPlatformApplication
+            .Current?.Services
+            .GetRequiredService<InsetsManager>();
         if (insetsManager is not null)
         {
             insetsManager.SystemSafeInsetBottom =
