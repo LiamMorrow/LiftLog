@@ -49,16 +49,19 @@ else
     <div class="m-2">
         <Tips/>
     </div>
-    <CardList Items="upcoming.IndexedTuples()" OnClick="x => SelectSession(x.Item)">
-        <SplitCardControl>
-            <TitleContent>
-                <SessionSummaryTitle IsFilled="context.Item.IsStarted" Session="context.Item" />
-            </TitleContent>
-            <MainContent>
-                <SessionSummary ShowSets=true Session="context.Item"></SessionSummary>
-            </MainContent>
-        </SplitCardControl>
-    </CardList>
+    <ItemList Items="upcoming" Dividers=false>
+        <button class="p-6 relative w-full"  @onclick=@(()=>SelectSession(context))>
+            <md-ripple></md-ripple>
+            <SplitCardControl>
+                <TitleContent>
+                    <SessionSummaryTitle IsFilled="context.IsStarted" Session="context" />
+                </TitleContent>
+                <MainContent>
+                    <SessionSummary ShowSets=true Session="context"></SessionSummary>
+                </MainContent>
+            </SplitCardControl>
+        </button>
+    </ItemList>
 }
 
 

@@ -2,10 +2,10 @@
 <div @attributes="AdditionalAttributes" class=" @(AdditionalAttributes?.GetValueOrDefault("class")) flex flex-col @VerticalPaddingClass itemlist">
     @for (var i = 0; i < Items.Count; i++)
     {
-        <div class="text-on-surface">
+        <div class="text-on-surface item" >
             @ChildContent?.Invoke(Items[i])
         </div>
-        @if(i < Items.Count - 1){
+        @if(Dividers && i < Items.Count - 1){
             <md-divider></md-divider>
         }
     }
@@ -18,6 +18,9 @@
     [Parameter] public RenderFragment<TItem>? ChildContent { get; set; } = null!;
 
     [Parameter] public bool VerticalPadding { get; set; } = true;
+
+    [Parameter]
+    public bool Dividers { get; set; } = true;
 
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }

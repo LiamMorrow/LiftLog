@@ -28,6 +28,7 @@
         @onpointerdown="OnPointerDown"
         @onpointerleave="OnPointerLeave"
         @onclick="OnPointerUp"
+        @oncontextmenu:preventDefault=true
         style="box-shadow: inset 0 0 0 @BoxShadowFill var(--md-sys-color-secondary-container);">
         @if(!IsReadonly)
         {

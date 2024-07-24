@@ -3,7 +3,6 @@
 @inject IState<FeedState> FeedState
 @inject IStringSharer StringSharer
 @inject IDispatcher Dispatcher
-@inject ToastService ToastService
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
@@ -105,7 +104,7 @@
     private void OnError(FeedApiErrorAction action)
     {
         Error = action.Message;
-        ToastService.ShowToast(action.Message);
+        Dispatcher.Dispatch(new ToastAction(action.Message));
         StateHasChanged();
     }
 

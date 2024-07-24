@@ -28,9 +28,24 @@
       },
       "animation": {
         "fade-zoom-in": "fade-zoom-in 150ms ease",
+        "zoom-in": "zoom-in 150ms ease forwards",
         "fade-zoom-out": "fade-zoom-out 150ms ease forwards"
       },
       "keyframes": {
+        "zoom-in": {
+          "0%": {
+            "transform": "scale(0)",
+            "opacity": "0"
+          },
+          "90%": {
+            "transform": "scale(1.1)",
+            "opacity": "1"
+          },
+          "100%": {
+            "transform": "scale(1)",
+            "opacity": "1"
+          }
+        },
         "fade-zoom-in": {
           "0%": {
             "transform": "scale(0.9)",

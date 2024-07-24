@@ -18,12 +18,14 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
+    [Parameter] public Card.CardType CardType { get; set; } = Card.CardType.Outlined;
+
     [Parameter] public string? CardClass { get; set; }
 
 
     private RenderFragment RenderCard(TItem item)
     {
-        return @<Card IsHighlighted="ShouldHighlight?.Invoke(item) ?? false" OnClick="@(OnClick != null ? _ => OnClick(item) : null)" class="@CardClass">
+        return @<Card Type=CardType IsHighlighted="ShouldHighlight?.Invoke(item) ?? false" OnClick="@(OnClick != null ? _ => OnClick(item) : null)" class="@CardClass">
             @ChildContent?.Invoke(item)
         </Card>;
     }
