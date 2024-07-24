@@ -1,10 +1,19 @@
 @inject IHapticFeedbackService HapticFeedback
 
-<div style="animation-delay: @Delay;" @onpointerdown=SetIsHolding @onpointerup=ClearIsHolding @onpointerleave=ClearIsHolding @onpointercancel=ClearIsHolding class="@HoldingClass transition-transform @AnimationClass justify-center items-center flex" >
+<div style="animation-delay: @Delay;"
+  class="@HoldingClass transition-transform @AnimationClass justify-center items-center flex" >
     <div class="grid  w-12 aspect-square">
     <div class="@HasSessionsPillClass @IsTodayClass relative col-start-1 col-end-1 row-start-1 row-end-1">
     </div>
-    <button disabled=@IsFuture @oncontextmenu:preventDefault=true @oncontextmenu=HandleDayLongPress @onclick=HandleDayClick class="@HasSessionsButtonClass @IsTodayClass flex col-start-1 col-end-1 row-start-1 row-end-1 items-center justify-center rounded-full relative" >
+    <button disabled=@IsFuture
+        @onpointerup=OnPointerLeave
+        @onpointercancel=OnPointerLeave
+        @onpointerdown="OnPointerDown"
+        @onpointerleave="OnPointerLeave"
+        @onclick="OnPointerUp"
+        @oncontextmenu:preventDefault=true
+        @oncontextmenu:stopPropagation=true
+        class="@HasSessionsButtonClass @IsTodayClass flex col-start-1 col-end-1 row-start-1 row-end-1 items-center justify-center rounded-full relative" >
         @(Day.Day)
         @if(!IsFuture)
         {
@@ -47,7 +56,11 @@
     string Delay => Index * 10 + "ms";
     int DelayMs => Index * 10;
 
-    string HoldingClass => isHolding ? "scale-110" : "scale-100";
+    string HoldingClass => AnimationClass != "" ? "" : isHolding ? "scale-110" : "scale-100";
+
+
+    private DateTime? _lastPointerDownTime;
+    private DateTime? _holdTime;
 
     void SetIsHolding ()=>isHolding = true;
     void ClearIsHolding ()=>isHolding = false;
@@ -73,6 +86,7 @@
        await OnDayClick.InvokeAsync();
     }
 
+
     async Task HandleDayLongPress()
     {
         if(IsFuture)
@@ -82,4 +96,45 @@
         await HapticFeedback.PerformAsync(HapticFeedbackType.LongPress);
         await OnDayLongPress.InvokeAsync();
     }
+
+    private async void OnPointerDown(PointerEventArgs args)
+    {
+        if(IsFuture)
+        {
+            return;
+        }
+        SetIsHolding();
+        _lastPointerDownTime = DateTime.Now;
+        await Task.Delay(400);
+        if (_lastPointerDownTime is null || _lastPointerDownTime.Value.AddMilliseconds(400) > DateTime.Now) return;
+        _holdTime = DateTime.Now;
+        _lastPointerDownTime = null;
+        await HandleDayLongPress();
+        ClearIsHolding();
+        _holdTime = null;
+    }
+
+
+    private void OnPointerLeave(PointerEventArgs args)
+    {
+        if(IsFuture) return;
+        ClearIsHolding();
+        _holdTime = null;
+        _lastPointerDownTime = null;
+    }
+
+    private async void OnPointerUp(MouseEventArgs args)
+    {
+        if(IsFuture) return;
+        // On desktop holding down opens a right click menu - so this does not fire
+        // This results in needing to click the repcount twice after cycling.  Not an issue on mobile
+        if (_holdTime is null)
+        {
+            await HandleDayClick();
+        }
+        ClearIsHolding();
+        _holdTime = null;
+        _lastPointerDownTime = null;
+    }
+
 }
