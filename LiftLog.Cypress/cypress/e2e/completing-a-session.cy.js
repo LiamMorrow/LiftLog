@@ -67,11 +67,11 @@ describe('Completing a session', () => {
 
         cy.contains('Finish').click()
 
-        cy.getA('.itemlist .item').first('.item').first().should('contain.text', 'Workout B')
+        cy.getA('[data-cy=session-summary-title]').should('contain.text', 'Workout B')
 
         cy.navigate('History')
 
-        cy.getA('.itemlist .item').first('.item').first('.card').should('contain.text', 'Workout A').click()
+        cy.getA('[data-cy=session-summary-title]').should('contain.text', 'Workout A').click()
 
         cy.getA('md-filled-text-field[type=date]').get('input', { includeShadowDom: true }).first().click().type('2023-05-22')
 
@@ -84,7 +84,7 @@ describe('Completing a session', () => {
           cy.getA('[data-cy=calendar-nav-previous-month]').first().click()
         }, 200)
 
-        cy.getA('.itemlist .item').first('.item').first().should('contain.text', 'Workout A').should('contain.text', '22 May 2023')
+        cy.getA('[data-cy=session-summary-title]').should('contain.text', 'Workout A').should('contain.text', '22 May 2023')
       })
 
       it('can complete a workout while switching to per set weights with it progressing properly', () => {
@@ -126,10 +126,10 @@ describe('Completing a session', () => {
         cy.getA('.snackbar').should('be.visible').should('contain.text', 'This session').should('contain.text', '650')
         cy.contains('Finish').click()
 
-        cy.getA('.itemlist .item').eq(0).should('contain.text', 'Workout B')
-        cy.getA('.itemlist .item').eq(1).should('contain.text', 'Workout A').click()
+        cy.getA('[data-cy=session-summary-title]').eq(0).should('contain.text', 'Workout B')
+        cy.getA('[data-cy=session-summary-title]').eq(1).should('contain.text', 'Workout A').click()
 
-        cy.getA('.itemlist div').eq(0).should('contain.text', 'Squat')
+        cy.getA('[data-cy=weighted-exercise]').eq(0).should('contain.text', 'Squat')
         // Since all sets were completed - with at least one of the sets having equal or higher weight than the top level, the weight should have increased
         cy.getA('[data-cy=weight-display]').first().should('contain.text', '15kg')
       })
@@ -147,7 +147,7 @@ describe('Completing a session', () => {
 
         cy.navigate('History')
 
-        cy.getA('.itemlist .item').first('.item').should('contain.text', 'Workout A').click()
+        cy.getA('[data-cy=session-summary-title]').first().should('contain.text', 'Workout A').click()
 
         cy.getA('[data-cy=more-exercise-btn]').first().click()
         cy.getA('[data-cy=exercise-notes-btn]').first().click()
