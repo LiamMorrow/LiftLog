@@ -25,6 +25,24 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
+#if IOS
+        // See: https://github.com/dotnet/maui/issues/23390#issue-2385115496
+        // Check for ios 18
+        if (DeviceInfo.Version.Major >= 18)
+        {
+            // Set the AppOriginUri to the app://localhost/ scheme
+            var handlerType =
+                typeof(Microsoft.AspNetCore.Components.WebView.Maui.BlazorWebViewHandler);
+            var field = handlerType.GetField(
+                "AppOriginUri",
+                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic
+            );
+            if (field != null)
+            {
+                field.SetValue(null, new Uri("app://localhost/"));
+            }
+        }
+#endif
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
