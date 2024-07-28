@@ -77,6 +77,6 @@ It also handles the AI generated plans with OpenAI.
 
 The site folder contains the source for the website at liftlog.online, along with the privacy policy etc. It needs some love.
 
-### Stats
+## Stats
 
 [![Star History Chart](https://api.star-history.com/svg?repos=LiamMorrow/LiftLog&type=Date)](https://star-history.com/#LiamMorrow/LiftLog&Date)
