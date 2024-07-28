@@ -72,8 +72,9 @@ internal partial class FeedUserDaoV1
                     : new Lib.Services.AesKey(value.AesKey.ToByteArray()),
                 PublicKey: new Lib.Services.RsaPublicKey(value.PublicKey.ToByteArray()),
                 CurrentPlan: value
-                    .CurrentPlan?.Sessions
-                    .Select(sessionBlueprintDao => sessionBlueprintDao.ToModel())
+                    .CurrentPlan?.Sessions.Select(sessionBlueprintDao =>
+                        sessionBlueprintDao.ToModel()
+                    )
                     .ToImmutableList() ?? [],
                 ProfilePicture: value.ProfilePicture.IsEmpty
                     ? null

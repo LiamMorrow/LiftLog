@@ -218,9 +218,7 @@ public static class MauiProgram
         MainThread.BeginInvokeOnMainThread(() =>
         {
             Application
-                .Current?.Handler
-                .MauiContext?.Services
-                .GetRequiredService<Fluxor.IDispatcher>()
+                .Current?.Handler.MauiContext?.Services.GetRequiredService<Fluxor.IDispatcher>()
                 .Dispatch(new NavigateAction(path + query));
         });
     }
