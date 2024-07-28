@@ -1,5 +1,5 @@
 
-<div class="grid @GridRows gap-x-4 text-start">
+<div class="grid @GridRows gap-x-4 text-start" data-cy="session-summary">
     @foreach (var exercise in Session.RecordedExercises)
     {
         <span>@exercise.Blueprint.Name</span>
