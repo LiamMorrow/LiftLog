@@ -73,9 +73,9 @@ Feeds are end to end encrypted using a shared symmetric key via AES.
 
 It also handles the AI generated plans with OpenAI.
 
-### Site
+### [Site](./site)
 
-The site folder contains the source for the website at liftlog.online, along with the privacy policy etc. It needs some love.
+The site folder contains the source for the website at liftlog.online, along with the privacy policy etc.
 
 ## Stats
 
