@@ -27,7 +27,7 @@
         <PackageReference Include="Fluxor.Blazor.Web" Version="6.0.0" />
         <PackageReference Include="System.Linq.Async" Version="6.0.1" />
 
-        <PackageReference Include="Google.Protobuf" Version="3.27.2" />
+        <PackageReference Include="Google.Protobuf" Version="3.27.3" />
         <PackageReference Include="Grpc.Tools" Version="2.65.0">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>

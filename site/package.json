@@ -39,7 +39,7 @@
         "bootstrap": "5.3.3"
     },
     "devDependencies": {
-        "autoprefixer": "10.4.19",
+        "autoprefixer": "10.4.20",
         "browser-sync": "3.0.2",
         "chokidar": "3.6.0",
         "concurrently": "8.2.2",
