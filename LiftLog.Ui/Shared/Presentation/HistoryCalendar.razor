@@ -2,7 +2,7 @@
 
 
 @{
-    var firstDayOfMonth = new DateOnly(_currentYear, _currentMonth, 1);
+    var firstDayOfMonth = new DateOnly(CurrentYear, CurrentMonth, 1);
     var firstDayOfWeek = (int)firstDayOfMonth.DayOfWeek;
     var lastDayOfPreviousMonth = firstDayOfMonth.AddDays(-1);
     var index = 0;
@@ -12,7 +12,7 @@
         <IconButton data-cy="calendar-nav-previous-month" Type=IconButtonType.Standard @onclick="PreviousMonth" Icon="chevron_left" />
     </div>
     <div class="col-span-5 flex my-2 justify-center items-center">
-        <h2 data-cy="calendar-month">@DateTimeFormatInfo.CurrentInfo.GetMonthName(_currentMonth) @_currentYear</h2>
+        <h2 data-cy="calendar-month">@DateTimeFormatInfo.CurrentInfo.GetMonthName(CurrentMonth) @CurrentYear</h2>
     </div>
     <div class="col-span-1 my-2 text-right">
         <IconButton Type=IconButtonType.Standard @onclick="NextMonth" disabled=@DisableNext Icon="chevron_right" />
@@ -28,24 +28,31 @@
     @for (int i = 0; i < firstDayOfWeek; i++)
     {
         var date = lastDayOfPreviousMonth.AddDays(-i);
-        <HistoryCalendarDay @key=@(date.ToString()+index) Index="index++" Day=date Sessions=_sessionsByDate[date] OnDayClick=@(()=>HandleDayClick(date)) OnDayLongPress=@(()=>HandleDayLongPress(date)) />
+        <HistoryCalendarDay ForOtherMonth=true @key=@(date.ToString()+index) Index="index++" Day=date Sessions=_sessionsByDate[date] OnDayClick=@(()=>HandleDayClick(date)) OnDayLongPress=@(()=>HandleDayLongPress(date)) />
     }
-    @for (int i = 1; i <= DateTime.DaysInMonth(_currentYear, _currentMonth); i++)
+    @for (int i = 1; i <= DateTime.DaysInMonth(CurrentYear, CurrentMonth); i++)
     {
-        var date = new DateOnly(_currentYear, _currentMonth, i);
+        var date = new DateOnly(CurrentYear, CurrentMonth, i);
 
         <HistoryCalendarDay @key=@(date.ToString()+index) Index="index++" Day=date Sessions=_sessionsByDate[date] OnDayClick=@(()=>HandleDayClick(date)) OnDayLongPress=@(()=>HandleDayLongPress(date)) />
+    }
+
+@{var extraDay =0;}
+    @while(index % 7 != 0)
+    {
+        var date =new DateOnly(CurrentYear, CurrentMonth, DateTime.DaysInMonth(CurrentYear, CurrentMonth)).AddDays(++extraDay);
+        <HistoryCalendarDay ForOtherMonth=true @key=@(date.ToString()+index) Index="index++" Day=date Sessions=_sessionsByDate[date] OnDayClick=@(()=>HandleDayClick(date)) OnDayLongPress=@(()=>HandleDayLongPress(date)) />
     }
 
 </div>
 
 @code {
-    private int _currentMonth = DateTime.Now.Month;
-    private int _currentYear = DateTime.Now.Year;
+    [Parameter][EditorRequired] public int CurrentMonth {get;set;}
+    [Parameter][EditorRequired] public int CurrentYear {get;set;}
 
     private ILookup<DateOnly, Session> _sessionsByDate = null!;
 
-    private bool DisableNext => _currentYear == DateTime.Now.Year && _currentMonth == DateTime.Now.Month;
+    private bool DisableNext => CurrentYear == DateTime.Now.Year && CurrentMonth == DateTime.Now.Month;
 
     [Parameter]
     [EditorRequired]
@@ -76,37 +83,37 @@
         if(DisableNext){
             return;
         }
-        if (_currentMonth == 12)
+        if (CurrentMonth == 12)
         {
-            _currentMonth = 1;
-            _currentYear++;
+            CurrentMonth = 1;
+            CurrentYear++;
         }
         else
         {
-            _currentMonth++;
+            CurrentMonth++;
         }
-        OnMonthChange.InvokeAsync(new DateOnly(_currentYear, _currentMonth, 1));
+        OnMonthChange.InvokeAsync(new DateOnly(CurrentYear, CurrentMonth, 1));
     }
 
     private void PreviousMonth()
     {
-        if (_currentMonth == 1)
+        if (CurrentMonth == 1)
         {
-            _currentMonth = 12;
-            _currentYear--;
+            CurrentMonth = 12;
+            CurrentYear--;
         }
         else
         {
-            _currentMonth--;
+            CurrentMonth--;
         }
 
-        OnMonthChange.InvokeAsync(new DateOnly(_currentYear, _currentMonth, 1));
+        OnMonthChange.InvokeAsync(new DateOnly(CurrentYear, CurrentMonth, 1));
     }
 
     private void GoToToday()
     {
-        _currentMonth = DateTime.Now.Month;
-        _currentYear = DateTime.Now.Year;
+        CurrentMonth = DateTime.Now.Month;
+        CurrentYear = DateTime.Now.Year;
     }
 
     private async Task HandleDayLongPress(DateOnly date)

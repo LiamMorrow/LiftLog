@@ -15,7 +15,8 @@ public record AppState(
     bool HasRequestedNotificationPermission,
     AppColorScheme<uint> ColorScheme,
     int AppLaunchCount,
-    AppRatingResult AppRatingResult
+    AppRatingResult AppRatingResult,
+    (int Year, int Month)? HistoryYearMonth
 );
 
 public enum AppRatingResult

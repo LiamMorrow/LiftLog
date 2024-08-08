@@ -14,6 +14,8 @@ public record ToastAction(string Message);
 
 public record SetBackNavigationUrlAction(string? BackNavigationUrl);
 
+public record SetHistoryYearMonthAction(int Year, int Month);
+
 public record NavigateAction(
     string Path,
     bool ClearPageStack = true,

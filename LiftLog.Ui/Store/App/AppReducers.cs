@@ -19,6 +19,13 @@ public static class AppReducers
         };
 
     [ReducerMethod]
+    public static AppState SetHistoryYearMonth(AppState state, SetHistoryYearMonthAction action) =>
+        state with
+        {
+            HistoryYearMonth = (action.Year, action.Month)
+        };
+
+    [ReducerMethod]
     public static AppState SetThemeColor(AppState state, ThemeColorUpdatedAction action) =>
         state with
         {

@@ -21,6 +21,7 @@ public class AppFeature : Feature<AppState>
             HasRequestedNotificationPermission: false,
             ColorScheme: new AppColorScheme<uint>(),
             AppLaunchCount: 0,
-            AppRatingResult: AppRatingResult.NotRated
+            AppRatingResult: AppRatingResult.NotRated,
+            HistoryYearMonth: null
         );
 }

@@ -8,6 +8,7 @@
 @inject SessionService SessionService
 @inject NavigationManager NavigationManager
 @inject IState<CurrentSessionState> CurrentSessionState
+@inject IState<AppState> AppState
 @inject IState<ProgramState> ProgramState
 @inject IDispatcher Dispatcher
 @inject ILogger<HistoryPage> Logger
@@ -25,26 +26,25 @@ else
 {
     <Card class="mx-2" Type=Card.CardType.Filled>
         <HistoryCalendar
+            CurrentMonth="@currentMonth.Month"
+            CurrentYear="@currentMonth.Year"
             Sessions="_latestSessions"
             OnSessionClick="HandleSessionClick"
             OnMonthChange="HandleMonthChange"
             OnDateSelect=CreateSessionAtDate
             OnSessionLongPress=@((session)=>{_selectedSession = session; _deleteDialog?.Open();}) />
     </Card>
-    <ItemList CardType=Card.CardType.Filled Items="filteredToMonthSessions" TItem="Session" Dividers=false >
-        <button class="p-6 relative w-full"  @onclick=@(()=>HandleSessionClick(context)) @oncontextmenu=@(()=>{_selectedSession = context; _deleteDialog?.Open();}) @oncontextmenu:preventDefault=true >
-            <md-ripple></md-ripple>
-            <SplitCardControl>
-                <TitleContent>
-                    <SessionSummaryTitle IsFilled="true" Session="context" ></SessionSummaryTitle>
-                </TitleContent>
-                <MainContent>
-                    <SessionSummary Session="context" ShowSets="true"></SessionSummary>
-                </MainContent>
+    <CardList CardType=Card.CardType.Outlined Items="filteredToMonthSessions" TItem="Session" OnClick="HandleSessionClick" OnContextMenu=@((item)=>{_selectedSession = item; _deleteDialog?.Open();}) >
+        <SplitCardControl>
+            <TitleContent>
+                <SessionSummaryTitle IsFilled="true" Session="context" ></SessionSummaryTitle>
+            </TitleContent>
+            <MainContent>
+                <SessionSummary Session="context" ShowSets="true"></SessionSummary>
+            </MainContent>
 
-            </SplitCardControl>
-        </button>
-    </ItemList>
+        </SplitCardControl>
+    </CardList>
 }
 
 <ConfirmationDialog @ref="_deleteDialog" OkText="Delete" OnOk=DeleteSession>
@@ -87,6 +87,7 @@ else
     {
         currentMonth = date;
         filteredToMonthSessions = _latestSessions.Where(s => s.Date.Month == date.Month && s.Date.Year == date.Year).ToList();
+        Dispatcher.Dispatch(new SetHistoryYearMonthAction(date.Year, date.Month));
     }
 
     private void CreateSessionAtDate(DateOnly date)
@@ -105,7 +106,15 @@ else
         this._latestSessions = await SessionService
             .GetLatestSessionsAsync()
             .ToListAsync();
-        HandleMonthChange(DateOnly.FromDateTime(DateTime.Now));
+
+        if (AppState.Value.HistoryYearMonth is (int year, int month))
+        {
+            HandleMonthChange(new DateOnly(year, month, 1));
+        }
+        else
+        {
+            HandleMonthChange(DateOnly.FromDateTime(DateTime.Now));
+        }
         await base.OnInitializedAsync();
         sw.Stop();
         Logger.LogInformation($"History page initialized in {sw.ElapsedMilliseconds} ms");

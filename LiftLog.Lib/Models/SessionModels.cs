@@ -110,13 +110,13 @@ public record RecordedExercise(
         PotentialSets.All(x => x.Set is not null && x.Set.RepsCompleted >= Blueprint.RepsPerSet)
         && PotentialSets.Any(x => x.Weight >= Weight);
 
-    [NotNullIfNotNull("FirstRecordedSet")]
+    [NotNullIfNotNull(nameof(FirstRecordedSet))]
     public PotentialSet? LastRecordedSet =>
         PotentialSets
             .OrderByDescending(x => x.Set?.CompletionTime)
             .FirstOrDefault(x => x.Set is not null);
 
-    [NotNullIfNotNull("LastRecordedSet")]
+    [NotNullIfNotNull(nameof(LastRecordedSet))]
     public PotentialSet? FirstRecordedSet =>
         PotentialSets.OrderBy(x => x.Set?.CompletionTime).FirstOrDefault(x => x.Set is not null);
 
@@ -124,9 +124,15 @@ public record RecordedExercise(
         LastRecordedSet?.Set?.CompletionTime - FirstRecordedSet?.Set?.CompletionTime
         ?? TimeSpan.Zero;
 
-    public decimal OneRepMax => Math.Floor(Weight / (1.0278m - (0.0278m * Blueprint.RepsPerSet)));
+    public decimal OneRepMax =>
+        Math.Floor(MaxWeightLifted / (1.0278m - (0.0278m * Blueprint.RepsPerSet)));
 
     public bool HasRemainingSets => PotentialSets.Any(x => x.Set is null);
+
+    public decimal MaxWeightLifted =>
+        PerSetWeight
+            ? PotentialSets.Where(x => x.Set is not null).Select(x => x.Weight).Append(Weight).Max()
+            : Weight;
 }
 
 public record RecordedSet(int RepsCompleted, TimeOnly CompletionTime);

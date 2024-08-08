@@ -2,7 +2,12 @@
 <div @attributes="AdditionalAttributes" class=" @(AdditionalAttributes?.GetValueOrDefault("class")) flex flex-col gap-2 p-2 cardlist">
     @foreach (var item in Items)
     {
-        <Card class="@CardClass" Type="CardType" IsHighlighted="ShouldHighlight?.Invoke(item) ?? false" OnClick=@(OnClick != null ? _ => OnClick(item) : null)>
+        <Card
+            class="@CardClass"
+            Type="CardType"
+            OnContextMenu=@(()=>OnContextMenu.InvokeAsync(item))
+            IsHighlighted="ShouldHighlight?.Invoke(item) ?? false"
+            OnClick=@(OnClick != null ? _ => OnClick(item) : null)>
             @ChildContent?.Invoke(item)
         </Card>
     }
@@ -15,6 +20,8 @@
     [Parameter] public RenderFragment<TItem>? ChildContent { get; set; } = null!;
 
     [Parameter] public Action<TItem>? OnClick { get; set; }
+
+    [Parameter] public EventCallback<TItem> OnContextMenu { get; set; }
 
     [Parameter] public Func<TItem, bool>? ShouldHighlight { get; set; }
 
