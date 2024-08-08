@@ -31,7 +31,9 @@ describe('Completing a session', () => {
 
       cy.navigate('History')
 
-      cy.getA('.itemlist .item').first('.item').should('contain.text', 'Freeform Session').should('contain.text', '7.5kg')
+      cy.getA('[data-cy=session-summary-title]').first().should('contain.text', 'Freeform Session');
+
+      cy.getA('[data-cy=session-summary]').should('contain.text', '7.5kg')
     })
   })
 
