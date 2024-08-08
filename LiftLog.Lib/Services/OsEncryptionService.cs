@@ -103,6 +103,8 @@ public class OsEncryptionService : IEncryptionService
     {
         //Generate a public/private key pair.
         var aes = Aes.Create();
+
+        aes.KeySize = 128;
         aes.GenerateKey();
 
         return ValueTask.FromResult(new AesKey(aes.Key));
