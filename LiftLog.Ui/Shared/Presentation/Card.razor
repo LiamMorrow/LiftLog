@@ -2,7 +2,10 @@
 
 <div
     class="@(AdditionalAttributes?.GetValueOrDefault("class")) @(HasPadding ?"p-5":"") relative @Style rounded-card text-on-surface card"
-    @onclick="HandleOnClick">
+    @onclick="HandleOnClick"
+    @oncontextmenu=OnContextMenu @oncontextmenu:preventDefault=@(OnContextMenu.HasDelegate)
+    >
+
     @if (OnClick != null)
     {
         <md-ripple></md-ripple>
@@ -19,6 +22,8 @@
     [Parameter] public RenderFragment ChildContent { get; set; } = null!;
 
     [Parameter] public Action<MouseEventArgs>? OnClick { get; set; }
+
+    [Parameter] public EventCallback OnContextMenu { get; set; }
 
     [Parameter] public bool IsHighlighted { get; set; }
 
