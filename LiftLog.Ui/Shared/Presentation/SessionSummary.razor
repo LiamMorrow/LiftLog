@@ -1,17 +1,39 @@
 
-<div class="grid @GridRows gap-x-4 text-start" data-cy="session-summary">
+<div class="grid @GridRows gap-x-4 gap-y-0.5 text-start" data-cy="session-summary">
     @foreach (var exercise in Session.RecordedExercises)
     {
+        var splitWeights = exercise.PerSetWeight && !exercise.PotentialSets.All(s => s.Weight == exercise.Weight);
         <span>@exercise.Blueprint.Name</span>
-        @if (ShowSets)
+        @if (ShowSets && !splitWeights)
         {
-            <span class="flex items-center">@(exercise.Blueprint.Sets)x@(exercise.Blueprint.RepsPerSet) </span>
+            <span class="flex items-center justify-end">
+                <span class="@ChipClass">
+                    @(exercise.Blueprint.Sets)x@(exercise.Blueprint.RepsPerSet)
+                </span>
+            </span>
         }
 
-        @if (ShowWeight)
+        @if (ShowWeight && !splitWeights)
         {
             <span class="flex justify-end">
-                <WeightFormat Weight="@exercise.Weight"/>
+                <span class="@ChipClass">
+                    <WeightFormat Weight="@exercise.Weight"/>
+                </span>
+            </span>
+        }
+
+        @if (ShowWeight && splitWeights)
+        {
+            <span class="flex justify-end gap-1  items-center col-span-2">
+                @foreach(var set in exercise.PotentialSets)
+                {
+                    <span class="flex gap-0.5 @ChipClass">
+                        @if (ShowSets){
+                            <span>@(set.Set?.RepsCompleted ?? exercise.Blueprint.RepsPerSet)</span><span>x</span>
+                        }
+                        <WeightFormat Weight="@set.Weight"/>
+                    </span>
+                }
             </span>
         }
     }
@@ -24,6 +46,8 @@
     [Parameter] public bool ShowSets { get; set; }
 
     [Parameter] public bool ShowWeight { get; set; } = true;
+
+    private string ChipClass => "bg-surface-container-highest text-on-surface-variant rounded-md py-0.5 px-1";
 
     private string GridRows => (ShowSets, ShowWeight) switch
     {

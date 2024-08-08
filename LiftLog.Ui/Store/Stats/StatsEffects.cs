@@ -79,17 +79,16 @@ public class StatsEffects(
 
             var averageTimeBetweenSets = sessions
                 .SelectMany(x => x.RecordedExercises)
-                .Select(x =>
+                .SelectMany(x =>
                     x.PotentialSets.Select(set => set.Set?.CompletionTime.ToTimeSpan())
                         .WhereNotNull()
                         .Order()
                         .Pairwise((a, b) => b - a)
                 )
-                .SelectMany(x => x)
                 .Aggregate(
-                    (TimeSpan.Zero, 0),
-                    (acc, x) => (acc.Item1 + x, acc.Item2 + 1),
-                    acc => acc.Item2 != 0 ? acc.Item1 / acc.Item2 : TimeSpan.Zero
+                    (TimeSpan.Zero, RunningAvg: 0),
+                    (acc, x) => (acc.Zero + x, acc.RunningAvg + 1),
+                    acc => acc.RunningAvg != 0 ? acc.Zero / acc.RunningAvg : TimeSpan.Zero
                 );
 
             var averageSessionLength = sessions
@@ -97,8 +96,8 @@ public class StatsEffects(
                 .WhereNotNull()
                 .Aggregate(
                     (TimeSpan.Zero, 0),
-                    (acc, x) => (acc.Item1 + x, acc.Item2 + 1),
-                    acc => acc.Item2 != 0 ? acc.Item1 / acc.Item2 : TimeSpan.Zero
+                    (acc, x) => (acc.Zero + x, acc.Item2 + 1),
+                    acc => acc.Item2 != 0 ? acc.Zero / acc.Item2 : TimeSpan.Zero
                 );
 
             var exerciseMostTimeSpent = sessions
@@ -114,7 +113,7 @@ public class StatsEffects(
             var heaviestLift = sessions
                 .SelectMany(x => x.RecordedExercises)
                 .Where(x => x.FirstRecordedSet is not null)
-                .MaxBy(x => x.Weight);
+                .MaxBy(x => x.MaxWeightLifted);
 
             dispatcher.Dispatch(
                 new SetOverallStatsAction(
@@ -186,7 +185,7 @@ public class StatsEffects(
                 exercises
                     .Select(exercise => new TimeTrackedStatistic(
                         exercise.DateTime,
-                        exercise.RecordedExercise.Weight
+                        exercise.RecordedExercise.MaxWeightLifted
                     ))
                     .ToImmutableList()
             ),
