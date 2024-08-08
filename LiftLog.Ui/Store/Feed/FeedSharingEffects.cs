@@ -101,7 +101,11 @@ public class FeedSharingEffects(
                 sharedItemPayload.PayloadCase
             );
             dispatcher.Dispatch(
-                new SetSharedItemAction(RemoteData.Errored("Failed to parse shared item"))
+                new SetSharedItemAction(
+                    RemoteData.Errored(
+                        "Failed to parse shared content. Please update the app to the latest version and try again."
+                    )
+                )
             );
             return;
         }
