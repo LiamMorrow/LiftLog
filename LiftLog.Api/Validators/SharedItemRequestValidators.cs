@@ -13,7 +13,7 @@ public class CreateSharedItemRequestValidator : AbstractValidator<CreateSharedIt
         RuleFor(x => x.UserId).NotEmpty();
         RuleFor(x => x.Password).NotEmpty().MaximumLength(40);
         RuleFor(x => x.EncryptedPayload).NotNull();
-        RuleFor(x => x.EncryptedPayload.EncryptedPayload.Length).InclusiveBetween(0, 5 * KB);
+        RuleFor(x => x.EncryptedPayload.EncryptedPayload.Length).InclusiveBetween(0, 20 * KB);
         RuleFor(x => x.EncryptedPayload.IV).NotEmpty();
         RuleFor(x => x.EncryptedPayload.IV.Value.Length).Equal(16);
         RuleFor(x => x.Expiry).NotEmpty();
