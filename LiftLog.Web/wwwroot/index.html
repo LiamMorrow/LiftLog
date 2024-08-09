@@ -46,24 +46,10 @@
       })(window.location);
     </script>
 
-    <script defer>
-      // on load try to redirect to the app via liftlog uri scheme
-      window.onload = function () {
-        try {
-          if (window.location.href.includes("app.liftlog.online"))
-            window.location.href = window.location.href
-              .replace("https://", "liftlog://")
-              .replace("http://", "liftlog://");
-        } catch (e) {
-          // Not an app
-        }
-      };
-    </script>
-    <!-- End Single Page Apps for GitHub Pages -->
-
     <script src="/_framework/blazor.webassembly.js"></script>
     <script src="_content/LiftLog.Ui/app-utils.js"></script>
     <script src="_content/LiftLog.Ui/bundle.js"></script>
     <script src="/crypto-utils.js"></script>
+    <!-- End Single Page Apps for GitHub Pages -->
   </body>
 </html>
