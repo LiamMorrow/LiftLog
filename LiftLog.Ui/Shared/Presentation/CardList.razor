@@ -5,7 +5,7 @@
         <Card
             class="@CardClass"
             Type="CardType"
-            OnContextMenu=@(()=>OnContextMenu.InvokeAsync(item))
+            OnContextMenu=@(OnContextMenu.HasDelegate ? ()=>OnContextMenu.InvokeAsync(item) : default!)
             IsHighlighted="ShouldHighlight?.Invoke(item) ?? false"
             OnClick=@(OnClick != null ? _ => OnClick(item) : null)>
             @ChildContent?.Invoke(item)
