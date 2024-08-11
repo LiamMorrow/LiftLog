@@ -85,6 +85,7 @@ else
     }
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         Color LineColors =  new()
         {
             GetColorString(AppState.Value.ColorScheme.Blue),
