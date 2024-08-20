@@ -7,6 +7,8 @@
 
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
+        <!-- Disable warnings on dereferencing possible null -->
+        <NoWarn>CS8602</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
