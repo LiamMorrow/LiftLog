@@ -8,42 +8,42 @@ public static class AppReducers
     public static AppState SetTitle(AppState state, SetPageTitleAction action) =>
         state with
         {
-            Title = action.Title
+            Title = action.Title,
         };
 
     [ReducerMethod]
     public static AppState SetProToken(AppState state, SetProTokenAction action) =>
         state with
         {
-            ProState = new(action.ProToken)
+            ProState = new(action.ProToken),
         };
 
     [ReducerMethod]
     public static AppState SetHistoryYearMonth(AppState state, SetHistoryYearMonthAction action) =>
         state with
         {
-            HistoryYearMonth = (action.Year, action.Month)
+            HistoryYearMonth = (action.Year, action.Month),
         };
 
     [ReducerMethod]
     public static AppState SetThemeColor(AppState state, ThemeColorUpdatedAction action) =>
         state with
         {
-            ColorScheme = action.Scheme
+            ColorScheme = action.Scheme,
         };
 
     [ReducerMethod]
     public static AppState SetAppLaunchCount(AppState state, SetAppLaunchCountAction action) =>
         state with
         {
-            AppLaunchCount = action.AppLaunchCount
+            AppLaunchCount = action.AppLaunchCount,
         };
 
     [ReducerMethod]
     public static AppState SetAppRatingResult(AppState state, SetAppRatingResultAction action) =>
         state with
         {
-            AppRatingResult = action.AppRatingResult
+            AppRatingResult = action.AppRatingResult,
         };
 
     [ReducerMethod]

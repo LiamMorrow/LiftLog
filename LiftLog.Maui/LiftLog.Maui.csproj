@@ -117,7 +117,7 @@
         <PackageReference Include="Plugin.Maui.AppRating" Version="1.2.0" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.80" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.80" />
-        <PackageReference Include="Sentry.Maui" Version="4.9.0" />
+        <PackageReference Include="Sentry.Maui" Version="4.10.1" />
         <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Annotation" Version="1.8.1" />
     </ItemGroup>
 

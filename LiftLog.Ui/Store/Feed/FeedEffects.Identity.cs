@@ -59,7 +59,7 @@ public partial class FeedEffects
                         ProfilePicture = action.ProfilePicture,
                         PublishBodyweight = action.PublishBodyweight,
                         PublishPlan = action.PublishPlan,
-                        PublishWorkouts = action.PublishWorkouts
+                        PublishWorkouts = action.PublishWorkouts,
                     }
                 )
             );

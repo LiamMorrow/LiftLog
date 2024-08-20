@@ -8,17 +8,16 @@ internal partial class SharedItemPayload
     {
         return sharedItem switch
         {
-            SharedProgramBlueprint sharedProgram
-                => new SharedItemPayload
+            SharedProgramBlueprint sharedProgram => new SharedItemPayload
+            {
+                SharedProgramBlueprint = new SharedProgramBlueprintPayload
                 {
-                    SharedProgramBlueprint = new SharedProgramBlueprintPayload
-                    {
-                        ProgramBlueprint = ProgramBlueprintDao.ProgramBlueprintDaoV1.FromModel(
-                            sharedProgram.ProgramBlueprint
-                        ),
-                    }
+                    ProgramBlueprint = ProgramBlueprintDao.ProgramBlueprintDaoV1.FromModel(
+                        sharedProgram.ProgramBlueprint
+                    ),
                 },
-            _ => throw new System.NotImplementedException()
+            },
+            _ => throw new System.NotImplementedException(),
         };
     }
 
@@ -29,9 +28,8 @@ internal partial class SharedItemPayload
             {
                 PayloadCase: PayloadOneofCase.SharedProgramBlueprint,
                 SharedProgramBlueprint.ProgramBlueprint: { } programBlueprint
-            }
-                => new SharedProgramBlueprint(programBlueprint.ToModel()),
-            _ => null
+            } => new SharedProgramBlueprint(programBlueprint.ToModel()),
+            _ => null,
         };
     }
 }

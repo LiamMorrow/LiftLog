@@ -53,11 +53,11 @@ public static class CurrentSessionReducers
                             action.SetIndex,
                             setAtIndex with
                             {
-                                Set = GetCycledRepCount(setAtIndex.Set, exerciseBlueprint)
+                                Set = GetCycledRepCount(setAtIndex.Set, exerciseBlueprint),
                             }
-                        )
+                        ),
                     }
-                )
+                ),
             }
         );
     }
@@ -76,9 +76,9 @@ public static class CurrentSessionReducers
             {
                 Blueprint = session.Blueprint with
                 {
-                    Exercises = session.Blueprint.Exercises.RemoveAt(action.ExerciseIndex)
+                    Exercises = session.Blueprint.Exercises.RemoveAt(action.ExerciseIndex),
                 },
-                RecordedExercises = session.RecordedExercises.RemoveAt(action.ExerciseIndex)
+                RecordedExercises = session.RecordedExercises.RemoveAt(action.ExerciseIndex),
             }
         );
     }
@@ -102,7 +102,7 @@ public static class CurrentSessionReducers
                     existingExercise.PotentialSets.ElementAtOrDefault(index)
                     ?? new PotentialSet(null, existingExercise.Weight)
                 )
-                .ToImmutableList()
+                .ToImmutableList(),
         };
         return WithActiveSession(
             state,
@@ -114,12 +114,12 @@ public static class CurrentSessionReducers
                     Exercises = session.Blueprint.Exercises.SetItem(
                         action.ExerciseIndex,
                         newExerciseBlueprint
-                    )
+                    ),
                 },
                 RecordedExercises = session.RecordedExercises.SetItem(
                     action.ExerciseIndex,
                     newExercise
-                )
+                ),
             }
         );
     }
@@ -148,9 +148,9 @@ public static class CurrentSessionReducers
             {
                 Blueprint = session.Blueprint with
                 {
-                    Exercises = session.Blueprint.Exercises.Add(newExerciseBlueprint)
+                    Exercises = session.Blueprint.Exercises.Add(newExerciseBlueprint),
                 },
-                RecordedExercises = session.RecordedExercises.Add(newExercise)
+                RecordedExercises = session.RecordedExercises.Add(newExercise),
             }
         );
     }
@@ -183,11 +183,11 @@ public static class CurrentSessionReducers
                                     : new RecordedSet(
                                         action.Reps.Value,
                                         TimeOnly.FromDateTime(DateTime.Now)
-                                    )
+                                    ),
                             }
-                        )
+                        ),
                     }
-                )
+                ),
             }
         );
     }
@@ -209,9 +209,9 @@ public static class CurrentSessionReducers
                     action.ExerciseIndex,
                     exerciseAtIndex with
                     {
-                        PerSetWeight = !exerciseAtIndex.PerSetWeight
+                        PerSetWeight = !exerciseAtIndex.PerSetWeight,
                     }
-                )
+                ),
             }
         );
     }
@@ -238,11 +238,11 @@ public static class CurrentSessionReducers
                             action.SetIndex,
                             setAtIndex with
                             {
-                                Weight = action.Weight
+                                Weight = action.Weight,
                             }
-                        )
+                        ),
                     }
-                )
+                ),
             }
         );
     }
@@ -261,7 +261,7 @@ public static class CurrentSessionReducers
                 !exerciseAtIndex.PerSetWeight || (set.Weight == previousWeight && set.Set is null)
                     ? set with
                     {
-                        Weight = action.Weight
+                        Weight = action.Weight,
                     }
                     : set
             )
@@ -276,9 +276,9 @@ public static class CurrentSessionReducers
                     exerciseAtIndex with
                     {
                         Weight = action.Weight,
-                        PotentialSets = newPotentialSets
+                        PotentialSets = newPotentialSets,
                     }
-                )
+                ),
             }
         );
     }
@@ -312,9 +312,9 @@ public static class CurrentSessionReducers
                     action.ExerciseIndex,
                     exerciseAtIndex with
                     {
-                        Notes = action.Notes
+                        Notes = action.Notes,
                     }
-                )
+                ),
             }
         );
     }
@@ -331,7 +331,7 @@ public static class CurrentSessionReducers
                 session switch
                 {
                     null => session,
-                    _ => session with { Bodyweight = action.Bodyweight }
+                    _ => session with { Bodyweight = action.Bodyweight },
                 }
         );
 
@@ -343,15 +343,14 @@ public static class CurrentSessionReducers
         return recordedSet switch
         {
             // When unset - we say the user completed all reps
-            null
-                => new RecordedSet(
-                    exerciseBlueprint.RepsPerSet,
-                    TimeOnly.FromDateTime(DateTime.Now)
-                ),
+            null => new RecordedSet(
+                exerciseBlueprint.RepsPerSet,
+                TimeOnly.FromDateTime(DateTime.Now)
+            ),
             // When they completed no reps, we transition back to unset
             { RepsCompleted: 0 } => null,
             // Otherwise, just decrement from the current
-            var reps => reps with { RepsCompleted = reps.RepsCompleted - 1 }
+            var reps => reps with { RepsCompleted = reps.RepsCompleted - 1 },
         };
     }
 
@@ -365,7 +364,7 @@ public static class CurrentSessionReducers
             SessionTarget.WorkoutSession => state with { WorkoutSession = session },
             SessionTarget.HistorySession => state with { HistorySession = session },
             SessionTarget.FeedSession => state with { FeedSession = session },
-            _ => throw new Exception()
+            _ => throw new Exception(),
         };
 
     private static CurrentSessionState WithActiveSession(
@@ -375,18 +374,16 @@ public static class CurrentSessionReducers
     ) =>
         target switch
         {
-            SessionTarget.WorkoutSession
-                => state with
-                {
-                    WorkoutSession = sessionMap(state.WorkoutSession)
-                },
-            SessionTarget.HistorySession
-                => state with
-                {
-                    HistorySession = sessionMap(state.HistorySession)
-                },
+            SessionTarget.WorkoutSession => state with
+            {
+                WorkoutSession = sessionMap(state.WorkoutSession),
+            },
+            SessionTarget.HistorySession => state with
+            {
+                HistorySession = sessionMap(state.HistorySession),
+            },
             SessionTarget.FeedSession => state with { FeedSession = sessionMap(state.FeedSession) },
-            _ => throw new Exception()
+            _ => throw new Exception(),
         };
 
     private static Session? ActiveSession(this CurrentSessionState state, SessionTarget target) =>
@@ -395,6 +392,6 @@ public static class CurrentSessionReducers
             SessionTarget.WorkoutSession => state.WorkoutSession,
             SessionTarget.HistorySession => state.HistorySession,
             SessionTarget.FeedSession => state.FeedSession,
-            _ => throw new Exception()
+            _ => throw new Exception(),
         };
 }

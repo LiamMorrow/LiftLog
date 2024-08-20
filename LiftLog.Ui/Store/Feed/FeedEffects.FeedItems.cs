@@ -169,10 +169,10 @@ public partial class FeedEffects
                     Session = SessionDaoV2.FromModel(
                         session with
                         {
-                            Bodyweight = identity.PublishBodyweight ? session.Bodyweight : null
+                            Bodyweight = identity.PublishBodyweight ? session.Bodyweight : null,
                         }
-                    )
-                }
+                    ),
+                },
             }.ToByteArray(),
             identity.AesKey,
             identity.RsaKeyPair.PrivateKey
@@ -194,7 +194,7 @@ public partial class FeedEffects
         var (encryptedPayload, iv) = await encryptionService.SignRsa256PssAndEncryptAesCbcAsync(
             new UserEventPayload
             {
-                RemovedSessionPayload = new RemovedSessionUserEvent { SessionId = sessionId }
+                RemovedSessionPayload = new RemovedSessionUserEvent { SessionId = sessionId },
             }.ToByteArray(),
             identity.AesKey,
             identity.RsaKeyPair.PrivateKey
@@ -286,23 +286,22 @@ public partial class FeedEffects
 
         return payload switch
         {
-            { EventPayloadCase: EventPayloadOneofCase.SessionPayload }
-                => new SessionFeedItem(
-                    UserId: userEvent.UserId,
-                    EventId: userEvent.EventId,
-                    Timestamp: userEvent.Timestamp,
-                    Expiry: userEvent.Expiry,
-                    Session: payload.SessionPayload.Session.ToModel()
-                ),
-            { EventPayloadCase: EventPayloadOneofCase.RemovedSessionPayload }
-                => new RemovedSessionFeedItem(
+            { EventPayloadCase: EventPayloadOneofCase.SessionPayload } => new SessionFeedItem(
+                UserId: userEvent.UserId,
+                EventId: userEvent.EventId,
+                Timestamp: userEvent.Timestamp,
+                Expiry: userEvent.Expiry,
+                Session: payload.SessionPayload.Session.ToModel()
+            ),
+            { EventPayloadCase: EventPayloadOneofCase.RemovedSessionPayload } =>
+                new RemovedSessionFeedItem(
                     UserId: userEvent.UserId,
                     EventId: userEvent.EventId,
                     Timestamp: userEvent.Timestamp,
                     Expiry: userEvent.Expiry,
                     SessionId: payload.RemovedSessionPayload.SessionId
                 ),
-            _ => null
+            _ => null,
         };
     }
 

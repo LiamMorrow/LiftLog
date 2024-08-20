@@ -20,7 +20,7 @@ public class AppStateInitMiddleware(
             .RestoreState(
                 (AppState)store.Features[nameof(AppFeature)].GetState() with
                 {
-                    ColorScheme = themeProvider.GetColorScheme()
+                    ColorScheme = themeProvider.GetColorScheme(),
                 }
             );
         var proToken = await preferencesRepository.GetProTokenAsync();

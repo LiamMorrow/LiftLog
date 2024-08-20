@@ -32,7 +32,7 @@ public class SessionService(
         var latestSession = currentSession switch
         {
             { IsStarted: true } => currentSession,
-            _ => await progressRepository.GetOrderedSessions().FirstOrDefaultAsync()
+            _ => await progressRepository.GetOrderedSessions().FirstOrDefaultAsync(),
         };
         if (latestSession == null)
         {
@@ -76,7 +76,7 @@ public class SessionService(
             latestRecordedExercises
         ) with
         {
-            Bodyweight = previousSession.Bodyweight
+            Bodyweight = previousSession.Bodyweight,
         };
     }
 
@@ -91,9 +91,9 @@ public class SessionService(
             var weight = lastExercise switch
             {
                 null => 0,
-                { IsSuccessForProgressiveOverload: true }
-                    => lastExercise.Weight + e.WeightIncreaseOnSuccess,
-                _ => lastExercise.Weight
+                { IsSuccessForProgressiveOverload: true } => lastExercise.Weight
+                    + e.WeightIncreaseOnSuccess,
+                _ => lastExercise.Weight,
             };
             return new RecordedExercise(
                 e,

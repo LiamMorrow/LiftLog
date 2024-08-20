@@ -62,10 +62,9 @@ public class SavedProgramRepository(IKeyValueStore keyValueStore)
 
             var storedData = version switch
             {
-                "1"
-                    => ProgramBlueprintDaoContainerV1.Parser.ParseFrom(
-                        await keyValueStore.GetItemBytesAsync(StorageKey) ?? []
-                    ),
+                "1" => ProgramBlueprintDaoContainerV1.Parser.ParseFrom(
+                    await keyValueStore.GetItemBytesAsync(StorageKey) ?? []
+                ),
                 _ => throw new Exception($"Unknown version {version} of {StorageKey}"),
             };
             _programs = storedData.ToModel();

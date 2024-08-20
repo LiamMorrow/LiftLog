@@ -8,7 +8,7 @@ public static class StatsReducers
     public static StatsState SetOverallStats(StatsState state, SetOverallStatsAction action) =>
         state with
         {
-            OverallView = action.Stats
+            OverallView = action.Stats,
         };
 
     [ReducerMethod]
@@ -29,17 +29,17 @@ public static class StatsReducers
     public static StatsState SetOverallViewTime(
         StatsState state,
         SetOverallViewTimeAction action
-    ) => state with { OverallViewTime = action.Time, };
+    ) => state with { OverallViewTime = action.Time };
 
     [ReducerMethod]
     public static StatsState SetPinnedStats(
         StatsState state,
         SetPinnedExerciseStatsAction action
-    ) => state with { PinnedExerciseStatistics = action.Stats, };
+    ) => state with { PinnedExerciseStatistics = action.Stats };
 
     [ReducerMethod]
     public static StatsState SetOverallViewSession(
         StatsState state,
         SetOverallViewSessionAction action
-    ) => state with { OverallViewSessionName = action.SessionName, };
+    ) => state with { OverallViewSessionName = action.SessionName };
 }

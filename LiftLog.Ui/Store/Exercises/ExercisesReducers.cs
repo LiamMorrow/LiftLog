@@ -15,6 +15,6 @@ public static class ExercisesReducers
         state with
         {
             DescribedExercises = action.DescribedExercises,
-            ExerciseNames = action.DescribedExercises.Select(x => x.Name).ToImmutableList()
+            ExerciseNames = action.DescribedExercises.Select(x => x.Name).ToImmutableList(),
         };
 }

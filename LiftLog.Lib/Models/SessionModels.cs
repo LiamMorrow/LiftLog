@@ -20,7 +20,7 @@ public record Session(
             Bodyweight = bodyweight,
             Id = Guid.NewGuid(),
             Blueprint = SessionBlueprint.Empty with { Name = "Freeform Session" },
-            Date = date
+            Date = date,
         };
 
     public RecordedExercise? NextExercise
@@ -37,12 +37,12 @@ public record Session(
             {
                 -1 => false, // Not found
                 var i when i == RecordedExercises.Count - 1 => false, // Cant superset next on last
-                var i => RecordedExercises[i].Blueprint.SupersetWithNext
+                var i => RecordedExercises[i].Blueprint.SupersetWithNext,
             };
             var latestExerciseSupersetsWithPrevious = latestExerciseIndex switch
             {
                 -1 or 0 => false, // Not found or first
-                var i => RecordedExercises[i - 1].Blueprint.SupersetWithNext
+                var i => RecordedExercises[i - 1].Blueprint.SupersetWithNext,
             };
             if (
                 latestExerciseSupersetsWithNext

@@ -12,14 +12,14 @@ public static class ProgramReducers
     public static ProgramState RehydrateProgram(ProgramState state, SetProgramIsHydratedAction _) =>
         state with
         {
-            IsHydrated = true
+            IsHydrated = true,
         };
 
     [ReducerMethod]
     public static ProgramState SetUpcomingSessions(
         ProgramState state,
         SetUpcomingSessionsAction action
-    ) => state with { UpcomingSessions = action.UpcomingSessions, };
+    ) => state with { UpcomingSessions = action.UpcomingSessions };
 
     [ReducerMethod]
     public static ProgramState SetProgramSessions(
@@ -55,7 +55,7 @@ public static class ProgramReducers
     public static ProgramState DeleteSavedPlan(ProgramState state, DeleteSavedPlanAction action) =>
         state with
         {
-            SavedPrograms = state.SavedPrograms.Remove(action.PlanId)
+            SavedPrograms = state.SavedPrograms.Remove(action.PlanId),
         };
 
     [ReducerMethod]
@@ -69,16 +69,16 @@ public static class ProgramReducers
                 action.PlanId,
                 state.SavedPrograms[action.PlanId] with
                 {
-                    Name = action.Name
+                    Name = action.Name,
                 }
-            )
+            ),
         };
 
     [ReducerMethod]
     public static ProgramState SetSavedPlans(ProgramState state, SetSavedPlansAction action) =>
         state with
         {
-            SavedPrograms = action.SavedPlans
+            SavedPrograms = action.SavedPlans,
         };
 
     [ReducerMethod]
@@ -129,7 +129,7 @@ public static class ProgramReducers
     public static ProgramState SetActivePlan(ProgramState state, SetActiveProgramAction action) =>
         state with
         {
-            ActivePlanId = action.PlanId
+            ActivePlanId = action.PlanId,
         };
 
     [ReducerMethod]
@@ -149,14 +149,14 @@ public static class ProgramReducers
                     ImmutableListValue<SessionBlueprint>.Empty,
                     DateOnly.FromDateTime(DateTime.Now)
                 )
-            )
+            ),
         };
 
     [ReducerMethod]
     public static ProgramState SavePlan(ProgramState state, SavePlanAction action) =>
         state with
         {
-            SavedPrograms = state.SavedPrograms.SetItem(action.PlanId, action.ProgramBlueprint)
+            SavedPrograms = state.SavedPrograms.SetItem(action.PlanId, action.ProgramBlueprint),
         };
 
     private static ProgramState WithSessionBlueprints(
@@ -173,8 +173,8 @@ public static class ProgramReducers
                 planId,
                 state.SavedPrograms[planId] with
                 {
-                    Sessions = sessionBlueprints(state.SavedPrograms[planId].Sessions)
+                    Sessions = sessionBlueprints(state.SavedPrograms[planId].Sessions),
                 }
-            )
+            ),
         };
 }

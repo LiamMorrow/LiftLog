@@ -18,7 +18,7 @@ public class FeedFollowService(
         var inboxMessage = new InboxMessageDao
         {
             FromUserId = identity.Id,
-            FollowRequest = new FollowRequestDao { Name = identity.Name, }
+            FollowRequest = new FollowRequestDao { Name = identity.Name },
         };
         var response = await feedApiService.PutInboxMessageAsync(
             new PutInboxMessageRequest(
@@ -61,9 +61,9 @@ public class FeedFollowService(
                 Accepted = new FollowResponseAcceptedDao
                 {
                     AesKey = ByteString.CopyFrom(identity.AesKey.Value),
-                    FollowSecret = followSecret
-                }
-            }
+                    FollowSecret = followSecret,
+                },
+            },
         };
         var encryptedMessage = await encryptionService.EncryptRsaOaepSha256Async(
             inboxMessage.ToByteArray(),
@@ -93,7 +93,7 @@ public class FeedFollowService(
         var inboxMessage = new InboxMessageDao
         {
             FromUserId = identity.Id,
-            FollowResponse = new FollowResponseDao { Rejected = new FollowResponseRejectedDao() }
+            FollowResponse = new FollowResponseDao { Rejected = new FollowResponseRejectedDao() },
         };
         RsaEncryptedData? encryptedMessage;
         try

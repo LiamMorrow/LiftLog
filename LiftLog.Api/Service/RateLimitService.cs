@@ -27,7 +27,7 @@ public class RateLimitService(RateLimitContext rateLimitContext)
             rateLimitConsumption = new Models.RateLimitConsumption
             {
                 Key = rateLimitKey,
-                Requests = []
+                Requests = [],
             };
             rateLimitContext.RateLimitConsumptions.Add(rateLimitConsumption);
         }
@@ -39,7 +39,7 @@ public class RateLimitService(RateLimitContext rateLimitContext)
         var limit = appStore switch
         {
             AppStore.Web => 100,
-            _ => 20
+            _ => 20,
         };
 
         if (requestsInLastDay.Count < limit)

@@ -41,15 +41,14 @@ public static class Sessions
             (i) =>
               (fillFirstSet, i) switch
               {
-                (true, 0)
-                  => new PotentialSet(
-                    new(
-                      RepsCompleted: exerciseBlueprint.RepsPerSet,
-                      CompletionTime: TimeOnly.Parse("14:32:00")
-                    ),
-                    0
+                (true, 0) => new PotentialSet(
+                  new(
+                    RepsCompleted: exerciseBlueprint.RepsPerSet,
+                    CompletionTime: TimeOnly.Parse("14:32:00")
                   ),
-                _ => new PotentialSet(null, 0)
+                  0
+                ),
+                _ => new PotentialSet(null, 0),
               }
           )
           .ToImmutableList(),

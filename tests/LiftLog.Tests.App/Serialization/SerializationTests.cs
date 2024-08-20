@@ -22,7 +22,7 @@ public class SerializationTests
               new SessionHistoryDaoContainer(
                 CompletedSessions: new Dictionary<Guid, Session>
                 {
-                  { session.Id, session }
+                  { session.Id, session },
                 }.ToImmutableDictionary()
               )
             );
@@ -52,7 +52,7 @@ public class SerializationTests
               new SessionHistoryDaoContainer(
                 CompletedSessions: new Dictionary<Guid, Session>
                 {
-                  { session.Id, session }
+                  { session.Id, session },
                 }.ToImmutableDictionary()
               )
             );

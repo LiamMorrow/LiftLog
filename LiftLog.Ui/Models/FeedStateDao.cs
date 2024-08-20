@@ -53,7 +53,7 @@ internal partial class FeedIdentityDaoV1
                     : ByteString.CopyFrom(value.ProfilePicture),
                 PublishBodyweight = value.PublishBodyweight,
                 PublishPlan = value.PublishPlan,
-                PublishWorkouts = value.PublishWorkouts
+                PublishWorkouts = value.PublishWorkouts,
             };
 }
 
@@ -99,7 +99,7 @@ internal partial class FeedUserDaoV1
                 ProfilePicture = value.ProfilePicture is null
                     ? ByteString.Empty
                     : ByteString.CopyFrom(value.ProfilePicture),
-                FollowSecret = value.FollowSecret
+                FollowSecret = value.FollowSecret,
             };
 }
 
@@ -108,14 +108,13 @@ internal partial class FeedItemDaoV1
     public static implicit operator FeedItem?(FeedItemDaoV1? value) =>
         value switch
         {
-            { PayloadCase: PayloadOneofCase.Session }
-                => new SessionFeedItem(
-                    UserId: value.UserId,
-                    EventId: value.EventId,
-                    Timestamp: value.Timestamp.ToDateTimeOffset(),
-                    Expiry: value.Expiry.ToDateTimeOffset(),
-                    Session: value.Session.ToModel()
-                ),
+            { PayloadCase: PayloadOneofCase.Session } => new SessionFeedItem(
+                UserId: value.UserId,
+                EventId: value.EventId,
+                Timestamp: value.Timestamp.ToDateTimeOffset(),
+                Expiry: value.Expiry.ToDateTimeOffset(),
+                Session: value.Session.ToModel()
+            ),
             _ => null,
         };
 
@@ -123,15 +122,14 @@ internal partial class FeedItemDaoV1
     public static implicit operator FeedItemDaoV1?(FeedItem? value) =>
         value switch
         {
-            SessionFeedItem sessionFeedItem
-                => new FeedItemDaoV1
-                {
-                    UserId = sessionFeedItem.UserId,
-                    EventId = sessionFeedItem.EventId,
-                    Timestamp = sessionFeedItem.Timestamp.ToTimestamp(),
-                    Expiry = sessionFeedItem.Expiry.ToTimestamp(),
-                    Session = SessionDaoV2.FromModel(sessionFeedItem.Session),
-                },
+            SessionFeedItem sessionFeedItem => new FeedItemDaoV1
+            {
+                UserId = sessionFeedItem.UserId,
+                EventId = sessionFeedItem.EventId,
+                Timestamp = sessionFeedItem.Timestamp.ToTimestamp(),
+                Expiry = sessionFeedItem.Expiry.ToTimestamp(),
+                Session = SessionDaoV2.FromModel(sessionFeedItem.Session),
+            },
             _ => null,
         };
 }
@@ -216,6 +214,6 @@ internal partial class InboxMessageDao
             : new InboxMessageDao
             {
                 FromUserId = value.UserId,
-                FollowRequest = new FollowRequestDao { Name = value.Name, }
+                FollowRequest = new FollowRequestDao { Name = value.Name },
             };
 }

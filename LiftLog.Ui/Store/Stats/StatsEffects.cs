@@ -141,7 +141,7 @@ public class StatsEffects(
         {
             string when lowerName.EndsWith("es") => lowerName[..^2],
             string when lowerName.EndsWith('s') => lowerName[..^1],
-            _ => lowerName
+            _ => lowerName,
         };
 
         return withoutPlural;

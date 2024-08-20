@@ -16,14 +16,14 @@ public static class SettingsReducers
     public static SettingsState SetAiPlanError(SettingsState state, SetAiPlanErrorAction action) =>
         state with
         {
-            AiPlanError = action.AiPlanError
+            AiPlanError = action.AiPlanError,
         };
 
     [ReducerMethod]
     public static SettingsState SetAiPlan(SettingsState state, SetAiPlanAction action) =>
         state with
         {
-            AiPlan = action.Plan
+            AiPlan = action.Plan,
         };
 
     [ReducerMethod]
@@ -48,21 +48,21 @@ public static class SettingsReducers
     public static SettingsState SetShowTips(SettingsState state, SetShowTipsAction action) =>
         state with
         {
-            ShowTips = action.ShowTips
+            ShowTips = action.ShowTips,
         };
 
     [ReducerMethod]
     public static SettingsState SetSetTipToShow(SettingsState state, SetTipToShowAction action) =>
         state with
         {
-            TipToShow = action.TipToShow
+            TipToShow = action.TipToShow,
         };
 
     [ReducerMethod]
     public static SettingsState SetShowFeed(SettingsState state, SetShowFeedAction action) =>
         state with
         {
-            ShowFeed = action.ShowFeed
+            ShowFeed = action.ShowFeed,
         };
 
     [ReducerMethod]

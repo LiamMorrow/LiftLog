@@ -9,35 +9,35 @@ public static class FeedReducers
     public static FeedState SetIsHydrated(FeedState state, SetFeedIsHydratedAction action) =>
         state with
         {
-            IsHydrated = true
+            IsHydrated = true,
         };
 
     [ReducerMethod]
     public static FeedState PutFeedIdentity(FeedState state, PutFeedIdentityAction action) =>
         state with
         {
-            Identity = action.Identity
+            Identity = action.Identity,
         };
 
     [ReducerMethod]
     public static FeedState ReplaceFeedItems(FeedState state, ReplaceFeedItemsAction action) =>
         state with
         {
-            Feed = action.Items
+            Feed = action.Items,
         };
 
     [ReducerMethod]
     public static FeedState PutFeedUser(FeedState state, PutFollowedUsersAction action) =>
         state with
         {
-            FollowedUsers = state.FollowedUsers.SetItem(action.User.Id, action.User)
+            FollowedUsers = state.FollowedUsers.SetItem(action.User.Id, action.User),
         };
 
     [ReducerMethod]
     public static FeedState SetSharedFeedUser(FeedState state, SetSharedFeedUserAction action) =>
         state with
         {
-            SharedFeedUser = action.User
+            SharedFeedUser = action.User,
         };
 
     [ReducerMethod]
@@ -50,7 +50,7 @@ public static class FeedReducers
                     state.SharedFeedUser.Data.Id,
                     state.SharedFeedUser.Data
                 ),
-                SharedFeedUser = RemoteData.NotAsked
+                SharedFeedUser = RemoteData.NotAsked,
             };
 
     [ReducerMethod]
@@ -64,7 +64,7 @@ public static class FeedReducers
         state with
         {
             FollowedUsers = state.FollowedUsers.Remove(action.FeedUser.Id),
-            Feed = state.Feed.Where(x => x.UserId != action.FeedUser.Id).ToImmutableList()
+            Feed = state.Feed.Where(x => x.UserId != action.FeedUser.Id).ToImmutableList(),
         };
 
     [ReducerMethod]
@@ -83,7 +83,7 @@ public static class FeedReducers
             FollowRequests = state
                 .FollowRequests.Concat(action.Requests)
                 .DistinctBy(x => x.UserId)
-                .ToImmutableList()
+                .ToImmutableList(),
         };
 
     [ReducerMethod]
@@ -96,21 +96,21 @@ public static class FeedReducers
     public static FeedState AddFollower(FeedState state, AddFollowerAction action) =>
         state with
         {
-            Followers = state.Followers.SetItem(action.User.Id, action.User)
+            Followers = state.Followers.SetItem(action.User.Id, action.User),
         };
 
     [ReducerMethod]
     public static FeedState RemoveFollower(FeedState state, RemoveFollowerAction action) =>
         state with
         {
-            Followers = state.Followers.Remove(action.User.Id)
+            Followers = state.Followers.Remove(action.User.Id),
         };
 
     [ReducerMethod]
     public static FeedState SetActiveTab(FeedState state, SetActiveTabAction action) =>
         state with
         {
-            ActiveTab = action.TabId
+            ActiveTab = action.TabId,
         };
 
     [ReducerMethod]
@@ -121,7 +121,7 @@ public static class FeedReducers
         state is { Identity.PublishWorkouts: true }
             ? state with
             {
-                UnpublishedSessionIds = state.UnpublishedSessionIds.Add(action.SessionId)
+                UnpublishedSessionIds = state.UnpublishedSessionIds.Add(action.SessionId),
             }
             : state;
 
@@ -132,14 +132,14 @@ public static class FeedReducers
     ) =>
         state with
         {
-            UnpublishedSessionIds = state.UnpublishedSessionIds.Remove(action.SessionId)
+            UnpublishedSessionIds = state.UnpublishedSessionIds.Remove(action.SessionId),
         };
 
     [ReducerMethod]
     public static FeedState SetSharedItem(FeedState state, SetSharedItemAction action) =>
         state with
         {
-            SharedItem = action.SharedItem
+            SharedItem = action.SharedItem,
         };
 
     [ReducerMethod]

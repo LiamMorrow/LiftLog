@@ -40,7 +40,7 @@ public partial class ScreenshotCollectorPage
                     RestBetweenSets: Rest.Medium,
                     SupersetWithNext: false,
                     Notes: ""
-                )
+                ),
             ],
             Notes: ""
         );

@@ -5,5 +5,5 @@ public enum AppButtonType
     Primary,
     Secondary,
     OutlineSecondary,
-    Text
+    Text,
 }

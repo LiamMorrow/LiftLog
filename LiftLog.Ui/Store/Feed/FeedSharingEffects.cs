@@ -74,7 +74,7 @@ public class FeedSharingEffects(
             {
                 ApiErrorType.NotFound => "Shared item not found",
                 ApiErrorType.Unauthorized => "Unauthorized to view shared item",
-                _ => "Error fetching shared item"
+                _ => "Error fetching shared item",
             };
             dispatcher.Dispatch(new SetSharedItemAction(RemoteData.Errored(errorMessage)));
             return;

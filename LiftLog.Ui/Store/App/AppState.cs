@@ -23,7 +23,7 @@ public enum AppRatingResult
 {
     NotRated,
     Rated,
-    Declined
+    Declined,
 }
 
 public record ProState(string? ProToken)

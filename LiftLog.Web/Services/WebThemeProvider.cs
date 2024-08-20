@@ -71,12 +71,11 @@ public class WebThemeProvider : IThemeProvider
             ThemePreference.FollowSystem => windowThemePrefersDark ? Dark() : Light(),
             ThemePreference.Light => Light(),
             ThemePreference.Dark => Dark(),
-            _
-                => throw new ArgumentOutOfRangeException(
-                    nameof(themePreference),
-                    themePreference,
-                    null
-                )
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(themePreference),
+                themePreference,
+                null
+            ),
         };
         dispatcher.Dispatch(
             new ThemeColorUpdatedAction(

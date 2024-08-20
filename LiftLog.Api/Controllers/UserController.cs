@@ -38,7 +38,7 @@ public class UserController(UserDataContext db, PasswordService passwordService)
             LastAccessed = DateTimeOffset.UtcNow,
             EncryptionIV = [],
             RsaPublicKey = [],
-            Created = DateTimeOffset.UtcNow
+            Created = DateTimeOffset.UtcNow,
         };
 
         await db.Users.AddAsync(user);

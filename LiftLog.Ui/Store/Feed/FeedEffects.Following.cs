@@ -137,7 +137,7 @@ public partial class FeedEffects(
             UnfollowNotification = new UnFollowNotification
             {
                 FollowSecret = action.FeedUser.FollowSecret,
-            }
+            },
         };
         var encryptedInboxMessage = await encryptionService.EncryptRsaOaepSha256Async(
             inboxMessage.ToByteArray(),
@@ -205,7 +205,7 @@ public partial class FeedEffects(
                         action.Request.Name
                     ) with
                     {
-                        FollowSecret = followSecretResponse.Data
+                        FollowSecret = followSecretResponse.Data,
                     }
                 )
             );

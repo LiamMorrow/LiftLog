@@ -63,7 +63,7 @@ public class SharedItemController(UserDataContext db, PasswordService passwordSe
                 x.Id,
                 x.User.RsaPublicKey,
                 x.EncryptedPayload,
-                x.EncryptionIV
+                x.EncryptionIV,
             })
             .FirstOrDefaultAsync(x => x.Id == id);
         if (sharedItem == null)
