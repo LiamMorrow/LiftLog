@@ -47,17 +47,15 @@ public class CurrentProgramRepository(IKeyValueStore keyValueStore)
 
             var storedData = version switch
             {
-                "1"
-                    => JsonSerializer
-                        .Deserialize<SessionBlueprintContainerDaoV1>(
-                            await keyValueStore.GetItemAsync(StorageKey) ?? "null",
-                            StorageJsonContext.Context.SessionBlueprintContainerDaoV1
-                        )
-                        ?.ToModel(),
-                "2"
-                    => SessionBlueprintContainerDaoV2
-                        .Parser.ParseFrom(await keyValueStore.GetItemBytesAsync(StorageKey) ?? [])
-                        .ToModel(),
+                "1" => JsonSerializer
+                    .Deserialize<SessionBlueprintContainerDaoV1>(
+                        await keyValueStore.GetItemAsync(StorageKey) ?? "null",
+                        StorageJsonContext.Context.SessionBlueprintContainerDaoV1
+                    )
+                    ?.ToModel(),
+                "2" => SessionBlueprintContainerDaoV2
+                    .Parser.ParseFrom(await keyValueStore.GetItemBytesAsync(StorageKey) ?? [])
+                    .ToModel(),
                 _ => throw new Exception($"Unknown version {version} of {StorageKey}"),
             };
             _sessions = storedData ?? ImmutableList.Create<SessionBlueprint>();

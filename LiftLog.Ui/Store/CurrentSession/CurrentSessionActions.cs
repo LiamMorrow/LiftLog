@@ -7,7 +7,7 @@ public enum SessionTarget
 {
     WorkoutSession,
     HistorySession,
-    FeedSession
+    FeedSession,
 }
 
 public record SetCurrentSessionHydratedAction();

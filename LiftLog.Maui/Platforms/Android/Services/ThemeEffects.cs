@@ -22,7 +22,7 @@ public partial class ThemeEffects
         _ = new WindowInsetsControllerCompat(activity.Window, activity.Window.DecorView)
         {
             AppearanceLightStatusBars = !action.IsDark,
-            AppearanceLightNavigationBars = !action.IsDark
+            AppearanceLightNavigationBars = !action.IsDark,
         };
     }
 }

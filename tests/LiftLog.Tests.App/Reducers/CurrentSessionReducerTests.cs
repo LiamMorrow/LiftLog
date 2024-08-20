@@ -26,7 +26,7 @@ public class CurrentSessionReducerTests
                       PotentialSets = Sessions
                         .CreatePotentialSet(10m, isEmpty: true)
                         .Repeat(exercise.Blueprint.Sets - 1)
-                        .Add(Sessions.CreatePotentialSet(10m))
+                        .Add(Sessions.CreatePotentialSet(10m)),
                     }
                 )
               )
@@ -42,10 +42,10 @@ public class CurrentSessionReducerTests
                       PotentialSets = Sessions
                         .CreatePotentialSet(20m, isEmpty: true)
                         .Repeat(exercise.Blueprint.Sets - 1)
-                        .Add(Sessions.CreatePotentialSet(60m))
+                        .Add(Sessions.CreatePotentialSet(60m)),
                     }
                 )
-              )
+              ),
           }
       ),
       HistorySession: null,
@@ -76,10 +76,10 @@ public class CurrentSessionReducerTests
                 1,
                 _initialState.WorkoutSession!.RecordedExercises[1] with
                 {
-                  PerSetWeight = true
+                  PerSetWeight = true,
                 }
-              )
-            }
+              ),
+            },
           };
         });
 

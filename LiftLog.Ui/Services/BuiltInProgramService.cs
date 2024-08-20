@@ -17,7 +17,7 @@ public static class BuiltInProgramService
                         [
                             new("Squat", 3, 5, 2.5m, Rest.Medium, false, ""),
                             new("Bench Press", 3, 5, 2.5m, Rest.Medium, false, ""),
-                            new("Deadlift", 1, 5, 5m, Rest.Medium, false, "")
+                            new("Deadlift", 1, 5, 5m, Rest.Medium, false, ""),
                         ],
                         ""
                     ),
@@ -26,10 +26,10 @@ public static class BuiltInProgramService
                         [
                             new("Squat", 3, 5, 2.5m, Rest.Medium, false, ""),
                             new("Overhead Press", 3, 5, 2.5m, Rest.Medium, false, ""),
-                            new("Deadlift", 1, 5, 5m, Rest.Medium, false, "")
+                            new("Deadlift", 1, 5, 5m, Rest.Medium, false, ""),
                         ],
                         ""
-                    )
+                    ),
                 ],
                 LastEdited: new(2024, 1, 1)
             ),
@@ -41,7 +41,7 @@ public static class BuiltInProgramService
                         [
                             new("Squat", 5, 5, 2.5m, Rest.Medium, false, ""),
                             new("Bench Press", 5, 5, 2.5m, Rest.Medium, false, ""),
-                            new("Barbell Row", 5, 5, 2.5m, Rest.Medium, false, "")
+                            new("Barbell Row", 5, 5, 2.5m, Rest.Medium, false, ""),
                         ],
                         ""
                     ),
@@ -50,10 +50,10 @@ public static class BuiltInProgramService
                         [
                             new("Squat", 5, 5, 2.5m, Rest.Medium, false, ""),
                             new("Overhead Press", 5, 5, 2.5m, Rest.Medium, false, ""),
-                            new("Deadlift", 1, 5, 5m, Rest.Medium, false, "")
+                            new("Deadlift", 1, 5, 5m, Rest.Medium, false, ""),
                         ],
                         ""
-                    )
+                    ),
                 ],
                 LastEdited: new(2024, 1, 1)
             ),
@@ -66,7 +66,7 @@ public static class BuiltInProgramService
                             new("Bench Press", 4, 8, 2.5m, Rest.Medium, false, ""),
                             new("Overhead Press", 4, 8, 2.5m, Rest.Medium, false, ""),
                             new("Tricep Extension", 4, 8, 2.5m, Rest.Medium, false, ""),
-                            new("Cable Fly", 4, 8, 2.5m, Rest.Medium, false, "")
+                            new("Cable Fly", 4, 8, 2.5m, Rest.Medium, false, ""),
                         ],
                         ""
                     ),
@@ -76,7 +76,7 @@ public static class BuiltInProgramService
                             new("Deadlift", 4, 8, 2.5m, Rest.Medium, false, ""),
                             new("Barbell Row", 4, 8, 2.5m, Rest.Medium, false, ""),
                             new("Lat Pulldown", 4, 8, 2.5m, Rest.Medium, false, ""),
-                            new("Barbell Curl", 4, 8, 2.5m, Rest.Medium, false, "")
+                            new("Barbell Curl", 4, 8, 2.5m, Rest.Medium, false, ""),
                         ],
                         ""
                     ),
@@ -86,10 +86,10 @@ public static class BuiltInProgramService
                             new("Squat", 4, 8, 2.5m, Rest.Medium, false, ""),
                             new("Lunges", 4, 8, 2.5m, Rest.Medium, false, ""),
                             new("Leg Extension", 4, 8, 2.5m, Rest.Medium, false, ""),
-                            new("Leg Curl", 4, 8, 2.5m, Rest.Medium, false, "")
+                            new("Leg Curl", 4, 8, 2.5m, Rest.Medium, false, ""),
                         ],
                         ""
-                    )
+                    ),
                 ],
                 LastEdited: new(2024, 1, 1)
             ),
@@ -105,7 +105,7 @@ public static class BuiltInProgramService
                             new("Lat Pulldown", 3, 10, 2.5m, Rest.Medium, false, ""),
                             new("Barbell Curl", 3, 10, 2.5m, Rest.Medium, false, ""),
                             new("Tricep Extension", 3, 10, 2.5m, Rest.Medium, false, ""),
-                            new("Cable Fly", 3, 10, 2.5m, Rest.Medium, false, "")
+                            new("Cable Fly", 3, 10, 2.5m, Rest.Medium, false, ""),
                         ],
                         ""
                     ),
@@ -116,7 +116,7 @@ public static class BuiltInProgramService
                             new("Deadlift", 3, 5, 5m, Rest.Medium, false, ""),
                             new("Leg Press", 3, 10, 2.5m, Rest.Medium, false, ""),
                             new("Leg Curl", 3, 10, 2.5m, Rest.Medium, false, ""),
-                            new("Calf Raise", 3, 10, 2.5m, Rest.Medium, false, "")
+                            new("Calf Raise", 3, 10, 2.5m, Rest.Medium, false, ""),
                         ],
                         ""
                     ),
@@ -128,7 +128,7 @@ public static class BuiltInProgramService
                             new("Dumbbell Fly", 3, 10, 2.5m, Rest.Medium, false, ""),
                             new("Lat Pulldown", 3, 10, 2.5m, Rest.Medium, false, ""),
                             new("Dumbbell Curl", 3, 10, 2.5m, Rest.Medium, false, ""),
-                            new("Skullcrusher", 3, 10, 2.5m, Rest.Medium, false, "")
+                            new("Skullcrusher", 3, 10, 2.5m, Rest.Medium, false, ""),
                         ],
                         ""
                     ),
@@ -139,10 +139,10 @@ public static class BuiltInProgramService
                             new("Romanian Deadlift", 3, 10, 2.5m, Rest.Medium, false, ""),
                             new("Leg Extension", 3, 10, 2.5m, Rest.Medium, false, ""),
                             new("Leg Curl", 3, 10, 2.5m, Rest.Medium, false, ""),
-                            new("Calf Raise", 3, 10, 2.5m, Rest.Medium, false, "")
+                            new("Calf Raise", 3, 10, 2.5m, Rest.Medium, false, ""),
                         ],
                         ""
-                    )
+                    ),
                 ],
                 LastEdited: new(2024, 1, 1)
             ),
@@ -154,7 +154,7 @@ public static class BuiltInProgramService
                         [
                             new("Pushups", 3, 10, 0m, Rest.Medium, false, ""),
                             new("Dips", 3, 10, 0m, Rest.Medium, false, ""),
-                            new("Handstand Pushups", 3, 10, 0m, Rest.Medium, false, "")
+                            new("Handstand Pushups", 3, 10, 0m, Rest.Medium, false, ""),
                         ],
                         ""
                     ),
@@ -163,7 +163,7 @@ public static class BuiltInProgramService
                         [
                             new("Pullups", 3, 10, 0m, Rest.Medium, false, ""),
                             new("Chinups", 3, 10, 0m, Rest.Medium, false, ""),
-                            new("Inverted Rows", 3, 10, 0m, Rest.Medium, false, "")
+                            new("Inverted Rows", 3, 10, 0m, Rest.Medium, false, ""),
                         ],
                         ""
                     ),
@@ -172,10 +172,10 @@ public static class BuiltInProgramService
                         [
                             new("Squats", 3, 10, 0m, Rest.Medium, false, ""),
                             new("Lunges", 3, 10, 0m, Rest.Medium, false, ""),
-                            new("Calf Raises", 3, 10, 0m, Rest.Medium, false, "")
+                            new("Calf Raises", 3, 10, 0m, Rest.Medium, false, ""),
                         ],
                         ""
-                    )
+                    ),
                 ],
                 LastEdited: new(2024, 1, 1)
             ),
@@ -188,7 +188,7 @@ public static class BuiltInProgramService
                             new("Pushups", 3, 10, 0m, Rest.Medium, false, ""),
                             new("Dips", 3, 10, 0m, Rest.Medium, false, ""),
                             new("Handstand Pushups", 3, 10, 0m, Rest.Medium, false, ""),
-                            new("Planche Pushups", 3, 10, 0m, Rest.Medium, false, "")
+                            new("Planche Pushups", 3, 10, 0m, Rest.Medium, false, ""),
                         ],
                         ""
                     ),
@@ -198,7 +198,7 @@ public static class BuiltInProgramService
                             new("Pullups", 3, 10, 0m, Rest.Medium, false, ""),
                             new("Chinups", 3, 10, 0m, Rest.Medium, false, ""),
                             new("Inverted Rows", 3, 10, 0m, Rest.Medium, false, ""),
-                            new("Muscle Ups", 3, 10, 0m, Rest.Medium, false, "")
+                            new("Muscle Ups", 3, 10, 0m, Rest.Medium, false, ""),
                         ],
                         ""
                     ),
@@ -208,12 +208,12 @@ public static class BuiltInProgramService
                             new("Squats", 3, 10, 0m, Rest.Medium, false, ""),
                             new("Lunges", 3, 10, 0m, Rest.Medium, false, ""),
                             new("Calf Raises", 3, 10, 0m, Rest.Medium, false, ""),
-                            new("Pistol Squats", 3, 10, 0m, Rest.Medium, false, "")
+                            new("Pistol Squats", 3, 10, 0m, Rest.Medium, false, ""),
                         ],
                         ""
-                    )
+                    ),
                 ],
                 LastEdited: new(2024, 1, 1)
-            )
+            ),
         }.ToImmutableDictionary();
 }

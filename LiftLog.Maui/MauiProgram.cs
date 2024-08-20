@@ -70,9 +70,9 @@ public static class MauiProgram
                         new NotificationAction(100)
                         {
                             Title = "Complete Set",
-                            Android = { LaunchAppWhenTapped = false, }
+                            Android = { LaunchAppWhenTapped = false },
                         },
-                    ]
+                    ],
                 }
             );
             notificationBuilder.AddAndroid(android =>

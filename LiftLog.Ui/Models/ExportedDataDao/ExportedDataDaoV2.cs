@@ -32,7 +32,7 @@ internal partial class ExportedDataDaoV2
                     v1.Program.Select(x => x.ToModel()).ToImmutableList(),
                     DateOnly.FromDateTime(DateTime.Now)
                 )
-            )
+            ),
         };
 
         return new ExportedDataDaoV2(

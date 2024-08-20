@@ -4,7 +4,7 @@ public enum DeviceType
 {
     Android,
     Ios,
-    Web
+    Web,
 }
 
 public interface IDeviceService

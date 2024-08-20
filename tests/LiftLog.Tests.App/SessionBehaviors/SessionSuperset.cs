@@ -31,7 +31,7 @@ public class SessionSupersetTests
             x with
             {
               Name = $"Ex{index}",
-              SupersetWithNext = supersetWithNext
+              SupersetWithNext = supersetWithNext,
             }
           );
 
@@ -47,8 +47,8 @@ public class SessionSupersetTests
                   Exercise(2, supersetWithNext: false),
                   Exercise(3, supersetWithNext: true),
                   Exercise(4, supersetWithNext: true),
-                  Exercise(5, supersetWithNext: false)
-                ]
+                  Exercise(5, supersetWithNext: false),
+                ],
               },
               fillFirstSet: false
             )

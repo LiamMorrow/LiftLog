@@ -11,7 +11,7 @@ public class AppHapticFeedbackService(IHapticFeedback hapticFeedback) : IHapticF
         {
             Ui.Services.HapticFeedbackType.Click => HapticFeedbackType.Click,
             Ui.Services.HapticFeedbackType.LongPress => HapticFeedbackType.LongPress,
-            _ => throw new ArgumentOutOfRangeException(nameof(amount), amount, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(amount), amount, null),
         };
         hapticFeedback.Perform(mapped);
         return Task.CompletedTask;

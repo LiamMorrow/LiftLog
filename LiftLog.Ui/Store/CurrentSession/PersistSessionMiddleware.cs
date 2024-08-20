@@ -32,20 +32,18 @@ namespace LiftLog.Ui.Store.CurrentSession
                 {
                     var currentSessionState = currentSessionVersion switch
                     {
-                        "1"
-                            => JsonSerializer
-                                .Deserialize<CurrentSessionStateDaoV1>(
-                                    await keyValueStore.GetItemAsync(StorageKey) ?? "null",
-                                    StorageJsonContext.Context.CurrentSessionStateDaoV1
-                                )
-                                ?.ToModel(),
-                        "2"
-                            => CurrentSessionStateDaoV2
-                                .Parser.ParseFrom(
-                                    await keyValueStore.GetItemBytesAsync(StorageKey) ?? []
-                                )
-                                .ToModel(),
-                        _ => null
+                        "1" => JsonSerializer
+                            .Deserialize<CurrentSessionStateDaoV1>(
+                                await keyValueStore.GetItemAsync(StorageKey) ?? "null",
+                                StorageJsonContext.Context.CurrentSessionStateDaoV1
+                            )
+                            ?.ToModel(),
+                        "2" => CurrentSessionStateDaoV2
+                            .Parser.ParseFrom(
+                                await keyValueStore.GetItemBytesAsync(StorageKey) ?? []
+                            )
+                            .ToModel(),
+                        _ => null,
                     };
                     var deserializationTime = sw.ElapsedMilliseconds;
                     sw.Stop();

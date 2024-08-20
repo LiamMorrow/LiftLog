@@ -42,7 +42,7 @@ public class SettingsStateInitMiddleware(
                 TipToShow = tipToShow,
                 ShowFeed = showFeed,
                 StatusBarFix = statusBarFix,
-                RestNotifications = restNotifications
+                RestNotifications = restNotifications,
             };
             store.Features[nameof(SettingsFeature)].RestoreState(state);
             sw.Stop();

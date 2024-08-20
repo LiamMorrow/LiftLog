@@ -18,7 +18,7 @@ internal partial class ProgramBlueprintDaoContainerV1
                     x => ProgramBlueprintDaoV1.FromModel(x.Value)
                 ),
             },
-            ActiveProgramId = activeProgramId.ToString()
+            ActiveProgramId = activeProgramId.ToString(),
         };
 
     public ImmutableDictionary<Guid, Lib.Models.ProgramBlueprint> ToModel() =>
@@ -32,7 +32,7 @@ internal partial class ProgramBlueprintDaoV1
         {
             Name = model.Name,
             Sessions = { model.Sessions.Select(SessionBlueprintDaoV2.FromModel).ToImmutableList() },
-            LastEdited = model.LastEdited
+            LastEdited = model.LastEdited,
         };
 
     public Lib.Models.ProgramBlueprint ToModel() =>

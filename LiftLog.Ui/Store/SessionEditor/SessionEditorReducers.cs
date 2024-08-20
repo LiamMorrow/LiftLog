@@ -23,7 +23,7 @@ public static class SessionEditorReducers
                 ? null
                 : state.SessionBlueprint with
                 {
-                    Name = action.Name
+                    Name = action.Name,
                 }
         );
 
@@ -37,7 +37,7 @@ public static class SessionEditorReducers
                 ? null
                 : state.SessionBlueprint with
                 {
-                    Notes = action.Notes
+                    Notes = action.Notes,
                 }
         );
 
@@ -51,7 +51,7 @@ public static class SessionEditorReducers
                 ? null
                 : state.SessionBlueprint with
                 {
-                    Exercises = state.SessionBlueprint.Exercises.Add(action.ExerciseBlueprint)
+                    Exercises = state.SessionBlueprint.Exercises.Add(action.ExerciseBlueprint),
                 }
         );
 
@@ -65,7 +65,7 @@ public static class SessionEditorReducers
                 ? null
                 : state.SessionBlueprint with
                 {
-                    Exercises = state.SessionBlueprint.Exercises.Remove(action.ExerciseBlueprint)
+                    Exercises = state.SessionBlueprint.Exercises.Remove(action.ExerciseBlueprint),
                 }
         );
 
@@ -93,7 +93,7 @@ public static class SessionEditorReducers
             {
                 Exercises = state
                     .SessionBlueprint.Exercises.SetItem(index, toSwap)
-                    .SetItem(index - 1, action.ExerciseBlueprint)
+                    .SetItem(index - 1, action.ExerciseBlueprint),
             }
         );
     }
@@ -122,7 +122,7 @@ public static class SessionEditorReducers
             {
                 Exercises = state
                     .SessionBlueprint.Exercises.SetItem(index, toSwap)
-                    .SetItem(index + 1, action.ExerciseBlueprint)
+                    .SetItem(index + 1, action.ExerciseBlueprint),
             }
         );
     }

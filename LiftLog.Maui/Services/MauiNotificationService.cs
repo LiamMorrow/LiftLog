@@ -31,10 +31,10 @@ public class MauiNotificationService(
         notificationService.Cancel(NextSetNotificationHandle.Id);
         var rest = exercise switch
         {
-            { LastRecordedSet: not null }
-                => exercise.LastRecordedSet?.Set?.RepsCompleted >= exercise.Blueprint.RepsPerSet
-                    ? exercise.Blueprint.RestBetweenSets.MinRest
-                    : exercise.Blueprint.RestBetweenSets.FailureRest,
+            { LastRecordedSet: not null } => exercise.LastRecordedSet?.Set?.RepsCompleted
+            >= exercise.Blueprint.RepsPerSet
+                ? exercise.Blueprint.RestBetweenSets.MinRest
+                : exercise.Blueprint.RestBetweenSets.FailureRest,
             _ => TimeSpan.Zero,
         };
         if (rest != TimeSpan.Zero)

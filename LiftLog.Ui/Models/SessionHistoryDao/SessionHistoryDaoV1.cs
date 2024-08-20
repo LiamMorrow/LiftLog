@@ -101,19 +101,17 @@ internal record RecordedSetDaoV1(
     ) =>
         model switch
         {
-            { Set: null }
-                => new RecordedSetDaoV1(
-                    RepsCompleted: null,
-                    CompletionTime: null,
-                    Weight: model.Weight
-                ),
-            { Set: { } } completed
-                => new RecordedSetDaoV1(
-                    RepsCompleted: model.Set.RepsCompleted,
-                    CompletionTime: sessionDate.ToDateTime(completed.Set.CompletionTime),
-                    Weight: completed.Weight
-                ),
-            _ => null
+            { Set: null } => new RecordedSetDaoV1(
+                RepsCompleted: null,
+                CompletionTime: null,
+                Weight: model.Weight
+            ),
+            { Set: { } } completed => new RecordedSetDaoV1(
+                RepsCompleted: model.Set.RepsCompleted,
+                CompletionTime: sessionDate.ToDateTime(completed.Set.CompletionTime),
+                Weight: completed.Weight
+            ),
+            _ => null,
         };
 
     public Lib.Models.PotentialSet ToModel(RecordedExerciseDaoV1 exercise)
@@ -121,17 +119,18 @@ internal record RecordedSetDaoV1(
         var weight = Weight ?? exercise.Kilograms;
         return this switch
         {
-            { RepsCompleted: null, CompletionTime: null }
-                => new Lib.Models.PotentialSet(null, weight),
-            { RepsCompleted: { }, CompletionTime: { } } completed
-                => new Lib.Models.PotentialSet(
-                    new Lib.Models.RecordedSet(
-                        completed.RepsCompleted.Value,
-                        TimeOnly.FromDateTime(completed.CompletionTime.Value.DateTime)
-                    ),
-                    weight
+            { RepsCompleted: null, CompletionTime: null } => new Lib.Models.PotentialSet(
+                null,
+                weight
+            ),
+            { RepsCompleted: { }, CompletionTime: { } } completed => new Lib.Models.PotentialSet(
+                new Lib.Models.RecordedSet(
+                    completed.RepsCompleted.Value,
+                    TimeOnly.FromDateTime(completed.CompletionTime.Value.DateTime)
                 ),
-            _ => throw new Exception("Invalid RecordedSetDaoV1")
+                weight
+            ),
+            _ => throw new Exception("Invalid RecordedSetDaoV1"),
         };
     }
 }

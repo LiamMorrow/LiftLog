@@ -15,7 +15,7 @@ public class AppPurchaseService(ILogger<AppPurchaseService> logger) : IAppPurcha
         {
             var e when e == DevicePlatform.Android => AppStore.Google,
             var e when e == DevicePlatform.iOS => AppStore.Apple,
-            _ => AppStore.Web
+            _ => AppStore.Web,
         };
     }
 

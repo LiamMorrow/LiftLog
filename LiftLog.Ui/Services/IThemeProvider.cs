@@ -23,5 +23,5 @@ public enum ThemePreference
 {
     FollowSystem,
     Light,
-    Dark
+    Dark,
 }

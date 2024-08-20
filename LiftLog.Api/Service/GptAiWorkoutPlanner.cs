@@ -41,7 +41,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
             Gender.Female => " female",
             Gender.Other => " with a gender other than male or female",
             Gender.PreferNotToSay => "",
-            _ => ""
+            _ => "",
         };
 
         var goalsText = string.Join(" and ", attributes.Goals);
@@ -133,7 +133,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
             < 50 => "three",
             < 75 => "five",
             < 90 => "seven",
-            _ => "ten"
+            _ => "ten",
         };
 
         var tools = new List<Tool> { GetSessionFunction };
