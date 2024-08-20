@@ -6,7 +6,8 @@ public static class Sessions
 {
   public static Session CreateSession(
     SessionBlueprint? sessionBlueprint = null,
-    Func<Session, Session>? transform = null
+    Func<Session, Session>? transform = null,
+    bool fillFirstSet = true
   )
   {
     sessionBlueprint ??= Blueprints.CreateSessionBlueprint();
@@ -15,7 +16,7 @@ public static class Sessions
         Id: Guid.NewGuid(),
         Blueprint: sessionBlueprint,
         RecordedExercises: sessionBlueprint
-          .Exercises.Select(x => CreateRecordedExercise(x))
+          .Exercises.Select(x => CreateRecordedExercise(x, fillFirstSet: fillFirstSet))
           .ToImmutableList(),
         Date: DateOnly.Parse("2021-04-05"),
         Bodyweight: null
@@ -25,7 +26,8 @@ public static class Sessions
 
   public static RecordedExercise CreateRecordedExercise(
     ExerciseBlueprint? exerciseBlueprint = null,
-    Func<RecordedExercise, RecordedExercise>? transform = null
+    Func<RecordedExercise, RecordedExercise>? transform = null,
+    bool fillFirstSet = true
   )
   {
     exerciseBlueprint ??= Blueprints.CreateExerciseBlueprint();
@@ -37,9 +39,9 @@ public static class Sessions
           .Range(0, exerciseBlueprint.Sets)
           .Select(
             (i) =>
-              i switch
+              (fillFirstSet, i) switch
               {
-                0
+                (true, 0)
                   => new PotentialSet(
                     new(
                       RepsCompleted: exerciseBlueprint.RepsPerSet,

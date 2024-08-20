@@ -86,9 +86,9 @@ public class OsEncryptionServiceTests
                 );
 
                 // Assert
-                Assert.Equal(data1, decryptedData1);
-                Assert.Equal(data2, decryptedData2);
-                Assert.Equal(encryptedData1.IV, encryptedData2.IV);
+                data1.Should().Equal(decryptedData1);
+                data2.Should().Equal(decryptedData2);
+                encryptedData1.IV.Should().BeEquivalentTo(encryptedData2.IV);
               });
           });
 
@@ -113,7 +113,7 @@ public class OsEncryptionServiceTests
                 encryptedData.EncryptedPayload[0] ^= 0xFF;
 
                 // Assert
-                await Assert.ThrowsAsync<SignatureMismatchException>(
+                Assert.ThrowsAsync<SignatureMismatchException>(
                   async () =>
                     await sut.DecryptAesCbcAndVerifyRsa256PssAsync(
                       encryptedData,

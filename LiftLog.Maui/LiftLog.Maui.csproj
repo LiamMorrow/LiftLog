@@ -69,6 +69,7 @@
 
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <RunAOTCompilation>true</RunAOTCompilation>
+        <AndroidStripILAfterAOT>true</AndroidStripILAfterAOT>
         <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
         <EnableLLVM>true</EnableLLVM>
     </PropertyGroup>
