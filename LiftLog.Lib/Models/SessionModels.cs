@@ -33,6 +33,7 @@ public record Session(
                 .OrderByDescending(x => x.Item.LastRecordedSet?.Set?.CompletionTime)
                 .Select(x => x.Index)
                 .FirstOrDefault(-1);
+
             var latestExerciseSupersetsWithNext = latestExerciseIndex switch
             {
                 -1 => false, // Not found

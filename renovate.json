@@ -2,5 +2,7 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:base", "group:allNonMajor"],
   "schedule": ["before 4am every monday"],
-  "automerge": true
+  "automerge": true,
+
+  "gitIgnoredAuthors": ["renovate[bot]@users.noreply.github.com"]
 }
