@@ -52,12 +52,24 @@ public record Session(
                 return RecordedExercises[latestExerciseIndex + 1];
             }
 
-            if (
-                latestExerciseSupersetsWithPrevious
-                && RecordedExercises[latestExerciseIndex - 1].HasRemainingSets
-            )
+            // loop back to the original exercise in the case of a superset chain
+            if (latestExerciseSupersetsWithPrevious)
             {
-                return RecordedExercises[latestExerciseIndex - 1];
+                var indexToJumpBackTo = latestExerciseIndex - 1;
+                while (RecordedExercises[indexToJumpBackTo].Blueprint.SupersetWithNext)
+                {
+                    indexToJumpBackTo--;
+                }
+                // We are now at an exercise which is not supersetting with the next,
+                // so jump forward to the next exercise
+                indexToJumpBackTo++;
+                // Now jump to the first exercise which has remaining sets in the chain
+                while (!RecordedExercises[indexToJumpBackTo].HasRemainingSets)
+                {
+                    indexToJumpBackTo++;
+                }
+
+                return RecordedExercises[indexToJumpBackTo];
             }
 
             return RecordedExercises

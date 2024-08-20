@@ -54,7 +54,7 @@ public class SessionSupersetTests
             )
         );
 
-        It("should have the first exercise and set as the next exercise")
+        It("should have exercise 0 set as the next exercise")
           .When(() =>
           {
             var nextExercise = session.NextExercise;
@@ -62,7 +62,7 @@ public class SessionSupersetTests
             nextExercise.Blueprint.Name.Should().Be(session.RecordedExercises[0].Blueprint.Name);
           });
 
-        Describe("and the last completed set was the first exercise (not a superset)")
+        Describe("and the last completed set was exercise 0 (not a superset)")
           .As(() =>
           {
             BeforeEach(() =>
@@ -83,9 +83,7 @@ public class SessionSupersetTests
             );
           });
 
-        Describe(
-            "and the last completed set was the second exercise (a superset with the third exercise)"
-          )
+        Describe("and the last completed set was the exercise 1 (a superset with exercise 2)")
           .As(() =>
           {
             BeforeEach(() =>
@@ -93,7 +91,7 @@ public class SessionSupersetTests
               session = CycleExerciseReps(1, 0);
             });
 
-            It("Should have the next set be the third exercise")
+            It("Should have the next set be 2")
               .When(() =>
               {
                 var nextExercise = session.NextExercise;
@@ -103,8 +101,9 @@ public class SessionSupersetTests
                   .Be(session.RecordedExercises[2].Blueprint.Name);
               });
           });
+
         Describe(
-            "and the last completed set was the third exercise (a superset with the previous exercise)"
+            "and the last completed set was exercise 2 (a superset with the previous exercise (1))"
           )
           .As(() =>
           {
@@ -113,7 +112,7 @@ public class SessionSupersetTests
               session = CycleExerciseReps(2, 0);
             });
 
-            It("Should have the next set be the second exercise")
+            It("Should have the next set be 1")
               .When(() =>
               {
                 var nextExercise = session.NextExercise;
@@ -123,9 +122,8 @@ public class SessionSupersetTests
                   .Be(session.RecordedExercises[1].Blueprint.Name);
               });
           });
-        Describe(
-            "and the last completed set was the fourth exercise (a superset with the fifth and sixth exercise)"
-          )
+
+        Describe("and the last completed set was exercise 3 (a superset with the 4 and 5)")
           .As(() =>
           {
             BeforeEach(() =>
@@ -133,7 +131,7 @@ public class SessionSupersetTests
               session = CycleExerciseReps(3, 0);
             });
 
-            It("Should have the next set be the fifth exercise")
+            It("Should have the next set be 4")
               .When(() =>
               {
                 var nextExercise = session.NextExercise;
@@ -144,9 +142,7 @@ public class SessionSupersetTests
               });
           });
 
-        Describe(
-            "and the last completed set was the fifth exercise (a superset with the fourth and sixth exercise)"
-          )
+        Describe("and the last completed set was exercise 4 (a superset with the 3 and 5)")
           .As(() =>
           {
             BeforeEach(() =>
@@ -154,7 +150,7 @@ public class SessionSupersetTests
               session = CycleExerciseReps(4, 0);
             });
 
-            It("Should have the next set be the sixth exercise")
+            It("Should have the next set be 5")
               .When(() =>
               {
                 var nextExercise = session.NextExercise;
@@ -165,24 +161,22 @@ public class SessionSupersetTests
               });
           });
 
-        Describe(
-            "and the last completed set was the sixth exercise (a superset with the fourth and fifth exercise)"
-          )
+        Describe("and the last completed set was exercise 5 (a superset with the 3 and 4)")
           .As(() =>
           {
             BeforeEach(() =>
             {
-              session = CycleExerciseReps(4, 0);
+              session = CycleExerciseReps(5, 0);
             });
 
-            It("Should have the next set be the fourth exercise")
+            It("Should cycle back to exercise 3")
               .When(() =>
               {
                 var nextExercise = session.NextExercise;
                 nextExercise.Should().NotBeNull();
                 nextExercise
                   .Blueprint.Name.Should()
-                  .Be(session.RecordedExercises[4].Blueprint.Name);
+                  .Be(session.RecordedExercises[3].Blueprint.Name);
               });
           });
       }
