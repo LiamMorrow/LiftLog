@@ -247,5 +247,92 @@ public class SessionSupersetTests
               });
           });
       });
+
+    Describe("When the last exercise is a superset")
+      .As(() =>
+      {
+        BeforeEach(() =>
+        {
+          session = Sessions.CreateSession(
+            sessionBlueprint: Blueprints.CreateSessionBlueprint() with
+            {
+              Exercises =
+              [
+                Exercise(0, supersetWithNext: false),
+                Exercise(1, supersetWithNext: false),
+                Exercise(2, supersetWithNext: true),
+              ],
+            },
+            fillFirstSet: false
+          );
+        });
+
+        It("should have exercise 0 set as the next exercise")
+          .When(() =>
+          {
+            var nextExercise = session.NextExercise;
+            nextExercise.Should().NotBeNull();
+            nextExercise.Blueprint.Name.Should().Be(session.RecordedExercises[0].Blueprint.Name);
+          });
+
+        Describe("and the last completed set was exercise 0 (not a superset)")
+          .As(() =>
+          {
+            BeforeEach(() =>
+            {
+              session = CycleExerciseReps(0, 0);
+            });
+
+            It("Should have the next set be itself(1)")
+              .When(() =>
+              {
+                var nextExercise = session.NextExercise;
+                nextExercise.Should().NotBeNull();
+                nextExercise
+                  .Blueprint.Name.Should()
+                  .Be(session.RecordedExercises[0].Blueprint.Name);
+              });
+          });
+
+        Describe("and the last completed set was exercise 1 (not a superset)")
+          .As(() =>
+          {
+            BeforeEach(() =>
+            {
+              session = CycleExerciseReps(1, 0);
+            });
+
+            It("Should have the next set be itself(1)")
+              .When(() =>
+              {
+                var nextExercise = session.NextExercise;
+                nextExercise.Should().NotBeNull();
+                nextExercise
+                  .Blueprint.Name.Should()
+                  .Be(session.RecordedExercises[1].Blueprint.Name);
+              });
+          });
+
+        Describe(
+            "and the last completed set was exercise 2 (a superset with the next, but it is the last - so noop)"
+          )
+          .As(() =>
+          {
+            BeforeEach(() =>
+            {
+              session = CycleExerciseReps(2, 0);
+            });
+
+            It("Should have the next set be itself (2)")
+              .When(() =>
+              {
+                var nextExercise = session.NextExercise;
+                nextExercise.Should().NotBeNull();
+                nextExercise
+                  .Blueprint.Name.Should()
+                  .Be(session.RecordedExercises[2].Blueprint.Name);
+              });
+          });
+      });
   }
 }
