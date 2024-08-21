@@ -139,6 +139,16 @@ public partial class FeedEffects(
                 FollowSecret = action.FeedUser.FollowSecret,
             },
         };
+        inboxMessage.Signature = ByteString.CopyFrom(
+            await encryptionService.SignRsaPssSha256Async(
+                [
+                    .. inboxMessage.GetPayloadBytes(),
+                    .. identity.Id.ToByteArray(),
+                    .. action.FeedUser.Id.ToByteArray(),
+                ],
+                identity.RsaKeyPair.PrivateKey
+            )
+        );
         var encryptedInboxMessage = await encryptionService.EncryptRsaOaepSha256Async(
             inboxMessage.ToByteArray(),
             action.FeedUser.PublicKey
@@ -315,7 +325,9 @@ public partial class FeedEffects(
 
             var payloadBytes = unverifiedInboxMessage.GetPayloadBytes();
             var myUserIdBytes = state.Value.Identity!.Id.ToByteArray();
-            byte[] signedPayload = [.. payloadBytes, .. myUserIdBytes];
+            var subjectUserIdBytes = unverifiedInboxMessage.FromUserId.ToByteArray();
+
+            byte[] signedPayload = [.. payloadBytes, .. subjectUserIdBytes, .. myUserIdBytes];
             var publicKey = await GetUserPublicKey(unverifiedInboxMessage.FromUserId);
 
             var verified = await encryptionService.VerifyRsaPssSha256Async(

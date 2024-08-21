@@ -22,7 +22,11 @@ public class FeedFollowService(
         };
         inboxMessage.Signature = ByteString.CopyFrom(
             await encryptionService.SignRsaPssSha256Async(
-                [.. inboxMessage.GetPayloadBytes(), .. toFollow.Id.ToByteArray()],
+                [
+                    .. inboxMessage.GetPayloadBytes(),
+                    .. identity.Id.ToByteArray(),
+                    .. toFollow.Id.ToByteArray(),
+                ],
                 identity.RsaKeyPair.PrivateKey
             )
         );
@@ -73,7 +77,11 @@ public class FeedFollowService(
         };
         inboxMessage.Signature = ByteString.CopyFrom(
             await encryptionService.SignRsaPssSha256Async(
-                [.. inboxMessage.GetPayloadBytes(), .. request.UserId.ToByteArray()],
+                [
+                    .. inboxMessage.GetPayloadBytes(),
+                    .. identity.Id.ToByteArray(),
+                    .. request.UserId.ToByteArray(),
+                ],
                 identity.RsaKeyPair.PrivateKey
             )
         );
@@ -109,7 +117,11 @@ public class FeedFollowService(
         };
         inboxMessage.Signature = ByteString.CopyFrom(
             await encryptionService.SignRsaPssSha256Async(
-                [.. inboxMessage.GetPayloadBytes(), .. request.UserId.ToByteArray()],
+                [
+                    .. inboxMessage.GetPayloadBytes(),
+                    .. identity.Id.ToByteArray(),
+                    .. request.UserId.ToByteArray(),
+                ],
                 identity.RsaKeyPair.PrivateKey
             )
         );

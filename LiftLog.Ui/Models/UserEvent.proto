@@ -29,7 +29,7 @@ message InboxMessageDao {
         FollowResponseDao follow_response = 3;
         UnFollowNotification unfollow_notification = 4;
     }
-    // The signature of the [message + the to_user_id], signed with the private key of the from_user_id
+    // The signature of the [message +from_user_id+ the to_user_id], signed with the private key of the from_user_id
     bytes signature = 5;
 }
 
