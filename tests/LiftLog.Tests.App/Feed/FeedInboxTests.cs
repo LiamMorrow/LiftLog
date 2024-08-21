@@ -91,7 +91,7 @@ public class FeedInboxTests
             var validMessage = new InboxMessageDao
             {
               FromUserId = thirdPartyUser.User.Id,
-              FollowRequest = new FollowRequestDao { Name = maliciousUser.User.Name },
+              FollowRequest = new FollowRequestDao { Name = thirdPartyUser.User.Name },
             };
             validMessage.Signature = ByteString.CopyFrom(
               await encryptionService.SignRsaPssSha256Async(
