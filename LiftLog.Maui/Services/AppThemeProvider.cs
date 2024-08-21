@@ -21,11 +21,6 @@ public class AppThemeProvider(AppColorService colorUpdateService) : IThemeProvid
             ThemePreference.FollowSystem => AppTheme.Unspecified,
             ThemePreference.Light => AppTheme.Light,
             ThemePreference.Dark => AppTheme.Dark,
-            _ => throw new ArgumentOutOfRangeException(
-                nameof(themePreference),
-                themePreference,
-                null
-            ),
         };
         if (seed is not null)
         {
@@ -55,11 +50,6 @@ public class AppThemeProvider(AppColorService colorUpdateService) : IThemeProvid
             AppTheme.Unspecified => ThemePreference.FollowSystem,
             AppTheme.Light => ThemePreference.Light,
             AppTheme.Dark => ThemePreference.Dark,
-            _ => throw new ArgumentOutOfRangeException(
-                nameof(Microsoft.Maui.Controls.Application.Current.UserAppTheme),
-                Microsoft.Maui.Controls.Application.Current.UserAppTheme,
-                null
-            ),
         };
     }
 

@@ -173,7 +173,6 @@ else
         SessionTarget.WorkoutSession => CurrentSessionState.Value.WorkoutSession,
         SessionTarget.HistorySession => CurrentSessionState.Value.HistorySession,
         SessionTarget.FeedSession => CurrentSessionState.Value.FeedSession,
-        _ => throw new InvalidOperationException("Invalid session target")
     } ?? Session.Empty;
 
     [EditorRequired] [Parameter] public ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>> PreviouslyCompleted { get; set; } = null!;

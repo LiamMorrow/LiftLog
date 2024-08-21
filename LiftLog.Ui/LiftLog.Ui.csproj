@@ -6,6 +6,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <!-- Enums not handled exhaustively with numbers -->
+    <NoWarn>CS8524</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup>

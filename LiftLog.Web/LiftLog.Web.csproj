@@ -6,6 +6,8 @@
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <ImplicitUsings>enable</ImplicitUsings>
 
+        <!-- Enums not handled exhaustively with numbers -->
+        <NoWarn>CS8524</NoWarn>
         <!-- <RunAOTCompilation>true</RunAOTCompilation>
         <RunAOTCompilationAfterBuild>true</RunAOTCompilationAfterBuild>
         <WasmNativeStrip>false</WasmNativeStrip> -->
