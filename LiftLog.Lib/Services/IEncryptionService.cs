@@ -40,6 +40,14 @@ public interface IEncryptionService
     public Task<RsaEncryptedData> EncryptRsaOaepSha256Async(byte[] data, RsaPublicKey publicKey);
 
     public ValueTask<RsaKeyPair> GenerateRsaKeysAsync();
+
+    public Task<byte[]> SignRsaPssSha256Async(byte[] data, RsaPrivateKey privateKey);
+
+    public Task<bool> VerifyRsaPssSha256Async(
+        byte[] data,
+        byte[] signature,
+        RsaPublicKey publicKey
+    );
 }
 
 public record RsaPublicKey(byte[] SpkiPublicKeyBytes);

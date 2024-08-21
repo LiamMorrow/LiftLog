@@ -169,6 +169,40 @@ const decryptRsaOaepSha256Async = async function (
   return new Uint8Array(decryptedChunks.reduce((acc, chunk) => [...acc, ...chunk], [] as number[]));
 };
 
+const signRsaPssSha256Async = async function (data: Uint8Array, privateKey: RsaPrivateKey): Promise<Uint8Array> {
+  const key = await crypto.subtle.importKey(
+    "pkcs8",
+    privateKey.pkcs8PrivateKeyBytes,
+    {
+      name: "RSA-PSS",
+      hash: "SHA-256",
+    } satisfies RsaHashedImportParams,
+    true,
+    ["sign"]
+  );
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return new Uint8Array(await crypto.subtle.sign("RSA-PSS", key, hash));
+};
+
+const verifyRsaPssSha256Async = async function (
+  data: Uint8Array,
+  signature: Uint8Array,
+  publicKey: RsaPublicKey
+): Promise<boolean> {
+  const key = await crypto.subtle.importKey(
+    "spki",
+    publicKey.spkiPublicKeyBytes,
+    {
+      name: "RSA-PSS",
+      hash: "SHA-256",
+    } satisfies RsaHashedImportParams,
+    true,
+    ["verify"]
+  );
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return crypto.subtle.verify("RSA-PSS", key, signature, hash);
+};
+
 var CryptoUtils = {
   generateAesKey,
   signRsa256PssAndEncryptAesCbcAsync,
@@ -176,6 +210,8 @@ var CryptoUtils = {
   generateRsaKeys,
   encryptRsaOaepSha256Async,
   decryptRsaOaepSha256Async,
+  signRsaPssSha256Async,
+  verifyRsaPssSha256Async,
 };
 
 interface RsaPublicKey {

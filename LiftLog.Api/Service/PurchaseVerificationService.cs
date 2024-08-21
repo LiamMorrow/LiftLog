@@ -17,7 +17,6 @@ public class PurchaseVerificationService(
                 proToken
             ),
             AppStore.Web => webAuthPurchaseVerificationService.IsValidPurchaseToken(proToken),
-            _ => throw new NotSupportedException(),
         };
     }
 }

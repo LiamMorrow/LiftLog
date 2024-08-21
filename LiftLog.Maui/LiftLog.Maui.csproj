@@ -11,6 +11,8 @@
         <SingleProject>true</SingleProject>
         <ImplicitUsings>enable</ImplicitUsings>
         <EnableDefaultCssItems>false</EnableDefaultCssItems>
+        <!-- Enums not handled exhaustively with numbers -->
+        <NoWarn>CS8524</NoWarn>
 
         <!-- Display name -->
         <ApplicationTitle>LiftLog</ApplicationTitle>

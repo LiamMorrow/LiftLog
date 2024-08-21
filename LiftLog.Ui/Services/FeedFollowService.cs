@@ -20,6 +20,16 @@ public class FeedFollowService(
             FromUserId = identity.Id,
             FollowRequest = new FollowRequestDao { Name = identity.Name },
         };
+        inboxMessage.Signature = ByteString.CopyFrom(
+            await encryptionService.SignRsaPssSha256Async(
+                [
+                    .. inboxMessage.GetPayloadBytes(),
+                    .. identity.Id.ToByteArray(),
+                    .. toFollow.Id.ToByteArray(),
+                ],
+                identity.RsaKeyPair.PrivateKey
+            )
+        );
         var response = await feedApiService.PutInboxMessageAsync(
             new PutInboxMessageRequest(
                 ToUserId: toFollow.Id,
@@ -65,6 +75,16 @@ public class FeedFollowService(
                 },
             },
         };
+        inboxMessage.Signature = ByteString.CopyFrom(
+            await encryptionService.SignRsaPssSha256Async(
+                [
+                    .. inboxMessage.GetPayloadBytes(),
+                    .. identity.Id.ToByteArray(),
+                    .. request.UserId.ToByteArray(),
+                ],
+                identity.RsaKeyPair.PrivateKey
+            )
+        );
         var encryptedMessage = await encryptionService.EncryptRsaOaepSha256Async(
             inboxMessage.ToByteArray(),
             userPublicKey
@@ -95,6 +115,16 @@ public class FeedFollowService(
             FromUserId = identity.Id,
             FollowResponse = new FollowResponseDao { Rejected = new FollowResponseRejectedDao() },
         };
+        inboxMessage.Signature = ByteString.CopyFrom(
+            await encryptionService.SignRsaPssSha256Async(
+                [
+                    .. inboxMessage.GetPayloadBytes(),
+                    .. identity.Id.ToByteArray(),
+                    .. request.UserId.ToByteArray(),
+                ],
+                identity.RsaKeyPair.PrivateKey
+            )
+        );
         RsaEncryptedData? encryptedMessage;
         try
         {

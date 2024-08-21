@@ -364,7 +364,6 @@ public static class CurrentSessionReducers
             SessionTarget.WorkoutSession => state with { WorkoutSession = session },
             SessionTarget.HistorySession => state with { HistorySession = session },
             SessionTarget.FeedSession => state with { FeedSession = session },
-            _ => throw new Exception(),
         };
 
     private static CurrentSessionState WithActiveSession(
@@ -383,7 +382,6 @@ public static class CurrentSessionReducers
                 HistorySession = sessionMap(state.HistorySession),
             },
             SessionTarget.FeedSession => state with { FeedSession = sessionMap(state.FeedSession) },
-            _ => throw new Exception(),
         };
 
     private static Session? ActiveSession(this CurrentSessionState state, SessionTarget target) =>
@@ -392,6 +390,5 @@ public static class CurrentSessionReducers
             SessionTarget.WorkoutSession => state.WorkoutSession,
             SessionTarget.HistorySession => state.HistorySession,
             SessionTarget.FeedSession => state.FeedSession,
-            _ => throw new Exception(),
         };
 }

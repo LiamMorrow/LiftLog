@@ -216,4 +216,15 @@ internal partial class InboxMessageDao
                 FromUserId = value.UserId,
                 FollowRequest = new FollowRequestDao { Name = value.Name },
             };
+
+    public byte[] GetPayloadBytes()
+    {
+        return MessagePayloadCase switch
+        {
+            MessagePayloadOneofCase.FollowRequest => FollowRequest.ToByteArray(),
+            MessagePayloadOneofCase.FollowResponse => FollowResponse.ToByteArray(),
+            MessagePayloadOneofCase.UnfollowNotification => UnfollowNotification.ToByteArray(),
+            MessagePayloadOneofCase.None => [],
+        };
+    }
 }

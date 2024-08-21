@@ -139,6 +139,16 @@ public partial class FeedEffects(
                 FollowSecret = action.FeedUser.FollowSecret,
             },
         };
+        inboxMessage.Signature = ByteString.CopyFrom(
+            await encryptionService.SignRsaPssSha256Async(
+                [
+                    .. inboxMessage.GetPayloadBytes(),
+                    .. identity.Id.ToByteArray(),
+                    .. action.FeedUser.Id.ToByteArray(),
+                ],
+                identity.RsaKeyPair.PrivateKey
+            )
+        );
         var encryptedInboxMessage = await encryptionService.EncryptRsaOaepSha256Async(
             inboxMessage.ToByteArray(),
             action.FeedUser.PublicKey
@@ -277,6 +287,20 @@ public partial class FeedEffects(
             dispatcher.Dispatch(new RemoveFollowerAction(action.User));
         });
 
+    private async ValueTask<RsaPublicKey> GetUserPublicKey(Guid userId)
+    {
+        if (state.Value.FollowedUsers.TryGetValue(userId, out var followedUser))
+        {
+            return followedUser.PublicKey;
+        }
+        var userResponse = await feedApiService.GetUserAsync(userId.ToString());
+        if (!userResponse.IsSuccess)
+        {
+            throw new InvalidOperationException("Failed to fetch user for public key");
+        }
+        return new RsaPublicKey(userResponse.Data.RsaPublicKey);
+    }
+
     private async Task<InboxMessageDao?> DecryptIfValid(
         GetInboxMessageResponse inboxMessage,
         RsaPrivateKey privateKey
@@ -288,7 +312,36 @@ public partial class FeedEffects(
                 new RsaEncryptedData(inboxMessage.EncryptedMessage),
                 privateKey
             );
-            return InboxMessageDao.Parser.ParseFrom(decrypted);
+            var unverifiedInboxMessage = InboxMessageDao.Parser.ParseFrom(decrypted);
+
+            if (
+                unverifiedInboxMessage.Signature is null
+                || unverifiedInboxMessage.Signature.Length == 0
+            )
+            {
+                // Temporary until majority of users have updated to new version
+                return unverifiedInboxMessage;
+            }
+
+            var payloadBytes = unverifiedInboxMessage.GetPayloadBytes();
+            var myUserIdBytes = state.Value.Identity!.Id.ToByteArray();
+            var subjectUserIdBytes = unverifiedInboxMessage.FromUserId.ToByteArray();
+
+            byte[] signedPayload = [.. payloadBytes, .. subjectUserIdBytes, .. myUserIdBytes];
+            var publicKey = await GetUserPublicKey(unverifiedInboxMessage.FromUserId);
+
+            var verified = await encryptionService.VerifyRsaPssSha256Async(
+                signedPayload,
+                unverifiedInboxMessage.Signature.ToByteArray(),
+                publicKey
+            );
+
+            if (!verified)
+            {
+                throw new InvalidOperationException("Failed to verify inbox message signature");
+            }
+
+            return unverifiedInboxMessage;
         }
         catch (Exception e)
         {
