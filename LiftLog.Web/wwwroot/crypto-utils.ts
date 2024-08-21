@@ -181,7 +181,17 @@ const signRsaPssSha256Async = async function (data: Uint8Array, privateKey: RsaP
     ["sign"]
   );
   const hash = await crypto.subtle.digest("SHA-256", data);
-  return new Uint8Array(await crypto.subtle.sign("RSA-PSS", key, hash));
+  return new Uint8Array(
+    await crypto.subtle.sign(
+      {
+        name: "RSA-PSS",
+        hash: "SHA-256",
+        saltLength: HashLengthBytes,
+      },
+      key,
+      hash
+    )
+  );
 };
 
 const verifyRsaPssSha256Async = async function (
@@ -200,7 +210,16 @@ const verifyRsaPssSha256Async = async function (
     ["verify"]
   );
   const hash = await crypto.subtle.digest("SHA-256", data);
-  return crypto.subtle.verify("RSA-PSS", key, signature, hash);
+  return crypto.subtle.verify(
+    {
+      name: "RSA-PSS",
+      hash: "SHA-256",
+      saltLength: HashLengthBytes,
+    },
+    key,
+    signature,
+    hash
+  );
 };
 
 var CryptoUtils = {
