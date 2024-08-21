@@ -15,7 +15,7 @@ namespace LiftLog.Ui.Store.Feed;
 public class FeedSharingEffects(
     IState<FeedState> feedState,
     IEncryptionService encryptionService,
-    FeedApiService feedApiService,
+    IFeedApiService feedApiService,
     IStringSharer stringSharer,
     ILogger<FeedSharingEffects> logger
 )

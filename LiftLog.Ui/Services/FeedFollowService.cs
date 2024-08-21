@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace LiftLog.Ui.Services;
 
 public class FeedFollowService(
-    FeedApiService feedApiService,
+    IFeedApiService feedApiService,
     IEncryptionService encryptionService,
     ILogger<FeedFollowService> logger
 )
@@ -22,11 +22,7 @@ public class FeedFollowService(
         };
         inboxMessage.Signature = ByteString.CopyFrom(
             await encryptionService.SignRsaPssSha256Async(
-                [
-                    .. inboxMessage.GetPayloadBytes(),
-                    .. identity.Id.ToByteArray(),
-                    .. toFollow.Id.ToByteArray(),
-                ],
+                FeedInboxDecryptionService.GetSignaturePayload(inboxMessage, toFollow.Id),
                 identity.RsaKeyPair.PrivateKey
             )
         );
@@ -77,11 +73,7 @@ public class FeedFollowService(
         };
         inboxMessage.Signature = ByteString.CopyFrom(
             await encryptionService.SignRsaPssSha256Async(
-                [
-                    .. inboxMessage.GetPayloadBytes(),
-                    .. identity.Id.ToByteArray(),
-                    .. request.UserId.ToByteArray(),
-                ],
+                FeedInboxDecryptionService.GetSignaturePayload(inboxMessage, request.UserId),
                 identity.RsaKeyPair.PrivateKey
             )
         );
@@ -117,11 +109,7 @@ public class FeedFollowService(
         };
         inboxMessage.Signature = ByteString.CopyFrom(
             await encryptionService.SignRsaPssSha256Async(
-                [
-                    .. inboxMessage.GetPayloadBytes(),
-                    .. identity.Id.ToByteArray(),
-                    .. request.UserId.ToByteArray(),
-                ],
+                FeedInboxDecryptionService.GetSignaturePayload(inboxMessage, request.UserId),
                 identity.RsaKeyPair.PrivateKey
             )
         );

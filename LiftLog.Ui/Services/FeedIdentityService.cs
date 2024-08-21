@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 namespace LiftLog.Ui.Services;
 
 public class FeedIdentityService(
-    FeedApiService feedApiService,
+    IFeedApiService feedApiService,
     IEncryptionService encryptionService
 )
 {

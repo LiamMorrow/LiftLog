@@ -43,7 +43,9 @@ public partial class FeedEffects
         var encryptedInboxItems = inboxItemsResponse.Data.InboxMessages;
         var inboxItems = (
             await Task.WhenAll(
-                encryptedInboxItems.Select(x => DecryptIfValid(x, identity.RsaKeyPair.PrivateKey))
+                encryptedInboxItems.Select(x =>
+                    feedInboxDecryptionService.DecryptIfValid(identity, x)
+                )
             )
         ).WhereNotNull();
 

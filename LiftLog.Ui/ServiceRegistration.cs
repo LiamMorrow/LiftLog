@@ -72,6 +72,8 @@ public static class ServiceRegistration
             BlazorTransitionableRoute.DefaultRouteTransitionInvoker
         >(lifetime);
 
+        services.Add<FeedInboxDecryptionService>(lifetime);
+
         services.Add<CurrentProgramRepository>(lifetime);
         services.Add<SavedProgramRepository>(lifetime);
         services.Add<ProgressRepository>(lifetime);
@@ -98,7 +100,7 @@ public static class ServiceRegistration
 
         services.Add<IBuiltInExerciseLoader, TBuiltInExerciseService>(lifetime);
 
-        services.Add<FeedApiService>(lifetime);
+        services.Add<IFeedApiService, FeedApiService>(lifetime);
         services.Add<FeedIdentityService>(lifetime);
         services.Add<FeedFollowService>(lifetime);
 

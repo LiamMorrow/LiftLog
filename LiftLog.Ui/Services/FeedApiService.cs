@@ -1,17 +1,19 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http.Json;
+using AutomaticInterface;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Store.Feed;
 
 namespace LiftLog.Ui.Services;
 
+[GenerateAutomaticInterface]
 public class FeedApiService(HttpClient httpClient
 #if DEBUG
     , IDeviceService deviceService
 #endif
-)
+) : IFeedApiService
 {
 #if DEBUG
     // Android emulator needs a special loopback address - hacky but works
