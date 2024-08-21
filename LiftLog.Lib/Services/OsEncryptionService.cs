@@ -163,4 +163,37 @@ public class OsEncryptionService : IEncryptionService
             )
         );
     }
+
+    public Task<byte[]> SignRsaPssSha256Async(byte[] data, RsaPrivateKey privateKey)
+    {
+        return Task.Run(() =>
+        {
+            var rsa = RSA.Create();
+
+            rsa.ImportPkcs8PrivateKey(privateKey.Pkcs8PrivateKeyBytes, out _);
+
+            var dataHash = SHA256.HashData(data);
+
+            return rsa.SignData(dataHash, HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
+        });
+    }
+
+    public Task<bool> VerifyRsaPssSha256Async(byte[] data, byte[] signature, RsaPublicKey publicKey)
+    {
+        return Task.Run(() =>
+        {
+            var rsa = RSA.Create();
+
+            rsa.ImportSubjectPublicKeyInfo(publicKey.SpkiPublicKeyBytes, out _);
+
+            var dataHash = SHA256.HashData(data);
+
+            return rsa.VerifyData(
+                dataHash,
+                signature,
+                HashAlgorithmName.SHA256,
+                RSASignaturePadding.Pss
+            );
+        });
+    }
 }

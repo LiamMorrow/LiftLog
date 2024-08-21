@@ -64,4 +64,18 @@ public class JsEncryptionService(IJSRuntime jSRuntime) : IEncryptionService
     {
         return jSRuntime.InvokeAsync<RsaKeyPair>("CryptoUtils.generateRsaKeys");
     }
+
+    public Task<byte[]> SignRsaPssSha256Async(byte[] data, RsaPrivateKey privateKey)
+    {
+        return jSRuntime
+            .InvokeAsync<byte[]>("CryptoUtils.signRsaPssSha256Async", data, privateKey)
+            .AsTask();
+    }
+
+    public Task<bool> VerifyRsaPssSha256Async(byte[] data, byte[] signature, RsaPublicKey publicKey)
+    {
+        return jSRuntime
+            .InvokeAsync<bool>("CryptoUtils.verifyRsaPssSha256Async", data, signature, publicKey)
+            .AsTask();
+    }
 }
