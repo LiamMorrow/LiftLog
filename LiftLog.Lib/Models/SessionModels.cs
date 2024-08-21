@@ -57,7 +57,10 @@ public record Session(
             if (latestExerciseSupersetsWithPrevious)
             {
                 var indexToJumpBackTo = latestExerciseIndex - 1;
-                while (RecordedExercises[indexToJumpBackTo].Blueprint.SupersetWithNext)
+                while (
+                    indexToJumpBackTo >= 0
+                    && RecordedExercises[indexToJumpBackTo].Blueprint.SupersetWithNext
+                )
                 {
                     indexToJumpBackTo--;
                 }
@@ -65,7 +68,10 @@ public record Session(
                 // so jump forward to the next exercise
                 indexToJumpBackTo++;
                 // Now jump to the first exercise which has remaining sets in the chain
-                while (!RecordedExercises[indexToJumpBackTo].HasRemainingSets)
+                while (
+                    indexToJumpBackTo < RecordedExercises.Count
+                    && !RecordedExercises[indexToJumpBackTo].HasRemainingSets
+                )
                 {
                     indexToJumpBackTo++;
                 }
