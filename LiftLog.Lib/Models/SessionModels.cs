@@ -76,7 +76,10 @@ public record Session(
                     indexToJumpBackTo++;
                 }
 
-                return RecordedExercises[indexToJumpBackTo];
+                if (indexToJumpBackTo < RecordedExercises.Count)
+                {
+                    return RecordedExercises[indexToJumpBackTo];
+                }
             }
 
             return RecordedExercises

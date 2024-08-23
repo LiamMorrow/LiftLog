@@ -179,6 +179,22 @@ public class SessionSupersetTests
                   .Be(session.RecordedExercises[3].Blueprint.Name);
               });
           });
+
+        Describe("and the last completed set was exercise 6 (last exercise and superset with 5)")
+          .As(() =>
+          {
+            BeforeEach(() =>
+            {
+              session = CycleExerciseReps(6, 0);
+            });
+
+            It("Should end the session")
+              .When(() =>
+              {
+                var nextExercise = session.NextExercise;
+                nextExercise.Should().BeNull();
+              });
+          });
       }
     );
 
