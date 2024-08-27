@@ -17,6 +17,7 @@ public class CurrentSessionReducerTests
               .RecordedExercises.SetItem(
                 0,
                 Sessions.CreateRecordedExercise(
+                  exerciseIndex: 0,
                   null,
                   exercise =>
                     exercise with
@@ -33,6 +34,7 @@ public class CurrentSessionReducerTests
               .SetItem(
                 1,
                 Sessions.CreateRecordedExercise(
+                  exerciseIndex: 1,
                   null,
                   exercise =>
                     exercise with

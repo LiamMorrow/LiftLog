@@ -50,7 +50,7 @@ public class SessionSupersetTests
                   Exercise(5, supersetWithNext: false),
                 ],
               },
-              fillFirstSet: false
+              fillSets: []
             )
         );
 
@@ -180,21 +180,6 @@ public class SessionSupersetTests
               });
           });
 
-        Describe("and the last completed set was exercise 6 (last exercise and superset with 5)")
-          .As(() =>
-          {
-            BeforeEach(() =>
-            {
-              session = CycleExerciseReps(6, 0);
-            });
-
-            It("Should end the session")
-              .When(() =>
-              {
-                var nextExercise = session.NextExercise;
-                nextExercise.Should().BeNull();
-              });
-          });
       }
     );
 
@@ -213,7 +198,7 @@ public class SessionSupersetTests
                 Exercise(2, supersetWithNext: false),
               ],
             },
-            fillFirstSet: false
+            fillSets: []
           );
         });
 
@@ -279,7 +264,7 @@ public class SessionSupersetTests
                 Exercise(2, supersetWithNext: true),
               ],
             },
-            fillFirstSet: false
+            fillSets: []
           );
         });
 
@@ -348,6 +333,33 @@ public class SessionSupersetTests
                   .Blueprint.Name.Should()
                   .Be(session.RecordedExercises[2].Blueprint.Name);
               });
+          });
+      });
+
+    Describe("When the last exercise is a completed superset")
+      .As(() =>
+      {
+        BeforeEach(() =>
+        {
+          session = Sessions.CreateSession(
+            sessionBlueprint: Blueprints.CreateSessionBlueprint() with
+            {
+              Exercises =
+              [
+                Exercise(0, supersetWithNext: false),
+                Exercise(1, supersetWithNext: true),
+                Exercise(2, supersetWithNext: false),
+              ],
+            },
+            fillSets: [0, 1, 2]
+          );
+        });
+
+        It("Should end the session")
+          .When(() =>
+          {
+            var nextExercise = session.NextExercise;
+            nextExercise.Should().BeNull();
           });
       });
   }
