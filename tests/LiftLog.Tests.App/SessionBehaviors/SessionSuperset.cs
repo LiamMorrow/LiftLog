@@ -179,7 +179,6 @@ public class SessionSupersetTests
                   .Be(session.RecordedExercises[3].Blueprint.Name);
               });
           });
-
       }
     );
 

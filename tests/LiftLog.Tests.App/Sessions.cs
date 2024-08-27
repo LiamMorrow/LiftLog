@@ -41,14 +41,14 @@ public static class Sessions
           .Select(
             (i) =>
               fillSets != null && fillSets.Contains(i)
-              ? new PotentialSet(
+                ? new PotentialSet(
                   new(
                     RepsCompleted: exerciseBlueprint.RepsPerSet,
                     CompletionTime: TimeOnly.Parse("14:32:00").AddMinutes(exerciseIndex * 5 + i)
                   ),
                   0
                 )
-               : new PotentialSet(null, 0)
+                : new PotentialSet(null, 0)
           )
           .ToImmutableList(),
         Notes: null,
