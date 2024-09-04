@@ -227,7 +227,7 @@ public class SettingsEffects(
         var exportedData = await GetDataExportAsync(includeFeedAccount);
         var bytes = exportedData.ToByteArray();
 
-        var hash = SHA256.Create().ComputeHash(bytes);
+        var hash = SHA256.HashData(bytes);
         var hashString = Convert.ToHexString(hash);
 
         if (settingsState.Value.LastSuccessfulRemoteBackupHash == hashString)
