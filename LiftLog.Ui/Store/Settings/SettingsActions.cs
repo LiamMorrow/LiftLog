@@ -41,7 +41,7 @@ public record SetShowFeedAction(bool ShowFeed);
 
 public record SetStatusBarFixAction(bool StatusBarFix);
 
-public record ExecuteRemoteBackupAction(RemoteBackupSettings Settings);
+public record ExecuteRemoteBackupAction(RemoteBackupSettings Settings, bool Force = false);
 
 public record UpdateRemoteBackupSettingsAction(RemoteBackupSettings Settings);
 

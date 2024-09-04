@@ -1,6 +1,7 @@
 // ReSharper disable UnusedMember.Global
 
 using System.Collections.Immutable;
+using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text.Json;
 using Fluxor;
@@ -226,16 +227,20 @@ public class SettingsEffects(
 
         var exportedData = await GetDataExportAsync(includeFeedAccount);
         var bytes = exportedData.ToByteArray();
+        var memoryStream = new MemoryStream();
+        using (GZipStream gzip = new(memoryStream, CompressionMode.Compress))
+            await gzip.WriteAsync(bytes);
 
-        var hash = SHA256.HashData(bytes);
+        var compressedBytes = memoryStream.ToArray();
+        var hash = SHA256.HashData(compressedBytes);
         var hashString = Convert.ToHexString(hash);
 
-        if (settingsState.Value.LastSuccessfulRemoteBackupHash == hashString)
+        if (!action.Force && settingsState.Value.LastSuccessfulRemoteBackupHash == hashString)
         {
             return;
         }
 
-        var content = new ByteArrayContent(bytes);
+        var content = new ByteArrayContent(compressedBytes);
         if (!string.IsNullOrEmpty(apiKey))
             content.Headers.Add("X-Api-Key", apiKey);
 

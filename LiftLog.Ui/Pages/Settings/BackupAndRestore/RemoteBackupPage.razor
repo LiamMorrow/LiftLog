@@ -65,7 +65,7 @@
 
     private void Test(MouseEventArgs _)
     {
-        Dispatcher.Dispatch(new ExecuteRemoteBackupAction(new(EndpointValue, ApiKeyValue, IncludeFeedAccount)));
+        Dispatcher.Dispatch(new ExecuteRemoteBackupAction(new(EndpointValue, ApiKeyValue, IncludeFeedAccount), Force: true));
     }
 
     private void Save(MouseEventArgs _)
