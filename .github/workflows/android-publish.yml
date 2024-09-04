@@ -37,7 +37,7 @@ jobs:
         id: buildNumber
         with:
           base: 100
-          run-id: ${GITHUB_RUN_NUMBER}
+          run-id: ${{github.run_number}}
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:

@@ -28,7 +28,7 @@ jobs:
         id: buildNumber
         with:
           base: 100
-          run-id: ${GITHUB_RUN_NUMBER}
+          run-id: ${{github.run_number}}
       - name: Put distribution cert
         env: # Or as an environment variable
           APPLE_DISTRIBUTION_CERT_P12_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERT_P12_BASE64 }}
