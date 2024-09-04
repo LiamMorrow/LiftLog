@@ -18,8 +18,6 @@ var app = builder.Build();
 
 app.UseCors();
 
-app.UseHttpsRedirection();
-
 app.MapPost(
     "/backup",
     async (
