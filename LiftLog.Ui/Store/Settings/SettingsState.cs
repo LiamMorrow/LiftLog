@@ -15,5 +15,11 @@ public record SettingsState(
     int TipToShow,
     bool ShowFeed,
     bool StatusBarFix,
-    bool RestNotifications
+    bool RestNotifications,
+    RemoteBackupSettings RemoteBackupSettings
 );
+
+public record RemoteBackupSettings(string Endpoint, string ApiKey, bool IncludeFeedAccount)
+{
+    public bool Enabled => !string.IsNullOrWhiteSpace(Endpoint);
+}

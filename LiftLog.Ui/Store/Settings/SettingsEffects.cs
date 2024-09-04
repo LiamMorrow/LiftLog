@@ -214,4 +214,19 @@ public class SettingsEffects(
     {
         await preferencesRepository.SetStatusBarFixAsync(action.StatusBarFix);
     }
+
+    [EffectMethod]
+    public async Task ExecuteRemoteBackup(ExecuteRemoteBackupAction action, IDispatcher __)
+    {
+        //
+    }
+
+    [EffectMethod]
+    public async Task UpdateAutomaticBackupSettings(
+        UpdateRemoteBackupSettingsAction action,
+        IDispatcher __
+    )
+    {
+        await preferencesRepository.SetRemoteBackupSettingsAsync(action.Settings);
+    }
 }

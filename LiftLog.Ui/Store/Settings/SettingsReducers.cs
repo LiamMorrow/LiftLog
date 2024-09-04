@@ -76,4 +76,10 @@ public static class SettingsReducers
         SettingsState state,
         SetRestNotificationsAction action
     ) => state with { RestNotifications = action.RestNotifications };
+
+    [ReducerMethod]
+    public static SettingsState UpdateRemoteBackupSettings(
+        SettingsState state,
+        UpdateRemoteBackupSettingsAction action
+    ) => state with { RemoteBackupSettings = action.Settings };
 }
