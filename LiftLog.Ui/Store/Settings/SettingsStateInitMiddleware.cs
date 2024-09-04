@@ -23,7 +23,8 @@ public class SettingsStateInitMiddleware(
                 showFeed,
                 statusBarFix,
                 restNotifications,
-                remoteBackupSettings
+                remoteBackupSettings,
+                lastSuccessfulRemoteBackupHash
             ) = await (
                 preferencesRepository.GetUseImperialUnitsAsync(),
                 preferencesRepository.GetShowBodyweightAsync(),
@@ -32,7 +33,8 @@ public class SettingsStateInitMiddleware(
                 preferencesRepository.GetShowFeedAsync(),
                 preferencesRepository.GetStatusBarFixAsync(),
                 preferencesRepository.GetRestNotificationsAsync(),
-                preferencesRepository.GetRemoteBackupSettingsAsync()
+                preferencesRepository.GetRemoteBackupSettingsAsync(),
+                preferencesRepository.GetLastSuccessfulRemoteBackupHashAsync()
             );
 
             var state = (SettingsState)store.Features[nameof(SettingsFeature)].GetState() with
@@ -46,6 +48,7 @@ public class SettingsStateInitMiddleware(
                 StatusBarFix = statusBarFix,
                 RestNotifications = restNotifications,
                 RemoteBackupSettings = remoteBackupSettings,
+                LastSuccessfulRemoteBackupHash = lastSuccessfulRemoteBackupHash,
             };
             store.Features[nameof(SettingsFeature)].RestoreState(state);
             sw.Stop();

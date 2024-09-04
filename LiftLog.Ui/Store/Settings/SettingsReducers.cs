@@ -82,4 +82,10 @@ public static class SettingsReducers
         SettingsState state,
         UpdateRemoteBackupSettingsAction action
     ) => state with { RemoteBackupSettings = action.Settings };
+
+    [ReducerMethod]
+    public static SettingsState SetLastSuccessfulRemoteBackupHash(
+        SettingsState state,
+        SetLastSuccessfulRemoteBackupHashAction action
+    ) => state with { LastSuccessfulRemoteBackupHash = action.Hash };
 }

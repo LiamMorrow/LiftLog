@@ -168,4 +168,14 @@ public class PreferencesRepository(IPreferenceStore preferenceStore)
             remoteBackupSettings.IncludeFeedAccount.ToString()
         );
     }
+
+    public async Task SetLastSuccessfulRemoteBackupHashAsync(string hash)
+    {
+        await preferenceStore.SetItemAsync("lastSuccessfulRemoteBackupHash", hash);
+    }
+
+    public async Task<string?> GetLastSuccessfulRemoteBackupHashAsync()
+    {
+        return await preferenceStore.GetItemAsync("lastSuccessfulRemoteBackupHash");
+    }
 }

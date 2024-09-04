@@ -20,6 +20,7 @@ public class SettingsFeature : Feature<SettingsState>
             ShowFeed: true,
             StatusBarFix: false,
             RestNotifications: true,
-            RemoteBackupSettings: new RemoteBackupSettings(string.Empty, string.Empty, false)
+            RemoteBackupSettings: new RemoteBackupSettings(string.Empty, string.Empty, false),
+            LastSuccessfulRemoteBackupHash: string.Empty
         );
 }

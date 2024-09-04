@@ -44,3 +44,5 @@ public record SetStatusBarFixAction(bool StatusBarFix);
 public record ExecuteRemoteBackupAction(RemoteBackupSettings Settings);
 
 public record UpdateRemoteBackupSettingsAction(RemoteBackupSettings Settings);
+
+public record SetLastSuccessfulRemoteBackupHashAction(string Hash);

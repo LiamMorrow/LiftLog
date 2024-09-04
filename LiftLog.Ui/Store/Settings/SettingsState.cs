@@ -16,7 +16,8 @@ public record SettingsState(
     bool ShowFeed,
     bool StatusBarFix,
     bool RestNotifications,
-    RemoteBackupSettings RemoteBackupSettings
+    RemoteBackupSettings RemoteBackupSettings,
+    string LastSuccessfulRemoteBackupHash
 );
 
 public record RemoteBackupSettings(string Endpoint, string ApiKey, bool IncludeFeedAccount)
