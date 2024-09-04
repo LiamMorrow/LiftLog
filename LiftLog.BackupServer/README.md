@@ -12,7 +12,7 @@ This header can also optionally accept an `X-API-KEY` header for controlling aut
 
 This POST endpoint accepts a `byte[]` payload which is a LiftLog backup file, gzipped. This file can be used unchanged (DO NOT decompress it) in the LiftLog app to restore all data it contains.
 
-The server has two optional configuration options:
+The server has two optional configuration options which can be specified as environment variables:
 
 ```
 BackupDirectory - A path to where backups will be stored
