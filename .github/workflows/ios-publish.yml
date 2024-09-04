@@ -23,6 +23,12 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
+      - uses: mlilback/build-number@v1
+        name: Set build number
+        id: buildNumber
+        with:
+          base: 100
+          run-id: ${GITHUB_RUN_NUMBER}
       - name: Put distribution cert
         env: # Or as an environment variable
           APPLE_DISTRIBUTION_CERT_P12_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERT_P12_BASE64 }}
@@ -47,7 +53,7 @@ jobs:
         run: npm i && npm run build
         working-directory: ./LiftLog.Ui
       - name: Build
-        run: 'dotnet publish -c Release -f:net8.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}" -p:CodesignProvision="LiftLog" -p:UseSentryCLI=true -p:ApplicationDisplayVersion=${{ github.event.release.name }} -p:ApplicationVersion=${{ github.event.release.tag_name }}'
+        run: 'dotnet publish -c Release -f:net8.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}" -p:CodesignProvision="LiftLog" -p:UseSentryCLI=true -p:ApplicationDisplayVersion=${{ github.event.release.name }} -p:ApplicationVersion=${{ steps.buildNumber.outputs.build-number }}'
         working-directory: ./LiftLog.Maui
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
