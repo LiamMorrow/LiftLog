@@ -19,6 +19,8 @@ public class SettingsFeature : Feature<SettingsState>
             TipToShow: 1,
             ShowFeed: true,
             StatusBarFix: false,
-            RestNotifications: true
+            RestNotifications: true,
+            RemoteBackupSettings: new RemoteBackupSettings(string.Empty, string.Empty, false),
+            LastSuccessfulRemoteBackupHash: string.Empty
         );
 }

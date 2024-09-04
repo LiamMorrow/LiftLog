@@ -1,4 +1,5 @@
 using LiftLog.Ui.Store.App;
+using LiftLog.Ui.Store.Settings;
 
 namespace LiftLog.Ui.Services;
 
@@ -140,5 +141,41 @@ public class PreferencesRepository(IPreferenceStore preferenceStore)
             return result;
         else
             return AppRatingResult.NotRated;
+    }
+
+    public async Task<RemoteBackupSettings> GetRemoteBackupSettingsAsync()
+    {
+        var (endpoint, apiKey, includeFeedAccount) = await (
+            preferenceStore.GetItemAsync("remoteBackupSettings.Endpoint").AsTask(),
+            preferenceStore.GetItemAsync("remoteBackupSettings.ApiKey").AsTask(),
+            preferenceStore.GetItemAsync("remoteBackupSettings.IncludeFeedAccount").AsTask()
+        );
+        return new RemoteBackupSettings(endpoint ?? "", apiKey ?? "", includeFeedAccount is "True");
+    }
+
+    public async Task SetRemoteBackupSettingsAsync(RemoteBackupSettings remoteBackupSettings)
+    {
+        await preferenceStore.SetItemAsync(
+            "remoteBackupSettings.Endpoint",
+            remoteBackupSettings.Endpoint
+        );
+        await preferenceStore.SetItemAsync(
+            "remoteBackupSettings.ApiKey",
+            remoteBackupSettings.ApiKey
+        );
+        await preferenceStore.SetItemAsync(
+            "remoteBackupSettings.IncludeFeedAccount",
+            remoteBackupSettings.IncludeFeedAccount.ToString()
+        );
+    }
+
+    public async Task SetLastSuccessfulRemoteBackupHashAsync(string hash)
+    {
+        await preferenceStore.SetItemAsync("lastSuccessfulRemoteBackupHash", hash);
+    }
+
+    public async Task<string?> GetLastSuccessfulRemoteBackupHashAsync()
+    {
+        return await preferenceStore.GetItemAsync("lastSuccessfulRemoteBackupHash");
     }
 }

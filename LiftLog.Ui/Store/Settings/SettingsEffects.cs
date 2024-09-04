@@ -1,6 +1,8 @@
 // ReSharper disable UnusedMember.Global
 
 using System.Collections.Immutable;
+using System.IO.Compression;
+using System.Security.Cryptography;
 using System.Text.Json;
 using Fluxor;
 using Google.Protobuf;
@@ -10,6 +12,7 @@ using LiftLog.Ui.Models.ExportedDataDao;
 using LiftLog.Ui.Models.ProgramBlueprintDao;
 using LiftLog.Ui.Models.SessionHistoryDao;
 using LiftLog.Ui.Services;
+using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.Feed;
 using LiftLog.Ui.Store.Program;
 using Microsoft.Extensions.Logging;
@@ -18,33 +21,22 @@ namespace LiftLog.Ui.Store.Settings;
 
 public class SettingsEffects(
     ProgressRepository progressRepository,
+    IState<SettingsState> settingsState,
     IState<ProgramState> programState,
     IState<FeedState> feedState,
     IExporter textExporter,
     IAiWorkoutPlanner aiWorkoutPlanner,
     IThemeProvider themeProvider,
     ILogger<SettingsEffects> logger,
-    PreferencesRepository preferencesRepository
+    PreferencesRepository preferencesRepository,
+    HttpClient httpClient
 )
 {
     [EffectMethod]
     public async Task ExportData(ExportDataAction action, IDispatcher __)
     {
-        var sessions = await progressRepository.GetOrderedSessions().ToListAsync();
-        var savedPrograms = programState.Value.SavedPrograms;
-        var activeProgramId = programState.Value.ActivePlanId;
-        var feedStateDao = action.ExportFeed ? (FeedStateDaoV1)feedState.Value : null;
-
         await textExporter.ExportBytesAsync(
-            new ExportedDataDaoV2(
-                sessions.Select(SessionDaoV2.FromModel),
-                savedPrograms.ToDictionary(
-                    x => x.Key.ToString(),
-                    x => ProgramBlueprintDaoV1.FromModel(x.Value)
-                ),
-                activeProgramId,
-                feedStateDao
-            ).ToByteArray()
+            (await GetDataExportAsync(action.ExportFeed)).ToByteArray()
         );
     }
 
@@ -210,8 +202,99 @@ public class SettingsEffects(
     }
 
     [EffectMethod]
+    public async Task HandleSetLastSuccessfulRemoteBackupHashAction(
+        SetLastSuccessfulRemoteBackupHashAction action,
+        IDispatcher _
+    )
+    {
+        await preferencesRepository.SetLastSuccessfulRemoteBackupHashAsync(action.Hash);
+    }
+
+    [EffectMethod]
     public async Task HandleStatusBarFixAction(SetStatusBarFixAction action, IDispatcher dispatcher)
     {
         await preferencesRepository.SetStatusBarFixAsync(action.StatusBarFix);
+    }
+
+    [EffectMethod]
+    public async Task ExecuteRemoteBackup(ExecuteRemoteBackupAction action, IDispatcher dispatcher)
+    {
+        var (endpoint, apiKey, includeFeedAccount) = action.Settings;
+        if (string.IsNullOrWhiteSpace(endpoint))
+        {
+            return;
+        }
+
+        var exportedData = await GetDataExportAsync(includeFeedAccount);
+        var bytes = exportedData.ToByteArray();
+        var memoryStream = new MemoryStream();
+        using (GZipStream gzip = new(memoryStream, CompressionMode.Compress))
+            await gzip.WriteAsync(bytes);
+
+        var compressedBytes = memoryStream.ToArray();
+        var hash = SHA256.HashData(compressedBytes);
+        var hashString = Convert.ToHexString(hash);
+
+        if (!action.Force && settingsState.Value.LastSuccessfulRemoteBackupHash == hashString)
+        {
+            return;
+        }
+
+        var content = new ByteArrayContent(compressedBytes);
+        if (!string.IsNullOrEmpty(apiKey))
+            content.Headers.Add("X-Api-Key", apiKey);
+
+        try
+        {
+            var result = await httpClient.PostAsync(endpoint, content);
+            result.EnsureSuccessStatusCode();
+            dispatcher.Dispatch(new SetLastSuccessfulRemoteBackupHashAction(hashString));
+            dispatcher.Dispatch(new ToastAction("Data backed up to remote server"));
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode is null)
+        {
+            dispatcher.Dispatch(
+                new ToastAction("Failed to backup data to remote server [connection failure]")
+            );
+        }
+        catch (HttpRequestException ex)
+        {
+            dispatcher.Dispatch(
+                new ToastAction("Failed to backup data to remote server [" + ex.StatusCode + "]")
+            );
+        }
+        catch
+        {
+            dispatcher.Dispatch(
+                new ToastAction("Failed to backup data to remote server [unknown]")
+            );
+        }
+    }
+
+    [EffectMethod]
+    public async Task UpdateAutomaticBackupSettings(
+        UpdateRemoteBackupSettingsAction action,
+        IDispatcher __
+    )
+    {
+        await preferencesRepository.SetRemoteBackupSettingsAsync(action.Settings);
+    }
+
+    private async Task<ExportedDataDaoV2> GetDataExportAsync(bool includeFeed)
+    {
+        var sessions = await progressRepository.GetOrderedSessions().ToListAsync();
+        var savedPrograms = programState.Value.SavedPrograms;
+        var activeProgramId = programState.Value.ActivePlanId;
+        var feedStateDao = includeFeed ? (FeedStateDaoV1)feedState.Value : null;
+
+        return new ExportedDataDaoV2(
+            sessions.Select(SessionDaoV2.FromModel),
+            savedPrograms.ToDictionary(
+                x => x.Key.ToString(),
+                x => ProgramBlueprintDaoV1.FromModel(x.Value)
+            ),
+            activeProgramId,
+            feedStateDao
+        );
     }
 }

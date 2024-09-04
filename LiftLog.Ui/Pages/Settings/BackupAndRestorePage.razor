@@ -16,6 +16,11 @@
         <span slot="headline">Import data</span>
         <span slot="supporting-text">Import data from a file to restore</span>
     </md-list-item>
+    <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="RemoteBackup">
+        <md-icon slot="start">cloud_upload</md-icon>
+        <span slot="headline">Automatic remote backup</span>
+        <span slot="supporting-text">Send backups to a remote server. Advanced users only</span>
+    </md-list-item>
 </md-list>
 
 
@@ -74,6 +79,8 @@
         Dispatcher.Dispatch(new ImportDataAction());
         Dispatcher.Dispatch(new SetStatsIsDirtyAction(true));
     }
+
+    private void RemoteBackup() => Dispatcher.Dispatch(new NavigateAction("/settings/backup-and-restore/remote-backup"));
 
     private void ExportData(bool includeFeed) => Dispatcher.Dispatch(new ExportDataAction(includeFeed));
 

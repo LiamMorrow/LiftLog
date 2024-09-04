@@ -1,0 +1,111 @@
+@page "/settings/backup-and-restore/remote-backup"
+@inject IDispatcher Dispatcher
+@inject IState<SettingsState> SettingsState
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<Card Type="Card.CardType.Filled" class="mx-6 mb-4">
+    <div>
+        This is an advanced feature which enables LiftLog to send backups to a remote server.
+        <br/>
+        Please read the documentation for instructions on how to set up a remote server.
+    </div>
+    <AppButton OnClick="OpenDocumentation" Type="AppButtonType.Text">Read Documentation</AppButton>
+</Card>
+
+<LabelledForm>
+    <LabelledFormRow Label="Endpoint" Icon="public">
+        <TextField
+            TextFieldType="TextFieldType.Outline"
+            placeholder="https://example.com/backup"
+            Value="@EndpointValue"
+            error-text="@EndpointValueError"
+            error=@(HasEndpointError)
+            OnChange="UpdateEndpoint"
+            SelectAllOnFocus=false
+            required>
+        </TextField>
+    </LabelledFormRow>
+    <LabelledFormRow Label="API Key" Icon="vpn_key">
+        <TextField
+            TextFieldType="TextFieldType.Outline"
+            Value="@ApiKeyValue"
+            SelectAllOnFocus=false
+            OnChange="UpdateApiKey">
+        </TextField>
+    </LabelledFormRow>
+    <ListSwitch Headline="Backup feed account" SupportingText="Include your feed account data in backups" Value=@IncludeFeedAccount OnSwitched="UpdateIncludeFeedAccount"/>
+</LabelledForm>
+
+<div class="flex justify-end gap-4 m-6">
+    <AppButton Type="AppButtonType.Text" Disabled=@(string.IsNullOrWhiteSpace(EndpointValue)) OnClick="Test">Test</AppButton>
+    <AppButton Type="AppButtonType.Primary" Disabled=@HasEndpointError OnClick="Save">Save</AppButton>
+</div>
+
+
+@code {
+
+    private string EndpointValue = "";
+    private string EndpointValueError = "";
+
+    private bool HasEndpointError => !string.IsNullOrWhiteSpace(EndpointValueError);
+    private string ApiKeyValue = "";
+
+    private bool IncludeFeedAccount = false;
+
+    protected override void OnInitialized()
+    {
+        Dispatcher.Dispatch(new SetPageTitleAction("Automatic Remote Backup"));
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings/backup-and-restore"));
+        base.OnInitialized();
+        EndpointValue = SettingsState.Value.RemoteBackupSettings.Endpoint;
+        ApiKeyValue = SettingsState.Value.RemoteBackupSettings.ApiKey;
+        IncludeFeedAccount = SettingsState.Value.RemoteBackupSettings.IncludeFeedAccount;
+    }
+
+    private void Test(MouseEventArgs _)
+    {
+        Dispatcher.Dispatch(new ExecuteRemoteBackupAction(new(EndpointValue, ApiKeyValue, IncludeFeedAccount), Force: true));
+    }
+
+    private void Save(MouseEventArgs _)
+    {
+        if(HasEndpointError)
+        {
+            return;
+        }
+        Dispatcher.Dispatch(new UpdateRemoteBackupSettingsAction(new(EndpointValue, ApiKeyValue, IncludeFeedAccount)));
+        Dispatcher.Dispatch(new ToastAction("Settings saved"));
+    }
+
+    private void OpenDocumentation(MouseEventArgs _)
+    {
+        Dispatcher.Dispatch(new NavigateAction("https://github.com/LiamMorrow/LiftLog/blob/main/Docs/RemoteBackup.md"));
+    }
+
+    private void UpdateEndpoint(string endpoint)
+    {
+        EndpointValue = endpoint;
+        StateHasChanged();
+        if(!string.IsNullOrWhiteSpace(endpoint) && !endpoint.StartsWith("https://"))
+        {
+            EndpointValueError = "Endpoint must start with https://";
+        }
+        else
+        {
+            EndpointValueError = "";
+        }
+    }
+
+    private void UpdateApiKey(string apiKey)
+    {
+        ApiKeyValue = apiKey;
+        StateHasChanged();
+    }
+
+    private void UpdateIncludeFeedAccount(bool includeFeedAccount)
+    {
+        IncludeFeedAccount = includeFeedAccount;
+        StateHasChanged();
+    }
+}
