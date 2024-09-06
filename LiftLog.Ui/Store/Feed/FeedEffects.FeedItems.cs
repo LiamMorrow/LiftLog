@@ -70,17 +70,19 @@ public partial class FeedEffects
 
         var newUsers = (
             await Task.WhenAll(
-                users.Select(x =>
+                users.Select(async x =>
                     originalFollowedUsers[x.Key].AesKey is null
-                        ? Task.FromResult((FeedUser?)originalFollowedUsers[x.Key])
-                        : GetDecryptedUserAsync(
-                            x.Key,
-                            originalFollowedUsers[x.Key].PublicKey,
-                            originalFollowedUsers[x.Key].AesKey!,
-                            originalFollowedUsers[x.Key].Nickname,
-                            x.Value,
-                            originalFollowedUsers[x.Key].FollowSecret
-                        )
+                        ? ((FeedUser?)originalFollowedUsers[x.Key])
+                        : (
+                            await GetDecryptedUserAsync(
+                                x.Key,
+                                originalFollowedUsers[x.Key].PublicKey,
+                                originalFollowedUsers[x.Key].AesKey!,
+                                originalFollowedUsers[x.Key].Nickname,
+                                x.Value,
+                                originalFollowedUsers[x.Key].FollowSecret
+                            )
+                        ) ?? originalFollowedUsers[x.Key]
                 )
             )
         )
