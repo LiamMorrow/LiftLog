@@ -58,21 +58,7 @@
 <Microsoft.AspNetCore.Components.Sections.SectionOutlet SectionName="FullscreenDialog"></Microsoft.AspNetCore.Components.Sections.SectionOutlet>
 <Microsoft.AspNetCore.Components.Sections.SectionOutlet SectionName="Dialog"></Microsoft.AspNetCore.Components.Sections.SectionOutlet>
 <Microsoft.AspNetCore.Components.Sections.SectionOutlet SectionName="AndroidNotificationDialog"></Microsoft.AspNetCore.Components.Sections.SectionOutlet>
-<div class="hidden">
-    <ApexChart
-        TItem="DummyChartType"
-        Title=""
-        XAxisType="XAxisType.Datetime">
 
-        <ApexPointSeries TItem="DummyChartType"
-                         Items="new DummyChartType[0]"
-                         Name="Placeholder to load apex charts so it doesn't freeze on load"
-                         SeriesType="SeriesType.Line"
-                         XValue="@(e => DateTime.Now)"
-                         YAggregate="@(e => e.Max(e => e.X))"
-                         OrderByDescending="e => e.X"/>
-    </ApexChart>
-</div>
 <ToastComponent/>
 <HeadContent>
     <title>@AppState.Value.Title</title>
@@ -105,7 +91,7 @@
 #if DEBUG
         if (firstRender)
         {
-            await Js.InvokeAsync<IJSObjectReference>("import", "/_content/LiftLog.Ui/load-tailwind.js");
+            @* await Js.InvokeAsync<IJSObjectReference>("import", "/_content/LiftLog.Ui/load-tailwind.js"); *@
         }
 #endif
         if (firstRender)

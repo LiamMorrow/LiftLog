@@ -1,15 +1,14 @@
-var AppUtils = {};
-AppUtils.getScrollTop = function (element) {
+const getScrollTop = function (element) {
   return element?.scrollTop;
 };
 
-AppUtils.showMdPopup = function (element) {
+const showMdPopup = function (element) {
   return element?.show();
 };
 
-AppUtils.vibrate = function (ms) {
+const vibrate = function (ms) {
   navigator.vibrate?.(ms);
-  if (AppUtils.getOs() === "unknown") {
+  if (getOs() === "unknown") {
     console.log("Vibrating for " + ms + "ms");
   }
 };
@@ -19,7 +18,7 @@ AppUtils.vibrate = function (ms) {
  * This new event has bubbles, which allows blazor components to intercept it
  * @param {HTMLElement} element
  */
-AppUtils.onCloseMdPopup = function (element) {
+const onCloseMdPopup = function (element) {
   element?.addEventListener("open", () => {
     if (element?.shadowRoot) {
       const scrim = element.shadowRoot.querySelector(".scrim");
@@ -46,7 +45,7 @@ AppUtils.onCloseMdPopup = function (element) {
   });
 };
 
-AppUtils.onClosedMenu = function (element) {
+const onClosedMenu = function (element) {
   element?.addEventListener("closed", () => {
     element?.dispatchEvent(
       new Event("dialog-close", {
@@ -57,45 +56,45 @@ AppUtils.onClosedMenu = function (element) {
   });
 };
 
-AppUtils.hideMdPopup = function (element) {
+const hideMdPopup = function (element) {
   return element?.close();
 };
 
-AppUtils.setValue = function (element, value) {
+const setValue = function (element, value) {
   if (element) element.value = value;
 };
 
-AppUtils.setValueIfNotFocused = function (element, value) {
+const setValueIfNotFocused = function (element, value) {
   if (element && document.activeElement !== element) element.value = value;
 };
 
-AppUtils.getValue = function (element) {
+const getValue = function (element) {
   return element.value;
 };
 
-AppUtils.getWidth = function (element) {
+const getWidth = function (element) {
   return element?.offsetWidth ?? 0;
 };
 
-AppUtils.isOpen = function (element) {
+const isOpen = function (element) {
   return element.open;
 };
 
-AppUtils.getActiveTabControls = function (tabs) {
+const getActiveTabControls = function (tabs) {
   /** @type {HTMLElement }*/
   const activeTab = tabs.activeTab;
   return activeTab.getAttribute("aria-controls");
 };
 
-AppUtils.setSelected = function (element, selected) {
+const setSelected = function (element, selected) {
   if (element) element.selected = selected;
 };
 
-AppUtils.getSelected = function (element) {
+const getSelected = function (element) {
   return element?.selected;
 };
 
-AppUtils.selectAllText = function (element) {
+const selectAllText = function (element) {
   try {
     element?.setSelectionRange(0, element?.value.length);
   } catch {
@@ -103,7 +102,7 @@ AppUtils.selectAllText = function (element) {
   }
 };
 
-AppUtils.toggleOpen = function (element) {
+const toggleOpen = function (element) {
   if (!element) return;
   element.open = !element.open;
 };
@@ -111,14 +110,14 @@ AppUtils.toggleOpen = function (element) {
 /**
  * @param {HTMLElement} element
  */
-AppUtils.scrollToTop = function (element) {
+const scrollToTop = function (element) {
   element?.scrollTo({
     top: 0,
     behavior: "instant",
   });
 };
 
-AppUtils.callOn = function (element, funcName) {
+const callOn = function (element, funcName) {
   element[funcName]();
 };
 
@@ -127,7 +126,7 @@ AppUtils.callOn = function (element, funcName) {
  * This new event just emits a number directly, as the value is incompatible with blazor ChangeEventArgs
  * @param {HTMLElement} element
  */
-AppUtils.onSliderChange = function (element) {
+const onSliderChange = function (element) {
   element?.addEventListener("input", () => {
     const event = new Event("slider-change", {
       bubbles: true,
@@ -142,7 +141,7 @@ AppUtils.onSliderChange = function (element) {
  *
  * @param {string} id
  */
-AppUtils.scrollIntoViewById = function (id) {
+const scrollIntoViewById = function (id) {
   const element = document.getElementById(id);
   const scrollingElement = document.getElementById("scrollingElement");
   // scroll to center
@@ -150,7 +149,7 @@ AppUtils.scrollIntoViewById = function (id) {
     scrollingElement.scroll({ top: element.offsetTop - scrollingElement.clientHeight / 2, behavior: "smooth" });
 };
 
-AppUtils.smoothScrollAndFocusLast = function (elementSelector) {
+const smoothScrollAndFocusLast = function (elementSelector) {
   const items = document.querySelectorAll(elementSelector);
   /**
    * @type {HTMLElement}
@@ -168,9 +167,9 @@ AppUtils.smoothScrollAndFocusLast = function (elementSelector) {
   }, 500);
 };
 
-AppUtils.closeActiveDialog = function () {
+const closeActiveDialog = function () {
   const dialog = document.querySelector("md-dialog[open]");
-  dialog?.close();
+  (dialog as any)?.close();
   const fullscreenDialog = document.querySelector(".fullscreen-dialog[data-open]:not([data-closing])");
   fullscreenDialog?.dispatchEvent(
     new Event("close", {
@@ -181,12 +180,12 @@ AppUtils.closeActiveDialog = function () {
   return !!dialog || !!fullscreenDialog;
 };
 
-AppUtils.setupPullToRefresh = function (elementSelector) {
+const setupPullToRefresh = function (elementSelector) {
   const pullToRefresh = PullToRefresh.init({
     mainElement: elementSelector,
     triggerElement: "#scrollingElement",
     shouldPullToRefresh() {
-      return AppUtils.getScrollTop(document.querySelector("#scrollingElement")) <= 1;
+      return getScrollTop(document.querySelector("#scrollingElement")) <= 1;
     },
     getStyles() {
       return `.__PREFIX__ptr {
@@ -245,11 +244,12 @@ AppUtils.setupPullToRefresh = function (elementSelector) {
   });
 };
 
-AppUtils.destroyPullToRefresh = function () {
+declare const PullToRefresh: any;
+const destroyPullToRefresh = function () {
   PullToRefresh.destroyAll();
 };
 
-AppUtils.getOs = function () {
+const getOs = function () {
   // Look at user agent to determine OS
   //@ts-ignore
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
@@ -261,4 +261,32 @@ AppUtils.getOs = function () {
     return "iOS";
   }
   return "unknown";
+};
+
+var AppUtils = {
+  getScrollTop,
+  showMdPopup,
+  vibrate,
+  getOs,
+  onCloseMdPopup,
+  onClosedMenu,
+  hideMdPopup,
+  setValue,
+  setValueIfNotFocused,
+  getValue,
+  getWidth,
+  isOpen,
+  getActiveTabControls,
+  setSelected,
+  getSelected,
+  selectAllText,
+  toggleOpen,
+  scrollToTop,
+  callOn,
+  onSliderChange,
+  scrollIntoViewById,
+  smoothScrollAndFocusLast,
+  closeActiveDialog,
+  setupPullToRefresh,
+  destroyPullToRefresh,
 };

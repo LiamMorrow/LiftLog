@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "strict": true,
+    "noImplicitAny": false,
     "target": "ES5",
-    "lib": ["DOM"]
+    "lib": ["DOM", "ES2015"]
   },
   "exclude": ["node_modules"]
 }
