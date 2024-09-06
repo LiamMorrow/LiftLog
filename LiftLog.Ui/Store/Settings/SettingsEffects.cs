@@ -249,7 +249,7 @@ public class SettingsEffects(
             var result = await httpClient.PostAsync(endpoint, content);
             result.EnsureSuccessStatusCode();
             dispatcher.Dispatch(new SetLastSuccessfulRemoteBackupHashAction(hashString));
-            dispatcher.Dispatch(new ToastAction("Data backed up to remote server"));
+            dispatcher.Dispatch(new RemoteBackupSucceededEvent());
         }
         catch (HttpRequestException ex) when (ex.StatusCode is null)
         {

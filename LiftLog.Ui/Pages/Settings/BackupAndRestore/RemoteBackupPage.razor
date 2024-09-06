@@ -57,6 +57,7 @@
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Automatic Remote Backup"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings/backup-and-restore"));
+        SubscribeToAction<RemoteBackupSucceededEvent>(OnRemoteBackupSucceeded);
         base.OnInitialized();
         EndpointValue = SettingsState.Value.RemoteBackupSettings.Endpoint;
         ApiKeyValue = SettingsState.Value.RemoteBackupSettings.ApiKey;
@@ -107,5 +108,10 @@
     {
         IncludeFeedAccount = includeFeedAccount;
         StateHasChanged();
+    }
+
+    private void OnRemoteBackupSucceeded(RemoteBackupSucceededEvent _)
+    {
+        Dispatcher.Dispatch(new ToastAction("Backup sent successfully"));
     }
 }
