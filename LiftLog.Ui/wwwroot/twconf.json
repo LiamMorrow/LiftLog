@@ -1,5 +1,12 @@
 {
-  "content": ["../**/*.{razor,html,cshtml}"],
+  "content": [
+    "./Pages/**/*.{razor,html,cshtml}",
+    "./Shared/**/*.{razor,html,cshtml}",
+    "./wwwroot/**/*.{razor,html,cshtml}",
+    "../Pages/**/*.{razor,html,cshtml}",
+    "../Shared/**/*.{razor,html,cshtml}",
+    "../wwwroot/**/*.{razor,html,cshtml}"
+  ],
   "theme": {
     "//": "This has come from running withMT https://github.com/creativetimofficial/material-tailwind",
     "boxShadow": {
