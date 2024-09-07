@@ -1,5 +1,5 @@
 
-<Dialog @ref="dialog" @ondialog-cancel="OnCancel">
+<Dialog @ref="dialog" @ondialog-cancel="OnCancel" type="alert" PreventCancel=@PreventCancel>
     <span slot="headline">@Headline</span>
     <span slot="content" class="block text-left">
         @TextContent
@@ -31,6 +31,8 @@
     public EventCallback OnOk { get; set; }
 
     [Parameter] public string SectionName { get; set; } = "Dialog";
+
+    [Parameter] public bool PreventCancel { get; set; } = false;
 
     private Dialog? dialog;
 
