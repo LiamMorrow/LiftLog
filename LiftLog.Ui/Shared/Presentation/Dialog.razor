@@ -30,12 +30,14 @@
 
     [Parameter] public string SectionName { get; set; } = "Dialog";
 
+    [Parameter] public bool PreventCancel { get; set; } = false;
+
     public async void Open()
     {
         opened = true;
         StateHasChanged();
         await Task.Yield();
-        await JSRuntime.InvokeVoidAsync("AppUtils.onCloseMdPopup", dialog);
+        await JSRuntime.InvokeVoidAsync("AppUtils.onCloseMdPopup", dialog, PreventCancel);
         await JSRuntime.InvokeVoidAsync("AppUtils.showMdPopup", dialog);
     }
 

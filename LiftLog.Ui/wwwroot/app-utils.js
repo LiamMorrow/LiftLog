@@ -19,7 +19,7 @@ AppUtils.vibrate = function (ms) {
  * This new event has bubbles, which allows blazor components to intercept it
  * @param {HTMLElement} element
  */
-AppUtils.onCloseMdPopup = function (element) {
+AppUtils.onCloseMdPopup = function (element, preventCancel) {
   element?.addEventListener("open", () => {
     if (element?.shadowRoot) {
       const scrim = element.shadowRoot.querySelector(".scrim");
@@ -36,7 +36,11 @@ AppUtils.onCloseMdPopup = function (element) {
       })
     );
   });
-  element?.addEventListener("cancel", () => {
+  element?.addEventListener("cancel", (event) => {
+    if (preventCancel) {
+      event.preventDefault();
+      return;
+    }
     element?.dispatchEvent(
       new Event("dialog-cancel", {
         bubbles: true,

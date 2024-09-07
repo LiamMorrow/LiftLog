@@ -34,7 +34,7 @@ else
             OnDateSelect=CreateSessionAtDate
             OnSessionLongPress=@((session)=>{_selectedSession = session; _deleteDialog?.Open();}) />
     </Card>
-    <CardList CardType=Card.CardType.Outlined Items="filteredToMonthSessions" TItem="Session" OnClick="HandleSessionClick" OnContextMenu=@((item)=>{_selectedSession = item; _deleteDialog?.Open();}) >
+    <CardList CardType=Card.CardType.Outlined Items="filteredToMonthSessions" TItem="Session" OnClick="HandleSessionClick" OnLongPress=@((item)=>{_selectedSession = item; _deleteDialog?.Open();}) >
         <SplitCardControl>
             <TitleContent>
                 <SessionSummaryTitle IsFilled="true" Session="context" ></SessionSummaryTitle>
@@ -56,7 +56,7 @@ else
     }
 }
 
-<ConfirmationDialog @ref="_deleteDialog" OkText="Delete" OnOk=DeleteSession>
+<ConfirmationDialog @ref="_deleteDialog" OkText="Delete" OnOk=DeleteSession PreventCancel=true >
     <Headline>Delete Session?</Headline>
     <TextContent>
         The session named <span class="font-bold text-primary">@_selectedSession.Blueprint.Name</span>,

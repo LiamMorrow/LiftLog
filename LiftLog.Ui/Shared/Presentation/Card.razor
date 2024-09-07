@@ -1,9 +1,13 @@
 @inject IJSRuntime JsRuntime
+@inject IHapticFeedbackService HapticFeedback
 
 <div
     class="@(AdditionalAttributes?.GetValueOrDefault("class")) @(HasPadding ?"p-5":"") relative @Style rounded-card text-on-surface card"
-    @onclick="HandleOnClick"
-    @oncontextmenu=OnContextMenu @oncontextmenu:preventDefault=@(OnContextMenu.HasDelegate)
+    @onpointercancel=OnPointerLeave
+    @onpointerdown="OnPointerDown"
+    @onpointerleave="OnPointerLeave"
+    @onclick="OnPointerUp"
+    @oncontextmenu:preventDefault=true
     >
 
     @if (OnClick != null)
@@ -21,9 +25,9 @@
 
     [Parameter] public RenderFragment ChildContent { get; set; } = null!;
 
-    [Parameter] public Action<MouseEventArgs>? OnClick { get; set; }
+    [Parameter] public Action? OnClick { get; set; }
 
-    [Parameter] public EventCallback OnContextMenu { get; set; }
+    [Parameter] public EventCallback OnLongPress { get; set; }
 
     [Parameter] public bool IsHighlighted { get; set; }
 
@@ -40,9 +44,12 @@
         _ => "",
     };
 
-    private void HandleOnClick(MouseEventArgs args)
+    private DateTime? _lastPointerDownTime;
+    private DateTime? _holdTime;
+
+    private async Task HandleOnClick()
     {
-        OnClick?.Invoke(args);
+        OnClick?.Invoke();
     }
 
     public enum CardType
@@ -52,4 +59,40 @@
         Elevated
     }
 
+
+    async Task HandleLongPress()
+    {
+        await HapticFeedback.PerformAsync(HapticFeedbackType.LongPress);
+        await OnLongPress.InvokeAsync();
+    }
+
+    private async void OnPointerDown(PointerEventArgs args)
+    {
+        _lastPointerDownTime = DateTime.Now;
+        await Task.Delay(400);
+        if (_lastPointerDownTime is null || _lastPointerDownTime.Value.AddMilliseconds(400) > DateTime.Now) return;
+        _holdTime = DateTime.Now;
+        _lastPointerDownTime = null;
+        await HandleLongPress();
+        _holdTime = null;
+    }
+
+
+    private void OnPointerLeave(PointerEventArgs args)
+    {
+        _holdTime = null;
+        _lastPointerDownTime = null;
+    }
+
+    private async void OnPointerUp(MouseEventArgs args)
+    {
+        // On desktop holding down opens a right click menu - so this does not fire
+        // This results in needing to click the repcount twice after cycling.  Not an issue on mobile
+        if (_holdTime is null)
+        {
+            await HandleOnClick();
+        }
+        _holdTime = null;
+        _lastPointerDownTime = null;
+    }
 }

@@ -89,7 +89,7 @@ else
         <ExerciseEditor Exercise="editingExerciseBlueprint" UpdateExercise="(ex) => {editingExerciseBlueprint = ex; StateHasChanged();}" />
 </FullScreenDialog>
 
-<Dialog @ref="setAdditionalActionsDialog">
+<Dialog @ref="setAdditionalActionsDialog" PreventCancel=true>
     @if(setAdditionalActions != null)
     {
         var exercise = Session.RecordedExercises[setAdditionalActions.Value.ExerciseIndex];

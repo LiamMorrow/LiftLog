@@ -25,7 +25,7 @@
 
     private RenderFragment RenderCard(TItem item)
     {
-        return @<Card Type=CardType IsHighlighted="ShouldHighlight?.Invoke(item) ?? false" OnClick="@(OnClick != null ? _ => OnClick(item) : null)" class="@CardClass">
+        return @<Card Type=CardType IsHighlighted="ShouldHighlight?.Invoke(item) ?? false" OnClick="@(OnClick != null ? () => OnClick(item) : null)" class="@CardClass">
             @ChildContent?.Invoke(item)
         </Card>;
     }
