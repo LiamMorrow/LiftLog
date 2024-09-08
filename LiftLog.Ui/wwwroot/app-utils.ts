@@ -1,13 +1,19 @@
-var AppUtils = {};
-AppUtils.getScrollTop = function (element) {
+var AppUtils: any = {};
+type MDDialog = {
+  show: () => void;
+  close: () => void;
+  open: boolean;
+};
+
+AppUtils.getScrollTop = function (element: HTMLElement) {
   return element?.scrollTop;
 };
 
-AppUtils.showMdPopup = function (element) {
+AppUtils.showMdPopup = function (element: MDDialog) {
   return element?.show();
 };
 
-AppUtils.vibrate = function (ms) {
+AppUtils.vibrate = function (ms: number) {
   navigator.vibrate?.(ms);
   if (AppUtils.getOs() === "unknown") {
     console.log("Vibrating for " + ms + "ms");
@@ -19,10 +25,10 @@ AppUtils.vibrate = function (ms) {
  * This new event has bubbles, which allows blazor components to intercept it
  * @param {HTMLElement} element
  */
-AppUtils.onCloseMdPopup = function (element, preventCancel) {
+AppUtils.onCloseMdPopup = function (element: HTMLElement, preventCancel: boolean | undefined) {
   element?.addEventListener("open", () => {
     if (element?.shadowRoot) {
-      const scrim = element.shadowRoot.querySelector(".scrim");
+      const scrim = element.shadowRoot.querySelector(".scrim") as HTMLElement | null;
       if (scrim) {
         scrim.style.zIndex = "99";
       }
@@ -50,7 +56,7 @@ AppUtils.onCloseMdPopup = function (element, preventCancel) {
   });
 };
 
-AppUtils.onClosedMenu = function (element) {
+AppUtils.onClosedMenu = function (element: HTMLElement) {
   element?.addEventListener("closed", () => {
     element?.dispatchEvent(
       new Event("dialog-close", {
@@ -61,45 +67,44 @@ AppUtils.onClosedMenu = function (element) {
   });
 };
 
-AppUtils.hideMdPopup = function (element) {
+AppUtils.hideMdPopup = function (element: MDDialog) {
   return element?.close();
 };
 
-AppUtils.setValue = function (element, value) {
+AppUtils.setValue = function (element: HTMLInputElement, value: string) {
   if (element) element.value = value;
 };
 
-AppUtils.setValueIfNotFocused = function (element, value) {
+AppUtils.setValueIfNotFocused = function (element: HTMLInputElement, value: string) {
   if (element && document.activeElement !== element) element.value = value;
 };
 
-AppUtils.getValue = function (element) {
+AppUtils.getValue = function (element: HTMLInputElement) {
   return element.value;
 };
 
-AppUtils.getWidth = function (element) {
+AppUtils.getWidth = function (element: HTMLElement) {
   return element?.offsetWidth ?? 0;
 };
 
-AppUtils.isOpen = function (element) {
+AppUtils.isOpen = function (element: MDDialog) {
   return element.open;
 };
 
-AppUtils.getActiveTabControls = function (tabs) {
-  /** @type {HTMLElement }*/
+AppUtils.getActiveTabControls = function (tabs: { activeTab: HTMLElement }) {
   const activeTab = tabs.activeTab;
   return activeTab.getAttribute("aria-controls");
 };
 
-AppUtils.setSelected = function (element, selected) {
+AppUtils.setSelected = function (element: HTMLOptionElement, selected: boolean) {
   if (element) element.selected = selected;
 };
 
-AppUtils.getSelected = function (element) {
+AppUtils.getSelected = function (element: HTMLOptionElement) {
   return element?.selected;
 };
 
-AppUtils.selectAllText = function (element) {
+AppUtils.selectAllText = function (element: HTMLInputElement) {
   try {
     element?.setSelectionRange(0, element?.value.length);
   } catch {
@@ -107,7 +112,7 @@ AppUtils.selectAllText = function (element) {
   }
 };
 
-AppUtils.toggleOpen = function (element) {
+AppUtils.toggleOpen = function (element: MDDialog) {
   if (!element) return;
   element.open = !element.open;
 };
@@ -115,15 +120,15 @@ AppUtils.toggleOpen = function (element) {
 /**
  * @param {HTMLElement} element
  */
-AppUtils.scrollToTop = function (element) {
+AppUtils.scrollToTop = function (element: HTMLElement) {
   element?.scrollTo({
     top: 0,
     behavior: "instant",
   });
 };
 
-AppUtils.callOn = function (element, funcName) {
-  element?.[funcName]();
+AppUtils.callOn = function (element: HTMLElement, funcName: keyof HTMLElement) {
+  (element?.[funcName] as any)?.();
 };
 
 /**
@@ -131,7 +136,7 @@ AppUtils.callOn = function (element, funcName) {
  * This new event just emits a number directly, as the value is incompatible with blazor ChangeEventArgs
  * @param {HTMLElement} element
  */
-AppUtils.onSliderChange = function (element) {
+AppUtils.onSliderChange = function (element: HTMLElement) {
   element?.addEventListener("input", () => {
     const event = new Event("slider-change", {
       bubbles: true,
@@ -146,7 +151,7 @@ AppUtils.onSliderChange = function (element) {
  *
  * @param {string} id
  */
-AppUtils.scrollIntoViewById = function (id) {
+AppUtils.scrollIntoViewById = function (id: string) {
   const element = document.getElementById(id);
   const scrollingElement = document.getElementById("scrollingElement");
   // scroll to center
@@ -154,11 +159,8 @@ AppUtils.scrollIntoViewById = function (id) {
     scrollingElement.scroll({ top: element.offsetTop - scrollingElement.clientHeight / 2, behavior: "smooth" });
 };
 
-AppUtils.smoothScrollAndFocusLast = function (elementSelector) {
-  const items = document.querySelectorAll(elementSelector);
-  /**
-   * @type {HTMLElement}
-   */
+AppUtils.smoothScrollAndFocusLast = function (elementSelector: string) {
+  const items = document.querySelectorAll(elementSelector) as NodeListOf<HTMLElement>;
   const lastItem = items[items.length - 1];
   lastItem?.scrollIntoView({
     behavior: "smooth",
@@ -174,7 +176,7 @@ AppUtils.smoothScrollAndFocusLast = function (elementSelector) {
 
 AppUtils.closeActiveDialog = function () {
   const dialog = document.querySelector("md-dialog[open]");
-  dialog?.close();
+  (dialog as any)?.close();
   const fullscreenDialog = document.querySelector(".fullscreen-dialog[data-open]:not([data-closing])");
   fullscreenDialog?.dispatchEvent(
     new Event("close", {
@@ -185,7 +187,9 @@ AppUtils.closeActiveDialog = function () {
   return !!dialog || !!fullscreenDialog;
 };
 
-AppUtils.setupPullToRefresh = function (elementSelector) {
+declare var PullToRefresh: any;
+
+AppUtils.setupPullToRefresh = function (elementSelector: string) {
   const pullToRefresh = PullToRefresh.init({
     mainElement: elementSelector,
     triggerElement: "#scrollingElement",
