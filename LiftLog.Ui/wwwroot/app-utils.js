@@ -123,7 +123,7 @@ AppUtils.scrollToTop = function (element) {
 };
 
 AppUtils.callOn = function (element, funcName) {
-  element[funcName]();
+  element?.[funcName]();
 };
 
 /**
