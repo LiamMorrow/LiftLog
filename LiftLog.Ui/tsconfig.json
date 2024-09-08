@@ -2,9 +2,9 @@
   "compilerOptions": {
     "strict": true,
     "target": "ES2021",
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
     "lib": ["ES2021", "DOM"]
   },
-  "include": ["wwwroot/**/*.ts"],
-  "exclude": ["node_modules"],
-  "moduleResolution": "nodenext"
+  "include": ["wwwroot/**/*.ts"]
 }
