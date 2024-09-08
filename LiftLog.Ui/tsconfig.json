@@ -4,6 +4,7 @@
     "target": "ES2021",
     "lib": ["ES2021", "DOM"]
   },
+  "include": ["wwwroot/**/*.ts"],
   "exclude": ["node_modules"],
   "moduleResolution": "nodenext"
 }
