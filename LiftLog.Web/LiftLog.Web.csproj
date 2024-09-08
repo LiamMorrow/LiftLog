@@ -29,5 +29,6 @@
     <ItemGroup>
         <ProjectReference Include="..\LiftLog.Lib\LiftLog.Lib.csproj"/>
         <ProjectReference Include="..\LiftLog.Ui\LiftLog.Ui.csproj"/>
+        <Content Update="tsconfig.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />
     </ItemGroup>
 </Project>

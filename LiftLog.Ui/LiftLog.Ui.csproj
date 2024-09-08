@@ -59,6 +59,7 @@
 
     <ItemGroup>
         <Content Remove="package.json" />
+        <Content Update="tsconfig.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />
     </ItemGroup>
 
 
