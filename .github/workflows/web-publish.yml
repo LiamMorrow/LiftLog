@@ -31,6 +31,9 @@ jobs:
       - name: Build Tailwind
         run: npm i && npm run build
         working-directory: ./LiftLog.Ui
+      - name: Build UI # Seems that the typescript built files dont get copied to the publish folder unless we build the project first
+        run: dotnet build -c Release
+        working-directory: ./LiftLog.Ui
       - name: Build
         run: dotnet publish -c Release
         working-directory: ./LiftLog.Web
