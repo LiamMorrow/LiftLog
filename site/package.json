@@ -43,10 +43,10 @@
         "browser-sync": "3.0.2",
         "chokidar": "3.6.0",
         "concurrently": "9.0.0",
-        "postcss": "8.4.43",
+        "postcss": "8.4.45",
         "prettier": "3.3.3",
         "pug": "3.0.3",
-        "sass": "1.77.8",
+        "sass": "1.78.0",
         "shelljs": "0.8.5",
         "upath": "2.0.1"
     }

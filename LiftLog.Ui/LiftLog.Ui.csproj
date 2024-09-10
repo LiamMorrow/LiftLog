@@ -39,7 +39,7 @@
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="TaskTupleAwaiter" Version="2.1.0" />
-        <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.5.3">
+        <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.6.2">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
