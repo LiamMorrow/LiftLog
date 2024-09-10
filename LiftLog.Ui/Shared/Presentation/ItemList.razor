@@ -1,19 +1,17 @@
 @typeparam TItem
 <div @attributes="AdditionalAttributes" class=" @(AdditionalAttributes?.GetValueOrDefault("class")) flex flex-col @VerticalPaddingClass itemlist">
-    @for (var i = 0; i < Items.Count; i++)
+    @foreach (var item in Items)
     {
         <div class="text-on-surface item" >
-            @ChildContent?.Invoke(Items[i])
+            @ChildContent?.Invoke(item)
         </div>
-        @if(Dividers && i < Items.Count - 1){
-            <md-divider></md-divider>
-        }
+        <md-divider class="last:hidden"></md-divider>
     }
 </div>
 
 @code
 {
-    [EditorRequired] [Parameter] public IReadOnlyList<TItem> Items { get; set; } = null!;
+    [EditorRequired] [Parameter] public IEnumerable<TItem> Items { get; set; } = null!;
 
     [Parameter] public RenderFragment<TItem>? ChildContent { get; set; } = null!;
 

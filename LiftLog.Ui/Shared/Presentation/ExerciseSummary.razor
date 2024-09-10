@@ -1,0 +1,65 @@
+@{
+ var splitWeights = (Exercise.PerSetWeight
+    && !Exercise.PotentialSets.All(s => s.Weight == Exercise.Weight))
+    || Exercise.PotentialSets.DistinctBy(x=>x.Set?.RepsCompleted).Count() != 1;
+}
+<span class="flex items-center">
+    @if(ShowName)
+    {
+        <span>@Exercise.Blueprint.Name</span>
+    }
+    @if(ShowSets || ShowWeight)
+    {
+        @if(!splitWeights)
+        {
+        <span class="flex justify-around ml-auto items-center gap-0.5 bg-surface-container-highest text-on-surface-variant rounded-md py-1 px-2">
+
+            @if (ShowSets)
+            {
+                <span>
+                    @(Exercise.Blueprint.Sets)x@(Exercise.Blueprint.RepsPerSet)
+                </span>
+                @if(ShowWeight)
+                {
+                    <span class="text-2xs">@@</span>
+                }
+            }
+
+            @if (ShowWeight)
+            {
+                <WeightFormat Weight="@Exercise.Weight"/>
+            }
+        </span>
+        }
+
+        @if (ShowWeight && splitWeights)
+        {
+            <span class="flex ml-auto flex-wrap justify-end gap-1">
+                @foreach(var set in Exercise.PotentialSets)
+                {
+                    if(set.Set?.RepsCompleted == null)
+                    {
+                        continue;
+                    }
+                    <span class="flex items-center gap-0.5 bg-surface-container-highest text-on-surface-variant rounded-md py-1 px-2">
+                        @if (ShowSets){
+                            <span>@(set.Set?.RepsCompleted ?? Exercise.Blueprint.RepsPerSet)</span><span class="text-2xs">@@</span>
+                        }
+                        <WeightFormat Weight="@set.Weight"/>
+                    </span>
+                }
+            </span>
+        }
+    }
+</span>
+
+@code
+{
+    [EditorRequired] [Parameter] public RecordedExercise Exercise { get; set; } = null!;
+
+    [Parameter] public bool ShowSets { get; set; }
+
+    [Parameter] public bool ShowWeight { get; set; }
+
+    [Parameter] public bool ShowName { get; set; }
+}

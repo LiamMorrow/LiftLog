@@ -58,21 +58,6 @@
 <Microsoft.AspNetCore.Components.Sections.SectionOutlet SectionName="FullscreenDialog"></Microsoft.AspNetCore.Components.Sections.SectionOutlet>
 <Microsoft.AspNetCore.Components.Sections.SectionOutlet SectionName="Dialog"></Microsoft.AspNetCore.Components.Sections.SectionOutlet>
 <Microsoft.AspNetCore.Components.Sections.SectionOutlet SectionName="AndroidNotificationDialog"></Microsoft.AspNetCore.Components.Sections.SectionOutlet>
-<div class="hidden">
-    <ApexChart
-        TItem="DummyChartType"
-        Title=""
-        XAxisType="XAxisType.Datetime">
-
-        <ApexPointSeries TItem="DummyChartType"
-                         Items="new DummyChartType[0]"
-                         Name="Placeholder to load apex charts so it doesn't freeze on load"
-                         SeriesType="SeriesType.Line"
-                         XValue="@(e => DateTime.Now)"
-                         YAggregate="@(e => e.Max(e => e.X))"
-                         OrderByDescending="e => e.X"/>
-    </ApexChart>
-</div>
 <ToastComponent/>
 <HeadContent>
     <title>@AppState.Value.Title</title>
@@ -171,8 +156,4 @@
             Dispatcher.Dispatch(new NavigateAction(AppState.Value.BackNavigationUrl));
         }
     }
-
-
-    private record DummyChartType(int X);
-
 }

@@ -29,7 +29,6 @@
 {
     private ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>> previouslyCompleted = ImmutableDictionary<KeyedExerciseBlueprint, ImmutableListValue<DatedRecordedExercise>>.Empty;
 
-
     protected override async Task OnInitializedAsync()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Session"));
