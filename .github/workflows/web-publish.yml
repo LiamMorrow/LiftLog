@@ -36,8 +36,8 @@ jobs:
         working-directory: ./LiftLog.Web
       - name: Copy 404 page
         run: cp ./404.html ./LiftLog.Web/bin/Release/net8.0/publish/wwwroot
-      - name: List files
-        run: ls ./LiftLog.Web/bin/Release/net8.0/publish/wwwroot
+      - name: List files recusively
+        run: ls -R ./LiftLog.Web/bin/Release/net8.0/publish/wwwroot
       - name: Upload pages
         uses: actions/upload-pages-artifact@v3
         with:
