@@ -1,51 +1,13 @@
 
-<div class="flex flex-col gap-y-1.5 text-start" data-cy="session-summary">
+<div class="flex flex-col gap-y-2 text-start" data-cy="session-summary">
     @foreach (var exercise in Session.RecordedExercises)
     {
-        var splitWeights = exercise.PerSetWeight && !exercise.PotentialSets.All(s => s.Weight == exercise.Weight);
-
-        <span class="flex items-center">
-            <span>@exercise.Blueprint.Name</span>
-            @if(ShowSets || ShowWeight)
-            {
-                @if(!splitWeights)
-                {
-                <span class="flex justify-around ml-auto items-center gap-0.5 bg-surface-container-highest text-on-surface-variant rounded-md py-1 px-2">
-
-                    @if (ShowSets)
-                    {
-                        <span>
-                            @(exercise.Blueprint.Sets)x@(exercise.Blueprint.RepsPerSet)
-                        </span>
-                        @if(ShowWeight)
-                        {
-                            <span class="text-2xs">@@</span>
-                        }
-                    }
-
-                    @if (ShowWeight)
-                    {
-                        <WeightFormat Weight="@exercise.Weight"/>
-                    }
-                </span>
-                }
-
-                @if (ShowWeight && splitWeights)
-                {
-                    <span class="flex ml-auto flex-wrap justify-end gap-1">
-                        @foreach(var set in exercise.PotentialSets)
-                        {
-                            <span class="flex items-center gap-0.5 bg-surface-container-highest text-on-surface-variant rounded-md py-1 px-2">
-                                @if (ShowSets){
-                                    <span>@(set.Set?.RepsCompleted ?? exercise.Blueprint.RepsPerSet)</span><span class="text-2xs">@@</span>
-                                }
-                                <WeightFormat Weight="@set.Weight"/>
-                            </span>
-                        }
-                    </span>
-                }
-            }
-        </span>
+       <ExerciseSummary
+            Exercise=exercise
+            ShowSets=ShowSets
+            ShowWeight=ShowWeight
+            ShowName=true />
+        <md-divider class="last:hidden"></md-divider>
     }
 </div>
 
