@@ -26,12 +26,9 @@
 }
 else if ((StatsState.Value.OverallView?.SessionStats.Count ?? 0) == 0)
 {
-    <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
-        <md-icon>info</md-icon>
-        <span>
-            <p>No data available.<br> Try changing your filters at the top.</p>
-        </span>
-    </div>
+    <EmptyInfo>
+        <p>No data available.<br> Try changing your filters at the top.</p>
+    </EmptyInfo>
 }
 else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null)
 {
@@ -80,9 +77,21 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
         <Card class=@CardClass>
             <StatGraphCardContent Title="Sessions" Statistics="overallStats.SessionStats" RenderDelay="TimeSpan.FromMilliseconds(200)"/>
         </Card>
+        @{
+            var anyExercisesRendered = false;
+        }
         <CardList Items="@(overallStats.ExerciseStats.Where(x=>!StatsState.Value.IsExercisePinned(x)).Where(SearchTermMatches).IndexedTuples())">
+            @{
+                anyExercisesRendered = true;
+            }
             <StatGraphCardContent Title="@context.Item.ExerciseName" Statistics="[context.Item.Statistics, context.Item.OneRepMaxStatistics]" RenderDelay="TimeSpan.FromMilliseconds(200 + context.Index * 200)"/>
         </CardList>
+        @if(SearchTerm != "" && !anyExercisesRendered)
+        {
+            <EmptyInfo>
+                <p>No exercises found.<br> Try changing your filters at the top.</p>
+            </EmptyInfo>
+        }
     </div>
 }
 

@@ -23,12 +23,9 @@
 
     @if (!ProgramState.Value.GetSessionBlueprints(PlanId).Any())
     {
-        <div class="flex flex-col justify-center items-center h-full gap-4 text-on-surface">
-            <md-icon>info</md-icon>
-            <span>
-                <p>No sessions in plan<br> Add a session to get started.</p>
-            </span>
-        </div>
+        <EmptyInfo>
+            <p>No sessions in plan<br> Add a session to get started.</p>
+        </EmptyInfo>
     }
     <CardList Items="ProgramState.Value.GetSessionBlueprints(PlanId).IndexedTuples()" OnClick="(item) => SelectSession(item.Item, item.Index)">
         @{
