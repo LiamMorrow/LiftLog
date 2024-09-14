@@ -13,10 +13,7 @@ public class ProgramEffects(SessionService sessionService, IState<ProgramState> 
     public async Task FetchUpcomingSessions(IDispatcher dispatcher)
     {
         dispatcher.Dispatch(new SetUpcomingSessionsAction(RemoteData.Loading));
-        var numberOfUpcomingSessions = Math.Max(
-            state.Value.GetActivePlanSessionBlueprints().Count,
-            3
-        );
+        var numberOfUpcomingSessions = state.Value.GetActivePlanSessionBlueprints().Count;
         var sessions = await sessionService
             .GetUpcomingSessionsAsync(state.Value.GetActivePlanSessionBlueprints())
             .Take(numberOfUpcomingSessions)

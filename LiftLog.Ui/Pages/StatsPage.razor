@@ -10,6 +10,9 @@
     <Select T="string" Options="SessionSelectOptions" Value="StatsState.Value.OverallViewSessionName" ValueChanged="v => {  Dispatcher.Dispatch(new SetOverallViewSessionAction(v)); Dispatcher.Dispatch(new SetStatsIsDirtyAction(true)); Dispatcher.Dispatch(new FetchOverallStatsAction());}"></Select>
     <Select data-cy="stats-time-selector" T="TimeSpan" Options="SelectTimeOptions" Value="StatsState.Value.OverallViewTime" ValueChanged="v => { Dispatcher.Dispatch(new SetOverallViewTimeAction(v)); Dispatcher.Dispatch(new SetStatsIsDirtyAction(true)); Dispatcher.Dispatch(new FetchOverallStatsAction()); }"></Select>
 </div>
+<div class="flex flex-col justify-between m-2">
+    <SearchInput SearchTerm=@SearchTerm OnSearch="@((st)=>{SearchTerm = st; StateHasChanged();})" />
+</div>
 @if (StatsState.Value.IsLoading)
 {
     <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
@@ -33,7 +36,7 @@ else if ((StatsState.Value.OverallView?.SessionStats.Count ?? 0) == 0)
 else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null)
 {
     var overallStats = StatsState.Value.OverallView;
-    <div class="grid grid-rows-2 grid-cols-2 gap-2 mb-2 px-2">
+    <div class="grid grid-rows-2 grid-cols-2 gap-2 mb-2 px-2 @HiddenOnSearch">
         <SingleValueStatisticsCard>
             <Title>Average time between sets</Title>
             <Body>
@@ -60,8 +63,9 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
             </Body>
         </SingleValueStatisticsCard>
     </div>
+
     <div class="flex flex-col gap-2">
-        @foreach(var pinnedStat in StatsState.Value.GetPinnedExercises().IndexedTuples())
+        @foreach(var pinnedStat in StatsState.Value.GetPinnedExercises().Where(SearchTermMatches).IndexedTuples())
         {
             <Card class="mx-2">
                 <StatGraphCardContent Title="@pinnedStat.Item.ExerciseName" Statistics="[pinnedStat.Item.Statistics, pinnedStat.Item.OneRepMaxStatistics]" RenderDelay="TimeSpan.FromMilliseconds(200 + pinnedStat.Index * 200)"/>
@@ -69,20 +73,22 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
         }
         @if (SettingsState.Value.ShowBodyweight && overallStats.BodyweightStats.Statistics.Any())
         {
-            <Card class="mx-2">
+            <Card class=@CardClass >
                 <StatGraphCardContent Title="Bodyweight" Statistics="[overallStats.BodyweightStats]" RenderDelay="TimeSpan.FromMilliseconds(100)"/>
             </Card>
         }
-        <Card class="mx-2">
+        <Card class=@CardClass>
             <StatGraphCardContent Title="Sessions" Statistics="overallStats.SessionStats" RenderDelay="TimeSpan.FromMilliseconds(200)"/>
         </Card>
-        <CardList Items="@(overallStats.ExerciseStats.Where(x=>!StatsState.Value.IsExercisePinned(x)).IndexedTuples())">
+        <CardList Items="@(overallStats.ExerciseStats.Where(x=>!StatsState.Value.IsExercisePinned(x)).Where(SearchTermMatches).IndexedTuples())">
             <StatGraphCardContent Title="@context.Item.ExerciseName" Statistics="[context.Item.Statistics, context.Item.OneRepMaxStatistics]" RenderDelay="TimeSpan.FromMilliseconds(200 + context.Index * 200)"/>
         </CardList>
     </div>
 }
 
 @code {
+
+    private string SearchTerm = "";
 
     private List<Select<TimeSpan>.SelectOption> SelectTimeOptions =
     [
@@ -116,4 +122,16 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
         await base.OnInitializedAsync();
     }
 
+    private string HiddenOnSearch => string.IsNullOrWhiteSpace(SearchTerm) ? "" : "hidden";
+
+    private string CardClass => "mx-2 " + HiddenOnSearch;
+
+    private bool SearchTermMatches(ExerciseStatistics statistics)
+    {
+        if(string.IsNullOrWhiteSpace(SearchTerm))
+        {
+            return true;
+        }
+        return statistics.ExerciseName.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase);
+    }
 }
