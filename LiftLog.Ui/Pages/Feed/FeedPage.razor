@@ -41,12 +41,9 @@
 
         @if (FeedState.Value.Feed is { Count: 0 })
         {
-            <div class="flex flex-col justify-center items-center h-full mt-10 mx-4 gap-4 text-on-surface">
-                <md-icon>info</md-icon>
-                <span>
-                    <p>Nothing here yet!<br> Nobody you're following has published anything yet! Come back later.</p>
-                </span>
-            </div>
+            <EmptyInfo class="mx-4 mt-10">
+                <p>Nothing here yet!<br> Nobody you're following has published anything yet! Come back later.</p>
+            </EmptyInfo>
         }
         <VirtualizedCardList Items="@(FeedState.Value.Feed.Select(x => (Item: x, User: FeedState.Value.FollowedUsers.GetValueOrDefault(x.UserId))).Where(x => x.User is not null).ToList())" OnClick="@(x => ViewFeedSession(x.Item))" CardClass="animate-fade-zoom-in">
             <FeedItemCardContent Item="context.Item" User="@(context.User)"/>
@@ -56,12 +53,9 @@
     <div id="following-panel" role="tabpanel" aria-labelledby="following-tab" class="@(GetTabClass("following-panel"))">
         @if (FeedState.Value.FollowedUsers is { Count: 0 })
         {
-            <div class="flex flex-col justify-center items-center h-full gap-4 mt-10 text-on-surface mx-2">
-                <md-icon>info</md-icon>
-                <span>
-                    <p>Start following someone!<br>You're not currently following anyone, ask a friend for their share link to start!</p>
-                </span>
-            </div>
+            <EmptyInfo class="mx-4 mt-10">
+                <p>Start following someone!<br>You're not currently following anyone, ask a friend for their share link to start!</p>
+            </EmptyInfo>
         }
         <VirtualizedCardList Items="@(FeedState.Value.FollowedUsers.Values.ToList())" CardClass="animate-fade-zoom-in">
             <FeedUserCardContent User="context" UpdateUser="UpdateUser" DeleteUser="() => BeginDeleteUser(context)" ViewUserPlan="() => ViewUserPlan(context)"/>
@@ -82,12 +76,9 @@
         }
         @if (FeedState.Value.Followers is { Count: 0 } && FeedState.Value.FollowRequests is { Count: 0 })
         {
-            <div class="flex flex-col justify-center items-center h-full gap-4 mt-10 text-on-surface">
-                <md-icon>info</md-icon>
-                <span>
-                    <p>Nobody is following you yet!<br>Share your link with friends to get followers</p>
-                </span>
-            </div>
+            <EmptyInfo class="mx-4 mt-10">
+                <p>Nobody is following you yet!<br>Share your link with friends to get followers</p>
+            </EmptyInfo>
         }
         <VirtualizedCardList Items="@(FeedState.Value.FollowRequests.ToList())" CardClass="animate-fade-zoom-in">
             <FollowRequestCardContent FollowRequest="context" Accept="@(() => AcceptFollowRequest(context))" Deny="@(() => DenyFollowRequest(context))"/>

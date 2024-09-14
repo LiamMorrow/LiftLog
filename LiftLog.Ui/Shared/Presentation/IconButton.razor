@@ -3,7 +3,7 @@
     case IconButtonType.Standard:
         <md-icon-button
             @attributes="AdditionalAttributes"
-            class="pointer-events-auto"
+            class="pointer-events-auto @(AdditionalAttributes?.GetValueOrDefault("class")) "
             @onclick="OnClick" @onclick:stopPropagation="true" @onclick:preventDefault="true"
             disabled=@Disabled >
             <md-icon>@Icon</md-icon>
@@ -12,7 +12,7 @@
     case IconButtonType.Filled:
         <md-filled-icon-button
             @attributes="AdditionalAttributes"
-            class="pointer-events-auto"
+            class="pointer-events-auto @(AdditionalAttributes?.GetValueOrDefault("class")) "
             @onclick="OnClick" @onclick:stopPropagation="true" @onclick:preventDefault="true"
             disabled=@Disabled >
             <md-icon>@Icon</md-icon>
@@ -21,7 +21,7 @@
     case IconButtonType.FilledTonal:
         <md-filled-tonal-icon-button
             @attributes="AdditionalAttributes"
-            class="pointer-events-auto"
+            class="pointer-events-auto @(AdditionalAttributes?.GetValueOrDefault("class")) "
             @onclick="OnClick" @onclick:stopPropagation="true" @onclick:preventDefault="true"
             disabled=@Disabled >
             <md-icon>@Icon</md-icon>
@@ -30,7 +30,7 @@
     case IconButtonType.Outlined:
         <md-outlined-icon-button
             @attributes="AdditionalAttributes"
-            class="pointer-events-auto"
+            class="pointer-events-auto @(AdditionalAttributes?.GetValueOrDefault("class")) "
             @onclick="OnClick" @onclick:stopPropagation="true" @onclick:preventDefault="true"
             disabled=@Disabled
             >
