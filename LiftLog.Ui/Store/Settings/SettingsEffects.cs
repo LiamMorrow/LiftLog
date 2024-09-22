@@ -253,18 +253,25 @@ public class SettingsEffects(
         }
         catch (HttpRequestException ex) when (ex.StatusCode is null)
         {
+            logger.LogWarning(ex, "Failed to backup data to remote server [connection failure]");
             dispatcher.Dispatch(
                 new ToastAction("Failed to backup data to remote server [connection failure]")
             );
         }
         catch (HttpRequestException ex)
         {
+            logger.LogWarning(
+                ex,
+                "Failed to backup data to remote server [{StatusCode}]",
+                ex.StatusCode
+            );
             dispatcher.Dispatch(
                 new ToastAction("Failed to backup data to remote server [" + ex.StatusCode + "]")
             );
         }
-        catch
+        catch (Exception ex)
         {
+            logger.LogWarning(ex, "Failed to backup data to remote server [unknown]");
             dispatcher.Dispatch(
                 new ToastAction("Failed to backup data to remote server [unknown]")
             );
