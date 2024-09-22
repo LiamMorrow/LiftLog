@@ -25,9 +25,9 @@ public class FeedApiService(HttpClient httpClient
     private static readonly string baseUrl = "https://api.liftlog.online/";
 #endif
 
-    public Task<ApiResult<GetEventsResponse>> GetUserEventsAsync(GetEventsRequest request)
+    public async Task<ApiResult<GetEventsResponse>> GetUserEventsAsync(GetEventsRequest request)
     {
-        return GetApiResultAsync(async () =>
+        return await GetApiResultAsync(async () =>
         {
             var result = (
                 await httpClient.PostAsJsonAsync($"{baseUrl}events", request)
@@ -36,9 +36,9 @@ public class FeedApiService(HttpClient httpClient
         });
     }
 
-    public Task<ApiResult<CreateUserResponse>> CreateUserAsync(CreateUserRequest request)
+    public async Task<ApiResult<CreateUserResponse>> CreateUserAsync(CreateUserRequest request)
     {
-        return GetApiResultAsync(async () =>
+        return await GetApiResultAsync(async () =>
         {
             var result = (
                 await httpClient.PostAsJsonAsync($"{baseUrl}user/create", request)
@@ -47,9 +47,9 @@ public class FeedApiService(HttpClient httpClient
         });
     }
 
-    public Task<ApiResult<GetUserResponse>> GetUserAsync(string idOrLookup)
+    public async Task<ApiResult<GetUserResponse>> GetUserAsync(string idOrLookup)
     {
-        return GetApiResultAsync(async () =>
+        return await GetApiResultAsync(async () =>
         {
             var result = (
                 await httpClient.GetAsync($"{baseUrl}user/{idOrLookup}")
@@ -58,25 +58,25 @@ public class FeedApiService(HttpClient httpClient
         });
     }
 
-    public Task<ApiResult> PutUserDataAsync(PutUserDataRequest request)
+    public async Task<ApiResult> PutUserDataAsync(PutUserDataRequest request)
     {
-        return GetApiResultAsync(async () =>
+        return await GetApiResultAsync(async () =>
         {
             (await httpClient.PutAsJsonAsync($"{baseUrl}user", request)).EnsureSuccessStatusCode();
         });
     }
 
-    public Task<ApiResult> PutUserEventAsync(PutUserEventRequest request)
+    public async Task<ApiResult> PutUserEventAsync(PutUserEventRequest request)
     {
-        return GetApiResultAsync(async () =>
+        return await GetApiResultAsync(async () =>
         {
             (await httpClient.PutAsJsonAsync($"{baseUrl}event", request)).EnsureSuccessStatusCode();
         });
     }
 
-    public Task<ApiResult<GetUsersResponse>> GetUsersAsync(GetUsersRequest getUsersRequest)
+    public async Task<ApiResult<GetUsersResponse>> GetUsersAsync(GetUsersRequest getUsersRequest)
     {
-        return GetApiResultAsync(async () =>
+        return await GetApiResultAsync(async () =>
         {
             var result = (
                 await httpClient.PostAsJsonAsync($"{baseUrl}users", getUsersRequest)
@@ -85,9 +85,9 @@ public class FeedApiService(HttpClient httpClient
         });
     }
 
-    public Task<ApiResult> DeleteUserAsync(DeleteUserRequest deleteUserRequest)
+    public async Task<ApiResult> DeleteUserAsync(DeleteUserRequest deleteUserRequest)
     {
-        return GetApiResultAsync(async () =>
+        return await GetApiResultAsync(async () =>
         {
             (
                 await httpClient.PostAsJsonAsync($"{baseUrl}user/delete", deleteUserRequest)
@@ -95,9 +95,11 @@ public class FeedApiService(HttpClient httpClient
         });
     }
 
-    public Task<ApiResult> PutInboxMessageAsync(PutInboxMessageRequest postInboxMessageRequest)
+    public async Task<ApiResult> PutInboxMessageAsync(
+        PutInboxMessageRequest postInboxMessageRequest
+    )
     {
-        return GetApiResultAsync(async () =>
+        return await GetApiResultAsync(async () =>
         {
             (
                 await httpClient.PutAsJsonAsync($"{baseUrl}inbox", postInboxMessageRequest)
@@ -105,11 +107,11 @@ public class FeedApiService(HttpClient httpClient
         });
     }
 
-    public Task<ApiResult<GetInboxMessagesResponse>> GetInboxMessagesAsync(
+    public async Task<ApiResult<GetInboxMessagesResponse>> GetInboxMessagesAsync(
         GetInboxMessagesRequest getInboxMessagesRequest
     )
     {
-        return GetApiResultAsync(async () =>
+        return await GetApiResultAsync(async () =>
         {
             var result = (
                 await httpClient.PostAsJsonAsync($"{baseUrl}inbox", getInboxMessagesRequest)
@@ -118,11 +120,11 @@ public class FeedApiService(HttpClient httpClient
         });
     }
 
-    public Task<ApiResult> PutUserFollowSecretAsync(
+    public async Task<ApiResult> PutUserFollowSecretAsync(
         PutUserFollowSecretRequest putFollowSecretRequest
     )
     {
-        return GetApiResultAsync(async () =>
+        return await GetApiResultAsync(async () =>
         {
             (
                 await httpClient.PutAsJsonAsync($"{baseUrl}follow-secret", putFollowSecretRequest)
@@ -130,11 +132,11 @@ public class FeedApiService(HttpClient httpClient
         });
     }
 
-    public Task<ApiResult> DeleteUserFollowSecretAsync(
+    public async Task<ApiResult> DeleteUserFollowSecretAsync(
         DeleteUserFollowSecretRequest deleteUserFollowSecretRequest
     )
     {
-        return GetApiResultAsync(async () =>
+        return await GetApiResultAsync(async () =>
         {
             (
                 await httpClient.PostAsJsonAsync(
@@ -145,11 +147,11 @@ public class FeedApiService(HttpClient httpClient
         });
     }
 
-    public Task<ApiResult<CreateSharedItemResponse>> PostSharedItemAsync(
+    public async Task<ApiResult<CreateSharedItemResponse>> PostSharedItemAsync(
         CreateSharedItemRequest request
     )
     {
-        return GetApiResultAsync(async () =>
+        return await GetApiResultAsync(async () =>
         {
             var result = (
                 await httpClient.PostAsJsonAsync($"{baseUrl}shareditem", request)
@@ -196,9 +198,9 @@ public class FeedApiService(HttpClient httpClient
         });
     }
 
-    public Task<ApiResult<GetSharedItemResponse>> GetSharedItemAsync(string sharedItemId)
+    public async Task<ApiResult<GetSharedItemResponse>> GetSharedItemAsync(string sharedItemId)
     {
-        return GetApiResultAsync(async () =>
+        return await GetApiResultAsync(async () =>
         {
             var response = await httpClient.GetAsync($"{baseUrl}shareditem/{sharedItemId}");
             return (await response.Content.ReadFromJsonAsync<GetSharedItemResponse>())!;
