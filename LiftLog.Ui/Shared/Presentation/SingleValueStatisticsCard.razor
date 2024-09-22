@@ -1,5 +1,5 @@
-<Card Type="Card.CardType.Filled">
-    <div class="flex flex-col gap-1 items-center justify-center h-full">
+<Card Type="Card.CardType.Filled" class="@Class" style="@Style">
+    <div class="flex flex-col gap-1 items-center justify-center h-full ">
         <span class="text-tertiary font-bold text-xl">
         @Body
         </span>
@@ -12,5 +12,9 @@
     [Parameter] [EditorRequired] public RenderFragment Title { get; set; } = null!;
 
     [Parameter] [EditorRequired] public RenderFragment Body { get; set; } = null!;
+
+    [Parameter] public string? Class { get; set; }
+
+    [Parameter] public string? Style { get; set; }
 
 }

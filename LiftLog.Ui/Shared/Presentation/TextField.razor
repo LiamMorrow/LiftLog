@@ -2,7 +2,7 @@
 
 @switch (TextFieldType)
 {
-    case TextFieldType.Outline:
+    case TextFieldType.Outlined:
         <md-outlined-text-field @ref="_textField"
             @attributes="AdditionalAttributes"
             value=@Value
@@ -47,7 +47,7 @@
 
     [Parameter] public EventCallback OnBlur { get; set; }
 
-    [Parameter] public TextFieldType TextFieldType { get; set; } = TextFieldType.Outline;
+    [Parameter] public TextFieldType TextFieldType { get; set; } = TextFieldType.Outlined;
 
     [Parameter] public bool SelectAllOnFocus { get; set; } = true;
 

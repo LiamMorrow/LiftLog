@@ -2,6 +2,7 @@
 @inject IHapticFeedbackService HapticFeedback
 
 <div
+    @attributes="AdditionalAttributes"
     class="@(AdditionalAttributes?.GetValueOrDefault("class")) @(HasPadding ?"p-5":"") relative @Style rounded-card text-on-surface card"
     @onpointercancel=OnPointerLeave
     @onpointerdown="OnPointerDown"

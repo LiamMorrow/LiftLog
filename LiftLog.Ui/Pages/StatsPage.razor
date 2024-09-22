@@ -10,7 +10,7 @@
     <Select T="string" Options="SessionSelectOptions" Value="StatsState.Value.OverallViewSessionName" ValueChanged="v => {  Dispatcher.Dispatch(new SetOverallViewSessionAction(v)); Dispatcher.Dispatch(new SetStatsIsDirtyAction(true)); Dispatcher.Dispatch(new FetchOverallStatsAction());}"></Select>
     <Select data-cy="stats-time-selector" T="TimeSpan" Options="SelectTimeOptions" Value="StatsState.Value.OverallViewTime" ValueChanged="v => { Dispatcher.Dispatch(new SetOverallViewTimeAction(v)); Dispatcher.Dispatch(new SetStatsIsDirtyAction(true)); Dispatcher.Dispatch(new FetchOverallStatsAction()); }"></Select>
 </div>
-<div class="flex flex-col justify-between m-2">
+<div class="flex flex-col justify-between m-2 mb-5">
     <SearchInput SearchTerm=@SearchTerm OnSearch="@((st)=>{SearchTerm = st; StateHasChanged();})" />
 </div>
 @if (StatsState.Value.IsLoading)
@@ -34,23 +34,23 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
 {
     var overallStats = StatsState.Value.OverallView;
     <div class="grid grid-rows-2 grid-cols-2 gap-2 mb-2 px-2 @HiddenOnSearch">
-        <SingleValueStatisticsCard>
+        <SingleValueStatisticsCard Class="scale-0 animate-zoom-in">
             <Title>Average time between sets</Title>
             <Body>
             <TimeSpanFormat TimeSpan="@overallStats.AverageTimeBetweenSets"/>
             </Body>
         </SingleValueStatisticsCard>
-        <SingleValueStatisticsCard>
+        <SingleValueStatisticsCard Class="scale-0 animate-zoom-in" Style="animation-delay: 50ms;">
             <Title>Average session length</Title>
             <Body>
             <TimeSpanFormat TimeSpan="@overallStats.AverageSessionLength" TruncateToMins="true"/>
             </Body>
         </SingleValueStatisticsCard>
-        <SingleValueStatisticsCard>
+        <SingleValueStatisticsCard Class="scale-0 animate-zoom-in" Style="animation-delay: 100ms;">
             <Title>Most time spent</Title>
             <Body>@overallStats.ExerciseMostTimeSpent?.ExerciseName</Body>
         </SingleValueStatisticsCard>
-        <SingleValueStatisticsCard>
+        <SingleValueStatisticsCard Class="scale-0 animate-zoom-in" Style="animation-delay: 150ms;">
             <Title>Heaviest lift</Title>
             <Body>
             <div class="flex flex-col justify-center items-center">
@@ -77,16 +77,10 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
         <Card class=@CardClass>
             <StatGraphCardContent Title="Sessions" Statistics="overallStats.SessionStats" RenderDelay="TimeSpan.FromMilliseconds(200)"/>
         </Card>
-        @{
-            var anyExercisesRendered = false;
-        }
-        <CardList Items="@(overallStats.ExerciseStats.Where(x=>!StatsState.Value.IsExercisePinned(x)).Where(SearchTermMatches).IndexedTuples())">
-            @{
-                anyExercisesRendered = true;
-            }
+        <CardList Items="@(UnpinnedExercisesToShow.IndexedTuples())">
             <StatGraphCardContent Title="@context.Item.ExerciseName" Statistics="[context.Item.Statistics, context.Item.OneRepMaxStatistics]" RenderDelay="TimeSpan.FromMilliseconds(200 + context.Index * 200)"/>
         </CardList>
-        @if(SearchTerm != "" && !anyExercisesRendered)
+        @if(SearchTerm != "" && !UnpinnedExercisesToShow.Any())
         {
             <EmptyInfo>
                 <p>No exercises found.<br> Try changing your filters at the top.</p>
@@ -98,6 +92,8 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
 @code {
 
     private string SearchTerm = "";
+
+    private IEnumerable<ExerciseStatistics> UnpinnedExercisesToShow => StatsState.Value.OverallView?.ExerciseStats.Where(x=>!StatsState.Value.IsExercisePinned(x)).Where(SearchTermMatches) ?? [];
 
     private List<Select<TimeSpan>.SelectOption> SelectTimeOptions =
     [

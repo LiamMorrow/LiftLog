@@ -50,7 +50,7 @@ else
     <div class="m-2">
         <Tips/>
     </div>
-    <CardList Items="upcoming.IndexedTuples()" OnClick="x => SelectSession(x.Item)">
+    <CardList CardType=Card.CardType.Outlined Items="upcoming.IndexedTuples()" OnClick="x => SelectSession(x.Item)">
         <SplitCardControl>
             <TitleContent>
                 <SessionSummaryTitle IsFilled="context.Item.IsStarted" Session="context.Item" />

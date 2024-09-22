@@ -13,7 +13,10 @@
         @oninput="e=>OnSearch.InvokeAsync(e.Value as string)" >
     </input>
     <md-icon class="absolute top-4 left-4">search</md-icon>
-    <IconButton OnClick=@(e=>OnSearch.InvokeAsync("")) Type="IconButtonType.Standard" Icon="close" class="absolute top-2 right-2"/>
+    @if(!string.IsNullOrWhiteSpace(SearchTerm))
+    {
+        <IconButton OnClick=@(e=>OnSearch.InvokeAsync("")) Type="IconButtonType.Standard" Icon="close" class="absolute top-2 right-2"/>
+    }
     <md-ripple></md-ripple>
     <md-focus-ring for="@ControlId"></md-focus-ring>
 </div>
