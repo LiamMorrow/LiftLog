@@ -21,10 +21,12 @@
         <NavButton IsActive=@IsRouteMatch("/history(/?.*)") Navigate="NavigateToHistory" Icon="history" Text="History"></NavButton>
         <NavButton IsActive=@IsRouteMatch("/settings(/?.*)") Navigate="NavigateToSettings" Icon="settings" Text="Settings"></NavButton>
     </div>
-    <div style="height: @InsetsManager.SystemSafeInsetBottom"></div>
+    <div style="height: @BottomInset"></div>
 </nav>
 
 @code {
+
+    private string BottomInset => SettingsState.Value.StatusBarFix ? "32px" : InsetsManager.SystemSafeInsetBottom;
 
     protected override void OnInitialized()
     {
