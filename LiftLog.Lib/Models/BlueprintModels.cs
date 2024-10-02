@@ -49,10 +49,35 @@ public record ExerciseBlueprint(
     string Notes
 );
 
-public record KeyedExerciseBlueprint(string Name, int Sets, int RepsPerSet)
+public sealed record KeyedExerciseBlueprint : IEquatable<KeyedExerciseBlueprint>
 {
-    public static implicit operator KeyedExerciseBlueprint(ExerciseBlueprint e) =>
-        new(e.Name, e.Sets, e.RepsPerSet);
+    private readonly string normalizedName = string.Empty;
+    public string Name { get; }
+
+    public KeyedExerciseBlueprint(string name)
+    {
+        Name = name;
+        normalizedName = NormalizeName(name);
+    }
+
+    public static implicit operator KeyedExerciseBlueprint(ExerciseBlueprint e) => new(e.Name);
+
+    public bool Equals(KeyedExerciseBlueprint? other) => other?.normalizedName == normalizedName;
+
+    public override int GetHashCode() => normalizedName.GetHashCode();
+
+    private static string NormalizeName(string name)
+    {
+        var lowerName = name.ToLower().Trim().Replace("flies", "flys").Replace("flyes", "flys");
+        var withoutPlural = lowerName switch
+        {
+            string when lowerName.EndsWith("es") => lowerName[..^2],
+            string when lowerName.EndsWith('s') => lowerName[..^1],
+            _ => lowerName,
+        };
+
+        return withoutPlural;
+    }
 }
 
 public record Rest(TimeSpan MinRest, TimeSpan MaxRest, TimeSpan FailureRest)

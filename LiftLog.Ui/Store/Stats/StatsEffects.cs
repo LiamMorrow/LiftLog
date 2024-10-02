@@ -73,7 +73,7 @@ public class StatsEffects(
                             ex
                         ))
                 )
-                .GroupBy(x => NormalizeName(x.RecordedExercise.Blueprint.Name))
+                .GroupBy(x => new KeyedExerciseBlueprint(x.RecordedExercise.Blueprint.Name))
                 .Select(CreateExerciseStatistic)
                 .ToImmutableList();
 
@@ -103,7 +103,7 @@ public class StatsEffects(
             var exerciseMostTimeSpent = sessions
                 .SelectMany(x => x.RecordedExercises)
                 .Where(x => x.LastRecordedSet?.Set is not null)
-                .GroupBy(x => NormalizeName(x.Blueprint.Name))
+                .GroupBy(x => new KeyedExerciseBlueprint(x.Blueprint.Name))
                 .Select(x => new TimeSpentExercise(
                     x.First().Blueprint.Name,
                     x.Select(x => x.TimeSpent).Aggregate((a, b) => a + b)
@@ -132,19 +132,6 @@ public class StatsEffects(
             dispatcher.Dispatch(new SetStatsIsDirtyAction(false));
             dispatcher.Dispatch(new SetStatsIsLoadingAction(false));
         });
-    }
-
-    private static string NormalizeName(string name)
-    {
-        var lowerName = name.ToLower().Trim().Replace("flies", "flys").Replace("flyes", "flys");
-        var withoutPlural = lowerName switch
-        {
-            string when lowerName.EndsWith("es") => lowerName[..^2],
-            string when lowerName.EndsWith('s') => lowerName[..^1],
-            _ => lowerName,
-        };
-
-        return withoutPlural;
     }
 
     private static StatisticOverTime CreateBodyweightStatistic(IEnumerable<Session> sessions)
