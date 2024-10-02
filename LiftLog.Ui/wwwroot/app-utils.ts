@@ -20,6 +20,20 @@ AppUtils.vibrate = function (ms: number) {
   }
 };
 
+AppUtils.showPopupAndAnchorTo = async function (element: HTMLElement, anchorId: string) {
+  const anchor = document.getElementById(anchorId);
+
+  element.style.transition = "transform 0.2s";
+  element.style.transform = "scale(0)";
+  await new Promise((resolve) => setTimeout(resolve, 5));
+  element?.showPopover();
+  element.style.top = anchor?.getBoundingClientRect().top + "px";
+  element.style.left = anchor?.getBoundingClientRect().left + "px";
+  element.style.position = "absolute";
+  element.style.margin = "0";
+  element.style.transform = "scale(1)";
+};
+
 /**
  * Creates a new event for the dialog close event.
  * This new event has bubbles, which allows blazor components to intercept it
