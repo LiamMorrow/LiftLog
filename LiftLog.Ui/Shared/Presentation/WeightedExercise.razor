@@ -1,4 +1,5 @@
-﻿@{
+﻿@inject IJSRuntime JSRuntime
+@{
     var (displayedExercise, repToStartNext) = (PreviousRecordedExercises?.FirstOrDefault()?.RecordedExercise) switch
     {
         null => (RecordedExercise, -1),
@@ -11,7 +12,8 @@
 <div class="flex flex-col gap-4 py-4 pl-7 pr-2 w-full" data-cy="weighted-exercise">
     <div class="flex flex-col">
         <div class="flex justify-between">
-            <ItemTitle Title="@RecordedExercise.Blueprint.Name" />
+            <ItemTitle Id="@exerciseNameId" Title="@RecordedExercise.Blueprint.Name" OnClick="OnExerciseNameClick" />
+            <span @ref="exerciseNameTooltip" popover class="bg-surface-container-highest rounded-lg p-4 text-on-surface">@displayedExercise.Blueprint.Name</span>
             @if(!IsReadonly)
             {
                 <div class="flex justify-end">
@@ -115,6 +117,9 @@
 
 @code {
     private string moreButtonId = "a" + Guid.NewGuid();
+    private string exerciseNameId = "a" + Guid.NewGuid();
+
+    private ElementReference exerciseNameTooltip;
 
     private Menu? _menu;
     private Dialog? notesDialog;
@@ -166,5 +171,10 @@
     private void ShowPrevious()
     {
         previousDialog?.Open();
+    }
+
+    private async Task OnExerciseNameClick()
+    {
+        await JSRuntime.InvokeVoidAsync("AppUtils.showPopupAndAnchorTo", exerciseNameTooltip, exerciseNameId);
     }
 }
