@@ -11,6 +11,13 @@
     </div>
     <md-divider class="last:hidden"></md-divider>
 }
+
+@if(!PreviousRecordedExercises.Any())
+{
+    <EmptyInfo >
+    You have never done this exercise before
+    </EmptyInfo>
+}
 </div>
 
 @code {

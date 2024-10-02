@@ -15,10 +15,7 @@
             @if(!IsReadonly)
             {
                 <div class="flex justify-end">
-                    @if (PreviousRecordedExercises?.Any() == true)
-                    {
-                        <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.Standard" Icon="history" OnClick="ShowPrevious"/>
-                    }
+                    <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.Standard" Icon="history" OnClick="ShowPrevious"/>
                     <IconButton data-cy="per-rep-weight-btn" Type=IconButtonType.Standard Icon=weight OnClick="ToggleExercisePerSetWeight"></IconButton>
                     <div>
                         <IconButton data-cy="more-exercise-btn" class="self-end" Type="IconButtonType.Standard" OnClick="() => { _menu?.Open(); }" Icon="more_horiz" id="@moreButtonId"/>
