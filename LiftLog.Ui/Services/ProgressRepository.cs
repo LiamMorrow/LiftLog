@@ -170,7 +170,10 @@ namespace LiftLog.Ui.Services
                         ))
                         .ToAsyncEnumerable()
                 )
-                .GroupBy(x => (KeyedExerciseBlueprint)x.RecordedExercise.Blueprint)
+                .GroupBy(
+                    x => (KeyedExerciseBlueprint)x.RecordedExercise.Blueprint,
+                    KeyedExerciseBlueprint.NormalizedNameOnlyEqualityComparer.Instance
+                )
                 .ToImmutableDictionaryAwaitAsync(
                     x => ValueTask.FromResult(x.Key),
                     async x => await x.Take(maxRecordsPerExercise).ToImmutableListValueAsync()

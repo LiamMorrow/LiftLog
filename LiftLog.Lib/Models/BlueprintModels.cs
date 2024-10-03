@@ -63,34 +63,36 @@ public record ExerciseBlueprint(
         );
 }
 
-public sealed record KeyedExerciseBlueprint : IEquatable<KeyedExerciseBlueprint>
+public record KeyedExerciseBlueprint(string Name, int Sets, int RepsPerSet)
 {
-    private readonly string normalizedName = string.Empty;
-    public string Name { get; }
+    public static implicit operator KeyedExerciseBlueprint(ExerciseBlueprint e) =>
+        new(e.Name, e.Sets, e.RepsPerSet);
 
-    public KeyedExerciseBlueprint(string name)
+    public class NormalizedNameOnlyEqualityComparer : IEqualityComparer<KeyedExerciseBlueprint>
     {
-        Name = name;
-        normalizedName = NormalizeName(name);
-    }
+        public static readonly NormalizedNameOnlyEqualityComparer Instance = new();
 
-    public static implicit operator KeyedExerciseBlueprint(ExerciseBlueprint e) => new(e.Name);
+        public bool Equals(KeyedExerciseBlueprint? x, KeyedExerciseBlueprint? y) =>
+            NormalizeName(x?.Name) == NormalizeName(y?.Name);
 
-    public bool Equals(KeyedExerciseBlueprint? other) => other?.normalizedName == normalizedName;
+        public int GetHashCode(KeyedExerciseBlueprint obj) => NormalizeName(obj.Name).GetHashCode();
 
-    public override int GetHashCode() => normalizedName.GetHashCode();
-
-    private static string NormalizeName(string name)
-    {
-        var lowerName = name.ToLower().Trim().Replace("flies", "flys").Replace("flyes", "flys");
-        var withoutPlural = lowerName switch
+        private static string NormalizeName(string? name)
         {
-            string when lowerName.EndsWith("es") => lowerName[..^2],
-            string when lowerName.EndsWith('s') => lowerName[..^1],
-            _ => lowerName,
-        };
+            if (name is null)
+            {
+                return string.Empty;
+            }
+            var lowerName = name.ToLower().Trim().Replace("flies", "flys").Replace("flyes", "flys");
+            var withoutPlural = lowerName switch
+            {
+                string when lowerName.EndsWith("es") => lowerName[..^2],
+                string when lowerName.EndsWith('s') => lowerName[..^1],
+                _ => lowerName,
+            };
 
-        return withoutPlural;
+            return withoutPlural;
+        }
     }
 }
 

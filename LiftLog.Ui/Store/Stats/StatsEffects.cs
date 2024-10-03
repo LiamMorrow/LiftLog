@@ -78,7 +78,10 @@ public class StatsEffects(
                             ex
                         ))
                 )
-                .GroupBy(x => new KeyedExerciseBlueprint(x.RecordedExercise.Blueprint.Name))
+                .GroupBy(
+                    x => (KeyedExerciseBlueprint)x.RecordedExercise.Blueprint,
+                    KeyedExerciseBlueprint.NormalizedNameOnlyEqualityComparer.Instance
+                )
                 .Select(CreateExerciseStatistic)
                 .ToImmutableList();
 
@@ -108,7 +111,10 @@ public class StatsEffects(
             var exerciseMostTimeSpent = sessionsWithExercises
                 .SelectMany(x => x.RecordedExercises)
                 .Where(x => x.LastRecordedSet?.Set is not null)
-                .GroupBy(x => new KeyedExerciseBlueprint(x.Blueprint.Name))
+                .GroupBy(
+                    x => (KeyedExerciseBlueprint)x.Blueprint,
+                    KeyedExerciseBlueprint.NormalizedNameOnlyEqualityComparer.Instance
+                )
                 .Select(x => new TimeSpentExercise(
                     x.First().Blueprint.Name,
                     x.Select(x => x.TimeSpent).Aggregate((a, b) => a + b)
