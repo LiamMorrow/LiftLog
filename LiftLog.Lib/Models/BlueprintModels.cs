@@ -54,7 +54,7 @@ public record ExerciseBlueprint(
         new(
             Name: string.Empty,
             Sets: 3,
-            RepsPerSet: 8,
+            RepsPerSet: 10,
             WeightIncreaseOnSuccess: 0,
             RestBetweenSets: Rest.Medium,
             SupersetWithNext: false,
