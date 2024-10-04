@@ -136,7 +136,7 @@
     {
         var text = await JSRuntime.InvokeAsync<string?>("AppUtils.extractLinkFromClipboard", e);
         SetExerciseLink(text ?? exercise.Link);
-        await linkField?.UpdateValueEvenIfFocused();
+        await linkField.UpdateValueEvenIfFocused();
     }
 
     private void UpdateExerciseHandler(ExerciseBlueprint updatedExercise)
