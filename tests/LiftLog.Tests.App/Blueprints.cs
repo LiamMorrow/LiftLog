@@ -17,7 +17,8 @@ public static class Blueprints
         WeightIncreaseOnSuccess: 2.5m,
         RestBetweenSets: Rest.Medium,
         SupersetWithNext: false,
-        Notes: "My exercise notes"
+        Notes: "My exercise notes",
+        Link: "https://example.com"
       )
     );
   }
