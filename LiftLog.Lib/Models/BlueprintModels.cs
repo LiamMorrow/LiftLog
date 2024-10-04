@@ -46,8 +46,22 @@ public record ExerciseBlueprint(
     decimal WeightIncreaseOnSuccess,
     Rest RestBetweenSets,
     bool SupersetWithNext,
-    string Notes
-);
+    string Notes,
+    string Link
+)
+{
+    public static readonly ExerciseBlueprint Default =
+        new(
+            Name: string.Empty,
+            Sets: 3,
+            RepsPerSet: 10,
+            WeightIncreaseOnSuccess: 0,
+            RestBetweenSets: Rest.Medium,
+            SupersetWithNext: false,
+            Notes: string.Empty,
+            Link: string.Empty
+        );
+}
 
 public sealed record KeyedExerciseBlueprint : IEquatable<KeyedExerciseBlueprint>
 {

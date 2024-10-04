@@ -52,7 +52,8 @@ internal partial class ExerciseBlueprintDaoV2
         DecimalValue weightIncreaseOnSuccess,
         RestDaoV2 restBetweenSets,
         bool supersetWithNext,
-        string notes
+        string notes,
+        string link
     )
     {
         Name = name;
@@ -62,6 +63,7 @@ internal partial class ExerciseBlueprintDaoV2
         RestBetweenSets = restBetweenSets;
         SupersetWithNext = supersetWithNext;
         Notes = notes;
+        Link = link;
     }
 
     public static ExerciseBlueprintDaoV2 FromModel(Lib.Models.ExerciseBlueprint model) =>
@@ -72,7 +74,8 @@ internal partial class ExerciseBlueprintDaoV2
             model.WeightIncreaseOnSuccess,
             RestDaoV2.FromModel(model.RestBetweenSets),
             model.SupersetWithNext,
-            model.Notes
+            model.Notes,
+            model.Link
         );
 
     public Lib.Models.ExerciseBlueprint ToModel() =>
@@ -83,7 +86,8 @@ internal partial class ExerciseBlueprintDaoV2
             WeightIncreaseOnSuccess,
             RestBetweenSets.ToModel(),
             SupersetWithNext,
-            Notes
+            Notes,
+            Link
         );
 }
 

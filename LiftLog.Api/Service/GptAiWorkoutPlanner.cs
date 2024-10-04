@@ -101,7 +101,8 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
                                     TimeSpan.FromSeconds(e.RestBetweenSets.FailureRestSeconds)
                                 ),
                                 false,
-                                Notes: ""
+                                Notes: "",
+                                Link: ""
                             ))
                             .ToImmutableList(),
                         Notes: s.Description
@@ -192,7 +193,8 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
                             TimeSpan.FromSeconds(e.RestBetweenSets.FailureRestSeconds)
                         ),
                         false,
-                        Notes: ""
+                        Notes: "",
+                        Link: ""
                     ))
                     .ToImmutableList(),
                 Notes: gptPlan.Description

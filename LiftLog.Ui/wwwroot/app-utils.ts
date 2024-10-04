@@ -20,6 +20,32 @@ AppUtils.vibrate = function (ms: number) {
   }
 };
 
+AppUtils.extractLinkFromClipboard = async function (): Promise<string | null> {
+  // first inspect the text in the clipboard - if it is a link, return it
+  const clipboard = await navigator.clipboard.read();
+  const text: Blob | null = clipboard[0].types.includes("text/plain") ? await clipboard[0].getType("text/plain") : null;
+  if (text) {
+    const textString = await new Response(text).text();
+    console.log(textString);
+    if (textString.startsWith("http")) {
+      return textString;
+    }
+  }
+  // then try to extract a link from a html clipboard
+  const html: Blob | null = clipboard[0].types.includes("text/html") ? await clipboard[0].getType("text/html") : null;
+  if (html) {
+    const htmlString = await new Response(html).text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlString, "text/html");
+    const link = doc.querySelector("a");
+    console.log(htmlString);
+    if (link) {
+      return link.href;
+    }
+  }
+  return null;
+};
+
 /**
  * Creates a new event for the dialog close event.
  * This new event has bubbles, which allows blazor components to intercept it

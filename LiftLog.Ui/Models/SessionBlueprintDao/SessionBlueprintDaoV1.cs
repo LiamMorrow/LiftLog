@@ -65,7 +65,8 @@ internal record ExerciseBlueprintDaoV1(
             KilogramsIncreaseOnSuccess,
             RestBetweenSets.ToModel(),
             SupersetWithNext,
-            Notes ?? ""
+            Notes ?? "",
+            Link: ""
         );
 }
 
