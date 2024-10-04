@@ -148,15 +148,7 @@ else
 
 @code {
 
-    private ExerciseBlueprint editingExerciseBlueprint = new ExerciseBlueprint(
-        Name: "",
-        Sets: 3,
-        RepsPerSet: 10,
-        WeightIncreaseOnSuccess: 0,
-        RestBetweenSets: Rest.Medium,
-        SupersetWithNext: false,
-        Notes: ""
-    );
+    private ExerciseBlueprint editingExerciseBlueprint = ExerciseBlueprint.Default;
 
     private (int ExerciseIndex, int PotentialSetIndex)? setAdditionalActions;
     private int? _exerciseToEditIndex;
@@ -279,15 +271,7 @@ else
 
     private void BeginAddExercise()
     {
-        editingExerciseBlueprint = new ExerciseBlueprint(
-            Name: "",
-            Sets: 3,
-            RepsPerSet: 10,
-            WeightIncreaseOnSuccess: 0,
-            RestBetweenSets: Rest.Medium,
-            SupersetWithNext: false,
-            Notes: ""
-        );
+        editingExerciseBlueprint = ExerciseBlueprint.Default;
         _editExerciseDialog?.Open();
     }
 

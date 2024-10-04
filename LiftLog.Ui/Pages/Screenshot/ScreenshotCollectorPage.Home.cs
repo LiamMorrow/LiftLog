@@ -21,7 +21,8 @@ public partial class ScreenshotCollectorPage
                     WeightIncreaseOnSuccess: 2.5m,
                     RestBetweenSets: Rest.Medium,
                     SupersetWithNext: false,
-                    Notes: ""
+                    Notes: "",
+                    Link: ""
                 ),
                 new ExerciseBlueprint(
                     Name: "Bench Press",
@@ -30,7 +31,8 @@ public partial class ScreenshotCollectorPage
                     WeightIncreaseOnSuccess: 2.5m,
                     RestBetweenSets: Rest.Medium,
                     SupersetWithNext: false,
-                    Notes: ""
+                    Notes: "",
+                    Link: ""
                 ),
                 new ExerciseBlueprint(
                     Name: "Deadlift",
@@ -39,7 +41,8 @@ public partial class ScreenshotCollectorPage
                     WeightIncreaseOnSuccess: 2.5m,
                     RestBetweenSets: Rest.Medium,
                     SupersetWithNext: false,
-                    Notes: ""
+                    Notes: "",
+                    Link: ""
                 ),
             ],
             Notes: ""
