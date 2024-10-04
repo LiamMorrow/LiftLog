@@ -50,8 +50,6 @@
                 Dispatcher.Dispatch(new SetPageTitleAction(CurrentSessionState.Value.FeedSession.Blueprint.Name));
         }
 
-        Console.WriteLine("{0} {1}", hasSession, CurrentSessionState.Value.FeedSession);
-
         if (!hasSession)
         {
             NavigationManager.NavigateTo("/feed");
