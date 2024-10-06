@@ -27,7 +27,8 @@ public class StatsEffects(
 
         var latestTime = DateOnly.FromDateTime(DateTime.Now);
         var earliestTime = DateOnly.FromDateTime(
-            latestTime.ToDateTime(TimeOnly.MinValue) - state.Value.OverallViewTime
+            latestTime.ToDateTime(TimeOnly.MinValue, DateTimeKind.Local)
+                - state.Value.OverallViewTime
         );
 
         var filteringToCurrentSessions = "CURRENT_SESSIONS".Equals(
@@ -69,7 +70,10 @@ public class StatsEffects(
                 .SelectMany(x =>
                     x.RecordedExercises.Where(y => y.LastRecordedSet?.Set is not null)
                         .Select(ex => new DatedRecordedExercise(
-                            x.Date.ToDateTime(ex.LastRecordedSet!.Set!.CompletionTime),
+                            x.Date.ToDateTime(
+                                ex.LastRecordedSet!.Set!.CompletionTime,
+                                DateTimeKind.Local
+                            ),
                             ex
                         ))
                 )
@@ -141,7 +145,7 @@ public class StatsEffects(
             sessions
                 .Where(x => x.Bodyweight is not null)
                 .Select(session => new TimeTrackedStatistic(
-                    session.Date.ToDateTime(TimeOnly.MinValue),
+                    session.Date.ToDateTime(TimeOnly.MinValue, DateTimeKind.Local),
                     session.Bodyweight!.Value
                 ))
                 .ToImmutableList()
@@ -154,7 +158,7 @@ public class StatsEffects(
             sessions.Key,
             sessions
                 .Select(session => new TimeTrackedStatistic(
-                    session.Date.ToDateTime(TimeOnly.MinValue),
+                    session.Date.ToDateTime(TimeOnly.MinValue, DateTimeKind.Local),
                     session.TotalWeightLifted
                 ))
                 .ToImmutableList()

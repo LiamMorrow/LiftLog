@@ -162,7 +162,10 @@ namespace LiftLog.Ui.Services
                 .SelectMany(x =>
                     x.RecordedExercises.Where(x => x.LastRecordedSet?.Set is not null)
                         .Select(ex => new DatedRecordedExercise(
-                            x.Date.ToDateTime(ex.LastRecordedSet!.Set!.CompletionTime),
+                            x.Date.ToDateTime(
+                                ex.LastRecordedSet!.Set!.CompletionTime,
+                                DateTimeKind.Local
+                            ),
                             ex
                         ))
                         .ToAsyncEnumerable()

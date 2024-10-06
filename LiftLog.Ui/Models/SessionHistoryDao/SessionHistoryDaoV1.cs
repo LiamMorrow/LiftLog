@@ -108,7 +108,10 @@ internal record RecordedSetDaoV1(
             ),
             { Set: { } } completed => new RecordedSetDaoV1(
                 RepsCompleted: model.Set.RepsCompleted,
-                CompletionTime: sessionDate.ToDateTime(completed.Set.CompletionTime),
+                CompletionTime: sessionDate.ToDateTime(
+                    completed.Set.CompletionTime,
+                    DateTimeKind.Local
+                ),
                 Weight: completed.Weight
             ),
             _ => null,
