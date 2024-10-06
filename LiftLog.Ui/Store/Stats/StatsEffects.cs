@@ -27,7 +27,8 @@ public class StatsEffects(
 
         var latestTime = DateOnly.FromDateTime(DateTime.Now);
         var earliestTime = DateOnly.FromDateTime(
-            latestTime.ToDateTime(TimeOnly.MinValue) - state.Value.OverallViewTime
+            latestTime.ToDateTime(TimeOnly.MinValue, DateTimeKind.Local)
+                - state.Value.OverallViewTime
         );
 
         var filteringToCurrentSessions = "CURRENT_SESSIONS".Equals(
@@ -51,25 +52,29 @@ public class StatsEffects(
                         && currentSessionNames.Contains(session.Blueprint.Name)
                     )
                 )
-                .Where(x => x.RecordedExercises.Any())
                 .ToListAsync();
+            var sessionsWithExercises = sessions.Where(x => x.RecordedExercises.Any()).ToList();
             if (sessions.Count == 0)
             {
                 dispatcher.Dispatch(new SetStatsIsLoadingAction(false));
+                dispatcher.Dispatch(new SetOverallStatsAction(null));
                 return;
             }
 
             var bodyweightStats = CreateBodyweightStatistic(sessions);
-            var sessionStats = sessions
+            var sessionStats = sessionsWithExercises
                 .GroupBy(session => session.Blueprint.Name)
                 .Select(CreateSessionStatistic)
                 .ToImmutableList();
 
-            var exerciseStats = sessions
+            var exerciseStats = sessionsWithExercises
                 .SelectMany(x =>
                     x.RecordedExercises.Where(y => y.LastRecordedSet?.Set is not null)
                         .Select(ex => new DatedRecordedExercise(
-                            x.Date.ToDateTime(ex.LastRecordedSet!.Set!.CompletionTime),
+                            x.Date.ToDateTime(
+                                ex.LastRecordedSet!.Set!.CompletionTime,
+                                DateTimeKind.Local
+                            ),
                             ex
                         ))
                 )
@@ -77,7 +82,7 @@ public class StatsEffects(
                 .Select(CreateExerciseStatistic)
                 .ToImmutableList();
 
-            var averageTimeBetweenSets = sessions
+            var averageTimeBetweenSets = sessionsWithExercises
                 .SelectMany(x => x.RecordedExercises)
                 .SelectMany(x =>
                     x.PotentialSets.Select(set => set.Set?.CompletionTime.ToTimeSpan())
@@ -91,7 +96,7 @@ public class StatsEffects(
                     acc => acc.RunningAvg != 0 ? acc.Zero / acc.RunningAvg : TimeSpan.Zero
                 );
 
-            var averageSessionLength = sessions
+            var averageSessionLength = sessionsWithExercises
                 .Select(session => session.SessionLength)
                 .WhereNotNull()
                 .Aggregate(
@@ -100,7 +105,7 @@ public class StatsEffects(
                     acc => acc.Item2 != 0 ? acc.Zero / acc.Item2 : TimeSpan.Zero
                 );
 
-            var exerciseMostTimeSpent = sessions
+            var exerciseMostTimeSpent = sessionsWithExercises
                 .SelectMany(x => x.RecordedExercises)
                 .Where(x => x.LastRecordedSet?.Set is not null)
                 .GroupBy(x => new KeyedExerciseBlueprint(x.Blueprint.Name))
@@ -110,7 +115,7 @@ public class StatsEffects(
                 ))
                 .MaxBy(x => x.TimeSpent);
 
-            var heaviestLift = sessions
+            var heaviestLift = sessionsWithExercises
                 .SelectMany(x => x.RecordedExercises)
                 .Where(x => x.FirstRecordedSet is not null)
                 .MaxBy(x => x.MaxWeightLifted);
@@ -141,7 +146,7 @@ public class StatsEffects(
             sessions
                 .Where(x => x.Bodyweight is not null)
                 .Select(session => new TimeTrackedStatistic(
-                    session.Date.ToDateTime(TimeOnly.MinValue),
+                    session.Date.ToDateTime(TimeOnly.MinValue, DateTimeKind.Local),
                     session.Bodyweight!.Value
                 ))
                 .ToImmutableList()
@@ -154,7 +159,7 @@ public class StatsEffects(
             sessions.Key,
             sessions
                 .Select(session => new TimeTrackedStatistic(
-                    session.Date.ToDateTime(TimeOnly.MinValue),
+                    session.Date.ToDateTime(TimeOnly.MinValue, DateTimeKind.Local),
                     session.TotalWeightLifted
                 ))
                 .ToImmutableList()
