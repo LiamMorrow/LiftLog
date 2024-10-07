@@ -136,6 +136,39 @@ describe('Completing a session', () => {
         cy.getA('[data-cy=weight-display]').first().should('contain.text', '15kg')
       })
 
+      it('can complete a workout and change the number of reps with it not adding progressive overload', () => {
+        cy.containsA('Workout A').click()
+        cy.containsA('Rest between').should('not.exist')
+        updateWeight(0, 20)
+        cy.getA('.repcount').first().click().should('contain.text', '5/5')
+        cy.getA('.snackbar').contains('Rest between').should('be.visible')
+
+        cy.getA('.itemlist div').eq(0).should('contain.text', 'Squat')
+        cy.getA('[data-cy=weight-display]').first().should('contain.text', '20kg')
+
+        // Update number of reps on the exercise
+        cy.getA('[data-cy=more-exercise-btn]').first().click()
+        cy.getA('[data-cy=exercise-edit-menu-button]').first().click()
+
+        // Update the number of reps to 6
+        cy.dialog().find('[data-cy=exercise-reps]').should('contain.text', '5').find('[data-cy=fixed-increment]').click()
+        cy.dialog().contains("Update").click()
+
+        // Complete all sets
+        for (let i = 1; i <= 6; i++) {
+          cy.getA('.repcount').eq(i).click()
+        }
+
+        cy.contains('Finish').click()
+
+        cy.getA('[data-cy=session-summary-title]').eq(0).should('contain.text', 'Workout B')
+        cy.getA('[data-cy=session-summary-title]').eq(1).should('contain.text', 'Workout A').click()
+
+        cy.getA('[data-cy=weighted-exercise]').eq(0).should('contain.text', 'Squat')
+        // Since the number of reps was increased, the weight should not have increased because it is a "different" exercise
+        cy.getA('[data-cy=weight-display]').first().should('contain.text', '0kg')
+      })
+
       it('can add notes to an exercise and see them the next time they do that exercise', () => {
         cy.containsA('Workout A').click()
 
