@@ -3,8 +3,9 @@
 
 @{
     var firstDayOfMonth = new DateOnly(CurrentYear, CurrentMonth, 1);
-    var firstDayOfWeek = (int)firstDayOfMonth.DayOfWeek;
-    var lastDayOfPreviousMonth = firstDayOfMonth.AddDays(-1);
+    var dayOfFirstDayOfTheMonth = (int)firstDayOfMonth.DayOfWeek;
+    // If the first day of the month is Sunday (0) we show no days from the previous month as it is a full week
+    var numberOfDaysToShowFromPreviousMonth = dayOfFirstDayOfTheMonth;
     var index = 0;
 }
 <div class="grid grid-cols-7 gap-2 justify-center items-center">
@@ -25,9 +26,9 @@
     <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Thursday))</span>
     <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Friday))</span>
     <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Saturday))</span>
-    @for (int i = 0; i < firstDayOfWeek; i++)
+    @for (int i = -numberOfDaysToShowFromPreviousMonth; i < 0; i++)
     {
-        var date = lastDayOfPreviousMonth.AddDays(-i);
+        var date = firstDayOfMonth.AddDays(i);
         <HistoryCalendarDay ForOtherMonth=true @key=@(date.ToString()+index) Index="index++" Day=date Sessions=_sessionsByDate[date] OnDayClick=@(()=>HandleDayClick(date)) OnDayLongPress=@(()=>HandleDayLongPress(date)) />
     }
     @for (int i = 1; i <= DateTime.DaysInMonth(CurrentYear, CurrentMonth); i++)
