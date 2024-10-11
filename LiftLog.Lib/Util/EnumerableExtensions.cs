@@ -92,4 +92,27 @@ public static class LinqExtensions
 
         return immutableDictionaryBuilder.ToImmutable();
     }
+
+    public static async ValueTask<ImmutableDictionary<K, V>> ToImmutableDictionaryAwaitAsync<
+        T,
+        K,
+        V
+    >(
+        this IAsyncEnumerable<T> source,
+        Func<T, ValueTask<K>> keySelector,
+        Func<T, ValueTask<V>> valueSelector,
+        IEqualityComparer<K> keyComparer
+    )
+        where K : notnull
+    {
+        var immutableDictionaryBuilder = ImmutableDictionary.CreateBuilder<K, V>(keyComparer);
+        await foreach (var item in source)
+        {
+            var key = keySelector(item);
+            var value = valueSelector(item);
+            immutableDictionaryBuilder.Add(await key, await value);
+        }
+
+        return immutableDictionaryBuilder.ToImmutable();
+    }
 }

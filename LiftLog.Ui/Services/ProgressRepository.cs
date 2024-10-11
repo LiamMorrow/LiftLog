@@ -176,7 +176,8 @@ namespace LiftLog.Ui.Services
                 )
                 .ToImmutableDictionaryAwaitAsync(
                     x => ValueTask.FromResult(x.Key),
-                    async x => await x.Take(maxRecordsPerExercise).ToImmutableListValueAsync()
+                    async x => await x.Take(maxRecordsPerExercise).ToImmutableListValueAsync(),
+                    KeyedExerciseBlueprint.NormalizedNameOnlyEqualityComparer.Instance
                 );
         }
 
