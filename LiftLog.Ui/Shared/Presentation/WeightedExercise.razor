@@ -1,9 +1,6 @@
 ﻿@{
-    var (displayedExercise, repToStartNext) = (PreviousRecordedExercises?.FirstOrDefault()?.RecordedExercise) switch
-    {
-        null => (RecordedExercise, -1),
-        _ => (RecordedExercise, RecordedExercise.PotentialSets.IndexOf(x => x.Set is null))
-    };
+    var displayedExercise = RecordedExercise;
+    var setToStartNext = RecordedExercise.PotentialSets.IndexOf(x => x.Set is null);
     var previousNotes = PreviousRecordedExercises?.FirstOrDefault()?.RecordedExercise?.Notes ?? "";
     var thisNotes = RecordedExercise.Notes ?? "";
     var blueprintNotes = RecordedExercise.Blueprint.Notes;
@@ -53,7 +50,7 @@
                 OnTap=@(() => {if(!IsReadonly) CycleRepCountForSet(i);})
                 OnHold=@(() => {if(!IsReadonly) ShowAdditionalActionsForSet(i);})
                 OnUpdateWeight=@((weight) => {if(!IsReadonly) UpdateWeightForSet(i, weight);})
-                ToStartNext=@(ToStartNext && repToStartNext == i && !IsReadonly)
+                ToStartNext=@(ToStartNext && setToStartNext == i && !IsReadonly)
                 IsReadonly=@IsReadonly />
         }
     </div>
