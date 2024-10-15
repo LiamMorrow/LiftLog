@@ -79,7 +79,7 @@ else
 @if(IsInActiveScreen && !IsReadonly)
 {
     <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="TrailingTitleButton">
-        <AppButton class="text-lg" Type=AppButtonType.Text OnClick=SaveSession>
+        <AppButton class="text-lg" Type=AppButtonType.Text OnClick=SaveSession data-cy="save-session-button">
             @(SessionTarget == SessionTarget.WorkoutSession ? "Finish" : "Save")
         </AppButton>
     </Microsoft.AspNetCore.Components.Sections.SectionContent>

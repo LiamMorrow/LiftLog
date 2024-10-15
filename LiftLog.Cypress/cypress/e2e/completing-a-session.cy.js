@@ -27,7 +27,7 @@ describe('Completing a session', () => {
 
       cy.dialog().contains("Save").click()
 
-      cy.contains('Finish').click()
+      cy.get('[data-cy=save-session-button]').click()
 
       cy.navigate('History')
 
@@ -67,7 +67,7 @@ describe('Completing a session', () => {
 
         cy.getA('.snackbar').should('be.visible').should('contain.text', 'This session').should('contain.text', '680')
 
-        cy.contains('Finish').click()
+        cy.get('[data-cy=save-session-button]').click()
 
         cy.getA('[data-cy=session-summary-title]').should('contain.text', 'Workout B')
 
@@ -77,7 +77,7 @@ describe('Completing a session', () => {
 
         cy.getA('md-filled-text-field[type=date]').get('input', { includeShadowDom: true }).first().click().type('2023-05-22')
 
-        cy.contains('Finish').click()
+        cy.get('[data-cy=save-session-button]').click()
 
         cy.recursionLoop(() => {
           if (Cypress.$('[data-cy=calendar-month]').text().includes('May 2023')) {
@@ -126,7 +126,7 @@ describe('Completing a session', () => {
         }
 
         cy.getA('.snackbar').should('be.visible').should('contain.text', 'This session').should('contain.text', '650')
-        cy.contains('Finish').click()
+        cy.get('[data-cy=save-session-button]').click()
 
         cy.getA('[data-cy=session-summary-title]').eq(0).should('contain.text', 'Workout B')
         cy.getA('[data-cy=session-summary-title]').eq(1).should('contain.text', 'Workout A').click()
@@ -159,7 +159,7 @@ describe('Completing a session', () => {
           cy.getA('.repcount').eq(i).click()
         }
 
-        cy.contains('Finish').click()
+        cy.get('[data-cy=save-session-button]').click()
 
         cy.getA('[data-cy=session-summary-title]').eq(0).should('contain.text', 'Workout B')
         cy.getA('[data-cy=session-summary-title]').eq(1).should('contain.text', 'Workout A').click()
@@ -178,7 +178,7 @@ describe('Completing a session', () => {
         cy.dialog().find('[data-cy=notes-dialog-actions]').contains("Save").click()
         cy.getA('.repcount').first().click().should('contain.text', '5/5')
 
-        cy.contains('Finish').click()
+        cy.get('[data-cy=save-session-button]').click()
 
         cy.navigate('History')
 
