@@ -1,9 +1,13 @@
 @typeparam TItem
 
 <div @attributes="AdditionalAttributes" class=" @(AdditionalAttributes?.GetValueOrDefault("class")) flex flex-col gap-2 p-2 cardlist">
+    @{
+        var index = 0;
+    }
     @foreach (var item in Items)
     {
         <Card
+            @key="KeySelector?.Invoke(item) ?? index++"
             class="@CardClass"
             Type="CardType"
             OnLongPress=@(OnLongPress.HasDelegate ? ()=>OnLongPress.InvokeAsync(item) : default!)
@@ -29,6 +33,8 @@
     [Parameter] public string? CardClass { get; set; }
 
     [Parameter] public Card.CardType CardType { get; set; } = Card.CardType.Outlined;
+
+    [Parameter] public Func<TItem, object>? KeySelector { get; set; }
 
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
