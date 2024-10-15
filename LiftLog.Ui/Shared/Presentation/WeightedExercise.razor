@@ -12,7 +12,10 @@
             @if(!IsReadonly)
             {
                 <div class="flex justify-end">
-                    <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.Standard" Icon="history" OnClick="ShowPrevious"/>
+                    @if(ShowPreviousButton)
+                    {
+                        <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.Standard" Icon="history" OnClick="ShowPrevious"/>
+                    }
                     <IconButton data-cy="per-rep-weight-btn" Type=IconButtonType.Standard Icon=weight OnClick="ToggleExercisePerSetWeight"></IconButton>
                     <div>
                         <IconButton data-cy="more-exercise-btn" class="self-end" Type="IconButtonType.Standard" OnClick="() => { _menu?.Open(); }" Icon="more_horiz" id="@moreButtonId"/>
@@ -142,6 +145,8 @@
     [EditorRequired] [Parameter] public Action OnRemoveExercise { get; set; } = null!;
 
     [Parameter] public bool IsReadonly { get; set; } = false;
+
+    [EditorRequired] [Parameter] public bool ShowPreviousButton { get; set; }
 
     private void HandleNotesChange(string value)
     {
