@@ -115,6 +115,8 @@ public record Session(
         RecordedExercises.Sum(ex =>
             ex.PotentialSets.Sum(set => (set.Set?.RepsCompleted ?? 0) * set.Weight)
         );
+
+    public bool IsFreeform => Blueprint.Name == "Freeform Session";
 }
 
 public record RecordedExercise(
