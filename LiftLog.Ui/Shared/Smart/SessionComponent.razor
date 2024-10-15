@@ -34,7 +34,8 @@ else
             UpdateNotesForExercise=@((notes) => UpdateNotesForExercise(context.Index, notes))
             OnEditExercise=@(() => BeginEditExercise(context.Index))
             OnRemoveExercise=@(() => BeginRemoveExercise(context.Index))
-            IsReadonly=IsReadonly />
+            IsReadonly=IsReadonly
+            ShowPreviousButton=@(SessionTarget == SessionTarget.WorkoutSession) />
     </ItemList>
 }
 @if (ShowBodyweight)
@@ -78,7 +79,9 @@ else
 @if(IsInActiveScreen && !IsReadonly)
 {
     <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="TrailingTitleButton">
-        <AppButton class="text-lg" Type=AppButtonType.Text OnClick=SaveSession>Finish</AppButton>
+        <AppButton class="text-lg" Type=AppButtonType.Text OnClick=SaveSession>
+            @(SessionTarget == SessionTarget.WorkoutSession ? "Finish" : "Save")
+        </AppButton>
     </Microsoft.AspNetCore.Components.Sections.SectionContent>
 }
 
