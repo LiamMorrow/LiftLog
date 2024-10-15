@@ -77,7 +77,7 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
         <Card class=@CardClass>
             <StatGraphCardContent Title="Sessions" Statistics="overallStats.SessionStats" RenderDelay="TimeSpan.FromMilliseconds(200)"/>
         </Card>
-        <CardList Items="@(UnpinnedExercisesToShow.IndexedTuples())">
+        <CardList KeySelector="context=>context.Item.ExerciseName" Items="@(UnpinnedExercisesToShow.IndexedTuples())" >
             <StatGraphCardContent Title="@context.Item.ExerciseName" Statistics="[context.Item.Statistics, context.Item.OneRepMaxStatistics]" RenderDelay="TimeSpan.FromMilliseconds(200 + context.Index * 200)"/>
         </CardList>
         @if(SearchTerm != "" && !UnpinnedExercisesToShow.Any())
