@@ -47,6 +47,7 @@
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Session"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/history"));
+        Dispatcher.Dispatch(new SetReopenCurrentSessionAction(SessionTarget.HistorySession, true));
         if (CurrentSessionState.Value.HistorySession is null)
         {
             NavigationManager.NavigateTo("/history");
