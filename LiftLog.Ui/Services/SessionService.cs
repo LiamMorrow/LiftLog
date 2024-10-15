@@ -32,7 +32,9 @@ public class SessionService(
         var latestSession = currentSession switch
         {
             { IsStarted: true } => currentSession,
-            _ => await progressRepository.GetOrderedSessions().FirstOrDefaultAsync(),
+            _ => await progressRepository
+                .GetOrderedSessions()
+                .FirstOrDefaultAsync(x => !x.IsFreeform),
         };
         if (latestSession == null)
         {
