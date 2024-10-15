@@ -97,7 +97,7 @@ else
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Upcoming Workouts"));
         Dispatcher.Dispatch(new FetchUpcomingSessionsAction());
-        Dispatcher.Dispatch(new SetReopenCurrentSessionAction(false));
+        Dispatcher.Dispatch(new SetReopenCurrentSessionAction(SessionTarget.WorkoutSession, false));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
         Dispatcher.Dispatch(new PublishUnpublishedSessionsAction());
         Dispatcher.Dispatch(new ExecuteRemoteBackupAction(SettingsState.Value.RemoteBackupSettings));

@@ -106,6 +106,7 @@ else
         var sw = System.Diagnostics.Stopwatch.StartNew();
         Dispatcher.Dispatch(new SetPageTitleAction("History"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
+        Dispatcher.Dispatch(new SetReopenCurrentSessionAction(SessionTarget.HistorySession, false));
         this._latestSessions = await SessionService
             .GetLatestSessionsAsync()
             .ToListAsync();

@@ -10,18 +10,5 @@ public class AppFeature : Feature<AppState>
 {
     public override string GetName() => nameof(AppFeature);
 
-    protected override AppState GetInitialState() =>
-        new(
-            Title: "LiftLog",
-            IsHydrated: false,
-            ProState: new ProState(ProToken: null),
-            ReopenCurrentSession: true,
-            BackNavigationUrl: null,
-            LatestSettingsUrl: null,
-            HasRequestedNotificationPermission: false,
-            ColorScheme: new AppColorScheme<uint>(),
-            AppLaunchCount: 0,
-            AppRatingResult: AppRatingResult.NotRated,
-            HistoryYearMonth: null
-        );
+    protected override AppState GetInitialState() => AppState.InitialState;
 }

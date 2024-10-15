@@ -29,7 +29,7 @@
         }
 
         Dispatcher.Dispatch(new SetPageTitleAction("Session Summary"));
-        Dispatcher.Dispatch(new SetReopenCurrentSessionAction(false));
+        Dispatcher.Dispatch(new SetReopenCurrentSessionAction(SessionTarget.WorkoutSession, false));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
         Session = await ProgressRepository.GetSessionAsync(id);
         if (Session is null)

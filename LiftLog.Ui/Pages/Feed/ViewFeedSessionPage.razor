@@ -32,6 +32,7 @@
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Feed Session"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/feed"));
+        Dispatcher.Dispatch(new SetReopenCurrentSessionAction(SessionTarget.FeedSession, true));
 
         var hasSession = false;
 

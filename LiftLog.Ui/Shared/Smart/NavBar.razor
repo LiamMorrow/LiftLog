@@ -45,7 +45,7 @@
     private void NavigateToWorkout()
     {
         if (CurrentSessionState.Value.WorkoutSession != null
-            && AppState.Value.ReopenCurrentSession
+            && AppState.Value.ReopenCurrentSessionTargets.Contains(SessionTarget.WorkoutSession)
             && !IsRouteMatch("/session/?$"))
         {
             Dispatcher.Dispatch(new NavigateAction("/session", ClearPageStack: false));
@@ -71,12 +71,32 @@
 
     private void NavigateToFeed()
     {
+        if (CurrentSessionState.Value.FeedSession != null
+            && AppState.Value.ReopenCurrentSessionTargets.Contains(SessionTarget.FeedSession)
+            && !IsRouteMatch("/feed/?.*$"))
+        {
+            var feedItem = FeedState.Value.Feed.OfType<SessionFeedItem>().FirstOrDefault(x => x.Session.Id == CurrentSessionState.Value.FeedSession.Id);
+            if (feedItem != null)
+            {
+                Dispatcher.Dispatch(new NavigateAction("feed/view-session/"+feedItem.EventId, ClearPageStack: false));
+                StateHasChanged();
+                return;
+            }
+        }
         Dispatcher.Dispatch(new NavigateAction("/feed", ClearPageStack: false));
         StateHasChanged();
     }
 
     private void NavigateToHistory()
     {
+        if (CurrentSessionState.Value.HistorySession != null
+            && AppState.Value.ReopenCurrentSessionTargets.Contains(SessionTarget.HistorySession)
+            && !IsRouteMatch("/history/?.*$"))
+        {
+            Dispatcher.Dispatch(new NavigateAction("/history/edit", ClearPageStack: false));
+            StateHasChanged();
+            return;
+        }
         Dispatcher.Dispatch(new NavigateAction("/history", ClearPageStack: false));
         StateHasChanged();
     }
