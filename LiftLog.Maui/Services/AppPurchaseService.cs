@@ -35,7 +35,7 @@ public class AppPurchaseService(ILogger<AppPurchaseService> logger) : IAppPurcha
             {
                 // only need to finalize if on Android unless you turn off auto finalize on iOS
                 await CrossInAppBilling.Current.FinalizePurchaseAsync(
-                    purchase.TransactionIdentifier
+                    [purchase.TransactionIdentifier]
                 );
             }
 
