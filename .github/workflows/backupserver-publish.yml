@@ -32,7 +32,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build image
         run: dotnet publish --os linux --arch x64 /t:PublishContainer -c Release
-        working-directory: LiftLog.BackupServer
+        working-directory: ./examples/remote-backup/reference-server-implementation/LiftLog.BackupServer
       - name: Tag image
         run: docker tag liftlog-backupserver:latest ghcr.io/liammorrow/liftlog:backupserver
       - name: Push image
