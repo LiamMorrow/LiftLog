@@ -107,6 +107,7 @@ else
         Dispatcher.Dispatch(new SetPageTitleAction("History"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
         Dispatcher.Dispatch(new SetReopenCurrentSessionAction(SessionTarget.HistorySession, false));
+        Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.HistorySession, null));
         this._latestSessions = await SessionService
             .GetLatestSessionsAsync()
             .ToListAsync();

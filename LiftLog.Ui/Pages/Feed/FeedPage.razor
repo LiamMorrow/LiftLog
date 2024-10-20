@@ -136,6 +136,7 @@
         Dispatcher.Dispatch(new FetchSessionFeedItemsAction(FromUserAction: false));
         Dispatcher.Dispatch(new FetchInboxItemsAction(FromUserAction: false));
         Dispatcher.Dispatch(new SetReopenCurrentSessionAction(SessionTarget.FeedSession, false));
+        Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.FeedSession, null));
         Dispatcher.Dispatch(new PublishUnpublishedSessionsAction());
         if (FeedState.Value.Identity is null)
         {
