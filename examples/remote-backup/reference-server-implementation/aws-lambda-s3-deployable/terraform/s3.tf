@@ -1,9 +1,9 @@
 resource "aws_s3_bucket" "backup_bucket" {
   bucket = var.liftlog_backup_bucket_name
 
-  # lifecycle {
-  #   prevent_destroy = true # Prevents bucket deletion
-  # }
+  lifecycle {
+    prevent_destroy = true # Prevents bucket deletion
+  }
 
   # Optional lifecycle rule that deletes files after the specified number of days
   dynamic "lifecycle_rule" {
