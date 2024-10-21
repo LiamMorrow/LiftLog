@@ -1,0 +1,21 @@
+{
+  "name": "lambda-backup",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "package": "npm run build && cd dist && zip -r ../../terraform/lambda.zip index.js"
+  },
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.119",
+    "aws-sdk": "^2.1691.0",
+    "mime-types": "^2.1.35"
+  },
+  "devDependencies": {
+    "@types/mime-types": "^2.1.4",
+    "ts-loader": "^9.4.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.3",
+    "webpack": "^5.88.0",
+    "webpack-cli": "^5.1.4"
+  }
+}
