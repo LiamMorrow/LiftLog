@@ -25,4 +25,4 @@ You can test if it is correctly set up by pressing the `Test` button in app. Any
 
 ## AWS Lambda S3 Deployable Backup Server
 
-A nodejs application along with code to deploy it to AWS is available in the [examples/remote-backup/reference-server-implementation/aws-lambda-s3-deployable](../examples/remote-backup/reference-server-implementation/aws-lambda-s3-deployable) folder. This is a more advanced setup which uses AWS Lambda and S3 to store the backups. Again this is quite involved but can get you set up if you are fairly technically adventurous.
+A Node.js application along with code to deploy it to AWS is available in the [examples/remote-backup/reference-server-implementation/aws-lambda-s3-deployable](../examples/remote-backup/reference-server-implementation/aws-lambda-s3-deployable) folder. This is a more advanced setup which uses AWS Lambda and S3 to store the backups. Again this is quite involved but can get you set up if you are fairly technically adventurous.
