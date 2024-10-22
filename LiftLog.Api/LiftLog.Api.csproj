@@ -24,9 +24,9 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.8" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.10" />
         <PackageReference Include="OpenAI-DotNet" Version="8.3.0" />
-        <PackageReference Include="Google.Apis.AndroidPublisher.v3" Version="1.68.0.3563" />
+        <PackageReference Include="Google.Apis.AndroidPublisher.v3" Version="1.68.0.3576" />
     </ItemGroup>
 
     <ItemGroup>
