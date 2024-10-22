@@ -86,7 +86,10 @@ This is the name of the state bucket you created earlier. This bucket keeps trac
 
 This must match the name of the AWS profile you created in the `.aws/config file`. The default is `liftlog-aws-profile` and you probably won't need to change it.
 
-In `terraform.tfvars` you must also configure `region` and `profile` to match the above values but there is an additional setting. This is `liftlog_backup_bucket_name` - this is the actual bucket where your backups will go. This needs to be a globally unique name so call it what you want, perhaps `YOURNAME-liftlog-backups`. Terraform will create this bucket for you in the next steps.
+In `terraform.tfvars` you must also configure:
+
+- `region` and `profile` to match the above values but there is an additional setting.
+- `liftlog_backup_bucket_name` - this is the actual bucket where your backups will go. This needs to be a globally unique name so call it what you want, perhaps `YOURNAME-liftlog-backups`. Terraform will create this bucket for you in the next steps.
 
 There is also an optional `delete_after_days` variable. Uncomment this to set an expiry on your backups in days. **This will delete any backups older than that figure so if you do not log in for that period, all your backups will be expired.** I personally set it to be 365 days, if I don't go to the gym for that long, I probably won't be going back!
 
