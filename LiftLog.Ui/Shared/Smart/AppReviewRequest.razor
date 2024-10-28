@@ -9,7 +9,7 @@
     <span slot="content" class="block text-left">If so, would you take a minute to leave a @ReviewType on @AppStore?</span>
     <div slot="actions" class="flex">
         <AppButton Type="AppButtonType.Text" class="mr-auto" OnClick="Never">Never</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="()=>rateDialog?.Close()">Not Now</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="NotNow">Not Now</AppButton>
         @if(DeviceService.GetDeviceType() == DeviceType.Web)
         {
             <AppButton Type="AppButtonType.Text" OnClick="Rate" target="_blank" href="https://github.com/LiamMorrow/LiftLog">Rate</AppButton>
@@ -41,6 +41,12 @@
     private void Never()
     {
         Dispatcher.Dispatch(new SetAppRatingResultAction(AppRatingResult.Declined));
+        rateDialog?.Close();
+    }
+
+    private void NotNow()
+    {
+        Dispatcher.Dispatch(new SetAppLaunchCountAction(0));
         rateDialog?.Close();
     }
 

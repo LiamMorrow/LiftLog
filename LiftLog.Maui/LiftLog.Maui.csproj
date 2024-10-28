@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFrameworks>net8.0-android</TargetFrameworks>
 
-        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx'))">$(TargetFrameworks);net8.0-ios18;</TargetFrameworks>
+        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx'))">$(TargetFrameworks);net8.0-ios;</TargetFrameworks>
 
         <OutputType>Exe</OutputType>
         <RootNamespace>LiftLog.Maui</RootNamespace>
@@ -75,6 +75,7 @@
     <PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Release'">
         <MtouchLink>SdkOnly</MtouchLink>
         <UseInterpreter>True</UseInterpreter>
+        <_ExportSymbolsExplicitly>false</_ExportSymbolsExplicitly>
     </PropertyGroup>
 
     <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
