@@ -104,6 +104,7 @@ namespace LiftLog.Ui.Services
                 };
                 var deserialiseTime = sw.ElapsedMilliseconds;
                 sw.Restart();
+                _storedSessions = ImmutableDictionary<Guid, Session>.Empty;
                 if (storedData is not null)
                 {
                     _storedSessions = storedData.CompletedSessions;
