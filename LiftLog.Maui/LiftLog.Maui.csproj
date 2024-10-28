@@ -75,6 +75,7 @@
     <PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Release'">
         <MtouchLink>SdkOnly</MtouchLink>
         <UseInterpreter>True</UseInterpreter>
+        <_ExportSymbolsExplicitly>false</_ExportSymbolsExplicitly>
     </PropertyGroup>
 
     <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
