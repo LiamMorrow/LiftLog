@@ -1,7 +1,14 @@
 @{
- var splitWeights = (Exercise.PerSetWeight
-    && !Exercise.PotentialSets.All(s => s.Weight == Exercise.Weight))
-    || Exercise.PotentialSets.DistinctBy(x=>x.Set?.RepsCompleted).Count() != 1;
+    var numberOfSetsCompleted = Exercise.PotentialSets.Count(s => s.Set != null);
+    var maxRepsCompleted = Exercise.PotentialSets.Max(s => s.Set?.RepsCompleted);
+
+    var allPerformedSetsHaveSameReps = Exercise.PotentialSets
+        .Where(x => x.Set != null)
+        .DistinctBy(x => x.Set?.RepsCompleted).Count() == 1;
+
+    var splitWeights = (Exercise.PerSetWeight
+        && !Exercise.PotentialSets.All(s => s.Weight == Exercise.Weight))
+        || !allPerformedSetsHaveSameReps;
 }
 <span class="flex items-center">
     @if(ShowName)
@@ -17,7 +24,7 @@
             @if (ShowSets)
             {
                 <span>
-                    @(Exercise.Blueprint.Sets)x@(Exercise.Blueprint.RepsPerSet)
+                    @(numberOfSetsCompleted)x@(maxRepsCompleted)
                 </span>
                 @if(ShowWeight)
                 {
