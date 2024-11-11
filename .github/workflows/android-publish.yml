@@ -44,7 +44,7 @@ jobs:
           distribution: "microsoft"
           java-version: "17"
       - name: Setup Android SDK Tools
-        uses: android-actions/setup-android@v3.2.1
+        uses: android-actions/setup-android@v3.2.2
       - name: Build Tailwind
         run: npm i && npm run build
         working-directory: ./LiftLog.Ui
