@@ -26,7 +26,7 @@ jobs:
       - name: Setup MAUI
         run: dotnet workload restore
       - name: Restore dependencies
-        run: dotnet restore -p:TargetFramework=net8.0-android
+        run: dotnet restore -p:TargetFramework=net9.0-android
       - name: Put keystore
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -52,7 +52,7 @@ jobs:
         run: dotnet build -c Release
         working-directory: ./LiftLog.Ui
       - name: Build
-        run: dotnet publish -p:TargetFramework=net8.0-android -f net8.0-android -c Release -p:BuildFor=android -p:AndroidKeyStore=true -p:AndroidSigningKeyStore=liftlog.keystore -p:AndroidSigningKeyAlias=liftlog -p:AndroidSigningKeyPass=env:KEYSTORE_PASS -p:AndroidSigningStorePass=env:KEYSTORE_PASS -p:UseSentryCLI=true -p:ApplicationDisplayVersion=${{ github.event.release.name }} -p:ApplicationVersion=${{ steps.buildNumber.outputs.build-number }}
+        run: dotnet publish -p:TargetFramework=net9.0-android -f net9.0-android -c Release -p:BuildFor=android -p:AndroidKeyStore=true -p:AndroidSigningKeyStore=liftlog.keystore -p:AndroidSigningKeyAlias=liftlog -p:AndroidSigningKeyPass=env:KEYSTORE_PASS -p:AndroidSigningStorePass=env:KEYSTORE_PASS -p:UseSentryCLI=true -p:ApplicationDisplayVersion=${{ github.event.release.name }} -p:ApplicationVersion=${{ steps.buildNumber.outputs.build-number }}
         working-directory: ./LiftLog.Maui
         env:
           KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
@@ -61,7 +61,7 @@ jobs:
         uses: r0adkll/upload-google-play@v1.1.3
         with:
           packageName: com.limajuice.liftlog
-          releaseFiles: LiftLog.Maui/bin/Release/net8.0-android/publish/com.limajuice.liftlog-Signed.aab
+          releaseFiles: LiftLog.Maui/bin/Release/net9.0-android/publish/com.limajuice.liftlog-Signed.aab
           track: internal
           status: completed
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
