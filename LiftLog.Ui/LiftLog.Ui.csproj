@@ -28,7 +28,7 @@
         <PackageReference Include="BlazorTransitionableRoute" Version="4.0.0" />
         <PackageReference Include="FuzzySharp" Version="2.0.2" />
         <PackageReference Include="MaterialColorUtilities" Version="0.3.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.10" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0" />
         <PackageReference Include="Fluxor" Version="6.1.0" />
         <PackageReference Include="Fluxor.Blazor.Web" Version="6.1.0" />
         <PackageReference Include="System.Linq.Async" Version="6.0.1" />
