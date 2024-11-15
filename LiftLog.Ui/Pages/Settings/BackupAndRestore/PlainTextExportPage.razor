@@ -15,7 +15,7 @@
 
 <LabelledForm>
     <LabelledFormRow Label="Format" Icon="description">
-        <SelectField data-cy="export-format-selector" T="PlaintextExportFormat" Options="Formats" Value="Format" ValueChanged="SelectFormat"/>
+        <SelectField data-cy="export-format-selector" Options="Formats" Value="@Format.ToString()" ValueChanged="SelectFormat"/>
     </LabelledFormRow>
 </LabelledForm>
 
@@ -27,7 +27,7 @@
 @code {
 
     private PlaintextExportFormat Format = PlaintextExportFormat.CSV;
-    private List<SelectField<PlaintextExportFormat>.SelectOption> Formats = [new("CSV", PlaintextExportFormat.CSV)];
+    private List<SelectField.SelectOption> Formats = Enum.GetValues<PlaintextExportFormat>().Select(x=>new SelectField.SelectOption(x.ToString(), x.ToString())).ToList();
 
     protected override void OnInitialized()
     {
@@ -36,9 +36,9 @@
         base.OnInitialized();
     }
 
-    private void SelectFormat(PlaintextExportFormat format)
+    private void SelectFormat(string format)
     {
-        Format = format;
+        Format = Enum.Parse<PlaintextExportFormat>(format);
         StateHasChanged();
     }
 

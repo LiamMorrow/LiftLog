@@ -1,22 +1,21 @@
 @inject IJSRuntime JsRuntime
-@typeparam T
 
 @switch(TextFieldType){
     case TextFieldType.Outlined:
-        <md-outlined-select value=@Value @attributes="AdditionalAttributes" @onchange="e=>ValueChanged.InvokeAsync(e.Value)" >
+        <md-outlined-select @attributes="AdditionalAttributes" @onchange="e=>ValueChanged.InvokeAsync((string)e.Value!)" >
             @foreach (var option in Options)
             {
-                <md-select-option value="@option.Value">
+                <md-select-option selected=@(option.Value == Value) value="@option.Value">
                     <div slot="headline">@option.Title</div>
                 </md-select-option>
             }
         </md-outlined-select>
         break;
     case TextFieldType.Filled:
-        <md-filled-select value=@Value @attributes="AdditionalAttributes" @onchange="e=>ValueChanged.InvokeAsync(e.Value)">
+        <md-filled-select @attributes="AdditionalAttributes" @onchange="e=>ValueChanged.InvokeAsync((string)e.Value!)">
             @foreach (var option in Options)
             {
-                <md-select-option value="@option.Value">
+                <md-select-option selected=@(option.Value == Value) value="@option.Value">
                     <div slot="headline">@option.Title</div>
                 </md-select-option>
             }
@@ -29,15 +28,15 @@
 
 
 @code {
-    [Parameter] [EditorRequired] public T Value { get; set; } = default!;
+    [Parameter] [EditorRequired] public string Value { get; set; } = default!;
 
     [Parameter] [EditorRequired] public List<SelectOption> Options { get; set; } = null!;
 
-    [Parameter] [EditorRequired] public EventCallback<T> ValueChanged { get; set; }
+    [Parameter] [EditorRequired] public EventCallback<string> ValueChanged { get; set; }
 
     [Parameter] public TextFieldType TextFieldType { get; set; } = TextFieldType.Outlined;
 
     [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    public record SelectOption(string Title, T Value);
+    public record SelectOption(string Title, string Value);
 }
