@@ -10,7 +10,7 @@ Mobile devices require that HTTPS is used for connections, which means that user
 
 ## Setting up the app
 
-Within the LiftLog app, navigate to `Settings -> Backup and Restore -> Automatic Remote Backup`. On this screen, two values can be set:
+Within the LiftLog app, navigate to `Settings -> Export, Backup, and Restore -> Automatic Remote Backup`. On this screen, two values can be set:
 
 ```
 Endpoint - Required.  This is the https endpoint which will receive the backups
