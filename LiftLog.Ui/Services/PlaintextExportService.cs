@@ -68,7 +68,10 @@ public record ExportedSetCsvRow(
             .PotentialSets.Where(x => x.Set is not null)
             .Select(set => new ExportedSetCsvRow(
                 session.Id.ToString(),
-                session.Date.ToDateTime(set.Set!.CompletionTime!).ToString("o"),
+                // s=sortable, ISO 8601 format without milliseconds or timezone
+                session
+                    .Date.ToDateTime(set.Set!.CompletionTime!, DateTimeKind.Local)
+                    .ToString("s"),
                 exercise.Blueprint.Name,
                 set.Weight,
                 unit,
