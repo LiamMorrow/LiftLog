@@ -27,14 +27,15 @@ builder.Services.RegisterUiServices<
     LocalStorageKeyValueStore,
     LocalStorageKeyValueStore,
     WebNotificationService,
-    WebExporter,
+    WebBackupRestoreService,
     WebThemeProvider,
     ClipboardStringSharer,
     WebAppPurchaseService,
     JsEncryptionService,
     JsHapticFeedbackService,
     WebDeviceService,
-    WebBuiltInExerciseLoader
+    WebBuiltInExerciseLoader,
+    WebFileExportService
 >(typeof(WebThemeProvider).Assembly);
 
 #if DEBUG

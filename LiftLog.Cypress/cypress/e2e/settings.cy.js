@@ -13,8 +13,8 @@ describe('Settings', () => {
       cy.containsA('Show tips').click()
 
       cy.navigate('Settings')
-      cy.containsA('Backup and restore').click()
-      cy.containsA('Import data').click()
+      cy.containsA('restore').click()
+      cy.containsA('Restore data').click()
       cy.get('input[type=file]').selectFile('export.liftlogbackup.gz', { force: true })
     })
 
