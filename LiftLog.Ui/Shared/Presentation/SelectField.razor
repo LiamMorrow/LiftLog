@@ -3,7 +3,7 @@
 
 @switch(TextFieldType){
     case TextFieldType.Outlined:
-        <md-outlined-select value=@Value @attributes="AdditionalAttributes">
+        <md-outlined-select value=@Value @attributes="AdditionalAttributes" @onchange="e=>ValueChanged.InvokeAsync(e.Value)" >
             @foreach (var option in Options)
             {
                 <md-select-option value="@option.Value">
@@ -13,7 +13,7 @@
         </md-outlined-select>
         break;
     case TextFieldType.Filled:
-        <md-filled-select value=@Value @attributes="AdditionalAttributes" >
+        <md-filled-select value=@Value @attributes="AdditionalAttributes" @onchange="e=>ValueChanged.InvokeAsync(e.Value)">
             @foreach (var option in Options)
             {
                 <md-select-option value="@option.Value">
