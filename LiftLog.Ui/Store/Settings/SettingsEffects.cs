@@ -24,16 +24,17 @@ public class SettingsEffects(
     IState<SettingsState> settingsState,
     IState<ProgramState> programState,
     IState<FeedState> feedState,
-    IExporter textExporter,
+    IBackupRestoreService textExporter,
     IAiWorkoutPlanner aiWorkoutPlanner,
     IThemeProvider themeProvider,
     ILogger<SettingsEffects> logger,
     PreferencesRepository preferencesRepository,
+    PlaintextExportService plaintextExportService,
     HttpClient httpClient
 )
 {
     [EffectMethod]
-    public async Task ExportData(ExportDataAction action, IDispatcher __)
+    public async Task ExportData(ExportBackupDataAction action, IDispatcher __)
     {
         await textExporter.ExportBytesAsync(
             (await GetDataExportAsync(action.ExportFeed)).ToByteArray()
@@ -44,6 +45,12 @@ public class SettingsEffects(
     public async Task ImportData(ImportDataAction _, IDispatcher dispatcher)
     {
         dispatcher.Dispatch(new ImportDataBytesAction(await textExporter.ImportBytesAsync()));
+    }
+
+    [EffectMethod]
+    public async Task ExportPlainText(ExportPlainTextAction action, IDispatcher _)
+    {
+        await plaintextExportService.ExportAsync(action.Format);
     }
 
     [EffectMethod]

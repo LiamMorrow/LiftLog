@@ -8,18 +8,23 @@
 <md-list>
     <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="()=>exportFeedDialog?.Open()">
         <md-icon slot="start">backup</md-icon>
-        <span slot="headline">Export data</span>
+        <span slot="headline">Backup data</span>
         <span slot="supporting-text">Export your data to a file for backup or transfer</span>
     </md-list-item>
     <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="ImportData">
         <md-icon slot="start">restore</md-icon>
-        <span slot="headline">Import data</span>
+        <span slot="headline">Restore data</span>
         <span slot="supporting-text">Import data from a file to restore</span>
     </md-list-item>
     <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="RemoteBackup">
         <md-icon slot="start">cloud_upload</md-icon>
         <span slot="headline">Automatic remote backup</span>
         <span slot="supporting-text">Send backups to a remote server. Advanced users only</span>
+    </md-list-item>
+    <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="PlainTextExport">
+        <md-icon slot="start">description</md-icon>
+        <span slot="headline">Plain text export</span>
+        <span slot="supporting-text">Export your data in a plain text format such as CSV for use in other applications</span>
     </md-list-item>
 </md-list>
 
@@ -55,7 +60,7 @@
     private InputFile? fileInput;
     protected override void OnInitialized()
     {
-        Dispatcher.Dispatch(new SetPageTitleAction("Backup and Restore"));
+        Dispatcher.Dispatch(new SetPageTitleAction("Export, Backup and Restore"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
         SubscribeToAction<BeginFeedImportAction>(OnBeginFeedImport);
         base.OnInitialized();
@@ -82,7 +87,9 @@
 
     private void RemoteBackup() => Dispatcher.Dispatch(new NavigateAction("/settings/backup-and-restore/remote-backup"));
 
-    private void ExportData(bool includeFeed) => Dispatcher.Dispatch(new ExportDataAction(includeFeed));
+    private void PlainTextExport() => Dispatcher.Dispatch(new NavigateAction("/settings/backup-and-restore/plain-text-export"));
+
+    private void ExportData(bool includeFeed) => Dispatcher.Dispatch(new ExportBackupDataAction(includeFeed));
 
     private void OnBeginFeedImport(BeginFeedImportAction action)
     {

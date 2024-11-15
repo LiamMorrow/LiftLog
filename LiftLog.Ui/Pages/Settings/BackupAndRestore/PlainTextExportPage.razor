@@ -1,0 +1,54 @@
+@page "/settings/backup-and-restore/plain-text-export"
+@inject IDispatcher Dispatcher
+@inject IState<SettingsState> SettingsState
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<Card Type="Card.CardType.Filled" class="mx-6 mb-4">
+    <div>
+        This feature allows you to export your data in a plain text format such as CSV for use in other applications.
+        It is not intended for backup purposes. For backups, please use the backup feature.
+        LiftLog cannot restore data from plain text exports.
+    </div>
+    <AppButton OnClick="OpenDocumentation" Type="AppButtonType.Text">Read Documentation</AppButton>
+</Card>
+
+<LabelledForm>
+    <LabelledFormRow Label="Format" Icon="description">
+        <SelectField data-cy="export-format-selector" T="PlaintextExportFormat" Options="Formats" Value="Format" ValueChanged="SelectFormat"/>
+    </LabelledFormRow>
+</LabelledForm>
+
+<div class="flex justify-end gap-4 m-6">
+    <AppButton Type="AppButtonType.Primary" OnClick="Export">Export</AppButton>
+</div>
+
+
+@code {
+
+    private PlaintextExportFormat Format = PlaintextExportFormat.CSV;
+    private List<SelectField<PlaintextExportFormat>.SelectOption> Formats = [new("CSV", PlaintextExportFormat.CSV)];
+
+    protected override void OnInitialized()
+    {
+        Dispatcher.Dispatch(new SetPageTitleAction("Plain Text Export"));
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings/backup-and-restore"));
+        base.OnInitialized();
+    }
+
+    private void SelectFormat(PlaintextExportFormat format)
+    {
+        Format = format;
+        StateHasChanged();
+    }
+
+    private void Export(MouseEventArgs _)
+    {
+        Dispatcher.Dispatch(new ExportPlainTextAction(Format));
+    }
+
+    private void OpenDocumentation(MouseEventArgs _)
+    {
+        Dispatcher.Dispatch(new NavigateAction("https://github.com/LiamMorrow/LiftLog/blob/main/Docs/PlaintextExport.md"));
+    }
+}
