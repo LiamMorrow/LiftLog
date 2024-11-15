@@ -22,7 +22,7 @@ jobs:
           dotnet-version: 8.0.x
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
+          xcode-version: 16.1
       - uses: mlilback/build-number@v1
         name: Set build number
         id: buildNumber
