@@ -17,8 +17,31 @@ public record SettingsState(
     bool StatusBarFix,
     bool RestNotifications,
     RemoteBackupSettings RemoteBackupSettings,
-    string LastSuccessfulRemoteBackupHash
-);
+    string LastSuccessfulRemoteBackupHash,
+    DateTimeOffset LastBackupTime,
+    bool BackupReminder
+)
+{
+    public static SettingsState Default =>
+        new(
+            IsHydrated: false,
+            AiWorkoutAttributes: null,
+            IsGeneratingAiPlan: false,
+            AiPlanError: null,
+            AiPlan: null,
+            UseImperialUnits: false,
+            ShowBodyweight: true,
+            ShowTips: true,
+            TipToShow: 1,
+            ShowFeed: true,
+            StatusBarFix: false,
+            RestNotifications: true,
+            RemoteBackupSettings: new RemoteBackupSettings(string.Empty, string.Empty, false),
+            LastSuccessfulRemoteBackupHash: string.Empty,
+            LastBackupTime: DateTimeOffset.MinValue,
+            BackupReminder: true
+        );
+}
 
 public record RemoteBackupSettings(string Endpoint, string ApiKey, bool IncludeFeedAccount)
 {

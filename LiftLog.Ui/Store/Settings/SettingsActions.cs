@@ -50,4 +50,8 @@ public record UpdateRemoteBackupSettingsAction(RemoteBackupSettings Settings);
 
 public record SetLastSuccessfulRemoteBackupHashAction(string Hash);
 
+public record SetLastBackupTimeAction(DateTimeOffset Time);
+
+public record SetBackupReminderAction(bool ShowReminder);
+
 public record ExportPlainTextAction(PlaintextExportFormat Format);

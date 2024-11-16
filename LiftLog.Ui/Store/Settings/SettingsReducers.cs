@@ -84,6 +84,18 @@ public static class SettingsReducers
     ) => state with { RemoteBackupSettings = action.Settings };
 
     [ReducerMethod]
+    public static SettingsState SetLastBackupTime(
+        SettingsState state,
+        SetLastBackupTimeAction action
+    ) => state with { LastBackupTime = action.Time };
+
+    [ReducerMethod]
+    public static SettingsState SetBackupReminder(
+        SettingsState state,
+        SetBackupReminderAction action
+    ) => state with { BackupReminder = action.ShowReminder };
+
+    [ReducerMethod]
     public static SettingsState SetLastSuccessfulRemoteBackupHash(
         SettingsState state,
         SetLastSuccessfulRemoteBackupHashAction action

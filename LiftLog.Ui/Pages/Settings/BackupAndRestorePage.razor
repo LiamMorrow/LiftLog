@@ -2,6 +2,7 @@
 @inject IDispatcher Dispatcher
 @inject IJSRuntime JSRuntime
 @inject IDeviceService DeviceService
+@inject IState<SettingsState> SettingsState
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
@@ -26,6 +27,7 @@
         <span slot="headline">Plaintext export</span>
         <span slot="supporting-text">Export your data in a plaintext format such as CSV for use in other applications</span>
     </md-list-item>
+    <ListSwitch Headline="Backup reminders" SupportingText="Periodically suggest a backup when you have not backed up in a while" Value="@SettingsState.Value.BackupReminder" OnSwitched="SetBackupReminder" />
 </md-list>
 
 
@@ -58,12 +60,26 @@
     private ConfirmationDialog? importFeedDialog;
     private ConfirmationDialog? exportFeedDialog;
     private InputFile? fileInput;
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "backup")]
+    public bool Backup { get; set; }
+
     protected override void OnInitialized()
     {
         Dispatcher.Dispatch(new SetPageTitleAction("Export, Backup and Restore"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
         SubscribeToAction<BeginFeedImportAction>(OnBeginFeedImport);
         base.OnInitialized();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if (firstRender && Backup)
+        {
+            exportFeedDialog?.Open();
+        }
     }
 
     private async Task LoadFiles(InputFileChangeEventArgs e)
@@ -96,6 +112,8 @@
         importedFeedState = action.FeedState;
         importFeedDialog?.Open();
     }
+
+    private void SetBackupReminder(bool value) => Dispatcher.Dispatch(new SetBackupReminderAction(value));
 
     private void ImportFeedData()
     {

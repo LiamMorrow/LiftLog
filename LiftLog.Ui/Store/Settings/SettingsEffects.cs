@@ -34,11 +34,12 @@ public class SettingsEffects(
 )
 {
     [EffectMethod]
-    public async Task ExportData(ExportBackupDataAction action, IDispatcher __)
+    public async Task ExportData(ExportBackupDataAction action, IDispatcher dispatcher)
     {
         await textExporter.ExportBytesAsync(
             (await GetDataExportAsync(action.ExportFeed)).ToByteArray()
         );
+        dispatcher.Dispatch(new SetLastBackupTimeAction(DateTimeOffset.Now));
     }
 
     [EffectMethod]
@@ -257,6 +258,7 @@ public class SettingsEffects(
             result.EnsureSuccessStatusCode();
             dispatcher.Dispatch(new SetLastSuccessfulRemoteBackupHashAction(hashString));
             dispatcher.Dispatch(new RemoteBackupSucceededEvent());
+            dispatcher.Dispatch(new SetLastBackupTimeAction(DateTimeOffset.Now));
         }
         catch (HttpRequestException ex) when (ex.StatusCode is null)
         {
@@ -292,6 +294,18 @@ public class SettingsEffects(
     )
     {
         await preferencesRepository.SetRemoteBackupSettingsAsync(action.Settings);
+    }
+
+    [EffectMethod]
+    public async Task SetLastBackupTime(SetLastBackupTimeAction action, IDispatcher __)
+    {
+        await preferencesRepository.SetLastBackupTimeAsync(action.Time);
+    }
+
+    [EffectMethod]
+    public async Task SetBackupReminder(SetBackupReminderAction action, IDispatcher __)
+    {
+        await preferencesRepository.SetBackupReminderAsync(action.ShowReminder);
     }
 
     private async Task<ExportedDataDaoV2> GetDataExportAsync(bool includeFeed)
