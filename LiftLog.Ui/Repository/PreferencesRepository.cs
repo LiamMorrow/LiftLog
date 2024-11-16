@@ -178,4 +178,31 @@ public class PreferencesRepository(IPreferenceStore preferenceStore)
     {
         return await preferenceStore.GetItemAsync("lastSuccessfulRemoteBackupHash");
     }
+
+    public async Task SetLastBackupTimeAsync(DateTimeOffset time)
+    {
+        await preferenceStore.SetItemAsync("lastBackupTime", time.ToString("O"));
+    }
+
+    public async Task<DateTimeOffset> GetLastBackupTimeAsync()
+    {
+        var lastBackupTime = await preferenceStore.GetItemAsync("lastBackupTime");
+        if (DateTimeOffset.TryParse(lastBackupTime, out var time))
+            return time;
+        else
+        {
+            await SetLastBackupTimeAsync(DateTimeOffset.Now);
+            return DateTimeOffset.Now;
+        }
+    }
+
+    public async Task SetBackupReminderAsync(bool showReminder)
+    {
+        await preferenceStore.SetItemAsync("backupReminder", showReminder.ToString());
+    }
+
+    public async Task<bool> GetBackupReminderAsync()
+    {
+        return await preferenceStore.GetItemAsync("backupReminder") is "True" or null;
+    }
 }
