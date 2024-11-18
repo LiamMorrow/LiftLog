@@ -25,24 +25,24 @@
 
     [EditorRequired] [Parameter] public EventCallback OnDeleteSet { get; set; }
 
-    private int? lasPointerDownReps = int.MinValue;
+    private int? lastPointerDownReps = int.MinValue;
 
 
     private RenderFragment GetRepButton(RenderFragment childContent, int? reps, string color)
     {
         void OnPointerDown(PointerEventArgs e)
         {
-            lasPointerDownReps = reps;
+            lastPointerDownReps = reps;
         }
         // On iOS the click event is triggered when the user lifts their finger after the dialog is opened
         // This is a workaround to prevent the click event from being triggered until the user has actually tapped the button
         async Task OnClick()
         {
-            if (lasPointerDownReps != reps)
+            if (lastPointerDownReps != reps)
             {
                 return;
             }
-            lasPointerDownReps = int.MinValue;
+            lastPointerDownReps = int.MinValue;
             await OnSelectRepCount.InvokeAsync(reps);
         }
         return @<div class="flex flex-col items-center relative">
