@@ -5,55 +5,54 @@ namespace LiftLog.Tests.Reducers;
 
 public class CurrentSessionReducerTests
 {
-  private static readonly CurrentSessionState _initialState =
-    new(
-      IsHydrated: true,
-      WorkoutSession: Sessions.CreateSession(
-        null,
-        session =>
-          session with
-          {
-            RecordedExercises = session
-              .RecordedExercises.SetItem(
-                0,
-                Sessions.CreateRecordedExercise(
-                  exerciseIndex: 0,
-                  null,
-                  exercise =>
-                    exercise with
-                    {
-                      PerSetWeight = false,
-                      Weight = 10m,
-                      PotentialSets = Sessions
-                        .CreatePotentialSet(10m, isEmpty: true)
-                        .Repeat(exercise.Blueprint.Sets - 1)
-                        .Add(Sessions.CreatePotentialSet(10m)),
-                    }
-                )
+  private static readonly CurrentSessionState _initialState = new(
+    IsHydrated: true,
+    WorkoutSession: Sessions.CreateSession(
+      null,
+      session =>
+        session with
+        {
+          RecordedExercises = session
+            .RecordedExercises.SetItem(
+              0,
+              Sessions.CreateRecordedExercise(
+                exerciseIndex: 0,
+                null,
+                exercise =>
+                  exercise with
+                  {
+                    PerSetWeight = false,
+                    Weight = 10m,
+                    PotentialSets = Sessions
+                      .CreatePotentialSet(10m, isEmpty: true)
+                      .Repeat(exercise.Blueprint.Sets - 1)
+                      .Add(Sessions.CreatePotentialSet(10m)),
+                  }
               )
-              .SetItem(
-                1,
-                Sessions.CreateRecordedExercise(
-                  exerciseIndex: 1,
-                  null,
-                  exercise =>
-                    exercise with
-                    {
-                      PerSetWeight = true,
-                      Weight = 20m,
-                      PotentialSets = Sessions
-                        .CreatePotentialSet(20m, isEmpty: true)
-                        .Repeat(exercise.Blueprint.Sets - 1)
-                        .Add(Sessions.CreatePotentialSet(60m)),
-                    }
-                )
-              ),
-          }
-      ),
-      HistorySession: null,
-      FeedSession: null,
-      LatestSetTimerNotificationId: null
-    );
+            )
+            .SetItem(
+              1,
+              Sessions.CreateRecordedExercise(
+                exerciseIndex: 1,
+                null,
+                exercise =>
+                  exercise with
+                  {
+                    PerSetWeight = true,
+                    Weight = 20m,
+                    PotentialSets = Sessions
+                      .CreatePotentialSet(20m, isEmpty: true)
+                      .Repeat(exercise.Blueprint.Sets - 1)
+                      .Add(Sessions.CreatePotentialSet(60m)),
+                  }
+              )
+            ),
+        }
+    ),
+    HistorySession: null,
+    FeedSession: null,
+    LatestSetTimerNotificationId: null
+  );
 
   [Describe("CurrentSessionReducer")]
   public static void Spec()

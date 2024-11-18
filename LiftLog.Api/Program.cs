@@ -76,13 +76,12 @@ builder.Services.AddSingleton(
             "notasecret",
             X509KeyStorageFlags.Exportable
         );
-        ServiceAccountCredential credential =
-            new(
-                new ServiceAccountCredential.Initializer(serviceAccountEmail)
-                {
-                    Scopes = new[] { AndroidPublisherService.Scope.Androidpublisher },
-                }.FromCertificate(certificate)
-            );
+        ServiceAccountCredential credential = new(
+            new ServiceAccountCredential.Initializer(serviceAccountEmail)
+            {
+                Scopes = new[] { AndroidPublisherService.Scope.Androidpublisher },
+            }.FromCertificate(certificate)
+        );
         return new AndroidPublisherService(
             new AndroidPublisherService.Initializer
             {
