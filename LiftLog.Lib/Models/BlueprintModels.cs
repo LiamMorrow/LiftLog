@@ -50,17 +50,16 @@ public record ExerciseBlueprint(
     string Link
 )
 {
-    public static readonly ExerciseBlueprint Default =
-        new(
-            Name: string.Empty,
-            Sets: 3,
-            RepsPerSet: 10,
-            WeightIncreaseOnSuccess: 0,
-            RestBetweenSets: Rest.Medium,
-            SupersetWithNext: false,
-            Notes: string.Empty,
-            Link: string.Empty
-        );
+    public static readonly ExerciseBlueprint Default = new(
+        Name: string.Empty,
+        Sets: 3,
+        RepsPerSet: 10,
+        WeightIncreaseOnSuccess: 0,
+        RestBetweenSets: Rest.Medium,
+        SupersetWithNext: false,
+        Notes: string.Empty,
+        Link: string.Empty
+    );
 }
 
 public record KeyedExerciseBlueprint(string Name, int Sets, int RepsPerSet)
@@ -98,12 +97,21 @@ public record KeyedExerciseBlueprint(string Name, int Sets, int RepsPerSet)
 
 public record Rest(TimeSpan MinRest, TimeSpan MaxRest, TimeSpan FailureRest)
 {
-    public static readonly Rest Short =
-        new(TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(90), TimeSpan.FromSeconds(180));
+    public static readonly Rest Short = new(
+        TimeSpan.FromSeconds(60),
+        TimeSpan.FromSeconds(90),
+        TimeSpan.FromSeconds(180)
+    );
 
-    public static readonly Rest Medium =
-        new(TimeSpan.FromSeconds(90), TimeSpan.FromSeconds(180), TimeSpan.FromSeconds(300));
+    public static readonly Rest Medium = new(
+        TimeSpan.FromSeconds(90),
+        TimeSpan.FromSeconds(180),
+        TimeSpan.FromSeconds(300)
+    );
 
-    public static readonly Rest Long =
-        new(TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(8));
+    public static readonly Rest Long = new(
+        TimeSpan.FromMinutes(3),
+        TimeSpan.FromMinutes(5),
+        TimeSpan.FromMinutes(8)
+    );
 }

@@ -11,8 +11,10 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
     : IClassFixture<WebApplicationFactory<Program>>
 {
     const string url = "/shareditem";
-    private static readonly AesEncryptedAndRsaSignedData encryptedPayload =
-        new([0x01, 0x02, 0x03], new(Enumerable.Repeat((byte)0x04, 16).ToArray()));
+    private static readonly AesEncryptedAndRsaSignedData encryptedPayload = new(
+        [0x01, 0x02, 0x03],
+        new(Enumerable.Repeat((byte)0x04, 16).ToArray())
+    );
     private static readonly byte[] rsaPublicKey = Enumerable.Repeat((byte)0x05, 16).ToArray();
     private readonly WebApplicationFactory<Program> _factory = factory;
 

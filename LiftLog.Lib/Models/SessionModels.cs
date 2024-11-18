@@ -11,8 +11,13 @@ public record Session(
     decimal? Bodyweight
 )
 {
-    public static readonly Session Empty =
-        new(Guid.Empty, SessionBlueprint.Empty, [], DateOnly.MinValue, null);
+    public static readonly Session Empty = new(
+        Guid.Empty,
+        SessionBlueprint.Empty,
+        [],
+        DateOnly.MinValue,
+        null
+    );
 
     public static Session FreeformSession(DateOnly date, decimal? bodyweight) =>
         Empty with

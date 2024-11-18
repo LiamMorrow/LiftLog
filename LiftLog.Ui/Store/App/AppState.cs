@@ -21,25 +21,24 @@ public record AppState(
     (int Year, int Month)? HistoryYearMonth
 )
 {
-    public static readonly AppState InitialState =
-        new(
-            Title: "LiftLog",
-            IsHydrated: false,
-            ProState: new ProState(ProToken: null),
-            ReopenCurrentSessionTargets:
-            [
-                SessionTarget.WorkoutSession,
-                SessionTarget.HistorySession,
-                SessionTarget.FeedSession,
-            ],
-            BackNavigationUrl: null,
-            LatestSettingsUrl: null,
-            HasRequestedNotificationPermission: false,
-            ColorScheme: new AppColorScheme<uint>(),
-            AppLaunchCount: 0,
-            AppRatingResult: AppRatingResult.NotRated,
-            HistoryYearMonth: null
-        );
+    public static readonly AppState InitialState = new(
+        Title: "LiftLog",
+        IsHydrated: false,
+        ProState: new ProState(ProToken: null),
+        ReopenCurrentSessionTargets:
+        [
+            SessionTarget.WorkoutSession,
+            SessionTarget.HistorySession,
+            SessionTarget.FeedSession,
+        ],
+        BackNavigationUrl: null,
+        LatestSettingsUrl: null,
+        HasRequestedNotificationPermission: false,
+        ColorScheme: new AppColorScheme<uint>(),
+        AppLaunchCount: 0,
+        AppRatingResult: AppRatingResult.NotRated,
+        HistoryYearMonth: null
+    );
 };
 
 public enum AppRatingResult
