@@ -23,6 +23,10 @@
                             <MenuItem Label="Edit" Icon="edit" data-cy="exercise-edit-menu-button" OnClick="OnEditExercise"/>
                             <MenuItem data-cy="exercise-notes-btn" Label="Notes" Icon="notes" OnClick="OnOpenNotesButtonClick"/>
                             <MenuItem Label="Remove" Icon="delete" OnClick="OnRemoveExercise"/>
+                            @if(Uri.IsWellFormedUriString(displayedExercise.Blueprint.Link, UriKind.Absolute))
+                            {
+                                <MenuItem Label="Open Link" Icon="open_in_new" OnClick="OnOpenLink"/>
+                            }
                         </Menu>
                     </div>
                 </div>
@@ -137,6 +141,8 @@
     [EditorRequired] [Parameter] public Action<decimal> UpdateWeightForExercise { get; set; } = null!;
 
     [EditorRequired] [Parameter] public Action<string?> UpdateNotesForExercise { get; set; } = null!;
+
+    [EditorRequired] [Parameter] public Action OnOpenLink { get; set; } = null!;
 
     [EditorRequired] [Parameter] public Action OnEditExercise { get; set; } = null!;
 
