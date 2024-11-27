@@ -52,7 +52,7 @@ jobs:
         run: dotnet build -c Release
         working-directory: ./LiftLog.Ui
       - name: Build
-        run: dotnet publish -p:TargetFramework=net9.0-android -f net9.0-android -c Release -p:BuildFor=android -p:AndroidKeyStore=true -p:AndroidSigningKeyStore=liftlog.keystore -p:AndroidSigningKeyAlias=liftlog -p:AndroidSigningKeyPass=env:KEYSTORE_PASS -p:AndroidSigningStorePass=env:KEYSTORE_PASS -p:UseSentryCLI=true -p:ApplicationDisplayVersion=${{ github.event.release.name }} -p:ApplicationVersion=${{ steps.buildNumber.outputs.build-number }}
+        run: dotnet publish -p:TargetFramework=net9.0-android -f net9.0-android -c Release -p:CompressionEnabled=false -p:BuildFor=android -p:AndroidKeyStore=true -p:AndroidSigningKeyStore=liftlog.keystore -p:AndroidSigningKeyAlias=liftlog -p:AndroidSigningKeyPass=env:KEYSTORE_PASS -p:AndroidSigningStorePass=env:KEYSTORE_PASS -p:UseSentryCLI=true -p:ApplicationDisplayVersion=${{ github.event.release.name }} -p:ApplicationVersion=${{ steps.buildNumber.outputs.build-number }}
         working-directory: ./LiftLog.Maui
         env:
           KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}

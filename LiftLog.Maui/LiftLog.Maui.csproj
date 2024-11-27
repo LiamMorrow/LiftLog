@@ -32,6 +32,8 @@
         <Version>$(ApplicationDisplayVersion)</Version>
 
         <DefineConstants Condition=" '$(ExtraDefineConstants)' != '' ">$(DefineConstants);$(ExtraDefineConstants)</DefineConstants>
+
+        <CompressionEnabled>false</CompressionEnabled>
     </PropertyGroup>
 
     <!-- We recommend only using these features for release builds. -->

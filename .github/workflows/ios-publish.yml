@@ -56,7 +56,7 @@ jobs:
         run: dotnet build -c Release
         working-directory: ./LiftLog.Ui
       - name: Build
-        run: 'dotnet publish -c Release -f:net9.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}" -p:CodesignProvision="LiftLog" -p:UseSentryCLI=true -p:ApplicationDisplayVersion=${{ github.event.release.name }} -p:ApplicationVersion=${{ steps.buildNumber.outputs.build-number }}'
+        run: 'dotnet publish -c Release -f:net9.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CompressionEnabled=false -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}" -p:CodesignProvision="LiftLog" -p:UseSentryCLI=true -p:ApplicationDisplayVersion=${{ github.event.release.name }} -p:ApplicationVersion=${{ steps.buildNumber.outputs.build-number }}'
         working-directory: ./LiftLog.Maui
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
