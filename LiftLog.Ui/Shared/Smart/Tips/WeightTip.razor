@@ -1,5 +1,6 @@
 <div class="flex gap-2">
-    <span>You can adjust the weight of any exercise during your session by tapping it.  Try it now!</span>
+    <span>You can adjust the weight of any exercise during your session by tapping it.  <br/>
+        <span class="text-primary font-bold">Try it now!</span></span>
     <div>
         <WeightDisplay Weight="weight" UpdateWeight="@(newWeight => { weight = newWeight!.Value; StateHasChanged(); })" IsReadonly="false" Increment="2.5m"></WeightDisplay>
     </div>
