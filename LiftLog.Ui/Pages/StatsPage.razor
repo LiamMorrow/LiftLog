@@ -110,10 +110,10 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         Dispatcher.Dispatch(new FetchOverallStatsAction());
         Dispatcher.Dispatch(new SetPageTitleAction("Statistics"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
-        base.OnInitialized();
     }
 
     protected override async Task OnInitializedAsync()

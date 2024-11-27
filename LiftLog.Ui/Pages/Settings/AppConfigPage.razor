@@ -31,9 +31,9 @@
 @code {
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         Dispatcher.Dispatch(new SetPageTitleAction("App Configuration"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
-        base.OnInitialized();
     }
 
     private void SetUseImperialUnits(bool value)

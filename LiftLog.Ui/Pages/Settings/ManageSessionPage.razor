@@ -202,6 +202,7 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         Dispatcher.Dispatch(new SetPageTitleAction("Manage Session"));
         var backPath = "/settings/manage-workouts?planId=" + PlanId;
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(backPath));
@@ -213,7 +214,6 @@
         {
             Dispatcher.Dispatch(new SetEditingSessionAction(ProgramState.Value.GetSessionBlueprints(PlanId)[SessionIndex]));
         }
-        base.OnInitialized();
     }
 
     protected override ValueTask DisposeAsyncCore(bool disposing)

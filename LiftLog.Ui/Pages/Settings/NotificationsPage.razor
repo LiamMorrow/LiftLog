@@ -13,9 +13,9 @@
 @code {
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         Dispatcher.Dispatch(new SetPageTitleAction("Notifications"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
-        base.OnInitialized();
     }
 
     private void SetRestNotifications(bool value)

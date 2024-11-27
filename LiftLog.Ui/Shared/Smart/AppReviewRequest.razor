@@ -59,9 +59,9 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         AppState.StateChanged += HandleAppStateChange;
         Dispatcher.Dispatch(new IncrementAppLaunchCountAction());
-        base.OnInitialized();
     }
 
     private void HandleAppStateChange(object? sender, EventArgs e)

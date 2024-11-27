@@ -46,6 +46,7 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         Dispatcher.Dispatch(new SetPageTitleAction("User Plan"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/feed"));
         if (!Guid.TryParse(UserIdStr, out var userId) || !FeedState.Value.FollowedUsers.TryGetValue(userId, out user))
@@ -57,8 +58,6 @@
             Dispatcher.Dispatch(new SetPageTitleAction($"{user.DisplayName}'s Plan"));
             plan = user.CurrentPlan;
         }
-
-        base.OnInitialized();
     }
 
     private async void ImportPlan()

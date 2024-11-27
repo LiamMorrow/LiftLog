@@ -30,6 +30,7 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         Dispatcher.Dispatch(new SetPageTitleAction("Feed Session"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/feed"));
         Dispatcher.Dispatch(new SetReopenCurrentSessionAction(SessionTarget.FeedSession, true));
@@ -55,7 +56,5 @@
         {
             NavigationManager.NavigateTo("/feed");
         }
-
-        base.OnInitialized();
     }
 }

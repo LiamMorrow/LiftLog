@@ -73,9 +73,9 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         Dispatcher.Dispatch(new SetPageTitleAction("Settings"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
-        base.OnInitialized();
     }
 
     private void NavigateToBackupAndRestore()

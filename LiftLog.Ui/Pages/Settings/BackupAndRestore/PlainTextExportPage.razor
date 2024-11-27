@@ -31,9 +31,9 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         Dispatcher.Dispatch(new SetPageTitleAction("Plaintext Export"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings/backup-and-restore"));
-        base.OnInitialized();
     }
 
     private void SelectFormat(string format)

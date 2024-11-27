@@ -45,6 +45,7 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         Dispatcher.Dispatch(new SetPageTitleAction("Session"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/history"));
         Dispatcher.Dispatch(new SetReopenCurrentSessionAction(SessionTarget.HistorySession, true));
@@ -56,7 +57,5 @@
         {
             Dispatcher.Dispatch(new SetPageTitleAction(CurrentSessionState.Value.HistorySession.Blueprint.Name));
         }
-
-        base.OnInitialized();
     }
 }

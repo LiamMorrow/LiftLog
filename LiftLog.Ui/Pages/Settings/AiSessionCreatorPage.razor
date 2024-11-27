@@ -90,8 +90,8 @@ else
 
     protected override void OnInitialized()
     {
-        Dispatcher.Dispatch(new SetPageTitleAction("AI Session Creator"));
         base.OnInitialized();
+        Dispatcher.Dispatch(new SetPageTitleAction("AI Session Creator"));
     }
 
     private void HandleGenerateSession()

@@ -55,10 +55,10 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         Dispatcher.Dispatch(new SetPageTitleAction("Automatic Remote Backup"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings/backup-and-restore"));
         SubscribeToAction<RemoteBackupSucceededEvent>(OnRemoteBackupSucceeded);
-        base.OnInitialized();
         EndpointValue = SettingsState.Value.RemoteBackupSettings.Endpoint;
         ApiKeyValue = SettingsState.Value.RemoteBackupSettings.ApiKey;
         IncludeFeedAccount = SettingsState.Value.RemoteBackupSettings.IncludeFeedAccount;
