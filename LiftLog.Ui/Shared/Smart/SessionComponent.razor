@@ -34,7 +34,7 @@ else
             UpdateNotesForExercise=@((notes) => UpdateNotesForExercise(context.Index, notes))
             OnEditExercise=@(() => BeginEditExercise(context.Index))
             OnRemoveExercise=@(() => BeginRemoveExercise(context.Index))
-            OnOpenLink=@(() => Dispatcher.Dispatch(new NavigateAction(context.Item.Blueprint.Link.Trim())))
+            OnOpenLink=@(() => Dispatcher.Dispatch(new OpenExternalUrlAction(context.Item.Blueprint.Link.Trim())))
             IsReadonly=IsReadonly
             ShowPreviousButton=@(SessionTarget == SessionTarget.WorkoutSession) />
     </ItemList>
