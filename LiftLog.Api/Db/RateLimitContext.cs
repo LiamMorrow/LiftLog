@@ -10,5 +10,6 @@ public class RateLimitContext(DbContextOptions<RateLimitContext> options) : DbCo
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<RateLimitConsumption>().HasKey(x => x.Key);
+        modelBuilder.ToSnakeCaseNames();
     }
 }

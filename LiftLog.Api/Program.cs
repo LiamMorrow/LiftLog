@@ -24,13 +24,13 @@ builder.Services.AddDbContext<UserDataContext>(options =>
     options
         .UseNpgsql(builder.Configuration.GetConnectionString("UserDataContext"))
         .ReplaceService<IHistoryRepository, CamelCaseHistoryContext>()
-        .UseSnakeCaseNamingConvention()
+// .UseSnakeCaseNamingConvention()
 );
 builder.Services.AddDbContext<RateLimitContext>(options =>
     options
         .UseNpgsql(builder.Configuration.GetConnectionString("RateLimitContext"))
         .ReplaceService<IHistoryRepository, CamelCaseHistoryContext>()
-        .UseSnakeCaseNamingConvention()
+// .UseSnakeCaseNamingConvention()
 );
 builder.Services.AddCors(options =>
 {
@@ -71,7 +71,7 @@ builder.Services.AddSingleton(
             builder.Configuration.GetValue<string>("GooglePlayServiceAccountEmail")
             ?? throw new Exception("GooglePlayServiceAccountEmail configuration is not set.");
         var certificateBytes = Convert.FromBase64String(certificateBase64);
-        var certificate = new X509Certificate2(
+        var certificate = X509CertificateLoader.LoadPkcs12(
             certificateBytes,
             "notasecret",
             X509KeyStorageFlags.Exportable
