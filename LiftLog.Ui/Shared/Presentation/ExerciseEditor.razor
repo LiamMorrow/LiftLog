@@ -58,6 +58,8 @@
     placeholder="https://"
     SelectAllOnFocus="false"
     Value="@Exercise.Link"
+    error-text="@LinkValueError"
+    error=@(HasLinkError)
     OnPaste="@(e => HandleLinkPaste(e))"
     PreventDefaultPaste=true
     OnChange="@(val => SetExerciseLink(val!))"/>
@@ -121,6 +123,16 @@
     }
 
     void SetExerciseNotes(string notes) => UpdateExerciseHandler(exercise with { Notes = notes });
+
+    private string LinkValueError => exercise.Link switch
+        {
+            "" or null => "",
+            var s when !s.StartsWith("https://") && !s.StartsWith("http://") => "Link must start with https:// or http://",
+            var s when !Uri.IsWellFormedUriString(s, UriKind.Absolute) => "Link is not a valid URL",
+            _ => ""
+        };
+
+    private bool HasLinkError => !string.IsNullOrWhiteSpace(LinkValueError);
 
     void SetExerciseLink(string link) => UpdateExerciseHandler(exercise with { Link = link });
 
