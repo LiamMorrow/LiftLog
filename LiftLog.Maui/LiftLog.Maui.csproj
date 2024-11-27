@@ -109,7 +109,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="BlazorTransitionableRoute" Version="4.0.0" />
         <PackageReference Include="MaterialColorUtilities.Maui" Version="0.3.0" />
         <PackageReference Include="Plugin.InAppBilling" Version="8.0.5" />
         <PackageReference Include="Plugin.LocalNotification" Version="11.1.4" />
