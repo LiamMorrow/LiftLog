@@ -115,14 +115,15 @@ public static class MauiProgram
             AppDataFileStorageKeyValueStore,
             SecureStoragePreferenceStore,
             MauiNotificationService,
-            MauiShareExporter,
+            MauiBackupRestoreService,
             AppThemeProvider,
             MauiStringSharer,
             AppPurchaseService,
             OsEncryptionService,
             AppHapticFeedbackService,
             AppDeviceService,
-            AppBuiltInExerciseLoader
+            AppBuiltInExerciseLoader,
+            MauiFileExportService
         >(typeof(ThemeEffects).Assembly);
 
         builder.UseMaterialColors<AppColorService>(opts =>

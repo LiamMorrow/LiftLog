@@ -18,7 +18,7 @@ public class UserDataContext(DbContextOptions<UserDataContext> options) : DbCont
     /// <summary>
     /// Used to register the user event filter tuple type as a DbSet for use in FromSqlRaw.
     /// </summary>
-    public DbSet<UserEventFilter> UserEventFilterStubDbSet { get; set; }
+    public DbSet<UserEventFilter> UserEventFilterStubDbSet { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

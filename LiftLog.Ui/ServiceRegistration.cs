@@ -30,12 +30,13 @@ public static class ServiceRegistration
         TEncryptionService,
         TVibrationService,
         TDeviceService,
-        TBuiltInExerciseService
+        TBuiltInExerciseService,
+        TFileExportService
     >(this IServiceCollection services, Assembly fluxorScanAssembly)
         where TKeyValueStore : class, IKeyValueStore
         where TPreferenceStore : class, IPreferenceStore
         where TNotificationService : class, INotificationService
-        where TExporter : class, IExporter
+        where TExporter : class, IBackupRestoreService
         where TThemeProvider : class, IThemeProvider
         where TStringSharer : class, IStringSharer
         where TPurchaseService : class, IAppPurchaseService
@@ -43,6 +44,7 @@ public static class ServiceRegistration
         where TVibrationService : class, IHapticFeedbackService
         where TDeviceService : class, IDeviceService
         where TBuiltInExerciseService : class, IBuiltInExerciseLoader
+        where TFileExportService : class, IFileExportService
     {
         var lifetime = ServiceLifetime.Singleton;
         services.AddFluxor(o =>
@@ -82,7 +84,7 @@ public static class ServiceRegistration
         services.Add<IKeyValueStore, TKeyValueStore>(lifetime);
         services.Add<IPreferenceStore, TPreferenceStore>(lifetime);
         services.Add<INotificationService, TNotificationService>(lifetime);
-        services.Add<IExporter, TExporter>(lifetime);
+        services.Add<IBackupRestoreService, TExporter>(lifetime);
 
         services.Add<IAiWorkoutPlanner, ApiBasedAiWorkoutPlanner>(lifetime);
 
@@ -99,6 +101,9 @@ public static class ServiceRegistration
         services.Add<IHapticFeedbackService, TVibrationService>(lifetime);
 
         services.Add<IBuiltInExerciseLoader, TBuiltInExerciseService>(lifetime);
+
+        services.Add<IFileExportService, TFileExportService>(lifetime);
+        services.Add<PlaintextExportService>(lifetime);
 
         services.Add<IFeedApiService, FeedApiService>(lifetime);
         services.Add<FeedIdentityService>(lifetime);

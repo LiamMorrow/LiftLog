@@ -1,11 +1,12 @@
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
+using LiftLog.Ui.Models;
 using LiftLog.Ui.Services;
 using LiftLog.Ui.Store.Feed;
 
 namespace LiftLog.Ui.Store.Settings;
 
-public record ExportDataAction(bool ExportFeed);
+public record ExportBackupDataAction(bool ExportFeed);
 
 public record ImportDataAction();
 
@@ -48,3 +49,9 @@ public record RemoteBackupSucceededEvent();
 public record UpdateRemoteBackupSettingsAction(RemoteBackupSettings Settings);
 
 public record SetLastSuccessfulRemoteBackupHashAction(string Hash);
+
+public record SetLastBackupTimeAction(DateTimeOffset Time);
+
+public record SetBackupReminderAction(bool ShowReminder);
+
+public record ExportPlainTextAction(PlaintextExportFormat Format);

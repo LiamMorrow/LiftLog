@@ -3,7 +3,7 @@ using LiftLog.Ui.Services;
 
 namespace LiftLog.Maui.Services;
 
-public class MauiShareExporter(IShare share, IFilePicker filePicker) : IExporter
+public class MauiBackupRestoreService(IShare share, IFilePicker filePicker) : IBackupRestoreService
 {
     public async Task ExportBytesAsync(byte[] bytes)
     {
@@ -15,7 +15,7 @@ public class MauiShareExporter(IShare share, IFilePicker filePicker) : IExporter
             await gzip.WriteAsync(bytes);
 
         await share.RequestAsync(
-            new ShareFileRequest { Title = "Export Data", File = new ShareFile(file) }
+            new ShareFileRequest { Title = "Backup Data", File = new ShareFile(file) }
         );
     }
 

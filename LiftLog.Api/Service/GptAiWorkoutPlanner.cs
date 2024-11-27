@@ -16,22 +16,20 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
     private static readonly JsonNode aiWorkoutPlanJsonSchema = JsonNode.Parse(
         File.ReadAllText("./AiWorkoutPlan.json")
     )!;
-    private static readonly Function GetGymPlanFunction =
-        new(
-            "GetGymPlan",
-            "Gets a gym plan based on the user's goals and attributes.",
-            aiWorkoutPlanJsonSchema
-        );
+    private static readonly Function GetGymPlanFunction = new(
+        "GetGymPlan",
+        "Gets a gym plan based on the user's goals and attributes.",
+        aiWorkoutPlanJsonSchema
+    );
 
     private static readonly JsonNode sessionBlueprintJsonSchema = JsonNode.Parse(
         File.ReadAllText("./AiSessionBlueprint.json")
     )!;
-    private static readonly Function GetSessionFunction =
-        new(
-            "GetSession",
-            "Gets a gym session based on the user's goals and attributes.",
-            sessionBlueprintJsonSchema
-        );
+    private static readonly Function GetSessionFunction = new(
+        "GetSession",
+        "Gets a gym session based on the user's goals and attributes.",
+        sessionBlueprintJsonSchema
+    );
 
     public async Task<AiWorkoutPlan> GenerateWorkoutPlanAsync(AiWorkoutAttributes attributes)
     {

@@ -1,6 +1,6 @@
 namespace LiftLog.Ui.Services;
 
-public interface IExporter
+public interface IBackupRestoreService
 {
     Task ExportBytesAsync(byte[] bytes);
     Task<byte[]> ImportBytesAsync();

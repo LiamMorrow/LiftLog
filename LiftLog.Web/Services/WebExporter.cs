@@ -4,7 +4,8 @@ using LiftLog.Ui.Services;
 
 namespace LiftLog.Web.Services;
 
-public class WebExporter(IBlazorDownloadFileService downloadFileService) : IExporter
+public class WebBackupRestoreService(IBlazorDownloadFileService downloadFileService)
+    : IBackupRestoreService
 {
     public async Task ExportBytesAsync(byte[] bytes)
     {

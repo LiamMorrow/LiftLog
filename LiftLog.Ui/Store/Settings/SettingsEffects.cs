@@ -24,26 +24,34 @@ public class SettingsEffects(
     IState<SettingsState> settingsState,
     IState<ProgramState> programState,
     IState<FeedState> feedState,
-    IExporter textExporter,
+    IBackupRestoreService textExporter,
     IAiWorkoutPlanner aiWorkoutPlanner,
     IThemeProvider themeProvider,
     ILogger<SettingsEffects> logger,
     PreferencesRepository preferencesRepository,
+    PlaintextExportService plaintextExportService,
     HttpClient httpClient
 )
 {
     [EffectMethod]
-    public async Task ExportData(ExportDataAction action, IDispatcher __)
+    public async Task ExportData(ExportBackupDataAction action, IDispatcher dispatcher)
     {
         await textExporter.ExportBytesAsync(
             (await GetDataExportAsync(action.ExportFeed)).ToByteArray()
         );
+        dispatcher.Dispatch(new SetLastBackupTimeAction(DateTimeOffset.Now));
     }
 
     [EffectMethod]
     public async Task ImportData(ImportDataAction _, IDispatcher dispatcher)
     {
         dispatcher.Dispatch(new ImportDataBytesAction(await textExporter.ImportBytesAsync()));
+    }
+
+    [EffectMethod]
+    public async Task ExportPlainText(ExportPlainTextAction action, IDispatcher _)
+    {
+        await plaintextExportService.ExportAsync(action.Format);
     }
 
     [EffectMethod]
@@ -250,6 +258,7 @@ public class SettingsEffects(
             result.EnsureSuccessStatusCode();
             dispatcher.Dispatch(new SetLastSuccessfulRemoteBackupHashAction(hashString));
             dispatcher.Dispatch(new RemoteBackupSucceededEvent());
+            dispatcher.Dispatch(new SetLastBackupTimeAction(DateTimeOffset.Now));
         }
         catch (HttpRequestException ex) when (ex.StatusCode is null)
         {
@@ -285,6 +294,18 @@ public class SettingsEffects(
     )
     {
         await preferencesRepository.SetRemoteBackupSettingsAsync(action.Settings);
+    }
+
+    [EffectMethod]
+    public async Task SetLastBackupTime(SetLastBackupTimeAction action, IDispatcher __)
+    {
+        await preferencesRepository.SetLastBackupTimeAsync(action.Time);
+    }
+
+    [EffectMethod]
+    public async Task SetBackupReminder(SetBackupReminderAction action, IDispatcher __)
+    {
+        await preferencesRepository.SetBackupReminderAsync(action.ShowReminder);
     }
 
     private async Task<ExportedDataDaoV2> GetDataExportAsync(bool includeFeed)
