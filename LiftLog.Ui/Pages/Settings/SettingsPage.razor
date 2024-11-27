@@ -37,12 +37,12 @@
 <ProFeatures/>
 <md-list class="text-left">
     <ListTitle Title="Support" />
-    <md-list-item type="link" multi-line-supporting-text href="https://github.com/LiamMorrow/LiftLog/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md">
+    <md-list-item type="button" multi-line-supporting-text @onclick=@(OpenUrl("https://github.com/LiamMorrow/LiftLog/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md"))>
         <md-icon slot="start">star</md-icon>
         <span slot="headline" >Feature request</span>
         <span slot="supporting-text">Suggest a new feature that you think LiftLog should have!</span>
     </md-list-item>
-    <md-list-item type="link" multi-line-supporting-text href="https://github.com/LiamMorrow/LiftLog/issues/new?assignees=&labels=bug&projects=&template=bug_report.md">
+    <md-list-item type="button" multi-line-supporting-text @onclick=@(OpenUrl("https://github.com/LiamMorrow/LiftLog/issues/new?assignees=&labels=bug&projects=&template=bug_report.md"))>
         <md-icon slot="start">bug_report</md-icon>
         <span slot="headline" >Bug report</span>
         <span slot="supporting-text">Let us know when you encounter a bug</span>
@@ -60,7 +60,7 @@
 <Dialog @ref="appInfoDialog" type="alert">
     <span slot="headline">App Info</span>
     <span slot="content" class="block text-left">
-        LiftLog is an entirely open source app, licensed under the AGPL-3.0 license. You can find the source code on <a class="underline text-primary font-bold" href="https://github.com/LiamMorrow/LiftLog">GitHub</a>.
+        LiftLog is an entirely open source app, licensed under the AGPL-3.0 license. You can find the source code on <a class="underline text-primary font-bold" href="https://github.com/LiamMorrow/LiftLog" @onclick=@(OpenUrl("https://github.com/LiamMorrow/LiftLog"))>GitHub</a>.
     </span>
     <div slot="actions">
         <AppButton Type="AppButtonType.Text" OnClick="() => { appInfoDialog?.Close(); }">Close</AppButton>
@@ -101,5 +101,10 @@
     private void ShowAppInfo()
     {
         appInfoDialog?.Open();
+    }
+
+    private Action OpenUrl(string url)
+    {
+        return () => Dispatcher.Dispatch(new OpenExternalUrlAction(url));
     }
 }

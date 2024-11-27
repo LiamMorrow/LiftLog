@@ -23,6 +23,8 @@ public record NavigateAction(
     Regex? IfCurrentPathMatches = null
 );
 
+public record OpenExternalUrlAction(string Url);
+
 public record SetLatestSettingsUrlAction(string? LatestSettingsUrl);
 
 public record SetAppStateIsHydratedAction(bool IsHydrated);
