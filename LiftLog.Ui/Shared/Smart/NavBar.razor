@@ -30,9 +30,9 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         NavigationManager.LocationChanged += LocationChanged;
         InsetsManager.InsetsChanged += (_, _) => { InvokeAsync(StateHasChanged); };
-        base.OnInitialized();
     }
 
     private bool IsRouteMatch(string routeMatchRegex)

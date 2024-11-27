@@ -105,10 +105,10 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         var title = "Manage " + ProgramState.Value.SavedPrograms[PlanId].Name;
         Dispatcher.Dispatch(new SetPageTitleAction(title));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings/program-list"));
-        base.OnInitialized();
     }
 
     protected override ValueTask DisposeAsyncCore(bool disposing)

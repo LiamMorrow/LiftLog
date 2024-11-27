@@ -67,10 +67,10 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         Dispatcher.Dispatch(new SetPageTitleAction("Export, Backup and Restore"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
         SubscribeToAction<BeginFeedImportAction>(OnBeginFeedImport);
-        base.OnInitialized();
     }
 
     protected override void OnAfterRender(bool firstRender)

@@ -131,6 +131,7 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         Dispatcher.Dispatch(new SetPageTitleAction("Feed"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
         Dispatcher.Dispatch(new FetchSessionFeedItemsAction(FromUserAction: false));
@@ -151,7 +152,6 @@
                 )
             );
         }
-        base.OnInitialized();
 
         SubscribeToAction<FeedApiErrorAction>(OnFeedApiError);
     }

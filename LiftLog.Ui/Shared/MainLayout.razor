@@ -71,6 +71,7 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         InsetsManager.InsetsChanged += (_, _) => { InvokeAsync(StateHasChanged); };
         NavigationManager.RegisterLocationChangingHandler(async context =>
         {
@@ -82,7 +83,6 @@
             }
         });
 
-        base.OnInitialized();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
