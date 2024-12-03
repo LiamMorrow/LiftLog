@@ -78,12 +78,14 @@
         if (string.IsNullOrWhiteSpace(value) && AllowNull)
         {
             EditorWeight = null;
+            StateHasChanged();
             return;
         }
 
         if (decimal.TryParse(value, out var result))
         {
             EditorWeight = result;
+            StateHasChanged();
         }
     }
 }
