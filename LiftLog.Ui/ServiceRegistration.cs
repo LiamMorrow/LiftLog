@@ -10,7 +10,6 @@ using LiftLog.Ui.Store.Feed;
 using LiftLog.Ui.Store.Program;
 using LiftLog.Ui.Store.Settings;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 #if DEBUG
 using Fluxor.Blazor.Web.ReduxDevTools;
 #endif
@@ -68,6 +67,8 @@ public static class ServiceRegistration
         services.Add<ProgressRepository>(lifetime);
         services.Add<PreferencesRepository>(lifetime);
         services.Add<NavigationManagerProvider>(lifetime);
+
+        services.AddLocalization();
 
         services.Add<
             BlazorTransitionableRoute.IRouteTransitionInvoker,
