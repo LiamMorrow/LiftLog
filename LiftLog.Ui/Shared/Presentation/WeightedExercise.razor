@@ -1,4 +1,7 @@
-﻿@{
+﻿
+@inject IStringLocalizer<UiStrings> UiStrings
+
+@{
     var displayedExercise = RecordedExercise;
     var setToStartNext = RecordedExercise.PotentialSets.IndexOf(x => x.Set is null);
     var previousNotes = PreviousRecordedExercises?.FirstOrDefault()?.RecordedExercise?.Notes ?? "";
@@ -20,9 +23,9 @@
                     <div>
                         <IconButton data-cy="more-exercise-btn" class="self-end" Type="IconButtonType.Standard" OnClick="() => { _menu?.Open(); }" Icon="more_horiz" id="@moreButtonId"/>
                         <Menu @ref="_menu" anchor="@moreButtonId">
-                            <MenuItem Label="Edit" Icon="edit" data-cy="exercise-edit-menu-button" OnClick="OnEditExercise"/>
-                            <MenuItem data-cy="exercise-notes-btn" Label="Notes" Icon="notes" OnClick="OnOpenNotesButtonClick"/>
-                            <MenuItem Label="Remove" Icon="delete" OnClick="OnRemoveExercise"/>
+                            <MenuItem Label="@(UiStrings.Edit())" Icon="edit" data-cy="exercise-edit-menu-button" OnClick="OnEditExercise"/>
+                            <MenuItem data-cy="exercise-notes-btn" Label="@(UiStrings.Notes())" Icon="notes" OnClick="OnOpenNotesButtonClick"/>
+                            <MenuItem Label="@(UiStrings.Remove())" Icon="delete" OnClick="OnRemoveExercise"/>
                             @if(Uri.IsWellFormedUriString(displayedExercise.Blueprint.Link, UriKind.Absolute))
                             {
                                 <MenuItem Label="Open Link" Icon="open_in_new" OnClick="OnOpenLink"/>

@@ -121,4 +121,40 @@
     <value>Freeform Session</value>
     <comment/>
   </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+    <comment/>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>Notes</value>
+    <comment/>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remove</value>
+    <comment/>
+  </data>
+  <data name="Workout" xml:space="preserve">
+    <value>Workout</value>
+    <comment/>
+  </data>
+  <data name="Feed" xml:space="preserve">
+    <value>Feed</value>
+    <comment/>
+  </data>
+  <data name="Stats" xml:space="preserve">
+    <value>Stats</value>
+    <comment/>
+  </data>
+  <data name="History" xml:space="preserve">
+    <value>History</value>
+    <comment/>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+    <comment/>
+  </data>
+  <data name="Statistics" xml:space="preserve">
+    <value>Statistics</value>
+    <comment/>
+  </data>
 </root>

@@ -4,6 +4,8 @@
 @inject IState<CurrentSessionState> CurrentSessionState
 @inject IDispatcher Dispatcher
 
+@inject IStringLocalizer<UiStrings> UiStrings
+
 @if(Session.Blueprint.Notes != "")
 {
     <Card class="my-2 mx-7 gap-4 text-start flex items-center" Type=Card.CardType.Filled>
@@ -121,7 +123,7 @@ else
     </span>
     <div slot="actions">
         <AppButton Type="AppButtonType.Text" slot="footer" OnClick="() => { _removeExerciseDialog?.Close(); }">Cancel</AppButton>
-        <AppButton Type="AppButtonType.Text" slot="footer" OnClick="RemoveExerciseHandler">Remove</AppButton>
+        <AppButton Type="AppButtonType.Text" slot="footer" OnClick="RemoveExerciseHandler">@(UiStrings.Remove())</AppButton>
     </div>
 </Dialog>
 

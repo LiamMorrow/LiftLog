@@ -6,6 +6,7 @@
 @page "/settings/manage-workouts/manage-session/{sessionIndex:int}"
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
+@inject IStringLocalizer<UiStrings> UiStrings
 @inject NavigationManager NavigationManager
 @inject IState<SessionEditorState> SessionEditorState
 @inject IState<ProgramState> ProgramState
@@ -73,7 +74,7 @@
     <span slot="content" class="block text-left">This will remove the exercise <span class="font-bold text-primary">"@(selectedExercise?.Name)"</span> from <span class="font-bold text-primary">@SessionEditorState.Value.SessionBlueprint?.Name</span>.</span>
     <div slot="actions">
         <AppButton Type="AppButtonType.Text" OnClick="() => { deleteDialog?.Close(); }">Cancel</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="RemoveExercise">Remove</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="RemoveExercise">@(UiStrings.Remove())</AppButton>
     </div>
 </Dialog>
 

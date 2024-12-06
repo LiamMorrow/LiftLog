@@ -5,6 +5,9 @@
 @inject IJSRuntime JSRuntime
 @inject IState<FeedState> FeedState
 @inject NavigationManager NavigationManager
+
+@inject IStringLocalizer<UiStrings> UiStrings
+
 @inject IDispatcher Dispatcher
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
@@ -132,7 +135,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Dispatcher.Dispatch(new SetPageTitleAction("Feed"));
+        Dispatcher.Dispatch(new SetPageTitleAction(UiStrings.Feed()));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
         Dispatcher.Dispatch(new FetchSessionFeedItemsAction(FromUserAction: false));
         Dispatcher.Dispatch(new FetchInboxItemsAction(FromUserAction: false));

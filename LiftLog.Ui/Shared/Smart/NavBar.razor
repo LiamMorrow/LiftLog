@@ -7,19 +7,21 @@
 @inject IState<SettingsState> SettingsState
 @inject IDispatcher Dispatcher
 @inject InsetsManager InsetsManager
+@inject IStringLocalizer<UiStrings> UiStrings
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
+
 <nav class="flex flex-col bg-surface-container text-on-surface">
     <div class="flex justify-around py-3">
-        <NavButton IsActive=@IsRouteMatch("(/$|^$|/session/?)") Navigate="NavigateToWorkout" Icon="fitness_center" Text="Workout"></NavButton>
+        <NavButton IsActive=@IsRouteMatch("(/$|^$|/session/?)") Navigate="NavigateToWorkout" Icon="fitness_center" Text="@(UiStrings.Workout())"></NavButton>
         @if (SettingsState.Value.ShowFeed)
         {
-            <NavButton IsActive=@IsRouteMatch("/feed(/?.*)") Navigate="NavigateToFeed" Icon="forum" Text="Feed" ShowBadge=@(FeedState.Value.FollowRequests.Any())></NavButton>
+            <NavButton IsActive=@IsRouteMatch("/feed(/?.*)") Navigate="NavigateToFeed" Icon="forum" Text="@(UiStrings.Feed())" ShowBadge=@(FeedState.Value.FollowRequests.Any())></NavButton>
         }
-        <NavButton IsActive=@IsRouteMatch("/stats(/?.*)") Navigate="NavigateToStats" Icon="analytics" Text="Stats"></NavButton>
-        <NavButton IsActive=@IsRouteMatch("/history(/?.*)") Navigate="NavigateToHistory" Icon="history" Text="History"></NavButton>
-        <NavButton IsActive=@IsRouteMatch("/settings(/?.*)") Navigate="NavigateToSettings" Icon="settings" Text="Settings"></NavButton>
+        <NavButton IsActive=@IsRouteMatch("/stats(/?.*)") Navigate="NavigateToStats" Icon="analytics" Text="@(UiStrings.Stats())"></NavButton>
+        <NavButton IsActive=@IsRouteMatch("/history(/?.*)") Navigate="NavigateToHistory" Icon="history" Text="@(UiStrings.History())"></NavButton>
+        <NavButton IsActive=@IsRouteMatch("/settings(/?.*)") Navigate="NavigateToSettings" Icon="settings" Text="@(UiStrings.Settings())"></NavButton>
     </div>
     <div style="height: @BottomInset"></div>
 </nav>
