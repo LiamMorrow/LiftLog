@@ -5,26 +5,28 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-    <!-- Enums not handled exhaustively with numbers; No await in async -->
-    <NoWarn>CS8524;CS1998</NoWarn>
-    <!-- Required for intellisense -->
-    <AdditionalFileItemNames>$(AdditionalFileItemNames);EmbeddedResource</AdditionalFileItemNames>
-    <CoreCompileDependsOn>PrepareResources;$(CompileDependsOn)</CoreCompileDependsOn>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+        <!-- Enums not handled exhaustively with numbers; No await in async -->
+        <NoWarn>CS8524;CS1998</NoWarn>
+        <!-- Required for intellisense -->
+        <AdditionalFileItemNames>$(AdditionalFileItemNames);EmbeddedResource</AdditionalFileItemNames>
+        <CoreCompileDependsOn>PrepareResources;$(CompileDependsOn)</CoreCompileDependsOn>
 
-  </PropertyGroup>
-<ItemGroup>
- <EmbeddedResource Update="i18n\UiStrings.resx">
-      <Generator>MSBuild:Compile</Generator>
-      <LastGenOutput>UiStrings.Designer.cs</LastGenOutput>
-      <!-- Make sure this won't clash with other generated files! -->
-      <StronglyTypedFileName>$(IntermediateOutputPath)\UiStrings.Designer.cs</StronglyTypedFileName>
-      <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
-      <StronglyTypedNamespace>LiftLog.Ui.i18n</StronglyTypedNamespace>
-      <StronglyTypedClassName>UiStrings</StronglyTypedClassName>
-    </EmbeddedResource>
+    </PropertyGroup>
 
-</ItemGroup>
+    <ItemGroup>
+    <!-- https://www.paraesthesia.com/archive/2022/09/30/strongly-typed-resources-with-net-core/ -->
+        <EmbeddedResource Update="i18n\UiStrings.resx">
+            <Generator>MSBuild:Compile</Generator>
+            <LastGenOutput>UiStrings.Designer.cs</LastGenOutput>
+            <!-- Make sure this won't clash with other generated files! -->
+            <StronglyTypedFileName>$(IntermediateOutputPath)\UiStrings.Designer.cs</StronglyTypedFileName>
+            <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
+            <StronglyTypedNamespace>LiftLog.Ui.i18n</StronglyTypedNamespace>
+            <StronglyTypedClassName>UiStrings</StronglyTypedClassName>
+        </EmbeddedResource>
+
+    </ItemGroup>
 
     <PropertyGroup>
         <DefineConstants Condition=" '$(ExtraDefineConstants)' != '' ">$(DefineConstants);$(ExtraDefineConstants)</DefineConstants>
