@@ -6,7 +6,6 @@
 @inject IState<StatsState> StatsState;
 @inject IDispatcher Dispatcher;
 
-@inject IStringLocalizer<UiStrings> UiStrings
 
 <div class="flex justify-between my-2">
     <Select T="string" Options="SessionSelectOptions" Value="StatsState.Value.OverallViewSessionName" ValueChanged="v => {  Dispatcher.Dispatch(new SetOverallViewSessionAction(v)); Dispatcher.Dispatch(new SetStatsIsDirtyAction(true)); Dispatcher.Dispatch(new FetchOverallStatsAction());}"></Select>

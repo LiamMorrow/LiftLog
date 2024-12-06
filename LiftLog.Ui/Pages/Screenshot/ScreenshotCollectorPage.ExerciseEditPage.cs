@@ -11,8 +11,6 @@ namespace LiftLog.Ui.Pages.Screenshot;
 
 public partial class ScreenshotCollectorPage
 {
-    [Inject]
-    private IStringLocalizer<UiStrings> UiStrings { get; set; } = null!;
 
     private async Task HandleExerciseEditorScreenshotCollection()
     {

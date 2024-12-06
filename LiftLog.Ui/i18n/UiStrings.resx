@@ -157,4 +157,12 @@
     <value>Statistics</value>
     <comment/>
   </data>
+  <data name="Feed_Following" xml:space="preserve">
+    <value>Following</value>
+    <comment/>
+  </data>
+  <data name="Feed_Followers" xml:space="preserve">
+    <value>Followers</value>
+    <comment/>
+  </data>
 </root>

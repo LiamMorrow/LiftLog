@@ -1,7 +1,4 @@
-﻿
-@inject IStringLocalizer<UiStrings> UiStrings
-
-@{
+﻿@{
     var displayedExercise = RecordedExercise;
     var setToStartNext = RecordedExercise.PotentialSets.IndexOf(x => x.Set is null);
     var previousNotes = PreviousRecordedExercises?.FirstOrDefault()?.RecordedExercise?.Notes ?? "";

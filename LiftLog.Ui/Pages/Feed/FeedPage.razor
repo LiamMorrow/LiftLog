@@ -6,19 +6,17 @@
 @inject IState<FeedState> FeedState
 @inject NavigationManager NavigationManager
 
-@inject IStringLocalizer<UiStrings> UiStrings
-
 @inject IDispatcher Dispatcher
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <div class="sticky top-0 z-10 @TopNavColorClass transition-colors">
     <md-tabs @ref="tabs" @onchange="HandleTabChange">
-        <md-primary-tab id="mainfeed-tab" active=@(GetTabActiveClass("mainfeed-panel")) aria-controls="mainfeed-panel">Feed</md-primary-tab>
-        <md-primary-tab id="following-tab" active=@(GetTabActiveClass("following-panel")) aria-controls="following-panel">Following</md-primary-tab>
+        <md-primary-tab id="mainfeed-tab" active=@(GetTabActiveClass("mainfeed-panel")) aria-controls="mainfeed-panel">@(UiStrings.Feed())</md-primary-tab>
+        <md-primary-tab id="following-tab" active=@(GetTabActiveClass("following-panel")) aria-controls="following-panel">@(UiStrings.Feed_Following())</md-primary-tab>
         <md-primary-tab id="followers-tab" active=@(GetTabActiveClass("followers-panel")) aria-controls="followers-panel">
             <span class="flex items-center gap-1">
-                <span>Followers</span>
+                <span>@(UiStrings.Feed_Followers())</span>
                 @if (FeedState.Value.FollowRequests is { Count: > 0 })
                 {
                     <div class="w-2 h-2 bg-error rounded-full"></div>
