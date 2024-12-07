@@ -46,7 +46,7 @@
         </div>
     </div>
     <div class="flex justify-start flex-wrap gap-2">
-        @foreach (var (set, i) in displayedExercise.PotentialSets.IndexedTuples())
+        @foreach (var (i, set) in displayedExercise.PotentialSets.Index())
         {
             <PotentialSetCounter
                 @key=i

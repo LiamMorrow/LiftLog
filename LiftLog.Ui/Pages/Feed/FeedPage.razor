@@ -35,15 +35,15 @@
         }else {
             <Card class="flex flex-col items-center justify-between m-2" Type=Card.CardType.Filled>
                 <md-icon class="mb-4">error</md-icon>
-                <span class="text-on-surface">You are not publishing your workouts</span>
-                <AppButton Type=AppButtonType.Text OnClick="@(async ()=>{settingsDialog?.Open(); await Task.Delay(500); SetPublishWorkouts(true); })">Start publishing</AppButton>
+                <span class="text-on-surface">@UiStrings.NotPublishingWorkouts</span>
+                <AppButton Type=AppButtonType.Text OnClick="@(async ()=>{settingsDialog?.Open(); await Task.Delay(500); SetPublishWorkouts(true); })">@UiStrings.StartPublishing</AppButton>
             </Card>
         }
 
         @if (FeedState.Value.Feed is { Count: 0 })
         {
             <EmptyInfo class="mx-4 mt-10">
-                <p>Nothing here yet!<br> Nobody you're following has published anything yet! Come back later.</p>
+                <p>@UiStrings.NothingHereYet<br>@UiStrings.NoFollowingData</p>
             </EmptyInfo>
         }
         <VirtualizedCardList Items="@(FeedState.Value.Feed.Select(x => (Item: x, User: FeedState.Value.FollowedUsers.GetValueOrDefault(x.UserId))).Where(x => x.User is not null).ToList())" OnClick="@(x => ViewFeedSession(x.Item))" CardClass="animate-fade-zoom-in">
@@ -55,7 +55,7 @@
         @if (FeedState.Value.FollowedUsers is { Count: 0 })
         {
             <EmptyInfo class="mx-4 mt-10">
-                <p>Start following someone!<br>You're not currently following anyone, ask a friend for their share link to start!</p>
+                <p>@UiStrings.StartFollowingSomeone<br>@UiStrings.NotFollowingAnyone</p>
             </EmptyInfo>
         }
         <VirtualizedCardList Items="@(FeedState.Value.FollowedUsers.Values.ToList())" CardClass="animate-fade-zoom-in">
@@ -71,14 +71,14 @@
         }else {
             <Card class="flex flex-col items-center justify-between m-2" Type=Card.CardType.Filled>
                 <md-icon class="mb-4">error</md-icon>
-                <span class="text-on-surface">You are not publishing your workouts</span>
-                <AppButton Type=AppButtonType.Text OnClick="@(async ()=>{settingsDialog?.Open(); await Task.Delay(500); SetPublishWorkouts(true); })">Start publishing</AppButton>
+                <span class="text-on-surface">@UiStrings.NotPublishingWorkouts</span>
+                <AppButton Type=AppButtonType.Text OnClick="@(async ()=>{settingsDialog?.Open(); await Task.Delay(500); SetPublishWorkouts(true); })">@UiStrings.StartPublishing</AppButton>
             </Card>
         }
         @if (FeedState.Value.Followers is { Count: 0 } && FeedState.Value.FollowRequests is { Count: 0 })
         {
             <EmptyInfo class="mx-4 mt-10">
-                <p>Nobody is following you yet!<br>Share your link with friends to get followers</p>
+                <p>@UiStrings.NobodyFollowingYou<br>@UiStrings.ShareLinkToGetFollowers</p>
             </EmptyInfo>
         }
         <VirtualizedCardList Items="@(FeedState.Value.FollowRequests.ToList())" CardClass="animate-fade-zoom-in">
@@ -103,14 +103,17 @@
 }
 
 
-<ConfirmationDialog @ref="deleteUserDialog" OkText="Unfollow" OnOk="DeleteUser">
-    <Headline>Unfollow user</Headline>
-    <TextContent>This will unfollow <span class="text-primary font-bold">@(userToDelete?.Nickname ?? userToDelete?.Name ?? "Anonymous User")</span> and remove all their content on your device.</TextContent>
+<ConfirmationDialog @ref="deleteUserDialog" OkText="@UiStrings.Unfollow" OnOk="DeleteUser">
+    <Headline>@UiStrings.UnfollowUser</Headline>
+    <TextContent>
+        <LimitedHtml
+            Value=@(UiStrings.Unfollow_Msg(userToDelete?.Nickname ?? userToDelete?.Name ?? "Anonymous User"))/>
+    </TextContent>
 </ConfirmationDialog>
 
-<ConfirmationDialog @ref="removeFollowerDialog" OkText="Remove" OnOk="RemoveFollower">
-    <Headline>Remove follower</Headline>
-    <TextContent>This will stop <span class="text-primary font-bold">@(userToDelete?.Nickname ?? userToDelete?.Name ?? "Anonymous User")</span> from following you and remove all your content from their device.</TextContent>
+<ConfirmationDialog @ref="removeFollowerDialog" OkText="@UiStrings.Remove" OnOk="RemoveFollower">
+    <Headline>@UiStrings.RemoveFollower</Headline>
+    <TextContent>@UiStrings.RemoveFollowerMsgPart1 <span class="text-primary font-bold">@(userToDelete?.Nickname ?? userToDelete?.Name ?? "Anonymous User")</span> @UiStrings.RemoveFollowerMsgPart2</TextContent>
 </ConfirmationDialog>
 
 @code

@@ -72,7 +72,7 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
     </div>
 
     <div class="flex flex-col gap-2">
-        @foreach(var pinnedStat in StatsState.Value.GetPinnedExercises().Where(SearchTermMatches).IndexedTuples())
+        @foreach(var pinnedStat in StatsState.Value.GetPinnedExercises().Where(SearchTermMatches).Index())
         {
             <Card class="mx-2">
                 <StatGraphCardContent Title="@pinnedStat.Item.ExerciseName" Statistics="[pinnedStat.Item.Statistics, pinnedStat.Item.OneRepMaxStatistics]" RenderDelay="TimeSpan.FromMilliseconds(200 + pinnedStat.Index * 200)"/>
@@ -87,7 +87,7 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
         <Card class=@CardClass>
             <StatGraphCardContent Title="@UiStrings.Sessions" Statistics="overallStats.SessionStats" RenderDelay="TimeSpan.FromMilliseconds(200)"/>
         </Card>
-        <CardList KeySelector="context=>context.Item.ExerciseName" Items="@(UnpinnedExercisesToShow.IndexedTuples())" >
+        <CardList KeySelector="context=>context.Item.ExerciseName" Items="@(UnpinnedExercisesToShow.Index())" >
             <StatGraphCardContent Title="@context.Item.ExerciseName" Statistics="[context.Item.Statistics, context.Item.OneRepMaxStatistics]" RenderDelay="TimeSpan.FromMilliseconds(200 + context.Index * 200)"/>
         </CardList>
         @if(SearchTerm != "" && !UnpinnedExercisesToShow.Any())
@@ -111,12 +111,12 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
 
     private List<Select<TimeSpan>.SelectOption> SelectTimeOptions =>
     [
-        new(UiStrings.NumDays_Days(7), TimeSpan.FromDays(7)),
-        new(UiStrings.NumDays_Days(14), TimeSpan.FromDays(14)),
-        new(UiStrings.NumDays_Days(30), TimeSpan.FromDays(30)),
-        new(UiStrings.NumDays_Days(90), TimeSpan.FromDays(90)),
-        new(UiStrings.NumDays_Days(180), TimeSpan.FromDays(180)),
-        new(UiStrings.NumDays_Days(365), TimeSpan.FromDays(365)),
+        new(UiStrings.NumDays(7), TimeSpan.FromDays(7)),
+        new(UiStrings.NumDays(14), TimeSpan.FromDays(14)),
+        new(UiStrings.NumDays(30), TimeSpan.FromDays(30)),
+        new(UiStrings.NumDays(90), TimeSpan.FromDays(90)),
+        new(UiStrings.NumDays(180), TimeSpan.FromDays(180)),
+        new(UiStrings.NumDays(365), TimeSpan.FromDays(365)),
         new(UiStrings.AllTime, TimeSpan.FromDays(36500)),
     ];
 

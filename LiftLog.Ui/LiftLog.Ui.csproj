@@ -12,7 +12,14 @@
         <AdditionalFileItemNames>$(AdditionalFileItemNames);EmbeddedResource</AdditionalFileItemNames>
         <CoreCompileDependsOn>PrepareResources;$(CompileDependsOn)</CoreCompileDependsOn>
 
+        <TypealizR_UseParamNamesInMethodNames>false</TypealizR_UseParamNamesInMethodNames>
+
     </PropertyGroup>
+
+    <ItemGroup>
+        <CompilerVisibleProperty Include="TypealizR_UseParamNamesInMethodNames" />
+    </ItemGroup>
+
 
     <ItemGroup>
     <!-- https://www.paraesthesia.com/archive/2022/09/30/strongly-typed-resources-with-net-core/ -->

@@ -6,21 +6,19 @@
 
 <Card Type="Card.CardType.Filled" class="mx-6 mb-4">
     <div>
-        This feature allows you to export your data in a plaintext format such as CSV for use in other applications.
-        It is not intended for backup purposes. For backups, please use the backup feature.
-        LiftLog cannot restore data from plaintext exports.
+        @UiStrings.PlaintextExportDescription
     </div>
-    <AppButton OnClick="OpenDocumentation" Type="AppButtonType.Text">Read Documentation</AppButton>
+    <AppButton OnClick="OpenDocumentation" Type="AppButtonType.Text">@UiStrings.ReadDocumentation</AppButton>
 </Card>
 
 <LabelledForm>
-    <LabelledFormRow Label="Format" Icon="description">
+    <LabelledFormRow Label="@UiStrings.PlaintextExportFormat" Icon="description">
         <SelectField data-cy="export-format-selector" Options="Formats" Value="@Format.ToString()" ValueChanged="SelectFormat"/>
     </LabelledFormRow>
 </LabelledForm>
 
 <div class="flex justify-end gap-4 m-6">
-    <AppButton Type="AppButtonType.Primary" OnClick="Export">Export</AppButton>
+    <AppButton Type="AppButtonType.Primary" OnClick="Export">@UiStrings.Export</AppButton>
 </div>
 
 
@@ -32,7 +30,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Dispatcher.Dispatch(new SetPageTitleAction("Plaintext Export"));
+        Dispatcher.Dispatch(new SetPageTitleAction(UiStrings.PlaintextExport));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings/backup-and-restore"));
     }
 

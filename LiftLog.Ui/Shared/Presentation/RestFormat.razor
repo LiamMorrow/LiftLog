@@ -1,15 +1,21 @@
 
 @if (Rest.MinRest >= Rest.MaxRest)
 {
-    <span>Rest <span class="font-bold @(Highlight ? "text-primary" :"")">@(Rest.MinRest.ToString(TimespanFormatStr))</span></span>
+    <LimitedHtml
+        Value="@UiStrings.RestSingular(Rest.MinRest.ToString(TimespanFormatStr))"
+        HighlightClass="@HighlightClass" />
 }
 else
 {
-    <span>Rest between <span class="font-bold @(Highlight ? "text-primary" :"")">@(Rest.MinRest.ToString(TimespanFormatStr))</span> and <span class="font-bold @(Highlight ? "text-primary" :"")">@(Rest.MaxRest.ToString(TimespanFormatStr))</span></span>
+    <LimitedHtml
+        Value="@UiStrings.RestBetween(Rest.MinRest.ToString(TimespanFormatStr), Rest.MaxRest.ToString(TimespanFormatStr))"
+        HighlightClass="@HighlightClass" />
 }
 @code {
 
     private const string TimespanFormatStr = @"m\:ss";
+
+    private string HighlightClass => "font-bold " + (Highlight ? "text-primary" : "");
 
     [Parameter]
     [EditorRequired]

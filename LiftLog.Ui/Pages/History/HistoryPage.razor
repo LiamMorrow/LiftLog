@@ -17,7 +17,7 @@
 @if (!_latestSessions.Any())
 {
     <EmptyInfo>
-        <p>Nothing recorded yet!<br> Complete a session and check again.</p>
+        <p>@UiStrings.NothingHereYet<br>@UiStrings.CompleteAndComeBack</p>
     </EmptyInfo>
 }
 else
@@ -46,16 +46,15 @@ else
     @if (!filteredToMonthSessions.Any())
     {
         <EmptyInfo>
-            <p>Nothing recorded in @(currentMonth.ToString("MMMM"))<br> Complete a session or switch to another month to view your sessions.</p>
+            <p><LimitedHtml Value="@UiStrings.NoSessionsInMonth(currentMonth.ToString("MMMM"))"/></p>
         </EmptyInfo>
     }
 }
 
-<ConfirmationDialog @ref="_deleteDialog" OkText="Delete" OnOk=DeleteSession PreventCancel=true >
-    <Headline>Delete Session?</Headline>
+<ConfirmationDialog @ref="_deleteDialog" OkText="@UiStrings.Delete" OnOk=DeleteSession PreventCancel=true >
+    <Headline>@UiStrings.DeleteSessionQuestion</Headline>
     <TextContent>
-        The session named <span class="font-bold text-primary">@_selectedSession.Blueprint.Name</span>,
-        on @(_selectedSession.Date) will be deleted from history. This cannot be undone.
+        <LimitedHtml Value="@UiStrings.DeleteSessionMessage(@_selectedSession.Blueprint.Name,_selectedSession.Date)" />
     </TextContent>
 </ConfirmationDialog>
 

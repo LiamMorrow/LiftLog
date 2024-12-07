@@ -6,13 +6,6 @@ namespace System.Linq;
 
 public static class LinqExtensions
 {
-    public static IEnumerable<(TSource Item, int Index)> IndexedTuples<TSource>(
-        this IEnumerable<TSource> source
-    )
-    {
-        return source.Select((item, index) => (item, index));
-    }
-
     public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> source)
         where T : notnull
     {
@@ -50,7 +43,7 @@ public static class LinqExtensions
         Func<TSource, bool> predicate
     )
     {
-        var tuples = source.IndexedTuples();
+        var tuples = source.Index();
         var matchingTuple = tuples
             .Where(x => predicate(x.Item))
             .Cast<(TSource?, int)>()
