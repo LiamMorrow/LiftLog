@@ -11,7 +11,6 @@ namespace LiftLog.Ui.Pages.Screenshot;
 
 public partial class ScreenshotCollectorPage
 {
-
     private async Task HandleExerciseEditorScreenshotCollection()
     {
         Dispatcher.Dispatch(
