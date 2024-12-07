@@ -105,7 +105,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         var sw = System.Diagnostics.Stopwatch.StartNew();
-        Dispatcher.Dispatch(new SetPageTitleAction(UiStrings.History()));
+        Dispatcher.Dispatch(new SetPageTitleAction(UiStrings.History));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
         Dispatcher.Dispatch(new SetReopenCurrentSessionAction(SessionTarget.HistorySession, false));
         Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget.HistorySession, null));

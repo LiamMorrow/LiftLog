@@ -120,8 +120,8 @@ else
         not be impacted.
     </span>
     <div slot="actions">
-        <AppButton Type="AppButtonType.Text" slot="footer" OnClick="() => { _removeExerciseDialog?.Close(); }">Cancel</AppButton>
-        <AppButton Type="AppButtonType.Text" slot="footer" OnClick="RemoveExerciseHandler">@(UiStrings.Remove())</AppButton>
+        <AppButton Type="AppButtonType.Text" slot="footer" OnClick="() => { _removeExerciseDialog?.Close(); }">@UiStrings.Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" slot="footer" OnClick="RemoveExerciseHandler">@UiStrings.Remove</AppButton>
     </div>
 </Dialog>
 

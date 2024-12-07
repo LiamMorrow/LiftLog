@@ -72,8 +72,8 @@
     <span slot="headline">Remove Exercise?</span>
     <span slot="content" class="block text-left">This will remove the exercise <span class="font-bold text-primary">"@(selectedExercise?.Name)"</span> from <span class="font-bold text-primary">@SessionEditorState.Value.SessionBlueprint?.Name</span>.</span>
     <div slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick="() => { deleteDialog?.Close(); }">Cancel</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="RemoveExercise">@(UiStrings.Remove())</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="() => { deleteDialog?.Close(); }">@UiStrings.Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="RemoveExercise">@UiStrings.Remove</AppButton>
     </div>
 </Dialog>
 

@@ -165,4 +165,112 @@
     <value>Followers</value>
     <comment/>
   </data>
+  <data name="SessionInProgress" xml:space="preserve">
+    <value>There is already a current session in progress, start a new one without saving?</value>
+    <comment/>
+  </data>
+  <data name="ReplaceCurrentSession" xml:space="preserve">
+    <value>Replace current session</value>
+    <comment/>
+  </data>
+  <data name="NoPlanCreated" xml:space="preserve">
+    <value>No plan created yet!</value>
+    <comment/>
+  </data>
+  <data name="AddWorkouts" xml:space="preserve">
+    <value>Add Workouts</value>
+    <comment/>
+  </data>
+  <data name="SelectAPlan" xml:space="preserve">
+    <value>Select a plan</value>
+    <comment/>
+  </data>
+  <data name="UpcomingWorkouts" xml:space="preserve">
+    <value>Upcoming Workouts</value>
+    <comment/>
+  </data>
+  <data name="BackUpData" xml:space="preserve">
+    <value>Back up data</value>
+    <comment/>
+  </data>
+  <data name="BackUpDataReminder" xml:space="preserve">
+    <value>It has been a while since you last created a backup. It is HIGHLY recommended you back up your data regularly to prevent data loss. Would you like to back up your data now?</value>
+    <comment/>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+    <comment/>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+    <comment/>
+  </data>
+  <data name="DontAskAgain" xml:space="preserve">
+    <value>Don't ask again</value>
+    <comment/>
+  </data>
+  <data name="OpenLink" xml:space="preserve">
+    <value>Open Link</value>
+    <comment/>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+    <comment/>
+  </data>
+  <data name="Calculating" xml:space="preserve">
+    <value>Calculating...</value>
+    <comment/>
+  </data>
+  <data name="NoDataAvailable" xml:space="preserve">
+    <value>No data available</value>
+    <comment/>
+  </data>
+  <data name="TryChangingFilters" xml:space="preserve">
+    <value>Try changing the filters at the top</value>
+    <comment/>
+  </data>
+  <data name="AverageTimeBetweenSets" xml:space="preserve">
+    <value>Average time between sets</value>
+    <comment/>
+  </data>
+  <data name="HeaviestLift" xml:space="preserve">
+    <value>Heaviest lift</value>
+    <comment/>
+  </data>
+  <data name="MostTimeSpent" xml:space="preserve">
+    <value>Most time spent</value>
+    <comment/>
+  </data>
+  <data name="AverageSessionLength" xml:space="preserve">
+    <value>Average session length</value>
+    <comment/>
+  </data>
+  <data name="Bodyweight" xml:space="preserve">
+    <value>Bodyweight</value>
+    <comment/>
+  </data>
+  <data name="Sessions" xml:space="preserve">
+    <value>Sessions</value>
+    <comment/>
+  </data>
+  <data name="NoExercisesFound" xml:space="preserve">
+    <value>No exercises found.</value>
+    <comment/>
+  </data>
+  <data name="AllTime" xml:space="preserve">
+    <value>All time</value>
+    <comment/>
+  </data>
+  <data name="{NumDays}Days" xml:space="preserve">
+    <value>{0} days</value>
+    <comment/>
+  </data>
+  <data name="AllSessions" xml:space="preserve">
+    <value>All sessions</value>
+    <comment/>
+  </data>
+  <data name="CurrentSessions" xml:space="preserve">
+    <value>Current sessions</value>
+    <comment/>
+  </data>
 </root>

@@ -87,6 +87,8 @@ public static class ServiceRegistration
         services.Add<INotificationService, TNotificationService>(lifetime);
         services.Add<IBackupRestoreService, TExporter>(lifetime);
 
+        services.Add<LiftLog.Ui.i18n.TypealizR.TypealizedUiStrings>(lifetime);
+
         services.Add<IAiWorkoutPlanner, ApiBasedAiWorkoutPlanner>(lifetime);
 
         services.Add<SessionService>(lifetime);
