@@ -47,7 +47,7 @@ public static class LinqExtensions
         var matchingTuple = tuples
             .Where(x => predicate(x.Item))
             .Cast<(int, TSource?)>()
-            .DefaultIfEmpty(( -1, default));
+            .DefaultIfEmpty((-1, default));
         return matchingTuple.First().Item1;
     }
 
