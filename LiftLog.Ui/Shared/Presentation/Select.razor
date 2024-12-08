@@ -2,8 +2,8 @@
 @typeparam T where T : IEquatable<T>
 
 <div class="relative" @attributes="AdditionalAttributes">
-    <AppButton id="@btnId" trailing-icon Type="AppButtonType.Text" OnClick="@(() => JsRuntime.InvokeVoidAsync("AppUtils.toggleOpen", menuRef))">
-        @(Options.FirstOrDefault(x => (x.Value == null && Value is null) || x.Value?.Equals(Value) == true)?.Title) <md-icon slot="icon">keyboard_arrow_down</md-icon>
+    <AppButton id="@btnId" trailing-icon Type="AppButtonType.Text" OnClick="@(() => JsRuntime.InvokeVoidAsync("AppUtils.toggleOpen", menuRef))" Icon="keyboard_arrow_down">
+        @(Options.FirstOrDefault(x => (x.Value == null && Value is null) || x.Value?.Equals(Value) == true)?.Title)
     </AppButton>
 
     <md-menu @ref="menuRef" id="usage-menu" anchor="@btnId">

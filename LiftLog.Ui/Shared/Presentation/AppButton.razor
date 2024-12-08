@@ -3,25 +3,41 @@
     case AppButtonType.Primary:
         <md-filled-button
             @attributes="AdditionalAttributes" class="@(AdditionalAttributes.GetValueOrDefault("class"))  pointer-events-auto" @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="@(!AdditionalAttributes.ContainsKey("href"))" >
-            @ChildContent
+            <span class="block first-letter:uppercase lowercase">@ChildContent</span>
+            @if(Icon is not null)
+            {
+                <md-icon slot="icon">@Icon</md-icon>
+            }
         </md-filled-button>
         break;
     case AppButtonType.Secondary:
         <md-filled-tonal-button
             @attributes="AdditionalAttributes" class="@(AdditionalAttributes.GetValueOrDefault("class"))  pointer-events-auto" @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="@(!AdditionalAttributes.ContainsKey("href"))" >
-            @ChildContent
+            <span class="block first-letter:uppercase lowercase">@ChildContent</span>
+            @if(Icon is not null)
+            {
+                <md-icon slot="icon">@Icon</md-icon>
+            }
         </md-filled-tonal-button>
         break;
     case AppButtonType.OutlineSecondary:
         <md-outlined-button
             @attributes="AdditionalAttributes" class="@(AdditionalAttributes.GetValueOrDefault("class"))  pointer-events-auto" @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="@(!AdditionalAttributes.ContainsKey("href"))" >
-            @ChildContent
+            <span class="block first-letter:uppercase lowercase">@ChildContent</span>
+            @if(Icon is not null)
+            {
+                <md-icon slot="icon">@Icon</md-icon>
+            }
         </md-outlined-button>
         break;
     case AppButtonType.Text:
         <md-text-button
             @attributes="AdditionalAttributes" class="@(AdditionalAttributes.GetValueOrDefault("class"))  pointer-events-auto" @onclick="Clicked" disabled=@Disabled @onclick:stopPropagation="true" @onclick:preventDefault="@(!AdditionalAttributes.ContainsKey("href"))" >
-            @ChildContent
+            <span class="block first-letter:uppercase lowercase">@ChildContent</span>
+            @if(Icon is not null)
+            {
+                <md-icon slot="icon">@Icon</md-icon>
+            }
         </md-text-button>
         break;
     default:
@@ -32,6 +48,8 @@
 @code {
 
     [EditorRequired] [Parameter] public RenderFragment ChildContent { get; set; } = null!;
+
+    [Parameter] public string? Icon { get; set; }
 
     [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
 

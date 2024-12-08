@@ -52,11 +52,8 @@ else
     <div class="flex  justify-center gap-2 mt-6">
         @if (!SessionInPlan && Session.RecordedExercises.Any())
         {
-            <AppButton Type="AppButtonType.Secondary" OnClick="@(() => _updatePlanDialog?.Open())">
-                <md-icon
-                    slot="icon">
-                    assignment_add
-                </md-icon>@UiStrings.UpdatePlan
+            <AppButton Icon="assignment_add" Type="AppButtonType.Secondary" OnClick="@(() => _updatePlanDialog?.Open())">
+                @UiStrings.UpdatePlan
             </AppButton>
         }
     </div>

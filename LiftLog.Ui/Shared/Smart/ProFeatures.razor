@@ -57,7 +57,7 @@
             return null;
         }
 
-        return @<AppButton class="mr-2" OnClick="() => { upgradeDialog?.Open(); }"><md-icon slot="icon">lock</md-icon>@UiStrings.Unlock</AppButton>;
+        return @<AppButton Icon="lock" class="mr-2" OnClick="() => { upgradeDialog?.Open(); }">@UiStrings.Unlock</AppButton>;
     }
 
     private RenderFragment RenderPrice()
