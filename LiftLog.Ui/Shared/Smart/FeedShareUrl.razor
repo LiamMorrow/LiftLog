@@ -3,8 +3,8 @@
 
 @if (FeedState.Value.Identity is not null)
 {
-    <TextField Value="@GetShareUrl()" label="Share Link" readonly="readonly" OnClick="HandleShareUrlClick"/>
-    <span class="text-sm text-on-surface mt-1">Only those with the link can see what you've shared.</span>
+    <TextField Value="@GetShareUrl()" label="@UiStrings.ShareLink" readonly="readonly" OnClick="HandleShareUrlClick"/>
+    <span class="text-sm text-on-surface mt-1">@UiStrings.OnlyThoseWithTheLinkCanSee</span>
 }
 
 @code {

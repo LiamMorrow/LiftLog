@@ -46,9 +46,9 @@ public static class LinqExtensions
         var tuples = source.Index();
         var matchingTuple = tuples
             .Where(x => predicate(x.Item))
-            .Cast<(TSource?, int)>()
-            .DefaultIfEmpty((default, -1));
-        return matchingTuple.First().Item2;
+            .Cast<(int, TSource?)>()
+            .DefaultIfEmpty(( -1, default));
+        return matchingTuple.First().Item1;
     }
 
     public static async Task<ImmutableListValue<T>> ToImmutableListValueAsync<T>(

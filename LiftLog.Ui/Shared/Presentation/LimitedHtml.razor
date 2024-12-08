@@ -7,7 +7,7 @@
     }
     if (isHighlighted)
     {
-        <span class="@HighlightClass">@text</span>
+        <span class="@EmClass">@text</span>
     }
     else
     {
@@ -20,5 +20,5 @@
 {
     [Parameter] [EditorRequired] public string Value { get; set; } = null!;
 
-    [Parameter] public string HighlightClass { get; set; } = "font-bold text-primary";
+    [Parameter] public string EmClass { get; set; } = "font-bold text-primary";
 }

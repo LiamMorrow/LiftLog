@@ -11,14 +11,9 @@
 
 @if (AiSessionCreatorState.Value.IsLoading)
 {
-    <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
-        <div>
-            <md-circular-progress aria-label="Ai planning progress" indeterminate four-color></md-circular-progress>
-        </div>
-        <span>
-            <p>Generating Session...</p>
-        </span>
-    </div>
+    <Loader>
+        <LimitedHtml Value="@UiStrings.GeneratingAiPlan" EmClass="text-xs" />
+    </Loader>
 }
 else if (AiSessionCreatorState.Value.ErrorMessage is not null)
 {
@@ -30,8 +25,8 @@ else if (AiSessionCreatorState.Value.ErrorMessage is not null)
             <p>@AiSessionCreatorState.Value.ErrorMessage</p>
         </span>
         <div class="grid grid-cols-2 gap-2">
-            <AppButton Type=AppButtonType.Text OnClick=@HandleCancel>Back</AppButton>
-            <AppButton Type=AppButtonType.Text OnClick=@(()=>Dispatcher.Dispatch(new ClearAiGeneratedSessionStateAction()))>Retry</AppButton>
+            <AppButton Type=AppButtonType.Text OnClick=@HandleCancel>@UiStrings.Back</AppButton>
+            <AppButton Type=AppButtonType.Text OnClick=@(()=>Dispatcher.Dispatch(new ClearAiGeneratedSessionStateAction()))>@UiStrings.Retry</AppButton>
         </div>
     </div>
 }
@@ -41,16 +36,15 @@ else if (AiSessionCreatorState.Value.GeneratedSession is not null)
         <Card class="flex flex-col gap-2">
             <SessionBlueprintSummary SessionBlueprint="AiSessionCreatorState.Value.GeneratedSession"/>
             <div class="grid  gap-2">
-                <AppButton Type=AppButtonType.Text OnClick=@(()=>Dispatcher.Dispatch(new ClearAiGeneratedSessionStateAction()))>Regenerate</AppButton>
+                <AppButton Type=AppButtonType.Text OnClick=@(()=>Dispatcher.Dispatch(new ClearAiGeneratedSessionStateAction()))>@UiStrings.Regenerate</AppButton>
             </div>
         </Card>
         <div class="flex flex-col gap-2 justify-end h-full">
             <div class="grid grid-cols-2 gap-2">
                 <AppButton Type=AppButtonType.Secondary OnClick=@AddToPlan>
-                    <md-icon slot="icon">assignment_add</md-icon>Add
-                    To Plan
+                    <md-icon slot="icon">assignment_add</md-icon>@UiStrings.AddToPlan
                 </AppButton>
-                <AppButton OnClick=@StartSession><md-icon slot="icon">fitness_center</md-icon>Start</AppButton>
+                <AppButton OnClick=@StartSession><md-icon slot="icon">fitness_center</md-icon>@UiStrings.Start</AppButton>
             </div>
         </div>
     </div>
@@ -70,7 +64,7 @@ else
     @if(IsInActiveScreen)
     {
         <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="TrailingTitleButton">
-            <AppButton class="text-lg" Type=AppButtonType.Text OnClick=HandleGenerateSession Disabled=@(ValidationError is not null) >Generate</AppButton>
+            <AppButton class="text-lg" Type=AppButtonType.Text OnClick=HandleGenerateSession Disabled=@(ValidationError is not null) >@UiStrings.Generate</AppButton>
         </Microsoft.AspNetCore.Components.Sections.SectionContent>
     }
 }
@@ -82,16 +76,16 @@ else
     [CascadingParameter(Name = "IsInActiveScreen")]
     public bool IsInActiveScreen { get; set; }
 
-    private string? ValidationError => Model switch
+    private LocalizedString? ValidationError => Model switch
     {
-        var m when m.AreasToWorkout.Count == 0 => "Please select at least one area to workout",
+        var m when m.AreasToWorkout.Count == 0 => UiStrings.SelectAtLeastOneArea,
         _ => null
     };
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Dispatcher.Dispatch(new SetPageTitleAction("AI Session Creator"));
+        Dispatcher.Dispatch(new SetPageTitleAction(@UiStrings.AiSessionCreator));
     }
 
     private void HandleGenerateSession()

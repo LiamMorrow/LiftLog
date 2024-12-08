@@ -31,10 +31,10 @@
 </md-list>
 
 
-<ConfirmationDialog @ref="importFeedDialog" OkText="@UiStrings.ImportVerb" CancelText="@UiStrings.No" OnOk="ImportFeedData">
+<ConfirmationDialog @ref="importFeedDialog" OkText="@UiStrings.Import" CancelText="@UiStrings.No" OnOk="ImportFeedData">
     <Headline>@UiStrings.ImportFeedDataQuestion</Headline>
     <TextContent>
-        <LimitedHtml Value="@UiStrings.ImportFeedDataQuestionMessage" HighlightClass="text-error font-bold" />
+        <LimitedHtml Value="@UiStrings.ImportFeedDataQuestionMessage" EmClass="text-error font-bold" />
     </TextContent>
 </ConfirmationDialog>
 
@@ -46,7 +46,7 @@
     OnCancel="()=>ExportData(false)">
     <Headline>@UiStrings.BackupFeedAccount</Headline>
     <TextContent>
-        <LimitedHtml Value="@UiStrings.BackupFeedAccountMessage" HighlightClass="text-error font-bold" />
+        <LimitedHtml Value="@UiStrings.BackupFeedAccountMessage" EmClass="text-error font-bold" />
     </TextContent>
 </ConfirmationDialog>
 

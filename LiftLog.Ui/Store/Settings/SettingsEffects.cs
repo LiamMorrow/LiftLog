@@ -7,6 +7,7 @@ using System.Text.Json;
 using Fluxor;
 using Google.Protobuf;
 using LiftLog.Lib.Services;
+using LiftLog.Ui.i18n.TypealizR;
 using LiftLog.Ui.Models;
 using LiftLog.Ui.Models.ExportedDataDao;
 using LiftLog.Ui.Models.ProgramBlueprintDao;
@@ -19,7 +20,7 @@ using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Ui.Store.Settings;
 
-public class SettingsEffects(
+internal class SettingsEffects(
     ProgressRepository progressRepository,
     IState<SettingsState> settingsState,
     IState<ProgramState> programState,
@@ -30,7 +31,8 @@ public class SettingsEffects(
     ILogger<SettingsEffects> logger,
     PreferencesRepository preferencesRepository,
     PlaintextExportService plaintextExportService,
-    HttpClient httpClient
+    HttpClient httpClient,
+    TypealizedUiStrings uiStrings
 )
 {
     [EffectMethod]
@@ -264,7 +266,7 @@ public class SettingsEffects(
         {
             logger.LogWarning(ex, "Failed to backup data to remote server [connection failure]");
             dispatcher.Dispatch(
-                new ToastAction("Failed to backup data to remote server [connection failure]")
+                new ToastAction(uiStrings.FailedToBackupToRemote + " [connection failure]")
             );
         }
         catch (HttpRequestException ex)
@@ -275,15 +277,13 @@ public class SettingsEffects(
                 ex.StatusCode
             );
             dispatcher.Dispatch(
-                new ToastAction("Failed to backup data to remote server [" + ex.StatusCode + "]")
+                new ToastAction(uiStrings.FailedToBackupToRemote + " [" + ex.StatusCode + "]")
             );
         }
         catch (Exception ex)
         {
             logger.LogWarning(ex, "Failed to backup data to remote server [unknown]");
-            dispatcher.Dispatch(
-                new ToastAction("Failed to backup data to remote server [unknown]")
-            );
+            dispatcher.Dispatch(new ToastAction(uiStrings.FailedToBackupToRemote + " [unknown]"));
         }
     }
 

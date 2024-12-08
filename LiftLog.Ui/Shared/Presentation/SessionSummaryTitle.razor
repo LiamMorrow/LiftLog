@@ -16,6 +16,6 @@
     [Parameter] public bool IsFilled { get; set; }
 
     private string FormattedDate => Session.Date.Year == DateTime.Now.Year
-        ? Session.Date.ToString("dddd d MMMM", CultureInfo.InvariantCulture)
-        : Session.Date.ToString("dddd d MMMM", CultureInfo.InvariantCulture) + " " + Session.Date.Year;
+        ? Session.Date.ToString("dddd d MMMM")
+        : Session.Date.ToString("dddd d MMMM") + " " + Session.Date.Year;
 }

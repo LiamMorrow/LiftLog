@@ -1,9 +1,9 @@
-<LabelledFormRow Label="What is your experience level?" Icon="social_leaderboard">
+<LabelledFormRow Label="@UiStrings.WhatIsYourExperienceLevel" Icon="social_leaderboard">
     <ChipContainer>
-        <FilterChip OnSelectedChange="@((selected) => OnExperienceSelect(Experience.Beginner))" Label="Beginner" Selected="Value == Experience.Beginner"/>
-        <FilterChip OnSelectedChange="@((selected) => OnExperienceSelect(Experience.Intermediate))" Label="Intermediate" Selected="Value == Experience.Intermediate"/>
-        <FilterChip OnSelectedChange="@((selected) => OnExperienceSelect(Experience.Advanced))" Label="Advanced" Selected="Value == Experience.Advanced"/>
-        <FilterChip OnSelectedChange="@((selected) => OnExperienceSelect(Experience.Professional))" Label="Professional" Selected="Value == Experience.Professional"/>
+        <FilterChip OnSelectedChange="@((selected) => OnExperienceSelect(Experience.Beginner))" Label="@UiStrings.ExperienceBeginner" Selected="Value == Experience.Beginner"/>
+        <FilterChip OnSelectedChange="@((selected) => OnExperienceSelect(Experience.Intermediate))" Label="@UiStrings.ExperienceIntermediate" Selected="Value == Experience.Intermediate"/>
+        <FilterChip OnSelectedChange="@((selected) => OnExperienceSelect(Experience.Advanced))" Label="@UiStrings.ExperienceAdvanced" Selected="Value == Experience.Advanced"/>
+        <FilterChip OnSelectedChange="@((selected) => OnExperienceSelect(Experience.Professional))" Label="@UiStrings.ExperienceProfessional" Selected="Value == Experience.Professional"/>
     </ChipContainer>
 </LabelledFormRow>
 

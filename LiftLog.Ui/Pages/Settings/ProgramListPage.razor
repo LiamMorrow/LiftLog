@@ -47,7 +47,7 @@
         {
             <SnackBar>
                 <div class="flex justify-between items-center">
-                    <LimitedHtml Value="@UiStrings.SelectedPlan(ProgramState.Value.GetActivePlan().Name)" HighlightClass="font-bold"/>
+                    <LimitedHtml Value="@UiStrings.SelectedPlan(ProgramState.Value.GetActivePlan().Name)" EmClass="font-bold"/>
                     <SnackBarButton OnClick=@(()=>Dispatcher.Dispatch(new NavigateAction("/")))>Go to workouts</SnackBarButton>
                 </div>
             </SnackBar>

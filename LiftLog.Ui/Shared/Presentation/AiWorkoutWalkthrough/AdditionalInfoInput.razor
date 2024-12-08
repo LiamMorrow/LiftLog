@@ -1,5 +1,5 @@
-<LabelledFormRow Label="Any additional information?" Icon="info">
-    <TextField label="Goals, injuries, available equipment, etc." TextFieldType=TextFieldType.Outlined type="textarea" inputmode="text" Value="@Value" maxlength=200 OnChange="@(value => OnUpdateAdditionalInfo(value))"/>
+<LabelledFormRow Label="@UiStrings.AdditionalInformationLabel" Icon="info">
+    <TextField label="@UiStrings.AdditionalInformationExtra" TextFieldType=TextFieldType.Outlined type="textarea" inputmode="text" Value="@Value" maxlength=200 OnChange="@(value => OnUpdateAdditionalInfo(value))"/>
 </LabelledFormRow>
 
 @code {

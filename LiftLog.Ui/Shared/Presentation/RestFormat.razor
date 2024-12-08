@@ -3,19 +3,19 @@
 {
     <LimitedHtml
         Value="@UiStrings.RestSingular(Rest.MinRest.ToString(TimespanFormatStr))"
-        HighlightClass="@HighlightClass" />
+        EmClass="@EmClass" />
 }
 else
 {
     <LimitedHtml
         Value="@UiStrings.RestBetween(Rest.MinRest.ToString(TimespanFormatStr), Rest.MaxRest.ToString(TimespanFormatStr))"
-        HighlightClass="@HighlightClass" />
+        EmClass="@EmClass" />
 }
 @code {
 
     private const string TimespanFormatStr = @"m\:ss";
 
-    private string HighlightClass => "font-bold " + (Highlight ? "text-primary" : "");
+    private string EmClass => "font-bold " + (Highlight ? "text-primary" : "");
 
     [Parameter]
     [EditorRequired]

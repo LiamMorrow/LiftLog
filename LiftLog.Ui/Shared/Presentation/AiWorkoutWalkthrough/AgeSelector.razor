@@ -1,6 +1,6 @@
 @inject IJSRuntime Js
 
-<LabelledFormRow Label="How old are you?" Icon="cake">
+<LabelledFormRow Label="@UiStrings.HowOldAreYou" Icon="cake">
     <TextField TextFieldType=TextFieldType.Outlined type="text" inputmode="numeric" Value="@(Value.ToString())" required OnChange="@(value => OnChanged(value))"/>
 </LabelledFormRow>
 
