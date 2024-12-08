@@ -17,7 +17,7 @@
 @if (!_latestSessions.Any())
 {
     <EmptyInfo>
-        <p>@UiStrings.NothingHereYet<br>@UiStrings.CompleteAndComeBack</p>
+        @UiStrings.NothingHereYet<br>@UiStrings.CompleteAndComeBack
     </EmptyInfo>
 }
 else
@@ -46,7 +46,7 @@ else
     @if (!filteredToMonthSessions.Any())
     {
         <EmptyInfo>
-            <p><LimitedHtml Value="@UiStrings.NoSessionsInMonth(currentMonth.ToString("MMMM"))"/></p>
+            <LimitedHtml Value="@UiStrings.NoSessionsInMonth(currentMonth.ToString("MMMM"))"/>
         </EmptyInfo>
     }
 }
