@@ -27,7 +27,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 9.0.x
       - name: Build Tailwind
         run: npm i && npm run build
         working-directory: ./LiftLog.Ui
@@ -38,13 +38,13 @@ jobs:
         run: dotnet publish -c Release
         working-directory: ./LiftLog.Web
       - name: Copy 404 page
-        run: cp ./404.html ./LiftLog.Web/bin/Release/net8.0/publish/wwwroot
+        run: cp ./404.html ./LiftLog.Web/bin/Release/net9.0/publish/wwwroot
       - name: List files recusively
-        run: ls -R ./LiftLog.Web/bin/Release/net8.0/publish/wwwroot
+        run: ls -R ./LiftLog.Web/bin/Release/net9.0/publish/wwwroot
       - name: Upload pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./LiftLog.Web/bin/Release/net8.0/publish/wwwroot
+          path: ./LiftLog.Web/bin/Release/net9.0/publish/wwwroot
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

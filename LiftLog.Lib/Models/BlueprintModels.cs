@@ -46,48 +46,72 @@ public record ExerciseBlueprint(
     decimal WeightIncreaseOnSuccess,
     Rest RestBetweenSets,
     bool SupersetWithNext,
-    string Notes
-);
-
-public sealed record KeyedExerciseBlueprint : IEquatable<KeyedExerciseBlueprint>
+    string Notes,
+    string Link
+)
 {
-    private readonly string normalizedName = string.Empty;
-    public string Name { get; }
+    public static readonly ExerciseBlueprint Default = new(
+        Name: string.Empty,
+        Sets: 3,
+        RepsPerSet: 10,
+        WeightIncreaseOnSuccess: 0,
+        RestBetweenSets: Rest.Medium,
+        SupersetWithNext: false,
+        Notes: string.Empty,
+        Link: string.Empty
+    );
+}
 
-    public KeyedExerciseBlueprint(string name)
+public record KeyedExerciseBlueprint(string Name, int Sets, int RepsPerSet)
+{
+    public static implicit operator KeyedExerciseBlueprint(ExerciseBlueprint e) =>
+        new(e.Name, e.Sets, e.RepsPerSet);
+
+    public class NormalizedNameOnlyEqualityComparer : IEqualityComparer<KeyedExerciseBlueprint>
     {
-        Name = name;
-        normalizedName = NormalizeName(name);
-    }
+        public static readonly NormalizedNameOnlyEqualityComparer Instance = new();
 
-    public static implicit operator KeyedExerciseBlueprint(ExerciseBlueprint e) => new(e.Name);
+        public bool Equals(KeyedExerciseBlueprint? x, KeyedExerciseBlueprint? y) =>
+            NormalizeName(x?.Name) == NormalizeName(y?.Name);
 
-    public bool Equals(KeyedExerciseBlueprint? other) => other?.normalizedName == normalizedName;
+        public int GetHashCode(KeyedExerciseBlueprint obj) => NormalizeName(obj.Name).GetHashCode();
 
-    public override int GetHashCode() => normalizedName.GetHashCode();
-
-    private static string NormalizeName(string name)
-    {
-        var lowerName = name.ToLower().Trim().Replace("flies", "flys").Replace("flyes", "flys");
-        var withoutPlural = lowerName switch
+        private static string NormalizeName(string? name)
         {
-            string when lowerName.EndsWith("es") => lowerName[..^2],
-            string when lowerName.EndsWith('s') => lowerName[..^1],
-            _ => lowerName,
-        };
+            if (name is null)
+            {
+                return string.Empty;
+            }
+            var lowerName = name.ToLower().Trim().Replace("flies", "flys").Replace("flyes", "flys");
+            var withoutPlural = lowerName switch
+            {
+                string when lowerName.EndsWith("es") => lowerName[..^2],
+                string when lowerName.EndsWith('s') => lowerName[..^1],
+                _ => lowerName,
+            };
 
-        return withoutPlural;
+            return withoutPlural;
+        }
     }
 }
 
 public record Rest(TimeSpan MinRest, TimeSpan MaxRest, TimeSpan FailureRest)
 {
-    public static readonly Rest Short =
-        new(TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(90), TimeSpan.FromSeconds(180));
+    public static readonly Rest Short = new(
+        TimeSpan.FromSeconds(60),
+        TimeSpan.FromSeconds(90),
+        TimeSpan.FromSeconds(180)
+    );
 
-    public static readonly Rest Medium =
-        new(TimeSpan.FromSeconds(90), TimeSpan.FromSeconds(180), TimeSpan.FromSeconds(300));
+    public static readonly Rest Medium = new(
+        TimeSpan.FromSeconds(90),
+        TimeSpan.FromSeconds(180),
+        TimeSpan.FromSeconds(300)
+    );
 
-    public static readonly Rest Long =
-        new(TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(8));
+    public static readonly Rest Long = new(
+        TimeSpan.FromMinutes(3),
+        TimeSpan.FromMinutes(5),
+        TimeSpan.FromMinutes(8)
+    );
 }

@@ -6,13 +6,6 @@ namespace System.Linq;
 
 public static class LinqExtensions
 {
-    public static IEnumerable<(TSource Item, int Index)> IndexedTuples<TSource>(
-        this IEnumerable<TSource> source
-    )
-    {
-        return source.Select((item, index) => (item, index));
-    }
-
     public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> source)
         where T : notnull
     {
@@ -50,12 +43,12 @@ public static class LinqExtensions
         Func<TSource, bool> predicate
     )
     {
-        var tuples = source.IndexedTuples();
+        var tuples = source.Index();
         var matchingTuple = tuples
             .Where(x => predicate(x.Item))
-            .Cast<(TSource?, int)>()
-            .DefaultIfEmpty((default, -1));
-        return matchingTuple.First().Item2;
+            .Cast<(int, TSource?)>()
+            .DefaultIfEmpty((-1, default));
+        return matchingTuple.First().Item1;
     }
 
     public static async Task<ImmutableListValue<T>> ToImmutableListValueAsync<T>(
@@ -83,6 +76,29 @@ public static class LinqExtensions
         where K : notnull
     {
         var immutableDictionaryBuilder = ImmutableDictionary.CreateBuilder<K, V>();
+        await foreach (var item in source)
+        {
+            var key = keySelector(item);
+            var value = valueSelector(item);
+            immutableDictionaryBuilder.Add(await key, await value);
+        }
+
+        return immutableDictionaryBuilder.ToImmutable();
+    }
+
+    public static async ValueTask<ImmutableDictionary<K, V>> ToImmutableDictionaryAwaitAsync<
+        T,
+        K,
+        V
+    >(
+        this IAsyncEnumerable<T> source,
+        Func<T, ValueTask<K>> keySelector,
+        Func<T, ValueTask<V>> valueSelector,
+        IEqualityComparer<K> keyComparer
+    )
+        where K : notnull
+    {
+        var immutableDictionaryBuilder = ImmutableDictionary.CreateBuilder<K, V>(keyComparer);
         await foreach (var item in source)
         {
             var key = keySelector(item);

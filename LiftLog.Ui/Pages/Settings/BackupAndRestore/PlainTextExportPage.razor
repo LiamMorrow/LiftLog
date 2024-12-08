@@ -1,0 +1,52 @@
+@page "/settings/backup-and-restore/plain-text-export"
+@inject IDispatcher Dispatcher
+@inject IState<SettingsState> SettingsState
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<Card Type="Card.CardType.Filled" class="mx-6 mb-4">
+    <div>
+        @UiStrings.PlaintextExportDescription
+    </div>
+    <AppButton OnClick="OpenDocumentation" Type="AppButtonType.Text">@UiStrings.ReadDocumentation</AppButton>
+</Card>
+
+<LabelledForm>
+    <LabelledFormRow Label="@UiStrings.PlaintextExportFormat" Icon="description">
+        <SelectField data-cy="export-format-selector" Options="Formats" Value="@Format.ToString()" ValueChanged="SelectFormat"/>
+    </LabelledFormRow>
+</LabelledForm>
+
+<div class="flex justify-end gap-4 m-6">
+    <AppButton Type="AppButtonType.Primary" OnClick="Export">@UiStrings.Export</AppButton>
+</div>
+
+
+@code {
+
+    private PlaintextExportFormat Format = PlaintextExportFormat.CSV;
+    private List<SelectField.SelectOption> Formats = Enum.GetValues<PlaintextExportFormat>().Select(x=>new SelectField.SelectOption(x.ToString(), x.ToString())).ToList();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Dispatcher.Dispatch(new SetPageTitleAction(UiStrings.PlaintextExport));
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings/backup-and-restore"));
+    }
+
+    private void SelectFormat(string format)
+    {
+        Format = Enum.Parse<PlaintextExportFormat>(format);
+        StateHasChanged();
+    }
+
+    private void Export(MouseEventArgs _)
+    {
+        Dispatcher.Dispatch(new ExportPlainTextAction(Format));
+    }
+
+    private void OpenDocumentation(MouseEventArgs _)
+    {
+        Dispatcher.Dispatch(new OpenExternalUrlAction("https://github.com/LiamMorrow/LiftLog/blob/main/Docs/PlaintextExport.md"));
+    }
+}

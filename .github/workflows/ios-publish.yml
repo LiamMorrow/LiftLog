@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: macos-15
     env:
       KEYCHAIN: job-${{ github.job }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
 
@@ -19,7 +19,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 9.0.x
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
@@ -56,12 +56,12 @@ jobs:
         run: dotnet build -c Release
         working-directory: ./LiftLog.Ui
       - name: Build
-        run: 'dotnet publish -c Release -f:net8.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}" -p:CodesignProvision="LiftLog" -p:UseSentryCLI=true -p:ApplicationDisplayVersion=${{ github.event.release.name }} -p:ApplicationVersion=${{ steps.buildNumber.outputs.build-number }}'
+        run: 'dotnet publish -c Release -f:net9.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CompressionEnabled=false -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}" -p:CodesignProvision="LiftLog" -p:UseSentryCLI=true -p:ApplicationDisplayVersion=${{ github.event.release.name }} -p:ApplicationVersion=${{ steps.buildNumber.outputs.build-number }}'
         working-directory: ./LiftLog.Maui
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: Upload with altool
-        run: xcrun altool --upload-app -f LiftLog.Maui/bin/Release/net8.0-ios/ios-arm64/publish/LiftLog.Maui.ipa -t ios -p '${{secrets.APPLE_UPLOAD_PASS}}' -u ${{secrets.APPLE_UPLOAD_USER}}
+        run: xcrun altool --upload-app -f LiftLog.Maui/bin/Release/net9.0-ios/ios-arm64/publish/LiftLog.Maui.ipa -t ios -p '${{secrets.APPLE_UPLOAD_PASS}}' -u ${{secrets.APPLE_UPLOAD_USER}}
       - name: Delete keychain
         if: always() # Always run this step to ensure the keychain is properly disposed of for self hosted runners
         run: |

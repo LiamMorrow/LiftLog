@@ -1,7 +1,15 @@
-@{
- var splitWeights = (Exercise.PerSetWeight
-    && !Exercise.PotentialSets.All(s => s.Weight == Exercise.Weight))
-    || Exercise.PotentialSets.DistinctBy(x=>x.Set?.RepsCompleted).Count() != 1;
+ @{
+    var splitWeights = (Exercise.PerSetWeight
+        && !Exercise.PotentialSets.All(s => s.Weight == Exercise.Weight))
+        || Exercise.PotentialSets.DistinctBy(x=>x.Set?.RepsCompleted).Count() != 1;
+    var numCompletedSets = Exercise.PotentialSets.Count(x => x.Set != null);
+    var maxNumReps = Exercise.PotentialSets.Max(x => x.Set?.RepsCompleted ?? 0);
+
+    var (numSets, numReps) = IsFilled switch
+    {
+        true => (numCompletedSets, maxNumReps),
+        false => (Exercise.Blueprint.Sets, Exercise.Blueprint.RepsPerSet)
+    };
 }
 <span class="flex items-center">
     @if(ShowName)
@@ -16,8 +24,7 @@
 
             @if (ShowSets)
             {
-                <span>
-                    @(Exercise.Blueprint.Sets)x@(Exercise.Blueprint.RepsPerSet)
+                <span>@(numSets)x@(numReps)
                 </span>
                 @if(ShowWeight)
                 {
@@ -62,4 +69,6 @@
     [Parameter] public bool ShowWeight { get; set; }
 
     [Parameter] public bool ShowName { get; set; }
+
+    [Parameter] public bool IsFilled { get; set; } = true;
 }

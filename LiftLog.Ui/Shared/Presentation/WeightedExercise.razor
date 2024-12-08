@@ -1,10 +1,7 @@
-﻿@inject IJSRuntime JSRuntime
+@inject IJSRuntime JSRuntime
 @{
-    var (displayedExercise, repToStartNext) = (PreviousRecordedExercises?.FirstOrDefault()?.RecordedExercise) switch
-    {
-        null => (RecordedExercise, -1),
-        _ => (RecordedExercise, RecordedExercise.PotentialSets.IndexOf(x => x.Set is null))
-    };
+    var displayedExercise = RecordedExercise;
+    var setToStartNext = RecordedExercise.PotentialSets.IndexOf(x => x.Set is null);
     var previousNotes = PreviousRecordedExercises?.FirstOrDefault()?.RecordedExercise?.Notes ?? "";
     var thisNotes = RecordedExercise.Notes ?? "";
     var blueprintNotes = RecordedExercise.Blueprint.Notes;
@@ -17,14 +14,21 @@
             @if(!IsReadonly)
             {
                 <div class="flex justify-end">
-                    <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.Standard" Icon="history" OnClick="ShowPrevious"/>
+                    @if(ShowPreviousButton)
+                    {
+                        <IconButton data-cy="prev-exercise-btn" Type="IconButtonType.Standard" Icon="history" OnClick="ShowPrevious"/>
+                    }
                     <IconButton data-cy="per-rep-weight-btn" Type=IconButtonType.Standard Icon=weight OnClick="ToggleExercisePerSetWeight"></IconButton>
                     <div>
                         <IconButton data-cy="more-exercise-btn" class="self-end" Type="IconButtonType.Standard" OnClick="() => { _menu?.Open(); }" Icon="more_horiz" id="@moreButtonId"/>
                         <Menu @ref="_menu" anchor="@moreButtonId">
-                            <MenuItem Label="Edit" Icon="edit" OnClick="OnEditExercise"/>
-                            <MenuItem data-cy="exercise-notes-btn" Label="Notes" Icon="notes" OnClick="OnOpenNotesButtonClick"/>
-                            <MenuItem Label="Remove" Icon="delete" OnClick="OnRemoveExercise"/>
+                            <MenuItem Label="@UiStrings.Edit" Icon="edit" data-cy="exercise-edit-menu-button" OnClick="OnEditExercise"/>
+                            <MenuItem data-cy="exercise-notes-btn" Label="@(UiStrings.Notes)" Icon="notes" OnClick="OnOpenNotesButtonClick"/>
+                            <MenuItem Label="@UiStrings.Remove" Icon="delete" OnClick="OnRemoveExercise"/>
+                            @if(Uri.IsWellFormedUriString(displayedExercise.Blueprint.Link, UriKind.Absolute))
+                            {
+                                <MenuItem Label="@UiStrings.OpenLink" Icon="open_in_new" OnClick="OnOpenLink"/>
+                            }
                         </Menu>
                     </div>
                 </div>
@@ -44,7 +48,7 @@
         </div>
     </div>
     <div class="flex justify-start flex-wrap gap-2">
-        @foreach (var (set, i) in displayedExercise.PotentialSets.IndexedTuples())
+        @foreach (var (i, set) in displayedExercise.PotentialSets.Index())
         {
             <PotentialSetCounter
                 @key=i
@@ -55,7 +59,7 @@
                 OnTap=@(() => {if(!IsReadonly) CycleRepCountForSet(i);})
                 OnHold=@(() => {if(!IsReadonly) ShowAdditionalActionsForSet(i);})
                 OnUpdateWeight=@((weight) => {if(!IsReadonly) UpdateWeightForSet(i, weight);})
-                ToStartNext=@(ToStartNext && repToStartNext == i && !IsReadonly)
+                ToStartNext=@(ToStartNext && setToStartNext == i && !IsReadonly)
                 IsReadonly=@IsReadonly />
         }
     </div>
@@ -143,6 +147,8 @@
 
     [EditorRequired] [Parameter] public Action<string?> UpdateNotesForExercise { get; set; } = null!;
 
+    [EditorRequired] [Parameter] public Action OnOpenLink { get; set; } = null!;
+
     [EditorRequired] [Parameter] public Action OnEditExercise { get; set; } = null!;
 
     [EditorRequired] [Parameter] public Action ToggleExercisePerSetWeight { get; set; } = null!;
@@ -150,6 +156,8 @@
     [EditorRequired] [Parameter] public Action OnRemoveExercise { get; set; } = null!;
 
     [Parameter] public bool IsReadonly { get; set; } = false;
+
+    [EditorRequired] [Parameter] public bool ShowPreviousButton { get; set; }
 
     private void HandleNotesChange(string value)
     {

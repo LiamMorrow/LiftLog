@@ -1,0 +1,1184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string"/>
+              <xsd:attribute name="type" type="xsd:string"/>
+              <xsd:attribute name="mimetype" type="xsd:string"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string"/>
+              <xsd:attribute name="name" type="xsd:string"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required"/>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Freeform Session" xml:space="preserve">
+    <value>Freeform Session</value>
+    <comment/>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+    <comment/>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>Notes</value>
+    <comment/>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remove</value>
+    <comment/>
+  </data>
+  <data name="Workout" xml:space="preserve">
+    <value>Workout</value>
+    <comment/>
+  </data>
+  <data name="Feed" xml:space="preserve">
+    <value>Feed</value>
+    <comment/>
+  </data>
+  <data name="Stats" xml:space="preserve">
+    <value>Stats</value>
+    <comment/>
+  </data>
+  <data name="History" xml:space="preserve">
+    <value>History</value>
+    <comment/>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+    <comment/>
+  </data>
+  <data name="Statistics" xml:space="preserve">
+    <value>Statistics</value>
+    <comment/>
+  </data>
+  <data name="Feed_Following" xml:space="preserve">
+    <value>Following</value>
+    <comment/>
+  </data>
+  <data name="Feed_Followers" xml:space="preserve">
+    <value>Followers</value>
+    <comment/>
+  </data>
+  <data name="SessionInProgress" xml:space="preserve">
+    <value>There is already a current session in progress, start a new one without saving?</value>
+    <comment/>
+  </data>
+  <data name="ReplaceCurrentSession" xml:space="preserve">
+    <value>Replace current session</value>
+    <comment/>
+  </data>
+  <data name="NoPlanCreated" xml:space="preserve">
+    <value>No plan created yet!</value>
+    <comment/>
+  </data>
+  <data name="AddWorkouts" xml:space="preserve">
+    <value>Add Workouts</value>
+    <comment/>
+  </data>
+  <data name="SelectAPlan" xml:space="preserve">
+    <value>Select a plan</value>
+    <comment/>
+  </data>
+  <data name="UpcomingWorkouts" xml:space="preserve">
+    <value>Upcoming Workouts</value>
+    <comment/>
+  </data>
+  <data name="BackUpData" xml:space="preserve">
+    <value>Back up data</value>
+    <comment/>
+  </data>
+  <data name="BackUpDataReminder" xml:space="preserve">
+    <value>It has been a while since you last created a backup. It is HIGHLY recommended you back up your data regularly to prevent data loss. Would you like to back up your data now?</value>
+    <comment/>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+    <comment/>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+    <comment/>
+  </data>
+  <data name="DontAskAgain" xml:space="preserve">
+    <value>Don't ask again</value>
+    <comment/>
+  </data>
+  <data name="OpenLink" xml:space="preserve">
+    <value>Open Link</value>
+    <comment/>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>As a verb</comment>
+  </data>
+  <data name="Calculating" xml:space="preserve">
+    <value>Calculating...</value>
+    <comment/>
+  </data>
+  <data name="NoDataAvailable" xml:space="preserve">
+    <value>No data available</value>
+    <comment/>
+  </data>
+  <data name="TryChangingFilters" xml:space="preserve">
+    <value>Try changing the filters at the top</value>
+    <comment/>
+  </data>
+  <data name="AverageTimeBetweenSets" xml:space="preserve">
+    <value>Average time between sets</value>
+    <comment/>
+  </data>
+  <data name="HeaviestLift" xml:space="preserve">
+    <value>Heaviest lift</value>
+    <comment/>
+  </data>
+  <data name="MostTimeSpent" xml:space="preserve">
+    <value>Most time spent</value>
+    <comment/>
+  </data>
+  <data name="AverageSessionLength" xml:space="preserve">
+    <value>Average session length</value>
+    <comment/>
+  </data>
+  <data name="Bodyweight" xml:space="preserve">
+    <value>Bodyweight</value>
+    <comment/>
+  </data>
+  <data name="Sessions" xml:space="preserve">
+    <value>Sessions</value>
+    <comment/>
+  </data>
+  <data name="NoExercisesFound" xml:space="preserve">
+    <value>No exercises found.</value>
+    <comment/>
+  </data>
+  <data name="AllTime" xml:space="preserve">
+    <value>All time</value>
+    <comment/>
+  </data>
+  <data name="{NumDays}NumDays" xml:space="preserve">
+    <value>{0} days</value>
+    <comment/>
+  </data>
+  <data name="AllSessions" xml:space="preserve">
+    <value>All sessions</value>
+    <comment/>
+  </data>
+  <data name="CurrentSessions" xml:space="preserve">
+    <value>Current sessions</value>
+    <comment/>
+  </data>
+  <data name="NotPublishingWorkouts" xml:space="preserve">
+    <value>You are not publishing your workouts</value>
+    <comment/>
+  </data>
+  <data name="StartPublishing" xml:space="preserve">
+    <value>Start publishing</value>
+    <comment/>
+  </data>
+  <data name="NothingHereYet" xml:space="preserve">
+    <value>Nothing here yet!</value>
+    <comment/>
+  </data>
+  <data name="NoFollowingData" xml:space="preserve">
+    <value>Nobody you're following has published anything yet! Come back later.</value>
+    <comment/>
+  </data>
+  <data name="StartFollowingSomeone" xml:space="preserve">
+    <value>Start following someone!</value>
+    <comment/>
+  </data>
+  <data name="NotFollowingAnyone" xml:space="preserve">
+    <value>You're not currently following anyone, ask a friend for their share link to start!</value>
+    <comment/>
+  </data>
+  <data name="NobodyFollowingYou" xml:space="preserve">
+    <value>Nobody is following you yet!</value>
+    <comment/>
+  </data>
+  <data name="ShareLinkToGetFollowers" xml:space="preserve">
+    <value>Share your link with friends to get followers</value>
+    <comment/>
+  </data>
+  <data name="Unfollow" xml:space="preserve">
+    <value>Unfollow</value>
+    <comment/>
+  </data>
+  <data name="UnfollowUser" xml:space="preserve">
+    <value>Unfollow user</value>
+    <comment/>
+  </data>
+  <data name="RemoveFollower" xml:space="preserve">
+    <value>Remove follower</value>
+    <comment/>
+  </data>
+  <data name="RemoveFollowerMsgPart1" xml:space="preserve">
+    <value>This will stop</value>
+    <comment/>
+  </data>
+  <data name="RemoveFollowerMsgPart2" xml:space="preserve">
+    <value>from following you and remove all your content from their device.</value>
+    <comment/>
+  </data>
+  <data name="Unfollow{User}Msg" xml:space="preserve">
+    <value>This will unfollow &lt;em&gt;{0}&lt;/em&gt; and remove all their content on your device.</value>
+    <comment/>
+  </data>
+  <data name="SessionContainsNoExercises" xml:space="preserve">
+    <value>Session contains no exercises.</value>
+    <comment/>
+  </data>
+  <data name="UpdatePlan" xml:space="preserve">
+    <value>Update plan</value>
+    <comment/>
+  </data>
+  <data name="AddExercise" xml:space="preserve">
+    <value>Add Exercise</value>
+    <comment/>
+  </data>
+  <data name="Finish" xml:space="preserve">
+    <value>Finish</value>
+    <comment/>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+    <comment/>
+  </data>
+  <data name="EditExercise" xml:space="preserve">
+    <value>Edit Exercise</value>
+    <comment/>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Update</value>
+    <comment/>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Add</value>
+    <comment/>
+  </data>
+  <data name="SelectReps" xml:space="preserve">
+    <value>Select Reps</value>
+    <comment/>
+  </data>
+  <data name="RemoveExerciseQuestion" xml:space="preserve">
+    <value>Remove exercise?</value>
+    <comment/>
+  </data>
+  <data name="RemoveExerciseMessage" xml:space="preserve">
+    <value>Exercise will be removed from the current session, future sessions will not be impacted.</value>
+    <comment/>
+  </data>
+  <data name="UpdateExistingWorkout{Name}" xml:space="preserve">
+    <value>Would you like to update the existing workout named &lt;em&gt;{0}&lt;/em&gt;, or add a new workout?</value>
+    <comment/>
+  </data>
+  <data name="PlanWillBeUpdated" xml:space="preserve">
+    <value>The plan will be updated with the current session's exercises.</value>
+    <comment/>
+  </data>
+  <data name="Exercise" xml:space="preserve">
+    <value>Exercise</value>
+    <comment>noun form of exercise</comment>
+  </data>
+  <data name="Sets" xml:space="preserve">
+    <value>Sets</value>
+    <comment>Noun form for sets, as in number of sets in an exercise</comment>
+  </data>
+  <data name="Reps" xml:space="preserve">
+    <value>Reps</value>
+    <comment>Noun form for exercise reps, as in repetitions</comment>
+  </data>
+  <data name="PlanNotes" xml:space="preserve">
+    <value>Plan Notes</value>
+    <comment/>
+  </data>
+  <data name="SessionNotes" xml:space="preserve">
+    <value>Session Notes</value>
+    <comment/>
+  </data>
+  <data name="ExternalLink" xml:space="preserve">
+    <value>External Link</value>
+    <comment>The name for a HTTPS url link outside of the app </comment>
+  </data>
+  <data name="ProgressiveOverload" xml:space="preserve">
+    <value>Progressive Overload</value>
+    <comment/>
+  </data>
+  <data name="SupersetNextExercise" xml:space="preserve">
+    <value>Superset next exercise</value>
+    <comment/>
+  </data>
+  <data name="RestShort" xml:space="preserve">
+    <value>Short</value>
+    <comment>A short period of rest</comment>
+  </data>
+  <data name="RestMedium" xml:space="preserve">
+    <value>Medium</value>
+    <comment>A medium period of rest</comment>
+  </data>
+  <data name="RestLong" xml:space="preserve">
+    <value>Long</value>
+    <comment>A long period of rest</comment>
+  </data>
+  <data name="Custom" xml:space="preserve">
+    <value>Custom</value>
+    <comment>As in customized</comment>
+  </data>
+  <data name="MinRest" xml:space="preserve">
+    <value>Min Rest</value>
+    <comment/>
+  </data>
+  <data name="MaxRest" xml:space="preserve">
+    <value>Max Rest</value>
+    <comment/>
+  </data>
+  <data name="FailureRest" xml:space="preserve">
+    <value>Failure Rest</value>
+    <comment/>
+  </data>
+  <data name="RestSingular{Time}" xml:space="preserve">
+    <value>Rest &lt;em&gt;{0}&lt;/em&gt;</value>
+    <comment/>
+  </data>
+  <data name="RestBetween{Time1}{Time2}" xml:space="preserve">
+    <value>Rest between &lt;em&gt;{0}&lt;/em&gt; and &lt;em&gt;{0}&lt;/em&gt;</value>
+    <comment/>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Date</value>
+    <comment>as in calendar date</comment>
+  </data>
+  <data name="CompleteAndComeBack" xml:space="preserve">
+    <value>Complete a session and check again.</value>
+    <comment/>
+  </data>
+  <data name="NoSessionsInMonth{Month}" xml:space="preserve">
+    <value>Nothing recorded in {0}&lt;br&gt;Complete a session or switch to another month to view your sessions.</value>
+    <comment/>
+  </data>
+  <data name="DeleteSessionMessage{SessionName}{Date}" xml:space="preserve">
+    <value>The session named &lt;em&gt;{0}&lt;/em&gt;, on {1} will be deleted from history. This cannot be undone.</value>
+    <comment/>
+  </data>
+  <data name="DeleteSessionQuestion" xml:space="preserve">
+    <value>Delete Session?</value>
+    <comment/>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+    <comment/>
+  </data>
+  <data name="ManagePlans" xml:space="preserve">
+    <value>Manage plans</value>
+    <comment/>
+  </data>
+  <data name="ManagePlansSubtitle" xml:space="preserve">
+    <value>Setup your workout plans</value>
+    <comment/>
+  </data>
+  <data name="AppConfiguration" xml:space="preserve">
+    <value>App configuration</value>
+    <comment/>
+  </data>
+  <data name="AppConfigurationSubtitle" xml:space="preserve">
+    <value>Adjust weight units, theme, and other misc. settings</value>
+    <comment/>
+  </data>
+  <data name="Notifications" xml:space="preserve">
+    <value>Notifications</value>
+    <comment/>
+  </data>
+  <data name="NotificationsSubtitle" xml:space="preserve">
+    <value>Adjust notification settings for rest timers</value>
+    <comment/>
+  </data>
+  <data name="ExportBackupRestore" xml:space="preserve">
+    <value>Export, backup, and restore</value>
+    <comment/>
+  </data>
+  <data name="ExportBackupRestoreSubtitle" xml:space="preserve">
+    <value>Create and export backups for transferring between devices</value>
+    <comment/>
+  </data>
+  <data name="FeatureRequest" xml:space="preserve">
+    <value>Feature request</value>
+    <comment/>
+  </data>
+  <data name="FeatureRequestSubtitle" xml:space="preserve">
+    <value>Suggest a new feature that you think LiftLog should have!</value>
+    <comment/>
+  </data>
+  <data name="BugReport" xml:space="preserve">
+    <value>Bug report</value>
+    <comment/>
+  </data>
+  <data name="BugReportSubtitle" xml:space="preserve">
+    <value>Let us know when you encounter a bug</value>
+    <comment/>
+  </data>
+  <data name="AppInfo" xml:space="preserve">
+    <value>App info</value>
+    <comment/>
+  </data>
+  <data name="AppInfoSubtitle" xml:space="preserve">
+    <value>Display app information</value>
+    <comment/>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+    <comment>as in the opposite of open, close a dialog</comment>
+  </data>
+  <data name="SavedPlans" xml:space="preserve">
+    <value>Saved Plans</value>
+    <comment/>
+  </data>
+  <data name="AddPlan" xml:space="preserve">
+    <value>Add plan</value>
+    <comment/>
+  </data>
+  <data name="SelectedPlan{Plan}" xml:space="preserve">
+    <value>Selected &lt;em&gt;{0}&lt;/em&gt;</value>
+    <comment/>
+  </data>
+  <data name="RestNotifications" xml:space="preserve">
+    <value>Rest notifications</value>
+    <comment>the title for the rest notifications toggle</comment>
+  </data>
+  <data name="RestNotificationsSubtitle" xml:space="preserve">
+    <value>Show a notification when the rest timer is up</value>
+    <comment/>
+  </data>
+  <data name="PlanName" xml:space="preserve">
+    <value>Plan Name</value>
+    <comment/>
+  </data>
+  <data name="NoWorkoutsInPlan" xml:space="preserve">
+    <value>No workouts in plan&lt;br&gt; Add a workout to get started.</value>
+    <comment/>
+  </data>
+  <data name="AddWorkout" xml:space="preserve">
+    <value>Add workout</value>
+    <comment/>
+  </data>
+  <data name="UseWorkout" xml:space="preserve">
+    <value>Use</value>
+    <comment/>
+  </data>
+  <data name="ManageWorkout{Workout}" xml:space="preserve">
+    <value>Manage {0}</value>
+    <comment/>
+  </data>
+  <data name="WorkoutName" xml:space="preserve">
+    <value>Workout Name</value>
+    <comment/>
+  </data>
+  <data name="WorkoutNotes" xml:space="preserve">
+    <value>Workout Notes</value>
+    <comment/>
+  </data>
+  <data name="NoExercisesAdded" xml:space="preserve">
+    <value>No exercises added yet</value>
+    <comment/>
+  </data>
+  <data name="Exercises" xml:space="preserve">
+    <value>Exercises</value>
+    <comment>Multiple noun exercises</comment>
+  </data>
+  <data name="RemoveExerciseFromWorkoutMessage{Exercise}{Session}" xml:space="preserve">
+    <value>This will remove the exercise &lt;em&gt;{0}&lt;/em&gt; from &lt;em&gt;{1}&lt;/em&gt;.</value>
+    <comment/>
+  </data>
+  <data name="BackUpDataSubtitle" xml:space="preserve">
+    <value>Export your data to a file for backup or transfer</value>
+    <comment/>
+  </data>
+  <data name="RestoreData" xml:space="preserve">
+    <value>Restore data</value>
+    <comment/>
+  </data>
+  <data name="RestoreDataSubtitle" xml:space="preserve">
+    <value>Import data from a file to restore</value>
+    <comment/>
+  </data>
+  <data name="AutomaticRemoteBackup" xml:space="preserve">
+    <value>Automatic remote backup</value>
+    <comment/>
+  </data>
+  <data name="PlaintextExport" xml:space="preserve">
+    <value>Plaintext export</value>
+    <comment/>
+  </data>
+  <data name="PlaintextExportSubtitle" xml:space="preserve">
+    <value>Export your data in a plaintext format such as CSV for use in other applications</value>
+    <comment/>
+  </data>
+  <data name="AutomaticRemoteBackupSubtitle" xml:space="preserve">
+    <value>Send backups to a remote server. Advanced users only</value>
+    <comment/>
+  </data>
+  <data name="ImportFeedDataQuestion" xml:space="preserve">
+    <value>Import feed data?</value>
+    <comment/>
+  </data>
+  <data name="ImportFeedDataQuestionMessage" xml:space="preserve">
+    <value>This backup includes a feed account. Would you like to import it?&lt;br&gt;You will lose access to your current account without a backup.&lt;br&gt;&lt;em&gt;This will replace your current account and cannot be undone!&lt;/em&gt;</value>
+    <comment/>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Import</value>
+    <comment>Import as a verb</comment>
+  </data>
+  <data name="IncludeFeed" xml:space="preserve">
+    <value>Include feed</value>
+    <comment>Include feed data in the backup</comment>
+  </data>
+  <data name="JustMyData" xml:space="preserve">
+    <value>Just my data</value>
+    <comment>A button saying to include only our data in the backup, and no feed content</comment>
+  </data>
+  <data name="BackupFeedAccount" xml:space="preserve">
+    <value>Backup feed account</value>
+    <comment/>
+  </data>
+  <data name="BackupFeedAccountMessage" xml:space="preserve">
+    <value>Include your feed account and followed users in this backup?&lt;br&gt;&lt;em&gt;Caution: This would allow anyone with this backup to post feed content with your account&lt;/em&gt;</value>
+    <comment/>
+  </data>
+  <data name="UseImperialUnits" xml:space="preserve">
+    <value>Use imperial units</value>
+    <comment/>
+  </data>
+  <data name="UseImperialUnitsSubtitle" xml:space="preserve">
+    <value>Use pounds in favour of kilograms</value>
+    <comment/>
+  </data>
+  <data name="ShowBodyweight" xml:space="preserve">
+    <value>Show bodyweight</value>
+    <comment/>
+  </data>
+  <data name="ShowBodyweightSubtitle" xml:space="preserve">
+    <value>Enable bodyweight tracking and statistics</value>
+    <comment/>
+  </data>
+  <data name="ShowFeed" xml:space="preserve">
+    <value>Show feed</value>
+    <comment/>
+  </data>
+  <data name="ShowFeedSubtitle" xml:space="preserve">
+    <value>Display the feed in the navigation bar</value>
+    <comment/>
+  </data>
+  <data name="StatusBarFix" xml:space="preserve">
+    <value>Status bar fix</value>
+    <comment/>
+  </data>
+  <data name="StatusBarFixSubtitle" xml:space="preserve">
+    <value>Fixes the status bar overlapping the page title controls on some devices</value>
+    <comment/>
+  </data>
+  <data name="ShowTips" xml:space="preserve">
+    <value>Show tips</value>
+    <comment/>
+  </data>
+  <data name="ShowTipsSubtitle" xml:space="preserve">
+    <value>Show tips on how to use the app</value>
+    <comment/>
+  </data>
+  <data name="ResetTips" xml:space="preserve">
+    <value>Reset tips</value>
+    <comment/>
+  </data>
+  <data name="PlaintextExportDescription" xml:space="preserve">
+    <value>This feature allows you to export your data in a plaintext format such as CSV for use in other applications. It is not intended for backup purposes. For backups, please use the backup feature. LiftLog cannot restore data from plaintext exports.</value>
+    <comment/>
+  </data>
+  <data name="ReadDocumentation" xml:space="preserve">
+    <value>Read documentation</value>
+    <comment/>
+  </data>
+  <data name="PlaintextExportFormat" xml:space="preserve">
+    <value>Format</value>
+    <comment>The export format type for the plaintext export</comment>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Export</value>
+    <comment>Export as a verb</comment>
+  </data>
+  <data name="RemoteBackupDescription" xml:space="preserve">
+    <value>This is an advanced feature which enables LiftLog to send backups to a remote server.&lt;br&gt;Please read the documentation for instructions on how to set up a remote server.</value>
+    <comment/>
+  </data>
+  <data name="Endpoint" xml:space="preserve">
+    <value>Endpoint</value>
+    <comment/>
+  </data>
+  <data name="ApiKey" xml:space="preserve">
+    <value>API Key</value>
+    <comment/>
+  </data>
+  <data name="BackupFeedAccountSubtitle" xml:space="preserve">
+    <value>Include your feed account data in backups</value>
+    <comment/>
+  </data>
+  <data name="Test" xml:space="preserve">
+    <value>Test</value>
+    <comment>The button for testing the remote backup</comment>
+  </data>
+  <data name="GeneratingAiPlan" xml:space="preserve">
+    <value>Generating AI plan...&lt;br&gt;&lt;em&gt;This may take up to 3 minutes&lt;/em&gt;</value>
+    <comment/>
+  </data>
+  <data name="NoteAboutTweakingAiPlan" xml:space="preserve">
+    <value>Note: you can tweak this plan after you accept it. Just head to the Manage Plan page in settings.</value>
+    <comment/>
+  </data>
+  <data name="Accept" xml:space="preserve">
+    <value>Accept</value>
+    <comment>As a verb</comment>
+  </data>
+  <data name="Regenerate" xml:space="preserve">
+    <value>Regenerate</value>
+    <comment>Recreate the ai plan</comment>
+  </data>
+  <data name="Retry" xml:space="preserve">
+    <value>Retry</value>
+    <comment>Generic retry verb</comment>
+  </data>
+  <data name="AiPlanner" xml:space="preserve">
+    <value>AI Planner</value>
+    <comment/>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Back</value>
+    <comment>As in, go back to the previous screen</comment>
+  </data>
+  <data name="AddToPlan" xml:space="preserve">
+    <value>Add to plan</value>
+    <comment>A button to add the session to the user's plan</comment>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Start</value>
+    <comment>A verb for beginnning the workout</comment>
+  </data>
+  <data name="Generate" xml:space="preserve">
+    <value>Generate</value>
+    <comment>Verb for generating an ai plan</comment>
+  </data>
+  <data name="SelectAtLeastOneArea" xml:space="preserve">
+    <value>Please select at least one area to workout</value>
+    <comment>Area referring to the area of the body, like a muscle</comment>
+  </data>
+  <data name="AiSessionCreator" xml:space="preserve">
+    <value>AI Session Creator</value>
+    <comment/>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Theme</value>
+    <comment>As in the general colours of the app</comment>
+  </data>
+  <data name="Default" xml:space="preserve">
+    <value>Default</value>
+    <comment>The default, as a noun</comment>
+  </data>
+  <data name="AdditionalInformationLabel" xml:space="preserve">
+    <value>Any additional information?</value>
+    <comment/>
+  </data>
+  <data name="AdditionalInformationExtra" xml:space="preserve">
+    <value>Goals, injuries, available equipment, etc.</value>
+    <comment/>
+  </data>
+  <data name="HowOldAreYou" xml:space="preserve">
+    <value>How old are you?</value>
+    <comment/>
+  </data>
+  <data name="SelectAtLeastOneGoal" xml:space="preserve">
+    <value>Please select at least one goal</value>
+    <comment/>
+  </data>
+  <data name="SelectNumberOfDays" xml:space="preserve">
+    <value>Please select the number of days per week</value>
+    <comment/>
+  </data>
+  <data name="WhatIsYourGender" xml:space="preserve">
+    <value>What is your gender?</value>
+    <comment/>
+  </data>
+  <data name="GenderFemale" xml:space="preserve">
+    <value>Female</value>
+    <comment/>
+  </data>
+  <data name="GenderMale" xml:space="preserve">
+    <value>Male</value>
+    <comment/>
+  </data>
+  <data name="GenderOther" xml:space="preserve">
+    <value>Other</value>
+    <comment>A gender other than female or male</comment>
+  </data>
+  <data name="GenderPreferNotToSay" xml:space="preserve">
+    <value>Prefer not to say</value>
+    <comment>The user prefers not to say their gender</comment>
+  </data>
+  <data name="WhatAreYourGoals" xml:space="preserve">
+    <value>What are your goals?</value>
+    <comment/>
+  </data>
+  <data name="Toning" xml:space="preserve">
+    <value>Toning</value>
+    <comment>As in getting more muscular definition</comment>
+  </data>
+  <data name="LosingWeight" xml:space="preserve">
+    <value>Lowing Weight</value>
+    <comment/>
+  </data>
+  <data name="GainingMuscle" xml:space="preserve">
+    <value>Gaining Muscle</value>
+    <comment/>
+  </data>
+  <data name="Strength" xml:space="preserve">
+    <value>Strength</value>
+    <comment/>
+  </data>
+  <data name="WhatIsYourExperienceLevel" xml:space="preserve">
+    <value>What is your experience level?</value>
+    <comment/>
+  </data>
+  <data name="ExperienceProfessional" xml:space="preserve">
+    <value>Professional</value>
+    <comment/>
+  </data>
+  <data name="ExperienceAdvanced" xml:space="preserve">
+    <value>Advanced</value>
+    <comment/>
+  </data>
+  <data name="ExperienceIntermediate" xml:space="preserve">
+    <value>Intermediate</value>
+    <comment/>
+  </data>
+  <data name="ExperienceBeginner" xml:space="preserve">
+    <value>Beginner</value>
+    <comment/>
+  </data>
+  <data name="One" xml:space="preserve">
+    <value>One</value>
+    <comment/>
+  </data>
+  <data name="Two" xml:space="preserve">
+    <value>Two</value>
+    <comment/>
+  </data>
+  <data name="Three" xml:space="preserve">
+    <value>Three</value>
+    <comment/>
+  </data>
+  <data name="Four" xml:space="preserve">
+    <value>Four</value>
+    <comment/>
+  </data>
+  <data name="Five" xml:space="preserve">
+    <value>Five</value>
+    <comment/>
+  </data>
+  <data name="Six" xml:space="preserve">
+    <value>Six</value>
+    <comment/>
+  </data>
+  <data name="Seven" xml:space="preserve">
+    <value>Seven</value>
+    <comment/>
+  </data>
+  <data name="HowManyDaysPerWeek" xml:space="preserve">
+    <value>How many days per week?</value>
+    <comment/>
+  </data>
+  <data name="HowMuchDoYouWeigh" xml:space="preserve">
+    <value>How much do you weigh?</value>
+    <comment/>
+  </data>
+  <data name="Arms" xml:space="preserve">
+    <value>Arms</value>
+    <comment/>
+  </data>
+  <data name="Chest" xml:space="preserve">
+    <value>Chest</value>
+    <comment/>
+  </data>
+  <data name="BackMuscle" xml:space="preserve">
+    <value>Back</value>
+    <comment>As in a person's back muscles</comment>
+  </data>
+  <data name="Legs" xml:space="preserve">
+    <value>Legs</value>
+    <comment/>
+  </data>
+  <data name="Triceps" xml:space="preserve">
+    <value>Triceps</value>
+    <comment/>
+  </data>
+  <data name="Biceps" xml:space="preserve">
+    <value>Biceps</value>
+    <comment/>
+  </data>
+  <data name="Quads" xml:space="preserve">
+    <value>Quads</value>
+    <comment/>
+  </data>
+  <data name="Hamstrings" xml:space="preserve">
+    <value>Hamstrings</value>
+    <comment/>
+  </data>
+  <data name="Calves" xml:space="preserve">
+    <value>Calves</value>
+    <comment/>
+  </data>
+  <data name="WhatAreYouWorkingOut" xml:space="preserve">
+    <value>What are we working out?</value>
+    <comment/>
+  </data>
+  <data name="HowMuchVolume" xml:space="preserve">
+    <value>How much volume?</value>
+    <comment/>
+  </data>
+  <data name="VolumeLight" xml:space="preserve">
+    <value>Light</value>
+    <comment>As in the opposite of heavy</comment>
+  </data>
+  <data name="VolumeMedium" xml:space="preserve">
+    <value>Medium</value>
+    <comment>As in the middle of light and heavy</comment>
+  </data>
+  <data name="VolumeHeavy" xml:space="preserve">
+    <value>Heavy</value>
+    <comment/>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>Ok</value>
+    <comment/>
+  </data>
+  <data name="FeedUserCompletedAWorkout{UserName}" xml:space="preserve">
+    <value>&lt;em&gt;{0}&lt;/em&gt; completed a workout!</value>
+    <comment/>
+  </data>
+  <data name="AnonymousUser" xml:space="preserve">
+    <value>Anonymous User</value>
+    <comment/>
+  </data>
+  <data name="AwaitingResponse" xml:space="preserve">
+    <value>Awaiting Response</value>
+    <comment/>
+  </data>
+  <data name="Nickname" xml:space="preserve">
+    <value>Nickname</value>
+    <comment/>
+  </data>
+  <data name="ViewTheirPlan" xml:space="preserve">
+    <value>View their plan</value>
+    <comment/>
+  </data>
+  <data name="UserIsFollowingYou{User}" xml:space="preserve">
+    <value>&lt;em&gt;{0}&lt;/em&gt; is following you!</value>
+    <comment/>
+  </data>
+  <data name="FollowUserBack{User}" xml:space="preserve">
+    <value>Follow {0} back</value>
+    <comment/>
+  </data>
+  <data name="UserWantsToFollowYou{User}" xml:space="preserve">
+    <value>&lt;em&gt;{0}&lt;/em&gt; wants to follow you!</value>
+    <comment/>
+  </data>
+  <data name="Deny" xml:space="preserve">
+    <value>Deny</value>
+    <comment/>
+  </data>
+  <data name="GenericLoading" xml:space="preserve">
+    <value>Loading...</value>
+    <comment/>
+  </data>
+  <data name="Duplicate" xml:space="preserve">
+    <value>Duplicate</value>
+    <comment/>
+  </data>
+  <data name="NeverDoneThisExerciseBefore" xml:space="preserve">
+    <value>You have never done this exercise before</value>
+    <comment/>
+  </data>
+  <data name="Share" xml:space="preserve">
+    <value>Share</value>
+    <comment>Verb</comment>
+  </data>
+  <data name="EditedOn{Date}" xml:space="preserve">
+    <value>Edited: {0}</value>
+    <comment/>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Active</value>
+    <comment/>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+    <comment/>
+  </data>
+  <data name="Weight" xml:space="preserve">
+    <value>Weight</value>
+    <comment/>
+  </data>
+  <data name="EnableNotificationsQuestion" xml:space="preserve">
+    <value>Enable Notifications?</value>
+    <comment/>
+  </data>
+  <data name="AndroidNotificationPermissionExplanation" xml:space="preserve">
+    <value>Newer Android devices require an additional permission to ensure that rest notifications are delivered on time. Without this permission, they will arrive late and largely be useless. On the next screen, please grant LiftLog the permission.</value>
+    <comment/>
+  </data>
+  <data name="EnjoyingLiftLogQuestion" xml:space="preserve">
+    <value>Enjoying LiftLog?</value>
+    <comment/>
+  </data>
+  <data name="EnjoyingLiftLogMessage{Type}{Store}" xml:space="preserve">
+    <value>If so, would you take a minute to leave a {0} on {1}?</value>
+    <comment/>
+  </data>
+  <data name="NotNow" xml:space="preserve">
+    <value>Not now</value>
+    <comment/>
+  </data>
+  <data name="Rate" xml:space="preserve">
+    <value>Rate</value>
+    <comment/>
+  </data>
+  <data name="Never" xml:space="preserve">
+    <value>Never</value>
+    <comment/>
+  </data>
+  <data name="GithubStar" xml:space="preserve">
+    <value>star</value>
+    <comment>as in a star on github</comment>
+  </data>
+  <data name="Review" xml:space="preserve">
+    <value>review</value>
+    <comment>as in a review on the app store</comment>
+  </data>
+  <data name="Optional" xml:space="preserve">
+    <value>Optional</value>
+    <comment/>
+  </data>
+  <data name="YourName" xml:space="preserve">
+    <value>Your Name</value>
+    <comment/>
+  </data>
+  <data name="PublishWorkout" xml:space="preserve">
+    <value>Publish workout</value>
+    <comment/>
+  </data>
+  <data name="PublishBodyweight" xml:space="preserve">
+    <value>Publish bodyweight</value>
+    <comment/>
+  </data>
+  <data name="PublishPlan" xml:space="preserve">
+    <value>Publish plan</value>
+    <comment/>
+  </data>
+  <data name="PublishWorkoutSubtitle" xml:space="preserve">
+    <value>Publish workouts as you complete them</value>
+    <comment/>
+  </data>
+  <data name="PublishPlanSubtitle" xml:space="preserve">
+    <value>Publish your current plan for your followers to see and import</value>
+    <comment/>
+  </data>
+  <data name="PublishBodyweightSubtitle" xml:space="preserve">
+    <value>Publish your bodyweight with your workouts</value>
+    <comment/>
+  </data>
+  <data name="ResetAccount" xml:space="preserve">
+    <value>Reset account</value>
+    <comment/>
+  </data>
+  <data name="ResetAccountMessage" xml:space="preserve">
+    <value>This will delete your data on the servers and unsubscribe you from all feeds. You will need to resubscribe and share a new link if you want to share your workouts again.</value>
+    <comment/>
+  </data>
+  <data name="OnlyThoseWithTheLinkCanSee" xml:space="preserve">
+    <value>Only those with the link can see what you've shared.</value>
+    <comment/>
+  </data>
+  <data name="ShareLink" xml:space="preserve">
+    <value>Share link</value>
+    <comment/>
+  </data>
+  <data name="Unlock" xml:space="preserve">
+    <value>Unlock</value>
+    <comment/>
+  </data>
+  <data name="ProFeatures" xml:space="preserve">
+    <value>Pro Features</value>
+    <comment/>
+  </data>
+  <data name="AiPlannerSubtitle" xml:space="preserve">
+    <value>Use AI to generate an entire program suited to your goals</value>
+    <comment/>
+  </data>
+  <data name="AiSessionCreatorSubtitle" xml:space="preserve">
+    <value>Generate a workout session to import into your plan or complete now!</value>
+    <comment/>
+  </data>
+  <data name="UpgradeToPro" xml:space="preserve">
+    <value>Upgrade to Pro</value>
+    <comment/>
+  </data>
+  <data name="UpgradeToProDescription" xml:space="preserve">
+    <value>This will unlock the AI planner, which will generate a plan tailored specifically to you and your goals. &lt;br&gt;This is a one time purchase of:</value>
+    <comment>The price immediately follows this, so translations will need to be worded in such a way that this is possible</comment>
+  </data>
+  <data name="Upgrade" xml:space="preserve">
+    <value>Upgrade</value>
+    <comment/>
+  </data>
+  <data name="PlanSharedWithYou" xml:space="preserve">
+    <value>This plan has been shared with you.</value>
+    <comment/>
+  </data>
+  <data name="SharedPlan" xml:space="preserve">
+    <value>Shared Plan</value>
+    <comment/>
+  </data>
+  <data name="SettingsSaved" xml:space="preserve">
+    <value>Settings saved</value>
+    <comment/>
+  </data>
+  <data name="BackupSentSuccessfully" xml:space="preserve">
+    <value>Backup sent successfully</value>
+    <comment/>
+  </data>
+  <data name="FailedToBackupToRemote" xml:space="preserve">
+    <value>Failed to backup to remote server</value>
+    <comment/>
+  </data>
+  <data name="ImportTheirPlan" xml:space="preserve">
+    <value>Import their plan</value>
+    <comment/>
+  </data>
+  <data name="ImportTheirPlanMessage{user}" xml:space="preserve">
+    <value>This will import &lt;em&gt;{0}'s&lt;/em&gt; plan.  It will not overwrite your existing plan.</value>
+    <comment/>
+  </data>
+  <data name="Translation" xml:space="preserve">
+    <value>Suggest a translation</value>
+    <comment/>
+  </data>
+  <data name="TranslationSubtitle" xml:space="preserve">
+    <value>Submit translations for parts of the app!</value>
+    <comment/>
+  </data>
+  <data name="ManageWorkoutTitle" xml:space="preserve">
+    <value>Manage workout</value>
+    <comment/>
+  </data>
+</root>

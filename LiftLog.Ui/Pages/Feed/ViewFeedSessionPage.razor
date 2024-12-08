@@ -30,8 +30,10 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         Dispatcher.Dispatch(new SetPageTitleAction("Feed Session"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/feed"));
+        Dispatcher.Dispatch(new SetReopenCurrentSessionAction(SessionTarget.FeedSession, true));
 
         var hasSession = false;
 
@@ -50,13 +52,9 @@
                 Dispatcher.Dispatch(new SetPageTitleAction(CurrentSessionState.Value.FeedSession.Blueprint.Name));
         }
 
-        Console.WriteLine("{0} {1}", hasSession, CurrentSessionState.Value.FeedSession);
-
         if (!hasSession)
         {
             NavigationManager.NavigateTo("/feed");
         }
-
-        base.OnInitialized();
     }
 }

@@ -10,7 +10,7 @@ Mobile devices require that HTTPS is used for connections, which means that user
 
 ## Setting up the app
 
-Within the LiftLog app, navigate to `Settings -> Backup and Restore -> Automatic Remote Backup`. On this screen, two values can be set:
+Within the LiftLog app, navigate to `Settings -> Export, Backup, and Restore -> Automatic Remote Backup`. On this screen, two values can be set:
 
 ```
 Endpoint - Required.  This is the https endpoint which will receive the backups
@@ -19,6 +19,10 @@ Api Key - Optional (recommended).  LiftLog will pass this value as an X-API-Key 
 
 The endpoint should simply accept a `POST` request where the body will be the raw bytes of a `liftlogbackup.gz` file. It MUST NOT decompress the gzipped data, the LiftLog app only understands gzipped files.
 
-An example implementation which stores the backups as files on disk can be found [here](../LiftLog.BackupServer/). Note that this server requires a reverse proxy for HTTPS termination.
+An example implementation which stores the backups as files on disk can be found [here](../examples/remote-backup/LiftLog.BackupServer/). Note that this server requires a reverse proxy for HTTPS termination.
 
 You can test if it is correctly set up by pressing the `Test` button in app. Any errors will be displayed, or a success toast on success. Ensure you hit `Save` to persist your configuration.
+
+## AWS Lambda S3 Deployable Backup Server
+
+A Node.js application along with code to deploy it to AWS is available in the [examples/remote-backup/reference-server-implementation/aws-lambda-s3-deployable](../examples/remote-backup/reference-server-implementation/aws-lambda-s3-deployable) folder. This is a more advanced setup which uses AWS Lambda and S3 to store the backups. Again this is quite involved but can get you set up if you are fairly technically adventurous.

@@ -38,13 +38,19 @@
             case 9:
                 <HoldingRepCounterTip/>
                 break;
+            case 10:
+                <PlainTextExportTip/>
+                break;
+            case 11:
+                <DifferentWeightDropsetTip/>
+                break;
         }
     </Card>
 }
 
 @code
 {
-    private static readonly int totalTips = 9;
+    private static readonly int totalTips = 11;
 
     private void HandleNextClick()
     {

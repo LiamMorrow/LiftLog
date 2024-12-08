@@ -14,7 +14,7 @@ describe('Completing a session', () => {
       cy.containsA('Add Exercise', { includeShadowDom: true }).click()
       cy.dialog().find('md-filled-text-field').find('input', { includeShadowDom: true }).first().click().type('Squat')
 
-      cy.dialog().contains("Update").click()
+      cy.dialog().find("[data-cy=dialog-action]").click()
 
 
       cy.getA('.repcount').first().click()
@@ -27,7 +27,7 @@ describe('Completing a session', () => {
 
       cy.dialog().contains("Save").click()
 
-      cy.contains('Finish').click()
+      cy.get('[data-cy=save-session-button]').click()
 
       cy.navigate('History')
 
@@ -41,7 +41,7 @@ describe('Completing a session', () => {
     beforeEach(() => {
       cy.navigate('Settings')
       // Disable tips
-      cy.containsA('App Configuration').click()
+      cy.containsA('App configuration').click()
       cy.containsA('Show tips').click()
       cy.navigate('Settings')
       cy.containsA('Manage plans').click()
@@ -67,7 +67,7 @@ describe('Completing a session', () => {
 
         cy.getA('.snackbar').should('be.visible').should('contain.text', 'This session').should('contain.text', '680')
 
-        cy.contains('Finish').click()
+        cy.get('[data-cy=save-session-button]').click()
 
         cy.getA('[data-cy=session-summary-title]').should('contain.text', 'Workout B')
 
@@ -77,7 +77,7 @@ describe('Completing a session', () => {
 
         cy.getA('md-filled-text-field[type=date]').get('input', { includeShadowDom: true }).first().click().type('2023-05-22')
 
-        cy.contains('Finish').click()
+        cy.get('[data-cy=save-session-button]').click()
 
         cy.recursionLoop(() => {
           if (Cypress.$('[data-cy=calendar-month]').text().includes('May 2023')) {
@@ -126,7 +126,7 @@ describe('Completing a session', () => {
         }
 
         cy.getA('.snackbar').should('be.visible').should('contain.text', 'This session').should('contain.text', '650')
-        cy.contains('Finish').click()
+        cy.get('[data-cy=save-session-button]').click()
 
         cy.getA('[data-cy=session-summary-title]').eq(0).should('contain.text', 'Workout B')
         cy.getA('[data-cy=session-summary-title]').eq(1).should('contain.text', 'Workout A').click()
@@ -134,6 +134,39 @@ describe('Completing a session', () => {
         cy.getA('[data-cy=weighted-exercise]').eq(0).should('contain.text', 'Squat')
         // Since all sets were completed - with at least one of the sets having equal or higher weight than the top level, the weight should have increased
         cy.getA('[data-cy=weight-display]').first().should('contain.text', '15kg')
+      })
+
+      it('can complete a workout and change the number of reps with it not adding progressive overload', () => {
+        cy.containsA('Workout A').click()
+        cy.containsA('Rest between').should('not.exist')
+        updateWeight(0, 20)
+        cy.getA('.repcount').first().click().should('contain.text', '5/5')
+        cy.getA('.snackbar').contains('Rest between').should('be.visible')
+
+        cy.getA('.itemlist div').eq(0).should('contain.text', 'Squat')
+        cy.getA('[data-cy=weight-display]').first().should('contain.text', '20kg')
+
+        // Update number of reps on the exercise
+        cy.getA('[data-cy=more-exercise-btn]').first().click()
+        cy.getA('[data-cy=exercise-edit-menu-button]').first().click()
+
+        // Update the number of reps to 6
+        cy.dialog().find('[data-cy=exercise-reps]').should('contain.text', '5').find('[data-cy=fixed-increment]').click()
+        cy.dialog().contains("Update").click()
+
+        // Complete all sets
+        for (let i = 1; i <= 6; i++) {
+          cy.getA('.repcount').eq(i).click()
+        }
+
+        cy.get('[data-cy=save-session-button]').click()
+
+        cy.getA('[data-cy=session-summary-title]').eq(0).should('contain.text', 'Workout B')
+        cy.getA('[data-cy=session-summary-title]').eq(1).should('contain.text', 'Workout A').click()
+
+        cy.getA('[data-cy=weighted-exercise]').eq(0).should('contain.text', 'Squat')
+        // Since the number of reps was increased, the weight should not have increased because it is a "different" exercise
+        cy.getA('[data-cy=weight-display]').first().should('contain.text', '0kg')
       })
 
       it('can add notes to an exercise and see them the next time they do that exercise', () => {
@@ -145,7 +178,7 @@ describe('Completing a session', () => {
         cy.dialog().find('[data-cy=notes-dialog-actions]').contains("Save").click()
         cy.getA('.repcount').first().click().should('contain.text', '5/5')
 
-        cy.contains('Finish').click()
+        cy.get('[data-cy=save-session-button]').click()
 
         cy.navigate('History')
 

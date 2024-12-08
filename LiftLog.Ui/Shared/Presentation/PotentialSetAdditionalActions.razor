@@ -1,13 +1,9 @@
 <div class="flex flex-wrap gap-2 justify-center mb-2 mx-4">
-    @GetRepButton(@<span>-</span>,
-        () => OnSelectRepCount.InvokeAsync(null),
-        "bg-secondary-container text-on-secondary-container")
+    @GetRepButton(@<span>-</span>, null, "bg-secondary-container text-on-secondary-container")
     @for(int i = 0; i < MaxReps + 1; i++)
     {
         var reps = i;
-        @GetRepButton(@<span class="font-bold">@reps</span>,
-            () => OnSelectRepCount.InvokeAsync(reps),
-            "bg-primary-container text-on-primary-container");
+        @GetRepButton(@<span class="font-bold">@reps</span>,reps, "bg-primary-container text-on-primary-container");
     }
 </div>
 <div class="flex flex-grow gap-2 justify-center">
@@ -15,9 +11,7 @@
     @for(int i = MaxReps+1; i < MaxReps + 4; i++)
     {
         var reps = i;
-        @GetRepButton(@<span class="font-bold">@reps</span>,
-            () => OnSelectRepCount.InvokeAsync(reps),
-            "bg-secondary-container text-on-secondary-container");
+        @GetRepButton(@<span class="font-bold">@reps</span>, reps, "bg-secondary-container text-on-secondary-container");
     }
 </div>
 
@@ -31,12 +25,31 @@
 
     [EditorRequired] [Parameter] public EventCallback OnDeleteSet { get; set; }
 
+    private int? lastPointerDownReps = int.MinValue;
 
-    private RenderFragment GetRepButton(RenderFragment childContent, Action onClick, string color)
+
+    private RenderFragment GetRepButton(RenderFragment childContent, int? reps, string color)
     {
+        void OnPointerDown(PointerEventArgs e)
+        {
+            lastPointerDownReps = reps;
+        }
+        // On iOS the click event is triggered when the user lifts their finger after the dialog is opened
+        // This is a workaround to prevent the click event from being triggered until the user has actually tapped the button
+        async Task OnClick()
+        {
+            if (lastPointerDownReps != reps)
+            {
+                return;
+            }
+            lastPointerDownReps = int.MinValue;
+            await OnSelectRepCount.InvokeAsync(reps);
+        }
         return @<div class="flex flex-col items-center relative">
             <button
-                @onpointerdown="onClick"
+                @key="reps ?? int.MaxValue"
+                @onclick="OnClick"
+                @onpointerdown="OnPointerDown"
                 class="
                     repcount
                     flex-shrink-0

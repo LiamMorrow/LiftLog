@@ -1,0 +1,6 @@
+terraform/.terraform
+terraform/*terraform.tfstate*
+terraform/output.txt
+terraform/lambda.zip
+src/dist
+src/node_modules

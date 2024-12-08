@@ -2,7 +2,9 @@
     <div class="flex items-center justify-between">
         @if (Failed)
         {
-            <span>Rest <span class="font-bold">@(Rest.FailureRest.ToString(TimespanFormatStr))</span></span>
+            <LimitedHtml
+                Value="@UiStrings.RestSingular(Rest.FailureRest.ToString(TimespanFormatStr))"
+                EmClass="font-bold" />
         }
         else {
             <RestFormat Highlight=false Rest="@Rest" />

@@ -17,7 +17,7 @@
 {
     <div class="flex w-full my-2 px-2">
         <TextField
-            Label="Date"
+            Label="@UiStrings.Date"
             class="w-full"
             TextFieldType="TextFieldType.Filled"
             Value=@(CurrentSessionState.Value.HistorySession.Date.ToString("o"))
@@ -45,8 +45,10 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         Dispatcher.Dispatch(new SetPageTitleAction("Session"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/history"));
+        Dispatcher.Dispatch(new SetReopenCurrentSessionAction(SessionTarget.HistorySession, true));
         if (CurrentSessionState.Value.HistorySession is null)
         {
             NavigationManager.NavigateTo("/history");
@@ -55,7 +57,5 @@
         {
             Dispatcher.Dispatch(new SetPageTitleAction(CurrentSessionState.Value.HistorySession.Blueprint.Name));
         }
-
-        base.OnInitialized();
     }
 }

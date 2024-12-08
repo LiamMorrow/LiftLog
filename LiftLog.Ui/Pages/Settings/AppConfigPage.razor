@@ -7,17 +7,17 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <md-list>
-    <ListSwitch Headline="Use imperial units" SupportingText="Use pounds in favour of kilograms" Value="@SettingsState.Value.UseImperialUnits" OnSwitched="SetUseImperialUnits" />
-    <ListSwitch Headline="Show bodyweight" SupportingText="Enable bodyweight tracking and statistics" Value="@SettingsState.Value.ShowBodyweight" OnSwitched="SetShowBodyweight" />
-    <ListSwitch Headline="Show feed" SupportingText="Display the feed in the navigation bar" Value="@SettingsState.Value.ShowFeed" OnSwitched="SetShowFeed" />
+    <ListSwitch Headline="@UiStrings.UseImperialUnits" SupportingText="@UiStrings.UseImperialUnitsSubtitle" Value="@SettingsState.Value.UseImperialUnits" OnSwitched="SetUseImperialUnits" />
+    <ListSwitch Headline="@UiStrings.ShowBodyweight" SupportingText="@UiStrings.ShowBodyweightSubtitle" Value="@SettingsState.Value.ShowBodyweight" OnSwitched="SetShowBodyweight" />
+    <ListSwitch Headline="@UiStrings.ShowFeed" SupportingText="@UiStrings.ShowFeedSubtitle" Value="@SettingsState.Value.ShowFeed" OnSwitched="SetShowFeed" />
     @* If android, we need a status bar fix sometimes *@
     @if(DeviceService.GetDeviceType() == DeviceType.Android)
     {
-        <ListSwitch Headline="Status bar fix" SupportingText="Fixes the status bar overlapping the page title controls on some devices" Value="@SettingsState.Value.StatusBarFix" OnSwitched="SetStatusBarFix" />
+        <ListSwitch Headline="@UiStrings.StatusBarFix" SupportingText="@UiStrings.StatusBarFixSubtitle" Value="@SettingsState.Value.StatusBarFix" OnSwitched="SetStatusBarFix" />
     }
 
-    <ListSwitch Headline="Show tips" SupportingText="Show tips on how to use the app" Value="@SettingsState.Value.ShowTips" OnSwitched="SetShowTips" />
-    <AppButton Type="AppButtonType.Text" OnClick="ResetTips">Reset tips</AppButton>
+    <ListSwitch Headline="@UiStrings.ShowTips" SupportingText="@UiStrings.ShowTipsSubtitle" Value="@SettingsState.Value.ShowTips" OnSwitched="SetShowTips" />
+    <AppButton Type="AppButtonType.Text" OnClick="ResetTips">@UiStrings.ResetTips</AppButton>
 
 
     <ThemeChooser
@@ -31,9 +31,9 @@
 @code {
     protected override void OnInitialized()
     {
-        Dispatcher.Dispatch(new SetPageTitleAction("App Configuration"));
-        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
         base.OnInitialized();
+        Dispatcher.Dispatch(new SetPageTitleAction(UiStrings.AppConfiguration));
+        Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
     }
 
     private void SetUseImperialUnits(bool value)

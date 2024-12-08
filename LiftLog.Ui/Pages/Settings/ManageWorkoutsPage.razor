@@ -14,20 +14,20 @@
 
 @if(ProgramState.Value.SavedPrograms.ContainsKey(PlanId)){
     <TextField
-        Label="Plan Name"
+        Label="@UiStrings.PlanName"
         TextFieldType="TextFieldType.Filled"
         Value="@ProgramState.Value.SavedPrograms[PlanId].Name"
         class="m-2"
-        OnChange="@((val) => Dispatcher.Dispatch(new SetSavedPlanNameAction(PlanId, val??"")))" />
+        OnChange="@((val) => Dispatcher.Dispatch(new SetSavedPlanNameAction(PlanId, val ?? "")))" />
 
 
     @if (!ProgramState.Value.GetSessionBlueprints(PlanId).Any())
     {
         <EmptyInfo>
-            <p>No sessions in plan<br> Add a session to get started.</p>
+            <LimitedHtml Value="@UiStrings.NoWorkoutsInPlan"/>
         </EmptyInfo>
     }
-    <CardList Items="ProgramState.Value.GetSessionBlueprints(PlanId).IndexedTuples()" OnClick="(item) => SelectSession(item.Item, item.Index)">
+    <CardList Items="ProgramState.Value.GetSessionBlueprints(PlanId).Index()" OnClick="(item) => SelectSession(item.Item, item.Index)">
         @{
             var session = context.Item;
             var index = context.Index;
@@ -42,14 +42,14 @@
 
     <FloatingBottomContainer>
         <Fab>
-            <FloatingButton size="small" variant="surface" aria-label="Add Session" label="Add Session" OnClick="AddSession"><md-icon slot="icon">add</md-icon></FloatingButton>
+            <FloatingButton size="small" variant="surface" aria-label="Add Session" label="@UiStrings.AddWorkout" OnClick="AddSession"><md-icon slot="icon">add</md-icon></FloatingButton>
         </Fab>
     </FloatingBottomContainer>
 
     @if(IsInActiveScreen && ProgramState.Value.ActivePlanId != PlanId)
     {
         <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="TrailingTitleButton">
-            <AppButton class="text-lg" Type=AppButtonType.Text OnClick=UseSession>Use</AppButton>
+            <AppButton class="text-lg" Type=AppButtonType.Text OnClick=UseSession>@UiStrings.UseWorkout</AppButton>
         </Microsoft.AspNetCore.Components.Sections.SectionContent>
     }
 }
@@ -82,7 +82,7 @@
         Dispatcher.Dispatch(
             new AddProgramSessionAction(
                 PlanId,
-                SessionBlueprint.Empty with { Name = $"Session {ProgramState.Value.GetSessionBlueprints(PlanId).Count + 1}" })
+                SessionBlueprint.Empty with { Name = $"{UiStrings.Workout} {ProgramState.Value.GetSessionBlueprints(PlanId).Count + 1}" })
         );
         SelectSession(ProgramState.Value.GetSessionBlueprints(PlanId).Last(), ProgramState.Value.GetSessionBlueprints(PlanId).Count - 1);
     }
@@ -92,7 +92,7 @@
             PlanId,
             sessionBlueprint with
             {
-                Name = $"Session {ProgramState.Value.GetSessionBlueprints(PlanId).Count + 1}"
+                Name = $"{UiStrings.Workout} {ProgramState.Value.GetSessionBlueprints(PlanId).Count + 1}"
             }
         )
     );
@@ -105,10 +105,10 @@
 
     protected override void OnInitialized()
     {
-        var title = "Manage " + ProgramState.Value.SavedPrograms[PlanId].Name;
+        base.OnInitialized();
+        var title = UiStrings.ManageWorkout(ProgramState.Value.SavedPrograms[PlanId].Name);
         Dispatcher.Dispatch(new SetPageTitleAction(title));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings/program-list"));
-        base.OnInitialized();
     }
 
     protected override ValueTask DisposeAsyncCore(bool disposing)

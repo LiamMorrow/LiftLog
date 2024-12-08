@@ -6,6 +6,7 @@
             Exercise=exercise
             ShowSets=ShowSets
             ShowWeight=ShowWeight
+            IsFilled=IsFilled
             ShowName=true />
         <md-divider class="last:hidden"></md-divider>
     }
@@ -18,4 +19,6 @@
     [Parameter] public bool ShowSets { get; set; }
 
     [Parameter] public bool ShowWeight { get; set; } = true;
+
+    [Parameter] public bool IsFilled { get; set; } = true;
 }

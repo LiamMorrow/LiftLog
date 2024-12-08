@@ -1,8 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base", "group:allNonMajor"],
-  "schedule": ["before 4am every monday"],
+  "extends": [
+    "config:recommended",
+    "group:allNonMajor"
+  ],
+  "schedule": [
+    "before 4am on monday"
+  ],
   "automerge": true,
-
-  "gitIgnoredAuthors": ["renovate[bot]@users.noreply.github.com"]
+  "gitIgnoredAuthors": [
+    "renovate[bot]@users.noreply.github.com"
+  ]
 }

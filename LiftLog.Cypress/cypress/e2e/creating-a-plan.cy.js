@@ -9,7 +9,7 @@ describe('Creating a plan', () => {
     beforeEach(() => {
       cy.navigate('Settings')
       // Disable tips
-      cy.containsA('App Configuration').click()
+      cy.containsA('App configuration').click()
       cy.containsA('Show tips').click()
       cy.navigate('Settings')
       cy.containsA('Manage plans').click()
@@ -24,7 +24,7 @@ describe('Creating a plan', () => {
     beforeEach(() => {
       cy.navigate('Settings')
       // Disable tips
-      cy.containsA('App Configuration').click()
+      cy.containsA('App configuration').click()
       cy.containsA('Show tips').click()
       cy.navigate('Settings')
       cy.containsA('Manage plans').click()
@@ -50,7 +50,7 @@ describe('Creating a plan', () => {
 
 function populatePlanFromEditPage(exerciseName) {
 
-  cy.containsA('Add Session', { includeShadowDom: true }).click()
+  cy.containsA('Add workout', { includeShadowDom: true }).click()
   cy.containsA('Add Exercise', { includeShadowDom: true }).click()
   cy.dialog().find('[data-cy=exercise-name]').find('input', { includeShadowDom: true }).clear().type(exerciseName)
   cy.dialog().find('[data-cy=exercise-sets]').should('contain.text', '3').find('[data-cy=fixed-increment]').click()
@@ -66,7 +66,7 @@ function populatePlanFromEditPage(exerciseName) {
 
 function assertPlanFromEditPage(exerciseName) {
 
-  cy.containsA('Session 1').click()
+  cy.containsA('Workout 1').click()
   cy.getA('.itemlist').children().first().click()
   cy.dialog().find('[data-cy=exercise-name]').find('input', { includeShadowDom: true }).should('have.value', exerciseName)
   cy.dialog().find('[data-cy=exercise-sets]').should('contain.text', '4')

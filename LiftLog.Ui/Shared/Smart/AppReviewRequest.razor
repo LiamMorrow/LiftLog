@@ -5,18 +5,18 @@
 @inject IDispatcher Dispatcher
 
 <Dialog @ref="rateDialog">
-    <span slot="headline">Enjoying LiftLog?</span>
-    <span slot="content" class="block text-left">If so, would you take a minute to leave a @ReviewType on @AppStore?</span>
+    <span slot="headline">@UiStrings.EnjoyingLiftLogQuestion</span>
+    <span slot="content" class="block text-left">@UiStrings.EnjoyingLiftLogMessage(ReviewType, AppStore)</span>
     <div slot="actions" class="flex">
-        <AppButton Type="AppButtonType.Text" class="mr-auto" OnClick="Never">Never</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="()=>rateDialog?.Close()">Not Now</AppButton>
+        <AppButton Type="AppButtonType.Text" class="mr-auto" OnClick="Never">@UiStrings.Never</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="NotNow">@UiStrings.NotNow</AppButton>
         @if(DeviceService.GetDeviceType() == DeviceType.Web)
         {
-            <AppButton Type="AppButtonType.Text" OnClick="Rate" target="_blank" href="https://github.com/LiamMorrow/LiftLog">Rate</AppButton>
+            <AppButton Type="AppButtonType.Text" OnClick="Rate" target="_blank" href="https://github.com/LiamMorrow/LiftLog">@UiStrings.Rate</AppButton>
         }
         else
         {
-            <AppButton Type="AppButtonType.Text" OnClick="Rate">Rate</AppButton>
+            <AppButton Type="AppButtonType.Text" OnClick="Rate">@UiStrings.Rate</AppButton>
         }
     </div>
 </Dialog>
@@ -34,13 +34,19 @@
 
     private string ReviewType => DeviceService.GetDeviceType() switch
     {
-        DeviceType.Web => "star",
-        _ => "review"
+        DeviceType.Web => UiStrings.GithubStar,
+        _ => UiStrings.Review
     };
 
     private void Never()
     {
         Dispatcher.Dispatch(new SetAppRatingResultAction(AppRatingResult.Declined));
+        rateDialog?.Close();
+    }
+
+    private void NotNow()
+    {
+        Dispatcher.Dispatch(new SetAppLaunchCountAction(0));
         rateDialog?.Close();
     }
 
@@ -53,9 +59,9 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         AppState.StateChanged += HandleAppStateChange;
         Dispatcher.Dispatch(new IncrementAppLaunchCountAction());
-        base.OnInitialized();
     }
 
     private void HandleAppStateChange(object? sender, EventArgs e)

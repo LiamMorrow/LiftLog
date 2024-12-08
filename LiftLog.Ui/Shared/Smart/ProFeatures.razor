@@ -12,30 +12,30 @@
 
 <md-list>
     <div class="flex justify-between items-center">
-        <ListTitle Title="Pro Features" />
+        <ListTitle Title="@UiStrings.ProFeatures" />
         @RenderLockedPro()
     </div>
     <md-list-item type="button" class="text-left" multi-line-supporting-text disabled=@(!AppState.Value.ProState.IsPro) @onclick="NavigateToAiPlanner">
         <md-icon slot="start">bolt</md-icon>
-        <span slot="headline">AI Program Planner</span>
-        <span slot="supporting-text">Use AI to generate an entire program suited to your goals</span>
+        <span slot="headline">@UiStrings.AiPlanner</span>
+        <span slot="supporting-text">@UiStrings.AiPlannerSubtitle</span>
     </md-list-item>
     <md-list-item type="button" class="text-left" multi-line-supporting-text disabled=@(!AppState.Value.ProState.IsPro) @onclick="NavigateToAiSessionCreator">
         <md-icon slot="start">auto_awesome</md-icon>
-        <span slot="headline">AI Session Creator</span>
-        <span slot="supporting-text">Generate a workout session to import into your plan or complete now!</span>
+        <span slot="headline">@UiStrings.AiSessionCreator</span>
+        <span slot="supporting-text">@UiStrings.AiSessionCreatorSubtitle</span>
     </md-list-item>
 </md-list>
 
 <Dialog @ref="upgradeDialog">
-    <span slot="headline">Upgrade to Pro</span>
+    <span slot="headline">@UiStrings.UpgradeToPro</span>
     <span slot="content" class="block text-left">
-        This will unlock the AI planner, which will generate a plan tailored
-        specifically to you and your goals. <br/>This is a one time purchase of @RenderPrice().
+        <LimitedHtml Value="@UiStrings.UpgradeToProDescription" />
+        @RenderPrice()
     </span>
     <div slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick="() => upgradeDialog?.Close()">Close</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="UpgradeToPro">Upgrade</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="() => upgradeDialog?.Close()">@UiStrings.Close</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="UpgradeToPro">@UiStrings.Upgrade</AppButton>
     </div>
 
 </Dialog>
@@ -57,7 +57,7 @@
             return null;
         }
 
-        return @<AppButton class="mr-2" OnClick="() => { upgradeDialog?.Open(); }"><md-icon slot="icon">lock</md-icon>Unlock</AppButton>;
+        return @<AppButton class="mr-2" OnClick="() => { upgradeDialog?.Open(); }"><md-icon slot="icon">lock</md-icon>@UiStrings.Unlock</AppButton>;
     }
 
     private RenderFragment RenderPrice()

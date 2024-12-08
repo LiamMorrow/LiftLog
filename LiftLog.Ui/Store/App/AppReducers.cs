@@ -50,7 +50,13 @@ public static class AppReducers
     public static AppState SetReopenCurrentSession(
         AppState state,
         SetReopenCurrentSessionAction action
-    ) => state with { ReopenCurrentSession = action.ReopenCurrentSession };
+    ) =>
+        state with
+        {
+            ReopenCurrentSessionTargets = action.ReopenSession
+                ? state.ReopenCurrentSessionTargets.Add(action.SessionTarget)
+                : state.ReopenCurrentSessionTargets.Remove(action.SessionTarget),
+        };
 
     [ReducerMethod]
     public static AppState SetBackNavigationUrl(

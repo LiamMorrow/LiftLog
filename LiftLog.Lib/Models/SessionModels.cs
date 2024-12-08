@@ -11,8 +11,13 @@ public record Session(
     decimal? Bodyweight
 )
 {
-    public static readonly Session Empty =
-        new(Guid.Empty, SessionBlueprint.Empty, [], DateOnly.MinValue, null);
+    public static readonly Session Empty = new(
+        Guid.Empty,
+        SessionBlueprint.Empty,
+        [],
+        DateOnly.MinValue,
+        null
+    );
 
     public static Session FreeformSession(DateOnly date, decimal? bodyweight) =>
         Empty with
@@ -28,7 +33,7 @@ public record Session(
         get
         {
             var latestExerciseIndex = RecordedExercises
-                .IndexedTuples()
+                .Index()
                 .Where(x => x.Item.LastRecordedSet is not null)
                 .OrderByDescending(x => x.Item.LastRecordedSet?.Set?.CompletionTime)
                 .Select(x => x.Index)
@@ -115,6 +120,8 @@ public record Session(
         RecordedExercises.Sum(ex =>
             ex.PotentialSets.Sum(set => (set.Set?.RepsCompleted ?? 0) * set.Weight)
         );
+
+    public bool IsFreeform => Blueprint.Name == "Freeform Session";
 }
 
 public record RecordedExercise(

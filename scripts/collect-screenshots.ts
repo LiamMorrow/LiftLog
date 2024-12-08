@@ -72,13 +72,13 @@ const androidDevices = [
   "Pixel_5_API_34",
 ];
 
-await $`dotnet clean ../LiftLog.Maui -f net8.0-android`;
+await $`dotnet clean ../LiftLog.Maui -f net9.0-android`;
 for (const device of androidDevices) {
   await $`mkdir -p ${getDeviceFolder(device)}`;
   const emulator = startEmulator(device).text();
   await $`echo Press enter when emulator loaded`;
   await $`read`;
-  // await $`dotnet build ../LiftLog.Maui -t:Run -c Debug -f net8.0-android -p:TargetFramework=net8.0-android -p:BuildFor=android -p:Device=${device}`;
+  // await $`dotnet build ../LiftLog.Maui -t:Run -c Debug -f net9.0-android -p:TargetFramework=net9.0-android -p:BuildFor=android -p:Device=${device}`;
   await sleep(5000);
 
   for (const coords of screenshotCoords) {
@@ -92,7 +92,7 @@ for (const device of iosDevices) {
   await $`mkdir -p ${getDeviceFolder(device)}`;
   await startSimulator(device);
   const simulatorId = await getIosSimulatorId(device);
-  // $`dotnet build ../LiftLog.Maui -t:Run -f net8.0-ios -p:RuntimeIdentifiers=iossimulator-x64 -c Debug -p:ExtraDefineConstants=DEBUG_IOSSIM -p:_DeviceName=:v2:udid=${simulatorId}`.text();
+  // $`dotnet build ../LiftLog.Maui -t:Run -f net9.0-ios -p:RuntimeIdentifiers=iossimulator-x64 -c Debug -p:ExtraDefineConstants=DEBUG_IOSSIM -p:_DeviceName=:v2:udid=${simulatorId}`.text();
   // await sleep(25000);
   for (const coords of screenshotCoords) {
     goToScreenshotUrlIos(coords, simulatorId);

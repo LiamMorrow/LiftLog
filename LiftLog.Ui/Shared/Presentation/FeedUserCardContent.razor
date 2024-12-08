@@ -1,10 +1,10 @@
 <SplitCardControl>
     <TitleContent>
         <div class="flex justify-between items-center">
-            <ItemTitle Title="@(User.Name ?? "Anonymous User")" />
+            <ItemTitle Title="@(User.Name ?? UiStrings.AnonymousUser)" />
             @if (User.AesKey is null)
             {
-                <span class="text-xs text-tertiary">Awaiting Response</span>
+                <span class="text-xs text-tertiary">@UiStrings.AwaitingResponse</span>
             }
         </div>
     </TitleContent>
@@ -13,12 +13,12 @@
     </Actions>
     <MainContent>
         <div class="flex flex-col gap-4">
-            <TextField Value=@(User.Nickname ?? "") OnChange="val => UpdateUser(User with { Nickname = val })" label="Nickname"/>
+            <TextField Value=@(User.Nickname ?? "") OnChange="val => UpdateUser(User with { Nickname = val })" label="@UiStrings.Nickname"/>
 
             @if (User.CurrentPlan is not [])
             {
                 <AppButton Type="AppButtonType.Text" OnClick=ViewUserPlan>
-                    View their plan
+                    @UiStrings.ViewTheirPlan
                 </AppButton>
             }
         </div>

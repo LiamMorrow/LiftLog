@@ -1,10 +1,10 @@
 @inject IJSRuntime JSRuntime
 
     <md-list-item class="text-left" multi-line-supporting-text>
-        <span slot="headline" >Theme</span>
+        <span slot="headline" >@UiStrings.Theme</span>
     </md-list-item>
     <div class="flex items-center gap-4 w-full  overflow-x-auto p-2">
-        <AppButton OnClick="() => HandleColorChange(null)" Type="AppButtonType.Text"><md-focus-ring @ref="_focusRing" visible="@(Seed == null)"></md-focus-ring>Default</AppButton>
+        <AppButton OnClick="() => HandleColorChange(null)" Type="AppButtonType.Text"><md-focus-ring @ref="_focusRing" visible="@(Seed == null)"></md-focus-ring>@UiStrings.Default</AppButton>
         <div class="gap-2 flex">
             @ColorBall(FromHex("AA0000"))
             @ColorBall(FromHex("00AA00"))

@@ -1,9 +1,11 @@
-<div class="flex flex-col gap-4">
+@inject IJSRuntime JSRuntime
+
+<div class="flex flex-col gap-2">
 <TextField
     data-cy="exercise-name"
     TextFieldType="TextFieldType.Filled"
     class="w-full mb-2 text-xl text-start"
-    Label="Exercise"
+    Label="@UiStrings.Exercise"
     type="combobox"
     aria-controls="menu"
     aria-autocomplete="list"
@@ -13,57 +15,76 @@
     required
     OnChange="@(val => {SetExerciseName(val!); exerciseListMenu!.Open();})"
     OnFocus=@(()=>{exerciseListMenu!.Open();})
-    OnBlur="()=>exerciseListMenu!.Close()">
+    OnBlur="()=>exerciseListMenu!.Close()"
+    OnPaste="HandleLinkPaste">
 </TextField>
 <ExerciseSearcher @ref="exerciseListMenu" Value="@Exercise.Name" Anchor="exerciseTextField"  ValueChanged=@(v=>SetExerciseName(v)) />
+
+<div class="flex items-center w-full gap-4">
+    <Card HasPadding=false Type=Card.CardType.Filled class="flex-grow py-5 flex-1 flex justify-center">
+        <FixedIncrementer
+            data-cy="exercise-sets"
+            Value="Exercise.Sets"
+            Increment="() => IncrementExerciseSets()"
+            Decrement="() => DecrementExerciseSets()"
+            Label="@UiStrings.Sets"/>
+    </Card>
+    <Card HasPadding=false Type=Card.CardType.Filled class="flex-grow py-5 flex flex-1 justify-center">
+        <FixedIncrementer
+            data-cy="exercise-reps"
+            Value="Exercise.RepsPerSet"
+            Increment="() => IncrementExerciseRepsPerSet()"
+            Decrement="() => DecrementExerciseRepsPerSet()"
+            Label="@UiStrings.Reps"/>
+    </Card>
+</div>
 <TextField
     data-cy="exercise-notes"
     TextFieldType="TextFieldType.Filled"
     class="w-full mb-2 text-xl text-start resize-y"
-    Label="Plan Notes"
+    Label="@UiStrings.PlanNotes"
     type="textarea"
     SelectAllOnFocus="false"
     Value="@Exercise.Notes"
-    OnChange="@(val => SetExerciseNotes(val!))"/>
+    OnChange="@(val => SetExerciseNotes(val!))"
+    OnPaste="HandleLinkPaste"/>
+
+<TextField
+    @ref="linkField"
+    data-cy="exercise-link"
+    TextFieldType="TextFieldType.Filled"
+    class="w-full mb-2 text-xl text-start resize-y"
+    Label="@UiStrings.ExternalLink"
+    type="text"
+    placeholder="https://"
+    SelectAllOnFocus="false"
+    Value="@Exercise.Link"
+    error-text="@LinkValueError"
+    error=@(HasLinkError)
+    OnPaste="@(e => HandleLinkPaste(e))"
+    PreventDefaultPaste=true
+    OnChange="@(val => SetExerciseLink(val!))"/>
+
 <div class="flex flex-wrap justify-around w-full gap-4">
-    <div class="flex items-center w-full gap-4">
-        <Card HasPadding=false Type=Card.CardType.Filled class="flex-grow py-5 flex-1 flex justify-center">
-            <FixedIncrementer
-                data-cy="exercise-sets"
-                Value="Exercise.Sets"
-                Increment="() => IncrementExerciseSets()"
-                Decrement="() => DecrementExerciseSets()"
-                Label="Sets"/>
-        </Card>
-        <Card HasPadding=false Type=Card.CardType.Filled class="flex-grow py-5 flex flex-1 justify-center">
-            <FixedIncrementer
-                data-cy="exercise-reps"
-                Value="Exercise.RepsPerSet"
-                Increment="() => IncrementExerciseRepsPerSet()"
-                Decrement="() => DecrementExerciseRepsPerSet()"
-                Label="Reps"/>
-        </Card>
-    </div>
     <Card Type=Card.CardType.Elevated class="w-full flex flex-col gap-6 items-start">
-        <div class="-mr-2">
-            <EditableIncrementer
-                Increment="0.1m"
-                Label="Progressive Overload"
-                data-cy="exercise-auto-increase"
-                Suffix=@WeightSuffix
-                Value="Exercise.WeightIncreaseOnSuccess"
-                OnChange="e => SetExerciseSuccessWeight(e)"/>
-        </div>
+        <EditableIncrementer
+            Increment="0.1m"
+            Label="@UiStrings.ProgressiveOverload"
+            data-cy="exercise-auto-increase"
+            Suffix=@WeightSuffix
+            Value="Exercise.WeightIncreaseOnSuccess"
+            OnChange="e => SetExerciseSuccessWeight(e)"/>
         <md-divider></md-divider>
 
         <div class="w-full">
-            <Switch Label="Superset next exercise" data-cy="exercise-superset" Value="Exercise.SupersetWithNext" OnSwitched="supersets => SetExerciseSupersetsNext(supersets)"/>
+            <Switch Label="@UiStrings.SupersetNextExercise" data-cy="exercise-superset" Value="Exercise.SupersetWithNext" OnSwitched="supersets => SetExerciseSupersetsNext(supersets)"/>
         </div>
 
         <md-divider></md-divider>
 
         <RestEditorGroup Rest="Exercise.RestBetweenSets" OnRestUpdated="rest => OnRestUpdated(rest)"/>
     </Card>
+
 </div>
 </div>
 
@@ -71,6 +92,9 @@
 {
     private ExerciseBlueprint exercise = null!;
     private ExerciseSearcher? exerciseListMenu;
+
+    private TextField linkField = null!;
+
     [Parameter] [EditorRequired] public Action<ExerciseBlueprint> UpdateExercise { get; set; } = null!;
 
     [Parameter] [EditorRequired] public ExerciseBlueprint Exercise { get; set; } = null!;
@@ -101,6 +125,18 @@
 
     void SetExerciseNotes(string notes) => UpdateExerciseHandler(exercise with { Notes = notes });
 
+    private string LinkValueError => exercise.Link switch
+        {
+            "" or null => "",
+            var s when !s.StartsWith("https://") && !s.StartsWith("http://") => "Link must start with https:// or http://",
+            var s when !Uri.IsWellFormedUriString(s, UriKind.Absolute) => "Link is not a valid URL",
+            _ => ""
+        };
+
+    private bool HasLinkError => !string.IsNullOrWhiteSpace(LinkValueError);
+
+    void SetExerciseLink(string link) => UpdateExerciseHandler(exercise with { Link = link });
+
     void SetExerciseSupersetsNext(bool supersets)
         => UpdateExerciseHandler(exercise with { SupersetWithNext = supersets });
 
@@ -108,6 +144,13 @@
         => UpdateExerciseHandler(exercise with { WeightIncreaseOnSuccess = weight });
 
     void OnRestUpdated(Rest rest) => UpdateExerciseHandler(exercise with { RestBetweenSets = rest });
+
+    async Task HandleLinkPaste(ClipboardEventArgs e)
+    {
+        var text = await JSRuntime.InvokeAsync<string?>("AppUtils.extractLinkFromClipboard", e);
+        SetExerciseLink(text ?? exercise.Link);
+        await linkField.UpdateValueEvenIfFocused();
+    }
 
     private void UpdateExerciseHandler(ExerciseBlueprint updatedExercise)
     {

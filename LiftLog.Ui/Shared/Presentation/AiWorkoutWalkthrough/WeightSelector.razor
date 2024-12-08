@@ -1,6 +1,6 @@
 @inject IJSRuntime Js
 
-<LabelledFormRow Label="How much do you weigh?" Icon="monitor_weight">
+<LabelledFormRow Label="@UiStrings.HowMuchDoYouWeigh" Icon="monitor_weight">
     <TextField suffix-text="@WeightUnit" TextFieldType=TextFieldType.Outlined type="text" inputmode="decimal" Value="@(Value.ToString())"  required OnChange="@(value => OnChanged(value))"/>
 </LabelledFormRow>
 @code {

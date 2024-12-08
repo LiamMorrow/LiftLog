@@ -5,16 +5,12 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <Card Type="Card.CardType.Filled" class="mx-6 mb-4">
-    <div>
-        This is an advanced feature which enables LiftLog to send backups to a remote server.
-        <br/>
-        Please read the documentation for instructions on how to set up a remote server.
-    </div>
-    <AppButton OnClick="OpenDocumentation" Type="AppButtonType.Text">Read Documentation</AppButton>
+    <LimitedHtml Value="@UiStrings.RemoteBackupDescription"/>
+    <AppButton OnClick="OpenDocumentation" Type="AppButtonType.Text">@UiStrings.ReadDocumentation</AppButton>
 </Card>
 
 <LabelledForm>
-    <LabelledFormRow Label="Endpoint" Icon="public">
+    <LabelledFormRow Label="@UiStrings.Endpoint" Icon="public">
         <TextField
             TextFieldType="TextFieldType.Outlined"
             placeholder="https://example.com/backup"
@@ -26,7 +22,7 @@
             required>
         </TextField>
     </LabelledFormRow>
-    <LabelledFormRow Label="API Key" Icon="vpn_key">
+    <LabelledFormRow Label="@UiStrings.ApiKey" Icon="vpn_key">
         <TextField
             TextFieldType="TextFieldType.Outlined"
             Value="@ApiKeyValue"
@@ -34,12 +30,12 @@
             OnChange="UpdateApiKey">
         </TextField>
     </LabelledFormRow>
-    <ListSwitch Headline="Backup feed account" SupportingText="Include your feed account data in backups" Value=@IncludeFeedAccount OnSwitched="UpdateIncludeFeedAccount"/>
+    <ListSwitch Headline="@UiStrings.BackupFeedAccount" SupportingText="@UiStrings.BackupFeedAccountSubtitle" Value=@IncludeFeedAccount OnSwitched="UpdateIncludeFeedAccount"/>
 </LabelledForm>
 
 <div class="flex justify-end gap-4 m-6">
-    <AppButton Type="AppButtonType.Text" Disabled=@(string.IsNullOrWhiteSpace(EndpointValue)) OnClick="Test">Test</AppButton>
-    <AppButton Type="AppButtonType.Primary" Disabled=@HasEndpointError OnClick="Save">Save</AppButton>
+    <AppButton Type="AppButtonType.Text" Disabled=@(string.IsNullOrWhiteSpace(EndpointValue)) OnClick="Test">@UiStrings.Test</AppButton>
+    <AppButton Type="AppButtonType.Primary" Disabled=@HasEndpointError OnClick="Save">@UiStrings.Save</AppButton>
 </div>
 
 
@@ -55,10 +51,10 @@
 
     protected override void OnInitialized()
     {
-        Dispatcher.Dispatch(new SetPageTitleAction("Automatic Remote Backup"));
+        base.OnInitialized();
+        Dispatcher.Dispatch(new SetPageTitleAction(@UiStrings.AutomaticRemoteBackup));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings/backup-and-restore"));
         SubscribeToAction<RemoteBackupSucceededEvent>(OnRemoteBackupSucceeded);
-        base.OnInitialized();
         EndpointValue = SettingsState.Value.RemoteBackupSettings.Endpoint;
         ApiKeyValue = SettingsState.Value.RemoteBackupSettings.ApiKey;
         IncludeFeedAccount = SettingsState.Value.RemoteBackupSettings.IncludeFeedAccount;
@@ -76,12 +72,12 @@
             return;
         }
         Dispatcher.Dispatch(new UpdateRemoteBackupSettingsAction(new(EndpointValue, ApiKeyValue, IncludeFeedAccount)));
-        Dispatcher.Dispatch(new ToastAction("Settings saved"));
+        Dispatcher.Dispatch(new ToastAction(UiStrings.SettingsSaved));
     }
 
     private void OpenDocumentation(MouseEventArgs _)
     {
-        Dispatcher.Dispatch(new NavigateAction("https://github.com/LiamMorrow/LiftLog/blob/main/Docs/RemoteBackup.md"));
+        Dispatcher.Dispatch(new OpenExternalUrlAction("https://github.com/LiamMorrow/LiftLog/blob/main/Docs/RemoteBackup.md"));
     }
 
     private void UpdateEndpoint(string endpoint)
@@ -112,6 +108,6 @@
 
     private void OnRemoteBackupSucceeded(RemoteBackupSucceededEvent _)
     {
-        Dispatcher.Dispatch(new ToastAction("Backup sent successfully"));
+        Dispatcher.Dispatch(new ToastAction(UiStrings.BackupSentSuccessfully));
     }
 }

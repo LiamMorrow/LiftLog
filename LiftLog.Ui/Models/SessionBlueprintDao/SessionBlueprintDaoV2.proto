@@ -24,6 +24,7 @@ message ExerciseBlueprintDaoV2 {
     RestDaoV2 rest_between_sets = 6;
     bool superset_with_next = 7;
     string notes = 8;
+    string link = 9;
 }
 
 message RestDaoV2 {

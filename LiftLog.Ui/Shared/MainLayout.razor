@@ -38,14 +38,7 @@
                         }
                         else
                         {
-                            <div class="flex flex-col justify-center h-full gap-4 text-on-surface">
-                                <div>
-                                    <md-circular-progress aria-label="Session loading" indeterminate four-color></md-circular-progress>
-                                </div>
-                                <span>
-                                    <p>Loading...</p>
-                                </span>
-                            </div>
+                            <Loader />
                         }
                     </div>
                     <NavBar></NavBar>
@@ -71,6 +64,7 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         InsetsManager.InsetsChanged += (_, _) => { InvokeAsync(StateHasChanged); };
         NavigationManager.RegisterLocationChangingHandler(async context =>
         {
@@ -82,7 +76,6 @@
             }
         });
 
-        base.OnInitialized();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

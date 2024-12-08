@@ -25,8 +25,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.Tests.Api", "tests\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.Tests.App", "tests\LiftLog.Tests.App\LiftLog.Tests.App.csproj", "{EAFB4E00-343C-4AA2-9CA0-CD186AC390C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.BackupServer", "LiftLog.BackupServer\LiftLog.BackupServer.csproj", "{8E81B6EB-97E3-4DD3-8D38-28EADCD2FAB3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -244,22 +242,6 @@ Global
 		{EAFB4E00-343C-4AA2-9CA0-CD186AC390C7}.Release|x64.Build.0 = Release|Any CPU
 		{EAFB4E00-343C-4AA2-9CA0-CD186AC390C7}.Release|x86.ActiveCfg = Release|Any CPU
 		{EAFB4E00-343C-4AA2-9CA0-CD186AC390C7}.Release|x86.Build.0 = Release|Any CPU
-		{8E81B6EB-97E3-4DD3-8D38-28EADCD2FAB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8E81B6EB-97E3-4DD3-8D38-28EADCD2FAB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8E81B6EB-97E3-4DD3-8D38-28EADCD2FAB3}.Debug|arm64.ActiveCfg = Debug|Any CPU
-		{8E81B6EB-97E3-4DD3-8D38-28EADCD2FAB3}.Debug|arm64.Build.0 = Debug|Any CPU
-		{8E81B6EB-97E3-4DD3-8D38-28EADCD2FAB3}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{8E81B6EB-97E3-4DD3-8D38-28EADCD2FAB3}.Debug|x64.Build.0 = Debug|Any CPU
-		{8E81B6EB-97E3-4DD3-8D38-28EADCD2FAB3}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8E81B6EB-97E3-4DD3-8D38-28EADCD2FAB3}.Debug|x86.Build.0 = Debug|Any CPU
-		{8E81B6EB-97E3-4DD3-8D38-28EADCD2FAB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8E81B6EB-97E3-4DD3-8D38-28EADCD2FAB3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8E81B6EB-97E3-4DD3-8D38-28EADCD2FAB3}.Release|arm64.ActiveCfg = Release|Any CPU
-		{8E81B6EB-97E3-4DD3-8D38-28EADCD2FAB3}.Release|arm64.Build.0 = Release|Any CPU
-		{8E81B6EB-97E3-4DD3-8D38-28EADCD2FAB3}.Release|x64.ActiveCfg = Release|Any CPU
-		{8E81B6EB-97E3-4DD3-8D38-28EADCD2FAB3}.Release|x64.Build.0 = Release|Any CPU
-		{8E81B6EB-97E3-4DD3-8D38-28EADCD2FAB3}.Release|x86.ActiveCfg = Release|Any CPU
-		{8E81B6EB-97E3-4DD3-8D38-28EADCD2FAB3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

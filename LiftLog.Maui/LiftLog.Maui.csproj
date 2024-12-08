@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
-        <TargetFrameworks>net8.0-android;net8.0</TargetFrameworks>
+        <TargetFrameworks>net9.0-android</TargetFrameworks>
 
-        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx'))">$(TargetFrameworks);net8.0-ios;</TargetFrameworks>
+        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx'))">$(TargetFrameworks);net9.0-ios;</TargetFrameworks>
 
         <OutputType>Exe</OutputType>
         <RootNamespace>LiftLog.Maui</RootNamespace>
@@ -32,6 +32,8 @@
         <Version>$(ApplicationDisplayVersion)</Version>
 
         <DefineConstants Condition=" '$(ExtraDefineConstants)' != '' ">$(DefineConstants);$(ExtraDefineConstants)</DefineConstants>
+
+        <CompressionEnabled>false</CompressionEnabled>
     </PropertyGroup>
 
     <!-- We recommend only using these features for release builds. -->
@@ -75,6 +77,7 @@
     <PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Release'">
         <MtouchLink>SdkOnly</MtouchLink>
         <UseInterpreter>True</UseInterpreter>
+        <_ExportSymbolsExplicitly>false</_ExportSymbolsExplicitly>
     </PropertyGroup>
 
     <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
@@ -108,28 +111,17 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="BlazorTransitionableRoute" Version="4.0.0" />
         <PackageReference Include="MaterialColorUtilities.Maui" Version="0.3.0" />
-        <PackageReference Include="Plugin.InAppBilling" Version="7.1.3" />
+        <PackageReference Include="Plugin.InAppBilling" Version="8.0.5" />
         <PackageReference Include="Plugin.LocalNotification" Version="11.1.4" />
         <PackageReference Include="Plugin.Maui.AppRating" Version="1.2.0" />
-        <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.90" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.90" />
-        <PackageReference Include="Sentry.Maui" Version="4.11.0" />
-        <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Annotation" Version="1.8.2.1" />
+        <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.10" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.10" />
+        <PackageReference Include="Sentry.Maui" Version="4.13.0" />
     </ItemGroup>
 
     <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
-    </ItemGroup>
-    <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-android'">
-        <PackageReference Include="Xamarin.Android.Google.BillingClient">
-            <Version>7.0.0.2</Version>
-        </PackageReference>
-        <PackageReference Include="Xamarin.AndroidX.Fragment.Ktx">
-            <Version>1.8.3.1</Version>
-        </PackageReference>
-        <PackageReference Include="Xamarin.GooglePlayServices.Base" Version="118.5.0.2" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
     </ItemGroup>
 
     <ItemGroup>

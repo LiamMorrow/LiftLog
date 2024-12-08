@@ -17,7 +17,7 @@
         <SessionSummary Session="context.GetEmptySession()" ShowSets="true" ShowWeight="false"/>
     </CardList>
     <div>
-        <AppButton OnClick="() => importPlanDialog?.Open()"><md-icon slot="icon">assignment</md-icon>Import their plan</AppButton>
+        <AppButton OnClick="() => importPlanDialog?.Open()"><md-icon slot="icon">assignment</md-icon>@UiStrings.ImportTheirPlan</AppButton>
     </div>
 </div>
 
@@ -25,11 +25,13 @@
 {
     <Dialog @ref="importPlanDialog">
 
-        <span slot="headline">Import their plan</span>
-        <span slot="content" class="block text-left">This will import <span class="font-bold text-primary">@(user.DisplayName)'s</span> plan.  It will not overwrite your existing plan.</span>
+        <span slot="headline">@UiStrings.ImportTheirPlan</span>
+        <span slot="content" class="block text-left">
+            <LimitedHtml Value="@UiStrings.ImportTheirPlanMessage(user.DisplayName)"/>
+        </span>
         <div slot="actions">
-            <AppButton Type="AppButtonType.Text" OnClick=@(() => importPlanDialog?.Close())>Cancel</AppButton>
-            <AppButton Type="AppButtonType.Text" OnClick=ImportPlan>Import</AppButton>
+            <AppButton Type="AppButtonType.Text" OnClick=@(() => importPlanDialog?.Close())>@UiStrings.Cancel</AppButton>
+            <AppButton Type="AppButtonType.Text" OnClick=ImportPlan>@UiStrings.Import</AppButton>
         </div>
     </Dialog>
 }
@@ -46,7 +48,8 @@
 
     protected override void OnInitialized()
     {
-        Dispatcher.Dispatch(new SetPageTitleAction("User Plan"));
+        base.OnInitialized();
+        Dispatcher.Dispatch(new SetPageTitleAction("User plan"));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/feed"));
         if (!Guid.TryParse(UserIdStr, out var userId) || !FeedState.Value.FollowedUsers.TryGetValue(userId, out user))
         {
@@ -57,8 +60,6 @@
             Dispatcher.Dispatch(new SetPageTitleAction($"{user.DisplayName}'s Plan"));
             plan = user.CurrentPlan;
         }
-
-        base.OnInitialized();
     }
 
     private async void ImportPlan()

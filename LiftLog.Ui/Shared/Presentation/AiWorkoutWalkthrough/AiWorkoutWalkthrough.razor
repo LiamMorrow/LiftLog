@@ -18,7 +18,7 @@
 @if(IsInActiveScreen)
 {
     <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="TrailingTitleButton">
-        <AppButton class="text-lg" Type=AppButtonType.Text OnClick=OnGenerate Disabled="ValidationError is not null">Generate</AppButton>
+        <AppButton class="text-lg" Type=AppButtonType.Text OnClick=OnGenerate Disabled="ValidationError is not null">@UiStrings.Generate</AppButton>
     </Microsoft.AspNetCore.Components.Sections.SectionContent>
 }
 
@@ -80,10 +80,10 @@
         OnAttributesSelected(attributes);
     }
 
-    private string? ValidationError => attributes switch
+    private LocalizedString? ValidationError => attributes switch
     {
-        {DaysPerWeek: 0} => "Please select the number of days per week",
-        {Goals.Count: 0} => "Please select at least one goal",
+        {DaysPerWeek: 0} => UiStrings.SelectNumberOfDays,
+        {Goals.Count: 0} => UiStrings.SelectAtLeastOneGoal,
         _ => null
     };
 

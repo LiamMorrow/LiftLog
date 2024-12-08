@@ -115,7 +115,10 @@ public partial class FeedEffects
                     .Select(x => x.OrderByDescending(x => x.Timestamp).First())
                     .OrderByDescending(x =>
                         x is SessionFeedItem sessionFeedItem
-                            ? sessionFeedItem.Session.Date.ToDateTime(TimeOnly.MinValue)
+                            ? sessionFeedItem.Session.Date.ToDateTime(
+                                TimeOnly.MinValue,
+                                DateTimeKind.Local
+                            )
                             : x.Timestamp
                     )
                     .ThenByDescending(x => x.Timestamp)

@@ -71,18 +71,17 @@ builder.Services.AddSingleton(
             builder.Configuration.GetValue<string>("GooglePlayServiceAccountEmail")
             ?? throw new Exception("GooglePlayServiceAccountEmail configuration is not set.");
         var certificateBytes = Convert.FromBase64String(certificateBase64);
-        var certificate = new X509Certificate2(
+        var certificate = X509CertificateLoader.LoadPkcs12(
             certificateBytes,
             "notasecret",
             X509KeyStorageFlags.Exportable
         );
-        ServiceAccountCredential credential =
-            new(
-                new ServiceAccountCredential.Initializer(serviceAccountEmail)
-                {
-                    Scopes = new[] { AndroidPublisherService.Scope.Androidpublisher },
-                }.FromCertificate(certificate)
-            );
+        ServiceAccountCredential credential = new(
+            new ServiceAccountCredential.Initializer(serviceAccountEmail)
+            {
+                Scopes = new[] { AndroidPublisherService.Scope.Androidpublisher },
+            }.FromCertificate(certificate)
+        );
         return new AndroidPublisherService(
             new AndroidPublisherService.Initializer
             {

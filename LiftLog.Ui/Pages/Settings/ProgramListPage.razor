@@ -14,7 +14,7 @@
     var orderedPrograms = ProgramState.Value.SavedPrograms.OrderBy(x=>x.Value.Name).ToList();
     <section class="text-left text-on-surface flex flex-col">
         <md-list>
-            <ListTitle Title="Saved Plans" />
+            <ListTitle Title="@UiStrings.SavedPlans" />
             @foreach (var (id, program) in orderedPrograms)
             {
                 <ProgramListItem
@@ -37,7 +37,7 @@
 <FloatingBottomContainer>
     <Fab>
         <div class="flex flex-col gap-2 items-end">
-            <FloatingButton variant="primary" has-icon OnClick="AddNewPlan" Label="Add plan">
+            <FloatingButton variant="primary" has-icon OnClick="AddNewPlan" Label="@UiStrings.AddPlan">
                 <md-icon slot="icon">add</md-icon>
             </FloatingButton>
         </div>
@@ -47,7 +47,7 @@
         {
             <SnackBar>
                 <div class="flex justify-between items-center">
-                    <span>Selected <span class="font-bold">@ProgramState.Value.GetActivePlan().Name</span></span>
+                    <LimitedHtml Value="@UiStrings.SelectedPlan(ProgramState.Value.GetActivePlan().Name)" EmClass="font-bold"/>
                     <SnackBarButton OnClick=@(()=>Dispatcher.Dispatch(new NavigateAction("/")))>Go to workouts</SnackBarButton>
                 </div>
             </SnackBar>

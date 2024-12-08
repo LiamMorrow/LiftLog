@@ -7,6 +7,7 @@ using System.Text.Json;
 using Fluxor;
 using Google.Protobuf;
 using LiftLog.Lib.Services;
+using LiftLog.Ui.i18n.TypealizR;
 using LiftLog.Ui.Models;
 using LiftLog.Ui.Models.ExportedDataDao;
 using LiftLog.Ui.Models.ProgramBlueprintDao;
@@ -19,31 +20,40 @@ using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Ui.Store.Settings;
 
-public class SettingsEffects(
+internal class SettingsEffects(
     ProgressRepository progressRepository,
     IState<SettingsState> settingsState,
     IState<ProgramState> programState,
     IState<FeedState> feedState,
-    IExporter textExporter,
+    IBackupRestoreService textExporter,
     IAiWorkoutPlanner aiWorkoutPlanner,
     IThemeProvider themeProvider,
     ILogger<SettingsEffects> logger,
     PreferencesRepository preferencesRepository,
-    HttpClient httpClient
+    PlaintextExportService plaintextExportService,
+    HttpClient httpClient,
+    TypealizedUiStrings uiStrings
 )
 {
     [EffectMethod]
-    public async Task ExportData(ExportDataAction action, IDispatcher __)
+    public async Task ExportData(ExportBackupDataAction action, IDispatcher dispatcher)
     {
         await textExporter.ExportBytesAsync(
             (await GetDataExportAsync(action.ExportFeed)).ToByteArray()
         );
+        dispatcher.Dispatch(new SetLastBackupTimeAction(DateTimeOffset.Now));
     }
 
     [EffectMethod]
     public async Task ImportData(ImportDataAction _, IDispatcher dispatcher)
     {
         dispatcher.Dispatch(new ImportDataBytesAction(await textExporter.ImportBytesAsync()));
+    }
+
+    [EffectMethod]
+    public async Task ExportPlainText(ExportPlainTextAction action, IDispatcher _)
+    {
+        await plaintextExportService.ExportAsync(action.Format);
     }
 
     [EffectMethod]
@@ -250,12 +260,13 @@ public class SettingsEffects(
             result.EnsureSuccessStatusCode();
             dispatcher.Dispatch(new SetLastSuccessfulRemoteBackupHashAction(hashString));
             dispatcher.Dispatch(new RemoteBackupSucceededEvent());
+            dispatcher.Dispatch(new SetLastBackupTimeAction(DateTimeOffset.Now));
         }
         catch (HttpRequestException ex) when (ex.StatusCode is null)
         {
             logger.LogWarning(ex, "Failed to backup data to remote server [connection failure]");
             dispatcher.Dispatch(
-                new ToastAction("Failed to backup data to remote server [connection failure]")
+                new ToastAction(uiStrings.FailedToBackupToRemote + " [connection failure]")
             );
         }
         catch (HttpRequestException ex)
@@ -266,15 +277,13 @@ public class SettingsEffects(
                 ex.StatusCode
             );
             dispatcher.Dispatch(
-                new ToastAction("Failed to backup data to remote server [" + ex.StatusCode + "]")
+                new ToastAction(uiStrings.FailedToBackupToRemote + " [" + ex.StatusCode + "]")
             );
         }
         catch (Exception ex)
         {
             logger.LogWarning(ex, "Failed to backup data to remote server [unknown]");
-            dispatcher.Dispatch(
-                new ToastAction("Failed to backup data to remote server [unknown]")
-            );
+            dispatcher.Dispatch(new ToastAction(uiStrings.FailedToBackupToRemote + " [unknown]"));
         }
     }
 
@@ -285,6 +294,18 @@ public class SettingsEffects(
     )
     {
         await preferencesRepository.SetRemoteBackupSettingsAsync(action.Settings);
+    }
+
+    [EffectMethod]
+    public async Task SetLastBackupTime(SetLastBackupTimeAction action, IDispatcher __)
+    {
+        await preferencesRepository.SetLastBackupTimeAsync(action.Time);
+    }
+
+    [EffectMethod]
+    public async Task SetBackupReminder(SetBackupReminderAction action, IDispatcher __)
+    {
+        await preferencesRepository.SetBackupReminderAsync(action.ShowReminder);
     }
 
     private async Task<ExportedDataDaoV2> GetDataExportAsync(bool includeFeed)

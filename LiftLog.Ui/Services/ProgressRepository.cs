@@ -104,6 +104,7 @@ namespace LiftLog.Ui.Services
                 };
                 var deserialiseTime = sw.ElapsedMilliseconds;
                 sw.Restart();
+                _storedSessions = ImmutableDictionary<Guid, Session>.Empty;
                 if (storedData is not null)
                 {
                     _storedSessions = storedData.CompletedSessions;
@@ -162,15 +163,22 @@ namespace LiftLog.Ui.Services
                 .SelectMany(x =>
                     x.RecordedExercises.Where(x => x.LastRecordedSet?.Set is not null)
                         .Select(ex => new DatedRecordedExercise(
-                            x.Date.ToDateTime(ex.LastRecordedSet!.Set!.CompletionTime),
+                            x.Date.ToDateTime(
+                                ex.LastRecordedSet!.Set!.CompletionTime,
+                                DateTimeKind.Local
+                            ),
                             ex
                         ))
                         .ToAsyncEnumerable()
                 )
-                .GroupBy(x => (KeyedExerciseBlueprint)x.RecordedExercise.Blueprint)
+                .GroupBy(
+                    x => (KeyedExerciseBlueprint)x.RecordedExercise.Blueprint,
+                    KeyedExerciseBlueprint.NormalizedNameOnlyEqualityComparer.Instance
+                )
                 .ToImmutableDictionaryAwaitAsync(
                     x => ValueTask.FromResult(x.Key),
-                    async x => await x.Take(maxRecordsPerExercise).ToImmutableListValueAsync()
+                    async x => await x.Take(maxRecordsPerExercise).ToImmutableListValueAsync(),
+                    KeyedExerciseBlueprint.NormalizedNameOnlyEqualityComparer.Instance
                 );
         }
 

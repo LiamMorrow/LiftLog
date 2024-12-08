@@ -8,9 +8,9 @@
         @RenderActiveBadge()
         <IconButton id="@_iconButtonId" Type="IconButtonType.Standard" Icon="more_horiz" OnClick=@(() => _menu?.Open())></IconButton>
         <Menu anchor="@_iconButtonId" @ref="_menu">
-            <MenuItem Icon="delete" disabled="@IsActive" Label="Remove" OnClick="() => OnRemove.InvokeAsync()"/>
-            <MenuItem Icon="content_copy" Label="Duplicate" OnClick="() => OnDuplicate.InvokeAsync()"/>
-            <MenuItem Icon="share" Label="Share" OnClick="() => OnShare.InvokeAsync()"/>
+            <MenuItem Icon="delete" disabled="@IsActive" Label="@UiStrings.Remove" OnClick="() => OnRemove.InvokeAsync()"/>
+            <MenuItem Icon="content_copy" Label="@UiStrings.Duplicate" OnClick="() => OnDuplicate.InvokeAsync()"/>
+            <MenuItem Icon="share" Label="@UiStrings.Share" OnClick="() => OnShare.InvokeAsync()"/>
         </Menu>
     </div>
 </md-list-item>
@@ -44,7 +44,7 @@
 
     [Parameter] public EventCallback OnShare { get; set; }
 
-    private string SupportingText => $"Edited: {ProgramBlueprint.LastEdited.ToShortDateString()}";
+    private string SupportingText => UiStrings.EditedOn(ProgramBlueprint.LastEdited.ToShortDateString());
 
     private string FocusClass => IsFocused ? "bg-secondary-container text-on-secondary-container " : "";
 
@@ -62,10 +62,10 @@
     {
         if (IsActive)
         {
-            return @<div class="flex flex-col justify-center"><span class="rounded-full relative bg-secondary-container text-on-secondary-container px-3 py-2 text-md" @onclick:stopPropagation="true" @onclick:preventDefault="true" >Active<md-ripple></md-ripple></span></div>;
+            return @<div class="flex flex-col justify-center"><span class="rounded-full relative bg-secondary-container text-on-secondary-container px-3 py-2 text-md" @onclick:stopPropagation="true" @onclick:preventDefault="true" >@UiStrings.Active<md-ripple></md-ripple></span></div>;
         }
 
-        return @<AppButton Type="AppButtonType.Text" OnClick="()=>OnUse.InvokeAsync()">Use</AppButton>;
+        return @<AppButton Type="AppButtonType.Text" OnClick="()=>OnUse.InvokeAsync()">@UiStrings.UseWorkout</AppButton>;
     }
 
 }

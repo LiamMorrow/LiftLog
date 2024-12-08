@@ -1,10 +1,10 @@
 
-<LabelledFormRow Label="What is your gender?" Icon="male">
+<LabelledFormRow Label="@UiStrings.WhatIsYourGender" Icon="male">
     <ChipContainer>
-        <FilterChip OnSelectedChange="@((selected) => OnGenderSelect(Gender.Female))" Label="Female" Selected="Value == Gender.Female"/>
-        <FilterChip OnSelectedChange="@((selected) => OnGenderSelect(Gender.Male))" Label="Male" Selected="Value == Gender.Male"/>
-        <FilterChip OnSelectedChange="@((selected) => OnGenderSelect(Gender.Other))" Label="Other" Selected="Value == Gender.Other"/>
-        <FilterChip OnSelectedChange="@((selected) => OnGenderSelect(Gender.PreferNotToSay))" Label="Prefer not to say" Selected="Value == Gender.PreferNotToSay"/>
+        <FilterChip OnSelectedChange="@((selected) => OnGenderSelect(Gender.Female))" Label="@UiStrings.GenderFemale" Selected="Value == Gender.Female"/>
+        <FilterChip OnSelectedChange="@((selected) => OnGenderSelect(Gender.Male))" Label="@UiStrings.GenderMale" Selected="Value == Gender.Male"/>
+        <FilterChip OnSelectedChange="@((selected) => OnGenderSelect(Gender.Other))" Label="@UiStrings.GenderOther" Selected="Value == Gender.Other"/>
+        <FilterChip OnSelectedChange="@((selected) => OnGenderSelect(Gender.PreferNotToSay))" Label="@UiStrings.GenderPreferNotToSay" Selected="Value == Gender.PreferNotToSay"/>
     </ChipContainer>
 </LabelledFormRow>
 

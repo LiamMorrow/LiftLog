@@ -1,6 +1,5 @@
 using Fluxor;
 using LiftLog.Ui.Services;
-using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 
 namespace LiftLog.Ui.Store.Settings;
@@ -24,7 +23,9 @@ public class SettingsStateInitMiddleware(
                 statusBarFix,
                 restNotifications,
                 remoteBackupSettings,
-                lastSuccessfulRemoteBackupHash
+                lastSuccessfulRemoteBackupHash,
+                lastBackupTime,
+                backupReminder
             ) = await (
                 preferencesRepository.GetUseImperialUnitsAsync(),
                 preferencesRepository.GetShowBodyweightAsync(),
@@ -34,7 +35,9 @@ public class SettingsStateInitMiddleware(
                 preferencesRepository.GetStatusBarFixAsync(),
                 preferencesRepository.GetRestNotificationsAsync(),
                 preferencesRepository.GetRemoteBackupSettingsAsync(),
-                preferencesRepository.GetLastSuccessfulRemoteBackupHashAsync()
+                preferencesRepository.GetLastSuccessfulRemoteBackupHashAsync(),
+                preferencesRepository.GetLastBackupTimeAsync(),
+                preferencesRepository.GetBackupReminderAsync()
             );
 
             var state = (SettingsState)store.Features[nameof(SettingsFeature)].GetState() with
@@ -49,6 +52,8 @@ public class SettingsStateInitMiddleware(
                 RestNotifications = restNotifications,
                 RemoteBackupSettings = remoteBackupSettings,
                 LastSuccessfulRemoteBackupHash = lastSuccessfulRemoteBackupHash,
+                LastBackupTime = lastBackupTime,
+                BackupReminder = backupReminder,
             };
             store.Features[nameof(SettingsFeature)].RestoreState(state);
             sw.Stop();

@@ -15,12 +15,12 @@
 @if (!Session.RecordedExercises.Any())
 {
     <EmptyInfo class="my-8">
-        <p>Session contains no exercises.</p>
+        @UiStrings.SessionContainsNoExercises
     </EmptyInfo>
 }
 else
 {
-    <ItemList Items="Session.RecordedExercises.IndexedTuples()">
+    <ItemList Items="Session.RecordedExercises.Index()">
         <WeightedExercise
             @key=context.Index
             RecordedExercise="context.Item"
@@ -34,14 +34,16 @@ else
             UpdateNotesForExercise=@((notes) => UpdateNotesForExercise(context.Index, notes))
             OnEditExercise=@(() => BeginEditExercise(context.Index))
             OnRemoveExercise=@(() => BeginRemoveExercise(context.Index))
-            IsReadonly=IsReadonly />
+            OnOpenLink=@(() => Dispatcher.Dispatch(new OpenExternalUrlAction(context.Item.Blueprint.Link.Trim())))
+            IsReadonly=IsReadonly
+            ShowPreviousButton=@(SessionTarget == SessionTarget.WorkoutSession) />
     </ItemList>
 }
 @if (ShowBodyweight)
 {
     <Card class="flex justify-between items-center mx-2" Type=Card.CardType.Filled >
-        <span class="text-xl font-bold">Bodyweight</span>
-        <WeightDisplay AllowNull=true Weight=Session.Bodyweight UpdateWeight="UpdateBodyweight" Increment="0.1m" Label="Bodyweight"/>
+        <span class="text-xl font-bold">@UiStrings.Bodyweight</span>
+        <WeightDisplay AllowNull=true Weight=Session.Bodyweight UpdateWeight="UpdateBodyweight" Increment="0.1m" Label="@UiStrings.Bodyweight"/>
     </Card>
 }
 
@@ -54,7 +56,7 @@ else
                 <md-icon
                     slot="icon">
                     assignment_add
-                </md-icon>Update Plan
+                </md-icon>@UiStrings.UpdatePlan
             </AppButton>
         }
     </div>
@@ -63,7 +65,7 @@ else
 {
     <FloatingBottomContainer>
         <Fab>
-            <FloatingButton size="small" variant="surface" aria-label="Add Exercise" label="Add Exercise" OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon></FloatingButton>
+            <FloatingButton size="small" variant="surface" aria-label="Add Exercise" label="@UiStrings.AddExercise" OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon></FloatingButton>
         </Fab>
         <AdditionalContent>@RenderSnackBar()</AdditionalContent>
     </FloatingBottomContainer>
@@ -78,11 +80,19 @@ else
 @if(IsInActiveScreen && !IsReadonly)
 {
     <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="TrailingTitleButton">
-        <AppButton class="text-lg" Type=AppButtonType.Text OnClick=SaveSession>Finish</AppButton>
+        <AppButton class="text-lg" Type=AppButtonType.Text OnClick=SaveSession data-cy="save-session-button">
+            @(SessionTarget == SessionTarget.WorkoutSession ? UiStrings.Finish : UiStrings.Save)
+        </AppButton>
     </Microsoft.AspNetCore.Components.Sections.SectionContent>
 }
 
-<FullScreenDialog @ref=_editExerciseDialog Title=@(_exerciseToEditIndex is null ? "Add Exercise" : "Edit Exercise") Action="Update" OnAction="EditExerciseHandler" OnClose="@(() => _exerciseToEditIndex = null)">
+<FullScreenDialog
+    @ref=_editExerciseDialog
+    Title=@(_exerciseToEditIndex is null ? UiStrings.AddExercise : UiStrings.EditExercise)
+    Action="@(_exerciseToEditIndex is null ? UiStrings.Add : UiStrings.Update)"
+    OnAction="EditExerciseHandler"
+    OnClose="@(() => _exerciseToEditIndex = null)"
+    >
         <ExerciseEditor Exercise="editingExerciseBlueprint" UpdateExercise="(ex) => {editingExerciseBlueprint = ex; StateHasChanged();}" />
 </FullScreenDialog>
 
@@ -91,7 +101,7 @@ else
     {
         var exercise = Session.RecordedExercises[setAdditionalActions.Value.ExerciseIndex];
         var set = exercise.PotentialSets[setAdditionalActions.Value.PotentialSetIndex];
-        <span slot="headline" class="select-none">Select Reps</span>
+        <span slot="headline" class="select-none">@UiStrings.SelectReps</span>
         <span slot="content" >
         <PotentialSetAdditionalActions
             Set="set"
@@ -103,42 +113,41 @@ else
             OnDeleteSet=@(()=>{})></PotentialSetAdditionalActions>
         </span>
         <div slot="actions">
-            <AppButton Type="AppButtonType.Text" OnClick="@(() => setAdditionalActionsDialog?.Close())">Cancel</AppButton>
+            <AppButton Type="AppButtonType.Text" OnClick="@(() => setAdditionalActionsDialog?.Close())">@UiStrings.Cancel</AppButton>
         </div>
     }
 </Dialog>
 
 
 <Dialog @ref="_removeExerciseDialog">
-    <span slot="headline">Remove Exercise?</span>
+    <span slot="headline">@UiStrings.RemoveExerciseQuestion</span>
     <span slot="content" class="block text-left">
-        Exercise will be removed from the current session, future sessions will
-        not be impacted.
+        @UiStrings.RemoveExerciseMessage
     </span>
     <div slot="actions">
-        <AppButton Type="AppButtonType.Text" slot="footer" OnClick="() => { _removeExerciseDialog?.Close(); }">Cancel</AppButton>
-        <AppButton Type="AppButtonType.Text" slot="footer" OnClick="RemoveExerciseHandler">Remove</AppButton>
+        <AppButton Type="AppButtonType.Text" slot="footer" OnClick="() => { _removeExerciseDialog?.Close(); }">@UiStrings.Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" slot="footer" OnClick="RemoveExerciseHandler">@UiStrings.Remove</AppButton>
     </div>
 </Dialog>
 
 <Dialog @ref="_updatePlanDialog">
-    <span slot="headline">Update Plan</span>
+    <span slot="headline">@UiStrings.UpdatePlan</span>
     <span slot="content" class="block text-left">
-        The plan will be updated with the current session's exercises.
+        @UiStrings.PlanWillBeUpdated
         @if (SessionWithSameNameInPlan)
         {
-            <span>Would you like to update the existing session <span class="font-bold text-primary">@Session.Blueprint.Name</span>, or add a new session?</span>
+            <LimitedHtml Value=@(UiStrings.UpdateExistingWorkout(Session.Blueprint.Name))/>
         }
     </span>
     <div slot="actions">
         <div class="flex justify-between flex-grow">
-            <AppButton Type="AppButtonType.Text" slot="footer" OnClick="@(() => _updatePlanDialog?.Close())">Cancel</AppButton>
+            <AppButton Type="AppButtonType.Text" slot="footer" OnClick="@(() => _updatePlanDialog?.Close())">@UiStrings.Cancel</AppButton>
             <div>
-                <AppButton Type="AppButtonType.Text" slot="footer" OnClick="HandleAddAsNewSession">Add</AppButton>
+                <AppButton Type="AppButtonType.Text" slot="footer" OnClick="HandleAddAsNewSession">@UiStrings.Add</AppButton>
                 @if (SessionWithSameNameInPlan)
                 {
                     <AppButton Type="AppButtonType.Text" slot="footer" OnClick="HandleUpdateInPlan">
-                        <span>Update</span>
+                        @UiStrings.Update
                     </AppButton>
                 }
             </div>
@@ -148,15 +157,7 @@ else
 
 @code {
 
-    private ExerciseBlueprint editingExerciseBlueprint = new ExerciseBlueprint(
-        Name: "",
-        Sets: 3,
-        RepsPerSet: 10,
-        WeightIncreaseOnSuccess: 0,
-        RestBetweenSets: Rest.Medium,
-        SupersetWithNext: false,
-        Notes: ""
-    );
+    private ExerciseBlueprint editingExerciseBlueprint = ExerciseBlueprint.Default;
 
     private (int ExerciseIndex, int PotentialSetIndex)? setAdditionalActions;
     private int? _exerciseToEditIndex;
@@ -279,15 +280,7 @@ else
 
     private void BeginAddExercise()
     {
-        editingExerciseBlueprint = new ExerciseBlueprint(
-            Name: "",
-            Sets: 3,
-            RepsPerSet: 10,
-            WeightIncreaseOnSuccess: 0,
-            RestBetweenSets: Rest.Medium,
-            SupersetWithNext: false,
-            Notes: ""
-        );
+        editingExerciseBlueprint = ExerciseBlueprint.Default;
         _editExerciseDialog?.Open();
     }
 
@@ -384,7 +377,7 @@ else
     {
         if (Session.Blueprint is SessionBlueprint blueprint)
         {
-            var blueprintIndex = ProgramState.Value.GetActivePlanSessionBlueprints().IndexedTuples().First(x => x.Item.Name == blueprint.Name).Index;
+            var blueprintIndex = ProgramState.Value.GetActivePlanSessionBlueprints().Index().First(x => x.Item.Name == blueprint.Name).Index;
             Dispatcher.Dispatch(new SetProgramSessionAction(ProgramState.Value.ActivePlanId, blueprintIndex, blueprint));
         }
     }
