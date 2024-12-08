@@ -29,17 +29,11 @@
                 <md-icon>info</md-icon>
             </div>
             <div class="grid grid-cols-2 gap-2">
-                <AppButton Type="AppButtonType.Secondary" OnClick=@(() => Dispatcher.Dispatch(new NavigateAction("/settings/manage-workouts?planId="+ProgramState.Value.ActivePlanId)))>
-                    <md-icon
-                        slot="icon">
-                        add
-                    </md-icon>@UiStrings.AddWorkouts
+                <AppButton Type="AppButtonType.Secondary" Icon="add" OnClick=@(() => Dispatcher.Dispatch(new NavigateAction("/settings/manage-workouts?planId="+ProgramState.Value.ActivePlanId)))>
+                    @UiStrings.AddWorkouts
                 </AppButton>
-                <AppButton OnClick=@(() => NavigationManager.NavigateTo("/settings/program-list"))>
-                    <md-icon
-                        slot="icon">
-                        assignment
-                    </md-icon>@UiStrings.SelectAPlan
+                <AppButton Icon="assignment" OnClick=@(() => NavigationManager.NavigateTo("/settings/program-list"))>
+                    @UiStrings.SelectAPlan
                 </AppButton>
             </div>
         </Card>

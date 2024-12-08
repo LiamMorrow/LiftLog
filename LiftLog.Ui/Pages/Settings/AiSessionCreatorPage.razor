@@ -41,10 +41,10 @@ else if (AiSessionCreatorState.Value.GeneratedSession is not null)
         </Card>
         <div class="flex flex-col gap-2 justify-end h-full">
             <div class="grid grid-cols-2 gap-2">
-                <AppButton Type=AppButtonType.Secondary OnClick=@AddToPlan>
-                    <md-icon slot="icon">assignment_add</md-icon>@UiStrings.AddToPlan
+                <AppButton Icon="assignment_add" Type=AppButtonType.Secondary OnClick=@AddToPlan>
+                    @UiStrings.AddToPlan
                 </AppButton>
-                <AppButton OnClick=@StartSession><md-icon slot="icon">fitness_center</md-icon>@UiStrings.Start</AppButton>
+                <AppButton Icon="fitness_center" OnClick=@StartSession>@UiStrings.Start</AppButton>
             </div>
         </div>
     </div>

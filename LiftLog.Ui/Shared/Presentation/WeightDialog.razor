@@ -6,11 +6,11 @@
         <div class="flex flex-col gap-2">
             <TextField data-cy="weight-input" label="@(Label ?? UiStrings.Weight)" required="@(!AllowNull)" suffix-text="@WeightSuffix" TextFieldType="TextFieldType.Outlined" Value="@(EditorWeight.ToString())" OnChange="HandleInputChange" type="text" inputmode="decimal" step="@NonZeroIncrement"/>
             <div class="flex justify-between">
-                <AppButton data-cy="decrement-weight" Type="AppButtonType.OutlineSecondary" OnClick="OnWeightDecrementClick">
-                    <md-icon slot="icon">remove</md-icon><WeightFormat Weight="NonZeroIncrement"/>
+                <AppButton Icon="remove" data-cy="decrement-weight" Type="AppButtonType.OutlineSecondary" OnClick="OnWeightDecrementClick">
+                    <WeightFormat Weight="NonZeroIncrement"/>
                 </AppButton>
-                <AppButton autofocus data-cy="increment-weight" Type="AppButtonType.OutlineSecondary" OnClick="OnWeightIncrementClick">
-                    <md-icon slot="icon">add</md-icon><WeightFormat Weight="NonZeroIncrement"/>
+                <AppButton Icon="add" autofocus data-cy="increment-weight" Type="AppButtonType.OutlineSecondary" OnClick="OnWeightIncrementClick">
+                    <WeightFormat Weight="NonZeroIncrement"/>
                 </AppButton>
             </div>
         </div>
