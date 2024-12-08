@@ -24,7 +24,7 @@
     @if (!ProgramState.Value.GetSessionBlueprints(PlanId).Any())
     {
         <EmptyInfo>
-            @UiStrings.NoWorkoutsInPlan
+            <LimitedHtml Value="@UiStrings.NoWorkoutsInPlan"/>
         </EmptyInfo>
     }
     <CardList Items="ProgramState.Value.GetSessionBlueprints(PlanId).Index()" OnClick="(item) => SelectSession(item.Item, item.Index)">
