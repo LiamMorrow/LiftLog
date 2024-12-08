@@ -1177,4 +1177,8 @@
     <value>Submit translations for parts of the app!</value>
     <comment/>
   </data>
+  <data name="ManageWorkoutTitle" xml:space="preserve">
+    <value>Manage workout</value>
+    <comment/>
+  </data>
 </root>

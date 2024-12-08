@@ -210,7 +210,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Dispatcher.Dispatch(new SetPageTitleAction("Manage Session"));
+        Dispatcher.Dispatch(new SetPageTitleAction(UiStrings.ManageWorkoutTitle));
         var backPath = "/settings/manage-workouts?planId=" + PlanId;
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(backPath));
         if (ProgramState.Value.GetSessionBlueprints(PlanId).Count - 1 < SessionIndex)
