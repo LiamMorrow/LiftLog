@@ -21,6 +21,10 @@ AppUtils.vibrate = function (ms: number) {
 };
 
 AppUtils.showPopupAndAnchorTo = async function (element: HTMLElement, anchorId: string) {
+  // If popover is not available, do nothing :(
+  if (!HTMLElement.prototype.hasOwnProperty("popover")) {
+    return;
+  }
   const anchor = document.getElementById(anchorId);
 
   element.style.transition = "transform 0.2s";
@@ -29,6 +33,7 @@ AppUtils.showPopupAndAnchorTo = async function (element: HTMLElement, anchorId: 
   element?.showPopover();
   element.style.top = anchor?.getBoundingClientRect().top + "px";
   element.style.left = anchor?.getBoundingClientRect().left + "px";
+  element.style.maxWidth = `calc(${window.innerWidth}px - ${anchor?.getBoundingClientRect().left}px - 1rem)`;
   element.style.position = "absolute";
   element.style.margin = "0";
   element.style.transform = "scale(1)";

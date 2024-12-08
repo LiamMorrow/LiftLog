@@ -10,7 +10,7 @@
     <div class="flex flex-col">
         <div class="flex justify-between">
             <ItemTitle Id="@exerciseNameId" Title="@RecordedExercise.Blueprint.Name" OnClick="OnExerciseNameClick" />
-            <span @ref="exerciseNameTooltip" popover class="bg-surface-container-highest rounded-lg p-4 text-on-surface">@displayedExercise.Blueprint.Name</span>
+            <span @ref="exerciseNameTooltip" popover class="bg-surface-container-highest rounded-lg p-4 text-on-surface text-wrap break-words">@displayedExercise.Blueprint.Name</span>
             @if(!IsReadonly)
             {
                 <div class="flex justify-end">
