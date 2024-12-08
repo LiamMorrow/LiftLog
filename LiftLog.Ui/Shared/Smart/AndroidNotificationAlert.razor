@@ -13,10 +13,8 @@
     CancelText="Disable Notifications"
     OnCancel="DisableNotifications"
     SectionName="AndroidNotificationDialog">
-    <Headline>Enable Notifications?</Headline>
-    <TextContent>Newer Android devices require an additional permission to ensure that rest notifications are delivered on time.
-        Without this permission, they will arrive late and largely be useless.
-        On the next screen, please grant LiftLog the permission.</TextContent>
+    <Headline>@UiStrings.EnableNotificationsQuestion</Headline>
+    <TextContent>@UiStrings.AndroidNotificationPermissionExplanation</TextContent>
 </ConfirmationDialog>
 
 @code

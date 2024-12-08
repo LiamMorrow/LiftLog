@@ -1,10 +1,10 @@
 <Dialog
     @ref="dialog"
     style="--md-dialog-container-max-block-size: 500px;">
-    <span slot="headline">@Label</span>
+    <span slot="headline">@(Label ?? UiStrings.Weight)</span>
     <div slot="content">
         <div class="flex flex-col gap-2">
-            <TextField data-cy="weight-input" label="@Label" required="@(!AllowNull)" suffix-text="@WeightSuffix" TextFieldType="TextFieldType.Outlined" Value="@(EditorWeight.ToString())" OnChange="HandleInputChange" type="text" inputmode="decimal" step="@NonZeroIncrement"/>
+            <TextField data-cy="weight-input" label="@(Label ?? UiStrings.Weight)" required="@(!AllowNull)" suffix-text="@WeightSuffix" TextFieldType="TextFieldType.Outlined" Value="@(EditorWeight.ToString())" OnChange="HandleInputChange" type="text" inputmode="decimal" step="@NonZeroIncrement"/>
             <div class="flex justify-between">
                 <AppButton data-cy="decrement-weight" Type="AppButtonType.OutlineSecondary" OnClick="OnWeightDecrementClick">
                     <md-icon slot="icon">remove</md-icon><WeightFormat Weight="NonZeroIncrement"/>
@@ -16,8 +16,8 @@
         </div>
     </div>
     <div slot="actions" class="flex gap-1">
-        <AppButton dialog-action="close" OnClick="OnCloseClick" Type="AppButtonType.Text">Close</AppButton>
-        <AppButton dialog-action="save" dialog-focus OnClick="OnSaveClick" Type="AppButtonType.Text">Save</AppButton>
+        <AppButton dialog-action="close" OnClick="OnCloseClick" Type="AppButtonType.Text">@UiStrings.Close</AppButton>
+        <AppButton dialog-action="save" dialog-focus OnClick="OnSaveClick" Type="AppButtonType.Text">@UiStrings.Save</AppButton>
     </div>
 </Dialog>
 
@@ -28,7 +28,7 @@
 
     [EditorRequired] [Parameter] public decimal? Weight { get; set; } = null!;
 
-    [Parameter] public string Label { get; set; } = "Weight";
+    [Parameter] public string? Label { get; set; }
 
     [EditorRequired] [Parameter] public decimal Increment { get; set; } = 2.5m;
 

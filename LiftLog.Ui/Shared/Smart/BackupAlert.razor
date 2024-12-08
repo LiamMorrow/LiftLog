@@ -4,15 +4,14 @@
 @inject IDispatcher Dispatcher
 
 <Dialog @ref="dialog" @ondialog-cancel="No" type="alert">
-    <span slot="headline">Back up data</span>
+    <span slot="headline">@UiStrings.BackUpData</span>
     <span slot="content" class="block text-left">
-        It has been a while since you last created a backup. It is HIGHLY recommended you back up your data regularly to prevent data loss.
-        Would you like to back up your data now?
+        @UiStrings.BackUpDataReminder
     </span>
     <div slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick="DontAsk">Don't ask again</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="No">No</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="BackUp">Yes</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="DontAsk">@UiStrings.DontAskAgain</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="No">@UiStrings.No</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="BackUp">@UiStrings.Yes</AppButton>
     </div>
 </Dialog>
 

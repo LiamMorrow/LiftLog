@@ -25,7 +25,7 @@
     <div class="flex flex-col gap-2 px-2">
         <Card class="flex flex-col gap-4">
             <div class="flex justify-between">
-                <span class="text-lg">No plan created yet!</span>
+                <span class="text-lg">@UiStrings.NoPlanCreated</span>
                 <md-icon>info</md-icon>
             </div>
             <div class="grid grid-cols-2 gap-2">
@@ -33,13 +33,13 @@
                     <md-icon
                         slot="icon">
                         add
-                    </md-icon>Add Workouts
+                    </md-icon>@UiStrings.AddWorkouts
                 </AppButton>
                 <AppButton OnClick=@(() => NavigationManager.NavigateTo("/settings/program-list"))>
                     <md-icon
                         slot="icon">
                         assignment
-                    </md-icon>Select a plan
+                    </md-icon>@UiStrings.SelectAPlan
                 </AppButton>
             </div>
         </Card>
@@ -50,7 +50,7 @@ else
     <div class="m-2">
         <Tips/>
     </div>
-    <CardList CardType=Card.CardType.Outlined Items="upcoming.IndexedTuples()" OnClick="x => SelectSession(x.Item)">
+    <CardList CardType=Card.CardType.Outlined Items="upcoming.Index()" OnClick="x => SelectSession(x.Item)">
         <SplitCardControl>
             <TitleContent>
                 <SessionSummaryTitle IsFilled="context.Item.IsStarted" Session="context.Item" />
@@ -72,7 +72,7 @@ else
                     <md-icon slot="icon">auto_awesome</md-icon>
                 </FloatingButton>
             }
-            <FloatingButton variant="primary" has-icon OnClick="StartFreeformSession" Label="Freeform Session">
+            <FloatingButton variant="primary" has-icon OnClick="StartFreeformSession" Label=@(UiStrings.Freeform_Session)>
                 <md-icon slot="icon">fitness_center</md-icon>
             </FloatingButton>
         </div>
@@ -81,10 +81,9 @@ else
 </Remote>
 
 <ConfirmationDialog @ref="replaceCurrentSesisonDialog" OkText="Replace" OnOk="ReplaceSession">
-    <Headline>Replace current session</Headline>
+    <Headline>@UiStrings.ReplaceCurrentSession</Headline>
     <TextContent>
-        There is already a current session in progress, start a new one without
-        saving?
+        @UiStrings.SessionInProgress
     </TextContent>
 </ConfirmationDialog>
 
@@ -97,7 +96,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        Dispatcher.Dispatch(new SetPageTitleAction("Upcoming Workouts"));
+        Dispatcher.Dispatch(new SetPageTitleAction(UiStrings.UpcomingWorkouts));
         Dispatcher.Dispatch(new FetchUpcomingSessionsAction());
         Dispatcher.Dispatch(new SetReopenCurrentSessionAction(SessionTarget.WorkoutSession, false));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));

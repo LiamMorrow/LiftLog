@@ -33,7 +33,7 @@ public record Session(
         get
         {
             var latestExerciseIndex = RecordedExercises
-                .IndexedTuples()
+                .Index()
                 .Where(x => x.Item.LastRecordedSet is not null)
                 .OrderByDescending(x => x.Item.LastRecordedSet?.Set?.CompletionTime)
                 .Select(x => x.Index)

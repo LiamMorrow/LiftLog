@@ -3,6 +3,9 @@ using LiftLog.Lib.Models;
 using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.CurrentSession;
 using LiftLog.Ui.Store.Program;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
+using LiftLog.Ui.i18n;
 
 namespace LiftLog.Ui.Pages.Screenshot;
 

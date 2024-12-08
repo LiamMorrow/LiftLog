@@ -11,27 +11,27 @@
     <Remote Value="FeedIdentity" Retry="CreateFeedIdentity">
         <div class="text-on-surface flex flex-col gap-4">
             <LabelledForm>
-                <LabelledFormRow Label="Your Name" Icon="person">
-                <TextField Value="@context.Name" label="Optional" OnChange=@SetName/>
+                <LabelledFormRow Label="@UiStrings.YourName" Icon="person">
+                <TextField Value="@context.Name" label="@UiStrings.Optional" OnChange=@SetName/>
                 </LabelledFormRow>
                 <FeedShareUrl/>
                 </LabelledForm>
             <md-list>
-                <ListSwitch Headline="Publish workouts" SupportingText="Publish workouts as you complete them" Value=@context.PublishWorkouts OnSwitched="SetPublishWorkouts"/>
-                <ListSwitch Headline="Publish bodyweight" SupportingText="Publish your bodyweight with your workouts"  Value=@context.PublishBodyweight OnSwitched="SetPublishBodyweight"/>
-                <ListSwitch Headline="Publish plan" SupportingText="Publish your current plan for your followers to see and import" Value=@context.PublishPlan OnSwitched="SetPublishPlan"/>
+                <ListSwitch Headline="@UiStrings.PublishWorkout" SupportingText="@UiStrings.PublishWorkoutSubtitle" Value=@context.PublishWorkouts OnSwitched="SetPublishWorkouts"/>
+                <ListSwitch Headline="@UiStrings.PublishBodyweight" SupportingText="@UiStrings.PublishBodyweightSubtitle"  Value=@context.PublishBodyweight OnSwitched="SetPublishBodyweight"/>
+                <ListSwitch Headline="@UiStrings.PublishPlan" SupportingText="@UiStrings.PublishPlanSubtitle" Value=@context.PublishPlan OnSwitched="SetPublishPlan"/>
             </md-list>
-            <AppButton Type=AppButtonType.Text OnClick="@(() => stopPublishingDialog?.Open())">Reset account</AppButton>
+            <AppButton Type=AppButtonType.Text OnClick="@(() => stopPublishingDialog?.Open())">@UiStrings.ResetAccount</AppButton>
         </div>
     </Remote>
 </div>
 
 <Dialog @ref="stopPublishingDialog">
-    <span slot="headline">Reset account</span>
-    <span slot="content" class="block text-left">This will delete your data on the servers and unsubscribe you from all feeds. You will need to resubscribe and share a new link if you want to share your workouts again.</span>
+    <span slot="headline">@UiStrings.ResetAccount</span>
+    <span slot="content" class="block text-left">@UiStrings.ResetAccountMessage</span>
     <div slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick="@(() => stopPublishingDialog?.Close())">Cancel</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="StopPublishing">Delete</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="@(() => stopPublishingDialog?.Close())">@UiStrings.Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="StopPublishing">@UiStrings.ResetAccount</AppButton>
     </div>
 </Dialog>
 

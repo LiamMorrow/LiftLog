@@ -20,12 +20,12 @@
                     <div>
                         <IconButton data-cy="more-exercise-btn" class="self-end" Type="IconButtonType.Standard" OnClick="() => { _menu?.Open(); }" Icon="more_horiz" id="@moreButtonId"/>
                         <Menu @ref="_menu" anchor="@moreButtonId">
-                            <MenuItem Label="Edit" Icon="edit" data-cy="exercise-edit-menu-button" OnClick="OnEditExercise"/>
-                            <MenuItem data-cy="exercise-notes-btn" Label="Notes" Icon="notes" OnClick="OnOpenNotesButtonClick"/>
-                            <MenuItem Label="Remove" Icon="delete" OnClick="OnRemoveExercise"/>
+                            <MenuItem Label="@UiStrings.Edit" Icon="edit" data-cy="exercise-edit-menu-button" OnClick="OnEditExercise"/>
+                            <MenuItem data-cy="exercise-notes-btn" Label="@(UiStrings.Notes)" Icon="notes" OnClick="OnOpenNotesButtonClick"/>
+                            <MenuItem Label="@UiStrings.Remove" Icon="delete" OnClick="OnRemoveExercise"/>
                             @if(Uri.IsWellFormedUriString(displayedExercise.Blueprint.Link, UriKind.Absolute))
                             {
-                                <MenuItem Label="Open Link" Icon="open_in_new" OnClick="OnOpenLink"/>
+                                <MenuItem Label="@UiStrings.OpenLink" Icon="open_in_new" OnClick="OnOpenLink"/>
                             }
                         </Menu>
                     </div>
@@ -46,7 +46,7 @@
         </div>
     </div>
     <div class="flex justify-start flex-wrap gap-2">
-        @foreach (var (set, i) in displayedExercise.PotentialSets.IndexedTuples())
+        @foreach (var (i, set) in displayedExercise.PotentialSets.Index())
         {
             <PotentialSetCounter
                 @key=i

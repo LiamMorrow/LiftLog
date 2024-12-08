@@ -9,7 +9,7 @@ describe('Settings', () => {
     beforeEach(() => {
       cy.navigate('Settings')
       // Disable tips
-      cy.containsA('App Configuration').click()
+      cy.containsA('App configuration').click()
       cy.containsA('Show tips').click()
 
       cy.navigate('Settings')
@@ -25,7 +25,7 @@ describe('Settings', () => {
         cy.navigate('Settings')
         // Navigate twice, because settings remembers its last page when you click it
         cy.navigate('Settings')
-        cy.containsA('App Configuration').click()
+        cy.containsA('App configuration').click()
         cy.containsA('Use imperial units').click()
         assertCorrectWeightUnitsOnAllPages('lbs')
       })
@@ -37,7 +37,7 @@ describe('Settings', () => {
         cy.navigate('Settings')
         // Navigate twice, because settings remembers its last page when you click it
         cy.navigate('Settings')
-        cy.containsA('App Configuration').click()
+        cy.containsA('App configuration').click()
         cy.containsA('Show bodyweight').click()
         assertShowsBodyweightOnAllPages(false)
       })

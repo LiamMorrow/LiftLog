@@ -24,11 +24,4 @@ internal static class Util
 
         return new ImmutableListValue<T>(ImmutableList.CreateRange(items));
     }
-
-    public static IEnumerable<(TSource Item, int Index)> IndexedTuples<TSource>(
-        this IEnumerable<TSource> source
-    )
-    {
-        return source.Select((item, index) => (item, index));
-    }
 }

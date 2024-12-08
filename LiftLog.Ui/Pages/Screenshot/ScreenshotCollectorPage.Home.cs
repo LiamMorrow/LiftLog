@@ -10,7 +10,7 @@ namespace LiftLog.Ui.Pages.Screenshot;
 public partial class ScreenshotCollectorPage
 {
     private SessionBlueprint demoSessionBlueprint = new(
-        Name: "Session 1",
+        Name: "Workout 1",
         Exercises:
         [
             new ExerciseBlueprint(

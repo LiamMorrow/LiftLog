@@ -1,18 +1,18 @@
 <LabelledForm>
-    <LabelledFormRow Label="What are we working out?" Icon="physical_therapy">
+    <LabelledFormRow Label="@UiStrings.WhatAreYouWorkingOut" Icon="physical_therapy">
         <ChipContainer>
-            @RenderFilterChip("Arms")
-            @RenderFilterChip("Chest")
-            @RenderFilterChip("Back")
-            @RenderFilterChip("Legs")
-            @RenderFilterChip("Triceps")
-            @RenderFilterChip("Biceps")
-            @RenderFilterChip("Quads")
-            @RenderFilterChip("Hamstrings")
-            @RenderFilterChip("Calves")
+            @RenderFilterChip(@UiStrings.Arms)
+            @RenderFilterChip(@UiStrings.Chest)
+            @RenderFilterChip(@UiStrings.BackMuscle)
+            @RenderFilterChip(@UiStrings.Legs)
+            @RenderFilterChip(@UiStrings.Triceps)
+            @RenderFilterChip(@UiStrings.Biceps)
+            @RenderFilterChip(@UiStrings.Quads)
+            @RenderFilterChip(@UiStrings.Hamstrings)
+            @RenderFilterChip(@UiStrings.Calves)
         </ChipContainer>
     </LabelledFormRow>
-    <LabelledFormRow Label="How much volume?" Icon="bar_chart">
+    <LabelledFormRow Label="" Icon="bar_chart">
         <Slider Min="0" Max="100" Value="Value.Volume" ValueChanged="i => OnChange.InvokeAsync(Value with { Volume = i })"
                 Label="@VolumeLabel">
         </Slider>
@@ -29,9 +29,9 @@
     private string VolumeLabel
         => Value.Volume switch
         {
-            <= 30 => "Light",
-            <= 60 => "Medium",
-            _ => "Heavy",
+            <= 30 => UiStrings.VolumeLight,
+            <= 60 => UiStrings.VolumeMedium,
+            _ => UiStrings.VolumeHeavy,
         };
 
 

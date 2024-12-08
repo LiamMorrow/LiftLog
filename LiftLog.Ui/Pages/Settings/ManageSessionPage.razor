@@ -17,14 +17,14 @@
     <div class="bg-surface pt-2">
 
         <LabelledForm>
-            <LabelledFormRow Label="Session Name" Icon="assignment">
+            <LabelledFormRow Label="@UiStrings.WorkoutName" Icon="assignment">
                 <TextField
                     TextFieldType="TextFieldType.Filled"
                     Value="@SessionEditorState.Value.SessionBlueprint.Name"
                     OnChange="@((val) => SetName(val!))">
                 </TextField>
             </LabelledFormRow>
-            <LabelledFormRow Label="Session Notes" Icon="notes">
+            <LabelledFormRow Label="@UiStrings.WorkoutNotes" Icon="notes">
                 <TextField
                     TextFieldType="TextFieldType.Filled"
                     Value="@SessionEditorState.Value.SessionBlueprint.Notes"
@@ -34,21 +34,26 @@
                     OnChange="@((val) => SetNotes(val!))">
                 </TextField>
             </LabelledFormRow>
-            <LabelledFormRow Label="Exercises" Icon="fitness_center">
+            <LabelledFormRow Label="@UiStrings.Exercises" Icon="fitness_center">
                 @if(SessionEditorState.Value.SessionBlueprint.Exercises.Count == 0)
                 {
                     <Card Type="Card.CardType.Filled">
                         <div class="flex flex-col items-center">
-                            <span class="text-on-surface">No exercises added yet</span>
+                            <span class="text-on-surface">@UiStrings.NoExercisesAdded</span>
                         </div>
                     </Card>
                 }
-                <ItemList Items="SessionEditorState.Value.SessionBlueprint.Exercises.IndexedTuples()" VerticalPadding=false class="-mx-6" Dividers=false >
+                <ItemList Items="SessionEditorState.Value.SessionBlueprint.Exercises.Index()" VerticalPadding=false class="-mx-6" Dividers=false >
                     @{
                         var exercise = context.Item;
                         var index = context.Index;
                     }
-                    <ExerciseBlueprintSummary  Blueprint="@exercise" OnEdit="()=>BeginEditExercise(exercise,index)" OnMoveDown="()=>MoveExerciseDown(exercise)" OnMoveUp="()=>MoveExerciseUp(exercise)" OnRemove="()=>BeginRemoveExercise(exercise)" />
+                    <ExerciseBlueprintSummary
+                        Blueprint="@exercise"
+                        OnEdit="()=>BeginEditExercise(exercise,index)"
+                        OnMoveDown="()=>MoveExerciseDown(exercise)"
+                        OnMoveUp="()=>MoveExerciseUp(exercise)"
+                        OnRemove="()=>BeginRemoveExercise(exercise)" />
                 </ItemList>
             </LabelledFormRow>
         </LabelledForm>
@@ -56,12 +61,12 @@
     </div>
     <FloatingBottomContainer>
         <Fab>
-            <FloatingButton size="small" variant="surface" aria-label="Add Exercise" label="Add Exercise" OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon></FloatingButton>
+            <FloatingButton size="small" variant="surface" aria-label="Add Exercise" label="@UiStrings.AddExercise" OnClick="BeginAddExercise"><md-icon slot="icon">add</md-icon></FloatingButton>
         </Fab>
     </FloatingBottomContainer>
 }
 
-<FullScreenDialog @ref=editDialog Title=@(isAddingExercise ? "Add Exercise" : "Edit Exercise") Action="Save" OnAction="UpdateExercise" >
+<FullScreenDialog @ref=editDialog Title=@(isAddingExercise ? UiStrings.AddExercise : UiStrings.EditExercise) Action="@UiStrings.Save" OnAction="UpdateExercise" >
     @if(selectedExercise is not null)
     {
         <ExerciseEditor Exercise="selectedExercise" UpdateExercise="(ex) => {selectedExercise = ex; StateHasChanged();}" />
@@ -69,11 +74,13 @@
 </FullScreenDialog>
 
 <Dialog @ref="deleteDialog">
-    <span slot="headline">Remove Exercise?</span>
-    <span slot="content" class="block text-left">This will remove the exercise <span class="font-bold text-primary">"@(selectedExercise?.Name)"</span> from <span class="font-bold text-primary">@SessionEditorState.Value.SessionBlueprint?.Name</span>.</span>
+    <span slot="headline">@UiStrings.RemoveExerciseQuestion</span>
+    <span slot="content" class="block text-left">
+        <LimitedHtml Value="@UiStrings.RemoveExerciseFromWorkoutMessage(selectedExercise?.Name, SessionEditorState.Value.SessionBlueprint?.Name)"/>
+    </span>
     <div slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick="() => { deleteDialog?.Close(); }">Cancel</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="RemoveExercise">Remove</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="() => { deleteDialog?.Close(); }">@UiStrings.Cancel</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="RemoveExercise">@UiStrings.Remove</AppButton>
     </div>
 </Dialog>
 

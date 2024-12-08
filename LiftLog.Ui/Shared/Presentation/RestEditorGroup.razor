@@ -2,18 +2,18 @@
     <span class="text-lg">Rest</span>
     <div class="w-full flex justify-center">
         <md-outlined-segmented-button-set>
-            <md-outlined-segmented-button @onsegmented-button-interaction="HandleSelectedChanged(Rest.Short)"  selected="@(!_isCustom && Rest == Rest.Short)" label="Short"></md-outlined-segmented-button>
-            <md-outlined-segmented-button @onsegmented-button-interaction="HandleSelectedChanged(Rest.Medium)" selected="@(!_isCustom && Rest == Rest.Medium)" label="Medium"></md-outlined-segmented-button>
-            <md-outlined-segmented-button @onsegmented-button-interaction="HandleSelectedChanged(Rest.Long)"   selected="@(!_isCustom && Rest == Rest.Long)" label="Long"></md-outlined-segmented-button>
-            <md-outlined-segmented-button @onsegmented-button-interaction="HandleCustomSelectedChanged"        selected="@(_isCustom)" label="Custom"></md-outlined-segmented-button>
+            <md-outlined-segmented-button @onsegmented-button-interaction="HandleSelectedChanged(Rest.Short)"  selected="@(!_isCustom && Rest == Rest.Short)" label="@UiStrings.RestShort"></md-outlined-segmented-button>
+            <md-outlined-segmented-button @onsegmented-button-interaction="HandleSelectedChanged(Rest.Medium)" selected="@(!_isCustom && Rest == Rest.Medium)" label="@UiStrings.RestMedium"></md-outlined-segmented-button>
+            <md-outlined-segmented-button @onsegmented-button-interaction="HandleSelectedChanged(Rest.Long)"   selected="@(!_isCustom && Rest == Rest.Long)" label="@UiStrings.RestLong"></md-outlined-segmented-button>
+            <md-outlined-segmented-button @onsegmented-button-interaction="HandleCustomSelectedChanged"        selected="@(_isCustom)" label="@UiStrings.Custom"></md-outlined-segmented-button>
         </md-outlined-segmented-button-set>
     </div>
     @if (_isCustom)
     {
         <div class="flex flex-col w-full items-center justify-between gap-2">
-            <RestEditor Label="Min Rest" Rest="Rest.MinRest" OnRestUpdated="rest => OnRestUpdated(Rest with { MinRest = rest })"></RestEditor>
-            <RestEditor Label="Max Rest" Rest="Rest.MaxRest" OnRestUpdated="rest => OnRestUpdated(Rest with { MaxRest = rest })"></RestEditor>
-            <RestEditor Label="Failure Rest" Rest="Rest.FailureRest" OnRestUpdated="rest => OnRestUpdated(Rest with { FailureRest = rest })"></RestEditor>
+            <RestEditor Label="@UiStrings.MinRest" Rest="Rest.MinRest" OnRestUpdated="rest => OnRestUpdated(Rest with { MinRest = rest })"></RestEditor>
+            <RestEditor Label="@UiStrings.MaxRest" Rest="Rest.MaxRest" OnRestUpdated="rest => OnRestUpdated(Rest with { MaxRest = rest })"></RestEditor>
+            <RestEditor Label="@UiStrings.FailureRest" Rest="Rest.FailureRest" OnRestUpdated="rest => OnRestUpdated(Rest with { FailureRest = rest })"></RestEditor>
         </div>
     }
     else

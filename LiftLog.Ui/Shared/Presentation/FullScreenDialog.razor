@@ -14,7 +14,7 @@
                     <span class="mr-auto">@Title</span>
                     @if(Action != null)
                     {
-                        <AppButton Type="AppButtonType.Text" OnClick="()=>{OnAction.InvokeAsync();Close();}">@Action</AppButton>
+                        <AppButton data-cy="dialog-action" Type="AppButtonType.Text" OnClick="()=>{OnAction.InvokeAsync();Close();}">@Action</AppButton>
                     }
                 </div>
             </div>

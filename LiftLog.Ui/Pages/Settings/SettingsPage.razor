@@ -12,26 +12,26 @@
     <ListTitle Title="Configuration" />
     <md-list-item type="button" multi-line-supporting-text @onclick="NavigateToProgramList">
         <md-icon slot="start">assignment</md-icon>
-        <span slot="headline" >Manage plans</span>
-        <span slot="supporting-text">Setup your workout plans</span>
+        <span slot="headline" >@UiStrings.ManagePlans</span>
+        <span slot="supporting-text">@UiStrings.ManagePlansSubtitle</span>
     </md-list-item>
 
     <md-list-item type="button" multi-line-supporting-text @onclick="NavigateToAppConfiguration">
         <md-icon slot="start">settings</md-icon>
-        <span slot="headline" >App Configuration</span>
-        <span slot="supporting-text">Adjust weight units, theme, and other misc. settings</span>
+        <span slot="headline" >@UiStrings.AppConfiguration</span>
+        <span slot="supporting-text">@UiStrings.AppConfigurationSubtitle</span>
     </md-list-item>
 
     <md-list-item type="button" multi-line-supporting-text @onclick="NavigateToNotifications">
         <md-icon slot="start">notifications</md-icon>
-        <span slot="headline" >Notifications</span>
-        <span slot="supporting-text">Adjust notification settings for rest timers</span>
+        <span slot="headline" >@UiStrings.Notifications</span>
+        <span slot="supporting-text">@UiStrings.NotificationsSubtitle</span>
     </md-list-item>
 
     <md-list-item type="button" multi-line-supporting-text @onclick="NavigateToBackupAndRestore">
         <md-icon slot="start">settings_backup_restore</md-icon>
-        <span slot="headline" >Export, backup, and restore</span>
-        <span slot="supporting-text">Create and export backups for transfering between devices</span>
+        <span slot="headline" >@UiStrings.ExportBackupRestore</span>
+        <span slot="supporting-text">@UiStrings.ExportBackupRestoreSubtitle</span>
     </md-list-item>
 </md-list>
 <ProFeatures/>
@@ -39,31 +39,31 @@
     <ListTitle Title="Support" />
     <md-list-item type="button" multi-line-supporting-text @onclick=@(OpenUrl("https://github.com/LiamMorrow/LiftLog/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md"))>
         <md-icon slot="start">star</md-icon>
-        <span slot="headline" >Feature request</span>
-        <span slot="supporting-text">Suggest a new feature that you think LiftLog should have!</span>
+        <span slot="headline" >@UiStrings.FeatureRequest</span>
+        <span slot="supporting-text">@UiStrings.FeatureRequestSubtitle</span>
     </md-list-item>
     <md-list-item type="button" multi-line-supporting-text @onclick=@(OpenUrl("https://github.com/LiamMorrow/LiftLog/issues/new?assignees=&labels=bug&projects=&template=bug_report.md"))>
         <md-icon slot="start">bug_report</md-icon>
-        <span slot="headline" >Bug report</span>
-        <span slot="supporting-text">Let us know when you encounter a bug</span>
+        <span slot="headline" >@UiStrings.BugReport</span>
+        <span slot="supporting-text">@UiStrings.BugReportSubtitle</span>
     </md-list-item>
 
     <md-list-item type="button" multi-line-supporting-text @onclick="ShowAppInfo">
         <md-icon slot="start">info</md-icon>
-        <span slot="headline" >App Info</span>
-        <span slot="supporting-text">Display app information</span>
+        <span slot="headline" >@UiStrings.AppInfo</span>
+        <span slot="supporting-text">@UiStrings.AppInfoSubtitle</span>
     </md-list-item>
 
 </md-list>
 
 
 <Dialog @ref="appInfoDialog" type="alert">
-    <span slot="headline">App Info</span>
+    <span slot="headline">@UiStrings.AppInfo</span>
     <span slot="content" class="block text-left">
         LiftLog is an entirely open source app, licensed under the AGPL-3.0 license. You can find the source code on <a class="underline text-primary font-bold" href="https://github.com/LiamMorrow/LiftLog" @onclick=@(OpenUrl("https://github.com/LiamMorrow/LiftLog"))>GitHub</a>.
     </span>
     <div slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick="() => { appInfoDialog?.Close(); }">Close</AppButton>
+        <AppButton Type="AppButtonType.Text" OnClick="() => { appInfoDialog?.Close(); }">@UiStrings.Close</AppButton>
     </div>
 </Dialog>
 
@@ -74,7 +74,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Dispatcher.Dispatch(new SetPageTitleAction("Settings"));
+        Dispatcher.Dispatch(new SetPageTitleAction(UiStrings.Settings));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction(null));
     }
 

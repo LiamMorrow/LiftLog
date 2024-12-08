@@ -1,13 +1,13 @@
 <SplitCardControl>
     <TitleContent>
-        <div class="flex flex-col gap-4">
-            <span><span class="text-primary font-bold">@(User.Name ?? "Anonymous User")</span> is following you!</span>
+        <div class="flex flex-col">
+            <LimitedHtml Value="@UiStrings.UserIsFollowingYou(User.Name ?? "Anonymous User")" />
         </div>
     </TitleContent>
     <MainContent>
         @if (ShowFollowBack)
         {
-            <AppButton Type=AppButtonType.Text OnClick=@OnFollowBack>Follow @(User.Name ?? "Anonymous User") back</AppButton>
+            <AppButton Type=AppButtonType.Text OnClick=@OnFollowBack>@UiStrings.FollowUserBack(User.Name ?? "Anonymous User")</AppButton>
         }
     </MainContent>
     <Actions>

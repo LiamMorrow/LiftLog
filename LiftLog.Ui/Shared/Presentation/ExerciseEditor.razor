@@ -1,10 +1,11 @@
 @inject IJSRuntime JSRuntime
+
 <div class="flex flex-col gap-2">
 <TextField
     data-cy="exercise-name"
     TextFieldType="TextFieldType.Filled"
     class="w-full mb-2 text-xl text-start"
-    Label="Exercise"
+    Label="@UiStrings.Exercise"
     type="combobox"
     aria-controls="menu"
     aria-autocomplete="list"
@@ -26,7 +27,7 @@
             Value="Exercise.Sets"
             Increment="() => IncrementExerciseSets()"
             Decrement="() => DecrementExerciseSets()"
-            Label="Sets"/>
+            Label="@UiStrings.Sets"/>
     </Card>
     <Card HasPadding=false Type=Card.CardType.Filled class="flex-grow py-5 flex flex-1 justify-center">
         <FixedIncrementer
@@ -34,14 +35,14 @@
             Value="Exercise.RepsPerSet"
             Increment="() => IncrementExerciseRepsPerSet()"
             Decrement="() => DecrementExerciseRepsPerSet()"
-            Label="Reps"/>
+            Label="@UiStrings.Reps"/>
     </Card>
 </div>
 <TextField
     data-cy="exercise-notes"
     TextFieldType="TextFieldType.Filled"
     class="w-full mb-2 text-xl text-start resize-y"
-    Label="Plan Notes"
+    Label="@UiStrings.PlanNotes"
     type="textarea"
     SelectAllOnFocus="false"
     Value="@Exercise.Notes"
@@ -53,7 +54,7 @@
     data-cy="exercise-link"
     TextFieldType="TextFieldType.Filled"
     class="w-full mb-2 text-xl text-start resize-y"
-    Label="External Link"
+    Label="@UiStrings.ExternalLink"
     type="text"
     placeholder="https://"
     SelectAllOnFocus="false"
@@ -68,7 +69,7 @@
     <Card Type=Card.CardType.Elevated class="w-full flex flex-col gap-6 items-start">
         <EditableIncrementer
             Increment="0.1m"
-            Label="Progressive Overload"
+            Label="@UiStrings.ProgressiveOverload"
             data-cy="exercise-auto-increase"
             Suffix=@WeightSuffix
             Value="Exercise.WeightIncreaseOnSuccess"
@@ -76,7 +77,7 @@
         <md-divider></md-divider>
 
         <div class="w-full">
-            <Switch Label="Superset next exercise" data-cy="exercise-superset" Value="Exercise.SupersetWithNext" OnSwitched="supersets => SetExerciseSupersetsNext(supersets)"/>
+            <Switch Label="@UiStrings.SupersetNextExercise" data-cy="exercise-superset" Value="Exercise.SupersetWithNext" OnSwitched="supersets => SetExerciseSupersetsNext(supersets)"/>
         </div>
 
         <md-divider></md-divider>

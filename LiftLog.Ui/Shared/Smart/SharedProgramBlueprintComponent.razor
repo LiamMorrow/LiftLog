@@ -2,7 +2,7 @@
 
 <div class="text-on-surface text-left">
     <h2 class="text-xl font-bold text-primary mx-4">@ProgramBlueprint.Name</h2>
-    <p class=" mx-4">This plan has been shared with you.</p>
+    <p class=" mx-4">@UiStrings.PlanSharedWithYou</p>
     <CardList Items="ProgramBlueprint.Sessions">
         <SplitCardControl>
             <TitleContent>
@@ -18,7 +18,7 @@
 @if(IsInActiveScreen)
 {
     <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="TrailingTitleButton">
-        <AppButton class="text-lg" Type=AppButtonType.Text OnClick=OnImport >Import</AppButton>
+        <AppButton class="text-lg" Type=AppButtonType.Text OnClick=OnImport >@UiStrings.Import</AppButton>
     </Microsoft.AspNetCore.Components.Sections.SectionContent>
 }
 @code {
@@ -32,7 +32,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Dispatcher.Dispatch(new SetPageTitleAction("Shared Plan"));
+        Dispatcher.Dispatch(new SetPageTitleAction(UiStrings.SharedPlan));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/"));
     }
 

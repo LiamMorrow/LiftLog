@@ -14,7 +14,7 @@ describe('Completing a session', () => {
       cy.containsA('Add Exercise', { includeShadowDom: true }).click()
       cy.dialog().find('md-filled-text-field').find('input', { includeShadowDom: true }).first().click().type('Squat')
 
-      cy.dialog().contains("Update").click()
+      cy.dialog().find("[data-cy=dialog-action]").click()
 
 
       cy.getA('.repcount').first().click()
@@ -41,7 +41,7 @@ describe('Completing a session', () => {
     beforeEach(() => {
       cy.navigate('Settings')
       // Disable tips
-      cy.containsA('App Configuration').click()
+      cy.containsA('App configuration').click()
       cy.containsA('Show tips').click()
       cy.navigate('Settings')
       cy.containsA('Manage plans').click()

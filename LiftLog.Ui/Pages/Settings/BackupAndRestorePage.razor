@@ -9,42 +9,44 @@
 <md-list>
     <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="()=>exportFeedDialog?.Open()">
         <md-icon slot="start">backup</md-icon>
-        <span slot="headline">Backup data</span>
-        <span slot="supporting-text">Export your data to a file for backup or transfer</span>
+        <span slot="headline">@UiStrings.BackUpData</span>
+        <span slot="supporting-text">@UiStrings.BackUpDataSubtitle</span>
     </md-list-item>
     <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="ImportData">
         <md-icon slot="start">restore</md-icon>
-        <span slot="headline">Restore data</span>
-        <span slot="supporting-text">Import data from a file to restore</span>
+        <span slot="headline">@UiStrings.RestoreData</span>
+        <span slot="supporting-text">@UiStrings.RestoreDataSubtitle</span>
     </md-list-item>
     <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="RemoteBackup">
         <md-icon slot="start">cloud_upload</md-icon>
-        <span slot="headline">Automatic remote backup</span>
-        <span slot="supporting-text">Send backups to a remote server. Advanced users only</span>
+        <span slot="headline">@UiStrings.AutomaticRemoteBackup</span>
+        <span slot="supporting-text">@UiStrings.AutomaticRemoteBackupSubtitle</span>
     </md-list-item>
     <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="PlainTextExport">
         <md-icon slot="start">description</md-icon>
-        <span slot="headline">Plaintext export</span>
-        <span slot="supporting-text">Export your data in a plaintext format such as CSV for use in other applications</span>
+        <span slot="headline">@UiStrings.PlaintextExport</span>
+        <span slot="supporting-text">@UiStrings.PlaintextExportSubtitle</span>
     </md-list-item>
     <ListSwitch Headline="Backup reminders" SupportingText="Periodically suggest a backup when you have not backed up in a while" Value="@SettingsState.Value.BackupReminder" OnSwitched="SetBackupReminder" />
 </md-list>
 
 
-<ConfirmationDialog @ref="importFeedDialog" OkText="Import" CancelText="No" OnOk="ImportFeedData">
-    <Headline>Import Feed Data?</Headline>
+<ConfirmationDialog @ref="importFeedDialog" OkText="@UiStrings.Import" CancelText="@UiStrings.No" OnOk="ImportFeedData">
+    <Headline>@UiStrings.ImportFeedDataQuestion</Headline>
     <TextContent>
-        <p>This backup includes a feed account. Would you like to import it?</p>
-        <p>You will lose access to your current account without a backup.</p>
-        <p class="text-error font-bold">This will replace your current account and cannot be undone!</p>
+        <LimitedHtml Value="@UiStrings.ImportFeedDataQuestionMessage" EmClass="text-error font-bold" />
     </TextContent>
 </ConfirmationDialog>
 
-<ConfirmationDialog @ref="exportFeedDialog" OkText="Include Feed" CancelText="Just my data" OnOk="()=>ExportData(true)" OnCancel="()=>ExportData(false)">
-    <Headline>Backup Feed Account</Headline>
+<ConfirmationDialog
+    @ref="exportFeedDialog"
+    OkText="@UiStrings.IncludeFeed"
+    CancelText="@UiStrings.JustMyData"
+    OnOk="()=>ExportData(true)"
+    OnCancel="()=>ExportData(false)">
+    <Headline>@UiStrings.BackupFeedAccount</Headline>
     <TextContent>
-        <p>Include your feed account and followed users in this backup?</p>
-        <p class="text-error font-bold">Caution: This would allow anyone with this backup to post feed content with your account</p>
+        <LimitedHtml Value="@UiStrings.BackupFeedAccountMessage" EmClass="text-error font-bold" />
     </TextContent>
 </ConfirmationDialog>
 
@@ -68,7 +70,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Dispatcher.Dispatch(new SetPageTitleAction("Export, Backup and Restore"));
+        Dispatcher.Dispatch(new SetPageTitleAction(UiStrings.ExportBackupRestore));
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
         SubscribeToAction<BeginFeedImportAction>(OnBeginFeedImport);
     }
