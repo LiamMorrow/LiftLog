@@ -629,7 +629,7 @@
     <value>This backup includes a feed account. Would you like to import it?&lt;br&gt;You will lose access to your current account without a backup.&lt;br&gt;&lt;em&gt;This will replace your current account and cannot be undone!&lt;/em&gt;</value>
     <comment/>
   </data>
-  <data name="ImportVerb" xml:space="preserve">
+  <data name="Import" xml:space="preserve">
     <value>Import</value>
     <comment>Import as a verb</comment>
   </data>
@@ -1159,6 +1159,14 @@
   </data>
   <data name="FailedToBackupToRemote" xml:space="preserve">
     <value>Failed to backup to remote server</value>
+    <comment/>
+  </data>
+  <data name="ImportTheirPlan" xml:space="preserve">
+    <value>Import their plan</value>
+    <comment/>
+  </data>
+  <data name="ImportTheirPlanMessage{user}" xml:space="preserve">
+    <value>This will import &lt;em&gt;{0}'s&lt;/em&gt; plan.  It will not overwrite your existing plan.</value>
     <comment/>
   </data>
 </root>
