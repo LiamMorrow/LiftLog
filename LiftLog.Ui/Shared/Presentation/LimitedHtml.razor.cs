@@ -40,7 +40,7 @@ public partial class LimitedHtml
                 var parts = innerText.Split("<br>");
                 for (var i = 0; i < parts.Length; i++)
                 {
-                    yield return (!closed, parts[i], i % 2 == 1);
+                    yield return (closed, parts[i], i % 2 == 1);
                 }
             }
 

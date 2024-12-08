@@ -1169,4 +1169,12 @@
     <value>This will import &lt;em&gt;{0}'s&lt;/em&gt; plan.  It will not overwrite your existing plan.</value>
     <comment/>
   </data>
+  <data name="Translation" xml:space="preserve">
+    <value>Suggest a translation</value>
+    <comment/>
+  </data>
+  <data name="TranslationSubtitle" xml:space="preserve">
+    <value>Submit translations for parts of the app!</value>
+    <comment/>
+  </data>
 </root>

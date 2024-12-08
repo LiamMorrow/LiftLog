@@ -47,6 +47,11 @@
         <span slot="headline" >@UiStrings.BugReport</span>
         <span slot="supporting-text">@UiStrings.BugReportSubtitle</span>
     </md-list-item>
+    <md-list-item type="button" multi-line-supporting-text @onclick=@(OpenUrl("https://github.com/LiamMorrow/LiftLog/issues/new?assignees=&labels=translation&projects=&template=translation-suggestion.md"))>
+        <md-icon slot="start">translate</md-icon>
+        <span slot="headline" >@UiStrings.Translation</span>
+        <span slot="supporting-text">@UiStrings.TranslationSubtitle</span>
+    </md-list-item>
 
     <md-list-item type="button" multi-line-supporting-text @onclick="ShowAppInfo">
         <md-icon slot="start">info</md-icon>
