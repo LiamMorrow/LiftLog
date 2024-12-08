@@ -20,6 +20,10 @@ LiftLog also allows users to publish their workouts to their feed, and subscribe
 
 Checkout [the app website](https://liftlog.online) for screenshots and features. Or checkout https://app.liftlog.online to try it out without installing an app.
 
+## Translations
+
+LiftLog can be translated into different languages by filling out a translations file. If you are interested in translating, please submit an issue or pull request creating or amending a copy of the [UiStrings.resx](./LiftLog.Ui/i18n/UiStrings.resx) file.
+
 ## Quickstart
 
 ### Prerequisites
