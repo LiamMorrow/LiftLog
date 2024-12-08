@@ -1,6 +1,10 @@
 
-<span class="text-xl font-bold flex-shrink text-ellipsis max-w-full text-nowrap whitespace-nowrap overflow-hidden min-w-0 text-start">@Title</span>
+<span id="@Id" @onclick=OnClick class="text-xl font-bold flex-shrink text-ellipsis max-w-full text-nowrap whitespace-nowrap overflow-hidden min-w-0 text-start">@Title</span>
 
 @code {
     [Parameter][EditorRequired] public string Title { get; set; } = null!;
+
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    [Parameter] public string Id { get; set; } = "";
 }
