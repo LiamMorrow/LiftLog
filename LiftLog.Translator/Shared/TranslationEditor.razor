@@ -1,0 +1,29 @@
+
+
+<InputTextArea @bind-Value="translatedValue" class="@(string.IsNullOrWhiteSpace(translatedValue) ? "bg-red-300" : "bg-white")" @bind-Value:after="HandleTranslatedTextInput" />
+
+
+@code{
+    private string translatedValue = "";
+    [Parameter]
+    public string Value { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<string> OnValueChange { get; set; }
+
+    override protected void OnInitialized()
+    {
+        translatedValue = Value;
+    }
+
+    override protected void OnParametersSet()
+    {
+        translatedValue = Value;
+    }
+
+
+    private async Task HandleTranslatedTextInput()
+    {
+        await OnValueChange.InvokeAsync(translatedValue);
+    }
+}
