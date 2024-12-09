@@ -98,7 +98,7 @@
         loadingGithub = true;
         var url = "https://raw.githubusercontent.com/LiamMorrow/LiftLog/refs/heads/main/LiftLog.Ui/i18n/UiStrings.resx";
         using var request3 = new HttpRequestMessage(HttpMethod.Get, url);
-        request3.SetBrowserRequestCache(BrowserRequestCache.NoCache);
+        request3.SetBrowserRequestCache(BrowserRequestCache.NoStore);
         var response = await new HttpClient().SendAsync(request3);
         var xmlContent = await response.Content.ReadAsStringAsync();
         sourceResxData = ResxEditor.ReadFromXml(xmlContent);
