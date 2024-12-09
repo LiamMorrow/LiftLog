@@ -118,36 +118,36 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Freeform Session" xml:space="preserve">
-    <value>Freeform Session</value>
+    <value>Freeform session</value>
     <comment/>
   </data>
   <data name="Edit" xml:space="preserve">
     <value>Edit</value>
-    <comment/>
+    <comment>Generic edit action</comment>
   </data>
   <data name="Notes" xml:space="preserve">
     <value>Notes</value>
-    <comment/>
+    <comment>Used to show a button the user can click to edit notes on their workout</comment>
   </data>
   <data name="Remove" xml:space="preserve">
     <value>Remove</value>
-    <comment/>
+    <comment>Generic remove action (delete)</comment>
   </data>
   <data name="Workout" xml:space="preserve">
     <value>Workout</value>
-    <comment/>
+    <comment>Noun form of workout</comment>
   </data>
   <data name="Feed" xml:space="preserve">
     <value>Feed</value>
-    <comment/>
+    <comment>Refers to the optional Feed feature, think "news feed"</comment>
   </data>
   <data name="Stats" xml:space="preserve">
     <value>Stats</value>
-    <comment/>
+    <comment>Short for statistics, used in bottom nav bar so should be short</comment>
   </data>
   <data name="History" xml:space="preserve">
     <value>History</value>
-    <comment/>
+    <comment>In reference to completed sessions</comment>
   </data>
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
@@ -159,14 +159,14 @@
   </data>
   <data name="Feed_Following" xml:space="preserve">
     <value>Following</value>
-    <comment/>
+    <comment>Users who you are following on the feed</comment>
   </data>
   <data name="Feed_Followers" xml:space="preserve">
     <value>Followers</value>
-    <comment/>
+    <comment>Users who are following you in the feed</comment>
   </data>
   <data name="SessionInProgress" xml:space="preserve">
-    <value>There is already a current session in progress, start a new one without saving?</value>
+    <value>There is already a session in progress, start a new one without saving?</value>
     <comment/>
   </data>
   <data name="ReplaceCurrentSession" xml:space="preserve">
