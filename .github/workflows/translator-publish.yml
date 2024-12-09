@@ -9,8 +9,8 @@ on:
     branches:
       - main
     paths:
-      - "site/**"
-      - ".github/workflows/static-site.yml"
+      - "LiftLog.Translator/**"
+      - ".github/workflows/translator-publish.yml"
 
 env:
   REGISTRY: ghcr.io
