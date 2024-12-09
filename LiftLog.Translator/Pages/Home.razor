@@ -1,0 +1,125 @@
+﻿@page "/"
+@inject IJSRuntime JS
+
+<div class="top-row px-4 mb-8">
+    <h1 class="mr-auto text-xl">LiftLog Translator</h1>
+</div>
+
+<div class="grid grid-cols-3 mb-8 gap-8">
+    <div class="flex flex-col border-2 p-4 rounded-lg gap-2">
+        <span>Select the source translation file</span>
+
+        <button disabled=@loadingGithub class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @onclick="GetFromGithub">
+            @if(loadingGithub)
+            {
+                <span >Loading...</span>
+            }
+            else
+            {
+                <span>Automatically from GitHub</span>
+            }
+        </button>
+
+        <span>OR</span>
+        <span>Upload a source file
+            <span class="text-sm text-nowrap">(e.g. UiStrings.resx)</span></span>
+        <InputFile OnChange="HandleSourceResxSelected" />
+    </div>
+    <div class="flex flex-col border-2 p-4 rounded-lg gap-2">
+        <span>OPTIONAL Load a translated file
+            <span class="text-sm text-nowrap">(e.g. UiStrings.es.resx)</span>
+        </span>
+        <InputFile OnChange="HandleTranslationResxSelected" />
+    </div>
+    <div class="flex flex-col border-2 p-4 rounded-lg gap-2">
+        <span>Download translation file</span>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @onclick="DownloadTranslation" >Download</button>
+    </div>
+</div>
+
+<div class="grid grid-cols-4 gap-1 bg-gray-100">
+
+    <div class="bg-gray-500 text-white font-bold text-center py-2 ">Key</div>
+    <div class="bg-gray-500 text-white font-bold text-center py-2 ">Original Value</div>
+    <div class="bg-gray-500 text-white font-bold text-center py-2 ">Comment</div>
+    <div class="bg-gray-500 text-white font-bold text-center py-2 ">Translated Value</div>
+    @foreach(var sourceResx in sourceResxData)
+    {
+        var translatedValue = translationResxData.GetValueOrDefault(sourceResx.Key)?.Value;
+
+        <div class="bg-white">@sourceResx.Key</div>
+        <div class="bg-white">@sourceResx.Value.Value</div>
+        <div class="bg-white">@sourceResx.Value.Comment</div>
+        <textarea class="@(string.IsNullOrWhiteSpace(translatedValue) ? "bg-red-300" : "bg-white")" @oninput=@((e) =>HandleTranslatedTextInput(e, sourceResx.Key)) >@translatedValue</textarea>
+    }
+</div>
+@code {
+    private bool loadingGithub = false;
+    private OrderedDictionary<string, ResxValue> sourceResxData = new();
+    private OrderedDictionary<string, ResxValue> translationResxData = new();
+
+    private async Task GetFromGithub()
+    {
+        loadingGithub = true;
+        var url = "https://raw.githubusercontent.com/LiamMorrow/LiftLog/refs/heads/main/LiftLog.Ui/i18n/UiStrings.resx";
+        using var request3 = new HttpRequestMessage(HttpMethod.Get, url);
+        request3.SetBrowserRequestCache(BrowserRequestCache.NoCache);
+        var response = await new HttpClient().SendAsync(request3);
+        var xmlContent = await response.Content.ReadAsStringAsync();
+        sourceResxData = ResxEditor.ReadFromXml(xmlContent);
+        loadingGithub = false;
+    }
+
+    private async Task HandleSourceResxSelected(InputFileChangeEventArgs e)
+    {
+        var resxFile = e.GetMultipleFiles().FirstOrDefault();
+        if (resxFile != null)
+        {
+            sourceResxData = await ReadResxFile(resxFile);
+        }
+    }
+
+    private async Task HandleTranslationResxSelected(InputFileChangeEventArgs e)
+    {
+        var resxFile = e.GetMultipleFiles().FirstOrDefault();
+        if (resxFile != null)
+        {
+            translationResxData = await ReadResxFile(resxFile);
+        }
+    }
+
+    private async Task<OrderedDictionary<string, ResxValue>> ReadResxFile(IBrowserFile resxFile)
+    {
+
+        var stream = resxFile.OpenReadStream();
+        var xmlContent = await new StreamReader(stream).ReadToEndAsync();
+        return ResxEditor.ReadFromXml(xmlContent);
+    }
+    private void HandleTranslatedTextInput(ChangeEventArgs e, string key)
+    {
+        var value = e.Value?.ToString() ?? "";
+        if (translationResxData.ContainsKey(key))
+        {
+            translationResxData[key] = new ResxValue(value.Trim(), translationResxData[key].Comment);
+        }
+        else
+        {
+            translationResxData.Add(key, new ResxValue(value, ""));
+        }
+    }
+
+    private async Task DownloadTranslation()
+    {
+        var xmlContent = ResxEditor.WriteToXml(translationResxData);
+        var fileStream = new MemoryStream();
+        var fileName = "UiStrings.REGION.resx";
+        var writer = new StreamWriter(fileStream);
+        writer.Write(xmlContent);
+        writer.Flush();
+        fileStream.Position = 0;
+
+        using var streamRef = new DotNetStreamReference(stream: fileStream);
+
+        await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+    }
+}
