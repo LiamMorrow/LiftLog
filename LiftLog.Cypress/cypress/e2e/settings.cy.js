@@ -49,7 +49,7 @@ function assertShowsBodyweightOnAllPages(shouldShow) {
   const classify = shouldShow ? 'contain.text' : 'not.contain.text'
   cy.navigate('Stats')
   cy.getA('[data-cy=stats-time-selector]').click()
-  cy.containsA('All time').click()
+  cy.containsA('All time').click({ force: true })
   cy.getA('.card').eq(4).should(classify, 'Bodyweight')
   cy.navigate('Workout')
   cy.navigate('Workout')
@@ -73,12 +73,12 @@ function assertCorrectWeightUnitsOnAllPages(units) {
   cy.getA('[data-cy=session-summary]').first().should('contain.text', units)
   cy.navigate('Stats')
   cy.getA('[data-cy=stats-time-selector]').click()
-  cy.containsA('All time').click()
+  cy.containsA('All time').click({ force: true })
   cy.getA('.cardlist .card').first().should('contain.text', units)
   cy.navigate('Workout')
   cy.navigate('Workout')
   cy.getA('[data-cy=session-summary]').first().should('contain.text', units).click()
   cy.getA('[data-cy=weight-display]').first().should('contain.text', units).click()
   cy.dialog().find('md-outlined-text-field').get('.suffix', { includeShadowDom: true }).should('contain.text', units)
-  cy.dialog().find('[slot=actions]').contains("Close").click()
+  cy.dialog().find('[dialog-action=close]').click()
 }

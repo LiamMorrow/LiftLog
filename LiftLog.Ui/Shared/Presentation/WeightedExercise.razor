@@ -102,8 +102,8 @@
         <TextField label="Notes" TextFieldType="TextFieldType.Outlined" Value="@EditorNotes" OnChange="HandleNotesChange" type="textarea"/>
     </div>
     <div slot="actions" data-cy="notes-dialog-actions">
-        <AppButton Type="AppButtonType.Text" OnClick="@(() => notesDialog?.Close())">Cancel</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="HandleNotesSave">Save</AppButton>
+        <AppButton dialog-action="close" Type="AppButtonType.Text" OnClick="@(() => notesDialog?.Close())">Cancel</AppButton>
+        <AppButton dialog-action="save" Type="AppButtonType.Text" OnClick="HandleNotesSave">Save</AppButton>
     </div>
 </Dialog>
 

@@ -1,5 +1,8 @@
 /// <reference types="cypress" />
 
+const benchFromCurrentPlan = 'bc'
+const benchFromNewPlan = 'bn'
+
 describe('Creating a plan', () => {
   beforeEach(() => {
     cy.visit('/')
@@ -14,10 +17,10 @@ describe('Creating a plan', () => {
       cy.navigate('Settings')
       cy.containsA('Manage plans').click()
       cy.containsA('My Program').parent('md-list-item').click()
-      populatePlanFromEditPage('benchFromCurrentPlan')
+      populatePlanFromEditPage(benchFromCurrentPlan)
     })
     it('should have saved that plan', () => {
-      assertPlanFromEditPage('benchFromCurrentPlan')
+      assertPlanFromEditPage(benchFromCurrentPlan)
     })
   })
   describe('When a user create a new plan', () => {
@@ -31,19 +34,19 @@ describe('Creating a plan', () => {
       cy.getA('md-fab').click()
       cy.getA('md-filled-text-field').find('input', { includeShadowDom: true }).first().click().type('I am a new plan')
 
-      populatePlanFromEditPage('benchFromNewPlan')
+      populatePlanFromEditPage(benchFromNewPlan)
     })
 
     it('should have saved that plan', () => {
-      assertPlanFromEditPage('benchFromNewPlan')
+      assertPlanFromEditPage(benchFromNewPlan)
     })
 
     it('should be able to use the new plan', () => {
       cy.get('[data-cy=back-btn]', { includeShadowDom: true }).click()
-      cy.containsA('I am a new plan').parent('md-list-item').contains('Use').click()
+      cy.containsA('I am a new plan').parent('md-list-item').find('[data-cy=use-plan-btn]').click()
 
       cy.navigate('Workout')
-      cy.containsA('benchFromNewPlan').click()
+      cy.containsA(benchFromNewPlan).click()
     })
   })
 })
@@ -53,13 +56,13 @@ function populatePlanFromEditPage(exerciseName) {
   cy.containsA('Add workout', { includeShadowDom: true }).click()
   cy.containsA('Add Exercise', { includeShadowDom: true }).click()
   cy.dialog().find('[data-cy=exercise-name]').find('input', { includeShadowDom: true }).clear().type(exerciseName)
-  cy.dialog().find('[data-cy=exercise-sets]').should('contain.text', '3').find('[data-cy=fixed-increment]').click()
   cy.dialog().find('[data-cy=exercise-reps]').should('contain.text', '10').find('[data-cy=fixed-decrement]').click()
+  cy.dialog().find('[data-cy=exercise-sets]').should('contain.text', '3').find('[data-cy=fixed-increment]').click()
   cy.dialog().find('[data-cy=exercise-auto-increase]').find('[data-cy=editable-field]').find('input', { includeShadowDom: true }).clear().type('4.5')
   cy.dialog().find('[data-cy=exercise-superset]').click()
   cy.dialog().contains('Long', { includeShadowDom: true }).click().parent('md-outlined-segmented-button').should('have.attr', 'selected')
 
-  cy.dialog().contains("Save").click()
+  cy.dialog().find("[data-cy=dialog-action]").click()
 
   cy.get('[data-cy=back-btn]', { includeShadowDom: true }).click()
 }

@@ -25,7 +25,7 @@ describe('Completing a session', () => {
 
       cy.dialog().find('[data-cy=increment-weight]').first().click().click().click()
 
-      cy.dialog().contains("Save").click()
+      cy.dialog().find("[dialog-action=save]").click()
 
       cy.get('[data-cy=save-session-button]').click()
 
@@ -45,7 +45,7 @@ describe('Completing a session', () => {
       cy.containsA('Show tips').click()
       cy.navigate('Settings')
       cy.containsA('Manage plans').click()
-      cy.containsA("Starting Strength").parent('md-list-item').contains('Use').click()
+      cy.containsA("Starting Strength").parent('md-list-item').find('[data-cy=use-plan-btn]').click()
       cy.navigate('Workout')
     })
 
@@ -105,14 +105,14 @@ describe('Completing a session', () => {
         // Update the weight of the second set to be lower than the top level weight
         cy.getA('[data-cy=set-weight-button]').eq(1).click()
         cy.dialog().find('[data-cy=decrement-weight]:visible').click()
-        cy.dialog().find('[slot="actions"]:visible').contains("Save").click()
+        cy.dialog().find('[slot="actions"]:visible').find('[dialog-action=save]').click()
         cy.getA('[data-cy=set-weight-button]').eq(1).should('contain.text', '17.5kg')
         cy.getA('[data-cy=set-weight-button]').eq(2).should('contain.text', '20kg')
 
         // Update top level weight - which should update all sets which aren't completed and have the same weight (i.e. the last set)
         cy.getA('[data-cy=weight-display]').first().click()
         cy.dialog().find('[data-cy=decrement-weight]').first().click().click().click()
-        cy.dialog().find('[slot="actions"]:visible').contains("Save").click()
+        cy.dialog().find('[slot="actions"]:visible').find('[dialog-action=save]').click()
         cy.getA('[data-cy=set-weight-button]').eq(0).should('contain.text', '20kg')
         cy.getA('[data-cy=set-weight-button]').eq(1).should('contain.text', '17.5kg')
         cy.getA('[data-cy=set-weight-button]').eq(2).should('contain.text', '12.5kg')
@@ -152,7 +152,7 @@ describe('Completing a session', () => {
 
         // Update the number of reps to 6
         cy.dialog().find('[data-cy=exercise-reps]').should('contain.text', '5').find('[data-cy=fixed-increment]').click()
-        cy.dialog().contains("Update").click()
+        cy.dialog().find('[data-cy=dialog-action]').click()
 
         // Complete all sets
         for (let i = 1; i <= 6; i++) {
@@ -175,7 +175,7 @@ describe('Completing a session', () => {
         cy.getA('[data-cy=more-exercise-btn]').first().click()
         cy.getA('[data-cy=exercise-notes-btn]').first().click()
         cy.dialog().find('md-outlined-text-field').find('textarea', { includeShadowDom: true }).first().click().type('I am NoteTaker, master of notes')
-        cy.dialog().find('[data-cy=notes-dialog-actions]').contains("Save").click()
+        cy.dialog().find('[data-cy=notes-dialog-actions]').find('[dialog-action=save]').click()
         cy.getA('.repcount').first().click().should('contain.text', '5/5')
 
         cy.get('[data-cy=save-session-button]').click()
@@ -190,7 +190,7 @@ describe('Completing a session', () => {
           .first()
           .should('have.value', 'I am NoteTaker, master of notes')
           .type('Replace notes but do not save')
-        cy.dialog().find('[data-cy=notes-dialog-actions]').contains("Cancel").click()
+        cy.dialog().find('[data-cy=notes-dialog-actions]').find("[dialog-action=close]").click()
 
         cy.navigate('Workout')
         cy.containsA('Workout A').click()
@@ -205,5 +205,5 @@ describe('Completing a session', () => {
 function updateWeight(index, amount) {
   cy.getA('[data-cy=weight-display]').eq(index).click()
   cy.dialog().find('[data-cy=weight-input]:visible').find('input', { includeShadowDom: true }).click().type(amount.toString())
-  cy.dialog().find('[slot="actions"]:visible').contains("Save").click()
+  cy.dialog().find('[slot="actions"]:visible').find('[dialog-action=save]').click()
 }
