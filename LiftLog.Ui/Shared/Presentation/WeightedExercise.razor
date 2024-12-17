@@ -7,7 +7,7 @@
 }
 <div class="flex flex-col gap-4 py-4 pl-7 pr-2 w-full" data-cy="weighted-exercise">
     <div class="flex flex-col">
-        <div class="flex justify-between">
+        <div class="flex items-center justify-between">
             <ItemTitle Title="@RecordedExercise.Blueprint.Name" />
             @if(!IsReadonly)
             {
@@ -37,7 +37,7 @@
                 </div>
             }
         </div>
-        <div class="self-start -m-3 -mt-6">
+        <div class="self-start -m-3 -mt-4">
             <WeightDisplay
                 Weight="displayedExercise.Weight"
                 Increment="displayedExercise.Blueprint.WeightIncreaseOnSuccess"
