@@ -27,7 +27,7 @@
 
 @code {
 
-    private string BottomInset => SettingsState.Value.StatusBarFix ? "32px" : InsetsManager.SystemSafeInsetBottom;
+    private string BottomInset => InsetsManager.SystemSafeInsetBottom;
 
     protected override void OnInitialized()
     {

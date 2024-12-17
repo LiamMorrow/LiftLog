@@ -500,12 +500,6 @@
   <data name="ShowFeedSubtitle" xml:space="preserve">
     <value>Display the feed in the navigation bar</value>
   </data>
-  <data name="StatusBarFix" xml:space="preserve">
-    <value>Status bar fix</value>
-  </data>
-  <data name="StatusBarFixSubtitle" xml:space="preserve">
-    <value>Fixes the status bar overlapping the page title controls on some devices</value>
-  </data>
   <data name="ShowTips" xml:space="preserve">
     <value>Show tips</value>
   </data>

@@ -129,7 +129,7 @@
 
     private string Justify => AppState.Value.BackNavigationUrl is null ? "justify-center" : "justify-start";
 
-    private string TopInset => SettingsState.Value.StatusBarFix ? "46px" : InsetsManager.SystemSafeInsetTop;
+    private string TopInset => InsetsManager.SystemSafeInsetTop;
 
     private RenderFragment? RenderBackButton()
     {

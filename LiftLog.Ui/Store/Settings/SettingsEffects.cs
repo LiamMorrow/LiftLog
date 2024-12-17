@@ -221,12 +221,6 @@ internal class SettingsEffects(
     }
 
     [EffectMethod]
-    public async Task HandleStatusBarFixAction(SetStatusBarFixAction action, IDispatcher dispatcher)
-    {
-        await preferencesRepository.SetStatusBarFixAsync(action.StatusBarFix);
-    }
-
-    [EffectMethod]
     public async Task ExecuteRemoteBackup(ExecuteRemoteBackupAction action, IDispatcher dispatcher)
     {
         var (endpoint, apiKey, includeFeedAccount) = action.Settings;
