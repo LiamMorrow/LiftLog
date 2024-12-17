@@ -13,6 +13,7 @@
         <CoreCompileDependsOn>PrepareResources;$(CompileDependsOn)</CoreCompileDependsOn>
 
         <TypealizR_UseParamNamesInMethodNames>false</TypealizR_UseParamNamesInMethodNames>
+        <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
 
     </PropertyGroup>
 

@@ -27,7 +27,7 @@
         <span slot="headline">@UiStrings.PlaintextExport</span>
         <span slot="supporting-text">@UiStrings.PlaintextExportSubtitle</span>
     </md-list-item>
-    <ListSwitch Headline="Backup reminders" SupportingText="Periodically suggest a backup when you have not backed up in a while" Value="@SettingsState.Value.BackupReminder" OnSwitched="SetBackupReminder" />
+    <ListSwitch Headline="@UiStrings.BackupReminders" SupportingText="@UiStrings.BackupRemindersSubtitle" Value="@SettingsState.Value.BackupReminder" OnSwitched="SetBackupReminder" />
 </md-list>
 
 
