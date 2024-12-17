@@ -15,12 +15,12 @@
         <ListTitle Title="@UiStrings.ProFeatures" />
         @RenderLockedPro()
     </div>
-    <md-list-item type="button" class="text-left" multi-line-supporting-text disabled=@(!AppState.Value.ProState.IsPro) @onclick="NavigateToAiPlanner">
+    <md-list-item type="button" class="text-start" multi-line-supporting-text disabled=@(!AppState.Value.ProState.IsPro) @onclick="NavigateToAiPlanner">
         <md-icon slot="start">bolt</md-icon>
         <span slot="headline">@UiStrings.AiPlanner</span>
         <span slot="supporting-text">@UiStrings.AiPlannerSubtitle</span>
     </md-list-item>
-    <md-list-item type="button" class="text-left" multi-line-supporting-text disabled=@(!AppState.Value.ProState.IsPro) @onclick="NavigateToAiSessionCreator">
+    <md-list-item type="button" class="text-start" multi-line-supporting-text disabled=@(!AppState.Value.ProState.IsPro) @onclick="NavigateToAiSessionCreator">
         <md-icon slot="start">auto_awesome</md-icon>
         <span slot="headline">@UiStrings.AiSessionCreator</span>
         <span slot="supporting-text">@UiStrings.AiSessionCreatorSubtitle</span>
@@ -29,7 +29,7 @@
 
 <Dialog @ref="upgradeDialog">
     <span slot="headline">@UiStrings.UpgradeToPro</span>
-    <span slot="content" class="block text-left">
+    <span slot="content" class="block text-start">
         <LimitedHtml Value="@UiStrings.UpgradeToProDescription" />
         @RenderPrice()
     </span>

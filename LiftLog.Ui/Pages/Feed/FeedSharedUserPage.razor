@@ -14,7 +14,7 @@
 {
     <Dialog @ref="_alertWebAppDialog" open>
         <span slot="headline">Download App</span>
-        <span slot="content" class="block text-left">This content is better in the app. If you have the app installed and you are seeing this, please update LiftLog in your phone's app store.</span>
+        <span slot="content" class="block text-start">This content is better in the app. If you have the app installed and you are seeing this, please update LiftLog in your phone's app store.</span>
         <div slot="actions">
             <AppButton Type="AppButtonType.Text" OnClick="() => { _alertWebAppDialog?.Close(); }">Ignore</AppButton>
             <AppButton Type="AppButtonType.Text" OnClick="OpenAppStore">Open app store</AppButton>

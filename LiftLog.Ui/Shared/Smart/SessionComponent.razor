@@ -118,7 +118,7 @@ else
 
 <Dialog @ref="_removeExerciseDialog">
     <span slot="headline">@UiStrings.RemoveExerciseQuestion</span>
-    <span slot="content" class="block text-left">
+    <span slot="content" class="block text-start">
         @UiStrings.RemoveExerciseMessage
     </span>
     <div slot="actions">
@@ -129,7 +129,7 @@ else
 
 <Dialog @ref="_updatePlanDialog">
     <span slot="headline">@UiStrings.UpdatePlan</span>
-    <span slot="content" class="block text-left">
+    <span slot="content" class="block text-start">
         @UiStrings.PlanWillBeUpdated
         @if (SessionWithSameNameInPlan)
         {

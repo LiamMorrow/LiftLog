@@ -8,7 +8,7 @@
         @onpointerdown:preventDefault="true" @onpointerdown:stopPropagation="true"
         @onpointerdown=@(_=>JSRuntime.InvokeVoidAsync("AppUtils.callOn", menu, "close"))></div>
 }
-<md-menu @attributes="AdditionalAttributes" positioning="popover" @ref="menu" @ondialog-close=@(()=>{_open = false;StateHasChanged();}) >
+<md-menu @attributes="AdditionalAttributes" class="text-start" positioning="popover" @ref="menu" @ondialog-close=@(()=>{_open = false;StateHasChanged();}) >
     @ChildContent
 </md-menu>
 @code {

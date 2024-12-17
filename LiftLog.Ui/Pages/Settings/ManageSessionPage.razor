@@ -75,7 +75,7 @@
 
 <Dialog @ref="deleteDialog">
     <span slot="headline">@UiStrings.RemoveExerciseQuestion</span>
-    <span slot="content" class="block text-left">
+    <span slot="content" class="block text-start">
         <LimitedHtml Value="@UiStrings.RemoveExerciseFromWorkoutMessage(selectedExercise?.Name, SessionEditorState.Value.SessionBlueprint?.Name)"/>
     </span>
     <div slot="actions">

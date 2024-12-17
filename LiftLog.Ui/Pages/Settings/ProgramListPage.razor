@@ -12,7 +12,7 @@
 @if(ProgramState.Value.SavedPrograms.Any())
 {
     var orderedPrograms = ProgramState.Value.SavedPrograms.OrderBy(x=>x.Value.Name).ToList();
-    <section class="text-left text-on-surface flex flex-col">
+    <section class="text-start text-on-surface flex flex-col">
         <md-list>
             <ListTitle Title="@UiStrings.SavedPlans" />
             @foreach (var (id, program) in orderedPrograms)

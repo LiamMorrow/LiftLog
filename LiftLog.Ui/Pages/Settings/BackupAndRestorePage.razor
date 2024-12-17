@@ -7,22 +7,22 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <md-list>
-    <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="()=>exportFeedDialog?.Open()">
+    <md-list-item type="button" class="text-start" multi-line-supporting-text @onclick="()=>exportFeedDialog?.Open()">
         <md-icon slot="start">backup</md-icon>
         <span slot="headline">@UiStrings.BackUpData</span>
         <span slot="supporting-text">@UiStrings.BackUpDataSubtitle</span>
     </md-list-item>
-    <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="ImportData">
+    <md-list-item type="button" class="text-start" multi-line-supporting-text @onclick="ImportData">
         <md-icon slot="start">restore</md-icon>
         <span slot="headline">@UiStrings.RestoreData</span>
         <span slot="supporting-text">@UiStrings.RestoreDataSubtitle</span>
     </md-list-item>
-    <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="RemoteBackup">
+    <md-list-item type="button" class="text-start" multi-line-supporting-text @onclick="RemoteBackup">
         <md-icon slot="start">cloud_upload</md-icon>
         <span slot="headline">@UiStrings.AutomaticRemoteBackup</span>
         <span slot="supporting-text">@UiStrings.AutomaticRemoteBackupSubtitle</span>
     </md-list-item>
-    <md-list-item type="button" class="text-left" multi-line-supporting-text @onclick="PlainTextExport">
+    <md-list-item type="button" class="text-start" multi-line-supporting-text @onclick="PlainTextExport">
         <md-icon slot="start">description</md-icon>
         <span slot="headline">@UiStrings.PlaintextExport</span>
         <span slot="supporting-text">@UiStrings.PlaintextExportSubtitle</span>

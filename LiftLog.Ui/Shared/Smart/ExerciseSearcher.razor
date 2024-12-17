@@ -14,7 +14,7 @@
     stay-open-on-focusout=true
     anchor-corner="end-start"
     menu-corner="start-start"
-    class="text-left">
+    class="text-start">
     @foreach (var describedExercise in filteredExercises)
     {
         <MenuItem Label="@describedExercise" Icon="" OnClick="() => ValueChanged.InvokeAsync(describedExercise)"/>

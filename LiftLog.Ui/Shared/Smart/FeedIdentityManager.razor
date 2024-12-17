@@ -28,7 +28,7 @@
 
 <Dialog @ref="stopPublishingDialog">
     <span slot="headline">@UiStrings.ResetAccount</span>
-    <span slot="content" class="block text-left">@UiStrings.ResetAccountMessage</span>
+    <span slot="content" class="block text-start">@UiStrings.ResetAccountMessage</span>
     <div slot="actions">
         <AppButton Type="AppButtonType.Text" OnClick="@(() => stopPublishingDialog?.Close())">@UiStrings.Cancel</AppButton>
         <AppButton Type="AppButtonType.Text" OnClick="StopPublishing">@UiStrings.ResetAccount</AppButton>

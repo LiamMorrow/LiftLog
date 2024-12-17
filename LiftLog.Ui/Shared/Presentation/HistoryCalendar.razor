@@ -15,7 +15,7 @@
     <div class="col-span-5 flex my-2 justify-center items-center">
         <h2 data-cy="calendar-month">@DateTimeFormatInfo.CurrentInfo.GetMonthName(CurrentMonth) @CurrentYear</h2>
     </div>
-    <div class="col-span-1 my-2 text-right">
+    <div class="col-span-1 my-2 text-end">
         <IconButton Type=IconButtonType.Standard @onclick="NextMonth" disabled=@DisableNext Icon="chevron_right" />
     </div>
 

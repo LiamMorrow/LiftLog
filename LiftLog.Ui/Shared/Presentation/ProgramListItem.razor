@@ -1,6 +1,6 @@
 @inject IJSRuntime JSRuntime
 
-<md-list-item @ref="_listItem" @attributes="AdditionalAttributes" type="button" class="text-left @(AdditionalAttributes?.GetValueOrDefault("class")) @FocusClass" multi-line-supporting-text @onclick="OnClick">
+<md-list-item @ref="_listItem" @attributes="AdditionalAttributes" type="button" class="text-start @(AdditionalAttributes?.GetValueOrDefault("class")) @FocusClass" multi-line-supporting-text @onclick="OnClick">
     <span slot="headline" >@ProgramBlueprint.Name</span>
     <span slot="supporting-text">@SupportingText</span>
 
