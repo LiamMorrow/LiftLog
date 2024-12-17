@@ -2,7 +2,6 @@
 @inject IState<SettingsState> SettingsState
 @inject IDispatcher Dispatcher
 @inject IThemeProvider ThemeProvider
-@inject IDeviceService DeviceService
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
@@ -10,11 +9,6 @@
     <ListSwitch Headline="@UiStrings.UseImperialUnits" SupportingText="@UiStrings.UseImperialUnitsSubtitle" Value="@SettingsState.Value.UseImperialUnits" OnSwitched="SetUseImperialUnits" />
     <ListSwitch Headline="@UiStrings.ShowBodyweight" SupportingText="@UiStrings.ShowBodyweightSubtitle" Value="@SettingsState.Value.ShowBodyweight" OnSwitched="SetShowBodyweight" />
     <ListSwitch Headline="@UiStrings.ShowFeed" SupportingText="@UiStrings.ShowFeedSubtitle" Value="@SettingsState.Value.ShowFeed" OnSwitched="SetShowFeed" />
-    @* If android, we need a status bar fix sometimes *@
-    @if(DeviceService.GetDeviceType() == DeviceType.Android)
-    {
-        <ListSwitch Headline="@UiStrings.StatusBarFix" SupportingText="@UiStrings.StatusBarFixSubtitle" Value="@SettingsState.Value.StatusBarFix" OnSwitched="SetStatusBarFix" />
-    }
 
     <ListSwitch Headline="@UiStrings.ShowTips" SupportingText="@UiStrings.ShowTipsSubtitle" Value="@SettingsState.Value.ShowTips" OnSwitched="SetShowTips" />
     <AppButton Type="AppButtonType.Text" OnClick="ResetTips">@UiStrings.ResetTips</AppButton>
@@ -47,9 +41,6 @@
 
     private void SetShowTips(bool value)
         => Dispatcher.Dispatch(new SetShowTipsAction(value));
-
-    private void SetStatusBarFix(bool value)
-        => Dispatcher.Dispatch(new SetStatusBarFixAction(value));
 
     private void ResetTips()
         => Dispatcher.Dispatch(new SetTipToShowAction(1));

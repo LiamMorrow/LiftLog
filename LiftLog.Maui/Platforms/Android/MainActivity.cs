@@ -1,4 +1,5 @@
-﻿using Android;
+﻿using System.Globalization;
+using Android;
 using Android.App;
 using Android.Content.PM;
 using Android.Content.Res;
@@ -48,10 +49,14 @@ public class MainActivity : MauiAppCompatActivity
             IPlatformApplication.Current?.Services.GetRequiredService<InsetsManager>();
         if (insetsManager is not null)
         {
-            insetsManager.SystemSafeInsetBottom =
-                $"{WebViewSoftInputPatch.GetNavBarHeight() / Resources!.DisplayMetrics!.Density}px";
-            insetsManager.SystemSafeInsetTop =
-                $"{WebViewSoftInputPatch.GetStatusBarHeight() / Resources.DisplayMetrics.Density}px";
+            insetsManager.SystemSafeInsetBottom = string.Create(
+                CultureInfo.InvariantCulture,
+                $"{WebViewSoftInputPatch.GetNavBarHeight() / Resources!.DisplayMetrics!.Density}px"
+            );
+            insetsManager.SystemSafeInsetTop = string.Create(
+                CultureInfo.InvariantCulture,
+                $"{WebViewSoftInputPatch.GetStatusBarHeight() / Resources.DisplayMetrics.Density}px"
+            );
             ViewCompat.SetOnApplyWindowInsetsListener(
                 Window!.DecorView,
                 new WindowInsetsListener(insetsManager!, Resources.DisplayMetrics.Density)
@@ -86,15 +91,25 @@ public class MainActivity : MauiAppCompatActivity
             }
             if (top == 0 || bottom == 0)
             {
-                insetsManager.SystemSafeInsetBottom =
-                    $"{WebViewSoftInputPatch.GetNavBarHeight() / density}px";
-                insetsManager.SystemSafeInsetTop =
-                    $"{WebViewSoftInputPatch.GetStatusBarHeight() / density}px";
+                insetsManager.SystemSafeInsetBottom = string.Create(
+                    CultureInfo.InvariantCulture,
+                    $"{WebViewSoftInputPatch.GetNavBarHeight() / density}px"
+                );
+                insetsManager.SystemSafeInsetTop = string.Create(
+                    CultureInfo.InvariantCulture,
+                    $"{WebViewSoftInputPatch.GetStatusBarHeight() / density}px"
+                );
                 insetsManager.NotifyInsetsChanged();
                 return insets;
             }
-            insetsManager.SystemSafeInsetTop = $"{top}px";
-            insetsManager.SystemSafeInsetBottom = $"{bottom}px";
+            insetsManager.SystemSafeInsetTop = string.Create(
+                CultureInfo.InvariantCulture,
+                $"{top}px"
+            );
+            insetsManager.SystemSafeInsetBottom = string.Create(
+                CultureInfo.InvariantCulture,
+                $"{bottom}px"
+            );
             insetsManager.NotifyInsetsChanged();
             return insets;
         }
