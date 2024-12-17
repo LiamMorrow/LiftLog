@@ -1,0 +1,855 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Edit" xml:space="preserve">
+    <value>Modifica</value>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Rimuovi</value>
+  </data>
+  <data name="Workout" xml:space="preserve">
+    <value>Allenamento</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Impostazioni</value>
+  </data>
+  <data name="Statistics" xml:space="preserve">
+    <value>Statistiche</value>
+  </data>
+  <data name="AddWorkouts" xml:space="preserve">
+    <value>Aggiungi Allenamenti</value>
+  </data>
+  <data name="UpcomingWorkouts" xml:space="preserve">
+    <value>Prossimi Allenamenti</value>
+  </data>
+  <data name="BackUpData" xml:space="preserve">
+    <value>Back up Dati</value>
+  </data>
+  <data name="BackUpDataReminder" xml:space="preserve">
+    <value>È passato un po' di tempo dall'ultimo backup, è consigliato effettuarli regolarmente per non perdere i tuoi dati. Vuoi effettuare il backup adesso?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Si</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="DontAskAgain" xml:space="preserve">
+    <value>Non chiedere più</value>
+  </data>
+  <data name="OpenLink" xml:space="preserve">
+    <value>Apri Link</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Annulla</value>
+  </data>
+  <data name="Calculating" xml:space="preserve">
+    <value>Calcolo in corso..</value>
+  </data>
+  <data name="NoDataAvailable" xml:space="preserve">
+    <value>Nessun dato disponibile</value>
+  </data>
+  <data name="TryChangingFilters" xml:space="preserve">
+    <value>Prova a cambiare i filtri in alto </value>
+  </data>
+  <data name="AverageTimeBetweenSets" xml:space="preserve">
+    <value>Media tempo tra le serie</value>
+  </data>
+  <data name="HeaviestLift" xml:space="preserve">
+    <value>Ripetizione più pesante</value>
+  </data>
+  <data name="AverageSessionLength" xml:space="preserve">
+    <value>Media durata sessione</value>
+  </data>
+  <data name="Bodyweight" xml:space="preserve">
+    <value>Peso corporeo</value>
+  </data>
+  <data name="Sessions" xml:space="preserve">
+    <value>Sessioni</value>
+  </data>
+  <data name="NoExercisesFound" xml:space="preserve">
+    <value>Nessun esercizio trovato.</value>
+  </data>
+  <data name="AllTime" xml:space="preserve">
+    <value>Sempre</value>
+  </data>
+  <data name="{NumDays}NumDays" xml:space="preserve">
+    <value>{0} giorni</value>
+  </data>
+  <data name="AllSessions" xml:space="preserve">
+    <value>Tutte le sessioni</value>
+  </data>
+  <data name="CurrentSessions" xml:space="preserve">
+    <value>Sessioni correnti</value>
+  </data>
+  <data name="NotPublishingWorkouts" xml:space="preserve">
+    <value>Non stai pubblicando i tuoi allenamenti</value>
+  </data>
+  <data name="StartPublishing" xml:space="preserve">
+    <value>Inizia a pubblicare</value>
+  </data>
+  <data name="NothingHereYet" xml:space="preserve">
+    <value>Non c'è ancora niente qua!</value>
+  </data>
+  <data name="StartFollowingSomeone" xml:space="preserve">
+    <value>Inizia a seguire qualcuno!</value>
+  </data>
+  <data name="NobodyFollowingYou" xml:space="preserve">
+    <value>Nessuno ti sta ancora seguendo!</value>
+  </data>
+  <data name="ShareLinkToGetFollowers" xml:space="preserve">
+    <value>Condividi il tuo link con gli amici per guadagnare seguaci</value>
+  </data>
+  <data name="Unfollow" xml:space="preserve">
+    <value>Smetti di seguire</value>
+  </data>
+  <data name="UnfollowUser" xml:space="preserve">
+    <value>Smetti di seguire l'utente</value>
+  </data>
+  <data name="RemoveFollower" xml:space="preserve">
+    <value>Rimuovi seguace</value>
+  </data>
+  <data name="SessionContainsNoExercises" xml:space="preserve">
+    <value>La sessione non contiene esercizi.</value>
+  </data>
+  <data name="AddExercise" xml:space="preserve">
+    <value>Aggiungi Esercizio</value>
+  </data>
+  <data name="Finish" xml:space="preserve">
+    <value>Fine</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Salva</value>
+  </data>
+  <data name="EditExercise" xml:space="preserve">
+    <value>Modifica Esercizio</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Aggiorna</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Aggiungi</value>
+  </data>
+  <data name="SelectReps" xml:space="preserve">
+    <value>Seleziona Ripetizioni</value>
+  </data>
+  <data name="RemoveExerciseQuestion" xml:space="preserve">
+    <value>Vuoi rimuovere l'esercizio?</value>
+  </data>
+  <data name="RemoveExerciseMessage" xml:space="preserve">
+    <value>L'esercizio sarà rimosso dalla sessione corrente, questo non avrà effetto sulle sessioni future.</value>
+  </data>
+  <data name="UpdateExistingWorkout{Name}" xml:space="preserve">
+    <value>Vuoi aggiornare l'allenamento &lt;em&gt;{0}&lt;/em&gt;, o aggiungerne uno nuovo?</value>
+  </data>
+  <data name="Exercise" xml:space="preserve">
+    <value>Esercizio</value>
+  </data>
+  <data name="Sets" xml:space="preserve">
+    <value>Serie</value>
+  </data>
+  <data name="Reps" xml:space="preserve">
+    <value>Ripetizioni</value>
+  </data>
+  <data name="SessionNotes" xml:space="preserve">
+    <value>Note Sessione</value>
+  </data>
+  <data name="ExternalLink" xml:space="preserve">
+    <value>Link Esterni</value>
+  </data>
+  <data name="ProgressiveOverload" xml:space="preserve">
+    <value>Sovraccarico Progressivo</value>
+  </data>
+  <data name="SupersetNextExercise" xml:space="preserve">
+    <value>Prossimo esercizio superset</value>
+  </data>
+  <data name="RestShort" xml:space="preserve">
+    <value>Corto</value>
+  </data>
+  <data name="RestMedium" xml:space="preserve">
+    <value>Medio</value>
+  </data>
+  <data name="RestLong" xml:space="preserve">
+    <value>Lungo</value>
+  </data>
+  <data name="Custom" xml:space="preserve">
+    <value>Personalizzato</value>
+  </data>
+  <data name="MinRest" xml:space="preserve">
+    <value>Recupero Minimo</value>
+  </data>
+  <data name="MaxRest" xml:space="preserve">
+    <value>Recupero Massimo</value>
+  </data>
+  <data name="FailureRest" xml:space="preserve">
+    <value>Recupero a Cedimento</value>
+  </data>
+  <data name="RestSingular{Time}" xml:space="preserve">
+    <value>Recupero &lt;em&gt;{0}&lt;/em&gt;</value>
+  </data>
+  <data name="RestBetween{Time1}{Time2}" xml:space="preserve">
+    <value>Recupero tra &lt;em&gt;{0}&lt;/em&gt; e &lt;em&gt;{0}&lt;/em&gt;</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="CompleteAndComeBack" xml:space="preserve">
+    <value>Completa la sessione e ricontrolla.</value>
+  </data>
+  <data name="DeleteSessionQuestion" xml:space="preserve">
+    <value>Vuoi eliminare la sessione?</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Elimina</value>
+  </data>
+  <data name="ManagePlans" xml:space="preserve">
+    <value>Gestisci piani</value>
+  </data>
+  <data name="ManagePlansSubtitle" xml:space="preserve">
+    <value>Imposta i tuoi piani di allenamento</value>
+  </data>
+  <data name="AppConfiguration" xml:space="preserve">
+    <value>Configurazione app</value>
+  </data>
+  <data name="AppConfigurationSubtitle" xml:space="preserve">
+    <value>Modifica le unità di misura, i temi ecc.</value>
+  </data>
+  <data name="Notifications" xml:space="preserve">
+    <value>Notifiche</value>
+  </data>
+  <data name="NotificationsSubtitle" xml:space="preserve">
+    <value>Modifica le impostazioni delle notifiche dei timer di recupero</value>
+  </data>
+  <data name="ExportBackupRestore" xml:space="preserve">
+    <value>Esporta, backup e ripristino</value>
+  </data>
+  <data name="FeatureRequest" xml:space="preserve">
+    <value>Suggerisci una funzione</value>
+  </data>
+  <data name="BugReport" xml:space="preserve">
+    <value>Segnala un bug</value>
+  </data>
+  <data name="AppInfo" xml:space="preserve">
+    <value>Info app</value>
+  </data>
+  <data name="AppInfoSubtitle" xml:space="preserve">
+    <value>Mostra le informazioni dell'app</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Chiudi</value>
+  </data>
+  <data name="SavedPlans" xml:space="preserve">
+    <value>Piani salvati</value>
+  </data>
+  <data name="AddPlan" xml:space="preserve">
+    <value>Aggiungi piano</value>
+  </data>
+  <data name="SelectedPlan{Plan}" xml:space="preserve">
+    <value>Selezionati &lt;em&gt;{0}&lt;/em&gt;</value>
+  </data>
+  <data name="RestNotifications" xml:space="preserve">
+    <value>Notifche recupero</value>
+  </data>
+  <data name="PlanName" xml:space="preserve">
+    <value>Nome Piano</value>
+  </data>
+  <data name="AddWorkout" xml:space="preserve">
+    <value>Aggiungi allenamento</value>
+  </data>
+  <data name="UseWorkout" xml:space="preserve">
+    <value>Usa</value>
+  </data>
+  <data name="WorkoutName" xml:space="preserve">
+    <value>Nome Allenamento</value>
+  </data>
+  <data name="WorkoutNotes" xml:space="preserve">
+    <value>Note Allenamento</value>
+  </data>
+  <data name="NoExercisesAdded" xml:space="preserve">
+    <value>Nessun esercizio aggiunto</value>
+  </data>
+  <data name="Exercises" xml:space="preserve">
+    <value>Esercizi</value>
+  </data>
+  <data name="RemoveExerciseFromWorkoutMessage{Exercise}{Session}" xml:space="preserve">
+    <value>Questo rimuoverà l'esercizio &lt;em&gt;{0}&lt;/em&gt; da &lt;em&gt;{1}&lt;/em&gt;.</value>
+  </data>
+  <data name="RestoreData" xml:space="preserve">
+    <value>Ripristina dati</value>
+  </data>
+  <data name="RestoreDataSubtitle" xml:space="preserve">
+    <value>Importa dati da un file per il ripristino</value>
+  </data>
+  <data name="BackUpDataSubtitle" xml:space="preserve">
+    <value>Esporta dati in un file per il backup o per un trasferimento</value>
+  </data>
+  <data name="AutomaticRemoteBackup" xml:space="preserve">
+    <value>Backup remoti automatici</value>
+  </data>
+  <data name="PlaintextExport" xml:space="preserve">
+    <value>Esportazione Plaintext</value>
+  </data>
+  <data name="PlaintextExportSubtitle" xml:space="preserve">
+    <value>Esporta i tuoi dati in un formato plaintext ad es.CSV per l'uso in altre applicazioni</value>
+  </data>
+  <data name="AutomaticRemoteBackupSubtitle" xml:space="preserve">
+    <value>Invia i backup ad un server remoto. Per utenti avanzati.</value>
+  </data>
+  <data name="SelectAPlan" xml:space="preserve">
+    <value>Seleziona un piano di allenamento</value>
+  </data>
+  <data name="NoPlanCreated" xml:space="preserve">
+    <value>Nessun piano di allenamento creato per ora!</value>
+  </data>
+  <data name="ReplaceCurrentSession" xml:space="preserve">
+    <value>Sostituisci sessione corrente</value>
+  </data>
+  <data name="MostTimeSpent" xml:space="preserve">
+    <value>Maggior tempo trascorso</value>
+  </data>
+  <data name="NoFollowingData" xml:space="preserve">
+    <value>Nessuna persona che segui ha ancora pubblicato qualcosa! Torna più tardi.</value>
+  </data>
+  <data name="NotFollowingAnyone" xml:space="preserve">
+    <value>Non stai ancora seguendo nessuno, chiedi ad un amico il suo link di condivisione per iniziare!</value>
+  </data>
+  <data name="RemoveFollowerMsgPart1" xml:space="preserve">
+    <value>Questo farà smettere</value>
+  </data>
+  <data name="RemoveFollowerMsgPart2" xml:space="preserve">
+    <value>di seguirti e rimuoverà tutto il tuo contenuto dal loro dispositivo.</value>
+  </data>
+  <data name="Unfollow{User}Msg" xml:space="preserve">
+    <value>Questo farà smettere di seguire &lt;em&gt;{0}&lt;/em&gt; e rimuoverà tutto il suo contenuto dal tuo dispositivo.</value>
+  </data>
+  <data name="UpdatePlan" xml:space="preserve">
+    <value>Aggiorna Piano</value>
+  </data>
+  <data name="PlanWillBeUpdated" xml:space="preserve">
+    <value>Il piano di allenamento sarà aggiornata con gli esercizi della sessione corrente.</value>
+  </data>
+  <data name="PlanNotes" xml:space="preserve">
+    <value>Note Piano d'Allenamento</value>
+  </data>
+  <data name="NoSessionsInMonth{Month}" xml:space="preserve">
+    <value>Non è stato registrato nulla a {0}&lt;br&gt; Completa la sessione o seleziona un altro mese per vedere le tue sessioni.</value>
+  </data>
+  <data name="DeleteSessionMessage{SessionName}{Date}" xml:space="preserve">
+    <value>La sessione &lt;em&gt;{0}&lt;/em&gt;, del {1} sarà elimminata dalla cronologia. Questo non potrà essere annulllato.</value>
+  </data>
+  <data name="BugReportSubtitle" xml:space="preserve">
+    <value>Facci sapere se riscontri bug</value>
+  </data>
+  <data name="FeatureRequestSubtitle" xml:space="preserve">
+    <value>Suggerisci una nuova funzione che pensi LiftLog debba avere!</value>
+  </data>
+  <data name="ExportBackupRestoreSubtitle" xml:space="preserve">
+    <value>Crea ed esporta backup per trasferire dati tra dispositivi</value>
+  </data>
+  <data name="RestNotificationsSubtitle" xml:space="preserve">
+    <value>Mostra una notifica quando il timer del recupero giunge al termine</value>
+  </data>
+  <data name="NoWorkoutsInPlan" xml:space="preserve">
+    <value>Nessun allenamento nel piano &lt;br&gt; Aggiungi un allenamento per iniziare.</value>
+  </data>
+  <data name="ManageWorkout{Workout}" xml:space="preserve">
+    <value>Gestisci {0}</value>
+  </data>
+  <data name="ImportFeedDataQuestion" xml:space="preserve">
+    <value>Vuoi importare i dati del feed?</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Importa</value>
+  </data>
+  <data name="IncludeFeed" xml:space="preserve">
+    <value>Includi feed</value>
+  </data>
+  <data name="JustMyData" xml:space="preserve">
+    <value>Solo i miei dati</value>
+  </data>
+  <data name="BackupFeedAccount" xml:space="preserve">
+    <value>Backup account del feed</value>
+  </data>
+  <data name="UseImperialUnits" xml:space="preserve">
+    <value>Usa unità imperiali</value>
+  </data>
+  <data name="UseImperialUnitsSubtitle" xml:space="preserve">
+    <value>Usa le libbre al posto dei chilogrammi</value>
+  </data>
+  <data name="ShowBodyweight" xml:space="preserve">
+    <value>Mostra peso corporeo</value>
+  </data>
+  <data name="ShowBodyweightSubtitle" xml:space="preserve">
+    <value>Attiva monitoraggio del peso corporeo e le statistiche</value>
+  </data>
+  <data name="ShowFeed" xml:space="preserve">
+    <value>Mostra feed</value>
+  </data>
+  <data name="ShowFeedSubtitle" xml:space="preserve">
+    <value>Mostra il feed nella barra di navigazione</value>
+  </data>
+  <data name="StatusBarFix" xml:space="preserve">
+    <value>Fix barra di stato</value>
+  </data>
+  <data name="StatusBarFixSubtitle" xml:space="preserve">
+    <value>Risolve il problema della sovrapposizione della barra di stato sui controlli in alcuni dispositivi.</value>
+  </data>
+  <data name="ShowTips" xml:space="preserve">
+    <value>Mostra suggerimenti</value>
+  </data>
+  <data name="SharedPlan" xml:space="preserve">
+    <value>Condividi piano</value>
+  </data>
+  <data name="SettingsSaved" xml:space="preserve">
+    <value>Impostazioni salvate</value>
+  </data>
+  <data name="BackupSentSuccessfully" xml:space="preserve">
+    <value>Backup inviato con successo</value>
+  </data>
+  <data name="ImportTheirPlan" xml:space="preserve">
+    <value>Importa il loro piano</value>
+  </data>
+  <data name="Translation" xml:space="preserve">
+    <value>Suggerisci una traduzione</value>
+  </data>
+  <data name="ManageWorkoutTitle" xml:space="preserve">
+    <value>Gestisci allenamento</value>
+  </data>
+  <data name="FailedToBackupToRemote" xml:space="preserve">
+    <value>Backup su server remoto fallito</value>
+  </data>
+  <data name="Upgrade" xml:space="preserve">
+    <value>Aggiorna</value>
+  </data>
+  <data name="PlanSharedWithYou" xml:space="preserve">
+    <value>Questo piano è stato condiviso con te.</value>
+  </data>
+  <data name="UpgradeToPro" xml:space="preserve">
+    <value>Aggiorna alla versione Pro</value>
+  </data>
+  <data name="Unlock" xml:space="preserve">
+    <value>Sblocca</value>
+  </data>
+  <data name="ShareLink" xml:space="preserve">
+    <value>Condividi link</value>
+  </data>
+  <data name="ResetAccount" xml:space="preserve">
+    <value>Reimposta account</value>
+  </data>
+  <data name="YourName" xml:space="preserve">
+    <value>Il tuo nome</value>
+  </data>
+  <data name="Optional" xml:space="preserve">
+    <value>Facoltativo</value>
+  </data>
+  <data name="NotNow" xml:space="preserve">
+    <value>Non adesso</value>
+  </data>
+  <data name="Rate" xml:space="preserve">
+    <value>Valuta</value>
+  </data>
+  <data name="Never" xml:space="preserve">
+    <value>Mai</value>
+  </data>
+  <data name="EnjoyingLiftLogQuestion" xml:space="preserve">
+    <value>Ti sta piacendo LiftLog?</value>
+  </data>
+  <data name="EnjoyingLiftLogMessage{Type}{Store}" xml:space="preserve">
+    <value>Se sì, ci dedicheresti un minuto per lasciare {0} su {1}?</value>
+  </data>
+  <data name="EnableNotificationsQuestion" xml:space="preserve">
+    <value>Attiva Notifiche?</value>
+  </data>
+  <data name="Feed" xml:space="preserve">
+    <value>Feed</value>
+  </data>
+  <data name="Stats" xml:space="preserve">
+    <value>Statistiche</value>
+  </data>
+  <data name="History" xml:space="preserve">
+    <value>Cronologia</value>
+  </data>
+  <data name="Feed_Following" xml:space="preserve">
+    <value>Seguiti</value>
+  </data>
+  <data name="Feed_Followers" xml:space="preserve">
+    <value>Seguaci</value>
+  </data>
+  <data name="SessionInProgress" xml:space="preserve">
+    <value>C'è già una sessione in corso, vuoi iniziare un'altra senza salvare?</value>
+  </data>
+  <data name="Freeform Session" xml:space="preserve">
+    <value>Sessione a corpo libero</value>
+  </data>
+  <data name="ShowTipsSubtitle" xml:space="preserve">
+    <value>Mostra suggerimenti su come usare l'app</value>
+  </data>
+  <data name="ResetTips" xml:space="preserve">
+    <value>Reimposta suggerimenti</value>
+  </data>
+  <data name="ReadDocumentation" xml:space="preserve">
+    <value>Leggi la documentazione</value>
+  </data>
+  <data name="PlaintextExportFormat" xml:space="preserve">
+    <value>Formatta</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Esporta</value>
+  </data>
+  <data name="Endpoint" xml:space="preserve">
+    <value>Endpoint</value>
+  </data>
+  <data name="ApiKey" xml:space="preserve">
+    <value>Chiave API</value>
+  </data>
+  <data name="BackupFeedAccountSubtitle" xml:space="preserve">
+    <value>Includi i dati del feed nei backup</value>
+  </data>
+  <data name="Test" xml:space="preserve">
+    <value>Test</value>
+  </data>
+  <data name="Accept" xml:space="preserve">
+    <value>Accetta</value>
+  </data>
+  <data name="Regenerate" xml:space="preserve">
+    <value>Rigenera</value>
+  </data>
+  <data name="Retry" xml:space="preserve">
+    <value>Riprova</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Indietro</value>
+  </data>
+  <data name="AddToPlan" xml:space="preserve">
+    <value>Aggiungi al piano</value>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Inizia</value>
+  </data>
+  <data name="Generate" xml:space="preserve">
+    <value>Genera</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="Default" xml:space="preserve">
+    <value>Predefinito</value>
+  </data>
+  <data name="ImportFeedDataQuestionMessage" xml:space="preserve">
+    <value>Questo backup include un account del feed. Vuoi importarlo?&lt;br&gt;Perderai accesso al tuo account corrente senza un backup.&lt;br&gt;&lt;em&gt;Questo sostituirà il tuo account corrente e non può essere annullato!&lt;/em&gt;</value>
+  </data>
+  <data name="BackupFeedAccountMessage" xml:space="preserve">
+    <value>Includi il tuo account del feed e gli utenti seguiti in questo backup?&lt;br&gt;&lt;em&gt;Attenzione: Questo permetterà a chiunque lo possieda di pubblicare contenuti con il tuo account&lt;/em&gt;</value>
+  </data>
+  <data name="PlaintextExportDescription" xml:space="preserve">
+    <value>Questa funzionalità ti permette di esportare i dati in un formato plaintext come ad es. CSV per l'uso in altre applicazioni. Non è pensato per essere un backup. Per i backup, usa la funzione di backup. LiftLog non può ripristinare i dati dalle esportazioni plaintext.</value>
+  </data>
+  <data name="RemoteBackupDescription" xml:space="preserve">
+    <value>Questa funzionalità avanzata permette a LiftLog di inviare i backup ad un server remoto.&lt;br&gt;Perfavore leggi la documentazione per come configurare un server remoto.</value>
+  </data>
+  <data name="AdditionalInformationLabel" xml:space="preserve">
+    <value>Qualche informazione aggiuntiva?</value>
+  </data>
+  <data name="AdditionalInformationExtra" xml:space="preserve">
+    <value>Obiettivi, infortuni, equipaggiamento disponibile ecc.</value>
+  </data>
+  <data name="HowOldAreYou" xml:space="preserve">
+    <value>Quanti anni hai?</value>
+  </data>
+  <data name="SelectAtLeastOneGoal" xml:space="preserve">
+    <value>Selezione almeno un obiettivo</value>
+  </data>
+  <data name="SelectNumberOfDays" xml:space="preserve">
+    <value>Seleziona il numero dei giorni a settimana</value>
+  </data>
+  <data name="WhatIsYourGender" xml:space="preserve">
+    <value>Qual è il tuo genere?</value>
+  </data>
+  <data name="GenderFemale" xml:space="preserve">
+    <value>Femmina</value>
+  </data>
+  <data name="GenderMale" xml:space="preserve">
+    <value>Maschio</value>
+  </data>
+  <data name="GenderOther" xml:space="preserve">
+    <value>Altro</value>
+  </data>
+  <data name="GenderPreferNotToSay" xml:space="preserve">
+    <value>Preferisco non dirlo</value>
+  </data>
+  <data name="WhatAreYourGoals" xml:space="preserve">
+    <value>Quali sono i tuoi obiettivi?</value>
+  </data>
+  <data name="Toning" xml:space="preserve">
+    <value>Tonificazione</value>
+  </data>
+  <data name="LosingWeight" xml:space="preserve">
+    <value>Dimagrire</value>
+  </data>
+  <data name="GainingMuscle" xml:space="preserve">
+    <value>Ipertrofia</value>
+  </data>
+  <data name="Strength" xml:space="preserve">
+    <value>Forza</value>
+  </data>
+  <data name="WhatIsYourExperienceLevel" xml:space="preserve">
+    <value>Qual è il tuo livello di esperienza?</value>
+  </data>
+  <data name="ExperienceProfessional" xml:space="preserve">
+    <value>Professionista</value>
+  </data>
+  <data name="ExperienceAdvanced" xml:space="preserve">
+    <value>Avanzato</value>
+  </data>
+  <data name="ExperienceIntermediate" xml:space="preserve">
+    <value>Intermedio</value>
+  </data>
+  <data name="ExperienceBeginner" xml:space="preserve">
+    <value>Novizio</value>
+  </data>
+  <data name="One" xml:space="preserve">
+    <value>Uno</value>
+  </data>
+  <data name="Two" xml:space="preserve">
+    <value>Due</value>
+  </data>
+  <data name="Three" xml:space="preserve">
+    <value>Tre</value>
+  </data>
+  <data name="Four" xml:space="preserve">
+    <value>Quattro</value>
+  </data>
+  <data name="Five" xml:space="preserve">
+    <value>Cinque</value>
+  </data>
+  <data name="Six" xml:space="preserve">
+    <value>Sei</value>
+  </data>
+  <data name="Seven" xml:space="preserve">
+    <value>Sette</value>
+  </data>
+  <data name="HowManyDaysPerWeek" xml:space="preserve">
+    <value>Quanti giorni a settimana?</value>
+  </data>
+  <data name="HowMuchDoYouWeigh" xml:space="preserve">
+    <value>Quanto pesi?</value>
+  </data>
+  <data name="Arms" xml:space="preserve">
+    <value>Braccia</value>
+  </data>
+  <data name="Chest" xml:space="preserve">
+    <value>Petto</value>
+  </data>
+  <data name="BackMuscle" xml:space="preserve">
+    <value>Schiena</value>
+  </data>
+  <data name="Legs" xml:space="preserve">
+    <value>Gambe</value>
+  </data>
+  <data name="Triceps" xml:space="preserve">
+    <value>Tricipiti</value>
+  </data>
+  <data name="Biceps" xml:space="preserve">
+    <value>Bicipiti</value>
+  </data>
+  <data name="Quads" xml:space="preserve">
+    <value>Quadricipiti</value>
+  </data>
+  <data name="Hamstrings" xml:space="preserve">
+    <value>Femorali</value>
+  </data>
+  <data name="Calves" xml:space="preserve">
+    <value>Polpacci</value>
+  </data>
+  <data name="WhatAreYouWorkingOut" xml:space="preserve">
+    <value>Cosa stiamo allenando?</value>
+  </data>
+  <data name="HowMuchVolume" xml:space="preserve">
+    <value>Quanto volume?</value>
+  </data>
+  <data name="VolumeLight" xml:space="preserve">
+    <value>Leggero</value>
+  </data>
+  <data name="VolumeMedium" xml:space="preserve">
+    <value>Medio</value>
+  </data>
+  <data name="VolumeHeavy" xml:space="preserve">
+    <value>Pesante</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>Ok</value>
+  </data>
+  <data name="FeedUserCompletedAWorkout{UserName}" xml:space="preserve">
+    <value>
+&lt;em&gt;{0}&lt;/em&gt; ha completato un allenamento!</value>
+  </data>
+  <data name="AnonymousUser" xml:space="preserve">
+    <value>Utente Anonimo</value>
+  </data>
+  <data name="AwaitingResponse" xml:space="preserve">
+    <value>In Attesa di Risposta</value>
+  </data>
+  <data name="Nickname" xml:space="preserve">
+    <value>Nickname</value>
+  </data>
+  <data name="ViewTheirPlan" xml:space="preserve">
+    <value>Vedi il loro piano</value>
+  </data>
+  <data name="UserIsFollowingYou{User}" xml:space="preserve">
+    <value>&lt;em&gt;{0}&lt;/em&gt; ti sta seguendo!</value>
+  </data>
+  <data name="UserWantsToFollowYou{User}" xml:space="preserve">
+    <value>
+&lt;em&gt;{0}&lt;/em&gt; vuole seguirti!</value>
+  </data>
+  <data name="Deny" xml:space="preserve">
+    <value>Rifiuta</value>
+  </data>
+  <data name="GenericLoading" xml:space="preserve">
+    <value>Caricamento...</value>
+  </data>
+  <data name="Duplicate" xml:space="preserve">
+    <value>Duplica</value>
+  </data>
+  <data name="NeverDoneThisExerciseBefore" xml:space="preserve">
+    <value>Non hai mai fatto questo esercizio prima d'ora</value>
+  </data>
+  <data name="Share" xml:space="preserve">
+    <value>Condividi</value>
+  </data>
+  <data name="EditedOn{Date}" xml:space="preserve">
+    <value>Modificato: {0}</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Attivo</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Cerca</value>
+  </data>
+  <data name="Weight" xml:space="preserve">
+    <value>Peso</value>
+  </data>
+  <data name="PublishWorkout" xml:space="preserve">
+    <value>Pubblica allenamento</value>
+  </data>
+  <data name="PublishBodyweight" xml:space="preserve">
+    <value>Pubblica peso corpoeo</value>
+  </data>
+  <data name="PublishPlan" xml:space="preserve">
+    <value>Pubblica piano</value>
+  </data>
+  <data name="PublishWorkoutSubtitle" xml:space="preserve">
+    <value>Pubblica gli allenamenti quando finisci</value>
+  </data>
+  <data name="PublishPlanSubtitle" xml:space="preserve">
+    <value>Pubblica il tuo piano corrente così che i tuoi seguaci possano vederlo e importarlo</value>
+  </data>
+  <data name="PublishBodyweightSubtitle" xml:space="preserve">
+    <value>Pubblica il tuo peso corporeo con i tuoi allenamenti</value>
+  </data>
+  <data name="ResetAccountMessage" xml:space="preserve">
+    <value>Questo eliminerà i tuoi dati con i server e ti disiscriverà da tutti i tuoi feed. Dovrai reiscriverti e condividere un nuovo lin se vuoi condividere ancora i tuoi allenamenti</value>
+  </data>
+  <data name="OnlyThoseWithTheLinkCanSee" xml:space="preserve">
+    <value>Solo chi possiede il link può vedere cosa hai pubblicato.</value>
+  </data>
+  <data name="ProFeatures" xml:space="preserve">
+    <value>Funzionalità Pro</value>
+  </data>
+  <data name="AiPlannerSubtitle" xml:space="preserve">
+    <value>Usa l'IA per generare piani di allenamento in base ai tuoi obiettivi</value>
+  </data>
+  <data name="AiSessionCreatorSubtitle" xml:space="preserve">
+    <value>Genera una sessione di allenamento da importare nel tuo piano o completa adesso!</value>
+  </data>
+  <data name="TranslationSubtitle" xml:space="preserve">
+    <value>Invia traduzioni per l'app!</value>
+  </data>
+  <data name="ImportTheirPlanMessage{user}" xml:space="preserve">
+    <value>Questo importerà il piano di &lt;em&gt;{0}'s&lt;/em&gt; . Non sovrascriverà il tuo piano corrente.</value>
+  </data>
+  <data name="FollowUserBack{User}" xml:space="preserve">
+    <value>Segui {0} anche tu</value>
+  </data>
+  <data name="SelectAtLeastOneArea" xml:space="preserve">
+    <value>Seleziona almeno un gruppo muscolare da allenare</value>
+  </data>
+  <data name="NoteAboutTweakingAiPlan" xml:space="preserve">
+    <value>Nota: puoi modificare questo piano dopo che l'hai accettato. Devi solo andare nella pagina di gestione dei piani di allenamento nelle impostazioni.</value>
+  </data>
+  <data name="GeneratingAiPlan" xml:space="preserve">
+    <value>Genero il piano di allenamento IA... &lt;br&gt;&lt;em&gt;Potrebbero volerci fino a 3 minuti&lt;/em&gt;</value>
+  </data>
+  <data name="Review" xml:space="preserve">
+    <value>Recensione</value>
+  </data>
+  <data name="GithubStar" xml:space="preserve">
+    <value>Stella</value>
+  </data>
+  <data name="UpgradeToProDescription" xml:space="preserve">
+    <value>Questo sblocchera l'AI planner, che genererà un piano di allenamento personalizzato per te e i tuoi obiettivi. &lt;br&gt; Consiste in un singolo acquisto di: </value>
+  </data>
+  <data name="AndroidNotificationPermissionExplanation" xml:space="preserve">
+    <value>I dispositivi Android più recenti richiedono un permesso aggiuntivo per assicurarsi che le notifiche dei timer di recupero siano visualizzate in tempo. Senza questo permesso, arriveranno in ritardo e saranno pressochè inutili. Nella prossima schermata, perfavore dai il consenso a LiftLog.</value>
+  </data>
+</root>

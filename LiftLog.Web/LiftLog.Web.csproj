@@ -11,14 +11,16 @@
         <!-- <RunAOTCompilation>true</RunAOTCompilation>
         <RunAOTCompilationAfterBuild>true</RunAOTCompilationAfterBuild>
         <WasmNativeStrip>false</WasmNativeStrip> -->
+        <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="BlazorDownloadFile" Version="2.4.0.2"/>
-        <PackageReference Include="Blazored.LocalStorage" Version="4.5.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.0" PrivateAssets="all"/>
-        <PackageReference Include="RealGoodApps.BlazorJavascript.Interop" Version="1.1.0"/>
+        <PackageReference Include="BlazorDownloadFile" Version="2.4.0.2" />
+        <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.0" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.0" />
+        <PackageReference Include="RealGoodApps.BlazorJavascript.Interop" Version="1.1.0" />
         <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.7.1">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
@@ -26,8 +28,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\LiftLog.Lib\LiftLog.Lib.csproj"/>
-        <ProjectReference Include="..\LiftLog.Ui\LiftLog.Ui.csproj"/>
+        <ProjectReference Include="..\LiftLog.Lib\LiftLog.Lib.csproj" />
+        <ProjectReference Include="..\LiftLog.Ui\LiftLog.Ui.csproj" />
         <Content Update="tsconfig.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />
     </ItemGroup>
 </Project>

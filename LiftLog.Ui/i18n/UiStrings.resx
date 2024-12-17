@@ -904,4 +904,10 @@
   <data name="ManageWorkoutTitle" xml:space="preserve">
     <value>Manage workout</value>
   </data>
+  <data name="BackupReminders" xml:space="preserve">
+    <value>Backup reminders</value>
+  </data>
+  <data name="BackupRemindersSubtitle" xml:space="preserve">
+    <value>Periodically suggest a backup when you have not backed up in a while</value>
+  </data>
 </root>
