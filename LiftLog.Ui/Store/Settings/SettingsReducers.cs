@@ -94,4 +94,10 @@ public static class SettingsReducers
         SettingsState state,
         SetLastSuccessfulRemoteBackupHashAction action
     ) => state with { LastSuccessfulRemoteBackupHash = action.Hash };
+
+    [ReducerMethod]
+    public static SettingsState SetSplitWeightByDefault(
+        SettingsState state,
+        SetSplitWeightByDefaultAction action
+    ) => state with { SplitWeightByDefault = action.SplitWeightByDefault };
 }

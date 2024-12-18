@@ -23,8 +23,6 @@ describe('Settings', () => {
       it('should display weights in the correct units on all pages', () => {
         assertCorrectWeightUnitsOnAllPages('kg')
         cy.navigate('Settings')
-        // Navigate twice, because settings remembers its last page when you click it
-        cy.navigate('Settings')
         cy.containsA('App configuration').click()
         cy.containsA('Use imperial units').click()
         assertCorrectWeightUnitsOnAllPages('lbs')
@@ -35,11 +33,41 @@ describe('Settings', () => {
       it('should hide and show it on all pages', () => {
         assertShowsBodyweightOnAllPages(true)
         cy.navigate('Settings')
-        // Navigate twice, because settings remembers its last page when you click it
-        cy.navigate('Settings')
         cy.containsA('App configuration').click()
         cy.containsA('Show bodyweight').click()
         assertShowsBodyweightOnAllPages(false)
+      })
+    })
+  })
+
+  describe('When a user selects a plan', () => {
+    beforeEach(() => {
+      cy.navigate('Settings')
+      // Disable tips
+      cy.containsA('App configuration').click()
+      cy.containsA('Show tips').click()
+      cy.navigate('Settings')
+      cy.containsA('Manage plans').click()
+      cy.containsA("Starting Strength").parent('md-list-item').find('[data-cy=use-plan-btn]').click()
+      cy.navigate('Workout')
+    })
+
+    describe('and updates the individual weight setting', () => {
+      it('should display the correct weight on the workout page', () => {
+        cy.navigate('Settings')
+        cy.containsA('App configuration').click()
+        cy.getA('[data-cy=split-weight-toggle]').click()
+        cy.navigate('Workout')
+        cy.getA('[data-cy=session-summary]').first().click()
+        cy.getA('[data-cy="set-weight-button"]').should('be.visible')
+
+        cy.navigate('Settings')
+        cy.containsA('App configuration').click()
+        cy.getA('[data-cy=split-weight-toggle]').click()
+        cy.navigate('Workout')
+        cy.navigate('Workout')
+        cy.getA('[data-cy=session-summary]').first().click()
+        cy.getA('[data-cy="set-weight-button"]').should('not.be.visible')
       })
     })
   })

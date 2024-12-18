@@ -53,3 +53,5 @@ public record SetLastBackupTimeAction(DateTimeOffset Time);
 public record SetBackupReminderAction(bool ShowReminder);
 
 public record ExportPlainTextAction(PlaintextExportFormat Format);
+
+public record SetSplitWeightByDefaultAction(bool SplitWeightByDefault);

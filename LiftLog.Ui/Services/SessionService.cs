@@ -3,10 +3,12 @@ using Fluxor;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Store.CurrentSession;
+using LiftLog.Ui.Store.Settings;
 
 namespace LiftLog.Ui.Services;
 
 public class SessionService(
+    IState<SettingsState> settingsState,
     IState<CurrentSessionState> currentSessionState,
     ProgressRepository progressRepository
 )
@@ -87,6 +89,7 @@ public class SessionService(
         IReadOnlyDictionary<KeyedExerciseBlueprint, RecordedExercise> latestRecordedExercises
     )
     {
+        var splitWeightByDefault = settingsState.Value.SplitWeightByDefault;
         RecordedExercise GetNextExercise(ExerciseBlueprint e)
         {
             var lastExercise = latestRecordedExercises.GetValueOrDefault(e);
@@ -102,7 +105,7 @@ public class SessionService(
                 weight,
                 Enumerable.Repeat(new PotentialSet(null, weight), e.Sets).ToImmutableList(),
                 null,
-                lastExercise?.PerSetWeight ?? false
+                splitWeightByDefault || (lastExercise?.PerSetWeight ?? false)
             );
         }
 

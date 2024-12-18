@@ -37,13 +37,16 @@
                 </div>
             }
         </div>
-        <div class="self-start -m-3 -mt-4">
+        <div class="self-start
+            [transition:height_150ms_cubic-bezier(0.4,0,0.2,1),margin_150ms_cubic-bezier(0.4,0,0.2,1),width_150ms_cubic-bezier(0.4,0,0.2,1),transform_400ms]
+            @WeightDisplayScale">
             <WeightDisplay
                 Weight="displayedExercise.Weight"
                 Increment="displayedExercise.Blueprint.WeightIncreaseOnSuccess"
                 UpdateWeight="w => { if (w is not null) UpdateWeightForExercise(w.Value); }"
                 IsReadonly="IsReadonly"/>
         </div>
+
     </div>
     <div class="flex justify-start flex-wrap gap-2">
         @foreach (var (i, set) in displayedExercise.PotentialSets.Index())
@@ -153,6 +156,8 @@
     [Parameter] public bool IsReadonly { get; set; } = false;
 
     [EditorRequired] [Parameter] public bool ShowPreviousButton { get; set; }
+
+    private string WeightDisplayScale => !RecordedExercise.PerSetWeight ? "h-12 -m-3 -mt-4" : "h-0 m-0";
 
     private void HandleNotesChange(string value)
     {

@@ -221,6 +221,15 @@ internal class SettingsEffects(
     }
 
     [EffectMethod]
+    public async Task HandleSetSplitWeightByDefaultAction(
+        SetSplitWeightByDefaultAction action,
+        IDispatcher _
+    )
+    {
+        await preferencesRepository.SetSplitWeightByDefaultAsync(action.SplitWeightByDefault);
+    }
+
+    [EffectMethod]
     public async Task ExecuteRemoteBackup(ExecuteRemoteBackupAction action, IDispatcher dispatcher)
     {
         var (endpoint, apiKey, includeFeedAccount) = action.Settings;
