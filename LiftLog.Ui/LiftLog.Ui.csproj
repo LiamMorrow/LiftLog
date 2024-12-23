@@ -56,12 +56,12 @@
         <PackageReference Include="FuzzySharp" Version="2.0.2" />
         <PackageReference Include="MaterialColorUtilities" Version="0.3.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0" />
-        <PackageReference Include="Fluxor" Version="6.1.0" />
-        <PackageReference Include="Fluxor.Blazor.Web" Version="6.1.0" />
+        <PackageReference Include="Fluxor" Version="6.2.1.5" />
+        <PackageReference Include="Fluxor.Blazor.Web" Version="6.2.1.5" />
         <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.0" />
         <PackageReference Include="System.Linq.Async" Version="6.0.1" />
 
-        <PackageReference Include="Google.Protobuf" Version="3.29.1" />
+        <PackageReference Include="Google.Protobuf" Version="3.29.2" />
         <PackageReference Include="Grpc.Tools" Version="2.68.1">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
@@ -78,7 +78,7 @@
     </ItemGroup>
 
     <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="6.1.0" />
+        <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="6.2.1.5" />
     </ItemGroup>
 
     <ItemGroup Condition=" '$(Configuration)' != 'Debug' ">
