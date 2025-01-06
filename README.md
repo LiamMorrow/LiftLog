@@ -24,6 +24,12 @@ Checkout [the app website](https://liftlog.online) for screenshots and features.
 
 LiftLog can be translated into different languages by filling out a translations file. If you are interested in translating, please submit an issue or pull request creating or amending a copy of the [UiStrings.resx](./LiftLog.Ui/i18n/UiStrings.resx) file.
 
+LiftLog is currently available in the following languages:
+
+- English (default)
+- Italian
+- German
+
 ## Quickstart
 
 ### Prerequisites
