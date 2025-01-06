@@ -611,7 +611,7 @@
     <value>Generieren</value>
   </data>
   <data name="SelectAtLeastOneArea" xml:space="preserve">
-    <value>Bitte mindestens einen Bereich für das Workout auswhälen</value>
+    <value>Bitte mindestens einen Bereich für das Workout auswählen</value>
   </data>
   <data name="AiSessionCreator" xml:space="preserve">
     <value>KI Session-Generator</value>
