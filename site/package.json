@@ -42,11 +42,11 @@
         "autoprefixer": "10.4.20",
         "browser-sync": "3.0.3",
         "chokidar": "4.0.3",
-        "concurrently": "9.1.1",
+        "concurrently": "9.1.2",
         "postcss": "8.4.49",
         "prettier": "3.4.2",
         "pug": "3.0.3",
-        "sass": "1.83.0",
+        "sass": "1.83.1",
         "shelljs": "0.8.5",
         "upath": "2.0.1"
     }
