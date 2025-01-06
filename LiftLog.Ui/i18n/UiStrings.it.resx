@@ -248,7 +248,7 @@
     <value>Recupero &lt;em&gt;{0}&lt;/em&gt;</value>
   </data>
   <data name="RestBetween{Time1}{Time2}" xml:space="preserve">
-    <value>Recupero tra &lt;em&gt;{0}&lt;/em&gt; e &lt;em&gt;{0}&lt;/em&gt;</value>
+    <value>Recupero tra &lt;em&gt;{0}&lt;/em&gt; e &lt;em&gt;{1}&lt;/em&gt;</value>
   </data>
   <data name="Date" xml:space="preserve">
     <value>Data</value>
