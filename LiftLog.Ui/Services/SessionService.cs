@@ -100,10 +100,21 @@ public class SessionService(
                     + e.WeightIncreaseOnSuccess,
                 _ => lastExercise.Weight,
             };
+            var potentialSets = lastExercise switch
+            {
+                null or { PerSetWeight: false } => Enumerable.Repeat(
+                    new PotentialSet(null, weight),
+                    e.Sets
+                ),
+                { IsSuccessForProgressiveOverload: true } => lastExercise.PotentialSets.Select(
+                    x => new PotentialSet(null, x.Weight + e.WeightIncreaseOnSuccess)
+                ),
+                _ => lastExercise.PotentialSets.Select(x => new PotentialSet(null, x.Weight)),
+            };
             return new RecordedExercise(
                 e,
                 weight,
-                Enumerable.Repeat(new PotentialSet(null, weight), e.Sets).ToImmutableList(),
+                potentialSets.ToImmutableList(),
                 null,
                 splitWeightByDefault || (lastExercise?.PerSetWeight ?? false)
             );
