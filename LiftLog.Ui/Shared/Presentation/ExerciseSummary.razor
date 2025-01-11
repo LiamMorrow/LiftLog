@@ -1,7 +1,6 @@
  @{
     var splitWeights = (Exercise.PerSetWeight
-        && !Exercise.PotentialSets.All(s => s.Weight == Exercise.Weight))
-        || Exercise.PotentialSets.DistinctBy(x=>x.Set?.RepsCompleted).Count() != 1;
+        && Exercise.PotentialSets.DistinctBy(x=>x.Set?.RepsCompleted).Count() != 1);
     var numCompletedSets = Exercise.PotentialSets.Count(x => x.Set != null);
     var maxNumReps = Exercise.PotentialSets.Max(x => x.Set?.RepsCompleted ?? 0);
 
@@ -34,7 +33,7 @@
 
             @if (ShowWeight)
             {
-                <WeightFormat Weight="@Exercise.Weight"/>
+                <WeightFormat Weight="@Exercise.MaxWeight"/>
             }
         </span>
         }

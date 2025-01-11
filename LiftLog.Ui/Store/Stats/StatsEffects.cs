@@ -131,7 +131,9 @@ public class StatsEffects(
                     new GranularStatisticView(
                         AverageTimeBetweenSets: averageTimeBetweenSets,
                         AverageSessionLength: averageSessionLength,
-                        HeaviestLift: heaviestLift,
+                        HeaviestLift: heaviestLift is null
+                            ? null
+                            : new(heaviestLift.Blueprint.Name, heaviestLift.MaxWeightLifted),
                         ExerciseMostTimeSpent: exerciseMostTimeSpent,
                         ExerciseStats: exerciseStats,
                         SessionStats: sessionStats,

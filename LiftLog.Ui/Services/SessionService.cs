@@ -93,17 +93,13 @@ public class SessionService(
         RecordedExercise GetNextExercise(ExerciseBlueprint e)
         {
             var lastExercise = latestRecordedExercises.GetValueOrDefault(e);
-            var weight = lastExercise switch
-            {
-                null => 0,
-                { IsSuccessForProgressiveOverload: true } => lastExercise.Weight
-                    + e.WeightIncreaseOnSuccess,
-                _ => lastExercise.Weight,
-            };
             var potentialSets = lastExercise switch
             {
                 null or { PerSetWeight: false } => Enumerable.Repeat(
-                    new PotentialSet(null, weight),
+                    new PotentialSet(
+                        null,
+                        lastExercise?.PotentialSets.FirstOrDefault()?.Weight ?? 0
+                    ),
                     e.Sets
                 ),
                 { IsSuccessForProgressiveOverload: true } => lastExercise.PotentialSets.Select(
@@ -113,7 +109,6 @@ public class SessionService(
             };
             return new RecordedExercise(
                 e,
-                weight,
                 potentialSets.ToImmutableList(),
                 null,
                 splitWeightByDefault || (lastExercise?.PerSetWeight ?? false)

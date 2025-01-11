@@ -23,7 +23,7 @@ public class ProgramEffects(
         {
             var latestExercises = (await progressRepository.GetLatestRecordedExercisesAsync())
                 .GroupBy(x => x.Key.Name)
-                .ToImmutableDictionary(x => x.Key, x => x.First().Value.Weight);
+                .ToImmutableDictionary(x => x.Key, x => x.First().Value.MaxWeightLifted);
 
             var generatedSession = await aiWorkoutPlanner.GenerateSessionAsync(
                 new(

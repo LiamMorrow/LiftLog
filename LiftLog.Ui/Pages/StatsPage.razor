@@ -58,7 +58,7 @@ else if (!StatsState.Value.IsLoading && StatsState.Value.OverallView is not null
             <Body>
             <div class="flex flex-col justify-center items-center">
                 <WeightFormat Weight="@overallStats.HeaviestLift?.Weight"/>
-                <span>@overallStats.HeaviestLift?.Blueprint.Name</span>
+                <span>@overallStats.HeaviestLift?.ExerciseName</span>
             </div>
             </Body>
         </SingleValueStatisticsCard>

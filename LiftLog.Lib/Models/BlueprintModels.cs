@@ -22,7 +22,6 @@ public record SessionBlueprint(
         {
             return new RecordedExercise(
                 e,
-                0,
                 Enumerable.Repeat(new PotentialSet(null, 0), e.Sets).ToImmutableList(),
                 null,
                 false

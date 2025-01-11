@@ -41,7 +41,7 @@
             [transition:height_150ms_cubic-bezier(0.4,0,0.2,1),margin_150ms_cubic-bezier(0.4,0,0.2,1),width_150ms_cubic-bezier(0.4,0,0.2,1),transform_400ms]
             @WeightDisplayScale">
             <WeightDisplay
-                Weight="displayedExercise.Weight"
+                Weight="displayedExercise.MaxWeight"
                 Increment="displayedExercise.Blueprint.WeightIncreaseOnSuccess"
                 UpdateWeight="w => { if (w is not null) UpdateWeightForExercise(w.Value); }"
                 IsReadonly="IsReadonly"/>

@@ -100,7 +100,7 @@ public static class CurrentSessionReducers
                 .Range(0, newExerciseBlueprint.Sets)
                 .Select(index =>
                     existingExercise.PotentialSets.ElementAtOrDefault(index)
-                    ?? new PotentialSet(null, existingExercise.Weight)
+                    ?? new PotentialSet(null, existingExercise.MaxWeight)
                 )
                 .ToImmutableList(),
         };
@@ -134,7 +134,6 @@ public static class CurrentSessionReducers
         var newExerciseBlueprint = action.ExerciseBlueprint;
         var newExercise = new RecordedExercise(
             newExerciseBlueprint,
-            0,
             Enumerable
                 .Repeat(new PotentialSet(null, 0), newExerciseBlueprint.Sets)
                 .ToImmutableList(),
@@ -255,7 +254,7 @@ public static class CurrentSessionReducers
     {
         var session = ActiveSession(state, action.Target) ?? throw new Exception();
         var exerciseAtIndex = session.RecordedExercises[action.ExerciseIndex];
-        var previousWeight = exerciseAtIndex.Weight;
+        var previousWeight = exerciseAtIndex.MaxWeight;
         var newPotentialSets = exerciseAtIndex
             .PotentialSets.Select(set =>
                 !exerciseAtIndex.PerSetWeight || (set.Weight == previousWeight && set.Set is null)
@@ -275,7 +274,6 @@ public static class CurrentSessionReducers
                     action.ExerciseIndex,
                     exerciseAtIndex with
                     {
-                        Weight = action.Weight,
                         PotentialSets = newPotentialSets,
                     }
                 ),

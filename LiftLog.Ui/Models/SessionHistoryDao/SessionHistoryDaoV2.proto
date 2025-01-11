@@ -21,7 +21,7 @@ message SessionDaoV2 {
 
 message RecordedExerciseDaoV2 {
     LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2 exercise_blueprint = 1;
-    LiftLog.Ui.Models.DecimalValue weight = 2;
+    optional LiftLog.Ui.Models.DecimalValue weight = 2; // deprecated
     repeated PotentialSetDaoV2 potential_sets = 3;
     optional google.protobuf.StringValue notes = 4;
     bool per_set_weight = 5;
