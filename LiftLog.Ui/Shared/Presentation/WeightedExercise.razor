@@ -157,7 +157,7 @@
 
     [EditorRequired] [Parameter] public bool ShowPreviousButton { get; set; }
 
-    private string WeightDisplayScale => !RecordedExercise.PerSetWeight ? "h-12 -m-3 -mt-4" : "h-0 m-0";
+    private string WeightDisplayScale => !RecordedExercise.PerSetWeight ? "h-12 -m-3 -mt-4" : "h-0 m-0 overflow-hidden";
 
     private void HandleNotesChange(string value)
     {

@@ -106,7 +106,7 @@ function assertCorrectWeightUnitsOnAllPages(units) {
   cy.navigate('Workout')
   cy.navigate('Workout')
   cy.getA('[data-cy=session-summary]').first().should('contain.text', units).click()
-  cy.getA('[data-cy=weight-display]').first().should('contain.text', units).click()
+  cy.getA('[data-cy=weight-display]').eq(1).should('contain.text', units).click()
   cy.dialog().find('md-outlined-text-field').get('.suffix', { includeShadowDom: true }).should('contain.text', units)
   cy.dialog().find('[dialog-action=close]').click()
 }
