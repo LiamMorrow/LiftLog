@@ -157,9 +157,9 @@ public record RecordedExercise(
     public bool HasRemainingSets => PotentialSets.Any(x => x.Set is null);
 
     public decimal MaxWeightLifted =>
-        PotentialSets.Where(x => x.Set is not null).Select(x => x.Weight).Append(0).Max();
+        PotentialSets.Where(x => x.Set is not null).Select(x => x.Weight).DefaultIfEmpty(0).Max();
 
-    public decimal MaxWeight => PotentialSets.Select(x => x.Weight).Append(0).Max();
+    public decimal MaxWeight => PotentialSets.Select(x => x.Weight).DefaultIfEmpty(0).Max();
 }
 
 public record RecordedSet(int RepsCompleted, TimeOnly CompletionTime);
