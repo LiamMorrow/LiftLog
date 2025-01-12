@@ -18,7 +18,8 @@ public record SettingsState(
     RemoteBackupSettings RemoteBackupSettings,
     string LastSuccessfulRemoteBackupHash,
     DateTimeOffset LastBackupTime,
-    bool BackupReminder
+    bool BackupReminder,
+    bool SplitWeightByDefault
 )
 {
     public static SettingsState Default =>
@@ -37,7 +38,8 @@ public record SettingsState(
             RemoteBackupSettings: new RemoteBackupSettings(string.Empty, string.Empty, false),
             LastSuccessfulRemoteBackupHash: string.Empty,
             LastBackupTime: DateTimeOffset.MinValue,
-            BackupReminder: true
+            BackupReminder: true,
+            SplitWeightByDefault: false
         );
 }
 

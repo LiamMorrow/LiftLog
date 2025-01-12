@@ -904,4 +904,10 @@
   <data name="BackupRemindersSubtitle" xml:space="preserve">
     <value>Periodically suggest a backup when you have not backed up in a while</value>
   </data>
+  <data name="SplitWeightByDefault" xml:space="preserve">
+    <value>Individual weights per set</value>
+  </data>
+  <data name="SplitWeightByDefaultSubtitle" xml:space="preserve">
+    <value>Allow you to set the weight of each exercise set by default</value>
+  </data>
 </root>

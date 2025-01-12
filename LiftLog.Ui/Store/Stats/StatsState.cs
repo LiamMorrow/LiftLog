@@ -46,7 +46,7 @@ public record TimeTrackedStatistic(DateTime DateTime, decimal Value);
 public record GranularStatisticView(
     TimeSpan AverageTimeBetweenSets,
     TimeSpan AverageSessionLength,
-    RecordedExercise? HeaviestLift,
+    HeaviestLift? HeaviestLift,
     TimeSpentExercise? ExerciseMostTimeSpent,
     ImmutableListValue<ExerciseStatistics> ExerciseStats,
     ImmutableListValue<StatisticOverTime> SessionStats,
@@ -54,3 +54,5 @@ public record GranularStatisticView(
 );
 
 public record TimeSpentExercise(string ExerciseName, TimeSpan TimeSpent);
+
+public record HeaviestLift(string ExerciseName, decimal Weight);

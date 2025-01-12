@@ -126,7 +126,6 @@ public record Session(
 
 public record RecordedExercise(
     ExerciseBlueprint Blueprint,
-    decimal Weight,
     ImmutableListValue<PotentialSet> PotentialSets,
     string? Notes,
     bool PerSetWeight
@@ -136,8 +135,7 @@ public record RecordedExercise(
     /// An exercise is considered a success if ALL sets are successful, with ANY of the sets >= the top level weight
     /// </summary>
     public bool IsSuccessForProgressiveOverload =>
-        PotentialSets.All(x => x.Set is not null && x.Set.RepsCompleted >= Blueprint.RepsPerSet)
-        && PotentialSets.Any(x => x.Weight >= Weight);
+        PotentialSets.All(x => x.Set is not null && x.Set.RepsCompleted >= Blueprint.RepsPerSet);
 
     [NotNullIfNotNull(nameof(FirstRecordedSet))]
     public PotentialSet? LastRecordedSet =>
@@ -159,9 +157,9 @@ public record RecordedExercise(
     public bool HasRemainingSets => PotentialSets.Any(x => x.Set is null);
 
     public decimal MaxWeightLifted =>
-        PerSetWeight
-            ? PotentialSets.Where(x => x.Set is not null).Select(x => x.Weight).Append(Weight).Max()
-            : Weight;
+        PotentialSets.Where(x => x.Set is not null).Select(x => x.Weight).Append(0).Max();
+
+    public decimal MaxWeight => PotentialSets.Select(x => x.Weight).Append(0).Max();
 }
 
 public record RecordedSet(int RepsCompleted, TimeOnly CompletionTime);

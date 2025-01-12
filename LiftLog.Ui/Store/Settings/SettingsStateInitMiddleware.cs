@@ -24,7 +24,8 @@ public class SettingsStateInitMiddleware(
                 remoteBackupSettings,
                 lastSuccessfulRemoteBackupHash,
                 lastBackupTime,
-                backupReminder
+                backupReminder,
+                splitWeightByDefault
             ) = await (
                 preferencesRepository.GetUseImperialUnitsAsync(),
                 preferencesRepository.GetShowBodyweightAsync(),
@@ -35,7 +36,8 @@ public class SettingsStateInitMiddleware(
                 preferencesRepository.GetRemoteBackupSettingsAsync(),
                 preferencesRepository.GetLastSuccessfulRemoteBackupHashAsync(),
                 preferencesRepository.GetLastBackupTimeAsync(),
-                preferencesRepository.GetBackupReminderAsync()
+                preferencesRepository.GetBackupReminderAsync(),
+                preferencesRepository.GetSplitWeightByDefaultAsync()
             );
 
             var state = (SettingsState)store.Features[nameof(SettingsFeature)].GetState() with
@@ -51,6 +53,7 @@ public class SettingsStateInitMiddleware(
                 LastSuccessfulRemoteBackupHash = lastSuccessfulRemoteBackupHash,
                 LastBackupTime = lastBackupTime,
                 BackupReminder = backupReminder,
+                SplitWeightByDefault = splitWeightByDefault,
             };
             store.Features[nameof(SettingsFeature)].RestoreState(state);
             sw.Stop();

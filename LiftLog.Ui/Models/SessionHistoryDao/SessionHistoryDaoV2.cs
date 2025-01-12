@@ -64,7 +64,7 @@ internal partial class RecordedExerciseDaoV2
 {
     public RecordedExerciseDaoV2(
         ExerciseBlueprintDaoV2 exerciseBlueprint,
-        decimal weight,
+        decimal? weight,
         IEnumerable<PotentialSetDaoV2> potentialSets,
         string? notes,
         bool perSetWeight
@@ -80,7 +80,7 @@ internal partial class RecordedExerciseDaoV2
     public static RecordedExerciseDaoV2 FromModel(Lib.Models.RecordedExercise model) =>
         new(
             ExerciseBlueprintDaoV2.FromModel(model.Blueprint),
-            model.Weight,
+            null,
             model.PotentialSets.Select(PotentialSetDaoV2.FromModel),
             model.Notes,
             model.PerSetWeight
@@ -89,7 +89,6 @@ internal partial class RecordedExerciseDaoV2
     public Lib.Models.RecordedExercise ToModel() =>
         new(
             ExerciseBlueprint.ToModel(),
-            Weight,
             PotentialSets.Select(x => x.ToModel()).ToImmutableList(),
             Notes,
             PerSetWeight

@@ -102,6 +102,10 @@ describe('Completing a session', () => {
         cy.getA('[data-cy=weight-display]').first().should('contain.text', '20kg')
         cy.getA('[data-cy=per-rep-weight-btn]').first().click()
 
+        // Update top level weight - which should update all sets which aren't completed and have the same weight (i.e. the last set)
+        cy.getA('[data-cy=weight-display]').first().should('not.be.visible')
+
+
         // Update the weight of the second set to be lower than the top level weight
         cy.getA('[data-cy=set-weight-button]').eq(1).click()
         cy.dialog().find('[data-cy=decrement-weight]:visible').click()
@@ -109,23 +113,17 @@ describe('Completing a session', () => {
         cy.getA('[data-cy=set-weight-button]').eq(1).should('contain.text', '17.5kg')
         cy.getA('[data-cy=set-weight-button]').eq(2).should('contain.text', '20kg')
 
-        // Update top level weight - which should update all sets which aren't completed and have the same weight (i.e. the last set)
-        cy.getA('[data-cy=weight-display]').first().click()
-        cy.dialog().find('[data-cy=decrement-weight]').first().click().click().click()
-        cy.dialog().find('[slot="actions"]:visible').find('[dialog-action=save]').click()
+
         cy.getA('[data-cy=set-weight-button]').eq(0).should('contain.text', '20kg')
         cy.getA('[data-cy=set-weight-button]').eq(1).should('contain.text', '17.5kg')
-        cy.getA('[data-cy=set-weight-button]').eq(2).should('contain.text', '12.5kg')
-
-        // We reduced top level weight to 12.5
-        cy.getA('[data-cy=weight-display]').first().should('contain.text', '12.5kg')
+        cy.getA('[data-cy=set-weight-button]').eq(2).should('contain.text', '20kg')
 
         // Complete all sets
         for (let i = 1; i <= 6; i++) {
           cy.getA('.repcount').eq(i).click()
         }
 
-        cy.getA('.snackbar').should('be.visible').should('contain.text', 'This session').should('contain.text', '650')
+        cy.getA('.snackbar').should('be.visible').should('contain.text', 'This session').should('contain.text', '687.5')
         cy.get('[data-cy=save-session-button]').click()
 
         cy.getA('[data-cy=session-summary-title]').eq(0).should('contain.text', 'Workout B')
@@ -133,7 +131,9 @@ describe('Completing a session', () => {
 
         cy.getA('[data-cy=weighted-exercise]').eq(0).should('contain.text', 'Squat')
         // Since all sets were completed - with at least one of the sets having equal or higher weight than the top level, the weight should have increased
-        cy.getA('[data-cy=weight-display]').first().should('contain.text', '15kg')
+        cy.getA('[data-cy=set-weight-button]').eq(0).should('contain.text', '22.5kg')
+        cy.getA('[data-cy=set-weight-button]').eq(1).should('contain.text', '20kg')
+        cy.getA('[data-cy=set-weight-button]').eq(2).should('contain.text', '22.5kg')
       })
 
       it('can complete a workout and change the number of reps with it not adding progressive overload', () => {

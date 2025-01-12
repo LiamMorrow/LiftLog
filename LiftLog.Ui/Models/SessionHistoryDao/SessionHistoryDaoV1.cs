@@ -10,9 +10,6 @@ internal record SessionHistoryDaoV1(
         ImmutableListValue<SessionDaoV1> CompletedSessions
 )
 {
-    public static SessionHistoryDaoV1 FromModel(SessionHistoryDaoContainer model) =>
-        new(model.CompletedSessions.Values.Select(SessionDaoV1.FromModel).ToImmutableList());
-
     public SessionHistoryDaoContainer ToModel() =>
         new(CompletedSessions.ToImmutableDictionary(x => x.Id, x => x.ToModel()));
 }
@@ -26,25 +23,6 @@ internal record SessionDaoV1(
     [property: JsonPropertyName("Bodyweight")] decimal? Bodyweight
 )
 {
-    public static SessionDaoV1 FromModel(Lib.Models.Session model) =>
-        new(
-            model.Id,
-            SessionBlueprintDaoV1.FromModel(model.Blueprint),
-            model
-                .RecordedExercises.Select(x => RecordedExerciseDaoV1.FromModel(model.Date, x))
-                .ToImmutableList(),
-            new DateTimeOffset(
-                model.Date.Year,
-                model.Date.Month,
-                model.Date.Day,
-                0,
-                0,
-                0,
-                TimeSpan.Zero
-            ),
-            model.Bodyweight
-        );
-
     public Lib.Models.Session ToModel() =>
         new(
             Id,
@@ -63,24 +41,9 @@ internal record RecordedExerciseDaoV1(
     [property: JsonPropertyName("PerSetWeight")] bool PerSetWeight
 )
 {
-    public static RecordedExerciseDaoV1 FromModel(
-        DateOnly sessionDate,
-        Lib.Models.RecordedExercise model
-    ) =>
-        new(
-            ExerciseBlueprintDaoV1.FromModel(model.Blueprint),
-            model.Weight,
-            model
-                .PotentialSets.Select(x => RecordedSetDaoV1.FromModel(sessionDate, x))
-                .ToImmutableList(),
-            model.Notes,
-            model.PerSetWeight
-        );
-
     public Lib.Models.RecordedExercise ToModel() =>
         new(
             Blueprint.ToModel(),
-            Kilograms,
             RecordedSets
                 .Select(x => x?.ToModel(this) ?? new Lib.Models.PotentialSet(null, Kilograms))
                 .ToImmutableList(),

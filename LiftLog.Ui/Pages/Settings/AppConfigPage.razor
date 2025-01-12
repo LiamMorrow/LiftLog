@@ -8,6 +8,7 @@
 <md-list>
     <ListSwitch Headline="@UiStrings.UseImperialUnits" SupportingText="@UiStrings.UseImperialUnitsSubtitle" Value="@SettingsState.Value.UseImperialUnits" OnSwitched="SetUseImperialUnits" />
     <ListSwitch Headline="@UiStrings.ShowBodyweight" SupportingText="@UiStrings.ShowBodyweightSubtitle" Value="@SettingsState.Value.ShowBodyweight" OnSwitched="SetShowBodyweight" />
+    <ListSwitch data-cy="split-weight-toggle" Headline="@UiStrings.SplitWeightByDefault" SupportingText="@UiStrings.SplitWeightByDefaultSubtitle" Value="@SettingsState.Value.SplitWeightByDefault" OnSwitched="SetSplitWeightByDefault" />
     <ListSwitch Headline="@UiStrings.ShowFeed" SupportingText="@UiStrings.ShowFeedSubtitle" Value="@SettingsState.Value.ShowFeed" OnSwitched="SetShowFeed" />
 
     <ListSwitch Headline="@UiStrings.ShowTips" SupportingText="@UiStrings.ShowTipsSubtitle" Value="@SettingsState.Value.ShowTips" OnSwitched="SetShowTips" />
@@ -41,6 +42,9 @@
 
     private void SetShowTips(bool value)
         => Dispatcher.Dispatch(new SetShowTipsAction(value));
+
+    private void SetSplitWeightByDefault(bool value)
+        => Dispatcher.Dispatch(new SetSplitWeightByDefaultAction(value));
 
     private void ResetTips()
         => Dispatcher.Dispatch(new SetTipToShowAction(1));

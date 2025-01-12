@@ -2,7 +2,7 @@
 <md-list-item type="button" class="text-start" @onclick="()=>OnSwitched.InvokeAsync(!Value)" >
         <span slot="headline" >@Headline</span>
         <span slot="supporting-text" >@SupportingText</span>
-    <md-switch slot="end" @attributes="AdditionalAttributes" @ref="_switchRef" @onchange="HandleInput" selected="@Value"></md-switch>
+    <md-switch  @attributes="AdditionalAttributes" slot="end" @ref="_switchRef" @onchange="HandleInput" selected="@Value"></md-switch>
 </md-list-item>
 
 @code{

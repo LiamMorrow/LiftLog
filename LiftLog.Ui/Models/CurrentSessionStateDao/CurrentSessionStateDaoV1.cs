@@ -11,17 +11,6 @@ internal record CurrentSessionStateDaoV1(
     [property: JsonPropertyName("LatestSetTimerNotificationId")] Guid? LatestSetTimerNotificationId
 )
 {
-    public static CurrentSessionStateDaoV1 FromModel(CurrentSessionState currentState) =>
-        new(
-            WorkoutSession: currentState.WorkoutSession is not null
-                ? SessionDaoV1.FromModel(currentState.WorkoutSession)
-                : null,
-            HistorySession: currentState.HistorySession is not null
-                ? SessionDaoV1.FromModel(currentState.HistorySession)
-                : null,
-            LatestSetTimerNotificationId: currentState.LatestSetTimerNotificationId
-        );
-
     public CurrentSessionState ToModel() =>
         new(
             IsHydrated: true,

@@ -3,10 +3,12 @@ using Fluxor;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Ui.Store.CurrentSession;
+using LiftLog.Ui.Store.Settings;
 
 namespace LiftLog.Ui.Services;
 
 public class SessionService(
+    IState<SettingsState> settingsState,
     IState<CurrentSessionState> currentSessionState,
     ProgressRepository progressRepository
 )
@@ -87,22 +89,29 @@ public class SessionService(
         IReadOnlyDictionary<KeyedExerciseBlueprint, RecordedExercise> latestRecordedExercises
     )
     {
+        var splitWeightByDefault = settingsState.Value.SplitWeightByDefault;
         RecordedExercise GetNextExercise(ExerciseBlueprint e)
         {
             var lastExercise = latestRecordedExercises.GetValueOrDefault(e);
-            var weight = lastExercise switch
+            var potentialSets = lastExercise switch
             {
-                null => 0,
-                { IsSuccessForProgressiveOverload: true } => lastExercise.Weight
-                    + e.WeightIncreaseOnSuccess,
-                _ => lastExercise.Weight,
+                null or { PerSetWeight: false } => Enumerable.Repeat(
+                    new PotentialSet(
+                        null,
+                        lastExercise?.PotentialSets.FirstOrDefault()?.Weight ?? 0
+                    ),
+                    e.Sets
+                ),
+                { IsSuccessForProgressiveOverload: true } => lastExercise.PotentialSets.Select(
+                    x => new PotentialSet(null, x.Weight + e.WeightIncreaseOnSuccess)
+                ),
+                _ => lastExercise.PotentialSets.Select(x => new PotentialSet(null, x.Weight)),
             };
             return new RecordedExercise(
                 e,
-                weight,
-                Enumerable.Repeat(new PotentialSet(null, weight), e.Sets).ToImmutableList(),
+                potentialSets.ToImmutableList(),
                 null,
-                lastExercise?.PerSetWeight ?? false
+                splitWeightByDefault || (lastExercise?.PerSetWeight ?? false)
             );
         }
 

@@ -195,4 +195,14 @@ public class PreferencesRepository(IPreferenceStore preferenceStore)
     {
         return await preferenceStore.GetItemAsync("backupReminder") is "True" or null;
     }
+
+    public async Task SetSplitWeightByDefaultAsync(bool splitWeightByDefault)
+    {
+        await preferenceStore.SetItemAsync("splitWeightByDefault", splitWeightByDefault.ToString());
+    }
+
+    public async Task<bool> GetSplitWeightByDefaultAsync()
+    {
+        return await preferenceStore.GetItemAsync("splitWeightByDefault") is "True";
+    }
 }
