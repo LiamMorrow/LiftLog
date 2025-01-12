@@ -22,7 +22,6 @@ public class CurrentSessionReducerTests
                   exercise with
                   {
                     PerSetWeight = false,
-                    Weight = 10m,
                     PotentialSets = Sessions
                       .CreatePotentialSet(10m, isEmpty: true)
                       .Repeat(exercise.Blueprint.Sets - 1)
@@ -39,7 +38,6 @@ public class CurrentSessionReducerTests
                   exercise with
                   {
                     PerSetWeight = true,
-                    Weight = 20m,
                     PotentialSets = Sessions
                       .CreatePotentialSet(20m, isEmpty: true)
                       .Repeat(exercise.Blueprint.Sets - 1)
@@ -84,7 +82,9 @@ public class CurrentSessionReducerTests
           };
         });
 
-        It("Should only update sets which are incomplete")
+        It(
+            "Should  not update the weight of any set, as top level weight isn't possible to be updated when PerSetWeight is true"
+          )
           .When(() =>
           {
             var action = new UpdateExerciseWeightAction(
@@ -95,12 +95,11 @@ public class CurrentSessionReducerTests
 
             var newState = CurrentSessionReducers.UpdateExerciseWeight(_initialState, action);
 
-            newState.WorkoutSession!.RecordedExercises[1].Weight.Should().Be(50m);
             newState
               .WorkoutSession!.RecordedExercises[1]
               .PotentialSets.Take(2)
               .Should()
-              .AllSatisfy(x => x.Weight.Should().Be(50m));
+              .AllSatisfy(x => x.Weight.Should().Be(20m));
             newState.WorkoutSession!.RecordedExercises[1].PotentialSets[2].Weight.Should().Be(60m);
           });
       });
@@ -119,7 +118,6 @@ public class CurrentSessionReducerTests
 
             var newState = CurrentSessionReducers.UpdateExerciseWeight(_initialState, action);
 
-            newState.WorkoutSession!.RecordedExercises[0].Weight.Should().Be(50m);
             newState
               .WorkoutSession!.RecordedExercises[0]
               .PotentialSets.Should()

@@ -35,7 +35,6 @@ public static class Sessions
     return (transform ?? (e => e)).Invoke(
       new RecordedExercise(
         Blueprint: exerciseBlueprint,
-        Weight: 0m,
         PotentialSets: Enumerable
           .Range(0, exerciseBlueprint.Sets)
           .Select(
