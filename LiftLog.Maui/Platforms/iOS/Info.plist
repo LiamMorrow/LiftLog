@@ -52,6 +52,7 @@
         <array>
             <string>it</string>
             <string>de</string>
+            <string>sr</string>
         </array>
         <key>CFBundleDevelopmentRegion</key>
         <string>en</string>
