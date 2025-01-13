@@ -95,13 +95,14 @@ public class SessionService(
             var lastExercise = latestRecordedExercises.GetValueOrDefault(e);
             var potentialSets = lastExercise switch
             {
-                null or { PerSetWeight: false } => Enumerable.Repeat(
-                    new PotentialSet(
-                        null,
-                        lastExercise?.PotentialSets.FirstOrDefault()?.Weight ?? 0
+                null or { PerSetWeight: false, IsSuccessForProgressiveOverload: false } =>
+                    Enumerable.Repeat(
+                        new PotentialSet(
+                            null,
+                            lastExercise?.PotentialSets.FirstOrDefault()?.Weight ?? 0
+                        ),
+                        e.Sets
                     ),
-                    e.Sets
-                ),
                 { IsSuccessForProgressiveOverload: true } => lastExercise.PotentialSets.Select(
                     x => new PotentialSet(null, x.Weight + e.WeightIncreaseOnSuccess)
                 ),
