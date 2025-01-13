@@ -4,6 +4,7 @@ using Fluxor.DependencyInjection;
 using LiftLog.Lib.Serialization;
 using LiftLog.Lib.Services;
 using LiftLog.Ui.Services;
+using LiftLog.Ui.Store;
 using LiftLog.Ui.Store.App;
 using LiftLog.Ui.Store.CurrentSession;
 using LiftLog.Ui.Store.Feed;
@@ -58,6 +59,7 @@ public static class ServiceRegistration
                 .AddMiddleware<AppStateInitMiddleware>()
                 .AddMiddleware<SettingsStateInitMiddleware>()
                 .AddMiddleware<FeedStateInitMiddleware>()
+                .AddMiddleware<LogActionMiddleware>()
 #if DEBUG
         // .UseReduxDevTools()  // Fails to load
 #endif
