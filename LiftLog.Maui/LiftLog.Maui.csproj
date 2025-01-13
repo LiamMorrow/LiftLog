@@ -118,9 +118,9 @@
         <PackageReference Include="Plugin.InAppBilling" Version="8.0.5" />
         <PackageReference Include="Plugin.LocalNotification" Version="11.1.4" />
         <PackageReference Include="Plugin.Maui.AppRating" Version="1.2.0" />
-        <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.21" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.21" />
-        <PackageReference Include="Sentry.Maui" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.22" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.22" />
+        <PackageReference Include="Sentry.Maui" Version="5.0.1" />
     </ItemGroup>
 
     <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
