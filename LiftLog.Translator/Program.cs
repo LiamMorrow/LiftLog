@@ -1,5 +1,6 @@
 using Blazored.LocalStorage;
 using LiftLog.Translator;
+using LiftLog.Translator.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -13,5 +14,6 @@ builder.Services.AddScoped(sp => new HttpClient
 });
 
 builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddScoped<GithubService>();
 
 await builder.Build().RunAsync();

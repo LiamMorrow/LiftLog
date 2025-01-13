@@ -1,6 +1,7 @@
 ﻿@page "/"
 @inject IJSRuntime JS
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject GithubService GithubService
 
 
 <div class="top-row px-4 mb-8">
@@ -11,7 +12,7 @@
     <div class="flex flex-col border-2 p-4 rounded-lg gap-2">
         <span>Select the source translation file</span>
 
-        <button disabled=@loadingGithub class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @onclick="GetFromGithub">
+        <button disabled=@loadingGithub class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @onclick="()=>GetFromGithub(null)">
             @if(loadingGithub)
             {
                 <span >Loading...</span>
@@ -31,6 +32,22 @@
         <span>OPTIONAL Load a translated file
             <span class="text-sm text-nowrap">(e.g. UiStrings.es.resx)</span>
         </span>
+        @foreach(var lang in existingLanguages)
+        {
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @onclick="()=>GetFromGithub(lang)">
+                @if(loadingGithub)
+                {
+                    <span >Loading...</span>
+                }
+                else
+                {
+                    <span>Load [@lang] from existing translation</span>
+                }
+            </button>
+        }
+        <span>OR</span>
+        <span>Upload a source file
+            <span class="text-sm text-nowrap">(e.g. UiStrings.it.resx)</span></span>
         <InputFile OnChange="HandleTranslationResxSelected" />
     </div>
     <div class="flex flex-col border-2 p-4 rounded-lg gap-2 md:col-span-2 lg:col-span-1">
@@ -82,10 +99,12 @@
     private bool loadingGithub = false;
     private OrderedDictionary<string, ResxValue> sourceResxData = new();
     private OrderedDictionary<string, ResxValue> translationResxData = new();
+        private List<string> existingLanguages = [];
 
     protected override async Task OnInitializedAsync()
     {
-        await GetFromGithub();
+        await GetFromGithub(null);
+        existingLanguages = await GithubService.GetExistingTranslationExtensions();
         var saved= await localStorage.GetItemAsync<OrderedDictionary<string, ResxValue>>("translation");
         if (saved != null)
         {
@@ -93,15 +112,23 @@
         }
     }
 
-    private async Task GetFromGithub()
+    private async Task GetFromGithub(string? languageCode)
     {
         loadingGithub = true;
-        var url = "https://raw.githubusercontent.com/LiamMorrow/LiftLog/refs/heads/main/LiftLog.Ui/i18n/UiStrings.resx";
-        using var request3 = new HttpRequestMessage(HttpMethod.Get, url);
-        request3.SetBrowserRequestCache(BrowserRequestCache.NoStore);
-        var response = await new HttpClient().SendAsync(request3);
+        var langExt = languageCode is null ? "" : "." + languageCode;
+        var url = $"https://raw.githubusercontent.com/LiamMorrow/LiftLog/refs/heads/main/LiftLog.Ui/i18n/UiStrings{langExt}.resx";
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.SetBrowserRequestCache(BrowserRequestCache.NoStore);
+        var response = await new HttpClient().SendAsync(request);
         var xmlContent = await response.Content.ReadAsStringAsync();
-        sourceResxData = ResxEditor.ReadFromXml(xmlContent);
+        if(languageCode is null)
+        {
+            sourceResxData = ResxEditor.ReadFromXml(xmlContent);
+        }
+        else
+        {
+            translationResxData = ResxEditor.ReadFromXml(xmlContent);
+        }
         loadingGithub = false;
     }
 
