@@ -6,10 +6,6 @@
     var dayOfFirstDayOfTheMonth = (int)firstDayOfMonth.DayOfWeek;
     var firstDayOfWeek = CultureInfo.DefaultThreadCurrentCulture != null ? CultureInfo.DefaultThreadCurrentCulture.DateTimeFormat.FirstDayOfWeek : DayOfWeek.Sunday;
     var dayOfFirstDayOfTheWeek = (int)firstDayOfWeek;
-    
-    //For testing purposes
-    firstDayOfWeek = DayOfWeek.Monday;
-    dayOfFirstDayOfTheWeek = 1;
 
     int numberOfDaysToShowFromPreviousMonth;
     //Handles the case where first day of the month is the day the week starts on
