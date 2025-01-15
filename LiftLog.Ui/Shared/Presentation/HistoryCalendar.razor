@@ -4,8 +4,29 @@
 @{
     var firstDayOfMonth = new DateOnly(CurrentYear, CurrentMonth, 1);
     var dayOfFirstDayOfTheMonth = (int)firstDayOfMonth.DayOfWeek;
-    // If the first day of the month is Sunday (0) we show no days from the previous month as it is a full week
-    var numberOfDaysToShowFromPreviousMonth = dayOfFirstDayOfTheMonth;
+    var firstDayOfWeek = CultureInfo.DefaultThreadCurrentCulture != null ? CultureInfo.DefaultThreadCurrentCulture.DateTimeFormat.FirstDayOfWeek : DayOfWeek.Sunday;
+    var dayOfFirstDayOfTheWeek = (int)firstDayOfWeek;
+    
+    //For testing purposes
+    firstDayOfWeek = DayOfWeek.Monday;
+    dayOfFirstDayOfTheWeek = 1;
+
+    int numberOfDaysToShowFromPreviousMonth;
+    //Handles the case where first day of the month is the day the week starts on
+    if(dayOfFirstDayOfTheWeek == dayOfFirstDayOfTheMonth) {
+        numberOfDaysToShowFromPreviousMonth = 0;
+    //If the first day of the week for the culture is Sunday, the following math is unnecessary
+    } else if(firstDayOfWeek != DayOfWeek.Sunday) {
+        //This is an edge case specifically for starting the week on Monday. Sunday = 0 so the numberOfDaysToShowFromPreviousMonth was negative
+        //Also happens to work if the culture starts the week on Saturday since 0 + 1 = 7 - 6 so no check for that is needed
+        if(firstDayOfMonth.DayOfWeek == DayOfWeek.Sunday) {
+            numberOfDaysToShowFromPreviousMonth = 7 - dayOfFirstDayOfTheWeek;
+        } else {
+            numberOfDaysToShowFromPreviousMonth = firstDayOfWeek == DayOfWeek.Monday ? dayOfFirstDayOfTheMonth - 1 : dayOfFirstDayOfTheMonth + 1;
+        }
+    } else {
+        numberOfDaysToShowFromPreviousMonth = dayOfFirstDayOfTheMonth;
+    }
     var index = 0;
 }
 <div class="grid grid-cols-7 gap-2 justify-center items-center">
@@ -18,14 +39,30 @@
     <div class="col-span-1 my-2 text-end">
         <IconButton Type=IconButtonType.Standard @onclick="NextMonth" disabled=@DisableNext Icon="chevron_right" />
     </div>
+    @if(firstDayOfWeek != DayOfWeek.Sunday)
+    {
+        @if(firstDayOfWeek == DayOfWeek.Monday ) 
+        {
+            <span class="mb-2">@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Monday))</span>
+            <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Tuesday))</span>
+            <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Wednesday))</span>
+            <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Thursday))</span>
+            <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Friday))</span>
+            <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Saturday))</span>
+            <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Sunday))</span>
+        }
+        else if(firstDayOfWeek == DayOfWeek.Saturday) 
+        {
+            <span class="mb-2">@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Saturday))</span>
+            <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Sunday))</span>
+            <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Monday))</span>
+            <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Tuesday))</span>
+            <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Wednesday))</span>
+            <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Thursday))</span>
+            <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Friday))</span>
 
-    <span class="mb-2">@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Sunday))</span>
-    <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Monday))</span>
-    <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Tuesday))</span>
-    <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Wednesday))</span>
-    <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Thursday))</span>
-    <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Friday))</span>
-    <span>@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(DayOfWeek.Saturday))</span>
+        }
+    } 
     @for (int i = -numberOfDaysToShowFromPreviousMonth; i < 0; i++)
     {
         var date = firstDayOfMonth.AddDays(i);
