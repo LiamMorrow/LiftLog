@@ -4,10 +4,8 @@
 @{
     var firstDayOfMonth = new DateOnly(CurrentYear, CurrentMonth, 1);
     var dayOfFirstDayOfTheMonth = (int)firstDayOfMonth.DayOfWeek;
-    var firstDayOfWeek = CultureInfo.DefaultThreadCurrentCulture != null ? CultureInfo.DefaultThreadCurrentCulture.DateTimeFormat.FirstDayOfWeek : DayOfWeek.Sunday;
-    firstDayOfWeek = DayOfWeek.Saturday;
+    var firstDayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
     var dayOfFirstDayOfTheWeek = (int)firstDayOfWeek;
-    dayOfFirstDayOfTheWeek = 1;
     int numberOfDaysToShowFromPreviousMonth = (dayOfFirstDayOfTheMonth - dayOfFirstDayOfTheWeek + 7) % 7;
     var index = 0;
 }
