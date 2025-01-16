@@ -26,11 +26,11 @@ LiftLog can be translated into different languages by filling out a translations
 
 LiftLog is currently available in the following languages:
 
-- English (default)
-- Italian
-- German
-- Serbian
-- French
+- 🇦🇺 English (default)
+- 🇮🇹 Italian
+- 🇩🇪 German
+- 🇷🇸 Serbian
+- 🇫🇷 French
 
 ## Quickstart
 
