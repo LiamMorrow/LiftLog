@@ -10,8 +10,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="FluentAssertions" Version="7.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0" />
+        <PackageReference Include="FluentAssertions" Version="7.1.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
         <PackageReference Include="NSubstitute" Version="5.3.0" />
         <PackageReference Include="xunit" Version="2.9.3" />
@@ -19,7 +19,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="coverlet.collector" Version="6.0.3">
+        <PackageReference Include="coverlet.collector" Version="6.0.4">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
