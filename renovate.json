@@ -10,5 +10,6 @@
   "automerge": true,
   "gitIgnoredAuthors": [
     "renovate[bot]@users.noreply.github.com"
-  ]
+  ],
+  "ignoreDeps": [ "FluentAssertions" ]
 }
