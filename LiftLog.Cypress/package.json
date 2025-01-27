@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "browser-sync": "^3.0.0",
-    "cypress": "^13.5.0",
+    "cypress": "^14.0.0",
     "npm-run-all2": "^7.0.0"
   }
 }
