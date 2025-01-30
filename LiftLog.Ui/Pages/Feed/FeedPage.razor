@@ -26,7 +26,7 @@
     </md-tabs>
 </div>
 
-<div class="mt-2 flex-grow">
+<div class="mt-2 grow">
     <div id="mainfeed-panel" role="tabpanel" aria-labelledby="mainfeed-tab" class="@(GetTabClass("mainfeed-panel")) min-h-full" @onpull-to-refresh="OnPullToRefresh">
 
         @if(FeedState.Value.Identity?.PublishWorkouts is true)
