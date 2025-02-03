@@ -120,7 +120,7 @@
         <PackageReference Include="Plugin.Maui.AppRating" Version="1.2.1" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.30" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.30" />
-        <PackageReference Include="Sentry.Maui" Version="5.0.1" />
+        <PackageReference Include="Sentry.Maui" Version="5.1.0" />
     </ItemGroup>
 
     <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
