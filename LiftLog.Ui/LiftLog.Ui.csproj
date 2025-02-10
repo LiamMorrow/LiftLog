@@ -50,14 +50,14 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Blazor-ApexCharts" Version="5.0.1" />
+        <PackageReference Include="Blazor-ApexCharts" Version="5.1.0" />
         <PackageReference Include="BlazorTransitionableRoute" Version="4.0.0" />
         <PackageReference Include="CsvHelper" Version="33.0.1" />
         <PackageReference Include="FuzzySharp" Version="2.0.2" />
         <PackageReference Include="MaterialColorUtilities" Version="0.3.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.1" />
-        <PackageReference Include="Fluxor" Version="6.5.2" />
-        <PackageReference Include="Fluxor.Blazor.Web" Version="6.5.2" />
+        <PackageReference Include="Fluxor" Version="6.6.0" />
+        <PackageReference Include="Fluxor.Blazor.Web" Version="6.6.0" />
         <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.1" />
         <PackageReference Include="System.Linq.Async" Version="6.0.1" />
 
@@ -78,7 +78,7 @@
     </ItemGroup>
 
     <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="6.5.2" />
+        <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="6.6.0" />
     </ItemGroup>
 
     <ItemGroup Condition=" '$(Configuration)' != 'Debug' ">
