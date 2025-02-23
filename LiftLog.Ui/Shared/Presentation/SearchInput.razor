@@ -7,7 +7,7 @@
             rounded-full
             bg-surface-container-high px-12 py-4
             placeholder-on-surface-variant
-            focus:outline-hidden focus:border-none"
+            focus:outline-none focus:border-none"
         placeholder="@UiStrings.Search"
         @bind="SearchTerm"
         @oninput="e=>OnSearch.InvokeAsync(e.Value as string)" >

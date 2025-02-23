@@ -6,7 +6,7 @@
         @GetRepButton(@<span class="font-bold">@reps</span>,reps, "bg-primary-container text-on-primary-container");
     }
 </div>
-<div class="flex grow gap-2 justify-center">
+<div class="flex flex-grow gap-2 justify-center">
 
     @for(int i = MaxReps+1; i < MaxReps + 4; i++)
     {
@@ -52,7 +52,7 @@
                 @onpointerdown="OnPointerDown"
                 class="
                     repcount
-                    shrink-0
+                    flex-shrink-0
                     w-14
                     h-14
                     rounded-xl
