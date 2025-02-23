@@ -31,7 +31,7 @@ jobs:
           ELECTRON_ENABLE_LOGGING: 1
         with:
           start: npm run server-ci
-          wait-on: http://localhost:5000
+          wait-on: http://localhost:5001
           working-directory: ./LiftLog.Cypress
       - name: Upload screenshots
         uses: actions/upload-artifact@v4

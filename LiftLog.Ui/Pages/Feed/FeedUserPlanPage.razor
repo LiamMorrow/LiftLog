@@ -14,7 +14,7 @@
 <div class="flex flex-col gap-4">
     <CardList Items="plan">
         <SessionSummaryTitle Session="context.GetEmptySession()" IsFilled="false"/>
-        <SessionSummary Session="context.GetEmptySession()" ShowSets="true" ShowWeight="false"/>
+        <SessionSummary Session="context.GetEmptySession()" IsFilled="false" />
     </CardList>
     <div>
         <AppButton OnClick="() => importPlanDialog?.Open()" Icon="assignment">@UiStrings.ImportTheirPlan</AppButton>

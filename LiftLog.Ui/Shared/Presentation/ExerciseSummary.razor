@@ -1,71 +1,36 @@
- @{
-    var splitWeights = (Exercise.PerSetWeight
-        && Exercise.PotentialSets.DistinctBy(x=>x.Set?.RepsCompleted).Count() != 1);
-    var numCompletedSets = Exercise.PotentialSets.Count(x => x.Set != null);
-    var maxNumReps = Exercise.PotentialSets.Max(x => x.Set?.RepsCompleted ?? 0);
 
-    var (numSets, numReps) = IsFilled switch
-    {
-        true => (numCompletedSets, maxNumReps),
-        false => (Exercise.Blueprint.Sets, Exercise.Blueprint.RepsPerSet)
-    };
-}
-<span class="flex items-center">
+<span class="flex items-center gap-2">
     @if(ShowName)
     {
         <span>@Exercise.Blueprint.Name</span>
     }
-    @if(ShowSets || ShowWeight)
-    {
-        @if(!splitWeights)
+    <span class="flex ml-auto overflow-x-auto gap-1">
+        @if(IsFilled)
         {
-        <span class="flex justify-around ml-auto items-center gap-0.5 bg-surface-container-highest text-on-surface-variant rounded-md py-1 px-2">
-
-            @if (ShowSets)
+            @foreach(var chip in GetWeightAndRepsChips())
             {
-                <span>@(numSets)x@(numReps)
+                <span class="flex items-center gap-0.5 bg-surface-container-highest text-on-surface-variant rounded-md py-1 px-2">
+                    <span>@(chip.RepsCompleted?.ToString() ?? "-")</span><span class="text-2xs">@@</span>
+                    <WeightFormat Weight="@chip.Weight"/>
                 </span>
-                @if(ShowWeight)
-                {
-                    <span class="text-2xs">@@</span>
-                }
             }
-
-            @if (ShowWeight)
-            {
-                <WeightFormat Weight="@Exercise.MaxWeight"/>
-            }
-        </span>
-        }
-
-        @if (ShowWeight && splitWeights)
+        } else
         {
-            <span class="flex ml-auto flex-wrap justify-end gap-1">
-                @foreach(var set in Exercise.PotentialSets)
-                {
-                    if(set.Set?.RepsCompleted == null)
-                    {
-                        continue;
-                    }
-                    <span class="flex items-center gap-0.5 bg-surface-container-highest text-on-surface-variant rounded-md py-1 px-2">
-                        @if (ShowSets){
-                            <span>@(set.Set?.RepsCompleted ?? Exercise.Blueprint.RepsPerSet)</span><span class="text-2xs">@@</span>
-                        }
-                        <WeightFormat Weight="@set.Weight"/>
-                    </span>
-                }
-            </span>
+
+            @foreach(var chip in GetPlannedChipData())
+            {
+                <span class="flex items-center gap-0.5 bg-surface-container-highest text-on-surface-variant rounded-md py-1 px-2">
+                    <span>@(chip.NumSets)x@(chip.RepTarget)</span><span class="text-2xs">@@</span>
+                    <WeightFormat Weight="@chip.Weight"/>
+                </span>
+            }
         }
-    }
+    </span>
 </span>
 
 @code
 {
     [EditorRequired] [Parameter] public RecordedExercise Exercise { get; set; } = null!;
-
-    [Parameter] public bool ShowSets { get; set; }
-
-    [Parameter] public bool ShowWeight { get; set; }
 
     [Parameter] public bool ShowName { get; set; }
 
