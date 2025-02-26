@@ -1,0 +1,913 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Freeform Session" xml:space="preserve">
+    <value>Vrije sessie</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Aanpassen</value>
+    <comment>Generic edit action</comment>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>Notities</value>
+    <comment>Used to show a button the user can click to edit notes on their workout</comment>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Verwijderen</value>
+    <comment>Generic remove action (delete)</comment>
+  </data>
+  <data name="Workout" xml:space="preserve">
+    <value>Training</value>
+    <comment>Noun form of workout</comment>
+  </data>
+  <data name="Feed" xml:space="preserve">
+    <value>Feed</value>
+    <comment>Refers to the optional Feed feature, think "news feed"</comment>
+  </data>
+  <data name="Stats" xml:space="preserve">
+    <value>Stats</value>
+    <comment>Short for statistics, used in bottom nav bar so should be short</comment>
+  </data>
+  <data name="History" xml:space="preserve">
+    <value>Geschiedenis</value>
+    <comment>In reference to completed sessions</comment>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Instellingen</value>
+  </data>
+  <data name="Statistics" xml:space="preserve">
+    <value>Statistieken</value>
+  </data>
+  <data name="Feed_Following" xml:space="preserve">
+    <value>Volgend</value>
+    <comment>Users who you are following on the feed</comment>
+  </data>
+  <data name="Feed_Followers" xml:space="preserve">
+    <value>Volgers</value>
+    <comment>Users who are following you in the feed</comment>
+  </data>
+  <data name="SessionInProgress" xml:space="preserve">
+    <value>Een sessie is al bezig, start een nieuwe zonder op te slaan?</value>
+  </data>
+  <data name="ReplaceCurrentSession" xml:space="preserve">
+    <value>Vervang huidige sessie</value>
+  </data>
+  <data name="NoPlanCreated" xml:space="preserve">
+    <value>Nog geen plan gemaakt!</value>
+  </data>
+  <data name="AddWorkouts" xml:space="preserve">
+    <value>Training toevoegen</value>
+  </data>
+  <data name="SelectAPlan" xml:space="preserve">
+    <value>Selecteer een plan</value>
+  </data>
+  <data name="UpcomingWorkouts" xml:space="preserve">
+    <value>Volgende trainingen</value>
+  </data>
+  <data name="BackUpData" xml:space="preserve">
+    <value>Back-up data</value>
+  </data>
+  <data name="BackUpDataReminder" xml:space="preserve">
+    <value>Het is lang geleden dat u een back-up gemaakt heeft. Het is aanbevolen om uw data regelmatig op te slaan om dataverlies te verkomen. Wilt u nu uw data back-uppen?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Nee</value>
+  </data>
+  <data name="DontAskAgain" xml:space="preserve">
+    <value>Niet opnieuw vragen</value>
+  </data>
+  <data name="OpenLink" xml:space="preserve">
+    <value>Open Link</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Annuleer</value>
+    <comment>As a verb</comment>
+  </data>
+  <data name="Calculating" xml:space="preserve">
+    <value>Berekenen...</value>
+  </data>
+  <data name="NoDataAvailable" xml:space="preserve">
+    <value>Geen data beschikbaar</value>
+  </data>
+  <data name="TryChangingFilters" xml:space="preserve">
+    <value>Probeer de filters boven aan te passen</value>
+  </data>
+  <data name="AverageTimeBetweenSets" xml:space="preserve">
+    <value>Gemiddelde tijd tussen sets</value>
+  </data>
+  <data name="HeaviestLift" xml:space="preserve">
+    <value>Zwaarste lift</value>
+  </data>
+  <data name="MostTimeSpent" xml:space="preserve">
+    <value>Langste tijd gespendeerd</value>
+  </data>
+  <data name="AverageSessionLength" xml:space="preserve">
+    <value>Gemiddelde sessie lengte</value>
+  </data>
+  <data name="Bodyweight" xml:space="preserve">
+    <value>Lichaamsgewicht</value>
+  </data>
+  <data name="Sessions" xml:space="preserve">
+    <value>Sessies</value>
+  </data>
+  <data name="NoExercisesFound" xml:space="preserve">
+    <value>Geen oefeningen gevonden</value>
+  </data>
+  <data name="AllTime" xml:space="preserve">
+    <value>Altijd</value>
+  </data>
+  <data name="{NumDays}NumDays" xml:space="preserve">
+    <value>{0} dagen</value>
+  </data>
+  <data name="AllSessions" xml:space="preserve">
+    <value>Alle sessies</value>
+  </data>
+  <data name="CurrentSessions" xml:space="preserve">
+    <value>Huidige sessie</value>
+  </data>
+  <data name="NotPublishingWorkouts" xml:space="preserve">
+    <value>Je deelt nog geen trainingen</value>
+  </data>
+  <data name="StartPublishing" xml:space="preserve">
+    <value>Start delen</value>
+  </data>
+  <data name="NothingHereYet" xml:space="preserve">
+    <value>Hier is nog niks!</value>
+  </data>
+  <data name="NoFollowingData" xml:space="preserve">
+    <value>Nog niemand heeft data gedeed! Kom later terug.</value>
+  </data>
+  <data name="StartFollowingSomeone" xml:space="preserve">
+    <value>Begin iemand te volgen!</value>
+  </data>
+  <data name="NotFollowingAnyone" xml:space="preserve">
+    <value>Je volgt nog niemand. Vraag iemand om een hun link!</value>
+  </data>
+  <data name="NobodyFollowingYou" xml:space="preserve">
+    <value>Nog geen volgers!</value>
+  </data>
+  <data name="ShareLinkToGetFollowers" xml:space="preserve">
+    <value>Deel de link om volgers te krijgen</value>
+  </data>
+  <data name="Unfollow" xml:space="preserve">
+    <value>Ontvolgen</value>
+  </data>
+  <data name="UnfollowUser" xml:space="preserve">
+    <value>Ontvolg gebruiker</value>
+  </data>
+  <data name="RemoveFollower" xml:space="preserve">
+    <value>Verwijder volger</value>
+  </data>
+  <data name="RemoveFollowerMsgPart1" xml:space="preserve">
+    <value>Hierdoor zal</value>
+  </data>
+  <data name="RemoveFollowerMsgPart2" xml:space="preserve">
+    <value>stoppen jouw te volgen en verwijdert al jouw gegevens van hun apparaat.</value>
+  </data>
+  <data name="Unfollow{User}Msg" xml:space="preserve">
+    <value>Ontvolg &lt;em&gt;{0}&lt;/em&gt; en verwijder al hun gegevens van jouw apparaat.</value>
+  </data>
+  <data name="SessionContainsNoExercises" xml:space="preserve">
+    <value>Sessie bevat geen oefeningen.</value>
+  </data>
+  <data name="UpdatePlan" xml:space="preserve">
+    <value>Update plan</value>
+  </data>
+  <data name="AddExercise" xml:space="preserve">
+    <value>Oefening toevoegen</value>
+  </data>
+  <data name="Finish" xml:space="preserve">
+    <value>Eindigen</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Opslaan</value>
+  </data>
+  <data name="EditExercise" xml:space="preserve">
+    <value>Oefening aanpassen</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Voeg toe</value>
+  </data>
+  <data name="SelectReps" xml:space="preserve">
+    <value>Selecteer Herhalingen</value>
+  </data>
+  <data name="RemoveExerciseQuestion" xml:space="preserve">
+    <value>Oefening verwijderen?</value>
+  </data>
+  <data name="RemoveExerciseMessage" xml:space="preserve">
+    <value>Oefening zal verwijderd worden uit huidige sessie; toekomstige sessies blijven onveranderd.</value>
+  </data>
+  <data name="UpdateExistingWorkout{Name}" xml:space="preserve">
+    <value>Update de bestaande training &lt;em&gt;{0}&lt;/em&gt;, of maak een nieuwe?</value>
+  </data>
+  <data name="PlanWillBeUpdated" xml:space="preserve">
+    <value>Het plan wordt geüpdatet met de oefeningen uit de huidige sessie.</value>
+  </data>
+  <data name="Exercise" xml:space="preserve">
+    <value>Oefening</value>
+    <comment>noun form of exercise</comment>
+  </data>
+  <data name="Sets" xml:space="preserve">
+    <value>Sets</value>
+    <comment>Noun form for sets, as in number of sets in an exercise</comment>
+  </data>
+  <data name="Reps" xml:space="preserve">
+    <value>Reps</value>
+    <comment>Noun form for exercise reps, as in repetitions</comment>
+  </data>
+  <data name="PlanNotes" xml:space="preserve">
+    <value>Trainingsplan notities</value>
+  </data>
+  <data name="SessionNotes" xml:space="preserve">
+    <value>Sessie notities</value>
+  </data>
+  <data name="ExternalLink" xml:space="preserve">
+    <value>Externe link</value>
+    <comment>The name for a HTTPS url link outside of the app </comment>
+  </data>
+  <data name="ProgressiveOverload" xml:space="preserve">
+    <value>Gewichts progressie</value>
+  </data>
+  <data name="SupersetNextExercise" xml:space="preserve">
+    <value>Superset volgende oefening</value>
+  </data>
+  <data name="RestShort" xml:space="preserve">
+    <value>Kort</value>
+    <comment>A short period of rest</comment>
+  </data>
+  <data name="RestMedium" xml:space="preserve">
+    <value>Medium</value>
+    <comment>A medium period of rest</comment>
+  </data>
+  <data name="RestLong" xml:space="preserve">
+    <value>Lang</value>
+    <comment>A long period of rest</comment>
+  </data>
+  <data name="Custom" xml:space="preserve">
+    <value>Handmatig</value>
+    <comment>As in customized</comment>
+  </data>
+  <data name="MinRest" xml:space="preserve">
+    <value>Min rust</value>
+  </data>
+  <data name="MaxRest" xml:space="preserve">
+    <value>Max rust</value>
+  </data>
+  <data name="FailureRest" xml:space="preserve">
+    <value>Falende rust</value>
+  </data>
+  <data name="RestSingular{Time}" xml:space="preserve">
+    <value>Rust &lt;em&gt;{0}&lt;/em&gt;</value>
+  </data>
+  <data name="RestBetween{Time1}{Time2}" xml:space="preserve">
+    <value>Rust tussen de &lt;em&gt;{0}&lt;/em&gt; and &lt;em&gt;{1}&lt;/em&gt;</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Datum</value>
+    <comment>as in calendar date</comment>
+  </data>
+  <data name="CompleteAndComeBack" xml:space="preserve">
+    <value>Voltooi een sessie en check opnieuw.</value>
+  </data>
+  <data name="NoSessionsInMonth{Month}" xml:space="preserve">
+    <value>Geen sessie opnames in {0}&lt;br&gt;Voltooi een sessie of bekijk een andere maand.</value>
+  </data>
+  <data name="DeleteSessionMessage{SessionName}{Date}" xml:space="preserve">
+    <value>De sessie met naam &lt;em&gt;{0}&lt;/em&gt;, op {1} zal verwijderd worden uit je historie. Dit kan niet ongedaan gemaakt worden.</value>
+  </data>
+  <data name="DeleteSessionQuestion" xml:space="preserve">
+    <value>Verwijder sessie?</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="ManagePlans" xml:space="preserve">
+    <value>Beheer trainingsplannen</value>
+  </data>
+  <data name="ManagePlansSubtitle" xml:space="preserve">
+    <value>Deel je trainingsplannen in.</value>
+  </data>
+  <data name="AppConfiguration" xml:space="preserve">
+    <value>App configuratie</value>
+  </data>
+  <data name="AppConfigurationSubtitle" xml:space="preserve">
+    <value>Pas eenheden, thema en anderen instellingen aan.</value>
+  </data>
+  <data name="Notifications" xml:space="preserve">
+    <value>Notificaties</value>
+  </data>
+  <data name="NotificationsSubtitle" xml:space="preserve">
+    <value>Pas notificaties aan voor rust timers</value>
+  </data>
+  <data name="ExportBackupRestore" xml:space="preserve">
+    <value>Exporteer, backup, en herstel</value>
+  </data>
+  <data name="ExportBackupRestoreSubtitle" xml:space="preserve">
+    <value>Maak en exporteer backups naar andere apparaten.</value>
+  </data>
+  <data name="FeatureRequest" xml:space="preserve">
+    <value>Functie aanvraag</value>
+  </data>
+  <data name="FeatureRequestSubtitle" xml:space="preserve">
+    <value>Stuur een suggestie voor een nieuwe functionaliteit voor LiftLog.</value>
+  </data>
+  <data name="BugReport" xml:space="preserve">
+    <value>Bug report</value>
+  </data>
+  <data name="BugReportSubtitle" xml:space="preserve">
+    <value>Laat ons weten wanneer je een bug tegenkomt.</value>
+  </data>
+  <data name="AppInfo" xml:space="preserve">
+    <value>App info</value>
+  </data>
+  <data name="AppInfoSubtitle" xml:space="preserve">
+    <value>Toon app informatie</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Sluit</value>
+    <comment>as in the opposite of open, close a dialog</comment>
+  </data>
+  <data name="SavedPlans" xml:space="preserve">
+    <value>Opgeslagen Trainingsplannen</value>
+  </data>
+  <data name="AddPlan" xml:space="preserve">
+    <value>Voeg trainingsplan toe</value>
+  </data>
+  <data name="SelectedPlan{Plan}" xml:space="preserve">
+    <value>&amp;lt geselecteerd;em&gt;{0}&lt;/em&gt;</value>
+  </data>
+  <data name="RestNotifications" xml:space="preserve">
+    <value>Rust notificaties</value>
+    <comment>the title for the rest notifications toggle</comment>
+  </data>
+  <data name="RestNotificationsSubtitle" xml:space="preserve">
+    <value>Toon notificatie wanneer rust timer v verlopen is</value>
+  </data>
+  <data name="PlanName" xml:space="preserve">
+    <value>Naam van trainingsplan</value>
+  </data>
+  <data name="NoWorkoutsInPlan" xml:space="preserve">
+    <value>Geen trainingen in het plan&lt;br&gt; Voeg een training toe om te beginnen.</value>
+  </data>
+  <data name="AddWorkout" xml:space="preserve">
+    <value>Training toevoegen</value>
+  </data>
+  <data name="UseWorkout" xml:space="preserve">
+    <value>Selecteer</value>
+  </data>
+  <data name="ManageWorkout{Workout}" xml:space="preserve">
+    <value>Manage {0}</value>
+  </data>
+  <data name="WorkoutName" xml:space="preserve">
+    <value>Trainings Naam</value>
+  </data>
+  <data name="WorkoutNotes" xml:space="preserve">
+    <value>Trainings Notes</value>
+  </data>
+  <data name="NoExercisesAdded" xml:space="preserve">
+    <value>Nog geen oefeningen toegevoegd</value>
+  </data>
+  <data name="Exercises" xml:space="preserve">
+    <value>Oefeningen</value>
+    <comment>Multiple noun exercises</comment>
+  </data>
+  <data name="RemoveExerciseFromWorkoutMessage{Exercise}{Session}" xml:space="preserve">
+    <value>De oefening &lt;em&gt;{0}&lt;/em&gt; zal verwijderd worden uit &lt;em&gt;{1}&lt;/em&gt;.</value>
+  </data>
+  <data name="RestoreData" xml:space="preserve">
+    <value>Herstel data</value>
+  </data>
+  <data name="RestoreDataSubtitle" xml:space="preserve">
+    <value>Importeer data uit een bestand om te herstellen.</value>
+  </data>
+  <data name="AutomaticRemoteBackup" xml:space="preserve">
+    <value>Automatische back-up op afstand</value>
+  </data>
+  <data name="PlaintextExport" xml:space="preserve">
+    <value>Exporteer als plattetekst</value>
+  </data>
+  <data name="PlaintextExportSubtitle" xml:space="preserve">
+    <value>Exorteer jouw data in plattetekst formaat zoals CSV om elders te gebruiken.</value>
+  </data>
+  <data name="AutomaticRemoteBackupSubtitle" xml:space="preserve">
+    <value>Verstuur back-ups naar een server op afstand. Alleen voor geavanceerde gebruikers.</value>
+  </data>
+  <data name="ImportFeedDataQuestion" xml:space="preserve">
+    <value>Feed data importeren?</value>
+  </data>
+  <data name="ImportFeedDataQuestionMessage" xml:space="preserve">
+    <value>Deze back-up bevat een account met feed. Wil je deze importeren?&lt;br&gt;Je verliest toegang tot dit account als er geen backup is.&lt;br&gt;&lt;em&gt;Je huidige account wordt definitief verwijderd!&lt;/em&gt;</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Importeer</value>
+    <comment>Import as a verb</comment>
+  </data>
+  <data name="IncludeFeed" xml:space="preserve">
+    <value>Feed toevoegen</value>
+    <comment>Include feed data in the backup</comment>
+  </data>
+  <data name="JustMyData" xml:space="preserve">
+    <value>Alleen mijn data</value>
+    <comment>A button saying to include only our data in the backup, and no feed content</comment>
+  </data>
+  <data name="BackupFeedAccount" xml:space="preserve">
+    <value>Back-up Feed account</value>
+  </data>
+  <data name="BackupFeedAccountMessage" xml:space="preserve">
+    <value>Jouw feed account en volgers toevoegen in deze back-up?&lt;br&gt;&lt;em&gt;Let op: Iedereen zal met deze back-up de feed kunnen gebruiken met jouw account&lt;/em&gt;</value>
+  </data>
+  <data name="UseImperialUnits" xml:space="preserve">
+    <value>Gebruik imperiale eenheden</value>
+  </data>
+  <data name="UseImperialUnitsSubtitle" xml:space="preserve">
+    <value>Gebruik pounds (NL: ponden) in plaats van kilogram</value>
+  </data>
+  <data name="ShowBodyweight" xml:space="preserve">
+    <value>Bekijk lichaamsgewicht</value>
+  </data>
+  <data name="ShowBodyweightSubtitle" xml:space="preserve">
+    <value>Zet lichaamsgewicht tracking wn statistiek aan.</value>
+  </data>
+  <data name="ShowFeed" xml:space="preserve">
+    <value>Bekijk feed</value>
+  </data>
+  <data name="ShowFeedSubtitle" xml:space="preserve">
+    <value>Toon feed in de navigatie balk</value>
+  </data>
+  <data name="ShowTips" xml:space="preserve">
+    <value>Toon tips</value>
+  </data>
+  <data name="ShowTipsSubtitle" xml:space="preserve">
+    <value>Toon tips voor het gebruik van de app</value>
+  </data>
+  <data name="ResetTips" xml:space="preserve">
+    <value>Reset tips</value>
+  </data>
+  <data name="PlaintextExportDescription" xml:space="preserve">
+    <value>Met deze functionaliteit kan je jouw data exporteren in een plattetekst formaat zoals CSV voor gebruik in andere applicaties. Voor back-ups, gebruik de aparte back-up functionaliteit. LiftLog kan geen data importeren uit plattetekst bestanden.</value>
+  </data>
+  <data name="ReadDocumentation" xml:space="preserve">
+    <value>Lees documentatie</value>
+  </data>
+  <data name="PlaintextExportFormat" xml:space="preserve">
+    <value>Formaat</value>
+    <comment>The export format type for the plaintext export</comment>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Exporteer</value>
+    <comment>Export as a verb</comment>
+  </data>
+  <data name="RemoteBackupDescription" xml:space="preserve">
+    <value>Hiermee kan LiftLog back-ups naar een remote server sturen; alleen voor geavanceerde gebruikers.&lt;br&gt;Lees de beschrijving over het opzetten van een remote server.</value>
+  </data>
+  <data name="Endpoint" xml:space="preserve">
+    <value>Einde</value>
+  </data>
+  <data name="ApiKey" xml:space="preserve">
+    <value>API Key</value>
+  </data>
+  <data name="BackupFeedAccountSubtitle" xml:space="preserve">
+    <value>Voeg jouw feed account data toe aan de back-ups</value>
+  </data>
+  <data name="Test" xml:space="preserve">
+    <value>Test</value>
+    <comment>The button for testing the remote backup</comment>
+  </data>
+  <data name="GeneratingAiPlan" xml:space="preserve">
+    <value>AI trainingsplan genereren...&lt;br&gt;&lt;em&gt;Dit kan tot 3 min duren.&lt;/em&gt;</value>
+  </data>
+  <data name="NoteAboutTweakingAiPlan" xml:space="preserve">
+    <value>Merk op: aanpassingen zijn mogelijk nadat je dit plan gekozen hebt. Ga daarvoor naar Beheer Trainingsplannen.</value>
+  </data>
+  <data name="Accept" xml:space="preserve">
+    <value>Accepteer</value>
+    <comment>As a verb</comment>
+  </data>
+  <data name="Regenerate" xml:space="preserve">
+    <value>Genereer opnieuw</value>
+    <comment>Recreate the ai plan</comment>
+  </data>
+  <data name="Retry" xml:space="preserve">
+    <value>Probeer opnieuw</value>
+    <comment>Generic retry verb</comment>
+  </data>
+  <data name="AiPlanner" xml:space="preserve">
+    <value>AI Planner</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Terug</value>
+    <comment>As in, go back to the previous screen</comment>
+  </data>
+  <data name="AddToPlan" xml:space="preserve">
+    <value>Voeg toe aan trainingsplan</value>
+    <comment>A button to add the session to the user's plan</comment>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Start</value>
+    <comment>A verb for beginnning the workout</comment>
+  </data>
+  <data name="Generate" xml:space="preserve">
+    <value>Genereer</value>
+    <comment>Verb for generating an ai plan</comment>
+  </data>
+  <data name="SelectAtLeastOneArea" xml:space="preserve">
+    <value>Selecteer tenminste 1 lichaamsdeel voor de training</value>
+    <comment>Area referring to the area of the body, like a muscle</comment>
+  </data>
+  <data name="AiSessionCreator" xml:space="preserve">
+    <value>AI Sessie Maker</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Thema</value>
+    <comment>As in the general colours of the app</comment>
+  </data>
+  <data name="Default" xml:space="preserve">
+    <value>Standaard</value>
+    <comment>The default, as a noun</comment>
+  </data>
+  <data name="AdditionalInformationLabel" xml:space="preserve">
+    <value>xtra informatie?</value>
+  </data>
+  <data name="AdditionalInformationExtra" xml:space="preserve">
+    <value>Goals, verwondingen, beschikbare apparaten, etc.</value>
+  </data>
+  <data name="HowOldAreYou" xml:space="preserve">
+    <value>Hoe oud ben je?</value>
+  </data>
+  <data name="SelectAtLeastOneGoal" xml:space="preserve">
+    <value>Selecteer tenminste een goal</value>
+  </data>
+  <data name="SelectNumberOfDays" xml:space="preserve">
+    <value>Selecteer het aantal dagen per week</value>
+  </data>
+  <data name="WhatIsYourGender" xml:space="preserve">
+    <value>Wat is je geslacht?</value>
+  </data>
+  <data name="GenderFemale" xml:space="preserve">
+    <value>Vrouw</value>
+  </data>
+  <data name="GenderMale" xml:space="preserve">
+    <value>Man</value>
+  </data>
+  <data name="GenderOther" xml:space="preserve">
+    <value>Ander</value>
+    <comment>A gender other than female or male</comment>
+  </data>
+  <data name="GenderPreferNotToSay" xml:space="preserve">
+    <value>Deel dit liever niet</value>
+    <comment>The user prefers not to say their gender</comment>
+  </data>
+  <data name="WhatAreYourGoals" xml:space="preserve">
+    <value>Wat zijn jouw doelen?</value>
+  </data>
+  <data name="Toning" xml:space="preserve">
+    <value>Meer getoned worden</value>
+    <comment>As in getting more muscular definition</comment>
+  </data>
+  <data name="LosingWeight" xml:space="preserve">
+    <value>Afvallen</value>
+  </data>
+  <data name="GainingMuscle" xml:space="preserve">
+    <value>Spiermassa Muscle</value>
+  </data>
+  <data name="Strength" xml:space="preserve">
+    <value>Kracht</value>
+  </data>
+  <data name="WhatIsYourExperienceLevel" xml:space="preserve">
+    <value>Wat is jouw ervaringsniveau?</value>
+  </data>
+  <data name="ExperienceProfessional" xml:space="preserve">
+    <value>Professional</value>
+  </data>
+  <data name="ExperienceAdvanced" xml:space="preserve">
+    <value>Advanced</value>
+  </data>
+  <data name="ExperienceIntermediate" xml:space="preserve">
+    <value>Intermediate</value>
+  </data>
+  <data name="ExperienceBeginner" xml:space="preserve">
+    <value>Beginner</value>
+  </data>
+  <data name="One" xml:space="preserve">
+    <value>Eén</value>
+  </data>
+  <data name="Two" xml:space="preserve">
+    <value>Twee</value>
+  </data>
+  <data name="Three" xml:space="preserve">
+    <value>Drie</value>
+  </data>
+  <data name="Four" xml:space="preserve">
+    <value>Vier</value>
+  </data>
+  <data name="Five" xml:space="preserve">
+    <value>Vijf</value>
+  </data>
+  <data name="Six" xml:space="preserve">
+    <value>Zes</value>
+  </data>
+  <data name="Seven" xml:space="preserve">
+    <value>Zeven</value>
+  </data>
+  <data name="HowManyDaysPerWeek" xml:space="preserve">
+    <value>Hoeveel dagen per week?</value>
+  </data>
+  <data name="HowMuchDoYouWeigh" xml:space="preserve">
+    <value>Wat is je gewicht?</value>
+  </data>
+  <data name="Arms" xml:space="preserve">
+    <value>Armen</value>
+  </data>
+  <data name="Chest" xml:space="preserve">
+    <value>Borst</value>
+  </data>
+  <data name="BackMuscle" xml:space="preserve">
+    <value>Rug</value>
+    <comment>As in a person's back muscles</comment>
+  </data>
+  <data name="Legs" xml:space="preserve">
+    <value>Benen</value>
+  </data>
+  <data name="Triceps" xml:space="preserve">
+    <value>Triceps</value>
+  </data>
+  <data name="Biceps" xml:space="preserve">
+    <value>Biceps</value>
+  </data>
+  <data name="Quads" xml:space="preserve">
+    <value>Quads</value>
+  </data>
+  <data name="Hamstrings" xml:space="preserve">
+    <value>Hamstrings</value>
+  </data>
+  <data name="Calves" xml:space="preserve">
+    <value>Kuiten</value>
+  </data>
+  <data name="WhatAreYouWorkingOut" xml:space="preserve">
+    <value>Wat trainen we?</value>
+  </data>
+  <data name="HowMuchVolume" xml:space="preserve">
+    <value>Hoeveel volume?</value>
+  </data>
+  <data name="VolumeLight" xml:space="preserve">
+    <value>Licht</value>
+    <comment>As in the opposite of heavy</comment>
+  </data>
+  <data name="VolumeMedium" xml:space="preserve">
+    <value>Medium</value>
+    <comment>As in the middle of light and heavy</comment>
+  </data>
+  <data name="VolumeHeavy" xml:space="preserve">
+    <value>Zwaar</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>Oke</value>
+  </data>
+  <data name="FeedUserCompletedAWorkout{UserName}" xml:space="preserve">
+    <value>&lt;em&gt;{0}&lt;/em&gt; heeft een training voltooid!</value>
+  </data>
+  <data name="AnonymousUser" xml:space="preserve">
+    <value>Anonieme gebruiker</value>
+  </data>
+  <data name="AwaitingResponse" xml:space="preserve">
+    <value>Wachtend op een reactie...</value>
+  </data>
+  <data name="Nickname" xml:space="preserve">
+    <value>Bijnaam</value>
+  </data>
+  <data name="ViewTheirPlan" xml:space="preserve">
+    <value>Bekijk hun trainingsplan</value>
+  </data>
+  <data name="UserIsFollowingYou{User}" xml:space="preserve">
+    <value>&lt;em&gt;{0}&lt;/em&gt; volgt jou!</value>
+  </data>
+  <data name="FollowUserBack{User}" xml:space="preserve">
+    <value>Volg {0}</value>
+  </data>
+  <data name="UserWantsToFollowYou{User}" xml:space="preserve">
+    <value>&lt;em&gt;{0}&lt;/em&gt; wilt jou volgen!</value>
+  </data>
+  <data name="Deny" xml:space="preserve">
+    <value>Afwijzen</value>
+  </data>
+  <data name="GenericLoading" xml:space="preserve">
+    <value>Laden...</value>
+  </data>
+  <data name="Duplicate" xml:space="preserve">
+    <value>Dupliceren</value>
+  </data>
+  <data name="NeverDoneThisExerciseBefore" xml:space="preserve">
+    <value>Je hebt nog nooit deze oefening voltooid.</value>
+  </data>
+  <data name="Share" xml:space="preserve">
+    <value>Deel</value>
+    <comment>Verb</comment>
+  </data>
+  <data name="EditedOn{Date}" xml:space="preserve">
+    <value>Aangepast: {0}</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Actief</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Zoek</value>
+  </data>
+  <data name="Weight" xml:space="preserve">
+    <value>Gewicht</value>
+  </data>
+  <data name="EnableNotificationsQuestion" xml:space="preserve">
+    <value>Notificaties activeren?</value>
+  </data>
+  <data name="AndroidNotificationPermissionExplanation" xml:space="preserve">
+    <value>Nieuwere Android apparaten hebben extra toegang nodig om de rust notificaties op het juiste moment te tonen. Zonder deze extra toegang zullen de notificaties te laat komen en onbruikbaar zijn. Geef LiftLog toegang op het volgende scherm.</value>
+  </data>
+  <data name="EnjoyingLiftLogQuestion" xml:space="preserve">
+    <value>Blij met LiftLog?</value>
+  </data>
+  <data name="EnjoyingLiftLogMessage{Type}{Store}" xml:space="preserve">
+    <value>Wij zijn benieuwd naar jouw mening. Laat een {0} achter op {1}?</value>
+  </data>
+  <data name="NotNow" xml:space="preserve">
+    <value>Niet nu</value>
+  </data>
+  <data name="Rate" xml:space="preserve">
+    <value>Rate</value>
+  </data>
+  <data name="Never" xml:space="preserve">
+    <value>Nooit</value>
+  </data>
+  <data name="GithubStar" xml:space="preserve">
+    <value>ster</value>
+    <comment>as in a star on github</comment>
+  </data>
+  <data name="Review" xml:space="preserve">
+    <value>review</value>
+    <comment>as in a review on the app store</comment>
+  </data>
+  <data name="Optional" xml:space="preserve">
+    <value>Optioneel</value>
+  </data>
+  <data name="YourName" xml:space="preserve">
+    <value>Je naam</value>
+  </data>
+  <data name="PublishWorkout" xml:space="preserve">
+    <value>Training publiceren</value>
+  </data>
+  <data name="PublishBodyweight" xml:space="preserve">
+    <value>Lichaamsgewicht publiceren</value>
+  </data>
+  <data name="PublishPlan" xml:space="preserve">
+    <value>Trainingsplan publiceren</value>
+  </data>
+  <data name="PublishWorkoutSubtitle" xml:space="preserve">
+    <value>Publiceer training wanmeer voltooid</value>
+  </data>
+  <data name="PublishPlanSubtitle" xml:space="preserve">
+    <value>Publiceer jouw huidige trainingsplan voor andere te zien en te importeren</value>
+  </data>
+  <data name="PublishBodyweightSubtitle" xml:space="preserve">
+    <value>Publiceer lichaamsgewicht samen met je training</value>
+  </data>
+  <data name="ResetAccount" xml:space="preserve">
+    <value>Reset account</value>
+  </data>
+  <data name="ResetAccountMessage" xml:space="preserve">
+    <value>Hiermee delete je al jouw data van de servers en je feed. Je moet je opnieuw aanmelden en een link aanmaken om opnoeuw trainingen te delen.</value>
+  </data>
+  <data name="OnlyThoseWithTheLinkCanSee" xml:space="preserve">
+    <value>Alleen mensen met deze link kunnen zien wat jij deelt.</value>
+  </data>
+  <data name="ShareLink" xml:space="preserve">
+    <value>Deel link</value>
+  </data>
+  <data name="Unlock" xml:space="preserve">
+    <value>Openen</value>
+  </data>
+  <data name="ProFeatures" xml:space="preserve">
+    <value>Pro functies</value>
+  </data>
+  <data name="AiPlannerSubtitle" xml:space="preserve">
+    <value>Gebruik AI om een nieuw programma te genereren dat aansluit op jouw goals</value>
+  </data>
+  <data name="AiSessionCreatorSubtitle" xml:space="preserve">
+    <value>Genereer een trainingssessie om te importeren in jouw trainingsplan of eindig nu!</value>
+  </data>
+  <data name="UpgradeToPro" xml:space="preserve">
+    <value>Upgrade naar Pro</value>
+  </data>
+  <data name="UpgradeToProDescription" xml:space="preserve">
+    <value>Dit ontgrendelt de AI planner, waarmee je traiiningsplannen kunt genereren afgesteld op jezelf en jouw goals. &lt;br&gt;Dit is een eenmalige aankoop van:</value>
+    <comment>The price immediately follows this, so translations will need to be worded in such a way that this is possible</comment>
+  </data>
+  <data name="Upgrade" xml:space="preserve">
+    <value>Upgrade</value>
+  </data>
+  <data name="PlanSharedWithYou" xml:space="preserve">
+    <value>Dit trainingsplan is gedeeld met jou.</value>
+  </data>
+  <data name="SharedPlan" xml:space="preserve">
+    <value>Gedeeld trainingsplan</value>
+  </data>
+  <data name="SettingsSaved" xml:space="preserve">
+    <value>Instellingen opgeslagen</value>
+  </data>
+  <data name="BackupSentSuccessfully" xml:space="preserve">
+    <value>Back-up succesvol</value>
+  </data>
+  <data name="FailedToBackupToRemote" xml:space="preserve">
+    <value>Back-up naar de remote server is gefaald</value>
+  </data>
+  <data name="ImportTheirPlan" xml:space="preserve">
+    <value>Importeer hun trainingsplan</value>
+  </data>
+  <data name="ImportTheirPlanMessage{user}" xml:space="preserve">
+    <value>Dit zal het trainingsplan van &lt;em&gt;{0}'s&lt;/em&gt; importeren. Dit overschrijft niet jouw eigen trainingsplan.</value>
+  </data>
+  <data name="Translation" xml:space="preserve">
+    <value>Vertaling voorstellen</value>
+  </data>
+  <data name="TranslationSubtitle" xml:space="preserve">
+    <value>Stuur een vertaling van een deel van de app!</value>
+  </data>
+  <data name="ManageWorkoutTitle" xml:space="preserve">
+    <value>Beheer trainingen</value>
+  </data>
+  <data name="BackupReminders" xml:space="preserve">
+    <value>Bac-up herinneringen</value>
+  </data>
+  <data name="BackupRemindersSubtitle" xml:space="preserve">
+    <value>Stuur zo nu en dan een suggestie om een back-up te maken wanneer dit lang niet is gebeurd.</value>
+  </data>
+  <data name="SplitWeightByDefault" xml:space="preserve">
+    <value>Individuele gewichten per set</value>
+  </data>
+  <data name="SplitWeightByDefaultSubtitle" xml:space="preserve">
+    <value>Stel het standaard gewicht van elke set apart in.</value>
+  </data>
+  <data name="BackUpDataSubtitle" xml:space="preserve">
+    <value>Exporteer je data naar een bestand voor back-ups of data verplaatsing.</value>
+  </data>
+</root>
