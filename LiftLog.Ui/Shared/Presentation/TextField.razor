@@ -11,6 +11,7 @@
             @onclick=OnClick
             @onfocusout=@(async _=>{await SetValueOnElement(); await OnBlur.InvokeAsync();})
             @onpaste=OnPaste
+            @onkeypress="@(async (e) => {if(e.Key == "Enter"){await SetValueOnElement(); await OnBlur.InvokeAsync();}})"
             @onpaste:preventDefault=PastePreventDefault
         >
             @ChildContent
@@ -25,6 +26,7 @@
             @onclick=OnClick
             @onfocusout=@(async _=>{await SetValueOnElement(); await OnBlur.InvokeAsync();})
             @onpaste=OnPaste
+            @onkeypress="@(async (e) => {if(e.Key == "Enter"){await SetValueOnElement(); await OnBlur.InvokeAsync();}})"
             @onpaste:preventDefault=PastePreventDefault
         >
             @ChildContent
