@@ -910,4 +910,11 @@
   <data name="SplitWeightByDefaultSubtitle" xml:space="preserve">
     <value>Allow you to set the weight of each exercise set by default</value>
   </data>
+  <data name="PlansPageTitle" xml:space="preserve">
+    <value>Plans</value>
+    <comment>The title in the header for the plans list page</comment>
+  </data>
+  <data name="NewPlanDefaultName" xml:space="preserve">
+    <value>The default name given when a user creates a new plan</value>
+  </data>
 </root>
