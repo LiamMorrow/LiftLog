@@ -67,7 +67,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Dispatcher.Dispatch(new SetPageTitleAction("Plans"));
+        Dispatcher.Dispatch(new SetPageTitleAction(UiStrings.PlansPageTitle));
         Dispatcher.Dispatch(new FetchSavedProgramsAction());
         Dispatcher.Dispatch(new SetBackNavigationUrlAction("/settings"));
     }
@@ -85,7 +85,7 @@
             new SavePlanAction(
                 planId,
                 new ProgramBlueprint(
-                    Name: "New Plan",
+                    Name: UiStrings.NewPlanDefaultName,
                     Sessions: [],
                     LastEdited: DateOnly.FromDateTime(DateTime.Now))));
         Dispatcher.Dispatch(new NavigateAction("/settings/manage-workouts?planId=" + planId));
