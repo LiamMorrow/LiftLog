@@ -62,12 +62,12 @@
         <PackageReference Include="System.Linq.Async" Version="6.0.1" />
 
         <PackageReference Include="Google.Protobuf" Version="3.29.3" />
-        <PackageReference Include="Grpc.Tools" Version="2.69.0">
+        <PackageReference Include="Grpc.Tools" Version="2.70.0">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="TaskTupleAwaiter" Version="2.1.0" />
-        <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.7.3">
+        <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.8.1">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
