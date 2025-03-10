@@ -1,2 +1,7 @@
 [*.{cs,vb}]
 dotnet_diagnostic.CA1860.severity = none
+
+
+[*.{ts,tsx}]
+indent_style = space
+indent_size = 2

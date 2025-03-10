@@ -1,12 +1,8 @@
+import { useMaterial3Theme } from '@pchmn/expo-material3-theme';
 import { vars } from 'nativewind';
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useMemo,
-  useState,
-} from 'react';
-import { useTheme } from 'react-native-paper';
+import React, { createContext, ReactNode, useContext, useMemo } from 'react';
+import { useColorScheme } from 'react-native';
+import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 
 interface Style {
   [key: string]: string;
@@ -31,62 +27,75 @@ interface BaseThemesetProviderProps {
 export const BaseThemesetProvider: React.FC<BaseThemesetProviderProps> = ({
   children,
 }) => {
-  const paperTheme = useTheme();
+  const colorScheme = useColorScheme();
+  // If the device is not compatible, it will return a theme based on the fallback source color (optional, default to #6750A4)
+  const { theme } = useMaterial3Theme({ fallbackSourceColor: '#3E8260' });
+  const schemedTheme = useMemo(
+    () => (colorScheme === 'dark' ? theme.dark : theme.light),
+    [colorScheme, theme],
+  );
+  const paperTheme = useMemo(
+    () =>
+      colorScheme === 'dark'
+        ? { ...MD3DarkTheme, colors: theme.dark }
+        : { ...MD3LightTheme, colors: theme.light },
+    [colorScheme, theme],
+  );
 
   const style = useMemo<Style>(
     () =>
       vars({
-        '--color-primary': hexToRgb(paperTheme.colors.primary),
-        '--color-on-primary': hexToRgb(paperTheme.colors.onPrimary),
-        '--color-secondary': hexToRgb(paperTheme.colors.secondary),
-        '--color-on-secondary': hexToRgb(paperTheme.colors.onSecondary),
-        '--color-primary-container': hexToRgb(
-          paperTheme.colors.primaryContainer,
-        ),
+        '--color-primary': hexToRgb(schemedTheme.primary),
+        '--color-on-primary': hexToRgb(schemedTheme.onPrimary),
+        '--color-secondary': hexToRgb(schemedTheme.secondary),
+        '--color-on-secondary': hexToRgb(schemedTheme.onSecondary),
+        '--color-primary-container': hexToRgb(schemedTheme.primaryContainer),
         '--color-on-primary-container': hexToRgb(
-          paperTheme.colors.onPrimaryContainer,
+          schemedTheme.onPrimaryContainer,
         ),
         '--color-secondary-container': hexToRgb(
-          paperTheme.colors.secondaryContainer,
+          schemedTheme.secondaryContainer,
         ),
         '--color-on-secondary-container': hexToRgb(
-          paperTheme.colors.onSecondaryContainer,
+          schemedTheme.onSecondaryContainer,
         ),
-        '--color-tertiary': hexToRgb(paperTheme.colors.tertiary),
-        '--color-on-tertiary': hexToRgb(paperTheme.colors.onTertiary),
-        '--color-tertiary-container': hexToRgb(
-          paperTheme.colors.tertiaryContainer,
-        ),
+        '--color-tertiary': hexToRgb(schemedTheme.tertiary),
+        '--color-on-tertiary': hexToRgb(schemedTheme.onTertiary),
+        '--color-tertiary-container': hexToRgb(schemedTheme.tertiaryContainer),
         '--color-on-tertiary-container': hexToRgb(
-          paperTheme.colors.onTertiaryContainer,
+          schemedTheme.onTertiaryContainer,
         ),
-        '--color-background': hexToRgb(paperTheme.colors.background),
-        '--color-on-background': hexToRgb(paperTheme.colors.onBackground),
-        '--color-surface': hexToRgb(paperTheme.colors.surface),
-        '--color-on-surface': hexToRgb(paperTheme.colors.onSurface),
-        '--color-on-surface-variant': hexToRgb(
-          paperTheme.colors.onSurfaceVariant,
+        '--color-background': hexToRgb(schemedTheme.background),
+        '--color-on-background': hexToRgb(schemedTheme.onBackground),
+        '--color-surface': hexToRgb(schemedTheme.surface),
+        '--color-surface-container-highest': hexToRgb(
+          schemedTheme.surfaceContainerHighest,
         ),
-        '--color-inverse-surface': hexToRgb(paperTheme.colors.inverseSurface),
-        '--color-inverse-on-surface': hexToRgb(
-          paperTheme.colors.inverseOnSurface,
+        '--color-on-surface': hexToRgb(schemedTheme.onSurface),
+        '--color-on-surface-variant': hexToRgb(schemedTheme.onSurfaceVariant),
+        '--color-inverse-surface': hexToRgb(schemedTheme.inverseSurface),
+        '--color-inverse-on-surface': hexToRgb(schemedTheme.inverseOnSurface),
+        '--color-surface-container': hexToRgb(schemedTheme.surfaceContainer),
+        '--color-surface-container-high': hexToRgb(
+          schemedTheme.surfaceContainerHigh,
         ),
-        '--color-inverse-primary': hexToRgb(paperTheme.colors.inversePrimary),
-        '--color-outline': hexToRgb(paperTheme.colors.outline),
-        '--color-outline-variant': hexToRgb(paperTheme.colors.outlineVariant),
-        '--color-error': hexToRgb(paperTheme.colors.error),
-        '--color-error-container': hexToRgb(paperTheme.colors.errorContainer),
-        '--color-on-error': hexToRgb(paperTheme.colors.onError),
-        '--color-on-error-container': hexToRgb(
-          paperTheme.colors.onErrorContainer,
+        '--color-surface-container-low': hexToRgb(
+          schemedTheme.surfaceContainerLow,
         ),
+        '--color-inverse-primary': hexToRgb(schemedTheme.inversePrimary),
+        '--color-outline': hexToRgb(schemedTheme.outline),
+        '--color-outline-variant': hexToRgb(schemedTheme.outlineVariant),
+        '--color-error': hexToRgb(schemedTheme.error),
+        '--color-error-container': hexToRgb(schemedTheme.errorContainer),
+        '--color-on-error': hexToRgb(schemedTheme.onError),
+        '--color-on-error-container': hexToRgb(schemedTheme.onErrorContainer),
       }),
-    [paperTheme.colors],
+    [schemedTheme],
   );
 
   return (
     <BaseThemesetContext.Provider value={style}>
-      {children}
+      <PaperProvider theme={paperTheme}>{children}</PaperProvider>
     </BaseThemesetContext.Provider>
   );
 };

@@ -22,8 +22,7 @@
             [transition:box-shadow_150ms_cubic-bezier(0.4,0,0.2,1),_border-radius_150ms_cubic-bezier(0.4,0,0.2,1),background-color_150ms_cubic-bezier(0.4,0,0.2,1),transform_400ms]
             items-center
             @HoldingClass
-            @ColorClass
-            @RepCountToStartClass"
+            @ColorClass"
         oncontextmenu="return false"
         @onpointerdown="OnPointerDown"
         @onpointerleave="OnPointerLeave"
@@ -109,7 +108,6 @@
 // Realistically the bg should not be seen when there is a rep count, but there are mild artifacts when keeping it as bg-primary
     private string ColorClass => RepCountValue is not null ? "text-on-primary bg-primary" : "text-on-secondary-container bg-secondary-container";
 
-    private string? RepCountToStartClass => ToStartNext ? "" : null;
 
 
     private async void OnPointerDown(PointerEventArgs args)

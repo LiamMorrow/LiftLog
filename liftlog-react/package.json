@@ -10,8 +10,10 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@js-joda/core": "^5.6.4",
     "@pchmn/expo-material3-theme": "^1.3.2",
     "babel-plugin-react-compiler": "^19.0.0-beta-e552027-20250112",
+    "bignumber.js": "^9.1.2",
     "eslint-plugin-react-compiler": "^19.0.0-beta-40c6c23-20250301",
     "expo": "^52.0.16",
     "expo-constants": "~17.0.3",
@@ -38,6 +40,7 @@
     "eslint-config-expo": "~8.0.1",
     "eslint-config-prettier": "^10.0.2",
     "eslint-plugin-prettier": "^5.2.3",
+    "eslint-plugin-unused-imports": "^4.1.4",
     "prettier": "^3.5.3",
     "typescript": "~5.3.3"
   },
