@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "LiftLog",
+    "slug": "liftlog-react",
+    "version": "1.0.0",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "scheme": "liftlog"
+  }
+}
