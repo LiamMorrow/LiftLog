@@ -9,11 +9,19 @@
       "bundler": "metro",
       "output": "static"
     },
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router"
+    ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
     },
-    "scheme": "liftlog"
+    "scheme": "liftlog",
+    "android": {
+      "package": "com.anonymous.liftlogreact"
+    },
+    "ios": {
+      "bundleIdentifier": "com.anonymous.liftlogreact"
+    }
   }
 }
