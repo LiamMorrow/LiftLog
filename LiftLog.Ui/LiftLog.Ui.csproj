@@ -61,7 +61,7 @@
         <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.*" />
         <PackageReference Include="System.Linq.Async" Version="6.0.1" />
 
-        <PackageReference Include="Google.Protobuf" Version="3.29.3" />
+        <PackageReference Include="Google.Protobuf" Version="3.30.0" />
         <PackageReference Include="Grpc.Tools" Version="2.70.0">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
