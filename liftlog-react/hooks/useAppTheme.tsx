@@ -6,11 +6,45 @@ import React, { createContext, ReactNode, useContext, useMemo } from 'react';
 import { useColorScheme } from 'react-native';
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 
-const BaseThemesetContext = createContext<Material3Scheme | undefined>(
-  undefined,
-);
+const spacing = {
+  0: 0,
+  0.5: 2,
+  1: 4,
+  2: 8,
+  3: 12,
+  4: 16,
+  5: 20,
+  6: 24,
+  7: 28,
+  8: 32,
+  9: 36,
+  10: 40,
+  11: 44,
+  12: 48,
+  14: 56,
+  16: 64,
+  20: 80,
+  24: 96,
+  28: 112,
+  32: 128,
+  36: 144,
+  40: 160,
+  44: 176,
+  48: 192,
+  52: 208,
+  56: 224,
+  60: 240,
+  64: 256,
+} as const;
 
-export const useBaseThemeset = (): Material3Scheme => {
+interface AppTheme {
+  colors: Material3Scheme;
+  spacing: typeof spacing;
+}
+
+const BaseThemesetContext = createContext<AppTheme | undefined>(undefined);
+
+export const useAppTheme = (): AppTheme => {
   const context = useContext(BaseThemesetContext);
   if (!context) {
     throw new Error(
@@ -41,9 +75,16 @@ export const BaseThemesetProvider: React.FC<BaseThemesetProviderProps> = ({
         : { ...MD3LightTheme, colors: theme.light },
     [colorScheme, theme],
   );
+  const appTheme = useMemo(
+    () => ({
+      colors: schemedTheme,
+      spacing,
+    }),
+    [schemedTheme],
+  );
 
   return (
-    <BaseThemesetContext.Provider value={schemedTheme}>
+    <BaseThemesetContext.Provider value={appTheme}>
       <PaperProvider theme={paperTheme}>{children}</PaperProvider>
     </BaseThemesetContext.Provider>
   );

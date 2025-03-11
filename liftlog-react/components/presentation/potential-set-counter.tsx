@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import WeightFormat from '@/components/presentation/weight-format';
 import WeightDialog from '@/components/presentation/weight-dialog';
-import { useBaseThemeset } from '@/hooks/useBaseThemeset';
+import { useAppTheme } from '@/hooks/useAppTheme';
 import { PressableProps } from 'react-native-paper/lib/typescript/components/TouchableRipple/Pressable';
 
 interface PotentialSetCounterProps {
@@ -29,37 +29,34 @@ interface PotentialSetCounterProps {
 }
 
 export default function PotentialSetCounter(props: PotentialSetCounterProps) {
-  const theme = useBaseThemeset();
-  const scaleValue = useAnimatedValue(1);
-  const weightScaleValue = useAnimatedValue(props.showWeight ? 1 : 0);
+  const { colors, spacing } = useAppTheme();
+  const holdingScale = useAnimatedValue(1);
+  const weightScale = useAnimatedValue(props.showWeight ? 1 : 0);
   const [isHolding, setIsHolding] = useState(false);
   const [isWeightDialogOpen, setIsWeightDialogOpen] = useState(false);
   const repCountValue = props.set?.set?.repsCompleted;
-  const repCountRounding = props.showWeight ? 'rounded-t-xl' : 'rounded-xl';
-  const boxShadowFill = repCountValue === undefined ? '2rem' : '0';
-  const holdingClass = isHolding ? 'scale-110' : '';
+  const bottomRadiusValue = weightScale.interpolate({
+    inputRange: [0, 1],
+    outputRange: [10, 0],
+  });
 
   useEffect(() => {
-    Animated.timing(scaleValue, {
+    Animated.timing(holdingScale, {
       toValue: isHolding ? 1.1 : 1,
       duration: 200,
+      easing: Easing.cubic,
       useNativeDriver: true,
     }).start();
-  }, [isHolding, scaleValue]);
+  }, [isHolding, holdingScale]);
 
   useEffect(() => {
-    Animated.timing(weightScaleValue, {
+    Animated.timing(weightScale, {
       toValue: props.showWeight ? 1 : 0,
       duration: 150,
       easing: Easing.cubic,
       useNativeDriver: false,
     }).start();
-  }, [props.showWeight, weightScaleValue]);
-
-  const textColorClass =
-    repCountValue !== undefined
-      ? 'text-on-primary'
-      : 'text-on-secondary-container';
+  }, [props.showWeight, weightScale]);
 
   const callbacks = props.isReadonly
     ? {}
@@ -81,70 +78,79 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
         userSelect: 'none',
         transform: [
           {
-            scale: scaleValue,
+            scale: holdingScale,
           },
         ],
       }}
     >
-      <TouchableRipple
-        style={{
-          aspectRatio: 1,
-          flexShrink: 0,
-          padding: 0,
-          height: 56,
-          width: 56,
-          borderTopLeftRadius: 10,
-          borderTopRightRadius: 10,
-          borderBottomRightRadius: props.showWeight ? 0 : 10,
-          borderBottomLeftRadius: props.showWeight ? 0 : 10,
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor:
-            repCountValue !== undefined
-              ? theme.primary
-              : theme.secondaryContainer,
-        }}
-        {...callbacks}
-        disabled={props.isReadonly}
-      >
-        <Text
-          style={{
-            color:
-              repCountValue !== undefined
-                ? theme.onPrimary
-                : theme.onSecondaryContainer,
-          }}
-        >
-          <Text style={{ fontWeight: 'bold' }}>{repCountValue ?? '-'}</Text>
-          <Text style={{ fontSize: 12, verticalAlign: 'top' }}>
-            /{props.maxReps}
-          </Text>
-        </Text>
-      </TouchableRipple>
       <Animated.View
         style={{
-          height: weightScaleValue.interpolate({
+          borderTopLeftRadius: 10,
+          borderTopRightRadius: 10,
+          borderBottomRightRadius: bottomRadiusValue,
+          borderBottomLeftRadius: bottomRadiusValue,
+          overflow: 'hidden',
+        }}
+      >
+        <TouchableRipple
+          style={{
+            aspectRatio: 1,
+            flexShrink: 0,
+            padding: 0,
+            height: spacing[14],
+            width: spacing[14],
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor:
+              repCountValue !== undefined
+                ? colors.primary
+                : colors.secondaryContainer,
+          }}
+          {...callbacks}
+          disabled={props.isReadonly}
+        >
+          <Text
+            style={{
+              color:
+                repCountValue !== undefined
+                  ? colors.onPrimary
+                  : colors.onSecondaryContainer,
+            }}
+          >
+            <Text style={{ fontWeight: 'bold' }}>{repCountValue ?? '-'}</Text>
+            <Text style={{ fontSize: 12, verticalAlign: 'top' }}>
+              /{props.maxReps}
+            </Text>
+          </Text>
+        </TouchableRipple>
+      </Animated.View>
+      <Animated.View
+        style={{
+          height: weightScale.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, 36],
+            outputRange: [0, spacing[9]],
           }),
-          paddingBlock: weightScaleValue.interpolate({
+          paddingBlock: weightScale.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, 8],
+            outputRange: [0, spacing[2]],
           }),
-          width: weightScaleValue.interpolate({
+          width: weightScale.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, 56],
+            outputRange: [0, spacing[14]],
           }),
-          borderTopWidth: weightScaleValue,
-          borderColor: theme.outline,
-          backgroundColor: theme.surfaceContainerHigh,
+          borderTopWidth: weightScale,
+          borderColor: colors.outline,
+          backgroundColor: colors.surfaceContainerHigh,
           borderBottomLeftRadius: 10,
           borderBottomRightRadius: 10,
+          overflow: 'hidden',
         }}
       >
         <TouchableRipple
           style={{
             alignItems: 'center',
+            marginBlock: -spacing[2],
+            padding: spacing[2],
           }}
           onPress={
             props.isReadonly ? undefined : () => setIsWeightDialogOpen(true)
