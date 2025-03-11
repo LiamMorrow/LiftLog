@@ -12,7 +12,10 @@
   "dependencies": {
     "@js-joda/core": "^5.6.4",
     "@pchmn/expo-material3-theme": "^1.3.2",
+    "@tolgee/react": "^6.2.2",
+    "babel-plugin-react-compiler": "^19.0.0-beta-bafa41b-20250307",
     "bignumber.js": "^9.1.2",
+    "eslint-plugin-react-compiler": "^19.0.0-beta-bafa41b-20250307",
     "expo": "^52.0.16",
     "expo-constants": "~17.0.3",
     "expo-linking": "~7.0.3",
@@ -20,6 +23,7 @@
     "expo-splash-screen": "~0.29.13",
     "expo-status-bar": "~2.0.0",
     "react": "18.3.1",
+    "react-compiler-runtime": "^19.0.0-beta-bafa41b-20250307",
     "react-dom": "18.3.1",
     "react-native": "0.76.7",
     "react-native-paper": "^5.13.1",

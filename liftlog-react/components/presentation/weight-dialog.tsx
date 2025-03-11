@@ -1,4 +1,5 @@
 import WeightFormat from '@/components/presentation/weight-format';
+import { T } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
@@ -86,12 +87,12 @@ export default function WeightDialog(props: WeightDialogProps) {
   return (
     <Portal>
       <Dialog visible={props.open} onDismiss={props.onClose}>
-        <Dialog.Title>{props.label ?? 'WEIGHT_TODO_TOLGEE'}</Dialog.Title>
+        <Dialog.Title>{props.label ?? <T keyName="Weight" />}</Dialog.Title>
         <Dialog.Content>
           <View style={{ gap: 8 }}>
             <TextInput
               data-cy="weight-input"
-              label={props.label ?? 'WEIGHT_TODO_TOLGEE'}
+              label={props.label ?? <T keyName="Weight" />}
               right={<TextInput.Affix text={weightSuffix} />}
               selectTextOnFocus
               mode="outlined"
@@ -124,8 +125,12 @@ export default function WeightDialog(props: WeightDialogProps) {
           </View>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={props.onClose}>TODO_Close</Button>
-          <Button onPress={onSaveClick}>TODO_Save</Button>
+          <Button onPress={props.onClose}>
+            <T keyName="Close" />
+          </Button>
+          <Button onPress={onSaveClick}>
+            <T keyName="Save" />
+          </Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>
