@@ -34,7 +34,6 @@ export default function WeightDialog(props: WeightDialogProps) {
   const [editorWeight, setEditorWeight] = useState<BigNumber | undefined>(
     props.weight,
   );
-  console.log('weight dialog open', props.open);
 
   useEffect(() => {
     setText(props.weight?.toFormat() ?? '');
@@ -89,7 +88,7 @@ export default function WeightDialog(props: WeightDialogProps) {
       <Dialog visible={props.open} onDismiss={props.onClose}>
         <Dialog.Title>{props.label ?? 'WEIGHT_TODO_TOLGEE'}</Dialog.Title>
         <Dialog.Content>
-          <View className="flex gap-2">
+          <View style={{ gap: 8 }}>
             <TextInput
               data-cy="weight-input"
               label={props.label ?? 'WEIGHT_TODO_TOLGEE'}
@@ -102,7 +101,9 @@ export default function WeightDialog(props: WeightDialogProps) {
               onChangeText={handleTextChange}
               style={{ backgroundColor: theme.colors.elevation.level3 }}
             />
-            <View className="flex-row justify-between">
+            <View
+              style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+            >
               <Button
                 icon={'minus'}
                 mode="outlined"

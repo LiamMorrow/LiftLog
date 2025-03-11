@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { Text } from 'react-native';
+import { Text } from 'react-native-paper';
 
 interface WeightFormatProps {
   weight: BigNumber | undefined;
@@ -13,9 +13,11 @@ export default function WeightFormat(props: WeightFormatProps) {
   const suffix = 'kg';
 
   return (
-    <Text className="flex items-center flex-row">
+    <Text
+      style={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}
+    >
       {weightDisplay}
-      <Text className={suffixClass}>{suffix}</Text>
+      <Text style={{ fontSize: 12 }}>{suffix}</Text>
     </Text>
   );
 }
