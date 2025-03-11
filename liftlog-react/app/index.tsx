@@ -12,9 +12,11 @@ export default function Index() {
   return (
     <View
       style={style}
-      className="flex-1 items-center justify-center gap-y-2 text-center"
+      // className="flex-1 items-center justify-center gap-y-2 text-center"
     >
-      <View className="items-center">
+      <View
+      // className="items-center"
+      >
         <PotentialSetCounter
           isReadonly={false}
           maxReps={8}

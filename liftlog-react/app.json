@@ -9,12 +9,9 @@
       "bundler": "metro",
       "output": "static"
     },
-    "plugins": [
-      "expo-router"
-    ],
+    "plugins": ["expo-router"],
     "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
+      "typedRoutes": true
     },
     "scheme": "liftlog",
     "android": {

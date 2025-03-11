@@ -74,11 +74,11 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
       <TouchableRipple
         className={`
           rounded-b-xl
-          [transition:height_150ms_cubic-bezier(0.4,0,0.2,1),padding_150ms_cubic-bezier(0.4,0,0.2,1),width_150ms_cubic-bezier(0.4,0,0.2,1),transform_400ms]
           ${weightScale}
           overflow-hidden
           ${holdingClass}
           text-xs
+          [transition:height_150ms_cubic-bezier(0.4,0,0.2,1),padding_150ms_cubic-bezier(0.4,0,0.2,1),width_150ms_cubic-bezier(0.4,0,0.2,1),transform_400ms]
           flex
           flex-row
           border-t

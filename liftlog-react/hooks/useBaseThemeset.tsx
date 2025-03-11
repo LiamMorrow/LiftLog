@@ -42,56 +42,51 @@ export const BaseThemesetProvider: React.FC<BaseThemesetProviderProps> = ({
     [colorScheme, theme],
   );
 
-  const style = useMemo<Style>(
-    () =>
-      vars({
-        '--color-primary': hexToRgb(schemedTheme.primary),
-        '--color-on-primary': hexToRgb(schemedTheme.onPrimary),
-        '--color-secondary': hexToRgb(schemedTheme.secondary),
-        '--color-on-secondary': hexToRgb(schemedTheme.onSecondary),
-        '--color-primary-container': hexToRgb(schemedTheme.primaryContainer),
-        '--color-on-primary-container': hexToRgb(
-          schemedTheme.onPrimaryContainer,
-        ),
-        '--color-secondary-container': hexToRgb(
-          schemedTheme.secondaryContainer,
-        ),
-        '--color-on-secondary-container': hexToRgb(
-          schemedTheme.onSecondaryContainer,
-        ),
-        '--color-tertiary': hexToRgb(schemedTheme.tertiary),
-        '--color-on-tertiary': hexToRgb(schemedTheme.onTertiary),
-        '--color-tertiary-container': hexToRgb(schemedTheme.tertiaryContainer),
-        '--color-on-tertiary-container': hexToRgb(
-          schemedTheme.onTertiaryContainer,
-        ),
-        '--color-background': hexToRgb(schemedTheme.background),
-        '--color-on-background': hexToRgb(schemedTheme.onBackground),
-        '--color-surface': hexToRgb(schemedTheme.surface),
-        '--color-surface-container-highest': hexToRgb(
-          schemedTheme.surfaceContainerHighest,
-        ),
-        '--color-on-surface': hexToRgb(schemedTheme.onSurface),
-        '--color-on-surface-variant': hexToRgb(schemedTheme.onSurfaceVariant),
-        '--color-inverse-surface': hexToRgb(schemedTheme.inverseSurface),
-        '--color-inverse-on-surface': hexToRgb(schemedTheme.inverseOnSurface),
-        '--color-surface-container': hexToRgb(schemedTheme.surfaceContainer),
-        '--color-surface-container-high': hexToRgb(
-          schemedTheme.surfaceContainerHigh,
-        ),
-        '--color-surface-container-low': hexToRgb(
-          schemedTheme.surfaceContainerLow,
-        ),
-        '--color-inverse-primary': hexToRgb(schemedTheme.inversePrimary),
-        '--color-outline': hexToRgb(schemedTheme.outline),
-        '--color-outline-variant': hexToRgb(schemedTheme.outlineVariant),
-        '--color-error': hexToRgb(schemedTheme.error),
-        '--color-error-container': hexToRgb(schemedTheme.errorContainer),
-        '--color-on-error': hexToRgb(schemedTheme.onError),
-        '--color-on-error-container': hexToRgb(schemedTheme.onErrorContainer),
-      }),
-    [schemedTheme],
-  );
+  const style = useMemo<Style>(() => {
+    console.log(schemedTheme);
+    return vars({
+      '--color-primary': hexToRgb(schemedTheme.primary),
+      '--color-on-primary': hexToRgb(schemedTheme.onPrimary),
+      '--color-secondary': hexToRgb(schemedTheme.secondary),
+      '--color-on-secondary': hexToRgb(schemedTheme.onSecondary),
+      '--color-primary-container': hexToRgb(schemedTheme.primaryContainer),
+      '--color-on-primary-container': hexToRgb(schemedTheme.onPrimaryContainer),
+      '--color-secondary-container': hexToRgb(schemedTheme.secondaryContainer),
+      '--color-on-secondary-container': hexToRgb(
+        schemedTheme.onSecondaryContainer,
+      ),
+      '--color-tertiary': hexToRgb(schemedTheme.tertiary),
+      '--color-on-tertiary': hexToRgb(schemedTheme.onTertiary),
+      '--color-tertiary-container': hexToRgb(schemedTheme.tertiaryContainer),
+      '--color-on-tertiary-container': hexToRgb(
+        schemedTheme.onTertiaryContainer,
+      ),
+      '--color-background': hexToRgb(schemedTheme.background),
+      '--color-on-background': hexToRgb(schemedTheme.onBackground),
+      '--color-surface': hexToRgb(schemedTheme.surface),
+      '--color-surface-container-highest': hexToRgb(
+        schemedTheme.surfaceContainerHighest,
+      ),
+      '--color-on-surface': hexToRgb(schemedTheme.onSurface),
+      '--color-on-surface-variant': hexToRgb(schemedTheme.onSurfaceVariant),
+      '--color-inverse-surface': hexToRgb(schemedTheme.inverseSurface),
+      '--color-inverse-on-surface': hexToRgb(schemedTheme.inverseOnSurface),
+      '--color-surface-container': hexToRgb(schemedTheme.surfaceContainer),
+      '--color-surface-container-high': hexToRgb(
+        schemedTheme.surfaceContainerHigh,
+      ),
+      '--color-surface-container-low': hexToRgb(
+        schemedTheme.surfaceContainerLow,
+      ),
+      '--color-inverse-primary': hexToRgb(schemedTheme.inversePrimary),
+      '--color-outline': hexToRgb(schemedTheme.outline),
+      '--color-outline-variant': hexToRgb(schemedTheme.outlineVariant),
+      '--color-error': hexToRgb(schemedTheme.error),
+      '--color-error-container': hexToRgb(schemedTheme.errorContainer),
+      '--color-on-error': hexToRgb(schemedTheme.onError),
+      '--color-on-error-container': hexToRgb(schemedTheme.onErrorContainer),
+    });
+  }, [schemedTheme]);
 
   return (
     <BaseThemesetContext.Provider value={style}>

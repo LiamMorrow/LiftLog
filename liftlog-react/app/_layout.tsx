@@ -7,10 +7,8 @@ import { BaseThemesetProvider } from '@/hooks/useBaseThemeset';
 
 export default function RootLayout() {
   return (
-    <StrictMode>
-      <BaseThemesetProvider>
-        <Stack />
-      </BaseThemesetProvider>
-    </StrictMode>
+    <BaseThemesetProvider>
+      <Stack />
+    </BaseThemesetProvider>
   );
 }
