@@ -1,5 +1,4 @@
 import PotentialSetCounter from '@/components/presentation/potential-set-counter';
-import { LocalTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { useState } from 'react';
 import { View } from 'react-native';
