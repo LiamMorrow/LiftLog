@@ -1,19 +1,13 @@
 import { PotentialSet } from '@/models/session-models';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
-import { TouchableRipple, useTheme } from 'react-native-paper';
-import {
-  Animated,
-  Easing,
-  Text,
-  Touchable,
-  useAnimatedValue,
-  View,
-} from 'react-native';
+import { TouchableRipple } from 'react-native-paper';
+import { Text, Touchable } from 'react-native';
 import WeightFormat from '@/components/presentation/weight-format';
 import WeightDialog from '@/components/presentation/weight-dialog';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { PressableProps } from 'react-native-paper/lib/typescript/components/TouchableRipple/Pressable';
+import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
 
 interface PotentialSetCounterProps {
   set: PotentialSet;
@@ -30,33 +24,40 @@ interface PotentialSetCounterProps {
 
 export default function PotentialSetCounter(props: PotentialSetCounterProps) {
   const { colors, spacing } = useAppTheme();
-  const holdingScale = useAnimatedValue(1);
-  const weightScale = useAnimatedValue(props.showWeight ? 1 : 0);
+  const holdingScale = useSharedValue(1);
+  const weightHeight = useSharedValue(0);
+  const weightWidth = useSharedValue(0);
+  const weightPadding = useSharedValue(0);
+  const bottomBorderRadius = useSharedValue(10);
   const [isHolding, setIsHolding] = useState(false);
   const [isWeightDialogOpen, setIsWeightDialogOpen] = useState(false);
   const repCountValue = props.set?.set?.repsCompleted;
-  const bottomRadiusValue = weightScale.interpolate({
-    inputRange: [0, 1],
-    outputRange: [10, 0],
-  });
 
   useEffect(() => {
-    Animated.timing(holdingScale, {
-      toValue: isHolding ? 1.1 : 1,
-      duration: 200,
-      easing: Easing.cubic,
-      useNativeDriver: true,
-    }).start();
-  }, [isHolding, holdingScale]);
-
-  useEffect(() => {
-    Animated.timing(weightScale, {
-      toValue: props.showWeight ? 1 : 0,
+    bottomBorderRadius.value = withTiming(props.showWeight ? 0 : 10, {
       duration: 150,
-      easing: Easing.cubic,
-      useNativeDriver: false,
-    }).start();
-  }, [props.showWeight, weightScale]);
+    });
+    weightHeight.value = withTiming(props.showWeight ? spacing[9] : 0, {
+      duration: 150,
+    });
+    weightWidth.value = withTiming(props.showWeight ? spacing[14] : 0, {
+      duration: 150,
+    });
+    weightPadding.value = withTiming(props.showWeight ? spacing[2] : 0, {
+      duration: 150,
+    });
+  }, [
+    props.showWeight,
+    bottomBorderRadius,
+    weightHeight,
+    weightWidth,
+    weightPadding,
+    spacing,
+  ]);
+
+  useEffect(() => {
+    holdingScale.value = withTiming(isHolding ? 1.1 : 1, { duration: 400 });
+  }, [isHolding, holdingScale]);
 
   const callbacks = props.isReadonly
     ? {}
@@ -85,10 +86,10 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
     >
       <Animated.View
         style={{
+          borderBottomLeftRadius: bottomBorderRadius,
+          borderBottomRightRadius: bottomBorderRadius,
           borderTopLeftRadius: 10,
           borderTopRightRadius: 10,
-          borderBottomRightRadius: bottomRadiusValue,
-          borderBottomLeftRadius: bottomRadiusValue,
           overflow: 'hidden',
         }}
       >
@@ -126,19 +127,10 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
       </Animated.View>
       <Animated.View
         style={{
-          height: weightScale.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, spacing[9]],
-          }),
-          paddingBlock: weightScale.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, spacing[2]],
-          }),
-          width: weightScale.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, spacing[14]],
-          }),
-          borderTopWidth: weightScale,
+          height: weightHeight,
+          width: weightWidth,
+          padding: weightPadding,
+          borderTopWidth: 1,
           borderColor: colors.outline,
           backgroundColor: colors.surfaceContainerHigh,
           borderBottomLeftRadius: 10,
@@ -149,7 +141,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
         <TouchableRipple
           style={{
             alignItems: 'center',
-            marginBlock: -spacing[2],
+            margin: -spacing[2],
             padding: spacing[2],
           }}
           onPress={

@@ -2,6 +2,6 @@
 dotnet_diagnostic.CA1860.severity = none
 
 
-[*.{ts,tsx}]
+[*.{ts,tsx,js,jsx}]
 indent_style = space
 indent_size = 2
