@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { BaseThemesetProvider } from '@/hooks/useAppTheme';
 import { DevTools, FormatSimple, Tolgee, TolgeeProvider } from '@tolgee/react';
+import { Text } from 'react-native';
 
 const tolgee = Tolgee()
   // DevTools will work only for web view
@@ -17,10 +18,7 @@ const tolgee = Tolgee()
 
 export default function RootLayout() {
   return (
-    <TolgeeProvider
-      tolgee={tolgee}
-      fallback="Loading..." // loading fallback
-    >
+    <TolgeeProvider tolgee={tolgee} fallback={<Text>Loading...</Text>}>
       <BaseThemesetProvider>
         <Stack />
       </BaseThemesetProvider>
