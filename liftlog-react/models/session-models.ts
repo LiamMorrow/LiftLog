@@ -26,3 +26,11 @@ export interface PotentialSet {
   readonly set: RecordedSet | undefined;
   readonly weight: BigNumber;
 }
+
+export class RecordedExercise {
+  static maxWeight(recordedExercise: RecordedExercise): BigNumber {
+    return recordedExercise.potentialSets.reduce((max, set) => {
+      return set.weight.isGreaterThan(max) ? set.weight : max;
+    }, new BigNumber(0));
+  }
+}

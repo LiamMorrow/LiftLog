@@ -14,13 +14,10 @@ export default function ItemTitle({ title }: ItemTitleProps) {
         ...font['text-xl'],
         fontWeight: 'bold',
         flexShrink: 1,
-        overflow: 'hidden',
         minWidth: 0,
         textAlign: 'left',
         color: colors.onSurface,
       }}
-      numberOfLines={1}
-      ellipsizeMode="tail"
     >
       {title}
     </Text>

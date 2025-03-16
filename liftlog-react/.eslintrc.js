@@ -8,5 +8,17 @@ module.exports = {
     'unused-imports/no-unused-imports': 'error',
     'no-redeclare': 'off',
     '@typescript-eslint/no-redeclare': 'off',
+    'no-restricted-imports': [
+      'error',
+      {
+        paths: [
+          {
+            name: 'react-native-paper',
+            importNames: ['Text'],
+            message: 'Please use Text from react-native',
+          },
+        ],
+      },
+    ],
   },
 };
