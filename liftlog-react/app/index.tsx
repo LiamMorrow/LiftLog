@@ -41,7 +41,12 @@ export default function Index() {
         weightIncrement={BigNumber(5)}
       />
 
-      <RestTimer failed={true} rest={Rest.short} startTime={startTime} />
+      <RestTimer
+        visible={true}
+        failed={true}
+        rest={Rest.short}
+        startTime={startTime}
+      />
     </View>
   );
 }

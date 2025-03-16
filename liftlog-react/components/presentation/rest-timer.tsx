@@ -14,12 +14,17 @@ interface RestTimerProps {
   rest: Rest; // Replace with your actual Rest type
   startTime: Date;
   failed: boolean;
+  visible: boolean;
 }
 
-export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
+export default function RestTimer({
+  rest,
+  startTime,
+  failed,
+  visible,
+}: RestTimerProps) {
   const { colors } = useAppTheme();
   const [timeSinceStart, setTimeSinceStart] = useState<string>('0:00');
-  const timeSpanFormatStr = 'm\\:ss';
   const { t } = useTranslate(); // Initialize Tolgee translations
 
   // Function to format time in m:ss format
@@ -43,7 +48,7 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
   }, [startTime]);
 
   return (
-    <Snackbar visible={true} onDismiss={() => {}}>
+    <Snackbar visible={visible} onDismiss={() => {}}>
       <View
         style={{
           flexDirection: 'row',
