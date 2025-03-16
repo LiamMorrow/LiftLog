@@ -18,7 +18,6 @@ export default function RestFormat({
   const { colors } = useAppTheme();
   const { t } = useTranslate();
 
-  // Function to format Duration in m:ss format
   const formatTimeSpan = (duration: Duration): string => {
     const totalSeconds = duration.seconds();
     const minutes = Math.floor(totalSeconds / 60);

@@ -20,6 +20,9 @@
     },
     "ios": {
       "bundleIdentifier": "com.anonymous.liftlogreact"
+    },
+    "androidStatusBar": {
+      "translucent": true
     }
   }
 }

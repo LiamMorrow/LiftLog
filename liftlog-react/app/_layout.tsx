@@ -1,8 +1,9 @@
 import { Stack } from 'expo-router';
 import { AppThemeProvider } from '@/hooks/useAppTheme';
 import { DevTools, FormatSimple, Tolgee, TolgeeProvider } from '@tolgee/react';
-import { Text } from 'react-native';
+import { Text, useColorScheme } from 'react-native';
 import en from '../i18n/en.json';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const tolgee = Tolgee()
   // DevTools will work only for web view
@@ -21,11 +22,22 @@ const tolgee = Tolgee()
   });
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
   return (
-    <TolgeeProvider tolgee={tolgee} fallback={<Text>Loading...</Text>}>
-      <AppThemeProvider>
-        <Stack />
-      </AppThemeProvider>
-    </TolgeeProvider>
+    <SafeAreaProvider>
+      <TolgeeProvider tolgee={tolgee} fallback={<Text>Loading...</Text>}>
+        <AppThemeProvider>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              statusBarTranslucent: true,
+              statusBarBackgroundColor: 'transparent',
+              navigationBarTranslucent: true,
+              statusBarStyle: colorScheme === 'dark' ? 'light' : 'dark',
+            }}
+          />
+        </AppThemeProvider>
+      </TolgeeProvider>
+    </SafeAreaProvider>
   );
 }

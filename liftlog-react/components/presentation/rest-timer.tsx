@@ -5,13 +5,11 @@ import RestFormat from '@/components/presentation/rest-format';
 import LimitedHtml from '@/components/presentation/limited-html';
 import { useTranslate } from '@tolgee/react'; // Using Tolgee for localization
 import { Rest } from '@/models/blueprint-models';
-import { Snackbar } from 'react-native-paper';
+import { Portal, Snackbar } from 'react-native-paper';
 import { Duration } from '@js-joda/core';
 
-// You'll need to adjust these imports based on your project structure
-
 interface RestTimerProps {
-  rest: Rest; // Replace with your actual Rest type
+  rest: Rest;
   startTime: Date;
   failed: boolean;
   visible: boolean;
@@ -48,30 +46,36 @@ export default function RestTimer({
   }, [startTime]);
 
   return (
-    <Snackbar visible={visible} onDismiss={() => {}}>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          width: '100%',
-        }}
+    <Portal>
+      <Snackbar
+        visible={visible}
+        onDismiss={() => {}}
+        style={{ marginBottom: 100 }}
       >
-        {failed ? (
-          <LimitedHtml
-            style={{ color: colors.inverseOnSurface }}
-            value={t('RestSingular', {
-              0: formatTimeSpan(rest.failureRest),
-            })}
-            emStyles={{ fontWeight: 'bold' }}
-          />
-        ) : (
-          <RestFormat highlight={false} rest={rest} />
-        )}
-        <Text style={{ fontWeight: 'bold', color: colors.inverseOnSurface }}>
-          {timeSinceStart}
-        </Text>
-      </View>
-    </Snackbar>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+          }}
+        >
+          {failed ? (
+            <LimitedHtml
+              style={{ color: colors.inverseOnSurface }}
+              value={t('RestSingular', {
+                0: formatTimeSpan(rest.failureRest),
+              })}
+              emStyles={{ fontWeight: 'bold' }}
+            />
+          ) : (
+            <RestFormat highlight={false} rest={rest} />
+          )}
+          <Text style={{ fontWeight: 'bold', color: colors.inverseOnSurface }}>
+            {timeSinceStart}
+          </Text>
+        </View>
+      </Snackbar>
+    </Portal>
   );
 }
