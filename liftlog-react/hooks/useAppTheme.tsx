@@ -37,15 +37,47 @@ const spacing = {
   64: 256,
 } as const;
 
+const font = {
+  'text-xs': {
+    fontSize: 12,
+    lineHeight: 16,
+  },
+  'text-sm': {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  'text-base': {
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  'text-lg': {
+    fontSize: 18,
+    lineHeight: 28,
+  },
+  'text-xl': {
+    fontSize: 20,
+    lineHeight: 28,
+  },
+  'text-2xl': {
+    fontSize: 24,
+    lineHeight: 32,
+  },
+  'text-3xl': {
+    fontSize: 30,
+    lineHeight: 40,
+  },
+} as const;
+
 interface AppTheme {
   colors: Material3Scheme;
   spacing: typeof spacing;
+  font: typeof font;
 }
 
-const BaseThemesetContext = createContext<AppTheme | undefined>(undefined);
+const AppThemeContext = createContext<AppTheme | undefined>(undefined);
 
 export const useAppTheme = (): AppTheme => {
-  const context = useContext(BaseThemesetContext);
+  const context = useContext(AppThemeContext);
   if (!context) {
     throw new Error('useAppTheme must be used within a AppThemeProvider');
   }
@@ -71,11 +103,12 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   const appTheme = {
     colors: schemedTheme,
     spacing,
+    font,
   };
 
   return (
-    <BaseThemesetContext.Provider value={appTheme}>
+    <AppThemeContext.Provider value={appTheme}>
       <PaperProvider theme={paperTheme}>{children}</PaperProvider>
-    </BaseThemesetContext.Provider>
+    </AppThemeContext.Provider>
   );
 };

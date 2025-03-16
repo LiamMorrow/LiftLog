@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import { AppThemeProvider } from '@/hooks/useAppTheme';
 import { DevTools, FormatSimple, Tolgee, TolgeeProvider } from '@tolgee/react';
 import { Text } from 'react-native';
+import en from '../i18n/en.json';
 
 const tolgee = Tolgee()
   // DevTools will work only for web view
@@ -14,6 +15,9 @@ const tolgee = Tolgee()
     // for development
     apiUrl: process.env.EXPO_PUBLIC_TOLGEE_API_URL,
     apiKey: process.env.EXPO_PUBLIC_TOLGEE_API_KEY,
+    staticData: {
+      en,
+    },
   });
 
 export default function RootLayout() {
