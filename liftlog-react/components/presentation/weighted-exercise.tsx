@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { IconButton, Menu } from 'react-native-paper';
 import { useTranslate } from '@tolgee/react';
-import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
+import { useAnimatedValue, Animated } from 'react-native';
 import WeightDisplay from '@/components/presentation/weight-display';
 
 interface WeightedExerciseProps {
@@ -37,36 +37,32 @@ function AnimatedWeightDisplay(
 ) {
   const { recordedExercise } = props;
   const { spacing } = useAppTheme();
-
-  const height = useSharedValue(spacing[14] as number);
-  const margin = useSharedValue(-spacing[3]);
-  const marginTop = useSharedValue(-spacing[4]);
+  const sizeAnimatedValue = useAnimatedValue(1);
 
   useEffect(() => {
-    const timing = {
+    Animated.timing(sizeAnimatedValue, {
+      toValue: recordedExercise.perSetWeight ? 0 : 1,
       duration: 150,
-    };
-    height.value = withTiming(
-      recordedExercise.perSetWeight ? 0 : spacing[14],
-      timing,
-    );
-    margin.value = withTiming(
-      recordedExercise.perSetWeight ? 0 : -spacing[3],
-      timing,
-    );
-    marginTop.value = withTiming(
-      recordedExercise.perSetWeight ? 0 : -spacing[4],
-      timing,
-    );
-  }, [recordedExercise.perSetWeight, height, margin, marginTop, spacing]);
+      useNativeDriver: false,
+    }).start();
+  }, [recordedExercise.perSetWeight, sizeAnimatedValue]);
 
   return (
     <Animated.View
       style={{
         alignSelf: 'flex-start',
-        height: height,
-        margin: margin,
-        marginTop: marginTop,
+        height: sizeAnimatedValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, spacing[14]],
+        }),
+        margin: sizeAnimatedValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, -spacing[3]],
+        }),
+        marginTop: sizeAnimatedValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, -spacing[4]],
+        }),
         overflow: recordedExercise.perSetWeight ? 'hidden' : undefined,
       }}
     >

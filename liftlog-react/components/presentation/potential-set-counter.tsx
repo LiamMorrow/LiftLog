@@ -2,12 +2,11 @@ import { PotentialSet } from '@/models/session-models';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { TouchableRipple } from 'react-native-paper';
-import { Text, Touchable } from 'react-native';
+import { Text, Touchable, useAnimatedValue, Animated } from 'react-native';
 import WeightFormat from '@/components/presentation/weight-format';
 import WeightDialog from '@/components/presentation/weight-dialog';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { PressableProps } from 'react-native-paper/lib/typescript/components/TouchableRipple/Pressable';
-import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
 
 interface PotentialSetCounterProps {
   set: PotentialSet;
@@ -24,39 +23,26 @@ interface PotentialSetCounterProps {
 
 export default function PotentialSetCounter(props: PotentialSetCounterProps) {
   const { colors, spacing } = useAppTheme();
-  const holdingScale = useSharedValue(1);
-  const weightHeight = useSharedValue(0);
-  const weightWidth = useSharedValue(0);
-  const weightPadding = useSharedValue(0);
-  const bottomBorderRadius = useSharedValue(10);
+  const holdingScale = useAnimatedValue(1);
+  const showWeightAnimatedValue = useAnimatedValue(props.showWeight ? 1 : 0);
   const [isHolding, setIsHolding] = useState(false);
   const [isWeightDialogOpen, setIsWeightDialogOpen] = useState(false);
   const repCountValue = props.set?.set?.repsCompleted;
 
   useEffect(() => {
-    bottomBorderRadius.value = withTiming(props.showWeight ? 0 : 10, {
+    Animated.timing(showWeightAnimatedValue, {
+      toValue: props.showWeight ? 1 : 0,
       duration: 150,
-    });
-    weightHeight.value = withTiming(props.showWeight ? spacing[9] : 0, {
-      duration: 150,
-    });
-    weightWidth.value = withTiming(props.showWeight ? spacing[14] : 0, {
-      duration: 150,
-    });
-    weightPadding.value = withTiming(props.showWeight ? spacing[2] : 0, {
-      duration: 150,
-    });
-  }, [
-    props.showWeight,
-    bottomBorderRadius,
-    weightHeight,
-    weightWidth,
-    weightPadding,
-    spacing,
-  ]);
+      useNativeDriver: false,
+    }).start();
+  }, [props.showWeight, showWeightAnimatedValue]);
 
   useEffect(() => {
-    holdingScale.value = withTiming(isHolding ? 1.1 : 1, { duration: 400 });
+    Animated.timing(holdingScale, {
+      toValue: isHolding ? 1.1 : 1,
+      duration: 400,
+      useNativeDriver: true,
+    }).start();
   }, [isHolding, holdingScale]);
 
   const callbacks = props.isReadonly
@@ -86,8 +72,14 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
     >
       <Animated.View
         style={{
-          borderBottomLeftRadius: bottomBorderRadius,
-          borderBottomRightRadius: bottomBorderRadius,
+          borderBottomLeftRadius: showWeightAnimatedValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: [10, 0],
+          }),
+          borderBottomRightRadius: showWeightAnimatedValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: [10, 0],
+          }),
           borderTopLeftRadius: 10,
           borderTopRightRadius: 10,
           overflow: 'hidden',
@@ -127,9 +119,18 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
       </Animated.View>
       <Animated.View
         style={{
-          height: weightHeight,
-          width: weightWidth,
-          padding: weightPadding,
+          height: showWeightAnimatedValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, spacing[9]],
+          }),
+          width: showWeightAnimatedValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, spacing[14]],
+          }),
+          padding: showWeightAnimatedValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, spacing[2]],
+          }),
           borderTopWidth: 1,
           borderColor: colors.outline,
           backgroundColor: colors.surfaceContainerHigh,
