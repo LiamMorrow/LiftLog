@@ -3,7 +3,7 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 // Create a context with default value
 const ScrollContext = createContext({
   isScrolled: false,
-  setScrolled: (scrolled: boolean) => {},
+  setScrolled: (_: boolean) => {},
 });
 
 // Create a provider component

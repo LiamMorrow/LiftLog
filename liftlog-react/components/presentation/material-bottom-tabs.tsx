@@ -1,14 +1,15 @@
 import { Tabs } from 'expo-router';
 import { CommonActions } from '@react-navigation/core';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useEffect } from 'react';
 import {
   Appbar,
   BottomNavigation,
   BottomNavigationProps,
 } from 'react-native-paper';
 import { useScroll } from '@/hooks/useScollListener';
-import { useAnimatedValue } from 'react-native';
+import { Animated, useAnimatedValue } from 'react-native';
+import { useAppTheme } from '@/hooks/useAppTheme';
 
 export type MaterialBottomTabsProps = PropsWithChildren<
   Omit<
@@ -26,17 +27,38 @@ export type MaterialBottomTabsProps = PropsWithChildren<
 function Header(props: BottomTabHeaderProps) {
   const isScrolled = useScroll().isScrolled;
   const scrollColor = useAnimatedValue(0);
+  const { colors } = useAppTheme();
+
+  useEffect(() => {
+    Animated.timing(scrollColor, {
+      toValue: isScrolled ? 1 : 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  }, [isScrolled, scrollColor]);
 
   return (
-    <Appbar.Header
-      mode={props.navigation.canGoBack() ? 'small' : 'center-aligned'}
+    <Animated.View
+      style={{
+        backgroundColor: scrollColor.interpolate({
+          inputRange: [0, 1],
+          outputRange: [colors.surface, colors.surfaceContainer],
+        }),
+      }}
     >
-      {props.navigation.canGoBack() ? (
-        <Appbar.BackAction onPress={props.navigation.goBack} />
-      ) : null}
-      <Appbar.Content title={props.options.title} />
-      <Appbar.Action icon="dots-vertical" onPress={() => {}} />
-    </Appbar.Header>
+      <Appbar.Header
+        mode={props.navigation.canGoBack() ? 'small' : 'center-aligned'}
+        style={{
+          backgroundColor: 'transparent',
+        }}
+      >
+        {props.navigation.canGoBack() ? (
+          <Appbar.BackAction onPress={props.navigation.goBack} />
+        ) : null}
+        <Appbar.Content title={props.options.title} />
+        <Appbar.Action icon="dots-vertical" onPress={() => {}} />
+      </Appbar.Header>
+    </Animated.View>
   );
 }
 
