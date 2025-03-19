@@ -4,6 +4,8 @@ import { DevTools, FormatSimple, Tolgee, TolgeeProvider } from '@tolgee/react';
 import { Text, useColorScheme } from 'react-native';
 import en from '../i18n/en.json';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Provider } from 'react-redux';
+import store from '@/store';
 
 const tolgee = Tolgee()
   // DevTools will work only for web view
@@ -24,20 +26,22 @@ const tolgee = Tolgee()
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   return (
-    <SafeAreaProvider>
-      <TolgeeProvider tolgee={tolgee} fallback={<Text>Loading...</Text>}>
-        <AppThemeProvider>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              statusBarTranslucent: true,
-              statusBarBackgroundColor: 'transparent',
-              navigationBarTranslucent: true,
-              statusBarStyle: colorScheme === 'dark' ? 'light' : 'dark',
-            }}
-          />
-        </AppThemeProvider>
-      </TolgeeProvider>
-    </SafeAreaProvider>
+    <Provider store={store}>
+      <SafeAreaProvider>
+        <TolgeeProvider tolgee={tolgee} fallback={<Text>Loading...</Text>}>
+          <AppThemeProvider>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                statusBarTranslucent: true,
+                statusBarBackgroundColor: 'transparent',
+                navigationBarTranslucent: true,
+                statusBarStyle: colorScheme === 'dark' ? 'light' : 'dark',
+              }}
+            />
+          </AppThemeProvider>
+        </TolgeeProvider>
+      </SafeAreaProvider>
+    </Provider>
   );
 }
