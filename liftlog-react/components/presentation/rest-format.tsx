@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, TextStyle } from 'react-native';
+import { StyleProp, TextProps, TextStyle } from 'react-native';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import LimitedHtml from '@/components/presentation/limited-html';
 import { useTranslate } from '@tolgee/react';
@@ -14,7 +14,8 @@ interface RestFormatProps {
 export default function RestFormat({
   rest,
   highlight = true,
-}: RestFormatProps) {
+  ...restProps
+}: RestFormatProps & TextProps) {
   const { colors } = useAppTheme();
   const { t } = useTranslate();
 
@@ -39,6 +40,7 @@ export default function RestFormat({
             0: formatTimeSpan(rest.minRest),
           })}
           emStyles={emStyles}
+          {...restProps}
         />
       ) : (
         <LimitedHtml
@@ -47,6 +49,7 @@ export default function RestFormat({
             1: formatTimeSpan(rest.maxRest),
           })}
           emStyles={emStyles}
+          {...restProps}
         />
       )}
     </>

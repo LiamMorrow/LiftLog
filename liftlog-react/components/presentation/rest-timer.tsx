@@ -1,26 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import RestFormat from '@/components/presentation/rest-format';
 import LimitedHtml from '@/components/presentation/limited-html';
 import { useTranslate } from '@tolgee/react'; // Using Tolgee for localization
 import { Rest } from '@/models/blueprint-models';
-import { Portal, Snackbar } from 'react-native-paper';
-import { Duration } from '@js-joda/core';
+import { Snackbar } from 'react-native-paper';
+import { Duration, LocalDateTime } from '@js-joda/core';
 
 interface RestTimerProps {
   rest: Rest;
-  startTime: Date;
+  startTime: LocalDateTime;
   failed: boolean;
-  visible: boolean;
 }
 
-export default function RestTimer({
-  rest,
-  startTime,
-  failed,
-  visible,
-}: RestTimerProps) {
+export const SnackBarOffset = 100;
+
+export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
   const { colors } = useAppTheme();
   const [timeSinceStart, setTimeSinceStart] = useState<string>('0:00');
   const { t } = useTranslate(); // Initialize Tolgee translations
@@ -36,9 +32,8 @@ export default function RestTimer({
   // Timer effect to update time every 200ms
   useEffect(() => {
     const timer = setInterval(() => {
-      const now = new Date();
-      const diffMs = now.getTime() - startTime.getTime();
-      setTimeSinceStart(formatTimeSpan(Duration.ofMillis(diffMs)));
+      const diffMs = Duration.between(startTime, LocalDateTime.now());
+      setTimeSinceStart(formatTimeSpan(diffMs));
     }, 200);
 
     // Cleanup timer on unmount
@@ -46,36 +41,38 @@ export default function RestTimer({
   }, [startTime]);
 
   return (
-    <Portal>
-      <Snackbar
-        visible={visible}
-        onDismiss={() => {}}
-        style={{ marginBottom: 100 }}
+    <Snackbar
+      wrapperStyle={{ position: 'relative' }}
+      visible={true}
+      onDismiss={() => {}}
+    >
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '100%',
+        }}
       >
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            width: '100%',
-          }}
-        >
-          {failed ? (
-            <LimitedHtml
-              style={{ color: colors.inverseOnSurface }}
-              value={t('RestSingular', {
-                0: formatTimeSpan(rest.failureRest),
-              })}
-              emStyles={{ fontWeight: 'bold' }}
-            />
-          ) : (
-            <RestFormat highlight={false} rest={rest} />
-          )}
-          <Text style={{ fontWeight: 'bold', color: colors.inverseOnSurface }}>
-            {timeSinceStart}
-          </Text>
-        </View>
-      </Snackbar>
-    </Portal>
+        {failed ? (
+          <LimitedHtml
+            style={{ color: colors.inverseOnSurface }}
+            value={t('RestSingular', {
+              0: formatTimeSpan(rest.failureRest),
+            })}
+            emStyles={{ fontWeight: 'bold' }}
+          />
+        ) : (
+          <RestFormat
+            style={{ color: colors.inverseOnSurface }}
+            highlight={false}
+            rest={rest}
+          />
+        )}
+        <Text style={{ fontWeight: 'bold', color: colors.inverseOnSurface }}>
+          {timeSinceStart}
+        </Text>
+      </View>
+    </Snackbar>
   );
 }

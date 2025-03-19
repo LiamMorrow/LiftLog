@@ -9,7 +9,7 @@ export interface Session {
   readonly blueprint: SessionBlueprint;
   readonly recordedExercises: readonly RecordedExercise[];
   readonly date: LocalDate;
-  readonly bodyweight: BigNumber;
+  readonly bodyweight: BigNumber | undefined;
 }
 
 export const Session = {
@@ -84,6 +84,15 @@ export const Session = {
       )
       .firstOrDefault();
   },
+
+  lastExercise(session: Session): RecordedExercise | undefined {
+    return Enumerable.from(session.recordedExercises)
+      .where((x) => x.potentialSets.some((set) => set.set))
+      .defaultIfEmpty(undefined)
+      .maxBy((x) =>
+        RecordedExercise.lastRecordedSet(x)?.set?.completionTime.toNanoOfDay(),
+      );
+  },
 };
 
 export interface RecordedExercise {
@@ -101,8 +110,11 @@ export const RecordedExercise = {
   },
 
   lastRecordedSet(
-    recordedExercise: RecordedExercise,
+    recordedExercise: RecordedExercise | undefined,
   ): PotentialSet | undefined {
+    if (!recordedExercise) {
+      return undefined;
+    }
     return Enumerable.from(recordedExercise.potentialSets)
       .orderByDescending((x) => x.set?.completionTime, LocalTimeComparer)
       .firstOrDefault((x) => x.set !== undefined);

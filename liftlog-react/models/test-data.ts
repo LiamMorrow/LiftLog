@@ -68,7 +68,12 @@ export const overheadPress: RecordedExercise = {
 };
 
 export const defaultSessionBlueprint: SessionBlueprint = {
-  exercises: [squats.blueprint, benchPress.blueprint, overheadPress.blueprint],
+  exercises: [
+    squats.blueprint,
+    benchPress.blueprint,
+    overheadPress.blueprint,
+    overheadPress.blueprint,
+  ],
   notes: 'Notes on my session',
   name: 'My Session',
 };
@@ -76,7 +81,7 @@ export const defaultSessionBlueprint: SessionBlueprint = {
 export const defaultSession: Session = {
   blueprint: defaultSessionBlueprint,
   id: Math.random().toString(),
-  recordedExercises: [squats, benchPress, overheadPress],
+  recordedExercises: [squats, benchPress, overheadPress, overheadPress],
   date: LocalDate.now(),
   bodyweight: new BigNumber(0),
 };

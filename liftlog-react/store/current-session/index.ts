@@ -225,7 +225,7 @@ const currentSessionSlice = createSlice({
     ),
 
     updateBodyweight: targetedSessionAction(
-      (session, action: { bodyweight: BigNumber }) => {
+      (session, action: { bodyweight: BigNumber | undefined }) => {
         session.bodyweight = action.bodyweight;
       },
     ),

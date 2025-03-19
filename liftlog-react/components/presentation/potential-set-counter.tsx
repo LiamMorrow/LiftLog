@@ -150,7 +150,9 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
           }
           disabled={props.isReadonly}
         >
-          <WeightFormat weight={props.set.weight} suffixClass="" />
+          <Text style={{ color: colors.onSurface }}>
+            <WeightFormat weight={props.set.weight} suffixClass="" />
+          </Text>
         </TouchableRipple>
       </Animated.View>
       <WeightDialog

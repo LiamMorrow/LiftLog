@@ -76,7 +76,12 @@ export function MaterialBottomTabs({
       tabBar={({ navigation, state, descriptors, insets }) => (
         <BottomNavigation.Bar
           {...props}
-          navigationState={state}
+          navigationState={{
+            ...state,
+            routes: state.routes.filter((r) =>
+              ['(session)/index', 'settings'].includes(r.name),
+            ),
+          }}
           safeAreaInsets={insets}
           onTabPress={({ route, preventDefault }) => {
             const event = navigation.emit({

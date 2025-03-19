@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Text, StyleProp, TextStyle, TextProps } from 'react-native';
 import { useAppTheme } from '@/hooks/useAppTheme';
 
@@ -82,18 +82,19 @@ export default function LimitedHtml({
   return (
     <Text {...rest}>
       {segments.map((segment, index) => (
-        <React.Fragment key={index}>
+        <Fragment key={index}>
           {segment.insertBreakBefore && '\n'}
           <Text
-            style={
+            style={[
               segment.isHighlighted
                 ? emStyles || defaultHighlightedStyle
-                : undefined
-            }
+                : undefined,
+              rest.style,
+            ]}
           >
             {segment.text}
           </Text>
-        </React.Fragment>
+        </Fragment>
       ))}
     </Text>
   );
