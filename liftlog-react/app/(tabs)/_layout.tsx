@@ -7,7 +7,7 @@ export default function Layout() {
     <ScrollProvider>
       <Tabs>
         <Tabs.Screen
-          name="(session)/index"
+          name="(session)"
           options={{
             tabBarLabel: 'Workout',
             tabBarIcon: ({ color, size }) => {
@@ -17,7 +17,7 @@ export default function Layout() {
         />
 
         <Tabs.Screen
-          name="settings"
+          name="(settings)/index"
           options={{
             tabBarLabel: 'Settings',
             tabBarIcon: ({ color, size }) => {

@@ -16,8 +16,7 @@ export default function FloatingBottomContainer({
         flex: 1,
         pointerEvents: 'none',
         marginTop: 'auto',
-        paddingHorizontal: spacing[2],
-        paddingTop: spacing[2],
+        padding: spacing[2],
         gap: spacing[2],
         zIndex: 10,
       }}

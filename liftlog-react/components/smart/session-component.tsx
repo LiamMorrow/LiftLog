@@ -217,7 +217,7 @@ export default function SessionComponent(props: {
   );
 
   return (
-    <View style={{ position: 'relative' }}>
+    <View style={{ position: 'relative', height: '100%' }}>
       <ScrollView
         onScroll={(e) => setScrolled(e.nativeEvent.contentOffset.y > 0)}
         style={{

@@ -22,7 +22,6 @@ const tolgee = Tolgee()
       en,
     },
   });
-
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   return (
@@ -36,6 +35,7 @@ export default function RootLayout() {
                 statusBarTranslucent: true,
                 statusBarBackgroundColor: 'transparent',
                 navigationBarTranslucent: true,
+                navigationBarColor: 'transparent',
                 statusBarStyle: colorScheme === 'dark' ? 'light' : 'dark',
               }}
             />
