@@ -181,6 +181,7 @@ public static class CurrentSessionReducers
                                     ? null
                                     : new RecordedSet(
                                         action.Reps.Value,
+                                        DateOnly.FromDateTime(DateTime.Now),
                                         TimeOnly.FromDateTime(DateTime.Now)
                                     ),
                             }
@@ -343,6 +344,7 @@ public static class CurrentSessionReducers
             // When unset - we say the user completed all reps
             null => new RecordedSet(
                 exerciseBlueprint.RepsPerSet,
+                DateOnly.FromDateTime(DateTime.Now),
                 TimeOnly.FromDateTime(DateTime.Now)
             ),
             // When they completed no reps, we transition back to unset

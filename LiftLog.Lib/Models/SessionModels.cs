@@ -162,6 +162,6 @@ public record RecordedExercise(
     public decimal MaxWeight => PotentialSets.Select(x => x.Weight).DefaultIfEmpty(0).Max();
 }
 
-public record RecordedSet(int RepsCompleted, TimeOnly CompletionTime);
+public record RecordedSet(int RepsCompleted, DateOnly CompletionDate, TimeOnly CompletionTime);
 
 public record PotentialSet(RecordedSet? Set, decimal Weight);

@@ -92,6 +92,7 @@ internal record RecordedSetDaoV1(
             { RepsCompleted: { }, CompletionTime: { } } completed => new Lib.Models.PotentialSet(
                 new Lib.Models.RecordedSet(
                     completed.RepsCompleted.Value,
+                    DateOnly.FromDateTime(completed.CompletionTime.Value.DateTime),
                     TimeOnly.FromDateTime(completed.CompletionTime.Value.DateTime)
                 ),
                 weight
