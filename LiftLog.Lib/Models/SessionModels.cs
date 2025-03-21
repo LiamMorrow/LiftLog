@@ -102,14 +102,14 @@ public record Session(
 
     public TimeSpan SessionLength =>
         RecordedExercises
-            .Select(x => x.LastRecordedSet?.Set?.CompletionTime)
+            .Select(x => x.LastRecordedSet?.Set?.CompletionDate.ToDateTime(x.LastRecordedSet.Set.CompletionTime))
             .WhereNotNull()
-            .DefaultIfEmpty(TimeOnly.MinValue)
+            .DefaultIfEmpty(DateTime.MinValue)
             .Max()
         - RecordedExercises
-            .Select(x => x.FirstRecordedSet?.Set?.CompletionTime)
+            .Select(x => x.FirstRecordedSet?.Set?.CompletionDate.ToDateTime(x.FirstRecordedSet.Set.CompletionTime))
             .WhereNotNull()
-            .DefaultIfEmpty(TimeOnly.MinValue)
+            .DefaultIfEmpty(DateTime.MinValue)
             .Min();
 
     public bool IsComplete =>
