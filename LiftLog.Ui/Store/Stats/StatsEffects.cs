@@ -88,7 +88,7 @@ public class StatsEffects(
             var averageTimeBetweenSets = sessionsWithExercises
                 .SelectMany(x => x.RecordedExercises)
                 .SelectMany(x =>
-                    x.PotentialSets.Select(set => set.Set?.CompletionTime.ToTimeSpan())
+                    x.PotentialSets.Select(set => set.Set!.CompletionDate!.ToDateTime(set.Set!.CompletionTime!))
                         .WhereNotNull()
                         .Order()
                         .Pairwise((a, b) => b - a)
