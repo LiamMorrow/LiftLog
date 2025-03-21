@@ -1,5 +1,10 @@
+import { Link } from 'expo-router';
 import { Text } from 'react-native';
 
 export default function Settings() {
-  return <Text>Hi</Text>;
+  return (
+    <Text>
+      <Link href="/settings/app-configuration">Hi</Link>
+    </Text>
+  );
 }

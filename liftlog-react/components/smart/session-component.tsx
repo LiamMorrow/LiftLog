@@ -10,7 +10,7 @@ import {
 } from '@/store/current-session';
 import { Button, Card, FAB, Icon } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
-import { ScrollView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import EmptyInfo from '@/components/presentation/empty-info';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
@@ -23,6 +23,7 @@ import RestTimer from '@/components/presentation/rest-timer';
 import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
 import { useState } from 'react';
 import { useScroll } from '@/hooks/useScollListener';
+import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
@@ -217,22 +218,13 @@ export default function SessionComponent(props: {
   );
 
   return (
-    <View style={{ position: 'relative', height: '100%' }}>
-      <ScrollView
-        onScroll={(e) => setScrolled(e.nativeEvent.contentOffset.y > 0)}
-        style={{
-          height: '100%',
-          position: 'relative',
-        }}
-      >
-        {notesComponent}
-        {emptyInfo}
-        <ItemList items={session.recordedExercises} renderItem={renderItem} />
-        {bodyWeight}
-        {updatePlanButton}
-        <View style={{ height: floatingBottomSize }} />
-      </ScrollView>
-      {fab}
-    </View>
+    <FullHeightScrollView afterScrollChildren={fab}>
+      {notesComponent}
+      {emptyInfo}
+      <ItemList items={session.recordedExercises} renderItem={renderItem} />
+      {bodyWeight}
+      {updatePlanButton}
+      <View style={{ height: floatingBottomSize }} />
+    </FullHeightScrollView>
   );
 }

@@ -17,7 +17,7 @@ export default function Layout() {
         />
 
         <Tabs.Screen
-          name="(settings)/index"
+          name="settings"
           options={{
             tabBarLabel: 'Settings',
             tabBarIcon: ({ color, size }) => {

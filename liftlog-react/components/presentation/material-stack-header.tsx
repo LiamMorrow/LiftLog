@@ -33,7 +33,7 @@ export default function MaterialHeader(props: NativeStackHeaderProps) {
           backgroundColor: 'transparent',
         }}
       >
-        {props.navigation.canGoBack() ? (
+        {props.back ? (
           <Appbar.BackAction onPress={props.navigation.goBack} />
         ) : null}
         <Appbar.Content title={props.options.title} />
