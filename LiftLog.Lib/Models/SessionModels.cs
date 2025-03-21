@@ -148,7 +148,8 @@ public record RecordedExercise(
         PotentialSets.OrderBy(x => x.Set?.CompletionTime).FirstOrDefault(x => x.Set is not null);
 
     public TimeSpan TimeSpent =>
-        LastRecordedSet?.Set?.CompletionTime - FirstRecordedSet?.Set?.CompletionTime
+        (LastRecordedSet?.Set?.CompletionDate.ToDateTime(LastRecordedSet?.Set?.CompletionTime ?? TimeOnly.MinValue)
+        - FirstRecordedSet?.Set?.CompletionDate.ToDateTime(FirstRecordedSet?.Set?.CompletionTime ?? TimeOnly.MinValue))
         ?? TimeSpan.Zero;
 
     public decimal OneRepMax =>
