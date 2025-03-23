@@ -6,6 +6,7 @@ import en from '../i18n/en.json';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import store from '@/store';
+import { ScrollProvider } from '@/hooks/useScollListener';
 
 const tolgee = Tolgee()
   // DevTools will work only for web view
@@ -29,16 +30,18 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <TolgeeProvider tolgee={tolgee} fallback={<Text>Loading...</Text>}>
           <AppThemeProvider>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                statusBarTranslucent: true,
-                statusBarBackgroundColor: 'transparent',
-                navigationBarTranslucent: true,
-                navigationBarColor: 'transparent',
-                statusBarStyle: colorScheme === 'dark' ? 'light' : 'dark',
-              }}
-            />
+            <ScrollProvider>
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  statusBarTranslucent: true,
+                  statusBarBackgroundColor: 'transparent',
+                  navigationBarTranslucent: true,
+                  navigationBarColor: 'transparent',
+                  statusBarStyle: colorScheme === 'dark' ? 'light' : 'dark',
+                }}
+              />
+            </ScrollProvider>
           </AppThemeProvider>
         </TolgeeProvider>
       </SafeAreaProvider>

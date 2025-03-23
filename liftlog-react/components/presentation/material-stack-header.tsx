@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useAnimatedValue, Animated } from 'react-native';
 
-export default function MaterialHeader(props: NativeStackHeaderProps) {
+export default function MaterialStackHeader(props: NativeStackHeaderProps) {
   const isScrolled = useScroll().isScrolled;
   const scrollColor = useAnimatedValue(0);
   const { colors } = useAppTheme();
@@ -28,7 +28,7 @@ export default function MaterialHeader(props: NativeStackHeaderProps) {
       }}
     >
       <Appbar.Header
-        mode={props.navigation.canGoBack() ? 'small' : 'center-aligned'}
+        mode={props.back ? 'small' : 'center-aligned'}
         style={{
           backgroundColor: 'transparent',
         }}

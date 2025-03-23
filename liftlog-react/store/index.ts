@@ -1,5 +1,6 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import currentSessionReducer from './current-session';
+import settingsReducer from './settings';
 
 const store = configureStore({
   middleware: (getDefaultMiddleware) =>
@@ -9,6 +10,7 @@ const store = configureStore({
     }),
   reducer: combineReducers({
     currentSession: currentSessionReducer,
+    settings: settingsReducer,
   }),
 });
 

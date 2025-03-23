@@ -5,6 +5,7 @@
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": false,
+    "lib": ["ESNext"],
     "noUnusedParameters": false,
     "paths": {
       "@/*": ["./*"]
