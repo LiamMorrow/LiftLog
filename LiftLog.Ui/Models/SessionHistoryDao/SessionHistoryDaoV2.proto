@@ -34,6 +34,6 @@ message PotentialSetDaoV2 {
 
 message RecordedSetDaoV2 {
     int32 reps_completed = 1;
-    LiftLog.Ui.Models.DateOnlyDao completion_date = 2;
-    LiftLog.Ui.Models.TimeOnlyDao completion_time = 3;
+    LiftLog.Ui.Models.TimeOnlyDao completion_time = 2;
+    optional LiftLog.Ui.Models.DateOnlyDao completion_date = 3;
 }

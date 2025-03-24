@@ -102,12 +102,12 @@ public record Session(
 
     public TimeSpan SessionLength =>
         RecordedExercises
-            .Select(x => x.LastRecordedSet?.Set?.CompletionDate.ToDateTime(x.LastRecordedSet.Set.CompletionTime))
+            .Select(x => x.LastRecordedSet?.Set?.CompletionDateTime
             .WhereNotNull()
             .DefaultIfEmpty(DateTime.MinValue)
             .Max()
         - RecordedExercises
-            .Select(x => x.FirstRecordedSet?.Set?.CompletionDate.ToDateTime(x.FirstRecordedSet.Set.CompletionTime))
+            .Select(x => x.FirstRecordedSet?.Set?.CompletionDateTime
             .WhereNotNull()
             .DefaultIfEmpty(DateTime.MinValue)
             .Min();
@@ -148,8 +148,8 @@ public record RecordedExercise(
         PotentialSets.OrderBy(x => x.Set?.CompletionTime).FirstOrDefault(x => x.Set is not null);
 
     public TimeSpan TimeSpent =>
-        (LastRecordedSet?.Set?.CompletionDate.ToDateTime(LastRecordedSet?.Set?.CompletionTime ?? TimeOnly.MinValue)
-        - FirstRecordedSet?.Set?.CompletionDate.ToDateTime(FirstRecordedSet?.Set?.CompletionTime ?? TimeOnly.MinValue))
+        (LastRecordedSet?.Set?.CompletionDateTime
+        - FirstRecordedSet?.Set?.CompletionDateTime)
         ?? TimeSpan.Zero;
 
     public decimal OneRepMax =>
@@ -163,6 +163,9 @@ public record RecordedExercise(
     public decimal MaxWeight => PotentialSets.Select(x => x.Weight).DefaultIfEmpty(0).Max();
 }
 
-public record RecordedSet(int RepsCompleted, DateOnly CompletionDate, TimeOnly CompletionTime);
+public record RecordedSet(int RepsCompleted, DateOnly CompletionDate, TimeOnly CompletionTime)
+{
+    public readonly DateTime CompletionDateTime => CompletionDate.ToDateTime(CompletionTime, DateTimeKind.Local);
+}
 
 public record PotentialSet(RecordedSet? Set, decimal Weight);

@@ -111,20 +111,12 @@ internal partial class PotentialSetDaoV2
 
 internal partial class RecordedSetDaoV2
 {
-    // public DateOnlyDao CompletionDate { get; set; }
     public RecordedSetDaoV2(int repsCompleted, DateOnlyDao completionDate, TimeOnlyDao completionTime)
     {
         RepsCompleted = repsCompleted;
         CompletionDate = completionDate;
         CompletionTime = completionTime;
     }
-
-    // public RecordedSetDaoV2(int repsCompleted, TimeOnly completionTime) 
-    // {
-    //     RepsCompleted = repsCompleted;
-    //     CompletionDate = DateOnly.FromDateTime(DateTime.Now);
-    //     CompletionTime = completionTime;
-    // }
 
     public static RecordedSetDaoV2? FromModel(Lib.Models.RecordedSet? model) =>
         model is null ? null : new(model.RepsCompleted, model.CompletionDate, model.CompletionTime);
