@@ -10,6 +10,8 @@
             <RestFormat Highlight=false Rest="@Rest" />
         }
         <span class="font-bold">@(TimeSinceStart.ToString(TimespanFormatStr))</span>
+        @* <span>@(DateTime.Now.ToString())</span>
+        <span>@(StartTime)</span> *@
     </div>
 </SnackBar>
 
@@ -20,6 +22,5 @@
 
     [EditorRequired] [Parameter] public bool Failed { get; set; }
 
-    @* private TimeSpan TimeSinceStart => TimeOnly.FromDateTime(DateTime.Now) - StartTime; *@
     private TimeSpan TimeSinceStart => DateTime.Now - StartTime;
 }
