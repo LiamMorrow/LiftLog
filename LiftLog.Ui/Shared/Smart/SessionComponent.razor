@@ -320,7 +320,7 @@ else
 
             return @<RestTimer
                         Rest="Session.LastExercise.Blueprint.RestBetweenSets"
-                        StartTime="lrs.Set.CompletionDateTime"
+                        StartTime="DateTime.Now"
                         Failed="lastSetFailed"/>;
         }
         else if (Session.IsComplete || IsReadonly)
