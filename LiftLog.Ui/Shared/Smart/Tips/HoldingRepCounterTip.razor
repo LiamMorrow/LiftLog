@@ -32,7 +32,7 @@
 </Dialog>
 
 @code{
-    private PotentialSet set = new PotentialSet(new RecordedSet(8, TimeOnly.MinValue), 10m);
+    private PotentialSet set = new PotentialSet(new RecordedSet(8, DateOnly.FromDateTime(DateTime.Now), TimeOnly.MinValue), 10m);
     private Dialog? setAdditionalActionsDialog;
 
     private void CycleRepCountForSet()
@@ -42,7 +42,7 @@
             Set = set.Set switch
             {
                 // When unset - we say the user completed all reps
-                null => new RecordedSet(8, TimeOnly.FromDateTime(DateTime.Now)),
+                null => new RecordedSet(8, DateOnly.FromDateTime(DateTime.Now), TimeOnly.FromDateTime(DateTime.Now)),
                 // When they completed no reps, we transition back to unset
                 { RepsCompleted: 0 } => null,
                 // Otherwise, just decrement from the current
@@ -56,7 +56,7 @@
     {
         set = reps is null
             ? set with { Set = null }
-            : set with { Set = new RecordedSet(reps.Value, TimeOnly.FromDateTime(DateTime.Now)) };
+            : set with { Set = new RecordedSet(reps.Value, DateOnly.FromDateTime(DateTime.Now), TimeOnly.FromDateTime(DateTime.Now)) };
         StateHasChanged();
     }
 

@@ -51,10 +51,10 @@ internal partial class SessionDaoV2
             Id,
             new Lib.Models.SessionBlueprint(
                 SessionName,
-                RecordedExercises.Select(x => x.ToModel().Blueprint).ToImmutableList(),
+                RecordedExercises.Select(x => x.ToModel(Date).Blueprint).ToImmutableList(),
                 BlueprintNotes
             ),
-            RecordedExercises.Select(x => x.ToModel()).ToImmutableList(),
+            RecordedExercises.Select(x => x.ToModel(Date)).ToImmutableList(),
             Date,
             Bodyweight
         );
@@ -86,10 +86,10 @@ internal partial class RecordedExerciseDaoV2
             model.PerSetWeight
         );
 
-    public Lib.Models.RecordedExercise ToModel() =>
+    public Lib.Models.RecordedExercise ToModel(DateOnlyDao sessionDate) =>
         new(
             ExerciseBlueprint.ToModel(),
-            PotentialSets.Select(x => x.ToModel()).ToImmutableList(),
+            PotentialSets.Select(x => x.ToModel(sessionDate)).ToImmutableList(),
             Notes,
             PerSetWeight
         );
@@ -106,19 +106,34 @@ internal partial class PotentialSetDaoV2
     public static PotentialSetDaoV2 FromModel(Lib.Models.PotentialSet model) =>
         new(RecordedSetDaoV2.FromModel(model.Set), model.Weight);
 
-    public Lib.Models.PotentialSet ToModel() => new(RecordedSet?.ToModel(), Weight);
+    public Lib.Models.PotentialSet ToModel(DateOnlyDao sessionDate) =>
+        new(RecordedSet?.ToModel(sessionDate), Weight);
 }
 
 internal partial class RecordedSetDaoV2
 {
-    public RecordedSetDaoV2(int repsCompleted, TimeOnlyDao completionTime)
+    public RecordedSetDaoV2(
+        int repsCompleted,
+        DateOnlyDao completionDate,
+        TimeOnlyDao completionTime
+    )
     {
         RepsCompleted = repsCompleted;
+        CompletionDate = completionDate;
         CompletionTime = completionTime;
     }
 
-    public static RecordedSetDaoV2? FromModel(Lib.Models.RecordedSet? model) =>
-        model is null ? null : new(model.RepsCompleted, model.CompletionTime);
+    public static RecordedSetDaoV2? FromModel(Lib.Models.RecordedSet? model)
+    {
+        if (model is null)
+            return null;
 
-    public Lib.Models.RecordedSet ToModel() => new(RepsCompleted, CompletionTime);
+        return new(model.RepsCompleted, model.CompletionDate, model.CompletionTime);
+    }
+
+    public Lib.Models.RecordedSet ToModel(DateOnlyDao sessionDate)
+    {
+        var dateCompleted = CompletionDate ?? sessionDate;
+        return new Lib.Models.RecordedSet(RepsCompleted, dateCompleted, CompletionTime);
+    }
 }
