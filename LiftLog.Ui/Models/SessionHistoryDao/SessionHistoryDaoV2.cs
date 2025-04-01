@@ -86,7 +86,7 @@ internal partial class RecordedExerciseDaoV2
             model.PerSetWeight
         );
 
-    public Lib.Models.RecordedExercise ToModel(DateOnlyDao? sessionDate = null) =>
+    public Lib.Models.RecordedExercise ToModel(DateOnlyDao sessionDate) =>
         new(
             ExerciseBlueprint.ToModel(),
             PotentialSets.Select(x => x.ToModel(sessionDate)).ToImmutableList(),
@@ -106,12 +106,17 @@ internal partial class PotentialSetDaoV2
     public static PotentialSetDaoV2 FromModel(Lib.Models.PotentialSet model) =>
         new(RecordedSetDaoV2.FromModel(model.Set), model.Weight);
 
-    public Lib.Models.PotentialSet ToModel(DateOnlyDao? sessionDate = null) => new(RecordedSet?.ToModel(sessionDate), Weight);
+    public Lib.Models.PotentialSet ToModel(DateOnlyDao sessionDate) =>
+        new(RecordedSet?.ToModel(sessionDate), Weight);
 }
 
 internal partial class RecordedSetDaoV2
 {
-    public RecordedSetDaoV2(int repsCompleted, DateOnlyDao completionDate, TimeOnlyDao completionTime)
+    public RecordedSetDaoV2(
+        int repsCompleted,
+        DateOnlyDao completionDate,
+        TimeOnlyDao completionTime
+    )
     {
         RepsCompleted = repsCompleted;
         CompletionDate = completionDate;
@@ -122,13 +127,13 @@ internal partial class RecordedSetDaoV2
     {
         if (model is null)
             return null;
-        
+
         return new(model.RepsCompleted, model.CompletionDate, model.CompletionTime);
     }
 
-    public Lib.Models.RecordedSet ToModel(DateOnlyDao? sessionDate)
+    public Lib.Models.RecordedSet ToModel(DateOnlyDao sessionDate)
     {
-        CompletionDate ??= sessionDate ?? new DateOnlyDao(DateOnly.FromDateTime(DateTime.Today));
-        return new Lib.Models.RecordedSet(RepsCompleted, CompletionDate, CompletionTime);
+        var dateCompleted = CompletionDate ?? sessionDate;
+        return new Lib.Models.RecordedSet(RepsCompleted, dateCompleted, CompletionTime);
     }
 }
