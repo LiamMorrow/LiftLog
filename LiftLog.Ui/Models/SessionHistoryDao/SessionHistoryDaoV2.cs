@@ -111,7 +111,7 @@ internal partial class PotentialSetDaoV2
 
 internal partial class RecordedSetDaoV2
 {
-    public RecordedSetDaoV2(int repsCompleted, DateOnlyDao? completionDate, TimeOnlyDao? completionTime)
+    public RecordedSetDaoV2(int repsCompleted, DateOnlyDao completionDate, TimeOnlyDao completionTime)
     {
         RepsCompleted = repsCompleted;
         CompletionDate = completionDate;
