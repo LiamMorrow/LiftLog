@@ -1,9 +1,9 @@
-import { Switch } from 'react-native-paper';
-import { List } from 'react-native-paper';
+import { ReactNode } from 'react';
+import { List, Switch } from 'react-native-paper';
 
 interface ListSwitchProps {
-  headline: string;
-  supportingText: string;
+  headline: ReactNode;
+  supportingText: ReactNode;
   value: boolean;
   onValueChange: (value: boolean) => void;
 }

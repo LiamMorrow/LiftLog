@@ -6,7 +6,7 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import { useAnimatedValue, Animated } from 'react-native';
 
 export default function MaterialStackHeader(props: NativeStackHeaderProps) {
-  const isScrolled = useScroll().isScrolled;
+  const { isScrolled } = useScroll();
   const scrollColor = useAnimatedValue(0);
   const { colors } = useAppTheme();
 
@@ -37,7 +37,9 @@ export default function MaterialStackHeader(props: NativeStackHeaderProps) {
           <Appbar.BackAction onPress={props.navigation.goBack} />
         ) : null}
         <Appbar.Content title={props.options.title} />
-        <Appbar.Action icon="dots-vertical" onPress={() => {}} />
+        {(props.options as { action: any }).action ? (
+          <Appbar.Action icon="dots-vertical" onPress={() => {}} />
+        ) : undefined}
       </Appbar.Header>
     </Animated.View>
   );

@@ -8,7 +8,7 @@ import {
   setSplitWeightByDefault,
   setUseImperialUnits,
 } from '@/store/settings';
-import { useTranslate } from '@tolgee/react';
+import { T, useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
 import { Button, List } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,39 +25,39 @@ export default function AppConfiguration() {
       <Stack.Screen options={{ title: t('AppConfiguration') }} />
       <List.Section>
         <ListSwitch
-          headline="@UiStrings.UseImperialUnits"
-          supportingText="@UiStrings.UseImperialUnitsSubtitle"
+          headline={<T keyName="UseImperialUnits" />}
+          supportingText={<T keyName="UseImperialUnitsSubtitle" />}
           value={settings.useImperialUnits}
           onValueChange={(value) => dispatch(setUseImperialUnits(value))}
         />
         <ListSwitch
-          headline="@UiStrings.ShowBodyweight"
-          supportingText="@UiStrings.ShowBodyweightSubtitle"
+          headline={<T keyName="ShowBodyweight" />}
+          supportingText={<T keyName="ShowBodyweightSubtitle" />}
           value={settings.showBodyweight}
           onValueChange={(value) => dispatch(setShowBodyweight(value))}
         />
         <ListSwitch
           data-cy="split-weight-toggle"
-          headline="@UiStrings.SplitWeightByDefault"
-          supportingText="@UiStrings.SplitWeightByDefaultSubtitle"
+          headline={<T keyName="SplitWeightByDefault" />}
+          supportingText={<T keyName="SplitWeightByDefaultSubtitle" />}
           value={settings.splitWeightByDefault}
           onValueChange={(value) => dispatch(setSplitWeightByDefault(value))}
         />
         <ListSwitch
-          headline="@UiStrings.ShowFeed"
-          supportingText="@UiStrings.ShowFeedSubtitle"
+          headline={<T keyName="ShowFeed" />}
+          supportingText={<T keyName="ShowFeedSubtitle" />}
           value={settings.showFeed}
           onValueChange={(value) => dispatch(setShowFeed(value))}
         />
 
         <ListSwitch
-          headline="@UiStrings.ShowTips"
-          supportingText="@UiStrings.ShowTipsSubtitle"
+          headline={<T keyName="ShowTips" />}
+          supportingText={<T keyName="ShowTipsSubtitle" />}
           value={settings.showTips}
           onValueChange={(value) => dispatch(setShowTips(value))}
         />
         <Button mode="text" onPress={resetTips}>
-          @UiStrings.ResetTips
+          <T keyName="ResetTips" />
         </Button>
       </List.Section>
     </FullHeightScrollView>
