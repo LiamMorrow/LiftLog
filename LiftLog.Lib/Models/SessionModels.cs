@@ -148,8 +148,7 @@ public record RecordedExercise(
         PotentialSets.OrderBy(x => x.Set?.CompletionTime).FirstOrDefault(x => x.Set is not null);
 
     public TimeSpan TimeSpent =>
-        (LastRecordedSet?.Set?.CompletionDateTime
-        - FirstRecordedSet?.Set?.CompletionDateTime)
+        (LastRecordedSet?.Set?.CompletionDateTime - FirstRecordedSet?.Set?.CompletionDateTime)
         ?? TimeSpan.Zero;
 
     public decimal OneRepMax =>
@@ -165,7 +164,8 @@ public record RecordedExercise(
 
 public record RecordedSet(int RepsCompleted, DateOnly CompletionDate, TimeOnly CompletionTime)
 {
-    public DateTime CompletionDateTime => CompletionDate.ToDateTime(CompletionTime, DateTimeKind.Local);
+    public DateTime CompletionDateTime =>
+        CompletionDate.ToDateTime(CompletionTime, DateTimeKind.Local);
 }
 
 public record PotentialSet(RecordedSet? Set, decimal Weight);

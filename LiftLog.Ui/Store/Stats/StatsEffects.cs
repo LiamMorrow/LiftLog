@@ -90,7 +90,7 @@ public class StatsEffects(
                 .SelectMany(x =>
                     x.PotentialSets.Select(set => set.Set)
                         .WhereNotNull()
-                        .Select(set=>set.CompletionDate.ToDateTime(set.CompletionTime!))
+                        .Select(set => set.CompletionDate.ToDateTime(set.CompletionTime!))
                         .Order()
                         .Pairwise((a, b) => b - a)
                 )
