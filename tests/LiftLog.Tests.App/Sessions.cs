@@ -43,7 +43,8 @@ public static class Sessions
                 ? new PotentialSet(
                   new(
                     RepsCompleted: exerciseBlueprint.RepsPerSet,
-                    CompletionTime: TimeOnly.Parse("14:32:00").AddMinutes(exerciseIndex * 5 + i)
+                    CompletionTime: TimeOnly.Parse("14:32:00").AddMinutes(exerciseIndex * 5 + i),
+                    CompletionDate: DateOnly.Parse("2021-04-05")
                   ),
                   0
                 )
@@ -65,7 +66,11 @@ public static class Sessions
     return isEmpty
       ? new PotentialSet(null, weight)
       : new PotentialSet(
-        new(RepsCompleted: repsCompleted, CompletionTime: TimeOnly.Parse("14:32:00")),
+        new(
+          RepsCompleted: repsCompleted,
+          CompletionTime: TimeOnly.Parse("14:32:00"),
+          CompletionDate: DateOnly.Parse("2021-04-05")
+        ),
         weight
       );
   }

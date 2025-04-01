@@ -16,9 +16,9 @@
 @code {
     [EditorRequired] [Parameter] public Rest Rest { get; set; } = null!;
 
-    [EditorRequired] [Parameter] public TimeOnly StartTime { get; set; }
+    [EditorRequired] [Parameter] public DateTime StartTime { get; set; }
 
     [EditorRequired] [Parameter] public bool Failed { get; set; }
 
-    private TimeSpan TimeSinceStart => TimeOnly.FromDateTime(DateTime.Now) - StartTime;
+    private TimeSpan TimeSinceStart => DateTime.Now - StartTime;
 }
