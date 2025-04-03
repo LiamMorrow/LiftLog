@@ -35,7 +35,7 @@ jobs:
           keychain: ${{ env.KEYCHAIN }}
       - name: Download Apple Provisioning Profiles
         id: provision
-        uses: Apple-Actions/download-provisioning-profiles@v3
+        uses: Apple-Actions/download-provisioning-profiles@v4
         with:
           bundle-id: "com.limajuice.liftlog"
           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
