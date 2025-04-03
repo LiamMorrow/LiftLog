@@ -11,7 +11,7 @@ export default function Layout() {
         options={{
           tabBarLabel: t('Workout'),
           tabBarIcon: ({ color, size }) => {
-            return <Icon source="weight" size={size} color={color} />;
+            return <Icon source="fitness_center" size={size} color={color} />;
           },
         }}
       />
@@ -21,7 +21,7 @@ export default function Layout() {
         options={{
           tabBarLabel: t('Settings'),
           tabBarIcon: ({ color, size }) => {
-            return <Icon source="cog" size={size} color={color} />;
+            return <Icon source="settings" size={size} color={color} />;
           },
         }}
       />
