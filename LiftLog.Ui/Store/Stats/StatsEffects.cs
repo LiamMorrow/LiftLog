@@ -71,10 +71,7 @@ public class StatsEffects(
                 .SelectMany(x =>
                     x.RecordedExercises.Where(y => y.LastRecordedSet?.Set is not null)
                         .Select(ex => new DatedRecordedExercise(
-                            x.Date.ToDateTime(
-                                ex.LastRecordedSet!.Set!.CompletionTime,
-                                DateTimeKind.Local
-                            ),
+                            ex.LastRecordedSet!.Set!.CompletionDateTime,
                             ex
                         ))
                 )
@@ -90,7 +87,7 @@ public class StatsEffects(
                 .SelectMany(x =>
                     x.PotentialSets.Select(set => set.Set)
                         .WhereNotNull()
-                        .Select(set => set.CompletionDate.ToDateTime(set.CompletionTime!))
+                        .Select(set => set.CompletionDateTime)
                         .Order()
                         .Pairwise((a, b) => b - a)
                 )

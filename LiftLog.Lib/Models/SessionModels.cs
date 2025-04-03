@@ -35,7 +35,7 @@ public record Session(
             var latestExerciseIndex = RecordedExercises
                 .Index()
                 .Where(x => x.Item.LastRecordedSet is not null)
-                .OrderByDescending(x => x.Item.LastRecordedSet?.Set?.CompletionTime)
+                .OrderByDescending(x => x.Item.LastRecordedSet?.Set?.CompletionDateTime)
                 .Select(x => x.Index)
                 .FirstOrDefault(-1);
 
@@ -89,14 +89,14 @@ public record Session(
 
             return RecordedExercises
                 .Where(x => x.HasRemainingSets)
-                .MaxBy(x => x.LastRecordedSet?.Set?.CompletionTime);
+                .MaxBy(x => x.LastRecordedSet?.Set?.CompletionDateTime);
         }
     }
 
     public RecordedExercise? LastExercise =>
         RecordedExercises
             .Where(x => x.PotentialSets.Any(set => set.Set is not null))
-            .MaxBy(x => x.LastRecordedSet?.Set?.CompletionTime);
+            .MaxBy(x => x.LastRecordedSet?.Set?.CompletionDateTime);
 
     public bool IsStarted => RecordedExercises.Any(x => x.LastRecordedSet?.Set is not null);
 
@@ -140,12 +140,14 @@ public record RecordedExercise(
     [NotNullIfNotNull(nameof(FirstRecordedSet))]
     public PotentialSet? LastRecordedSet =>
         PotentialSets
-            .OrderByDescending(x => x.Set?.CompletionTime)
+            .OrderByDescending(x => x.Set?.CompletionDateTime)
             .FirstOrDefault(x => x.Set is not null);
 
     [NotNullIfNotNull(nameof(LastRecordedSet))]
     public PotentialSet? FirstRecordedSet =>
-        PotentialSets.OrderBy(x => x.Set?.CompletionTime).FirstOrDefault(x => x.Set is not null);
+        PotentialSets
+            .OrderBy(x => x.Set?.CompletionDateTime)
+            .FirstOrDefault(x => x.Set is not null);
 
     public TimeSpan TimeSpent =>
         (LastRecordedSet?.Set?.CompletionDateTime - FirstRecordedSet?.Set?.CompletionDateTime)

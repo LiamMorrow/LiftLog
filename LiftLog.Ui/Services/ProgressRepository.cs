@@ -32,7 +32,7 @@ namespace LiftLog.Ui.Services
                 var session in _storedSessions
                     .Select(day => day.Value)
                     .OrderByDescending(x => x.Date)
-                    .ThenByDescending(x => x.LastExercise?.LastRecordedSet?.Set?.CompletionTime)
+                    .ThenByDescending(x => x.LastExercise?.LastRecordedSet?.Set?.CompletionDateTime)
             )
             {
                 yield return session;
@@ -163,10 +163,7 @@ namespace LiftLog.Ui.Services
                 .SelectMany(x =>
                     x.RecordedExercises.Where(x => x.LastRecordedSet?.Set is not null)
                         .Select(ex => new DatedRecordedExercise(
-                            x.Date.ToDateTime(
-                                ex.LastRecordedSet!.Set!.CompletionTime,
-                                DateTimeKind.Local
-                            ),
+                            ex.LastRecordedSet!.Set!.CompletionDateTime,
                             ex
                         ))
                         .ToAsyncEnumerable()
