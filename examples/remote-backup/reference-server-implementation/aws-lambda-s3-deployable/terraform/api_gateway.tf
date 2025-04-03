@@ -57,6 +57,21 @@ resource "aws_api_gateway_usage_plan" "liftlog_plan" {
     api_id = aws_api_gateway_rest_api.liftlog_api.id
     stage  = aws_api_gateway_stage.prod_stage.stage_name
   }
+
+  dynamic "quota_settings" {
+    for_each = var.enable_rate_limit ? [1] : []
+    content {
+      limit  = var.daily_rate_limit
+      period = "DAY"
+    }
+  }
+
+  dynamic "throttle_settings" {
+    for_each = var.enable_rate_limit ? [1] : []
+    content {
+      rate_limit = var.limit_per_second
+    }
+  }
 }
 
 # Create an API Key for accessing the API
