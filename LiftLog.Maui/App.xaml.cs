@@ -40,10 +40,7 @@ public partial class App : Application
             if (session?.LastExercise?.LastRecordedSet?.Set is not null)
             {
                 var lastSet = session.LastExercise.LastRecordedSet.Set;
-                var lastSetTime = session.Date.ToDateTime(
-                    lastSet.CompletionTime,
-                    DateTimeKind.Local
-                );
+                var lastSetTime = lastSet.CompletionDateTime;
                 var timeSinceLastSet = DateTime.Now - lastSetTime;
                 if (
                     (timeSinceLastSet > TimeSpan.FromMinutes(30) && session.IsComplete)
