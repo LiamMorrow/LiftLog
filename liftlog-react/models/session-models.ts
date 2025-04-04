@@ -1,6 +1,6 @@
 import { ExerciseBlueprint, SessionBlueprint } from '@/models/blueprint-models';
-import { LocalTimeComparer } from '@/models/comparers';
-import { LocalDate, LocalTime } from '@js-joda/core';
+import { LocalDateTimeComparer } from '@/models/comparers';
+import { LocalDate, LocalDateTime, ZoneOffset } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
 
@@ -24,8 +24,9 @@ export const Session = {
       .select((x, index) => ({ item: x, index }))
       .where((x) => RecordedExercise.lastRecordedSet(x.item) !== undefined)
       .orderByDescending(
-        (x) => x.item.potentialSets.find((set) => set.set)?.set?.completionTime,
-        LocalTimeComparer,
+        (x) =>
+          x.item.potentialSets.find((set) => set.set)?.set?.completionDateTime,
+        LocalDateTimeComparer,
       )
       .select((x) => x.index)
       .firstOrDefault(-1);
@@ -79,8 +80,8 @@ export const Session = {
     return Enumerable.from(session.recordedExercises)
       .where((x) => RecordedExercise.hasRemainingSets(x))
       .orderByDescending(
-        (x) => x.potentialSets.find((set) => set.set)?.set?.completionTime,
-        LocalTimeComparer,
+        (x) => x.potentialSets.find((set) => set.set)?.set?.completionDateTime,
+        LocalDateTimeComparer,
       )
       .firstOrDefault();
   },
@@ -90,7 +91,9 @@ export const Session = {
       .where((x) => x.potentialSets.some((set) => set.set))
       .defaultIfEmpty(undefined)
       .maxBy((x) =>
-        RecordedExercise.lastRecordedSet(x)?.set?.completionTime.toNanoOfDay(),
+        RecordedExercise.lastRecordedSet(x)?.set?.completionDateTime.toInstant(
+          ZoneOffset.UTC,
+        ),
       );
   },
 };
@@ -116,7 +119,10 @@ export const RecordedExercise = {
       return undefined;
     }
     return Enumerable.from(recordedExercise.potentialSets)
-      .orderByDescending((x) => x.set?.completionTime, LocalTimeComparer)
+      .orderByDescending(
+        (x) => x.set?.completionDateTime,
+        LocalDateTimeComparer,
+      )
       .firstOrDefault((x) => x.set !== undefined);
   },
 
@@ -127,7 +133,7 @@ export const RecordedExercise = {
 
 export interface RecordedSet {
   readonly repsCompleted: number;
-  readonly completionTime: LocalTime;
+  readonly completionDateTime: LocalDateTime;
 }
 
 export interface PotentialSet {

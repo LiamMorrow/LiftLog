@@ -157,7 +157,7 @@ const currentSessionSlice = createSlice({
             ? undefined
             : {
                 repsCompleted: action.reps,
-                completionTime: LocalTime.now(),
+                completionDateTime: LocalTime.now(),
               };
       },
     ),

@@ -12,7 +12,7 @@ export function getCycledRepCount(
   return match(recordedSet)
     .returnType<RecordedSet | undefined>()
     .with(undefined, () => ({
-      completionTime: LocalTime.now(),
+      completionDateTime: LocalTime.now(),
       repsCompleted: exerciseBlueprint.repsPerSet,
     }))
     .with({ repsCompleted: 0 }, () => undefined)

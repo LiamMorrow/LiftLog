@@ -1,7 +1,9 @@
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
 import ListSwitch from '@/components/presentation/list-switch';
+import ThemeChooser from '@/components/presentation/theme-chooser';
 import { RootState } from '@/store';
 import {
+  setColorSchemeSeed,
   setShowBodyweight,
   setShowFeed,
   setShowTips,
@@ -59,6 +61,11 @@ export default function AppConfiguration() {
         <Button mode="text" onPress={resetTips}>
           <T keyName="ResetTips" />
         </Button>
+
+        <ThemeChooser
+          seed={settings.colorSchemeSeed}
+          onUpdateTheme={(x) => dispatch(setColorSchemeSeed(x))}
+        />
       </List.Section>
     </FullHeightScrollView>
   );

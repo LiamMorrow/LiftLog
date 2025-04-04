@@ -187,7 +187,9 @@ export default function SessionComponent(props: {
       return (
         <RestTimer
           rest={lastExercise.blueprint.restBetweenSets}
-          startTime={lastRecordedSet.set.completionTime.atDate(session.date)}
+          startTime={lastRecordedSet.set.completionDateTime.atDate(
+            session.date,
+          )}
           failed={lastSetFailed}
         />
       );

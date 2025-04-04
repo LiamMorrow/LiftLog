@@ -3,7 +3,7 @@ import {
   Material3Scheme,
   useMaterial3Theme,
 } from '@pchmn/expo-material3-theme';
-import React, { createContext, ReactNode, useContext } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { useSelector } from 'react-redux';
@@ -74,6 +74,7 @@ interface AppTheme {
   colors: Material3Scheme;
   spacing: typeof spacing;
   font: typeof font;
+  colorScheme: 'light' | 'dark';
 }
 
 const AppThemeContext = createContext<AppTheme | undefined>(undefined);
@@ -99,10 +100,17 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
 
   const colorScheme = useColorScheme();
   // If the device is not compatible, it will return a theme based on the fallback source color (optional, default to #6750A4)
-  const { theme } = useMaterial3Theme({
+  const { theme, updateTheme, resetTheme } = useMaterial3Theme({
     fallbackSourceColor: '0x00AA00',
     sourceColor: colorSchemeSeed === 'default' ? undefined : colorSchemeSeed,
   });
+  useEffect(() => {
+    if (colorSchemeSeed === 'default') {
+      resetTheme();
+    } else {
+      updateTheme(colorSchemeSeed);
+    }
+  }, [colorSchemeSeed]);
   const schemedTheme = colorScheme === 'dark' ? theme.dark : theme.light;
 
   const paperTheme =
@@ -113,6 +121,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
     colors: schemedTheme,
     spacing,
     font,
+    colorScheme: colorScheme ?? 'light',
   };
 
   return (

@@ -138,6 +138,7 @@ export const {
   setLastBackupTime,
   setBackupReminder,
   setSplitWeightByDefault,
+  setColorSchemeSeed,
 } = settingsSlice.actions;
 
 export default settingsSlice.reducer;
