@@ -6,9 +6,11 @@ export const ANIMATION_DURATION = 200;
 export default function FocusRing({
   isSelected,
   children,
+  radius,
 }: {
   isSelected: boolean;
   children: ReactNode;
+  radius?: number;
 }) {
   const { colors, spacing } = useAppTheme();
   const selectedAnim = useAnimatedValue(isSelected ? 1 : 0);
@@ -27,7 +29,9 @@ export default function FocusRing({
           inputRange,
           outputRange: ['transparent', colors.outline],
         }),
-        borderRadius: spacing[14],
+        padding: 2,
+        margin: -5,
+        borderRadius: radius ?? spacing[14],
         borderWidth: 3,
       }}
     >

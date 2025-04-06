@@ -7,6 +7,7 @@ import WeightFormat from '@/components/presentation/weight-format';
 import WeightDialog from '@/components/presentation/weight-dialog';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { PressableProps } from 'react-native-paper/lib/typescript/components/TouchableRipple/Pressable';
+import FocusRing from '@/components/presentation/focus-ring';
 
 interface PotentialSetCounterProps {
   set: PotentialSet;
@@ -58,110 +59,112 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
       } satisfies Touchable & Omit<PressableProps, 'children'>);
 
   return (
-    <Animated.View
-      style={{
-        justifyContent: 'center',
-        alignItems: 'center',
-        userSelect: 'none',
-        transform: [
-          {
-            scale: holdingScale,
-          },
-        ],
-      }}
-    >
+    <FocusRing isSelected={props.toStartNext} radius={15}>
       <Animated.View
         style={{
-          borderBottomLeftRadius: showWeightAnimatedValue.interpolate({
-            inputRange: [0, 1],
-            outputRange: [10, 0],
-          }),
-          borderBottomRightRadius: showWeightAnimatedValue.interpolate({
-            inputRange: [0, 1],
-            outputRange: [10, 0],
-          }),
-          borderTopLeftRadius: 10,
-          borderTopRightRadius: 10,
-          overflow: 'hidden',
+          justifyContent: 'center',
+          alignItems: 'center',
+          userSelect: 'none',
+          transform: [
+            {
+              scale: holdingScale,
+            },
+          ],
         }}
       >
-        <TouchableRipple
+        <Animated.View
           style={{
-            aspectRatio: 1,
-            flexShrink: 0,
-            padding: 0,
-            height: spacing[14],
-            width: spacing[14],
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor:
-              repCountValue !== undefined
-                ? colors.primary
-                : colors.secondaryContainer,
+            borderBottomLeftRadius: showWeightAnimatedValue.interpolate({
+              inputRange: [0, 1],
+              outputRange: [10, 0],
+            }),
+            borderBottomRightRadius: showWeightAnimatedValue.interpolate({
+              inputRange: [0, 1],
+              outputRange: [10, 0],
+            }),
+            borderTopLeftRadius: 10,
+            borderTopRightRadius: 10,
+            overflow: 'hidden',
           }}
-          {...callbacks}
-          disabled={props.isReadonly}
         >
-          <Text
+          <TouchableRipple
             style={{
-              color:
+              aspectRatio: 1,
+              flexShrink: 0,
+              padding: 0,
+              height: spacing[14],
+              width: spacing[14],
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor:
                 repCountValue !== undefined
-                  ? colors.onPrimary
-                  : colors.onSecondaryContainer,
+                  ? colors.primary
+                  : colors.secondaryContainer,
             }}
+            {...callbacks}
+            disabled={props.isReadonly}
           >
-            <Text style={{ fontWeight: 'bold' }}>{repCountValue ?? '-'}</Text>
-            <Text style={{ fontSize: 12, verticalAlign: 'top' }}>
-              /{props.maxReps}
+            <Text
+              style={{
+                color:
+                  repCountValue !== undefined
+                    ? colors.onPrimary
+                    : colors.onSecondaryContainer,
+              }}
+            >
+              <Text style={{ fontWeight: 'bold' }}>{repCountValue ?? '-'}</Text>
+              <Text style={{ fontSize: 12, verticalAlign: 'top' }}>
+                /{props.maxReps}
+              </Text>
             </Text>
-          </Text>
-        </TouchableRipple>
-      </Animated.View>
-      <Animated.View
-        style={{
-          height: showWeightAnimatedValue.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, spacing[9]],
-          }),
-          width: showWeightAnimatedValue.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, spacing[14]],
-          }),
-          padding: showWeightAnimatedValue.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, spacing[2]],
-          }),
-          borderTopWidth: 1,
-          borderColor: colors.outline,
-          backgroundColor: colors.surfaceContainerHigh,
-          borderBottomLeftRadius: 10,
-          borderBottomRightRadius: 10,
-          overflow: 'hidden',
-        }}
-      >
-        <TouchableRipple
+          </TouchableRipple>
+        </Animated.View>
+        <Animated.View
           style={{
-            alignItems: 'center',
-            margin: -spacing[2],
-            padding: spacing[2],
+            height: showWeightAnimatedValue.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, spacing[9]],
+            }),
+            width: showWeightAnimatedValue.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, spacing[14]],
+            }),
+            padding: showWeightAnimatedValue.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, spacing[2]],
+            }),
+            borderTopWidth: 1,
+            borderColor: colors.outline,
+            backgroundColor: colors.surfaceContainerHigh,
+            borderBottomLeftRadius: 10,
+            borderBottomRightRadius: 10,
+            overflow: 'hidden',
           }}
-          onPress={
-            props.isReadonly ? undefined : () => setIsWeightDialogOpen(true)
-          }
-          disabled={props.isReadonly}
         >
-          <Text style={{ color: colors.onSurface }}>
-            <WeightFormat weight={props.set.weight} suffixClass="" />
-          </Text>
-        </TouchableRipple>
+          <TouchableRipple
+            style={{
+              alignItems: 'center',
+              margin: -spacing[2],
+              padding: spacing[2],
+            }}
+            onPress={
+              props.isReadonly ? undefined : () => setIsWeightDialogOpen(true)
+            }
+            disabled={props.isReadonly}
+          >
+            <Text style={{ color: colors.onSurface }}>
+              <WeightFormat weight={props.set.weight} suffixClass="" />
+            </Text>
+          </TouchableRipple>
+        </Animated.View>
+        <WeightDialog
+          open={isWeightDialogOpen}
+          increment={props.weightIncrement}
+          weight={props.set.weight}
+          onClose={() => setIsWeightDialogOpen(false)}
+          updateWeight={props.onUpdateWeight}
+        />
       </Animated.View>
-      <WeightDialog
-        open={isWeightDialogOpen}
-        increment={props.weightIncrement}
-        weight={props.set.weight}
-        onClose={() => setIsWeightDialogOpen(false)}
-        updateWeight={props.onUpdateWeight}
-      />
-    </Animated.View>
+    </FocusRing>
   );
 }

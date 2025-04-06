@@ -1,6 +1,8 @@
 import { RootState } from '@/store';
 import {
+  addExercise,
   cycleExerciseReps,
+  editExercise,
   SessionTarget,
   toggleExercisePerSetWeight,
   updateBodyweight,
@@ -24,6 +26,9 @@ import FloatingBottomContainer from '@/components/presentation/floating-bottom-c
 import { useState } from 'react';
 import { useScroll } from '@/hooks/useScollListener';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
+import { ExerciseBlueprint } from '@/models/blueprint-models';
+import FullScreenDialog from '@/components/presentation/full-screen-dialog';
+import { ExerciseEditor } from '@/components/presentation/exercise-editor';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
@@ -41,10 +46,36 @@ export default function SessionComponent(props: {
     reducer: (a: { payload: T; target: SessionTarget }) => any,
     payload: T,
   ) => storeDispatch(reducer({ payload, target: props.target }));
+  const isReadonly = props.target === 'feedSession';
+
+  const [exerciseToEditIndex, setExerciseToEditIndex] = useState<
+    number | undefined
+  >(undefined);
+  const [editingExerciseBlueprint, setEditingExerciseBlueprint] = useState<
+    ExerciseBlueprint | undefined
+  >(undefined);
+  const [exerciseEditorOpen, setExerciseEditorOpen] = useState(false);
+
+  const handleEditExercise = () => {
+    if (editingExerciseBlueprint !== undefined) {
+      if (exerciseToEditIndex !== undefined) {
+        dispatch(editExercise, {
+          exerciseIndex: exerciseToEditIndex,
+          newBlueprint: editingExerciseBlueprint,
+        });
+        setExerciseToEditIndex(undefined);
+      } else {
+        dispatch(addExercise, {
+          blueprint: editingExerciseBlueprint,
+        });
+      }
+    }
+  };
+
   if (!session) {
     return <Text>Loading</Text>;
   }
-  const isReadonly = props.target === 'feedSession';
+
   const notesComponent = session.blueprint.notes ? (
     <Card
       mode="contained"
@@ -106,7 +137,11 @@ export default function SessionComponent(props: {
       updateNotesForExercise={(notes) =>
         dispatch(updateNotesForExercise, { notes, exerciseIndex: index })
       }
-      onEditExercise={() => {}}
+      onEditExercise={() => {
+        setEditingExerciseBlueprint(item.blueprint);
+        setExerciseToEditIndex(index);
+        setExerciseEditorOpen(true);
+      }}
       onRemoveExercise={() => {}}
       onOpenLink={() => {}}
       isReadonly={isReadonly}
@@ -187,9 +222,7 @@ export default function SessionComponent(props: {
       return (
         <RestTimer
           rest={lastExercise.blueprint.restBetweenSets}
-          startTime={lastRecordedSet.set.completionDateTime.atDate(
-            session.date,
-          )}
+          startTime={lastRecordedSet.set.completionDateTime}
           failed={lastSetFailed}
         />
       );
@@ -227,6 +260,26 @@ export default function SessionComponent(props: {
       {bodyWeight}
       {updatePlanButton}
       <View style={{ height: floatingBottomSize }} />
+      <FullScreenDialog
+        title={
+          exerciseToEditIndex === undefined
+            ? t('AddExercise')
+            : t('EditExercise')
+        }
+        action={exerciseToEditIndex === undefined ? t('Add') : t('Update')}
+        open={exerciseEditorOpen}
+        onAction={handleEditExercise}
+        onClose={() => setExerciseEditorOpen(false)}
+      >
+        {editingExerciseBlueprint ? (
+          <ExerciseEditor
+            exercise={editingExerciseBlueprint}
+            updateExercise={(ex) => {
+              setEditingExerciseBlueprint(ex);
+            }}
+          />
+        ) : null}
+      </FullScreenDialog>
     </FullHeightScrollView>
   );
 }

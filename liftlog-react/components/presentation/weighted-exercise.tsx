@@ -83,6 +83,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
   const [menuVisible, setMenuVisible] = useState(false);
   const [editorNotes, setEditorNotes] = useState(recordedExercise.notes ?? '');
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
+  var setToStartNext = recordedExercise.potentialSets.findIndex((x) => !x.set);
 
   const showPrevious = () => {};
   const interactiveButtons = props.isReadonly ? (
@@ -119,7 +120,10 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
         }
       >
         <Menu.Item
-          onPress={props.onEditExercise}
+          onPress={() => {
+            props.onEditExercise();
+            setMenuVisible(false);
+          }}
           leadingIcon="pencil"
           title={t('Edit')}
         />
@@ -130,6 +134,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
           onPress={() => {
             setEditorNotes(recordedExercise.notes ?? '');
             setNotesDialogOpen(true);
+            setMenuVisible(false);
           }}
         />
         <Menu.Item
@@ -177,7 +182,11 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
               onUpdateWeight={(w) => props.updateWeightForSet(index, w)}
               set={set}
               showWeight={recordedExercise.perSetWeight}
-              toStartNext={props.toStartNext}
+              toStartNext={
+                props.toStartNext &&
+                setToStartNext === index &&
+                !props.isReadonly
+              }
               weightIncrement={
                 recordedExercise.blueprint.weightIncreaseOnSuccess
               }

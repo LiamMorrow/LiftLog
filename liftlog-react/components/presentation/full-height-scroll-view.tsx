@@ -1,15 +1,27 @@
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScollListener';
-import { View, ScrollView } from 'react-native';
+import { useEffect, useState } from 'react';
+import { View, ScrollView, StyleProp, ViewStyle } from 'react-native';
 
 export default function FullHeightScrollView({
   children,
+  afterScrollChildren,
+  setIsScrolled: propsSetIsScrolled,
+  scrollStyle,
 }: {
   children: React.ReactNode;
   afterScrollChildren?: React.ReactNode;
+  setIsScrolled?: (isScrolled: boolean) => void;
+  scrollStyle?: StyleProp<ViewStyle>;
 }) {
   const { colors } = useAppTheme();
-  const { setScrolled } = useScroll();
+  const { setScrolled: dispatchSetIsScrolled } = useScroll();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Effect basically ensures we only emit when isScrolled changes so our parents don't need to care
+  useEffect(() => {
+    (propsSetIsScrolled ?? dispatchSetIsScrolled)(isScrolled);
+  }, [dispatchSetIsScrolled, isScrolled, propsSetIsScrolled]);
 
   return (
     <View
@@ -22,13 +34,17 @@ export default function FullHeightScrollView({
       ]}
     >
       <ScrollView
-        onScroll={(e) => setScrolled(e.nativeEvent.contentOffset.y > 0)}
-        style={{
-          height: '100%',
-        }}
+        onScroll={(e) => setIsScrolled(e.nativeEvent.contentOffset.y > 0)}
+        style={[
+          {
+            height: '100%',
+          },
+          scrollStyle,
+        ]}
       >
         {children}
       </ScrollView>
+      {afterScrollChildren}
     </View>
   );
 }
