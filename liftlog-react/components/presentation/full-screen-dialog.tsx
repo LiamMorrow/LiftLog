@@ -17,13 +17,11 @@ interface FullScreenDialogProps {
 
 export default function FullScreenDialog(props: FullScreenDialogProps) {
   const { action, open, onAction, onClose, title, children } = props;
-  // Navigation
   const navigation = useNavigation();
   const scrollAnimation = useAnimatedValue(0);
   const { colors, spacing, font } = useAppTheme();
   const { top, bottom } = useSafeAreaInsets();
 
-  // Effect
   useEffect(() => {
     const listener = navigation.addListener('beforeRemove', (e) => {
       if (!open) {
