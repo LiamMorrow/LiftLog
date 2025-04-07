@@ -5,7 +5,7 @@ import {
   SafeDraft,
   toSafeDraft,
 } from '@/store/current-session/helpers';
-import { LocalDate, LocalTime } from '@js-joda/core';
+import { LocalDate, LocalDateTime } from '@js-joda/core';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import BigNumber from 'bignumber.js';
 import { Draft, WritableDraft } from 'immer';
@@ -157,7 +157,7 @@ const currentSessionSlice = createSlice({
             ? undefined
             : {
                 repsCompleted: action.reps,
-                completionDateTime: LocalTime.now(),
+                completionDateTime: LocalDateTime.now(),
               };
       },
     ),

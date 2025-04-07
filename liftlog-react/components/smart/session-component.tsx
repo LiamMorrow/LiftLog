@@ -69,6 +69,7 @@ export default function SessionComponent(props: {
           blueprint: editingExerciseBlueprint,
         });
       }
+      setExerciseEditorOpen(false);
     }
   };
 
@@ -231,7 +232,7 @@ export default function SessionComponent(props: {
     return null;
   };
 
-  const fab = isReadonly ? null : (
+  const floatingBottomContainer = isReadonly ? null : (
     <View
       onLayout={(event) =>
         setFloatingBottomSize(event.nativeEvent.layout.height)
@@ -253,7 +254,7 @@ export default function SessionComponent(props: {
   );
 
   return (
-    <FullHeightScrollView afterScrollChildren={fab}>
+    <FullHeightScrollView afterScrollChildren={floatingBottomContainer}>
       {notesComponent}
       {emptyInfo}
       <ItemList items={session.recordedExercises} renderItem={renderItem} />

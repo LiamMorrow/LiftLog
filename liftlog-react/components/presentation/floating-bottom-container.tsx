@@ -21,7 +21,7 @@ export default function FloatingBottomContainer({
         zIndex: 10,
       }}
     >
-      {fab && (
+      {fab ? (
         <View
           style={{
             flex: 1,
@@ -33,8 +33,8 @@ export default function FloatingBottomContainer({
         >
           {fab}
         </View>
-      )}
-      {additionalContent && additionalContent}
+      ) : undefined}
+      {additionalContent}
     </View>
   );
 }

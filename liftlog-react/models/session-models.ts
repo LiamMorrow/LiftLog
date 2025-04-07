@@ -91,9 +91,9 @@ export const Session = {
       .where((x) => x.potentialSets.some((set) => set.set))
       .defaultIfEmpty(undefined)
       .maxBy((x) =>
-        RecordedExercise.lastRecordedSet(x)?.set?.completionDateTime.toInstant(
-          ZoneOffset.UTC,
-        ),
+        RecordedExercise.lastRecordedSet(x)
+          ?.set?.completionDateTime.toInstant(ZoneOffset.UTC)
+          .toEpochMilli(),
       );
   },
 };

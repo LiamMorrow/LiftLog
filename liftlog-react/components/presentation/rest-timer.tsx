@@ -14,8 +14,6 @@ interface RestTimerProps {
   failed: boolean;
 }
 
-export const SnackBarOffset = 100;
-
 export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
   const { colors } = useAppTheme();
   const [timeSinceStart, setTimeSinceStart] = useState<string>('0:00');
@@ -42,7 +40,7 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
 
   return (
     <Snackbar
-      wrapperStyle={{ position: 'relative' }}
+      wrapperStyle={{ position: 'relative', paddingBottom: 0 }}
       visible={true}
       onDismiss={() => {}}
     >

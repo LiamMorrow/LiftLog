@@ -1,10 +1,16 @@
+import EditableIncrementer from '@/components/presentation/editable-incrementer';
 import FixedIncrementer from '@/components/presentation/fixed-incrementer';
+import ListSwitch from '@/components/presentation/list-switch';
+import RestEditorGroup from '@/components/presentation/rest-editor-group';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { ExerciseBlueprint } from '@/models/blueprint-models';
+import { RootState } from '@/store';
 import { useTranslate } from '@tolgee/react';
+import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { Card, TextInput } from 'react-native-paper';
+import { Card, Divider, TextInput } from 'react-native-paper';
+import { useSelector } from 'react-redux';
 
 interface ExerciseEditorProps {
   exercise: ExerciseBlueprint;
@@ -26,22 +32,28 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
     setExercise({ ...exercise, ...ex });
     updatePropsExercise({ ...exercise, ...ex });
   };
+  const useImperialUnits = useSelector(
+    (s: RootState) => s.settings.useImperialUnits,
+  );
+  const weightSuffix = useImperialUnits ? 'lb' : 'kg';
 
-  const incrementSets = () => {
-    updateExercise({ sets: exercise.sets + 1 });
-  };
+  const incrementSets = () => updateExercise({ sets: exercise.sets + 1 });
 
-  const decrementSets = () => {
+  const decrementSets = () =>
     updateExercise({ sets: Math.max(exercise.sets - 1, 0) });
-  };
 
-  const incrementReps = () => {
+  const incrementReps = () =>
     updateExercise({ repsPerSet: exercise.repsPerSet + 1 });
-  };
 
-  const decrementReps = () => {
+  const decrementReps = () =>
     updateExercise({ repsPerSet: Math.max(exercise.repsPerSet - 1, 0) });
-  };
+
+  const setExerciseNotes = (notes: string) => updateExercise({ notes });
+
+  const setExerciseLink = (link: string) => updateExercise({ link });
+
+  const setExerciseWeightIncrease = (weightIncreaseOnSuccess: BigNumber) =>
+    updateExercise({ weightIncreaseOnSuccess });
 
   return (
     <View style={{ gap: spacing[2] }}>
@@ -51,6 +63,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
         style={{ marginBottom: spacing[2] }}
         value={exercise.name}
         onChangeText={(name) => updateExercise({ name })}
+        selectTextOnFocus={true}
       />
       <View
         style={{
@@ -93,6 +106,59 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
               decrement={decrementReps}
               value={exercise.repsPerSet}
               data-cy="exercise-reps"
+            />
+          </Card.Content>
+        </Card>
+      </View>
+
+      <TextInput
+        label={t('PlanNotes')}
+        data-cy="exercise-notes"
+        style={{ marginBottom: spacing[2] }}
+        value={exercise.notes}
+        onChangeText={setExerciseNotes}
+        multiline={true}
+      />
+
+      <TextInput
+        label={t('ExternalLink')}
+        data-cy="exercise-link"
+        style={{ marginBottom: spacing[2] }}
+        placeholder="https://"
+        value={exercise.link}
+        onChangeText={setExerciseLink}
+        multiline={true}
+      />
+
+      <View style={{ gap: spacing[4] }}>
+        <Card mode="elevated">
+          <Card.Content style={{ gap: spacing[6] }}>
+            <EditableIncrementer
+              increment={new BigNumber('0.1')}
+              label={t('ProgressiveOverload')}
+              data-cy="exercist-auto-increase"
+              suffix={weightSuffix}
+              value={exercise.weightIncreaseOnSuccess}
+              onChange={setExerciseWeightIncrease}
+            />
+            <Divider />
+            <View style={{ width: '100%' }}>
+              <ListSwitch
+                headline={t('SupersetNextExercise')}
+                value={exercise.supersetWithNext}
+                supportingText=""
+                data-cy="exercise-superset"
+                onValueChange={(supersetWithNext) =>
+                  updateExercise({ supersetWithNext })
+                }
+              />
+            </View>
+            <Divider />
+            <RestEditorGroup
+              rest={exercise.restBetweenSets}
+              onRestUpdated={(restBetweenSets) =>
+                updateExercise({ restBetweenSets })
+              }
             />
           </Card.Content>
         </Card>
