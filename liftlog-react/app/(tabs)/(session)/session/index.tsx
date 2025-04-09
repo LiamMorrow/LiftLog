@@ -1,4 +1,3 @@
-import TabsOffset from '@/components/presentation/TabsOffset';
 import SessionComponent from '@/components/smart/session-component';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { RootState } from '@/store';
@@ -14,19 +13,17 @@ export default function Index() {
   );
 
   return (
-    <TabsOffset>
-      <View
-        style={[
-          {
-            backgroundColor: colors.surface,
-            height: '100%',
-          },
-        ]}
-      >
-        <Stack.Screen options={{ title: session?.blueprint.name }} />
+    <View
+      style={[
+        {
+          backgroundColor: colors.surface,
+          flex: 1,
+        },
+      ]}
+    >
+      <Stack.Screen options={{ title: session?.blueprint.name }} />
 
-        <SessionComponent target="workoutSession" showBodyweight={true} />
-      </View>
-    </TabsOffset>
+      <SessionComponent target="workoutSession" showBodyweight={true} />
+    </View>
   );
 }

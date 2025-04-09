@@ -1,7 +1,8 @@
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScollListener';
 import { useEffect, useState } from 'react';
-import { View, ScrollView, StyleProp, ViewStyle } from 'react-native';
+import { View, StyleProp, ViewStyle } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export default function FullHeightScrollView({
   children,
@@ -27,23 +28,18 @@ export default function FullHeightScrollView({
     <View
       style={[
         {
-          position: 'relative',
           backgroundColor: colors.surface,
-          height: '100%',
+          flex: 1,
         },
       ]}
     >
-      <ScrollView
+      <KeyboardAwareScrollView
         onScroll={(e) => setIsScrolled(e.nativeEvent.contentOffset.y > 0)}
-        style={[
-          {
-            height: '100%',
-          },
-          scrollStyle,
-        ]}
+        enableOnAndroid={true}
+        style={[scrollStyle]}
       >
         {children}
-      </ScrollView>
+      </KeyboardAwareScrollView>
       {afterScrollChildren}
     </View>
   );

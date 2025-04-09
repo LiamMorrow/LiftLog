@@ -32,6 +32,7 @@
     "react-compiler-runtime": "^19.0.0-beta-bafa41b-20250307",
     "react-dom": "18.3.1",
     "react-native": "0.76.7",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-paper": "^5.13.1",
     "react-native-safe-area-context": "^5.3.0",
     "react-native-screens": "~4.4.0",
