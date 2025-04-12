@@ -1,8 +1,10 @@
 import { ExerciseBlueprint, SessionBlueprint } from '@/models/blueprint-models';
 import { LocalDateTimeComparer } from '@/models/comparers';
+import { indexed } from '@/utils/enumerable';
 import { LocalDate, LocalDateTime, ZoneOffset } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
+import { match, P } from 'ts-pattern';
 
 export interface Session {
   readonly id: string;
@@ -20,70 +22,80 @@ export const Session = {
   },
 
   nextExercise(session: Session): RecordedExercise | undefined {
-    const latestExerciseIndex = Enumerable.from(session.recordedExercises)
-      .select((x, index) => ({ item: x, index }))
-      .where((x) => RecordedExercise.lastRecordedSet(x.item) !== undefined)
+    const recordedExercises = session.recordedExercises;
+    const latestExerciseIndex = Enumerable.from(recordedExercises)
+      .select(indexed)
+      .where((x) => !!RecordedExercise.lastRecordedSet(x.item))
       .orderByDescending(
-        (x) =>
-          x.item.potentialSets.find((set) => set.set)?.set?.completionDateTime,
+        ({ item }) =>
+          RecordedExercise.lastRecordedSet(item)!.set?.completionDateTime,
         LocalDateTimeComparer,
       )
       .select((x) => x.index)
       .firstOrDefault(-1);
 
-    const latestExerciseSupersetsWithNext =
-      latestExerciseIndex === -1
-        ? false
-        : latestExerciseIndex === session.recordedExercises.length - 1
-          ? false
-          : session.recordedExercises[latestExerciseIndex].blueprint
-              .supersetWithNext;
+    const latestExerciseSupersetsWithNext = match(latestExerciseIndex)
+      .with(-1, () => false)
+      .with(recordedExercises.length - 1, () => false) // can never superset with next if its the last exercise
+      .otherwise((i) => recordedExercises[i].blueprint.supersetWithNext);
 
-    const latestExerciseSupersetsWithPrevious =
-      latestExerciseIndex === -1 || latestExerciseIndex === 0
-        ? false
-        : session.recordedExercises[latestExerciseIndex - 1].blueprint
-            .supersetWithNext;
+    const latestExerciseSupersetsWithPrevious = match(latestExerciseIndex)
+      .with(P.union(-1, 0), () => false)
+      .otherwise((i) => recordedExercises[i - 1].blueprint.supersetWithNext);
 
     if (
       latestExerciseSupersetsWithNext &&
       RecordedExercise.hasRemainingSets(
-        session.recordedExercises[latestExerciseIndex + 1],
+        recordedExercises[latestExerciseIndex + 1],
       )
     ) {
-      return session.recordedExercises[latestExerciseIndex + 1];
+      return recordedExercises[latestExerciseIndex + 1];
     }
 
+    // loop back to the original exercise in the case of a superset chain
     if (latestExerciseSupersetsWithPrevious) {
       let indexToJumpBackTo = latestExerciseIndex - 1;
       while (
         indexToJumpBackTo >= 0 &&
-        session.recordedExercises[indexToJumpBackTo].blueprint.supersetWithNext
+        recordedExercises[indexToJumpBackTo].blueprint.supersetWithNext
       ) {
         indexToJumpBackTo--;
       }
+      // We are now at an exercise which is not supersetting with the next,
+      // so jump forward to the next exercise
       indexToJumpBackTo++;
+      // Now jump to the first exercise which has remaining sets in the chain
       while (
-        indexToJumpBackTo < session.recordedExercises.length &&
-        !RecordedExercise.hasRemainingSets(
-          session.recordedExercises[indexToJumpBackTo],
-        )
+        indexToJumpBackTo < recordedExercises.length &&
+        !RecordedExercise.hasRemainingSets(recordedExercises[indexToJumpBackTo])
       ) {
         indexToJumpBackTo++;
       }
 
-      if (indexToJumpBackTo < session.recordedExercises.length) {
-        return session.recordedExercises[indexToJumpBackTo];
+      if (indexToJumpBackTo < recordedExercises.length) {
+        return recordedExercises[indexToJumpBackTo];
       }
     }
 
-    return Enumerable.from(session.recordedExercises)
-      .where((x) => RecordedExercise.hasRemainingSets(x))
-      .orderByDescending(
-        (x) => x.potentialSets.find((set) => set.set)?.set?.completionDateTime,
-        LocalDateTimeComparer,
-      )
-      .firstOrDefault();
+    let result: RecordedExercise | undefined = undefined;
+    let maxEpochSecond = Number.MIN_VALUE;
+
+    for (const recordedExercise of recordedExercises) {
+      if (RecordedExercise.hasRemainingSets(recordedExercise)) {
+        const lastRecordedSet =
+          RecordedExercise.lastRecordedSet(recordedExercise);
+        const epochSecond =
+          lastRecordedSet?.set?.completionDateTime.toEpochSecond(
+            ZoneOffset.UTC,
+          ) ?? Number.MIN_VALUE;
+
+        if (epochSecond > maxEpochSecond || !result) {
+          maxEpochSecond = epochSecond;
+          result = recordedExercise;
+        }
+      }
+    }
+    return result;
   },
 
   lastExercise(session: Session): RecordedExercise | undefined {
@@ -118,12 +130,13 @@ export const RecordedExercise = {
     if (!recordedExercise) {
       return undefined;
     }
-    return Enumerable.from(recordedExercise.potentialSets)
+    const result = Enumerable.from(recordedExercise.potentialSets)
       .orderByDescending(
         (x) => x.set?.completionDateTime,
         LocalDateTimeComparer,
       )
       .firstOrDefault((x) => x.set !== undefined);
+    return result;
   },
 
   hasRemainingSets(recordedExercise: RecordedExercise): boolean {
