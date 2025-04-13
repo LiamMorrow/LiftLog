@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { Text, StyleProp, TextStyle, TextProps } from 'react-native';
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 
 interface LimitedHtmlProps {
   value: string;

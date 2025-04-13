@@ -17,6 +17,11 @@ module.exports = {
             importNames: ['Text'],
             message: 'Please use Text from react-native',
           },
+          {
+            name: 'react-redux',
+            importNames: ['useSelector'],
+            message: 'Use useSelector from @/store',
+          },
         ],
       },
     ],

@@ -15,7 +15,7 @@ export const benchPress: RecordedExercise = {
     restBetweenSets: Rest.medium,
     weightIncreaseOnSuccess: new BigNumber('2.5'),
   },
-  potentialSets: Enumerable.range(0, 3)
+  potentialSets: Enumerable.range(0, 10)
     .select(() => ({
       weight: new BigNumber(100),
       set: undefined,

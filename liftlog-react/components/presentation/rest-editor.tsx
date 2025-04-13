@@ -1,4 +1,4 @@
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { Duration } from '@js-joda/core';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
@@ -11,7 +11,7 @@ interface RestEditorProps {
 }
 
 export default function RestEditor(props: RestEditorProps) {
-  const { font, colors, spacing } = useAppTheme();
+  const { colors } = useAppTheme();
   const { rest, onRestUpdated } = props;
 
   const [minutes, setMinutes] = useState(rest.toMinutes().toString());

@@ -1,6 +1,6 @@
 import WeightDialog from '@/components/presentation/weight-dialog';
 import WeightFormat from '@/components/presentation/weight-format';
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import BigNumber from 'bignumber.js';
 import { useState } from 'react';
 import { View } from 'react-native';
@@ -23,7 +23,7 @@ type WeightDisplayProps = {
     }
 );
 export default function WeightDisplay(props: WeightDisplayProps) {
-  const { colors, font } = useAppTheme();
+  const { colors } = useAppTheme();
   const [dialogOpen, setDialogOpen] = useState(false);
   return (
     <View>

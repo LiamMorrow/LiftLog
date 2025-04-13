@@ -1,12 +1,12 @@
 import { Text } from 'react-native';
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme, font } from '@/hooks/useAppTheme';
 
 interface ItemTitleProps {
   title: string;
 }
 
 export default function ItemTitle({ title }: ItemTitleProps) {
-  const { colors, font } = useAppTheme();
+  const { colors } = useAppTheme();
 
   return (
     <Text

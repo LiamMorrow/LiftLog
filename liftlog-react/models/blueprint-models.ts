@@ -3,20 +3,20 @@ import BigNumber from 'bignumber.js';
 
 export interface ProgramBlueprint {
   readonly name: string;
-  readonly sessions: readonly SessionBlueprint[];
+  readonly sessions: SessionBlueprint[];
   lastEdited: LocalDate;
 }
 
 export interface SessionBlueprint {
-  readonly name: string;
-  readonly exercises: readonly ExerciseBlueprint[];
+  name: string;
+  exercises: ExerciseBlueprint[];
   notes: string;
 }
 
 export interface Rest {
-  readonly minRest: Duration;
-  readonly maxRest: Duration;
-  readonly failureRest: Duration;
+  minRest: Duration;
+  maxRest: Duration;
+  failureRest: Duration;
 }
 
 export const Rest = {
@@ -38,12 +38,12 @@ export const Rest = {
 } as const;
 
 export interface ExerciseBlueprint {
-  readonly name: string;
-  readonly sets: number;
-  readonly repsPerSet: number;
-  readonly weightIncreaseOnSuccess: BigNumber;
-  readonly restBetweenSets: Rest;
-  readonly supersetWithNext: boolean;
-  readonly notes: string;
-  readonly link: string;
+  name: string;
+  sets: number;
+  repsPerSet: number;
+  weightIncreaseOnSuccess: BigNumber;
+  restBetweenSets: Rest;
+  supersetWithNext: boolean;
+  notes: string;
+  link: string;
 }

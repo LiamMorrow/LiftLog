@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleProp, TextProps, TextStyle } from 'react-native';
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import LimitedHtml from '@/components/presentation/limited-html';
 import { useTranslate } from '@tolgee/react';
 import { Rest } from '@/models/blueprint-models';

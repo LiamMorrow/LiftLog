@@ -8,7 +8,7 @@ import { useColorScheme } from 'react-native';
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 
-const spacing = {
+export const spacing = {
   0: 0,
   0.5: 2,
   1: 4,
@@ -39,7 +39,11 @@ const spacing = {
   64: 256,
 } as const;
 
-const font = {
+export const font = {
+  'text-2xs': {
+    fontSize: 10,
+    lineHeight: 14,
+  },
   'text-xs': {
     fontSize: 12,
     lineHeight: 16,
@@ -70,10 +74,10 @@ const font = {
   },
 } as const;
 
-interface AppTheme {
+export type FontChoice = keyof typeof font;
+
+export interface AppTheme {
   colors: Material3Scheme;
-  spacing: typeof spacing;
-  font: typeof font;
   colorScheme: 'light' | 'dark';
 }
 
@@ -119,8 +123,6 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
       : { ...MD3LightTheme, colors: theme.light };
   const appTheme = {
     colors: schemedTheme,
-    spacing,
-    font,
     colorScheme: colorScheme ?? 'light',
   };
 

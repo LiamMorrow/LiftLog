@@ -5,7 +5,7 @@ import { TouchableRipple } from 'react-native-paper';
 import { Text, Touchable, useAnimatedValue, Animated } from 'react-native';
 import WeightFormat from '@/components/presentation/weight-format';
 import WeightDialog from '@/components/presentation/weight-dialog';
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { PressableProps } from 'react-native-paper/lib/typescript/components/TouchableRipple/Pressable';
 import FocusRing from '@/components/presentation/focus-ring';
 
@@ -23,7 +23,7 @@ interface PotentialSetCounterProps {
 }
 
 export default function PotentialSetCounter(props: PotentialSetCounterProps) {
-  const { colors, spacing } = useAppTheme();
+  const { colors } = useAppTheme();
   const holdingScale = useAnimatedValue(1);
   const showWeightAnimatedValue = useAnimatedValue(props.showWeight ? 1 : 0);
   const [isHolding, setIsHolding] = useState(false);

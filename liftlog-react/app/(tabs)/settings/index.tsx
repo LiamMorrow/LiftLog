@@ -9,7 +9,7 @@ import { Button, Dialog, Icon, List, Portal } from 'react-native-paper';
 
 export default function Settings() {
   const { t } = useTranslate();
-  const { colors, font } = useAppTheme();
+  const { colors } = useAppTheme();
   const { push } = useRouter();
   const [appInfoOpen, setAppInfoOpen] = useState(false);
 

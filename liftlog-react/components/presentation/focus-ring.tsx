@@ -1,4 +1,4 @@
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { ReactNode, useEffect } from 'react';
 import { Animated, useAnimatedValue } from 'react-native';
 
@@ -12,7 +12,7 @@ export default function FocusRing({
   children: ReactNode;
   radius?: number;
 }) {
-  const { colors, spacing } = useAppTheme();
+  const { colors } = useAppTheme();
   const selectedAnim = useAnimatedValue(isSelected ? 1 : 0);
   const inputRange = [0, 1];
   useEffect(() => {

@@ -7,11 +7,11 @@ import Enumerable from 'linq';
 import { match, P } from 'ts-pattern';
 
 export interface Session {
-  readonly id: string;
-  readonly blueprint: SessionBlueprint;
-  readonly recordedExercises: readonly RecordedExercise[];
-  readonly date: LocalDate;
-  readonly bodyweight: BigNumber | undefined;
+  id: string;
+  blueprint: SessionBlueprint;
+  recordedExercises: RecordedExercise[];
+  date: LocalDate;
+  bodyweight: BigNumber | undefined;
 }
 
 export const Session = {

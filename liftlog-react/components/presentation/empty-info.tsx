@@ -1,9 +1,9 @@
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { Text, View, ViewProps } from 'react-native';
 import { Icon } from 'react-native-paper';
 
 export default function EmptyInfo(props: ViewProps & { icon?: string }) {
-  const { spacing, colors } = useAppTheme();
+  const { colors } = useAppTheme();
   const { icon, style, ...rest } = props;
   return (
     <View

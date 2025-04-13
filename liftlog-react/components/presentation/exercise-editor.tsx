@@ -2,15 +2,14 @@ import EditableIncrementer from '@/components/presentation/editable-incrementer'
 import FixedIncrementer from '@/components/presentation/fixed-incrementer';
 import ListSwitch from '@/components/presentation/list-switch';
 import RestEditorGroup from '@/components/presentation/rest-editor-group';
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { spacing } from '@/hooks/useAppTheme';
 import { ExerciseBlueprint } from '@/models/blueprint-models';
-import { RootState } from '@/store';
+import { RootState, useSelector } from '@/store';
 import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Card, Divider, TextInput } from 'react-native-paper';
-import { useSelector } from 'react-redux';
 
 interface ExerciseEditorProps {
   exercise: ExerciseBlueprint;
@@ -21,7 +20,6 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
   const { exercise: propsExercise, updateExercise: updatePropsExercise } =
     props;
   const [exercise, setExercise] = useState(propsExercise);
-  const { spacing, font } = useAppTheme();
   const { t } = useTranslate();
 
   // Bit of a hack to let us update exercise immediately without going through the whole props loop

@@ -17,13 +17,13 @@
         {
             <div class="my-auto flex flex-col items-center gap-4 text-on-surface">
                 <md-icon>error</md-icon>
-                <span>
+                <div>
                     <p>@Value.Error</p>
                     @if(Retry is not null)
                     {
                         <AppButton Type=AppButtonType.Text OnClick=Retry>Retry</AppButton>
                     }
-                </span>
+                </div>
             </div>
         }
         break;

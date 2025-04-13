@@ -1,4 +1,4 @@
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { Text, View } from 'react-native';
 import { IconButton } from 'react-native-paper';
 
@@ -12,7 +12,7 @@ interface FixedIncrementerProps<T> {
 export default function FixedIncrementer<T extends { toString(): string }>(
   props: FixedIncrementerProps<T>,
 ) {
-  const { spacing, colors, font } = useAppTheme();
+  const { colors } = useAppTheme();
   return (
     <View
       style={{

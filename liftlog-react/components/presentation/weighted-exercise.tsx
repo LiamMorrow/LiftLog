@@ -1,6 +1,6 @@
 import ItemTitle from '@/components/presentation/item-title';
 import PotentialSetCounter from '@/components/presentation/potential-set-counter';
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { RecordedExercise } from '@/models/session-models';
 import { DatedRecordedExercise } from '@/models/stats-models';
 import BigNumber from 'bignumber.js';
@@ -36,7 +36,7 @@ function AnimatedWeightDisplay(
   >,
 ) {
   const { recordedExercise } = props;
-  const { spacing } = useAppTheme();
+  const { colors } = useAppTheme();
   const sizeAnimatedValue = useAnimatedValue(1);
 
   useEffect(() => {
@@ -79,7 +79,7 @@ function AnimatedWeightDisplay(
 export default function WeightedExercise(props: WeightedExerciseProps) {
   const { t } = useTranslate();
   const { recordedExercise } = props;
-  const { colors, spacing } = useAppTheme();
+  const { colors } = useAppTheme();
   const [menuVisible, setMenuVisible] = useState(false);
   const [editorNotes, setEditorNotes] = useState(recordedExercise.notes ?? '');
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);

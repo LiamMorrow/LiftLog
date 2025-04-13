@@ -1,10 +1,7 @@
 import { ExerciseBlueprint } from '@/models/blueprint-models';
 import { RecordedExercise, Session } from '@/models/session-models';
-import {
-  getCycledRepCount,
-  SafeDraft,
-  toSafeDraft,
-} from '@/store/current-session/helpers';
+import { getCycledRepCount } from '@/store/current-session/helpers';
+import { SafeDraft, toSafeDraft } from '@/utils/store-helpers';
 import { LocalDate, LocalDateTime } from '@js-joda/core';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import BigNumber from 'bignumber.js';
@@ -71,12 +68,19 @@ const currentSessionSlice = createSlice({
     }),
 
     cycleExerciseReps: targetedSessionAction(
-      (session, action: { exerciseIndex: number; setIndex: number }) => {
+      (
+        session,
+        action: {
+          exerciseIndex: number;
+          setIndex: number;
+          time: LocalDateTime;
+        },
+      ) => {
         const exerciseBlueprint =
           session.blueprint.exercises[action.exerciseIndex];
 
         if (!Session.isStarted(session as unknown as Session)) {
-          session.date = LocalDate.now();
+          session.date = action.time.toLocalDate();
         }
 
         session.recordedExercises[action.exerciseIndex].potentialSets[
@@ -86,6 +90,7 @@ const currentSessionSlice = createSlice({
             action.setIndex
           ].set,
           exerciseBlueprint,
+          action.time,
         );
       },
     ),
@@ -148,6 +153,7 @@ const currentSessionSlice = createSlice({
           exerciseIndex: number;
           setIndex: number;
           reps: number | undefined;
+          time: LocalDateTime;
         },
       ) => {
         session.recordedExercises[action.exerciseIndex].potentialSets[
@@ -157,7 +163,7 @@ const currentSessionSlice = createSlice({
             ? undefined
             : {
                 repsCompleted: action.reps,
-                completionDateTime: LocalDateTime.now(),
+                completionDateTime: action.time,
               };
       },
     ),

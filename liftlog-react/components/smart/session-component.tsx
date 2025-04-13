@@ -14,7 +14,7 @@ import { Button, Card, FAB, Icon } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { Text, View } from 'react-native';
 import EmptyInfo from '@/components/presentation/empty-info';
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import ItemList from '@/components/presentation/item-list';
 import { RecordedExercise, Session } from '@/models/session-models';
@@ -24,19 +24,18 @@ import BigNumber from 'bignumber.js';
 import RestTimer from '@/components/presentation/rest-timer';
 import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
 import { useState } from 'react';
-import { useScroll } from '@/hooks/useScollListener';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
 import { ExerciseBlueprint } from '@/models/blueprint-models';
 import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/exercise-editor';
+import { LocalDateTime } from '@js-joda/core';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
   showBodyweight: boolean;
 }) {
-  const { setScrolled } = useScroll();
   const [floatingBottomSize, setFloatingBottomSize] = useState(0);
-  const { colors, spacing, font } = useAppTheme();
+  const { colors } = useAppTheme();
   const { t } = useTranslate();
   const session = useSelector(
     (state: RootState) => state.currentSession[props.target],
@@ -115,6 +114,7 @@ export default function SessionComponent(props: {
         dispatch(cycleExerciseReps, {
           exerciseIndex: index,
           setIndex,
+          time: LocalDateTime.now(),
         })
       }
       updateWeightForExercise={(weight) =>

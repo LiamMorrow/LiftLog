@@ -1,4 +1,4 @@
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScollListener';
 import { useEffect, useState } from 'react';
 import { View, StyleProp, ViewStyle } from 'react-native';

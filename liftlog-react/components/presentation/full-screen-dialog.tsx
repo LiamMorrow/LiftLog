@@ -1,5 +1,5 @@
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { useNavigation } from 'expo-router';
 import { ReactNode, useEffect } from 'react';
 import { Animated, Text, useAnimatedValue, View } from 'react-native';
@@ -19,7 +19,7 @@ export default function FullScreenDialog(props: FullScreenDialogProps) {
   const { action, open, onAction, onClose, title, children } = props;
   const navigation = useNavigation();
   const scrollAnimation = useAnimatedValue(0);
-  const { colors, spacing, font } = useAppTheme();
+  const { colors } = useAppTheme();
   const { top, bottom } = useSafeAreaInsets();
 
   useEffect(() => {

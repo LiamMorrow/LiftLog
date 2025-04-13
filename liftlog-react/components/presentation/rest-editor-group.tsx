@@ -1,7 +1,7 @@
 import LimitedHtml from '@/components/presentation/limited-html';
 import RestEditor from '@/components/presentation/rest-editor';
 import RestFormat from '@/components/presentation/rest-format';
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { Rest } from '@/models/blueprint-models';
 import { Duration } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
@@ -17,7 +17,7 @@ interface RestEditorGroupProps {
   onRestUpdated: (rest: Rest) => void;
 }
 export default function RestEditorGroup(props: RestEditorGroupProps) {
-  const { spacing, colors, font } = useAppTheme();
+  const { colors } = useAppTheme();
   const { t } = useTranslate();
   const { onRestUpdated, rest } = props;
   const [buttonValue, setButtonValue] = useState(

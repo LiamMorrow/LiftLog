@@ -5,7 +5,7 @@ export default function Layout() {
   return (
     <Stack
       screenOptions={{
-        header: MaterialStackHeader,
+        header: (props) => <MaterialStackHeader {...props} />,
       }}
     ></Stack>
   );
