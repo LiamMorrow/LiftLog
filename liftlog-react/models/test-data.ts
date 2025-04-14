@@ -4,7 +4,7 @@ import { LocalDate } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
 
-export const benchPress: RecordedExercise = {
+export const benchPress: RecordedExercise = new RecordedExercise().with({
   blueprint: {
     name: 'Bench Press',
     sets: 3,
@@ -23,9 +23,9 @@ export const benchPress: RecordedExercise = {
     .toArray(),
   notes: '',
   perSetWeight: false,
-};
+});
 
-export const squats: RecordedExercise = {
+export const squats: RecordedExercise = new RecordedExercise().with({
   blueprint: {
     name: 'Squats',
     sets: 3,
@@ -44,9 +44,9 @@ export const squats: RecordedExercise = {
     .toArray(),
   notes: '',
   perSetWeight: false,
-};
+});
 
-export const overheadPress: RecordedExercise = {
+export const overheadPress: RecordedExercise = new RecordedExercise().with({
   blueprint: {
     name: 'Overhead Press',
     sets: 3,
@@ -65,7 +65,7 @@ export const overheadPress: RecordedExercise = {
     .toArray(),
   notes: '',
   perSetWeight: false,
-};
+});
 
 export const defaultSessionBlueprint: SessionBlueprint = {
   exercises: [
@@ -78,10 +78,10 @@ export const defaultSessionBlueprint: SessionBlueprint = {
   name: 'My Session',
 };
 
-export const defaultSession: Session = {
+export const defaultSession: Session = new Session().with({
   blueprint: defaultSessionBlueprint,
   id: Math.random().toString(),
   recordedExercises: [squats, benchPress, overheadPress, overheadPress],
   date: LocalDate.now(),
   bodyweight: new BigNumber(0),
-};
+});

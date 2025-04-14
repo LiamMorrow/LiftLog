@@ -1,4 +1,3 @@
-import { RootState } from '@/store';
 import {
   addExercise,
   cycleExerciseReps,
@@ -11,13 +10,13 @@ import {
   updateWeightForSet,
 } from '@/store/current-session';
 import { Button, Card, FAB, Icon } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Text, View } from 'react-native';
 import EmptyInfo from '@/components/presentation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import ItemList from '@/components/presentation/item-list';
-import { RecordedExercise, Session } from '@/models/session-models';
+import { RecordedExercise } from '@/models/session-models';
 import WeightedExercise from '@/components/presentation/weighted-exercise';
 import WeightDisplay from '@/components/presentation/weight-display';
 import BigNumber from 'bignumber.js';
@@ -29,6 +28,7 @@ import { ExerciseBlueprint } from '@/models/blueprint-models';
 import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/exercise-editor';
 import { LocalDateTime } from '@js-joda/core';
+import { useSession } from '@/hooks/useSession';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
@@ -37,9 +37,8 @@ export default function SessionComponent(props: {
   const [floatingBottomSize, setFloatingBottomSize] = useState(0);
   const { colors } = useAppTheme();
   const { t } = useTranslate();
-  const session = useSelector(
-    (state: RootState) => state.currentSession[props.target],
-  );
+  const session = useSession(props.target);
+  console.log(session);
   const storeDispatch = useDispatch();
   const dispatch = <T,>(
     reducer: (a: { payload: T; target: SessionTarget }) => any,
@@ -109,7 +108,7 @@ export default function SessionComponent(props: {
   const renderItem = (item: RecordedExercise, index: number) => (
     <WeightedExercise
       recordedExercise={item}
-      toStartNext={Session.nextExercise(session) === item}
+      toStartNext={session.nextExercise === item}
       cycleRepCountForSet={(setIndex) =>
         dispatch(cycleExerciseReps, {
           exerciseIndex: index,
@@ -209,11 +208,11 @@ export default function SessionComponent(props: {
   );
 
   const SnackBar = () => {
-    const lastExercise = Session.lastExercise(session);
-    const lastRecordedSet = RecordedExercise.lastRecordedSet(lastExercise);
+    const lastExercise = session.lastExercise;
+    const lastRecordedSet = lastExercise?.lastRecordedSet;
     if (
       props.target === 'workoutSession' &&
-      Session.nextExercise(session) &&
+      session.nextExercise &&
       lastExercise &&
       lastRecordedSet?.set
     ) {

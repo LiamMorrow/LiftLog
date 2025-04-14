@@ -10,7 +10,7 @@ interface CardListProps<T> extends ViewProps {
   onLongPress?: (item: T) => void;
   shouldHighlight?: (item: T) => boolean;
   cardStyle?: CardProps['style'];
-  cardType: CardProps['mode'];
+  cardType: 'elevated' | 'outlined' | 'contained';
   keySelector?: (item: T) => Key;
 }
 

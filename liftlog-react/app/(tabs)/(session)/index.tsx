@@ -1,4 +1,5 @@
 import CardList from '@/components/presentation/card-list';
+import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
 import { Remote } from '@/components/presentation/remote';
 import SessionSummary from '@/components/presentation/session-summary';
@@ -8,8 +9,10 @@ import { SurfaceText } from '@/components/presentation/surface-text';
 import { AndroidNotificationAlert } from '@/components/smart/android-notification-alert';
 import { Tips } from '@/components/smart/tips';
 import { spacing } from '@/hooks/useAppTheme';
+import { useSession } from '@/hooks/useSession';
 import { Session } from '@/models/session-models';
 import { RootState, useSelector } from '@/store';
+import { setCurrentSession } from '@/store/current-session';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -63,11 +66,30 @@ function NoUpcomingSessions() {
 
 function ListUpcomingWorkouts({ upcoming }: { upcoming: readonly Session[] }) {
   const dispatch = useDispatch();
-  const currentSession = useSelector(() => {});
+  const currentSession = useSession('workoutSession');
+  const { push } = useRouter();
   const [selectedSession, setSelectedSession] = useState<Session | undefined>();
 
   const selectSession = (session: Session) => {
     setSelectedSession(session);
+    if (currentSession?.isStarted && currentSession !== session) {
+    } else {
+      replaceSession();
+    }
+  };
+  const replaceSession = () => {
+    if (!selectedSession) {
+      return;
+    }
+    const capturedSession = selectedSession;
+    setSelectedSession(undefined);
+    dispatch(
+      setCurrentSession({
+        target: 'workoutSession',
+        session: capturedSession.toPOJO(),
+      }),
+    );
+    push('/session');
   };
   return (
     <>
@@ -83,7 +105,7 @@ function ListUpcomingWorkouts({ upcoming }: { upcoming: readonly Session[] }) {
             <SplitCardControl
               titleContent={
                 <SessionSummaryTitle
-                  isFilled={Session.isStarted(session)}
+                  isFilled={session.isStarted}
                   session={session}
                 />
               }
@@ -93,6 +115,14 @@ function ListUpcomingWorkouts({ upcoming }: { upcoming: readonly Session[] }) {
             />
           );
         }}
+      />
+      <ConfirmationDialog
+        open={!!selectedSession}
+        onCancel={() => setSelectedSession(undefined)}
+        okText="Replace"
+        onOk={replaceSession}
+        headline={<T keyName="ReplaceCurrentSession" />}
+        textContent={<T keyName="SessionInProgress" />}
       />
     </>
   );
@@ -114,7 +144,11 @@ export default function Index() {
           if (!upcoming.length) {
             return <NoUpcomingSessions />;
           }
-          return <ListUpcomingWorkouts upcoming={upcoming} />;
+          return (
+            <ListUpcomingWorkouts
+              upcoming={upcoming.map((x) => Session.fromPOJO(x))}
+            />
+          );
         }}
       />
     </FullHeightScrollView>

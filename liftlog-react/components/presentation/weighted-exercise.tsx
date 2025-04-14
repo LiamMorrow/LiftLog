@@ -1,6 +1,6 @@
 import ItemTitle from '@/components/presentation/item-title';
 import PotentialSetCounter from '@/components/presentation/potential-set-counter';
-import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { RecordedExercise } from '@/models/session-models';
 import { DatedRecordedExercise } from '@/models/stats-models';
 import BigNumber from 'bignumber.js';
@@ -69,7 +69,7 @@ function AnimatedWeightDisplay(
       <WeightDisplay
         increment={recordedExercise.blueprint.weightIncreaseOnSuccess}
         updateWeight={props.updateWeightForExercise}
-        weight={RecordedExercise.maxWeight(recordedExercise)}
+        weight={recordedExercise.maxWeight}
         isReadonly={props.isReadonly}
       />
     </Animated.View>

@@ -43,6 +43,7 @@ export function MaterialBottomTabs({
             if (event.defaultPrevented) {
               preventDefault();
             } else {
+              //@ts-expect-error
               navigation.dispatch({
                 ...CommonActions.navigate(route.name, route.params),
                 target: state.key,

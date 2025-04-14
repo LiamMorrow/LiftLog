@@ -1,7 +1,7 @@
 import FocusRing, {
   ANIMATION_DURATION,
 } from '@/components/presentation/focus-ring';
-import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { ColorSchemeSeed } from '@/store/settings';
 import { sleep } from '@/utils/sleep';
 import { createMaterial3Theme } from '@pchmn/expo-material3-theme';
@@ -20,7 +20,7 @@ function ColorBall(props: {
   seed: `#${string}`;
   onUpdateTheme: (seed: ColorSchemeSeed) => void;
 }) {
-  const { colors } = useAppTheme();
+  const { colors, colorScheme } = useAppTheme();
   const theme = useMemo(() => createMaterial3Theme(props.seed), [props.seed]);
   const isSelected = props.seed === props.selectedSeed;
 

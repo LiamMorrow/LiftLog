@@ -5,7 +5,7 @@ import { TouchableRipple } from 'react-native-paper';
 import { Text, Touchable, useAnimatedValue, Animated } from 'react-native';
 import WeightFormat from '@/components/presentation/weight-format';
 import WeightDialog from '@/components/presentation/weight-dialog';
-import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { PressableProps } from 'react-native-paper/lib/typescript/components/TouchableRipple/Pressable';
 import FocusRing from '@/components/presentation/focus-ring';
 
@@ -148,7 +148,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
               padding: spacing[2],
             }}
             onPress={
-              props.isReadonly ? undefined : () => setIsWeightDialogOpen(true)
+              props.isReadonly ? undefined! : () => setIsWeightDialogOpen(true)
             }
             disabled={props.isReadonly}
           >

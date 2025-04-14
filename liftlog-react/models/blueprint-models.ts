@@ -13,6 +13,22 @@ export interface SessionBlueprint {
   notes: string;
 }
 
+export class KeyedExerciseBlueprint {
+  constructor(
+    public name: string,
+    public sets: number,
+    public repsPerSet: number,
+  ) {}
+
+  static fromExerciseBlueprint(e: ExerciseBlueprint): KeyedExerciseBlueprint {
+    return new KeyedExerciseBlueprint(e.name, e.sets, e.repsPerSet);
+  }
+
+  toString() {
+    return `${this.name}_${this.sets}_${this.sets}`;
+  }
+}
+
 export interface Rest {
   minRest: Duration;
   maxRest: Duration;

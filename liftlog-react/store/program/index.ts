@@ -1,6 +1,6 @@
 import { ProgramBlueprint, SessionBlueprint } from '@/models/blueprint-models';
 import { RemoteData } from '@/models/remote';
-import { Session } from '@/models/session-models';
+import { SessionPOJO } from '@/models/session-models';
 import { defaultSession } from '@/models/test-data';
 
 import { LocalDate } from '@js-joda/core';
@@ -9,7 +9,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface ProgramState {
   readonly isHydrated: boolean;
   readonly activeProgramId: string;
-  readonly upcomingSessions: RemoteData<readonly Session[]>;
+  readonly upcomingSessions: RemoteData<readonly SessionPOJO[]>;
   readonly savedPrograms: {
     readonly [programId: string]: ProgramBlueprint;
   };
@@ -18,7 +18,7 @@ interface ProgramState {
 const initialState: ProgramState = {
   isHydrated: false,
   activeProgramId: '00000000-0000-0000-0000-000000000000',
-  upcomingSessions: RemoteData.success([defaultSession]),
+  upcomingSessions: RemoteData.success([defaultSession.toPOJO()]),
   savedPrograms: {},
 };
 
@@ -32,7 +32,7 @@ const programSlice = createSlice({
 
     setUpcomingSessions(
       state,
-      action: PayloadAction<RemoteData<readonly Session[]>>,
+      action: PayloadAction<RemoteData<readonly SessionPOJO[]>>,
     ) {
       state.upcomingSessions = action.payload;
     },
@@ -185,6 +185,37 @@ const programSlice = createSlice({
     },
   },
 });
+
+export function getSessionBlueprints(state: ProgramState, programId: string) {
+  return state.savedPrograms[programId];
+}
+
+export function getActiveProgramSessionBlueprints(state: ProgramState) {
+  return getSessionBlueprints(state, state.activeProgramId).sessions;
+}
+
+export function getActiveProgram(state: ProgramState) {
+  return state.savedPrograms[state.activeProgramId];
+}
+
+// const listenerMiddleware = createListenerMiddleware<RootState>();
+
+// export const fetchUpcomingSessions = { type: 'FETCH_UPCOMING_SESSIONS' };
+
+// // Add one or more listener entries that look for specific actions.
+// // They may contain any sync or async logic, similar to thunks.
+// listenerMiddleware.startListening({
+//   predicate: (action) => action.type === fetchUpcomingSessions.type,
+//   effect: async (_, { cancelActiveListeners, dispatch, getState }) => {
+//     cancelActiveListeners();
+//     dispatch(programSlice.actions.setUpcomingSessions(RemoteData.loading()));
+//     const state = getState().program;
+//     const sessionBlueprints = getActiveProgramSessionBlueprints(state)
+//     const numberOfUpcomingSessions = sessionBlueprints.length;
+
+//       const sessions = await SessionService.getUpcomingSessions(sessionBlueprints).take(5).toArrayAsync()
+//   },
+// });
 
 export const { setIsHydrated } = programSlice.actions;
 

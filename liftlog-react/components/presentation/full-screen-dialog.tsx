@@ -81,7 +81,9 @@ export default function FullScreenDialog(props: FullScreenDialogProps) {
             >
               {title}
             </Text>
-            {action ? <Button onPress={onAction}>{action}</Button> : null}
+            {action && onAction ? (
+              <Button onPress={onAction}>{action}</Button>
+            ) : null}
           </View>
         </Animated.View>
         <FullHeightScrollView

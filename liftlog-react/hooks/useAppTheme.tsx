@@ -1,4 +1,4 @@
-import { RootState } from '@/store';
+import { useSelector } from '@/store';
 import {
   Material3Scheme,
   useMaterial3Theme,
@@ -6,7 +6,6 @@ import {
 import React, { createContext, ReactNode, useContext, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
-import { useSelector } from 'react-redux';
 
 export const spacing = {
   0: 0,
@@ -99,14 +98,14 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   children,
 }) => {
   const colorSchemeSeed = useSelector(
-    (state: RootState) => state.settings.colorSchemeSeed,
+    (state) => state.settings.colorSchemeSeed,
   );
 
   const colorScheme = useColorScheme();
   // If the device is not compatible, it will return a theme based on the fallback source color (optional, default to #6750A4)
   const { theme, updateTheme, resetTheme } = useMaterial3Theme({
     fallbackSourceColor: '0x00AA00',
-    sourceColor: colorSchemeSeed === 'default' ? undefined : colorSchemeSeed,
+    sourceColor: colorSchemeSeed === 'default' ? undefined! : colorSchemeSeed,
   });
   useEffect(() => {
     if (colorSchemeSeed === 'default') {

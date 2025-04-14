@@ -21,7 +21,7 @@ export default function Index() {
         },
       ]}
     >
-      <Stack.Screen options={{ title: session?.blueprint.name }} />
+      <Stack.Screen options={{ title: session?.blueprint.name ?? 'Workout' }} />
 
       <SessionComponent target="workoutSession" showBodyweight={true} />
     </View>

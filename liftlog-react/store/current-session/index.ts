@@ -1,5 +1,10 @@
 import { ExerciseBlueprint } from '@/models/blueprint-models';
-import { RecordedExercise, Session } from '@/models/session-models';
+import {
+  RecordedExercise,
+  RecordedExercisePOJO,
+  Session,
+  SessionPOJO,
+} from '@/models/session-models';
 import { getCycledRepCount } from '@/store/current-session/helpers';
 import { SafeDraft, toSafeDraft } from '@/utils/store-helpers';
 import { LocalDate, LocalDateTime } from '@js-joda/core';
@@ -10,9 +15,9 @@ import Enumerable from 'linq';
 
 interface CurrentSessionState {
   isHydrated: boolean;
-  workoutSession: Session | undefined;
-  historySession: Session | undefined;
-  feedSession: Session | undefined;
+  workoutSession: SessionPOJO | undefined;
+  historySession: SessionPOJO | undefined;
+  feedSession: SessionPOJO | undefined;
   latestSetTimerNotificationId: string | undefined;
 }
 
@@ -34,7 +39,7 @@ type TargetedSessionAction<TPayload> = PayloadAction<{
 // Only apply the action if the target is defined
 function targetedSessionAction<T>(
   reducer: (
-    session: SafeDraft<Session>,
+    session: SafeDraft<SessionPOJO>,
     action: T,
     target: SessionTarget,
     state: SafeDraft<CurrentSessionState>,
@@ -79,7 +84,7 @@ const currentSessionSlice = createSlice({
         const exerciseBlueprint =
           session.blueprint.exercises[action.exerciseIndex];
 
-        if (!Session.isStarted(session as unknown as Session)) {
+        if (!Session.fromPOJO(session).isStarted) {
           session.date = action.time.toLocalDate();
         }
 
@@ -117,7 +122,7 @@ const currentSessionSlice = createSlice({
             .select(
               (index) =>
                 existingExercise.potentialSets[index] ?? {
-                  weight: RecordedExercise.maxWeight(existingExercise),
+                  weight: RecordedExercise.fromPOJO(existingExercise).maxWeight,
                   set: undefined,
                 },
             )
@@ -141,7 +146,8 @@ const currentSessionSlice = createSlice({
             .toArray(),
           notes: undefined,
           perSetWeight: false,
-        } satisfies RecordedExercise;
+          _BRAND: 'RECORDED_EXERCISE_POJO',
+        } satisfies RecordedExercisePOJO;
         session.recordedExercises.push(newRecordedExercise);
       },
     ),
@@ -214,11 +220,11 @@ const currentSessionSlice = createSlice({
       state,
       action: PayloadAction<{
         target: SessionTarget;
-        session: Session;
+        session: SessionPOJO;
       }>,
     ) => {
       state[action.payload.target] = action.payload
-        .session as unknown as WritableDraft<Session>;
+        .session as unknown as WritableDraft<SessionPOJO>;
     },
 
     updateNotesForExercise: targetedSessionAction(

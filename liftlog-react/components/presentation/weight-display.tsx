@@ -1,6 +1,7 @@
 import WeightDialog from '@/components/presentation/weight-dialog';
 import WeightFormat from '@/components/presentation/weight-format';
-import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
+import { font } from '@/hooks/useAppTheme';
+import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useState } from 'react';
 import { View } from 'react-native';
@@ -23,7 +24,7 @@ type WeightDisplayProps = {
     }
 );
 export default function WeightDisplay(props: WeightDisplayProps) {
-  const { colors } = useAppTheme();
+  const { t } = useTranslate();
   const [dialogOpen, setDialogOpen] = useState(false);
   return (
     <View>
@@ -40,7 +41,7 @@ export default function WeightDisplay(props: WeightDisplayProps) {
           open={dialogOpen}
           weight={props.weight as BigNumber}
           increment={props.increment}
-          label={props.label}
+          label={props.label ?? t('Weight')}
           allowNull={props.allowNull as false}
           updateWeight={props.updateWeight as (weight: BigNumber) => void}
           onClose={() => setDialogOpen(false)}
