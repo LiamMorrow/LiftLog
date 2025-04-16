@@ -328,4 +328,10 @@ internal class SettingsEffects(
             feedStateDao
         );
     }
+
+    [EffectMethod]
+    public async Task SetFirstDayOfWeek(SetFirstDayOfWeekAction action, IDispatcher __)
+    {
+        await preferencesRepository.SetFirstDayOfWeekAsync(action.FirstDayOfWeek);
+    }
 }

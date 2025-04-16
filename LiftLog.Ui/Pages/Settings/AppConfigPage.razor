@@ -7,6 +7,8 @@
 
 <md-list>
     <ListSwitch Headline="@UiStrings.UseImperialUnits" SupportingText="@UiStrings.UseImperialUnitsSubtitle" Value="@SettingsState.Value.UseImperialUnits" OnSwitched="SetUseImperialUnits" />
+    <FirstDayOfTheWeekSelector Title="@UiStrings.SetFirstDayOfWeek" Subtitle="@UiStrings.SetFirstDayOfWeekSubtitle"
+     SelectedValue="@SettingsState.Value.FirstDayOfWeek.ToString()" SelectedValueChanged="OnFirstDayOfWeekChanged" />
     <ListSwitch Headline="@UiStrings.ShowBodyweight" SupportingText="@UiStrings.ShowBodyweightSubtitle" Value="@SettingsState.Value.ShowBodyweight" OnSwitched="SetShowBodyweight" />
     <ListSwitch data-cy="split-weight-toggle" Headline="@UiStrings.SplitWeightByDefault" SupportingText="@UiStrings.SplitWeightByDefaultSubtitle" Value="@SettingsState.Value.SplitWeightByDefault" OnSwitched="SetSplitWeightByDefault" />
     <ListSwitch Headline="@UiStrings.ShowFeed" SupportingText="@UiStrings.ShowFeedSubtitle" Value="@SettingsState.Value.ShowFeed" OnSwitched="SetShowFeed" />
@@ -34,6 +36,16 @@
     private void SetUseImperialUnits(bool value)
     => Dispatcher.Dispatch(new SetUseImperialUnitsAction(value));
 
+    private void SetFirstDayOfWeek(DayOfWeek value)
+        => Dispatcher.Dispatch(new SetFirstDayOfWeekAction(value));
+
+    private void OnFirstDayOfWeekChanged(string? value)
+    {
+        if (Enum.TryParse<DayOfWeek>(value, out var day))
+        {
+            SetFirstDayOfWeek(day);
+        }
+    }
     private void SetShowBodyweight(bool value)
         => Dispatcher.Dispatch(new SetShowBodyweightAction(value));
 

@@ -1,3 +1,4 @@
+using System.Globalization;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 
@@ -19,7 +20,8 @@ public record SettingsState(
     string LastSuccessfulRemoteBackupHash,
     DateTimeOffset LastBackupTime,
     bool BackupReminder,
-    bool SplitWeightByDefault
+    bool SplitWeightByDefault,
+    DayOfWeek FirstDayOfWeek
 )
 {
     public static SettingsState Default =>
@@ -39,7 +41,8 @@ public record SettingsState(
             LastSuccessfulRemoteBackupHash: string.Empty,
             LastBackupTime: DateTimeOffset.MinValue,
             BackupReminder: true,
-            SplitWeightByDefault: false
+            SplitWeightByDefault: false,
+            FirstDayOfWeek: CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek
         );
 }
 
