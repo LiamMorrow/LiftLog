@@ -488,6 +488,12 @@
   <data name="UseImperialUnitsSubtitle" xml:space="preserve">
     <value>Use pounds in favour of kilograms</value>
   </data>
+  <data name="SetFirstDayOfWeek" xml:space="preserve">
+    <value>Set first day of week</value>
+  </data>
+  <data name="SetFirstDayOfWeekSubtitle" xml:space="preserve">
+    <value>Set the first day of the week for the calendar</value>
+  </data>
   <data name="ShowBodyweight" xml:space="preserve">
     <value>Show bodyweight</value>
   </data>

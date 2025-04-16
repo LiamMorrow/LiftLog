@@ -55,3 +55,5 @@ public record SetBackupReminderAction(bool ShowReminder);
 public record ExportPlainTextAction(PlaintextExportFormat Format);
 
 public record SetSplitWeightByDefaultAction(bool SplitWeightByDefault);
+
+public record SetFirstDayOfWeekAction(DayOfWeek FirstDayOfWeek);

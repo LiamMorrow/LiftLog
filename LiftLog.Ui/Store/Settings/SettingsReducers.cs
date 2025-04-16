@@ -100,4 +100,10 @@ public static class SettingsReducers
         SettingsState state,
         SetSplitWeightByDefaultAction action
     ) => state with { SplitWeightByDefault = action.SplitWeightByDefault };
+
+    [ReducerMethod]
+    public static SettingsState SetFirstDayOfWeek(
+        SettingsState state,
+        SetFirstDayOfWeekAction action
+    ) => state with { FirstDayOfWeek = action.FirstDayOfWeek };
 }

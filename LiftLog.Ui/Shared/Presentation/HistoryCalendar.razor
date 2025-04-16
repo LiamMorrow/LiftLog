@@ -1,10 +1,10 @@
 @using System.Globalization
-
+@inject IState<SettingsState> SettingsState
 
 @{
     var firstDayOfMonth = new DateOnly(CurrentYear, CurrentMonth, 1);
     var dayOfFirstDayOfTheMonth = (int)firstDayOfMonth.DayOfWeek;
-    var firstDayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
+    var firstDayOfWeek = SettingsState.Value.FirstDayOfWeek;
     var dayOfFirstDayOfTheWeek = (int)firstDayOfWeek;
     int numberOfDaysToShowFromPreviousMonth = (dayOfFirstDayOfTheMonth - dayOfFirstDayOfTheWeek + 7) % 7;
     var index = 0;
