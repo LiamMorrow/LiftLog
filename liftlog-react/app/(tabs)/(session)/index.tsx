@@ -1,6 +1,7 @@
 import CardList from '@/components/presentation/card-list';
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
+
 import { Remote } from '@/components/presentation/remote';
 import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
@@ -72,24 +73,23 @@ function ListUpcomingWorkouts({ upcoming }: { upcoming: readonly Session[] }) {
 
   const selectSession = (session: Session) => {
     setSelectedSession(session);
-    if (currentSession?.isStarted && currentSession !== session) {
-    } else {
-      replaceSession();
+    if (!currentSession || !currentSession.isStarted) {
+      replaceSession(session);
     }
   };
-  const replaceSession = () => {
-    if (!selectedSession) {
-      return;
-    }
-    const capturedSession = selectedSession;
+  const replaceSession = (session: Session) => {
     setSelectedSession(undefined);
     dispatch(
       setCurrentSession({
         target: 'workoutSession',
-        session: capturedSession.toPOJO(),
+        session: session.toPOJO(),
       }),
     );
     push('/session');
+  };
+  const replaceSessionDialogAction = () => {
+    if (!selectedSession) return;
+    replaceSession(selectedSession);
   };
   return (
     <>
@@ -120,7 +120,7 @@ function ListUpcomingWorkouts({ upcoming }: { upcoming: readonly Session[] }) {
         open={!!selectedSession}
         onCancel={() => setSelectedSession(undefined)}
         okText="Replace"
-        onOk={replaceSession}
+        onOk={replaceSessionDialogAction}
         headline={<T keyName="ReplaceCurrentSession" />}
         textContent={<T keyName="SessionInProgress" />}
       />
@@ -129,9 +129,7 @@ function ListUpcomingWorkouts({ upcoming }: { upcoming: readonly Session[] }) {
 }
 
 export default function Index() {
-  const dispatch = useDispatch();
   const upcomingSessions = useSelector((s) => s.program.upcomingSessions);
-  const { push } = useRouter();
   const { t } = useTranslate();
 
   return (

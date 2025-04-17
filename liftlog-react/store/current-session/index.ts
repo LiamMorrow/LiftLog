@@ -115,7 +115,8 @@ const currentSessionSlice = createSlice({
         const existingExercise =
           session.recordedExercises[action.exerciseIndex];
 
-        session.blueprint.exercises[action.exerciseIndex] = action.newBlueprint;
+        session.blueprint.exercises[action.exerciseIndex] =
+          action.newBlueprint.toPOJO();
 
         session.recordedExercises[action.exerciseIndex].potentialSets =
           Enumerable.range(0, action.newBlueprint.sets)
@@ -129,23 +130,27 @@ const currentSessionSlice = createSlice({
             .toArray();
 
         session.recordedExercises[action.exerciseIndex].blueprint =
-          action.newBlueprint;
+          action.newBlueprint.toPOJO();
       },
     ),
 
     addExercise: targetedSessionAction(
-      (session, action: { blueprint: ExerciseBlueprint }) => {
-        session.blueprint.exercises.push(action.blueprint);
+      (
+        session,
+        action: { blueprint: ExerciseBlueprint; perSetWeight: boolean },
+      ) => {
+        session.blueprint.exercises.push(action.blueprint.toPOJO());
         const newRecordedExercise = {
-          blueprint: action.blueprint,
+          blueprint: action.blueprint.toPOJO(),
           potentialSets: Enumerable.range(0, action.blueprint.sets)
             .select(() => ({
+              _BRAND: 'POTENTIAL_SET_POJO' as const,
               weight: new BigNumber(0),
               set: undefined,
             }))
             .toArray(),
           notes: undefined,
-          perSetWeight: false,
+          perSetWeight: action.perSetWeight,
           _BRAND: 'RECORDED_EXERCISE_POJO',
         } satisfies RecordedExercisePOJO;
         session.recordedExercises.push(newRecordedExercise);
@@ -168,6 +173,7 @@ const currentSessionSlice = createSlice({
           action.reps === undefined
             ? undefined
             : {
+                _BRAND: 'RECORDED_SET_POJO',
                 repsCompleted: action.reps,
                 completionDateTime: action.time,
               };

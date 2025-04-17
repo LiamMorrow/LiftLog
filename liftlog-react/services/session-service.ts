@@ -102,22 +102,28 @@ class SessionServiceImpl {
             isSuccessForProgressiveOverload: false,
           }),
           () =>
-            Array.from({ length: e.sets }, () => ({
-              weight: lastExercise?.potentialSets[0]?.weight ?? BigNumber(0),
-              set: undefined,
-            })),
+            Array.from({ length: e.sets }, () =>
+              PotentialSet.fromPOJO({
+                weight: lastExercise?.potentialSets[0]?.weight ?? BigNumber(0),
+                set: undefined,
+              }),
+            ),
         )
         .with({ isSuccessForProgressiveOverload: true }, (x) =>
-          x.potentialSets.map((x) => ({
-            weight: x.weight.plus(e.weightIncreaseOnSuccess),
-            set: undefined,
-          })),
+          x.potentialSets.map((x) =>
+            PotentialSet.fromPOJO({
+              weight: x.weight.plus(e.weightIncreaseOnSuccess),
+              set: undefined,
+            }),
+          ),
         )
         .otherwise((x) =>
-          x.potentialSets.map((x) => ({
-            weight: x.weight,
-            set: undefined,
-          })),
+          x.potentialSets.map((x) =>
+            PotentialSet.fromPOJO({
+              weight: x.weight,
+              set: undefined,
+            }),
+          ),
         );
 
       return new RecordedExercise(

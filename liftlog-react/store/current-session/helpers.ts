@@ -1,16 +1,17 @@
-import { ExerciseBlueprint } from '@/models/blueprint-models';
-import { RecordedSet } from '@/models/session-models';
+import { ExerciseBlueprintPOJO } from '@/models/blueprint-models';
+import { RecordedSetPOJO } from '@/models/session-models';
 import { LocalDateTime } from '@js-joda/core';
 import { match } from 'ts-pattern';
 
 export function getCycledRepCount(
-  recordedSet: RecordedSet | undefined,
-  exerciseBlueprint: ExerciseBlueprint,
+  recordedSet: RecordedSetPOJO | undefined,
+  exerciseBlueprint: ExerciseBlueprintPOJO,
   time: LocalDateTime,
-): RecordedSet | undefined {
+): RecordedSetPOJO | undefined {
   return match(recordedSet)
-    .returnType<RecordedSet | undefined>()
+    .returnType<RecordedSetPOJO | undefined>()
     .with(undefined, () => ({
+      _BRAND: 'RECORDED_SET_POJO',
       completionDateTime: time,
       repsCompleted: exerciseBlueprint.repsPerSet,
     }))

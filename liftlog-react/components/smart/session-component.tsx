@@ -29,6 +29,7 @@ import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/exercise-editor';
 import { LocalDateTime } from '@js-joda/core';
 import { useSession } from '@/hooks/useSession';
+import { useSelector } from '@/store';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
@@ -38,12 +39,16 @@ export default function SessionComponent(props: {
   const { colors } = useAppTheme();
   const { t } = useTranslate();
   const session = useSession(props.target);
-  console.log(session);
   const storeDispatch = useDispatch();
   const dispatch = <T,>(
     reducer: (a: { payload: T; target: SessionTarget }) => any,
     payload: T,
   ) => storeDispatch(reducer({ payload, target: props.target }));
+
+  const perSetWeightSetting = useSelector(
+    (x) => x.settings.splitWeightByDefault,
+  );
+
   const isReadonly = props.target === 'feedSession';
 
   const [exerciseToEditIndex, setExerciseToEditIndex] = useState<
@@ -65,6 +70,7 @@ export default function SessionComponent(props: {
       } else {
         dispatch(addExercise, {
           blueprint: editingExerciseBlueprint,
+          perSetWeight: perSetWeightSetting,
         });
       }
       setExerciseEditorOpen(false);

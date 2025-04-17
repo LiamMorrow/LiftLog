@@ -27,8 +27,9 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
     setExercise(propsExercise);
   }, [propsExercise]);
   const updateExercise = (ex: Partial<ExerciseBlueprint>) => {
-    setExercise({ ...exercise, ...ex });
-    updatePropsExercise({ ...exercise, ...ex });
+    const update = ExerciseBlueprint.fromPOJO({ ...exercise.toPOJO(), ...ex });
+    setExercise(update);
+    updatePropsExercise(update);
   };
   const useImperialUnits = useSelector(
     (s: RootState) => s.settings.useImperialUnits,

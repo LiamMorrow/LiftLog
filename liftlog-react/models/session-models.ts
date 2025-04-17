@@ -1,4 +1,9 @@
-import { ExerciseBlueprint, SessionBlueprint } from '@/models/blueprint-models';
+import {
+  ExerciseBlueprint,
+  ExerciseBlueprintPOJO,
+  SessionBlueprint,
+  SessionBlueprintPOJO,
+} from '@/models/blueprint-models';
 import { LocalDateTimeComparer } from '@/models/comparers';
 import { indexed } from '@/utils/enumerable';
 import { LocalDate, LocalDateTime, ZoneOffset } from '@js-joda/core';
@@ -9,7 +14,7 @@ import { match, P } from 'ts-pattern';
 export interface SessionPOJO {
   _BRAND: 'SESSION_POJO';
   id: string;
-  blueprint: SessionBlueprint;
+  blueprint: SessionBlueprintPOJO;
   recordedExercises: RecordedExercisePOJO[];
   date: LocalDate;
   bodyweight: BigNumber | undefined;
@@ -48,17 +53,38 @@ export class Session {
   }
 
   static fromPOJO(pojo: undefined): undefined;
-  static fromPOJO(pojo: SessionPOJO): Session;
-  static fromPOJO(pojo: SessionPOJO | undefined): Session | undefined;
-  static fromPOJO(pojo: SessionPOJO | undefined): Session | undefined {
+  static fromPOJO(pojo: Omit<SessionPOJO, '_BRAND'>): Session;
+  static fromPOJO(
+    pojo: Omit<SessionPOJO, '_BRAND'> | undefined,
+  ): Session | undefined;
+  static fromPOJO(
+    pojo: Omit<SessionPOJO, '_BRAND'> | undefined,
+  ): Session | undefined {
     return (
       pojo &&
       new Session(
         pojo.id,
-        pojo.blueprint,
+        SessionBlueprint.fromPOJO(pojo.blueprint),
         pojo.recordedExercises.map(RecordedExercise.fromPOJO),
         pojo.date,
         pojo.bodyweight,
+      )
+    );
+  }
+
+  equals(other: Session | undefined): boolean {
+    if (!other) {
+      return false;
+    }
+
+    return (
+      this.id === other.id &&
+      this.date.equals(other.date) &&
+      BigNumberEqual(this.bodyweight, other.bodyweight) &&
+      this.blueprint.equals(other.blueprint) &&
+      this.recordedExercises.length === other.recordedExercises.length &&
+      this.recordedExercises.every((exercise, index) =>
+        exercise.equals(other.recordedExercises[index]),
       )
     );
   }
@@ -78,7 +104,7 @@ export class Session {
   toPOJO(): SessionPOJO {
     return {
       _BRAND: 'SESSION_POJO',
-      blueprint: this.blueprint,
+      blueprint: this.blueprint.toPOJO(),
       bodyweight: this.bodyweight,
       date: this.date,
       id: this.id,
@@ -181,8 +207,8 @@ export class Session {
 
 export interface RecordedExercisePOJO {
   _BRAND: 'RECORDED_EXERCISE_POJO';
-  blueprint: ExerciseBlueprint;
-  potentialSets: readonly PotentialSet[];
+  blueprint: ExerciseBlueprintPOJO;
+  potentialSets: readonly PotentialSetPOJO[];
   notes: string | undefined;
   perSetWeight: boolean;
 }
@@ -215,30 +241,60 @@ export class RecordedExercise {
     this.perSetWeight = perSetWeight!;
   }
 
-  with(other: Partial<RecordedExercisePOJO>) {
+  static fromPOJO(
+    fromPOJO: Omit<RecordedExercisePOJO, '_BRAND'>,
+  ): RecordedExercise {
     return new RecordedExercise(
-      'blueprint' in other ? other.blueprint! : this.blueprint,
-      'potentialSets' in other ? other.potentialSets! : this.potentialSets,
-      'notes' in other ? other.notes! : this.notes,
-      'perSetWeight' in other ? other.perSetWeight! : this.perSetWeight,
+      ExerciseBlueprint.fromPOJO(fromPOJO.blueprint),
+      fromPOJO.potentialSets.map((x) => PotentialSet.fromPOJO(x)),
+      fromPOJO.notes,
+      fromPOJO.perSetWeight,
     );
   }
 
-  static fromPOJO(fromPOJO: RecordedExercisePOJO): RecordedExercise {
+  equals(other: RecordedExercise | undefined) {
+    if (!other) {
+      return false;
+    }
+    if (other === this) {
+      return true;
+    }
+
+    return (
+      this.blueprint.equals(other.blueprint) &&
+      this.perSetWeight === other.perSetWeight &&
+      this.notes === other.notes &&
+      this.potentialSets.length === other.potentialSets.length &&
+      this.potentialSets.every((set, index) => {
+        const otherSet = other.potentialSets[index];
+        return (
+          set.weight.isEqualTo(otherSet.weight) &&
+          set.set?.repsCompleted === otherSet.set?.repsCompleted &&
+          set.set?.completionDateTime?.equals(otherSet.set?.completionDateTime)
+        );
+      })
+    );
+  }
+
+  with(other: Partial<RecordedExercisePOJO>) {
     return new RecordedExercise(
-      fromPOJO.blueprint,
-      fromPOJO.potentialSets,
-      fromPOJO.notes,
-      fromPOJO.perSetWeight,
+      'blueprint' in other
+        ? ExerciseBlueprint.fromPOJO(other.blueprint!)
+        : this.blueprint,
+      'potentialSets' in other
+        ? other.potentialSets!.map((x) => PotentialSet.fromPOJO(x))
+        : this.potentialSets,
+      'notes' in other ? other.notes! : this.notes,
+      'perSetWeight' in other ? other.perSetWeight! : this.perSetWeight,
     );
   }
 
   toPOJO(): RecordedExercisePOJO {
     return {
       _BRAND: 'RECORDED_EXERCISE_POJO',
-      blueprint: this.blueprint,
+      blueprint: this.blueprint.toPOJO(),
       perSetWeight: this.perSetWeight,
-      potentialSets: this.potentialSets,
+      potentialSets: this.potentialSets.map((x) => x.toPOJO()),
       notes: this.notes,
     };
   }
@@ -273,12 +329,120 @@ export class RecordedExercise {
   }
 }
 
-export interface RecordedSet {
-  readonly repsCompleted: number;
-  readonly completionDateTime: LocalDateTime;
+export interface RecordedSetPOJO {
+  _BRAND: 'RECORDED_SET_POJO';
+  repsCompleted: number;
+  completionDateTime: LocalDateTime;
 }
 
-export interface PotentialSet {
+export class RecordedSet {
+  readonly repsCompleted: number;
+  readonly completionDateTime: LocalDateTime;
+
+  /**
+   * @deprecated please use full constructor. Here only for serialization
+   */
+  constructor();
+  constructor(repsCompleted: number, completionDateTime: LocalDateTime);
+  constructor(repsCompleted?: number, completionDateTime?: LocalDateTime) {
+    this.repsCompleted = repsCompleted!;
+    this.completionDateTime = completionDateTime!;
+  }
+
+  static fromPOJO(pojo: Omit<RecordedSetPOJO, '_BRAND'>): RecordedSet {
+    return new RecordedSet(pojo.repsCompleted, pojo.completionDateTime);
+  }
+
+  equals(other: RecordedSet | undefined): boolean {
+    if (!other) {
+      return false;
+    }
+    if (other === this) {
+      return true;
+    }
+    return (
+      this.repsCompleted === other.repsCompleted &&
+      this.completionDateTime.equals(other.completionDateTime)
+    );
+  }
+
+  with(other: Partial<RecordedSet>): RecordedSet {
+    return new RecordedSet(
+      'repsCompleted' in other ? other.repsCompleted! : this.repsCompleted,
+      'completionDateTime' in other
+        ? other.completionDateTime!
+        : this.completionDateTime,
+    );
+  }
+
+  toPOJO(): RecordedSetPOJO {
+    return {
+      _BRAND: 'RECORDED_SET_POJO',
+      repsCompleted: this.repsCompleted,
+      completionDateTime: this.completionDateTime,
+    };
+  }
+}
+
+export interface PotentialSetPOJO {
+  _BRAND: 'POTENTIAL_SET_POJO';
+  set: RecordedSetPOJO | undefined;
+  weight: BigNumber;
+}
+
+export class PotentialSet {
   readonly set: RecordedSet | undefined;
   readonly weight: BigNumber;
+
+  /**
+   * @deprecated please use full constructor. Here only for serialization
+   */
+  constructor();
+  constructor(set: RecordedSet | undefined, weight: BigNumber);
+  constructor(set?: RecordedSet | undefined, weight?: BigNumber) {
+    this.set = set;
+    this.weight = weight!;
+  }
+
+  static fromPOJO(pojo: Omit<PotentialSetPOJO, '_BRAND'>): PotentialSet {
+    return new PotentialSet(
+      pojo.set ? RecordedSet.fromPOJO(pojo.set) : undefined,
+      pojo.weight,
+    );
+  }
+
+  equals(other: PotentialSet | undefined): boolean {
+    if (!other) {
+      return false;
+    }
+    if (other === this) {
+      return true;
+    }
+    return (
+      (this.set?.equals(other.set) ?? other.set === undefined) &&
+      this.weight.isEqualTo(other.weight)
+    );
+  }
+
+  with(other: Partial<PotentialSet>): PotentialSet {
+    return new PotentialSet(
+      'set' in other ? other.set : this.set,
+      'weight' in other ? other.weight! : this.weight,
+    );
+  }
+
+  toPOJO(): PotentialSetPOJO {
+    return {
+      _BRAND: 'POTENTIAL_SET_POJO',
+      set: this.set?.toPOJO(),
+      weight: this.weight,
+    };
+  }
+}
+
+function BigNumberEqual(a: BigNumber | undefined, b: BigNumber | undefined) {
+  if (a === undefined || b === undefined) {
+    return a === b;
+  }
+  return a.isEqualTo(b);
 }

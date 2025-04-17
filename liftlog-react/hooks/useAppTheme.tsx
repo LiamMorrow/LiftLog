@@ -127,7 +127,19 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
 
   return (
     <AppThemeContext.Provider value={appTheme}>
-      <PaperProvider theme={paperTheme}>{children}</PaperProvider>
+      <PaperProvider
+        theme={paperTheme}
+        // settings={{
+        //   icon: ({ name, ...rest }) => (
+        //     <MsIcon
+        //       icon={mst}
+        //       {...rest}
+        //     />
+        //   ),
+        // }}
+      >
+        {children}
+      </PaperProvider>
     </AppThemeContext.Provider>
   );
 };

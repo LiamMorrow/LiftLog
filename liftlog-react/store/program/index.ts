@@ -1,4 +1,8 @@
-import { ProgramBlueprint, SessionBlueprint } from '@/models/blueprint-models';
+import {
+  ProgramBlueprint,
+  ProgramBlueprintPOJO,
+  SessionBlueprint,
+} from '@/models/blueprint-models';
 import { RemoteData } from '@/models/remote';
 import { SessionPOJO } from '@/models/session-models';
 import { defaultSession } from '@/models/test-data';
@@ -11,7 +15,7 @@ interface ProgramState {
   readonly activeProgramId: string;
   readonly upcomingSessions: RemoteData<readonly SessionPOJO[]>;
   readonly savedPrograms: {
-    readonly [programId: string]: ProgramBlueprint;
+    readonly [programId: string]: ProgramBlueprintPOJO;
   };
 }
 
@@ -47,7 +51,7 @@ const programSlice = createSlice({
       if (state.savedPrograms[action.payload.planId]) {
         state.savedPrograms[action.payload.planId] = {
           ...state.savedPrograms[action.payload.planId],
-          sessions: action.payload.sessionBlueprints,
+          sessions: action.payload.sessionBlueprints.map((x) => x.toPOJO()),
         };
       }
     },
@@ -67,7 +71,7 @@ const programSlice = createSlice({
         action.payload.sessionIndex < program.sessions.length
       ) {
         program.sessions[action.payload.sessionIndex] =
-          action.payload.sessionBlueprint;
+          action.payload.sessionBlueprint.toPOJO();
       }
     },
 
@@ -107,7 +111,9 @@ const programSlice = createSlice({
       state,
       action: PayloadAction<{ [programId: string]: ProgramBlueprint }>,
     ) {
-      state.savedPrograms = action.payload;
+      state.savedPrograms = Object.fromEntries(
+        Object.entries(action.payload).map(([x, y]) => [x, y.toPOJO()]),
+      );
     },
 
     moveSessionBlueprintUpInProgram(
@@ -167,6 +173,7 @@ const programSlice = createSlice({
       action: PayloadAction<{ planId: string; name: string; time: LocalDate }>,
     ) {
       state.savedPrograms[action.payload.planId] = {
+        _BRAND: 'PROGRAM_BLUEPRINT_POJO',
         name: action.payload.name,
         sessions: [],
         lastEdited: action.payload.time,
@@ -181,7 +188,7 @@ const programSlice = createSlice({
       }>,
     ) {
       state.savedPrograms[action.payload.planId] =
-        action.payload.programBlueprint;
+        action.payload.programBlueprint.toPOJO();
     },
   },
 });

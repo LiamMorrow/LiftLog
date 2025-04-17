@@ -1,12 +1,11 @@
 diff --git a/node_modules/react-native-web/dist/index.js b/node_modules/react-native-web/dist/index.js
-index 4f69987..df96e50 100644
+index 4f69987..0299669 100644
 --- a/node_modules/react-native-web/dist/index.js
 +++ b/node_modules/react-native-web/dist/index.js
-@@ -67,3 +67,17 @@ export { default as DeviceEventEmitter } from './exports/DeviceEventEmitter';
- export { default as useColorScheme } from './exports/useColorScheme';
- export { default as useLocaleContext } from './exports/useLocaleContext';
- export { default as useWindowDimensions } from './exports/useWindowDimensions';
-+
+@@ -60,6 +60,20 @@ export { default as VirtualizedList } from './exports/VirtualizedList';
+ export { default as YellowBox } from './exports/YellowBox';
+ export { default as LogBox } from './exports/LogBox';
+ 
 +import Animated from './exports/Animated';
 +import { useRef } from 'react';
 +
@@ -20,3 +19,7 @@ index 4f69987..df96e50 100644
 +    }
 +    return ref.current;
 +}
++
+ // plugins
+ export { default as DeviceEventEmitter } from './exports/DeviceEventEmitter';
+ 
