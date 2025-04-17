@@ -14,8 +14,9 @@ import { useSession } from '@/hooks/useSession';
 import { Session } from '@/models/session-models';
 import { RootState, useSelector } from '@/store';
 import { setCurrentSession } from '@/store/current-session';
+import { fetchUpcomingSessions } from '@/store/program';
 import { T, useTranslate } from '@tolgee/react';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { Button, Card, Icon } from 'react-native-paper';
@@ -72,9 +73,14 @@ function ListUpcomingWorkouts({ upcoming }: { upcoming: readonly Session[] }) {
   const [selectedSession, setSelectedSession] = useState<Session | undefined>();
 
   const selectSession = (session: Session) => {
-    setSelectedSession(session);
-    if (!currentSession || !currentSession.isStarted) {
+    if (
+      !currentSession ||
+      currentSession.equals(session) ||
+      !currentSession.isStarted
+    ) {
       replaceSession(session);
+    } else {
+      setSelectedSession(session);
     }
   };
   const replaceSession = (session: Session) => {
@@ -130,7 +136,11 @@ function ListUpcomingWorkouts({ upcoming }: { upcoming: readonly Session[] }) {
 
 export default function Index() {
   const upcomingSessions = useSelector((s) => s.program.upcomingSessions);
+  const dispatch = useDispatch();
   const { t } = useTranslate();
+  useFocusEffect(() => {
+    dispatch(fetchUpcomingSessions);
+  });
 
   return (
     <FullHeightScrollView>

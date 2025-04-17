@@ -1,26 +1,11 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import currentSessionReducer from './current-session';
-import settingsReducer from './settings';
-import programReducer from './program';
 // eslint-disable-next-line no-restricted-imports
 import { useSelector as untypedUseSelector, UseSelector } from 'react-redux';
 
-const store = configureStore({
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      // We manually do persistence and devtools aren't needed
-      serializableCheck: false,
-    }),
-  reducer: combineReducers({
-    currentSession: currentSessionReducer,
-    settings: settingsReducer,
-    program: programReducer,
-  }),
-});
+import store, { type RootState, type AppDispatch } from '@/store/store';
+import { applyProgramEffects } from '@/store/program/effects';
 
-export default store;
+export { store, RootState, AppDispatch };
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+applyProgramEffects();
 
 export const useSelector: UseSelector<RootState> = untypedUseSelector;

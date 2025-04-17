@@ -6,6 +6,7 @@
     "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": false,
     "lib": ["ESNext"],
+    "module": "ESNext",
     "noUnusedParameters": false,
     "paths": {
       "@/*": ["./*"]

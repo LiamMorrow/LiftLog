@@ -5,7 +5,7 @@ import { KeyValueStore } from '@/services/key-value-store';
 import { Logger } from '@/services/logger';
 import Enumerable from 'linq';
 
-class ProgressRepositoryImpl {
+export class ProgressRepository {
   constructor(
     private keyValueStore: KeyValueStore,
     logger: Logger,
@@ -41,11 +41,8 @@ class ProgressRepositoryImpl {
     if (this.storedSessions) {
       return;
     }
+
+    // TOOD
+    this.storedSessions = new Map();
   }
 }
-
-export const ProgressRepository = new ProgressRepositoryImpl(
-  KeyValueStore,
-  Logger,
-);
-export type ProgressRepository = typeof ProgressRepository;

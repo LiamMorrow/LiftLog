@@ -1,4 +1,4 @@
-class LoggerImpl {
+export class Logger {
   log(message: string): void {
     console.log(message);
   }
@@ -19,6 +19,3 @@ class LoggerImpl {
     console.debug(`DEBUG: ${message}`);
   }
 }
-
-export const Logger = new LoggerImpl();
-export type Logger = typeof Logger;

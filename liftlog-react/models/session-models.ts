@@ -267,11 +267,7 @@ export class RecordedExercise {
       this.potentialSets.length === other.potentialSets.length &&
       this.potentialSets.every((set, index) => {
         const otherSet = other.potentialSets[index];
-        return (
-          set.weight.isEqualTo(otherSet.weight) &&
-          set.set?.repsCompleted === otherSet.set?.repsCompleted &&
-          set.set?.completionDateTime?.equals(otherSet.set?.completionDateTime)
-        );
+        return otherSet.equals(set);
       })
     );
   }
@@ -300,9 +296,14 @@ export class RecordedExercise {
   }
 
   get maxWeight(): BigNumber {
-    return this.potentialSets.reduce((max, set) => {
-      return set.weight.isGreaterThan(max) ? set.weight : max;
-    }, new BigNumber(0));
+    return (
+      this.potentialSets.reduce(
+        (max, set) => {
+          return !max || set.weight.isGreaterThan(max) ? set.weight : max;
+        },
+        undefined as BigNumber | undefined,
+      ) ?? BigNumber(0)
+    );
   }
 
   get lastRecordedSet(): PotentialSet | undefined {

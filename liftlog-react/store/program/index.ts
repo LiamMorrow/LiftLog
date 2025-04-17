@@ -5,7 +5,7 @@ import {
 } from '@/models/blueprint-models';
 import { RemoteData } from '@/models/remote';
 import { SessionPOJO } from '@/models/session-models';
-import { defaultSession } from '@/models/test-data';
+import { defaultSessionBlueprint } from '@/models/test-data';
 
 import { LocalDate } from '@js-joda/core';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
@@ -22,8 +22,17 @@ interface ProgramState {
 const initialState: ProgramState = {
   isHydrated: false,
   activeProgramId: '00000000-0000-0000-0000-000000000000',
-  upcomingSessions: RemoteData.success([defaultSession.toPOJO()]),
-  savedPrograms: {},
+  upcomingSessions: RemoteData.notAsked(),
+  savedPrograms: {
+    '00000000-0000-0000-0000-000000000000': ProgramBlueprint.fromPOJO({
+      lastEdited: LocalDate.now(),
+      name: 'MY SESSION',
+      sessions: [
+        defaultSessionBlueprint.toPOJO(),
+        defaultSessionBlueprint.with({ name: 'HIEL' }).toPOJO(),
+      ],
+    }).toPOJO(),
+  },
 };
 
 const programSlice = createSlice({
@@ -205,25 +214,8 @@ export function getActiveProgram(state: ProgramState) {
   return state.savedPrograms[state.activeProgramId];
 }
 
-// const listenerMiddleware = createListenerMiddleware<RootState>();
+export const { setIsHydrated, setUpcomingSessions } = programSlice.actions;
 
-// export const fetchUpcomingSessions = { type: 'FETCH_UPCOMING_SESSIONS' };
-
-// // Add one or more listener entries that look for specific actions.
-// // They may contain any sync or async logic, similar to thunks.
-// listenerMiddleware.startListening({
-//   predicate: (action) => action.type === fetchUpcomingSessions.type,
-//   effect: async (_, { cancelActiveListeners, dispatch, getState }) => {
-//     cancelActiveListeners();
-//     dispatch(programSlice.actions.setUpcomingSessions(RemoteData.loading()));
-//     const state = getState().program;
-//     const sessionBlueprints = getActiveProgramSessionBlueprints(state)
-//     const numberOfUpcomingSessions = sessionBlueprints.length;
-
-//       const sessions = await SessionService.getUpcomingSessions(sessionBlueprints).take(5).toArrayAsync()
-//   },
-// });
-
-export const { setIsHydrated } = programSlice.actions;
+export const fetchUpcomingSessions = { type: 'FETCH_UPCOMING_SESSIONS' };
 
 export default programSlice.reducer;

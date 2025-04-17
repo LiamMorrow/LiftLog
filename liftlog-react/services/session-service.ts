@@ -9,20 +9,23 @@ import {
   Session,
 } from '@/models/session-models';
 import { ProgressRepository } from '@/services/progress-repository';
-import store from '@/store';
+import type { RootState } from '@/store';
 import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
 import { match, P } from 'ts-pattern';
 
-class SessionServiceImpl {
-  constructor(private progressRepository: ProgressRepository) {}
+export class SessionService {
+  constructor(
+    private progressRepository: ProgressRepository,
+    private getState: () => RootState,
+  ) {}
 
   async *getUpcomingSessions(
     sessionBlueprints: SessionBlueprint[],
   ): AsyncIterableIterator<Session> {
-    const currentState = store.getState();
+    const currentState = this.getState();
     const currentSession = Session.fromPOJO(
       currentState.currentSession.workoutSession,
     );
@@ -91,7 +94,7 @@ class SessionServiceImpl {
   ): Session {
     const {
       settings: { splitWeightByDefault },
-    } = store.getState();
+    } = this.getState();
     function getNextExercise(e: ExerciseBlueprint): RecordedExercise {
       const lastExercise = latestRecordedExercises.get(e);
       const potentialSets: PotentialSet[] = match(lastExercise)
@@ -142,6 +145,3 @@ class SessionServiceImpl {
     );
   }
 }
-
-export type SessionService = typeof SessionServiceImpl;
-export const SessionService = new SessionServiceImpl(ProgressRepository);
