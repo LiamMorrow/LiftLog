@@ -46,7 +46,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutomaticInterface" Version="5.1.3">
+        <PackageReference Include="AutomaticInterface" Version="5.1.4">
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
@@ -71,7 +71,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="TypealizR" Version="0.11.0">
+        <PackageReference Include="TypealizR" Version="0.12.0">
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
