@@ -1,29 +1,67 @@
-import { toDecimalDao } from '@/models/storage/conversions-to-dao.js';
-import { fromDecimalDao } from '@/models/storage/conversions.from-dao.js';
+import {
+  toDecimalDao,
+  toDateOnlyDao,
+  toTimeOnlyDao,
+  toSessionBlueprintDao,
+  toSessionDao,
+  toFeedIdentityDao,
+  toFeedUserDao,
+} from '@/models/storage/conversions.to-dao';
+import {
+  fromDecimalDao,
+  fromDateOnlyDao,
+  fromTimeOnlyDao,
+  fromSessionBlueprintDao,
+  fromSessionDao,
+  fromFeedIdentityDao,
+  fromFeedUserDao,
+} from '@/models/storage/conversions.from-dao';
 import BigNumber from 'bignumber.js';
+import fc from 'fast-check';
+import { LocalDate, LocalTime } from '@js-joda/core';
+import {
+  BigNumberGenerator,
+  FeedIdentityGenerator,
+  FeedUserGenerator,
+  LocalDateGenerator,
+  LocalTimeGenerator,
+  SessionBlueprintGenerator,
+  SessionGenerator,
+} from '@/models/storage/generators';
 
 describe('conversions', () => {
   it.each`
-    name         | initialValue         | convertToDao    | convertFromDao    | equals
---                                          | -- | -- | -- | --
-    ${'Decimal'} | ${BigNumber('1.23')} | ${toDecimalDao} | ${fromDecimalDao} | ${(a: BigNumber, b: BigNumber) => a.isEqualTo(b)}
+    name                  | initialValueGenerator        | convertToDao             | convertFromDao             | assertEquals
+    ${'Decimal'}          | ${BigNumberGenerator}        | ${toDecimalDao}          | ${fromDecimalDao}          | ${(a: BigNumber, b: BigNumber) => expect(a.isEqualTo(b)).toBeTruthy()}
+    ${'DateOnly'}         | ${LocalDateGenerator}        | ${toDateOnlyDao}         | ${fromDateOnlyDao}         | ${(a: LocalDate, b: LocalDate) => expect(a.equals(b)).toBeTruthy()}
+    ${'TimeOnly'}         | ${LocalTimeGenerator}        | ${toTimeOnlyDao}         | ${fromTimeOnlyDao}         | ${(a: LocalTime, b: LocalTime) => expect(a.equals(b)).toBeTruthy()}
+    ${'SessionBlueprint'} | ${SessionBlueprintGenerator} | ${toSessionBlueprintDao} | ${fromSessionBlueprintDao} | ${toPOJOEquals}
+    ${'Session'}          | ${SessionGenerator}          | ${toSessionDao}          | ${fromSessionDao}          | ${toPOJOEquals}
+    ${'FeedIdentity'}     | ${FeedIdentityGenerator}     | ${toFeedIdentityDao}     | ${fromFeedIdentityDao}     | ${toPOJOEquals}
+    ${'FeedUser'}         | ${FeedUserGenerator}         | ${toFeedUserDao}         | ${fromFeedUserDao}         | ${toPOJOEquals}
   `(
     'should convert back and forth between $name',
-    ({ initialValue, convertToDao, convertFromDao, equals }) => {
-      const converted = convertToDao(initialValue);
-      const convertedBack = convertFromDao(converted);
+    ({ initialValueGenerator, convertToDao, convertFromDao, assertEquals }) => {
+      fc.assert(
+        fc.property(
+          initialValueGenerator as fc.Arbitrary<unknown>,
+          (initialValue) => {
+            const converted = convertToDao(
+              initialValue as fc.Arbitrary<unknown>,
+            );
+            const convertedBack = convertFromDao(converted);
 
-      const isEqualAfterConversion = equals(initialValue, convertedBack);
-
-      if (!isEqualAfterConversion) {
-        fail(
-          `Expected round trip conversion to be equivalent
-          ----
-          converted: ${convertedBack}
-          ----
-          Back:${convertedBack}`,
-        );
-      }
+            assertEquals(initialValue, convertedBack);
+          },
+        ),
+      );
     },
   );
 });
+
+interface ToPOJO {
+  toPOJO(): unknown;
+}
+function toPOJOEquals(a: ToPOJO, b: ToPOJO) {
+  expect(b.toPOJO()).toEqual(a.toPOJO());
+}

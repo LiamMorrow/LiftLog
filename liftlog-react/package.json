@@ -13,6 +13,7 @@
     "protojs": "pbjs -p ../proto  -t static-module ../proto/**/*.proto -o ./gen/proto.js -w es6 --es6 --force-long",
     "protots": "pbts -o ./gen/proto.d.ts ./gen/proto.js",
     "proto": "npm run protojs && npm run protots",
+    "test": "vitest",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -55,9 +56,12 @@
     "eslint-config-prettier": "^10.0.2",
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-unused-imports": "^4.1.4",
+    "fast-check": "^4.1.1",
     "prettier": "^3.5.3",
     "protobufjs-cli": "^1.1.3",
-    "typescript": "~5.3.3"
+    "typescript": "~5.3.3",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.1.1"
   },
   "private": true
 }

@@ -11,7 +11,8 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "exactOptionalPropertyTypes": true
+    "exactOptionalPropertyTypes": true,
+    "types": ["vitest/globals"]
   },
   "include": [
     "**/*.ts",

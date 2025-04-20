@@ -52,7 +52,7 @@ export class Session {
     this.bodyweight = bodyweight!;
   }
 
-  static fromPOJO(pojo: undefined): undefined;
+  // static fromPOJO(pojo: undefined): undefined;
   static fromPOJO(pojo: Omit<SessionPOJO, '_BRAND'>): Session;
   static fromPOJO(
     pojo: Omit<SessionPOJO, '_BRAND'> | undefined,
