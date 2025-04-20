@@ -9,8 +9,6 @@ import {
 import { AsyncStream } from 'data-async-iterators';
 
 export function applyProgramEffects() {
-  // Add one or more listener entries that look for specific actions.
-  // They may contain any sync or async logic, similar to thunks.
   addEffect(
     fetchUpcomingSessions,
     async (
@@ -18,7 +16,6 @@ export function applyProgramEffects() {
       { cancelActiveListeners, dispatch, getState, extra: { sessionService } },
     ) => {
       cancelActiveListeners();
-      dispatch(setUpcomingSessions(RemoteData.loading()));
 
       const state = getState().program;
       const sessionBlueprints = getActiveProgramSessionBlueprints(state);

@@ -17,7 +17,6 @@ export default function MaterialStackHeader(props: NativeStackHeaderProps) {
       useNativeDriver: true,
     }).start();
   }, [isScrolled, scrollColor]);
-
   return (
     <Animated.View
       style={{
@@ -34,7 +33,7 @@ export default function MaterialStackHeader(props: NativeStackHeaderProps) {
         }}
       >
         {props.back ? (
-          <Appbar.BackAction onPress={props.navigation.goBack} />
+          <Appbar.BackAction onPress={() => props.navigation.goBack()} />
         ) : null}
         <Appbar.Content title={props.options.title} />
         {(props.options as { action: any }).action ? (

@@ -36,7 +36,6 @@ export class SessionService {
     if (!sessionBlueprints.length) {
       return;
     }
-    // TODO: does not match original impl
 
     const latestRecordedExercises =
       await this.progressRepository.getLatestRecordedExercises();
@@ -63,6 +62,18 @@ export class SessionService {
       );
       yield latestSession;
     }
+  }
+
+  getLatestSessions(): Promise<Enumerable.IEnumerable<Session>> {
+    return this.progressRepository.getOrderedSessions();
+  }
+
+  public async hydrateSessionFromBlueprint(
+    blueprint: SessionBlueprint,
+  ): Promise<Session> {
+    const latestRecordedExercises =
+      await this.progressRepository.getLatestRecordedExercises();
+    return this.createNewSession(blueprint, latestRecordedExercises);
   }
 
   private getNextSession(

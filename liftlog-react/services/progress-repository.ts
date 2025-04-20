@@ -1,10 +1,14 @@
+import { LiftLog } from '@/gen/proto';
 import { KeyedExerciseBlueprint } from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
 import { RecordedExercise, Session } from '@/models/session-models';
 import { KeyValueStore } from '@/services/key-value-store';
 import { Logger } from '@/services/logger';
+import { Deferred } from '@/utils/Deferred';
 import Enumerable from 'linq';
+import { match } from 'ts-pattern';
 
+const storageKey = 'Progress';
 export class ProgressRepository {
   constructor(
     private keyValueStore: KeyValueStore,
@@ -13,6 +17,7 @@ export class ProgressRepository {
 
   // Ensure initialize is called at the beginning of every operation
   private storedSessions: ReadonlyMap<string, Session> = undefined!;
+  private initializeDeferred: Deferred | undefined;
 
   async getOrderedSessions(): Promise<Enumerable.IEnumerable<Session>> {
     await this.initialize();
@@ -25,9 +30,20 @@ export class ProgressRepository {
       );
   }
 
+  async saveCompletedSession(session: Session): Promise<void> {
+    await this.initialize();
+
+    const cloned = new Map(this.storedSessions);
+    this.storedSessions = cloned;
+    cloned.set(session.id, session);
+    await this.persist();
+  }
+
   async getLatestRecordedExercises(): Promise<
     Enumerable.IDictionary<KeyedExerciseBlueprint, RecordedExercise>
   > {
+    await this.initialize();
+
     return (await this.getOrderedSessions())
       .selectMany((x) => x.recordedExercises)
       .groupBy((x) => KeyedExerciseBlueprint.fromExerciseBlueprint(x.blueprint))
@@ -37,12 +53,47 @@ export class ProgressRepository {
       );
   }
 
+  private async persist() {
+    if (!this.storedSessions) {
+      throw new Error('Failed to persist as not initialized');
+    }
+    await Promise.all([
+      this.keyValueStore.setItem(`${storageKey}-Version`, '2'),
+      this.keyValueStore.setItem(storageKey, 'TODO_PROTOBUF'),
+    ]);
+  }
+
   private async initialize() {
-    if (this.storedSessions) {
+    if (this.initializeDeferred) {
+      await this.initializeDeferred.promise;
       return;
     }
 
-    // TOOD
-    this.storedSessions = new Map();
+    this.initializeDeferred = new Deferred();
+
+    try {
+      let version = await this.keyValueStore.getItem(`${storageKey}-Version`);
+      if (!version) {
+        version = '2';
+        await this.keyValueStore.setItem(`${storageKey}-Version`, '2');
+      }
+
+      const storedData = await match(version)
+        .with('2', async () =>
+          LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2.decode(
+            (await this.keyValueStore.getItemBytes(storageKey)) ??
+              Buffer.from([]),
+          ),
+        )
+        .otherwise((x) => {
+          throw new Error(`Unsupported version ${x}`);
+        });
+
+      this.storedSessions = storedData?.completedSessions ?? new Map();
+    } catch (err) {
+      this.initializeDeferred.reject(err);
+    }
+
+    await this.initializeDeferred.promise;
   }
 }
