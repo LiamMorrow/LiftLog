@@ -17,8 +17,8 @@ const tolgee = Tolgee()
     language: 'en',
 
     // for development
-    // apiUrl: process.env.EXPO_PUBLIC_TOLGEE_API_URL,
-    // apiKey: process.env.EXPO_PUBLIC_TOLGEE_API_KEY,
+    // apiUrl: process.env.EXPO_PUBLIC_TOLGEE_API_URL!,
+    // apiKey: process.env.EXPO_PUBLIC_TOLGEE_API_KEY!,
     staticData: {
       en,
     },

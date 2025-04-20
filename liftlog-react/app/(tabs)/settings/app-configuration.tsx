@@ -1,7 +1,7 @@
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
 import ListSwitch from '@/components/presentation/list-switch';
 import ThemeChooser from '@/components/presentation/theme-chooser';
-import { RootState } from '@/store';
+import { RootState, useSelector } from '@/store';
 import {
   setColorSchemeSeed,
   setShowBodyweight,
@@ -13,7 +13,7 @@ import {
 import { T, useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
 import { Button, List } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 export default function AppConfiguration() {
   const { t } = useTranslate();

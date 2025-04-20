@@ -38,70 +38,62 @@ export default function FullScreenDialog(props: FullScreenDialogProps) {
 
   return (
     <Portal>
-      <View
-        style={
-          open
-            ? {
-                flex: 1,
-              }
-            : {
-                opacity: 0,
-                top: 0,
-                left: 0,
-                width: 0,
-                height: 0,
-              }
-        }
-      >
-        <Animated.View
+      {open ? (
+        <View
           style={{
-            backgroundColor: scrollAnimation.interpolate({
-              inputRange: [0, 1],
-              outputRange: [colors.surface, colors.surfaceContainer],
-            }),
-            paddingTop: top,
+            flex: 1,
           }}
         >
-          <View
+          <Animated.View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              gap: spacing[2],
-              padding: spacing[4],
+              backgroundColor: scrollAnimation.interpolate({
+                inputRange: [0, 1],
+                outputRange: [colors.surface, colors.surfaceContainer],
+              }),
+              paddingTop: top,
             }}
           >
-            <IconButton icon={'close'} onPress={onClose} />
-            <Text
+            <View
               style={{
-                marginRight: 'auto',
-                ...font['text-2xl'],
-                color: colors.onSurface,
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                gap: spacing[2],
+                padding: spacing[4],
               }}
             >
-              {title}
-            </Text>
-            {action && onAction ? (
-              <Button onPress={onAction}>{action}</Button>
-            ) : null}
-          </View>
-        </Animated.View>
-        <FullHeightScrollView
-          scrollStyle={{
-            padding: spacing[2],
-          }}
-          setIsScrolled={(scrolled) =>
-            Animated.timing(scrollAnimation, {
-              toValue: scrolled ? 1 : 0,
-              useNativeDriver: true,
-              duration: 100,
-            }).start()
-          }
-        >
-          {children}
-          <View style={{ height: bottom, width: '100%' }}></View>
-        </FullHeightScrollView>
-      </View>
+              <IconButton icon={'close'} onPress={onClose} />
+              <Text
+                style={{
+                  marginRight: 'auto',
+                  ...font['text-2xl'],
+                  color: colors.onSurface,
+                }}
+              >
+                {title}
+              </Text>
+              {action && onAction ? (
+                <Button onPress={onAction}>{action}</Button>
+              ) : null}
+            </View>
+          </Animated.View>
+          <FullHeightScrollView
+            scrollStyle={{
+              padding: spacing[2],
+            }}
+            setIsScrolled={(scrolled) =>
+              Animated.timing(scrollAnimation, {
+                toValue: scrolled ? 1 : 0,
+                useNativeDriver: true,
+                duration: 100,
+              }).start()
+            }
+          >
+            {children}
+            <View style={{ height: bottom, width: '100%' }}></View>
+          </FullHeightScrollView>
+        </View>
+      ) : undefined}
     </Portal>
   );
 }

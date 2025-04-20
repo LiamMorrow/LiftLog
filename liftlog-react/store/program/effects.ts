@@ -19,6 +19,7 @@ export function applyProgramEffects() {
     ) => {
       cancelActiveListeners();
       dispatch(setUpcomingSessions(RemoteData.loading()));
+
       const state = getState().program;
       const sessionBlueprints = getActiveProgramSessionBlueprints(state);
       const numberOfUpcomingSessions = sessionBlueprints.length;
@@ -30,6 +31,7 @@ export function applyProgramEffects() {
         .take(numberOfUpcomingSessions)
         .map((x) => x.toPOJO())
         .toArray();
+
       dispatch(setUpcomingSessions(RemoteData.success(sessions)));
     },
   );

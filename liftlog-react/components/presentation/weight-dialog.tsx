@@ -1,4 +1,5 @@
 import WeightFormat from '@/components/presentation/weight-format';
+import { spacing } from '@/hooks/useAppTheme';
 import { T } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
@@ -89,7 +90,7 @@ export default function WeightDialog(props: WeightDialogProps) {
       <Dialog visible={props.open} onDismiss={props.onClose}>
         <Dialog.Title>{props.label ?? <T keyName="Weight" />}</Dialog.Title>
         <Dialog.Content>
-          <View style={{ gap: 8 }}>
+          <View style={{ gap: spacing[2] }}>
             <TextInput
               data-cy="weight-input"
               label={props.label ?? <T keyName="Weight" />}
