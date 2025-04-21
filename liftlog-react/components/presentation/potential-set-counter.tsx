@@ -2,7 +2,13 @@ import { PotentialSet } from '@/models/session-models';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { TouchableRipple } from 'react-native-paper';
-import { Text, Touchable, useAnimatedValue, Animated } from 'react-native';
+import {
+  Text,
+  Touchable,
+  useAnimatedValue,
+  Animated,
+  View,
+} from 'react-native';
 import WeightFormat from '@/components/presentation/weight-format';
 import WeightDialog from '@/components/presentation/weight-dialog';
 import { useAppTheme, spacing } from '@/hooks/useAppTheme';
@@ -42,7 +48,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
     Animated.timing(holdingScale, {
       toValue: isHolding ? 1.1 : 1,
       duration: 400,
-      useNativeDriver: true,
+      useNativeDriver: false,
     }).start();
   }, [isHolding, holdingScale]);
 
@@ -59,17 +65,22 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
       } satisfies Touchable & Omit<PressableProps, 'children'>);
 
   return (
-    <FocusRing isSelected={props.toStartNext} radius={15}>
-      <Animated.View
+    <FocusRing
+      isSelected={props.toStartNext}
+      radius={15}
+      style={{
+        transform: [
+          {
+            scale: holdingScale,
+          },
+        ],
+      }}
+    >
+      <View
         style={{
           justifyContent: 'center',
           alignItems: 'center',
           userSelect: 'none',
-          transform: [
-            {
-              scale: holdingScale,
-            },
-          ],
         }}
       >
         <Animated.View
@@ -153,7 +164,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
             disabled={props.isReadonly}
           >
             <Text style={{ color: colors.onSurface }}>
-              <WeightFormat weight={props.set.weight} suffixClass="" />
+              <WeightFormat weight={props.set.weight} />
             </Text>
           </TouchableRipple>
         </Animated.View>
@@ -164,7 +175,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
           onClose={() => setIsWeightDialogOpen(false)}
           updateWeight={props.onUpdateWeight}
         />
-      </Animated.View>
+      </View>
     </FocusRing>
   );
 }
