@@ -1,4 +1,4 @@
-import { useAppTheme, spacing } from '@/hooks/useAppTheme';
+import { spacing } from '@/hooks/useAppTheme';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
@@ -13,8 +13,7 @@ interface EditableIncrementerProps {
 }
 
 export default function EditableIncrementer(props: EditableIncrementerProps) {
-  const { colors } = useAppTheme();
-  const { increment, label, value, suffix, onChange, ...rest } = props;
+  const { increment, label, value, suffix, onChange } = props;
   const [text, setText] = useState(props.value.toFormat());
   const [editorValue, setEditorValue] = useState<BigNumber>(value);
 

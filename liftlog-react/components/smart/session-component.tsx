@@ -3,6 +3,7 @@ import {
   cycleExerciseReps,
   editExercise,
   SessionTarget,
+  setExerciseReps,
   toggleExercisePerSetWeight,
   updateBodyweight,
   updateExerciseWeight,
@@ -115,6 +116,14 @@ export default function SessionComponent(props: {
     <WeightedExercise
       recordedExercise={item}
       toStartNext={session.nextExercise === item}
+      updateRepCountForSet={(setIndex, reps) =>
+        dispatch(setExerciseReps, {
+          exerciseIndex: index,
+          reps,
+          setIndex,
+          time: LocalDateTime.now(),
+        })
+      }
       cycleRepCountForSet={(setIndex) =>
         dispatch(cycleExerciseReps, {
           exerciseIndex: index,
@@ -154,7 +163,6 @@ export default function SessionComponent(props: {
       showPreviousButton={props.target === 'workoutSession'}
       // TODO
       previousRecordedExercises={[]}
-      showAdditionalActionsForSet={() => {}}
     />
   );
 
@@ -282,5 +290,3 @@ export default function SessionComponent(props: {
     </FullHeightScrollView>
   );
 }
-
-const sh = {};
