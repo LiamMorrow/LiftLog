@@ -1,7 +1,7 @@
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
 import ListSwitch from '@/components/presentation/list-switch';
 import ThemeChooser from '@/components/presentation/theme-chooser';
-import { RootState, useSelector } from '@/store';
+import { RootState, useAppSelector } from '@/store';
 import {
   setColorSchemeSeed,
   setShowBodyweight,
@@ -17,7 +17,7 @@ import { useDispatch } from 'react-redux';
 
 export default function AppConfiguration() {
   const { t } = useTranslate();
-  const settings = useSelector((state: RootState) => state.settings);
+  const settings = useAppSelector((state: RootState) => state.settings);
   const dispatch = useDispatch();
 
   const resetTips = () => {};

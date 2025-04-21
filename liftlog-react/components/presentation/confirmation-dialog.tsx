@@ -28,7 +28,15 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
 
   return (
     <Portal>
-      <Dialog visible={open} dismissable={!preventCancel}>
+      <Dialog
+        visible={open}
+        dismissable={!preventCancel}
+        onDismiss={() => {
+          if (!preventCancel) {
+            onCancel();
+          }
+        }}
+      >
         <Dialog.Title>{headline}</Dialog.Title>
         <Dialog.Content>
           <SurfaceText>{textContent}</SurfaceText>

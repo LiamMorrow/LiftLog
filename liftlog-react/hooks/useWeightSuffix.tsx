@@ -1,6 +1,6 @@
-import { useSelector } from '@/store';
+import { useAppSelector } from '@/store';
 
 export function useWeightSuffix() {
-  const useImperial = useSelector((x) => x.settings.useImperialUnits);
+  const useImperial = useAppSelector((x) => x.settings.useImperialUnits);
   return useImperial ? 'lbs' : 'kg';
 }

@@ -4,7 +4,7 @@ import ListSwitch from '@/components/presentation/list-switch';
 import RestEditorGroup from '@/components/presentation/rest-editor-group';
 import { spacing } from '@/hooks/useAppTheme';
 import { ExerciseBlueprint } from '@/models/blueprint-models';
-import { RootState, useSelector } from '@/store';
+import { RootState, useAppSelector } from '@/store';
 import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
@@ -31,7 +31,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
     setExercise(update);
     updatePropsExercise(update);
   };
-  const useImperialUnits = useSelector(
+  const useImperialUnits = useAppSelector(
     (s: RootState) => s.settings.useImperialUnits,
   );
   const weightSuffix = useImperialUnits ? 'lb' : 'kg';

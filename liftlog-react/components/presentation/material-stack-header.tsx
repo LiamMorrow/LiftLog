@@ -36,9 +36,7 @@ export default function MaterialStackHeader(props: NativeStackHeaderProps) {
           <Appbar.BackAction onPress={() => props.navigation.goBack()} />
         ) : null}
         <Appbar.Content title={props.options.title} />
-        {(props.options as { action: any }).action ? (
-          <Appbar.Action icon="dots-vertical" onPress={() => {}} />
-        ) : undefined}
+        {props.options.headerRight?.({})}
       </Appbar.Header>
     </Animated.View>
   );

@@ -12,7 +12,7 @@ import { Tips } from '@/components/smart/tips';
 import { spacing } from '@/hooks/useAppTheme';
 import { useSession } from '@/hooks/useSession';
 import { Session } from '@/models/session-models';
-import { RootState, useSelector } from '@/store';
+import { RootState, useAppSelector } from '@/store';
 import { setCurrentSession } from '@/store/current-session';
 import { fetchUpcomingSessions } from '@/store/program';
 import { T, useTranslate } from '@tolgee/react';
@@ -21,11 +21,12 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import { Button, Card, Icon } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
+import { useDebouncedCallback } from 'use-debounce';
 
 function NoUpcomingSessions() {
   const { push } = useRouter();
 
-  const activeProgramId = useSelector(
+  const activeProgramId = useAppSelector(
     (s: RootState) => s.program.activeProgramId,
   );
   return (
@@ -83,16 +84,20 @@ function ListUpcomingWorkouts({ upcoming }: { upcoming: readonly Session[] }) {
       setSelectedSession(session);
     }
   };
-  const replaceSession = (session: Session) => {
-    setSelectedSession(undefined);
-    dispatch(
-      setCurrentSession({
-        target: 'workoutSession',
-        session: session.toPOJO(),
-      }),
-    );
-    push('/session');
-  };
+  const replaceSession = useDebouncedCallback(
+    (session: Session) => {
+      setSelectedSession(undefined);
+      dispatch(
+        setCurrentSession({
+          target: 'workoutSession',
+          session: session.toPOJO(),
+        }),
+      );
+      push('/session');
+    },
+    500,
+    { leading: true, trailing: false },
+  );
   const replaceSessionDialogAction = () => {
     if (!selectedSession) return;
     replaceSession(selectedSession);
@@ -135,16 +140,20 @@ function ListUpcomingWorkouts({ upcoming }: { upcoming: readonly Session[] }) {
 }
 
 export default function Index() {
-  const upcomingSessions = useSelector((s) => s.program.upcomingSessions);
+  const upcomingSessions = useAppSelector((s) => s.program.upcomingSessions);
   const dispatch = useDispatch();
   const { t } = useTranslate();
   useFocusEffect(() => {
-    dispatch(fetchUpcomingSessions);
+    dispatch(fetchUpcomingSessions());
   });
 
   return (
     <FullHeightScrollView>
-      <Stack.Screen options={{ title: t('UpcomingWorkouts') }} />
+      <Stack.Screen
+        options={{
+          title: t('UpcomingWorkouts'),
+        }}
+      />
       <AndroidNotificationAlert />
       <Remote
         value={upcomingSessions}

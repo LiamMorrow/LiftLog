@@ -2,6 +2,7 @@ import {
   addExercise,
   cycleExerciseReps,
   editExercise,
+  removeExercise,
   SessionTarget,
   setExerciseReps,
   toggleExercisePerSetWeight,
@@ -30,7 +31,7 @@ import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/exercise-editor';
 import { LocalDateTime } from '@js-joda/core';
 import { useSession } from '@/hooks/useSession';
-import { useSelector } from '@/store';
+import { useAppSelector } from '@/store';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
@@ -46,7 +47,7 @@ export default function SessionComponent(props: {
     payload: T,
   ) => storeDispatch(reducer({ payload, target: props.target }));
 
-  const perSetWeightSetting = useSelector(
+  const perSetWeightSetting = useAppSelector(
     (x) => x.settings.splitWeightByDefault,
   );
 
@@ -157,7 +158,11 @@ export default function SessionComponent(props: {
         setExerciseToEditIndex(index);
         setExerciseEditorOpen(true);
       }}
-      onRemoveExercise={() => {}}
+      onRemoveExercise={() =>
+        dispatch(removeExercise, {
+          exerciseIndex: index,
+        })
+      }
       onOpenLink={() => {}}
       isReadonly={isReadonly}
       showPreviousButton={props.target === 'workoutSession'}
@@ -266,7 +271,6 @@ export default function SessionComponent(props: {
       <ItemList items={session.recordedExercises} renderItem={renderItem} />
       {bodyWeight}
       {updatePlanButton}
-      <View style={{ height: floatingBottomSize }} />
       <FullScreenDialog
         title={
           exerciseToEditIndex === undefined
@@ -287,6 +291,7 @@ export default function SessionComponent(props: {
           />
         ) : null}
       </FullScreenDialog>
+      <View style={{ height: floatingBottomSize }} />
     </FullHeightScrollView>
   );
 }

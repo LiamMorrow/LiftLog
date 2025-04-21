@@ -1,4 +1,4 @@
-import { useSelector } from '@/store';
+import { useAppSelector } from '@/store';
 import {
   Material3Scheme,
   useMaterial3Theme,
@@ -97,7 +97,7 @@ interface AppThemeProviderProps {
 export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   children,
 }) => {
-  const colorSchemeSeed = useSelector(
+  const colorSchemeSeed = useAppSelector(
     (state) => state.settings.colorSchemeSeed,
   );
 

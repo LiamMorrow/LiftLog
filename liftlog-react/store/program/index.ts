@@ -8,7 +8,7 @@ import { SessionPOJO } from '@/models/session-models';
 import { defaultSessionBlueprint } from '@/models/test-data';
 
 import { LocalDate } from '@js-joda/core';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface ProgramState {
   readonly isHydrated: boolean;
@@ -216,6 +216,6 @@ export function getActiveProgram(state: ProgramState) {
 
 export const { setIsHydrated, setUpcomingSessions } = programSlice.actions;
 
-export const fetchUpcomingSessions = { type: 'FETCH_UPCOMING_SESSIONS' };
+export const fetchUpcomingSessions = createAction('fetchUpcomingSessions');
 
 export default programSlice.reducer;

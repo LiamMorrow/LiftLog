@@ -8,7 +8,7 @@ import {
 import { getCycledRepCount } from '@/store/current-session/helpers';
 import { SafeDraft, toSafeDraft } from '@/utils/store-helpers';
 import { LocalDate, LocalDateTime } from '@js-joda/core';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import BigNumber from 'bignumber.js';
 import { Draft, WritableDraft } from 'immer';
 import Enumerable from 'linq';
@@ -226,7 +226,7 @@ const currentSessionSlice = createSlice({
       state,
       action: PayloadAction<{
         target: SessionTarget;
-        session: SessionPOJO;
+        session: SessionPOJO | undefined;
       }>,
     ) => {
       state[action.payload.target] = action.payload
@@ -249,6 +249,14 @@ const currentSessionSlice = createSlice({
     ),
   },
 });
+
+export const clearSetTimerNotification = createAction(
+  'clearSetTimerNotification',
+);
+
+export const persistCurrentSession = createAction<SessionTarget>(
+  'persistCurrentSession',
+);
 
 export const {
   cycleExerciseReps,

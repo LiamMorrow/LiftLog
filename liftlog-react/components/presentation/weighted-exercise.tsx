@@ -1,20 +1,28 @@
 import ItemTitle from '@/components/presentation/item-title';
 import PotentialSetCounter from '@/components/presentation/potential-set-counter';
-import { useAppTheme, spacing } from '@/hooks/useAppTheme';
+import { spacing } from '@/hooks/useAppTheme';
 import { RecordedExercise } from '@/models/session-models';
-import { DatedRecordedExercise } from '@/models/stats-models';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { IconButton, Menu } from 'react-native-paper';
-import { useTranslate } from '@tolgee/react';
+import {
+  Button,
+  Dialog,
+  IconButton,
+  Menu,
+  Portal,
+  TextInput,
+} from 'react-native-paper';
+import { T, useTranslate } from '@tolgee/react';
 import { useAnimatedValue, Animated } from 'react-native';
 import WeightDisplay from '@/components/presentation/weight-display';
 import PotentialSetAdditionalActionsDialog from '@/components/presentation/potential-sets-addition-actions-dialog';
+import PreviousExerciseViewer from '@/components/presentation/previous-exercixe-viewer';
+import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 
 interface WeightedExerciseProps {
   recordedExercise: RecordedExercise;
-  previousRecordedExercises: DatedRecordedExercise[];
+  previousRecordedExercises: RecordedExercise[];
   toStartNext: boolean;
   isReadonly: boolean;
   showPreviousButton: boolean;
@@ -78,18 +86,25 @@ function AnimatedWeightDisplay(
 }
 
 export default function WeightedExercise(props: WeightedExerciseProps) {
-  const { updateRepCountForSet } = props;
+  const { updateRepCountForSet, updateNotesForExercise, onRemoveExercise } =
+    props;
   const { t } = useTranslate();
   const { recordedExercise } = props;
-  const { colors } = useAppTheme();
   const [menuVisible, setMenuVisible] = useState(false);
   const [editorNotes, setEditorNotes] = useState(recordedExercise.notes ?? '');
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
+  const [previousDialogOpen, setPreviousDialogOpen] = useState(false);
+  const [removeExerciseDialogOpen, setRemoveExerciseDialogOpen] =
+    useState(false);
   const [additionalPotentialSetIndex, setAdditionalPotentialSetIndex] =
     useState(-1);
-  var setToStartNext = recordedExercise.potentialSets.findIndex((x) => !x.set);
+  const setToStartNext = recordedExercise.potentialSets.findIndex(
+    (x) => !x.set,
+  );
 
-  const showPrevious = () => {};
+  const showPrevious = () => {
+    setPreviousDialogOpen(true);
+  };
   const interactiveButtons = props.isReadonly ? (
     <View style={{ height: 40 }}></View>
   ) : (
@@ -142,7 +157,10 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
           }}
         />
         <Menu.Item
-          onPress={props.onRemoveExercise}
+          onPress={() => {
+            setRemoveExerciseDialogOpen(true);
+            setMenuVisible(false);
+          }}
           leadingIcon="delete"
           title={t('Remove')}
         />
@@ -206,6 +224,55 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
           updateRepCountForSet(additionalPotentialSetIndex, reps)
         }
         close={() => setAdditionalPotentialSetIndex(-1)}
+      />
+      <Portal>
+        <Dialog visible={notesDialogOpen}>
+          <Dialog.Title>
+            <T
+              keyName="SessionNotesFor{0}"
+              params={{ 0: recordedExercise.blueprint.name }}
+            />
+          </Dialog.Title>
+          <Dialog.Content>
+            <TextInput
+              value={editorNotes}
+              multiline
+              mode="outlined"
+              onChangeText={setEditorNotes}
+            />
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setNotesDialogOpen(false)}>
+              <T keyName="Cancel" />
+            </Button>
+            <Button
+              onPress={() => {
+                updateNotesForExercise(editorNotes);
+                setNotesDialogOpen(false);
+              }}
+            >
+              <T keyName="Save" />
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+      <ConfirmationDialog
+        headline={t('RemoveExerciseQuestion')}
+        textContent={t('RemoveExerciseMessage')}
+        okText={t('Remove')}
+        open={removeExerciseDialogOpen}
+        onOk={() => {
+          setRemoveExerciseDialogOpen(false);
+          onRemoveExercise();
+        }}
+        onCancel={() => setRemoveExerciseDialogOpen(false)}
+        preventCancel={false}
+      />
+      <PreviousExerciseViewer
+        name={recordedExercise.blueprint.name}
+        previousRecordedExercises={props.previousRecordedExercises}
+        close={() => setPreviousDialogOpen(false)}
+        open={previousDialogOpen}
       />
     </View>
   );
