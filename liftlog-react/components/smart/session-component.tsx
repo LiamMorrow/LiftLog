@@ -213,29 +213,22 @@ export default function SessionComponent(props: {
     </View>
   );
 
-  const SnackBar = () => {
-    const lastExercise = session.lastExercise;
-    const lastRecordedSet = lastExercise?.lastRecordedSet;
-    if (
-      props.target === 'workoutSession' &&
-      session.nextExercise &&
-      lastExercise &&
-      lastRecordedSet?.set
-    ) {
-      const lastSetFailed =
-        lastRecordedSet.set.repsCompleted < lastExercise.blueprint.repsPerSet;
-
-      return (
-        <RestTimer
-          rest={lastExercise.blueprint.restBetweenSets}
-          startTime={lastRecordedSet.set.completionDateTime}
-          failed={lastSetFailed}
-        />
-      );
-    }
-
-    return null;
-  };
+  const lastExercise = session.lastExercise;
+  const lastRecordedSet = lastExercise?.lastRecordedSet;
+  const showSnackbar =
+    props.target === 'workoutSession' &&
+    session.nextExercise &&
+    lastExercise &&
+    lastRecordedSet?.set;
+  const lastSetFailed =
+    lastRecordedSet?.set?.repsCompleted! < lastExercise?.blueprint?.repsPerSet!;
+  const snackbar = showSnackbar ? (
+    <RestTimer
+      rest={lastExercise.blueprint.restBetweenSets}
+      startTime={lastRecordedSet.set.completionDateTime}
+      failed={lastSetFailed}
+    />
+  ) : undefined;
 
   const floatingBottomContainer = isReadonly ? null : (
     <View
@@ -253,7 +246,7 @@ export default function SessionComponent(props: {
             label={t('AddExercise')}
           />
         }
-        additionalContent={<SnackBar />}
+        additionalContent={snackbar}
       />
     </View>
   );
@@ -289,3 +282,5 @@ export default function SessionComponent(props: {
     </FullHeightScrollView>
   );
 }
+
+const sh = {};

@@ -16,14 +16,14 @@ async function createServicesInternal() {
     await getStateFactory(),
   );
 
-  const services = {
+  return {
     logger,
     keyValueStore,
     progressRepository,
     sessionService,
   };
-  return services;
 }
+export type Services = Awaited<ReturnType<typeof createServicesInternal>>;
 
 // Cache the created services so they only get made once
 let createdServices: Promise<Services> | undefined;
@@ -31,7 +31,5 @@ async function createServices(): Promise<Services> {
   createdServices ??= createServicesInternal();
   return await createdServices;
 }
-
-export type Services = Awaited<ReturnType<typeof createServicesInternal>>;
 
 export { createServices };

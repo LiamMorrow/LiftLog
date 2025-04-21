@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
-import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
+import { useAppTheme } from '@/hooks/useAppTheme';
 import RestFormat from '@/components/presentation/rest-format';
 import LimitedHtml from '@/components/presentation/limited-html';
 import { useTranslate } from '@tolgee/react'; // Using Tolgee for localization

@@ -1,4 +1,4 @@
-import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
+import { spacing } from '@/hooks/useAppTheme';
 import { ReactNode } from 'react';
 import { View } from 'react-native';
 
@@ -9,7 +9,6 @@ export default function FloatingBottomContainer({
   fab?: ReactNode;
   additionalContent?: ReactNode;
 }) {
-  const { colors } = useAppTheme();
   return (
     <View
       style={{
