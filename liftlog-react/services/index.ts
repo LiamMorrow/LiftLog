@@ -3,7 +3,7 @@ import { Logger } from '@/services/logger';
 import { ProgressRepository } from '@/services/progress-repository';
 import { SessionService } from '@/services/session-service';
 
-async function createServices() {
+async function createServicesInternal() {
   const getStateFactory = async () => {
     const { store } = await import('@/store');
     return store.getState;
@@ -25,6 +25,13 @@ async function createServices() {
   return services;
 }
 
-export type Services = Awaited<ReturnType<typeof createServices>>;
+// Cache the created services so they only get made once
+let createdServices: Promise<Services> | undefined;
+async function createServices(): Promise<Services> {
+  createdServices ??= createServicesInternal();
+  return await createdServices;
+}
 
-export default createServices;
+export type Services = Awaited<ReturnType<typeof createServicesInternal>>;
+
+export { createServices };

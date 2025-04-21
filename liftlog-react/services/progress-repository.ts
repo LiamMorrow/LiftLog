@@ -2,11 +2,12 @@ import { LiftLog } from '@/gen/proto';
 import { KeyedExerciseBlueprint } from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
 import { RecordedExercise, Session } from '@/models/session-models';
+import { fromSessionDao } from '@/models/storage/conversions.from-dao';
 import { KeyValueStore } from '@/services/key-value-store';
 import { Logger } from '@/services/logger';
-import { Deferred } from '@/utils/Deferred';
 import Enumerable from 'linq';
 import { match } from 'ts-pattern';
+global.Buffer = require('buffer').Buffer;
 
 const storageKey = 'Progress';
 export class ProgressRepository {
@@ -17,7 +18,7 @@ export class ProgressRepository {
 
   // Ensure initialize is called at the beginning of every operation
   private storedSessions: ReadonlyMap<string, Session> = undefined!;
-  private initializeDeferred: Deferred | undefined;
+  private initializePromise: Promise<void> | undefined;
 
   async getOrderedSessions(): Promise<Enumerable.IEnumerable<Session>> {
     await this.initialize();
@@ -64,14 +65,7 @@ export class ProgressRepository {
   }
 
   private async initialize() {
-    if (this.initializeDeferred) {
-      await this.initializeDeferred.promise;
-      return;
-    }
-
-    this.initializeDeferred = new Deferred();
-
-    try {
+    this.initializePromise ??= (async () => {
       let version = await this.keyValueStore.getItem(`${storageKey}-Version`);
       if (!version) {
         version = '2';
@@ -89,11 +83,12 @@ export class ProgressRepository {
           throw new Error(`Unsupported version ${x}`);
         });
 
-      this.storedSessions = storedData?.completedSessions ?? new Map();
-    } catch (err) {
-      this.initializeDeferred.reject(err);
-    }
-
-    await this.initializeDeferred.promise;
+      this.storedSessions = new Map<string, Session>(
+        storedData?.completedSessions
+          .map(fromSessionDao)
+          .map((x) => [x.id, x]) ?? [],
+      );
+    })();
+    await this.initializePromise;
   }
 }
