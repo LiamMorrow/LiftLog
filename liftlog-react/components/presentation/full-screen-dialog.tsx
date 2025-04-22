@@ -23,7 +23,7 @@ export default function FullScreenDialog(props: FullScreenDialogProps) {
   const { top, bottom } = useSafeAreaInsets();
 
   useEffect(() => {
-    const listener = navigation.addListener('beforeRemove', (e) => {
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
       if (!open) {
         return;
       }
@@ -32,7 +32,7 @@ export default function FullScreenDialog(props: FullScreenDialogProps) {
     });
 
     return () => {
-      navigation.removeListener('beforeRemove', listener);
+      unsubscribe();
     };
   }, [navigation, onClose, open]);
 
