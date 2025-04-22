@@ -2,6 +2,7 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import currentSessionReducer from './current-session';
 import settingsReducer from './settings';
 import programReducer from './program';
+import appReducer from './app';
 import { listenerMiddleware } from '@/store/listenerMiddleware';
 
 const store = configureStore({
@@ -14,6 +15,7 @@ const store = configureStore({
     currentSession: currentSessionReducer,
     settings: settingsReducer,
     program: programReducer,
+    app: appReducer,
   }),
 });
 

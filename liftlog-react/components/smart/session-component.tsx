@@ -2,6 +2,7 @@ import {
   addExercise,
   cycleExerciseReps,
   editExercise,
+  notifySetTimer,
   removeExercise,
   SessionTarget,
   setExerciseReps,
@@ -117,21 +118,23 @@ export default function SessionComponent(props: {
     <WeightedExercise
       recordedExercise={item}
       toStartNext={session.nextExercise === item}
-      updateRepCountForSet={(setIndex, reps) =>
+      updateRepCountForSet={(setIndex, reps) => {
         dispatch(setExerciseReps, {
           exerciseIndex: index,
           reps,
           setIndex,
           time: LocalDateTime.now(),
-        })
-      }
-      cycleRepCountForSet={(setIndex) =>
+        });
+        if (props.target === 'workoutSession') storeDispatch(notifySetTimer());
+      }}
+      cycleRepCountForSet={(setIndex) => {
         dispatch(cycleExerciseReps, {
           exerciseIndex: index,
           setIndex,
           time: LocalDateTime.now(),
-        })
-      }
+        });
+        if (props.target === 'workoutSession') storeDispatch(notifySetTimer());
+      }}
       updateWeightForExercise={(weight) =>
         dispatch(updateExerciseWeight, {
           exerciseIndex: index,

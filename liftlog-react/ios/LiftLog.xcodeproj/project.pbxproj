@@ -302,7 +302,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.anonymous.liftlogreact";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.limajuice.liftlogreact";
 				PRODUCT_NAME = "LiftLog";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -329,7 +329,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.anonymous.liftlogreact";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.limajuice.liftlogreact";
 				PRODUCT_NAME = "LiftLog";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

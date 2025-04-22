@@ -20,6 +20,7 @@ export default function AppConfiguration() {
   const settings = useAppSelector((state: RootState) => state.settings);
   const dispatch = useDispatch();
 
+  // TODO
   const resetTips = () => {};
 
   return (

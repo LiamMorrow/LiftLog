@@ -28,7 +28,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>liftlog</string>
-          <string>com.anonymous.liftlogreact</string>
+          <string>com.limajuice.liftlogreact</string>
         </array>
       </dict>
     </array>

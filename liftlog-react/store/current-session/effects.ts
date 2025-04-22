@@ -1,6 +1,7 @@
 import { Session } from '@/models/session-models';
 import {
   clearSetTimerNotification,
+  notifySetTimer,
   persistCurrentSession,
   setCurrentSession,
 } from '@/store/current-session';
@@ -20,6 +21,33 @@ export function applyCurrentSessionEffects() {
       }
       dispatch(setCurrentSession({ target: a.payload, session: undefined }));
       dispatch(fetchUpcomingSessions());
+    },
+  );
+
+  addEffect(
+    clearSetTimerNotification,
+    async (_, { extra: { notificationService } }) => {
+      await notificationService.clearSetTimerNotification();
+    },
+  );
+
+  addEffect(
+    notifySetTimer,
+    async (_, { extra: { notificationService }, getState }) => {
+      await notificationService.clearSetTimerNotification();
+      const {
+        settings: { restNotifications },
+        currentSession: { workoutSession: sessionPOJO },
+      } = getState();
+      if (!restNotifications) {
+        return;
+      }
+      const session = Session.fromPOJO(sessionPOJO);
+      if (session?.nextExercise && session.lastExercise) {
+        await notificationService.scheduleNextSetNotification(
+          session.lastExercise,
+        );
+      }
     },
   );
 }

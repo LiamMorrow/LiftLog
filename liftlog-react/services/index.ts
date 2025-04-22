@@ -1,5 +1,6 @@
 import { KeyValueStore } from '@/services/key-value-store';
 import { Logger } from '@/services/logger';
+import { NotificationService } from '@/services/notification-service';
 import { ProgressRepository } from '@/services/progress-repository';
 import { SessionService } from '@/services/session-service';
 
@@ -15,12 +16,14 @@ async function createServicesInternal() {
     progressRepository,
     await getStateFactory(),
   );
+  const notificationService = new NotificationService();
 
   return {
     logger,
     keyValueStore,
     progressRepository,
     sessionService,
+    notificationService,
   };
 }
 export type Services = Awaited<ReturnType<typeof createServicesInternal>>;

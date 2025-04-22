@@ -16,10 +16,11 @@
     },
     "scheme": "liftlog",
     "android": {
-      "package": "com.anonymous.liftlogreact"
+      "package": "com.limajuice.liftlogreact",
+      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"]
     },
     "ios": {
-      "bundleIdentifier": "com.anonymous.liftlogreact"
+      "bundleIdentifier": "com.limajuice.liftlogreact"
     },
     "androidStatusBar": {
       "translucent": true

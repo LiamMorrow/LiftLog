@@ -1,4 +1,4 @@
-package com.anonymous.liftlogreact
+package com.limajuice.liftlogreact
 
 import android.app.Application
 import android.content.res.Configuration

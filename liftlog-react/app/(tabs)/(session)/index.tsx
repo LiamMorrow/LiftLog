@@ -1,13 +1,12 @@
 import CardList from '@/components/presentation/card-list';
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
-
 import { Remote } from '@/components/presentation/remote';
 import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
 import SplitCardControl from '@/components/presentation/split-card-control';
 import { SurfaceText } from '@/components/presentation/surface-text';
-import { AndroidNotificationAlert } from '@/components/smart/android-notification-alert';
+import AndroidNotificationAlert from '@/components/smart/android-notification-alert';
 import { Tips } from '@/components/smart/tips';
 import { spacing } from '@/hooks/useAppTheme';
 import { useSession } from '@/hooks/useSession';

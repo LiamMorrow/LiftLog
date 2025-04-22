@@ -254,6 +254,8 @@ export const clearSetTimerNotification = createAction(
   'clearSetTimerNotification',
 );
 
+export const notifySetTimer = createAction('notifySetTimer');
+
 export const persistCurrentSession = createAction<SessionTarget>(
   'persistCurrentSession',
 );
