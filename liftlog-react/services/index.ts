@@ -5,18 +5,15 @@ import { ProgressRepository } from '@/services/progress-repository';
 import { SessionService } from '@/services/session-service';
 
 async function createServicesInternal() {
-  const getStateFactory = async () => {
-    const { store } = await import('@/store');
-    return store.getState;
-  };
+  const { store } = await import('@/store');
   const logger = new Logger();
   const keyValueStore = new KeyValueStore();
   const progressRepository = new ProgressRepository(keyValueStore, logger);
-  const sessionService = new SessionService(
-    progressRepository,
-    await getStateFactory(),
+  const sessionService = new SessionService(progressRepository, store.getState);
+  const notificationService = new NotificationService(
+    store.getState,
+    store.dispatch,
   );
-  const notificationService = new NotificationService();
 
   return {
     logger,
