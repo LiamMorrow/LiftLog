@@ -81,12 +81,12 @@ internal partial class UuidDao
 {
     public UuidDao(Guid value)
     {
-        Value = ByteString.CopyFrom(value.ToByteArray());
+        Value = UnsafeByteOperations.UnsafeWrap(value.ToByteArray());
     }
 
     public static implicit operator UuidDao(Guid value) => new(value);
 
-    public static implicit operator Guid(UuidDao dao) => new(dao.Value.ToByteArray());
+    public static implicit operator Guid(UuidDao dao) => new(dao.Value.Span);
 
     public static implicit operator UuidDao?(Guid? value) =>
         value is null ? null : (UuidDao)value.Value;
