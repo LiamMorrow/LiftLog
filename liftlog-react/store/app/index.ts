@@ -8,7 +8,7 @@ const initialState = {
 export type AppState = typeof initialState;
 
 const appSlice = createSlice({
-  name: 'settings',
+  name: 'app',
   initialState,
   reducers: {
     setIsHydrated(state, action: PayloadAction<boolean>) {

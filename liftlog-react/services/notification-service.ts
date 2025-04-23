@@ -47,8 +47,7 @@ export class NotificationService {
   ) {}
 
   async scheduleNextSetNotification(exercise: RecordedExercise) {
-    await cancelScheduledNotificationAsync(nextSetNotificationIdentifier);
-    await dismissNotificationAsync(nextSetNotificationIdentifier);
+    await this.clearSetTimerNotification();
 
     const id = uuid();
     this.dispatch(setLatestSetTimerNotificationId(id));
@@ -86,7 +85,8 @@ export class NotificationService {
   }
 
   async clearSetTimerNotification() {
-    // TODO
+    await cancelScheduledNotificationAsync(nextSetNotificationIdentifier);
+    await dismissNotificationAsync(nextSetNotificationIdentifier);
   }
 
   /**

@@ -1,4 +1,9 @@
-import { ExerciseBlueprint } from '@/models/blueprint-models';
+import {
+  ExerciseBlueprint,
+  NormalizedName,
+  NormalizedNameKey,
+  SessionBlueprint,
+} from '@/models/blueprint-models';
 import {
   RecordedExercise,
   RecordedExercisePOJO,
@@ -8,7 +13,12 @@ import {
 import { getCycledRepCount } from '@/store/current-session/helpers';
 import { SafeDraft, toSafeDraft } from '@/utils/store-helpers';
 import { LocalDate, LocalDateTime } from '@js-joda/core';
-import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createAction,
+  createSelector,
+  createSlice,
+  PayloadAction,
+} from '@reduxjs/toolkit';
 import BigNumber from 'bignumber.js';
 import { Draft, WritableDraft } from 'immer';
 import Enumerable from 'linq';
@@ -19,6 +29,7 @@ interface CurrentSessionState {
   historySession: SessionPOJO | undefined;
   feedSession: SessionPOJO | undefined;
   latestSetTimerNotificationId: string | undefined;
+  recentlyCompletedExercises: Record<NormalizedNameKey, RecordedExercisePOJO[]>;
 }
 
 export type SessionTarget = 'workoutSession' | 'historySession' | 'feedSession';
@@ -29,6 +40,7 @@ const initialState: CurrentSessionState = {
   historySession: undefined,
   feedSession: undefined,
   latestSetTimerNotificationId: undefined,
+  recentlyCompletedExercises: {},
 };
 
 type TargetedSessionAction<TPayload> = PayloadAction<{
@@ -71,6 +83,21 @@ const currentSessionSlice = createSlice({
     setActiveSessionDate: targetedSessionAction((session, date: LocalDate) => {
       session.date = date;
     }),
+
+    setRecentlyCompletedExercises(
+      state,
+      action: PayloadAction<Record<string, RecordedExercise[]>>,
+    ) {
+      const mapped: Record<string, RecordedExercisePOJO[]> = Object.fromEntries(
+        Object.entries(action.payload).map((x) => [
+          x[0],
+          x[1].map((r) => r.toPOJO()),
+        ]),
+      );
+      state.recentlyCompletedExercises = mapped as unknown as WritableDraft<
+        Record<string, RecordedExercisePOJO[]>
+      >;
+    },
 
     cycleExerciseReps: targetedSessionAction(
       (
@@ -226,11 +253,11 @@ const currentSessionSlice = createSlice({
       state,
       action: PayloadAction<{
         target: SessionTarget;
-        session: SessionPOJO | undefined;
+        session: Session | undefined;
       }>,
     ) => {
-      state[action.payload.target] = action.payload
-        .session as unknown as WritableDraft<SessionPOJO>;
+      state[action.payload.target] =
+        action.payload.session?.toPOJO() as unknown as WritableDraft<SessionPOJO>;
     },
 
     updateNotesForExercise: targetedSessionAction(
@@ -248,6 +275,17 @@ const currentSessionSlice = createSlice({
       },
     ),
   },
+
+  selectors: {
+    selectRecentlyCompletedExercises: createSelector(
+      (state: CurrentSessionState) => state.recentlyCompletedExercises,
+      (recentlyCompletedExercises) =>
+        (blueprint: ExerciseBlueprint): RecordedExercise[] =>
+          recentlyCompletedExercises[
+            NormalizedName.fromExerciseBlueprint(blueprint).toString()
+          ]?.map(RecordedExercise.fromPOJO) ?? [],
+    ),
+  },
 });
 
 export const clearSetTimerNotification = createAction(
@@ -255,10 +293,24 @@ export const clearSetTimerNotification = createAction(
 );
 
 export const notifySetTimer = createAction('notifySetTimer');
+export const completeSetFromNotification = createAction(
+  'completeSetFromNotification',
+);
+
+export const deleteSession = createAction<Session>('deleteSession');
+
+export const setCurrentSessionFromBlueprint = createAction<{
+  target: SessionTarget;
+  blueprint: SessionBlueprint;
+}>('setCurrentSessionFromBlueprint');
 
 export const persistCurrentSession = createAction<SessionTarget>(
   'persistCurrentSession',
 );
+
+export const computeRecentlyCompletedRecordedExercises = createAction<{
+  max: number;
+}>('computeRecentlyCompletedRecordedExercises');
 
 export const {
   cycleExerciseReps,
@@ -275,6 +327,10 @@ export const {
   setCurrentSession,
   updateNotesForExercise,
   updateBodyweight,
+  setRecentlyCompletedExercises,
 } = currentSessionSlice.actions;
+
+export const { selectRecentlyCompletedExercises } =
+  currentSessionSlice.selectors;
 
 export default currentSessionSlice.reducer;

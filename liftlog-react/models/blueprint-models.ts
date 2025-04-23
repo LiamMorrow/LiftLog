@@ -290,6 +290,37 @@ export class KeyedExerciseBlueprint {
   }
 }
 
+export type NormalizedNameKey = string;
+
+export class NormalizedName {
+  constructor(public name: string) {}
+  static fromExerciseBlueprint(e: ExerciseBlueprint): NormalizedName {
+    return new NormalizedName(e.name);
+  }
+
+  toString(): NormalizedNameKey {
+    return NormalizedName.normalizeName(this.name);
+  }
+
+  private static normalizeName(name?: string): string {
+    if (!name) {
+      return '';
+    }
+    const lowerName = name
+      .toLowerCase()
+      .trim()
+      .replace(/flies/g, 'flys')
+      .replace(/flyes/g, 'flys');
+    const withoutPlural = lowerName.endsWith('es')
+      ? lowerName.slice(0, -2)
+      : lowerName.endsWith('s')
+        ? lowerName.slice(0, -1)
+        : lowerName;
+
+    return withoutPlural;
+  }
+}
+
 export interface Rest {
   minRest: Duration;
   maxRest: Duration;

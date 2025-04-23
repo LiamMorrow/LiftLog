@@ -4,11 +4,16 @@ import {
   SessionBlueprint,
 } from '@/models/blueprint-models';
 import { RemoteData } from '@/models/remote';
-import { SessionPOJO } from '@/models/session-models';
+import { Session, SessionPOJO } from '@/models/session-models';
 import { defaultSessionBlueprint } from '@/models/test-data';
 
 import { LocalDate } from '@js-joda/core';
-import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createAction,
+  createSelector,
+  createSlice,
+  PayloadAction,
+} from '@reduxjs/toolkit';
 
 interface ProgramState {
   readonly isHydrated: boolean;
@@ -36,7 +41,7 @@ const initialState: ProgramState = {
 };
 
 const programSlice = createSlice({
-  name: 'currentSession',
+  name: 'program',
   initialState,
   reducers: {
     setIsHydrated(state, action: PayloadAction<boolean>) {
@@ -45,9 +50,11 @@ const programSlice = createSlice({
 
     setUpcomingSessions(
       state,
-      action: PayloadAction<RemoteData<readonly SessionPOJO[]>>,
+      action: PayloadAction<RemoteData<readonly Session[]>>,
     ) {
-      state.upcomingSessions = action.payload;
+      state.upcomingSessions = action.payload.map((x) =>
+        x.map((y) => y.toPOJO()),
+      );
     },
 
     setProgramSessions(
@@ -200,21 +207,32 @@ const programSlice = createSlice({
         action.payload.programBlueprint.toPOJO();
     },
   },
+  selectors: {
+    selectActiveProgram: createSelector(
+      (state: ProgramState) => state.savedPrograms[state.activeProgramId],
+      ProgramBlueprint.fromPOJO,
+    ),
+  },
 });
 
-export function getSessionBlueprints(state: ProgramState, programId: string) {
-  return state.savedPrograms[programId];
-}
+export const {
+  setIsHydrated,
+  setUpcomingSessions,
+  addProgramSession,
+  createSavedPlan,
+  deleteSavedPlan,
+  moveSessionBlueprintDownInProgram,
+  moveSessionBlueprintUpInProgram,
+  removeSessionFromProgram,
+  savePlan,
+  setActivePlan,
+  setProgramSession,
+  setProgramSessions,
+  setSavedPlanName,
+  setSavedPlans,
+} = programSlice.actions;
 
-export function getActiveProgramSessionBlueprints(state: ProgramState) {
-  return getSessionBlueprints(state, state.activeProgramId).sessions;
-}
-
-export function getActiveProgram(state: ProgramState) {
-  return state.savedPrograms[state.activeProgramId];
-}
-
-export const { setIsHydrated, setUpcomingSessions } = programSlice.actions;
+export const { selectActiveProgram } = programSlice.selectors;
 
 export const fetchUpcomingSessions = createAction('fetchUpcomingSessions');
 

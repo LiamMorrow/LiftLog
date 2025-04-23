@@ -1,5 +1,9 @@
 import { LiftLog } from '@/gen/proto';
-import { KeyedExerciseBlueprint } from '@/models/blueprint-models';
+import {
+  KeyedExerciseBlueprint,
+  NormalizedName,
+  NormalizedNameKey,
+} from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
 import { RecordedExercise, Session } from '@/models/session-models';
 import { fromSessionDao } from '@/models/storage/conversions.from-dao';
@@ -40,6 +44,22 @@ export class ProgressRepository {
     await this.persist();
   }
 
+  async getLatestOrderedRecordedExercises(
+    maxRecordsPerExercise: number,
+  ): Promise<Record<NormalizedNameKey, RecordedExercise[]>> {
+    return (await this.getOrderedSessions())
+      .selectMany((x) =>
+        x.recordedExercises.filter((x) => x.lastRecordedSet?.set),
+      )
+      .groupBy((x) =>
+        NormalizedName.fromExerciseBlueprint(x.blueprint).toString(),
+      )
+      .toObject(
+        (x) => x.key(),
+        (x) => x.take(maxRecordsPerExercise).toArray(),
+      );
+  }
+
   async getLatestRecordedExercises(): Promise<
     Enumerable.IDictionary<KeyedExerciseBlueprint, RecordedExercise>
   > {
@@ -52,6 +72,13 @@ export class ProgressRepository {
         (x) => x.key(),
         (x) => x.first(),
       );
+  }
+  async deleteSession(session: Session) {
+    await this.initialize();
+    const cloned = new Map(this.storedSessions);
+    cloned.delete(session.id);
+    this.storedSessions = new Map(this.storedSessions);
+    await this.persist();
   }
 
   private async persist() {

@@ -28,6 +28,7 @@ import {
   SessionBlueprintGenerator,
   SessionGenerator,
 } from '@/models/storage/generators';
+import { describe, it, expect } from 'vitest';
 
 describe('conversions', () => {
   it.each`

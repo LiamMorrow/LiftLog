@@ -4,6 +4,7 @@ import {
   editExercise,
   notifySetTimer,
   removeExercise,
+  selectRecentlyCompletedExercises,
   SessionTarget,
   setExerciseReps,
   toggleExercisePerSetWeight,
@@ -12,7 +13,7 @@ import {
   updateNotesForExercise,
   updateWeightForSet,
 } from '@/store/current-session';
-import { Button, Card, FAB, Icon } from 'react-native-paper';
+import { Card, FAB, Icon } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { Text, View } from 'react-native';
 import EmptyInfo from '@/components/presentation/empty-info';
@@ -33,6 +34,7 @@ import { ExerciseEditor } from '@/components/presentation/exercise-editor';
 import { LocalDateTime } from '@js-joda/core';
 import { useSession } from '@/hooks/useSession';
 import { useAppSelector } from '@/store';
+import UpdatePlanButton from '@/components/smart/update-plan-button';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
@@ -47,6 +49,9 @@ export default function SessionComponent(props: {
     reducer: (a: { payload: T; target: SessionTarget }) => any,
     payload: T,
   ) => storeDispatch(reducer({ payload, target: props.target }));
+  const recentlyCompletedExercises = useAppSelector(
+    selectRecentlyCompletedExercises,
+  );
 
   const perSetWeightSetting = useAppSelector(
     (x) => x.settings.splitWeightByDefault,
@@ -169,8 +174,7 @@ export default function SessionComponent(props: {
       onOpenLink={() => {}}
       isReadonly={isReadonly}
       showPreviousButton={props.target === 'workoutSession'}
-      // TODO
-      previousRecordedExercises={[]}
+      previousRecordedExercises={recentlyCompletedExercises(item.blueprint)}
     />
   );
 
@@ -205,28 +209,8 @@ export default function SessionComponent(props: {
     </Card>
   ) : null;
 
-  const sessionInPlan = false; // TODO
-  const openUpdatePlanDialog = () => {}; // TODO
-
   const updatePlanButton = isReadonly ? null : (
-    <View
-      style={{
-        flexDirection: 'row',
-        justifyContent: 'center',
-        gap: spacing[2],
-        marginTop: spacing[6],
-      }}
-    >
-      {!sessionInPlan && session.recordedExercises.length > 0 ? (
-        <Button
-          mode="contained-tonal"
-          icon={'plus'}
-          onPress={openUpdatePlanDialog}
-        >
-          {t('UpdatePlan')}
-        </Button>
-      ) : null}
-    </View>
+    <UpdatePlanButton target={props.target} session={session} />
   );
 
   const lastExercise = session.lastExercise;
@@ -294,6 +278,7 @@ export default function SessionComponent(props: {
           />
         ) : null}
       </FullScreenDialog>
+
       <View style={{ height: floatingBottomSize }} />
     </FullHeightScrollView>
   );

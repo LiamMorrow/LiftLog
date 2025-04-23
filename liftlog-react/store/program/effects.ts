@@ -1,9 +1,8 @@
-import { SessionBlueprint } from '@/models/blueprint-models';
 import { RemoteData } from '@/models/remote';
 import { addEffect } from '@/store/listenerMiddleware';
 import {
   fetchUpcomingSessions,
-  getActiveProgramSessionBlueprints,
+  selectActiveProgram,
   setUpcomingSessions,
 } from '@/store/program';
 import { AsyncStream } from 'data-async-iterators';
@@ -17,16 +16,13 @@ export function applyProgramEffects() {
     ) => {
       cancelActiveListeners();
 
-      const state = getState().program;
-      const sessionBlueprints = getActiveProgramSessionBlueprints(state);
+      const state = getState();
+      const sessionBlueprints = selectActiveProgram(state).sessions;
       const numberOfUpcomingSessions = sessionBlueprints.length;
       const sessions = await AsyncStream.from(
-        sessionService.getUpcomingSessions(
-          sessionBlueprints.map((x) => SessionBlueprint.fromPOJO(x)),
-        ),
+        sessionService.getUpcomingSessions(sessionBlueprints),
       )
         .take(numberOfUpcomingSessions)
-        .map((x) => x.toPOJO())
         .toArray();
 
       dispatch(setUpcomingSessions(RemoteData.success(sessions)));

@@ -1,12 +1,19 @@
 import { Session } from '@/models/session-models';
 import {
   clearSetTimerNotification,
+  completeSetFromNotification,
+  computeRecentlyCompletedRecordedExercises,
+  cycleExerciseReps,
+  deleteSession,
   notifySetTimer,
   persistCurrentSession,
   setCurrentSession,
+  setCurrentSessionFromBlueprint,
+  setRecentlyCompletedExercises,
 } from '@/store/current-session';
 import { addEffect } from '@/store/listenerMiddleware';
 import { fetchUpcomingSessions } from '@/store/program';
+import { LocalDateTime } from '@js-joda/core';
 
 export function applyCurrentSessionEffects() {
   addEffect(
@@ -48,6 +55,66 @@ export function applyCurrentSessionEffects() {
           session.lastExercise,
         );
       }
+    },
+  );
+
+  addEffect(
+    completeSetFromNotification,
+    async (_, { dispatch, getState, extra: { notificationService } }) => {
+      await notificationService.clearSetTimerNotification();
+      const state = getState();
+      const session = Session.fromPOJO(state.currentSession.workoutSession);
+      if (session?.nextExercise) {
+        const exerciseIndex = session.recordedExercises.indexOf(
+          session.nextExercise,
+        );
+        const setIndex = session.nextExercise.potentialSets.findIndex(
+          (x) => !x.set,
+        );
+        if (setIndex !== -1) {
+          dispatch(
+            cycleExerciseReps({
+              target: 'workoutSession',
+              payload: {
+                exerciseIndex,
+                setIndex,
+                time: LocalDateTime.now(),
+              },
+            }),
+          );
+          dispatch(notifySetTimer());
+        }
+      }
+    },
+  );
+
+  addEffect(
+    deleteSession,
+    async (action, { extra: { progressRepository } }) => {
+      await progressRepository.deleteSession(action.payload);
+    },
+  );
+
+  addEffect(
+    setCurrentSessionFromBlueprint,
+    async (action, { dispatch, extra: { sessionService } }) => {
+      const session = await sessionService.hydrateSessionFromBlueprint(
+        action.payload.blueprint,
+      );
+      dispatch(setCurrentSession({ session, target: action.payload.target }));
+    },
+  );
+
+  addEffect(
+    computeRecentlyCompletedRecordedExercises,
+    async (
+      { payload: { max } },
+      { dispatch, extra: { progressRepository } },
+    ) => {
+      const ex =
+        await progressRepository.getLatestOrderedRecordedExercises(max);
+      console.log(ex);
+      dispatch(setRecentlyCompletedExercises(ex));
     },
   );
 }

@@ -89,7 +89,7 @@ function ListUpcomingWorkouts({ upcoming }: { upcoming: readonly Session[] }) {
       dispatch(
         setCurrentSession({
           target: 'workoutSession',
-          session: session.toPOJO(),
+          session,
         }),
       );
       push('/session');

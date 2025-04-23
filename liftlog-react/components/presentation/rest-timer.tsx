@@ -16,9 +16,10 @@ interface RestTimerProps {
 
 export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
   const { colors } = useAppTheme();
-  const [timeSinceStart, setTimeSinceStart] = useState<string>('0:00');
-  const { t } = useTranslate(); // Initialize Tolgee translations
-
+  const getTimeSinceStart = () => {
+    const diffMs = Duration.between(startTime, LocalDateTime.now());
+    return formatTimeSpan(diffMs);
+  };
   // Function to format time in m:ss format
   const formatTimeSpan = (ms: Duration): string => {
     const totalSeconds = Math.floor(ms.toMillis() / 1000);
@@ -27,11 +28,14 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  const [timeSinceStart, setTimeSinceStart] =
+    useState<string>(getTimeSinceStart());
+  const { t } = useTranslate(); // Initialize Tolgee translations
+
   // Timer effect to update time every 200ms
   useEffect(() => {
     const timer = setInterval(() => {
-      const diffMs = Duration.between(startTime, LocalDateTime.now());
-      setTimeSinceStart(formatTimeSpan(diffMs));
+      setTimeSinceStart(getTimeSinceStart());
     }, 200);
 
     // Cleanup timer on unmount

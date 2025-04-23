@@ -23,9 +23,9 @@ const tolgee = Tolgee()
       en,
     },
   });
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-
   return (
     <Provider store={store}>
       <SafeAreaProvider>

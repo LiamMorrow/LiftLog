@@ -1,7 +1,7 @@
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
-import { useNavigation } from 'expo-router';
-import { ReactNode, useEffect } from 'react';
+import { usePreventNavigate } from '@/hooks/usePreventNavigate';
+import { ReactNode } from 'react';
 import { Animated, Text, useAnimatedValue, View } from 'react-native';
 import { Button, IconButton, Portal } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,24 +17,11 @@ interface FullScreenDialogProps {
 
 export default function FullScreenDialog(props: FullScreenDialogProps) {
   const { action, open, onAction, onClose, title, children } = props;
-  const navigation = useNavigation();
   const scrollAnimation = useAnimatedValue(0);
   const { colors } = useAppTheme();
   const { top, bottom } = useSafeAreaInsets();
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-      if (!open) {
-        return;
-      }
-      e.preventDefault();
-      onClose();
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [navigation, onClose, open]);
+  usePreventNavigate(open, onClose);
 
   return (
     <Portal>

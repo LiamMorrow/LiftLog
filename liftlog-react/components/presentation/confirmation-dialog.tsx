@@ -1,18 +1,34 @@
 import { SurfaceText } from '@/components/presentation/surface-text';
 import { T } from '@tolgee/react';
 import { ReactNode } from 'react';
+import { View } from 'react-native';
 import { Button, Dialog, Portal } from 'react-native-paper';
 
-interface ConfirmationDialogProps {
+type ConfirmationDialogWithoutAdditionalActionProps = {
   open: boolean;
   headline: ReactNode;
   textContent: ReactNode;
   cancelText?: string;
   okText?: string;
   preventCancel?: boolean;
+  additionalActionText?: undefined;
+  onAdditionalAction?: undefined;
   onCancel: () => void;
   onOk: () => void;
-}
+};
+
+type WithAdditionalActions = {
+  additionalActionText: string;
+  onAdditionalAction: () => void;
+};
+
+type ConfirmationDialogProps =
+  | ConfirmationDialogWithoutAdditionalActionProps
+  | (Omit<
+      ConfirmationDialogWithoutAdditionalActionProps,
+      'additionalActionText' | 'onAdditionalAction'
+    > &
+      WithAdditionalActions);
 
 export default function ConfirmationDialog(props: ConfirmationDialogProps) {
   const {
@@ -24,7 +40,39 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
     onCancel,
     onOk,
     preventCancel,
+    additionalActionText,
+    onAdditionalAction,
   } = props;
+
+  const cancelButton = (
+    <Button onPress={onCancel}>{cancelText ?? <T keyName="Cancel" />}</Button>
+  );
+  const okButton = (
+    <Button onPress={onOk}>{okText ?? <T keyName="Ok" />}</Button>
+  );
+
+  const buttons = additionalActionText ? (
+    <Dialog.Actions>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+      >
+        {cancelButton}
+        <View style={{ flexDirection: 'row' }}>
+          <Button onPress={onAdditionalAction}>{additionalActionText}</Button>
+          {okButton}
+        </View>
+      </View>
+    </Dialog.Actions>
+  ) : (
+    <Dialog.Actions>
+      {cancelButton}
+      {okButton}
+    </Dialog.Actions>
+  );
 
   return (
     <Portal>
@@ -41,12 +89,7 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
         <Dialog.Content>
           <SurfaceText>{textContent}</SurfaceText>
         </Dialog.Content>
-        <Dialog.Actions>
-          <Button onPress={onCancel}>
-            {cancelText ?? <T keyName="Cancel" />}
-          </Button>
-          <Button onPress={onOk}>{okText ?? <T keyName="Ok" />}</Button>
-        </Dialog.Actions>
+        {buttons}
       </Dialog>
     </Portal>
   );

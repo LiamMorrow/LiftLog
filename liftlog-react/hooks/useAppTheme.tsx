@@ -6,6 +6,12 @@ import {
 import React, { createContext, ReactNode, useContext, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
+import {
+  DarkTheme,
+  ThemeProvider as NavigationThemeProvider,
+  DefaultTheme,
+  Theme,
+} from '@react-navigation/native';
 
 export const spacing = {
   0: 0,
@@ -102,6 +108,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   );
 
   const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
   // If the device is not compatible, it will return a theme based on the fallback source color (optional, default to #6750A4)
   const { theme, updateTheme, resetTheme } = useMaterial3Theme({
     fallbackSourceColor: '0x00AA00',
@@ -116,13 +123,25 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   }, [colorSchemeSeed]);
   const schemedTheme = colorScheme === 'dark' ? theme.dark : theme.light;
 
-  const paperTheme =
-    colorScheme === 'dark'
-      ? { ...MD3DarkTheme, colors: theme.dark }
-      : { ...MD3LightTheme, colors: theme.light };
+  const paperTheme = isDark
+    ? { ...MD3DarkTheme, colors: theme.dark }
+    : { ...MD3LightTheme, colors: theme.light };
   const appTheme = {
     colors: schemedTheme,
     colorScheme: colorScheme ?? 'light',
+  };
+
+  const baseNavigationThem = isDark ? DarkTheme : DefaultTheme;
+  const navigationTheme: Theme = {
+    ...baseNavigationThem,
+    colors: {
+      background: paperTheme.colors.background,
+      border: paperTheme.colors.outline,
+      card: paperTheme.colors.surfaceContainer,
+      notification: paperTheme.colors.surface,
+      primary: paperTheme.colors.primary,
+      text: paperTheme.colors.onSurface,
+    },
   };
 
   return (
@@ -138,7 +157,9 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
         //   ),
         // }}
       >
-        {children}
+        <NavigationThemeProvider value={navigationTheme}>
+          {children}
+        </NavigationThemeProvider>
       </PaperProvider>
     </AppThemeContext.Provider>
   );

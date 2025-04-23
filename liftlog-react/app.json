@@ -14,7 +14,7 @@
       "typedRoutes": true,
       "reactCompiler": true
     },
-    "scheme": "liftlog",
+    "scheme": "com.limajuice.liftlogreact",
     "android": {
       "package": "com.limajuice.liftlogreact",
       "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"]

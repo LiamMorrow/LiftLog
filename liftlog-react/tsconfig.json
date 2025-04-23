@@ -11,8 +11,8 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "exactOptionalPropertyTypes": true,
-    "types": ["vitest/globals"]
+    "types": ["vitest"],
+    "exactOptionalPropertyTypes": true
   },
   "include": [
     "**/*.ts",
@@ -20,5 +20,11 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "tolgee.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/vitest/dist/**",
+    "**/vitest/dist/chunks/**",
+    "vitest.config.ts"
   ]
 }

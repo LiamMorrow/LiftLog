@@ -4,5 +4,6 @@
   "azureFunctions.projectRuntime": "~4",
   "debug.internalConsoleOptions": "neverOpen",
   "azureFunctions.preDeployTask": "publish (functions)",
-  "cSpell.words": ["Fluxor", "Oaep", "Sqids", "Tolgee", "Unfollow"]
+  "cSpell.words": ["Fluxor", "Oaep", "Sqids", "Tolgee", "Unfollow"],
+  "typescript.preferences.autoImportSpecifierExcludeRegexes": ["vitest/dist/chunks.*"]
 }
