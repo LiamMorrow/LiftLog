@@ -4,18 +4,18 @@ export class Logger {
   }
 
   info(message: string): void {
-    console.info(`INFO: ${message}`);
+    console.info(message);
   }
 
-  warn(message: string): void {
-    console.warn(`WARN: ${message}`);
+  warn(message: string, options: unknown): void {
+    console.warn(message, options);
   }
 
-  error(message: string): void {
-    console.error(`ERROR: ${message}`);
+  error(message: string, options: unknown): void {
+    console.error(message, options);
   }
 
   debug(message: string): void {
-    console.debug(`DEBUG: ${message}`);
+    console.debug(message);
   }
 }

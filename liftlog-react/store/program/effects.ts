@@ -19,12 +19,12 @@ export function applyProgramEffects() {
       const state = getState();
       const sessionBlueprints = selectActiveProgram(state).sessions;
       const numberOfUpcomingSessions = sessionBlueprints.length;
+
       const sessions = await AsyncStream.from(
         sessionService.getUpcomingSessions(sessionBlueprints),
       )
         .take(numberOfUpcomingSessions)
         .toArray();
-
       dispatch(setUpcomingSessions(RemoteData.success(sessions)));
     },
   );

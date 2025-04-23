@@ -1,7 +1,6 @@
 import {
   createListenerMiddleware,
   addListener,
-  Action,
   ActionCreator,
 } from '@reduxjs/toolkit';
 import type { RootState, AppDispatch } from './store';
@@ -34,17 +33,22 @@ export function addEffect<TAction extends { type: string }>(
   effect: EffectFn<TAction extends ActionCreator<infer U> ? U : TAction>,
 ): void;
 export function addEffect(
-  actionPredicate: { type: string } | ((action: Action) => boolean),
+  actionPredicate: { type: string },
   effect: EffectFn<unknown>,
 ) {
   startAppListening({
-    predicate: (action) =>
-      'type' in actionPredicate
-        ? action.type === actionPredicate.type
-        : actionPredicate(action),
+    predicate: (action) => action.type === actionPredicate.type,
     effect: async (action, listenerApi) => {
       const services = await listenerApi.extra();
-      effect(action, { ...listenerApi, extra: services });
+      try {
+        await effect(action, { ...listenerApi, extra: services });
+      } catch (e) {
+        services.logger.warn(
+          `Error during effect [${actionPredicate.type}]:`,
+          e,
+        );
+        throw e;
+      }
     },
   });
 }

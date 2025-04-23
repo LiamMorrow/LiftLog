@@ -5,5 +5,8 @@
   "debug.internalConsoleOptions": "neverOpen",
   "azureFunctions.preDeployTask": "publish (functions)",
   "cSpell.words": ["Fluxor", "Oaep", "Sqids", "Tolgee", "Unfollow"],
-  "typescript.preferences.autoImportSpecifierExcludeRegexes": ["vitest/dist/chunks.*"]
+  "typescript.preferences.autoImportSpecifierExcludeRegexes": [
+    "vitest/dist/chunks.*",
+    "react-native/Libraries/TurboModule/TurboModuleRegistry"
+  ]
 }

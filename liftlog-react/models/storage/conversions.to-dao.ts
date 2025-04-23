@@ -16,9 +16,19 @@ import {
   RecordedSet,
   Session,
 } from '@/models/session-models';
+import Enumerable from 'linq';
 
 function toUuidDao(uuid: string): LiftLog.Ui.Models.IUuidDao {
-  return { value: uuidParse(uuid) };
+  const parsed = uuidParse(uuid);
+  // Reorder bytes to match the Guid.ToByteArray behavior in C#. See fromUuidDao
+  // prettier-ignore
+  const reorderedForGuid = [
+    parsed[3], parsed[2], parsed[1], parsed[0],
+    parsed[5], parsed[4],
+    parsed[7], parsed[6],
+    parsed[8], parsed[9], parsed[10], parsed[11], parsed[12], parsed[13], parsed[14], parsed[15],
+  ];
+  return { value: Uint8Array.from(reorderedForGuid) };
 }
 
 function toStringValue(
@@ -159,6 +169,16 @@ export function toCurrentPlanDao(
 ): LiftLog.Ui.Models.CurrentPlanDaoV1 {
   return new LiftLog.Ui.Models.CurrentPlanDaoV1({
     sessions: sessions.map(toSessionBlueprintDao),
+  });
+}
+
+export function toSessionHistoryDao(
+  model: ReadonlyMap<string, Session>,
+): LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2 {
+  return new LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2({
+    completedSessions: Enumerable.from(model.values())
+      .select(toSessionDao)
+      .toArray(),
   });
 }
 

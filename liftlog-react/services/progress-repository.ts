@@ -4,9 +4,10 @@ import {
   NormalizedName,
   NormalizedNameKey,
 } from '@/models/blueprint-models';
-import { TemporalComparer } from '@/models/comparers';
+import { LocalDateTimeComparer, TemporalComparer } from '@/models/comparers';
 import { RecordedExercise, Session } from '@/models/session-models';
 import { fromSessionDao } from '@/models/storage/conversions.from-dao';
+import { toSessionHistoryDao } from '@/models/storage/conversions.to-dao';
 import { KeyValueStore } from '@/services/key-value-store';
 import { Logger } from '@/services/logger';
 import Enumerable from 'linq';
@@ -56,7 +57,14 @@ export class ProgressRepository {
       )
       .toObject(
         (x) => x.key(),
-        (x) => x.take(maxRecordsPerExercise).toArray(),
+        (x) =>
+          x
+            .orderByDescending(
+              (x) => x.lastRecordedSet!.set!.completionDateTime,
+              LocalDateTimeComparer,
+            )
+            .take(maxRecordsPerExercise)
+            .toArray(),
       );
   }
 
@@ -85,9 +93,12 @@ export class ProgressRepository {
     if (!this.storedSessions) {
       throw new Error('Failed to persist as not initialized');
     }
+    const s = LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2.encode(
+      toSessionHistoryDao(this.storedSessions),
+    );
     await Promise.all([
       this.keyValueStore.setItem(`${storageKey}-Version`, '2'),
-      this.keyValueStore.setItem(storageKey, 'TODO_PROTOBUF'),
+      this.keyValueStore.setItem(storageKey, s.finish()),
     ]);
   }
 
@@ -103,7 +114,7 @@ export class ProgressRepository {
         .with('2', async () =>
           LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2.decode(
             (await this.keyValueStore.getItemBytes(storageKey)) ??
-              Buffer.from([]),
+              Uint8Array.from([]),
           ),
         )
         .otherwise((x) => {

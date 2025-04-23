@@ -113,7 +113,6 @@ export function applyCurrentSessionEffects() {
     ) => {
       const ex =
         await progressRepository.getLatestOrderedRecordedExercises(max);
-      console.log(ex);
       dispatch(setRecentlyCompletedExercises(ex));
     },
   );

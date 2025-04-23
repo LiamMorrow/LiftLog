@@ -15,6 +15,7 @@ import {
   fromSessionDao,
   fromFeedIdentityDao,
   fromFeedUserDao,
+  fromSessionHistoryDao,
 } from '@/models/storage/conversions.from-dao';
 import BigNumber from 'bignumber.js';
 import fc from 'fast-check';
@@ -28,21 +29,32 @@ import {
   SessionBlueprintGenerator,
   SessionGenerator,
 } from '@/models/storage/generators';
+import { LiftLog } from '@/gen/proto';
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'fs';
+import { gunzipSync } from 'zlib';
+
+const Models = LiftLog.Ui.Models;
 
 describe('conversions', () => {
   it.each`
-    name                  | initialValueGenerator        | convertToDao             | convertFromDao             | assertEquals
-    ${'Decimal'}          | ${BigNumberGenerator}        | ${toDecimalDao}          | ${fromDecimalDao}          | ${(a: BigNumber, b: BigNumber) => expect(a.isEqualTo(b)).toBeTruthy()}
-    ${'DateOnly'}         | ${LocalDateGenerator}        | ${toDateOnlyDao}         | ${fromDateOnlyDao}         | ${(a: LocalDate, b: LocalDate) => expect(a.equals(b)).toBeTruthy()}
-    ${'TimeOnly'}         | ${LocalTimeGenerator}        | ${toTimeOnlyDao}         | ${fromTimeOnlyDao}         | ${(a: LocalTime, b: LocalTime) => expect(a.equals(b)).toBeTruthy()}
-    ${'SessionBlueprint'} | ${SessionBlueprintGenerator} | ${toSessionBlueprintDao} | ${fromSessionBlueprintDao} | ${toPOJOEquals}
-    ${'Session'}          | ${SessionGenerator}          | ${toSessionDao}          | ${fromSessionDao}          | ${toPOJOEquals}
-    ${'FeedIdentity'}     | ${FeedIdentityGenerator}     | ${toFeedIdentityDao}     | ${fromFeedIdentityDao}     | ${toPOJOEquals}
-    ${'FeedUser'}         | ${FeedUserGenerator}         | ${toFeedUserDao}         | ${fromFeedUserDao}         | ${toPOJOEquals}
+    name                  | protoType                                           | initialValueGenerator        | convertToDao             | convertFromDao             | assertEquals
+    ${'Decimal'}          | ${Models.DecimalValue}                              | ${BigNumberGenerator}        | ${toDecimalDao}          | ${fromDecimalDao}          | ${(a: BigNumber, b: BigNumber) => expect(a.isEqualTo(b)).toBeTruthy()}
+    ${'DateOnly'}         | ${Models.DateOnlyDao}                               | ${LocalDateGenerator}        | ${toDateOnlyDao}         | ${fromDateOnlyDao}         | ${(a: LocalDate, b: LocalDate) => expect(a.equals(b)).toBeTruthy()}
+    ${'TimeOnly'}         | ${Models.TimeOnlyDao}                               | ${LocalTimeGenerator}        | ${toTimeOnlyDao}         | ${fromTimeOnlyDao}         | ${(a: LocalTime, b: LocalTime) => expect(a.equals(b)).toBeTruthy()}
+    ${'SessionBlueprint'} | ${Models.SessionBlueprintDao.SessionBlueprintDaoV2} | ${SessionBlueprintGenerator} | ${toSessionBlueprintDao} | ${fromSessionBlueprintDao} | ${toPOJOEquals}
+    ${'Session'}          | ${Models.SessionHistoryDao.SessionDaoV2}            | ${SessionGenerator}          | ${toSessionDao}          | ${fromSessionDao}          | ${toPOJOEquals}
+    ${'FeedIdentity'}     | ${Models.FeedIdentityDaoV1}                         | ${FeedIdentityGenerator}     | ${toFeedIdentityDao}     | ${fromFeedIdentityDao}     | ${toPOJOEquals}
+    ${'FeedUser'}         | ${Models.FeedUserDaoV1}                             | ${FeedUserGenerator}         | ${toFeedUserDao}         | ${fromFeedUserDao}         | ${toPOJOEquals}
   `(
-    'should convert back and forth between $name',
-    ({ initialValueGenerator, convertToDao, convertFromDao, assertEquals }) => {
+    'should convert back and forth between $name surviving an encoding',
+    ({
+      initialValueGenerator,
+      protoType,
+      convertToDao,
+      convertFromDao,
+      assertEquals,
+    }) => {
       fc.assert(
         fc.property(
           initialValueGenerator as fc.Arbitrary<unknown>,
@@ -50,7 +62,9 @@ describe('conversions', () => {
             const converted = convertToDao(
               initialValue as fc.Arbitrary<unknown>,
             );
-            const convertedBack = convertFromDao(converted);
+            const encoded = protoType.encode(converted).finish();
+            const decoded = protoType.decode(encoded);
+            const convertedBack = convertFromDao(decoded);
 
             assertEquals(initialValue, convertedBack);
           },
@@ -58,6 +72,17 @@ describe('conversions', () => {
       );
     },
   );
+
+  it('should be able to decode a backup from original liftlog', () => {
+    const compressedData = readFileSync(
+      __dirname + '/' + 'export.liftlogbackup.gz',
+    );
+    const decompressed = gunzipSync(compressedData);
+    const decoded =
+      Models.SessionHistoryDao.SessionHistoryDaoV2.decode(decompressed);
+    const sessions = fromSessionHistoryDao(decoded);
+    expect(sessions.size).toBe(85);
+  });
 });
 
 interface ToPOJO {

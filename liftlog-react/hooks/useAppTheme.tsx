@@ -12,6 +12,7 @@ import {
   DefaultTheme,
   Theme,
 } from '@react-navigation/native';
+import { Text } from 'react-native';
 
 export const spacing = {
   0: 0,
@@ -148,14 +149,12 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
     <AppThemeContext.Provider value={appTheme}>
       <PaperProvider
         theme={paperTheme}
-        // settings={{
-        //   icon: ({ name, ...rest }) => (
-        //     <MsIcon
-        //       icon={mst}
-        //       {...rest}
-        //     />
-        //   ),
-        // }}
+        settings={{
+          // TODO we want real icons - this just suppresses the warn until we settle on an icon pack
+          icon: ({ name, ...rest }) => (
+            <Text style={{ color: appTheme.colors.onSurface }}>?</Text>
+          ),
+        }}
       >
         <NavigationThemeProvider value={navigationTheme}>
           {children}
