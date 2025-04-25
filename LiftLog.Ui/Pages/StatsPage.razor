@@ -12,13 +12,15 @@
         T="string"
         Options="SessionSelectOptions"
         Value="StatsState.Value.OverallViewSessionName"
-        ValueChanged="HandleSessionSelectChanged" />
+        ValueChanged="HandleSessionSelectChanged"
+        EqualsComparer="(a,b)=>a.Equals(b)" />
     <Select
         data-cy="stats-time-selector"
         T="TimeSpan"
         Options="SelectTimeOptions"
         Value="StatsState.Value.OverallViewTime"
-        ValueChanged="HandleTimeSelectChanged" />
+        ValueChanged="HandleTimeSelectChanged"
+        EqualsComparer="(a,b)=>a.Equals(b)" />
 </div>
 <div class="flex flex-col justify-between m-2 mb-5">
     <SearchInput SearchTerm=@SearchTerm OnSearch="@((st)=>{SearchTerm = st; StateHasChanged();})" />

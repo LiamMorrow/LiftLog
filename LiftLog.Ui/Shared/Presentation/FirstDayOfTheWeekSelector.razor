@@ -1,28 +1,18 @@
 @using System
 @using Microsoft.AspNetCore.Components
 
-<md-list-item>
-    <div style="display: flex; flex-direction: column; align-items: flex-start;">
-        <span slot="headline">@Title</span>
-        <span slot="supporting-text">@Subtitle</span>
-    </div>
-    <md-outlined-select slot="end" value="@SelectedValue" @onchange="HandleChange">
-        @foreach (DayOfWeek day in Enum.GetValues<DayOfWeek>())
-        {
-            <md-select-option value="@day.ToString()">
-                <div slot="headline">@day.ToString()</div>
-            </md-select-option>
-        }
-    </md-outlined-select>
+<md-list-item class="text-start">
+    <span slot="headline">@UiStrings.SetFirstDayOfWeek</span>
+    <span slot="supporting-text">@UiStrings.SetFirstDayOfWeekSubtitle</span>
+    <span slot="end">
+        <Select T="DayOfWeek" Options="DaysOfWeek" Value="SelectedValue" ValueChanged="SelectedValueChanged" EqualsComparer="(a,b)=>a==b"/>
+    </span>
 </md-list-item>
 
 @code {
-    [Parameter] public string? Title { get; set; }
-    [Parameter] public string? Subtitle { get; set; }
-    [Parameter] public string? SelectedValue { get; set; }
-    [Parameter] public EventCallback<string> SelectedValueChanged { get; set; }
-    private async Task HandleChange(ChangeEventArgs e)
-    {
-        await SelectedValueChanged.InvokeAsync(e.Value?.ToString());
-    }
+    private List<Select<DayOfWeek>.SelectOption> DaysOfWeek = new []{DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday}
+            .Select(x=>new Select<DayOfWeek>.SelectOption(x.ToString(), x))
+            .ToList();
+    [Parameter] [EditorRequired] public DayOfWeek SelectedValue { get; set; }
+    [Parameter] [EditorRequired] public EventCallback<DayOfWeek> SelectedValueChanged { get; set; }
 }

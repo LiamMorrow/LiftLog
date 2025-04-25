@@ -1,12 +1,12 @@
 @inject IJSRuntime JsRuntime
-@typeparam T where T : IEquatable<T>
+@typeparam T
 
 <div class="relative" @attributes="AdditionalAttributes">
     <AppButton id="@btnId" trailing-icon Type="AppButtonType.Text" OnClick="@(() => JsRuntime.InvokeVoidAsync("AppUtils.toggleOpen", menuRef))" Icon="keyboard_arrow_down">
-        @(Options.FirstOrDefault(x => (x.Value == null && Value is null) || x.Value?.Equals(Value) == true)?.Title)
+        @(Options.FirstOrDefault(x => (x.Value == null && Value is null) || EqualsComparer(x.Value, Value))?.Title)
     </AppButton>
 
-    <md-menu @ref="menuRef" id="usage-menu" anchor="@btnId">
+    <md-menu @ref="menuRef" id="usage-menu" anchor="@btnId"  positioning="popover">
         @foreach (var option in Options)
         {
             <md-menu-item @onclick="() => ValueChanged.InvokeAsync(option.Value)">
@@ -19,6 +19,10 @@
 @code {
     private string btnId = "btn-" + Guid.NewGuid().ToString("N");
     private ElementReference menuRef;
+
+    [Parameter] [EditorRequired] public Func<T,T, bool> EqualsComparer { get; set; } = null!;
+
+
     [Parameter] [EditorRequired] public T Value { get; set; } = default!;
 
     [Parameter] [EditorRequired] public List<SelectOption> Options { get; set; } = null!;
