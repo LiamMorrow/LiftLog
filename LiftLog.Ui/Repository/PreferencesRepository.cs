@@ -205,4 +205,18 @@ public class PreferencesRepository(IPreferenceStore preferenceStore)
     {
         return await preferenceStore.GetItemAsync("splitWeightByDefault") is "True";
     }
+
+    public async Task SetFirstDayOfWeekAsync(DayOfWeek firstDayOfWeek)
+    {
+        await preferenceStore.SetItemAsync("firstDayOfWeek", firstDayOfWeek.ToString());
+    }
+
+    public async Task<DayOfWeek> GetFirstDayOfWeekAsync()
+    {
+        var firstDayOfWeek = await preferenceStore.GetItemAsync("firstDayOfWeek");
+        if (Enum.TryParse<DayOfWeek>(firstDayOfWeek, out var dayOfWeek))
+            return dayOfWeek;
+        else
+            return System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
+    }
 }

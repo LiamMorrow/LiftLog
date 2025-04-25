@@ -1,0 +1,18 @@
+@using System
+@using Microsoft.AspNetCore.Components
+
+<md-list-item class="text-start">
+    <span slot="headline">@UiStrings.SetFirstDayOfWeek</span>
+    <span slot="supporting-text">@UiStrings.SetFirstDayOfWeekSubtitle</span>
+    <span slot="end">
+        <Select T="DayOfWeek" Options="DaysOfWeek" Value="SelectedValue" ValueChanged="SelectedValueChanged" EqualsComparer="(a,b)=>a==b"/>
+    </span>
+</md-list-item>
+
+@code {
+    private List<Select<DayOfWeek>.SelectOption> DaysOfWeek = new []{DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday}
+            .Select(x=>new Select<DayOfWeek>.SelectOption(x.ToString(), x))
+            .ToList();
+    [Parameter] [EditorRequired] public DayOfWeek SelectedValue { get; set; }
+    [Parameter] [EditorRequired] public EventCallback<DayOfWeek> SelectedValueChanged { get; set; }
+}
