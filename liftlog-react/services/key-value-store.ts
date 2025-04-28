@@ -19,7 +19,17 @@ export class KeyValueStore {
 
   async setItem(key: string, value: string | Uint8Array) {
     const file = getFile(key);
-    file.write(value);
+    if (typeof value === 'string') {
+      file.write(value);
+      return;
+    }
+    const str = file.writableStream();
+    const writer = str.getWriter();
+    try {
+      await writer.write(value);
+    } finally {
+      writer.close();
+    }
   }
 
   async removeItem(key: string) {
