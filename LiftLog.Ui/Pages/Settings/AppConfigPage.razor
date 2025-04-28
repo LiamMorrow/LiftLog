@@ -7,6 +7,7 @@
 
 <md-list>
     <ListSwitch Headline="@UiStrings.UseImperialUnits" SupportingText="@UiStrings.UseImperialUnitsSubtitle" Value="@SettingsState.Value.UseImperialUnits" OnSwitched="SetUseImperialUnits" />
+    <FirstDayOfTheWeekSelector SelectedValue="@SettingsState.Value.FirstDayOfWeek" SelectedValueChanged="(v)=>SetFirstDayOfWeek(v)" />
     <ListSwitch Headline="@UiStrings.ShowBodyweight" SupportingText="@UiStrings.ShowBodyweightSubtitle" Value="@SettingsState.Value.ShowBodyweight" OnSwitched="SetShowBodyweight" />
     <ListSwitch data-cy="split-weight-toggle" Headline="@UiStrings.SplitWeightByDefault" SupportingText="@UiStrings.SplitWeightByDefaultSubtitle" Value="@SettingsState.Value.SplitWeightByDefault" OnSwitched="SetSplitWeightByDefault" />
     <ListSwitch Headline="@UiStrings.ShowFeed" SupportingText="@UiStrings.ShowFeedSubtitle" Value="@SettingsState.Value.ShowFeed" OnSwitched="SetShowFeed" />
@@ -33,6 +34,9 @@
 
     private void SetUseImperialUnits(bool value)
     => Dispatcher.Dispatch(new SetUseImperialUnitsAction(value));
+
+    private void SetFirstDayOfWeek(DayOfWeek value)
+        => Dispatcher.Dispatch(new SetFirstDayOfWeekAction(value));
 
     private void SetShowBodyweight(bool value)
         => Dispatcher.Dispatch(new SetShowBodyweightAction(value));
