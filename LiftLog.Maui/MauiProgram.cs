@@ -95,7 +95,7 @@ public static class MauiProgram
 
         builder.Services.RegisterUiServices<
             AppDataFileStorageKeyValueStore,
-            SecureStoragePreferenceStore,
+            PreferenceStore,
             MauiNotificationService,
             MauiBackupRestoreService,
             AppThemeProvider,
