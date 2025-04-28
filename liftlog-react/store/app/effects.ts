@@ -1,5 +1,6 @@
 import {
   initializeAppStateSlice,
+  refreshNotificationPermissionStatus,
   requestExactNotificationPermission,
   setCanScheduleExactNotifications,
   setIsHydrated,
@@ -11,12 +12,7 @@ export function applyAppEffects() {
     initializeAppStateSlice,
     async (
       _,
-      {
-        cancelActiveListeners,
-        dispatch,
-        getState,
-        extra: { notificationService },
-      },
+      { cancelActiveListeners, dispatch, extra: { notificationService } },
     ) => {
       cancelActiveListeners();
 
@@ -25,6 +21,14 @@ export function applyAppEffects() {
       dispatch(setCanScheduleExactNotifications(canScheduleExactAlarm));
 
       dispatch(setIsHydrated(true));
+    },
+  );
+
+  addEffect(
+    refreshNotificationPermissionStatus,
+    async (_, { dispatch, extra: { notificationService } }) => {
+      const result = await notificationService.canScheduleExactNotifications();
+      dispatch(setCanScheduleExactNotifications(result));
     },
   );
 

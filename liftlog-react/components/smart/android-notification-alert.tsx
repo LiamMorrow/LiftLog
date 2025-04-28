@@ -1,13 +1,22 @@
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import { useAppSelector } from '@/store';
-import { requestExactNotificationPermission } from '@/store/app';
+import {
+  refreshNotificationPermissionStatus,
+  requestExactNotificationPermission,
+} from '@/store/app';
 import { setRestNotifications } from '@/store/settings';
 import { T, useTranslate } from '@tolgee/react';
+import { useFocusEffect } from 'expo-router';
 import { Platform } from 'react-native';
 import { useDispatch } from 'react-redux';
 
 function AndroidNotificationAlertImpl() {
   const dispatch = useDispatch();
+
+  useFocusEffect(() => {
+    dispatch(refreshNotificationPermissionStatus());
+  });
+
   const canScheduleExactNotifications = useAppSelector(
     (x) => x.app.canScheduleExactNotifications,
   );

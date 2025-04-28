@@ -25,6 +25,10 @@ export const requestExactNotificationPermission = createAction(
   'requestExactNotificationPermission',
 );
 
+export const refreshNotificationPermissionStatus = createAction(
+  'refreshNotificationPermissionStatus',
+);
+
 export const initializeAppStateSlice = createAction('initializeAppStateSlice');
 
 export const { setIsHydrated, setCanScheduleExactNotifications } =

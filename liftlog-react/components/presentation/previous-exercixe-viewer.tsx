@@ -12,8 +12,8 @@ function PreviousExerciseContent(props: {
 }) {
   return (
     <View style={{ gap: spacing[2] }}>
-      {props.previousRecordedExercises.map((ex) => (
-        <ScrollView horizontal>
+      {props.previousRecordedExercises.map((ex, i) => (
+        <ScrollView horizontal key={i} style={{ gap: spacing[2] }}>
           <SurfaceText>
             {ex.lastRecordedSet?.set?.completionDateTime
               .toLocalDate()

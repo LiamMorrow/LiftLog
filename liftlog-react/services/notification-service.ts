@@ -104,10 +104,7 @@ export class NotificationService {
   }
 
   async requestScheduleExactNotificationPermission() {
-    if (Platform.OS !== 'android') {
-      return true;
-    }
-    if (Platform.Version < 31) {
+    if (await this.canScheduleExactNotifications()) {
       return true;
     }
 
