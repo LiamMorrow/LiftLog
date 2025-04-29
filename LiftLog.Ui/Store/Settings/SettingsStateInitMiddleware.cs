@@ -25,7 +25,8 @@ public class SettingsStateInitMiddleware(
                 lastSuccessfulRemoteBackupHash,
                 lastBackupTime,
                 backupReminder,
-                splitWeightByDefault
+                splitWeightByDefault,
+                firstDayOfWeek
             ) = await (
                 preferencesRepository.GetUseImperialUnitsAsync(),
                 preferencesRepository.GetShowBodyweightAsync(),
@@ -37,7 +38,8 @@ public class SettingsStateInitMiddleware(
                 preferencesRepository.GetLastSuccessfulRemoteBackupHashAsync(),
                 preferencesRepository.GetLastBackupTimeAsync(),
                 preferencesRepository.GetBackupReminderAsync(),
-                preferencesRepository.GetSplitWeightByDefaultAsync()
+                preferencesRepository.GetSplitWeightByDefaultAsync(),
+                preferencesRepository.GetFirstDayOfWeekAsync()
             );
 
             var state = (SettingsState)store.Features[nameof(SettingsFeature)].GetState() with
@@ -54,6 +56,7 @@ public class SettingsStateInitMiddleware(
                 LastBackupTime = lastBackupTime,
                 BackupReminder = backupReminder,
                 SplitWeightByDefault = splitWeightByDefault,
+                FirstDayOfWeek = firstDayOfWeek,
             };
             store.Features[nameof(SettingsFeature)].RestoreState(state);
             sw.Stop();
