@@ -18,7 +18,7 @@ variable "enable_rate_limit" {
 variable "daily_rate_limit" {
   description = "The daily rate limit for the API"
   type        = number
-  default     = 10
+  default     = 20
 }
 
 variable "limit_per_second" {
