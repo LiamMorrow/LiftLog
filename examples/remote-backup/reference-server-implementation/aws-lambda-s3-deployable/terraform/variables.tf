@@ -9,6 +9,24 @@ variable "delete_after_days" {
   default     = null
 }
 
+variable "enable_rate_limit" {
+  description = "Enable rate limiting for the API"
+  type        = bool
+  default     = true
+}
+
+variable "daily_rate_limit" {
+  description = "The daily rate limit for the API"
+  type        = number
+  default     = 20
+}
+
+variable "limit_per_second" {
+  description = "The rate limit per second for the API"
+  type        = number
+  default     = 1
+}
+
 variable "region" {
   description = "The AWS region where resources will be created"
   type        = string
