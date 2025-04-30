@@ -14,6 +14,7 @@ import {
   createSlice,
   PayloadAction,
 } from '@reduxjs/toolkit';
+import Enumerable from 'linq';
 
 interface ProgramState {
   readonly isHydrated: boolean;
@@ -34,7 +35,15 @@ const initialState: ProgramState = {
       name: 'MY SESSION',
       sessions: [
         defaultSessionBlueprint.toPOJO(),
-        defaultSessionBlueprint.with({ name: 'HIEL' }).toPOJO(),
+        defaultSessionBlueprint.with({ name: 'HOLE' }).toPOJO(),
+      ],
+    }).toPOJO(),
+    '00000000-0000-0000-0000-000000000001': ProgramBlueprint.fromPOJO({
+      lastEdited: LocalDate.now(),
+      name: 'MY SESSION 2',
+      sessions: [
+        defaultSessionBlueprint.toPOJO(),
+        defaultSessionBlueprint.with({ name: 'DOGLET' }).toPOJO(),
       ],
     }).toPOJO(),
   },
@@ -212,6 +221,22 @@ const programSlice = createSlice({
       (state: ProgramState) => state.savedPrograms[state.activeProgramId],
       ProgramBlueprint.fromPOJO,
     ),
+
+    selectAllPrograms: createSelector(
+      (state: ProgramState) => state.savedPrograms,
+      (programMap) =>
+        Enumerable.from(Object.entries(programMap))
+          .select(([id, val]) => ({
+            id,
+            program: ProgramBlueprint.fromPOJO(val),
+          }))
+          .orderBy((x) => x.program.name)
+          .toArray(),
+    ),
+    selectProgram: createSelector(
+      [(state: ProgramState) => state.savedPrograms, (_, id: string) => id],
+      (programs, id) => ProgramBlueprint.fromPOJO(programs[id]),
+    ),
   },
 });
 
@@ -232,7 +257,8 @@ export const {
   setSavedPlans,
 } = programSlice.actions;
 
-export const { selectActiveProgram } = programSlice.selectors;
+export const { selectActiveProgram, selectProgram, selectAllPrograms } =
+  programSlice.selectors;
 
 export const fetchUpcomingSessions = createAction('fetchUpcomingSessions');
 

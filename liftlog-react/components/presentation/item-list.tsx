@@ -1,4 +1,4 @@
-import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
+import { spacing } from '@/hooks/useAppTheme';
 import { Fragment } from 'react';
 import { View, ViewProps } from 'react-native';
 import { Divider } from 'react-native-paper';
@@ -10,7 +10,6 @@ export default function ItemList<T>(
     verticalPadding?: boolean;
   } & ViewProps,
 ) {
-  const { colors } = useAppTheme();
   const { items, renderItem, verticalPadding, ...rest } = props;
 
   return (

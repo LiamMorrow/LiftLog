@@ -27,8 +27,6 @@
 
     [Parameter] [EditorRequired] public EventCallback OnClick { get; set; }
 
-    [Parameter] [EditorRequired] public bool BuiltIn { get; set; }
-
     [Parameter] [EditorRequired] public bool IsActive { get; set; }
 
     [Parameter] [EditorRequired] public bool IsFocused { get; set; }
@@ -62,7 +60,12 @@
     {
         if (IsActive)
         {
-            return @<div class="flex flex-col justify-center"><span class="rounded-full relative bg-secondary-container text-on-secondary-container px-3 py-2 text-md" @onclick:stopPropagation="true" @onclick:preventDefault="true" >@UiStrings.Active<md-ripple></md-ripple></span></div>;
+            return @<div class="flex flex-col justify-center">
+                <span class="rounded-full relative bg-secondary-container text-on-secondary-container px-3 py-2 text-md"
+                @onclick:stopPropagation="true" @onclick:preventDefault="true" >
+                @UiStrings.Active<md-ripple></md-ripple>
+                </span>
+                </div>;
         }
 
         return @<AppButton data-cy="use-plan-btn" Type="AppButtonType.Text" OnClick="()=>OnUse.InvokeAsync()">@UiStrings.UseWorkout</AppButton>;

@@ -5,10 +5,10 @@ import { Card, CardProps } from 'react-native-paper';
 
 interface CardListProps<T> extends ViewProps {
   items: readonly T[];
-  renderItem: (item: T) => ReactNode;
-  onPress?: (item: T) => void;
-  onLongPress?: (item: T) => void;
-  shouldHighlight?: (item: T) => boolean;
+  renderItem: (item: T, index: number) => ReactNode;
+  onPress?: (item: T, index: number) => void;
+  onLongPress?: (item: T, index: number) => void;
+  shouldHighlight?: (item: T, index: number) => boolean;
   cardStyle?: CardProps['style'];
   cardType: 'elevated' | 'outlined' | 'contained';
   keySelector?: (item: T) => Key;
@@ -42,13 +42,13 @@ export default function CardList<T>(props: CardListProps<T>) {
           key={keySelector?.(item) ?? i}
           style={[
             cardStyle,
-            shouldHighlight?.(item) ? highlightStyle : undefined,
+            shouldHighlight?.(item, i) ? highlightStyle : undefined,
           ]}
           mode={cardType}
-          onLongPress={onLongPress ? () => onLongPress(item) : undefined}
-          onPress={onPress ? () => onPress(item) : undefined}
+          onLongPress={onLongPress ? () => onLongPress(item, i) : undefined}
+          onPress={onPress ? () => onPress(item, i) : undefined}
         >
-          <Card.Content>{renderItem(item)}</Card.Content>
+          <Card.Content>{renderItem(item, i)}</Card.Content>
         </Card>
       ))}
     </View>

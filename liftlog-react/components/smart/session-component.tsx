@@ -231,28 +231,21 @@ export default function SessionComponent(props: {
   ) : undefined;
 
   const floatingBottomContainer = isReadonly ? null : (
-    <View
-      onLayout={(event) =>
-        setFloatingBottomSize(event.nativeEvent.layout.height)
+    <FloatingBottomContainer
+      fab={
+        <FAB
+          variant="surface"
+          size="small"
+          icon="add"
+          label={t('AddExercise')}
+        />
       }
-      style={{ position: 'absolute', bottom: 0, width: '100%' }}
-    >
-      <FloatingBottomContainer
-        fab={
-          <FAB
-            variant="surface"
-            size="small"
-            icon="plus"
-            label={t('AddExercise')}
-          />
-        }
-        additionalContent={snackbar}
-      />
-    </View>
+      additionalContent={snackbar}
+    />
   );
 
   return (
-    <FullHeightScrollView afterScrollChildren={floatingBottomContainer}>
+    <FullHeightScrollView floatingChildren={floatingBottomContainer}>
       {notesComponent}
       {emptyInfo}
       <ItemList items={session.recordedExercises} renderItem={renderItem} />

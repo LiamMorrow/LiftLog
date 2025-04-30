@@ -82,6 +82,12 @@ export const font = {
 
 export type FontChoice = keyof typeof font;
 
+export type ColorChoice = keyof {
+  [K in keyof Material3Scheme as Material3Scheme[K] extends string
+    ? K
+    : never]: Material3Scheme[K];
+};
+
 export interface AppTheme {
   colors: Material3Scheme;
   colorScheme: 'light' | 'dark';

@@ -19,7 +19,9 @@ export default function EmptyInfo(props: ViewProps & { icon?: string }) {
       ]}
     >
       <Icon source={props.icon ?? 'info'} size={20} />
-      <Text style={{ color: colors.onSurface }}>{props.children}</Text>
+      <Text style={{ color: colors.onSurface, textAlign: 'center' }}>
+        {props.children}
+      </Text>
     </View>
   );
 }

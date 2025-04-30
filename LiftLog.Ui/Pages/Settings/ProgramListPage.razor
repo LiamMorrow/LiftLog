@@ -26,8 +26,7 @@
                     OnShare="@(() => Dispatcher.Dispatch(new EncryptAndShareAction(new SharedProgramBlueprint(program))))"
                     OnRemove="()=>HandleRemove(id)"
                     IsActive="ProgramState.Value.ActivePlanId == id"
-                    IsFocused="FocusPlanId == id"
-                    BuiltIn=false/>
+                    IsFocused="FocusPlanId == id"/>
             }
         </md-list>
     </section>
