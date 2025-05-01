@@ -6,6 +6,7 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   AnimatedProps,
+  interpolateColor,
 } from 'react-native-reanimated';
 
 export const ANIMATION_DURATION = 200;
@@ -30,7 +31,11 @@ export default function FocusRing({
   }, [isSelected, selectedAnim]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    borderColor: selectedAnim.value === 1 ? colors.outline : 'transparent',
+    borderColor: interpolateColor(
+      selectedAnim.value,
+      [0, 1],
+      ['transparent', colors.outline],
+    ),
     padding: 2,
     margin: -5,
     borderRadius: radius ?? spacing[14],

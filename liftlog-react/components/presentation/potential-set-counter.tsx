@@ -14,6 +14,7 @@ import Animated, {
   withTiming,
   interpolate,
 } from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
 
 interface PotentialSetCounterProps {
   set: PotentialSet;
@@ -79,7 +80,10 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
     ? {}
     : ({
         onPress: props.onTap,
-        onLongPress: props.onHold,
+        onLongPress: () => {
+          Haptics.selectionAsync();
+          props.onHold();
+        },
         onTouchStart: () => setIsHolding(true),
         onPointerDown: () => setIsHolding(true),
         onPointerUp: () => setIsHolding(false),

@@ -64,6 +64,7 @@ export default function PotentialSetAdditionalActionsDialog({
             selectTextOnFocus
             error={!isValid}
             onChangeText={setRepCountText}
+            autoFocus
           />
           <IconButton
             mode="outlined"
