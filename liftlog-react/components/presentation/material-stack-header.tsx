@@ -3,7 +3,7 @@ import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import { useScroll } from '@/hooks/useScollListener';
 import { useEffect } from 'react';
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { useAnimatedValue, Animated } from 'react-native';
+import { useAnimatedValue, Animated, Platform } from 'react-native';
 
 export default function MaterialStackHeader(props: NativeStackHeaderProps) {
   const { isScrolled } = useScroll();
@@ -27,7 +27,7 @@ export default function MaterialStackHeader(props: NativeStackHeaderProps) {
       }}
     >
       <Appbar.Header
-        mode={props.back ? 'small' : 'center-aligned'}
+        mode={props.back && Platform.OS !== 'ios' ? 'small' : 'center-aligned'}
         style={{
           backgroundColor: 'transparent',
         }}

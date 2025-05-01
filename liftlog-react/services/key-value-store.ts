@@ -19,6 +19,9 @@ export class KeyValueStore {
 
   async setItem(key: string, value: string | Uint8Array) {
     const file = getFile(key);
+    if (!file.exists) {
+      file.create();
+    }
     if (typeof value === 'string') {
       file.write(value);
       return;

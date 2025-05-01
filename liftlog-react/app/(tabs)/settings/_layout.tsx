@@ -6,6 +6,7 @@ export default function Layout() {
     <Stack
       screenOptions={{
         header: (props) => <MaterialStackHeader {...props} />,
+        gestureEnabled: true,
       }}
     ></Stack>
   );

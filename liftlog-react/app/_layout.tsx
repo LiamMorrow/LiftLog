@@ -7,6 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import { store } from '@/store';
 import { ScrollProvider } from '@/hooks/useScollListener';
+import { enableScreens } from 'react-native-screens';
 LogBox.ignoreLogs([/.*is not a valid icon name.*/]);
 const tolgee = Tolgee()
   // DevTools will work only for web view
@@ -23,6 +24,7 @@ const tolgee = Tolgee()
       en,
     },
   });
+enableScreens(true);
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -40,6 +42,7 @@ export default function RootLayout() {
                   navigationBarTranslucent: true,
                   navigationBarColor: 'transparent',
                   statusBarStyle: colorScheme === 'dark' ? 'light' : 'dark',
+                  gestureEnabled: false,
                 }}
               />
             </ScrollProvider>
