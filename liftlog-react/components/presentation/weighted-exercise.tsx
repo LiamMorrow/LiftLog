@@ -14,7 +14,12 @@ import {
   TextInput,
 } from 'react-native-paper';
 import { T, useTranslate } from '@tolgee/react';
-import { useAnimatedValue, Animated } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  interpolate,
+} from 'react-native-reanimated';
 import WeightDisplay from '@/components/presentation/weight-display';
 import PotentialSetAdditionalActionsDialog from '@/components/presentation/potential-sets-addition-actions-dialog';
 import PreviousExerciseViewer from '@/components/presentation/previous-exercixe-viewer';
@@ -46,34 +51,32 @@ function AnimatedWeightDisplay(
 ) {
   const { recordedExercise } = props;
 
-  const sizeAnimatedValue = useAnimatedValue(1);
+  const sizeAnimatedValue = useSharedValue(1);
 
   useEffect(() => {
-    Animated.timing(sizeAnimatedValue, {
-      toValue: recordedExercise.perSetWeight ? 0 : 1,
-      duration: 150,
-      useNativeDriver: false,
-    }).start();
+    sizeAnimatedValue.value = withTiming(
+      recordedExercise.perSetWeight ? 0 : 1,
+      {
+        duration: 150,
+      },
+    );
   }, [recordedExercise.perSetWeight, sizeAnimatedValue]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    alignSelf: 'flex-start',
+    height: interpolate(sizeAnimatedValue.value, [0, 1], [0, spacing[14]]),
+    margin: interpolate(sizeAnimatedValue.value, [0, 1], [0, -spacing[3]]),
+    marginTop: interpolate(sizeAnimatedValue.value, [0, 1], [0, -spacing[4]]),
+  }));
 
   return (
     <Animated.View
-      style={{
-        alignSelf: 'flex-start',
-        height: sizeAnimatedValue.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, spacing[14]],
-        }),
-        margin: sizeAnimatedValue.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, -spacing[3]],
-        }),
-        marginTop: sizeAnimatedValue.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, -spacing[4]],
-        }),
-        overflow: recordedExercise.perSetWeight ? 'hidden' : undefined,
-      }}
+      style={[
+        animatedStyle,
+        {
+          overflow: recordedExercise.perSetWeight ? 'hidden' : 'visible',
+        },
+      ]}
     >
       <WeightDisplay
         increment={recordedExercise.blueprint.weightIncreaseOnSuccess}
@@ -229,8 +232,8 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
         <Dialog visible={notesDialogOpen}>
           <Dialog.Title>
             <T
-              keyName="SessionNotesFor{0}"
-              params={{ 0: recordedExercise.blueprint.name }}
+              keyName="SessionNotesFor{name}"
+              params={{ name: recordedExercise.blueprint.name }}
             />
           </Dialog.Title>
           <Dialog.Content>

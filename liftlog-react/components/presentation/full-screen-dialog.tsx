@@ -2,9 +2,15 @@ import FullHeightScrollView from '@/components/presentation/full-height-scroll-v
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { usePreventNavigate } from '@/hooks/usePreventNavigate';
 import { ReactNode } from 'react';
-import { Animated, Text, useAnimatedValue, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { Button, IconButton, Portal } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  interpolateColor,
+} from 'react-native-reanimated';
 
 interface FullScreenDialogProps {
   title: string;
@@ -17,11 +23,20 @@ interface FullScreenDialogProps {
 
 export default function FullScreenDialog(props: FullScreenDialogProps) {
   const { action, open, onAction, onClose, title, children } = props;
-  const scrollAnimation = useAnimatedValue(0);
+  const scrollAnimation = useSharedValue(0);
   const { colors } = useAppTheme();
   const { top, bottom } = useSafeAreaInsets();
 
   usePreventNavigate(open, onClose);
+
+  const backgroundStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(
+      scrollAnimation.value,
+      [0, 1],
+      [colors.surface, colors.surfaceContainer],
+    ),
+    paddingTop: top,
+  }));
 
   return (
     <Portal>
@@ -31,15 +46,7 @@ export default function FullScreenDialog(props: FullScreenDialogProps) {
             flex: 1,
           }}
         >
-          <Animated.View
-            style={{
-              backgroundColor: scrollAnimation.interpolate({
-                inputRange: [0, 1],
-                outputRange: [colors.surface, colors.surfaceContainer],
-              }),
-              paddingTop: top,
-            }}
-          >
+          <Animated.View style={backgroundStyle}>
             <View
               style={{
                 flexDirection: 'row',
@@ -68,13 +75,13 @@ export default function FullScreenDialog(props: FullScreenDialogProps) {
             scrollStyle={{
               padding: spacing[2],
             }}
-            setIsScrolled={(scrolled) =>
-              Animated.timing(scrollAnimation, {
-                toValue: scrolled ? 1 : 0,
-                useNativeDriver: true,
-                duration: 100,
-              }).start()
-            }
+            setIsScrolled={(scrolled) => {
+              scrollAnimation.set(
+                withTiming(scrolled ? 1 : 0, {
+                  duration: 100,
+                }),
+              );
+            }}
           >
             {children}
             <View style={{ height: bottom, width: '100%' }}></View>
