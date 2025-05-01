@@ -4,7 +4,6 @@ import { font, useAppTheme } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useState } from 'react';
-import { View } from 'react-native';
 import { Button } from 'react-native-paper';
 
 type WeightDisplayProps = {
@@ -28,7 +27,7 @@ export default function WeightDisplay(props: WeightDisplayProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { colors } = useAppTheme();
   return (
-    <View>
+    <>
       <Button
         data-cy="weight-display"
         mode="text"
@@ -48,6 +47,6 @@ export default function WeightDisplay(props: WeightDisplayProps) {
           onClose={() => setDialogOpen(false)}
         />
       )}
-    </View>
+    </>
   );
 }

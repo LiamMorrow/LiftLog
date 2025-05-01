@@ -20,10 +20,10 @@ import Animated, {
   withTiming,
   interpolate,
 } from 'react-native-reanimated';
-import WeightDisplay from '@/components/presentation/weight-display';
 import PotentialSetAdditionalActionsDialog from '@/components/presentation/potential-sets-addition-actions-dialog';
 import PreviousExerciseViewer from '@/components/presentation/previous-exercixe-viewer';
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
+import WeightDisplay from '@/components/presentation/weight-display';
 
 interface WeightedExerciseProps {
   recordedExercise: RecordedExercise;
@@ -64,9 +64,22 @@ function AnimatedWeightDisplay(
 
   const animatedStyle = useAnimatedStyle(() => ({
     alignSelf: 'flex-start',
-    height: interpolate(sizeAnimatedValue.value, [0, 1], [0, spacing[14]]),
-    margin: interpolate(sizeAnimatedValue.value, [0, 1], [0, -spacing[3]]),
-    marginTop: interpolate(sizeAnimatedValue.value, [0, 1], [0, -spacing[4]]),
+    marginHorizontal: interpolate(
+      sizeAnimatedValue.value,
+      [0, 1],
+      [-spacing[3], -spacing[3]],
+    ),
+    marginTop: interpolate(
+      sizeAnimatedValue.value,
+      [0, 1],
+      [-spacing[9], -spacing[4]],
+    ),
+    marginBottom: interpolate(
+      sizeAnimatedValue.value,
+      [0, 1],
+      [0, -spacing[1]],
+    ),
+    transform: [{ scale: sizeAnimatedValue.value }],
   }));
 
   return (
@@ -74,7 +87,7 @@ function AnimatedWeightDisplay(
       style={[
         animatedStyle,
         {
-          overflow: recordedExercise.perSetWeight ? 'hidden' : 'visible',
+          transformOrigin: 'bottom',
         },
       ]}
     >
