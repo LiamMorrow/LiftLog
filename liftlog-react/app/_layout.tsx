@@ -7,8 +7,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import { store } from '@/store';
 import { ScrollProvider } from '@/hooks/useScollListener';
-import { enableScreens } from 'react-native-screens';
+
 LogBox.ignoreLogs([/.*is not a valid icon name.*/]);
+
 const tolgee = Tolgee()
   // DevTools will work only for web view
   .use(DevTools())
@@ -24,7 +25,6 @@ const tolgee = Tolgee()
       en,
     },
   });
-enableScreens(true);
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
