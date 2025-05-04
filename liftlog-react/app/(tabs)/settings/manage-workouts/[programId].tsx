@@ -46,7 +46,7 @@ export default function ManageWorkouts() {
         value={program.name}
         mode="flat"
         onChangeText={(name) =>
-          dispatch(setSavedPlanName({ planId: programId, name }))
+          dispatch(setSavedPlanName({ programId: programId, name }))
         }
       />
       {emptyInfo}
@@ -54,7 +54,12 @@ export default function ManageWorkouts() {
       <CardList
         items={program.sessions}
         cardType="outlined"
-        renderItem={(session) => <ManageWorkoutCardContent session={session} />}
+        renderItem={(session) => (
+          <ManageWorkoutCardContent
+            sessionBlueprint={session}
+            programId={programId}
+          />
+        )}
       />
     </FullHeightScrollView>
   );

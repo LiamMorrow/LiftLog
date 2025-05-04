@@ -4,7 +4,7 @@ import {
   ExerciseBlueprint,
   Rest,
   ProgramBlueprint,
-} from '@/models/blueprint-models';
+} from '@/models/session-models';
 import {
   PotentialSet,
   RecordedExercise,

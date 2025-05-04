@@ -6,7 +6,7 @@ import {
   ExerciseBlueprint,
   SessionBlueprint,
   ProgramBlueprint,
-} from '@/models/blueprint-models';
+} from '@/models/session-models';
 import { RsaPublicKey, AesKey, RsaKeyPair } from '@/models/encryption-models';
 import {
   FeedUserPOJO,

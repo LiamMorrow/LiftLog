@@ -2,7 +2,7 @@ import {
   ExerciseBlueprint,
   KeyedExerciseBlueprint,
   SessionBlueprint,
-} from '@/models/blueprint-models';
+} from '@/models/session-models';
 import {
   PotentialSet,
   RecordedExercise,

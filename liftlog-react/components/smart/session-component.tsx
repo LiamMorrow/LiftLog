@@ -28,7 +28,7 @@ import RestTimer from '@/components/presentation/rest-timer';
 import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
 import { useState } from 'react';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
-import { ExerciseBlueprint } from '@/models/blueprint-models';
+import { ExerciseBlueprint } from '@/models/session-models';
 import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/exercise-editor';
 import { LocalDateTime } from '@js-joda/core';

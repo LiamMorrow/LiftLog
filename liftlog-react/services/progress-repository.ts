@@ -3,7 +3,7 @@ import {
   KeyedExerciseBlueprint,
   NormalizedName,
   NormalizedNameKey,
-} from '@/models/blueprint-models';
+} from '@/models/session-models';
 import { LocalDateTimeComparer, TemporalComparer } from '@/models/comparers';
 import { RecordedExercise, Session } from '@/models/session-models';
 import { fromSessionDao } from '@/models/storage/conversions.from-dao';

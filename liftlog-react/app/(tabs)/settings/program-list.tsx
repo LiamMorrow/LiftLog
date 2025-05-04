@@ -11,7 +11,9 @@ import { FAB, List } from 'react-native-paper';
 export default function ProgramList() {
   const ps = useAppSelector(selectAllPrograms);
   const { t } = useTranslate();
-  const { focusPlanId } = useLocalSearchParams<{ focusPlanId?: string }>();
+  const { focusprogramId } = useLocalSearchParams<{
+    focusprogramId?: string;
+  }>();
   const addProgram = () => {
     //TODO
   };
@@ -34,7 +36,7 @@ export default function ProgramList() {
       <List.Section>
         <ListTitle title={t('SavedPlans')} />
         {ps.map(({ id }) => (
-          <ProgramListItem key={id} id={id} isFocused={focusPlanId === id} />
+          <ProgramListItem key={id} id={id} isFocused={focusprogramId === id} />
         ))}
       </List.Section>
     </FullHeightScrollView>

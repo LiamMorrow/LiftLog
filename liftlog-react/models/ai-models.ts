@@ -1,4 +1,4 @@
-import { SessionBlueprint } from '@/models/blueprint-models';
+import { SessionBlueprint } from '@/models/session-models';
 
 export enum AppStore {
   Web = 'Web',

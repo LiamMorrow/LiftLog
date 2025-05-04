@@ -7,7 +7,7 @@ import {
   ProgramBlueprint,
   Rest,
   SessionBlueprint,
-} from '@/models/blueprint-models';
+} from '@/models/session-models';
 import { FeedIdentity, FeedUser } from '@/models/feed-models';
 import { parse as uuidParse } from 'uuid';
 import {

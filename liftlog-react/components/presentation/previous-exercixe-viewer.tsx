@@ -16,6 +16,7 @@ function PreviousExerciseContent(props: {
           key={i}
           exercise={ex}
           isFilled
+          showWeight
           showName={false}
           showDate={true}
         />

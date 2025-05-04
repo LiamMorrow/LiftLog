@@ -2,7 +2,7 @@ import LimitedHtml from '@/components/presentation/limited-html';
 import RestEditor from '@/components/presentation/rest-editor';
 import RestFormat from '@/components/presentation/rest-format';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
-import { Rest } from '@/models/blueprint-models';
+import { Rest } from '@/models/session-models';
 import { Duration } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';

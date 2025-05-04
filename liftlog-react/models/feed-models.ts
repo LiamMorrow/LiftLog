@@ -3,7 +3,7 @@ import {
   ProgramBlueprint,
   SessionBlueprint,
   SessionBlueprintPOJO,
-} from './blueprint-models';
+} from './session-models';
 import { RsaPublicKey, AesKey, RsaKeyPair } from '@/models/encryption-models';
 import { Session, SessionPOJO } from '@/models/session-models';
 

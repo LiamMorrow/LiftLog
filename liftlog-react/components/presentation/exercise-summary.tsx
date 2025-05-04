@@ -12,6 +12,7 @@ interface ExerciseSummaryProps {
   exercise: RecordedExercise;
   showName: boolean;
   showDate: boolean;
+  showWeight: boolean;
   isFilled: boolean;
 }
 
@@ -60,24 +61,38 @@ function ChipScroller(props: { children: ReactNode }) {
   );
 }
 
-function FilledChips(props: { exercise: RecordedExercise }) {
+function FilledChips(props: {
+  exercise: RecordedExercise;
+  showWeight: boolean;
+}) {
   return getWeightAndRepsChips(props.exercise).map((chip, index) => (
     <Chip key={index}>
       <SurfaceText>{chip.repsCompleted?.toString() ?? '-'}</SurfaceText>
-      <SurfaceText font="text-2xs">@</SurfaceText>
-      <WeightFormat weight={chip.weight} />
+      {props.showWeight ? (
+        <>
+          <SurfaceText font="text-2xs">@</SurfaceText>
+          <WeightFormat weight={chip.weight} />
+        </>
+      ) : undefined}
     </Chip>
   ));
 }
 
-function PlannedChips(props: { exercise: RecordedExercise }) {
+function PlannedChips(props: {
+  exercise: RecordedExercise;
+  showWeight: boolean;
+}) {
   return getPlannedChipData(props.exercise).map((chip, index) => (
     <Chip key={index}>
       <SurfaceText>
         {chip.numSets}x{chip.repTarget}
       </SurfaceText>
-      <SurfaceText font="text-2xs">@</SurfaceText>
-      <WeightFormat weight={chip.weight} />
+      {props.showWeight ? (
+        <>
+          <SurfaceText font="text-2xs">@</SurfaceText>
+          <WeightFormat weight={chip.weight} />
+        </>
+      ) : undefined}
     </Chip>
   ));
 }
@@ -86,6 +101,7 @@ export default function ExerciseSummary({
   exercise,
   showName,
   showDate,
+  showWeight,
   isFilled,
 }: ExerciseSummaryProps) {
   return (
@@ -110,9 +126,9 @@ export default function ExerciseSummary({
       ) : undefined}
       <ChipScroller>
         {isFilled ? (
-          <FilledChips exercise={exercise} />
+          <FilledChips exercise={exercise} showWeight={showWeight} />
         ) : (
-          <PlannedChips exercise={exercise} />
+          <PlannedChips exercise={exercise} showWeight={showWeight} />
         )}
       </ChipScroller>
     </View>

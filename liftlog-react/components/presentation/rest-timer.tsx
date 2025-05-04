@@ -4,7 +4,7 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import RestFormat from '@/components/presentation/rest-format';
 import LimitedHtml from '@/components/presentation/limited-html';
 import { useTranslate } from '@tolgee/react'; // Using Tolgee for localization
-import { Rest } from '@/models/blueprint-models';
+import { Rest } from '@/models/session-models';
 import { Snackbar } from 'react-native-paper';
 import { Duration, LocalDateTime } from '@js-joda/core';
 

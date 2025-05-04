@@ -120,7 +120,7 @@ function ListUpcomingWorkouts({ upcoming }: { upcoming: readonly Session[] }) {
                 />
               }
               mainContent={
-                <SessionSummary session={session} isFilled={false} />
+                <SessionSummary session={session} isFilled={false} showWeight />
               }
             />
           );

@@ -57,7 +57,7 @@ export default function UpdatePlanButton({
       setCurrentSession({ target, session: session.with({ blueprint }) }),
     );
     dispatch(
-      addProgramSession({ planId: programId, sessionBlueprint: blueprint }),
+      addProgramSession({ programId: programId, sessionBlueprint: blueprint }),
     );
     onClose();
   };
@@ -69,7 +69,7 @@ export default function UpdatePlanButton({
           );
           dispatch(
             setProgramSession({
-              planId: programId,
+              programId: programId,
               sessionBlueprint: session.blueprint,
               sessionIndex: blueprintIndex,
             }),

@@ -104,7 +104,7 @@ function ActiveBadge({ id }: ItemProps) {
     <Button
       mode={mode}
       onPress={() => {
-        dispatch(setActivePlan({ planId: id }));
+        dispatch(setActivePlan({ programId: id }));
       }}
     >
       <T keyName={text} />
