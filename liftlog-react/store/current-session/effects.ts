@@ -5,10 +5,12 @@ import {
   computeRecentlyCompletedRecordedExercises,
   cycleExerciseReps,
   deleteSession,
+  initializeCurrentSessionStateSlice,
   notifySetTimer,
   persistCurrentSession,
   setCurrentSession,
   setCurrentSessionFromBlueprint,
+  setIsHydrated,
   setRecentlyCompletedExercises,
 } from '@/store/current-session';
 import { addEffect } from '@/store/listenerMiddleware';
@@ -16,6 +18,17 @@ import { fetchUpcomingSessions } from '@/store/program';
 import { LocalDateTime } from '@js-joda/core';
 
 export function applyCurrentSessionEffects() {
+  addEffect(
+    initializeCurrentSessionStateSlice,
+    async (_, { cancelActiveListeners, dispatch, extra: {} }) => {
+      cancelActiveListeners();
+      dispatch(fetchUpcomingSessions());
+      // TODO see PersisteSessionMiddleware - > should load in progress session from disk
+
+      dispatch(setIsHydrated(true));
+    },
+  );
+
   addEffect(
     persistCurrentSession,
     async (a, { dispatch, extra: { progressRepository }, getState }) => {

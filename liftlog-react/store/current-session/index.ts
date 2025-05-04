@@ -3,7 +3,7 @@ import {
   NormalizedName,
   NormalizedNameKey,
   SessionBlueprint,
-} from '@/models/blueprint-models';
+} from '@/models/session-models';
 import {
   RecordedExercise,
   RecordedExercisePOJO,
@@ -47,6 +47,10 @@ type TargetedSessionAction<TPayload> = PayloadAction<{
   target: SessionTarget;
   payload: TPayload;
 }>;
+
+export const initializeCurrentSessionStateSlice = createAction(
+  'initializeCurrentSessionStateSlice',
+);
 
 // Only apply the action if the target is defined
 function targetedSessionAction<T>(

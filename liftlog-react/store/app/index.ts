@@ -1,11 +1,14 @@
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-const initialState = {
+const initialState: AppState = {
   isHydrated: false,
   canScheduleExactNotifications: false,
 };
 
-export type AppState = typeof initialState;
+export type AppState = {
+  isHydrated: boolean;
+  canScheduleExactNotifications: boolean;
+};
 
 const appSlice = createSlice({
   name: 'app',

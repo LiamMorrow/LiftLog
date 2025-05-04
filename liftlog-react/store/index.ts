@@ -7,14 +7,22 @@ import { applyCurrentSessionEffects } from '@/store/current-session/effects';
 import { applyAppEffects } from '@/store/app/effects';
 import { initializeAppStateSlice } from '@/store/app';
 import { useMemo } from 'react';
+import { initializeCurrentSessionStateSlice } from '@/store/current-session';
+import { initializeProgramStateSlice } from '@/store/program';
+import { applySettingsEffects } from '@/store/settings/effects';
+import { initializeSettingsStateSlice } from '@/store/settings';
 
 export { store, RootState, AppDispatch };
 
 applyProgramEffects();
 applyCurrentSessionEffects();
 applyAppEffects();
+applySettingsEffects();
 
+store.dispatch(initializeSettingsStateSlice());
 store.dispatch(initializeAppStateSlice());
+store.dispatch(initializeCurrentSessionStateSlice());
+store.dispatch(initializeProgramStateSlice());
 
 export const useAppSelector = untypedUseSelector.withTypes<RootState>();
 

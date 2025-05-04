@@ -1,4 +1,4 @@
-import { ExerciseBlueprintPOJO } from '@/models/blueprint-models';
+import { ExerciseBlueprintPOJO } from '@/models/session-models';
 import { RecordedSetPOJO } from '@/models/session-models';
 import { LocalDateTime } from '@js-joda/core';
 import { match } from 'ts-pattern';

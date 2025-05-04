@@ -1,6 +1,11 @@
 import { AiWorkoutAttributes, AiWorkoutPlan } from '@/models/ai-models';
 import { Instant } from '@js-joda/core';
-import { createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createAction,
+  createSlice,
+  Draft,
+  PayloadAction,
+} from '@reduxjs/toolkit';
 
 export type ColorSchemeSeed = 'default' | `#${string}`;
 
@@ -120,6 +125,9 @@ const settingsSlice = createSlice({
     },
   },
 });
+export const initializeSettingsStateSlice = createAction(
+  'initializeSettingsStateSlice',
+);
 
 export const {
   setIsHydrated,
