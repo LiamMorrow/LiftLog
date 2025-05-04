@@ -8,7 +8,7 @@ import { LocalDateTimeComparer, TemporalComparer } from '@/models/comparers';
 import { RecordedExercise, Session } from '@/models/session-models';
 import { fromSessionDao } from '@/models/storage/conversions.from-dao';
 import { toSessionHistoryDao } from '@/models/storage/conversions.to-dao';
-import { KeyValueStore } from '@/services/key-value-store';
+import { IKeyValueStore } from '@/services/key-value-store';
 import { Logger } from '@/services/logger';
 import Enumerable from 'linq';
 import { match } from 'ts-pattern';
@@ -17,7 +17,7 @@ global.Buffer = require('buffer').Buffer;
 const storageKey = 'Progress';
 export class ProgressRepository {
   constructor(
-    private keyValueStore: KeyValueStore,
+    private keyValueStore: IKeyValueStore,
     logger: Logger,
   ) {}
 

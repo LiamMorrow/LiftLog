@@ -17,7 +17,12 @@ export default function SessionSummary({
     <View style={{ gap: spacing[2], flex: 1 }} data-cy="session-summary">
       {session.recordedExercises.map((ex, index) => (
         <Fragment key={index}>
-          <ExerciseSummary exercise={ex} isFilled={isFilled} showName={true} />
+          <ExerciseSummary
+            exercise={ex}
+            isFilled={isFilled}
+            showName={true}
+            showDate={false}
+          />
 
           {session.recordedExercises.length - 1 !== index && (
             <Divider style={{}} />

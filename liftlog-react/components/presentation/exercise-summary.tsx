@@ -2,6 +2,7 @@ import { SurfaceText } from '@/components/presentation/surface-text';
 import WeightFormat from '@/components/presentation/weight-format';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { RecordedExercise } from '@/models/session-models';
+import { DateTimeFormatter } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
 import { ReactNode } from 'react';
@@ -10,6 +11,7 @@ import { ScrollView, View } from 'react-native';
 interface ExerciseSummaryProps {
   exercise: RecordedExercise;
   showName: boolean;
+  showDate: boolean;
   isFilled: boolean;
 }
 
@@ -32,49 +34,58 @@ function Chip(props: { children: ReactNode }) {
   );
 }
 
-function FilledChips(props: { exercise: RecordedExercise }) {
+function ChipScroller(props: { children: ReactNode }) {
   return (
-    <ScrollView
-      horizontal
-      contentContainerStyle={{
-        gap: spacing[1],
+    <View
+      style={{
+        flex: 1,
       }}
     >
-      {getWeightAndRepsChips(props.exercise).map((chip, index) => (
-        <Chip key={index}>
-          <SurfaceText>{chip.repsCompleted?.toString() ?? '-'}</SurfaceText>
-          <SurfaceText font="text-2xs">@</SurfaceText>
-          <WeightFormat weight={chip.weight} />
-        </Chip>
-      ))}
-    </ScrollView>
+      <View
+        style={{
+          alignItems: 'flex-end',
+          overflow: 'hidden',
+        }}
+      >
+        <ScrollView
+          horizontal
+          contentContainerStyle={{
+            gap: spacing[1],
+          }}
+        >
+          {props.children}
+        </ScrollView>
+      </View>
+    </View>
   );
 }
 
+function FilledChips(props: { exercise: RecordedExercise }) {
+  return getWeightAndRepsChips(props.exercise).map((chip, index) => (
+    <Chip key={index}>
+      <SurfaceText>{chip.repsCompleted?.toString() ?? '-'}</SurfaceText>
+      <SurfaceText font="text-2xs">@</SurfaceText>
+      <WeightFormat weight={chip.weight} />
+    </Chip>
+  ));
+}
+
 function PlannedChips(props: { exercise: RecordedExercise }) {
-  return (
-    <ScrollView
-      horizontal
-      contentContainerStyle={{
-        gap: spacing[1],
-      }}
-    >
-      {getPlannedChipData(props.exercise).map((chip, index) => (
-        <Chip key={index}>
-          <SurfaceText>
-            {chip.numSets}x{chip.repTarget}
-          </SurfaceText>
-          <SurfaceText font="text-2xs">@</SurfaceText>
-          <WeightFormat weight={chip.weight} />
-        </Chip>
-      ))}
-    </ScrollView>
-  );
+  return getPlannedChipData(props.exercise).map((chip, index) => (
+    <Chip key={index}>
+      <SurfaceText>
+        {chip.numSets}x{chip.repTarget}
+      </SurfaceText>
+      <SurfaceText font="text-2xs">@</SurfaceText>
+      <WeightFormat weight={chip.weight} />
+    </Chip>
+  ));
 }
 
 export default function ExerciseSummary({
   exercise,
   showName,
+  showDate,
   isFilled,
 }: ExerciseSummaryProps) {
   return (
@@ -90,17 +101,20 @@ export default function ExerciseSummary({
       {showName ? (
         <SurfaceText>{exercise.blueprint.name}</SurfaceText>
       ) : undefined}
-      <View
-        style={{
-          maxWidth: '80%',
-        }}
-      >
+      {showDate ? (
+        <SurfaceText>
+          {exercise.lastRecordedSet?.set?.completionDateTime.format(
+            DateTimeFormatter.ISO_DATE,
+          )}
+        </SurfaceText>
+      ) : undefined}
+      <ChipScroller>
         {isFilled ? (
           <FilledChips exercise={exercise} />
         ) : (
           <PlannedChips exercise={exercise} />
         )}
-      </View>
+      </ChipScroller>
     </View>
   );
 }
