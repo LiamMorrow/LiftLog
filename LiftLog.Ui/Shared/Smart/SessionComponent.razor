@@ -390,7 +390,8 @@ OnClose="@(() => _exerciseToEditIndex = null)"
 
     private void BeginSaveSession()
     {
-        if (SessionTarget == SessionTarget.WorkoutSession)
+        // check if workout session has exercises remaining
+        if (SessionTarget == SessionTarget.WorkoutSession && Session?.IsComplete == false)
         {
             // display confirmation message
             finishWorkoutDialogue?.Open();
