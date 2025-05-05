@@ -26,6 +26,7 @@ import {
   setEditingSessionNotes,
   updateSessionExercise,
 } from '@/store/session-editor';
+import { getState } from '@/store/store';
 import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { Redirect, Stack, useLocalSearchParams } from 'expo-router';
@@ -72,11 +73,14 @@ function SessionEditor({
   const [isEditOpen, setIsEditOpen] = useState(false);
   const { t } = useTranslate();
   const saveSession = () => {
+    // We need to get it again, as we likely dispatched, but the 'session' var will not have updated yet
+    const currentSession = selectCurrentlyEditingSession(getState());
+    if (!currentSession) return;
     dispatch(
       setProgramSession({
         programId,
         sessionIndex,
-        sessionBlueprint: session,
+        sessionBlueprint: currentSession,
       }),
     );
   };
@@ -210,6 +214,7 @@ function SessionEditor({
           setSelectedExercise(undefined);
           setIsRemoveOpen(false);
           if (selected) dispatch(removeExercise(selected));
+          saveSession();
         }}
         onCancel={() => setIsRemoveOpen(false)}
         open={!!selectedExercise && isRemoveOpen}
