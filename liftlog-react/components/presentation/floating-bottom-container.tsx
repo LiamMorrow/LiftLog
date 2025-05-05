@@ -13,12 +13,12 @@ export default function FloatingBottomContainer({
     <View
       style={{
         flex: 1,
-        pointerEvents: 'none', // TODO fix
         marginTop: 'auto',
         padding: spacing[2],
         gap: spacing[2],
         zIndex: 10,
       }}
+      pointerEvents="box-none"
     >
       {fab ? (
         <View
