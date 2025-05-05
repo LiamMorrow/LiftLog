@@ -36,7 +36,7 @@ export default function FullHeightScrollView({
     >
       <KeyboardAwareScrollView
         onScroll={(e) => setIsScrolled(e.nativeEvent.contentOffset.y > 0)}
-        enableOnAndroid={true}
+        enableOnAndroid
         style={[scrollStyle]}
       >
         {children}
