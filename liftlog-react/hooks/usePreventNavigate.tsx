@@ -7,7 +7,7 @@ import { useEffect } from 'react';
  */
 export function usePreventNavigate(
   prevent: boolean,
-  onPrevent?: Function,
+  onPrevent?: () => void,
 ): void {
   const { addListener } = useNavigation();
   useEffect(

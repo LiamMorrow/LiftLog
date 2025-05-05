@@ -86,12 +86,12 @@ export class Session {
 
   with(other: Partial<Session>) {
     return new Session(
-      'id' in other ? other.id! : this.id,
-      'blueprint' in other ? other.blueprint! : this.blueprint,
+      'id' in other ? other.id : this.id,
+      'blueprint' in other ? other.blueprint : this.blueprint,
       'recordedExercises' in other
-        ? other.recordedExercises!
+        ? other.recordedExercises
         : this.recordedExercises,
-      'date' in other ? other.date! : this.date,
+      'date' in other ? other.date : this.date,
       'bodyweight' in other ? other.bodyweight! : this.bodyweight,
     );
   }
@@ -227,7 +227,7 @@ export class RecordedExercise {
   constructor(
     blueprint?: ExerciseBlueprint,
     potentialSets?: readonly PotentialSet[],
-    notes?: string | undefined,
+    notes?: string,
     perSetWeight?: boolean,
   ) {
     this.blueprint = blueprint!;
@@ -270,13 +270,13 @@ export class RecordedExercise {
   with(other: Partial<RecordedExercisePOJO>) {
     return new RecordedExercise(
       'blueprint' in other
-        ? ExerciseBlueprint.fromPOJO(other.blueprint!)
+        ? ExerciseBlueprint.fromPOJO(other.blueprint)
         : this.blueprint,
       'potentialSets' in other
-        ? other.potentialSets!.map((x) => PotentialSet.fromPOJO(x))
+        ? other.potentialSets.map((x) => PotentialSet.fromPOJO(x))
         : this.potentialSets,
       'notes' in other ? other.notes! : this.notes,
-      'perSetWeight' in other ? other.perSetWeight! : this.perSetWeight,
+      'perSetWeight' in other ? other.perSetWeight : this.perSetWeight,
     );
   }
 
@@ -364,9 +364,9 @@ export class RecordedSet {
 
   with(other: Partial<RecordedSet>): RecordedSet {
     return new RecordedSet(
-      'repsCompleted' in other ? other.repsCompleted! : this.repsCompleted,
+      'repsCompleted' in other ? other.repsCompleted : this.repsCompleted,
       'completionDateTime' in other
-        ? other.completionDateTime!
+        ? other.completionDateTime
         : this.completionDateTime,
     );
   }
@@ -395,7 +395,7 @@ export class PotentialSet {
    */
   constructor();
   constructor(set: RecordedSet | undefined, weight: BigNumber);
-  constructor(set?: RecordedSet | undefined, weight?: BigNumber) {
+  constructor(set?: RecordedSet, weight?: BigNumber) {
     this.set = set;
     this.weight = weight!;
   }
@@ -423,7 +423,7 @@ export class PotentialSet {
   with(other: Partial<PotentialSet>): PotentialSet {
     return new PotentialSet(
       'set' in other ? other.set : this.set,
-      'weight' in other ? other.weight! : this.weight,
+      'weight' in other ? other.weight : this.weight,
     );
   }
 

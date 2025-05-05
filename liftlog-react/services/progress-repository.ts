@@ -12,7 +12,6 @@ import { IKeyValueStore } from '@/services/key-value-store';
 import { Logger } from '@/services/logger';
 import Enumerable from 'linq';
 import { match } from 'ts-pattern';
-global.Buffer = require('buffer').Buffer;
 
 const storageKey = 'Progress';
 export class ProgressRepository {

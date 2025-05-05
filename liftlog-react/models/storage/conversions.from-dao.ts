@@ -242,7 +242,7 @@ export function fromFeedIdentityDao(
   dao: LiftLog.Ui.Models.IFeedIdentityDaoV1,
 ): FeedIdentity {
   return new FeedIdentity(
-    fromUuidDao(dao.id!),
+    fromUuidDao(dao.id),
     dao.lookup?.value ?? '',
     { value: dao.aesKey! },
     {
@@ -263,7 +263,7 @@ export function fromFeedUserDao(
   dao: LiftLog.Ui.Models.IFeedUserDaoV1,
 ): FeedUser {
   return new FeedUser(
-    fromUuidDao(dao.id!),
+    fromUuidDao(dao.id),
     { spkiPublicKeyBytes: dao.publicKey! },
     dao.name?.value ?? undefined,
     dao.nickname?.value ?? undefined,

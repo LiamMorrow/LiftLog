@@ -1,6 +1,6 @@
 module.exports = {
-  extends: ['expo', 'prettier'],
-  plugins: ['prettier', 'eslint-plugin-react-compiler', 'unused-imports'],
+  extends: ['expo', 'prettier', 'plugin:@typescript-eslint/recommended-type-checked'],
+  plugins: ['prettier', 'eslint-plugin-react-compiler', 'unused-imports', '@typescript-eslint'],
   rules: {
     'prettier/prettier': 'error',
     'import/no-unresolved': 'off',
@@ -8,6 +8,9 @@ module.exports = {
     'unused-imports/no-unused-imports': 'error',
     'no-redeclare': 'off',
     '@typescript-eslint/no-redeclare': 'off',
+    '@typescript-eslint/unbound-method': 'off',
+    '@typescript-eslint/require-await': 'off',
+    'no-empty-pattern': 'off',
     'no-restricted-imports': [
       'error',
       {
@@ -25,5 +28,10 @@ module.exports = {
         ],
       },
     ],
+  },
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    projectService: true,
+    tsconfigRootDir: __dirname,
   },
 };

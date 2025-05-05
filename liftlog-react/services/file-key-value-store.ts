@@ -32,7 +32,7 @@ export class FileKeyValueStore implements IKeyValueStore {
     try {
       await writer.write(value);
     } finally {
-      writer.close();
+      await writer.close();
     }
   }
 

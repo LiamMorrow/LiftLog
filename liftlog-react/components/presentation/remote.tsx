@@ -13,7 +13,8 @@ interface RemoteProps<T> {
   error?: (err: unknown) => ReactNode;
 }
 export function Remote<T>(props: RemoteProps<T>) {
-  let { success, error, loading, notAsked, retry } = props;
+  const { success, retry } = props;
+  let { error, loading, notAsked } = props;
   loading ??= () => <Loader />;
   notAsked ??= loading;
   error ??= (value) => (

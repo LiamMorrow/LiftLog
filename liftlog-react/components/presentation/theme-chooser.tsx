@@ -18,7 +18,7 @@ interface ThemeChooserProps {
 function ColorBall(props: {
   selectedSeed: ColorSchemeSeed;
   seed: `#${string}`;
-  onUpdateTheme: (seed: ColorSchemeSeed) => void;
+  onUpdateTheme: (seed: ColorSchemeSeed) => void | Promise<void>;
 }) {
   const { colors, colorScheme } = useAppTheme();
   const theme = useMemo(() => createMaterial3Theme(props.seed), [props.seed]);
@@ -42,8 +42,8 @@ function ColorBall(props: {
             borderColor: colors.outlineVariant,
             borderWidth: 2,
           }}
-          onPress={async () => {
-            props.onUpdateTheme(props.seed);
+          onPress={() => {
+            void props.onUpdateTheme(props.seed);
           }}
         >
           <></>
@@ -54,7 +54,6 @@ function ColorBall(props: {
 }
 
 export default function ThemeChooser(props: ThemeChooserProps) {
-  const { colors } = useAppTheme();
   const { t } = useTranslate();
   const [selectedSeed, setSelectedSeed] = useState(props.seed);
 
@@ -80,7 +79,7 @@ export default function ThemeChooser(props: ThemeChooserProps) {
         <FocusRing isSelected={selectedSeed === 'default'}>
           <Button
             style={{ position: 'relative' }}
-            onPress={() => updateSeed('default')}
+            onPress={() => void updateSeed('default')}
           >
             <T keyName="Default" />
           </Button>

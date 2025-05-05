@@ -41,13 +41,13 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
     showWeightAnimatedValue.value = withTiming(props.showWeight ? 1 : 0, {
       duration: 150,
     });
-  }, [props.showWeight]);
+  }, [props.showWeight, showWeightAnimatedValue]);
 
   useEffect(() => {
     holdingScale.value = withTiming(isHolding ? 1.1 : 1, {
       duration: 400,
     });
-  }, [isHolding]);
+  }, [holdingScale, isHolding]);
 
   const borderRadiusStyle = useAnimatedStyle(() => ({
     borderBottomLeftRadius: interpolate(
@@ -81,7 +81,8 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
     : ({
         onPress: props.onTap,
         onLongPress: () => {
-          Haptics.selectionAsync();
+          // TODO sick hold vibrations
+          void Haptics.selectionAsync();
           props.onHold();
         },
         onTouchStart: () => setIsHolding(true),

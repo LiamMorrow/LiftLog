@@ -30,7 +30,7 @@ setNotificationHandler({
 
 const nextSetNotificationChannelId = 'Set Timers';
 const nextSetNotificationIdentifier = '1000';
-setNotificationChannelAsync(nextSetNotificationChannelId, {
+void setNotificationChannelAsync(nextSetNotificationChannelId, {
   name: 'Sets',
   description:
     'Notifications which remind you when your next set should be started',

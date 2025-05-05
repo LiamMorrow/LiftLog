@@ -15,7 +15,7 @@ import {
 } from '@/store/current-session';
 import { Card, FAB, Icon } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 import EmptyInfo from '@/components/presentation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
@@ -35,18 +35,18 @@ import { LocalDateTime } from '@js-joda/core';
 import { useSession } from '@/hooks/useSession';
 import { useAppSelector } from '@/store';
 import UpdatePlanButton from '@/components/smart/update-plan-button';
+import { UnknownAction } from '@reduxjs/toolkit';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
   showBodyweight: boolean;
 }) {
-  const [floatingBottomSize, setFloatingBottomSize] = useState(0);
   const { colors } = useAppTheme();
   const { t } = useTranslate();
   const session = useSession(props.target);
   const storeDispatch = useDispatch();
   const dispatch = <T,>(
-    reducer: (a: { payload: T; target: SessionTarget }) => any,
+    reducer: (a: { payload: T; target: SessionTarget }) => UnknownAction,
     payload: T,
   ) => storeDispatch(reducer({ payload, target: props.target }));
   const recentlyCompletedExercises = useAppSelector(
@@ -221,12 +221,14 @@ export default function SessionComponent(props: {
     lastExercise &&
     lastRecordedSet?.set;
   const lastSetFailed =
-    lastRecordedSet?.set?.repsCompleted! < lastExercise?.blueprint?.repsPerSet!;
+    lastRecordedSet?.set &&
+    lastExercise &&
+    lastRecordedSet.set.repsCompleted < lastExercise.blueprint.repsPerSet;
   const snackbar = showSnackbar ? (
     <RestTimer
       rest={lastExercise.blueprint.restBetweenSets}
       startTime={lastRecordedSet.set.completionDateTime}
-      failed={lastSetFailed}
+      failed={!!lastSetFailed}
     />
   ) : undefined;
 
@@ -271,8 +273,6 @@ export default function SessionComponent(props: {
           />
         ) : null}
       </FullScreenDialog>
-
-      <View style={{ height: floatingBottomSize }} />
     </FullHeightScrollView>
   );
 }

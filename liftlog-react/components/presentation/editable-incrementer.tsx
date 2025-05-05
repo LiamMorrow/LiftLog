@@ -13,7 +13,8 @@ interface EditableIncrementerProps {
 }
 
 export default function EditableIncrementer(props: EditableIncrementerProps) {
-  const { increment, label, value, suffix, onChange } = props;
+  // TODO suffix is unused
+  const { increment, label, value, onChange } = props;
   const [text, setText] = useState(props.value.toFormat());
   const [editorValue, setEditorValue] = useState<BigNumber>(value);
 

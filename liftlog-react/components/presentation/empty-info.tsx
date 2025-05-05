@@ -1,10 +1,9 @@
 import { SurfaceText } from '@/components/presentation/surface-text';
-import { useAppTheme, spacing } from '@/hooks/useAppTheme';
+import { spacing } from '@/hooks/useAppTheme';
 import { View, ViewProps } from 'react-native';
 import { Icon } from 'react-native-paper';
 
 export default function EmptyInfo(props: ViewProps & { icon?: string }) {
-  const { colors } = useAppTheme();
   const { icon, style, ...rest } = props;
   return (
     <View

@@ -14,7 +14,7 @@ export default function Settings() {
   const [appInfoOpen, setAppInfoOpen] = useState(false);
 
   const openUrl = (url: string) => {
-    Linking.canOpenURL(url).then(() => Linking.openURL(url));
+    void Linking.canOpenURL(url).then(() => Linking.openURL(url));
   };
 
   return (

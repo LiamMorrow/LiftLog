@@ -14,7 +14,7 @@ interface SurfaceTextProps extends TextProps {
 export function SurfaceText(props: SurfaceTextProps) {
   const { colors } = useAppTheme();
   const { style, ...rest } = props;
-  let fontChoice = props.font ?? 'text-base';
+  const fontChoice = props.font ?? 'text-base';
   return (
     <Text
       {...rest}

@@ -4,7 +4,7 @@ import { initializeSettingsStateSlice, setIsHydrated } from '@/store/settings';
 export function applySettingsEffects() {
   addEffect(
     initializeSettingsStateSlice,
-    async (_, { cancelActiveListeners, dispatch, extra: {} }) => {
+    async (_, { cancelActiveListeners, dispatch }) => {
       cancelActiveListeners();
       // TODO see SettingsStateInitMiddleware - should load all programs from disk
       dispatch(setIsHydrated(true));

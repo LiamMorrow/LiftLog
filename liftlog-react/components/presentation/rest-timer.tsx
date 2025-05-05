@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import RestFormat from '@/components/presentation/rest-format';
@@ -16,18 +16,10 @@ interface RestTimerProps {
 
 export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
   const { colors } = useAppTheme();
-  const getTimeSinceStart = () => {
+  const getTimeSinceStart = useCallback(() => {
     const diffMs = Duration.between(startTime, LocalDateTime.now());
     return formatTimeSpan(diffMs);
-  };
-  // Function to format time in m:ss format
-  const formatTimeSpan = (ms: Duration): string => {
-    const totalSeconds = Math.floor(ms.toMillis() / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
+  }, [startTime]);
   const [timeSinceStart, setTimeSinceStart] =
     useState<string>(getTimeSinceStart());
   const { t } = useTranslate(); // Initialize Tolgee translations
@@ -40,7 +32,7 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
 
     // Cleanup timer on unmount
     return () => clearInterval(timer);
-  }, [startTime]);
+  }, [getTimeSinceStart, startTime]);
 
   return (
     <Snackbar
@@ -77,4 +69,12 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
       </View>
     </Snackbar>
   );
+}
+
+// Function to format time in m:ss format
+function formatTimeSpan(ms: Duration): string {
+  const totalSeconds = Math.floor(ms.toMillis() / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
