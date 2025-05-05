@@ -1,5 +1,5 @@
 import { spacing } from '@/hooks/useAppTheme';
-import { Fragment } from 'react';
+import { Fragment, ReactNode } from 'react';
 import { View, ViewProps } from 'react-native';
 import { Divider } from 'react-native-paper';
 
@@ -8,15 +8,19 @@ export default function ItemList<T>(
     items: readonly T[];
     renderItem: (item: T, index: number) => React.ReactNode;
     verticalPadding?: boolean;
+    empty?: ReactNode;
   } & ViewProps,
 ) {
   const { items, renderItem, verticalPadding, ...rest } = props;
+  if (!items.length && props.empty) {
+    return props.empty;
+  }
 
   return (
     <View
       {...rest}
       style={[
-        { paddingVertical: verticalPadding ? spacing[2] : 0 },
+        { paddingVertical: (verticalPadding ?? true) ? spacing[2] : 0 },
         rest.style,
       ]}
       data-cy="item-list"

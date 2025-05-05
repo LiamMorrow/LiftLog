@@ -5,21 +5,29 @@ import FullHeightScrollView from '@/components/presentation/full-height-scroll-v
 import LimitedHtml from '@/components/presentation/limited-html';
 import ManageWorkoutCardContent from '@/components/smart/manage-workout-card-content';
 import { spacing } from '@/hooks/useAppTheme';
+import { SessionBlueprint } from '@/models/session-models';
 import { useAppSelectorWithArg } from '@/store';
 import { selectProgram, setSavedPlanName } from '@/store/program';
+import { setEditingSession } from '@/store/session-editor';
 import { useTranslate } from '@tolgee/react';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { FAB, TextInput } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 export default function ManageWorkouts() {
   const { programId } = useLocalSearchParams<{ programId: string }>();
+  const { push } = useRouter();
   const program = useAppSelectorWithArg(selectProgram, programId);
   const { t } = useTranslate();
   const dispatch = useDispatch();
   const addWorkout = () => {
     // TODO
   };
+  const selectSession = (sessionBlueprint: SessionBlueprint, index: number) => {
+    dispatch(setEditingSession(sessionBlueprint));
+    push(`/settings/manage-workouts/${programId}/manage-session/${index}`);
+  };
+
   const floatingBottomContainer = (
     <FloatingBottomContainer
       fab={
@@ -54,6 +62,7 @@ export default function ManageWorkouts() {
       <CardList
         items={program.sessions}
         cardType="outlined"
+        onPress={selectSession}
         renderItem={(session) => (
           <ManageWorkoutCardContent
             sessionBlueprint={session}

@@ -1,5 +1,6 @@
+import { SurfaceText } from '@/components/presentation/surface-text';
 import { useAppTheme, spacing } from '@/hooks/useAppTheme';
-import { Text, View, ViewProps } from 'react-native';
+import { View, ViewProps } from 'react-native';
 import { Icon } from 'react-native-paper';
 
 export default function EmptyInfo(props: ViewProps & { icon?: string }) {
@@ -19,9 +20,9 @@ export default function EmptyInfo(props: ViewProps & { icon?: string }) {
       ]}
     >
       <Icon source={props.icon ?? 'info'} size={20} />
-      <Text style={{ color: colors.onSurface, textAlign: 'center' }}>
+      <SurfaceText color="onSurface" style={{ textAlign: 'center' }}>
         {props.children}
-      </Text>
+      </SurfaceText>
     </View>
   );
 }
