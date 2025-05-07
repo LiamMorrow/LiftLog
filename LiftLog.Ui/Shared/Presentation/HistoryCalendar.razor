@@ -19,7 +19,7 @@
     <div class="col-span-1 my-2 text-end">
         <IconButton Type=IconButtonType.Standard @onclick="NextMonth" disabled=@DisableNext Icon="chevron_right" />
     </div>
-    @for(int offset = 0; offset < 7; offset++) 
+    @for(int offset = 0; offset < 7; offset++)
     {
         var dayOfWeek = (DayOfWeek) ((offset + dayOfFirstDayOfTheWeek) % 7);
         <span class="mb-2">@(DateTimeFormatInfo.CurrentInfo.GetShortestDayName(dayOfWeek))</span>
@@ -27,7 +27,7 @@
     @for (int i = -numberOfDaysToShowFromPreviousMonth; i < 0; i++)
     {
         var date = firstDayOfMonth.AddDays(i);
-        <HistoryCalendarDay ForOtherMonth=true @key=@(date.ToString()+index) Index="index++" Day=date Sessions=_sessionsByDate[date] OnDayClick=@(()=>HandleDayClick(date)) OnDayLongPress=@(()=>HandleDayLongPress(date)) />
+        <HistoryCalendarDay @key=@(date.ToString()+index) Index="index++" Day=date Sessions=_sessionsByDate[date] OnDayClick=@(()=>HandleDayClick(date)) OnDayLongPress=@(()=>HandleDayLongPress(date)) />
     }
     @for (int i = 1; i <= DateTime.DaysInMonth(CurrentYear, CurrentMonth); i++)
     {
@@ -40,7 +40,7 @@
     @while(index % 7 != 0)
     {
         var date =new DateOnly(CurrentYear, CurrentMonth, DateTime.DaysInMonth(CurrentYear, CurrentMonth)).AddDays(++extraDay);
-        <HistoryCalendarDay ForOtherMonth=true @key=@(date.ToString()+index) Index="index++" Day=date Sessions=_sessionsByDate[date] OnDayClick=@(()=>HandleDayClick(date)) OnDayLongPress=@(()=>HandleDayLongPress(date)) />
+        <HistoryCalendarDay @key=@(date.ToString()+index) Index="index++" Day=date Sessions=_sessionsByDate[date] OnDayClick=@(()=>HandleDayClick(date)) OnDayLongPress=@(()=>HandleDayLongPress(date)) />
     }
 
 </div>

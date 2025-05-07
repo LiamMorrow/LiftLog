@@ -10,6 +10,8 @@ import {
 export type ColorSchemeSeed = 'default' | `#${string}`;
 
 interface SettingsState {
+  // 0 based, sunday being 0
+  firstDayOfWeek: number;
   isHydrated: boolean;
   aiWorkoutAttributes: AiWorkoutAttributes | undefined;
   isGeneratingAiPlan: boolean;
@@ -37,6 +39,7 @@ interface RemoteBackupSettings {
 
 const initialState: SettingsState = {
   isHydrated: false,
+  firstDayOfWeek: 0,
   aiWorkoutAttributes: undefined,
   isGeneratingAiPlan: false,
   aiPlanError: undefined,

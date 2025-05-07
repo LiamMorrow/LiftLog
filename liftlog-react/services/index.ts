@@ -33,9 +33,9 @@ export type Services = Awaited<ReturnType<typeof createServicesInternal>>;
 
 // Cache the created services so they only get made once
 let createdServices: Promise<Services> | undefined;
-async function createServices(): Promise<Services> {
+async function resolveServices(): Promise<Services> {
   createdServices ??= createServicesInternal();
   return await createdServices;
 }
 
-export { createServices };
+export { resolveServices };

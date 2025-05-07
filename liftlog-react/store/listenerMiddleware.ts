@@ -9,7 +9,7 @@ import { Services } from '@/services';
 declare type ExtraArgument = () => Promise<Services>;
 
 export const listenerMiddleware = createListenerMiddleware({
-  extra: () => import('@/services').then((x) => x.createServices()),
+  extra: () => import('@/services').then((x) => x.resolveServices()),
 });
 
 export const startAppListening = listenerMiddleware.startListening.withTypes<
