@@ -2,16 +2,16 @@ import FullHeightScrollView from '@/components/presentation/full-height-scroll-v
 import HistoryCalendarCard from '@/components/presentation/history-calendar-card';
 import { Session } from '@/models/session-models';
 import { resolveServices } from '@/services';
-import { LocalDate } from '@js-joda/core';
+import { YearMonth } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
-import { Stack } from 'expo-router';
-import { useLayoutEffect, useState } from 'react';
+import { Stack, useFocusEffect } from 'expo-router';
+import { useState } from 'react';
 
 export default function History() {
   const { t } = useTranslate();
   const [sessions, setSessions] = useState<Session[]>([]);
-  const [currentDate, setCurrentDate] = useState(LocalDate.now());
-  useLayoutEffect(() => {
+  const [currentYearMonth, setCurrentYearMonth] = useState(YearMonth.now());
+  useFocusEffect(() => {
     void resolveServices().then(async (x) =>
       setSessions((await x.sessionService.getLatestSessions()).toArray()),
     );
@@ -25,10 +25,10 @@ export default function History() {
       />
       <FullHeightScrollView>
         <HistoryCalendarCard
-          currentMonth={currentDate.month().value()}
-          currentYear={currentDate.year()}
+          currentYearMonth={currentYearMonth}
+          sessions={sessions}
           onDateSelect={() => {}}
-          onMonthChange={() => {}}
+          onMonthChange={setCurrentYearMonth}
           onSessionLongPress={() => {}}
           onSessionPress={() => {}}
         />
