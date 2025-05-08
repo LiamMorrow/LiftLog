@@ -22,7 +22,7 @@ jobs:
       - name: Format with csharpier
         # If branch is renovate we want to format and commit the changes
         if: startsWith(github.event.ref, 'refs/heads/renovate')
-        run: dotnet tool run csharpier .
+        run: dotnet tool run csharpier format .
       - name: Commit changes
         # If branch is renovate we want to format and commit the changes
         if: startsWith(github.event.ref, 'refs/heads/renovate')
@@ -32,4 +32,4 @@ jobs:
           commit_author: "Renovate Bot <renovate[bot]@users.noreply.github.com>"
         # If branch is not renovate we just want to check the formatting
       - name: Check formatting with csharpier
-        run: dotnet tool run csharpier . --check
+        run: dotnet tool run csharpier check .
