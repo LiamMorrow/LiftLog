@@ -35,23 +35,22 @@ public class SessionSupersetTests
       "When given a session with supersets",
       () =>
       {
-        BeforeEach(
-          () =>
-            session = Sessions.CreateSession(
-              sessionBlueprint: Blueprints.CreateSessionBlueprint() with
-              {
-                Exercises =
-                [
-                  Exercise(0, supersetWithNext: false),
-                  Exercise(1, supersetWithNext: true),
-                  Exercise(2, supersetWithNext: false),
-                  Exercise(3, supersetWithNext: true),
-                  Exercise(4, supersetWithNext: true),
-                  Exercise(5, supersetWithNext: false),
-                ],
-              },
-              fillSets: []
-            )
+        BeforeEach(() =>
+          session = Sessions.CreateSession(
+            sessionBlueprint: Blueprints.CreateSessionBlueprint() with
+            {
+              Exercises =
+              [
+                Exercise(0, supersetWithNext: false),
+                Exercise(1, supersetWithNext: true),
+                Exercise(2, supersetWithNext: false),
+                Exercise(3, supersetWithNext: true),
+                Exercise(4, supersetWithNext: true),
+                Exercise(5, supersetWithNext: false),
+              ],
+            },
+            fillSets: []
+          )
         );
 
         It("should have exercise 0 set as the next exercise")
