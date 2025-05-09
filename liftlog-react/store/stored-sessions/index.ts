@@ -1,4 +1,4 @@
-import { LocalDateTimeComparer } from '@/models/comparers';
+import { LocalDateComparer, LocalDateTimeComparer } from '@/models/comparers';
 import {
   ExerciseBlueprint,
   NormalizedName,
@@ -7,6 +7,7 @@ import {
   Session,
   SessionPOJO,
 } from '@/models/session-models';
+import { YearMonth } from '@js-joda/core';
 import {
   createAction,
   createSelector,
@@ -106,4 +107,20 @@ export const selectRecentlyCompletedExercises = createSelector(
         NormalizedName.fromExerciseBlueprint(blueprint).toString()
       ] ?? [],
 );
+
+export const selectSessionsInMonth = createSelector(
+  [selectSessions, (_, ym: YearMonth) => ym],
+  (sessions, ym) =>
+    Enumerable.from(sessions)
+      .where(
+        (x) => x.date.year() === ym.year() && x.date.month().equals(ym.month()),
+      )
+      .orderByDescending((x) => x.date, LocalDateComparer)
+      .thenByDescending(
+        (x) => x.lastExercise?.lastRecordedSet?.set?.completionDateTime,
+        LocalDateTimeComparer,
+      )
+      .toArray(),
+);
+
 export default storedSessionsSlice.reducer;
