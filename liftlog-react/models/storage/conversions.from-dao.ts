@@ -280,3 +280,16 @@ export function fromCurrentPlanDao(
 ): SessionBlueprint[] {
   return dao.sessions!.map(fromSessionBlueprintDao);
 }
+
+export function fromCurrentSessionDao(
+  dao: LiftLog.Ui.Models.CurrentSessionStateDao.ICurrentSessionStateDaoV2,
+) {
+  return {
+    latestSetTimerNotificationId:
+      (dao.latestSetTimerNotificationId &&
+        fromUuidDao(dao.latestSetTimerNotificationId)) ??
+      undefined,
+    workoutSession: dao.workoutSession && fromSessionDao(dao.workoutSession),
+    historySession: dao.historySession && fromSessionDao(dao.historySession),
+  };
+}

@@ -1,4 +1,6 @@
+import { LiftLog } from '@/gen/proto';
 import { Session } from '@/models/session-models';
+import { fromCurrentSessionDao } from '@/models/storage/conversions.from-dao';
 import {
   clearSetTimerNotification,
   completeSetFromNotification,
@@ -9,22 +11,93 @@ import {
   setCurrentSession,
   setCurrentSessionFromBlueprint,
   setIsHydrated,
+  setLatestSetTimerNotificationId,
 } from '@/store/current-session';
 import { addEffect } from '@/store/listenerMiddleware';
 import { fetchUpcomingSessions } from '@/store/program';
 import { addStoredSession } from '@/store/stored-sessions';
 import { LocalDateTime } from '@js-joda/core';
 
+const storageKey = 'CurrentSessionStateV1';
 export function applyCurrentSessionEffects() {
   addEffect(
     initializeCurrentSessionStateSlice,
-    async (_, { cancelActiveListeners, dispatch, extra: {} }) => {
+    async (
+      _,
+      { cancelActiveListeners, dispatch, extra: { keyValueStore, logger } },
+    ) => {
       cancelActiveListeners();
-      // TODO see PersisteSessionMiddleware - > should load in progress session from disk
+      try {
+        const sw = performance.now();
+        const currentSessionVersion =
+          (await keyValueStore.getItem(`${storageKey}-Version`)) ?? '2';
 
-      dispatch(setIsHydrated(true));
+        let currentSessionStateDao:
+          | LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+          | undefined;
+        switch (currentSessionVersion) {
+          case '2':
+            const bytes =
+              (await keyValueStore.getItemBytes(storageKey)) ??
+              Uint8Array.from([]);
+            currentSessionStateDao =
+              LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2.decode(
+                bytes,
+              );
+            break;
+          default:
+            currentSessionStateDao = undefined;
+        }
+        const deserializationTime = performance.now() - sw;
+        logger.info(
+          `Deserialized current session state in ${deserializationTime.toFixed(2)}ms`,
+        );
+        if (currentSessionStateDao) {
+          const currentSessionState = fromCurrentSessionDao(
+            currentSessionStateDao,
+          );
+          if (currentSessionState.workoutSession) {
+            dispatch(
+              setCurrentSession({
+                target: 'workoutSession',
+                session: currentSessionState.workoutSession,
+              }),
+            );
+          }
+          if (currentSessionState.historySession) {
+            dispatch(
+              setCurrentSession({
+                target: 'historySession',
+                session: currentSessionState.historySession,
+              }),
+            );
+          }
+          if (currentSessionState.latestSetTimerNotificationId) {
+            dispatch(
+              setLatestSetTimerNotificationId(
+                currentSessionState.latestSetTimerNotificationId,
+              ),
+            );
+          }
+        }
+
+        dispatch(setIsHydrated(true));
+      } catch (e) {
+        logger.error('Failed to initialize current session state', e);
+        throw e;
+      }
     },
   );
+
+  addEffect(undefined, (_, { getState, originalState, stateAfterReduce }) => {
+    const shouldPersist =
+      stateAfterReduce.currentSession.isHydrated &&
+      stateAfterReduce.currentSession !== originalState.currentSession;
+    console.log('Should Persist', shouldPersist, _.type);
+    if (shouldPersist) {
+      console.log(originalState.currentSession, getState().currentSession);
+    }
+  });
 
   addEffect(persistCurrentSession, async (a, { dispatch, getState }) => {
     dispatch(clearSetTimerNotification());
