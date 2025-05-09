@@ -80,6 +80,7 @@ export class ProgressRepository {
         (x) => x.first(),
       );
   }
+
   async deleteSession(session: Session) {
     await this.initialize();
     const cloned = new Map(this.storedSessions);

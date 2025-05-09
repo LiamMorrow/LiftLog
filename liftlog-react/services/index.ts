@@ -13,7 +13,7 @@ async function createServicesInternal() {
       ? new (
           await import('./local-storage-key-value-store')
         ).FileKeyValueStore()
-      : new (await import('./file-key-value-store')).FileKeyValueStore();
+      : new (await import('./file-key-value-store')).KeyValueStore();
   const progressRepository = new ProgressRepository(keyValueStore, logger);
   const sessionService = new SessionService(progressRepository, store.getState);
   const notificationService = new NotificationService(

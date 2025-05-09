@@ -5,7 +5,7 @@ import { useAppSelector } from '@/store';
 import { LocalDate, Year, YearMonth } from '@js-joda/core';
 import Enumerable from 'linq';
 import { View } from 'react-native';
-import { Card, IconButton } from 'react-native-paper';
+import { Card, IconButton, TouchableRipple } from 'react-native-paper';
 
 const oneSeventh = `${100 / 7}%`;
 const fiveSevenths = `${(100 / 7) * 5}%`;
@@ -16,14 +16,17 @@ interface HistoryCalendarCardProps {
 
   onMonthChange: (date: YearMonth) => void;
   onDateSelect: (date: LocalDate) => void;
-  onSessionLongPress: (session: Session) => void;
-  onSessionPress: (Session: Session) => void;
+  onSessionSelect: (Session: Session) => void;
+  onDeleteSession: (session: Session) => void;
 }
 
 export default function HistoryCalendarCard({
   currentYearMonth,
-  onMonthChange,
   sessions,
+  onMonthChange,
+  onDateSelect,
+  onSessionSelect,
+  onDeleteSession,
 }: HistoryCalendarCardProps) {
   const firstDayOfMonth = LocalDate.of(
     currentYearMonth.year(),
@@ -51,6 +54,21 @@ export default function HistoryCalendarCard({
   };
   const nextMonth = () => {
     onMonthChange(currentYearMonth.plusMonths(1));
+  };
+
+  const handleDayPress = (date: LocalDate) => {
+    const sessionsForDate = sessionsByDate.get(date.toString());
+    if (sessionsForDate.any()) {
+      onSessionSelect(sessionsForDate.first());
+    } else {
+      onDateSelect(date);
+    }
+  };
+  const handleDayLongPress = (date: LocalDate) => {
+    const sessionsForDate = sessionsByDate.get(date.toString());
+    if (sessionsForDate.any()) {
+      onDeleteSession(sessionsForDate.first());
+    }
   };
 
   const navButtons = (
@@ -119,6 +137,8 @@ export default function HistoryCalendarCard({
           key={date.toString()}
           sessions={sessionsByDate.get(date.toString())}
           day={date}
+          onPress={() => handleDayPress(date)}
+          onLongPress={() => handleDayLongPress(date)}
         />
       );
     },
@@ -135,6 +155,8 @@ export default function HistoryCalendarCard({
           key={date.toString()}
           sessions={sessionsByDate.get(date.toString())}
           day={date}
+          onPress={() => handleDayPress(date)}
+          onLongPress={() => handleDayLongPress(date)}
         />
       );
     },
@@ -149,6 +171,8 @@ export default function HistoryCalendarCard({
           key={date.toString()}
           sessions={sessionsByDate.get(date.toString())}
           day={date}
+          onPress={() => handleDayPress(date)}
+          onLongPress={() => handleDayLongPress(date)}
         />
       );
     },
@@ -179,7 +203,10 @@ export default function HistoryCalendarCard({
 function HistoryCalendarDay(props: {
   day: LocalDate;
   sessions: Enumerable.IEnumerable<Session>;
+  onPress: () => void;
+  onLongPress: () => void;
 }) {
+  const isFuture = props.day.isAfter(LocalDate.now());
   const hasSessions = props.sessions.any();
   const isTodayWithNoSessions =
     props.day.equals(LocalDate.now()) && !hasSessions;
@@ -188,29 +215,37 @@ function HistoryCalendarDay(props: {
     <View
       style={{
         width: oneSeventh,
-        padding: spacing[1],
+        borderRadius: 1000,
+        overflow: 'hidden',
       }}
     >
-      <View
-        style={{
-          alignItems: 'center',
-          justifyContent: 'center',
-          aspectRatio: '1/1',
-          borderRadius: 1000,
-          borderColor: isTodayWithNoSessions ? colors.primary : 'transparent',
-          borderWidth: 1,
-          backgroundColor: props.sessions.any()
-            ? colors.primary
-            : 'transparent',
-        }}
+      <TouchableRipple
+        onPress={props.onPress}
+        onLongPress={props.onLongPress}
+        disabled={isFuture}
+        style={{ padding: spacing[1] }}
       >
-        <SurfaceText
-          style={{ textAlign: 'center' }}
-          color={hasSessions ? 'onPrimary' : 'onSurface'}
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            aspectRatio: '1/1',
+            borderRadius: 1000,
+            borderColor: isTodayWithNoSessions ? colors.primary : 'transparent',
+            borderWidth: 1,
+            backgroundColor: props.sessions.any()
+              ? colors.primary
+              : 'transparent',
+          }}
         >
-          {formatDate(props.day, { day: 'numeric' })}
-        </SurfaceText>
-      </View>
+          <SurfaceText
+            style={{ textAlign: 'center' }}
+            color={hasSessions ? 'onPrimary' : 'onSurface'}
+          >
+            {formatDate(props.day, { day: 'numeric' })}
+          </SurfaceText>
+        </View>
+      </TouchableRipple>
     </View>
   );
 }
