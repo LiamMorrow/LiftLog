@@ -3,13 +3,9 @@ import { TemporalComparer } from '@/models/comparers';
 import { RecordedExercise, Session } from '@/models/session-models';
 import Enumerable from 'linq';
 import { RootState } from '@/store';
-import { UnknownAction } from '@reduxjs/toolkit';
 
 export class ProgressRepository {
-  constructor(
-    private getState: () => RootState,
-    private dispatch: (u: UnknownAction) => void,
-  ) {}
+  constructor(private getState: () => RootState) {}
 
   private getSessionMap(): Record<string, SessionPOJO> {
     if (!this.getState().storedSessions.isHydrated) {
