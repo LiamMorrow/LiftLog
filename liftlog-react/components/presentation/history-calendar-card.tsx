@@ -2,6 +2,7 @@ import { SurfaceText } from '@/components/presentation/surface-text';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Session } from '@/models/session-models';
 import { useAppSelector } from '@/store';
+import { formatDate } from '@/utils/format-date';
 import { LocalDate, Year, YearMonth } from '@js-joda/core';
 import Enumerable from 'linq';
 import { View } from 'react-native';
@@ -248,14 +249,6 @@ function HistoryCalendarDay(props: {
       </TouchableRipple>
     </View>
   );
-}
-
-function formatDate(date: LocalDate, opts: Intl.DateTimeFormatOptions) {
-  return new Date(
-    date.year(),
-    date.month().ordinal(),
-    date.dayOfMonth(),
-  ).toLocaleString('default', opts);
 }
 
 function getDateOnDay(dayOfWeek: number) {

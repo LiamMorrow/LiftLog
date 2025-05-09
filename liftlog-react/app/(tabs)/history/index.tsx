@@ -1,6 +1,8 @@
 import CardList from '@/components/presentation/card-list';
+import EmptyInfo from '@/components/presentation/empty-info';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
 import HistoryCalendarCard from '@/components/presentation/history-calendar-card';
+import LimitedHtml from '@/components/presentation/limited-html';
 import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
 import SplitCardControl from '@/components/presentation/split-card-control';
@@ -10,6 +12,7 @@ import {
   selectSessions,
   selectSessionsInMonth,
 } from '@/store/stored-sessions';
+import { formatDate } from '@/utils/format-date';
 import { YearMonth } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
@@ -54,6 +57,15 @@ export default function History() {
               }
             />
           )}
+          emptyTemplate={
+            <EmptyInfo>
+              <LimitedHtml
+                value={t('NoSessionsInMonth{Month}', {
+                  0: formatDate(currentYearMonth.atDay(1), { month: 'long' }),
+                })}
+              />
+            </EmptyInfo>
+          }
         />
       </FullHeightScrollView>
     </>
