@@ -22,6 +22,7 @@ type EffectFn<T> = (
   action: T,
   listenerApi: {
     extra: Services;
+    signal: AbortSignal;
     cancelActiveListeners: () => void;
     dispatch: AppDispatch;
     getState: () => RootState;
@@ -29,24 +30,26 @@ type EffectFn<T> = (
 ) => void | Promise<void>;
 
 export function addEffect<TAction extends { type: string }>(
+  action: TAction[],
+  effect: EffectFn<unknown>,
+): void;
+export function addEffect<TAction extends { type: string }>(
   action: TAction,
   effect: EffectFn<TAction extends ActionCreator<infer U> ? U : TAction>,
 ): void;
 export function addEffect(
-  actionPredicate: { type: string },
+  actionPredicate: { type: string } | { type: string }[],
   effect: EffectFn<unknown>,
 ) {
   startAppListening({
-    predicate: (action) => action.type === actionPredicate.type,
+    predicate: (action) =>
+      [actionPredicate].flat().some((x) => x.type === action.type),
     effect: async (action, listenerApi) => {
       const services = await listenerApi.extra();
       try {
         await effect(action, { ...listenerApi, extra: services });
       } catch (e) {
-        services.logger.warn(
-          `Error during effect [${actionPredicate.type}]:`,
-          e,
-        );
+        services.logger.warn(`Error during effect [${action.type}]:`, e);
         throw e;
       }
     },

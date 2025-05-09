@@ -4,7 +4,6 @@ import {
   completeSetFromNotification,
   computeRecentlyCompletedRecordedExercises,
   cycleExerciseReps,
-  deleteSession,
   initializeCurrentSessionStateSlice,
   notifySetTimer,
   persistCurrentSession,
@@ -22,7 +21,6 @@ export function applyCurrentSessionEffects() {
     initializeCurrentSessionStateSlice,
     async (_, { cancelActiveListeners, dispatch, extra: {} }) => {
       cancelActiveListeners();
-      dispatch(fetchUpcomingSessions());
       // TODO see PersisteSessionMiddleware - > should load in progress session from disk
 
       dispatch(setIsHydrated(true));
@@ -102,13 +100,6 @@ export function applyCurrentSessionEffects() {
   );
 
   addEffect(
-    deleteSession,
-    async (action, { extra: { progressRepository } }) => {
-      await progressRepository.deleteSession(action.payload);
-    },
-  );
-
-  addEffect(
     setCurrentSessionFromBlueprint,
     async (action, { dispatch, extra: { sessionService } }) => {
       const session = await sessionService.hydrateSessionFromBlueprint(
@@ -124,8 +115,7 @@ export function applyCurrentSessionEffects() {
       { payload: { max } },
       { dispatch, extra: { progressRepository } },
     ) => {
-      const ex =
-        await progressRepository.getLatestOrderedRecordedExercises(max);
+      const ex = progressRepository.getLatestOrderedRecordedExercises(max);
       dispatch(setRecentlyCompletedExercises(ex));
     },
   );

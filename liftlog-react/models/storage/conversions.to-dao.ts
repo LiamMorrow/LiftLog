@@ -7,6 +7,7 @@ import {
   ProgramBlueprint,
   Rest,
   SessionBlueprint,
+  SessionPOJO,
 } from '@/models/session-models';
 import { FeedIdentity, FeedUser } from '@/models/feed-models';
 import { parse as uuidParse } from 'uuid';
@@ -173,10 +174,11 @@ export function toCurrentPlanDao(
 }
 
 export function toSessionHistoryDao(
-  model: ReadonlyMap<string, Session>,
+  model: Record<string, SessionPOJO>,
 ): LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2 {
   return new LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2({
-    completedSessions: Enumerable.from(model.values())
+    completedSessions: Enumerable.from(model)
+      .select((x) => Session.fromPOJO(x.value))
       .select(toSessionDao)
       .toArray(),
   });

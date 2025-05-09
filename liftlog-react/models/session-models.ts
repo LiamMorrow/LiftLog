@@ -203,7 +203,7 @@ export class Session {
 export interface RecordedExercisePOJO {
   _BRAND: 'RECORDED_EXERCISE_POJO';
   blueprint: ExerciseBlueprintPOJO;
-  potentialSets: readonly PotentialSetPOJO[];
+  potentialSets: PotentialSetPOJO[];
   notes: string | undefined;
   perSetWeight: boolean;
 }

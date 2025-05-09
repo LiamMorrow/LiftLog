@@ -3,6 +3,7 @@ import currentSessionReducer from './current-session';
 import settingsReducer from './settings';
 import programReducer from './program';
 import appReducer from './app';
+import storedSessionsReducer from './stored-sessions';
 import sessionEditorReducer from './session-editor';
 import { listenerMiddleware } from '@/store/listenerMiddleware';
 
@@ -18,6 +19,7 @@ const store = configureStore({
     program: programReducer,
     app: appReducer,
     sessionEditor: sessionEditorReducer,
+    storedSessions: storedSessionsReducer,
   }),
 });
 

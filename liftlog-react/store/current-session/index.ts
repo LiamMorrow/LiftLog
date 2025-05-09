@@ -301,8 +301,6 @@ export const completeSetFromNotification = createAction(
   'completeSetFromNotification',
 );
 
-export const deleteSession = createAction<Session>('deleteSession');
-
 export const setCurrentSessionFromBlueprint = createAction<{
   target: SessionTarget;
   blueprint: SessionBlueprint;
