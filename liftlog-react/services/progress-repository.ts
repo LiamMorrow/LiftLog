@@ -1,15 +1,9 @@
-import {
-  KeyedExerciseBlueprint,
-  NormalizedName,
-  NormalizedNameKey,
-  SessionPOJO,
-} from '@/models/session-models';
-import { LocalDateTimeComparer, TemporalComparer } from '@/models/comparers';
+import { KeyedExerciseBlueprint, SessionPOJO } from '@/models/session-models';
+import { TemporalComparer } from '@/models/comparers';
 import { RecordedExercise, Session } from '@/models/session-models';
 import Enumerable from 'linq';
 import { RootState } from '@/store';
 import { UnknownAction } from '@reduxjs/toolkit';
-import { addStoredSession } from '@/store/stored-sessions';
 
 export class ProgressRepository {
   constructor(
@@ -33,33 +27,6 @@ export class ProgressRepository {
       .thenByDescending(
         (x) => x.lastExercise?.lastRecordedSet?.set?.completionDateTime,
         TemporalComparer,
-      );
-  }
-
-  async saveCompletedSession(session: Session): Promise<void> {
-    this.dispatch(addStoredSession(session));
-  }
-
-  getLatestOrderedRecordedExercises(
-    maxRecordsPerExercise: number,
-  ): Record<NormalizedNameKey, RecordedExercise[]> {
-    return this.getOrderedSessions()
-      .selectMany((x) =>
-        x.recordedExercises.filter((x) => x.lastRecordedSet?.set),
-      )
-      .groupBy((x) =>
-        NormalizedName.fromExerciseBlueprint(x.blueprint).toString(),
-      )
-      .toObject(
-        (x) => x.key(),
-        (x) =>
-          x
-            .orderByDescending(
-              (x) => x.lastRecordedSet!.set!.completionDateTime,
-              LocalDateTimeComparer,
-            )
-            .take(maxRecordsPerExercise)
-            .toArray(),
       );
   }
 

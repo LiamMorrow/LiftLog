@@ -2,7 +2,6 @@ import { Session } from '@/models/session-models';
 import {
   clearSetTimerNotification,
   completeSetFromNotification,
-  computeRecentlyCompletedRecordedExercises,
   cycleExerciseReps,
   initializeCurrentSessionStateSlice,
   notifySetTimer,
@@ -10,10 +9,10 @@ import {
   setCurrentSession,
   setCurrentSessionFromBlueprint,
   setIsHydrated,
-  setRecentlyCompletedExercises,
 } from '@/store/current-session';
 import { addEffect } from '@/store/listenerMiddleware';
 import { fetchUpcomingSessions } from '@/store/program';
+import { addStoredSession } from '@/store/stored-sessions';
 import { LocalDateTime } from '@js-joda/core';
 
 export function applyCurrentSessionEffects() {
@@ -27,20 +26,15 @@ export function applyCurrentSessionEffects() {
     },
   );
 
-  addEffect(
-    persistCurrentSession,
-    async (a, { dispatch, extra: { progressRepository }, getState }) => {
-      dispatch(clearSetTimerNotification());
-      const session = getState().currentSession[a.payload];
-      if (session) {
-        await progressRepository.saveCompletedSession(
-          Session.fromPOJO(session),
-        );
-      }
-      dispatch(setCurrentSession({ target: a.payload, session: undefined }));
-      dispatch(fetchUpcomingSessions());
-    },
-  );
+  addEffect(persistCurrentSession, async (a, { dispatch, getState }) => {
+    dispatch(clearSetTimerNotification());
+    const session = getState().currentSession[a.payload];
+    if (session) {
+      dispatch(addStoredSession(Session.fromPOJO(session)));
+    }
+    dispatch(setCurrentSession({ target: a.payload, session: undefined }));
+    dispatch(fetchUpcomingSessions());
+  });
 
   addEffect(
     clearSetTimerNotification,
@@ -102,21 +96,10 @@ export function applyCurrentSessionEffects() {
   addEffect(
     setCurrentSessionFromBlueprint,
     async (action, { dispatch, extra: { sessionService } }) => {
-      const session = await sessionService.hydrateSessionFromBlueprint(
+      const session = sessionService.hydrateSessionFromBlueprint(
         action.payload.blueprint,
       );
       dispatch(setCurrentSession({ session, target: action.payload.target }));
-    },
-  );
-
-  addEffect(
-    computeRecentlyCompletedRecordedExercises,
-    async (
-      { payload: { max } },
-      { dispatch, extra: { progressRepository } },
-    ) => {
-      const ex = progressRepository.getLatestOrderedRecordedExercises(max);
-      dispatch(setRecentlyCompletedExercises(ex));
     },
   );
 }

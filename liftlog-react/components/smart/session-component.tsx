@@ -4,7 +4,6 @@ import {
   editExercise,
   notifySetTimer,
   removeExercise,
-  selectRecentlyCompletedExercises,
   SessionTarget,
   setExerciseReps,
   toggleExercisePerSetWeight,
@@ -33,9 +32,10 @@ import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/exercise-editor';
 import { LocalDateTime } from '@js-joda/core';
 import { useSession } from '@/hooks/useSession';
-import { useAppSelector } from '@/store';
+import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import UpdatePlanButton from '@/components/smart/update-plan-button';
 import { UnknownAction } from '@reduxjs/toolkit';
+import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
@@ -49,8 +49,9 @@ export default function SessionComponent(props: {
     reducer: (a: { payload: T; target: SessionTarget }) => UnknownAction,
     payload: T,
   ) => storeDispatch(reducer({ payload, target: props.target }));
-  const recentlyCompletedExercises = useAppSelector(
+  const recentlyCompletedExercises = useAppSelectorWithArg(
     selectRecentlyCompletedExercises,
+    10,
   );
 
   const perSetWeightSetting = useAppSelector(

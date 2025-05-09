@@ -1,10 +1,19 @@
-import { Session, SessionPOJO } from '@/models/session-models';
+import { LocalDateTimeComparer } from '@/models/comparers';
+import {
+  ExerciseBlueprint,
+  NormalizedName,
+  NormalizedNameKey,
+  RecordedExercise,
+  Session,
+  SessionPOJO,
+} from '@/models/session-models';
 import {
   createAction,
   createSelector,
   createSlice,
   PayloadAction,
 } from '@reduxjs/toolkit';
+import Enumerable from 'linq';
 
 interface StoredSessionState {
   isHydrated: boolean;
@@ -59,4 +68,42 @@ export const {
 
 export const { selectSessions } = storedSessionsSlice.selectors;
 
+export const selectLatestOrderedRecordedExercises = createSelector(
+  [
+    storedSessionsSlice.selectors.selectSessions,
+    (_, maxRecordsPerExercise: number) => maxRecordsPerExercise,
+  ],
+  (
+    sessions,
+    maxRecordsPerExercise,
+  ): Record<NormalizedNameKey, RecordedExercise[]> => {
+    return Enumerable.from(sessions)
+      .selectMany((x) =>
+        x.recordedExercises.filter((x) => x.lastRecordedSet?.set),
+      )
+      .groupBy((x) =>
+        NormalizedName.fromExerciseBlueprint(x.blueprint).toString(),
+      )
+      .toObject(
+        (x) => x.key(),
+        (x) =>
+          x
+            .orderByDescending(
+              (x) => x.lastRecordedSet!.set!.completionDateTime,
+              LocalDateTimeComparer,
+            )
+            .take(maxRecordsPerExercise)
+            .toArray(),
+      );
+  },
+);
+
+export const selectRecentlyCompletedExercises = createSelector(
+  selectLatestOrderedRecordedExercises,
+  (recentlyCompletedExercises) =>
+    (blueprint: ExerciseBlueprint): RecordedExercise[] =>
+      recentlyCompletedExercises[
+        NormalizedName.fromExerciseBlueprint(blueprint).toString()
+      ] ?? [],
+);
 export default storedSessionsSlice.reducer;

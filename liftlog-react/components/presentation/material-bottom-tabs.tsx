@@ -5,7 +5,8 @@ import { BottomNavigation, BottomNavigationProps } from 'react-native-paper';
 
 export type MaterialBottomTabsProps = PropsWithChildren<
   Omit<
-    BottomNavigationProps<unknown>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    BottomNavigationProps<any>,
     | 'navigationState'
     | 'safeAreaInsets'
     | 'onTabPress'
