@@ -4,8 +4,13 @@ import {
   useMaterial3Theme,
 } from '@pchmn/expo-material3-theme';
 import React, { createContext, ReactNode, useContext, useEffect } from 'react';
-import { useColorScheme } from 'react-native';
-import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
+import { useColorScheme, View } from 'react-native';
+import {
+  Icon,
+  MD3DarkTheme,
+  MD3LightTheme,
+  PaperProvider,
+} from 'react-native-paper';
 import {
   DarkTheme,
   ThemeProvider as NavigationThemeProvider,
@@ -13,6 +18,7 @@ import {
   Theme,
 } from '@react-navigation/native';
 import { Text } from 'react-native';
+import { SurfaceText } from '@/components/presentation/surface-text';
 
 export const spacing = {
   0: 0,
@@ -160,7 +166,23 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
         settings={{
           // TODO we want real icons - this just suppresses the warn until we settle on an icon pack
           icon: ({ name, ...rest }) => (
-            <Text style={{ color: appTheme.colors.onSurface }}>?</Text>
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: rest.size,
+                height: rest.size,
+              }}
+            >
+              <Text
+                style={{
+                  ...font['text-xs'],
+                  color: appTheme.colors.onSurface,
+                }}
+              >
+                {name}
+              </Text>
+            </View>
           ),
         }}
       >
