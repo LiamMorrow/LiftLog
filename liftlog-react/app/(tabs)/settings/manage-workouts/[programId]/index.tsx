@@ -5,9 +5,13 @@ import FullHeightScrollView from '@/components/presentation/full-height-scroll-v
 import LimitedHtml from '@/components/presentation/limited-html';
 import ManageWorkoutCardContent from '@/components/smart/manage-workout-card-content';
 import { spacing } from '@/hooks/useAppTheme';
-import { SessionBlueprint } from '@/models/session-models';
+import { EmptySession, SessionBlueprint } from '@/models/session-models';
 import { useAppSelectorWithArg } from '@/store';
-import { selectProgram, setSavedPlanName } from '@/store/program';
+import {
+  addProgramSession,
+  selectProgram,
+  setSavedPlanName,
+} from '@/store/program';
 import { setEditingSession } from '@/store/session-editor';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
@@ -20,14 +24,23 @@ export default function ManageWorkouts() {
   const program = useAppSelectorWithArg(selectProgram, programId);
   const { t } = useTranslate();
   const dispatch = useDispatch();
-  const addWorkout = () => {
-    // TODO
-  };
   const selectSession = (sessionBlueprint: SessionBlueprint, index: number) => {
     dispatch(setEditingSession(sessionBlueprint));
     push(`/settings/manage-workouts/${programId}/manage-session/${index}`);
   };
 
+  const addWorkout = () => {
+    const newSession = EmptySession.blueprint.with({
+      name: `${t('Workout')} ${program.sessions.length + 1}`,
+    });
+    dispatch(
+      addProgramSession({
+        programId,
+        sessionBlueprint: newSession,
+      }),
+      selectSession(newSession, program.sessions.length),
+    );
+  };
   const floatingBottomContainer = (
     <FloatingBottomContainer
       fab={
