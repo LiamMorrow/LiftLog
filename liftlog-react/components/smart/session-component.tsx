@@ -180,7 +180,7 @@ export default function SessionComponent(props: {
   );
 
   const bodyWeight = props.showBodyweight ? (
-    <Card style={{ marginHorizontal: spacing[2] }} mode="contained">
+    <Card style={{ marginHorizontal: spacing[7] }} mode="contained">
       <Card.Content
         style={{
           flexDirection: 'row',

@@ -15,13 +15,14 @@ import { spacing } from '@/hooks/useAppTheme';
 import { Session } from '@/models/session-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { setCurrentSession } from '@/store/current-session';
+import { fetchUpcomingSessions } from '@/store/program';
 import {
   deleteStoredSession,
   selectSessions,
   selectSessionsInMonth,
 } from '@/store/stored-sessions';
 import { formatDate } from '@/utils/format-date';
-import { YearMonth } from '@js-joda/core';
+import { LocalDate, YearMonth } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -31,6 +32,11 @@ export default function History() {
   const { t } = useTranslate();
   const dispatch = useDispatch();
   const [currentYearMonth, setCurrentYearMonth] = useState(YearMonth.now());
+  const latesBodyweight = useAppSelector((x) =>
+    x.program.upcomingSessions
+      .map((x) => x.at(0)?.bodyweight)
+      .unwrapOr(undefined),
+  );
   const sessions = useAppSelector(selectSessions);
   const sessionsInMonth = useAppSelectorWithArg(
     selectSessionsInMonth,
@@ -40,6 +46,10 @@ export default function History() {
   const onSelectSession = (session: Session) => {
     dispatch(setCurrentSession({ target: 'historySession', session }));
     push('/history/edit');
+  };
+  const createSessionAtDate = (date: LocalDate) => {
+    const newSession = Session.freeformSession(date, latesBodyweight);
+    onSelectSession(newSession);
   };
   return (
     <>
@@ -52,12 +62,12 @@ export default function History() {
         <HistoryCalendarCard
           currentYearMonth={currentYearMonth}
           sessions={sessions}
-          onDateSelect={() => {}}
+          onDateSelect={createSessionAtDate}
           onMonthChange={setCurrentYearMonth}
           onDeleteSession={(s) => {
             dispatch(deleteStoredSession(s.id));
           }}
-          onSessionSelect={() => {}}
+          onSessionSelect={onSelectSession}
         />
         <ListTitle title={t('SessionsInMonth')} />
         <CardList

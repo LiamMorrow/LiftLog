@@ -107,6 +107,18 @@ export class Session {
     };
   }
 
+  static freeformSession(
+    date: LocalDate,
+    bodyweight: BigNumber | undefined,
+  ): Session {
+    return EmptySession.with({
+      id: uuid(),
+      date: date,
+      bodyweight,
+      blueprint: EmptySession.blueprint.with({ name: 'Freeform Session' }),
+    });
+  }
+
   get isStarted(): boolean {
     return this.recordedExercises.some((x) => x.lastRecordedSet !== undefined);
   }
@@ -806,3 +818,15 @@ export const Rest = {
     failureRest: Duration.ofMinutes(8),
   },
 } as const;
+
+export const EmptySession: Session = new Session(
+  '00000000-0000-0000-0000-000000000000',
+  SessionBlueprint.fromPOJO({
+    name: '',
+    exercises: [],
+    notes: '',
+  }),
+  [],
+  LocalDate.MIN,
+  undefined,
+);

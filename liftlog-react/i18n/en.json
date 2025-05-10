@@ -286,5 +286,6 @@
   "DateFormatMustBe{inputFormat}": "Date format must be {inputFormat}",
   "MustBeLaterThan{date}": "Must be later than {date}",
   "MustBeEarlierThan{date}": "Must be earlier than {date}",
-  "MustBeBetween{startDate}-{endDate}": "Must be between {startDate} - {endDate}"
+  "MustBeBetween{startDate}-{endDate}": "Must be between {startDate} - {endDate}",
+  "SessionsInMonth": "Sessions in month"
 }
