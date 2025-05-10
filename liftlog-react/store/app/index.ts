@@ -1,13 +1,20 @@
-import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createAction,
+  createSlice,
+  PayloadAction,
+  UnknownAction,
+} from '@reduxjs/toolkit';
 
 const initialState: AppState = {
   isHydrated: false,
   canScheduleExactNotifications: false,
+  currentSnackbar: undefined,
 };
 
 export type AppState = {
   isHydrated: boolean;
   canScheduleExactNotifications: boolean;
+  currentSnackbar: SnackbarDescriptor | undefined;
 };
 
 const appSlice = createSlice({
@@ -20,6 +27,13 @@ const appSlice = createSlice({
 
     setCanScheduleExactNotifications(state, action: PayloadAction<boolean>) {
       state.canScheduleExactNotifications = action.payload;
+    },
+
+    setCurrentSnackbar(
+      state,
+      action: PayloadAction<SnackbarDescriptor | undefined>,
+    ) {
+      state.currentSnackbar = action.payload;
     },
   },
 });
@@ -34,7 +48,19 @@ export const refreshNotificationPermissionStatus = createAction(
 
 export const initializeAppStateSlice = createAction('initializeAppStateSlice');
 
-export const { setIsHydrated, setCanScheduleExactNotifications } =
-  appSlice.actions;
+export type SnackbarDescriptor = {
+  text: string;
+  action: string;
+  dispatchAction: UnknownAction;
+};
+export const showSnackbar = createAction<
+  SnackbarDescriptor & { duration?: number }
+>('snackBarWithAction');
+
+export const {
+  setIsHydrated,
+  setCanScheduleExactNotifications,
+  setCurrentSnackbar,
+} = appSlice.actions;
 
 export default appSlice.reducer;

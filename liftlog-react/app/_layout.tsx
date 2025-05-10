@@ -8,6 +8,8 @@ import { store } from '@/store';
 import { ScrollProvider } from '@/hooks/useScollListener';
 import AppStateProvider from '@/components/smart/app-state-provider';
 import { tolgee } from '@/services/tolgee';
+import SnackbarProvider from '@/components/smart/snackbar-provider';
+
 import '@/utils/date-locale';
 
 LogBox.ignoreLogs([/.*is not a valid icon name.*/]);
@@ -22,7 +24,9 @@ export default function RootLayout() {
             <Stack
               layout={(e) => (
                 <AppStateProvider>
-                  <ScrollProvider>{e.children}</ScrollProvider>
+                  <ScrollProvider>
+                    <SnackbarProvider>{e.children}</SnackbarProvider>
+                  </ScrollProvider>
                 </AppStateProvider>
               )}
               screenOptions={{
