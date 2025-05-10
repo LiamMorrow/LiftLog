@@ -830,3 +830,14 @@ export const EmptySession: Session = new Session(
   LocalDate.MIN,
   undefined,
 );
+
+export const EmptyExerciseBlueprint = new ExerciseBlueprint(
+  '',
+  3,
+  10,
+  BigNumber(0),
+  Rest.medium,
+  false,
+  '',
+  '',
+);

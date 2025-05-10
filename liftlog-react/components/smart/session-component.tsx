@@ -19,7 +19,10 @@ import EmptyInfo from '@/components/presentation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import ItemList from '@/components/presentation/item-list';
-import { RecordedExercise } from '@/models/session-models';
+import {
+  EmptyExerciseBlueprint,
+  RecordedExercise,
+} from '@/models/session-models';
 import WeightedExercise from '@/components/presentation/weighted-exercise';
 import WeightDisplay from '@/components/presentation/weight-display';
 import BigNumber from 'bignumber.js';
@@ -241,6 +244,10 @@ export default function SessionComponent(props: {
           size="small"
           icon="add"
           label={t('AddExercise')}
+          onPress={() => {
+            setEditingExerciseBlueprint(EmptyExerciseBlueprint);
+            setExerciseEditorOpen(true);
+          }}
         />
       }
       additionalContent={snackbar}
