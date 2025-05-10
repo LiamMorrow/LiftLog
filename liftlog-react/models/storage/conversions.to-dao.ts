@@ -230,3 +230,20 @@ export function toRecordedSetDao(
     completionTime: toTimeOnlyDao(model.completionDateTime.toLocalTime()),
   });
 }
+
+export function toCurrentSessionDao(model: {
+  workoutSession: Session | undefined;
+  historySession: Session | undefined;
+  latestSetTimerNotificationId: string | undefined;
+}): LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2 {
+  return new LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2({
+    historySession:
+      (model.historySession && toSessionDao(model.historySession)) ?? null,
+    workoutSession:
+      (model.workoutSession && toSessionDao(model.workoutSession)) ?? null,
+    latestSetTimerNotificationId:
+      (model.latestSetTimerNotificationId &&
+        toUuidDao(model.latestSetTimerNotificationId)) ||
+      null,
+  });
+}

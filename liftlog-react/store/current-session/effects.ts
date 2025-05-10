@@ -1,6 +1,7 @@
 import { LiftLog } from '@/gen/proto';
 import { Session } from '@/models/session-models';
 import { fromCurrentSessionDao } from '@/models/storage/conversions.from-dao';
+import { toCurrentSessionDao } from '@/models/storage/conversions.to-dao';
 import {
   clearSetTimerNotification,
   completeSetFromNotification,
@@ -89,15 +90,39 @@ export function applyCurrentSessionEffects() {
     },
   );
 
-  addEffect(undefined, (_, { getState, originalState, stateAfterReduce }) => {
-    const shouldPersist =
-      stateAfterReduce.currentSession.isHydrated &&
-      stateAfterReduce.currentSession !== originalState.currentSession;
-    console.log('Should Persist', shouldPersist, _.type);
-    if (shouldPersist) {
-      console.log(originalState.currentSession, getState().currentSession);
-    }
-  });
+  addEffect(
+    undefined,
+    async (
+      _,
+      { originalState, stateAfterReduce, extra: { keyValueStore, logger } },
+    ) => {
+      const shouldPersist =
+        stateAfterReduce.currentSession.isHydrated &&
+        stateAfterReduce.currentSession !== originalState.currentSession;
+      if (shouldPersist) {
+        try {
+          const currentSessionStateDao = toCurrentSessionDao({
+            historySession: Session.fromPOJO(
+              stateAfterReduce.currentSession.historySession,
+            ),
+            workoutSession: Session.fromPOJO(
+              stateAfterReduce.currentSession.workoutSession,
+            ),
+            latestSetTimerNotificationId:
+              stateAfterReduce.currentSession.latestSetTimerNotificationId,
+          });
+          const bytes =
+            LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2.encode(
+              currentSessionStateDao,
+            ).finish();
+          await keyValueStore.setItem(`${storageKey}-Version`, '2');
+          await keyValueStore.setItem(storageKey, bytes);
+        } catch (e) {
+          logger.error('Failed to persist current session state', e);
+        }
+      }
+    },
+  );
 
   addEffect(persistCurrentSession, async (a, { dispatch, getState }) => {
     dispatch(clearSetTimerNotification());

@@ -1,5 +1,5 @@
 import SessionComponent from '@/components/smart/session-component';
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { RootState, useAppSelector } from '@/store';
 import { persistCurrentSession } from '@/store/current-session';
 import { Stack, useRouter } from 'expo-router';
@@ -24,16 +24,10 @@ export default function Index() {
     // dispatch(setStatsIsDirty(true));
     dismissTo('/');
   };
+  const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
 
   return (
-    <View
-      style={[
-        {
-          backgroundColor: colors.surface,
-          flex: 1,
-        },
-      ]}
-    >
+    <>
       <Stack.Screen
         options={{
           title: session?.blueprint.name ?? 'Workout',
@@ -42,8 +36,10 @@ export default function Index() {
           ),
         }}
       />
-
-      <SessionComponent target="workoutSession" showBodyweight={true} />
-    </View>
+      <SessionComponent
+        target="workoutSession"
+        showBodyweight={showBodyweight}
+      />
+    </>
   );
 }

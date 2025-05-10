@@ -7,6 +7,7 @@ import { LocalDate, Year, YearMonth } from '@js-joda/core';
 import Enumerable from 'linq';
 import { View } from 'react-native';
 import { Card, IconButton, TouchableRipple } from 'react-native-paper';
+import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 
 const oneSeventh = `${100 / 7}%`;
 const fiveSevenths = `${(100 / 7) * 5}%`;
@@ -128,6 +129,7 @@ export default function HistoryCalendarCard({
       </SurfaceText>
     );
   });
+  let dateEnterDelay = 0;
   const daysFromPreviousMonth = Array.from(
     { length: numberOfDaysToShowFromPreviousMonth },
     (_, offset) => {
@@ -135,8 +137,9 @@ export default function HistoryCalendarCard({
       const date = firstDayOfMonth.plusDays(offset);
       return (
         <HistoryCalendarDay
-          key={date.toString()}
+          key={date.toString() + dateEnterDelay}
           sessions={sessionsByDate.get(date.toString())}
+          delayEntranceAnimMs={(dateEnterDelay += 5)}
           day={date}
           onPress={() => handleDayPress(date)}
           onLongPress={() => handleDayLongPress(date)}
@@ -153,8 +156,9 @@ export default function HistoryCalendarCard({
       const date = firstDayOfMonth.withDayOfMonth(i + 1);
       return (
         <HistoryCalendarDay
-          key={date.toString()}
+          key={date.toString() + dateEnterDelay}
           sessions={sessionsByDate.get(date.toString())}
+          delayEntranceAnimMs={(dateEnterDelay += 5)}
           day={date}
           onPress={() => handleDayPress(date)}
           onLongPress={() => handleDayLongPress(date)}
@@ -169,8 +173,9 @@ export default function HistoryCalendarCard({
       const date = firstDayOfMonth.plusMonths(1).withDayOfMonth(i + 1);
       return (
         <HistoryCalendarDay
-          key={date.toString()}
+          key={date.toString() + dateEnterDelay}
           sessions={sessionsByDate.get(date.toString())}
+          delayEntranceAnimMs={(dateEnterDelay += 5)}
           day={date}
           onPress={() => handleDayPress(date)}
           onLongPress={() => handleDayLongPress(date)}
@@ -204,6 +209,7 @@ export default function HistoryCalendarCard({
 function HistoryCalendarDay(props: {
   day: LocalDate;
   sessions: Enumerable.IEnumerable<Session>;
+  delayEntranceAnimMs: number;
   onPress: () => void;
   onLongPress: () => void;
 }) {
@@ -213,7 +219,8 @@ function HistoryCalendarDay(props: {
     props.day.equals(LocalDate.now()) && !hasSessions;
   const { colors } = useAppTheme();
   return (
-    <View
+    <Animated.View
+      entering={ZoomIn.delay(props.delayEntranceAnimMs)}
       style={{
         width: oneSeventh,
         borderRadius: 1000,
@@ -247,7 +254,7 @@ function HistoryCalendarDay(props: {
           </SurfaceText>
         </View>
       </TouchableRipple>
-    </View>
+    </Animated.View>
   );
 }
 

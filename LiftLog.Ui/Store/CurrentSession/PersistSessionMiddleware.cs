@@ -77,7 +77,6 @@ namespace LiftLog.Ui.Store.CurrentSession
             sw.Restart();
             if (currentState != null && previousState != currentState)
             {
-                previousState = currentState;
                 try
                 {
                     var currentSessionState = CurrentSessionStateDaoV2

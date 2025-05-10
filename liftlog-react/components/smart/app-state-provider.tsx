@@ -3,6 +3,7 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
 import { ReactNode } from 'react';
 import { View } from 'react-native';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 export default function AppStateProvider(props: { children: ReactNode }) {
   const waitingOn = useAppSelector(
@@ -18,11 +19,13 @@ export default function AppStateProvider(props: { children: ReactNode }) {
   return !waitingOn ? (
     props.children
   ) : (
-    <View
+    <Animated.View
+      entering={FadeIn}
+      exiting={FadeOut}
       style={{ flex: 1, backgroundColor: colors.surface, alignItems: 'center' }}
     >
       <Loader loadingText={waitingOn} />
-    </View>
+    </Animated.View>
   );
 }
 

@@ -12,7 +12,9 @@ import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
 import SplitCardControl from '@/components/presentation/split-card-control';
 import { spacing } from '@/hooks/useAppTheme';
+import { Session } from '@/models/session-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
+import { setCurrentSession } from '@/store/current-session';
 import {
   deleteStoredSession,
   selectSessions,
@@ -21,7 +23,7 @@ import {
 import { formatDate } from '@/utils/format-date';
 import { YearMonth } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -34,6 +36,11 @@ export default function History() {
     selectSessionsInMonth,
     currentYearMonth,
   );
+  const { push } = useRouter();
+  const onSelectSession = (session: Session) => {
+    dispatch(setCurrentSession({ target: 'historySession', session }));
+    push('/history/edit');
+  };
   return (
     <>
       <Stack.Screen
@@ -56,6 +63,7 @@ export default function History() {
         <CardList
           items={sessionsInMonth}
           cardType="outlined"
+          onPress={onSelectSession}
           renderItem={(session) => (
             <SplitCardControl
               titleContent={<SessionSummaryTitle isFilled session={session} />}

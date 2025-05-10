@@ -5,5 +5,5 @@ export function formatDate(date: LocalDate, opts: Intl.DateTimeFormatOptions) {
     date.year(),
     date.month().ordinal(),
     date.dayOfMonth(),
-  ).toLocaleString('default', opts);
+  ).toLocaleString(undefined, opts);
 }
