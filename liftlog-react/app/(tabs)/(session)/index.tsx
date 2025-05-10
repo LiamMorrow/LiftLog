@@ -10,7 +10,8 @@ import { SurfaceText } from '@/components/presentation/surface-text';
 import AndroidNotificationAlert from '@/components/smart/android-notification-alert';
 import { Tips } from '@/components/smart/tips';
 import { spacing } from '@/hooks/useAppTheme';
-import { useSession } from '@/hooks/useSession';
+import { useMountEffect } from '@/hooks/useMountEffect';
+import { useCurrentSession } from '@/hooks/useSession';
 import { Session } from '@/models/session-models';
 import { RootState, useAppSelector } from '@/store';
 import { setCurrentSession } from '@/store/current-session';
@@ -75,7 +76,6 @@ function ListUpcomingWorkouts({
   upcoming: readonly Session[];
   selectSession: (s: Session) => void;
 }) {
-  const dispatch = useDispatch();
   return (
     <>
       <View style={{ margin: spacing[2] }}>
@@ -109,16 +109,24 @@ export default function Index() {
   const upcomingSessions = useAppSelector((s) => s.program.upcomingSessions);
   const dispatch = useDispatch();
   const { t } = useTranslate();
-  useFocusEffect(() => {
-    dispatch(fetchUpcomingSessions());
-  });
+  const { push } = useRouter();
+  const currentSession = useCurrentSession('workoutSession');
   const currentBodyweight = upcomingSessions
     .map((x) => x.at(0)?.bodyweight)
     .unwrapOr(undefined);
 
-  const currentSession = useSession('workoutSession');
-  const { push } = useRouter();
   const [selectedSession, setSelectedSession] = useState<Session | undefined>();
+
+  useMountEffect(() => {
+    // On app open from cold if we have a current session loaded, show it automatically.
+    if (currentSession) {
+      push('/(tabs)/(session)/session');
+    }
+  });
+
+  useFocusEffect(() => {
+    dispatch(fetchUpcomingSessions());
+  });
 
   const selectSession = (session: Session) => {
     if (
