@@ -10,7 +10,6 @@ import { SurfaceText } from '@/components/presentation/surface-text';
 import AndroidNotificationAlert from '@/components/smart/android-notification-alert';
 import { Tips } from '@/components/smart/tips';
 import { spacing } from '@/hooks/useAppTheme';
-import { useMountEffect } from '@/hooks/useMountEffect';
 import { useCurrentSession } from '@/hooks/useSession';
 import { Session } from '@/models/session-models';
 import { RootState, useAppSelector } from '@/store';
@@ -18,8 +17,13 @@ import { setCurrentSession } from '@/store/current-session';
 import { fetchUpcomingSessions } from '@/store/program';
 import { LocalDate } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
-import { Stack, useFocusEffect, useRouter } from 'expo-router';
-import { useState } from 'react';
+import {
+  Stack,
+  useFocusEffect,
+  useRootNavigationState,
+  useRouter,
+} from 'expo-router';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Button, Card, FAB, Icon } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
@@ -114,15 +118,18 @@ export default function Index() {
   const currentBodyweight = upcomingSessions
     .map((x) => x.at(0)?.bodyweight)
     .unwrapOr(undefined);
+  const rootNavigationState = useRootNavigationState();
+  const navigatorReady = rootNavigationState?.key != null;
 
   const [selectedSession, setSelectedSession] = useState<Session | undefined>();
 
-  useMountEffect(() => {
+  useEffect(() => {
+    if (!navigatorReady) return;
     // On app open from cold if we have a current session loaded, show it automatically.
     if (currentSession) {
       push('/(tabs)/(session)/session');
     }
-  });
+  }, [navigatorReady]);
 
   useFocusEffect(() => {
     dispatch(fetchUpcomingSessions());
