@@ -164,7 +164,7 @@ export default function Index() {
         <FAB
           variant="surface"
           size="small"
-          icon="add"
+          icon="fitness_center"
           label={t('Freeform Session')}
           onPress={createFreeformSession}
         />
