@@ -14,83 +14,8 @@ describe('EncryptionService', () => {
   });
 
   describe('Encrypting and Decrypting', () => {
-    it('should encrypt and decrypt a payload successfully', async () => {
-      const key = await encryptionService.generateAesKey();
-      const rsaKeyPair = await encryptionService.generateRsaKeys();
-      const data = new TextEncoder().encode('Hello, world!');
-
-      const encryptedData =
-        await encryptionService.signRsa256PssAndEncryptAesCbcAsync(
-          data,
-          key,
-          rsaKeyPair.privateKey,
-          null,
-        );
-
-      const decryptedData =
-        await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
-          encryptedData,
-          key,
-          rsaKeyPair.publicKey,
-        );
-
-      expect(Buffer.from(decryptedData).toString('base64')).toEqual(
-        Buffer.from(data).toString('base64'),
-      );
-    });
-
-    describe('using a supplied IV', () => {
-      it('should encrypt and decrypt a payload with the same IV', async () => {
-        const key = await encryptionService.generateAesKey();
-        const rsaKeyPair = await encryptionService.generateRsaKeys();
-        const data1 = new TextEncoder().encode('Hello, world!');
-        const data2 = new TextEncoder().encode('Goodbye, world!');
-
-        const encryptedData1 =
-          await encryptionService.signRsa256PssAndEncryptAesCbcAsync(
-            data1,
-            key,
-            rsaKeyPair.privateKey,
-            null,
-          );
-
-        const decryptedData1 =
-          await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
-            encryptedData1,
-            key,
-            rsaKeyPair.publicKey,
-          );
-
-        const encryptedData2 =
-          await encryptionService.signRsa256PssAndEncryptAesCbcAsync(
-            data2,
-            key,
-            rsaKeyPair.privateKey,
-            encryptedData1.iv,
-          );
-
-        const decryptedData2 =
-          await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
-            {
-              encryptedPayload: encryptedData2.encryptedPayload,
-              iv: encryptedData1.iv,
-            },
-            key,
-            rsaKeyPair.publicKey,
-          );
-
-        expect(Buffer.from(decryptedData1).toString('base64')).toEqual(
-          Buffer.from(data1).toString('base64'),
-        );
-        expect(Buffer.from(decryptedData2).toString('base64')).toEqual(
-          Buffer.from(data2).toString('base64'),
-        );
-        expect(encryptedData1.iv.value).toEqual(encryptedData2.iv.value);
-      });
-    });
-
-    describe('when the payload is tampered with', () => {
-      it('should throw an error', async () => {
+    describe('aes', () => {
+      it('should encrypt and decrypt a payload successfully', async () => {
         const key = await encryptionService.generateAesKey();
         const rsaKeyPair = await encryptionService.generateRsaKeys();
         const data = new TextEncoder().encode('Hello, world!');
@@ -103,16 +28,173 @@ describe('EncryptionService', () => {
             null,
           );
 
-        // Tamper with the encrypted payload
-        encryptedData.encryptedPayload[0] ^= 0xff;
-
-        await expect(
-          encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
+        const decryptedData =
+          await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
             encryptedData,
             key,
             rsaKeyPair.publicKey,
+          );
+
+        expect(Buffer.from(decryptedData).toString('base64')).toEqual(
+          Buffer.from(data).toString('base64'),
+        );
+      });
+
+      describe('using a supplied IV', () => {
+        it('should encrypt and decrypt a payload with the same IV', async () => {
+          const key = await encryptionService.generateAesKey();
+          const rsaKeyPair = await encryptionService.generateRsaKeys();
+          const data1 = new TextEncoder().encode('Hello, world!');
+          const data2 = new TextEncoder().encode('Goodbye, world!');
+
+          const encryptedData1 =
+            await encryptionService.signRsa256PssAndEncryptAesCbcAsync(
+              data1,
+              key,
+              rsaKeyPair.privateKey,
+              null,
+            );
+
+          const decryptedData1 =
+            await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
+              encryptedData1,
+              key,
+              rsaKeyPair.publicKey,
+            );
+
+          const encryptedData2 =
+            await encryptionService.signRsa256PssAndEncryptAesCbcAsync(
+              data2,
+              key,
+              rsaKeyPair.privateKey,
+              encryptedData1.iv,
+            );
+
+          const decryptedData2 =
+            await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
+              {
+                encryptedPayload: encryptedData2.encryptedPayload,
+                iv: encryptedData1.iv,
+              },
+              key,
+              rsaKeyPair.publicKey,
+            );
+
+          expect(Buffer.from(decryptedData1).toString('base64')).toEqual(
+            Buffer.from(data1).toString('base64'),
+          );
+          expect(Buffer.from(decryptedData2).toString('base64')).toEqual(
+            Buffer.from(data2).toString('base64'),
+          );
+          expect(encryptedData1.iv.value).toEqual(encryptedData2.iv.value);
+        });
+      });
+
+      describe('when the payload is tampered with', () => {
+        it('should throw an error', async () => {
+          const key = await encryptionService.generateAesKey();
+          const rsaKeyPair = await encryptionService.generateRsaKeys();
+          const data = new TextEncoder().encode('Hello, world!');
+
+          const encryptedData =
+            await encryptionService.signRsa256PssAndEncryptAesCbcAsync(
+              data,
+              key,
+              rsaKeyPair.privateKey,
+              null,
+            );
+
+          // Tamper with the encrypted payload
+          encryptedData.encryptedPayload[0] ^= 0xff;
+
+          await expect(
+            encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
+              encryptedData,
+              key,
+              rsaKeyPair.publicKey,
+            ),
+          ).rejects.toThrowError('Signature verification failed');
+        });
+      });
+    });
+
+    describe('rsa', () => {
+      it('should encrypt and decrypt a payload successfully using RSA', async () => {
+        const rsaKeyPair = await encryptionService.generateRsaKeys();
+        const data = new TextEncoder().encode('Hello, RSA!');
+
+        const encryptedData = await encryptionService.encryptRsaOaepSha256Async(
+          data,
+          rsaKeyPair.publicKey,
+        );
+
+        const decryptedData = await encryptionService.decryptRsaOaepSha256Async(
+          encryptedData,
+          rsaKeyPair.privateKey,
+        );
+
+        expect(Buffer.from(decryptedData).toString('base64')).toEqual(
+          Buffer.from(data).toString('base64'),
+        );
+      });
+
+      it('should sign and verify a payload successfully using RSA', async () => {
+        const rsaKeyPair = await encryptionService.generateRsaKeys();
+        const data = new TextEncoder().encode('Hello, RSA Signature!');
+
+        const signature = await encryptionService.signRsaPssSha256Async(
+          data,
+          rsaKeyPair.privateKey,
+        );
+
+        const isValid = await encryptionService.verifyRsaPssSha256Async(
+          data,
+          signature,
+          rsaKeyPair.publicKey,
+        );
+
+        expect(isValid).toBe(true);
+      });
+
+      it('should fail verification if the payload is tampered with', async () => {
+        const rsaKeyPair = await encryptionService.generateRsaKeys();
+        const data = new TextEncoder().encode('Hello, RSA Signature!');
+
+        const signature = await encryptionService.signRsaPssSha256Async(
+          data,
+          rsaKeyPair.privateKey,
+        );
+
+        // Tamper with the data
+        data[0] ^= 0xff;
+
+        const isValid = await encryptionService.verifyRsaPssSha256Async(
+          data,
+          signature,
+          rsaKeyPair.publicKey,
+        );
+
+        expect(isValid).toBe(false);
+      });
+
+      it('should fail decryption if the encrypted data is tampered with', async () => {
+        const rsaKeyPair = await encryptionService.generateRsaKeys();
+        const data = new TextEncoder().encode('Hello, RSA!');
+
+        const encryptedData = await encryptionService.encryptRsaOaepSha256Async(
+          data,
+          rsaKeyPair.publicKey,
+        );
+
+        // Tamper with the encrypted data
+        encryptedData.dataChunks[0][0] ^= 0xff;
+
+        await expect(
+          encryptionService.decryptRsaOaepSha256Async(
+            encryptedData,
+            rsaKeyPair.privateKey,
           ),
-        ).rejects.toThrowError('Signature verification failed');
+        ).rejects.toThrow();
       });
     });
   });
@@ -123,7 +205,7 @@ describe('EncryptionService', () => {
         __dirname + '/test-assets/aes/encrypted.bin',
       );
       const ivBytes = readFileSync(__dirname + '/test-assets/aes/iv.bin');
-      const keyBytes = readFileSync(__dirname + '/test-assets/key.bin');
+      const keyBytes = readFileSync(__dirname + '/test-assets/aes/key.bin');
       const publicKey = readFileSync(
         __dirname + '/test-assets/aes/publicKey.bin',
       );
