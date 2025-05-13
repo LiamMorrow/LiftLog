@@ -35,6 +35,8 @@ public class FeedInboxDecryptionService(
                 return unverifiedInboxMessage;
             }
 
+            // We know the message is delivered TO us (as we decrypted it with our private key)
+            // Now we need to verify that the sender is who they say they are by checking with the public key against their user
             byte[] signedPayload = GetSignaturePayload(unverifiedInboxMessage, identity.Id);
             var publicKey = await GetUserPublicKey(unverifiedInboxMessage.FromUserId);
 
