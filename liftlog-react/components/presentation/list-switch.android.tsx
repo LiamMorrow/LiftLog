@@ -1,5 +1,4 @@
 import { ReactNode, useEffect, useState } from 'react';
-import { Platform } from 'react-native';
 import { List, Switch } from 'react-native-paper';
 
 interface ListSwitchProps {
@@ -10,9 +9,6 @@ interface ListSwitchProps {
 }
 // Workaround - mount the switch after initial render. See: https://github.com/react-navigation/react-navigation/issues/8658#issuecomment-898486182
 function useDelay() {
-  if (Platform.OS !== 'android') {
-    return true;
-  }
   const [gate, setGate] = useState(false);
   useEffect(() => {
     setTimeout(() => {
