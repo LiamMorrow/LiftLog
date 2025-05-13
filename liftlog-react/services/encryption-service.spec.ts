@@ -118,13 +118,15 @@ describe('EncryptionService', () => {
   });
 
   describe('Decrypting existing file', () => {
-    it('can decrypt a file that was encrypted with the dotnet app', async () => {
+    it('can decrypt a file that was encrypted via aes with the dotnet app', async () => {
       const encryptedBytes = readFileSync(
-        __dirname + '/test-assets/encrypted.bin',
+        __dirname + '/test-assets/aes/encrypted.bin',
       );
-      const ivBytes = readFileSync(__dirname + '/test-assets/iv.bin');
+      const ivBytes = readFileSync(__dirname + '/test-assets/aes/iv.bin');
       const keyBytes = readFileSync(__dirname + '/test-assets/key.bin');
-      const publicKey = readFileSync(__dirname + '/test-assets/publicKey.bin');
+      const publicKey = readFileSync(
+        __dirname + '/test-assets/aes/publicKey.bin',
+      );
       const decrypted =
         await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
           {
@@ -140,6 +142,26 @@ describe('EncryptionService', () => {
         );
 
       expect(Buffer.from(decrypted).toString()).toBe('Hello, world!');
+    });
+
+    it('can decrypt a file that was encrypted via RSA with the dotnet app', async () => {
+      const dataChunks = [
+        readFileSync(__dirname + '/test-assets/rsa/encrypted-0.bin'),
+        readFileSync(__dirname + '/test-assets/rsa/encrypted-1.bin'),
+        readFileSync(__dirname + '/test-assets/rsa/encrypted-2.bin'),
+        readFileSync(__dirname + '/test-assets/rsa/encrypted-3.bin'),
+      ];
+      const privateKey = readFileSync(
+        __dirname + '/test-assets/rsa/privateKey.bin',
+      );
+      const decrypted = await encryptionService.decryptRsaOaepSha256Async(
+        { dataChunks },
+        { pkcs8PrivateKeyBytes: privateKey },
+      );
+
+      expect(Buffer.from(decrypted).toString()).toBe(
+        'Hello, world!'.repeat(30),
+      );
     });
   });
 });
