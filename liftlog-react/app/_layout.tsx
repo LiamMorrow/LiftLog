@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 import { AppThemeProvider } from '@/hooks/useAppTheme';
-import { DevTools, FormatSimple, Tolgee, TolgeeProvider } from '@tolgee/react';
+import { TolgeeProvider } from '@tolgee/react';
 import { LogBox, Text, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
@@ -12,12 +12,15 @@ import SnackbarProvider from '@/components/smart/snackbar-provider';
 
 import '@/utils/date-locale';
 
+import PolyfillCrypto from 'react-native-webview-crypto';
+
 LogBox.ignoreLogs([/.*is not a valid icon name.*/]);
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   return (
     <Provider store={store}>
+      <PolyfillCrypto />
       <SafeAreaProvider>
         <TolgeeProvider tolgee={tolgee} fallback={<Text>Loading...</Text>}>
           <AppThemeProvider>

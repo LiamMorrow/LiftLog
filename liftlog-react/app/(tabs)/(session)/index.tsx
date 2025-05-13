@@ -118,7 +118,9 @@ export default function Index() {
   const currentBodyweight = upcomingSessions
     .map((x) => x.at(0)?.bodyweight)
     .unwrapOr(undefined);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const rootNavigationState = useRootNavigationState();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   const navigatorReady = rootNavigationState?.key != null;
 
   const [selectedSession, setSelectedSession] = useState<Session | undefined>();

@@ -44,6 +44,11 @@ public class OsEncryptionServiceTests
             );
 
             decryptedData.Should().BeEquivalentTo(data);
+            File.WriteAllBytes("encrypted.bin", encryptedData.EncryptedPayload);
+            File.WriteAllBytes("iv.bin", encryptedData.IV.Value);
+            File.WriteAllBytes("key.bin", key.Value);
+            File.WriteAllBytes("privateKey.bin", rsaKeyPair.PrivateKey.Pkcs8PrivateKeyBytes);
+            File.WriteAllBytes("publicKey.bin", rsaKeyPair.PublicKey.SpkiPublicKeyBytes);
           });
 
         Describe("using a supplied IV")

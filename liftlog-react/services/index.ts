@@ -1,3 +1,4 @@
+import { EncryptionService } from '@/services/encryption-service';
 import { IKeyValueStore } from '@/services/key-value-store';
 import { Logger } from '@/services/logger';
 import { NotificationService } from '@/services/notification-service';
@@ -20,6 +21,7 @@ async function createServicesInternal() {
     store.getState,
     store.dispatch,
   );
+  const encryptionService = new EncryptionService();
 
   return {
     logger,
@@ -27,6 +29,7 @@ async function createServicesInternal() {
     progressRepository,
     sessionService,
     notificationService,
+    encryptionService,
   };
 }
 export type Services = Awaited<ReturnType<typeof createServicesInternal>>;

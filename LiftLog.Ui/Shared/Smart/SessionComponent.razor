@@ -348,24 +348,26 @@ else
 
     private void AddSessionToPlan()
     {
-        var existingSessionWithSameName = ProgramState.Value.GetActivePlanSessionBlueprints().Any(x => x.Name == blueprint.Name);
-        if (existingSessionWithSameName)
+        if (Session?.Blueprint is SessionBlueprint blueprint)
         {
-            var blueprintNameWithoutNumber = System.Text.RegularExpressions.Regex.Replace(blueprint.Name, @" \(\d+\)$", "");
-            var newName = blueprint.Name;
-            var i = 1;
-            while (ProgramState.Value.GetActivePlanSessionBlueprints().Any(x => x.Name == newName))
+            var existingSessionWithSameName = ProgramState.Value.GetActivePlanSessionBlueprints().Any(x => x.Name == blueprint.Name);
+            if (existingSessionWithSameName)
             {
-                newName = $"{blueprintNameWithoutNumber} ({i})";
-                i++;
+                var blueprintNameWithoutNumber = System.Text.RegularExpressions.Regex.Replace(blueprint.Name, @" \(\d+\)$", "");
+                var newName = blueprint.Name;
+                var i = 1;
+                while (ProgramState.Value.GetActivePlanSessionBlueprints().Any(x => x.Name == newName))
+                {
+                    newName = $"{blueprintNameWithoutNumber} ({i})";
+                    i++;
+                }
+
+                blueprint = blueprint with { Name = newName };
             }
 
-            blueprint = blueprint with { Name = newName };
+            Dispatcher.Dispatch(new AddProgramSessionAction(ProgramState.Value.ActivePlanId, blueprint));
+            Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget, Session with { Blueprint = blueprint }));
         }
-
-        Dispatcher.Dispatch(new AddProgramSessionAction(ProgramState.Value.ActivePlanId, blueprint));
-        Dispatcher.Dispatch(new SetCurrentSessionAction(SessionTarget, Session with { Blueprint = blueprint }));
-
     }
 
     private void UpdateSessionInPlan()
