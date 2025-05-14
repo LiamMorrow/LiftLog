@@ -1,4 +1,4 @@
-import { LiftLog } from '@/gen/proto';
+import { google, LiftLog } from '@/gen/proto';
 import {
   SessionBlueprint,
   ExerciseBlueprint,
@@ -12,8 +12,13 @@ import {
   Session,
 } from '@/models/session-models';
 import Long from 'long';
-import { FeedIdentity, FeedUser } from '@/models/feed-models';
-import { Duration, LocalDate, LocalTime } from '@js-joda/core';
+import {
+  FeedIdentity,
+  FeedItem,
+  FeedUser,
+  SessionFeedItem,
+} from '@/models/feed-models';
+import { Duration, Instant, LocalDate, LocalTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { stringify as uuidStringify } from 'uuid';
 import { UuidConversionError } from '@/models/storage/uuid-conversion-error';
@@ -82,6 +87,13 @@ export function fromDateOnlyDao(
     throw new Error('DateOnlyDao cannot be null');
   }
   return LocalDate.of(dao.year!, dao.month!, dao.day!);
+}
+
+export function fromTimestampDao(
+  dao: google.protobuf.ITimestamp | null | undefined,
+): Instant {
+  // TODO - we just drop the nanos for now
+  return Instant.ofEpochSecond(dao!.seconds!.toNumber());
 }
 
 // Converts a RecordedSet DAO to a RecordedSetPOJO
@@ -234,6 +246,30 @@ export function fromProgramBlueprintDao(
     dao.name!,
     dao.sessions!.map(fromSessionBlueprintDao),
     dao.lastEdited ? fromDateOnlyDao(dao.lastEdited) : LocalDate.now(),
+  );
+}
+
+export function fromFeedStateDao(dao: LiftLog.Ui.Models.IFeedStateDaoV1) {
+  return {
+    feedItems: dao.feedItems?.map(fromFeedItemDao) ?? [],
+    followedUsers: dao.followedUsers?.map(fromFeedUserDao) ?? [],
+    identity: dao.identity && fromFeedIdentityDao(dao.identity),
+    // TODO
+    followRequests: [],
+    followers: dao.followers?.map(fromFeedUserDao) ?? [],
+    unpublishedSessionIds: dao.unpublishedSessionIds?.map(fromUuidDao) ?? [],
+  };
+}
+
+export function fromFeedItemDao(
+  dao: LiftLog.Ui.Models.IFeedItemDaoV1,
+): FeedItem {
+  return new SessionFeedItem(
+    fromUuidDao(dao.userId),
+    fromUuidDao(dao.eventId),
+    fromTimestampDao(dao.timestamp),
+    fromTimestampDao(dao.timestamp),
+    fromSessionDao(dao.session),
   );
 }
 

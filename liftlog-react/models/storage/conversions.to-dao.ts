@@ -1,5 +1,5 @@
 import { google, LiftLog } from '@/gen/proto';
-import { LocalDate, LocalTime } from '@js-joda/core';
+import { Instant, LocalDate, LocalTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Long from 'long';
 import {
@@ -9,7 +9,12 @@ import {
   SessionBlueprint,
   SessionPOJO,
 } from '@/models/session-models';
-import { FeedIdentity, FeedUser } from '@/models/feed-models';
+import {
+  FeedIdentity,
+  FeedItem,
+  FeedUser,
+  SessionFeedItem,
+} from '@/models/feed-models';
 import { parse as uuidParse } from 'uuid';
 import {
   PotentialSet,
@@ -18,6 +23,7 @@ import {
   Session,
 } from '@/models/session-models';
 import Enumerable from 'linq';
+import { FeedState } from '@/store/feed';
 
 function toUuidDao(uuid: string): LiftLog.Ui.Models.IUuidDao {
   const parsed = uuidParse(uuid);
@@ -54,6 +60,13 @@ export function toDecimalDao(
   return new LiftLog.Ui.Models.DecimalValue({
     units: Long.fromString(units.toString()),
     nanos: nanos.toNumber(),
+  });
+}
+
+function toTimestampDao(instant: Instant): google.protobuf.Timestamp {
+  return new google.protobuf.Timestamp({
+    seconds: Long.fromNumber(Math.floor(instant.toEpochMilli() / 1000)),
+    // TODO we are dropping nanos
   });
 }
 
@@ -245,5 +258,37 @@ export function toCurrentSessionDao(model: {
       (model.latestSetTimerNotificationId &&
         toUuidDao(model.latestSetTimerNotificationId)) ||
       null,
+  });
+}
+
+export function toFeedItemDao(item: FeedItem): LiftLog.Ui.Models.FeedItemDaoV1 {
+  return new LiftLog.Ui.Models.FeedItemDaoV1({
+    eventId: toUuidDao(item.eventId),
+    expiry: toTimestampDao(item.expiry),
+    timestamp: toTimestampDao(item.timestamp),
+    userId: toUuidDao(item.userId),
+    session:
+      item instanceof SessionFeedItem ? toSessionDao(item.session) : null,
+  });
+}
+
+export function toFeedStateDao(
+  state: FeedState,
+): LiftLog.Ui.Models.FeedStateDaoV1 {
+  return new LiftLog.Ui.Models.FeedStateDaoV1({
+    feedItems: state.feed.map((x) => toFeedItemDao(FeedItem.fromPOJO(x))),
+    followedUsers: Object.values(state.followedUsers).map((x) =>
+      toFeedUserDao(FeedUser.fromPOJO(x)),
+    ),
+    followers: Object.values(state.followers).map((x) =>
+      toFeedUserDao(FeedUser.fromPOJO(x)),
+    ),
+    // TODO
+    followRequests: [],
+    identity:
+      (state.identity &&
+        toFeedIdentityDao(FeedIdentity.fromPOJO(state.identity))) ??
+      null,
+    unpublishedSessionIds: state.unpublishedSessionIds.map(toUuidDao),
   });
 }

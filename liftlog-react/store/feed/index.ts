@@ -1,0 +1,118 @@
+import {
+  FeedIdentity,
+  FeedIdentityPOJO,
+  FeedItem,
+  FeedItemPOJO,
+  FeedUser,
+  FeedUserPOJO,
+  FollowRequest,
+  FollowRequestPOJO,
+  SharedItem,
+  SharedItemPOJO,
+} from '@/models/feed-models';
+import { RemoteData } from '@/models/remote';
+import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+export type FeedState = {
+  isHydrated: boolean;
+  isLoadingIdentity: boolean;
+  identity: FeedIdentityPOJO | undefined;
+  feed: FeedItemPOJO[];
+  followedUsers: Record<string, FeedUserPOJO>;
+  sharedFeedUser: RemoteData<FeedUserPOJO>;
+  followRequests: FollowRequestPOJO[];
+  followers: Record<string, FeedUserPOJO>;
+  activeTab: string;
+  unpublishedSessionIds: string[];
+  sharedItem: RemoteData<SharedItemPOJO>;
+};
+
+const initialState: FeedState = {
+  isHydrated: false,
+  isLoadingIdentity: false,
+  identity: undefined,
+  feed: [],
+  followedUsers: {},
+  sharedFeedUser: RemoteData.notAsked(),
+  followRequests: [],
+  followers: {},
+  activeTab: 'mainfeed-panel',
+  unpublishedSessionIds: [],
+  sharedItem: RemoteData.notAsked(),
+};
+
+const feedSlice = createSlice({
+  name: 'feed',
+  initialState,
+  reducers: {
+    setIsHydrated(state, action: PayloadAction<boolean>) {
+      state.isHydrated = action.payload;
+    },
+    setIsLoadingIdentity(state, action: PayloadAction<boolean>) {
+      state.isLoadingIdentity = action.payload;
+    },
+    setIdentity(state, action: PayloadAction<FeedIdentity | undefined>) {
+      state.identity = action.payload?.toPOJO();
+    },
+    setFeed(state, action: PayloadAction<FeedItem[]>) {
+      state.feed = action.payload.map((x) => x.toPOJO());
+    },
+    setFollowedUsers(state, action: PayloadAction<Record<string, FeedUser>>) {
+      state.followedUsers = Object.fromEntries(
+        Object.entries(action.payload).map((x) => [x[0], x[1].toPOJO()]),
+      );
+    },
+    setSharedFeedUser(state, action: PayloadAction<RemoteData<FeedUser>>) {
+      state.sharedFeedUser = action.payload.map((x) => x.toPOJO());
+    },
+    setFollowRequests(state, action: PayloadAction<FollowRequest[]>) {
+      state.followRequests = action.payload.map((x) => x.toPOJO());
+    },
+    setFollowers(state, action: PayloadAction<Record<string, FeedUser>>) {
+      state.followers = Object.fromEntries(
+        Object.entries(action.payload).map((x) => [x[0], x[1].toPOJO()]),
+      );
+    },
+    setActiveTab(state, action: PayloadAction<string>) {
+      state.activeTab = action.payload;
+    },
+    setUnpublishedSessionIds(state, action: PayloadAction<string[]>) {
+      state.unpublishedSessionIds = action.payload;
+    },
+    setSharedItem(state, action: PayloadAction<RemoteData<SharedItem>>) {
+      state.sharedItem = action.payload.map((x) => x.toPOJO());
+    },
+  },
+});
+
+export const {
+  setIsHydrated,
+  setIsLoadingIdentity,
+  setIdentity,
+  setFeed,
+  setFollowedUsers,
+  setSharedFeedUser,
+  setFollowRequests,
+  setFollowers,
+  setActiveTab,
+  setUnpublishedSessionIds,
+  setSharedItem,
+} = feedSlice.actions;
+
+export const initializeFeedStateSlice = createAction(
+  'initializeFeedStateSlice',
+);
+
+export const createFeedIdentity = createAction<{
+  name: string | undefined;
+  publishBodyweight: boolean;
+  publishPlan: boolean;
+  publishWorkouts: boolean;
+  fromUserAction: boolean;
+}>('createFeedIdentity');
+
+export const fetchInboxItemsAction = createAction<{ fromUserAction: boolean }>(
+  'fetchInboxItemsAction',
+);
+
+export default feedSlice.reducer;
