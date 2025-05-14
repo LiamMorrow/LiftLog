@@ -15,7 +15,7 @@ export class Logger {
     console.error(message, options);
   }
 
-  debug(message: string): void {
-    console.debug(message);
+  debug(message: string, o: unknown): void {
+    console.debug(message, o);
   }
 }

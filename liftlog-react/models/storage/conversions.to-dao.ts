@@ -14,6 +14,8 @@ import {
   FeedItem,
   FeedUser,
   SessionFeedItem,
+  SharedItem,
+  SharedProgramBlueprint,
 } from '@/models/feed-models';
 import { parse as uuidParse } from 'uuid';
 import {
@@ -285,10 +287,24 @@ export function toFeedStateDao(
     ),
     // TODO
     followRequests: [],
-    identity:
-      (state.identity &&
-        toFeedIdentityDao(FeedIdentity.fromPOJO(state.identity))) ??
-      null,
+    identity: state.identity
+      .map(FeedIdentity.fromPOJO)
+      .map(toFeedIdentityDao)
+      .unwrapOr(null),
     unpublishedSessionIds: state.unpublishedSessionIds.map(toUuidDao),
+  });
+}
+
+export function toSharedItemDao(
+  item: SharedItem,
+): LiftLog.Ui.Models.SharedItemPayload {
+  const sharedProgramBlueprint =
+    item instanceof SharedProgramBlueprint
+      ? new LiftLog.Ui.Models.SharedProgramBlueprintPayload({
+          programBlueprint: toProgramBlueprintDao(item.programBlueprint),
+        })
+      : null;
+  return new LiftLog.Ui.Models.SharedItemPayload({
+    sharedProgramBlueprint,
   });
 }

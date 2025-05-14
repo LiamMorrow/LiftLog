@@ -27,6 +27,24 @@ export abstract class RemoteData<T> {
 
   abstract match<R>(handlers: RemoteDataMatchHandlers<T, R>): R;
 
+  isLoading(): this is RemoteDataLoading<T> {
+    return this.match({
+      loading: () => true,
+      error: () => false,
+      notAsked: () => false,
+      success: () => false,
+    });
+  }
+
+  isSuccess(): this is RemoteDataSuccess<T> {
+    return this.match({
+      loading: () => false,
+      error: () => false,
+      notAsked: () => false,
+      success: () => true,
+    });
+  }
+
   /**
    * Map the data of the RemoteData to another type.  Only the success state will be mapped.
    * @param successMapper The function to map the data.
@@ -46,11 +64,11 @@ export abstract class RemoteData<T> {
    * @param defaultValue The default value to return if the state is not success.
    * @returns The data if the state is success, otherwise the default value.
    */
-  unwrapOr(defaultValue: T): T {
+  unwrapOr<R>(defaultValue: R): T | R {
     return this.match({
       notAsked: () => defaultValue,
       loading: () => defaultValue,
-      success: (data) => data,
+      success: (data) => data as unknown as R,
       error: () => defaultValue,
     });
   }
@@ -73,7 +91,7 @@ class RemoteDataLoading<T> extends RemoteData<T> {
 }
 
 class RemoteDataSuccess<T> extends RemoteData<T> {
-  constructor(private readonly data: T) {
+  constructor(public readonly data: T) {
     super();
   }
 

@@ -81,7 +81,7 @@ export class EncryptionService {
     data: Uint8Array,
     key: AesKey,
     privateKey: RsaPrivateKey,
-    aesIv: AesIV | null,
+    aesIv?: AesIV | null,
   ): Promise<AesEncryptedAndRsaSignedData> {
     const iv = aesIv?.value ?? crypto.getRandomValues(new Uint8Array(16));
     const params: AesCbcParams = {

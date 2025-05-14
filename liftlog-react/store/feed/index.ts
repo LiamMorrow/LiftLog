@@ -11,12 +11,12 @@ import {
   SharedItemPOJO,
 } from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
+import { ApiError } from '@/services/feed-api';
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type FeedState = {
   isHydrated: boolean;
-  isLoadingIdentity: boolean;
-  identity: FeedIdentityPOJO | undefined;
+  identity: RemoteData<FeedIdentityPOJO>;
   feed: FeedItemPOJO[];
   followedUsers: Record<string, FeedUserPOJO>;
   sharedFeedUser: RemoteData<FeedUserPOJO>;
@@ -29,8 +29,7 @@ export type FeedState = {
 
 const initialState: FeedState = {
   isHydrated: false,
-  isLoadingIdentity: false,
-  identity: undefined,
+  identity: RemoteData.notAsked(),
   feed: [],
   followedUsers: {},
   sharedFeedUser: RemoteData.notAsked(),
@@ -48,11 +47,8 @@ const feedSlice = createSlice({
     setIsHydrated(state, action: PayloadAction<boolean>) {
       state.isHydrated = action.payload;
     },
-    setIsLoadingIdentity(state, action: PayloadAction<boolean>) {
-      state.isLoadingIdentity = action.payload;
-    },
-    setIdentity(state, action: PayloadAction<FeedIdentity | undefined>) {
-      state.identity = action.payload?.toPOJO();
+    setIdentity(state, action: PayloadAction<RemoteData<FeedIdentity>>) {
+      state.identity = action.payload?.map((x) => x.toPOJO());
     },
     setFeed(state, action: PayloadAction<FeedItem[]>) {
       state.feed = action.payload.map((x) => x.toPOJO());
@@ -87,7 +83,6 @@ const feedSlice = createSlice({
 
 export const {
   setIsHydrated,
-  setIsLoadingIdentity,
   setIdentity,
   setFeed,
   setFollowedUsers,
@@ -103,16 +98,29 @@ export const initializeFeedStateSlice = createAction(
   'initializeFeedStateSlice',
 );
 
-export const createFeedIdentity = createAction<{
-  name: string | undefined;
-  publishBodyweight: boolean;
-  publishPlan: boolean;
-  publishWorkouts: boolean;
+type FeedAction = {
   fromUserAction: boolean;
-}>('createFeedIdentity');
+};
 
-export const fetchInboxItemsAction = createAction<{ fromUserAction: boolean }>(
+export const createFeedIdentity = createAction<
+  {
+    name: string | undefined;
+    publishBodyweight: boolean;
+    publishPlan: boolean;
+    publishWorkouts: boolean;
+  } & FeedAction
+>('createFeedIdentity');
+
+export const fetchInboxItemsAction = createAction<FeedAction>(
   'fetchInboxItemsAction',
 );
+
+export const encryptAndShare = createAction<SharedItem>('encryptAndShare');
+
+export const feedApiError = createAction<{
+  message: string;
+  error: ApiError;
+  action: PayloadAction<FeedAction>;
+}>('feedApiError');
 
 export default feedSlice.reducer;

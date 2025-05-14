@@ -9292,6 +9292,445 @@ export const LiftLog = $root.LiftLog = (() => {
                 return UnFollowNotification;
             })();
 
+            Models.SharedItemPayload = (function() {
+
+                /**
+                 * Properties of a SharedItemPayload.
+                 * @memberof LiftLog.Ui.Models
+                 * @interface ISharedItemPayload
+                 * @property {LiftLog.Ui.Models.ISharedProgramBlueprintPayload|null} [sharedProgramBlueprint] SharedItemPayload sharedProgramBlueprint
+                 */
+
+                /**
+                 * Constructs a new SharedItemPayload.
+                 * @memberof LiftLog.Ui.Models
+                 * @classdesc Represents a SharedItemPayload.
+                 * @implements ISharedItemPayload
+                 * @constructor
+                 * @param {LiftLog.Ui.Models.ISharedItemPayload=} [properties] Properties to set
+                 */
+                function SharedItemPayload(properties) {
+                    if (properties)
+                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * SharedItemPayload sharedProgramBlueprint.
+                 * @member {LiftLog.Ui.Models.ISharedProgramBlueprintPayload|null|undefined} sharedProgramBlueprint
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @instance
+                 */
+                SharedItemPayload.prototype.sharedProgramBlueprint = null;
+
+                // OneOf field names bound to virtual getters and setters
+                let $oneOfFields;
+
+                /**
+                 * SharedItemPayload payload.
+                 * @member {"sharedProgramBlueprint"|undefined} payload
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @instance
+                 */
+                Object.defineProperty(SharedItemPayload.prototype, "payload", {
+                    get: $util.oneOfGetter($oneOfFields = ["sharedProgramBlueprint"]),
+                    set: $util.oneOfSetter($oneOfFields)
+                });
+
+                /**
+                 * Creates a new SharedItemPayload instance using the specified properties.
+                 * @function create
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.ISharedItemPayload=} [properties] Properties to set
+                 * @returns {LiftLog.Ui.Models.SharedItemPayload} SharedItemPayload instance
+                 */
+                SharedItemPayload.create = function create(properties) {
+                    return new SharedItemPayload(properties);
+                };
+
+                /**
+                 * Encodes the specified SharedItemPayload message. Does not implicitly {@link LiftLog.Ui.Models.SharedItemPayload.verify|verify} messages.
+                 * @function encode
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.ISharedItemPayload} message SharedItemPayload message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                SharedItemPayload.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.sharedProgramBlueprint != null && Object.hasOwnProperty.call(message, "sharedProgramBlueprint"))
+                        $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.encode(message.sharedProgramBlueprint, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified SharedItemPayload message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SharedItemPayload.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.ISharedItemPayload} message SharedItemPayload message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                SharedItemPayload.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a SharedItemPayload message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {LiftLog.Ui.Models.SharedItemPayload} SharedItemPayload
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                SharedItemPayload.decode = function decode(reader, length, error) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.SharedItemPayload();
+                    while (reader.pos < end) {
+                        let tag = reader.uint32();
+                        if (tag === error)
+                            break;
+                        switch (tag >>> 3) {
+                        case 1: {
+                                message.sharedProgramBlueprint = $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.decode(reader, reader.uint32());
+                                break;
+                            }
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a SharedItemPayload message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {LiftLog.Ui.Models.SharedItemPayload} SharedItemPayload
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                SharedItemPayload.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a SharedItemPayload message.
+                 * @function verify
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                SharedItemPayload.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    let properties = {};
+                    if (message.sharedProgramBlueprint != null && message.hasOwnProperty("sharedProgramBlueprint")) {
+                        properties.payload = 1;
+                        {
+                            let error = $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.verify(message.sharedProgramBlueprint);
+                            if (error)
+                                return "sharedProgramBlueprint." + error;
+                        }
+                    }
+                    return null;
+                };
+
+                /**
+                 * Creates a SharedItemPayload message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {LiftLog.Ui.Models.SharedItemPayload} SharedItemPayload
+                 */
+                SharedItemPayload.fromObject = function fromObject(object) {
+                    if (object instanceof $root.LiftLog.Ui.Models.SharedItemPayload)
+                        return object;
+                    let message = new $root.LiftLog.Ui.Models.SharedItemPayload();
+                    if (object.sharedProgramBlueprint != null) {
+                        if (typeof object.sharedProgramBlueprint !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.SharedItemPayload.sharedProgramBlueprint: object expected");
+                        message.sharedProgramBlueprint = $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.fromObject(object.sharedProgramBlueprint);
+                    }
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a SharedItemPayload message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.SharedItemPayload} message SharedItemPayload
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                SharedItemPayload.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    let object = {};
+                    if (message.sharedProgramBlueprint != null && message.hasOwnProperty("sharedProgramBlueprint")) {
+                        object.sharedProgramBlueprint = $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.toObject(message.sharedProgramBlueprint, options);
+                        if (options.oneofs)
+                            object.payload = "sharedProgramBlueprint";
+                    }
+                    return object;
+                };
+
+                /**
+                 * Converts this SharedItemPayload to JSON.
+                 * @function toJSON
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                SharedItemPayload.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                /**
+                 * Gets the default type url for SharedItemPayload
+                 * @function getTypeUrl
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                SharedItemPayload.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/LiftLog.Ui.Models.SharedItemPayload";
+                };
+
+                return SharedItemPayload;
+            })();
+
+            Models.SharedProgramBlueprintPayload = (function() {
+
+                /**
+                 * Properties of a SharedProgramBlueprintPayload.
+                 * @memberof LiftLog.Ui.Models
+                 * @interface ISharedProgramBlueprintPayload
+                 * @property {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1|null} [programBlueprint] SharedProgramBlueprintPayload programBlueprint
+                 */
+
+                /**
+                 * Constructs a new SharedProgramBlueprintPayload.
+                 * @memberof LiftLog.Ui.Models
+                 * @classdesc Represents a SharedProgramBlueprintPayload.
+                 * @implements ISharedProgramBlueprintPayload
+                 * @constructor
+                 * @param {LiftLog.Ui.Models.ISharedProgramBlueprintPayload=} [properties] Properties to set
+                 */
+                function SharedProgramBlueprintPayload(properties) {
+                    if (properties)
+                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * SharedProgramBlueprintPayload programBlueprint.
+                 * @member {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1|null|undefined} programBlueprint
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @instance
+                 */
+                SharedProgramBlueprintPayload.prototype.programBlueprint = null;
+
+                /**
+                 * Creates a new SharedProgramBlueprintPayload instance using the specified properties.
+                 * @function create
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.ISharedProgramBlueprintPayload=} [properties] Properties to set
+                 * @returns {LiftLog.Ui.Models.SharedProgramBlueprintPayload} SharedProgramBlueprintPayload instance
+                 */
+                SharedProgramBlueprintPayload.create = function create(properties) {
+                    return new SharedProgramBlueprintPayload(properties);
+                };
+
+                /**
+                 * Encodes the specified SharedProgramBlueprintPayload message. Does not implicitly {@link LiftLog.Ui.Models.SharedProgramBlueprintPayload.verify|verify} messages.
+                 * @function encode
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.ISharedProgramBlueprintPayload} message SharedProgramBlueprintPayload message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                SharedProgramBlueprintPayload.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.programBlueprint != null && Object.hasOwnProperty.call(message, "programBlueprint"))
+                        $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.encode(message.programBlueprint, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified SharedProgramBlueprintPayload message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SharedProgramBlueprintPayload.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.ISharedProgramBlueprintPayload} message SharedProgramBlueprintPayload message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                SharedProgramBlueprintPayload.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a SharedProgramBlueprintPayload message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {LiftLog.Ui.Models.SharedProgramBlueprintPayload} SharedProgramBlueprintPayload
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                SharedProgramBlueprintPayload.decode = function decode(reader, length, error) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload();
+                    while (reader.pos < end) {
+                        let tag = reader.uint32();
+                        if (tag === error)
+                            break;
+                        switch (tag >>> 3) {
+                        case 1: {
+                                message.programBlueprint = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.decode(reader, reader.uint32());
+                                break;
+                            }
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a SharedProgramBlueprintPayload message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {LiftLog.Ui.Models.SharedProgramBlueprintPayload} SharedProgramBlueprintPayload
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                SharedProgramBlueprintPayload.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a SharedProgramBlueprintPayload message.
+                 * @function verify
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                SharedProgramBlueprintPayload.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.programBlueprint != null && message.hasOwnProperty("programBlueprint")) {
+                        let error = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.verify(message.programBlueprint);
+                        if (error)
+                            return "programBlueprint." + error;
+                    }
+                    return null;
+                };
+
+                /**
+                 * Creates a SharedProgramBlueprintPayload message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {LiftLog.Ui.Models.SharedProgramBlueprintPayload} SharedProgramBlueprintPayload
+                 */
+                SharedProgramBlueprintPayload.fromObject = function fromObject(object) {
+                    if (object instanceof $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload)
+                        return object;
+                    let message = new $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload();
+                    if (object.programBlueprint != null) {
+                        if (typeof object.programBlueprint !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.SharedProgramBlueprintPayload.programBlueprint: object expected");
+                        message.programBlueprint = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.fromObject(object.programBlueprint);
+                    }
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a SharedProgramBlueprintPayload message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.SharedProgramBlueprintPayload} message SharedProgramBlueprintPayload
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                SharedProgramBlueprintPayload.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    let object = {};
+                    if (options.defaults)
+                        object.programBlueprint = null;
+                    if (message.programBlueprint != null && message.hasOwnProperty("programBlueprint"))
+                        object.programBlueprint = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.toObject(message.programBlueprint, options);
+                    return object;
+                };
+
+                /**
+                 * Converts this SharedProgramBlueprintPayload to JSON.
+                 * @function toJSON
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                SharedProgramBlueprintPayload.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                /**
+                 * Gets the default type url for SharedProgramBlueprintPayload
+                 * @function getTypeUrl
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                SharedProgramBlueprintPayload.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/LiftLog.Ui.Models.SharedProgramBlueprintPayload";
+                };
+
+                return SharedProgramBlueprintPayload;
+            })();
+
             return Models;
         })();
 

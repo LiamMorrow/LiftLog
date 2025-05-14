@@ -12,6 +12,7 @@ import SnackbarProvider from '@/components/smart/snackbar-provider';
 
 import '@/utils/date-locale';
 
+import 'react-native-get-random-values';
 import PolyfillCrypto from 'react-native-webview-crypto';
 
 LogBox.ignoreLogs([/.*is not a valid icon name.*/]);

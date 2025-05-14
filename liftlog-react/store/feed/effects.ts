@@ -1,13 +1,24 @@
 import { addEffect } from '@/store/listenerMiddleware';
 import {
   createFeedIdentity,
+  encryptAndShare,
+  feedApiError,
   fetchInboxItemsAction,
   initializeFeedStateSlice,
+  setIdentity,
   setIsHydrated,
 } from '@/store/feed';
 import { LiftLog } from '@/gen/proto';
 import { fromFeedStateDao } from '@/models/storage/conversions.from-dao';
-import { toFeedStateDao } from '@/models/storage/conversions.to-dao';
+import {
+  toFeedStateDao,
+  toSharedItemDao,
+} from '@/models/storage/conversions.to-dao';
+import { RemoteData } from '@/models/remote';
+import { selectActiveProgram } from '@/store/program';
+import { ApiErrorType } from '@/services/feed-api';
+import { AesKey } from '@/models/encryption-models';
+import { toUrlSafeHexString } from '@/utils/to-url-safe-hex-string';
 
 const StorageKey = 'FeedState';
 export function applyFeedEffects() {
@@ -26,18 +37,19 @@ export function applyFeedEffects() {
           if (!version || version === '1') {
             const feedStateDao = LiftLog.Ui.Models.FeedStateDaoV1.decode(state);
             const feedState = fromFeedStateDao(feedStateDao);
-            if (feedState) {
-              if (!feedState.identity) {
-                dispatch(
-                  createFeedIdentity({
-                    name: undefined,
-                    publishBodyweight: false,
-                    publishPlan: false,
-                    publishWorkouts: false,
-                    fromUserAction: false,
-                  }),
-                );
-              }
+
+            if (!feedState.identity) {
+              dispatch(
+                createFeedIdentity({
+                  name: undefined,
+                  publishBodyweight: false,
+                  publishPlan: false,
+                  publishWorkouts: false,
+                  fromUserAction: false,
+                }),
+              );
+            } else {
+              dispatch(setIdentity(RemoteData.success(feedState.identity)));
             }
           }
         }
@@ -51,6 +63,16 @@ export function applyFeedEffects() {
       }
     },
   );
+
+  addEffect(feedApiError, async (action, { dispatch, extra: { logger } }) => {
+    if (action.payload.action.payload.fromUserAction) {
+      // TODO dispatch toast
+    }
+    logger.error(action.payload.message, {
+      action,
+      error: action.payload.error,
+    });
+  });
 
   addEffect(
     undefined,
@@ -77,4 +99,122 @@ export function applyFeedEffects() {
       await keyValueStore.setItem(`${StorageKey}Version`, '1');
     },
   );
+
+  addEffect(
+    createFeedIdentity,
+    async (
+      action,
+      {
+        cancelActiveListeners,
+        getState,
+        dispatch,
+        extra: { encryptionService, feedIdentityService },
+      },
+    ) => {
+      cancelActiveListeners();
+      if (getState().feed.identity.isLoading()) {
+        return;
+      }
+      const payload = action.payload;
+      dispatch(setIdentity(RemoteData.loading()));
+      const identityResult = await feedIdentityService.createFeedIdentityAsync(
+        payload.name,
+        undefined,
+        payload.publishBodyweight,
+        payload.publishPlan,
+        payload.publishWorkouts,
+        selectActiveProgram(getState()).sessions,
+      );
+      if (!identityResult.isSuccess()) {
+        dispatch(
+          feedApiError({
+            message: 'Failed to create user',
+            error: identityResult.error!,
+            action,
+          }),
+        );
+        dispatch(setIdentity(RemoteData.error(identityResult.error)));
+        return;
+      }
+      dispatch(setIdentity(RemoteData.success(identityResult.data)));
+    },
+  );
+
+  addEffect(
+    encryptAndShare,
+    async (
+      action,
+      {
+        cancelActiveListeners,
+        getState,
+        dispatch,
+        extra: { encryptionService, feedApiService, stringSharer, logger },
+      },
+    ) => {
+      cancelActiveListeners();
+      const identity = getState().feed.identity;
+      if (!identity.isSuccess()) {
+        logger.debug('Identity', identity);
+        dispatch(
+          feedApiError({
+            error: {
+              exception: new Error('No identity'),
+              message: 'Failed to share. Identity not found',
+              type: ApiErrorType.Unknown,
+            },
+            message: 'Failed to share. Identity not found',
+            action: {
+              ...action,
+              payload: { ...action.payload, fromUserAction: true },
+            },
+          }),
+        );
+        return;
+      }
+
+      const aesKey = await encryptionService.generateAesKey();
+      const payload = toSharedItemDao(action.payload);
+      const payloadBytes =
+        LiftLog.Ui.Models.SharedItemPayload.encode(payload).finish();
+
+      const encrypted =
+        await encryptionService.signRsa256PssAndEncryptAesCbcAsync(
+          payloadBytes,
+          aesKey,
+          identity.data.rsaKeyPair.privateKey,
+        );
+
+      const result = await feedApiService.postSharedItemAsync({
+        userId: identity.data.id,
+        password: identity.data.password,
+        encryptedPayload: encrypted,
+        expiry: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+      });
+
+      if (!result.isSuccess()) {
+        dispatch(
+          feedApiError({
+            message: 'Failed to share feed item',
+            error: result.error!,
+            action: {
+              ...action,
+              payload: { ...action.payload, fromUserAction: true },
+            },
+          }),
+        );
+        return;
+      }
+
+      await stringSharer.share(
+        getShareUrl(result.data.id, aesKey),
+        'Share your plan!',
+      );
+    },
+  );
+}
+
+function getShareUrl(sharedItemId: string, aesKey: AesKey) {
+  return __DEV__
+    ? `https://0.0.0.0:5001/feed/shared-item/${sharedItemId}?k=${toUrlSafeHexString(aesKey.value)}`
+    : `https://app.liftlog.online/feed/shared-item/${sharedItemId}?k=${toUrlSafeHexString(aesKey.value)}`;
 }

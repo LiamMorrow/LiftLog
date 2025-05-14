@@ -1,7 +1,9 @@
 import { SurfaceText } from '@/components/presentation/surface-text';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { SharedProgramBlueprint } from '@/models/feed-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { showSnackbar } from '@/store/app';
+import { encryptAndShare } from '@/store/feed';
 import {
   deleteSavedPlan,
   savePlan,
@@ -82,12 +84,12 @@ function ItemMenu({ id }: ItemProps) {
         }}
       />
       <Menu.Item
-        onPress={() => {
-          setMenuVisible(false);
-        }}
         leadingIcon="share"
         title={t('Share')}
-        // TODO sharing
+        onPress={() => {
+          setMenuVisible(false);
+          dispatch(encryptAndShare(new SharedProgramBlueprint(thisProgram)));
+        }}
       />
     </Menu>
   );

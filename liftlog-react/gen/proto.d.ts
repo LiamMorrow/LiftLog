@@ -3539,6 +3539,203 @@ export namespace LiftLog {
                  */
                 public static getTypeUrl(typeUrlPrefix?: string): string;
             }
+
+            /** Properties of a SharedItemPayload. */
+            interface ISharedItemPayload {
+
+                /** SharedItemPayload sharedProgramBlueprint */
+                sharedProgramBlueprint?: (LiftLog.Ui.Models.ISharedProgramBlueprintPayload|null);
+            }
+
+            /** Represents a SharedItemPayload. */
+            class SharedItemPayload implements ISharedItemPayload {
+
+                /**
+                 * Constructs a new SharedItemPayload.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: LiftLog.Ui.Models.ISharedItemPayload);
+
+                /** SharedItemPayload sharedProgramBlueprint. */
+                public sharedProgramBlueprint?: (LiftLog.Ui.Models.ISharedProgramBlueprintPayload|null);
+
+                /** SharedItemPayload payload. */
+                public payload?: "sharedProgramBlueprint";
+
+                /**
+                 * Creates a new SharedItemPayload instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns SharedItemPayload instance
+                 */
+                public static create(properties?: LiftLog.Ui.Models.ISharedItemPayload): LiftLog.Ui.Models.SharedItemPayload;
+
+                /**
+                 * Encodes the specified SharedItemPayload message. Does not implicitly {@link LiftLog.Ui.Models.SharedItemPayload.verify|verify} messages.
+                 * @param message SharedItemPayload message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: LiftLog.Ui.Models.ISharedItemPayload, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified SharedItemPayload message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SharedItemPayload.verify|verify} messages.
+                 * @param message SharedItemPayload message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: LiftLog.Ui.Models.ISharedItemPayload, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a SharedItemPayload message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns SharedItemPayload
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): LiftLog.Ui.Models.SharedItemPayload;
+
+                /**
+                 * Decodes a SharedItemPayload message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns SharedItemPayload
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): LiftLog.Ui.Models.SharedItemPayload;
+
+                /**
+                 * Verifies a SharedItemPayload message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a SharedItemPayload message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns SharedItemPayload
+                 */
+                public static fromObject(object: { [k: string]: any }): LiftLog.Ui.Models.SharedItemPayload;
+
+                /**
+                 * Creates a plain object from a SharedItemPayload message. Also converts values to other types if specified.
+                 * @param message SharedItemPayload
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: LiftLog.Ui.Models.SharedItemPayload, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this SharedItemPayload to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for SharedItemPayload
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a SharedProgramBlueprintPayload. */
+            interface ISharedProgramBlueprintPayload {
+
+                /** SharedProgramBlueprintPayload programBlueprint */
+                programBlueprint?: (LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1|null);
+            }
+
+            /** Represents a SharedProgramBlueprintPayload. */
+            class SharedProgramBlueprintPayload implements ISharedProgramBlueprintPayload {
+
+                /**
+                 * Constructs a new SharedProgramBlueprintPayload.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: LiftLog.Ui.Models.ISharedProgramBlueprintPayload);
+
+                /** SharedProgramBlueprintPayload programBlueprint. */
+                public programBlueprint?: (LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1|null);
+
+                /**
+                 * Creates a new SharedProgramBlueprintPayload instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns SharedProgramBlueprintPayload instance
+                 */
+                public static create(properties?: LiftLog.Ui.Models.ISharedProgramBlueprintPayload): LiftLog.Ui.Models.SharedProgramBlueprintPayload;
+
+                /**
+                 * Encodes the specified SharedProgramBlueprintPayload message. Does not implicitly {@link LiftLog.Ui.Models.SharedProgramBlueprintPayload.verify|verify} messages.
+                 * @param message SharedProgramBlueprintPayload message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: LiftLog.Ui.Models.ISharedProgramBlueprintPayload, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified SharedProgramBlueprintPayload message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SharedProgramBlueprintPayload.verify|verify} messages.
+                 * @param message SharedProgramBlueprintPayload message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: LiftLog.Ui.Models.ISharedProgramBlueprintPayload, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a SharedProgramBlueprintPayload message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns SharedProgramBlueprintPayload
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): LiftLog.Ui.Models.SharedProgramBlueprintPayload;
+
+                /**
+                 * Decodes a SharedProgramBlueprintPayload message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns SharedProgramBlueprintPayload
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): LiftLog.Ui.Models.SharedProgramBlueprintPayload;
+
+                /**
+                 * Verifies a SharedProgramBlueprintPayload message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a SharedProgramBlueprintPayload message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns SharedProgramBlueprintPayload
+                 */
+                public static fromObject(object: { [k: string]: any }): LiftLog.Ui.Models.SharedProgramBlueprintPayload;
+
+                /**
+                 * Creates a plain object from a SharedProgramBlueprintPayload message. Also converts values to other types if specified.
+                 * @param message SharedProgramBlueprintPayload
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: LiftLog.Ui.Models.SharedProgramBlueprintPayload, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this SharedProgramBlueprintPayload to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for SharedProgramBlueprintPayload
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
         }
     }
 }
