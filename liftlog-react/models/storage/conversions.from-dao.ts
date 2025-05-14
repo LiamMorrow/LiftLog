@@ -280,14 +280,14 @@ export function fromFeedIdentityDao(
   return new FeedIdentity(
     fromUuidDao(dao.id),
     dao.lookup?.value ?? '',
-    { value: dao.aesKey! },
+    { value: Uint8Array.from(dao.aesKey!) },
     {
-      publicKey: { spkiPublicKeyBytes: dao.publicKey! },
-      privateKey: { pkcs8PrivateKeyBytes: dao.privateKey! },
+      publicKey: { spkiPublicKeyBytes: Uint8Array.from(dao.publicKey!) },
+      privateKey: { pkcs8PrivateKeyBytes: Uint8Array.from(dao.privateKey!) },
     },
     dao.password!,
     dao.name?.value ?? undefined,
-    dao.profilePicture ?? undefined,
+    (dao.profilePicture && Uint8Array.from(dao.profilePicture)) ?? undefined,
     dao.publishBodyweight ?? false,
     dao.publishPlan ?? false,
     dao.publishWorkouts ?? false,
@@ -300,12 +300,12 @@ export function fromFeedUserDao(
 ): FeedUser {
   return new FeedUser(
     fromUuidDao(dao.id),
-    { spkiPublicKeyBytes: dao.publicKey! },
+    { spkiPublicKeyBytes: Uint8Array.from(dao.publicKey!) },
     dao.name?.value ?? undefined,
     dao.nickname?.value ?? undefined,
     dao.currentPlan ? fromCurrentPlanDao(dao.currentPlan) : [],
-    dao.profilePicture ?? undefined,
-    dao.aesKey ? { value: dao.aesKey } : undefined,
+    (dao.profilePicture && Uint8Array.from(dao.profilePicture)) ?? undefined,
+    dao.aesKey ? { value: Uint8Array.from(dao.aesKey) } : undefined,
     dao.followSecret?.value ?? undefined,
   );
 }
