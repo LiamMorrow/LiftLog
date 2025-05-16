@@ -8,6 +8,7 @@ import Enumerable from 'linq';
 import { View } from 'react-native';
 import { Card, IconButton, TouchableRipple } from 'react-native-paper';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
+import { msIconSource } from './ms-icon-source';
 
 const oneSeventh = `${100 / 7}%`;
 const fiveSevenths = `${(100 / 7) * 5}%`;
@@ -78,7 +79,7 @@ export default function HistoryCalendarCard({
       <View style={{ width: oneSeventh, marginVertical: spacing[2] }}>
         <IconButton
           data-cy="calendar-nav-previous-month"
-          icon={'chevron_left'}
+          icon={msIconSource('chevronLeft')}
           onPress={previousMonth}
         />
       </View>
@@ -104,7 +105,7 @@ export default function HistoryCalendarCard({
       <View style={{ width: oneSeventh, marginVertical: spacing[2] }}>
         <IconButton
           data-cy="calendar-nav-next-month"
-          icon={'chevron_right'}
+          icon={msIconSource('chevronRight')}
           onPress={nextMonth}
           disabled={disableNextMonth}
         />

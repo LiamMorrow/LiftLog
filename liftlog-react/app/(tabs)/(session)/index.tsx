@@ -46,7 +46,7 @@ function NoUpcomingSessions() {
             <SurfaceText font="text-lg">
               <T keyName="NoPlanCreated" />
             </SurfaceText>
-            <Icon size={20} source={'info'} />
+            <Icon size={20} source={msIconSource('info')} />
           </View>
           <View style={{ flexDirection: 'row', gap: spacing[2] }}>
             <Button

@@ -22,6 +22,8 @@ import { msStar } from '@material-symbols-react-native/outlined-400/msStar';
 import { msTextAd } from '@material-symbols-react-native/outlined-400/msTextAd';
 import { msTranslate } from '@material-symbols-react-native/outlined-400/msTranslate';
 import { msWeight } from '@material-symbols-react-native/outlined-400/msWeight';
+import { msChevronLeft } from '@material-symbols-react-native/outlined-400/msChevronLeft';
+import { msChevronRight } from '@material-symbols-react-native/outlined-400/msChevronRight';
 import { MsIcon } from 'material-symbols-react-native';
 
 // Importing these icons using the below methods causes android app to crash
@@ -55,6 +57,9 @@ const MaterialSymbols = {
   translate: msTranslate,
   weight: msWeight,
   fitnessCenter: msFitnessCenter,
+
+  chevronLeft: msChevronLeft,
+  chevronRight: msChevronRight,
 };
 
 export function msIconSource(name: keyof typeof MaterialSymbols) {

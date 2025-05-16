@@ -122,7 +122,11 @@ export default function Settings() {
                 style={{ color: colors.primary, fontWeight: 'bold' }}
                 href="https://github.com/LiamMorrow/LiftLog"
               >
-                <Icon size={16} source={'share'} color={colors.primary} />
+                <Icon
+                  size={16}
+                  source={msIconSource('share')}
+                  color={colors.primary}
+                />
                 GitHub
               </Link>
               .

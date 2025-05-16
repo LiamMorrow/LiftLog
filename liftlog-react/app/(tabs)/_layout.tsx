@@ -28,7 +28,13 @@ export default function Layout() {
         options={{
           tabBarLabel: t('History'),
           tabBarIcon: ({ color, size }) => {
-            return <Icon source="history" size={size} color={color} />;
+            return (
+              <Icon
+                source={msIconSource('history')}
+                size={size}
+                color={color}
+              />
+            );
           },
         }}
       />
