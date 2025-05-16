@@ -1,54 +1,48 @@
 import { Stack } from 'expo-router';
 import { AppThemeProvider } from '@/hooks/useAppTheme';
-import { DevTools, FormatSimple, Tolgee, TolgeeProvider } from '@tolgee/react';
+import { TolgeeProvider } from '@tolgee/react';
 import { LogBox, Text, useColorScheme } from 'react-native';
-import en from '../i18n/en.json';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import { store } from '@/store';
 import { ScrollProvider } from '@/hooks/useScollListener';
 import AppStateProvider from '@/components/smart/app-state-provider';
+import { tolgee } from '@/services/tolgee';
+import SnackbarProvider from '@/components/smart/snackbar-provider';
+
+import '@/utils/date-locale';
+
+import 'react-native-get-random-values';
+import PolyfillCrypto from 'react-native-webview-crypto';
 
 LogBox.ignoreLogs([/.*is not a valid icon name.*/]);
-
-const tolgee = Tolgee()
-  // DevTools will work only for web view
-  .use(DevTools())
-  .use(FormatSimple())
-  // replace with .use(FormatIcu()) for rendering plurals, formatted numbers, etc.
-  .init({
-    language: 'en',
-
-    // for development
-    // apiUrl: process.env.EXPO_PUBLIC_TOLGEE_API_URL!,
-    // apiKey: process.env.EXPO_PUBLIC_TOLGEE_API_KEY!,
-    staticData: {
-      en,
-    },
-  });
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   return (
     <Provider store={store}>
+      <PolyfillCrypto />
       <SafeAreaProvider>
         <TolgeeProvider tolgee={tolgee} fallback={<Text>Loading...</Text>}>
           <AppThemeProvider>
-            <AppStateProvider>
-              <ScrollProvider>
-                <Stack
-                  screenOptions={{
-                    headerShown: false,
-                    statusBarTranslucent: true,
-                    statusBarBackgroundColor: 'transparent',
-                    navigationBarTranslucent: true,
-                    navigationBarColor: 'transparent',
-                    statusBarStyle: colorScheme === 'dark' ? 'light' : 'dark',
-                    gestureEnabled: false,
-                  }}
-                />
-              </ScrollProvider>
-            </AppStateProvider>
+            <Stack
+              layout={(e) => (
+                <AppStateProvider>
+                  <ScrollProvider>
+                    <SnackbarProvider>{e.children}</SnackbarProvider>
+                  </ScrollProvider>
+                </AppStateProvider>
+              )}
+              screenOptions={{
+                headerShown: false,
+                statusBarTranslucent: true,
+                statusBarBackgroundColor: 'transparent',
+                navigationBarTranslucent: true,
+                navigationBarColor: 'transparent',
+                statusBarStyle: colorScheme === 'dark' ? 'light' : 'dark',
+                gestureEnabled: false,
+              }}
+            />
           </AppThemeProvider>
         </TolgeeProvider>
       </SafeAreaProvider>

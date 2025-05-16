@@ -11,6 +11,10 @@ import { initializeCurrentSessionStateSlice } from '@/store/current-session';
 import { initializeProgramStateSlice } from '@/store/program';
 import { applySettingsEffects } from '@/store/settings/effects';
 import { initializeSettingsStateSlice } from '@/store/settings';
+import { initializeStoredSessionsStateSlice } from '@/store/stored-sessions';
+import { applyStoredSessionsEffects } from '@/store/stored-sessions/effects';
+import { applyFeedEffects } from '@/store/feed/effects';
+import { initializeFeedStateSlice } from '@/store/feed';
 
 export { store, RootState, AppDispatch };
 
@@ -18,11 +22,15 @@ applyProgramEffects();
 applyCurrentSessionEffects();
 applyAppEffects();
 applySettingsEffects();
+applyStoredSessionsEffects();
+applyFeedEffects();
 
 store.dispatch(initializeSettingsStateSlice());
 store.dispatch(initializeAppStateSlice());
 store.dispatch(initializeCurrentSessionStateSlice());
 store.dispatch(initializeProgramStateSlice());
+store.dispatch(initializeStoredSessionsStateSlice());
+store.dispatch(initializeFeedStateSlice());
 
 export const useAppSelector = untypedUseSelector.withTypes<RootState>();
 

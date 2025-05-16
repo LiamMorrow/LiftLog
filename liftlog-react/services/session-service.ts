@@ -38,13 +38,13 @@ export class SessionService {
     }
 
     const latestRecordedExercises =
-      await this.progressRepository.getLatestRecordedExercises();
-    let latestSession = await match(currentSession)
+      this.progressRepository.getLatestRecordedExercises();
+    let latestSession = match(currentSession)
       .with({ isStarted: true }, (x) => x)
-      .otherwise(async () =>
-        (await this.progressRepository.getOrderedSessions()).firstOrDefault(
-          (x) => !x.isFreeform,
-        ),
+      .otherwise(() =>
+        this.progressRepository
+          .getOrderedSessions()
+          .firstOrDefault((x) => !x.isFreeform),
       );
     if (!latestSession) {
       latestSession = this.createNewSession(
@@ -64,15 +64,9 @@ export class SessionService {
     }
   }
 
-  getLatestSessions(): Promise<Enumerable.IEnumerable<Session>> {
-    return this.progressRepository.getOrderedSessions();
-  }
-
-  public async hydrateSessionFromBlueprint(
-    blueprint: SessionBlueprint,
-  ): Promise<Session> {
+  public hydrateSessionFromBlueprint(blueprint: SessionBlueprint): Session {
     const latestRecordedExercises =
-      await this.progressRepository.getLatestRecordedExercises();
+      this.progressRepository.getLatestRecordedExercises();
     return this.createNewSession(blueprint, latestRecordedExercises);
   }
 

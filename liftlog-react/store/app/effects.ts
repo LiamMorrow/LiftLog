@@ -3,9 +3,12 @@ import {
   refreshNotificationPermissionStatus,
   requestExactNotificationPermission,
   setCanScheduleExactNotifications,
+  setCurrentSnackbar,
   setIsHydrated,
+  showSnackbar,
 } from '@/store/app';
 import { addEffect } from '@/store/listenerMiddleware';
+import { sleep } from '@/utils/sleep';
 
 export function applyAppEffects() {
   addEffect(
@@ -40,4 +43,12 @@ export function applyAppEffects() {
       dispatch(setCanScheduleExactNotifications(result));
     },
   );
+
+  addEffect(showSnackbar, async (action, { dispatch, getState }) => {
+    dispatch(setCurrentSnackbar(action.payload));
+    await sleep(action.payload.duration ?? 5000);
+    if (getState().app.currentSnackbar === action.payload) {
+      dispatch(setCurrentSnackbar(undefined));
+    }
+  });
 }

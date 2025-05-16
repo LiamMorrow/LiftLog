@@ -1,6 +1,7 @@
 import ItemTitle from '@/components/presentation/item-title';
 import { SurfaceText } from '@/components/presentation/surface-text';
 import { Session } from '@/models/session-models';
+import { formatDate } from '@/utils/format-date';
 import { DateTimeFormatter, LocalDate } from '@js-joda/core';
 import { View } from 'react-native';
 
@@ -12,10 +13,13 @@ export default function SessionSummaryTitle({
   session,
   isFilled,
 }: SessionSummaryTitleProps) {
-  const formattedDate =
-    session.date.year() === LocalDate.now().year()
-      ? session.date.format(DateTimeFormatter.ofPattern('d d M'))
-      : `${session.date.format(DateTimeFormatter.ofPattern('d d M'))} ${session.date.year()}`;
+  const formattedDate = formatDate(session.date, {
+    year:
+      session.date.year() !== LocalDate.now().year() ? 'numeric' : undefined,
+    day: 'numeric',
+    weekday: 'long',
+    month: 'long',
+  });
   return (
     <View
       style={{ flexShrink: 1, alignItems: 'flex-start', overflow: 'hidden' }}

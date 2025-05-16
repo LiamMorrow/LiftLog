@@ -1,7 +1,16 @@
 import { SurfaceText } from '@/components/presentation/surface-text';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { SharedProgramBlueprint } from '@/models/feed-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { selectProgram, setActivePlan } from '@/store/program';
+import { showSnackbar } from '@/store/app';
+import { encryptAndShare } from '@/store/feed';
+import {
+  deleteSavedPlan,
+  savePlan,
+  selectProgram,
+  setActivePlan,
+} from '@/store/program';
+import { uuid } from '@/utils/uuid';
 import { DateTimeFormatter } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
@@ -27,10 +36,11 @@ interface ItemProps {
 }
 
 function ItemMenu({ id }: ItemProps) {
+  const thisProgram = useAppSelectorWithArg(selectProgram, id);
   const isActive = useAppSelector((x) => x.program.activeProgramId) === id;
   const [menuVisible, setMenuVisible] = useState(false);
+  const dispatch = useDispatch();
   const { t } = useTranslate();
-  // TODO implement actions of itemmenu
   return (
     <Menu
       visible={menuVisible}
@@ -45,6 +55,19 @@ function ItemMenu({ id }: ItemProps) {
     >
       <Menu.Item
         onPress={() => {
+          if (!isActive) {
+            dispatch(
+              showSnackbar({
+                text: t('PlanDeleted'),
+                action: t('Undo'),
+                dispatchAction: savePlan({
+                  programId: id,
+                  programBlueprint: thisProgram,
+                }),
+              }),
+            );
+            dispatch(deleteSavedPlan({ programId: id }));
+          }
           setMenuVisible(false);
         }}
         leadingIcon={msIconSource('delete')}
@@ -56,14 +79,18 @@ function ItemMenu({ id }: ItemProps) {
         leadingIcon={msIconSource('contentCopy')}
         onPress={() => {
           setMenuVisible(false);
+          dispatch(
+            savePlan({ programId: uuid(), programBlueprint: thisProgram }),
+          );
         }}
       />
       <Menu.Item
-        onPress={() => {
-          setMenuVisible(false);
-        }}
         leadingIcon={msIconSource('share')}
         title={t('Share')}
+        onPress={() => {
+          setMenuVisible(false);
+          dispatch(encryptAndShare(new SharedProgramBlueprint(thisProgram)));
+        }}
       />
     </Menu>
   );

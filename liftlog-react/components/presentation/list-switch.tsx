@@ -1,4 +1,5 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import { List, Switch } from 'react-native-paper';
 
 interface ListSwitchProps {

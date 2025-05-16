@@ -1,6 +1,7 @@
-import { LocalDateTime } from '@js-joda/core';
+import { Instant } from '@js-joda/core';
 import {
   ProgramBlueprint,
+  ProgramBlueprintPOJO,
   SessionBlueprint,
   SessionBlueprintPOJO,
 } from './session-models';
@@ -128,29 +129,52 @@ export class FeedUser {
 }
 
 export interface FeedItemPOJO {
-  _BRAND: 'FEED_ITEM_POJO';
+  _BRAND: 'SESSION_FEED_ITEM_POJO' | 'REMOVED_SESSION_FEED_ITEM_POJO';
   userId: string;
   eventId: string;
-  timestamp: LocalDateTime;
-  expiry: LocalDateTime;
+  timestamp: Instant;
+  expiry: Instant;
 }
 
 export abstract class FeedItem {
   readonly userId: string;
   readonly eventId: string;
-  readonly timestamp: LocalDateTime;
-  readonly expiry: LocalDateTime;
+  readonly timestamp: Instant;
+  readonly expiry: Instant;
 
   constructor(
     userId: string,
     eventId: string,
-    timestamp: LocalDateTime,
-    expiry: LocalDateTime,
+    timestamp: Instant,
+    expiry: Instant,
   ) {
     this.userId = userId;
     this.eventId = eventId;
     this.timestamp = timestamp;
     this.expiry = expiry;
+  }
+
+  abstract toPOJO(): FeedItemPOJO;
+
+  static fromPOJO(x: FeedItemPOJO): FeedItem {
+    switch (x._BRAND) {
+      case 'REMOVED_SESSION_FEED_ITEM_POJO':
+        return new RemovedSessionFeedItem(
+          x.userId,
+          x.eventId,
+          x.timestamp,
+          x.expiry,
+          (x as RemovedSessionFeedItemPOJO).sessionId,
+        );
+      case 'SESSION_FEED_ITEM_POJO':
+        return new SessionFeedItem(
+          x.userId,
+          x.eventId,
+          x.timestamp,
+          x.expiry,
+          Session.fromPOJO((x as SessionFeedItemPOJO).session),
+        );
+    }
   }
 }
 
@@ -164,12 +188,23 @@ export class SessionFeedItem extends FeedItem {
   constructor(
     userId: string,
     eventId: string,
-    timestamp: LocalDateTime,
-    expiry: LocalDateTime,
+    timestamp: Instant,
+    expiry: Instant,
     session: Session,
   ) {
     super(userId, eventId, timestamp, expiry);
     this.session = session;
+  }
+
+  toPOJO(): SessionFeedItemPOJO {
+    return {
+      _BRAND: 'SESSION_FEED_ITEM_POJO',
+      eventId: this.eventId,
+      expiry: this.expiry,
+      session: this.session.toPOJO(),
+      timestamp: this.timestamp,
+      userId: this.userId,
+    };
   }
 }
 
@@ -183,12 +218,23 @@ export class RemovedSessionFeedItem extends FeedItem {
   constructor(
     userId: string,
     eventId: string,
-    timestamp: LocalDateTime,
-    expiry: LocalDateTime,
+    timestamp: Instant,
+    expiry: Instant,
     sessionId: string,
   ) {
     super(userId, eventId, timestamp, expiry);
     this.sessionId = sessionId;
+  }
+
+  toPOJO(): RemovedSessionFeedItemPOJO {
+    return {
+      _BRAND: 'REMOVED_SESSION_FEED_ITEM_POJO',
+      eventId: this.eventId,
+      expiry: this.expiry,
+      sessionId: this.sessionId,
+      timestamp: this.timestamp,
+      userId: this.userId,
+    };
   }
 }
 
@@ -410,8 +456,16 @@ export class FollowResponse {
   }
 }
 
-export abstract class SharedItem {}
+export type SharedItemPOJO = SharedProgramBlueprintPOJO;
 
+export abstract class SharedItem {
+  abstract toPOJO(): SharedItemPOJO;
+}
+
+export interface SharedProgramBlueprintPOJO {
+  _BRAND: 'SHARED_PROGRAM_BLUEPRINT_POJO';
+  programBlueprint: ProgramBlueprintPOJO;
+}
 export class SharedProgramBlueprint extends SharedItem {
   readonly programBlueprint: ProgramBlueprint;
 
@@ -431,9 +485,10 @@ export class SharedProgramBlueprint extends SharedItem {
     return new SharedProgramBlueprint(pojo.programBlueprint);
   }
 
-  toPOJO(): { programBlueprint: ProgramBlueprint } {
+  toPOJO(): SharedProgramBlueprintPOJO {
     return {
-      programBlueprint: this.programBlueprint,
+      _BRAND: 'SHARED_PROGRAM_BLUEPRINT_POJO',
+      programBlueprint: this.programBlueprint.toPOJO(),
     };
   }
 

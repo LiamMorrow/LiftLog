@@ -1,12 +1,9 @@
 import { msIconSource } from '@/components/presentation/ms-icon-source';
 import SessionComponent from '@/components/smart/session-component';
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { RootState, useAppSelector } from '@/store';
-import {
-  computeRecentlyCompletedRecordedExercises,
-  persistCurrentSession,
-} from '@/store/current-session';
-import { Stack, useFocusEffect, useRouter } from 'expo-router';
+import { persistCurrentSession } from '@/store/current-session';
+import { Stack, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { Appbar } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
@@ -28,20 +25,10 @@ export default function Index() {
     // dispatch(setStatsIsDirty(true));
     dismissTo('/');
   };
-
-  useFocusEffect(() => {
-    dispatch(computeRecentlyCompletedRecordedExercises({ max: 10 }));
-  });
+  const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
 
   return (
-    <View
-      style={[
-        {
-          backgroundColor: colors.surface,
-          flex: 1,
-        },
-      ]}
-    >
+    <>
       <Stack.Screen
         options={{
           title: session?.blueprint.name ?? 'Workout',
@@ -53,8 +40,10 @@ export default function Index() {
           ),
         }}
       />
-
-      <SessionComponent target="workoutSession" showBodyweight={true} />
-    </View>
+      <SessionComponent
+        target="workoutSession"
+        showBodyweight={showBodyweight}
+      />
+    </>
   );
 }

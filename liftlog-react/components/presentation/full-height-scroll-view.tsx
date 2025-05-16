@@ -9,11 +9,13 @@ export default function FullHeightScrollView({
   floatingChildren,
   setIsScrolled: propsSetIsScrolled,
   scrollStyle,
+  contentContainerStyle,
 }: {
   children: React.ReactNode;
   floatingChildren?: React.ReactNode;
   setIsScrolled?: (isScrolled: boolean) => void;
   scrollStyle?: StyleProp<ViewStyle>;
+  contentContainerStyle?: StyleProp<ViewStyle>;
 }) {
   const { colors } = useAppTheme();
   const { setScrolled: dispatchSetIsScrolled } = useScroll();
@@ -36,8 +38,9 @@ export default function FullHeightScrollView({
     >
       <KeyboardAwareScrollView
         onScroll={(e) => setIsScrolled(e.nativeEvent.contentOffset.y > 0)}
-        enableOnAndroid={true}
+        enableOnAndroid
         style={[scrollStyle]}
+        contentContainerStyle={[contentContainerStyle]}
       >
         {children}
         <View style={{ height: floatingBottomSize }} />

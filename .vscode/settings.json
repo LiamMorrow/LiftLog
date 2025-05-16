@@ -7,6 +7,7 @@
   "cSpell.words": ["Fluxor", "Oaep", "Sqids", "Tolgee", "Unfollow"],
   "typescript.preferences.autoImportSpecifierExcludeRegexes": [
     "vitest/dist/chunks.*",
-    "react-native/Libraries/TurboModule/TurboModuleRegistry"
+    "react-native/Libraries/TurboModule/TurboModuleRegistry",
+    "react-native-reanimated/lib/typescript/Animated"
   ]
 }

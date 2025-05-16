@@ -1,5 +1,6 @@
 import CardList from '@/components/presentation/card-list';
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
+import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
 import { msIconSource } from '@/components/presentation/ms-icon-source';
 import { Remote } from '@/components/presentation/remote';
@@ -10,16 +11,22 @@ import { SurfaceText } from '@/components/presentation/surface-text';
 import AndroidNotificationAlert from '@/components/smart/android-notification-alert';
 import { Tips } from '@/components/smart/tips';
 import { spacing } from '@/hooks/useAppTheme';
-import { useSession } from '@/hooks/useSession';
+import { useCurrentSession } from '@/hooks/useSession';
 import { Session } from '@/models/session-models';
 import { RootState, useAppSelector } from '@/store';
 import { setCurrentSession } from '@/store/current-session';
 import { fetchUpcomingSessions } from '@/store/program';
+import { LocalDate } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
-import { Stack, useFocusEffect, useRouter } from 'expo-router';
-import { useState } from 'react';
+import {
+  Stack,
+  useFocusEffect,
+  useRootNavigationState,
+  useRouter,
+} from 'expo-router';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { Button, Card, Icon } from 'react-native-paper';
+import { Button, Card, FAB, Icon } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -67,11 +74,69 @@ function NoUpcomingSessions() {
   );
 }
 
-function ListUpcomingWorkouts({ upcoming }: { upcoming: readonly Session[] }) {
+function ListUpcomingWorkouts({
+  upcoming,
+  selectSession,
+}: {
+  upcoming: readonly Session[];
+  selectSession: (s: Session) => void;
+}) {
+  return (
+    <>
+      <View style={{ margin: spacing[2] }}>
+        <Tips />
+      </View>
+      <CardList
+        cardType="outlined"
+        items={upcoming}
+        onPress={selectSession}
+        renderItem={(session) => {
+          return (
+            <SplitCardControl
+              titleContent={
+                <SessionSummaryTitle
+                  isFilled={session.isStarted}
+                  session={session}
+                />
+              }
+              mainContent={
+                <SessionSummary session={session} isFilled={false} showWeight />
+              }
+            />
+          );
+        }}
+      />
+    </>
+  );
+}
+
+export default function Index() {
+  const upcomingSessions = useAppSelector((s) => s.program.upcomingSessions);
   const dispatch = useDispatch();
-  const currentSession = useSession('workoutSession');
+  const { t } = useTranslate();
   const { push } = useRouter();
+  const currentSession = useCurrentSession('workoutSession');
+  const currentBodyweight = upcomingSessions
+    .map((x) => x.at(0)?.bodyweight)
+    .unwrapOr(undefined);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const rootNavigationState = useRootNavigationState();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  const navigatorReady = rootNavigationState?.key != null;
+
   const [selectedSession, setSelectedSession] = useState<Session | undefined>();
+
+  useEffect(() => {
+    if (!navigatorReady) return;
+    // On app open from cold if we have a current session loaded, show it automatically.
+    if (currentSession) {
+      push('/(tabs)/(session)/session');
+    }
+  }, [navigatorReady]);
+
+  useFocusEffect(() => {
+    dispatch(fetchUpcomingSessions());
+  });
 
   const selectSession = (session: Session) => {
     if (
@@ -102,53 +167,31 @@ function ListUpcomingWorkouts({ upcoming }: { upcoming: readonly Session[] }) {
     if (!selectedSession) return;
     replaceSession(selectedSession);
   };
-  return (
-    <>
-      <View style={{ margin: spacing[2] }}>
-        <Tips />
-      </View>
-      <CardList
-        cardType="outlined"
-        items={upcoming}
-        onPress={selectSession}
-        renderItem={(session) => {
-          return (
-            <SplitCardControl
-              titleContent={
-                <SessionSummaryTitle
-                  isFilled={session.isStarted}
-                  session={session}
-                />
-              }
-              mainContent={
-                <SessionSummary session={session} isFilled={false} showWeight />
-              }
-            />
-          );
-        }}
-      />
-      <ConfirmationDialog
-        open={!!selectedSession}
-        onCancel={() => setSelectedSession(undefined)}
-        okText="Replace"
-        onOk={replaceSessionDialogAction}
-        headline={<T keyName="ReplaceCurrentSession" />}
-        textContent={<T keyName="SessionInProgress" />}
-      />
-    </>
+
+  const createFreeformSession = () => {
+    const newSession = Session.freeformSession(
+      LocalDate.now(),
+      currentBodyweight,
+    );
+    selectSession(newSession);
+  };
+
+  const floatingBottomContainer = (
+    <FloatingBottomContainer
+      fab={
+        <FAB
+          variant="surface"
+          size="small"
+          icon="fitness_center"
+          label={t('Freeform Session')}
+          onPress={createFreeformSession}
+        />
+      }
+    />
   );
-}
-
-export default function Index() {
-  const upcomingSessions = useAppSelector((s) => s.program.upcomingSessions);
-  const dispatch = useDispatch();
-  const { t } = useTranslate();
-  useFocusEffect(() => {
-    dispatch(fetchUpcomingSessions());
-  });
 
   return (
-    <FullHeightScrollView>
+    <FullHeightScrollView floatingChildren={floatingBottomContainer}>
       <Stack.Screen
         options={{
           title: t('UpcomingWorkouts'),
@@ -163,10 +206,19 @@ export default function Index() {
           }
           return (
             <ListUpcomingWorkouts
+              selectSession={selectSession}
               upcoming={upcoming.map((x) => Session.fromPOJO(x))}
             />
           );
         }}
+      />
+      <ConfirmationDialog
+        open={!!selectedSession}
+        onCancel={() => setSelectedSession(undefined)}
+        okText="Replace"
+        onOk={replaceSessionDialogAction}
+        headline={<T keyName="ReplaceCurrentSession" />}
+        textContent={<T keyName="SessionInProgress" />}
       />
     </FullHeightScrollView>
   );

@@ -1,3 +1,4 @@
+import { SurfaceText } from '@/components/presentation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
@@ -14,7 +15,6 @@ interface EditableIncrementerProps {
 }
 
 export default function EditableIncrementer(props: EditableIncrementerProps) {
-  // TODO suffix is unused
   const { increment, label, value, onChange } = props;
   const [text, setText] = useState(props.value.toFormat());
   const [editorValue, setEditorValue] = useState<BigNumber>(value);
@@ -58,12 +58,12 @@ export default function EditableIncrementer(props: EditableIncrementerProps) {
             />
             <TextInput
               data-cy="editable-field"
-              style={{ width: spacing[20] }}
               value={text}
               inputMode="decimal"
               onChangeText={handleTextChange}
               selectTextOnFocus
               onBlur={() => onChange(editorValue)}
+              right={<TextInput.Affix text={props.suffix} />}
             />
             <IconButton
               icon={msIconSource('add')}

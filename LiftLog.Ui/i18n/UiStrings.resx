@@ -921,6 +921,7 @@
     <comment>The title in the header for the plans list page</comment>
   </data>
   <data name="NewPlanDefaultName" xml:space="preserve">
-    <value>The default name given when a user creates a new plan</value>
+    <value>New Plan</value>
+    <comment>The default name given when a user creates a new plan</comment>
   </data>
 </root>

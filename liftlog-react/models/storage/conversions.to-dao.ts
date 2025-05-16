@@ -1,5 +1,5 @@
 import { google, LiftLog } from '@/gen/proto';
-import { LocalDate, LocalTime } from '@js-joda/core';
+import { Instant, LocalDate, LocalTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Long from 'long';
 import {
@@ -7,8 +7,16 @@ import {
   ProgramBlueprint,
   Rest,
   SessionBlueprint,
+  SessionPOJO,
 } from '@/models/session-models';
-import { FeedIdentity, FeedUser } from '@/models/feed-models';
+import {
+  FeedIdentity,
+  FeedItem,
+  FeedUser,
+  SessionFeedItem,
+  SharedItem,
+  SharedProgramBlueprint,
+} from '@/models/feed-models';
 import { parse as uuidParse } from 'uuid';
 import {
   PotentialSet,
@@ -17,6 +25,7 @@ import {
   Session,
 } from '@/models/session-models';
 import Enumerable from 'linq';
+import { FeedState } from '@/store/feed';
 
 function toUuidDao(uuid: string): LiftLog.Ui.Models.IUuidDao {
   const parsed = uuidParse(uuid);
@@ -53,6 +62,13 @@ export function toDecimalDao(
   return new LiftLog.Ui.Models.DecimalValue({
     units: Long.fromString(units.toString()),
     nanos: nanos.toNumber(),
+  });
+}
+
+function toTimestampDao(instant: Instant): google.protobuf.Timestamp {
+  return new google.protobuf.Timestamp({
+    seconds: Long.fromNumber(Math.floor(instant.toEpochMilli() / 1000)),
+    // TODO we are dropping nanos
   });
 }
 
@@ -173,10 +189,11 @@ export function toCurrentPlanDao(
 }
 
 export function toSessionHistoryDao(
-  model: ReadonlyMap<string, Session>,
+  model: Record<string, SessionPOJO>,
 ): LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2 {
   return new LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2({
-    completedSessions: Enumerable.from(model.values())
+    completedSessions: Enumerable.from(model)
+      .select((x) => Session.fromPOJO(x.value))
       .select(toSessionDao)
       .toArray(),
   });
@@ -226,5 +243,68 @@ export function toRecordedSetDao(
     repsCompleted: model.repsCompleted,
     completionDate: toDateOnlyDao(model.completionDateTime.toLocalDate()),
     completionTime: toTimeOnlyDao(model.completionDateTime.toLocalTime()),
+  });
+}
+
+export function toCurrentSessionDao(model: {
+  workoutSession: Session | undefined;
+  historySession: Session | undefined;
+  latestSetTimerNotificationId: string | undefined;
+}): LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2 {
+  return new LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2({
+    historySession:
+      (model.historySession && toSessionDao(model.historySession)) ?? null,
+    workoutSession:
+      (model.workoutSession && toSessionDao(model.workoutSession)) ?? null,
+    latestSetTimerNotificationId:
+      (model.latestSetTimerNotificationId &&
+        toUuidDao(model.latestSetTimerNotificationId)) ||
+      null,
+  });
+}
+
+export function toFeedItemDao(item: FeedItem): LiftLog.Ui.Models.FeedItemDaoV1 {
+  return new LiftLog.Ui.Models.FeedItemDaoV1({
+    eventId: toUuidDao(item.eventId),
+    expiry: toTimestampDao(item.expiry),
+    timestamp: toTimestampDao(item.timestamp),
+    userId: toUuidDao(item.userId),
+    session:
+      item instanceof SessionFeedItem ? toSessionDao(item.session) : null,
+  });
+}
+
+export function toFeedStateDao(
+  state: FeedState,
+): LiftLog.Ui.Models.FeedStateDaoV1 {
+  return new LiftLog.Ui.Models.FeedStateDaoV1({
+    feedItems: state.feed.map((x) => toFeedItemDao(FeedItem.fromPOJO(x))),
+    followedUsers: Object.values(state.followedUsers).map((x) =>
+      toFeedUserDao(FeedUser.fromPOJO(x)),
+    ),
+    followers: Object.values(state.followers).map((x) =>
+      toFeedUserDao(FeedUser.fromPOJO(x)),
+    ),
+    // TODO
+    followRequests: [],
+    identity: state.identity
+      .map(FeedIdentity.fromPOJO)
+      .map(toFeedIdentityDao)
+      .unwrapOr(null),
+    unpublishedSessionIds: state.unpublishedSessionIds.map(toUuidDao),
+  });
+}
+
+export function toSharedItemDao(
+  item: SharedItem,
+): LiftLog.Ui.Models.SharedItemPayload {
+  const sharedProgramBlueprint =
+    item instanceof SharedProgramBlueprint
+      ? new LiftLog.Ui.Models.SharedProgramBlueprintPayload({
+          programBlueprint: toProgramBlueprintDao(item.programBlueprint),
+        })
+      : null;
+  return new LiftLog.Ui.Models.SharedItemPayload({
+    sharedProgramBlueprint,
   });
 }

@@ -4,7 +4,6 @@ import {
   editExercise,
   notifySetTimer,
   removeExercise,
-  selectRecentlyCompletedExercises,
   SessionTarget,
   setExerciseReps,
   toggleExercisePerSetWeight,
@@ -20,7 +19,10 @@ import EmptyInfo from '@/components/presentation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import ItemList from '@/components/presentation/item-list';
-import { RecordedExercise } from '@/models/session-models';
+import {
+  EmptyExerciseBlueprint,
+  RecordedExercise,
+} from '@/models/session-models';
 import WeightedExercise from '@/components/presentation/weighted-exercise';
 import WeightDisplay from '@/components/presentation/weight-display';
 import BigNumber from 'bignumber.js';
@@ -32,11 +34,12 @@ import { ExerciseBlueprint } from '@/models/session-models';
 import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/exercise-editor';
 import { LocalDateTime } from '@js-joda/core';
-import { useSession } from '@/hooks/useSession';
-import { useAppSelector } from '@/store';
+import { useCurrentSession } from '@/hooks/useSession';
+import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import UpdatePlanButton from '@/components/smart/update-plan-button';
 import { UnknownAction } from '@reduxjs/toolkit';
 import { msIconSource } from '@/components/presentation/ms-icon-source';
+import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
@@ -44,14 +47,15 @@ export default function SessionComponent(props: {
 }) {
   const { colors } = useAppTheme();
   const { t } = useTranslate();
-  const session = useSession(props.target);
+  const session = useCurrentSession(props.target);
   const storeDispatch = useDispatch();
   const dispatch = <T,>(
     reducer: (a: { payload: T; target: SessionTarget }) => UnknownAction,
     payload: T,
   ) => storeDispatch(reducer({ payload, target: props.target }));
-  const recentlyCompletedExercises = useAppSelector(
+  const recentlyCompletedExercises = useAppSelectorWithArg(
     selectRecentlyCompletedExercises,
+    10,
   );
 
   const perSetWeightSetting = useAppSelector(
@@ -180,7 +184,7 @@ export default function SessionComponent(props: {
   );
 
   const bodyWeight = props.showBodyweight ? (
-    <Card style={{ marginHorizontal: spacing[2] }} mode="contained">
+    <Card style={{ marginHorizontal: spacing[7] }} mode="contained">
       <Card.Content
         style={{
           flexDirection: 'row',
@@ -241,6 +245,10 @@ export default function SessionComponent(props: {
           size="small"
           icon={msIconSource('add')}
           label={t('AddExercise')}
+          onPress={() => {
+            setEditingExerciseBlueprint(EmptyExerciseBlueprint);
+            setExerciseEditorOpen(true);
+          }}
         />
       }
       additionalContent={snackbar}

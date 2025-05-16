@@ -76,6 +76,6 @@
     <key>UIUserInterfaceStyle</key>
     <string>Automatic</string>
     <key>UIViewControllerBasedStatusBarAppearance</key>
-    <true/>
+    <false/>
   </dict>
 </plist>

@@ -1,0 +1,177 @@
+diff --git a/node_modules/react-native-paper-dates/lib/commonjs/translations/utils.js b/node_modules/react-native-paper-dates/lib/commonjs/translations/utils.js
+index 24afcdf..7f31d04 100644
+--- a/node_modules/react-native-paper-dates/lib/commonjs/translations/utils.js
++++ b/node_modules/react-native-paper-dates/lib/commonjs/translations/utils.js
+@@ -13,7 +13,7 @@ function getTranslation(locale, key, fallback) {
+     console.warn(`[react-native-paper-dates] The locale ${locale} is not registered, see README!, key: ${key}`);
+     return fallback || key;
+   }
+-  const translation = translationsPerLocale[l][key];
++  const translation = translationsPerLocale[l]()[key];
+   if (!translation) {
+     console.warn(`[react-native-paper-dates] The locale ${locale} is registered, but ${key} is missing`);
+   }
+diff --git a/node_modules/react-native-paper-dates/lib/module/translations/utils.js b/node_modules/react-native-paper-dates/lib/module/translations/utils.js
+index 34f688a..fcd914e 100644
+--- a/node_modules/react-native-paper-dates/lib/module/translations/utils.js
++++ b/node_modules/react-native-paper-dates/lib/module/translations/utils.js
+@@ -12,7 +12,7 @@ export function getTranslation(locale, key, fallback) {
+   if (!translation) {
+     console.warn(`[react-native-paper-dates] The locale ${locale} is registered, but ${key} is missing`);
+   }
+-  return translation || fallback || key;
++  return translation() || fallback || key;
+ }
+ export function registerTranslation(locale, translations) {
+   translationsPerLocale[locale] = translations;
+diff --git a/node_modules/react-native-paper-dates/lib/typescript/Date/DatePickerInput.shared.d.ts b/node_modules/react-native-paper-dates/lib/typescript/Date/DatePickerInput.shared.d.ts
+index bbcb991..c7f4945 100644
+--- a/node_modules/react-native-paper-dates/lib/typescript/Date/DatePickerInput.shared.d.ts
++++ b/node_modules/react-native-paper-dates/lib/typescript/Date/DatePickerInput.shared.d.ts
+@@ -1,31 +1,34 @@
+-import { ComponentProps, CSSProperties } from 'react';
+-import type { ValidRangeType } from './Calendar';
+-import type { TextInput } from 'react-native-paper';
++import { ComponentProps, CSSProperties } from 'react'
++import type { ValidRangeType } from './Calendar'
++import type { TextInput } from 'react-native-paper'
+ export type DatePickerInputProps = {
+-    inputMode: 'start' | 'end';
+-    locale: string;
+-    onChange: (date: Date | undefined) => void;
+-    value: Date | undefined;
+-    validRange?: ValidRangeType | undefined;
+-    withModal?: boolean;
+-    withDateFormatInLabel?: boolean;
+-    hideValidationErrors?: boolean;
+-    hasError?: boolean;
+-    onValidationError?: ((error: string | null) => void) | undefined;
+-    calendarIcon?: string;
+-    iconSize?: number;
+-    iconStyle?: CSSProperties;
+-    iconColor?: string;
+-    saveLabel?: string;
+-    saveLabelDisabled?: boolean;
+-    uppercase?: boolean;
+-    startYear?: number;
+-    endYear?: number;
+-    onChangeText?: (text: string | undefined) => void;
+-    inputEnabled?: boolean;
+-    disableStatusBarPadding?: boolean;
+-    animationType?: 'slide' | 'fade' | 'none';
+-    presentationStyle?: 'pageSheet' | 'overFullScreen';
+-    startWeekOnMonday?: boolean;
+-} & Omit<ComponentProps<typeof TextInput>, 'value' | 'onChange' | 'onChangeText' | 'inputMode'>;
++  inputMode: 'start' | 'end'
++  locale: string
++  onChange: (date: Date | undefined) => void
++  value: Date | undefined
++  validRange?: ValidRangeType | undefined
++  withModal?: boolean
++  withDateFormatInLabel?: boolean
++  hideValidationErrors?: boolean
++  hasError?: boolean
++  onValidationError?: ((error: string | null) => void) | undefined
++  calendarIcon?: string
++  iconSize?: number
++  iconStyle?: CSSProperties
++  iconColor?: string
++  saveLabel?: string
++  saveLabelDisabled?: boolean
++  uppercase?: boolean
++  startYear?: number
++  endYear?: number
++  onChangeText?: (text: string | undefined) => void
++  inputEnabled?: boolean
++  disableStatusBarPadding?: boolean
++  animationType?: 'slide' | 'fade' | 'none'
++  presentationStyle?: 'pageSheet' | 'overFullScreen'
++  startWeekOnMonday?: boolean
++} & Omit<
++  ComponentProps<typeof TextInput>,
++  'value' | 'onChange' | 'onChangeText' | 'inputMode'
++>
+ //# sourceMappingURL=DatePickerInput.shared.d.ts.map
+diff --git a/node_modules/react-native-paper-dates/lib/typescript/translations/utils.d.ts b/node_modules/react-native-paper-dates/lib/typescript/translations/utils.d.ts
+index 594cbd3..4209043 100644
+--- a/node_modules/react-native-paper-dates/lib/typescript/translations/utils.d.ts
++++ b/node_modules/react-native-paper-dates/lib/typescript/translations/utils.d.ts
+@@ -1,21 +1,28 @@
+ export type TranslationsType = {
+-    selectSingle: string;
+-    selectMultiple: string;
+-    selectRange: string;
+-    save: string;
+-    notAccordingToDateFormat: (inputFormat: string) => string;
+-    mustBeHigherThan: (date: string) => string;
+-    mustBeLowerThan: (date: string) => string;
+-    mustBeBetween: (startDate: string, endDate: string) => string;
+-    dateIsDisabled: string;
+-    previous: string;
+-    next: string;
+-    typeInDate: string;
+-    pickDateFromCalendar: string;
+-    close: string;
+-    hour: string;
+-    minute: string;
+-};
+-export declare function getTranslation<K extends keyof TranslationsType>(locale: string | undefined, key: K, fallback?: any): any;
+-export declare function registerTranslation(locale: string, translations: TranslationsType): void;
++  selectSingle: string
++  selectMultiple: string
++  selectRange: string
++  save: string
++  notAccordingToDateFormat: (inputFormat: string) => string
++  mustBeHigherThan: (date: string) => string
++  mustBeLowerThan: (date: string) => string
++  mustBeBetween: (startDate: string, endDate: string) => string
++  dateIsDisabled: string
++  previous: string
++  next: string
++  typeInDate: string
++  pickDateFromCalendar: string
++  close: string
++  hour: string
++  minute: string
++}
++export declare function getTranslation<K extends keyof TranslationsType>(
++  locale: string | undefined,
++  key: K,
++  fallback?: any
++): any
++export declare function registerTranslation(
++  locale: string,
++  translations: () => TranslationsType
++): void
+ //# sourceMappingURL=utils.d.ts.map
+diff --git a/node_modules/react-native-paper-dates/src/translations/utils.ts b/node_modules/react-native-paper-dates/src/translations/utils.ts
+index 6fe4067..5a59ea2 100644
+--- a/node_modules/react-native-paper-dates/src/translations/utils.ts
++++ b/node_modules/react-native-paper-dates/src/translations/utils.ts
+@@ -17,7 +17,7 @@ export type TranslationsType = {
+   minute: string
+ }
+ 
+-let translationsPerLocale: Record<string, TranslationsType> = {}
++let translationsPerLocale: Record<string, () => TranslationsType> = {}
+ 
+ export function getTranslation<K extends keyof TranslationsType>(
+   locale: string | undefined,
+@@ -32,7 +32,7 @@ export function getTranslation<K extends keyof TranslationsType>(
+     )
+     return fallback || key
+   }
+-  const translation = translationsPerLocale[l][key]
++  const translation = translationsPerLocale[l]()[key]
+   if (!translation) {
+     console.warn(
+       `[react-native-paper-dates] The locale ${locale} is registered, but ${key} is missing`
+@@ -43,7 +43,7 @@ export function getTranslation<K extends keyof TranslationsType>(
+ 
+ export function registerTranslation(
+   locale: string,
+-  translations: TranslationsType
++  translations: () => TranslationsType
+ ) {
+   translationsPerLocale[locale] = translations
+ }

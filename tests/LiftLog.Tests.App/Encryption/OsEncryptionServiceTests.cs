@@ -123,6 +123,32 @@ public class OsEncryptionServiceTests
                 );
               });
           });
+
+        Describe(
+          "RSA",
+          () =>
+          {
+            It("Can encrypt and decrypt a payload")
+              .When(async () =>
+              {
+                // Arrange
+                var rsaKeyPair = await sut.GenerateRsaKeysAsync();
+                var data = Encoding.UTF8.GetBytes(
+                  "Hello, world!".Repeat(30).Aggregate((a, b) => a + b)
+                );
+
+                // Act
+                var encryptedData = await sut.EncryptRsaOaepSha256Async(data, rsaKeyPair.PublicKey);
+                var decryptedData = await sut.DecryptRsaOaepSha256Async(
+                  encryptedData,
+                  rsaKeyPair.PrivateKey
+                );
+
+                // Assert
+                decryptedData.Should().BeEquivalentTo(data);
+              });
+          }
+        );
       });
   }
 }

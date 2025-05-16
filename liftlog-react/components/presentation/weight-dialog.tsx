@@ -1,5 +1,6 @@
 import WeightFormat from '@/components/presentation/weight-format';
 import { spacing } from '@/hooks/useAppTheme';
+import { useWeightSuffix } from '@/hooks/useWeightSuffix';
 import { T } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
@@ -37,6 +38,7 @@ export default function WeightDialog(props: WeightDialogProps) {
   const [editorWeight, setEditorWeight] = useState<BigNumber | undefined>(
     props.weight,
   );
+  const weightSuffix = useWeightSuffix();
 
   useEffect(() => {
     setText(props.weight?.toFormat() ?? '');
@@ -46,8 +48,6 @@ export default function WeightDialog(props: WeightDialogProps) {
   const nonZeroIncrement = props.increment.isZero()
     ? new BigNumber('2.5')
     : props.increment;
-  // TODO get from settings context
-  const weightSuffix = 'kg';
 
   const incrementWeight = () => {
     if (editorWeight === undefined) {
