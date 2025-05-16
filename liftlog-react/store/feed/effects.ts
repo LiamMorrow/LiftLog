@@ -49,7 +49,15 @@ export function applyFeedEffects() {
                 }),
               );
             } else {
-              dispatch(setIdentity(RemoteData.success(feedState.identity)));
+              dispatch(
+                createFeedIdentity({
+                  name: undefined,
+                  publishBodyweight: false,
+                  publishPlan: false,
+                  publishWorkouts: false,
+                  fromUserAction: false,
+                }),
+              );
             }
           }
         }
@@ -108,7 +116,7 @@ export function applyFeedEffects() {
         cancelActiveListeners,
         getState,
         dispatch,
-        extra: { encryptionService, feedIdentityService },
+        extra: { feedIdentityService },
       },
     ) => {
       cancelActiveListeners();
@@ -183,6 +191,12 @@ export function applyFeedEffects() {
           aesKey,
           identity.data.rsaKeyPair.privateKey,
         );
+      const decrypted =
+        await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
+          encrypted,
+          aesKey,
+          identity.data.rsaKeyPair.publicKey,
+        );
 
       const result = await feedApiService.postSharedItemAsync({
         userId: identity.data.id,
@@ -214,7 +228,5 @@ export function applyFeedEffects() {
 }
 
 function getShareUrl(sharedItemId: string, aesKey: AesKey) {
-  return __DEV__
-    ? `https://0.0.0.0:5001/feed/shared-item/${sharedItemId}?k=${toUrlSafeHexString(aesKey.value)}`
-    : `https://app.liftlog.online/feed/shared-item/${sharedItemId}?k=${toUrlSafeHexString(aesKey.value)}`;
+  return `https://app.liftlog.online/feed/shared-item/${sharedItemId}?k=${toUrlSafeHexString(aesKey.value)}`;
 }
