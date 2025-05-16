@@ -27,34 +27,20 @@ import {
 
 import { MsIcon } from 'material-symbols-react-native';
 
-const MaterialSymbols = {
-  add: msAdd,
-  arrowDownward: msArrowDownward,
-  arrowUpward: msArrowUpward,
-  assignment: msAssignment,
-  bugReport: msBugReport,
-  close: msClose,
-  contentCopy: msContentCopy,
-  delete: msDelete,
-  edit: msEdit,
-  history: msHistory,
-  info: msInfo,
-  minus: msRemove, // Remap
-  moreHoriz: msMoreHoriz,
-  notes: msNotes,
-  notifications: msNotifications,
-  plus: msAdd, // Remap
-  remove: msRemove,
-  save: msSave,
-  settings: msSettings,
-  settingsBackupRestore: msSettingsBackupRestore,
-  share: msShare,
-  star: msStar,
-  text: msTextAd,
-  translate: msTranslate,
-  weight: msWeight,
-  fitnessCenter: msFitnessCenter,
+// console.log(msAdd);
+
+const x = {
+  variant: 'outlined' as const,
+  weight: 400 as const,
+  xml: '<svg xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 -960 960 960" width="48"><path d="M450-450H200v-60h250v-250h60v250h250v60H510v250h-60v-250Z"/></svg>',
 };
+
+import { View } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
+
+// const MaterialSymbols = {
+//   add: msAdd,
+// };
 
 // Instead of keeping the map above we can just go
 
@@ -63,12 +49,15 @@ const MaterialSymbols = {
 // const icon = AllIcons[name]
 // This would import all the icons into the bundle though
 
-export function msIconSource(name: keyof typeof MaterialSymbols) {
+export function msIconSource(name: any) {
   return ({ size, color }: { size: number; color: string }) => {
-    const icon = MaterialSymbols[name];
-    if (!icon) {
-      throw new Error(`Icon "${name}" not found in MaterialSymbols Map.`);
-    }
-    return <MsIcon icon={MaterialSymbols[name]} size={size} color={color} />;
+    return <MsIcon icon={x} size={size} color={color} />;
+    // return (
+    //   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    //     <Svg height="100" width="100">
+    //       <Circle cx="50" cy="50" r="40" fill="blue" />
+    //     </Svg>
+    //   </View>
+    // );
   };
 }
