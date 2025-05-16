@@ -1,4 +1,5 @@
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
+import { msIconSource } from '@/components/presentation/ms-icon-source';
 import ListTitle from '@/components/presentation/list-title';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
@@ -26,21 +27,27 @@ export default function Settings() {
           onPress={() => push('/(tabs)/settings/program-list')}
           title={t('ManagePlans')}
           description={t('ManagePlansSubtitle')}
-          left={(props) => <List.Icon icon={'assignment'} {...props} />}
+          left={(props) => (
+            <List.Icon icon={msIconSource('assignment')} {...props} />
+          )}
         ></List.Item>
 
         <List.Item
           onPress={() => push('/(tabs)/settings/app-configuration')}
           title={t('AppConfiguration')}
           description={t('AppConfigurationSubtitle')}
-          left={(props) => <List.Icon icon={'settings'} {...props} />}
+          left={(props) => (
+            <List.Icon icon={msIconSource('settings')} {...props} />
+          )}
         ></List.Item>
 
         <List.Item
           onPress={() => push('/(tabs)/settings/notifications')}
           title={t('Notifications')}
           description={t('NotificationsSubtitle')}
-          left={(props) => <List.Icon icon={'notifications'} {...props} />}
+          left={(props) => (
+            <List.Icon icon={msIconSource('notifications')} {...props} />
+          )}
         ></List.Item>
 
         <List.Item
@@ -48,7 +55,10 @@ export default function Settings() {
           title={t('ExportBackupRestore')}
           description={t('ExportBackupRestoreSubtitle')}
           left={(props) => (
-            <List.Icon icon={'settings_backup_restore'} {...props} />
+            <List.Icon
+              icon={msIconSource('settingsBackupRestore')}
+              {...props}
+            />
           )}
         ></List.Item>
       </List.Section>
@@ -63,7 +73,7 @@ export default function Settings() {
           }
           title={t('FeatureRequest')}
           description={t('FeatureRequestSubtitle')}
-          left={(props) => <List.Icon icon={'star'} {...props} />}
+          left={(props) => <List.Icon icon={msIconSource('star')} {...props} />}
         ></List.Item>
 
         <List.Item
@@ -74,7 +84,9 @@ export default function Settings() {
           }
           title={t('BugReport')}
           description={t('BugReportSubtitle')}
-          left={(props) => <List.Icon icon={'bug_report'} {...props} />}
+          left={(props) => (
+            <List.Icon icon={msIconSource('bugReport')} {...props} />
+          )}
         ></List.Item>
 
         <List.Item
@@ -85,13 +97,15 @@ export default function Settings() {
           }
           title={t('Translation')}
           description={t('TranslationSubtitle')}
-          left={(props) => <List.Icon icon={'translate'} {...props} />}
+          left={(props) => (
+            <List.Icon icon={msIconSource('translate')} {...props} />
+          )}
         ></List.Item>
         <List.Item
           onPress={() => setAppInfoOpen(true)}
           title={t('AppInfo')}
           description={t('AppInfoSubtitle')}
-          left={(props) => <List.Icon icon={'info'} {...props} />}
+          left={(props) => <List.Icon icon={msIconSource('info')} {...props} />}
         ></List.Item>
       </List.Section>
 

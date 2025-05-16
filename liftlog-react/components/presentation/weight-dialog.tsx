@@ -11,6 +11,7 @@ import {
   TextInput,
   useTheme,
 } from 'react-native-paper';
+import { msIconSource } from '@/components/presentation/ms-icon-source';
 
 type WeightDialogProps = {
   open: boolean;
@@ -107,7 +108,7 @@ export default function WeightDialog(props: WeightDialogProps) {
               style={{ flexDirection: 'row', justifyContent: 'space-between' }}
             >
               <Button
-                icon={'minus'}
+                icon={msIconSource('minus')}
                 mode="outlined"
                 data-cy="decrement-weight"
                 onPress={decrementWeight}
@@ -115,7 +116,7 @@ export default function WeightDialog(props: WeightDialogProps) {
                 <WeightFormat weight={nonZeroIncrement} />
               </Button>
               <Button
-                icon={'plus'}
+                icon={msIconSource('plus')}
                 mode="outlined"
                 data-cy="increment-weight"
                 onPress={incrementWeight}

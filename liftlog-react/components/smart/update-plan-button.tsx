@@ -15,6 +15,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import { Button } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
+import { msIconSource } from '@/components/presentation/ms-icon-source';
 
 interface UpdatePlanDialogProps {
   session: Session;
@@ -94,7 +95,7 @@ export default function UpdatePlanButton({
           {session.recordedExercises.length > 0 ? (
             <Button
               mode="contained-tonal"
-              icon={'plus'}
+              icon={msIconSource('plus')}
               onPress={() => setOpen(true)}
             >
               {t('UpdatePlan')}

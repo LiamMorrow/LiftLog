@@ -8,6 +8,7 @@ import { View } from 'react-native';
 import {
   Button,
   Dialog,
+  Icon,
   IconButton,
   Menu,
   Portal,
@@ -24,6 +25,7 @@ import PotentialSetAdditionalActionsDialog from '@/components/presentation/poten
 import PreviousExerciseViewer from '@/components/presentation/previous-exercixe-viewer';
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import WeightDisplay from '@/components/presentation/weight-display';
+import { msIconSource } from '@/components/presentation/ms-icon-source';
 
 interface WeightedExerciseProps {
   recordedExercise: RecordedExercise;
@@ -121,6 +123,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
   const showPrevious = () => {
     setPreviousDialogOpen(true);
   };
+
   const interactiveButtons = props.isReadonly ? (
     <View style={{ height: 40 }}></View>
   ) : (
@@ -133,13 +136,13 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
       {props.showPreviousButton ? (
         <IconButton
           data-cy="prev-exercise-btn"
-          icon={'history'}
+          icon={msIconSource('history')}
           onPress={showPrevious}
         />
       ) : null}
       <IconButton
         data-cy="per-rep-weight-btn"
-        icon={'weight'}
+        icon={msIconSource('weight')}
         onPress={props.togglePerSepWeight}
       />
 
@@ -150,7 +153,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
           <IconButton
             data-cy="more-exercise-btn"
             onPress={() => setMenuVisible(true)}
-            icon="dots-horizontal"
+            icon={msIconSource('moreHoriz')}
           />
         }
       >
@@ -159,13 +162,13 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             props.onEditExercise();
             setMenuVisible(false);
           }}
-          leadingIcon="pencil"
+          leadingIcon={msIconSource('edit')}
           title={t('Edit')}
         />
         <Menu.Item
           data-cy="exercise-notes-btn"
           title={t('Notes')}
-          leadingIcon="text"
+          leadingIcon={msIconSource('notes')}
           onPress={() => {
             setEditorNotes(recordedExercise.notes ?? '');
             setNotesDialogOpen(true);
@@ -177,12 +180,13 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             setRemoveExerciseDialogOpen(true);
             setMenuVisible(false);
           }}
-          leadingIcon="delete"
-          title={t('Remove')}
+          leadingIcon={msIconSource('delete')}
+          title={'Remove123'}
         />
       </Menu>
     </View>
   );
+
   return (
     <View
       style={{

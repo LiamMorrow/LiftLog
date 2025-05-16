@@ -7,6 +7,7 @@ import { selectAllPrograms } from '@/store/program';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { FAB, List } from 'react-native-paper';
+import { msIconSource } from '@/components/presentation/ms-icon-source';
 
 export default function ProgramList() {
   const ps = useAppSelector(selectAllPrograms);
@@ -23,7 +24,7 @@ export default function ProgramList() {
         <FAB
           variant="surface"
           size="small"
-          icon="add"
+          icon={msIconSource('add')}
           label={t('AddPlan')}
           onPress={addProgram}
         />

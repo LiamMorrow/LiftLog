@@ -1,6 +1,7 @@
 import CardList from '@/components/presentation/card-list';
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
+import { msIconSource } from '@/components/presentation/ms-icon-source';
 import { Remote } from '@/components/presentation/remote';
 import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
@@ -43,7 +44,7 @@ function NoUpcomingSessions() {
           <View style={{ flexDirection: 'row', gap: spacing[2] }}>
             <Button
               mode="contained-tonal"
-              icon={'add'}
+              icon={msIconSource('add')}
               style={{ flex: 1 }}
               onPress={() =>
                 push(`/settings/manage-workouts/${activeProgramId}`)
@@ -54,7 +55,7 @@ function NoUpcomingSessions() {
             <Button
               mode="contained"
               style={{ flex: 1 }}
-              icon={'assignment'}
+              icon={msIconSource('assignment')}
               onPress={() => push(`/settings/program-list`)}
             >
               <T keyName="SelectAPlan" />

@@ -14,6 +14,7 @@ import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { IconButton, Menu } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
+import { msIconSource } from '@/components/presentation/ms-icon-source';
 
 interface ManageWorkoutCardContentProps {
   sessionBlueprint: SessionBlueprint;
@@ -77,13 +78,19 @@ function Actions({
     );
   return (
     <>
-      <IconButton onPress={moveSessionUp} icon={'arrow_upward'} />
-      <IconButton onPress={moveSessionDown} icon={'arrow_downward'} />
+      <IconButton onPress={moveSessionUp} icon={msIconSource('arrowUpward')} />
+      <IconButton
+        onPress={moveSessionDown}
+        icon={msIconSource('arrowDownward')}
+      />
       <Menu
         visible={menuOpen}
         onDismiss={() => setMenuOpen(false)}
         anchor={
-          <IconButton onPress={() => setMenuOpen(true)} icon={'more_horiz'} />
+          <IconButton
+            onPress={() => setMenuOpen(true)}
+            icon={msIconSource('moreHoriz')}
+          />
         }
       >
         <Menu.Item
@@ -91,12 +98,12 @@ function Actions({
             setMenuOpen(false);
             removeSession();
           }}
-          leadingIcon="delete"
+          leadingIcon={msIconSource('delete')}
           title={t('Remove')}
         />
         <Menu.Item
           title={t('Duplicate')}
-          leadingIcon="content_copy"
+          leadingIcon={msIconSource('contentCopy')}
           onPress={() => {
             setMenuOpen(false);
             duplicateSession();
