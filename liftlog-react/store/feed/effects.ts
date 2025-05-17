@@ -26,7 +26,11 @@ export function applyFeedEffects() {
     initializeFeedStateSlice,
     async (
       _,
-      { cancelActiveListeners, dispatch, extra: { keyValueStore, logger } },
+      {
+        cancelActiveListeners,
+        dispatch,
+        extra: { keyValueStore, logger, encryptionService },
+      },
     ) => {
       cancelActiveListeners();
       const sw = performance.now();
@@ -49,15 +53,7 @@ export function applyFeedEffects() {
                 }),
               );
             } else {
-              dispatch(
-                createFeedIdentity({
-                  name: undefined,
-                  publishBodyweight: false,
-                  publishPlan: false,
-                  publishWorkouts: false,
-                  fromUserAction: false,
-                }),
-              );
+              dispatch(setIdentity(RemoteData.success(feedState.identity)));
             }
           }
         }
@@ -145,19 +141,6 @@ export function applyFeedEffects() {
         return;
       }
       dispatch(setIdentity(RemoteData.success(identityResult.data)));
-      const encrypted =
-        await encryptionService.signRsa256PssAndEncryptAesCbcAsync(
-          new TextEncoder().encode('hello'),
-          identityResult.data.aesKey,
-          identityResult.data.rsaKeyPair.privateKey,
-        );
-      const decrypted =
-        await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
-          encrypted,
-          identityResult.data.aesKey,
-          identityResult.data.rsaKeyPair.publicKey,
-        );
-      debugger;
     },
   );
 
@@ -203,12 +186,6 @@ export function applyFeedEffects() {
           payloadBytes,
           aesKey,
           identity.data.rsaKeyPair.privateKey,
-        );
-      const decrypted =
-        await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
-          encrypted,
-          aesKey,
-          identity.data.rsaKeyPair.publicKey,
         );
 
       const result = await feedApiService.postSharedItemAsync({
