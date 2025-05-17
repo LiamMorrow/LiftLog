@@ -13,6 +13,7 @@ import {
   fromUrlSafeHexString,
   toUrlSafeHexString,
 } from '@/utils/to-url-safe-hex-string';
+import { Platform } from 'react-native';
 
 // SHA-256 hash length in bytes
 const SignatureLengthBytes = 256;
@@ -43,11 +44,8 @@ export class EncryptionService {
     const signature = decrypted.slice(decrypted.length - SignatureLengthBytes);
     const payload = decrypted.slice(0, decrypted.length - SignatureLengthBytes);
 
-    const payloadHashHex = await Aes.sha256(uint8ArrayToBase64(payload));
-    const payloadHashBytes = fromUrlSafeHexString(payloadHashHex);
-
     const verified = await this.verifyRsaPssSha256Async(
-      payloadHashBytes,
+      payload,
       signature,
       publicKey,
     );
@@ -66,17 +64,9 @@ export class EncryptionService {
     aesIv?: AesIV | null,
   ): Promise<AesEncryptedAndRsaSignedData> {
     const iv = aesIv?.value ?? crypto.getRandomValues(new Uint8Array(16));
-    const dataStr = uint8ArrayToBase64(data);
-    const sha256Hash = await Aes.sha256(dataStr);
-    const signature = await this.signRsaPssSha256Async(
-      fromUrlSafeHexString(sha256Hash),
-      privateKey,
-    );
+    const signature = await this.signRsaPssSha256Async(data, privateKey);
 
-    const payloadBytes = new Uint8Array([
-      ...data,
-      ...new Uint8Array(signature),
-    ]);
+    const payloadBytes = new Uint8Array([...data, ...signature]);
     const payloadBase64 = uint8ArrayToBase64(payloadBytes);
 
     const encrypted = await Aes.encrypt(
@@ -86,7 +76,6 @@ export class EncryptionService {
       'aes-128-cbc',
     );
     const encryptedPayload = base64ToUint8Array(encrypted);
-
     return {
       encryptedPayload,
       iv: { value: iv },
@@ -99,10 +88,10 @@ export class EncryptionService {
     const publicKey = pemToDer(kp.public);
     return {
       privateKey: {
-        pkcs8PrivateKeyBytes: new Uint8Array(privateKey),
+        pkcs8PrivateKeyBytes: privateKey,
       },
       publicKey: {
-        spkiPublicKeyBytes: new Uint8Array(publicKey),
+        spkiPublicKeyBytes: pkcs1ToSpki(publicKey),
       },
     };
   }
@@ -158,11 +147,12 @@ export class EncryptionService {
   ): Promise<Uint8Array> {
     const key = derToPem(privateKey.pkcs8PrivateKeyBytes, 'PRIVATE KEY');
     const hashHex = await Aes.sha256(uint8ArrayToBase64(data));
+    console.log(hashHex);
     return base64ToUint8Array(
       await RSA.sign64WithAlgorithm(
         uint8ArrayToBase64(fromUrlSafeHexString(hashHex)),
         key,
-        'SHA256withRSA',
+        'RSASSA-PSS',
       ),
     );
   }
@@ -172,7 +162,10 @@ export class EncryptionService {
     signature: Uint8Array,
     publicKey: RsaPublicKey,
   ): Promise<boolean> {
-    const keyPem = derToPem(publicKey.spkiPublicKeyBytes, 'PUBLIC KEY');
+    const keyPem = derToPem(
+      spkiToPkcs1(publicKey.spkiPublicKeyBytes),
+      'PUBLIC KEY',
+    );
     const payloadHashHex = await Aes.sha256(uint8ArrayToBase64(data));
     const payloadHashBytes = fromUrlSafeHexString(payloadHashHex);
     const payloadHashBase64 = uint8ArrayToBase64(payloadHashBytes);
@@ -180,7 +173,7 @@ export class EncryptionService {
       uint8ArrayToBase64(signature),
       payloadHashBase64,
       keyPem,
-      'SHA256withRSA',
+      'RSASSA-PSS',
     );
   }
 }
@@ -243,4 +236,71 @@ function base64ToUint8Array(base64: string): Uint8Array {
     arr[i] = binary.charCodeAt(i);
   }
   return arr;
+}
+/**
+ * Wraps a PKCS#1 public key DER in an SPKI (X.509) header.
+ * @param pkcs1 The PKCS#1 DER-encoded public key.
+ * @returns The SPKI DER-encoded public key.
+ */ function pkcs1ToSpki(pkcs1: Uint8Array): Uint8Array {
+  if (Platform.OS === 'ios') {
+    return pkcs1;
+  }
+  const rsaOid = [
+    0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
+    0x01, 0x05, 0x00,
+  ];
+  // BIT STRING: tag, length, 0x00, then pkcs1
+  const bitString = [
+    0x03,
+    ...encodeAsn1Length(pkcs1.length + 1),
+    0x00,
+    ...pkcs1,
+  ];
+  // SEQUENCE: rsaOid + bitString
+  const fullSeq = [...rsaOid, ...bitString];
+  const spki = [0x30, ...encodeAsn1Length(fullSeq.length), ...fullSeq];
+  return new Uint8Array(spki);
+}
+/**
+ * Extracts a PKCS#1 public key DER from an SPKI (X.509) DER public key.
+ * @param spki The SPKI DER-encoded public key.
+ * @returns The PKCS#1 DER-encoded public key.
+ */
+function spkiToPkcs1(spki: Uint8Array): Uint8Array {
+  if (Platform.OS === 'ios') {
+    return spki;
+  }
+  // Find the BIT STRING tag (0x03)
+  let i = 0;
+  while (i < spki.length) {
+    if (spki[i] === 0x03) break;
+    i++;
+  }
+  if (i >= spki.length - 2) throw new Error('Invalid SPKI format');
+  // The next byte is the length, then a 0x00 (no unused bits)
+  let len = spki[i + 1];
+  let offset = i + 2;
+  if (len & 0x80) {
+    // Long form length
+    const numLenBytes = len & 0x7f;
+    len = 0;
+    for (let j = 0; j < numLenBytes; j++) {
+      len = (len << 8) | spki[offset++];
+    }
+  }
+  // The next byte should be 0x00 (no unused bits)
+  if (spki[offset] !== 0x00) throw new Error('Invalid SPKI BIT STRING');
+  offset++;
+  // The rest is the PKCS#1 DER
+  return spki.slice(offset, offset + len - 1);
+}
+function encodeAsn1Length(len: number): number[] {
+  if (len <= 127) return [len];
+  const bytes = [];
+  let tmp = len;
+  while (tmp > 0) {
+    bytes.unshift(tmp & 0xff);
+    tmp >>= 8;
+  }
+  return [0x80 | bytes.length, ...bytes];
 }

@@ -1,3 +1,253 @@
+diff --git a/node_modules/react-native-rsa-native/android/src/main/java/com/RNRSA/RSA.java b/node_modules/react-native-rsa-native/android/src/main/java/com/RNRSA/RSA.java
+index 7079d28..20df175 100644
+--- a/node_modules/react-native-rsa-native/android/src/main/java/com/RNRSA/RSA.java
++++ b/node_modules/react-native-rsa-native/android/src/main/java/com/RNRSA/RSA.java
+@@ -171,9 +171,18 @@ public class RSA {
+         return Base64.encodeToString(data, Base64.DEFAULT);
+     }
+
+-    private String sign(byte[] messageBytes, String algorithm) throws NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException {
++    private String sign(byte[] messageBytes, String algorithm) throws NoSuchAlgorithmException,InvalidAlgorithmParameterException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException {
+
+-        Signature privateSignature = Signature.getInstance(algorithm);
++        Signature privateSignature;
++        if (algorithm.equals("RSASSA-PSS")) {
++            privateSignature = Signature.getInstance("SHA256withRSA/PSS");
++            java.security.spec.PSSParameterSpec pssSpec = new java.security.spec.PSSParameterSpec(
++                "SHA-256", "MGF1", java.security.spec.MGF1ParameterSpec.SHA256, 32, 1
++            );
++            privateSignature.setParameter(pssSpec);
++        } else {
++            privateSignature = Signature.getInstance(algorithm);
++        }
+         privateSignature.initSign(this.privateKey);
+         privateSignature.update(messageBytes);
+         byte[] signature = privateSignature.sign();
+@@ -181,27 +190,37 @@ public class RSA {
+     }
+
+     // b64 message
+-    public String sign64(String b64message, String algorithm) throws NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException {
++    public String sign64(String b64message, String algorithm) throws NoSuchAlgorithmException,InvalidAlgorithmParameterException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException {
+         byte[] messageBytes = Base64.decode(b64message, Base64.DEFAULT);
+         return sign(messageBytes, algorithm);
+     }
+
+
+     //utf-8 message
+-    public String sign(String message, String signature) throws NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException {
++    public String sign(String message, String signature) throws NoSuchAlgorithmException,InvalidAlgorithmParameterException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException {
+         byte[] messageBytes = message.getBytes(CharsetUTF_8);
+         return sign(messageBytes, signature);
+     }
+
+-    private boolean verify(byte[] signatureBytes, byte[] messageBytes, String algorithm) throws NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException {
+-        Signature publicSignature = Signature.getInstance(algorithm);
++    private boolean verify(byte[] signatureBytes, byte[] messageBytes, String algorithm) throws NoSuchAlgorithmException, InvalidKeySpecException,InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException {
++        Signature publicSignature;
++        if (algorithm.equals("RSASSA-PSS")) {
++
++            publicSignature = Signature.getInstance("SHA256withRSA/PSS");
++            java.security.spec.PSSParameterSpec pssSpec = new java.security.spec.PSSParameterSpec(
++                "SHA-256", "MGF1", java.security.spec.MGF1ParameterSpec.SHA256, 32, 1
++            );
++            publicSignature.setParameter(pssSpec);
++        } else {
++            publicSignature = Signature.getInstance(algorithm);
++        }
+         publicSignature.initVerify(this.publicKey);
+         publicSignature.update(messageBytes);
+         return publicSignature.verify(signatureBytes);
+     }
+
+     // b64 message
+-    public boolean verify64(String signature, String message, String algorithm) throws NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException {
++    public boolean verify64(String signature, String message, String algorithm) throws NoSuchAlgorithmException,InvalidAlgorithmParameterException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException {
+         Signature publicSignature = Signature.getInstance(algorithm);
+         publicSignature.initVerify(this.publicKey);
+         byte[] messageBytes = Base64.decode(message, Base64.DEFAULT);
+@@ -210,7 +229,7 @@ public class RSA {
+     }
+
+     // utf-8 message
+-    public boolean verify(String signature, String message, String algorithm) throws NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException {
++    public boolean verify(String signature, String message, String algorithm) throws NoSuchAlgorithmException,InvalidAlgorithmParameterException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException {
+         Signature publicSignature = Signature.getInstance(algorithm);
+         publicSignature.initVerify(this.publicKey);
+         byte[] messageBytes = message.getBytes(CharsetUTF_8);
+@@ -401,4 +420,3 @@ public class RSA {
+     }
+
+ }
+-
+diff --git a/node_modules/react-native-rsa-native/index.d.ts b/node_modules/react-native-rsa-native/index.d.ts
+index c44ccfb..2cbdb94 100644
+--- a/node_modules/react-native-rsa-native/index.d.ts
++++ b/node_modules/react-native-rsa-native/index.d.ts
+@@ -18,6 +18,7 @@ declare module 'react-native-rsa-native' {
+ 		'SHA256withECDSA'|
+ 		'SHA512withECDSA'|
+ 		'SHA1withECDSA'
++		|'RSASSA-PSS'
+
+
+ 	namespace RSA {
+diff --git a/node_modules/react-native-rsa-native/ios/CSRSwift.swift b/node_modules/react-native-rsa-native/ios/CSRSwift.swift
+index b042e5f..238b504 100644
+--- a/node_modules/react-native-rsa-native/ios/CSRSwift.swift
++++ b/node_modules/react-native-rsa-native/ios/CSRSwift.swift
+@@ -114,7 +114,7 @@ public class CertificateSigningRequest:NSObject {
+
+                 CC_SHA1_Final(&digest, &SHA1)
+
+-            case .rsa(signatureType: .sha256), .ec(signatureType: .sha256):
++            case .rsa(signatureType: .sha256), .ec(signatureType: .sha256), .rsaPSS:
+
+                 var SHA256 = CC_SHA256_CTX()
+                 CC_SHA256_Init(&SHA256)
+@@ -268,7 +268,7 @@ public class CertificateSigningRequest:NSObject {
+         var publicKeyInfo = Data(capacity: 390)
+
+         switch keyAlgorithm! {
+-        case .rsa:
++        case .rsa, .rsaPSS:
+             publicKeyInfo.append(OBJECT_rsaEncryptionNULL, count: OBJECT_rsaEncryptionNULL.count)
+         case .ec:
+             publicKeyInfo.append(OBJECT_ecPubicKey, count: OBJECT_ecPubicKey.count)
+@@ -467,6 +467,3 @@ public class CertificateSigningRequest:NSObject {
+         return ret
+     }
+ }
+-
+-
+-
+diff --git a/node_modules/react-native-rsa-native/ios/CSRSwiftConstants.swift b/node_modules/react-native-rsa-native/ios/CSRSwiftConstants.swift
+index 46c2639..7a83ab6 100644
+--- a/node_modules/react-native-rsa-native/ios/CSRSwiftConstants.swift
++++ b/node_modules/react-native-rsa-native/ios/CSRSwiftConstants.swift
+@@ -38,7 +38,9 @@ let SEQUENCE_OBJECT_sha512WithECEncryption:[UInt8] = [0x30, 0x0A, 0x06, 0x08, 0x
+
+ //Enums
+ public enum KeyAlgorithm {
+-    case rsa(signatureType: signature), ec(signatureType: signature)
++    case rsa(signatureType: signature)
++    case rsaPSS(signatureType: signature)
++    case ec(signatureType: signature)
+
+     @available(iOS 10, *)
+     public var secKeyAttrType: CFString {
+@@ -46,6 +48,7 @@ public enum KeyAlgorithm {
+         switch self {
+
+         case .rsa:  result = kSecAttrKeyTypeRSA
++        case .rsaPSS:  result = kSecAttrKeyTypeRSA
+         case .ec:   result = kSecAttrKeyTypeECSECPrimeRandom
+
+         }
+@@ -58,6 +61,7 @@ public enum KeyAlgorithm {
+         switch self {
+
+         case .rsa:  result = kSecAttrKeyTypeRSA
++        case .rsaPSS:  result = kSecAttrKeyTypeRSA
+         case .ec:   result = kSecAttrKeyTypeEC
+
+         }
+@@ -69,6 +73,7 @@ public enum KeyAlgorithm {
+         switch self {
+
+         case .rsa:  result = [512, 1024, 2048]
++        case .rsaPSS:  result = [2048]
+         case .ec:   result = [256]
+
+         }
+@@ -78,18 +83,14 @@ public enum KeyAlgorithm {
+     public enum signature {
+         case sha1, sha256, sha512
+     }
+-
+-    public var type:String{
++    public var type: String {
+         let result: String
+-
+         switch self {
+-        case .rsa(signatureType: .sha1), .rsa(signatureType: .sha256), .rsa(signatureType: .sha512):
++        case .rsa, .rsaPSS:
+             result = "RSA"
+-
+-        case .ec(signatureType: .sha1), .ec(signatureType: .sha256), .ec(signatureType: .sha512):
++        case .ec:
+             result = "EC"
+         }
+-
+         return result
+     }
+
+@@ -103,6 +104,12 @@ public enum KeyAlgorithm {
+             result = .rsaSignatureMessagePKCS1v15SHA256
+         case .rsa(signatureType: .sha512):
+             result = .rsaSignatureMessagePKCS1v15SHA512
++        case .rsaPSS:
++            if #available(iOS 11.0, *) {
++                result = .rsaSignatureMessagePSSSHA256
++            } else {
++                fatalError("RSA-PSS requires iOS 11+")
++            }
+         case .ec(signatureType: .sha1):
+             result = .ecdsaSignatureMessageX962SHA1
+         case .ec(signatureType: .sha256):
+@@ -111,7 +118,6 @@ public enum KeyAlgorithm {
+             result = .ecdsaSignatureMessageX962SHA512
+         }
+         return result
+-
+     }
+
+     @available(iOS, deprecated: 10.0)
+@@ -121,7 +127,7 @@ public enum KeyAlgorithm {
+         //case .rsa(signatureType: .md5), .ec(signatureType: .md5):    result = CC_MD5_DIGEST_LENGTH
+         case .rsa(signatureType: .sha1), .ec(signatureType: .sha1):     result = CC_SHA1_DIGEST_LENGTH
+         //case .rsa(signatureType: .sha224), .ec(signatureType: .sha224):   result = CC_SHA224_DIGEST_LENGTH
+-        case .rsa(signatureType: .sha256), .ec(signatureType: .sha256):   result = CC_SHA256_DIGEST_LENGTH
++        case .rsa(signatureType: .sha256), .ec(signatureType: .sha256), .rsaPSS:   result = CC_SHA256_DIGEST_LENGTH
+         //case .rsa(signatureType: .sha384), .ec(signatureType: .sha384):   result = CC_SHA384_DIGEST_LENGTH
+         case .rsa(signatureType: .sha512), .ec(signatureType: .sha512):   result = CC_SHA512_DIGEST_LENGTH
+         }
+@@ -135,7 +141,7 @@ public enum KeyAlgorithm {
+         switch self {
+         case .rsa(signatureType: .sha1), .ec(signatureType: .sha1):
+             result = SecPadding.PKCS1SHA1
+-        case .rsa(signatureType: .sha256), .ec(signatureType: .sha256):
++        case .rsa(signatureType: .sha256), .ec(signatureType: .sha256), .rsaPSS:
+             result = SecPadding.PKCS1SHA256
+         case .rsa(signatureType: .sha512), .ec(signatureType: .sha512):
+             result = SecPadding.PKCS1SHA512
+@@ -149,7 +155,7 @@ public enum KeyAlgorithm {
+         switch self {
+         case .rsa(signatureType: .sha1):
+             result = SEQUENCE_OBJECT_sha1WithRSAEncryption
+-        case .rsa(signatureType: .sha256):
++        case .rsa(signatureType: .sha256), .rsaPSS:
+             result = SEQUENCE_OBJECT_sha256WithRSAEncryption
+         case .rsa(signatureType: .sha512):
+             result = SEQUENCE_OBJECT_sha512WithRSAEncryption
+@@ -167,7 +173,7 @@ public enum KeyAlgorithm {
+     var objectEncryptionKeyType: [UInt8]{
+         let result:[UInt8]
+         switch self {
+-        case .rsa(signatureType: .sha1), .rsa(signatureType: .sha256), .rsa(signatureType: .sha512):
++        case .rsa(signatureType: .sha1), .rsa(signatureType: .sha256), .rsa(signatureType: .sha512), .rsaPSS:
+
+             result = OBJECT_rsaEncryptionNULL
+
+@@ -180,6 +186,3 @@ public enum KeyAlgorithm {
+     }
+
+ }
+-
+-
+-
+diff --git a/node_modules/react-native-rsa-native/ios/RNRSA.swift b/node_modules/react-native-rsa-native/ios/RNRSA.swift
+index 6f4bb71..b5fa7a5 100644
 --- a/node_modules/react-native-rsa-native/ios/RNRSA.swift
 +++ b/node_modules/react-native-rsa-native/ios/RNRSA.swift
 @@ -153,7 +153,7 @@ class RNRSA: NSObject {
@@ -22,4 +272,65 @@
 -
 -
 -
+-
+diff --git a/node_modules/react-native-rsa-native/ios/RSAECNative.swift b/node_modules/react-native-rsa-native/ios/RSAECNative.swift
+index faae259..a13d727 100644
+--- a/node_modules/react-native-rsa-native/ios/RSAECNative.swift
++++ b/node_modules/react-native-rsa-native/ios/RSAECNative.swift
+@@ -178,23 +178,27 @@ class RSAECNative: NSObject {
+     }
+
+     private func setAlgorithm(algorithm: String) -> Void {
+-        switch algorithm {
+-        case "SHA256withRSA":
+-            self.keyAlgorithm = .rsa(signatureType: .sha256)
+-        case "SHA512withRSA":
+-            self.keyAlgorithm = .rsa(signatureType: .sha512)
+-        case "SHA1withRSA":
+-            self.keyAlgorithm = .rsa(signatureType: .sha1)
+-        case "SHA256withECDSA":
+-            self.keyAlgorithm = .ec(signatureType: .sha256)
+-        case "SHA512withECDSA":
+-            self.keyAlgorithm = .ec(signatureType: .sha512)
+-        case "SHA1withECDSA":
+-            self.keyAlgorithm = .ec(signatureType: .sha1)
+-        default:
+-            self.keyAlgorithm = .rsa(signatureType: .sha1)
++    switch algorithm {
++    case "SHA256withRSA":
++        self.keyAlgorithm = .rsa(signatureType: .sha256)
++    case "SHA512withRSA":
++        self.keyAlgorithm = .rsa(signatureType: .sha512)
++    case "SHA1withRSA":
++        self.keyAlgorithm = .rsa(signatureType: .sha1)
++    case "RSASSA-PSS":
++        if #available(iOS 10.0, *) {
++            self.keyAlgorithm = .rsaPSS(signatureType: .sha256)
+         }
++    case "SHA256withECDSA":
++        self.keyAlgorithm = .ec(signatureType: .sha256)
++    case "SHA512withECDSA":
++        self.keyAlgorithm = .ec(signatureType: .sha512)
++    case "SHA1withECDSA":
++        self.keyAlgorithm = .ec(signatureType: .sha1)
++    default:
++        self.keyAlgorithm = .rsa(signatureType: .sha1)
+     }
++}
+
+
+     public func deletePrivateKey(){
+@@ -448,7 +452,7 @@ class RSAECNative: NSObject {
+
+                     CC_SHA1_Final(&digest, &SHA1)
+
+-                case .rsa(signatureType: .sha256), .ec(signatureType: .sha256):
++                case .rsa(signatureType: .sha256), .ec(signatureType: .sha256), .rsaPSS:
+
+                     var SHA256 = CC_SHA256_CTX()
+                     CC_SHA256_Init(&SHA256)
+@@ -609,4 +613,3 @@ class RSAECNative: NSObject {
+     }
+
+ }
 -
