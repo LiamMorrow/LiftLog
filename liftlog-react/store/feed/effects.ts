@@ -116,7 +116,7 @@ export function applyFeedEffects() {
         cancelActiveListeners,
         getState,
         dispatch,
-        extra: { feedIdentityService },
+        extra: { feedIdentityService, encryptionService },
       },
     ) => {
       cancelActiveListeners();
@@ -145,6 +145,19 @@ export function applyFeedEffects() {
         return;
       }
       dispatch(setIdentity(RemoteData.success(identityResult.data)));
+      const encrypted =
+        await encryptionService.signRsa256PssAndEncryptAesCbcAsync(
+          new TextEncoder().encode('hello'),
+          identityResult.data.aesKey,
+          identityResult.data.rsaKeyPair.privateKey,
+        );
+      const decrypted =
+        await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
+          encrypted,
+          identityResult.data.aesKey,
+          identityResult.data.rsaKeyPair.publicKey,
+        );
+      debugger;
     },
   );
 

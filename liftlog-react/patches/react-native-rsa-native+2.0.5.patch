@@ -1,0 +1,25 @@
+--- a/node_modules/react-native-rsa-native/ios/RNRSA.swift
++++ b/node_modules/react-native-rsa-native/ios/RNRSA.swift
+@@ -153,7 +153,7 @@ class RNRSA: NSObject {
+             resolve(false)
+             return
+         }
+-        let verifyResult = rsa_ec.verify64(encodedSignature: signature, withMessage: withMessage, withAlgorithm: withAlgorithm)
++        let verifyResult = rsa_ec.verify64(encodedSignature: withMessage, withMessage: signature, withAlgorithm: withAlgorithm)
+         if(verifyResult == false){
+             reject("verify failed", "error", nil)
+         }else {
+@@ -223,13 +223,3 @@ class RNRSA: NSObject {
+     }
+
+ }
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
