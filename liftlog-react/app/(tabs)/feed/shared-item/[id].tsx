@@ -8,12 +8,12 @@ import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useDispatch } from 'react-redux';
 
 export default function SharedItemPage() {
-  let { id, k } = useLocalSearchParams<{
+  const { id, k } = useLocalSearchParams<{
     id: string;
     k?: string;
   }>();
-  id = 'f7z43iy473my';
-  k = 'ee4d91d8423b1a16f82fa955add95cd1';
+  // id = 'f7z43iy473my';
+  // k = 'ee4d91d8423b1a16f82fa955add95cd1';
   const sharedRemote = useAppSelector(selectSharedItem);
   const dispatch = useDispatch();
   const fetch = () => {

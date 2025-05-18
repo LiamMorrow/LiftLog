@@ -8,14 +8,19 @@ import { msContentCopy } from '@material-symbols-react-native/outlined-400/msCon
 import { msDelete } from '@material-symbols-react-native/outlined-400/msDelete';
 import { msEdit } from '@material-symbols-react-native/outlined-400/msEdit';
 import { msFitnessCenter } from '@material-symbols-react-native/outlined-400/msFitnessCenter';
+import { msFitnessCenterFill } from '@material-symbols-react-native/outlined-400/msFitnessCenterFill';
 import { msHistory } from '@material-symbols-react-native/outlined-400/msHistory';
 import { msInfo } from '@material-symbols-react-native/outlined-400/msInfo';
 import { msMoreHoriz } from '@material-symbols-react-native/outlined-400/msMoreHoriz';
 import { msNotes } from '@material-symbols-react-native/outlined-400/msNotes';
 import { msNotifications } from '@material-symbols-react-native/outlined-400/msNotifications';
 import { msRemove } from '@material-symbols-react-native/outlined-400/msRemove';
+import { msAnalyticsFill } from '@material-symbols-react-native/outlined-400/msAnalyticsFill';
+import { msAnalytics } from '@material-symbols-react-native/outlined-400/msAnalytics';
 import { msSave } from '@material-symbols-react-native/outlined-400/msSave';
+import { msError } from '@material-symbols-react-native/outlined-400/msError';
 import { msSettings } from '@material-symbols-react-native/outlined-400/msSettings';
+import { msSettingsFill } from '@material-symbols-react-native/outlined-400/msSettingsFill';
 import { msSettingsBackupRestore } from '@material-symbols-react-native/outlined-400/msSettingsBackupRestore';
 import { msShare } from '@material-symbols-react-native/outlined-400/msShare';
 import { msStar } from '@material-symbols-react-native/outlined-400/msStar';
@@ -23,6 +28,8 @@ import { msTextAd } from '@material-symbols-react-native/outlined-400/msTextAd';
 import { msTranslate } from '@material-symbols-react-native/outlined-400/msTranslate';
 import { msWeight } from '@material-symbols-react-native/outlined-400/msWeight';
 import { msChevronLeft } from '@material-symbols-react-native/outlined-400/msChevronLeft';
+import { msForum } from '@material-symbols-react-native/outlined-400/msForum';
+import { msForumFill } from '@material-symbols-react-native/outlined-400/msForumFill';
 import { msChevronRight } from '@material-symbols-react-native/outlined-400/msChevronRight';
 import { MsIcon } from 'material-symbols-react-native';
 import { IconProps } from 'react-native-paper/lib/typescript/components/MaterialCommunityIcon';
@@ -41,6 +48,7 @@ const MaterialSymbols = {
   contentCopy: msContentCopy,
   delete: msDelete,
   edit: msEdit,
+  error: msError,
   history: msHistory,
   info: msInfo,
   minus: msRemove, // Remap
@@ -50,7 +58,12 @@ const MaterialSymbols = {
   plus: msAdd, // Remap
   remove: msRemove,
   save: msSave,
+  forum: msForum,
+  forumFill: msForumFill,
   settings: msSettings,
+  settingsFill: msSettingsFill,
+  analytics: msAnalytics,
+  analyticsFill: msAnalyticsFill,
   settingsBackupRestore: msSettingsBackupRestore,
   share: msShare,
   star: msStar,
@@ -58,6 +71,7 @@ const MaterialSymbols = {
   translate: msTranslate,
   weight: msWeight,
   fitnessCenter: msFitnessCenter,
+  fitnessCenterFill: msFitnessCenterFill,
 
   chevronLeft: msChevronLeft,
   chevronRight: msChevronRight,

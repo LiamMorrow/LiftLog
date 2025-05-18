@@ -10,8 +10,14 @@ export default function Layout() {
         name="(session)"
         options={{
           tabBarLabel: t('Workout'),
-          tabBarIcon: ({ color, size }) => {
-            return <Icon source={'fitnessCenter'} size={size} color={color} />;
+          tabBarIcon: ({ color, size, focused }) => {
+            return (
+              <Icon
+                source={focused ? `fitnessCenterFill` : 'fitnessCenter'}
+                size={size}
+                color={color}
+              />
+            );
           },
         }}
       />
@@ -20,8 +26,30 @@ export default function Layout() {
         name="feed"
         options={{
           tabBarLabel: t('Feed'),
-          tabBarIcon: ({ color, size }) => {
-            return <Icon source="forum" size={size} color={color} />;
+          tabBarIcon: ({ color, size, focused }) => {
+            return (
+              <Icon
+                source={focused ? `forumFill` : 'forum'}
+                size={size}
+                color={color}
+              />
+            );
+          },
+        }}
+      />
+
+      <Tabs.Screen
+        name="stats/index"
+        options={{
+          tabBarLabel: t('Stats'),
+          tabBarIcon: ({ color, size, focused }) => {
+            return (
+              <Icon
+                source={focused ? `analyticsFill` : 'analytics'}
+                size={size}
+                color={color}
+              />
+            );
           },
         }}
       />
@@ -40,8 +68,14 @@ export default function Layout() {
         name="settings"
         options={{
           tabBarLabel: t('Settings'),
-          tabBarIcon: ({ color, size }) => {
-            return <Icon source={'settings'} size={size} color={color} />;
+          tabBarIcon: ({ color, size, focused }) => {
+            return (
+              <Icon
+                source={focused ? `settingsFill` : 'settings'}
+                size={size}
+                color={color}
+              />
+            );
           },
         }}
       />
