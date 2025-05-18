@@ -116,7 +116,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
         style={{ marginBottom: spacing[2] }}
         value={exercise.notes}
         onChangeText={setExerciseNotes}
-        multiline={true}
+        multiline
       />
 
       <TextInput
@@ -126,7 +126,6 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
         placeholder="https://"
         value={exercise.link}
         onChangeText={setExerciseLink}
-        multiline={true}
       />
 
       <View style={{ gap: spacing[4] }}>

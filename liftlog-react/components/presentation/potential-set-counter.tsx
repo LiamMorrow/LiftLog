@@ -2,7 +2,7 @@ import { PotentialSet } from '@/models/session-models';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { TouchableRipple } from 'react-native-paper';
-import { Text, Touchable, View } from 'react-native';
+import { Text, Touchable } from 'react-native';
 import WeightFormat from '@/components/presentation/weight-format';
 import WeightDialog from '@/components/presentation/weight-dialog';
 import { useAppTheme, spacing } from '@/hooks/useAppTheme';
@@ -93,13 +93,16 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
       } satisfies Touchable & Omit<PressableProps, 'children'>);
 
   return (
-    <FocusRing isSelected={props.toStartNext} radius={15} style={scaleStyle}>
-      <View
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          userSelect: 'none',
-        }}
+    <FocusRing isSelected={props.toStartNext} radius={15}>
+      <Animated.View
+        style={[
+          scaleStyle,
+          {
+            justifyContent: 'center',
+            alignItems: 'center',
+            userSelect: 'none',
+          },
+        ]}
       >
         <Animated.View
           style={[
@@ -179,7 +182,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
           onClose={() => setIsWeightDialogOpen(false)}
           updateWeight={props.onUpdateWeight}
         />
-      </View>
+      </Animated.View>
     </FocusRing>
   );
 }

@@ -95,7 +95,6 @@ export function addSharedItemEffects() {
         dispatch(setSharedItem(RemoteData.error(shared.error)));
         return;
       }
-
       const { encryptedPayload, rsaPublicKey } = shared.data;
       const { key: aesKey } = a.payload;
 

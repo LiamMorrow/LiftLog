@@ -8,7 +8,6 @@ import { View } from 'react-native';
 import {
   Button,
   Dialog,
-  Icon,
   IconButton,
   Menu,
   Portal,
@@ -180,7 +179,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             setMenuVisible(false);
           }}
           leadingIcon={'delete'}
-          title={'Remove123'}
+          title={t('Remove')}
         />
       </Menu>
     </View>

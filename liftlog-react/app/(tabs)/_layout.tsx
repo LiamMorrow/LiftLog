@@ -39,7 +39,7 @@ export default function Layout() {
       />
 
       <Tabs.Screen
-        name="stats/index"
+        name="stats"
         options={{
           tabBarLabel: t('Stats'),
           tabBarIcon: ({ color, size, focused }) => {

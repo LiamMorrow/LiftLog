@@ -12,8 +12,8 @@ export default function SharedItemPage() {
     id: string;
     k?: string;
   }>();
-  // id = 'f7z43iy473my';
-  // k = 'ee4d91d8423b1a16f82fa955add95cd1';
+  // id = 'wlw0wil0ka0g';
+  // k = '7a38fc5e6cd25ffbd5535cc10b574b99';
   const sharedRemote = useAppSelector(selectSharedItem);
   const dispatch = useDispatch();
   const fetch = () => {

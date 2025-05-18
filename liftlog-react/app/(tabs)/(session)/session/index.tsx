@@ -1,14 +1,11 @@
 import SessionComponent from '@/components/smart/session-component';
-import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { RootState, useAppSelector } from '@/store';
 import { persistCurrentSession } from '@/store/current-session';
 import { Stack, useRouter } from 'expo-router';
-import { View } from 'react-native';
 import { Appbar } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 export default function Index() {
-  const { colors } = useAppTheme();
   const dispatch = useDispatch();
   const session = useAppSelector(
     (state: RootState) => state.currentSession.workoutSession,
@@ -32,7 +29,7 @@ export default function Index() {
         options={{
           title: session?.blueprint.name ?? 'Workout',
           headerRight: () => (
-            <Appbar.Action icon={'save'} onPress={save}></Appbar.Action>
+            <Appbar.Action icon={'inventory'} onPress={save}></Appbar.Action>
           ),
         }}
       />

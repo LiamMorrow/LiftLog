@@ -287,5 +287,6 @@
   "MustBeLaterThan{date}": "Must be later than {date}",
   "MustBeEarlierThan{date}": "Must be earlier than {date}",
   "MustBeBetween{startDate}-{endDate}": "Must be between {startDate} - {endDate}",
-  "SessionsInMonth": "Sessions in month"
+  "SessionsInMonth": "Sessions in month",
+  "SessionNotesFor{name}": "Session notes for {name}"
 }

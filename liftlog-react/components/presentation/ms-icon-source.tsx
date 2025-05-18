@@ -30,6 +30,7 @@ import { msWeight } from '@material-symbols-react-native/outlined-400/msWeight';
 import { msChevronLeft } from '@material-symbols-react-native/outlined-400/msChevronLeft';
 import { msForum } from '@material-symbols-react-native/outlined-400/msForum';
 import { msForumFill } from '@material-symbols-react-native/outlined-400/msForumFill';
+import { msInventory } from '@material-symbols-react-native/outlined-400/msInventory';
 import { msChevronRight } from '@material-symbols-react-native/outlined-400/msChevronRight';
 import { MsIcon } from 'material-symbols-react-native';
 import { IconProps } from 'react-native-paper/lib/typescript/components/MaterialCommunityIcon';
@@ -72,6 +73,7 @@ const MaterialSymbols = {
   weight: msWeight,
   fitnessCenter: msFitnessCenter,
   fitnessCenterFill: msFitnessCenterFill,
+  inventory: msInventory,
 
   chevronLeft: msChevronLeft,
   chevronRight: msChevronRight,

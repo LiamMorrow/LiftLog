@@ -128,7 +128,7 @@ export default function Index() {
   useEffect(() => {
     if (!navigatorReady) return;
     // On app open from cold if we have a current session loaded, show it automatically.
-    if (currentSession) {
+    if (currentSession?.isStarted) {
       push('/(tabs)/(session)/session');
     }
   }, [navigatorReady]);
