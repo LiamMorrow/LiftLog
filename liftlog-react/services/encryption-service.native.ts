@@ -13,7 +13,6 @@ import {
   fromUrlSafeHexString,
   toUrlSafeHexString,
 } from '@/utils/to-url-safe-hex-string';
-import { Platform } from 'react-native';
 
 // SHA-256 hash length in bytes
 const SignatureLengthBytes = 256;
@@ -91,7 +90,7 @@ export class EncryptionService {
         pkcs8PrivateKeyBytes: privateKey,
       },
       publicKey: {
-        spkiPublicKeyBytes: pkcs1ToSpki(publicKey),
+        spkiPublicKeyBytes: publicKey,
       },
     };
   }
@@ -162,10 +161,7 @@ export class EncryptionService {
     signature: Uint8Array,
     publicKey: RsaPublicKey,
   ): Promise<boolean> {
-    const keyPem = derToPem(
-      spkiToPkcs1(publicKey.spkiPublicKeyBytes),
-      'PUBLIC KEY',
-    );
+    const keyPem = derToPem(publicKey.spkiPublicKeyBytes, 'PUBLIC KEY');
     const payloadHashHex = await Aes.sha256(uint8ArrayToBase64(data));
     const payloadHashBytes = fromUrlSafeHexString(payloadHashHex);
     const payloadHashBase64 = uint8ArrayToBase64(payloadHashBytes);
@@ -236,71 +232,4 @@ function base64ToUint8Array(base64: string): Uint8Array {
     arr[i] = binary.charCodeAt(i);
   }
   return arr;
-}
-/**
- * Wraps a PKCS#1 public key DER in an SPKI (X.509) header.
- * @param pkcs1 The PKCS#1 DER-encoded public key.
- * @returns The SPKI DER-encoded public key.
- */ function pkcs1ToSpki(pkcs1: Uint8Array): Uint8Array {
-  if (Platform.OS === 'ios') {
-    return pkcs1;
-  }
-  const rsaOid = [
-    0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01,
-    0x01, 0x05, 0x00,
-  ];
-  // BIT STRING: tag, length, 0x00, then pkcs1
-  const bitString = [
-    0x03,
-    ...encodeAsn1Length(pkcs1.length + 1),
-    0x00,
-    ...pkcs1,
-  ];
-  // SEQUENCE: rsaOid + bitString
-  const fullSeq = [...rsaOid, ...bitString];
-  const spki = [0x30, ...encodeAsn1Length(fullSeq.length), ...fullSeq];
-  return new Uint8Array(spki);
-}
-/**
- * Extracts a PKCS#1 public key DER from an SPKI (X.509) DER public key.
- * @param spki The SPKI DER-encoded public key.
- * @returns The PKCS#1 DER-encoded public key.
- */
-function spkiToPkcs1(spki: Uint8Array): Uint8Array {
-  if (Platform.OS === 'ios') {
-    return spki;
-  }
-  // Find the BIT STRING tag (0x03)
-  let i = 0;
-  while (i < spki.length) {
-    if (spki[i] === 0x03) break;
-    i++;
-  }
-  if (i >= spki.length - 2) throw new Error('Invalid SPKI format');
-  // The next byte is the length, then a 0x00 (no unused bits)
-  let len = spki[i + 1];
-  let offset = i + 2;
-  if (len & 0x80) {
-    // Long form length
-    const numLenBytes = len & 0x7f;
-    len = 0;
-    for (let j = 0; j < numLenBytes; j++) {
-      len = (len << 8) | spki[offset++];
-    }
-  }
-  // The next byte should be 0x00 (no unused bits)
-  if (spki[offset] !== 0x00) throw new Error('Invalid SPKI BIT STRING');
-  offset++;
-  // The rest is the PKCS#1 DER
-  return spki.slice(offset, offset + len - 1);
-}
-function encodeAsn1Length(len: number): number[] {
-  if (len <= 127) return [len];
-  const bytes = [];
-  let tmp = len;
-  while (tmp > 0) {
-    bytes.unshift(tmp & 0xff);
-    tmp >>= 8;
-  }
-  return [0x80 | bytes.length, ...bytes];
 }
