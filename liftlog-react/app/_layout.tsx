@@ -12,16 +12,15 @@ import SnackbarProvider from '@/components/smart/snackbar-provider';
 
 import '@/utils/date-locale';
 
-import 'react-native-get-random-values';
-import PolyfillCrypto from 'react-native-webview-crypto';
+// import { install } from 'react-native-quick-crypto';
 
+// install();
 LogBox.ignoreLogs([/.*is not a valid icon name.*/]);
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   return (
     <Provider store={store}>
-      <PolyfillCrypto />
       <SafeAreaProvider>
         <TolgeeProvider tolgee={tolgee} fallback={<Text>Loading...</Text>}>
           <AppThemeProvider>

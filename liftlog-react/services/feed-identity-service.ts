@@ -25,10 +25,8 @@ export class FeedIdentityService {
     if (!response.isSuccess()) {
       return ApiResult.fromFailure(response);
     }
-
     const aesKey = await this.encryptionService.generateAesKey();
     const rsaKeyPair = await this.encryptionService.generateRsaKeys();
-
     return this.updateFeedIdentityAsync(
       response.data.id,
       response.data.lookup,

@@ -17,6 +17,16 @@ export default function Layout() {
       />
 
       <Tabs.Screen
+        name="feed"
+        options={{
+          tabBarLabel: t('Feed'),
+          tabBarIcon: ({ color, size }) => {
+            return <Icon source="forum" size={size} color={color} />;
+          },
+        }}
+      />
+
+      <Tabs.Screen
         name="history"
         options={{
           tabBarLabel: t('History'),

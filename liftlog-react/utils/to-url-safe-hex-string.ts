@@ -4,6 +4,10 @@ export function toUrlSafeHexString(bytes: Uint8Array): string {
     .join('');
 }
 
+export function fromUrlSafeHexString(hexString: string): Uint8Array;
+export function fromUrlSafeHexString(
+  hexString: string | null | undefined,
+): Uint8Array | null;
 export function fromUrlSafeHexString(
   hexString: string | null | undefined,
 ): Uint8Array | null {

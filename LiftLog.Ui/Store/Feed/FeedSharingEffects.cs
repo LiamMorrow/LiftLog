@@ -128,7 +128,7 @@ public class FeedSharingEffects(
         }
         catch (Exception e)
         {
-            logger.LogError("Failed to decrypt shared item with error {Error}", e.Message);
+            logger.LogError("Failed to decrypt shared item with error {Error}", e);
             return null;
         }
     }
