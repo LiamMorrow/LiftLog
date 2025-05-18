@@ -10,6 +10,7 @@ import { LocalDate } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { FAB, List } from 'react-native-paper';
+
 import { useDispatch } from 'react-redux';
 
 export default function ProgramList() {
@@ -40,7 +41,7 @@ export default function ProgramList() {
         <FAB
           variant="surface"
           size="small"
-          icon="add"
+          icon={'add'}
           label={t('AddPlan')}
           onPress={addProgram}
         />

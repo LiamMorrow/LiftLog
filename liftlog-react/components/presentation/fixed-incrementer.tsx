@@ -35,7 +35,7 @@ export default function FixedIncrementer<T extends { toString(): string }>(
           {props.label}
         </Text>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <IconButton icon="remove" onPress={props.decrement} />
+          <IconButton icon={'remove'} onPress={props.decrement} />
           <Text
             style={{
               color: colors.primary,
@@ -46,7 +46,7 @@ export default function FixedIncrementer<T extends { toString(): string }>(
           >
             {props.value?.toString()}
           </Text>
-          <IconButton icon="add" onPress={props.increment} />
+          <IconButton icon={'add'} onPress={props.increment} />
         </View>
       </View>
     </View>

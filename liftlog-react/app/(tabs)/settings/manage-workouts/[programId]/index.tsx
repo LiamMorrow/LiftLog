@@ -47,7 +47,7 @@ export default function ManageWorkouts() {
         <FAB
           variant="surface"
           size="small"
-          icon="add"
+          icon={'add'}
           label={t('AddWorkout')}
           onPress={addWorkout}
         />

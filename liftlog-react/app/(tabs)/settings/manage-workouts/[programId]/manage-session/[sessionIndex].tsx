@@ -126,7 +126,7 @@ function SessionEditor({
         <FAB
           variant="surface"
           size="small"
-          icon="add"
+          icon={'add'}
           label={t('AddExercise')}
           onPress={beginAddExercise}
         />
@@ -137,7 +137,7 @@ function SessionEditor({
     <FullHeightScrollView floatingChildren={floatingBottomContainer}>
       <Stack.Screen options={{ title: session.name }} />
       <LabelledForm>
-        <LabelledFormRow label={t('WorkoutName')} icon="assignment">
+        <LabelledFormRow label={t('WorkoutName')} icon={'assignment'}>
           <TextInput
             mode="flat"
             value={session.name}
@@ -145,7 +145,7 @@ function SessionEditor({
             selectTextOnFocus
           />
         </LabelledFormRow>
-        <LabelledFormRow label={t('WorkoutNotes')} icon="notes">
+        <LabelledFormRow label={t('WorkoutNotes')} icon={'notes'}>
           <TextInput
             mode="flat"
             value={session.notes}
@@ -155,7 +155,7 @@ function SessionEditor({
         </LabelledFormRow>
         <LabelledFormRow
           label={t('Exercises')}
-          icon="fitness_center"
+          icon={'fitnessCenter'}
           undoFormPadding={true}
         >
           <ItemList

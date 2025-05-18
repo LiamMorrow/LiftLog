@@ -38,6 +38,7 @@ import { useCurrentSession } from '@/hooks/useSession';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import UpdatePlanButton from '@/components/smart/update-plan-button';
 import { UnknownAction } from '@reduxjs/toolkit';
+
 import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
 
 export default function SessionComponent(props: {
@@ -108,7 +109,7 @@ export default function SessionComponent(props: {
           alignItems: 'center',
         }}
       >
-        <Icon source="text" size={20} />
+        <Icon source={'text'} size={20} />
         <Text style={{ color: colors.onSurface }}>
           {session.blueprint.notes}
         </Text>
@@ -242,7 +243,7 @@ export default function SessionComponent(props: {
         <FAB
           variant="surface"
           size="small"
-          icon="add"
+          icon={'add'}
           label={t('AddExercise')}
           onPress={() => {
             setEditingExerciseBlueprint(EmptyExerciseBlueprint);

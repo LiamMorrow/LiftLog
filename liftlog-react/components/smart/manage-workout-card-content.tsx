@@ -77,13 +77,13 @@ function Actions({
     );
   return (
     <>
-      <IconButton onPress={moveSessionUp} icon={'arrow_upward'} />
-      <IconButton onPress={moveSessionDown} icon={'arrow_downward'} />
+      <IconButton onPress={moveSessionUp} icon={'arrowUpward'} />
+      <IconButton onPress={moveSessionDown} icon={'arrowDownward'} />
       <Menu
         visible={menuOpen}
         onDismiss={() => setMenuOpen(false)}
         anchor={
-          <IconButton onPress={() => setMenuOpen(true)} icon={'more_horiz'} />
+          <IconButton onPress={() => setMenuOpen(true)} icon={'moreHoriz'} />
         }
       >
         <Menu.Item
@@ -91,12 +91,12 @@ function Actions({
             setMenuOpen(false);
             removeSession();
           }}
-          leadingIcon="delete"
+          leadingIcon={'delete'}
           title={t('Remove')}
         />
         <Menu.Item
           title={t('Duplicate')}
-          leadingIcon="content_copy"
+          leadingIcon={'contentCopy'}
           onPress={() => {
             setMenuOpen(false);
             duplicateSession();

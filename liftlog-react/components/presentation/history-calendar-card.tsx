@@ -78,7 +78,7 @@ export default function HistoryCalendarCard({
       <View style={{ width: oneSeventh, marginVertical: spacing[2] }}>
         <IconButton
           data-cy="calendar-nav-previous-month"
-          icon={'chevron_left'}
+          icon={'chevronLeft'}
           onPress={previousMonth}
         />
       </View>
@@ -104,7 +104,7 @@ export default function HistoryCalendarCard({
       <View style={{ width: oneSeventh, marginVertical: spacing[2] }}>
         <IconButton
           data-cy="calendar-nav-next-month"
-          icon={'chevron_right'}
+          icon={'chevronRight'}
           onPress={nextMonth}
           disabled={disableNextMonth}
         />

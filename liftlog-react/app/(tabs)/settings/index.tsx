@@ -1,4 +1,5 @@
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
+
 import ListTitle from '@/components/presentation/list-title';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
@@ -48,7 +49,7 @@ export default function Settings() {
           title={t('ExportBackupRestore')}
           description={t('ExportBackupRestoreSubtitle')}
           left={(props) => (
-            <List.Icon icon={'settings_backup_restore'} {...props} />
+            <List.Icon icon={'settingsBackupRestore'} {...props} />
           )}
         ></List.Item>
       </List.Section>
@@ -74,7 +75,7 @@ export default function Settings() {
           }
           title={t('BugReport')}
           description={t('BugReportSubtitle')}
-          left={(props) => <List.Icon icon={'bug_report'} {...props} />}
+          left={(props) => <List.Icon icon={'bugReport'} {...props} />}
         ></List.Item>
 
         <List.Item

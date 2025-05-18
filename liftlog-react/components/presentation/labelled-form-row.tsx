@@ -3,9 +3,10 @@ import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { ReactNode } from 'react';
 import { View } from 'react-native';
 import { Icon } from 'react-native-paper';
+import { IconSource } from 'react-native-paper/lib/typescript/components/Icon';
 
 export default function LabelledFormRow(props: {
-  icon: string;
+  icon: IconSource;
   label: string;
   children: ReactNode;
   undoFormPadding?: boolean;

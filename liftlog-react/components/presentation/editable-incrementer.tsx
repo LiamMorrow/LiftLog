@@ -50,7 +50,7 @@ export default function EditableIncrementer(props: EditableIncrementerProps) {
             }}
           >
             <IconButton
-              icon="remove"
+              icon={'remove'}
               onPress={() => {
                 onChange(editorValue.minus(increment));
               }}
@@ -65,7 +65,7 @@ export default function EditableIncrementer(props: EditableIncrementerProps) {
               right={<TextInput.Affix text={props.suffix} />}
             />
             <IconButton
-              icon="add"
+              icon={'add'}
               onPress={() => onChange(editorValue.plus(increment))}
             />
           </View>

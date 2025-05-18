@@ -36,9 +36,9 @@ export default function ExerciseBlueprintSummary({
         >
           <ItemTitle title={blueprint.name} />
           <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-            <IconButton onPress={onMoveUp} icon="arrow_upward" />
-            <IconButton onPress={onMoveDown} icon="arrow_downward" />
-            <IconButton onPress={onRemove} icon="delete" />
+            <IconButton onPress={onMoveUp} icon={'arrowUpward'} />
+            <IconButton onPress={onMoveDown} icon={'arrowDownward'} />
+            <IconButton onPress={onRemove} icon={'delete'} />
           </View>
         </View>
         <View style={{ gap: spacing[1], alignItems: 'flex-start' }}>
