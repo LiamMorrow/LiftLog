@@ -158,7 +158,6 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
       <PaperProvider
         theme={paperTheme}
         settings={{
-          // TODO we want real icons - this just suppresses the warn until we settle on an icon pack
           icon: (props) => <MsIconSrc {...props} />,
         }}
       >
