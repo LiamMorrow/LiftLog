@@ -17,6 +17,8 @@ import {
   FeedItem,
   FeedUser,
   SessionFeedItem,
+  SharedItem,
+  SharedProgramBlueprint,
 } from '@/models/feed-models';
 import { Duration, Instant, LocalDate, LocalTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
@@ -328,4 +330,15 @@ export function fromCurrentSessionDao(
     workoutSession: dao.workoutSession && fromSessionDao(dao.workoutSession),
     historySession: dao.historySession && fromSessionDao(dao.historySession),
   };
+}
+
+export function fromSharedItemDao(
+  dao: LiftLog.Ui.Models.SharedItemPayload,
+): SharedItem | null {
+  if (dao.sharedProgramBlueprint?.programBlueprint) {
+    return new SharedProgramBlueprint(
+      fromProgramBlueprintDao(dao.sharedProgramBlueprint.programBlueprint),
+    );
+  }
+  return null;
 }

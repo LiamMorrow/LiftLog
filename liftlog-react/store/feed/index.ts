@@ -1,3 +1,4 @@
+import { AesKey } from '@/models/encryption-models';
 import {
   FeedIdentity,
   FeedIdentityPOJO,
@@ -12,7 +13,12 @@ import {
 } from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
 import { ApiError } from '@/services/feed-api';
-import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createAction,
+  createSelector,
+  createSlice,
+  PayloadAction,
+} from '@reduxjs/toolkit';
 
 export type FeedState = {
   isHydrated: boolean;
@@ -79,6 +85,12 @@ const feedSlice = createSlice({
       state.sharedItem = action.payload.map((x) => x.toPOJO());
     },
   },
+  selectors: {
+    selectSharedItem: createSelector(
+      (state: FeedState) => state.sharedItem,
+      (sharedItem) => sharedItem.map(SharedItem.fromPOJO),
+    ),
+  },
 });
 
 export const {
@@ -93,6 +105,8 @@ export const {
   setUnpublishedSessionIds,
   setSharedItem,
 } = feedSlice.actions;
+
+export const { selectSharedItem } = feedSlice.selectors;
 
 export const initializeFeedStateSlice = createAction(
   'initializeFeedStateSlice',
@@ -116,6 +130,10 @@ export const fetchInboxItemsAction = createAction<FeedAction>(
 );
 
 export const encryptAndShare = createAction<SharedItem>('encryptAndShare');
+
+export const fetchSharedItem = createAction<{ id: string; key: AesKey }>(
+  'fetchSharedItem',
+);
 
 export const feedApiError = createAction<{
   message: string;

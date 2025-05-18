@@ -66,6 +66,14 @@ export class ApiResult<T> {
   }
 }
 
+type Base64Response<T> = {
+  [key in keyof T]: T[key] extends Uint8Array
+    ? string
+    : T[key] extends object
+      ? Base64Response<T[key]>
+      : T[key];
+};
+
 export class FeedApiService {
   private readonly baseUrl: string;
 
@@ -240,7 +248,23 @@ export class FeedApiService {
     return this.getApiResultAsync(async () => {
       const response = await fetch(`${this.baseUrl}shareditem/${sharedItemId}`);
       this.ensureSuccessStatusCode(response);
-      return (await response.json()) as GetSharedItemResponse;
+      const base4Response =
+        (await response.json()) as Base64Response<GetSharedItemResponse>;
+      return {
+        encryptedPayload: {
+          iv: {
+            value: base64ToUint8Array(base4Response.encryptedPayload.iv.value),
+          },
+          encryptedPayload: base64ToUint8Array(
+            base4Response.encryptedPayload.encryptedPayload,
+          ),
+        },
+        rsaPublicKey: {
+          spkiPublicKeyBytes: base64ToUint8Array(
+            base4Response.rsaPublicKey.spkiPublicKeyBytes,
+          ),
+        },
+      };
     });
   }
 
@@ -305,4 +329,14 @@ function stringify(value: unknown): string {
 
 function uint8ArrayToBase64(value: Uint8Array): string {
   return btoa(String.fromCharCode(...value));
+}
+
+function base64ToUint8Array(value: string): Uint8Array {
+  const binaryString = atob(value);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
 }

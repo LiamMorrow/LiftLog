@@ -460,6 +460,15 @@ export type SharedItemPOJO = SharedProgramBlueprintPOJO;
 
 export abstract class SharedItem {
   abstract toPOJO(): SharedItemPOJO;
+
+  static fromPOJO(pojo: SharedItemPOJO): SharedItem {
+    if (pojo._BRAND === 'SHARED_PROGRAM_BLUEPRINT_POJO') {
+      return new SharedProgramBlueprint(
+        ProgramBlueprint.fromPOJO(pojo.programBlueprint),
+      );
+    }
+    throw new Error('Unknown type');
+  }
 }
 
 export interface SharedProgramBlueprintPOJO {
@@ -477,12 +486,6 @@ export class SharedProgramBlueprint extends SharedItem {
   constructor(programBlueprint?: ProgramBlueprint) {
     super();
     this.programBlueprint = programBlueprint!;
-  }
-
-  static fromPOJO(pojo: {
-    programBlueprint: ProgramBlueprint;
-  }): SharedProgramBlueprint {
-    return new SharedProgramBlueprint(pojo.programBlueprint);
   }
 
   toPOJO(): SharedProgramBlueprintPOJO {
