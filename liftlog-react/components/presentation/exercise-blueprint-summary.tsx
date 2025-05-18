@@ -5,7 +5,6 @@ import { spacing } from '@/hooks/useAppTheme';
 import { ExerciseBlueprint } from '@/models/session-models';
 import { View } from 'react-native';
 import { IconButton, TouchableRipple } from 'react-native-paper';
-import { msIconSource } from '@/components/presentation/ms-icon-source';
 
 interface ExerciseBlueprintSummaryProps {
   blueprint: ExerciseBlueprint;
@@ -37,12 +36,9 @@ export default function ExerciseBlueprintSummary({
         >
           <ItemTitle title={blueprint.name} />
           <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-            <IconButton onPress={onMoveUp} icon={msIconSource('arrowUpward')} />
-            <IconButton
-              onPress={onMoveDown}
-              icon={msIconSource('arrowDownward')}
-            />
-            <IconButton onPress={onRemove} icon={msIconSource('delete')} />
+            <IconButton onPress={onMoveUp} icon={'arrowUpward'} />
+            <IconButton onPress={onMoveDown} icon={'arrowDownward'} />
+            <IconButton onPress={onRemove} icon={'delete'} />
           </View>
         </View>
         <View style={{ gap: spacing[1], alignItems: 'flex-start' }}>

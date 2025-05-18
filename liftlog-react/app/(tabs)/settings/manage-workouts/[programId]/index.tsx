@@ -17,7 +17,6 @@ import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { FAB, TextInput } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import { msIconSource } from '@/components/presentation/ms-icon-source';
 
 export default function ManageWorkouts() {
   const { programId } = useLocalSearchParams<{ programId: string }>();
@@ -48,7 +47,7 @@ export default function ManageWorkouts() {
         <FAB
           variant="surface"
           size="small"
-          icon={msIconSource('add')}
+          icon={'add'}
           label={t('AddWorkout')}
           onPress={addWorkout}
         />

@@ -11,7 +11,6 @@ import Animated, {
   withTiming,
   interpolateColor,
 } from 'react-native-reanimated';
-import { msIconSource } from '@/components/presentation/ms-icon-source';
 
 interface FullScreenDialogProps {
   title: string;
@@ -57,7 +56,7 @@ export default function FullScreenDialog(props: FullScreenDialogProps) {
                 padding: spacing[4],
               }}
             >
-              <IconButton icon={msIconSource('close')} onPress={onClose} />
+              <IconButton icon={'close'} onPress={onClose} />
               <Text
                 style={{
                   marginRight: 'auto',

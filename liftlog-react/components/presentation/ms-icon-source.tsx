@@ -25,6 +25,7 @@ import { msWeight } from '@material-symbols-react-native/outlined-400/msWeight';
 import { msChevronLeft } from '@material-symbols-react-native/outlined-400/msChevronLeft';
 import { msChevronRight } from '@material-symbols-react-native/outlined-400/msChevronRight';
 import { MsIcon } from 'material-symbols-react-native';
+import { IconProps } from 'react-native-paper/lib/typescript/components/MaterialCommunityIcon';
 
 // Importing these icons using the below methods causes android app to crash
 // import { msAdd, msArrowDownward } from '@material-symbols-react-native/outlined-400';
@@ -62,12 +63,10 @@ const MaterialSymbols = {
   chevronRight: msChevronRight,
 };
 
-export function msIconSource(name: keyof typeof MaterialSymbols) {
-  return ({ size, color }: { size: number; color: string }) => {
-    const icon = MaterialSymbols[name];
-    if (!icon) {
-      throw new Error(`Icon "${name}" not found in MaterialSymbols Map.`);
-    }
-    return <MsIcon icon={MaterialSymbols[name]} size={size} color={color} />;
-  };
+export function MsIconSrc({ name, ...rest }: IconProps) {
+  const icon = MaterialSymbols[name as keyof typeof MaterialSymbols];
+  if (!icon) {
+    throw new Error(`Icon "${name}" not found in MaterialSymbols Map.`);
+  }
+  return <MsIcon icon={icon} {...rest} />;
 }

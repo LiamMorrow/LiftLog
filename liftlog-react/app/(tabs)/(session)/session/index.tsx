@@ -1,4 +1,3 @@
-import { msIconSource } from '@/components/presentation/ms-icon-source';
 import SessionComponent from '@/components/smart/session-component';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { RootState, useAppSelector } from '@/store';
@@ -33,10 +32,7 @@ export default function Index() {
         options={{
           title: session?.blueprint.name ?? 'Workout',
           headerRight: () => (
-            <Appbar.Action
-              icon={msIconSource('save')}
-              onPress={save}
-            ></Appbar.Action>
+            <Appbar.Action icon={'save'} onPress={save}></Appbar.Action>
           ),
         }}
       />

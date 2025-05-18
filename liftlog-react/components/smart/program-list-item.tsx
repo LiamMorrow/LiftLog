@@ -16,7 +16,7 @@ import { T, useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { msIconSource } from '@/components/presentation/ms-icon-source';
+
 import {
   Button,
   IconButton,
@@ -49,7 +49,7 @@ function ItemMenu({ id }: ItemProps) {
         <IconButton
           data-cy="more-program-btn"
           onPress={() => setMenuVisible(true)}
-          icon={msIconSource('moreHoriz')}
+          icon={'moreHoriz'}
         />
       }
     >
@@ -70,13 +70,13 @@ function ItemMenu({ id }: ItemProps) {
           }
           setMenuVisible(false);
         }}
-        leadingIcon={msIconSource('delete')}
+        leadingIcon={'delete'}
         disabled={isActive}
         title={t('Remove')}
       />
       <Menu.Item
         title={t('Duplicate')}
-        leadingIcon={msIconSource('contentCopy')}
+        leadingIcon={'contentCopy'}
         onPress={() => {
           setMenuVisible(false);
           dispatch(
@@ -85,7 +85,7 @@ function ItemMenu({ id }: ItemProps) {
         }}
       />
       <Menu.Item
-        leadingIcon={msIconSource('share')}
+        leadingIcon={'share'}
         title={t('Share')}
         onPress={() => {
           setMenuVisible(false);

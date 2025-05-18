@@ -9,7 +9,6 @@ import {
   Portal,
   TextInput,
 } from 'react-native-paper';
-import { msIconSource } from '@/components/presentation/ms-icon-source';
 
 interface PotentialSetAdditionalActionsDialogProps {
   open: boolean;
@@ -69,7 +68,7 @@ export default function PotentialSetAdditionalActionsDialog({
           />
           <IconButton
             mode="outlined"
-            icon={msIconSource('close')}
+            icon={'close'}
             onPress={() => setRepCountText('')}
           />
         </Dialog.Content>

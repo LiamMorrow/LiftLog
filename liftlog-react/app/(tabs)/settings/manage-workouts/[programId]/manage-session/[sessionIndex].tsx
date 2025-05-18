@@ -34,8 +34,6 @@ import { useState } from 'react';
 import { Card, FAB, TextInput } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
-import { msIconSource } from '@/components/presentation/ms-icon-source';
-
 export default function ManageWorkouts() {
   const { sessionIndex: sessionIndexStr, programId } = useLocalSearchParams<{
     sessionIndex: string;
@@ -128,7 +126,7 @@ function SessionEditor({
         <FAB
           variant="surface"
           size="small"
-          icon={msIconSource('add')}
+          icon={'add'}
           label={t('AddExercise')}
           onPress={beginAddExercise}
         />
@@ -139,10 +137,7 @@ function SessionEditor({
     <FullHeightScrollView floatingChildren={floatingBottomContainer}>
       <Stack.Screen options={{ title: session.name }} />
       <LabelledForm>
-        <LabelledFormRow
-          label={t('WorkoutName')}
-          icon={msIconSource('assignment')}
-        >
+        <LabelledFormRow label={t('WorkoutName')} icon={'assignment'}>
           <TextInput
             mode="flat"
             value={session.name}
@@ -150,7 +145,7 @@ function SessionEditor({
             selectTextOnFocus
           />
         </LabelledFormRow>
-        <LabelledFormRow label={t('WorkoutNotes')} icon={msIconSource('notes')}>
+        <LabelledFormRow label={t('WorkoutNotes')} icon={'notes'}>
           <TextInput
             mode="flat"
             value={session.notes}
@@ -160,7 +155,7 @@ function SessionEditor({
         </LabelledFormRow>
         <LabelledFormRow
           label={t('Exercises')}
-          icon={msIconSource('fitnessCenter')}
+          icon={'fitnessCenter'}
           undoFormPadding={true}
         >
           <ItemList

@@ -2,7 +2,6 @@ import CardList from '@/components/presentation/card-list';
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
-import { msIconSource } from '@/components/presentation/ms-icon-source';
 import { Remote } from '@/components/presentation/remote';
 import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
@@ -46,12 +45,12 @@ function NoUpcomingSessions() {
             <SurfaceText font="text-lg">
               <T keyName="NoPlanCreated" />
             </SurfaceText>
-            <Icon size={20} source={msIconSource('info')} />
+            <Icon size={20} source={'info'} />
           </View>
           <View style={{ flexDirection: 'row', gap: spacing[2] }}>
             <Button
               mode="contained-tonal"
-              icon={msIconSource('add')}
+              icon={'add'}
               style={{ flex: 1 }}
               onPress={() =>
                 push(`/settings/manage-workouts/${activeProgramId}`)
@@ -62,7 +61,7 @@ function NoUpcomingSessions() {
             <Button
               mode="contained"
               style={{ flex: 1 }}
-              icon={msIconSource('assignment')}
+              icon={'assignment'}
               onPress={() => push(`/settings/program-list`)}
             >
               <T keyName="SelectAPlan" />
@@ -182,7 +181,7 @@ export default function Index() {
         <FAB
           variant="surface"
           size="small"
-          icon="fitness_center"
+          icon="fitnessCenter"
           label={t('Freeform Session')}
           onPress={createFreeformSession}
         />

@@ -4,7 +4,6 @@ import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { IconButton, List, TextInput } from 'react-native-paper';
-import { msIconSource } from '@/components/presentation/ms-icon-source';
 
 interface EditableIncrementerProps {
   increment: BigNumber;
@@ -51,7 +50,7 @@ export default function EditableIncrementer(props: EditableIncrementerProps) {
             }}
           >
             <IconButton
-              icon={msIconSource('remove')}
+              icon={'remove'}
               onPress={() => {
                 onChange(editorValue.minus(increment));
               }}
@@ -66,7 +65,7 @@ export default function EditableIncrementer(props: EditableIncrementerProps) {
               right={<TextInput.Affix text={props.suffix} />}
             />
             <IconButton
-              icon={msIconSource('add')}
+              icon={'add'}
               onPress={() => onChange(editorValue.plus(increment))}
             />
           </View>
