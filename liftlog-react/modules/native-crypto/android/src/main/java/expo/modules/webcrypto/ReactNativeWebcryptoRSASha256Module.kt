@@ -5,7 +5,6 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import java.security.*
 import java.security.spec.*
 import javax.crypto.Cipher
-import android.util.Base64
 
 class ReactNativeWebcryptoRSASha256Module : Module() {
   override fun definition() = ModuleDefinition {

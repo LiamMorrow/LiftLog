@@ -1,6 +1,5 @@
 package expo.modules.webcrypto
 
-import android.util.Base64
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.util.UUID
@@ -23,7 +22,7 @@ class ReactNativeWebcryptoModule : Module() {
     // Returns a random UUID string
     Function("randomUuid") { UUID.randomUUID().toString() }
 
-    // Returns a base64-encoded string of random bytes of the given length
+    // Returns an array of random bytes of the given length
     Function("getRandomValues") { length: Int ->
       val bytes = ByteArray(length)
       Random.Default.nextBytes(bytes)
