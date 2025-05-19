@@ -10,6 +10,7 @@ import { SurfaceText } from '@/components/presentation/surface-text';
 import AndroidNotificationAlert from '@/components/smart/android-notification-alert';
 import { Tips } from '@/components/smart/tips';
 import { spacing } from '@/hooks/useAppTheme';
+import { useMountEffect } from '@/hooks/useMountEffect';
 import { useCurrentSession } from '@/hooks/useSession';
 import { Session } from '@/models/session-models';
 import { RootState, useAppSelector } from '@/store';
@@ -122,16 +123,27 @@ export default function Index() {
   const rootNavigationState = useRootNavigationState();
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   const navigatorReady = rootNavigationState?.key != null;
-
+  const [hasRedirected, setHasRedirected] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
   const [selectedSession, setSelectedSession] = useState<Session | undefined>();
 
+  useMountEffect(() => {
+    setHasMounted(true);
+  });
   useEffect(() => {
-    if (!navigatorReady) return;
+    if (!navigatorReady || !hasMounted) return;
     // On app open from cold if we have a current session loaded, show it automatically.
-    if (currentSession?.isStarted) {
+    if (currentSession?.isStarted && !hasRedirected) {
       push('/(tabs)/(session)/session');
     }
-  }, [navigatorReady]);
+    setHasRedirected(true);
+  }, [
+    navigatorReady,
+    hasRedirected,
+    currentSession?.isStarted,
+    push,
+    hasMounted,
+  ]);
 
   useFocusEffect(() => {
     dispatch(fetchUpcomingSessions());
