@@ -30,26 +30,29 @@ export function applyFeedEffects() {
       const sw = performance.now();
       try {
         const state = await keyValueStore.getItemBytes(StorageKey);
+        let hasIdentity = false;
         if (state) {
           const version = await keyValueStore.getItem(`${StorageKey}Version`);
           if (!version || version === '1') {
             const feedStateDao = LiftLog.Ui.Models.FeedStateDaoV1.decode(state);
             const feedState = fromFeedStateDao(feedStateDao);
 
-            if (!feedState.identity) {
-              dispatch(
-                createFeedIdentity({
-                  name: undefined,
-                  publishBodyweight: false,
-                  publishPlan: false,
-                  publishWorkouts: false,
-                  fromUserAction: false,
-                }),
-              );
-            } else {
+            if (feedState.identity) {
               dispatch(setIdentity(RemoteData.success(feedState.identity)));
+              hasIdentity = true;
             }
           }
+        }
+        if (!hasIdentity) {
+          dispatch(
+            createFeedIdentity({
+              name: undefined,
+              publishBodyweight: false,
+              publishPlan: false,
+              publishWorkouts: false,
+              fromUserAction: false,
+            }),
+          );
         }
         dispatch(setIsHydrated(true));
         dispatch(fetchInboxItemsAction({ fromUserAction: false }));
