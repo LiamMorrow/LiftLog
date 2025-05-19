@@ -1,0 +1,17 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": [
+      "ReactNativeWebcryptoModule",
+      "ReactNativeWebcryptoAesModule",
+      "ReactNativeWebcryptoRSASha256Module"
+    ]
+  },
+  "android": {
+    "modules": [
+      "expo.modules.webcrypto.ReactNativeWebcryptoModule",
+      "expo.modules.webcrypto.ReactNativeWebcryptoAesModule",
+      "expo.modules.webcrypto.ReactNativeWebcryptoRSASha256Module"
+    ]
+  }
+}

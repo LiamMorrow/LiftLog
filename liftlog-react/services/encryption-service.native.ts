@@ -7,23 +7,24 @@ import {
   RsaPrivateKey,
   RsaPublicKey,
 } from '@/models/encryption-models';
-import Aes from 'react-native-aes-crypto';
-import { RSA } from 'react-native-rsa-native';
 import {
-  fromUrlSafeHexString,
-  toUrlSafeHexString,
-} from '@/utils/to-url-safe-hex-string';
+  decryptAesCbc,
+  encryptAesCbc,
+  generateAesIv,
+  generateAesKey,
+  generateRsaKeyPair,
+  rsaDecrypt,
+  rsaEncrypt,
+  rsaSign,
+  rsaVerify,
+} from '@/modules/native-crypto';
+import { sha256Hash } from '@/modules/native-crypto/src/ReactNativeWebcryptoModule';
 
-// SHA-256 hash length in bytes
 const SignatureLengthBytes = 256;
 
 export class EncryptionService {
   async generateAesKey(): Promise<AesKey> {
-    const key = await Aes.randomKey(16);
-
-    return {
-      value: fromUrlSafeHexString(key),
-    };
+    return { value: generateAesKey(128) };
   }
 
   async decryptAesCbcAndVerifyRsa256PssAsync(
@@ -31,23 +32,24 @@ export class EncryptionService {
     key: AesKey,
     publicKey: RsaPublicKey,
   ): Promise<Uint8Array> {
-    const base64 = uint8ArrayToBase64(data.encryptedPayload);
-    const decr = await Aes.decrypt(
-      base64,
-      toUrlSafeHexString(key.value),
-      toUrlSafeHexString(data.iv.value),
-      'aes-128-cbc',
+    const decrypted = new Uint8Array(
+      await decryptAesCbc({
+        iv: data.iv.value,
+        key: key.value,
+        payload: data.encryptedPayload,
+      }),
     );
-    const decrypted = base64ToUint8Array(decr);
 
     const signature = decrypted.slice(decrypted.length - SignatureLengthBytes);
     const payload = decrypted.slice(0, decrypted.length - SignatureLengthBytes);
 
-    const verified = await this.verifyRsaPssSha256Async(
-      payload,
+    const payloadHash = await sha256Hash(payload);
+
+    const verified = await rsaVerify({
+      payload: payloadHash,
       signature,
-      publicKey,
-    );
+      spkiPublicKeyDer: publicKey.spkiPublicKeyBytes,
+    });
 
     if (!verified) {
       throw new Error('Signature verification failed');
@@ -62,36 +64,35 @@ export class EncryptionService {
     privateKey: RsaPrivateKey,
     aesIv?: AesIV | null,
   ): Promise<AesEncryptedAndRsaSignedData> {
-    const iv = aesIv?.value ?? crypto.getRandomValues(new Uint8Array(16));
-    const signature = await this.signRsaPssSha256Async(data, privateKey);
+    const iv = aesIv?.value ?? generateAesIv();
 
-    const payloadBytes = new Uint8Array([...data, ...signature]);
-    const payloadBase64 = uint8ArrayToBase64(payloadBytes);
+    const dataHash = await sha256Hash(data);
 
-    const encrypted = await Aes.encrypt(
-      payloadBase64,
-      toUrlSafeHexString(key.value),
-      toUrlSafeHexString(iv),
-      'aes-128-cbc',
-    );
-    const encryptedPayload = base64ToUint8Array(encrypted);
+    const signature = await rsaSign({
+      payload: dataHash,
+      pkcs8PrivateKeyDer: privateKey.pkcs8PrivateKeyBytes,
+    });
+
+    const payload = new Uint8Array([...data, ...new Uint8Array(signature)]);
+
+    const encrypted = await encryptAesCbc({
+      payload,
+      key: key.value,
+      iv,
+    });
+
     return {
-      encryptedPayload,
+      encryptedPayload: new Uint8Array(encrypted),
       iv: { value: iv },
     };
   }
 
   async generateRsaKeys(): Promise<RsaKeyPair> {
-    const kp = await RSA.generateKeys(2048);
-    const privateKey = pemToDer(kp.private);
-    const publicKey = pemToDer(kp.public);
+    const keyPair = await generateRsaKeyPair(2048);
+
     return {
-      privateKey: {
-        pkcs8PrivateKeyBytes: privateKey,
-      },
-      publicKey: {
-        spkiPublicKeyBytes: publicKey,
-      },
+      privateKey: { pkcs8PrivateKeyBytes: keyPair.pkcs8PrivateKeyDer },
+      publicKey: { spkiPublicKeyBytes: keyPair.spkiPublicKeyDer },
     };
   }
 
@@ -104,13 +105,13 @@ export class EncryptionService {
     for (let i = 0; i < data.length; i += 122) {
       chunkedData.push(data.slice(i, i + 122));
     }
-    const key = derToPem(publicKey.spkiPublicKeyBytes, 'PUBLIC KEY');
     return {
       dataChunks: await Promise.all(
         chunkedData.map(async (chunk) => {
-          return base64ToUint8Array(
-            await RSA.encrypt64(uint8ArrayToBase64(chunk), key),
-          );
+          return await rsaEncrypt({
+            payload: chunk,
+            spkiPublicKeyDer: publicKey.spkiPublicKeyBytes,
+          });
         }),
       ),
     };
@@ -124,12 +125,12 @@ export class EncryptionService {
     for (let i = 0; i < data.dataChunks.length; i++) {
       chunkedData.push(data.dataChunks[i]);
     }
-    const key = derToPem(privateKey.pkcs8PrivateKeyBytes, 'PRIVATE KEY');
     const decryptedChunks = await Promise.all(
       chunkedData.map(async (chunk) => {
-        return base64ToUint8Array(
-          await RSA.decrypt64(uint8ArrayToBase64(chunk), key),
-        );
+        return await rsaDecrypt({
+          payload: chunk,
+          pkcs8PrivateKeyDer: privateKey.pkcs8PrivateKeyBytes,
+        });
       }),
     );
     return new Uint8Array(
@@ -144,15 +145,12 @@ export class EncryptionService {
     data: Uint8Array,
     privateKey: RsaPrivateKey,
   ): Promise<Uint8Array> {
-    const key = derToPem(privateKey.pkcs8PrivateKeyBytes, 'PRIVATE KEY');
-    const hashHex = await Aes.sha256(uint8ArrayToBase64(data));
-    console.log(hashHex);
-    return base64ToUint8Array(
-      await RSA.sign64WithAlgorithm(
-        uint8ArrayToBase64(fromUrlSafeHexString(hashHex)),
-        key,
-        'RSASSA-PSS',
-      ),
+    const hash = await sha256Hash(data);
+    return new Uint8Array(
+      await rsaSign({
+        payload: hash,
+        pkcs8PrivateKeyDer: privateKey.pkcs8PrivateKeyBytes,
+      }),
     );
   }
 
@@ -161,75 +159,11 @@ export class EncryptionService {
     signature: Uint8Array,
     publicKey: RsaPublicKey,
   ): Promise<boolean> {
-    const keyPem = derToPem(publicKey.spkiPublicKeyBytes, 'PUBLIC KEY');
-    const payloadHashHex = await Aes.sha256(uint8ArrayToBase64(data));
-    const payloadHashBytes = fromUrlSafeHexString(payloadHashHex);
-    const payloadHashBase64 = uint8ArrayToBase64(payloadHashBytes);
-    return RSA.verify64WithAlgorithm(
-      uint8ArrayToBase64(signature),
-      payloadHashBase64,
-      keyPem,
-      'RSASSA-PSS',
-    );
+    const hash = await sha256Hash(data);
+    return await rsaVerify({
+      payload: hash,
+      signature,
+      spkiPublicKeyDer: publicKey.spkiPublicKeyBytes,
+    });
   }
-}
-
-/**
- * Converts a DER-encoded Uint8Array to a PEM-formatted string.
- * @param der The DER-encoded data.
- * @param label The PEM label, e.g. "PUBLIC KEY" or "PRIVATE KEY".
- */
-function derToPem(
-  der: Uint8Array,
-  label: 'PRIVATE KEY' | 'PUBLIC KEY',
-): string {
-  const base64 = btoa(String.fromCharCode(...der));
-  const lines = base64.match(/.{1,64}/g) || [];
-  return [
-    `-----BEGIN RSA ${label}-----`,
-    ...lines,
-    `-----END RSA ${label}-----`,
-  ].join('\n');
-}
-
-/**
- * Converts a PEM-formatted string to a DER-encoded Uint8Array.
- * @param pem The PEM string.
- */
-function pemToDer(pem: string): Uint8Array {
-  const base64 = pem
-    .replace(/-----BEGIN [^-]+-----/, '')
-    .replace(/-----END [^-]+-----/, '')
-    .replace(/\s+/g, '');
-  const binary = atob(base64);
-  const der = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-    der[i] = binary.charCodeAt(i);
-  }
-  return der;
-}
-
-/**
- * Converts a Uint8Array to a base64 string.
- * @param arr The Uint8Array to convert.
- */
-function uint8ArrayToBase64(arr: Uint8Array): string {
-  let binary = '';
-  for (let i = 0; i < arr.length; i++) {
-    binary += String.fromCharCode(arr[i]);
-  }
-  return btoa(binary);
-}
-
-/**
- * Converts a base64 string to a Uint8Array.
- * @param base64 The base64 string to convert.
- */
-function base64ToUint8Array(base64: string): Uint8Array {
-  const binary = atob(base64);
-  const arr = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-    arr[i] = binary.charCodeAt(i);
-  }
-  return arr;
 }
