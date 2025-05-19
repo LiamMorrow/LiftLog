@@ -1703,6 +1703,8 @@ PODS:
     - React-logger
     - React-perflogger
     - React-utils (= 0.76.9)
+  - ReactNativeWebcrypto (1.0.0):
+    - ExpoModulesCore
   - RNDateTimePicker (8.2.0):
     - DoubleConversion
     - glog
@@ -2008,6 +2010,7 @@ DEPENDENCIES:
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - ReactNativeWebcrypto (from `../modules/react-native-webcrypto/ios`)
   - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
@@ -2186,6 +2189,8 @@ EXTERNAL SOURCES:
     :path: build/generated/ios
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  ReactNativeWebcrypto:
+    :path: "../modules/react-native-webcrypto/ios"
   RNDateTimePicker:
     :path: "../node_modules/@react-native-community/datetimepicker"
   RNPermissions:
@@ -2283,6 +2288,7 @@ SPEC CHECKSUMS:
   React-utils: ed818f19ab445000d6b5c4efa9d462449326cc9f
   ReactCodegen: f853a20cc9125c5521c8766b4b49375fec20648b
   ReactCommon: 300d8d9c5cb1a6cd79a67cf5d8f91e4d477195f9
+  ReactNativeWebcrypto: 664ad69abe82c96a1fafbe75fc0419a58cb1d1e7
   RNDateTimePicker: d1b3b7412981ec0d4f9136b7b2566bc612b0045b
   RNPermissions: e9e0f71afa2acb2d93c7efeb0191a3d714102b81
   RNReanimated: 2e5069649cbab2c946652d3b97589b2ae0526220
