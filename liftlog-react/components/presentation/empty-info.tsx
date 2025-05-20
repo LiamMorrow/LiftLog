@@ -12,13 +12,12 @@ export default function EmptyInfo(props: ViewProps & { icon?: string }) {
         {
           alignItems: 'center',
           justifyContent: 'center',
-          height: '100%',
           gap: spacing[4],
         },
         style,
       ]}
     >
-      <Icon source={props.icon ?? 'info'} size={20} />
+      <Icon source={props.icon ?? 'info'} size={30} />
       <SurfaceText color="onSurface" style={{ textAlign: 'center' }}>
         {props.children}
       </SurfaceText>

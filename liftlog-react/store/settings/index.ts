@@ -1,4 +1,5 @@
 import { AiWorkoutAttributes, AiWorkoutPlan } from '@/models/ai-models';
+import { FeedState } from '@/store/feed';
 import { Instant } from '@js-joda/core';
 import {
   createAction,
@@ -131,6 +132,25 @@ const settingsSlice = createSlice({
 export const initializeSettingsStateSlice = createAction(
   'initializeSettingsStateSlice',
 );
+export type PlaintextExportFormat = 'CSV';
+
+// TODO implement effect (maybe need custom one for web with file picker - see BackupAndRestorePage.razor)
+export const importData = createAction('importData');
+// TODO implement
+export const beginFeedImport = createAction<FeedState>('beginFeedImport');
+// TODO implement
+export const exportData = createAction<{ includeFeed: boolean }>('exportData');
+
+// TODO implement
+export const exportPlainText = createAction<{ format: PlaintextExportFormat }>(
+  'exportPlainText',
+);
+
+// TODO implement
+export const executeRemoteBackup = createAction<{
+  settings: RemoteBackupSettings;
+  force: boolean;
+}>('executeRemoteBackup');
 
 export const {
   setIsHydrated,

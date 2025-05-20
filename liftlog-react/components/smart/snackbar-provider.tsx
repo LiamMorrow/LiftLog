@@ -15,13 +15,17 @@ export default function SnackbarProvider(props: { children: ReactNode }) {
         {
           <Snackbar
             visible={!!currentSnackbar}
-            action={{
-              label: currentSnackbar?.action ?? '',
-              onPress: () => {
-                currentSnackbar && dispatch(currentSnackbar.dispatchAction);
-                dispatch(setCurrentSnackbar(undefined));
-              },
-            }}
+            action={
+              currentSnackbar?.action
+                ? {
+                    label: currentSnackbar.action ?? '',
+                    onPress: () => {
+                      dispatch(currentSnackbar.dispatchAction);
+                      dispatch(setCurrentSnackbar(undefined));
+                    },
+                  }
+                : undefined!
+            }
             onDismiss={() => {}}
           >
             {currentSnackbar?.text}

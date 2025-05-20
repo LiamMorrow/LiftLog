@@ -2,6 +2,7 @@ import { msAdd } from '@material-symbols-react-native/outlined-400/msAdd';
 import { msArrowDownward } from '@material-symbols-react-native/outlined-400/msArrowDownward';
 import { msArrowUpward } from '@material-symbols-react-native/outlined-400/msArrowUpward';
 import { msAssignment } from '@material-symbols-react-native/outlined-400/msAssignment';
+import { msAssignmentFill } from '@material-symbols-react-native/outlined-400/msAssignmentFill';
 import { msBugReport } from '@material-symbols-react-native/outlined-400/msBugReport';
 import { msClose } from '@material-symbols-react-native/outlined-400/msClose';
 import { msContentCopy } from '@material-symbols-react-native/outlined-400/msContentCopy';
@@ -13,6 +14,8 @@ import { msHistory } from '@material-symbols-react-native/outlined-400/msHistory
 import { msInfo } from '@material-symbols-react-native/outlined-400/msInfo';
 import { msMoreHoriz } from '@material-symbols-react-native/outlined-400/msMoreHoriz';
 import { msNotes } from '@material-symbols-react-native/outlined-400/msNotes';
+import { msRefresh } from '@material-symbols-react-native/outlined-400/msRefresh';
+import { msNotesFill } from '@material-symbols-react-native/outlined-400/msNotesFill';
 import { msNotifications } from '@material-symbols-react-native/outlined-400/msNotifications';
 import { msRemove } from '@material-symbols-react-native/outlined-400/msRemove';
 import { msAnalyticsFill } from '@material-symbols-react-native/outlined-400/msAnalyticsFill';
@@ -32,6 +35,36 @@ import { msForum } from '@material-symbols-react-native/outlined-400/msForum';
 import { msForumFill } from '@material-symbols-react-native/outlined-400/msForumFill';
 import { msInventory } from '@material-symbols-react-native/outlined-400/msInventory';
 import { msChevronRight } from '@material-symbols-react-native/outlined-400/msChevronRight';
+import { msArrowDropDown } from '@material-symbols-react-native/outlined-400/msArrowDropDown';
+import { msCheck } from '@material-symbols-react-native/outlined-400/msCheck';
+import { msArrowDropUp } from '@material-symbols-react-native/outlined-400/msArrowDropUp';
+import { msBackup } from '@material-symbols-react-native/outlined-400/msBackup';
+import { msCloudUpload } from '@material-symbols-react-native/outlined-400/msCloudUpload';
+import { msDescription } from '@material-symbols-react-native/outlined-400/msDescription';
+import { msDescriptionFill } from '@material-symbols-react-native/outlined-400/msDescriptionFill';
+import { msVpnKey } from '@material-symbols-react-native/outlined-400/msVpnKey';
+import { msVpnKeyFill } from '@material-symbols-react-native/outlined-400/msVpnKeyFill';
+import { msPublic } from '@material-symbols-react-native/outlined-400/msPublic';
+import { msPublicFill } from '@material-symbols-react-native/outlined-400/msPublicFill';
+import { msPhysicalTherapy } from '@material-symbols-react-native/outlined-400/msPhysicalTherapy';
+import { msPhysicalTherapyFill } from '@material-symbols-react-native/outlined-400/msPhysicalTherapyFill';
+import { msBarChart } from '@material-symbols-react-native/outlined-400/msBarChart';
+import { msBarChartFill } from '@material-symbols-react-native/outlined-400/msBarChartFill';
+import { msInfoFill } from '@material-symbols-react-native/outlined-400/msInfoFill';
+import { msCake } from '@material-symbols-react-native/outlined-400/msCake';
+import { msCakeFill } from '@material-symbols-react-native/outlined-400/msCakeFill';
+import { msSocialLeaderboard } from '@material-symbols-react-native/outlined-400/msSocialLeaderboard';
+import { msSocialLeaderboardFill } from '@material-symbols-react-native/outlined-400/msSocialLeaderboardFill';
+import { msMale } from '@material-symbols-react-native/outlined-400/msMale';
+import { msMaleFill } from '@material-symbols-react-native/outlined-400/msMaleFill';
+import { msSpeed } from '@material-symbols-react-native/outlined-400/msSpeed';
+import { msSpeedFill } from '@material-symbols-react-native/outlined-400/msSpeedFill';
+import { msEvent } from '@material-symbols-react-native/outlined-400/msEvent';
+import { msEventFill } from '@material-symbols-react-native/outlined-400/msEventFill';
+import { msMonitorWeight } from '@material-symbols-react-native/outlined-400/msMonitorWeight';
+import { msMonitorWeightFill } from '@material-symbols-react-native/outlined-400/msMonitorWeightFill';
+import { msPerson } from '@material-symbols-react-native/outlined-400/msPerson';
+import { msPersonFill } from '@material-symbols-react-native/outlined-400/msPersonFill';
 import { MsIcon } from 'material-symbols-react-native';
 import { IconProps } from 'react-native-paper/lib/typescript/components/MaterialCommunityIcon';
 
@@ -44,6 +77,7 @@ const MaterialSymbols = {
   arrowDownward: msArrowDownward,
   arrowUpward: msArrowUpward,
   assignment: msAssignment,
+  assignmentFill: msAssignmentFill,
   bugReport: msBugReport,
   close: msClose,
   contentCopy: msContentCopy,
@@ -52,11 +86,12 @@ const MaterialSymbols = {
   error: msError,
   history: msHistory,
   info: msInfo,
-  minus: msRemove, // Remap
+  minus: msRemove,
   moreHoriz: msMoreHoriz,
   notes: msNotes,
+  notesFill: msNotesFill,
   notifications: msNotifications,
-  plus: msAdd, // Remap
+  plus: msAdd,
   remove: msRemove,
   save: msSave,
   forum: msForum,
@@ -66,9 +101,21 @@ const MaterialSymbols = {
   analytics: msAnalytics,
   analyticsFill: msAnalyticsFill,
   settingsBackupRestore: msSettingsBackupRestore,
+  public: msPublic,
+  publicFill: msPublicFill,
+  vpnKey: msVpnKey,
+  vpnKeyFill: msVpnKeyFill,
   share: msShare,
   star: msStar,
   text: msTextAd,
+  reload: msRefresh,
+  check: msCheck,
+  'menu-down': msArrowDropDown,
+  'menu-up': msArrowDropUp,
+  backup: msBackup,
+  description: msDescription,
+  descriptionFill: msDescriptionFill,
+  cloudUpload: msCloudUpload,
   translate: msTranslate,
   weight: msWeight,
   fitnessCenter: msFitnessCenter,
@@ -77,6 +124,26 @@ const MaterialSymbols = {
 
   chevronLeft: msChevronLeft,
   chevronRight: msChevronRight,
+
+  physicalTherapy: msPhysicalTherapy,
+  physicalTherapyFill: msPhysicalTherapyFill,
+  barChart: msBarChart,
+  barChartFill: msBarChartFill,
+  infoFill: msInfoFill,
+  cake: msCake,
+  cakeFill: msCakeFill,
+  socialLeaderboard: msSocialLeaderboard,
+  socialLeaderboardFill: msSocialLeaderboardFill,
+  male: msMale,
+  maleFill: msMaleFill,
+  speed: msSpeed,
+  speedFill: msSpeedFill,
+  event: msEvent,
+  eventFill: msEventFill,
+  monitorWeight: msMonitorWeight,
+  monitorWeightFill: msMonitorWeightFill,
+  person: msPerson,
+  personFill: msPersonFill,
 };
 
 export function MsIconSrc({ name, ...rest }: IconProps) {

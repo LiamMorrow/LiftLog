@@ -48,11 +48,17 @@ export const refreshNotificationPermissionStatus = createAction(
 
 export const initializeAppStateSlice = createAction('initializeAppStateSlice');
 
-export type SnackbarDescriptor = {
-  text: string;
-  action: string;
-  dispatchAction: UnknownAction;
-};
+export type SnackbarDescriptor =
+  | {
+      text: string;
+      action?: undefined;
+      dispatchAction?: undefined;
+    }
+  | {
+      text: string;
+      action: string;
+      dispatchAction: UnknownAction;
+    };
 export const showSnackbar = createAction<
   SnackbarDescriptor & { duration?: number }
 >('snackBarWithAction');
