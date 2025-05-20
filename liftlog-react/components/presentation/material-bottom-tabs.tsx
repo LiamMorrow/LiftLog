@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { CommonActions } from '@react-navigation/core';
 import { PropsWithChildren } from 'react';
+import { Text, View } from 'react-native';
 import { BottomNavigation, BottomNavigationProps } from 'react-native-paper';
 
 export type MaterialBottomTabsProps = PropsWithChildren<
@@ -34,6 +35,7 @@ export function MaterialBottomTabs({
             routes: state.routes,
           }}
           safeAreaInsets={insets}
+          labeled
           onTabPress={({ route, preventDefault }) => {
             const event = navigation.emit({
               type: 'tabPress',
@@ -71,7 +73,16 @@ export function MaterialBottomTabs({
                     ? route.title
                     : route.name;
 
-            return String(label);
+            return (
+              <View
+                style={{
+                  alignItems: 'center',
+                  width: '100%',
+                }}
+              >
+                <Text>{String(label)}</Text>
+              </View>
+            ) as unknown as string;
           }}
         />
       )}

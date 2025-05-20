@@ -7,6 +7,7 @@
     "android": "expo run:android",
     "android:release": "expo run:android --variant release",
     "ios": "expo run:ios",
+    "dev": "expo start --dev-client",
     "web": "expo start --web",
     "lint": "eslint .",
     "patch-package": "patch-package",
