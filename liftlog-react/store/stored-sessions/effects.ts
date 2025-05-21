@@ -5,6 +5,7 @@ import {
   initializeStoredSessionsStateSlice,
   setIsHydrated,
   setStoredSessions,
+  upsertStoredSessions,
 } from './index';
 import { LiftLog } from '@/gen/proto';
 import { match } from 'ts-pattern';
@@ -52,7 +53,7 @@ export function applyStoredSessionsEffects() {
   );
 
   addEffect(
-    [deleteStoredSession, addStoredSession],
+    [deleteStoredSession, addStoredSession, upsertStoredSessions],
     async (
       _,
       { cancelActiveListeners, getState, extra: { keyValueStore } },

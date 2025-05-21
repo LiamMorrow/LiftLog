@@ -142,6 +142,15 @@ const programSlice = createSlice({
       );
     },
 
+    upsertSavedPlans(
+      state,
+      action: PayloadAction<{ [programId: string]: ProgramBlueprint }>,
+    ) {
+      Object.entries(action.payload).forEach(
+        ([id, program]) => (state.savedPrograms[id] = program.toPOJO()),
+      );
+    },
+
     moveSessionBlueprintUpInProgram(
       state,
       action: PayloadAction<{
@@ -275,6 +284,7 @@ export const {
   setProgramSession,
   setProgramSessions,
   setSavedPlanName,
+  upsertSavedPlans,
   setSavedPlans,
 } = programSlice.actions;
 

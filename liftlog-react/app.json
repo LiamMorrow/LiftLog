@@ -20,7 +20,10 @@
       "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"]
     },
     "ios": {
-      "bundleIdentifier": "com.limajuice.liftlogreact"
+      "bundleIdentifier": "com.limajuice.liftlogreact",
+      "infoPlist": {
+        "UIViewControllerBasedStatusBarAppearance": true
+      }
     },
     "androidStatusBar": {
       "translucent": true

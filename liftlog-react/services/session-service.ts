@@ -74,7 +74,7 @@ export class SessionService {
     previousSession: Session,
     sessionBlueprints: SessionBlueprint[],
     latestRecordedExercises: Enumerable.IDictionary<
-      KeyedExerciseBlueprint,
+      string, //KeyedExerciseBlueprint,
       RecordedExercise
     >,
   ): Session {
@@ -93,7 +93,7 @@ export class SessionService {
   private createNewSession(
     sessionBlueprint: SessionBlueprint,
     latestRecordedExercises: Enumerable.IDictionary<
-      KeyedExerciseBlueprint,
+      string, //KeyedExerciseBlueprint,
       RecordedExercise
     >,
   ): Session {
@@ -101,7 +101,9 @@ export class SessionService {
       settings: { splitWeightByDefault },
     } = this.getState();
     function getNextExercise(e: ExerciseBlueprint): RecordedExercise {
-      const lastExercise = latestRecordedExercises.get(e);
+      const lastExercise = latestRecordedExercises.get(
+        KeyedExerciseBlueprint.fromExerciseBlueprint(e).toString(),
+      );
       const potentialSets: PotentialSet[] = match(lastExercise)
         .returnType<PotentialSet[]>()
         .with(

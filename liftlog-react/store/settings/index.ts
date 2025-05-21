@@ -1,6 +1,6 @@
+import { LiftLog } from '@/gen/proto';
 import { AiWorkoutAttributes, AiWorkoutPlan } from '@/models/ai-models';
 import { RemoteData } from '@/models/remote';
-import { FeedState } from '@/store/feed';
 import { Instant } from '@js-joda/core';
 import {
   createAction,
@@ -136,11 +136,13 @@ export const initializeSettingsStateSlice = createAction(
 );
 export type PlaintextExportFormat = 'CSV';
 
-// TODO implement effect (maybe need custom one for web with file picker - see BackupAndRestorePage.razor)
 export const importData = createAction('importData');
+export const importDataDao = createAction<{
+  dao: LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2;
+}>('importDataDao');
 // TODO implement
-export const beginFeedImport = createAction<FeedState>('beginFeedImport');
-// TODO implement
+export const beginFeedImport =
+  createAction<LiftLog.Ui.Models.IFeedStateDaoV1>('beginFeedImport');
 export const exportData = createAction<{ includeFeed: boolean }>('exportData');
 
 export const exportPlainText = createAction<{ format: PlaintextExportFormat }>(

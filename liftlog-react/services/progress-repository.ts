@@ -27,12 +27,14 @@ export class ProgressRepository {
   }
 
   getLatestRecordedExercises(): Enumerable.IDictionary<
-    KeyedExerciseBlueprint,
+    string,
     RecordedExercise
   > {
     return this.getOrderedSessions()
       .selectMany((x) => x.recordedExercises)
-      .groupBy((x) => KeyedExerciseBlueprint.fromExerciseBlueprint(x.blueprint))
+      .groupBy((x) =>
+        KeyedExerciseBlueprint.fromExerciseBlueprint(x.blueprint).toString(),
+      )
       .toDictionary(
         (x) => x.key(),
         (x) => x.first(),

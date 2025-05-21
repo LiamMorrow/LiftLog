@@ -7,6 +7,7 @@ import {
 import { addEffect } from '@/store/listenerMiddleware';
 import { selectAllPrograms } from '@/store/program';
 import { exportData } from '@/store/settings';
+import { streamToUint8Array } from '@/utils/stream';
 import 'compression-streams-polyfill';
 
 export function addExportBackupEffects() {
@@ -47,33 +48,10 @@ export function addExportBackupEffects() {
       const gzipped = await streamToUint8Array(readable);
 
       await fileExportService.exportBytes(
-        'liftlog.backup.gz',
+        'export.liftlogbackup.gz',
         gzipped,
         'application/octet-stream',
       );
     },
   );
-}
-async function streamToUint8Array(stream: ReadableStream<Uint8Array>) {
-  const reader = stream.getReader();
-  const chunks = [];
-  let totalLength = 0;
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) {
-      break;
-    }
-    chunks.push(value);
-    totalLength += value.length;
-  }
-
-  const result = new Uint8Array(totalLength);
-  let position = 0;
-  for (const chunk of chunks) {
-    result.set(chunk, position);
-    position += chunk.length;
-  }
-
-  return result;
 }

@@ -7,7 +7,7 @@ import { LocalDate, Year, YearMonth } from '@js-joda/core';
 import Enumerable from 'linq';
 import { View } from 'react-native';
 import { Card, IconButton, TouchableRipple } from 'react-native-paper';
-import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
+import Animated, { ZoomIn } from 'react-native-reanimated';
 
 const oneSeventh = `${100 / 7}%`;
 const fiveSevenths = `${(100 / 7) * 5}%`;
@@ -185,7 +185,7 @@ export default function HistoryCalendarCard({
   );
 
   return (
-    <Card style={{ marginHorizontal: spacing[2] }}>
+    <Card style={{ marginHorizontal: spacing[2] }} mode="contained">
       <Card.Content>
         <View
           style={{

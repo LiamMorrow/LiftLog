@@ -61,6 +61,8 @@ import { msSpeed } from '@material-symbols-react-native/outlined-400/msSpeed';
 import { msSpeedFill } from '@material-symbols-react-native/outlined-400/msSpeedFill';
 import { msEvent } from '@material-symbols-react-native/outlined-400/msEvent';
 import { msEventFill } from '@material-symbols-react-native/outlined-400/msEventFill';
+import { msCalendarToday } from '@material-symbols-react-native/outlined-400/msCalendarToday';
+import { msCalendarMonth } from '@material-symbols-react-native/outlined-400/msCalendarMonth';
 import { msMonitorWeight } from '@material-symbols-react-native/outlined-400/msMonitorWeight';
 import { msMonitorWeightFill } from '@material-symbols-react-native/outlined-400/msMonitorWeightFill';
 import { msPerson } from '@material-symbols-react-native/outlined-400/msPerson';
@@ -111,10 +113,15 @@ const MaterialSymbols = {
   reload: msRefresh,
   check: msCheck,
   'menu-down': msArrowDropDown,
+  'pencil-outline': msEdit,
   'menu-up': msArrowDropUp,
+  'chevron-left': msChevronLeft,
+  'chevron-right': msChevronRight,
   backup: msBackup,
   description: msDescription,
   descriptionFill: msDescriptionFill,
+  calendar: msCalendarMonth,
+  'calendar-blank': msCalendarToday,
   cloudUpload: msCloudUpload,
   translate: msTranslate,
   weight: msWeight,

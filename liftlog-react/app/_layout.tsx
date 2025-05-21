@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { AppThemeProvider } from '@/hooks/useAppTheme';
 import { TolgeeProvider } from '@tolgee/react';
-import { LogBox, Text, useColorScheme } from 'react-native';
+import { LogBox, Platform, Text, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import { store } from '@/store';
@@ -41,7 +41,12 @@ export default function RootLayout() {
                 statusBarBackgroundColor: 'transparent',
                 navigationBarTranslucent: true,
                 navigationBarColor: 'transparent',
-                statusBarStyle: colorScheme === 'dark' ? 'light' : 'dark',
+                statusBarStyle:
+                  Platform.OS === 'android'
+                    ? colorScheme === 'dark'
+                      ? 'light'
+                      : 'dark'
+                    : undefined,
                 gestureEnabled: false,
               }}
             />

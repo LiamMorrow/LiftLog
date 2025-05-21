@@ -2,6 +2,7 @@ import { EncryptionService } from '@/services/encryption-service';
 import { FeedApiService } from '@/services/feed-api';
 import { FeedIdentityService } from '@/services/feed-identity-service';
 import { FileExportService } from '@/services/file-export-service';
+import { FilePickerService } from '@/services/file-picker-service';
 import { IKeyValueStore } from '@/services/key-value-store';
 import { Logger } from '@/services/logger';
 import { NotificationService } from '@/services/notification-service';
@@ -33,6 +34,7 @@ async function createServicesInternal() {
   );
   const stringSharer = new StringSharer();
   const fileExportService = new FileExportService();
+  const filePickerService = new FilePickerService();
 
   return {
     logger,
@@ -45,6 +47,7 @@ async function createServicesInternal() {
     feedIdentityService,
     stringSharer,
     fileExportService,
+    filePickerService,
   };
 }
 export type Services = Awaited<ReturnType<typeof createServicesInternal>>;

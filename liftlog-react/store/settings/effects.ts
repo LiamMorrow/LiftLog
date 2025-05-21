@@ -2,6 +2,7 @@ import { addEffect } from '@/store/listenerMiddleware';
 import { initializeSettingsStateSlice, setIsHydrated } from '@/store/settings';
 import { addExportBackupEffects } from '@/store/settings/export-backup-effects';
 import { addExportPlaintextEffects } from '@/store/settings/export-plaintext-effects';
+import { addImportBackupEffects } from '@/store/settings/import-backup-effects';
 
 export function applySettingsEffects() {
   addEffect(
@@ -16,4 +17,5 @@ export function applySettingsEffects() {
 
   addExportPlaintextEffects();
   addExportBackupEffects();
+  addImportBackupEffects();
 }

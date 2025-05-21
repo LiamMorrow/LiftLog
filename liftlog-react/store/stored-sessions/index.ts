@@ -40,6 +40,10 @@ const storedSessionsSlice = createSlice({
       state.sessions = action.payload;
     },
 
+    upsertStoredSessions(state, action: PayloadAction<Session[]>) {
+      action.payload.forEach((s) => (state.sessions[s.id] = s.toPOJO()));
+    },
+
     addStoredSession(state, action: PayloadAction<Session>) {
       state.sessions[action.payload.id] = action.payload.toPOJO();
     },
@@ -63,6 +67,7 @@ export const initializeStoredSessionsStateSlice = createAction(
 export const {
   setIsHydrated,
   setStoredSessions,
+  upsertStoredSessions,
   addStoredSession,
   deleteStoredSession,
 } = storedSessionsSlice.actions;

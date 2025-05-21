@@ -2,10 +2,6 @@ import CardList from '@/components/presentation/card-list';
 import EmptyInfo from '@/components/presentation/empty-info';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
 import HistoryCalendarCard from '@/components/presentation/history-calendar-card';
-import ItemList from '@/components/presentation/item-list';
-import ItemTitle from '@/components/presentation/item-title';
-import LabelledForm from '@/components/presentation/labelled-form';
-import LabelledFormRow from '@/components/presentation/labelled-form-row';
 import LimitedHtml from '@/components/presentation/limited-html';
 import ListTitle from '@/components/presentation/list-title';
 import SessionSummary from '@/components/presentation/session-summary';
@@ -15,7 +11,6 @@ import { spacing } from '@/hooks/useAppTheme';
 import { Session } from '@/models/session-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { setCurrentSession } from '@/store/current-session';
-import { fetchUpcomingSessions } from '@/store/program';
 import {
   deleteStoredSession,
   selectSessions,
