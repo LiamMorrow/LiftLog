@@ -4,6 +4,7 @@ import {
   feedApiError,
   fetchInboxItemsAction,
   initializeFeedStateSlice,
+  patchFeedState,
   setIdentity,
   setIsHydrated,
 } from '@/store/feed';
@@ -13,6 +14,7 @@ import { toFeedStateDao } from '@/models/storage/conversions.to-dao';
 import { RemoteData } from '@/models/remote';
 import { selectActiveProgram } from '@/store/program';
 import { addSharedItemEffects } from '@/store/feed/shared-item-effects';
+import { showSnackbar } from '@/store/app';
 
 const StorageKey = 'FeedState';
 export function applyFeedEffects() {
@@ -37,10 +39,10 @@ export function applyFeedEffects() {
             const feedStateDao = LiftLog.Ui.Models.FeedStateDaoV1.decode(state);
             const feedState = fromFeedStateDao(feedStateDao);
 
-            if (feedState.identity) {
-              dispatch(setIdentity(RemoteData.success(feedState.identity)));
+            if (feedState.identity.isSuccess()) {
               hasIdentity = true;
             }
+            dispatch(patchFeedState(feedState));
           }
         }
         if (!hasIdentity) {
@@ -67,7 +69,7 @@ export function applyFeedEffects() {
 
   addEffect(feedApiError, async (action, { dispatch, extra: { logger } }) => {
     if (action.payload.action.payload.fromUserAction) {
-      // TODO dispatch toast
+      dispatch(showSnackbar({ text: action.payload.message }));
     }
     logger.error(action.payload.message, {
       action,

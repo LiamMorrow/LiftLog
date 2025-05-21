@@ -17,7 +17,10 @@ export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
     return undefined;
   }
   return (
-    <Card mode="contained" style={{ marginRight: spacing[5] }}>
+    <Card
+      mode="contained"
+      style={{ marginRight: spacing[5], marginTop: spacing[4] }}
+    >
       <Card.Content>
         <View style={{ flexDirection: 'row', gap: spacing[2] }}>
           <Icon source={'notes'} size={24} />

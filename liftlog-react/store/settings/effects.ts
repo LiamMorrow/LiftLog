@@ -9,7 +9,7 @@ export function applySettingsEffects() {
     initializeSettingsStateSlice,
     async (_, { cancelActiveListeners, dispatch }) => {
       cancelActiveListeners();
-      // TODO see SettingsStateInitMiddleware - should load all programs from disk
+      // TODO see SettingsStateInitMiddleware - should load them
       dispatch(setIsHydrated(true));
     },
   );

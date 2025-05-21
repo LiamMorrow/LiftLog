@@ -21,12 +21,13 @@ export default function SnackbarProvider(props: { children: ReactNode }) {
                     label: currentSnackbar.action ?? '',
                     onPress: () => {
                       dispatch(currentSnackbar.dispatchAction);
-                      dispatch(setCurrentSnackbar(undefined));
                     },
                   }
                 : undefined!
             }
-            onDismiss={() => {}}
+            onDismiss={() => {
+              dispatch(setCurrentSnackbar(undefined));
+            }}
           >
             {currentSnackbar?.text}
           </Snackbar>

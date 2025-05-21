@@ -50,8 +50,8 @@ const feedSlice = createSlice({
   name: 'feed',
   initialState,
   reducers: {
-    setFeedState(_, action: PayloadAction<FeedState>) {
-      return action.payload;
+    patchFeedState(state, action: PayloadAction<Partial<FeedState>>) {
+      Object.assign(state, action.payload);
     },
     setIsHydrated(state, action: PayloadAction<boolean>) {
       state.isHydrated = action.payload;
@@ -97,7 +97,7 @@ const feedSlice = createSlice({
 });
 
 export const {
-  setFeedState,
+  patchFeedState,
   setIsHydrated,
   setIdentity,
   setFeed,

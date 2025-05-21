@@ -198,39 +198,47 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
       }}
       data-cy="weighted-exercise"
     >
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <ItemTitle title={recordedExercise.blueprint.name} />
-        {interactiveButtons}
+      <View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <ItemTitle title={recordedExercise.blueprint.name} />
+          {interactiveButtons}
+        </View>
+        <AnimatedWeightDisplay {...props} />
+        <View
+          style={{ flexDirection: 'row', gap: spacing[2], flexWrap: 'wrap' }}
+        >
+          {recordedExercise.potentialSets.map((set, index) => (
+            <PotentialSetCounter
+              isReadonly={props.isReadonly}
+              key={index}
+              maxReps={recordedExercise.blueprint.repsPerSet}
+              onTap={() => props.cycleRepCountForSet(index)}
+              onHold={() => setAdditionalPotentialSetIndex(index)}
+              onUpdateWeight={(w) => props.updateWeightForSet(index, w)}
+              set={set}
+              showWeight={recordedExercise.perSetWeight}
+              toStartNext={
+                props.toStartNext &&
+                setToStartNext === index &&
+                !props.isReadonly
+              }
+              weightIncrement={
+                recordedExercise.blueprint.weightIncreaseOnSuccess
+              }
+            />
+          ))}
+        </View>
+        <ExerciseNotesDisplay
+          exercise={props.recordedExercise}
+          previousExercise={props.previousRecordedExercises.at(0)}
+        />
       </View>
-      <AnimatedWeightDisplay {...props} />
-      <View style={{ flexDirection: 'row', gap: spacing[2], flexWrap: 'wrap' }}>
-        {recordedExercise.potentialSets.map((set, index) => (
-          <PotentialSetCounter
-            isReadonly={props.isReadonly}
-            key={index}
-            maxReps={recordedExercise.blueprint.repsPerSet}
-            onTap={() => props.cycleRepCountForSet(index)}
-            onHold={() => setAdditionalPotentialSetIndex(index)}
-            onUpdateWeight={(w) => props.updateWeightForSet(index, w)}
-            set={set}
-            showWeight={recordedExercise.perSetWeight}
-            toStartNext={
-              props.toStartNext && setToStartNext === index && !props.isReadonly
-            }
-            weightIncrement={recordedExercise.blueprint.weightIncreaseOnSuccess}
-          />
-        ))}
-      </View>
-      <ExerciseNotesDisplay
-        exercise={props.recordedExercise}
-        previousExercise={props.previousRecordedExercises.at(0)}
-      />
 
       <PotentialSetAdditionalActionsDialog
         open={additionalPotentialSetIndex !== -1}

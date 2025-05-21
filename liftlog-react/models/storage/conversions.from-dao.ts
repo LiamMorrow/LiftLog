@@ -24,6 +24,8 @@ import { Duration, Instant, LocalDate, LocalTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { stringify as uuidStringify } from 'uuid';
 import { UuidConversionError } from '@/models/storage/uuid-conversion-error';
+import { FeedState } from '@/store/feed';
+import { RemoteData } from '@/models/remote';
 
 // Converts a UUID DAO to a string
 function fromUuidDao(
@@ -253,14 +255,31 @@ export function fromProgramBlueprintDao(
 
 export function fromFeedStateDao(dao: LiftLog.Ui.Models.IFeedStateDaoV1) {
   return {
-    feedItems: dao.feedItems?.map(fromFeedItemDao) ?? [],
-    followedUsers: dao.followedUsers?.map(fromFeedUserDao) ?? [],
-    identity: dao.identity && fromFeedIdentityDao(dao.identity),
+    feed: dao.feedItems?.map(fromFeedItemDao).map((x) => x.toPOJO()) ?? [],
+    followedUsers:
+      (dao.followedUsers &&
+        Object.fromEntries(
+          dao.followedUsers
+            .map(fromFeedUserDao)
+            .map((x) => [x.id, x.toPOJO()] as const),
+        )) ??
+      {},
+    identity:
+      (dao.identity &&
+        RemoteData.success(fromFeedIdentityDao(dao.identity).toPOJO())) ??
+      RemoteData.notAsked(),
     // TODO
     followRequests: [],
-    followers: dao.followers?.map(fromFeedUserDao) ?? [],
+    followers:
+      (dao.followers &&
+        Object.fromEntries(
+          dao.followers
+            .map(fromFeedUserDao)
+            .map((x) => [x.id, x.toPOJO()] as const),
+        )) ??
+      {},
     unpublishedSessionIds: dao.unpublishedSessionIds?.map(fromUuidDao) ?? [],
-  };
+  } satisfies Partial<FeedState>;
 }
 
 export function fromFeedItemDao(

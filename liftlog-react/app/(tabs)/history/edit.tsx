@@ -5,17 +5,16 @@ import {
   persistCurrentSession,
   setActiveSessionDate,
 } from '@/store/current-session';
+import { setStatsIsDirty } from '@/store/stats';
 import { LocalDate } from '@js-joda/core';
-import { useTranslate } from '@tolgee/react';
 import { useRouter, Stack } from 'expo-router';
 import { View } from 'react-native';
-import { Appbar, TextInput } from 'react-native-paper';
+import { Appbar } from 'react-native-paper';
 import { DatePickerInput } from 'react-native-paper-dates';
 import { useDispatch } from 'react-redux';
 
 export default function HistoryEditPage() {
   const dispatch = useDispatch();
-  const { t } = useTranslate();
   const session = useAppSelector(
     (state: RootState) => state.currentSession.historySession,
   );
@@ -27,7 +26,7 @@ export default function HistoryEditPage() {
     if (session) {
       // dispatch(addUnpublishedSessionIdAction(session.id));
     }
-    // dispatch(setStatsIsDirty(true));
+    dispatch(setStatsIsDirty(true));
     dismissTo('/history');
   };
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
@@ -60,7 +59,7 @@ export default function HistoryEditPage() {
           locale="default"
           inputMode="start"
           onChange={(e) => {
-            e &&
+            if (e)
               dispatch(
                 setActiveSessionDate({
                   target: 'historySession',
