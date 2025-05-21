@@ -97,6 +97,10 @@ export function fromTimestampDao(
   dao: google.protobuf.ITimestamp | null | undefined,
 ): Instant {
   // TODO - we just drop the nanos for now
+  const sec = dao?.seconds;
+  if (typeof sec === 'number') {
+    return Instant.ofEpochSecond(sec);
+  }
   return Instant.ofEpochSecond(dao!.seconds!.toNumber());
 }
 
