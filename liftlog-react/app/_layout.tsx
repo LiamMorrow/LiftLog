@@ -15,7 +15,10 @@ import '@/utils/date-locale';
 // import { install } from 'react-native-quick-crypto';
 
 // install();
-LogBox.ignoreLogs([/.*is not a valid icon name.*/]);
+LogBox.ignoreLogs([
+  /.*is not a valid icon name.*/,
+  /Open debugger to view warnings./,
+]);
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();

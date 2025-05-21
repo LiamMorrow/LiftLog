@@ -1,7 +1,6 @@
 import { Tabs } from 'expo-router';
 import { CommonActions } from '@react-navigation/core';
 import { PropsWithChildren } from 'react';
-import { Text, View } from 'react-native';
 import { BottomNavigation, BottomNavigationProps } from 'react-native-paper';
 
 export type MaterialBottomTabsProps = PropsWithChildren<
@@ -73,16 +72,7 @@ export function MaterialBottomTabs({
                     ? route.title
                     : route.name;
 
-            return (
-              <View
-                style={{
-                  alignItems: 'center',
-                  width: '100%',
-                }}
-              >
-                <Text>{String(label)}</Text>
-              </View>
-            ) as unknown as string;
+            return String(label);
           }}
         />
       )}
