@@ -29,6 +29,7 @@
     "@tolgee/react": "^6.2.2",
     "babel-plugin-react-compiler": "^19.0.0-beta-bafa41b-20250307",
     "bignumber.js": "^9.1.2",
+    "compression-streams-polyfill": "^0.1.7",
     "data-async-iterators": "^1.4.6",
     "eslint-plugin-react-compiler": "^19.0.0-beta-bafa41b-20250307",
     "expo": "~52.0.46",

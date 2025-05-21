@@ -1,5 +1,6 @@
 import { addEffect } from '@/store/listenerMiddleware';
 import { initializeSettingsStateSlice, setIsHydrated } from '@/store/settings';
+import { addExportBackupEffects } from '@/store/settings/export-backup-effects';
 import { addExportPlaintextEffects } from '@/store/settings/export-plaintext-effects';
 
 export function applySettingsEffects() {
@@ -14,4 +15,5 @@ export function applySettingsEffects() {
   // TODO we might need a generic handler which sets settings values from dispatched actions
 
   addExportPlaintextEffects();
+  addExportBackupEffects();
 }

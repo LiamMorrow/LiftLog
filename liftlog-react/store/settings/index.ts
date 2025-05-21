@@ -1,4 +1,5 @@
 import { AiWorkoutAttributes, AiWorkoutPlan } from '@/models/ai-models';
+import { RemoteData } from '@/models/remote';
 import { FeedState } from '@/store/feed';
 import { Instant } from '@js-joda/core';
 import {
@@ -9,6 +10,12 @@ import {
 } from '@reduxjs/toolkit';
 
 export type ColorSchemeSeed = 'default' | `#${string}`;
+
+export type LastBackup = {
+  lastSuccessfulRemoteBackupHash: string;
+  lastBackupTime: Instant;
+  settings: RemoteBackupSettings;
+};
 
 interface SettingsState {
   // 0 based, sunday being 0
@@ -25,8 +32,7 @@ interface SettingsState {
   showFeed: boolean;
   restNotifications: boolean;
   remoteBackupSettings: RemoteBackupSettings;
-  lastSuccessfulRemoteBackupHash: string | undefined;
-  lastBackupTime: Instant;
+  lastBackup: RemoteData<LastBackup, string>;
   backupReminder: boolean;
   splitWeightByDefault: boolean;
   colorSchemeSeed: ColorSchemeSeed;
@@ -56,8 +62,7 @@ const initialState: SettingsState = {
     apiKey: '',
     includeFeedAccount: false,
   },
-  lastSuccessfulRemoteBackupHash: '',
-  lastBackupTime: Instant.MIN,
+  lastBackup: RemoteData.notAsked(),
   backupReminder: true,
   splitWeightByDefault: false,
   colorSchemeSeed: 'default',
@@ -109,14 +114,11 @@ const settingsSlice = createSlice({
     ) {
       state.remoteBackupSettings = action.payload;
     },
-    setLastSuccessfulRemoteBackupHash(
+    setLastBackup(
       state,
-      action: PayloadAction<string | undefined>,
+      action: PayloadAction<RemoteData<LastBackup, string>>,
     ) {
-      state.lastSuccessfulRemoteBackupHash = action.payload;
-    },
-    setLastBackupTime(state, action: PayloadAction<Instant>) {
-      state.lastBackupTime = action.payload;
+      state.lastBackup = action.payload;
     },
     setBackupReminder(state, action: PayloadAction<boolean>) {
       state.backupReminder = action.payload;
@@ -141,7 +143,6 @@ export const beginFeedImport = createAction<FeedState>('beginFeedImport');
 // TODO implement
 export const exportData = createAction<{ includeFeed: boolean }>('exportData');
 
-// TODO implement
 export const exportPlainText = createAction<{ format: PlaintextExportFormat }>(
   'exportPlainText',
 );
@@ -165,8 +166,7 @@ export const {
   setShowFeed,
   setRestNotifications,
   setRemoteBackupSettings,
-  setLastSuccessfulRemoteBackupHash,
-  setLastBackupTime,
+  setLastBackup,
   setBackupReminder,
   setSplitWeightByDefault,
   setColorSchemeSeed,

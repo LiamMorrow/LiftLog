@@ -1,11 +1,11 @@
-type RemoteDataMatchHandlers<T, R> = {
+type RemoteDataMatchHandlers<T, TError, R> = {
   loading: () => R;
   success: (data: T) => R;
-  error: (error: unknown) => R;
+  error: (error: TError) => R;
   notAsked?: () => R;
 };
 
-export abstract class RemoteData<T> {
+export abstract class RemoteData<T, TError = unknown> {
   // Used for serialization in the Redux DevTools.
   protected abstract type: 'notAsked' | 'loading' | 'success' | 'error';
 
@@ -17,15 +17,15 @@ export abstract class RemoteData<T> {
     return new RemoteDataLoading<T>();
   }
 
-  static success<T>(data: T): RemoteData<T> {
+  static success<T, TError = unknown>(data: T): RemoteData<T, TError> {
     return new RemoteDataSuccess<T>(data);
   }
 
-  static error<T>(error: unknown): RemoteData<T> {
-    return new RemoteDataError<T>(error);
+  static error<T, TError = unknown>(error: TError): RemoteData<T, TError> {
+    return new RemoteDataError<T, TError>(error);
   }
 
-  abstract match<R>(handlers: RemoteDataMatchHandlers<T, R>): R;
+  abstract match<R>(handlers: RemoteDataMatchHandlers<T, TError, R>): R;
 
   isLoading(): this is RemoteDataLoading<T> {
     return this.match({
@@ -74,42 +74,42 @@ export abstract class RemoteData<T> {
   }
 }
 
-class RemoteDataNotAsked<T> extends RemoteData<T> {
+class RemoteDataNotAsked<T> extends RemoteData<T, never> {
   protected type = 'notAsked' as const;
 
-  match<R>(handlers: RemoteDataMatchHandlers<T, R>): R {
+  match<R>(handlers: RemoteDataMatchHandlers<T, never, R>): R {
     return handlers.notAsked?.() ?? handlers.loading();
   }
 }
 
-class RemoteDataLoading<T> extends RemoteData<T> {
+class RemoteDataLoading<T> extends RemoteData<T, never> {
   protected type = 'loading' as const;
 
-  match<R>(handlers: RemoteDataMatchHandlers<T, R>): R {
+  match<R>(handlers: RemoteDataMatchHandlers<T, never, R>): R {
     return handlers.loading();
   }
 }
 
-class RemoteDataSuccess<T> extends RemoteData<T> {
+class RemoteDataSuccess<T> extends RemoteData<T, never> {
   constructor(public readonly data: T) {
     super();
   }
 
   protected type = 'success' as const;
 
-  match<R>(handlers: RemoteDataMatchHandlers<T, R>): R {
+  match<R>(handlers: RemoteDataMatchHandlers<T, never, R>): R {
     return handlers.success(this.data);
   }
 }
 
-class RemoteDataError<T> extends RemoteData<T> {
-  constructor(private readonly error: unknown) {
+class RemoteDataError<T, TError> extends RemoteData<T, TError> {
+  constructor(private readonly error: TError) {
     super();
   }
 
   protected type = 'error' as const;
 
-  match<R>(handlers: RemoteDataMatchHandlers<T, R>): R {
+  match<R>(handlers: RemoteDataMatchHandlers<T, TError, R>): R {
     return handlers.error(this.error);
   }
 }

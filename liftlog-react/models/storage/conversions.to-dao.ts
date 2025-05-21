@@ -27,7 +27,7 @@ import {
 import Enumerable from 'linq';
 import { FeedState } from '@/store/feed';
 
-function toUuidDao(uuid: string): LiftLog.Ui.Models.IUuidDao {
+export function toUuidDao(uuid: string): LiftLog.Ui.Models.IUuidDao {
   const parsed = uuidParse(uuid);
   // Reorder bytes to match the Guid.ToByteArray behavior in C#. See fromUuidDao
   // prettier-ignore
