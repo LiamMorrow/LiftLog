@@ -13,7 +13,7 @@
         Options="SessionSelectOptions"
         Value="StatsState.Value.OverallViewSessionName"
         ValueChanged="HandleSessionSelectChanged"
-        EqualsComparer="(a,b)=>a.Equals(b)" />
+        EqualsComparer="(a,b)=>a?.Equals(b) ?? (a is null && b is null)" />
     <Select
         data-cy="stats-time-selector"
         T="TimeSpan"
