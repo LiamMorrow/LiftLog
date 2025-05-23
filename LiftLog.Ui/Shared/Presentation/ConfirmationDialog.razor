@@ -5,8 +5,8 @@
         @TextContent
     </span>
     <div slot="actions">
-        <AppButton Type="AppButtonType.Text" OnClick="async () => { dialog?.Close(); await OnCancel.InvokeAsync(); }">@(CancelText ?? UiStrings.Cancel)</AppButton>
-        <AppButton Type="AppButtonType.Text" OnClick="async () => { dialog?.Close(); await OnOk.InvokeAsync(); }">@(OkText ?? UiStrings.Ok)</AppButton>
+        <AppButton data-cy="action-cancel" Type="AppButtonType.Text" OnClick="async () => { dialog?.Close(); await OnCancel.InvokeAsync(); }">@(CancelText ?? UiStrings.Cancel)</AppButton>
+        <AppButton data-cy="action-ok" Type="AppButtonType.Text" OnClick="async () => { dialog?.Close(); await OnOk.InvokeAsync(); }">@(OkText ?? UiStrings.Ok)</AppButton>
     </div>
 </Dialog>
 
