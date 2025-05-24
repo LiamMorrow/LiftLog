@@ -17,6 +17,7 @@
     "scheme": "com.limajuice.liftlogreact",
     "android": {
       "package": "com.limajuice.liftlogreact",
+      "edgeToEdgeEnabled": true,
       "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"]
     },
     "ios": {

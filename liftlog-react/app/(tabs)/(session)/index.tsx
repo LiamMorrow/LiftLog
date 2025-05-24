@@ -18,13 +18,8 @@ import { setCurrentSession } from '@/store/current-session';
 import { fetchUpcomingSessions } from '@/store/program';
 import { LocalDate } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
-import {
-  Stack,
-  useFocusEffect,
-  useRootNavigationState,
-  useRouter,
-} from 'expo-router';
-import { useEffect, useState } from 'react';
+import { Stack, useFocusEffect, useRouter } from 'expo-router';
+import { useState } from 'react';
 import { View } from 'react-native';
 import { Button, Card, FAB, Icon } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
@@ -120,9 +115,9 @@ export default function Index() {
     .map((x) => x.at(0)?.bodyweight)
     .unwrapOr(undefined);
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const rootNavigationState = useRootNavigationState();
+  // const rootNavigationState = useRootNavigationState();
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  const navigatorReady = rootNavigationState?.key != null;
+  // const navigatorReady = rootNavigationState?.key != null;
   const [hasRedirected, setHasRedirected] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
   const [selectedSession, setSelectedSession] = useState<Session | undefined>();
@@ -130,20 +125,20 @@ export default function Index() {
   useMountEffect(() => {
     setHasMounted(true);
   });
-  useEffect(() => {
-    if (!navigatorReady || !hasMounted) return;
-    // On app open from cold if we have a current session loaded, show it automatically.
-    if (currentSession?.isStarted && !hasRedirected) {
-      push('/(tabs)/(session)/session');
-    }
-    setHasRedirected(true);
-  }, [
-    navigatorReady,
-    hasRedirected,
-    currentSession?.isStarted,
-    push,
-    hasMounted,
-  ]);
+  // useEffect(() => {
+  //   if (!navigatorReady || !hasMounted) return;
+  //   // On app open from cold if we have a current session loaded, show it automatically.
+  //   if (currentSession?.isStarted && !hasRedirected) {
+  //     push('/(tabs)/(session)/session');
+  //   }
+  //   setHasRedirected(true);
+  // }, [
+  //   navigatorReady,
+  //   hasRedirected,
+  //   currentSession?.isStarted,
+  //   push,
+  //   hasMounted,
+  // ]);
 
   useFocusEffect(() => {
     dispatch(fetchUpcomingSessions());
