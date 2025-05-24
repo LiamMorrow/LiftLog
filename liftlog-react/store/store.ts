@@ -13,6 +13,7 @@ const store = configureStore({
     getDefaultMiddleware({
       // We manually do persistence and devtools aren't needed
       serializableCheck: false,
+      immutableCheck: false,
     }).prepend(listenerMiddleware.middleware),
   reducer: combineReducers({
     currentSession: currentSessionReducer,
