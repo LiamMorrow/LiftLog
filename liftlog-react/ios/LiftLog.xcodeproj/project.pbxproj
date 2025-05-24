@@ -8,25 +8,25 @@
 
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		278107F186475F788A84944A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 7E7D8D4666F9D9688E1E3F72 /* PrivacyInfo.xcprivacy */; };
-		39D26F7042E0DCDFBF8BCC38 /* libPods-LiftLog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 12A7BF0072F4664B0A2B1936 /* libPods-LiftLog.a */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		76873459B2FBA83AB2FACA1E /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73D7AF6AAB7A15254708B1A /* ExpoModulesProvider.swift */; };
+		9E4BD0F431B158F98FF0E43F /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9BCD4DECC4F57E0F934561 /* ExpoModulesProvider.swift */; };
+		9FEB227599FFFDE2BAEAB848 /* libPods-LiftLog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 05AE7279CC6D43F2B0AE3A63 /* libPods-LiftLog.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
+		CA3705668A4CFAE705F070D0 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 477A7FC046D724502D8C7B39 /* PrivacyInfo.xcprivacy */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		12A7BF0072F4664B0A2B1936 /* libPods-LiftLog.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-LiftLog.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		05AE7279CC6D43F2B0AE3A63 /* libPods-LiftLog.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-LiftLog.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* LiftLog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LiftLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = LiftLog/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = LiftLog/Info.plist; sourceTree = "<group>"; };
-		6A1A3685FA5495CFE202ED5A /* Pods-LiftLog.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LiftLog.release.xcconfig"; path = "Target Support Files/Pods-LiftLog/Pods-LiftLog.release.xcconfig"; sourceTree = "<group>"; };
-		7E7D8D4666F9D9688E1E3F72 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = LiftLog/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		8B4D6B0EC90183653DBD74EB /* Pods-LiftLog.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LiftLog.debug.xcconfig"; path = "Target Support Files/Pods-LiftLog/Pods-LiftLog.debug.xcconfig"; sourceTree = "<group>"; };
+		28B768DB3FE249E2F6C0C072 /* Pods-LiftLog.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LiftLog.debug.xcconfig"; path = "Target Support Files/Pods-LiftLog/Pods-LiftLog.debug.xcconfig"; sourceTree = "<group>"; };
+		477A7FC046D724502D8C7B39 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = LiftLog/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		4C9BCD4DECC4F57E0F934561 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-LiftLog/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		67310D1DABA44FABE795758E /* Pods-LiftLog.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LiftLog.release.xcconfig"; path = "Target Support Files/Pods-LiftLog/Pods-LiftLog.release.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = LiftLog/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		C73D7AF6AAB7A15254708B1A /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-LiftLog/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = LiftLog/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* LiftLog-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "LiftLog-Bridging-Header.h"; path = "LiftLog/LiftLog-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -37,13 +37,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				39D26F7042E0DCDFBF8BCC38 /* libPods-LiftLog.a in Frameworks */,
+				9FEB227599FFFDE2BAEAB848 /* libPods-LiftLog.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0671534243F6E039DDC34D10 /* LiftLog */ = {
+			isa = PBXGroup;
+			children = (
+				4C9BCD4DECC4F57E0F934561 /* ExpoModulesProvider.swift */,
+			);
+			name = LiftLog;
+			sourceTree = "<group>";
+		};
 		13B07FAE1A68108700A75B9A /* LiftLog */ = {
 			isa = PBXGroup;
 			children = (
@@ -53,7 +61,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				7E7D8D4666F9D9688E1E3F72 /* PrivacyInfo.xcprivacy */,
+				477A7FC046D724502D8C7B39 /* PrivacyInfo.xcprivacy */,
 			);
 			name = LiftLog;
 			sourceTree = "<group>";
@@ -62,17 +70,17 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				12A7BF0072F4664B0A2B1936 /* libPods-LiftLog.a */,
+				05AE7279CC6D43F2B0AE3A63 /* libPods-LiftLog.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		62C5D5DE3FDD9AB4AA3A7F1B /* LiftLog */ = {
+		481FA7E0F3BC13787B1942C1 /* ExpoModulesProviders */ = {
 			isa = PBXGroup;
 			children = (
-				C73D7AF6AAB7A15254708B1A /* ExpoModulesProvider.swift */,
+				0671534243F6E039DDC34D10 /* LiftLog */,
 			);
-			name = LiftLog;
+			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -89,8 +97,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				C567504F2D7096277A5DB3AB /* Pods */,
-				D3B750487F562E540924F62E /* ExpoModulesProviders */,
+				B391E4C8E3EA0B5ACD8522BF /* Pods */,
+				481FA7E0F3BC13787B1942C1 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -105,6 +113,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		B391E4C8E3EA0B5ACD8522BF /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				28B768DB3FE249E2F6C0C072 /* Pods-LiftLog.debug.xcconfig */,
+				67310D1DABA44FABE795758E /* Pods-LiftLog.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
@@ -112,24 +130,6 @@
 			);
 			name = Supporting;
 			path = LiftLog/Supporting;
-			sourceTree = "<group>";
-		};
-		C567504F2D7096277A5DB3AB /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				8B4D6B0EC90183653DBD74EB /* Pods-LiftLog.debug.xcconfig */,
-				6A1A3685FA5495CFE202ED5A /* Pods-LiftLog.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
-			sourceTree = "<group>";
-		};
-		D3B750487F562E540924F62E /* ExpoModulesProviders */ = {
-			isa = PBXGroup;
-			children = (
-				62C5D5DE3FDD9AB4AA3A7F1B /* LiftLog */,
-			);
-			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -140,13 +140,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "LiftLog" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				953EEE307DC8EE4155E01758 /* [Expo] Configure project */,
+				13D0760B0AC406D4D0D24C86 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				B14C0222FB8F96BC3EEAB786 /* [CP] Embed Pods Frameworks */,
+				C0B0DA2278A9BFB18EEAE28F /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -196,7 +196,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				278107F186475F788A84944A /* PrivacyInfo.xcprivacy in Resources */,
+				CA3705668A4CFAE705F070D0 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -240,6 +240,25 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		13D0760B0AC406D4D0D24C86 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-LiftLog/expo-configure-project.sh\"\n";
+		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -280,26 +299,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-LiftLog/Pods-LiftLog-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		953EEE307DC8EE4155E01758 /* [Expo] Configure project */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "[Expo] Configure project";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-LiftLog/expo-configure-project.sh\"\n";
-		};
-		B14C0222FB8F96BC3EEAB786 /* [CP] Embed Pods Frameworks */ = {
+		C0B0DA2278A9BFB18EEAE28F /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -325,7 +325,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				76873459B2FBA83AB2FACA1E /* ExpoModulesProvider.swift in Sources */,
+				9E4BD0F431B158F98FF0E43F /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -334,7 +334,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8B4D6B0EC90183653DBD74EB /* Pods-LiftLog.debug.xcconfig */;
+			baseConfigurationReference = 28B768DB3FE249E2F6C0C072 /* Pods-LiftLog.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -359,18 +359,18 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.limajuice.liftlogreact;
-				PRODUCT_NAME = "LiftLog";
+				PRODUCT_NAME = LiftLog;
 				SWIFT_OBJC_BRIDGING_HEADER = "LiftLog/LiftLog-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6A1A3685FA5495CFE202ED5A /* Pods-LiftLog.release.xcconfig */;
+			baseConfigurationReference = 67310D1DABA44FABE795758E /* Pods-LiftLog.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -390,10 +390,10 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.limajuice.liftlogreact;
-				PRODUCT_NAME = "LiftLog";
+				PRODUCT_NAME = LiftLog;
 				SWIFT_OBJC_BRIDGING_HEADER = "LiftLog/LiftLog-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
