@@ -84,6 +84,9 @@ const feedSlice = createSlice({
     setUnpublishedSessionIds(state, action: PayloadAction<string[]>) {
       state.unpublishedSessionIds = action.payload;
     },
+    addUnpublishedSessionId(state, action: PayloadAction<string>) {
+      state.unpublishedSessionIds.push(action.payload);
+    },
     setSharedItem(state, action: PayloadAction<RemoteData<SharedItem>>) {
       state.sharedItem = action.payload.map((x) => x.toPOJO());
     },
@@ -108,6 +111,7 @@ export const {
   setActiveTab,
   setUnpublishedSessionIds,
   setSharedItem,
+  addUnpublishedSessionId,
 } = feedSlice.actions;
 
 export const { selectSharedItem } = feedSlice.selectors;

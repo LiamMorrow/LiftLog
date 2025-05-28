@@ -1,6 +1,7 @@
 import SessionComponent from '@/components/smart/session-component';
 import { RootState, useAppSelector } from '@/store';
 import { persistCurrentSession } from '@/store/current-session';
+import { addUnpublishedSessionId } from '@/store/feed';
 import { setStatsIsDirty } from '@/store/stats';
 import { Stack, useRouter } from 'expo-router';
 import { Appbar } from 'react-native-paper';
@@ -15,9 +16,8 @@ export default function Index() {
 
   const save = () => {
     dispatch(persistCurrentSession('workoutSession'));
-    // TODO
     if (session) {
-      // dispatch(addUnpublishedSessionIdAction(session.id));
+      dispatch(addUnpublishedSessionId(session.id));
     }
     dispatch(setStatsIsDirty(true));
     dismissTo('/');

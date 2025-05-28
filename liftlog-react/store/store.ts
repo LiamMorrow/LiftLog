@@ -11,7 +11,7 @@ import { listenerMiddleware } from '@/store/listenerMiddleware';
 const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      // We manually do persistence and devtools aren't needed
+      // We manually do persistence
       serializableCheck: false,
       immutableCheck: false,
     }).prepend(listenerMiddleware.middleware),

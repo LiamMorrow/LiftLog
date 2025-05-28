@@ -5,6 +5,7 @@ import {
   persistCurrentSession,
   setActiveSessionDate,
 } from '@/store/current-session';
+import { addUnpublishedSessionId } from '@/store/feed';
 import { setStatsIsDirty } from '@/store/stats';
 import { LocalDate } from '@js-joda/core';
 import { useRouter, Stack } from 'expo-router';
@@ -22,9 +23,8 @@ export default function HistoryEditPage() {
 
   const save = () => {
     dispatch(persistCurrentSession('historySession'));
-    // TODO
     if (session) {
-      // dispatch(addUnpublishedSessionIdAction(session.id));
+      dispatch(addUnpublishedSessionId(session.id));
     }
     dispatch(setStatsIsDirty(true));
     dismissTo('/history');
