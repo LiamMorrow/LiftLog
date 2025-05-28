@@ -74,6 +74,41 @@ const currentSessionSlice = createSlice({
 
     setActiveSessionDate: targetedSessionAction((session, date: LocalDate) => {
       session.date = date;
+      const originalDate = session.date;
+      const newDate = date;
+
+      // Gather all unique, non-null completion dates from all sets
+      const allCompletionDates = session.recordedExercises.flatMap((re) =>
+        re.potentialSets
+          .map((ps) => ps.set?.completionDateTime?.toLocalDate())
+          .filter((d): d is LocalDate => d !== undefined),
+      );
+
+      // If all sets have the same completion date, use absolute date
+      const useAbsoluteDate =
+        allCompletionDates.length > 0 &&
+        new Set(allCompletionDates.map((d) => d.toString())).size === 1;
+
+      function getAdjustedDate(setDate: LocalDate): LocalDate {
+        if (useAbsoluteDate) {
+          return newDate;
+        }
+        // Maintain relative offset if sets cross midnight
+        const dayOffset = setDate.toEpochDay() - originalDate.toEpochDay();
+        return newDate.plusDays(dayOffset);
+      }
+
+      // Update all sets' completionDateTime
+      session.recordedExercises.forEach((re) => {
+        re.potentialSets.forEach((ps) => {
+          if (ps.set && ps.set.completionDateTime) {
+            const setDate = ps.set.completionDateTime.toLocalDate();
+            ps.set.completionDateTime = ps.set.completionDateTime
+              .toLocalTime()
+              .atDate(getAdjustedDate(setDate));
+          }
+        });
+      });
     }),
 
     cycleExerciseReps: targetedSessionAction(
