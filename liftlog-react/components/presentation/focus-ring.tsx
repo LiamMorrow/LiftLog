@@ -6,9 +6,11 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   interpolate,
+  Easing,
+  ReduceMotion,
 } from 'react-native-reanimated';
 
-export const ANIMATION_DURATION = 350;
+export const ANIMATION_DURATION = 600;
 export default function FocusRing({
   isSelected,
   children,
@@ -21,16 +23,18 @@ export default function FocusRing({
   radius?: number;
 } & ViewProps) {
   const { colors } = useAppTheme();
-  const selectedAnim = useSharedValue(isSelected ? 1 : 0);
+  const growAnim = useSharedValue(isSelected ? 1 : 0);
 
   useEffect(() => {
-    selectedAnim.value = withTiming(isSelected ? 1 : 0, {
+    growAnim.value = withTiming(isSelected ? 1 : 0, {
       duration: ANIMATION_DURATION,
+      easing: Easing.bezier(0.2, 0, 0, 1),
+      reduceMotion: ReduceMotion.System,
     });
-  }, [isSelected, selectedAnim]);
+  }, [isSelected, growAnim]);
 
   const animatedStyle = useAnimatedStyle(() => {
-    const pos = interpolate(selectedAnim.value, [0, 0.8, 1], [4, -7, -5]);
+    const pos = interpolate(growAnim.value, [0, 0.25, 1], [0, -8, -5]);
     return {
       borderColor: colors.outline,
       position: 'absolute',
@@ -39,7 +43,9 @@ export default function FocusRing({
       left: pos,
       right: pos,
       borderRadius: radius ?? spacing[14],
-      borderWidth: 3,
+      borderWidth: isSelected
+        ? interpolate(growAnim.value, [0, 0.25, 1], [0, 8, 3])
+        : 0,
     };
   });
 
