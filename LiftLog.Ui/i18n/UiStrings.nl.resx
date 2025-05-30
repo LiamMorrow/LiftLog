@@ -125,7 +125,7 @@
     <value>Back-up data</value>
   </data>
   <data name="BackUpDataReminder" xml:space="preserve">
-    <value>Het is lang geleden dat u een back-up gemaakt heeft. Het is aanbevolen om uw data regelmatig op te slaan om dataverlies te verkomen. Wilt u nu uw data back-uppen?</value>
+    <value>Het is lang geleden dat u een back-up gemaakt heeft. Het is aanbevolen om uw data regelmatig op te slaan om dataverlies te voorkomen. Wilt u nu uw data back-uppen?</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Ja</value>
@@ -195,13 +195,13 @@
     <value>Hier is nog niks!</value>
   </data>
   <data name="NoFollowingData" xml:space="preserve">
-    <value>Nog niemand heeft data gedeed! Kom later terug.</value>
+    <value>Nog niemand heeft data gedeeld! Kom later terug.</value>
   </data>
   <data name="StartFollowingSomeone" xml:space="preserve">
     <value>Begin iemand te volgen!</value>
   </data>
   <data name="NotFollowingAnyone" xml:space="preserve">
-    <value>Je volgt nog niemand. Vraag iemand om een hun link!</value>
+    <value>Je volgt nog niemand. Vraag iemand om hun link!</value>
   </data>
   <data name="NobodyFollowingYou" xml:space="preserve">
     <value>Nog geen volgers!</value>
@@ -363,10 +363,10 @@
     <value>Pas notificaties aan voor rust timers</value>
   </data>
   <data name="ExportBackupRestore" xml:space="preserve">
-    <value>Exporteer, backup, en herstel</value>
+    <value>Exporteer, back-up, en herstel</value>
   </data>
   <data name="ExportBackupRestoreSubtitle" xml:space="preserve">
-    <value>Maak en exporteer backups naar andere apparaten.</value>
+    <value>Maak en exporteer back-ups naar andere apparaten.</value>
   </data>
   <data name="FeatureRequest" xml:space="preserve">
     <value>Functie aanvraag</value>
@@ -447,10 +447,10 @@
     <value>Automatische back-up op afstand</value>
   </data>
   <data name="PlaintextExport" xml:space="preserve">
-    <value>Exporteer als plattetekst</value>
+    <value>Exporteer als platte tekst</value>
   </data>
   <data name="PlaintextExportSubtitle" xml:space="preserve">
-    <value>Exorteer jouw data in plattetekst formaat zoals CSV om elders te gebruiken.</value>
+    <value>Exporteer jouw data in platte tekst formaat zoals CSV om elders te gebruiken.</value>
   </data>
   <data name="AutomaticRemoteBackupSubtitle" xml:space="preserve">
     <value>Verstuur back-ups naar een server op afstand. Alleen voor geavanceerde gebruikers.</value>
@@ -459,7 +459,7 @@
     <value>Feed data importeren?</value>
   </data>
   <data name="ImportFeedDataQuestionMessage" xml:space="preserve">
-    <value>Deze back-up bevat een account met feed. Wil je deze importeren?&lt;br&gt;Je verliest toegang tot dit account als er geen backup is.&lt;br&gt;&lt;em&gt;Je huidige account wordt definitief verwijderd!&lt;/em&gt;</value>
+    <value>Deze back-up bevat een account met feed. Wil je deze importeren?&lt;br&gt;Je verliest toegang tot dit account als er geen back-up is.&lt;br&gt;&lt;em&gt;Je huidige account wordt definitief verwijderd!&lt;/em&gt;</value>
   </data>
   <data name="Import" xml:space="preserve">
     <value>Importeer</value>
@@ -489,7 +489,7 @@
     <value>Bekijk lichaamsgewicht</value>
   </data>
   <data name="ShowBodyweightSubtitle" xml:space="preserve">
-    <value>Zet lichaamsgewicht tracking wn statistiek aan.</value>
+    <value>Zet lichaamsgewicht tracking en statistieken aan.</value>
   </data>
   <data name="ShowFeed" xml:space="preserve">
     <value>Bekijk feed</value>
@@ -507,7 +507,7 @@
     <value>Reset tips</value>
   </data>
   <data name="PlaintextExportDescription" xml:space="preserve">
-    <value>Met deze functionaliteit kan je jouw data exporteren in een plattetekst formaat zoals CSV voor gebruik in andere applicaties. Voor back-ups, gebruik de aparte back-up functionaliteit. LiftLog kan geen data importeren uit plattetekst bestanden.</value>
+    <value>Met deze functionaliteit kan je jouw data exporteren in een platte tekst formaat zoals CSV voor gebruik in andere applicaties. Voor back-ups, gebruik de aparte back-up functionaliteit. LiftLog kan geen data importeren uit platte tekst bestanden.</value>
   </data>
   <data name="ReadDocumentation" xml:space="preserve">
     <value>Lees documentatie</value>
@@ -540,7 +540,7 @@
     <value>AI trainingsplan genereren...&lt;br&gt;&lt;em&gt;Dit kan tot 3 min duren.&lt;/em&gt;</value>
   </data>
   <data name="NoteAboutTweakingAiPlan" xml:space="preserve">
-    <value>Merk op: aanpassingen zijn mogelijk nadat je dit plan gekozen hebt. Ga daarvoor naar Beheer Trainingsplannen.</value>
+    <value>Merk op: aanpassingen zijn mogelijk nadat je dit plan hebt gekozen. Ga hiervoor naar Beheer Trainingsplannen.</value>
   </data>
   <data name="Accept" xml:space="preserve">
     <value>Accepteer</value>
@@ -589,16 +589,16 @@
     <comment>The default, as a noun</comment>
   </data>
   <data name="AdditionalInformationLabel" xml:space="preserve">
-    <value>xtra informatie?</value>
+    <value>Extra informatie?</value>
   </data>
   <data name="AdditionalInformationExtra" xml:space="preserve">
-    <value>Goals, verwondingen, beschikbare apparaten, etc.</value>
+    <value>Doelen, verwondingen, beschikbare apparaten, etc.</value>
   </data>
   <data name="HowOldAreYou" xml:space="preserve">
     <value>Hoe oud ben je?</value>
   </data>
   <data name="SelectAtLeastOneGoal" xml:space="preserve">
-    <value>Selecteer tenminste een goal</value>
+    <value>Selecteer tenminste een doel</value>
   </data>
   <data name="SelectNumberOfDays" xml:space="preserve">
     <value>Selecteer het aantal dagen per week</value>
@@ -823,7 +823,7 @@
     <value>Trainingsplan publiceren</value>
   </data>
   <data name="PublishWorkoutSubtitle" xml:space="preserve">
-    <value>Publiceer training wanmeer voltooid</value>
+    <value>Publiceer training wanneer voltooid</value>
   </data>
   <data name="PublishPlanSubtitle" xml:space="preserve">
     <value>Publiceer jouw huidige trainingsplan voor andere te zien en te importeren</value>
@@ -835,7 +835,7 @@
     <value>Reset account</value>
   </data>
   <data name="ResetAccountMessage" xml:space="preserve">
-    <value>Hiermee delete je al jouw data van de servers en je feed. Je moet je opnieuw aanmelden en een link aanmaken om opnoeuw trainingen te delen.</value>
+    <value>Hiermee verwijder je al jouw data van de servers en je feed. Je moet je opnieuw aanmelden en een nieuwe link aanmaken om opnieuw trainingen te delen.</value>
   </data>
   <data name="OnlyThoseWithTheLinkCanSee" xml:space="preserve">
     <value>Alleen mensen met deze link kunnen zien wat jij deelt.</value>
@@ -850,7 +850,7 @@
     <value>Pro functies</value>
   </data>
   <data name="AiPlannerSubtitle" xml:space="preserve">
-    <value>Gebruik AI om een nieuw programma te genereren dat aansluit op jouw goals</value>
+    <value>Gebruik AI om een nieuw programma te genereren dat aansluit op jouw doelen</value>
   </data>
   <data name="AiSessionCreatorSubtitle" xml:space="preserve">
     <value>Genereer een trainingssessie om te importeren in jouw trainingsplan of eindig nu!</value>
@@ -859,7 +859,7 @@
     <value>Upgrade naar Pro</value>
   </data>
   <data name="UpgradeToProDescription" xml:space="preserve">
-    <value>Dit ontgrendelt de AI planner, waarmee je traiiningsplannen kunt genereren afgesteld op jezelf en jouw goals. &lt;br&gt;Dit is een eenmalige aankoop van:</value>
+    <value>Dit ontgrendelt de AI planner, waarmee je trainingsplannen kunt genereren afgesteld op jezelf en jouw doelen. &lt;br&gt;Dit is een eenmalige aankoop van:</value>
     <comment>The price immediately follows this, so translations will need to be worded in such a way that this is possible</comment>
   </data>
   <data name="Upgrade" xml:space="preserve">
@@ -896,7 +896,7 @@
     <value>Beheer trainingen</value>
   </data>
   <data name="BackupReminders" xml:space="preserve">
-    <value>Bac-up herinneringen</value>
+    <value>Back-up herinneringen</value>
   </data>
   <data name="BackupRemindersSubtitle" xml:space="preserve">
     <value>Stuur zo nu en dan een suggestie om een back-up te maken wanneer dit lang niet is gebeurd.</value>
