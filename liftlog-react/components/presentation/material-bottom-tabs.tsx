@@ -25,6 +25,7 @@ export function MaterialBottomTabs({
     <Tabs
       screenOptions={{
         headerShown: false,
+        animation: 'shift',
       }}
       tabBar={({ navigation, state, descriptors, insets }) => (
         <BottomNavigation.Bar
