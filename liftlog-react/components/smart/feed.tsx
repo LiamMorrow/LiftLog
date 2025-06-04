@@ -26,6 +26,7 @@ export default function Feed() {
       ListHeaderComponent={<SurfaceText>hu</SurfaceText>}
       onScroll={handleScroll}
       data={feedItems}
+      keyExtractor={(x) => x.eventId}
       renderItem={({ item }) => <FeedItemRenderer feedItem={item} />}
       contentContainerStyle={{ gap: spacing[2], padding: spacing[2] }}
     />
