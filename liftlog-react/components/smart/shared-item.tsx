@@ -5,5 +5,9 @@ interface SharedItemProps {
   sharedItem: SharedItem;
 }
 export default function SharedItemComponent({ sharedItem }: SharedItemProps) {
-  return <SurfaceText>hi</SurfaceText>;
+  return (
+    <>
+      <SurfaceText>hi</SurfaceText>
+    </>
+  );
 }

@@ -5,7 +5,6 @@ import { LogBox, Platform, Text, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import { store } from '@/store';
-import { ScrollProvider } from '@/hooks/useScollListener';
 import AppStateProvider from '@/components/smart/app-state-provider';
 import { tolgee } from '@/services/tolgee';
 import SnackbarProvider from '@/components/smart/snackbar-provider';
@@ -30,9 +29,7 @@ export default function RootLayout() {
             <Stack
               layout={(e) => (
                 <AppStateProvider>
-                  <ScrollProvider>
-                    <SnackbarProvider>{e.children}</SnackbarProvider>
-                  </ScrollProvider>
+                  <SnackbarProvider>{e.children}</SnackbarProvider>
                 </AppStateProvider>
               )}
               screenOptions={{

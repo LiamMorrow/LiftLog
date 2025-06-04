@@ -1,13 +1,5 @@
-import MaterialStackHeader from '@/components/presentation/material-stack-header';
-import { Stack } from 'expo-router';
+import HeaderedStack from '@/components/layout/headered-stack';
 
 export default function Layout() {
-  return (
-    <Stack
-      screenOptions={{
-        header: (props) => <MaterialStackHeader {...props} />,
-        gestureEnabled: true,
-      }}
-    ></Stack>
-  );
+  return <HeaderedStack />;
 }

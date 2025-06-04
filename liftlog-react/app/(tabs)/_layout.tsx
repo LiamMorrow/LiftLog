@@ -1,9 +1,12 @@
 import { MaterialBottomTabs as Tabs } from '@/components/presentation/material-bottom-tabs';
+import { useAppSelector } from '@/store';
+import { selectFollowRequestCount } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
 import { Icon } from 'react-native-paper';
 
 export default function Layout() {
   const { t } = useTranslate();
+  const followRequestCount = useAppSelector(selectFollowRequestCount);
   return (
     <Tabs>
       <Tabs.Screen
@@ -26,6 +29,7 @@ export default function Layout() {
         name="feed"
         options={{
           tabBarLabel: t('Feed'),
+          tabBarBadge: followRequestCount || undefined!,
           tabBarIcon: ({ color, size, focused }) => {
             return (
               <Icon

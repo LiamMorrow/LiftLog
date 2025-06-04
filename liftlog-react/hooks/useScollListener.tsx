@@ -1,17 +1,40 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 
 // Create a context with default value
-const ScrollContext = createContext({
+export const ScrollContext = createContext({
   isScrolled: false,
   setScrolled: (_: boolean) => {},
 });
 
+type ScrollProviderCallbackProps =
+  | {
+      setScrolled: (scroll: boolean) => void;
+      isScrolled: boolean;
+    }
+  | {
+      setScrolled?: undefined;
+      isScrolled?: undefined;
+    };
+
+type ScrollProviderProps = {
+  children: ReactNode;
+} & ScrollProviderCallbackProps;
+
 // Create a provider component
-export const ScrollProvider = ({ children }: { children: ReactNode }) => {
-  const [isScrolled, setScrolled] = useState(false);
+export const ScrollProvider = ({
+  children,
+  isScrolled,
+  setScrolled,
+}: ScrollProviderProps) => {
+  const [isScrolledG, setScrolledG] = useState(false);
 
   return (
-    <ScrollContext.Provider value={{ isScrolled, setScrolled }}>
+    <ScrollContext.Provider
+      value={{
+        isScrolled: isScrolled ?? isScrolledG,
+        setScrolled: setScrolled ?? setScrolledG,
+      }}
+    >
       {children}
     </ScrollContext.Provider>
   );

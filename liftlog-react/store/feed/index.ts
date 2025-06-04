@@ -98,6 +98,17 @@ const feedSlice = createSlice({
       (state: FeedState) => state.sharedItem,
       (sharedItem) => sharedItem.map(SharedItem.fromPOJO),
     ),
+    selectFollowRequestCount: createSelector(
+      (state: FeedState) => state.followRequests,
+      (x) => x.length,
+    ),
+    selectFeedSessionItems: createSelector(
+      (state: FeedState) => state.feed,
+      (x) =>
+        x
+          .filter((y) => y._BRAND === 'SESSION_FEED_ITEM_POJO')
+          .map(FeedItem.fromPOJO),
+    ),
   },
 });
 
@@ -116,7 +127,11 @@ export const {
   addUnpublishedSessionId,
 } = feedSlice.actions;
 
-export const { selectSharedItem } = feedSlice.selectors;
+export const {
+  selectSharedItem,
+  selectFollowRequestCount,
+  selectFeedSessionItems,
+} = feedSlice.selectors;
 
 export const initializeFeedStateSlice = createAction(
   'initializeFeedStateSlice',

@@ -53,6 +53,10 @@ export function MaterialBottomTabs({
               });
             }
           }}
+          getBadge={({ route }) => {
+            const { options } = descriptors[route.key];
+            return options.tabBarBadge;
+          }}
           renderIcon={({ route, focused, color }) => {
             const { options } = descriptors[route.key];
             if (options.tabBarIcon) {

@@ -9,6 +9,7 @@ import ItemList from '@/components/presentation/item-list';
 import LabelledForm from '@/components/presentation/labelled-form';
 import LabelledFormRow from '@/components/presentation/labelled-form-row';
 import LimitedHtml from '@/components/presentation/limited-html';
+import { spacing } from '@/hooks/useAppTheme';
 import {
   ExerciseBlueprint,
   Rest,
@@ -162,7 +163,7 @@ function SessionEditor({
             items={session.exercises}
             verticalPadding={false}
             empty={
-              <Card mode="contained">
+              <Card mode="contained" style={{ marginHorizontal: spacing[6] }}>
                 <Card.Content>
                   <EmptyInfo>
                     <T keyName="NoExercisesAdded" />
