@@ -1,5 +1,5 @@
-import HeaderedStack from '@/components/layout/headered-stack';
+import StackWithHeader from '@/components/layout/stack-with-header';
 
 export default function Layout() {
-  return <HeaderedStack />;
+  return <StackWithHeader />;
 }
