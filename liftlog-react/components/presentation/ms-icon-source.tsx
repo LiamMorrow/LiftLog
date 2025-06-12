@@ -156,7 +156,8 @@ const MaterialSymbols = {
 export function MsIconSrc({ name, ...rest }: IconProps) {
   const icon = MaterialSymbols[name as keyof typeof MaterialSymbols];
   if (!icon) {
-    throw new Error(`Icon "${name}" not found in MaterialSymbols Map.`);
+    console.log('COULD NOT FIND ICON');
+    return <MsIcon icon={MaterialSymbols['info']} {...rest} />;
   }
   return <MsIcon icon={icon} {...rest} />;
 }

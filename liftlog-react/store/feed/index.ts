@@ -109,6 +109,10 @@ const feedSlice = createSlice({
           .filter((y) => y._BRAND === 'SESSION_FEED_ITEM_POJO')
           .map(FeedItem.fromPOJO),
     ),
+    selectFeedIdentityRemote: createSelector(
+      (state: FeedState) => state.identity,
+      (x) => x.map(FeedIdentity.fromPOJO),
+    ),
   },
 });
 
@@ -131,6 +135,7 @@ export const {
   selectSharedItem,
   selectFollowRequestCount,
   selectFeedSessionItems,
+  selectFeedIdentityRemote,
 } = feedSlice.selectors;
 
 export const initializeFeedStateSlice = createAction(

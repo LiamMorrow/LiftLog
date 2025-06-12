@@ -19,7 +19,7 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "tolgee.d.ts"
+    "store/tolgee.d.ts"
   ],
   "exclude": [
     "node_modules",

@@ -1,18 +1,20 @@
+import { Remote } from '@/components/presentation/remote';
 import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
 import SplitCardControl from '@/components/presentation/split-card-control';
 import { SurfaceText } from '@/components/presentation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScollListener';
-import { FeedItem, SessionFeedItem } from '@/models/feed-models';
+import { FeedIdentity, FeedItem, SessionFeedItem } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
-import { selectFeedSessionItems } from '@/store/feed';
+import { selectFeedIdentityRemote, selectFeedSessionItems } from '@/store/feed';
+import { T } from '@tolgee/react';
 import {
   FlatList,
   NativeScrollEvent,
   NativeSyntheticEvent,
 } from 'react-native';
-import { Card } from 'react-native-paper';
+import { Button, Card, Icon, IconButton } from 'react-native-paper';
 
 export default function Feed() {
   const feedItems = useAppSelector(selectFeedSessionItems);
@@ -23,13 +25,49 @@ export default function Feed() {
   };
   return (
     <FlatList
-      ListHeaderComponent={<SurfaceText>hu</SurfaceText>}
+      ListHeaderComponent={<FeedShareUrlHeader />}
       onScroll={handleScroll}
       data={feedItems}
       keyExtractor={(x) => x.eventId}
       renderItem={({ item }) => <FeedItemRenderer feedItem={item} />}
       contentContainerStyle={{ gap: spacing[2], padding: spacing[2] }}
     />
+  );
+}
+
+function FeedShareUrlHeader() {
+  const identityRemote = useAppSelector(selectFeedIdentityRemote);
+
+  return (
+    <Remote
+      value={identityRemote}
+      success={(identity) => <FeedShareUrl identity={identity} />}
+    />
+  );
+}
+
+function FeedShareUrl({ identity }: { identity: FeedIdentity }) {
+  return (
+    <Card>
+      <Card.Title
+        left={({ size }) => <Icon source={'personFill'} size={size} />}
+        title="Profile"
+        titleVariant="headlineMedium"
+      />
+      <Card.Content>
+        <SurfaceText>
+          This is your profile, share it with your friends to let them follow
+          your workouts!
+        </SurfaceText>
+      </Card.Content>
+
+      <Card.Actions>
+        <IconButton icon={'edit'} onPress={() => {}} />
+        <Button icon={'share'} onPress={() => {}}>
+          <T keyName={'Share'} />
+        </Button>
+      </Card.Actions>
+    </Card>
   );
 }
 
