@@ -56,9 +56,15 @@ function FeedShareUrl({ identity }: { identity: FeedIdentity }) {
       />
       <Card.Content>
         <SurfaceText>
-          This is your profile, share it with your friends to let them follow
-          your workouts!
+          This is your feed, share it with your friends to let them follow your
+          workouts!
         </SurfaceText>
+
+        {identity.publishPlan ? undefined : (
+          <SurfaceText color="error">
+            You are not publishing your workouts!
+          </SurfaceText>
+        )}
       </Card.Content>
 
       <Card.Actions>
