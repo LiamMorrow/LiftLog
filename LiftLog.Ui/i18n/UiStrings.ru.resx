@@ -466,7 +466,6 @@
   </data>
   <data name="Import" xml:space="preserve">
     <value>Импортировать</value>
-    <comment>Глагол</comment>
   </data>
   <data name="IncludeFeed" xml:space="preserve">
     <value>Включить ленту</value>
@@ -527,7 +526,6 @@
   </data>
   <data name="Export" xml:space="preserve">
     <value>Экспортировать</value>
-    <comment>Глагол</comment>
   </data>
   <data name="RemoteBackupDescription" xml:space="preserve">
     <value>Продвинутая функция отправки резервных копий на удалённый сервер.&lt;br&gt;Инструкции по настройке сервера смотрите в документации.</value>
@@ -553,7 +551,6 @@
   </data>
   <data name="Accept" xml:space="preserve">
     <value>Принять</value>
-    <comment>Глагол</comment>
   </data>
   <data name="Regenerate" xml:space="preserve">
     <value>Создать заново</value>
@@ -598,13 +595,13 @@
     <comment>Стандартная настройка</comment>
   </data>
   <data name="AdditionalInformationLabel" xml:space="preserve">
-    <value>Дополнительная информация?</value>
+    <value>Дополнительная информация</value>
   </data>
   <data name="AdditionalInformationExtra" xml:space="preserve">
     <value>Цели, травмы, доступное оборудование и т.д.</value>
   </data>
   <data name="HowOldAreYou" xml:space="preserve">
-    <value>Ваш возраст?</value>
+    <value>Укажите ваш возраст</value>
   </data>
   <data name="SelectAtLeastOneGoal" xml:space="preserve">
     <value>Выберите хотя бы одну цель</value>
@@ -613,7 +610,7 @@
     <value>Выберите количество тренировочных дней в неделю</value>
   </data>
   <data name="WhatIsYourGender" xml:space="preserve">
-    <value>Ваш пол?</value>
+    <value>Выберите ваш пол</value>
   </data>
   <data name="GenderFemale" xml:space="preserve">
     <value>Женский</value>
@@ -630,7 +627,7 @@
     <comment>Отказ от указания пола</comment>
   </data>
   <data name="WhatAreYourGoals" xml:space="preserve">
-    <value>Ваши цели?</value>
+    <value>Выберите цели</value>
   </data>
   <data name="Toning" xml:space="preserve">
     <value>Тонизирование</value>
@@ -646,7 +643,7 @@
     <value>Развитие силы</value>
   </data>
   <data name="WhatIsYourExperienceLevel" xml:space="preserve">
-    <value>Ваш уровень подготовки?</value>
+    <value>Выберите ваш уровень подготовки</value>
   </data>
   <data name="ExperienceProfessional" xml:space="preserve">
     <value>Профессионал</value>
@@ -685,7 +682,7 @@
     <value>Тренировочных дней в неделю?</value>
   </data>
   <data name="HowMuchDoYouWeigh" xml:space="preserve">
-    <value>Ваш вес?</value>
+    <value>Напишите свой вес</value>
   </data>
   <data name="Arms" xml:space="preserve">
     <value>Руки</value>
@@ -923,6 +920,6 @@
     <value>Новый план</value>
   </data>
   <data name="FinishWorkout" xml:space="preserve">
-    <value>Завершить тренировку? Вы уверены?</value>
+    <value>Вы уверены, что хотите завершить тренировку?</value>
   </data>
 </root>
