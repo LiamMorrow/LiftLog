@@ -85,19 +85,25 @@ function ListUpcomingWorkouts({
         cardType="outlined"
         items={upcoming}
         onPress={selectSession}
-        renderItem={(session) => {
+        renderItemContent={(session) => {
           return (
-            <SplitCardControl
-              titleContent={
-                <SessionSummaryTitle
-                  isFilled={session.isStarted}
-                  session={session}
-                />
-              }
-              mainContent={
-                <SessionSummary session={session} isFilled={false} showWeight />
-              }
-            />
+            <Card.Content>
+              <SplitCardControl
+                titleContent={
+                  <SessionSummaryTitle
+                    isFilled={session.isStarted}
+                    session={session}
+                  />
+                }
+                mainContent={
+                  <SessionSummary
+                    session={session}
+                    isFilled={false}
+                    showWeight
+                  />
+                }
+              />
+            </Card.Content>
           );
         }}
       />

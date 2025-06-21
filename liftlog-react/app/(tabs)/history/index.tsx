@@ -21,6 +21,7 @@ import { LocalDate, YearMonth } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import { Card } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 export default function History() {
@@ -69,13 +70,17 @@ export default function History() {
           items={sessionsInMonth}
           cardType="outlined"
           onPress={onSelectSession}
-          renderItem={(session) => (
-            <SplitCardControl
-              titleContent={<SessionSummaryTitle isFilled session={session} />}
-              mainContent={
-                <SessionSummary isFilled showWeight session={session} />
-              }
-            />
+          renderItemContent={(session) => (
+            <Card.Content>
+              <SplitCardControl
+                titleContent={
+                  <SessionSummaryTitle isFilled session={session} />
+                }
+                mainContent={
+                  <SessionSummary isFilled showWeight session={session} />
+                }
+              />
+            </Card.Content>
           )}
           emptyTemplate={
             <EmptyInfo>

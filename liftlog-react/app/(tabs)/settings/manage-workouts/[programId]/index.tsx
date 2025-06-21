@@ -15,7 +15,7 @@ import {
 import { setEditingSession } from '@/store/session-editor';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { FAB, TextInput } from 'react-native-paper';
+import { Card, FAB, TextInput } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 export default function ManageWorkouts() {
@@ -76,11 +76,13 @@ export default function ManageWorkouts() {
         items={program.sessions}
         cardType="outlined"
         onPress={selectSession}
-        renderItem={(session) => (
-          <ManageWorkoutCardContent
-            sessionBlueprint={session}
-            programId={programId}
-          />
+        renderItemContent={(session) => (
+          <Card.Content>
+            <ManageWorkoutCardContent
+              sessionBlueprint={session}
+              programId={programId}
+            />
+          </Card.Content>
         )}
       />
     </FullHeightScrollView>
