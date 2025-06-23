@@ -140,7 +140,6 @@ export const importData = createAction('importData');
 export const importDataDao = createAction<{
   dao: LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2;
 }>('importDataDao');
-// TODO implement
 export const beginFeedImport =
   createAction<LiftLog.Ui.Models.IFeedStateDaoV1>('beginFeedImport');
 export const exportData = createAction<{ includeFeed: boolean }>('exportData');
