@@ -139,6 +139,9 @@ export default function ProgramListItem({
         </View>
       )}
       onPress={() => {
+        if (activeProgramId === id) {
+          push(`/settings/manage-workouts/${id}`);
+        }
         dispatch(setActivePlan({ programId: id }));
       }}
       style={{}}
