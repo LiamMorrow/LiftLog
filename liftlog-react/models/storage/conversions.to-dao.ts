@@ -40,7 +40,7 @@ export function toUuidDao(uuid: string): LiftLog.Ui.Models.IUuidDao {
   return { value: Uint8Array.from(reorderedForGuid) };
 }
 
-function toStringValue(
+export function toStringValue(
   value: string | undefined | null,
 ): google.protobuf.IStringValue | null {
   if (value == null) {

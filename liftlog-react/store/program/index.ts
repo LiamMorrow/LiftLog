@@ -6,7 +6,6 @@ import {
 } from '@/models/session-models';
 import { RemoteData } from '@/models/remote';
 import { Session, SessionPOJO } from '@/models/session-models';
-import { defaultSessionBlueprint } from '@/models/test-data';
 
 import { LocalDate } from '@js-joda/core';
 import {
@@ -30,24 +29,7 @@ const initialState: ProgramState = {
   isHydrated: false,
   activeProgramId: '00000000-0000-0000-0000-000000000000',
   upcomingSessions: RemoteData.notAsked(),
-  savedPrograms: {
-    '00000000-0000-0000-0000-000000000000': ProgramBlueprint.fromPOJO({
-      lastEdited: LocalDate.now(),
-      name: 'My plan',
-      sessions: [
-        defaultSessionBlueprint.toPOJO(),
-        defaultSessionBlueprint.with({ name: 'Workout B' }).toPOJO(),
-      ],
-    }).toPOJO(),
-    '00000000-0000-0000-0000-000000000001': ProgramBlueprint.fromPOJO({
-      lastEdited: LocalDate.now(),
-      name: 'My other plan',
-      sessions: [
-        defaultSessionBlueprint.toPOJO(),
-        defaultSessionBlueprint.with({ name: 'DOGLET' }).toPOJO(),
-      ],
-    }).toPOJO(),
-  },
+  savedPrograms: {},
 };
 
 const programSlice = createSlice({

@@ -47,6 +47,7 @@ export function addEffect<TAction extends { type: string }>(
 export function addEffect(
   actionPredicate: { type: string } | { type: string }[] | undefined,
   effect: EffectFn<UnknownAction>,
+  timerName?: string,
 ) {
   startAppListening({
     predicate: (action) =>

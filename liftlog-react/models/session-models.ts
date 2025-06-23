@@ -15,6 +15,18 @@ export interface SessionPOJO {
   bodyweight: BigNumber | undefined;
 }
 
+export type DeepOmit<T, K extends PropertyKey> = K extends keyof T
+  ? T extends object
+    ? T extends (infer U)[]
+      ? DeepOmit<U, K>[]
+      : {
+          [P in keyof T as P extends K ? never : P]: DeepOmit<T[P], K>;
+        }
+    : T
+  : T extends (infer U)[]
+    ? DeepOmit<U, K>[]
+    : T;
+
 export class Session {
   readonly id: string;
   readonly blueprint: SessionBlueprint;
@@ -47,13 +59,13 @@ export class Session {
     this.bodyweight = bodyweight!;
   }
 
-  static fromPOJO(pojo: Omit<SessionPOJO, '_BRAND'>): Session;
+  static fromPOJO(pojo: DeepOmit<SessionPOJO, '_BRAND'>): Session;
   static fromPOJO(pojo: undefined): undefined;
   static fromPOJO(
-    pojo: Omit<SessionPOJO, '_BRAND'> | undefined,
+    pojo: DeepOmit<SessionPOJO, '_BRAND'> | undefined,
   ): Session | undefined;
   static fromPOJO(
-    pojo: Omit<SessionPOJO, '_BRAND'> | undefined,
+    pojo: DeepOmit<SessionPOJO, '_BRAND'> | undefined,
   ): Session | undefined {
     return (
       pojo &&
@@ -249,7 +261,7 @@ export class RecordedExercise {
   }
 
   static fromPOJO(
-    fromPOJO: Omit<RecordedExercisePOJO, '_BRAND'>,
+    fromPOJO: DeepOmit<RecordedExercisePOJO, '_BRAND'>,
   ): RecordedExercise {
     return new RecordedExercise(
       ExerciseBlueprint.fromPOJO(fromPOJO.blueprint),
@@ -357,7 +369,7 @@ export class RecordedSet {
     this.completionDateTime = completionDateTime!;
   }
 
-  static fromPOJO(pojo: Omit<RecordedSetPOJO, '_BRAND'>): RecordedSet {
+  static fromPOJO(pojo: DeepOmit<RecordedSetPOJO, '_BRAND'>): RecordedSet {
     return new RecordedSet(pojo.repsCompleted, pojo.completionDateTime);
   }
 
@@ -412,7 +424,7 @@ export class PotentialSet {
     this.weight = weight!;
   }
 
-  static fromPOJO(pojo: Omit<PotentialSetPOJO, '_BRAND'>): PotentialSet {
+  static fromPOJO(pojo: DeepOmit<PotentialSetPOJO, '_BRAND'>): PotentialSet {
     return new PotentialSet(
       pojo.set ? RecordedSet.fromPOJO(pojo.set) : undefined,
       pojo.weight,
@@ -487,7 +499,7 @@ export class ProgramBlueprint {
   }
 
   static fromPOJO(
-    pojo: Omit<ProgramBlueprintPOJO, '_BRAND'>,
+    pojo: DeepOmit<ProgramBlueprintPOJO, '_BRAND'>,
   ): ProgramBlueprint {
     return new ProgramBlueprint(
       pojo.name,
@@ -558,7 +570,7 @@ export class SessionBlueprint {
   }
 
   static fromPOJO(
-    pojo: Omit<SessionBlueprintPOJO, '_BRAND'>,
+    pojo: DeepOmit<SessionBlueprintPOJO, '_BRAND'>,
   ): SessionBlueprint {
     return new SessionBlueprint(
       pojo.name,
@@ -682,7 +694,7 @@ export class ExerciseBlueprint {
   }
 
   static fromPOJO(
-    pojo: Omit<ExerciseBlueprintPOJO, '_BRAND'>,
+    pojo: DeepOmit<ExerciseBlueprintPOJO, '_BRAND'>,
   ): ExerciseBlueprint {
     return new ExerciseBlueprint(
       pojo.name,
