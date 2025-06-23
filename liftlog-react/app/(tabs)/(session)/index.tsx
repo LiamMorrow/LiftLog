@@ -15,7 +15,7 @@ import { useCurrentSession } from '@/hooks/useSession';
 import { Session } from '@/models/session-models';
 import { RootState, useAppSelector } from '@/store';
 import { setCurrentSession } from '@/store/current-session';
-import { fetchUpcomingSessions } from '@/store/program';
+import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
 import { LocalDate } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
@@ -84,7 +84,6 @@ function ListUpcomingWorkouts({
       <CardList
         cardType="outlined"
         items={upcoming}
-        onPress={selectSession}
         renderItemContent={(session) => {
           return (
             <Card.Content>
@@ -106,6 +105,23 @@ function ListUpcomingWorkouts({
             </Card.Content>
           );
         }}
+        renderItemActions={(session) => {
+          return (
+            <Card.Actions>
+              <Button
+                mode="text"
+                icon={'playCircle'}
+                onPress={() => selectSession(session)}
+              >
+                {session.isStarted ? (
+                  <T keyName={'Resume workout'} />
+                ) : (
+                  <T keyName={'Start workout'} />
+                )}
+              </Button>
+            </Card.Actions>
+          );
+        }}
       />
     </>
   );
@@ -113,6 +129,7 @@ function ListUpcomingWorkouts({
 
 export default function Index() {
   const upcomingSessions = useAppSelector((s) => s.program.upcomingSessions);
+  const program = useAppSelector(selectActiveProgram);
   const dispatch = useDispatch();
   const { t } = useTranslate();
   const { push } = useRouter();
@@ -206,7 +223,7 @@ export default function Index() {
     <FullHeightScrollView floatingChildren={floatingBottomContainer}>
       <Stack.Screen
         options={{
-          title: t('UpcomingWorkouts'),
+          title: program.name,
         }}
       />
       <AndroidNotificationAlert />

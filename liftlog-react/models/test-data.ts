@@ -95,7 +95,7 @@ export const defaultSessionBlueprint: SessionBlueprint =
       overheadPress.blueprint.toPOJO(),
     ],
     notes: 'Notes on my session',
-    name: 'My Session',
+    name: 'Workout A',
   });
 
 export const defaultSession: Session = Session.fromPOJO({

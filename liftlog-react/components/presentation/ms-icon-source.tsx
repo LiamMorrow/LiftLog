@@ -14,6 +14,7 @@ import { msHistory } from '@material-symbols-react-native/outlined-400/msHistory
 import { msInfo } from '@material-symbols-react-native/outlined-400/msInfo';
 import { msMoreHoriz } from '@material-symbols-react-native/outlined-400/msMoreHoriz';
 import { msNotes } from '@material-symbols-react-native/outlined-400/msNotes';
+import { msPlayCircle } from '@material-symbols-react-native/outlined-400/msPlayCircle';
 import { msRefresh } from '@material-symbols-react-native/outlined-400/msRefresh';
 import { msNotesFill } from '@material-symbols-react-native/outlined-400/msNotesFill';
 import { msNotifications } from '@material-symbols-react-native/outlined-400/msNotifications';
@@ -131,6 +132,7 @@ const MaterialSymbols = {
 
   chevronLeft: msChevronLeft,
   chevronRight: msChevronRight,
+  playCircle: msPlayCircle,
 
   physicalTherapy: msPhysicalTherapy,
   physicalTherapyFill: msPhysicalTherapyFill,

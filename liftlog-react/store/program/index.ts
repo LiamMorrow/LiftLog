@@ -33,15 +33,15 @@ const initialState: ProgramState = {
   savedPrograms: {
     '00000000-0000-0000-0000-000000000000': ProgramBlueprint.fromPOJO({
       lastEdited: LocalDate.now(),
-      name: 'MY SESSION',
+      name: 'My plan',
       sessions: [
         defaultSessionBlueprint.toPOJO(),
-        defaultSessionBlueprint.with({ name: 'HOLE' }).toPOJO(),
+        defaultSessionBlueprint.with({ name: 'Workout B' }).toPOJO(),
       ],
     }).toPOJO(),
     '00000000-0000-0000-0000-000000000001': ProgramBlueprint.fromPOJO({
       lastEdited: LocalDate.now(),
-      name: 'MY SESSION 2',
+      name: 'My other plan',
       sessions: [
         defaultSessionBlueprint.toPOJO(),
         defaultSessionBlueprint.with({ name: 'DOGLET' }).toPOJO(),
