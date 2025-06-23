@@ -28,7 +28,12 @@ export function applyProgramEffects() {
     initializeProgramStateSlice,
     async (
       _,
-      { cancelActiveListeners, dispatch, extra: { keyValueStore, logger } },
+      {
+        getState,
+        cancelActiveListeners,
+        dispatch,
+        extra: { keyValueStore, logger },
+      },
     ) => {
       const start = performance.now();
       cancelActiveListeners();
@@ -37,6 +42,7 @@ export function applyProgramEffects() {
         keyValueStore.getItem(`${storageKey}-Version`),
         keyValueStore.getItemBytes(storageKey),
       ]);
+      let hasSetActivePlan = false;
       if (!version) {
         version = '1';
         await keyValueStore.setItem(`${storageKey}-Version`, '1');
@@ -57,7 +63,19 @@ export function applyProgramEffects() {
 
         dispatch(setSavedPlans(converted));
         if (decoded.activeProgramId?.value) {
-          dispatch(setActivePlan({ programId: decoded.activeProgramId.value }));
+          if (!(decoded.activeProgramId.value in decoded.programBlueprints)) {
+            if (Object.entries(decoded.programBlueprints).length) {
+              dispatch(
+                setActivePlan({ programId: decoded.activeProgramId.value }),
+              );
+              hasSetActivePlan = true;
+            }
+          } else {
+            dispatch(
+              setActivePlan({ programId: decoded.activeProgramId.value }),
+            );
+            hasSetActivePlan = true;
+          }
         }
         if (
           !decoded.activeProgramId?.value ||
@@ -65,6 +83,7 @@ export function applyProgramEffects() {
         ) {
           const activeProgramId = uuid();
           dispatch(setActivePlan({ programId: activeProgramId }));
+          hasSetActivePlan = true;
           dispatch(
             setSavedPlans({
               [activeProgramId]: ProgramBlueprint.fromPOJO({
@@ -75,13 +94,20 @@ export function applyProgramEffects() {
             }),
           );
         }
+      }
 
-        for (const [id, program] of Object.entries(BuiltInPrograms)) {
-          if (id in converted) {
-            continue;
-          }
-          dispatch(savePlan({ programId: id, programBlueprint: program }));
+      for (const [id, program] of Object.entries(BuiltInPrograms)) {
+        if (id in getState().program.savedPrograms) {
+          continue;
         }
+        dispatch(savePlan({ programId: id, programBlueprint: program }));
+      }
+      if (!hasSetActivePlan) {
+        dispatch(
+          setActivePlan({
+            programId: Object.keys(getState().program.savedPrograms)[0],
+          }),
+        );
       }
 
       dispatch(setIsHydrated(true));
