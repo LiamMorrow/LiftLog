@@ -1,5 +1,4 @@
-import { SurfaceText } from '@/components/presentation/surface-text';
-import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { useAppTheme } from '@/hooks/useAppTheme';
 import { SharedProgramBlueprint } from '@/models/feed-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { showSnackbar } from '@/store/app';
@@ -12,18 +11,12 @@ import {
 } from '@/store/program';
 import { uuid } from '@/utils/uuid';
 import { DateTimeFormatter } from '@js-joda/core';
-import { T, useTranslate } from '@tolgee/react';
+import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 
-import {
-  Button,
-  IconButton,
-  List,
-  Menu,
-  TouchableRipple,
-} from 'react-native-paper';
+import { IconButton, List, Menu, RadioButton } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 interface ProgramListItemProps {
@@ -40,6 +33,7 @@ function ItemMenu({ id }: ItemProps) {
   const isActive = useAppSelector((x) => x.program.activeProgramId) === id;
   const [menuVisible, setMenuVisible] = useState(false);
   const dispatch = useDispatch();
+  const { push } = useRouter();
   const { t } = useTranslate();
   return (
     <Menu
@@ -53,6 +47,14 @@ function ItemMenu({ id }: ItemProps) {
         />
       }
     >
+      <Menu.Item
+        onPress={() => {
+          push(`/settings/manage-workouts/${id}`);
+          setMenuVisible(false);
+        }}
+        leadingIcon={'edit'}
+        title={t('Edit')}
+      />
       <Menu.Item
         onPress={() => {
           if (!isActive) {
@@ -96,57 +98,17 @@ function ItemMenu({ id }: ItemProps) {
   );
 }
 
-function ActiveBadge({ id }: ItemProps) {
-  const isActive = useAppSelector((x) => x.program.activeProgramId) === id;
-  const mode = isActive ? 'contained' : 'text';
-  const text = isActive ? 'Active' : 'UseWorkout';
-  const dispatch = useDispatch();
-  const { colors } = useAppTheme();
-  if (isActive) {
-    return (
-      <View
-        style={{
-          justifyContent: 'center',
-          overflow: 'hidden',
-          borderRadius: 1000,
-          backgroundColor: colors.secondaryContainer,
-        }}
-      >
-        <TouchableRipple onPress={() => {}}>
-          <SurfaceText
-            color="onSecondaryContainer"
-            style={{
-              fontWeight: 'semibold',
-              paddingHorizontal: spacing[3],
-              paddingVertical: spacing[2],
-            }}
-          >
-            Active
-          </SurfaceText>
-        </TouchableRipple>
-      </View>
-    );
-  }
-
-  return (
-    <Button
-      mode={mode}
-      onPress={() => {
-        dispatch(setActivePlan({ programId: id }));
-      }}
-    >
-      <T keyName={text} />
-    </Button>
-  );
-}
-
 export default function ProgramListItem({
   id,
   isFocused,
 }: ProgramListItemProps) {
   const program = useAppSelectorWithArg(selectProgram, id);
-  const { push } = useRouter();
+  const activeProgramId = useAppSelector(
+    (state) => state.program.activeProgramId,
+  );
+  const dispatch = useDispatch();
   const { t } = useTranslate();
+  const { push } = useRouter();
   const { colors } = useAppTheme();
   const focusStyle = isFocused
     ? {
@@ -160,6 +122,7 @@ export default function ProgramListItem({
       description={t('EditedOn{Date}', {
         0: program.lastEdited.format(DateTimeFormatter.ISO_DATE),
       })}
+      onLongPress={() => push(`/settings/manage-workouts/${id}`)}
       titleStyle={focusStyle}
       descriptionStyle={focusStyle}
       contentStyle={focusStyle}
@@ -167,12 +130,16 @@ export default function ProgramListItem({
         <View
           style={{ flexDirection: 'row', alignItems: 'center', ...focusStyle }}
         >
-          <ActiveBadge id={id} />
+          <RadioButton
+            value={id}
+            status={activeProgramId === id ? 'checked' : 'unchecked'}
+            onPress={() => dispatch(setActivePlan({ programId: id }))}
+          />
           <ItemMenu id={id} />
         </View>
       )}
       onPress={() => {
-        push(`/settings/manage-workouts/${id}`);
+        dispatch(setActivePlan({ programId: id }));
       }}
       style={{}}
     ></List.Item>
