@@ -2,7 +2,7 @@ import { addEffect } from '@/store/listenerMiddleware';
 import {
   createFeedIdentity,
   feedApiError,
-  fetchInboxItemsAction,
+  fetchInboxItems,
   initializeFeedStateSlice,
   patchFeedState,
   setIdentity,
@@ -15,6 +15,7 @@ import { RemoteData } from '@/models/remote';
 import { selectActiveProgram } from '@/store/program';
 import { addSharedItemEffects } from '@/store/feed/shared-item-effects';
 import { showSnackbar } from '@/store/app';
+import { addFeedItemEffects } from '@/store/feed/feed-items-effects';
 
 const StorageKey = 'FeedState';
 export function applyFeedEffects() {
@@ -57,7 +58,7 @@ export function applyFeedEffects() {
           );
         }
         dispatch(setIsHydrated(true));
-        dispatch(fetchInboxItemsAction({ fromUserAction: false }));
+        dispatch(fetchInboxItems({ fromUserAction: false }));
         const elapsedMilliseconds = performance.now() - sw;
         logger.info(`Feed state initialized in ${elapsedMilliseconds}ms`);
       } catch (e) {
@@ -144,4 +145,5 @@ export function applyFeedEffects() {
   );
 
   addSharedItemEffects();
+  addFeedItemEffects();
 }

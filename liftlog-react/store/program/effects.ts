@@ -20,7 +20,7 @@ import {
 } from '@/store/program';
 import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
-import { AsyncStream } from 'data-async-iterators';
+import Enumerable from 'linq';
 
 const storageKey = 'SavedPrograms';
 export function applyProgramEffects() {
@@ -169,9 +169,10 @@ export function applyProgramEffects() {
 
   addEffect(
     fetchUpcomingSessions,
-    async (
+    (
       _,
       {
+        signal,
         cancelActiveListeners,
         dispatch,
         getState,
@@ -185,9 +186,13 @@ export function applyProgramEffects() {
       const sessionBlueprints = selectActiveProgram(state).sessions;
       const numberOfUpcomingSessions = sessionBlueprints.length;
 
-      const sessions = await AsyncStream.from(
+      if (signal.aborted) {
+        return;
+      }
+      const sessions = Enumerable.from(
         sessionService.getUpcomingSessions(sessionBlueprints),
       )
+        .takeWhile(() => !signal.aborted)
         .take(numberOfUpcomingSessions)
         .toArray();
       dispatch(setUpcomingSessions(RemoteData.success(sessions)));

@@ -1,7 +1,7 @@
-import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
-import { SurfaceText } from '@/components/presentation/surface-text';
 import Feed from '@/components/smart/feed';
-import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { FeedFollowers } from '@/components/smart/feed-followers';
+import { FeedFollowing } from '@/components/smart/feed-following';
+import { useAppTheme } from '@/hooks/useAppTheme';
 import { ScrollProvider, useScroll } from '@/hooks/useScollListener';
 import { useAppSelector } from '@/store';
 import { selectFollowRequestCount } from '@/store/feed';
@@ -64,15 +64,23 @@ export default function FeedIndexPage() {
             </ScrollProvider>
           </TabScreen>
           <TabScreen label={t('Feed_Following')}>
-            <SurfaceText>hihi</SurfaceText>
+            <ScrollProvider
+              isScrolled={!!tabScrolls[activeTabIndex]}
+              setScrolled={(s) => setTabScrolled(s, 1)}
+            >
+              <FeedFollowing />
+            </ScrollProvider>
           </TabScreen>
           <TabScreen
             label={t('Feed_Followers')}
             badge={followRequestBadgeCount!}
           >
-            <FullHeightScrollView contentContainerStyle={{ gap: spacing[4] }}>
-              <SurfaceText>hihi</SurfaceText>
-            </FullHeightScrollView>
+            <ScrollProvider
+              isScrolled={!!tabScrolls[activeTabIndex]}
+              setScrolled={(s) => setTabScrolled(s, 2)}
+            >
+              <FeedFollowers />
+            </ScrollProvider>
           </TabScreen>
         </Tabs>
       </TabsProvider>

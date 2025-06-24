@@ -31,11 +31,13 @@ export type FeedState = {
   activeTab: string;
   unpublishedSessionIds: string[];
   sharedItem: RemoteData<SharedItemPOJO>;
+  isFetching: boolean;
 };
 
 const initialState: FeedState = {
   isHydrated: false,
   identity: RemoteData.notAsked(),
+  isFetching: false,
   feed: [],
   followedUsers: {},
   sharedFeedUser: RemoteData.notAsked(),
@@ -92,6 +94,9 @@ const feedSlice = createSlice({
     setSharedItem(state, action: PayloadAction<RemoteData<SharedItem>>) {
       state.sharedItem = action.payload.map((x) => x.toPOJO());
     },
+    setIsFetching(state, action: PayloadAction<boolean>) {
+      state.isFetching = action.payload;
+    },
   },
   selectors: {
     selectSharedItem: createSelector(
@@ -101,6 +106,26 @@ const feedSlice = createSlice({
     selectFollowRequestCount: createSelector(
       (state: FeedState) => state.followRequests,
       (x) => x.length,
+    ),
+    selectFeedFollowRequests: createSelector(
+      (state: FeedState) => state.followRequests,
+      (x) => x.map(FollowRequest.fromPOJO),
+    ),
+    selectFeedFollowers: createSelector(
+      (state: FeedState) => state.followers,
+      (x) =>
+        Object.entries(x).map(([userId, user]) => ({
+          userId,
+          user: FeedUser.fromPOJO(user),
+        })),
+    ),
+    selectFeedFollowing: createSelector(
+      (state: FeedState) => state.followedUsers,
+      (x) =>
+        Object.entries(x).map(([userId, user]) => ({
+          userId,
+          user: FeedUser.fromPOJO(user),
+        })),
     ),
     selectFeedSessionItems: createSelector(
       (state: FeedState) => state.feed,
@@ -129,12 +154,16 @@ export const {
   setUnpublishedSessionIds,
   setSharedItem,
   addUnpublishedSessionId,
+  setIsFetching,
 } = feedSlice.actions;
 
 export const {
   selectSharedItem,
   selectFollowRequestCount,
   selectFeedSessionItems,
+  selectFeedFollowing,
+  selectFeedFollowers,
+  selectFeedFollowRequests,
   selectFeedIdentityRemote,
 } = feedSlice.selectors;
 
@@ -155,9 +184,10 @@ export const createFeedIdentity = createAction<
   } & FeedAction
 >('createFeedIdentity');
 
-export const fetchInboxItemsAction = createAction<FeedAction>(
-  'fetchInboxItemsAction',
-);
+// TODO handle
+export const fetchFeedItems = createAction<FeedAction>('fetchFeedItems');
+// TODO handle
+export const fetchInboxItems = createAction<FeedAction>('fetchInboxItems');
 
 export const encryptAndShare = createAction<SharedItem>('encryptAndShare');
 

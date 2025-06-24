@@ -22,9 +22,9 @@ export class SessionService {
     private getState: () => RootState,
   ) {}
 
-  async *getUpcomingSessions(
+  *getUpcomingSessions(
     sessionBlueprints: SessionBlueprint[],
-  ): AsyncIterableIterator<Session> {
+  ): IterableIterator<Session> {
     const currentState = this.getState();
     const currentSession = Session.fromPOJO(
       currentState.currentSession.workoutSession,

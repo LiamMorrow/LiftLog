@@ -7,7 +7,12 @@ import { spacing } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScollListener';
 import { FeedIdentity, FeedItem, SessionFeedItem } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
-import { selectFeedIdentityRemote, selectFeedSessionItems } from '@/store/feed';
+import {
+  fetchFeedItems,
+  fetchInboxItems,
+  selectFeedIdentityRemote,
+  selectFeedSessionItems,
+} from '@/store/feed';
 import { T } from '@tolgee/react';
 import {
   FlatList,
@@ -15,6 +20,7 @@ import {
   NativeSyntheticEvent,
 } from 'react-native';
 import { Button, Card, Icon, IconButton } from 'react-native-paper';
+import { useDispatch } from 'react-redux';
 
 export default function Feed() {
   const feedItems = useAppSelector(selectFeedSessionItems);
@@ -23,9 +29,16 @@ export default function Feed() {
     const offsetY = event.nativeEvent.contentOffset.y;
     setScrolled(offsetY > 0);
   };
+  const fetchingFeedItems = useAppSelector((x) => x.feed.isFetching);
+  const dispatch = useDispatch();
   return (
     <FlatList
       ListHeaderComponent={<FeedShareUrlHeader />}
+      onRefresh={() => {
+        dispatch(fetchInboxItems({ fromUserAction: true }));
+        dispatch(fetchFeedItems({ fromUserAction: true }));
+      }}
+      refreshing={fetchingFeedItems}
       onScroll={handleScroll}
       data={feedItems}
       keyExtractor={(x) => x.eventId}
@@ -41,18 +54,18 @@ function FeedShareUrlHeader() {
   return (
     <Remote
       value={identityRemote}
-      success={(identity) => <FeedShareUrl identity={identity} />}
+      success={(identity) => <FeedProfile identity={identity} />}
     />
   );
 }
 
-function FeedShareUrl({ identity }: { identity: FeedIdentity }) {
+function FeedProfile({ identity }: { identity: FeedIdentity }) {
   return (
     <Card>
       <Card.Title
         left={({ size }) => <Icon source={'personFill'} size={size} />}
         title="Profile"
-        titleVariant="headlineMedium"
+        titleVariant="headlineSmall"
       />
       <Card.Content>
         <SurfaceText>
@@ -65,11 +78,22 @@ function FeedShareUrl({ identity }: { identity: FeedIdentity }) {
             You are not publishing your workouts!
           </SurfaceText>
         )}
+        {/* TODO I think we wanna show the profile info like name and configuration... */}
       </Card.Content>
 
       <Card.Actions>
-        <IconButton icon={'edit'} onPress={() => {}} />
-        <Button icon={'share'} onPress={() => {}}>
+        <IconButton
+          icon={'edit'}
+          onPress={() => {
+            // TODO
+          }}
+        />
+        <Button
+          icon={'share'}
+          onPress={() => {
+            // TODO
+          }}
+        >
           <T keyName={'Share'} />
         </Button>
       </Card.Actions>
