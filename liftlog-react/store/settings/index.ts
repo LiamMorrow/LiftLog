@@ -1,7 +1,7 @@
 import { LiftLog } from '@/gen/proto';
 import { AiWorkoutAttributes, AiWorkoutPlan } from '@/models/ai-models';
 import { RemoteData } from '@/models/remote';
-import { Instant } from '@js-joda/core';
+import { DayOfWeek, Instant } from '@js-joda/core';
 import {
   createAction,
   createSlice,
@@ -19,7 +19,7 @@ export type LastBackup = {
 
 interface SettingsState {
   // 0 based, sunday being 0
-  firstDayOfWeek: number;
+  firstDayOfWeek: DayOfWeek;
   isHydrated: boolean;
   aiWorkoutAttributes: AiWorkoutAttributes | undefined;
   isGeneratingAiPlan: boolean;
@@ -46,7 +46,7 @@ interface RemoteBackupSettings {
 
 const initialState: SettingsState = {
   isHydrated: false,
-  firstDayOfWeek: 0,
+  firstDayOfWeek: DayOfWeek.SUNDAY,
   aiWorkoutAttributes: undefined,
   isGeneratingAiPlan: false,
   aiPlanError: undefined,
@@ -129,6 +129,9 @@ const settingsSlice = createSlice({
     setColorSchemeSeed(state, action: PayloadAction<ColorSchemeSeed>) {
       state.colorSchemeSeed = action.payload;
     },
+    setFirstDayOfWeek(state, action: PayloadAction<DayOfWeek>) {
+      state.firstDayOfWeek = action.payload;
+    },
   },
 });
 export const initializeSettingsStateSlice = createAction(
@@ -171,6 +174,7 @@ export const {
   setBackupReminder,
   setSplitWeightByDefault,
   setColorSchemeSeed,
+  setFirstDayOfWeek,
 } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

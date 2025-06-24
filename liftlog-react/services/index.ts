@@ -6,6 +6,7 @@ import { FilePickerService } from '@/services/file-picker-service';
 import { IKeyValueStore } from '@/services/key-value-store';
 import { Logger } from '@/services/logger';
 import { NotificationService } from '@/services/notification-service';
+import { PreferenceService } from '@/services/preference-service';
 import { ProgressRepository } from '@/services/progress-repository';
 import { SessionService } from '@/services/session-service';
 import { StringSharer } from '@/services/string-sharer';
@@ -35,6 +36,7 @@ async function createServicesInternal() {
   const stringSharer = new StringSharer();
   const fileExportService = new FileExportService();
   const filePickerService = new FilePickerService();
+  const preferenceService = new PreferenceService(keyValueStore);
 
   return {
     logger,
@@ -48,6 +50,7 @@ async function createServicesInternal() {
     stringSharer,
     fileExportService,
     filePickerService,
+    preferenceService,
   };
 }
 export type Services = Awaited<ReturnType<typeof createServicesInternal>>;
