@@ -38,7 +38,7 @@ export default function HistoryCalendarCard({
   const dayOfFirstDayOfTheMonth = firstDayOfMonth.dayOfWeek().value();
   const firstDayOfWeek = useAppSelector((x) => x.settings.firstDayOfWeek);
   const numberOfDaysToShowFromPreviousMonth =
-    (dayOfFirstDayOfTheMonth - firstDayOfWeek + 7) % 7;
+    (dayOfFirstDayOfTheMonth - firstDayOfWeek.value() + 7) % 7;
   const numberOfDaysToShowFromNextMonth =
     (7 -
       ((numberOfDaysToShowFromPreviousMonth +
@@ -113,7 +113,7 @@ export default function HistoryCalendarCard({
   );
 
   const dayHeaders = Array.from({ length: 7 }, (_, offset) => {
-    const dayOfWeek = (offset + firstDayOfWeek) % 7;
+    const dayOfWeek = (offset + firstDayOfWeek.value()) % 7;
     return (
       <SurfaceText
         key={dayOfWeek}
@@ -139,6 +139,7 @@ export default function HistoryCalendarCard({
         <HistoryCalendarDay
           key={date.toString() + dateEnterDelay}
           sessions={sessionsByDate.get(date.toString())}
+          // eslint-disable-next-line react-compiler/react-compiler
           delayEntranceAnimMs={(dateEnterDelay += 5)}
           day={date}
           onPress={() => handleDayPress(date)}

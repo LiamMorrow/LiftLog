@@ -18,7 +18,6 @@ export type LastBackup = {
 };
 
 interface SettingsState {
-  // 0 based, sunday being 0
   firstDayOfWeek: DayOfWeek;
   isHydrated: boolean;
   aiWorkoutAttributes: AiWorkoutAttributes | undefined;
