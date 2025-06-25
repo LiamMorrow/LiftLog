@@ -33,6 +33,7 @@ import { msTextAd } from '@material-symbols-react-native/outlined-400/msTextAd';
 import { msTranslate } from '@material-symbols-react-native/outlined-400/msTranslate';
 import { msWeight } from '@material-symbols-react-native/outlined-400/msWeight';
 import { msChevronLeft } from '@material-symbols-react-native/outlined-400/msChevronLeft';
+
 import { msForum } from '@material-symbols-react-native/outlined-400/msForum';
 import { msForumFill } from '@material-symbols-react-native/outlined-400/msForumFill';
 import { msInventory } from '@material-symbols-react-native/outlined-400/msInventory';
@@ -116,6 +117,8 @@ const MaterialSymbols = {
   reload: msRefresh,
   check: msCheck,
   'menu-down': msArrowDropDown,
+  arrowDropDown: msArrowDropDown,
+  arrowDropUp: msArrowDropUp,
   'pencil-outline': msEdit,
   'menu-up': msArrowDropUp,
   'chevron-left': msChevronLeft,

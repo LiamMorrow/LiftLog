@@ -2,8 +2,8 @@ import { SurfaceText } from '@/components/presentation/surface-text';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Session } from '@/models/session-models';
 import { useAppSelector } from '@/store';
-import { formatDate } from '@/utils/format-date';
-import { LocalDate, Year, YearMonth } from '@js-joda/core';
+import { formatDate, getDateOnDay } from '@/utils/format-date';
+import { DayOfWeek, LocalDate, Year, YearMonth } from '@js-joda/core';
 import Enumerable from 'linq';
 import { View } from 'react-native';
 import { Card, IconButton, TouchableRipple } from 'react-native-paper';
@@ -113,7 +113,7 @@ export default function HistoryCalendarCard({
   );
 
   const dayHeaders = Array.from({ length: 7 }, (_, offset) => {
-    const dayOfWeek = (offset + firstDayOfWeek.value()) % 7;
+    const dayOfWeek = (offset + firstDayOfWeek.ordinal()) % 7;
     return (
       <SurfaceText
         key={dayOfWeek}
@@ -123,7 +123,7 @@ export default function HistoryCalendarCard({
           textAlign: 'center',
         }}
       >
-        {formatDate(getDateOnDay(dayOfWeek), {
+        {formatDate(getDateOnDay(DayOfWeek.of(dayOfWeek + 1)), {
           weekday: 'short',
         })}
       </SurfaceText>
@@ -257,11 +257,4 @@ function HistoryCalendarDay(props: {
       </TouchableRipple>
     </Animated.View>
   );
-}
-
-function getDateOnDay(dayOfWeek: number) {
-  // Super gross and hacky, but then we get i18n formatting for free
-  const constantSundayDay = LocalDate.of(2025, 5, 4);
-  const dateWithSpecifiedDayOfWeek = constantSundayDay.plusDays(dayOfWeek);
-  return dateWithSpecifiedDayOfWeek;
 }

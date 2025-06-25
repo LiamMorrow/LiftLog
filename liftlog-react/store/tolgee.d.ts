@@ -2,7 +2,7 @@
 
 import type en from '../i18n/en.json';
 
-declare module '@tolgee/core/lib/types' {
+declare module '@tolgee/web' {
   type TranslationsType = typeof en;
 
   // ensures that nested keys are accessible with "."
