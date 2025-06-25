@@ -11,10 +11,12 @@ import AndroidNotificationAlert from '@/components/smart/android-notification-al
 import { Tips } from '@/components/smart/tips';
 import { spacing } from '@/hooks/useAppTheme';
 import { useMountEffect } from '@/hooks/useMountEffect';
-import { useCurrentSession } from '@/hooks/useSession';
 import { Session } from '@/models/session-models';
-import { RootState, useAppSelector } from '@/store';
-import { setCurrentSession } from '@/store/current-session';
+import { RootState, useAppSelector, useAppSelectorWithArg } from '@/store';
+import {
+  selectCurrentSession,
+  setCurrentSession,
+} from '@/store/current-session';
 import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
 import { LocalDate } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
@@ -133,7 +135,10 @@ export default function Index() {
   const dispatch = useDispatch();
   const { t } = useTranslate();
   const { push } = useRouter();
-  const currentSession = useCurrentSession('workoutSession');
+  const currentSession = useAppSelectorWithArg(
+    selectCurrentSession,
+    'workoutSession',
+  );
   const currentBodyweight = upcomingSessions
     .map((x) => x.at(0)?.bodyweight)
     .unwrapOr(undefined);

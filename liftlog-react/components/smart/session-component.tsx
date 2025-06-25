@@ -4,6 +4,7 @@ import {
   editExercise,
   notifySetTimer,
   removeExercise,
+  selectCurrentSession,
   SessionTarget,
   setExerciseReps,
   toggleExercisePerSetWeight,
@@ -34,7 +35,6 @@ import { ExerciseBlueprint } from '@/models/session-models';
 import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/exercise-editor';
 import { LocalDateTime } from '@js-joda/core';
-import { useCurrentSession } from '@/hooks/useSession';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import UpdatePlanButton from '@/components/smart/update-plan-button';
 import { UnknownAction } from '@reduxjs/toolkit';
@@ -47,7 +47,7 @@ export default function SessionComponent(props: {
 }) {
   const { colors } = useAppTheme();
   const { t } = useTranslate();
-  const session = useCurrentSession(props.target);
+  const session = useAppSelectorWithArg(selectCurrentSession, props.target);
   const storeDispatch = useDispatch();
   const dispatch = <T,>(
     reducer: (a: { payload: T; target: SessionTarget }) => UnknownAction,

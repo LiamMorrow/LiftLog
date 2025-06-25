@@ -1,5 +1,5 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import currentSessionReducer from './current-session';
+import { currentSessionReducer } from './current-session';
 import settingsReducer from './settings';
 import programReducer from './program';
 import appReducer from './app';

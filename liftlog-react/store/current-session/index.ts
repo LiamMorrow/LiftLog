@@ -8,7 +8,12 @@ import {
 import { getCycledRepCount } from '@/store/current-session/helpers';
 import { SafeDraft, toSafeDraft } from '@/utils/store-helpers';
 import { LocalDate, LocalDateTime } from '@js-joda/core';
-import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createAction,
+  createSelector,
+  createSlice,
+  PayloadAction,
+} from '@reduxjs/toolkit';
 import BigNumber from 'bignumber.js';
 import { Draft, WritableDraft } from 'immer';
 import Enumerable from 'linq';
@@ -289,6 +294,16 @@ const currentSessionSlice = createSlice({
   },
 });
 
+const selectCurrentSessionPOJO = createSelector(
+  [(state: CurrentSessionState) => state, (_, target: SessionTarget) => target],
+  (state, target) => state[target],
+);
+
+export const selectCurrentSession = createSelector(
+  selectCurrentSessionPOJO,
+  (pojo) => Session.fromPOJO(pojo),
+);
+
 export const clearSetTimerNotification = createAction(
   'clearSetTimerNotification',
 );
@@ -324,4 +339,4 @@ export const {
   updateBodyweight,
 } = currentSessionSlice.actions;
 
-export default currentSessionSlice.reducer;
+export const currentSessionReducer = currentSessionSlice.reducer;
