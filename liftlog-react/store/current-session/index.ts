@@ -293,10 +293,7 @@ const currentSessionSlice = createSlice({
     ),
   },
   selectors: {
-    selectState: createSelector(
-      (x: CurrentSessionState) => x,
-      (x) => x,
-    ),
+    selectState: (x) => x,
   },
 });
 

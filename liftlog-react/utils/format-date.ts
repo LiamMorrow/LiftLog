@@ -1,4 +1,5 @@
-import { DayOfWeek, LocalDate } from '@js-joda/core';
+import { DayOfWeek, Duration, LocalDate } from '@js-joda/core';
+import { match } from 'ts-pattern';
 
 export function formatDate(date: LocalDate, opts: Intl.DateTimeFormatOptions) {
   return new Date(
@@ -15,4 +16,26 @@ export function getDateOnDay(dayOfWeek: DayOfWeek) {
     dayOfWeek.value(),
   );
   return dateWithSpecifiedDayOfWeek;
+}
+
+export default function formatDuration(
+  duration: Duration,
+  truncateToMins = false,
+) {
+  const str = match({ duration, truncateToMins })
+    .with(
+      { truncateToMins: true },
+      () => `${Math.floor(duration.toMinutes())} mins`,
+    )
+    .when(
+      ({ duration }) => duration.toHours() >= 1,
+      () => `${duration.toHours()} hrs`,
+    )
+    .when(
+      ({ duration }) => duration.toMinutes() >= 1,
+      () => `${duration.toMinutes()} mins`,
+    )
+    .otherwise(() => `${duration.toMillis() / 1000} secs`);
+
+  return str;
 }

@@ -1,11 +1,19 @@
-import { useAppTheme } from '@/hooks/useAppTheme';
+import {
+  ColorChoice,
+  font,
+  FontChoice,
+  useAppTheme,
+} from '@/hooks/useAppTheme';
 import { useWeightSuffix } from '@/hooks/useWeightSuffix';
 import BigNumber from 'bignumber.js';
-import { Text } from 'react-native';
+import { Text, TextStyle } from 'react-native';
 
 interface WeightFormatProps {
   weight: BigNumber | undefined;
-  color?: string;
+
+  fontSize?: FontChoice;
+  color?: ColorChoice;
+  fontWeight?: TextStyle['fontWeight'];
 }
 export default function WeightFormat(props: WeightFormatProps) {
   const weightDisplay = props.weight?.decimalPlaces(4).toFormat() ?? '-';
@@ -18,7 +26,9 @@ export default function WeightFormat(props: WeightFormatProps) {
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'row',
-        color: props.color ?? colors.onSurface,
+        color: colors[props.color ?? 'onSurface'],
+        fontWeight: props.fontWeight,
+        ...(props.fontSize ? { ...font[props.fontSize] } : undefined),
       }}
     >
       {weightDisplay}

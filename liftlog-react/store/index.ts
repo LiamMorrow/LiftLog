@@ -15,6 +15,7 @@ import { initializeStoredSessionsStateSlice } from '@/store/stored-sessions';
 import { applyStoredSessionsEffects } from '@/store/stored-sessions/effects';
 import { applyFeedEffects } from '@/store/feed/effects';
 import { initializeFeedStateSlice } from '@/store/feed';
+import { applyStatsEffects } from '@/store/stats/effects';
 
 export { store, RootState, AppDispatch };
 
@@ -24,6 +25,7 @@ applyAppEffects();
 applySettingsEffects();
 applyStoredSessionsEffects();
 applyFeedEffects();
+applyStatsEffects();
 
 store.dispatch(initializeSettingsStateSlice());
 store.dispatch(initializeAppStateSlice());

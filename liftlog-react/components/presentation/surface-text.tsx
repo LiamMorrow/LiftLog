@@ -4,22 +4,23 @@ import {
   FontChoice,
   useAppTheme,
 } from '@/hooks/useAppTheme';
-import { Text, TextProps } from 'react-native';
+import { Text, TextProps, TextStyle } from 'react-native';
 
 interface SurfaceTextProps extends TextProps {
   color?: ColorChoice;
   font?: FontChoice;
+  weight?: TextStyle['fontWeight'];
 }
 
 export function SurfaceText(props: SurfaceTextProps) {
   const { colors } = useAppTheme();
-  const { style, ...rest } = props;
+  const { style, weight, ...rest } = props;
   const fontChoice = props.font ?? 'text-base';
   return (
     <Text
       {...rest}
       style={[
-        { color: colors[props.color ?? 'onSurface'] },
+        { color: colors[props.color ?? 'onSurface'], fontWeight: weight },
         font[fontChoice],
         style,
       ]}

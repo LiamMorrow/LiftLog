@@ -1,6 +1,6 @@
 import WeightDialog from '@/components/presentation/weight-dialog';
 import WeightFormat from '@/components/presentation/weight-format';
-import { font, useAppTheme } from '@/hooks/useAppTheme';
+import { font } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useState } from 'react';
@@ -25,7 +25,7 @@ type WeightDisplayProps = {
 export default function WeightDisplay(props: WeightDisplayProps) {
   const { t } = useTranslate();
   const [dialogOpen, setDialogOpen] = useState(false);
-  const { colors } = useAppTheme();
+
   return (
     <>
       <Button
@@ -34,7 +34,7 @@ export default function WeightDisplay(props: WeightDisplayProps) {
         onPress={() => setDialogOpen(true)}
         labelStyle={{ ...font['text-lg'] }}
       >
-        <WeightFormat weight={props.weight} color={colors.primary} />
+        <WeightFormat weight={props.weight} color={'primary'} />
       </Button>
       {props.isReadonly ? null : (
         <WeightDialog

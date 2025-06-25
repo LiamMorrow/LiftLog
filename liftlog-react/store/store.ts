@@ -7,6 +7,7 @@ import feedReducer from './feed';
 import storedSessionsReducer from './stored-sessions';
 import sessionEditorReducer from './session-editor';
 import { listenerMiddleware } from '@/store/listenerMiddleware';
+import { statsReducer } from '@/store/stats';
 
 const store = configureStore({
   middleware: (getDefaultMiddleware) =>
@@ -23,6 +24,7 @@ const store = configureStore({
     app: appReducer,
     sessionEditor: sessionEditorReducer,
     storedSessions: storedSessionsReducer,
+    stats: statsReducer,
   }),
 });
 

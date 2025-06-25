@@ -131,6 +131,20 @@ export class Session {
     });
   }
 
+  get totalWeightLifted(): BigNumber {
+    return this.recordedExercises.reduce(
+      (b, ex) =>
+        b.plus(
+          ex.potentialSets.reduce(
+            (c, set) =>
+              c.plus(set.weight.multipliedBy(set.set?.repsCompleted ?? 0)),
+            new BigNumber(0),
+          ),
+        ),
+      new BigNumber(0),
+    );
+  }
+
   get isStarted(): boolean {
     return this.recordedExercises.some((x) => x.lastRecordedSet !== undefined);
   }
