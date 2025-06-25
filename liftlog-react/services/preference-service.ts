@@ -1,6 +1,7 @@
 import { IKeyValueStore } from '@/services/key-value-store';
+import { ColorSchemeSeed } from '@/store/settings';
 import { DayOfWeek, Instant } from '@js-joda/core';
-import { match } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 
 export enum AppRatingResult {
   NotRated = 'NotRated',
@@ -14,11 +15,24 @@ export interface RemoteBackupSettings {
   includeFeedAccount: boolean;
 }
 
+function toBooleanString(val: boolean | undefined) {
+  return val ? 'True' : 'False';
+}
+
+function fromBooleanString(
+  val: string | undefined,
+  defaultValue: boolean,
+): boolean {
+  if (val === undefined || val === null) return defaultValue;
+  return val === 'True';
+}
+
 export class PreferenceService {
   constructor(private keyValueStore: IKeyValueStore) {}
 
   async getProToken(): Promise<string | undefined> {
     const token = await this.keyValueStore.getItem('proToken');
+    // We used GUID tokens at one stage but they are invalid - delete them
     if (token && /^[0-9a-fA-F-]{36}$/.test(token)) return undefined;
     return token ?? undefined;
   }
@@ -29,47 +43,47 @@ export class PreferenceService {
 
   async getUseImperialUnits(): Promise<boolean> {
     const value = await this.keyValueStore.getItem('useImperialUnits');
-    return value === 'True';
+    return fromBooleanString(value, false);
   }
 
   async setUseImperialUnits(useImperialUnits: boolean): Promise<void> {
     await this.keyValueStore.setItem(
       'useImperialUnits',
-      useImperialUnits.toString(),
+      toBooleanString(useImperialUnits),
     );
   }
 
   async getRestNotifications(): Promise<boolean> {
     const value = await this.keyValueStore.getItem('restNotifications');
-    return value === 'True' || value === null || value === undefined;
+    return fromBooleanString(value, true);
   }
 
   async setRestNotifications(restNotifications: boolean): Promise<void> {
     await this.keyValueStore.setItem(
       'restNotifications',
-      restNotifications.toString(),
+      toBooleanString(restNotifications),
     );
   }
 
   async setShowBodyweight(showBodyweight: boolean): Promise<void> {
     await this.keyValueStore.setItem(
       'showBodyweight',
-      showBodyweight.toString(),
+      toBooleanString(showBodyweight),
     );
   }
 
   async getShowBodyweight(): Promise<boolean> {
     const value = await this.keyValueStore.getItem('showBodyweight');
-    return value === 'True' || value === null || value === undefined;
+    return fromBooleanString(value, true);
   }
 
   async setShowTips(showTips: boolean): Promise<void> {
-    await this.keyValueStore.setItem('showTips', showTips.toString());
+    await this.keyValueStore.setItem('showTips', toBooleanString(showTips));
   }
 
   async getShowTips(): Promise<boolean> {
     const value = await this.keyValueStore.getItem('showTips');
-    return value === 'True' || value === null || value === undefined;
+    return fromBooleanString(value, true);
   }
 
   async setTipToShow(tipToShow: number): Promise<void> {
@@ -83,19 +97,19 @@ export class PreferenceService {
   }
 
   async setShowFeed(showFeed: boolean): Promise<void> {
-    await this.keyValueStore.setItem('showFeed', showFeed.toString());
+    await this.keyValueStore.setItem('showFeed', toBooleanString(showFeed));
   }
 
   async getShowFeed(): Promise<boolean> {
     const value = await this.keyValueStore.getItem('showFeed');
-    return value === 'True' || value === null || value === undefined;
+    return fromBooleanString(value, true);
   }
 
   async getHasRequestedNotificationPermission(): Promise<boolean> {
     const value = await this.keyValueStore.getItem(
       'hasRequestedNotificationPermission',
     );
-    return value === 'True';
+    return fromBooleanString(value, false);
   }
 
   async setHasRequestedNotificationPermission(
@@ -103,7 +117,7 @@ export class PreferenceService {
   ): Promise<void> {
     await this.keyValueStore.setItem(
       'hasRequestedNotificationPermission',
-      hasRequested.toString(),
+      toBooleanString(hasRequested),
     );
   }
 
@@ -141,7 +155,7 @@ export class PreferenceService {
     return {
       endpoint: endpoint ?? '',
       apiKey: apiKey ?? '',
-      includeFeedAccount: includeFeedAccount === 'True',
+      includeFeedAccount: fromBooleanString(includeFeedAccount, false),
     };
   }
 
@@ -156,7 +170,7 @@ export class PreferenceService {
     );
     await this.keyValueStore.setItem(
       'remoteBackupSettings.IncludeFeedAccount',
-      settings.includeFeedAccount.toString(),
+      toBooleanString(settings.includeFeedAccount),
     );
   }
 
@@ -189,21 +203,38 @@ export class PreferenceService {
   }
 
   async setBackupReminder(showReminder: boolean): Promise<void> {
-    await this.keyValueStore.setItem('backupReminder', showReminder.toString());
+    await this.keyValueStore.setItem(
+      'backupReminder',
+      toBooleanString(showReminder),
+    );
   }
 
   async getBackupReminder(): Promise<boolean> {
     const value = await this.keyValueStore.getItem('backupReminder');
-    return value === 'True' || value === null || value === undefined;
+    return fromBooleanString(value, true);
   }
 
   async setSplitWeightByDefault(split: boolean): Promise<void> {
-    await this.keyValueStore.setItem('splitWeightByDefault', split.toString());
+    await this.keyValueStore.setItem(
+      'splitWeightByDefault',
+      toBooleanString(split),
+    );
   }
 
   async getSplitWeightByDefault(): Promise<boolean> {
     const value = await this.keyValueStore.getItem('splitWeightByDefault');
-    return value === 'True';
+    return fromBooleanString(value, false);
+  }
+  async setColorSchemeSeed(payload: ColorSchemeSeed): Promise<void> {
+    await this.keyValueStore.setItem('colorSchemeSeed', payload);
+  }
+
+  async getColorSchemeSeed(): Promise<ColorSchemeSeed> {
+    const value = await this.keyValueStore.getItem('colorSchemeSeed');
+    return match(value)
+      .returnType<ColorSchemeSeed>()
+      .with(P.string.regex(/^#[0-9a-fA-F]{6}$/), (v) => v as ColorSchemeSeed)
+      .otherwise(() => 'default');
   }
 
   async setFirstDayOfWeek(firstDayOfWeek: DayOfWeek): Promise<void> {

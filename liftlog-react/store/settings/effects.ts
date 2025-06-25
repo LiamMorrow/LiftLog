@@ -3,6 +3,7 @@ import { addEffect } from '@/store/listenerMiddleware';
 import {
   initializeSettingsStateSlice,
   setBackupReminder,
+  setColorSchemeSeed,
   setFirstDayOfWeek,
   setIsHydrated,
   setLastBackup,
@@ -42,6 +43,7 @@ export function applySettingsEffects() {
         backupReminder,
         splitWeightByDefault,
         firstDayOfWeek,
+        colorSchemeSeed,
       ] = await Promise.all([
         preferenceService.getUseImperialUnits(),
         preferenceService.getShowBodyweight(),
@@ -55,7 +57,9 @@ export function applySettingsEffects() {
         preferenceService.getBackupReminder(),
         preferenceService.getSplitWeightByDefault(),
         preferenceService.getFirstDayOfWeek(),
+        preferenceService.getColorSchemeSeed(),
       ]);
+      dispatch(setColorSchemeSeed(colorSchemeSeed));
       dispatch(setUseImperialUnits(useImperialUnits));
       dispatch(setShowBodyweight(showBodyweight));
       dispatch(setShowTips(showTips));
@@ -173,6 +177,15 @@ export function applySettingsEffects() {
     async (action, { stateAfterReduce, extra: { preferenceService } }) => {
       if (stateAfterReduce.settings.isHydrated) {
         await preferenceService.setFirstDayOfWeek(action.payload);
+      }
+    },
+  );
+
+  addEffect(
+    setColorSchemeSeed,
+    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+      if (stateAfterReduce.settings.isHydrated) {
+        await preferenceService.setColorSchemeSeed(action.payload);
       }
     },
   );
