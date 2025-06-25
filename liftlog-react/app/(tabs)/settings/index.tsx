@@ -29,7 +29,7 @@ export default function Settings() {
           description={t('ManagePlansSubtitle')}
           left={(props) => <List.Icon icon={'assignment'} {...props} />}
         ></List.Item>
-
+        {/* TODO pro features */}
         <List.Item
           onPress={() => push('/(tabs)/settings/app-configuration')}
           title={t('AppConfiguration')}

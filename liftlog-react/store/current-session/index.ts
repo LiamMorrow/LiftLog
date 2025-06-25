@@ -292,10 +292,19 @@ const currentSessionSlice = createSlice({
       },
     ),
   },
+  selectors: {
+    selectState: createSelector(
+      (x: CurrentSessionState) => x,
+      (x) => x,
+    ),
+  },
 });
 
 const selectCurrentSessionPOJO = createSelector(
-  [(state: CurrentSessionState) => state, (_, target: SessionTarget) => target],
+  [
+    currentSessionSlice.selectors.selectState,
+    (_, target: SessionTarget) => target,
+  ],
   (state, target) => state[target],
 );
 

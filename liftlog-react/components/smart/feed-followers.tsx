@@ -106,6 +106,7 @@ function FeedFollowersItem(props: { user: FeedUser; userId: string }) {
       <List.Item
         title={
           <LimitedHtml
+            emStyles={{}}
             value={t('UserIsFollowingYou{User}', {
               0: props.user.name ?? 'Anonymous User',
             })}

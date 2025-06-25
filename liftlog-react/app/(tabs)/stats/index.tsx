@@ -36,9 +36,7 @@ export default function StatsPage() {
               color="#4484B2"
               animated={true}
               enablePanGesture={true}
-              onGestureStart={() => {}}
-              onPointSelected={(p) => {}}
-              onGestureEnd={() => {}}
+              panGestureDelay={20}
             />
           </Card.Content>
         </Card>
