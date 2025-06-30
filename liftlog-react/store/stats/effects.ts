@@ -7,11 +7,11 @@ import {
   TimeSpentExercise,
   TimeTrackedStatistic,
 } from './index';
-import { Duration, LocalDateTime } from '@js-joda/core';
+import { Duration, LocalDate, LocalDateTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { fetchOverallStats, setOverallStats, setStatsIsLoading } from './index';
 import { addEffect } from '@/store/listenerMiddleware';
-import { selectSessions } from '@/store/stored-sessions';
+import { selectSessionsAfter } from '@/store/stored-sessions';
 
 function computeStats(sessions: Session[]): GranularStatisticView | undefined {
   if (!sessions.length) return undefined;
@@ -104,8 +104,11 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
     const statistics = ex.statistics;
     return {
       exerciseName: ex.exerciseName,
-      statistics,
-      oneRepMaxStatistics: ex.oneRepMaxStatistics,
+      statistics: { title: ex.exerciseName, statistics },
+      oneRepMaxStatistics: {
+        title: 'One rep max',
+        statistics: ex.oneRepMaxStatistics,
+      },
       totalLifted: ex.allLifted.reduce((a, b) => a + b, 0),
       max: statistics.length ? Math.max(...statistics.map((s) => s.value)) : 0,
       current: statistics.length ? statistics[statistics.length - 1].value : 0,
@@ -241,7 +244,12 @@ export function applyStatsEffects() {
     dispatch(setStatsIsLoading(true));
 
     try {
-      const stats = computeStats(selectSessions(state));
+      const stats = computeStats(
+        selectSessionsAfter(
+          state,
+          LocalDate.now().minus(state.stats.overallViewTime),
+        ),
+      );
       dispatch(setOverallStats(stats));
     } catch (error) {
       console.error('Failed to fetch stats:', error);

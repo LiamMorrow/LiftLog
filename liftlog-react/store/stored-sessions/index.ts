@@ -7,7 +7,7 @@ import {
   Session,
   SessionPOJO,
 } from '@/models/session-models';
-import { YearMonth } from '@js-joda/core';
+import { LocalDate, YearMonth } from '@js-joda/core';
 import {
   createAction,
   createSelector,
@@ -60,6 +60,15 @@ const storedSessionsSlice = createSlice({
     ),
   },
 });
+
+export const selectSessionsAfter = createSelector(
+  [storedSessionsSlice.selectors.selectSessions, (_, date: LocalDate) => date],
+  (sessions, date) =>
+    Object.values(sessions).filter(
+      (x) => x.date.isAfter(date) || x.date.isEqual(date),
+    ),
+);
+
 export const initializeStoredSessionsStateSlice = createAction(
   'initializeStoredSessionsStateSlice',
 );

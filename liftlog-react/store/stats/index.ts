@@ -1,12 +1,12 @@
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Duration, LocalDateTime } from '@js-joda/core';
+import { Duration, LocalDateTime, Period } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 
 interface StatsState {
   isDirty: boolean;
   isLoading: boolean;
   overallViewSessionName: string | undefined;
-  overallViewTime: Duration;
+  overallViewTime: Period;
   overallView: GranularStatisticView | undefined;
   pinnedExerciseStatistics: PinnedExerciseStatistic[];
 }
@@ -18,8 +18,8 @@ export interface TimeTrackedStatistic {
 
 export interface ExerciseStatistics {
   exerciseName: string;
-  statistics: TimeTrackedStatistic[];
-  oneRepMaxStatistics: TimeTrackedStatistic[];
+  statistics: StatisticOverTime;
+  oneRepMaxStatistics: StatisticOverTime;
   totalLifted: number;
   max: number;
   current: number;
@@ -59,7 +59,7 @@ const initialState: StatsState = {
   isDirty: true,
   isLoading: false,
   overallViewSessionName: undefined,
-  overallViewTime: Duration.ofDays(90),
+  overallViewTime: Period.ofDays(90),
   overallView: undefined,
   pinnedExerciseStatistics: [],
 };
@@ -80,7 +80,7 @@ const statsSlice = createSlice({
     setStatsIsDirty(state, action: PayloadAction<boolean>) {
       state.isDirty = action.payload;
     },
-    setOverallViewTime(state, action: PayloadAction<Duration>) {
+    setOverallViewTime(state, action: PayloadAction<Period>) {
       state.overallViewTime = action.payload;
     },
     setOverallViewSession(state, action: PayloadAction<string | undefined>) {

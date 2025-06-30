@@ -1,8 +1,6 @@
-import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
 import { Loader } from '@/components/presentation/loader';
 import SingleValueStatisticCard from '@/components/presentation/single-value-statistic-card';
 import { SurfaceText } from '@/components/presentation/surface-text';
-import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
 import {
   fetchOverallStats,
@@ -13,12 +11,12 @@ import formatDuration from '@/utils/format-date';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect } from 'expo-router';
 import { View } from 'react-native';
-import { LineGraph } from 'react-native-graph';
-import { Card } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { FlatGrid } from 'react-native-super-grid';
 import WeightFormat from '@/components/presentation/weight-format';
 import BigNumber from 'bignumber.js';
+import { FlatList } from 'react-native-gesture-handler';
+import StatGraphCard from '@/components/presentation/stat-graph-card';
 
 export default function StatsPage() {
   const { t } = useTranslate();
@@ -38,8 +36,8 @@ export default function StatsPage() {
           title: t('Statistics'),
         }}
       />
-      <FullHeightScrollView contentContainerStyle={{ gap: spacing[4] }}>
-        <View>
+      <FlatList
+        ListHeaderComponent={() => (
           <FlatGrid
             scrollEnabled={false}
             data={[0, 1, 2, 3]}
@@ -48,35 +46,12 @@ export default function StatsPage() {
               <TopLevelStatCard index={item} stats={stats} />
             )}
           ></FlatGrid>
-          <View style={{ flexDirection: 'row', gap: spacing[2] }}></View>
-          <View style={{ flexDirection: 'row', gap: spacing[2] }}></View>
-        </View>
-        <Card>
-          <Card.Content style={{ height: 300 }}>
-            <LineGraph
-              points={[
-                {
-                  date: new Date('2025-05-10T10:00:00Z'),
-                  value: 10,
-                },
-                {
-                  date: new Date('2025-05-11T10:00:00Z'),
-                  value: 11,
-                },
-                {
-                  date: new Date('2025-05-12T10:00:00Z'),
-                  value: 11,
-                },
-              ]}
-              style={{ flex: 1 }}
-              color="#4484B2"
-              animated={true}
-              enablePanGesture={true}
-              panGestureDelay={20}
-            />
-          </Card.Content>
-        </Card>
-      </FullHeightScrollView>
+        )}
+        data={stats.exerciseStats}
+        renderItem={({ item }) => (
+          <StatGraphCard exerciseStats={item} title={item.exerciseName} />
+        )}
+      />
     </>
   );
 }
@@ -91,7 +66,12 @@ function TopLevelStatCard(props: {
     case 0:
       return (
         <SingleValueStatisticCard title={t('AverageTimeBetweenSets')}>
-          <SurfaceText color="tertiary" font="text-xl" weight={'bold'}>
+          <SurfaceText
+            color="tertiary"
+            font="text-xl"
+            weight={'bold'}
+            style={{ textAlign: 'center' }}
+          >
             {formatDuration(stats.averageTimeBetweenSets)}
           </SurfaceText>
         </SingleValueStatisticCard>
@@ -99,7 +79,12 @@ function TopLevelStatCard(props: {
     case 1:
       return (
         <SingleValueStatisticCard title={t('AverageSessionLength')}>
-          <SurfaceText color="tertiary" font="text-xl" weight={'bold'}>
+          <SurfaceText
+            color="tertiary"
+            font="text-xl"
+            weight={'bold'}
+            style={{ textAlign: 'center' }}
+          >
             {formatDuration(stats.averageSessionLength, true)}
           </SurfaceText>
         </SingleValueStatisticCard>
@@ -107,7 +92,12 @@ function TopLevelStatCard(props: {
     case 2:
       return (
         <SingleValueStatisticCard title={t('MostTimeSpent')}>
-          <SurfaceText color="tertiary" font="text-xl" weight={'bold'}>
+          <SurfaceText
+            color="tertiary"
+            font="text-xl"
+            weight={'bold'}
+            style={{ textAlign: 'center' }}
+          >
             {stats.exerciseMostTimeSpent?.exerciseName ?? '-'}
           </SurfaceText>
         </SingleValueStatisticCard>
@@ -122,7 +112,12 @@ function TopLevelStatCard(props: {
               fontWeight={'bold'}
               weight={stats.heaviestLift?.weight ?? BigNumber(0)}
             />
-            <SurfaceText color="tertiary" font="text-xl" weight={'bold'}>
+            <SurfaceText
+              color="tertiary"
+              font="text-xl"
+              weight={'bold'}
+              style={{ textAlign: 'center' }}
+            >
               {stats.heaviestLift?.exerciseName ?? '-'}
             </SurfaceText>
           </View>
