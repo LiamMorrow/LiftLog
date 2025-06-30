@@ -359,11 +359,11 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.limajuice.liftlogreact;
-				PRODUCT_NAME = LiftLog;
+				PRODUCT_NAME = "LiftLog";
 				SWIFT_OBJC_BRIDGING_HEADER = "LiftLog/LiftLog-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -390,10 +390,10 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.limajuice.liftlogreact;
-				PRODUCT_NAME = LiftLog;
+				PRODUCT_NAME = "LiftLog";
 				SWIFT_OBJC_BRIDGING_HEADER = "LiftLog/LiftLog-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

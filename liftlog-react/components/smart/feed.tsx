@@ -33,7 +33,7 @@ export default function Feed() {
   const dispatch = useDispatch();
   return (
     <FlatList
-      ListHeaderComponent={<FeedShareUrlHeader />}
+      ListHeaderComponent={<FeedProfileHeader />}
       onRefresh={() => {
         dispatch(fetchInboxItems({ fromUserAction: true }));
         dispatch(fetchFeedItems({ fromUserAction: true }));
@@ -48,7 +48,7 @@ export default function Feed() {
   );
 }
 
-function FeedShareUrlHeader() {
+function FeedProfileHeader() {
   const identityRemote = useAppSelector(selectFeedIdentityRemote);
 
   return (
@@ -61,7 +61,7 @@ function FeedShareUrlHeader() {
 
 function FeedProfile({ identity }: { identity: FeedIdentity }) {
   return (
-    <Card>
+    <Card mode="contained">
       <Card.Title
         left={({ size }) => <Icon source={'personFill'} size={size} />}
         title="Profile"

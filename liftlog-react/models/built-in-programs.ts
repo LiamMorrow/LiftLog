@@ -7,7 +7,7 @@ import BigNumber from 'bignumber.js';
 import { LocalDate } from '@js-joda/core';
 
 export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
-  'A303C855-9ED7-4FF8-AE60-11E9A573193E': ProgramBlueprint.fromPOJO({
+  'a303c855-9ed7-4ff8-ae60-11e9a573193e': ProgramBlueprint.fromPOJO({
     name: 'Starting Strength',
     lastEdited: LocalDate.of(2024, 1, 1),
     sessions: [
@@ -86,7 +86,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
     ],
   }),
 
-  'AC80C322-3C0F-42BA-B837-CD998ADEE25A': ProgramBlueprint.fromPOJO({
+  'ac80c322-3c0f-42ba-b837-cd998adee25a': ProgramBlueprint.fromPOJO({
     name: 'Stronglifts 5x5',
     lastEdited: LocalDate.of(2024, 1, 1),
     sessions: [
@@ -165,7 +165,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
     ],
   }),
 
-  '347607F0-67B8-4051-BFC2-3B73FCCF92D8': ProgramBlueprint.fromPOJO({
+  '347607f0-67b8-4051-bfc2-3b73fccf92d8': ProgramBlueprint.fromPOJO({
     name: 'PPL',
     lastEdited: LocalDate.of(2024, 1, 1),
     sessions: [
@@ -310,7 +310,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
     ],
   }),
 
-  '5072C29E-1DE9-44E0-865F-F65A15E860F7': ProgramBlueprint.fromPOJO({
+  '5072c29e-1de9-44e0-865f-f65a15e860f7': ProgramBlueprint.fromPOJO({
     name: 'PHUL',
     lastEdited: LocalDate.of(2024, 1, 1),
     sessions: [
@@ -571,7 +571,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
     ],
   }),
 
-  '0D0E0860-0555-4B43-BD93-350EDD49C6BD': ProgramBlueprint.fromPOJO({
+  '0d0e0860-0555-4b43-bd93-350edd49c6bd': ProgramBlueprint.fromPOJO({
     name: 'Light Calisthenics',
     lastEdited: LocalDate.of(2024, 1, 1),
     sessions: [
@@ -686,7 +686,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
     ],
   }),
 
-  '890A285B-F883-4536-A1CE-CBC9E2D90399': ProgramBlueprint.fromPOJO({
+  '890a285b-f883-4536-a1ce-cbc9e2d90399': ProgramBlueprint.fromPOJO({
     name: 'Heavy Calisthenics',
     lastEdited: LocalDate.of(2024, 1, 1),
     sessions: [

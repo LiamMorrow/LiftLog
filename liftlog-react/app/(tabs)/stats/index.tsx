@@ -17,6 +17,7 @@ import WeightFormat from '@/components/presentation/weight-format';
 import BigNumber from 'bignumber.js';
 import { FlatList } from 'react-native-gesture-handler';
 import StatGraphCard from '@/components/presentation/stat-graph-card';
+import { spacing } from '@/hooks/useAppTheme';
 
 export default function StatsPage() {
   const { t } = useTranslate();
@@ -48,8 +49,13 @@ export default function StatsPage() {
           ></FlatGrid>
         )}
         data={stats.exerciseStats}
+        contentContainerStyle={{
+          gap: spacing[4],
+        }}
         renderItem={({ item }) => (
-          <StatGraphCard exerciseStats={item} title={item.exerciseName} />
+          <View style={{ paddingHorizontal: spacing[6] }}>
+            <StatGraphCard exerciseStats={item} title={item.exerciseName} />
+          </View>
         )}
       />
     </>

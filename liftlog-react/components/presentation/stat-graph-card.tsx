@@ -1,10 +1,11 @@
-import { Card } from 'react-native-paper';
 import { ExerciseStatistics } from '@/store/stats';
 import { useWeightSuffix } from '@/hooks/useWeightSuffix';
 import { LineChart, lineDataItem } from 'react-native-gifted-charts';
 import { View } from 'react-native';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useState } from 'react';
+import { SurfaceText } from '@/components/presentation/surface-text';
+const Y_AXIS_WIDTH = 40;
 
 export default function StatGraphCard(props: {
   exerciseStats: ExerciseStatistics;
@@ -30,47 +31,43 @@ export default function StatGraphCard(props: {
         dataPointColor: colors.red,
       }),
     );
-  const [width, setWidth] = useState(100);
+  const [width, setWidth] = useState(0);
   return (
-    <Card>
-      <Card.Title title={props.title} titleVariant="headlineSmall" />
-      <Card.Content
-        style={{ height: 300 }}
-        onLayout={(event) => setWidth(event.nativeEvent.layout.height)}
-      >
-        <LineChart
-          areaChart
-          data={oneRepMaxPoints}
-          startFillColor={colors.primary}
-          endFillColor={colors.primary}
-          startOpacity={0.8}
-          endOpacity={0.3}
-          color1={colors.red}
-          strokeDashArray1={[5, 10]}
-          data2={exercisePoints}
-          color2={colors.primary}
-          strokeDashArray2={[1]}
-          endOpacity1={0}
-          startOpacity1={0}
-          focusEnabled
-          textColor={colors.onSurface}
-          xAxisColor={colors.outline}
-          yAxisColor={colors.outline}
-          xAxisIndicesColor={colors.onSurface}
-          yAxisIndicesColor={colors.onSurface}
-          rulesColor={colors.onSurface}
-          noOfSections={4}
-          scrollToEnd
-          xAxisLabelTextStyle={{
-            color: colors.onSurface,
-          }}
-          yAxisTextStyle={{
-            color: colors.onSurface,
-          }}
-          width={width}
-        />
-      </Card.Content>
-    </Card>
+    <View onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+      <SurfaceText font="text-2xl">{props.title}</SurfaceText>
+      <LineChart
+        areaChart
+        data={oneRepMaxPoints}
+        startFillColor={colors.primary}
+        endFillColor={colors.primary}
+        startOpacity={0.8}
+        endOpacity={0.3}
+        color1={colors.red}
+        strokeDashArray1={[5, 10]}
+        data2={exercisePoints}
+        color2={colors.primary}
+        strokeDashArray2={[1]}
+        endOpacity1={0}
+        startOpacity1={0}
+        focusEnabled
+        textColor={colors.onSurface}
+        xAxisColor={colors.outline}
+        yAxisColor={colors.outline}
+        xAxisIndicesColor={colors.onSurface}
+        yAxisIndicesColor={colors.onSurface}
+        rulesColor={colors.onSurface}
+        noOfSections={4}
+        scrollToEnd
+        xAxisLabelTextStyle={{
+          color: colors.onSurface,
+        }}
+        yAxisTextStyle={{
+          color: colors.onSurface,
+        }}
+        yAxisLabelWidth={Y_AXIS_WIDTH}
+        width={width - Y_AXIS_WIDTH}
+      />
+    </View>
   );
 }
 const customDataPoint = () => {
