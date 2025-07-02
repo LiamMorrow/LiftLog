@@ -17,7 +17,6 @@ import {
   SharedItem,
   SharedProgramBlueprint,
 } from '@/models/feed-models';
-import { parse as uuidParse } from 'uuid';
 import {
   PotentialSet,
   RecordedExercise,
@@ -26,6 +25,7 @@ import {
 } from '@/models/session-models';
 import Enumerable from 'linq';
 import { FeedState } from '@/store/feed';
+import { uuidParse } from '@/utils/uuid';
 
 export function toUuidDao(uuid: string): LiftLog.Ui.Models.IUuidDao {
   const parsed = uuidParse(uuid);

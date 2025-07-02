@@ -22,10 +22,10 @@ import {
 } from '@/models/feed-models';
 import { Duration, Instant, LocalDate, LocalTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
-import { stringify as uuidStringify } from 'uuid';
 import { UuidConversionError } from '@/models/storage/uuid-conversion-error';
 import { FeedState } from '@/store/feed';
 import { RemoteData } from '@/models/remote';
+import { uuidStringify } from '@/utils/uuid';
 
 // Converts a UUID DAO to a string
 function fromUuidDao(
