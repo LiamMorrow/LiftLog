@@ -1,3 +1,8 @@
+import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
+import FullScreenDialog from '@/components/presentation/full-screen-dialog';
+import LabelledForm from '@/components/presentation/labelled-form';
+import LabelledFormRow from '@/components/presentation/labelled-form-row';
+import ListSwitch from '@/components/presentation/list-switch';
 import { Remote } from '@/components/presentation/remote';
 import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
@@ -14,9 +19,17 @@ import {
   selectFeedIdentityRemote,
   selectFeedSessionItems,
 } from '@/store/feed';
-import { T } from '@tolgee/react';
-import { FlatList } from 'react-native';
-import { Button, Card, Icon, IconButton } from 'react-native-paper';
+import { T, useTranslate } from '@tolgee/react';
+import { useState } from 'react';
+import { FlatList, View } from 'react-native';
+import {
+  Button,
+  Card,
+  Icon,
+  IconButton,
+  List,
+  TextInput,
+} from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 export default function Feed() {
@@ -54,53 +67,141 @@ function FeedProfileHeader() {
 
 function FeedProfile({ identity }: { identity: FeedIdentity }) {
   const dispatch = useDispatch();
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   return (
-    <Card mode="contained">
-      <Card.Title
-        left={({ size }) => <Icon source={'personFill'} size={size} />}
-        title="Profile"
-        titleVariant="headlineSmall"
-      />
-      <Card.Content>
-        <SurfaceText>
-          This is your feed, share it with your friends to let them follow your
-          workouts!
-        </SurfaceText>
-
-        {identity.publishPlan ? undefined : (
-          <SurfaceText color="error">
-            You are not publishing your workouts!
-          </SurfaceText>
-        )}
-        {/* TODO I think we wanna show the profile info like name and configuration... */}
-      </Card.Content>
-
-      <Card.Actions>
-        <IconButton
-          icon={'edit'}
-          onPress={() => {
-            // TODO
-          }}
+    <>
+      <Card mode="contained">
+        <Card.Title
+          left={({ size }) => <Icon source={'personFill'} size={size} />}
+          title="Profile"
+          titleVariant="headlineSmall"
         />
-        <Button
-          icon={'share'}
-          onPress={() => {
-            dispatch(
-              shareString({
-                title: 'Share feed profile',
-                value: `https://app.liftlog.online/feed/share?id=${identity.id}${
-                  identity.name
-                    ? `&name=${encodeURIComponent(identity.name)}`
-                    : ''
-                }`,
-              }),
-            );
-          }}
-        >
-          <T keyName={'Share'} />
+        <Card.Content>
+          <SurfaceText>
+            This is your feed, share it with your friends to let them follow
+            your workouts!
+          </SurfaceText>
+
+          {identity.publishPlan ? undefined : (
+            <SurfaceText color="error">
+              You are not publishing your workouts!
+            </SurfaceText>
+          )}
+          {/* TODO I think we wanna show the profile info like name and configuration... */}
+        </Card.Content>
+
+        <Card.Actions>
+          <IconButton
+            icon={'edit'}
+            onPress={() => {
+              setEditDialogOpen(true);
+            }}
+          />
+          <Button
+            icon={'share'}
+            onPress={() => {
+              dispatch(
+                shareString({
+                  title: 'Share feed profile',
+                  value: `https://app.liftlog.online/feed/share?id=${identity.id}${
+                    identity.name
+                      ? `&name=${encodeURIComponent(identity.name)}`
+                      : ''
+                  }`,
+                }),
+              );
+            }}
+          >
+            <T keyName={'Share'} />
+          </Button>
+        </Card.Actions>
+      </Card>
+      <FeedProfileEditor
+        open={editDialogOpen}
+        focusPublish
+        onClose={() => setEditDialogOpen(false)}
+        identity={identity}
+      />
+    </>
+  );
+}
+
+function FeedProfileEditor({
+  open,
+  onClose,
+  identity,
+  focusPublish,
+}: {
+  open: boolean;
+  onClose: () => void;
+  identity: FeedIdentity;
+  focusPublish: boolean;
+}) {
+  const { t } = useTranslate();
+  const dispatch = useDispatch();
+  const updateProfile = (value: Partial<FeedIdentity>) => {
+    // TODO
+  };
+  const resetAccount = () => {
+    //TODO
+  };
+  const [resetAccountDialogOpen, setResetAccountDialogOpen] = useState(false);
+  return (
+    <FullScreenDialog open={open} onClose={onClose} title={t('Manage Feed')}>
+      <View
+        style={{
+          gap: spacing[2],
+          marginHorizontal: -spacing.pageHorizontalMargin,
+        }}
+      >
+        <LabelledForm>
+          <LabelledFormRow icon={'person'} label={t('YourName')}>
+            <TextInput
+              placeholder={t('Optional')}
+              value={identity.name ?? ''}
+              label={t('Optional')}
+              mode="outlined"
+            />
+          </LabelledFormRow>
+        </LabelledForm>
+        <List.Section>
+          <ListSwitch
+            focus={focusPublish}
+            headline={t('PublishWorkout')}
+            supportingText={t('PublishWorkoutSubtitle')}
+            value={identity.publishWorkouts}
+            onValueChange={(publishWorkouts) =>
+              updateProfile({ publishWorkouts })
+            }
+          />
+          <ListSwitch
+            headline={t('PublishBodyweight')}
+            supportingText={t('PublishBodyweightSubtitle')}
+            value={identity.publishBodyweight}
+            onValueChange={(publishBodyweight) =>
+              updateProfile({ publishBodyweight })
+            }
+          />
+          <ListSwitch
+            headline={t('PublishPlan')}
+            supportingText={t('PublishPlanSubtitle')}
+            value={identity.publishPlan}
+            onValueChange={(publishPlan) => updateProfile({ publishPlan })}
+          />
+        </List.Section>
+        <Button onPress={() => setResetAccountDialogOpen(true)}>
+          {t('ResetAccount')}
         </Button>
-      </Card.Actions>
-    </Card>
+      </View>
+      <ConfirmationDialog
+        headline={t('ResetAccount')}
+        textContent={t('ResetAccountMessage')}
+        open={resetAccountDialogOpen}
+        onOk={resetAccount}
+        okText={t('ResetAccount')}
+        onCancel={() => setResetAccountDialogOpen(false)}
+      />
+    </FullScreenDialog>
   );
 }
 

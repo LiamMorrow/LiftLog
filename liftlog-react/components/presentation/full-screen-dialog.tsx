@@ -14,7 +14,7 @@ import Animated, {
 
 interface FullScreenDialogProps {
   title: string;
-  action: string;
+  action?: string;
   open: boolean;
   children: ReactNode;
   onAction?: () => void;
