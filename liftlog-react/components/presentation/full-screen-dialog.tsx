@@ -10,6 +10,9 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   interpolateColor,
+  Easing,
+  FadeInDown,
+  FadeOutDown,
 } from 'react-native-reanimated';
 
 interface FullScreenDialogProps {
@@ -41,7 +44,9 @@ export default function FullScreenDialog(props: FullScreenDialogProps) {
   return (
     <Portal>
       {open ? (
-        <View
+        <Animated.View
+          entering={FadeInDown.duration(150).easing(Easing.inOut(Easing.quad))}
+          exiting={FadeOutDown.duration(150).easing(Easing.inOut(Easing.quad))}
           style={{
             flex: 1,
           }}
@@ -86,7 +91,7 @@ export default function FullScreenDialog(props: FullScreenDialogProps) {
             {children}
             <View style={{ height: bottom, width: '100%' }}></View>
           </FullHeightScrollView>
-        </View>
+        </Animated.View>
       ) : undefined}
     </Portal>
   );
