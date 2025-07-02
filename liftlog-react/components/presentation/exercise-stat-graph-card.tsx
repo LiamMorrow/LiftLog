@@ -2,12 +2,13 @@ import { ExerciseStatistics } from '@/store/stats';
 import { useWeightSuffix } from '@/hooks/useWeightSuffix';
 import { LineChart, lineDataItem } from 'react-native-gifted-charts';
 import { View } from 'react-native';
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useState } from 'react';
 import { SurfaceText } from '@/components/presentation/surface-text';
-const Y_AXIS_WIDTH = 40;
+import { formatDate } from '@/utils/format-date';
+import { lineGraphProps } from '@/components/presentation/line-graph-props';
 
-export default function StatGraphCard(props: {
+export default function ExerciseStatGraphCard(props: {
   exerciseStats: ExerciseStatistics;
   title: string;
 }) {
@@ -17,8 +18,8 @@ export default function StatGraphCard(props: {
     props.exerciseStats.statistics.statistics.map(
       (stat): lineDataItem => ({
         value: stat.value,
-        label: stat.dateTime.toString(),
-        dataPointText: stat.value.toString(),
+        dataPointText: formatNumber(stat.value) + weightSuffix,
+        textShiftY: -10,
         dataPointColor: colors.primary,
       }),
     );
@@ -26,15 +27,24 @@ export default function StatGraphCard(props: {
     props.exerciseStats.oneRepMaxStatistics.statistics.map(
       (stat): lineDataItem => ({
         value: stat.value,
-        label: stat.dateTime.toString(),
-        dataPointText: Math.floor(stat.value).toString(),
+        textShiftY: -10,
+        label: formatDate(stat.dateTime.toLocalDate(), {
+          day: 'numeric',
+          month: 'short',
+        }),
         dataPointColor: colors.red,
+        focusedDataPointLabelComponent: () => <SurfaceText>'HI'</SurfaceText>,
       }),
     );
   const [width, setWidth] = useState(0);
   return (
-    <View onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
-      <SurfaceText font="text-2xl">{props.title}</SurfaceText>
+    <View
+      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+      style={{ gap: spacing[2] }}
+    >
+      <SurfaceText font="text-2xl" style={{ textAlign: 'center' }}>
+        {props.title}
+      </SurfaceText>
       <LineChart
         areaChart
         data={oneRepMaxPoints}
@@ -49,38 +59,17 @@ export default function StatGraphCard(props: {
         strokeDashArray2={[1]}
         endOpacity1={0}
         startOpacity1={0}
-        focusEnabled
-        textColor={colors.onSurface}
-        xAxisColor={colors.outline}
-        yAxisColor={colors.outline}
-        xAxisIndicesColor={colors.onSurface}
-        yAxisIndicesColor={colors.onSurface}
-        rulesColor={colors.onSurface}
-        noOfSections={4}
-        scrollToEnd
-        xAxisLabelTextStyle={{
-          color: colors.onSurface,
-        }}
-        yAxisTextStyle={{
-          color: colors.onSurface,
-        }}
-        yAxisLabelWidth={Y_AXIS_WIDTH}
-        width={width - Y_AXIS_WIDTH}
+        {...lineGraphProps(colors)}
+        width={width}
       />
     </View>
   );
 }
-const customDataPoint = () => {
-  return (
-    <View
-      style={{
-        width: 20,
-        height: 20,
-        backgroundColor: 'white',
-        borderWidth: 4,
-        borderRadius: 10,
-        borderColor: '#07BAD1',
-      }}
-    />
-  );
-};
+
+/**
+ * Formats showing up to 2 decimal places
+ * @param value
+ */
+function formatNumber(value: number) {
+  return value % 1 === 0 ? value.toString() : value.toFixed(2);
+}

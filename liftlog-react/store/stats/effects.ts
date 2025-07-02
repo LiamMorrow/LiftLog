@@ -11,10 +11,22 @@ import { Duration, LocalDate, LocalDateTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { fetchOverallStats, setOverallStats, setStatsIsLoading } from './index';
 import { addEffect } from '@/store/listenerMiddleware';
-import { selectSessionsAfter } from '@/store/stored-sessions';
+import { selectSessionsBy } from '@/store/stored-sessions';
 
 function computeStats(sessions: Session[]): GranularStatisticView | undefined {
-  if (!sessions.length) return undefined;
+  if (!sessions.length)
+    return {
+      averageSessionLength: Duration.ZERO,
+      averageTimeBetweenSets: Duration.ZERO,
+      bodyweightStats: {
+        statistics: [],
+        title: 'Bodyweight',
+      },
+      exerciseMostTimeSpent: undefined,
+      exerciseStats: [],
+      heaviestLift: undefined,
+      sessionStats: [],
+    };
 
   // Only sessions with at least one exercise
   const sessionsWithExercises = sessions.filter(
@@ -245,9 +257,10 @@ export function applyStatsEffects() {
 
     try {
       const stats = computeStats(
-        selectSessionsAfter(
+        selectSessionsBy(
           state,
           LocalDate.now().minus(state.stats.overallViewTime),
+          state.stats.overallViewSessionName,
         ),
       );
       dispatch(setOverallStats(stats));

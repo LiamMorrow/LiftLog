@@ -34,7 +34,12 @@ function NoUpcomingSessions() {
     (s: RootState) => s.program.activeProgramId,
   );
   return (
-    <View style={{ gap: spacing[2], paddingHorizontal: spacing[2] }}>
+    <View
+      style={{
+        gap: spacing[2],
+        paddingHorizontal: spacing.pageHorizontalMargin,
+      }}
+    >
       <Card>
         <Card.Content style={{ gap: spacing[4] }}>
           <View

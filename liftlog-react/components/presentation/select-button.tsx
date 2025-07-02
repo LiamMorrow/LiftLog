@@ -1,4 +1,6 @@
+import { Period } from '@js-joda/core';
 import { useState } from 'react';
+import { ScrollView } from 'react-native-gesture-handler';
 import { Button, Menu } from 'react-native-paper';
 
 export interface SelectButtonOption<T> {
@@ -10,12 +12,10 @@ interface SelectButtonProps<T> {
   options: SelectButtonOption<T>[];
   onChange: (value: T) => void;
 }
-export default function SelectButton<T>({
-  value,
-  options,
-  onChange,
-}: SelectButtonProps<T>) {
-  const valueLabel = options.find((x) => x.value === value)?.label;
+export default function SelectButton<
+  T extends number | string | Period | undefined,
+>({ value, options, onChange }: SelectButtonProps<T>) {
+  const valueLabel = options.find((x) => isEqual(x.value, value))?.label;
   const [open, setOpen] = useState(false);
   return (
     <Menu
@@ -32,17 +32,32 @@ export default function SelectButton<T>({
       }
       anchorPosition="bottom"
     >
-      {options.map((option) => (
-        <Menu.Item
-          key={option.label}
-          title={option.label}
-          onPress={() => {
-            onChange(option.value);
-            setOpen(false);
-          }}
-          trailingIcon={option.value === value ? 'check' : undefined!}
-        />
-      ))}
+      <ScrollView>
+        {options.map((option) => (
+          <Menu.Item
+            key={option.label}
+            title={option.label}
+            onPress={() => {
+              onChange(option.value);
+              setOpen(false);
+            }}
+            trailingIcon={option.value === value ? 'check' : undefined!}
+          />
+        ))}
+      </ScrollView>
     </Menu>
   );
+}
+
+function isEqual<T extends number | string | Period | undefined>(
+  a: T,
+  b: T,
+): boolean {
+  if (a === b) {
+    return true;
+  }
+  if (a && typeof a === 'object' && a.equals(b)) {
+    return true;
+  }
+  return false;
 }

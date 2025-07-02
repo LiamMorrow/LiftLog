@@ -58,14 +58,32 @@ const storedSessionsSlice = createSlice({
       [(state: StoredSessionState) => state.sessions],
       (sessions) => Object.values(sessions).map((x) => Session.fromPOJO(x)),
     ),
+    selectCompletedDistinctSessionNames: createSelector(
+      [
+        (state: StoredSessionState) => state.sessions,
+        (_, since: LocalDate) => since,
+      ],
+      (sessions, since) =>
+        Enumerable.from(Object.values(sessions))
+          .where((x) => x.date.isAfter(since) || x.date.isEqual(since))
+          .select((x) => x.blueprint.name)
+          .distinct()
+          .toArray(),
+    ),
   },
 });
 
-export const selectSessionsAfter = createSelector(
-  [storedSessionsSlice.selectors.selectSessions, (_, date: LocalDate) => date],
-  (sessions, date) =>
+export const selectSessionsBy = createSelector(
+  [
+    storedSessionsSlice.selectors.selectSessions,
+    (_, date: LocalDate) => date,
+    (_, __, sessionName: string | undefined) => sessionName,
+  ],
+  (sessions, date, sessionName) =>
     Object.values(sessions).filter(
-      (x) => x.date.isAfter(date) || x.date.isEqual(date),
+      (x) =>
+        (x.date.isAfter(date) || x.date.isEqual(date)) &&
+        (!sessionName || x.blueprint.name === sessionName),
     ),
 );
 
@@ -81,7 +99,8 @@ export const {
   deleteStoredSession,
 } = storedSessionsSlice.actions;
 
-export const { selectSessions } = storedSessionsSlice.selectors;
+export const { selectSessions, selectCompletedDistinctSessionNames } =
+  storedSessionsSlice.selectors;
 
 export const selectLatestOrderedRecordedExercises = createSelector(
   [
