@@ -13,7 +13,7 @@ import {
 import formatDuration from '@/utils/format-date';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect } from 'expo-router';
-import { View } from 'react-native';
+import { NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { FlatGrid } from 'react-native-super-grid';
 import WeightFormat from '@/components/presentation/weight-format';
@@ -29,6 +29,7 @@ import { selectCompletedDistinctSessionNames } from '@/store/stored-sessions';
 import { Divider, Searchbar } from 'react-native-paper';
 import { useState } from 'react';
 import BodyweightStatGraphCard from '@/components/presentation/bodyweight-stat-graph-card';
+import { useScroll } from '@/hooks/useScollListener';
 
 export default function StatsPage() {
   const { t } = useTranslate();
@@ -38,6 +39,7 @@ export default function StatsPage() {
   });
   const stats = useAppSelector(selectOverallView);
   const [searchText, setSearchText] = useState<string>('');
+  const { setScrolled } = useScroll();
   if (!stats) {
     return <Loader />;
   }
@@ -50,6 +52,10 @@ export default function StatsPage() {
         }}
       />
       <FlatList
+        onScroll={(event: NativeSyntheticEvent<NativeScrollEvent>) => {
+          const offsetY = event.nativeEvent.contentOffset.y;
+          setScrolled(offsetY > 0);
+        }}
         ListHeaderComponent={
           <ListHeader
             searchText={searchText}
