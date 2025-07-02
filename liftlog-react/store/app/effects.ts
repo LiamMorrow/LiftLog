@@ -5,6 +5,7 @@ import {
   setCanScheduleExactNotifications,
   setCurrentSnackbar,
   setIsHydrated,
+  shareString,
   showSnackbar,
 } from '@/store/app';
 import { addEffect } from '@/store/listenerMiddleware';
@@ -50,5 +51,9 @@ export function applyAppEffects() {
     if (getState().app.currentSnackbar === action.payload) {
       dispatch(setCurrentSnackbar(undefined));
     }
+  });
+
+  addEffect(shareString, async (action, { extra: { stringSharer } }) => {
+    await stringSharer.share(action.payload.value, action.payload.title);
   });
 }

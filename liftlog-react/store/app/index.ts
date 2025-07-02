@@ -48,6 +48,10 @@ export const refreshNotificationPermissionStatus = createAction(
 
 export const initializeAppStateSlice = createAction('initializeAppStateSlice');
 
+export const shareString = createAction<{ title: string; value: string }>(
+  'shareString',
+);
+
 export type SnackbarDescriptor =
   | {
       text: string;

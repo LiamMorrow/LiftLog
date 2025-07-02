@@ -11,12 +11,7 @@ import {
 } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
 import React, { useState } from 'react';
-import {
-  FlatList,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  View,
-} from 'react-native';
+import { FlatList, View } from 'react-native';
 import { IconButton, Button, List } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
@@ -28,11 +23,7 @@ export function FeedFollowers() {
   ) as FeedFollowItem[];
   const followers = useAppSelector(selectFeedFollowers);
   const items = followRequests.concat(followers);
-  const { setScrolled } = useScroll();
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const offsetY = event.nativeEvent.contentOffset.y;
-    setScrolled(offsetY > 0);
-  };
+  const { handleScroll } = useScroll();
   const fetchingFeedItems = useAppSelector((x) => x.feed.isFetching);
   const dispatch = useDispatch();
   return (

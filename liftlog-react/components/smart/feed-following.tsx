@@ -4,21 +4,13 @@ import { useAppSelector } from '@/store';
 import { fetchInboxItems, selectFeedFollowing } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
 import React, { useState } from 'react';
-import {
-  FlatList,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-} from 'react-native';
+import { FlatList } from 'react-native';
 import { IconButton, List, Menu } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 export function FeedFollowing() {
   const following = useAppSelector(selectFeedFollowing);
-  const { setScrolled } = useScroll();
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const offsetY = event.nativeEvent.contentOffset.y;
-    setScrolled(offsetY > 0);
-  };
+  const { handleScroll } = useScroll();
   const fetchingFeedItems = useAppSelector((x) => x.feed.isFetching);
   const dispatch = useDispatch();
   return (

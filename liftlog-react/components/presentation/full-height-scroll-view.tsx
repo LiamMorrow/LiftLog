@@ -1,6 +1,6 @@
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScollListener';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { View, StyleProp, ViewStyle } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -18,14 +18,8 @@ export default function FullHeightScrollView({
   contentContainerStyle?: StyleProp<ViewStyle>;
 }) {
   const { colors } = useAppTheme();
-  const { setScrolled: dispatchSetIsScrolled } = useScroll();
-  const [isScrolled, setIsScrolled] = useState(false);
+  const { handleScroll } = useScroll();
   const [floatingBottomSize, setFloatingBottomSize] = useState(0);
-
-  // Effect basically ensures we only emit when isScrolled changes so our parents don't need to care
-  useEffect(() => {
-    (propsSetIsScrolled ?? dispatchSetIsScrolled)(isScrolled);
-  }, [dispatchSetIsScrolled, isScrolled, propsSetIsScrolled]);
 
   return (
     <View
@@ -37,7 +31,7 @@ export default function FullHeightScrollView({
       ]}
     >
       <KeyboardAwareScrollView
-        onScroll={(e) => setIsScrolled(e.nativeEvent.contentOffset.y > 0)}
+        onScroll={handleScroll}
         enableOnAndroid
         style={[scrollStyle]}
         contentContainerStyle={[contentContainerStyle]}

@@ -28,12 +28,13 @@ import { msSettings } from '@material-symbols-react-native/outlined-400/msSettin
 import { msSettingsFill } from '@material-symbols-react-native/outlined-400/msSettingsFill';
 import { msSettingsBackupRestore } from '@material-symbols-react-native/outlined-400/msSettingsBackupRestore';
 import { msShare } from '@material-symbols-react-native/outlined-400/msShare';
+import { msIosShare } from '@material-symbols-react-native/outlined-400/msIosShare';
+import { msShareWindows } from '@material-symbols-react-native/outlined-400/msShareWindows';
 import { msStar } from '@material-symbols-react-native/outlined-400/msStar';
 import { msTextAd } from '@material-symbols-react-native/outlined-400/msTextAd';
 import { msTranslate } from '@material-symbols-react-native/outlined-400/msTranslate';
 import { msWeight } from '@material-symbols-react-native/outlined-400/msWeight';
 import { msChevronLeft } from '@material-symbols-react-native/outlined-400/msChevronLeft';
-
 import { msForum } from '@material-symbols-react-native/outlined-400/msForum';
 import { msForumFill } from '@material-symbols-react-native/outlined-400/msForumFill';
 import { msInventory } from '@material-symbols-react-native/outlined-400/msInventory';
@@ -72,6 +73,8 @@ import { msPerson } from '@material-symbols-react-native/outlined-400/msPerson';
 import { msPersonFill } from '@material-symbols-react-native/outlined-400/msPersonFill';
 import { MsIcon } from 'material-symbols-react-native';
 import { IconProps } from 'react-native-paper/lib/typescript/components/MaterialCommunityIcon';
+import { Platform } from 'react-native';
+import { match } from 'ts-pattern';
 
 // Importing these icons using the below methods causes android app to crash
 // import { msAdd, msArrowDownward } from '@material-symbols-react-native/outlined-400';
@@ -111,7 +114,13 @@ const MaterialSymbols = {
   publicFill: msPublicFill,
   vpnKey: msVpnKey,
   vpnKeyFill: msVpnKeyFill,
-  share: msShare,
+  share: match(Platform.OS)
+    .with('ios', () => msIosShare)
+    .with('macos', () => msIosShare)
+    .with('android', () => msShare)
+    .with('web', () => msShare)
+    .with('windows', () => msShareWindows)
+    .otherwise(() => msShare),
   star: msStar,
   text: msTextAd,
   reload: msRefresh,

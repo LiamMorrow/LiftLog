@@ -7,6 +7,7 @@ import { spacing } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScollListener';
 import { FeedIdentity, FeedItem, SessionFeedItem } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
+import { shareString } from '@/store/app';
 import {
   fetchFeedItems,
   fetchInboxItems,
@@ -14,21 +15,13 @@ import {
   selectFeedSessionItems,
 } from '@/store/feed';
 import { T } from '@tolgee/react';
-import {
-  FlatList,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-} from 'react-native';
+import { FlatList } from 'react-native';
 import { Button, Card, Icon, IconButton } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 export default function Feed() {
   const feedItems = useAppSelector(selectFeedSessionItems);
-  const { setScrolled } = useScroll();
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const offsetY = event.nativeEvent.contentOffset.y;
-    setScrolled(offsetY > 0);
-  };
+  const { handleScroll } = useScroll();
   const fetchingFeedItems = useAppSelector((x) => x.feed.isFetching);
   const dispatch = useDispatch();
   return (
@@ -60,6 +53,7 @@ function FeedProfileHeader() {
 }
 
 function FeedProfile({ identity }: { identity: FeedIdentity }) {
+  const dispatch = useDispatch();
   return (
     <Card mode="contained">
       <Card.Title
@@ -91,7 +85,16 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
         <Button
           icon={'share'}
           onPress={() => {
-            // TODO
+            dispatch(
+              shareString({
+                title: 'Share feed profile',
+                value: `https://app.liftlog.online/feed/share?id=${identity.id}${
+                  identity.name
+                    ? `&name=${encodeURIComponent(identity.name)}`
+                    : ''
+                }`,
+              }),
+            );
           }}
         >
           <T keyName={'Share'} />
