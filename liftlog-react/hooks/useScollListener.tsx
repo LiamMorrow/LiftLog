@@ -25,10 +25,10 @@ type ScrollProviderProps = {
 // Create a provider component
 export const ScrollProvider = ({
   children,
-  isScrolled,
-  setScrolled,
+  isScrolled: isScrolledOverride,
+  setScrolled: setScrolledOverride,
 }: ScrollProviderProps) => {
-  const [isScrolledG, setScrolledG] = useState(false);
+  const [isScrolledGlobal, setScrolledGlobal] = useState(false);
   const [scrollHandlerLastFired, setScrollHandlerLastFired] = useState<
     boolean | undefined
   >(undefined);
@@ -36,8 +36,8 @@ export const ScrollProvider = ({
   return (
     <ScrollContext.Provider
       value={{
-        isScrolled: isScrolled ?? isScrolledG,
-        setScrolled: setScrolled ?? setScrolledG,
+        isScrolled: isScrolledOverride ?? isScrolledGlobal,
+        setScrolled: setScrolledOverride ?? setScrolledGlobal,
         handleScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => {
           const offsetY = event.nativeEvent.contentOffset.y;
           const isScrolled = offsetY > 0;
@@ -45,8 +45,8 @@ export const ScrollProvider = ({
             return;
           }
           setScrollHandlerLastFired(isScrolled);
-          if (setScrolled) setScrolled(isScrolled);
-          else setScrolledG(isScrolled);
+          if (setScrolledOverride) setScrolledOverride(isScrolled);
+          else setScrolledGlobal(isScrolled);
         },
       }}
     >
