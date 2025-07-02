@@ -97,7 +97,7 @@ function ListUpcomingWorkouts({
         <Tips />
       </View>
       <CardList
-        cardType="outlined"
+        cardType="contained"
         items={upcoming}
         renderItemContent={(session) => {
           return (
@@ -137,7 +137,6 @@ function ListUpcomingWorkouts({
                 <IconButton icon={'edit'} onPress={handleEditPress} />
               ) : undefined}
               <Button
-                mode="contained-tonal"
                 icon={'playCircle'}
                 onPress={() => selectSession(session)}
               >

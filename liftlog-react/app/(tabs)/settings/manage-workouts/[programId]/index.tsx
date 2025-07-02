@@ -79,7 +79,7 @@ export default function ManageWorkouts() {
 
       <CardList
         items={program.sessions}
-        cardType="outlined"
+        cardType="contained"
         onPress={selectSession}
         renderItemContent={(session) => (
           <Card.Content>

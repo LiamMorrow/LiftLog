@@ -24,7 +24,7 @@ function Chip(props: { children: ReactNode }) {
         flexDirection: 'row',
         alignItems: 'center',
         gap: spacing[0.5],
-        backgroundColor: colors.surfaceContainerHighest,
+        backgroundColor: colors.surfaceContainer,
         borderRadius: spacing[2],
         paddingVertical: spacing[1],
         paddingHorizontal: spacing[2],
@@ -70,8 +70,10 @@ function FilledChips(props: {
       <SurfaceText>{chip.repsCompleted?.toString() ?? '-'}</SurfaceText>
       {props.showWeight ? (
         <>
-          <SurfaceText font="text-2xs">@</SurfaceText>
-          <WeightFormat weight={chip.weight} />
+          <SurfaceText font="text-2xs" color="onSurface">
+            @
+          </SurfaceText>
+          <WeightFormat color="onSurface" weight={chip.weight} />
         </>
       ) : undefined}
     </Chip>
@@ -84,13 +86,15 @@ function PlannedChips(props: {
 }) {
   return getPlannedChipData(props.exercise).map((chip, index) => (
     <Chip key={index}>
-      <SurfaceText>
+      <SurfaceText color="onSurface">
         {chip.numSets}x{chip.repTarget}
       </SurfaceText>
       {props.showWeight ? (
         <>
-          <SurfaceText font="text-2xs">@</SurfaceText>
-          <WeightFormat weight={chip.weight} />
+          <SurfaceText color="onSurface" font="text-2xs">
+            @
+          </SurfaceText>
+          <WeightFormat color="onSurface" weight={chip.weight} />
         </>
       ) : undefined}
     </Chip>
@@ -115,7 +119,9 @@ export default function ExerciseSummary({
       }}
     >
       {showName ? (
-        <SurfaceText>{exercise.blueprint.name}</SurfaceText>
+        <SurfaceText style={{ maxWidth: '50%' }}>
+          {exercise.blueprint.name}
+        </SurfaceText>
       ) : undefined}
       {showDate ? (
         <SurfaceText>

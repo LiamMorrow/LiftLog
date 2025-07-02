@@ -230,7 +230,7 @@ function FeedItemRenderer(props: { feedItem: FeedItem }) {
   switch (true) {
     case props.feedItem instanceof SessionFeedItem:
       return (
-        <Card mode="outlined">
+        <Card mode="contained">
           <Card.Content>
             <SplitCardControl
               titleContent={

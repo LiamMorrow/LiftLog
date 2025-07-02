@@ -71,7 +71,7 @@ export default function History() {
         />
         <CardList
           items={sessionsInMonth}
-          cardType="outlined"
+          cardType="contained"
           onPress={onSelectSession}
           renderItemContent={(session) => (
             <Card.Content>
