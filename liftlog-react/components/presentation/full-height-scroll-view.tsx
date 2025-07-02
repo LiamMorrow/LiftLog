@@ -7,13 +7,11 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 export default function FullHeightScrollView({
   children,
   floatingChildren,
-  setIsScrolled: propsSetIsScrolled,
   scrollStyle,
   contentContainerStyle,
 }: {
   children: React.ReactNode;
   floatingChildren?: React.ReactNode;
-  setIsScrolled?: (isScrolled: boolean) => void;
   scrollStyle?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
 }) {

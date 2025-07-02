@@ -6,7 +6,7 @@ export default function LabelledForm(props: { children: ReactNode }) {
   return (
     <View
       style={{
-        paddingHorizontal: spacing[6],
+        paddingHorizontal: spacing.pageHorizontalMargin,
         justifyContent: 'space-between',
         gap: spacing[4],
       }}

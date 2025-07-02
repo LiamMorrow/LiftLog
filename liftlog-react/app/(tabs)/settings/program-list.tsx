@@ -1,6 +1,5 @@
 import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
-import ListTitle from '@/components/presentation/list-title';
 import ProgramListItem from '@/components/smart/program-list-item';
 import { ProgramBlueprint } from '@/models/session-models';
 import { useAppSelector } from '@/store';
@@ -52,7 +51,6 @@ export default function ProgramList() {
     <FullHeightScrollView floatingChildren={floatingBottomContainer}>
       <Stack.Screen options={{ title: t('PlansPageTitle') }} />
       <List.Section>
-        <ListTitle title={t('SavedPlans')} />
         {ps.map(({ id }) => (
           <ProgramListItem key={id} id={id} isFocused={focusprogramId === id} />
         ))}

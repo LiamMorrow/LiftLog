@@ -192,8 +192,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
         flexDirection: 'column',
         gap: spacing[4],
         paddingBlock: spacing[4],
-        paddingLeft: spacing[7],
-        paddingRight: spacing[2],
+        paddingHorizontal: spacing.pageHorizontalMargin,
         width: '100%',
       }}
       data-cy="weighted-exercise"

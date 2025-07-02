@@ -186,7 +186,7 @@ export default function HistoryCalendarCard({
   );
 
   return (
-    <Card style={{ marginHorizontal: spacing[2] }} mode="contained">
+    <Card mode="contained">
       <Card.Content>
         <View
           style={{

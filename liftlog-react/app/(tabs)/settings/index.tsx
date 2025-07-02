@@ -1,6 +1,5 @@
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
 
-import ListTitle from '@/components/presentation/list-title';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
 import { Link, Stack, useRouter } from 'expo-router';
@@ -21,8 +20,7 @@ export default function Settings() {
   return (
     <FullHeightScrollView>
       <Stack.Screen options={{ title: t('Settings') }} />
-      <List.Section>
-        <ListTitle title={t('Configuration')} />
+      <List.Section title={t('Configuration')}>
         <List.Item
           onPress={() => push('/(tabs)/settings/program-list')}
           title={t('ManagePlans')}
@@ -54,8 +52,7 @@ export default function Settings() {
         ></List.Item>
       </List.Section>
 
-      <List.Section>
-        <ListTitle title={t('Support')} />
+      <List.Section title={t('Support')}>
         <List.Item
           onPress={() =>
             openUrl(

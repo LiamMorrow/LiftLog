@@ -1,8 +1,8 @@
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
-import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { usePreventNavigate } from '@/hooks/usePreventNavigate';
-import { ReactNode } from 'react';
-import { Text, View } from 'react-native';
+import { ReactNode, useEffect } from 'react';
+import { View } from 'react-native';
 import { Button, IconButton, Portal } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
@@ -14,6 +14,8 @@ import Animated, {
   FadeInDown,
   FadeOutDown,
 } from 'react-native-reanimated';
+import { ScrollProvider, useScroll } from '@/hooks/useScollListener';
+import { SurfaceText } from '@/components/presentation/surface-text';
 
 interface FullScreenDialogProps {
   title: string;
@@ -26,12 +28,56 @@ interface FullScreenDialogProps {
 
 export default function FullScreenDialog(props: FullScreenDialogProps) {
   const { action, open, onAction, onClose, title, children } = props;
-  const scrollAnimation = useSharedValue(0);
-  const { colors } = useAppTheme();
-  const { top, bottom } = useSafeAreaInsets();
+
+  const { bottom } = useSafeAreaInsets();
 
   usePreventNavigate(open, onClose);
 
+  return (
+    <Portal>
+      {open ? (
+        <ScrollProvider>
+          <Animated.View
+            entering={FadeInDown.duration(150).easing(
+              Easing.inOut(Easing.quad),
+            )}
+            exiting={FadeOutDown.duration(150).easing(
+              Easing.inOut(Easing.quad),
+            )}
+            style={{
+              flex: 1,
+            }}
+          >
+            <Header
+              onClose={onClose}
+              action={action!}
+              onAction={onAction!}
+              title={title}
+            />
+            <FullHeightScrollView
+              scrollStyle={{
+                padding: spacing.pageHorizontalMargin,
+              }}
+            >
+              {children}
+              <View style={{ height: bottom * 4, width: '100%' }}></View>
+            </FullHeightScrollView>
+          </Animated.View>
+        </ScrollProvider>
+      ) : undefined}
+    </Portal>
+  );
+}
+
+function Header({
+  onClose,
+  title,
+  action,
+  onAction,
+}: Pick<FullScreenDialogProps, 'action' | 'onAction' | 'onClose' | 'title'>) {
+  const scrollAnimation = useSharedValue(0);
+  const { colors } = useAppTheme();
+  const { top } = useSafeAreaInsets();
   const backgroundStyle = useAnimatedStyle(() => ({
     backgroundColor: interpolateColor(
       scrollAnimation.value,
@@ -40,59 +86,40 @@ export default function FullScreenDialog(props: FullScreenDialogProps) {
     ),
     paddingTop: top,
   }));
+  const { isScrolled } = useScroll();
+
+  useEffect(() => {
+    scrollAnimation.set(
+      withTiming(isScrolled ? 1 : 0, {
+        duration: 100,
+      }),
+    );
+  }, [isScrolled, scrollAnimation]);
 
   return (
-    <Portal>
-      {open ? (
-        <Animated.View
-          entering={FadeInDown.duration(150).easing(Easing.inOut(Easing.quad))}
-          exiting={FadeOutDown.duration(150).easing(Easing.inOut(Easing.quad))}
+    <Animated.View style={backgroundStyle}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          gap: spacing[2],
+          padding: spacing[4],
+        }}
+      >
+        <IconButton icon={'close'} onPress={onClose} />
+        <SurfaceText
           style={{
-            flex: 1,
+            marginRight: 'auto',
           }}
+          font="text-2xl"
         >
-          <Animated.View style={backgroundStyle}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                gap: spacing[2],
-                padding: spacing[4],
-              }}
-            >
-              <IconButton icon={'close'} onPress={onClose} />
-              <Text
-                style={{
-                  marginRight: 'auto',
-                  ...font['text-2xl'],
-                  color: colors.onSurface,
-                }}
-              >
-                {title}
-              </Text>
-              {action && onAction ? (
-                <Button onPress={onAction}>{action}</Button>
-              ) : null}
-            </View>
-          </Animated.View>
-          <FullHeightScrollView
-            scrollStyle={{
-              padding: spacing[2],
-            }}
-            setIsScrolled={(scrolled) => {
-              scrollAnimation.set(
-                withTiming(scrolled ? 1 : 0, {
-                  duration: 100,
-                }),
-              );
-            }}
-          >
-            {children}
-            <View style={{ height: bottom, width: '100%' }}></View>
-          </FullHeightScrollView>
-        </Animated.View>
-      ) : undefined}
-    </Portal>
+          {title}
+        </SurfaceText>
+        {action && onAction ? (
+          <Button onPress={onAction}>{action}</Button>
+        ) : null}
+      </View>
+    </Animated.View>
   );
 }

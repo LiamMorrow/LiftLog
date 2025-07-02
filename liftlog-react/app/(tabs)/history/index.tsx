@@ -3,7 +3,6 @@ import EmptyInfo from '@/components/presentation/empty-info';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
 import HistoryCalendarCard from '@/components/presentation/history-calendar-card';
 import LimitedHtml from '@/components/presentation/limited-html';
-import ListTitle from '@/components/presentation/list-title';
 import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
 import SplitCardControl from '@/components/presentation/split-card-control';
@@ -54,7 +53,12 @@ export default function History() {
           title: t('History'),
         }}
       />
-      <FullHeightScrollView contentContainerStyle={{ gap: spacing[4] }}>
+      <FullHeightScrollView
+        contentContainerStyle={{
+          gap: spacing[4],
+          paddingHorizontal: spacing.pageHorizontalMargin,
+        }}
+      >
         <HistoryCalendarCard
           currentYearMonth={currentYearMonth}
           sessions={sessions}
@@ -65,7 +69,6 @@ export default function History() {
           }}
           onSessionSelect={onSelectSession}
         />
-        <ListTitle title={t('SessionsInMonth')} />
         <CardList
           items={sessionsInMonth}
           cardType="outlined"

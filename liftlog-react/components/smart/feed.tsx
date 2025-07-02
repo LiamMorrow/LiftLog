@@ -49,7 +49,10 @@ export default function Feed() {
       data={feedItems}
       keyExtractor={(x) => x.eventId}
       renderItem={({ item }) => <FeedItemRenderer feedItem={item} />}
-      contentContainerStyle={{ gap: spacing[2], padding: spacing[2] }}
+      contentContainerStyle={{
+        gap: spacing[2],
+        padding: spacing.pageHorizontalMargin,
+      }}
     />
   );
 }
@@ -68,6 +71,7 @@ function FeedProfileHeader() {
 function FeedProfile({ identity }: { identity: FeedIdentity }) {
   const dispatch = useDispatch();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [focusPublish, setFocusPublish] = useState(false);
   return (
     <>
       <Card mode="contained">
@@ -83,17 +87,34 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
           </SurfaceText>
 
           {identity.publishPlan ? undefined : (
-            <SurfaceText color="error">
-              You are not publishing your workouts!
-            </SurfaceText>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <SurfaceText color="error">
+                You are not publishing your workouts!
+              </SurfaceText>
+              <Button
+                onPress={() => {
+                  setFocusPublish(true);
+                  setEditDialogOpen(true);
+                }}
+                mode="outlined"
+              >
+                <T keyName="Fix" />
+              </Button>
+            </View>
           )}
-          {/* TODO I think we wanna show the profile info like name and configuration... */}
         </Card.Content>
 
         <Card.Actions>
           <IconButton
             icon={'edit'}
             onPress={() => {
+              setFocusPublish(false);
               setEditDialogOpen(true);
             }}
           />
@@ -118,7 +139,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
       </Card>
       <FeedProfileEditor
         open={editDialogOpen}
-        focusPublish
+        focusPublish={focusPublish}
         onClose={() => setEditDialogOpen(false)}
         identity={identity}
       />

@@ -18,12 +18,13 @@ import {
   setCurrentSession,
 } from '@/store/current-session';
 import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
+import { setEditingSession } from '@/store/session-editor';
 import { LocalDate } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Button, Card, FAB, Icon } from 'react-native-paper';
+import { Button, Card, FAB, Icon, IconButton } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -37,7 +38,6 @@ function NoUpcomingSessions() {
     <View
       style={{
         gap: spacing[2],
-        paddingHorizontal: spacing.pageHorizontalMargin,
       }}
     >
       <Card>
@@ -56,7 +56,9 @@ function NoUpcomingSessions() {
               icon={'add'}
               style={{ flex: 1 }}
               onPress={() =>
-                push(`/settings/manage-workouts/${activeProgramId}`)
+                push(`/settings/manage-workouts/${activeProgramId}`, {
+                  withAnchor: true,
+                })
               }
             >
               <T keyName="AddWorkouts" />
@@ -65,7 +67,9 @@ function NoUpcomingSessions() {
               mode="contained"
               style={{ flex: 1 }}
               icon={'assignment'}
-              onPress={() => push(`/settings/program-list`)}
+              onPress={() =>
+                push(`/settings/program-list`, { withAnchor: true })
+              }
             >
               <T keyName="SelectAPlan" />
             </Button>
@@ -83,9 +87,13 @@ function ListUpcomingWorkouts({
   upcoming: readonly Session[];
   selectSession: (s: Session) => void;
 }) {
+  const plan = useAppSelector(selectActiveProgram);
+  const planId = useAppSelector((x) => x.program.activeProgramId);
+  const { push } = useRouter();
+  const dispatch = useDispatch();
   return (
     <>
-      <View style={{ margin: spacing[2] }}>
+      <View style={{ margin: spacing.pageHorizontalMargin }}>
         <Tips />
       </View>
       <CardList
@@ -113,10 +121,23 @@ function ListUpcomingWorkouts({
           );
         }}
         renderItemActions={(session) => {
+          const sessionPlanIndex = plan.sessions.findIndex((x) =>
+            x.equals(session.blueprint),
+          );
+          const handleEditPress = () => {
+            dispatch(setEditingSession(session.blueprint));
+            push(
+              `/(tabs)/settings/manage-workouts/${planId}/manage-session/${sessionPlanIndex}`,
+              { withAnchor: true },
+            );
+          };
           return (
-            <Card.Actions>
+            <Card.Actions style={{ marginTop: spacing[2] }}>
+              {sessionPlanIndex !== -1 && !session.isStarted ? (
+                <IconButton icon={'edit'} onPress={handleEditPress} />
+              ) : undefined}
               <Button
-                mode="text"
+                mode="contained-tonal"
                 icon={'playCircle'}
                 onPress={() => selectSession(session)}
               >
@@ -230,10 +251,13 @@ export default function Index() {
   );
 
   return (
-    <FullHeightScrollView floatingChildren={floatingBottomContainer}>
+    <FullHeightScrollView
+      floatingChildren={floatingBottomContainer}
+      scrollStyle={{ paddingHorizontal: spacing.pageHorizontalMargin }}
+    >
       <Stack.Screen
         options={{
-          title: program.name,
+          title: 'LiftLog',
         }}
       />
       <AndroidNotificationAlert />

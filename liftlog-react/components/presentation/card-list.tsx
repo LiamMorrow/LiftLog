@@ -39,7 +39,6 @@ export default function CardList<T>(props: CardListProps<T>) {
       style={[
         {
           gap: spacing[2],
-          padding: spacing[2],
           flex: 1,
         },
         rest['style'],

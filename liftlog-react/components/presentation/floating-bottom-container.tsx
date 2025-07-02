@@ -14,7 +14,7 @@ export default function FloatingBottomContainer({
       style={{
         flex: 1,
         marginTop: 'auto',
-        padding: spacing[2],
+        padding: spacing.pageHorizontalMargin,
         gap: spacing[2],
         zIndex: 10,
       }}

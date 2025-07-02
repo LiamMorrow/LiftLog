@@ -24,7 +24,10 @@ export default function ExerciseBlueprintSummary({
   return (
     <TouchableRipple
       onPress={onEdit}
-      style={{ paddingHorizontal: spacing[6], paddingVertical: spacing[4] }}
+      style={{
+        paddingHorizontal: spacing.pageHorizontalMargin,
+        paddingVertical: spacing[4],
+      }}
     >
       <View>
         <View

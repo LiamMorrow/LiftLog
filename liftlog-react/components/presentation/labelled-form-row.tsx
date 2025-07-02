@@ -10,11 +10,14 @@ export default function LabelledFormRow(props: {
   label: string;
   children: ReactNode;
   undoFormPadding?: boolean;
+  noGap?: boolean;
 }) {
   const { colors } = useAppTheme();
-  const margin = props.undoFormPadding ? { marginHorizontal: -spacing[6] } : {};
+  const margin = props.undoFormPadding
+    ? { marginHorizontal: -spacing.pageHorizontalMargin }
+    : {};
   return (
-    <View style={{ gap: spacing[3] }}>
+    <View style={{ gap: props.noGap ? undefined! : spacing[3] }}>
       <View
         style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[2] }}
       >

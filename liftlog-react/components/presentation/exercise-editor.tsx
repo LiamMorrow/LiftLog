@@ -79,6 +79,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
             paddingVertical: spacing[5],
             justifyContent: 'center',
           }}
+          mode="contained"
         >
           <Card.Content>
             <FixedIncrementer
@@ -97,6 +98,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
             paddingVertical: spacing[5],
             justifyContent: 'center',
           }}
+          mode="contained"
         >
           <Card.Content>
             <FixedIncrementer
@@ -128,38 +130,34 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
         onChangeText={setExerciseLink}
       />
 
-      <View style={{ gap: spacing[4] }}>
-        <Card mode="elevated">
-          <Card.Content style={{ gap: spacing[6] }}>
-            <EditableIncrementer
-              increment={new BigNumber('0.1')}
-              label={t('ProgressiveOverload')}
-              data-cy="exercist-auto-increase"
-              suffix={weightSuffix}
-              value={exercise.weightIncreaseOnSuccess}
-              onChange={setExerciseWeightIncrease}
-            />
-            <Divider />
-            <View style={{ width: '100%' }}>
-              <ListSwitch
-                headline={t('SupersetNextExercise')}
-                value={exercise.supersetWithNext}
-                supportingText=""
-                data-cy="exercise-superset"
-                onValueChange={(supersetWithNext) =>
-                  updateExercise({ supersetWithNext })
-                }
-              />
-            </View>
-            <Divider />
-            <RestEditorGroup
-              rest={exercise.restBetweenSets}
-              onRestUpdated={(restBetweenSets) =>
-                updateExercise({ restBetweenSets })
-              }
-            />
-          </Card.Content>
-        </Card>
+      <View style={{ gap: spacing[2] }}>
+        <EditableIncrementer
+          increment={new BigNumber('0.1')}
+          label={t('ProgressiveOverload')}
+          data-cy="exercist-auto-increase"
+          suffix={weightSuffix}
+          value={exercise.weightIncreaseOnSuccess}
+          onChange={setExerciseWeightIncrease}
+        />
+        <Divider />
+        <View style={{ width: '100%' }}>
+          <ListSwitch
+            headline={t('SupersetNextExercise')}
+            value={exercise.supersetWithNext}
+            supportingText=""
+            data-cy="exercise-superset"
+            onValueChange={(supersetWithNext) =>
+              updateExercise({ supersetWithNext })
+            }
+          />
+        </View>
+        <Divider />
+        <RestEditorGroup
+          rest={exercise.restBetweenSets}
+          onRestUpdated={(restBetweenSets) =>
+            updateExercise({ restBetweenSets })
+          }
+        />
       </View>
     </View>
   );

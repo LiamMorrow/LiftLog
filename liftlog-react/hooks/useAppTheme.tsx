@@ -16,7 +16,7 @@ import { MsIconSrc } from '@/components/presentation/ms-icon-source';
 import { Blend } from '@material/material-color-utilities';
 
 export const spacing = {
-  pageHorizontalMargin: 8, // spacing[2]
+  pageHorizontalMargin: 16, // spacing[4]
   0: 0,
   0.5: 2,
   1: 4,

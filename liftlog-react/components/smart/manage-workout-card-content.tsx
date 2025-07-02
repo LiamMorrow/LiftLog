@@ -3,12 +3,14 @@ import SessionSummaryTitle from '@/components/presentation/session-summary-title
 import SplitCardControl from '@/components/presentation/split-card-control';
 import { SessionBlueprint } from '@/models/session-models';
 import { useAppSelectorWithArg } from '@/store';
+import { showSnackbar } from '@/store/app';
 import {
   addProgramSession,
   moveSessionBlueprintDownInProgram,
   moveSessionBlueprintUpInProgram,
   removeSessionFromProgram,
   selectProgram,
+  setProgramSessions,
 } from '@/store/program';
 import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
@@ -59,14 +61,37 @@ function Actions({
         sessionBlueprint: sessionBlueprint,
       }),
     );
-  const removeSession = () =>
+  const removeSession = () => {
+    const currentSessions = plan.sessions;
     dispatch(
       removeSessionFromProgram({
         programId,
         sessionBlueprint: sessionBlueprint,
       }),
     );
-  const duplicateSession = () =>
+    dispatch(
+      showSnackbar({
+        text: t('Workout removed'),
+        action: t('Undo'),
+        dispatchAction: setProgramSessions({
+          programId,
+          sessionBlueprints: currentSessions,
+        }),
+      }),
+    );
+  };
+  const duplicateSession = () => {
+    const currentSessions = plan.sessions;
+    dispatch(
+      showSnackbar({
+        text: t('Workout duplicated'),
+        action: t('Undo'),
+        dispatchAction: setProgramSessions({
+          programId,
+          sessionBlueprints: currentSessions,
+        }),
+      }),
+    );
     dispatch(
       addProgramSession({
         programId,
@@ -75,6 +100,7 @@ function Actions({
         }),
       }),
     );
+  };
   return (
     <>
       <IconButton onPress={moveSessionUp} icon={'arrowUpward'} />

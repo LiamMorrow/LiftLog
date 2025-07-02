@@ -157,7 +157,8 @@ function SessionEditor({
         <LabelledFormRow
           label={t('Exercises')}
           icon={'fitnessCenter'}
-          undoFormPadding={true}
+          undoFormPadding
+          noGap
         >
           <ItemList
             items={session.exercises}
@@ -174,7 +175,6 @@ function SessionEditor({
             renderItem={(blueprint, index) => (
               <ExerciseItem
                 blueprint={blueprint}
-                index={index}
                 beginEdit={() => {
                   setSelectedExerciseIndex(index);
                   setSelectedExercise(blueprint);
@@ -233,12 +233,10 @@ function SessionEditor({
 }
 
 function ExerciseItem({
-  index,
   blueprint,
   beginEdit,
   beginRemove,
 }: {
-  index: number;
   blueprint: ExerciseBlueprint;
   beginEdit: () => void;
   beginRemove: () => void;

@@ -60,11 +60,16 @@ export default function ManageWorkouts() {
     </EmptyInfo>
   );
   return (
-    <FullHeightScrollView floatingChildren={floatingBottomContainer}>
+    <FullHeightScrollView
+      floatingChildren={floatingBottomContainer}
+      scrollStyle={{
+        paddingHorizontal: spacing.pageHorizontalMargin,
+      }}
+    >
       <Stack.Screen options={{ title: program.name }} />
       <TextInput
-        style={{ marginHorizontal: spacing[2] }}
         value={program.name}
+        style={{ marginBottom: spacing[2] }}
         mode="flat"
         onChangeText={(name) =>
           dispatch(setSavedPlanName({ programId: programId, name }))
