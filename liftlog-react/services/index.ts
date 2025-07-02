@@ -1,6 +1,8 @@
 import { EncryptionService } from '@/services/encryption-service';
 import { FeedApiService } from '@/services/feed-api';
+import { FeedFollowService } from '@/services/feed-follow-service';
 import { FeedIdentityService } from '@/services/feed-identity-service';
+import { FeedInboxDecryptionService } from '@/services/feed-inbox-decryption-service';
 import { FileExportService } from '@/services/file-export-service';
 import { FilePickerService } from '@/services/file-picker-service';
 import { IKeyValueStore } from '@/services/key-value-store';
@@ -33,6 +35,14 @@ async function createServicesInternal() {
     feedApiService,
     encryptionService,
   );
+  const feedInboxDecryptionService = new FeedInboxDecryptionService(
+    encryptionService,
+    feedApiService,
+  );
+  const feedFollowService = new FeedFollowService(
+    feedApiService,
+    encryptionService,
+  );
   const stringSharer = new StringSharer();
   const fileExportService = new FileExportService();
   const filePickerService = new FilePickerService();
@@ -45,6 +55,8 @@ async function createServicesInternal() {
     sessionService,
     notificationService,
     encryptionService,
+    feedFollowService,
+    feedInboxDecryptionService,
     feedApiService,
     feedIdentityService,
     stringSharer,

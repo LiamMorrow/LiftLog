@@ -97,6 +97,33 @@ const feedSlice = createSlice({
     setIsFetching(state, action: PayloadAction<boolean>) {
       state.isFetching = action.payload;
     },
+    addFollower(state, action: PayloadAction<FeedUser>) {
+      state.followers[action.payload.id] = action.payload.toPOJO();
+    },
+    removeFollower(state, action: PayloadAction<FeedUser>) {
+      delete state.followers[action.payload.id];
+    },
+    removeFollowRequest(state, action: PayloadAction<FollowRequest>) {
+      state.followRequests = state.followRequests.filter(
+        (req) => req.userId !== action.payload.userId,
+      );
+    },
+    replaceFeedFollowedUsers(state, action: PayloadAction<FeedUser[]>) {
+      state.followedUsers = Object.fromEntries(
+        action.payload.map((user) => [user.id, user.toPOJO()]),
+      );
+    },
+    putFollowedUser(state, action: PayloadAction<FeedUser>) {
+      state.followedUsers[action.payload.id] = action.payload.toPOJO();
+    },
+    replaceFeedItems(state, action: PayloadAction<FeedItem[]>) {
+      state.feed = action.payload.map((item) => item.toPOJO());
+    },
+    removeUnpublishedSessionId(state, action: PayloadAction<string>) {
+      state.unpublishedSessionIds = state.unpublishedSessionIds.filter(
+        (id) => id !== action.payload,
+      );
+    },
   },
   selectors: {
     selectSharedItem: createSelector(
@@ -155,6 +182,13 @@ export const {
   setSharedItem,
   addUnpublishedSessionId,
   setIsFetching,
+  addFollower,
+  removeFollower,
+  removeFollowRequest,
+  replaceFeedFollowedUsers,
+  putFollowedUser,
+  replaceFeedItems,
+  removeUnpublishedSessionId,
 } = feedSlice.actions;
 
 export const {
@@ -200,5 +234,40 @@ export const feedApiError = createAction<{
   error: ApiError;
   action: PayloadAction<FeedAction>;
 }>('feedApiError');
+
+export const fetchAndSetSharedFeedUser = createAction<
+  { idOrLookup: string; name?: string } & FeedAction
+>('fetchAndSetSharedFeedUser');
+
+export const requestFollowUser = createAction<FeedAction>('requestFollowUser');
+
+export const processFollowResponses = createAction<{
+  responses: {
+    userId: string;
+    accepted: boolean;
+    aesKey: AesKey | null;
+    followSecret: string | null | undefined;
+  }[];
+}>('processFollowResponses');
+
+export const unfollowFeedUser = createAction<{ feedUser: FeedUser }>(
+  'unfollowFeedUser',
+);
+
+export const acceptFollowRequest = createAction<
+  { request: FollowRequest } & FeedAction
+>('acceptFollowRequest');
+
+export const denyFollowRequest = createAction<
+  { request: FollowRequest } & FeedAction
+>('denyFollowRequest');
+
+export const startRemoveFollower = createAction<
+  { user: FeedUser } & FeedAction
+>('startRemoveFollower');
+
+export const publishUnpublishedSessions = createAction(
+  'publishUnpublishedSessions',
+);
 
 export default feedSlice.reducer;

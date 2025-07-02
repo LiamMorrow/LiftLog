@@ -58,6 +58,10 @@ const storedSessionsSlice = createSlice({
       [(state: StoredSessionState) => state.sessions],
       (sessions) => Object.values(sessions).map((x) => Session.fromPOJO(x)),
     ),
+    selectSession: createSelector(
+      [(state: StoredSessionState) => state.sessions, (_, id: string) => id],
+      (sessions, id) => Session.fromPOJO(sessions[id]),
+    ),
     selectCompletedDistinctSessionNames: createSelector(
       [
         (state: StoredSessionState) => state.sessions,
@@ -99,8 +103,11 @@ export const {
   deleteStoredSession,
 } = storedSessionsSlice.actions;
 
-export const { selectSessions, selectCompletedDistinctSessionNames } =
-  storedSessionsSlice.selectors;
+export const {
+  selectSessions,
+  selectCompletedDistinctSessionNames,
+  selectSession,
+} = storedSessionsSlice.selectors;
 
 export const selectLatestOrderedRecordedExercises = createSelector(
   [

@@ -16,6 +16,8 @@ import { selectActiveProgram } from '@/store/program';
 import { addSharedItemEffects } from '@/store/feed/shared-item-effects';
 import { showSnackbar } from '@/store/app';
 import { addFeedItemEffects } from '@/store/feed/feed-items-effects';
+import { addInboxEffects } from '@/store/feed/inbox-effects';
+import { addFollowingEffects } from '@/store/feed/following-effects';
 
 const StorageKey = 'FeedState';
 export function applyFeedEffects() {
@@ -146,4 +148,6 @@ export function applyFeedEffects() {
 
   addSharedItemEffects();
   addFeedItemEffects();
+  addInboxEffects();
+  addFollowingEffects();
 }

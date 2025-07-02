@@ -28,7 +28,7 @@ import { RemoteData } from '@/models/remote';
 import { uuidStringify } from '@/utils/uuid';
 
 // Converts a UUID DAO to a string
-function fromUuidDao(
+export function fromUuidDao(
   dao: LiftLog.Ui.Models.IUuidDao | null | undefined,
 ): string {
   if (!dao?.value) {
