@@ -14,7 +14,11 @@ import Animated, {
   withTiming,
   interpolate,
 } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
+import { useDispatch } from 'react-redux';
+import {
+  endIncreasingHoldHaptics,
+  startIncreasingHoldHaptics,
+} from '@/store/app';
 
 interface PotentialSetCounterProps {
   set: PotentialSet;
@@ -36,6 +40,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
   const [isHolding, setIsHolding] = useState(false);
   const [isWeightDialogOpen, setIsWeightDialogOpen] = useState(false);
   const repCountValue = props.set?.set?.repsCompleted;
+  const dispatch = useDispatch();
 
   useEffect(() => {
     showWeightAnimatedValue.value = withTiming(props.showWeight ? 1 : 0, {
@@ -76,20 +81,28 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
     transform: [{ scale: holdingScale.value }],
   }));
 
+  const enterHold = () => {
+    setIsHolding(true);
+    dispatch(startIncreasingHoldHaptics());
+  };
+  const exitHold = () => {
+    setIsHolding(false);
+    dispatch(endIncreasingHoldHaptics({ completedHold: false }));
+  };
+
   const callbacks = props.isReadonly
     ? {}
     : ({
         onPress: props.onTap,
         onLongPress: () => {
-          // TODO sick hold vibrations
-          void Haptics.selectionAsync();
+          dispatch(endIncreasingHoldHaptics({ completedHold: true }));
           props.onHold();
         },
-        onTouchStart: () => setIsHolding(true),
-        onPointerDown: () => setIsHolding(true),
-        onPointerUp: () => setIsHolding(false),
-        onPointerLeave: () => setIsHolding(false),
-        onTouchEnd: () => setIsHolding(false),
+        onTouchStart: enterHold,
+        onPointerDown: enterHold,
+        onPointerUp: exitHold,
+        onPointerLeave: exitHold,
+        onTouchEnd: exitHold,
       } satisfies Touchable & Omit<PressableProps, 'children'>);
 
   return (

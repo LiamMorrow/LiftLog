@@ -67,6 +67,13 @@ export const showSnackbar = createAction<
   SnackbarDescriptor & { duration?: number }
 >('snackBarWithAction');
 
+export const startIncreasingHoldHaptics = createAction(
+  'startIncreasingHoldHaptics',
+);
+export const endIncreasingHoldHaptics = createAction<{
+  completedHold: boolean;
+}>('endIncreasingHoldHaptics');
+
 export const {
   setIsHydrated,
   setCanScheduleExactNotifications,
