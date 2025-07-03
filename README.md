@@ -37,6 +37,7 @@ LiftLog is currently available in the following languages:
 - 🇳🇱 Dutch
 - 🇫🇮 Finnish
 - 🇪🇸 Spanish
+- 🇷🇺 Russian
 
 ## Quickstart
 

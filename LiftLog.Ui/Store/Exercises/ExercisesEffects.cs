@@ -17,16 +17,15 @@ public class ExercisesEffects(
     {
         var (builtInExercises, usedExercises) = await (
             builtInExerciseLoader.LoadBuiltInExercisesAsync(),
-            Task.Run(
-                async () =>
-                    await progressRepository
-                        .GetOrderedSessions()
-                        .SelectMany(x =>
-                            x.RecordedExercises.Select(ex => ex.Blueprint.Name).ToAsyncEnumerable()
-                        )
-                        .Distinct()
-                        .Select(DescribedExercise.FromName)
-                        .ToListAsync()
+            Task.Run(async () =>
+                await progressRepository
+                    .GetOrderedSessions()
+                    .SelectMany(x =>
+                        x.RecordedExercises.Select(ex => ex.Blueprint.Name).ToAsyncEnumerable()
+                    )
+                    .Distinct()
+                    .Select(DescribedExercise.FromName)
+                    .ToListAsync()
             )
         );
 

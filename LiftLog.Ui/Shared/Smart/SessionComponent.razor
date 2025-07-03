@@ -22,21 +22,21 @@ else
 {
     <ItemList Items="Session.RecordedExercises.Index()">
         <WeightedExercise
-            @key=context.Index
-            RecordedExercise="context.Item"
-            ToStartNext=@(Session.NextExercise == context.Item)
-            CycleRepCountForSet=CycleRepCountForExerciseSet(context.Index)
-            ShowAdditionalActionsForSet=@(ShowAdditionalActionsForExerciseSet(context.Index))
-            UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index)
-            PreviousRecordedExercises=@(PreviouslyCompleted.GetValueOrDefault(context.Item.Blueprint, []))
-            ToggleExercisePerSetWeight=@(() => ToggleExercisePerSetWeight(context.Index))
-            UpdateWeightForSet=@((setIndex, weight) => UpdateWeightForSet(context.Index, setIndex, weight))
-            UpdateNotesForExercise=@((notes) => UpdateNotesForExercise(context.Index, notes))
-            OnEditExercise=@(() => BeginEditExercise(context.Index))
-            OnRemoveExercise=@(() => BeginRemoveExercise(context.Index))
-            OnOpenLink=@(() => Dispatcher.Dispatch(new OpenExternalUrlAction(context.Item.Blueprint.Link.Trim())))
-            IsReadonly=IsReadonly
-            ShowPreviousButton=@(SessionTarget == SessionTarget.WorkoutSession) />
+        @key=context.Index
+        RecordedExercise="context.Item"
+        ToStartNext=@(Session.NextExercise == context.Item)
+        CycleRepCountForSet=CycleRepCountForExerciseSet(context.Index)
+        ShowAdditionalActionsForSet=@(ShowAdditionalActionsForExerciseSet(context.Index))
+        UpdateWeightForExercise=UpdateWeightForExerciseWrapper(context.Index)
+        PreviousRecordedExercises=@(PreviouslyCompleted.GetValueOrDefault(context.Item.Blueprint, []))
+        ToggleExercisePerSetWeight=@(() => ToggleExercisePerSetWeight(context.Index))
+        UpdateWeightForSet=@((setIndex, weight) => UpdateWeightForSet(context.Index, setIndex, weight))
+        UpdateNotesForExercise=@((notes) => UpdateNotesForExercise(context.Index, notes))
+        OnEditExercise=@(() => BeginEditExercise(context.Index))
+        OnRemoveExercise=@(() => BeginRemoveExercise(context.Index))
+        OnOpenLink=@(() => Dispatcher.Dispatch(new OpenExternalUrlAction(context.Item.Blueprint.Link.Trim())))
+        IsReadonly=IsReadonly
+        ShowPreviousButton=@(SessionTarget == SessionTarget.WorkoutSession) />
     </ItemList>
 }
 @if (ShowBodyweight)
@@ -77,20 +77,20 @@ else
 @if(IsInActiveScreen && !IsReadonly)
 {
     <Microsoft.AspNetCore.Components.Sections.SectionContent SectionName="TrailingTitleButton">
-        <AppButton class="text-lg" Type=AppButtonType.Text OnClick=SaveSession data-cy="save-session-button">
+        <AppButton class="text-lg" Type=AppButtonType.Text OnClick=BeginSaveSession data-cy="save-session-button">
             @(SessionTarget == SessionTarget.WorkoutSession ? UiStrings.Finish : UiStrings.Save)
         </AppButton>
     </Microsoft.AspNetCore.Components.Sections.SectionContent>
 }
 
 <FullScreenDialog
-    @ref=_editExerciseDialog
-    Title=@(_exerciseToEditIndex is null ? UiStrings.AddExercise : UiStrings.EditExercise)
-    Action="@(_exerciseToEditIndex is null ? UiStrings.Add : UiStrings.Update)"
-    OnAction="EditExerciseHandler"
-    OnClose="@(() => _exerciseToEditIndex = null)"
-    >
-        <ExerciseEditor Exercise="editingExerciseBlueprint" UpdateExercise="(ex) => {editingExerciseBlueprint = ex; StateHasChanged();}" />
+@ref=_editExerciseDialog
+Title=@(_exerciseToEditIndex is null ? UiStrings.AddExercise : UiStrings.EditExercise)
+Action="@(_exerciseToEditIndex is null ? UiStrings.Add : UiStrings.Update)"
+OnAction="EditExerciseHandler"
+OnClose="@(() => _exerciseToEditIndex = null)"
+>
+    <ExerciseEditor Exercise="editingExerciseBlueprint" UpdateExercise="(ex) => {editingExerciseBlueprint = ex; StateHasChanged();}" />
 </FullScreenDialog>
 
 <Dialog @ref="setAdditionalActionsDialog" PreventCancel=true>
@@ -100,7 +100,7 @@ else
         var set = exercise.PotentialSets[setAdditionalActions.Value.PotentialSetIndex];
         <span slot="headline" class="select-none">@UiStrings.SelectReps</span>
         <span slot="content" >
-        <PotentialSetAdditionalActions
+            <PotentialSetAdditionalActions
             Set="set"
             MaxReps=exercise.Blueprint.RepsPerSet
             OnSelectRepCount="@((reps)=>{
@@ -152,6 +152,13 @@ else
     </div>
 </Dialog>
 
+<ConfirmationDialog @ref="finishWorkoutDialogue" OkText="@UiStrings.Yes" OnOk="SaveSession">
+    <Headline>@UiStrings.Finish</Headline>
+    <TextContent>
+        <LimitedHtml Value=@(UiStrings.FinishWorkout) />
+    </TextContent>
+</ConfirmationDialog>
+
 @code {
 
     private ExerciseBlueprint editingExerciseBlueprint = ExerciseBlueprint.Default;
@@ -163,6 +170,7 @@ else
     private Dialog? _removeExerciseDialog;
     private Dialog? _updatePlanDialog;
     private Dialog? setAdditionalActionsDialog;
+    private ConfirmationDialog? finishWorkoutDialogue;
 
     private Session Session => SessionTarget switch {
         SessionTarget.WorkoutSession => CurrentSessionState.Value.WorkoutSession,
@@ -340,7 +348,8 @@ else
                         </span>
                     </span>
                 </span>
-            </SnackBar>;
+            </SnackBar>
+    ;
         }
 
         return null;
@@ -379,8 +388,24 @@ else
         }
     }
 
+    private void BeginSaveSession()
+    {
+        // check if workout session has exercises remaining
+        if (SessionTarget == SessionTarget.WorkoutSession && Session?.IsComplete == false)
+        {
+            // display confirmation message
+            finishWorkoutDialogue?.Open();
+        }
+        else
+        {
+            SaveSession();
+        }
+    }
+
     private void SaveSession()
     {
+        finishWorkoutDialogue?.Close();
+
         Dispatcher.Dispatch(new PersistCurrentSessionAction(SessionTarget));
         var id = CurrentSessionState.Value.WorkoutSession?.Id;
         if (Session is not null)

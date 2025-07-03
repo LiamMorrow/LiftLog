@@ -1,35 +1,35 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
-
-    <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <ImplicitUsings>enable</ImplicitUsings>
-
-        <!-- Enums not handled exhaustively with numbers -->
-        <NoWarn>CS8524</NoWarn>
-        <!-- <RunAOTCompilation>true</RunAOTCompilation>
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Enums not handled exhaustively with numbers -->
+    <NoWarn>CS8524</NoWarn>
+    <!-- <RunAOTCompilation>true</RunAOTCompilation>
         <RunAOTCompilationAfterBuild>true</RunAOTCompilationAfterBuild>
         <WasmNativeStrip>false</WasmNativeStrip> -->
-        <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <PackageReference Include="BlazorDownloadFile" Version="2.4.0.2" />
-        <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.*" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.*" PrivateAssets="all" />
-        <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.*" />
-        <PackageReference Include="RealGoodApps.BlazorJavascript.Interop" Version="1.1.0" />
-        <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.8.1">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\LiftLog.Lib\LiftLog.Lib.csproj" />
-        <ProjectReference Include="..\LiftLog.Ui\LiftLog.Ui.csproj" />
-        <Content Update="tsconfig.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />
-    </ItemGroup>
+    <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BlazorDownloadFile" Version="2.4.0.2" />
+    <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.*" />
+    <PackageReference
+      Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+      Version="9.0.*"
+      PrivateAssets="all"
+    />
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.*" />
+    <PackageReference Include="RealGoodApps.BlazorJavascript.Interop" Version="1.1.0" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.8.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LiftLog.Lib\LiftLog.Lib.csproj" />
+    <ProjectReference Include="..\LiftLog.Ui\LiftLog.Ui.csproj" />
+    <Content Update="tsconfig.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />
+  </ItemGroup>
 </Project>

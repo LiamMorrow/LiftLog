@@ -113,13 +113,12 @@ public class OsEncryptionServiceTests
                 encryptedData.EncryptedPayload[0] ^= 0xFF;
 
                 // Assert
-                Assert.ThrowsAsync<SignatureMismatchException>(
-                  async () =>
-                    await sut.DecryptAesCbcAndVerifyRsa256PssAsync(
-                      encryptedData,
-                      key,
-                      rsaKeyPair.PublicKey
-                    )
+                Assert.ThrowsAsync<SignatureMismatchException>(async () =>
+                  await sut.DecryptAesCbcAndVerifyRsa256PssAsync(
+                    encryptedData,
+                    key,
+                    rsaKeyPair.PublicKey
+                  )
                 );
               });
           });

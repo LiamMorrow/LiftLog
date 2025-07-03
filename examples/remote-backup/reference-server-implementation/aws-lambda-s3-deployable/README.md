@@ -10,6 +10,8 @@ This deploys a serverless lambda, written in Node.js which will accept files upl
 
 AWS provides a million lambda invocations a month included in their free tier. The charges for S3 storage is typically a couple of cents per GB and the charges for hits to API Gateway are again, cents per month. It is likely this will cost a few cents per month but it is your responsibility to monitor your AWS bill and ensure you are happy with the costs. Please consider adding an alert or maximum charge on your account for your own peace of mind.
 
+The default for this deployment is to limit requests to 20 per day, with no more than 1 request per second. With 'options' requests, this translates to 10 backups a day. You can adjust these levels by setting new values for the variables `daily_rate_limit` and `limit_per_second` in `terraform.tfvars`. You can also set `enable_rate_limit` to `false` to swap the limits to an extremely high number. We don’t completely remove the usage plan as doing so does not reset a previously breached limit. While it is extremely unlikely for a bad actor to gain access to your API key and endpoint setting, this feature is here as a safeguard in the event that a future bug in the app might cause it to send too many requests.
+
 # Deployment
 
 This deployment uses terraform to deploy the resources described in this repo to AWS for you. What is deployed is recorded in a separate AWS 'bucket' and that allows you to come back at a later date and invoke the terraform `destroy` command to get rid of it all. If an update to this code is released and you pull the changes to your machine, you should be able to upgrade by following the re-deploy steps below.

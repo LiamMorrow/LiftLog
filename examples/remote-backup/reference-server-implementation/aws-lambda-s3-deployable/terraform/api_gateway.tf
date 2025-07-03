@@ -37,7 +37,6 @@ resource "aws_api_gateway_integration" "lambda_integration" {
 # Deploy API Gateway and create a stage
 resource "aws_api_gateway_deployment" "api_deployment" {
   rest_api_id = aws_api_gateway_rest_api.liftlog_api.id
-  stage_name  = "prod"
 
   depends_on = [
     aws_api_gateway_method.post_method,            # Ensure the POST method is created before deployment
@@ -45,12 +44,28 @@ resource "aws_api_gateway_deployment" "api_deployment" {
   ]
 }
 
+resource "aws_api_gateway_stage" "prod_stage" {
+  stage_name    = "prod"
+  rest_api_id   = aws_api_gateway_rest_api.liftlog_api.id
+  deployment_id = aws_api_gateway_deployment.api_deployment.id
+}
+
 # Create an API usage plan
 resource "aws_api_gateway_usage_plan" "liftlog_plan" {
   name = "LiftLogUsagePlan"
   api_stages {
     api_id = aws_api_gateway_rest_api.liftlog_api.id
-    stage  = aws_api_gateway_deployment.api_deployment.stage_name
+    stage  = aws_api_gateway_stage.prod_stage.stage_name
+  }
+
+  quota_settings {
+    limit  = var.enable_rate_limit ? var.daily_rate_limit : 1000000
+    period = "DAY"
+  }
+
+  throttle_settings {
+    rate_limit  = var.enable_rate_limit ? var.limit_per_second : 10000
+    burst_limit = var.enable_rate_limit ? 5 : 10000
   }
 }
 

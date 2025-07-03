@@ -19,6 +19,48 @@ public static class CurrentSessionReducers
     )
     {
         var session = ActiveSession(state, action.Target) ?? throw new Exception();
+        var originalDate = session.Date;
+        var newDate = action.Date;
+        // If the sets cross over multiple days, we want to maintain this change
+        // However usually we want to just update all the sets to be on the same day as the session.
+        var useAbsoluteDate =
+            session
+                .RecordedExercises.SelectMany(re =>
+                    re.PotentialSets.Select(ps => ps.Set?.CompletionDate)
+                )
+                .WhereNotNull()
+                .Distinct()
+                .Count() == 1;
+        DateOnly GetAdjustedDate(DateOnly setDate)
+        {
+            if (useAbsoluteDate)
+            {
+                return newDate;
+            }
+            // This maintains that if a set was completed on a different day (for instance, crossing over midnight)
+            // The relative set time is maintained
+            var dayOffset = setDate.DayNumber - originalDate.DayNumber;
+            return newDate.AddDays(dayOffset);
+        }
+        var s = session.RecordedExercises.Select(re =>
+            re with
+            {
+                PotentialSets = re
+                    .PotentialSets.Select(ps =>
+                        ps with
+                        {
+                            Set =
+                                ps.Set != null
+                                    ? ps.Set with
+                                    {
+                                        CompletionDate = GetAdjustedDate(ps.Set.CompletionDate),
+                                    }
+                                    : null,
+                        }
+                    )
+                    .ToImmutableList(),
+            }
+        );
 
         return WithActiveSession(state, action.Target, session with { Date = action.Date });
     }

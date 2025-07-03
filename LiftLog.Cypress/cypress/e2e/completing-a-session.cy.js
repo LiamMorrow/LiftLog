@@ -28,6 +28,7 @@ describe('Completing a session', () => {
       cy.dialog().find("[dialog-action=save]").click()
 
       cy.get('[data-cy=save-session-button]').click()
+      cy.dialog().find('[data-cy=action-ok]').click()
 
       cy.navigate('History')
 
@@ -179,6 +180,7 @@ describe('Completing a session', () => {
         cy.getA('.repcount').first().click().should('contain.text', '5/5')
 
         cy.get('[data-cy=save-session-button]').click()
+        cy.dialog().find('[data-cy=action-ok]').click()
 
         cy.navigate('History')
 

@@ -1,0 +1,925 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Freeform Session" xml:space="preserve">
+    <value>Произвольная тренировка</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Изменить</value>
+    <comment>Действие редактирования (общий случай)</comment>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>Заметки</value>
+    <comment>Кнопка для редактирования заметок о тренировке</comment>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Удалить</value>
+    <comment>Действие удаления (общий случай)</comment>
+  </data>
+  <data name="Workout" xml:space="preserve">
+    <value>Тренировка</value>
+    <comment>Существительное "тренировка"</comment>
+  </data>
+  <data name="Feed" xml:space="preserve">
+    <value>Лента</value>
+    <comment>Функция ленты активности (аналог "новостной ленты")</comment>
+  </data>
+  <data name="Stats" xml:space="preserve">
+    <value>Статистика</value>
+    <comment>Сокращение от statistics, для нижней панели навигации</comment>
+  </data>
+  <data name="History" xml:space="preserve">
+    <value>История</value>
+    <comment>Завершённые тренировки</comment>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
+  <data name="Statistics" xml:space="preserve">
+    <value>Статистика</value>
+  </data>
+  <data name="Feed_Following" xml:space="preserve">
+    <value>Подписки</value>
+    <comment>Пользователи, на которых вы подписаны</comment>
+  </data>
+  <data name="Feed_Followers" xml:space="preserve">
+    <value>Подписчики</value>
+    <comment>Ваши подписчики в ленте</comment>
+  </data>
+  <data name="SessionInProgress" xml:space="preserve">
+    <value>Тренировка уже начата. Начать новую без сохранения?</value>
+  </data>
+  <data name="ReplaceCurrentSession" xml:space="preserve">
+    <value>Заменить текущую тренировку</value>
+  </data>
+  <data name="NoPlanCreated" xml:space="preserve">
+    <value>План тренировок ещё не создан!</value>
+  </data>
+  <data name="AddWorkouts" xml:space="preserve">
+    <value>Добавить тренировки</value>
+  </data>
+  <data name="SelectAPlan" xml:space="preserve">
+    <value>Выбрать план</value>
+  </data>
+  <data name="UpcomingWorkouts" xml:space="preserve">
+    <value>Предстоящие тренировки</value>
+  </data>
+  <data name="BackUpData" xml:space="preserve">
+    <value>Резервное копирование</value>
+  </data>
+  <data name="BackUpDataReminder" xml:space="preserve">
+    <value>С момента последнего резервного копирования прошло много времени. Настоятельно рекомендуем регулярно создавать резервные копии для предотвращения потери данных. Создать резервную копию сейчас?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Да</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Нет</value>
+  </data>
+  <data name="DontAskAgain" xml:space="preserve">
+    <value>Не спрашивать снова</value>
+  </data>
+  <data name="OpenLink" xml:space="preserve">
+    <value>Открыть ссылку</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Отмена</value>
+    <comment>Глагол (действие отмены)</comment>
+  </data>
+  <data name="Calculating" xml:space="preserve">
+    <value>Вычисление...</value>
+  </data>
+  <data name="NoDataAvailable" xml:space="preserve">
+    <value>Нет данных</value>
+  </data>
+  <data name="TryChangingFilters" xml:space="preserve">
+    <value>Попробуйте изменить фильтры вверху</value>
+  </data>
+  <data name="AverageTimeBetweenSets" xml:space="preserve">
+    <value>Среднее время между подходами</value>
+  </data>
+  <data name="HeaviestLift" xml:space="preserve">
+    <value>Рекордный вес</value>
+  </data>
+  <data name="MostTimeSpent" xml:space="preserve">
+    <value>Максимум времени</value>
+  </data>
+  <data name="AverageSessionLength" xml:space="preserve">
+    <value>Средняя длительность тренировки</value>
+  </data>
+  <data name="Bodyweight" xml:space="preserve">
+    <value>Вес тела</value>
+  </data>
+  <data name="Sessions" xml:space="preserve">
+    <value>Тренировки</value>
+  </data>
+  <data name="NoExercisesFound" xml:space="preserve">
+    <value>Упражнения не найдены</value>
+  </data>
+  <data name="AllTime" xml:space="preserve">
+    <value>За всё время</value>
+  </data>
+  <data name="{NumDays}NumDays" xml:space="preserve">
+    <value>{0} дней</value>
+  </data>
+  <data name="AllSessions" xml:space="preserve">
+    <value>Все тренировки</value>
+  </data>
+  <data name="CurrentSessions" xml:space="preserve">
+    <value>Текущие тренировки</value>
+  </data>
+  <data name="NotPublishingWorkouts" xml:space="preserve">
+    <value>Вы не публикуете тренировки</value>
+  </data>
+  <data name="StartPublishing" xml:space="preserve">
+    <value>Начать публикацию</value>
+  </data>
+  <data name="NothingHereYet" xml:space="preserve">
+    <value>Пока ничего нет!</value>
+  </data>
+  <data name="NoFollowingData" xml:space="preserve">
+    <value>Ваши подписки ещё ничего не опубликовали! Загляните позже.</value>
+  </data>
+  <data name="StartFollowingSomeone" xml:space="preserve">
+    <value>Начните подписываться!</value>
+  </data>
+  <data name="NotFollowingAnyone" xml:space="preserve">
+    <value>У вас пока нет подписок. Попросите друга прислать ссылку для подключения!</value>
+  </data>
+  <data name="NobodyFollowingYou" xml:space="preserve">
+    <value>У вас пока нет подписчиков!</value>
+  </data>
+  <data name="ShareLinkToGetFollowers" xml:space="preserve">
+    <value>Поделитесь ссылкой, чтобы привлечь подписчиков</value>
+  </data>
+  <data name="Unfollow" xml:space="preserve">
+    <value>Отписаться</value>
+  </data>
+  <data name="UnfollowUser" xml:space="preserve">
+    <value>Отписаться от пользователя</value>
+  </data>
+  <data name="RemoveFollower" xml:space="preserve">
+    <value>Удалить подписчика</value>
+  </data>
+  <data name="RemoveFollowerMsgPart1" xml:space="preserve">
+    <value>Это действие отменит подписку</value>
+  </data>
+  <data name="RemoveFollowerMsgPart2" xml:space="preserve">
+    <value>и удалит весь ваш контент с его устройства.</value>
+  </data>
+  <data name="Unfollow{User}Msg" xml:space="preserve">
+    <value>Вы отпишетесь от &lt;em&gt;{0}&lt;/em&gt;, и весь их контент будет удалён с вашего устройства.</value>
+  </data>
+  <data name="SessionContainsNoExercises" xml:space="preserve">
+    <value>В тренировке нет упражнений.</value>
+  </data>
+  <data name="UpdatePlan" xml:space="preserve">
+    <value>Обновить план</value>
+  </data>
+  <data name="AddExercise" xml:space="preserve">
+    <value>Добавить упражнение</value>
+  </data>
+  <data name="Finish" xml:space="preserve">
+    <value>Завершить</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="EditExercise" xml:space="preserve">
+    <value>Редактировать упражнение</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="SelectReps" xml:space="preserve">
+    <value>Выбрать повторения</value>
+  </data>
+  <data name="RemoveExerciseQuestion" xml:space="preserve">
+    <value>Удалить упражнение?</value>
+  </data>
+  <data name="RemoveExerciseMessage" xml:space="preserve">
+    <value>Упражнение будет удалено из текущей тренировки. Будущие тренировки не изменятся.</value>
+  </data>
+  <data name="UpdateExistingWorkout{Name}" xml:space="preserve">
+    <value>Обновить существующую тренировку &lt;em&gt;{0}&lt;/em&gt; или добавить новую?</value>
+  </data>
+  <data name="PlanWillBeUpdated" xml:space="preserve">
+    <value>План будет обновлён с учётом упражнений текущей тренировки.</value>
+  </data>
+  <data name="Exercise" xml:space="preserve">
+    <value>Упражнение</value>
+    <comment>Существительное "упражнение"</comment>
+  </data>
+  <data name="Sets" xml:space="preserve">
+    <value>Подходы</value>
+    <comment>Количество подходов в упражнении</comment>
+  </data>
+  <data name="Reps" xml:space="preserve">
+    <value>Повторения</value>
+    <comment>Количество повторений в упражнении</comment>
+  </data>
+  <data name="PlanNotes" xml:space="preserve">
+    <value>Заметки к плану</value>
+  </data>
+  <data name="SessionNotes" xml:space="preserve">
+    <value>Заметки к тренировке</value>
+  </data>
+  <data name="ExternalLink" xml:space="preserve">
+    <value>Внешняя ссылка</value>
+    <comment>HTTPS-ссылка вне приложения</comment>
+  </data>
+  <data name="ProgressiveOverload" xml:space="preserve">
+    <value>Прогрессивная перегрузка</value>
+  </data>
+  <data name="SupersetNextExercise" xml:space="preserve">
+    <value>Суперсет со следующим упражнением</value>
+  </data>
+  <data name="RestShort" xml:space="preserve">
+    <value>Короткий</value>
+    <comment>Короткий отдых</comment>
+  </data>
+  <data name="RestMedium" xml:space="preserve">
+    <value>Средний</value>
+    <comment>Средний отдых</comment>
+  </data>
+  <data name="RestLong" xml:space="preserve">
+    <value>Длинный</value>
+    <comment>Длительный отдых</comment>
+  </data>
+  <data name="Custom" xml:space="preserve">
+    <value>Свой вариант</value>
+    <comment>Пользовательская настройка</comment>
+  </data>
+  <data name="MinRest" xml:space="preserve">
+    <value>Мин. отдых</value>
+  </data>
+  <data name="MaxRest" xml:space="preserve">
+    <value>Макс. отдых</value>
+  </data>
+  <data name="FailureRest" xml:space="preserve">
+    <value>Отдых при отказе</value>
+  </data>
+  <data name="RestSingular{Time}" xml:space="preserve">
+    <value>Отдых &lt;em&gt;{0}&lt;/em&gt;</value>
+  </data>
+  <data name="RestBetween{Time1}{Time2}" xml:space="preserve">
+    <value>Отдых от &lt;em&gt;{0}&lt;/em&gt; до &lt;em&gt;{1}&lt;/em&gt;</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Дата</value>
+    <comment>Календарная дата</comment>
+  </data>
+  <data name="CompleteAndComeBack" xml:space="preserve">
+    <value>Проведите тренировку и проверьте снова.</value>
+  </data>
+  <data name="NoSessionsInMonth{Month}" xml:space="preserve">
+    <value>За {0} записей нет&lt;br&gt;Проведите тренировку или выберите другой месяц.</value>
+  </data>
+  <data name="DeleteSessionMessage{SessionName}{Date}" xml:space="preserve">
+    <value>Тренировка &lt;em&gt;{0}&lt;/em&gt; за {1} будет удалена из истории. Это необратимо.</value>
+  </data>
+  <data name="DeleteSessionQuestion" xml:space="preserve">
+    <value>Удалить тренировку?</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="ManagePlans" xml:space="preserve">
+    <value>Управление планами</value>
+  </data>
+  <data name="ManagePlansSubtitle" xml:space="preserve">
+    <value>Настройте планы тренировок</value>
+  </data>
+  <data name="AppConfiguration" xml:space="preserve">
+    <value>Настройки приложения</value>
+  </data>
+  <data name="AppConfigurationSubtitle" xml:space="preserve">
+    <value>Единицы веса, тема и другие параметры</value>
+  </data>
+  <data name="Notifications" xml:space="preserve">
+    <value>Уведомления</value>
+  </data>
+  <data name="NotificationsSubtitle" xml:space="preserve">
+    <value>Настройки уведомлений для таймера отдыха</value>
+  </data>
+  <data name="ExportBackupRestore" xml:space="preserve">
+    <value>Экспорт и восстановление</value>
+  </data>
+  <data name="ExportBackupRestoreSubtitle" xml:space="preserve">
+    <value>Создание резервных копий для переноса на другие устройства</value>
+  </data>
+  <data name="FeatureRequest" xml:space="preserve">
+    <value>Запрос функции</value>
+  </data>
+  <data name="FeatureRequestSubtitle" xml:space="preserve">
+    <value>Предложите новую функцию для LiftLog!</value>
+  </data>
+  <data name="BugReport" xml:space="preserve">
+    <value>Сообщение об ошибке</value>
+  </data>
+  <data name="BugReportSubtitle" xml:space="preserve">
+    <value>Сообщите об обнаруженной ошибке</value>
+  </data>
+  <data name="AppInfo" xml:space="preserve">
+    <value>О приложении</value>
+  </data>
+  <data name="AppInfoSubtitle" xml:space="preserve">
+    <value>Информация о приложении</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Закрыть</value>
+    <comment>Закрытие диалогового окна</comment>
+  </data>
+  <data name="SavedPlans" xml:space="preserve">
+    <value>Сохранённые планы</value>
+  </data>
+  <data name="AddPlan" xml:space="preserve">
+    <value>Добавить план</value>
+  </data>
+  <data name="SelectedPlan{Plan}" xml:space="preserve">
+    <value>Выбран &lt;em&gt;{0}&lt;/em&gt;</value>
+  </data>
+  <data name="RestNotifications" xml:space="preserve">
+    <value>Уведомления об отдыхе</value>
+    <comment>Переключатель уведомлений таймера</comment>
+  </data>
+  <data name="RestNotificationsSubtitle" xml:space="preserve">
+    <value>Уведомлять по окончании отдыха</value>
+  </data>
+  <data name="PlanName" xml:space="preserve">
+    <value>Название плана</value>
+  </data>
+  <data name="NoWorkoutsInPlan" xml:space="preserve">
+    <value>В плане нет тренировок&lt;br&gt;Добавьте тренировку для начала.</value>
+  </data>
+  <data name="AddWorkout" xml:space="preserve">
+    <value>Добавить тренировку</value>
+  </data>
+  <data name="UseWorkout" xml:space="preserve">
+    <value>Использовать</value>
+  </data>
+  <data name="ManageWorkout{Workout}" xml:space="preserve">
+    <value>Управление {0}</value>
+  </data>
+  <data name="WorkoutName" xml:space="preserve">
+    <value>Название тренировки</value>
+  </data>
+  <data name="WorkoutNotes" xml:space="preserve">
+    <value>Заметки к тренировке</value>
+  </data>
+  <data name="NoExercisesAdded" xml:space="preserve">
+    <value>Упражнения не добавлены</value>
+  </data>
+  <data name="Exercises" xml:space="preserve">
+    <value>Упражнения</value>
+    <comment>Множественное число</comment>
+  </data>
+  <data name="RemoveExerciseFromWorkoutMessage{Exercise}{Session}" xml:space="preserve">
+    <value>Упражнение &lt;em&gt;{0}&lt;/em&gt; будет удалено из &lt;em&gt;{1}&lt;/em&gt;.</value>
+  </data>
+  <data name="BackUpDataSubtitle" xml:space="preserve">
+    <value>Экспорт данных в файл для резервирования</value>
+  </data>
+  <data name="RestoreData" xml:space="preserve">
+    <value>Восстановить данные</value>
+  </data>
+  <data name="RestoreDataSubtitle" xml:space="preserve">
+    <value>Импорт данных из файла</value>
+  </data>
+  <data name="AutomaticRemoteBackup" xml:space="preserve">
+    <value>Автономное резервное копирование</value>
+  </data>
+  <data name="PlaintextExport" xml:space="preserve">
+    <value>Текстовый экспорт</value>
+  </data>
+  <data name="PlaintextExportSubtitle" xml:space="preserve">
+    <value>Экспорт в текстовом формате (CSV) для других приложений</value>
+  </data>
+  <data name="AutomaticRemoteBackupSubtitle" xml:space="preserve">
+    <value>Отправка копий на удалённый сервер (для опытных)</value>
+  </data>
+  <data name="ImportFeedDataQuestion" xml:space="preserve">
+    <value>Импортировать данные ленты?</value>
+  </data>
+  <data name="ImportFeedDataQuestionMessage" xml:space="preserve">
+    <value>Эта копия содержит данные ленты. Импортировать?&lt;br&gt;Без резервной копии вы потеряете текущий аккаунт.&lt;br&gt;&lt;em&gt;Внимание! Это заменит текущий аккаунт безвозвратно!&lt;/em&gt;</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Импортировать</value>
+  </data>
+  <data name="IncludeFeed" xml:space="preserve">
+    <value>Включить ленту</value>
+    <comment>Добавить данные ленты в копию</comment>
+  </data>
+  <data name="JustMyData" xml:space="preserve">
+    <value>Только мои данные</value>
+    <comment>Без данных ленты</comment>
+  </data>
+  <data name="BackupFeedAccount" xml:space="preserve">
+    <value>Резервирование аккаунта</value>
+  </data>
+  <data name="BackupFeedAccountMessage" xml:space="preserve">
+    <value>Включить аккаунт ленты и подписки в копию?&lt;br&gt;&lt;em&gt;Внимание: владелец копии сможет публиковать контент от вашего имени&lt;/em&gt;</value>
+  </data>
+  <data name="UseImperialUnits" xml:space="preserve">
+    <value>Использовать имперские единицы</value>
+  </data>
+  <data name="UseImperialUnitsSubtitle" xml:space="preserve">
+    <value>Фунты вместо килограммов</value>
+  </data>
+  <data name="SetFirstDayOfWeek" xml:space="preserve">
+    <value>Первый день недели</value>
+  </data>
+  <data name="SetFirstDayOfWeekSubtitle" xml:space="preserve">
+    <value>Настройка для календаря</value>
+  </data>
+  <data name="ShowBodyweight" xml:space="preserve">
+    <value>Отслеживать вес тела</value>
+  </data>
+  <data name="ShowBodyweightSubtitle" xml:space="preserve">
+    <value>Включить статистику веса тела</value>
+  </data>
+  <data name="ShowFeed" xml:space="preserve">
+    <value>Показывать ленту</value>
+  </data>
+  <data name="ShowFeedSubtitle" xml:space="preserve">
+    <value>Отображение ленты в навигации</value>
+  </data>
+  <data name="ShowTips" xml:space="preserve">
+    <value>Показывать подсказки</value>
+  </data>
+  <data name="ShowTipsSubtitle" xml:space="preserve">
+    <value>Советы по использованию приложения</value>
+  </data>
+  <data name="ResetTips" xml:space="preserve">
+    <value>Сбросить подсказки</value>
+  </data>
+  <data name="PlaintextExportDescription" xml:space="preserve">
+    <value>Экспорт данных в текстовом формате (CSV) для других приложений. Не предназначен для резервирования. Для бэкапа используйте соответствующую функцию. LiftLog не восстанавливает данные из текстового экспорта.</value>
+  </data>
+  <data name="ReadDocumentation" xml:space="preserve">
+    <value>Документация</value>
+  </data>
+  <data name="PlaintextExportFormat" xml:space="preserve">
+    <value>Формат</value>
+    <comment>Тип формата экспорта</comment>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Экспортировать</value>
+  </data>
+  <data name="RemoteBackupDescription" xml:space="preserve">
+    <value>Продвинутая функция отправки резервных копий на удалённый сервер.&lt;br&gt;Инструкции по настройке сервера смотрите в документации.</value>
+  </data>
+  <data name="Endpoint" xml:space="preserve">
+    <value>Конечная точка</value>
+  </data>
+  <data name="ApiKey" xml:space="preserve">
+    <value>API-ключ</value>
+  </data>
+  <data name="BackupFeedAccountSubtitle" xml:space="preserve">
+    <value>Включать данные аккаунта в копии</value>
+  </data>
+  <data name="Test" xml:space="preserve">
+    <value>Проверить</value>
+    <comment>Тест подключения</comment>
+  </data>
+  <data name="GeneratingAiPlan" xml:space="preserve">
+    <value>Генерация плана ИИ...&lt;br&gt;&lt;em&gt;Может занять до 3 минут&lt;/em&gt;</value>
+  </data>
+  <data name="NoteAboutTweakingAiPlan" xml:space="preserve">
+    <value>Примечание: после принятия план можно настроить в разделе "Управление планами".</value>
+  </data>
+  <data name="Accept" xml:space="preserve">
+    <value>Принять</value>
+  </data>
+  <data name="Regenerate" xml:space="preserve">
+    <value>Создать заново</value>
+    <comment>Повторная генерация плана ИИ</comment>
+  </data>
+  <data name="Retry" xml:space="preserve">
+    <value>Повторить</value>
+    <comment>Повторная попытка</comment>
+  </data>
+  <data name="AiPlanner" xml:space="preserve">
+    <value>ИИ планировщик</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Назад</value>
+    <comment>Возврат на предыдущий экран</comment>
+  </data>
+  <data name="AddToPlan" xml:space="preserve">
+    <value>Добавить в план</value>
+    <comment>Добавление тренировки в план</comment>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Начать</value>
+    <comment>Начать тренировку</comment>
+  </data>
+  <data name="Generate" xml:space="preserve">
+    <value>Создать</value>
+    <comment>Генерация плана ИИ</comment>
+  </data>
+  <data name="SelectAtLeastOneArea" xml:space="preserve">
+    <value>Выберите хотя бы одну группу мышц</value>
+    <comment>Область тренировки (мышечная группа)</comment>
+  </data>
+  <data name="AiSessionCreator" xml:space="preserve">
+    <value>Генератор тренировок ИИ</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Тема оформления</value>
+    <comment>Цветовая схема приложения</comment>
+  </data>
+  <data name="Default" xml:space="preserve">
+    <value>По умолчанию</value>
+    <comment>Стандартная настройка</comment>
+  </data>
+  <data name="AdditionalInformationLabel" xml:space="preserve">
+    <value>Дополнительная информация</value>
+  </data>
+  <data name="AdditionalInformationExtra" xml:space="preserve">
+    <value>Цели, травмы, доступное оборудование и т.д.</value>
+  </data>
+  <data name="HowOldAreYou" xml:space="preserve">
+    <value>Укажите ваш возраст</value>
+  </data>
+  <data name="SelectAtLeastOneGoal" xml:space="preserve">
+    <value>Выберите хотя бы одну цель</value>
+  </data>
+  <data name="SelectNumberOfDays" xml:space="preserve">
+    <value>Выберите количество тренировочных дней в неделю</value>
+  </data>
+  <data name="WhatIsYourGender" xml:space="preserve">
+    <value>Выберите ваш пол</value>
+  </data>
+  <data name="GenderFemale" xml:space="preserve">
+    <value>Женский</value>
+  </data>
+  <data name="GenderMale" xml:space="preserve">
+    <value>Мужской</value>
+  </data>
+  <data name="GenderOther" xml:space="preserve">
+    <value>Другой</value>
+    <comment>Пол, отличный от мужского/женского</comment>
+  </data>
+  <data name="GenderPreferNotToSay" xml:space="preserve">
+    <value>Предпочитаю не указывать</value>
+    <comment>Отказ от указания пола</comment>
+  </data>
+  <data name="WhatAreYourGoals" xml:space="preserve">
+    <value>Выберите цели</value>
+  </data>
+  <data name="Toning" xml:space="preserve">
+    <value>Тонизирование</value>
+    <comment>Повышение мышечного тонуса</comment>
+  </data>
+  <data name="LosingWeight" xml:space="preserve">
+    <value>Снижение веса</value>
+  </data>
+  <data name="GainingMuscle" xml:space="preserve">
+    <value>Набор мышечной массы</value>
+  </data>
+  <data name="Strength" xml:space="preserve">
+    <value>Развитие силы</value>
+  </data>
+  <data name="WhatIsYourExperienceLevel" xml:space="preserve">
+    <value>Выберите ваш уровень подготовки</value>
+  </data>
+  <data name="ExperienceProfessional" xml:space="preserve">
+    <value>Профессионал</value>
+  </data>
+  <data name="ExperienceAdvanced" xml:space="preserve">
+    <value>Продвинутый</value>
+  </data>
+  <data name="ExperienceIntermediate" xml:space="preserve">
+    <value>Средний</value>
+  </data>
+  <data name="ExperienceBeginner" xml:space="preserve">
+    <value>Новичок</value>
+  </data>
+  <data name="One" xml:space="preserve">
+    <value>Один</value>
+  </data>
+  <data name="Two" xml:space="preserve">
+    <value>Два</value>
+  </data>
+  <data name="Three" xml:space="preserve">
+    <value>Три</value>
+  </data>
+  <data name="Four" xml:space="preserve">
+    <value>Четыре</value>
+  </data>
+  <data name="Five" xml:space="preserve">
+    <value>Пять</value>
+  </data>
+  <data name="Six" xml:space="preserve">
+    <value>Шесть</value>
+  </data>
+  <data name="Seven" xml:space="preserve">
+    <value>Семь</value>
+  </data>
+  <data name="HowManyDaysPerWeek" xml:space="preserve">
+    <value>Тренировочных дней в неделю?</value>
+  </data>
+  <data name="HowMuchDoYouWeigh" xml:space="preserve">
+    <value>Напишите свой вес</value>
+  </data>
+  <data name="Arms" xml:space="preserve">
+    <value>Руки</value>
+  </data>
+  <data name="Chest" xml:space="preserve">
+    <value>Грудь</value>
+  </data>
+  <data name="BackMuscle" xml:space="preserve">
+    <value>Спина</value>
+    <comment>Мышцы спины</comment>
+  </data>
+  <data name="Legs" xml:space="preserve">
+    <value>Ноги</value>
+  </data>
+  <data name="Triceps" xml:space="preserve">
+    <value>Трицепсы</value>
+  </data>
+  <data name="Biceps" xml:space="preserve">
+    <value>Бицепсы</value>
+  </data>
+  <data name="Quads" xml:space="preserve">
+    <value>Квадрицепсы</value>
+  </data>
+  <data name="Hamstrings" xml:space="preserve">
+    <value>Бицепсы бёдер</value>
+  </data>
+  <data name="Calves" xml:space="preserve">
+    <value>Икры</value>
+  </data>
+  <data name="WhatAreYouWorkingOut" xml:space="preserve">
+    <value>Что тренируем?</value>
+  </data>
+  <data name="HowMuchVolume" xml:space="preserve">
+    <value>Объём нагрузки?</value>
+  </data>
+  <data name="VolumeLight" xml:space="preserve">
+    <value>Лёгкий</value>
+    <comment>Низкая нагрузка</comment>
+  </data>
+  <data name="VolumeMedium" xml:space="preserve">
+    <value>Средний</value>
+    <comment>Умеренная нагрузка</comment>
+  </data>
+  <data name="VolumeHeavy" xml:space="preserve">
+    <value>Высокий</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>ОК</value>
+  </data>
+  <data name="FeedUserCompletedAWorkout{UserName}" xml:space="preserve">
+    <value>&lt;em&gt;{0}&lt;/em&gt; завершил(а) тренировку!</value>
+  </data>
+  <data name="AnonymousUser" xml:space="preserve">
+    <value>Аноним</value>
+  </data>
+  <data name="AwaitingResponse" xml:space="preserve">
+    <value>Ожидание ответа</value>
+  </data>
+  <data name="Nickname" xml:space="preserve">
+    <value>Имя</value>
+  </data>
+  <data name="ViewTheirPlan" xml:space="preserve">
+    <value>Посмотреть их план</value>
+  </data>
+  <data name="UserIsFollowingYou{User}" xml:space="preserve">
+    <value>&lt;em&gt;{0}&lt;/em&gt; подписался(ась) на вас!</value>
+  </data>
+  <data name="FollowUserBack{User}" xml:space="preserve">
+    <value>Подписаться на {0}</value>
+  </data>
+  <data name="UserWantsToFollowYou{User}" xml:space="preserve">
+    <value>&lt;em&gt;{0}&lt;/em&gt; хочет подписаться на вас!</value>
+  </data>
+  <data name="Deny" xml:space="preserve">
+    <value>Отклонить</value>
+  </data>
+  <data name="GenericLoading" xml:space="preserve">
+    <value>Загрузка...</value>
+  </data>
+  <data name="Duplicate" xml:space="preserve">
+    <value>Дублировать</value>
+  </data>
+  <data name="NeverDoneThisExerciseBefore" xml:space="preserve">
+    <value>Вы никогда не выполняли это упражнение</value>
+  </data>
+  <data name="Share" xml:space="preserve">
+    <value>Поделиться</value>
+  </data>
+  <data name="EditedOn{Date}" xml:space="preserve">
+    <value>Изменено: {0}</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Активно</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Поиск</value>
+  </data>
+  <data name="Weight" xml:space="preserve">
+    <value>Вес</value>
+  </data>
+  <data name="EnableNotificationsQuestion" xml:space="preserve">
+    <value>Включить уведомления?</value>
+  </data>
+  <data name="AndroidNotificationPermissionExplanation" xml:space="preserve">
+    <value>Новые устройства Android требуют дополнительного разрешения для своевременных уведомлений об окончании отдыха. Без него уведомления будут приходить с задержкой. На следующем экране предоставьте LiftLog необходимое разрешение.</value>
+  </data>
+  <data name="EnjoyingLiftLogQuestion" xml:space="preserve">
+    <value>Нравится LiftLog?</value>
+  </data>
+  <data name="EnjoyingLiftLogMessage{Type}{Store}" xml:space="preserve">
+    <value>Не могли бы вы оставить {0} на {1}?</value>
+  </data>
+  <data name="NotNow" xml:space="preserve">
+    <value>Не сейчас</value>
+  </data>
+  <data name="Rate" xml:space="preserve">
+    <value>Оценить</value>
+  </data>
+  <data name="Never" xml:space="preserve">
+    <value>Никогда</value>
+  </data>
+  <data name="GithubStar" xml:space="preserve">
+    <value>звезду</value>
+    <comment>Оценка на GitHub</comment>
+  </data>
+  <data name="Review" xml:space="preserve">
+    <value>отзыв</value>
+    <comment>Отзыв в магазине приложений</comment>
+  </data>
+  <data name="Optional" xml:space="preserve">
+    <value>Необязательно</value>
+  </data>
+  <data name="YourName" xml:space="preserve">
+    <value>Ваше имя</value>
+  </data>
+  <data name="PublishWorkout" xml:space="preserve">
+    <value>Публиковать тренировки</value>
+  </data>
+  <data name="PublishBodyweight" xml:space="preserve">
+    <value>Публиковать вес тела</value>
+  </data>
+  <data name="PublishPlan" xml:space="preserve">
+    <value>Публиковать план</value>
+  </data>
+  <data name="PublishWorkoutSubtitle" xml:space="preserve">
+    <value>Публиковать завершённые тренировки</value>
+  </data>
+  <data name="PublishPlanSubtitle" xml:space="preserve">
+    <value>Публикация плана для подписчиков</value>
+  </data>
+  <data name="PublishBodyweightSubtitle" xml:space="preserve">
+    <value>Публиковать вес тела с тренировками</value>
+  </data>
+  <data name="ResetAccount" xml:space="preserve">
+    <value>Сбросить аккаунт</value>
+  </data>
+  <data name="ResetAccountMessage" xml:space="preserve">
+    <value>Это удалит ваши данные с серверов и отпишет вас от всех лент. Для повторного обмена нужно создать новую ссылку.</value>
+  </data>
+  <data name="OnlyThoseWithTheLinkCanSee" xml:space="preserve">
+    <value>Только люди с ссылкой увидят ваш контент.</value>
+  </data>
+  <data name="ShareLink" xml:space="preserve">
+    <value>Поделиться ссылкой</value>
+  </data>
+  <data name="Unlock" xml:space="preserve">
+    <value>Разблокировать</value>
+  </data>
+  <data name="ProFeatures" xml:space="preserve">
+    <value>Pro-функции</value>
+  </data>
+  <data name="AiPlannerSubtitle" xml:space="preserve">
+    <value>Персональная программа тренировок от ИИ</value>
+  </data>
+  <data name="AiSessionCreatorSubtitle" xml:space="preserve">
+    <value>Создание тренировки для добавления в план или выполнения</value>
+  </data>
+  <data name="UpgradeToPro" xml:space="preserve">
+    <value>Перейти на Pro</value>
+  </data>
+  <data name="UpgradeToProDescription" xml:space="preserve">
+    <value>Доступ к ИИ-планировщику, создающему персональную программу. &lt;br&gt;Единоразовая оплата:</value>
+    <comment>Цена будет указана следом</comment>
+  </data>
+  <data name="Upgrade" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="PlanSharedWithYou" xml:space="preserve">
+    <value>Этот план был вам предоставлен.</value>
+  </data>
+  <data name="SharedPlan" xml:space="preserve">
+    <value>Общий план</value>
+  </data>
+  <data name="SettingsSaved" xml:space="preserve">
+    <value>Настройки сохранены</value>
+  </data>
+  <data name="BackupSentSuccessfully" xml:space="preserve">
+    <value>Резервная копия создана успешно</value>
+  </data>
+  <data name="FailedToBackupToRemote" xml:space="preserve">
+    <value>Ошибка резервного копирования на сервер</value>
+  </data>
+  <data name="ImportTheirPlan" xml:space="preserve">
+    <value>Импортировать их план</value>
+  </data>
+  <data name="ImportTheirPlanMessage{user}" xml:space="preserve">
+    <value>Будет импортирован план &lt;em&gt;{0}&lt;/em&gt;. Ваш текущий план останется без изменений.</value>
+  </data>
+  <data name="Translation" xml:space="preserve">
+    <value>Предложить перевод</value>
+  </data>
+  <data name="TranslationSubtitle" xml:space="preserve">
+    <value>Предложите улучшения перевода!</value>
+  </data>
+  <data name="ManageWorkoutTitle" xml:space="preserve">
+    <value>Управление тренировкой</value>
+  </data>
+  <data name="BackupReminders" xml:space="preserve">
+    <value>Напоминания о резервном копировании</value>
+  </data>
+  <data name="BackupRemindersSubtitle" xml:space="preserve">
+    <value>Напоминать о резервном копировании при долгом перерыве</value>
+  </data>
+  <data name="SplitWeightByDefault" xml:space="preserve">
+    <value>Отдельный вес для подхода</value>
+  </data>
+  <data name="SplitWeightByDefaultSubtitle" xml:space="preserve">
+    <value>Задавать вес для каждого подхода отдельно</value>
+  </data>
+  <data name="PlansPageTitle" xml:space="preserve">
+    <value>Планы</value>
+    <comment>Заголовок страницы планов</comment>
+  </data>
+  <data name="NewPlanDefaultName" xml:space="preserve">
+    <value>Новый план</value>
+  </data>
+  <data name="FinishWorkout" xml:space="preserve">
+    <value>Вы уверены, что хотите завершить тренировку?</value>
+  </data>
+</root>
