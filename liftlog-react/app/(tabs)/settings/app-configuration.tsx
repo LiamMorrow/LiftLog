@@ -11,7 +11,6 @@ import {
   setShowBodyweight,
   setShowFeed,
   setShowTips,
-  setSplitWeightByDefault,
   setUseImperialUnits,
 } from '@/store/settings';
 import { formatDate, getDateOnDay } from '@/utils/format-date';
@@ -100,13 +99,6 @@ export default function AppConfiguration() {
           supportingText={<T keyName="ShowBodyweightSubtitle" />}
           value={settings.showBodyweight}
           onValueChange={(value) => dispatch(setShowBodyweight(value))}
-        />
-        <ListSwitch
-          data-cy="split-weight-toggle"
-          headline={<T keyName="SplitWeightByDefault" />}
-          supportingText={<T keyName="SplitWeightByDefaultSubtitle" />}
-          value={settings.splitWeightByDefault}
-          onValueChange={(value) => dispatch(setSplitWeightByDefault(value))}
         />
         <ListSwitch
           headline={<T keyName="ShowFeed" />}

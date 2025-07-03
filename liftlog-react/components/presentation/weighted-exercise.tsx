@@ -3,7 +3,7 @@ import PotentialSetCounter from '@/components/presentation/potential-set-counter
 import { spacing } from '@/hooks/useAppTheme';
 import { RecordedExercise } from '@/models/session-models';
 import BigNumber from 'bignumber.js';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { View } from 'react-native';
 import {
   Button,
@@ -14,16 +14,10 @@ import {
   TextInput,
 } from 'react-native-paper';
 import { T, useTranslate } from '@tolgee/react';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  interpolate,
-} from 'react-native-reanimated';
+
 import PotentialSetAdditionalActionsDialog from '@/components/presentation/potential-sets-addition-actions-dialog';
 import PreviousExerciseViewer from '@/components/presentation/previous-exercixe-viewer';
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
-import WeightDisplay from '@/components/presentation/weight-display';
 import ExerciseNotesDisplay from '@/components/presentation/exercise-notes-display';
 
 interface WeightedExerciseProps {
@@ -40,66 +34,7 @@ interface WeightedExerciseProps {
   updateNotesForExercise: (notes: string) => void;
   onOpenLink: (link: string) => void;
   onEditExercise: () => void;
-  togglePerSepWeight: () => void;
   onRemoveExercise: () => void;
-}
-
-function AnimatedWeightDisplay(
-  props: Pick<
-    WeightedExerciseProps,
-    'isReadonly' | 'recordedExercise' | 'updateWeightForExercise'
-  >,
-) {
-  const { recordedExercise } = props;
-
-  const sizeAnimatedValue = useSharedValue(1);
-
-  useEffect(() => {
-    sizeAnimatedValue.value = withTiming(
-      recordedExercise.perSetWeight ? 0 : 1,
-      {
-        duration: 150,
-      },
-    );
-  }, [recordedExercise.perSetWeight, sizeAnimatedValue]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    alignSelf: 'flex-start',
-    marginHorizontal: interpolate(
-      sizeAnimatedValue.value,
-      [0, 1],
-      [-spacing[3], -spacing[3]],
-    ),
-    marginTop: interpolate(
-      sizeAnimatedValue.value,
-      [0, 1],
-      [-spacing[9], -spacing[4]],
-    ),
-    marginBottom: interpolate(
-      sizeAnimatedValue.value,
-      [0, 1],
-      [0, -spacing[1]],
-    ),
-    transform: [{ scale: sizeAnimatedValue.value }],
-  }));
-
-  return (
-    <Animated.View
-      style={[
-        animatedStyle,
-        {
-          transformOrigin: 'bottom',
-        },
-      ]}
-    >
-      <WeightDisplay
-        increment={recordedExercise.blueprint.weightIncreaseOnSuccess}
-        updateWeight={props.updateWeightForExercise}
-        weight={recordedExercise.maxWeight}
-        isReadonly={props.isReadonly}
-      />
-    </Animated.View>
-  );
 }
 
 export default function WeightedExercise(props: WeightedExerciseProps) {
@@ -139,11 +74,6 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
           onPress={showPrevious}
         />
       ) : null}
-      <IconButton
-        data-cy="per-rep-weight-btn"
-        icon={'weight'}
-        onPress={props.togglePerSepWeight}
-      />
 
       <Menu
         visible={menuVisible}
@@ -208,7 +138,6 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
           <ItemTitle title={recordedExercise.blueprint.name} />
           {interactiveButtons}
         </View>
-        <AnimatedWeightDisplay {...props} />
         <View
           style={{ flexDirection: 'row', gap: spacing[2], flexWrap: 'wrap' }}
         >
@@ -221,7 +150,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
               onHold={() => setAdditionalPotentialSetIndex(index)}
               onUpdateWeight={(w) => props.updateWeightForSet(index, w)}
               set={set}
-              showWeight={recordedExercise.perSetWeight}
+              showWeight={true}
               toStartNext={
                 props.toStartNext &&
                 setToStartNext === index &&

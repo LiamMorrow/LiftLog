@@ -7,7 +7,6 @@ import {
   selectCurrentSession,
   SessionTarget,
   setExerciseReps,
-  toggleExercisePerSetWeight,
   updateBodyweight,
   updateExerciseWeight,
   updateNotesForExercise,
@@ -35,7 +34,7 @@ import { ExerciseBlueprint } from '@/models/session-models';
 import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/exercise-editor';
 import { LocalDateTime } from '@js-joda/core';
-import { useAppSelector, useAppSelectorWithArg } from '@/store';
+import { useAppSelectorWithArg } from '@/store';
 import UpdatePlanButton from '@/components/smart/update-plan-button';
 import { UnknownAction } from '@reduxjs/toolkit';
 
@@ -56,10 +55,6 @@ export default function SessionComponent(props: {
   const recentlyCompletedExercises = useAppSelectorWithArg(
     selectRecentlyCompletedExercises,
     10,
-  );
-
-  const perSetWeightSetting = useAppSelector(
-    (x) => x.settings.splitWeightByDefault,
   );
 
   const isReadonly = props.target === 'feedSession';
@@ -83,7 +78,6 @@ export default function SessionComponent(props: {
       } else {
         dispatch(addExercise, {
           blueprint: editingExerciseBlueprint,
-          perSetWeight: perSetWeightSetting,
         });
       }
       setExerciseEditorOpen(false);
@@ -149,11 +143,6 @@ export default function SessionComponent(props: {
         dispatch(updateExerciseWeight, {
           exerciseIndex: index,
           weight,
-        })
-      }
-      togglePerSepWeight={() =>
-        dispatch(toggleExercisePerSetWeight, {
-          exerciseIndex: index,
         })
       }
       updateWeightForSet={(setIndex, weight) =>

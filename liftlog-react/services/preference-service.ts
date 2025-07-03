@@ -214,17 +214,6 @@ export class PreferenceService {
     return fromBooleanString(value, true);
   }
 
-  async setSplitWeightByDefault(split: boolean): Promise<void> {
-    await this.keyValueStore.setItem(
-      'splitWeightByDefault',
-      toBooleanString(split),
-    );
-  }
-
-  async getSplitWeightByDefault(): Promise<boolean> {
-    const value = await this.keyValueStore.getItem('splitWeightByDefault');
-    return fromBooleanString(value, false);
-  }
   async setColorSchemeSeed(payload: ColorSchemeSeed): Promise<void> {
     await this.keyValueStore.setItem('colorSchemeSeed', payload);
   }

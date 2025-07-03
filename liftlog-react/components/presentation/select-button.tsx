@@ -1,4 +1,4 @@
-import { Period } from '@js-joda/core';
+import { DayOfWeek, Period } from '@js-joda/core';
 import { useState } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Button, Menu } from 'react-native-paper';
@@ -13,7 +13,7 @@ interface SelectButtonProps<T> {
   onChange: (value: T) => void;
 }
 export default function SelectButton<
-  T extends number | string | Period | undefined,
+  T extends number | string | Period | undefined | DayOfWeek,
 >({ value, options, onChange }: SelectButtonProps<T>) {
   const valueLabel = options.find((x) => isEqual(x.value, value))?.label;
   const [open, setOpen] = useState(false);
@@ -49,7 +49,7 @@ export default function SelectButton<
   );
 }
 
-function isEqual<T extends number | string | Period | undefined>(
+function isEqual<T extends number | string | Period | undefined | DayOfWeek>(
   a: T,
   b: T,
 ): boolean {

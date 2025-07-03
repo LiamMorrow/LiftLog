@@ -13,7 +13,7 @@ export const benchPress: RecordedExercise = RecordedExercise.fromPOJO({
     name: 'Bench Press',
     sets: 3,
     repsPerSet: 10,
-    supersetWithNext: false,
+    supersetWithNext: true,
     link: '',
     notes: '',
     restBetweenSets: Rest.medium,
@@ -30,7 +30,7 @@ export const benchPress: RecordedExercise = RecordedExercise.fromPOJO({
     )
     .toArray(),
   notes: '',
-  perSetWeight: false,
+  perSetWeight: true,
 });
 
 export const squats: RecordedExercise = RecordedExercise.fromPOJO({
@@ -38,7 +38,7 @@ export const squats: RecordedExercise = RecordedExercise.fromPOJO({
     name: 'Squats',
     sets: 3,
     repsPerSet: 10,
-    supersetWithNext: false,
+    supersetWithNext: true,
     link: '',
     notes: '',
     restBetweenSets: Rest.medium,
@@ -55,7 +55,7 @@ export const squats: RecordedExercise = RecordedExercise.fromPOJO({
     )
     .toArray(),
   notes: '',
-  perSetWeight: false,
+  perSetWeight: true,
 });
 
 export const overheadPress: RecordedExercise = RecordedExercise.fromPOJO({
@@ -63,7 +63,7 @@ export const overheadPress: RecordedExercise = RecordedExercise.fromPOJO({
     name: 'Overhead Press',
     sets: 3,
     repsPerSet: 10,
-    supersetWithNext: false,
+    supersetWithNext: true,
     link: '',
     notes: '',
     restBetweenSets: Rest.medium,
@@ -80,7 +80,7 @@ export const overheadPress: RecordedExercise = RecordedExercise.fromPOJO({
     )
     .toArray(),
   notes: '',
-  perSetWeight: false,
+  perSetWeight: true,
 });
 
 export const defaultSessionBlueprint: SessionBlueprint =

@@ -179,10 +179,7 @@ const currentSessionSlice = createSlice({
     ),
 
     addExercise: targetedSessionAction(
-      (
-        session,
-        action: { blueprint: ExerciseBlueprint; perSetWeight: boolean },
-      ) => {
+      (session, action: { blueprint: ExerciseBlueprint }) => {
         session.blueprint.exercises.push(action.blueprint.toPOJO());
         const newRecordedExercise = {
           blueprint: action.blueprint.toPOJO(),
@@ -194,7 +191,7 @@ const currentSessionSlice = createSlice({
             }))
             .toArray(),
           notes: undefined,
-          perSetWeight: action.perSetWeight,
+          perSetWeight: true,
           _BRAND: 'RECORDED_EXERCISE_POJO',
         } satisfies RecordedExercisePOJO;
         session.recordedExercises.push(newRecordedExercise);
@@ -221,13 +218,6 @@ const currentSessionSlice = createSlice({
                 repsCompleted: action.reps,
                 completionDateTime: action.time,
               };
-      },
-    ),
-
-    toggleExercisePerSetWeight: targetedSessionAction(
-      (session, action: { exerciseIndex: number }) => {
-        session.recordedExercises[action.exerciseIndex].perSetWeight =
-          !session.recordedExercises[action.exerciseIndex].perSetWeight;
       },
     ),
 
@@ -336,7 +326,6 @@ export const {
   editExercise,
   addExercise,
   setExerciseReps,
-  toggleExercisePerSetWeight,
   updateWeightForSet,
   updateExerciseWeight,
   setLatestSetTimerNotificationId,

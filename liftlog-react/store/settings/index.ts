@@ -33,7 +33,6 @@ interface SettingsState {
   remoteBackupSettings: RemoteBackupSettings;
   lastBackup: RemoteData<LastBackup, string>;
   backupReminder: boolean;
-  splitWeightByDefault: boolean;
   colorSchemeSeed: ColorSchemeSeed;
 }
 
@@ -63,7 +62,6 @@ const initialState: SettingsState = {
   },
   lastBackup: RemoteData.notAsked(),
   backupReminder: true,
-  splitWeightByDefault: false,
   colorSchemeSeed: 'default',
 };
 
@@ -122,9 +120,6 @@ const settingsSlice = createSlice({
     setBackupReminder(state, action: PayloadAction<boolean>) {
       state.backupReminder = action.payload;
     },
-    setSplitWeightByDefault(state, action: PayloadAction<boolean>) {
-      state.splitWeightByDefault = action.payload;
-    },
     setColorSchemeSeed(state, action: PayloadAction<ColorSchemeSeed>) {
       state.colorSchemeSeed = action.payload;
     },
@@ -171,7 +166,6 @@ export const {
   setRemoteBackupSettings,
   setLastBackup,
   setBackupReminder,
-  setSplitWeightByDefault,
   setColorSchemeSeed,
   setFirstDayOfWeek,
 } = settingsSlice.actions;

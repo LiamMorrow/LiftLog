@@ -14,7 +14,7 @@ import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
-import { match, P } from 'ts-pattern';
+import { match } from 'ts-pattern';
 
 export class SessionService {
   constructor(
@@ -97,27 +97,19 @@ export class SessionService {
       RecordedExercise
     >,
   ): Session {
-    const {
-      settings: { splitWeightByDefault },
-    } = this.getState();
     function getNextExercise(e: ExerciseBlueprint): RecordedExercise {
       const lastExercise = latestRecordedExercises.get(
         KeyedExerciseBlueprint.fromExerciseBlueprint(e).toString(),
       );
       const potentialSets: PotentialSet[] = match(lastExercise)
         .returnType<PotentialSet[]>()
-        .with(
-          P.union(undefined, {
-            perSetWeight: false,
-            isSuccessForProgressiveOverload: false,
-          }),
-          () =>
-            Array.from({ length: e.sets }, () =>
-              PotentialSet.fromPOJO({
-                weight: lastExercise?.potentialSets[0]?.weight ?? BigNumber(0),
-                set: undefined,
-              }),
-            ),
+        .with(undefined, () =>
+          Array.from({ length: e.sets }, () =>
+            PotentialSet.fromPOJO({
+              weight: lastExercise?.potentialSets[0]?.weight ?? BigNumber(0),
+              set: undefined,
+            }),
+          ),
         )
         .with({ isSuccessForProgressiveOverload: true }, (x) =>
           x.potentialSets.map((x) =>
@@ -136,12 +128,7 @@ export class SessionService {
           ),
         );
 
-      return new RecordedExercise(
-        e,
-        potentialSets,
-        undefined,
-        splitWeightByDefault || (lastExercise?.perSetWeight ?? false),
-      );
+      return new RecordedExercise(e, potentialSets, undefined, true);
     }
     return new Session(
       uuid(),

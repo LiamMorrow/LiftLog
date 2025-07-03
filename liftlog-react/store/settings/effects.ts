@@ -12,7 +12,6 @@ import {
   setShowBodyweight,
   setShowFeed,
   setShowTips,
-  setSplitWeightByDefault,
   setTipToShow,
   setUseImperialUnits,
 } from '@/store/settings';
@@ -41,7 +40,6 @@ export function applySettingsEffects() {
         lastSuccessfulRemoteBackupHash,
         lastBackupTime,
         backupReminder,
-        splitWeightByDefault,
         firstDayOfWeek,
         colorSchemeSeed,
       ] = await Promise.all([
@@ -55,7 +53,6 @@ export function applySettingsEffects() {
         preferenceService.getLastSuccessfulRemoteBackupHash(),
         preferenceService.getLastBackupTime(),
         preferenceService.getBackupReminder(),
-        preferenceService.getSplitWeightByDefault(),
         preferenceService.getFirstDayOfWeek(),
         preferenceService.getColorSchemeSeed(),
       ]);
@@ -79,7 +76,6 @@ export function applySettingsEffects() {
         ),
       );
       dispatch(setBackupReminder(backupReminder));
-      dispatch(setSplitWeightByDefault(splitWeightByDefault));
       dispatch(setFirstDayOfWeek(firstDayOfWeek));
 
       dispatch(setIsHydrated(true));
@@ -161,14 +157,6 @@ export function applySettingsEffects() {
     async (action, { stateAfterReduce, extra: { preferenceService } }) => {
       if (stateAfterReduce.settings.isHydrated) {
         await preferenceService.setBackupReminder(action.payload);
-      }
-    },
-  );
-  addEffect(
-    setSplitWeightByDefault,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setSplitWeightByDefault(action.payload);
       }
     },
   );
