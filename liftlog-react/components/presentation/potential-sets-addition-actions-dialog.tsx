@@ -69,7 +69,11 @@ export default function PotentialSetAdditionalActionsDialog({
           <IconButton
             mode="outlined"
             icon={'close'}
-            onPress={() => setRepCountText('')}
+            onPress={() => {
+              setRepCountText('');
+              updateRepCount(undefined);
+              close();
+            }}
           />
         </Dialog.Content>
         <Dialog.Actions>
