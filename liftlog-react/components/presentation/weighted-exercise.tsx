@@ -19,6 +19,7 @@ import PotentialSetAdditionalActionsDialog from '@/components/presentation/poten
 import PreviousExerciseViewer from '@/components/presentation/previous-exercixe-viewer';
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import ExerciseNotesDisplay from '@/components/presentation/exercise-notes-display';
+import { WeightAppliesTo } from '@/store/current-session';
 
 interface WeightedExerciseProps {
   recordedExercise: RecordedExercise;
@@ -29,7 +30,11 @@ interface WeightedExerciseProps {
 
   cycleRepCountForSet: (setIndex: number) => void;
   updateRepCountForSet: (setIndex: number, reps: number | undefined) => void;
-  updateWeightForSet: (setIndex: number, weight: BigNumber) => void;
+  updateWeightForSet: (
+    setIndex: number,
+    weight: BigNumber,
+    applyTo: WeightAppliesTo,
+  ) => void;
   updateWeightForExercise: (weight: BigNumber) => void;
   updateNotesForExercise: (notes: string) => void;
   onOpenLink: (link: string) => void;
@@ -148,7 +153,9 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
               maxReps={recordedExercise.blueprint.repsPerSet}
               onTap={() => props.cycleRepCountForSet(index)}
               onHold={() => setAdditionalPotentialSetIndex(index)}
-              onUpdateWeight={(w) => props.updateWeightForSet(index, w)}
+              onUpdateWeight={(w, applyTo) =>
+                props.updateWeightForSet(index, w, applyTo)
+              }
               set={set}
               showWeight={true}
               toStartNext={

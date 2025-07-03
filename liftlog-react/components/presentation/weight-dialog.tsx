@@ -3,7 +3,7 @@ import { spacing } from '@/hooks/useAppTheme';
 import { useWeightSuffix } from '@/hooks/useWeightSuffix';
 import { T } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import {
   Button,
@@ -18,6 +18,7 @@ type WeightDialogProps = {
   onClose: () => void;
   increment: BigNumber;
   label?: string;
+  children?: ReactNode;
 } & (
   | {
       weight: BigNumber;
@@ -104,7 +105,11 @@ export default function WeightDialog(props: WeightDialogProps) {
               style={{ backgroundColor: theme.colors.elevation.level3 }}
             />
             <View
-              style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+              style={{
+                flexDirection: 'row',
+                gap: spacing[2],
+                justifyContent: 'center',
+              }}
             >
               <Button
                 icon={'minus'}
@@ -123,6 +128,7 @@ export default function WeightDialog(props: WeightDialogProps) {
                 <WeightFormat weight={nonZeroIncrement} />
               </Button>
             </View>
+            {props.children}
           </View>
         </Dialog.Content>
         <Dialog.Actions>

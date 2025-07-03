@@ -145,11 +145,12 @@ export default function SessionComponent(props: {
           weight,
         })
       }
-      updateWeightForSet={(setIndex, weight) =>
+      updateWeightForSet={(setIndex, weight, applyTo) =>
         dispatch(updateWeightForSet, {
           exerciseIndex: index,
           weight,
           setIndex,
+          applyTo,
         })
       }
       updateNotesForExercise={(notes) =>

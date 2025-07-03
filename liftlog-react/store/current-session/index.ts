@@ -28,6 +28,8 @@ interface CurrentSessionState {
 
 export type SessionTarget = 'workoutSession' | 'historySession' | 'feedSession';
 
+export type WeightAppliesTo = 'thisSet' | 'uncompletedSets' | 'allSets';
+
 const initialState: CurrentSessionState = {
   isHydrated: false,
   workoutSession: undefined,
@@ -228,11 +230,32 @@ const currentSessionSlice = createSlice({
           exerciseIndex: number;
           setIndex: number;
           weight: BigNumber;
+          applyTo: WeightAppliesTo;
         },
       ) => {
-        session.recordedExercises[action.exerciseIndex].potentialSets[
-          action.setIndex
-        ].weight = action.weight;
+        switch (action.applyTo) {
+          case 'thisSet':
+            session.recordedExercises[action.exerciseIndex].potentialSets[
+              action.setIndex
+            ].weight = action.weight;
+            break;
+          case 'uncompletedSets':
+            session.recordedExercises[
+              action.exerciseIndex
+            ].potentialSets.forEach((set, idx) => {
+              if (idx >= action.setIndex && set.set === undefined) {
+                set.weight = action.weight;
+              }
+            });
+            break;
+          case 'allSets':
+            session.recordedExercises[
+              action.exerciseIndex
+            ].potentialSets.forEach((set) => {
+              set.weight = action.weight;
+            });
+            break;
+        }
       },
     ),
 

@@ -2,10 +2,10 @@ import { PotentialSet } from '@/models/session-models';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { TouchableRipple } from 'react-native-paper';
-import { Text, Touchable } from 'react-native';
+import { Text, Touchable, View } from 'react-native';
 import WeightFormat from '@/components/presentation/weight-format';
 import WeightDialog from '@/components/presentation/weight-dialog';
-import { useAppTheme, spacing } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { PressableProps } from 'react-native-paper/lib/typescript/components/TouchableRipple/Pressable';
 import FocusRing from '@/components/presentation/focus-ring';
 import Animated, {
@@ -19,6 +19,11 @@ import {
   endIncreasingHoldHaptics,
   startIncreasingHoldHaptics,
 } from '@/store/app';
+import { WeightAppliesTo } from '@/store/current-session';
+import SelectButton, {
+  SelectButtonOption,
+} from '@/components/presentation/select-button';
+import { useTranslate } from '@tolgee/react';
 
 interface PotentialSetCounterProps {
   set: PotentialSet;
@@ -30,18 +35,33 @@ interface PotentialSetCounterProps {
 
   onTap: () => void;
   onHold: () => void;
-  onUpdateWeight: (weight: BigNumber) => void;
+  onUpdateWeight: (weight: BigNumber, applyTo: WeightAppliesTo) => void;
 }
 
 export default function PotentialSetCounter(props: PotentialSetCounterProps) {
   const { colors } = useAppTheme();
   const holdingScale = useSharedValue(1);
+  const { t } = useTranslate();
   const showWeightAnimatedValue = useSharedValue(props.showWeight ? 1 : 0);
   const [isHolding, setIsHolding] = useState(false);
   const [isWeightDialogOpen, setIsWeightDialogOpen] = useState(false);
   const repCountValue = props.set?.set?.repsCompleted;
   const dispatch = useDispatch();
 
+  const applyToSelections: SelectButtonOption<WeightAppliesTo>[] = [
+    {
+      label: t('Apply to uncompleted sets'),
+      value: 'uncompletedSets',
+    },
+    {
+      label: t('Apply to all sets'),
+      value: 'allSets',
+    },
+    {
+      label: t('Apply to this set'),
+      value: 'thisSet',
+    },
+  ];
   useEffect(() => {
     showWeightAnimatedValue.value = withTiming(props.showWeight ? 1 : 0, {
       duration: 150,
@@ -104,6 +124,16 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
         onPointerLeave: exitHold,
         onTouchEnd: exitHold,
       } satisfies Touchable & Omit<PressableProps, 'children'>);
+
+  const [applyTo, setApplyTo] = useState<WeightAppliesTo>('uncompletedSets');
+
+  useEffect(() => {
+    if (props.set.set) {
+      setApplyTo('thisSet');
+    } else {
+      setApplyTo('uncompletedSets');
+    }
+  }, [props.set.set]);
 
   return (
     <FocusRing isSelected={props.toStartNext} radius={15}>
@@ -183,7 +213,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
             }
             disabled={props.isReadonly}
           >
-            <Text style={{ color: colors.onSurface }}>
+            <Text style={{ color: colors.onSurface, ...font['text-xs'] }}>
               <WeightFormat weight={props.set.weight} />
             </Text>
           </TouchableRipple>
@@ -193,8 +223,22 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
           increment={props.weightIncrement}
           weight={props.set.weight}
           onClose={() => setIsWeightDialogOpen(false)}
-          updateWeight={props.onUpdateWeight}
-        />
+          updateWeight={(w) => props.onUpdateWeight(w, applyTo)}
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <SelectButton
+              value={applyTo}
+              onChange={setApplyTo}
+              options={applyToSelections}
+            />
+          </View>
+        </WeightDialog>
       </Animated.View>
     </FocusRing>
   );
