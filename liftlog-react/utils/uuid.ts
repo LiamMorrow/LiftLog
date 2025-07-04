@@ -1,4 +1,4 @@
-export const uuid = crypto.randomUUID;
+export const uuid = () => crypto.randomUUID();
 
 /**
  * Convert array of 16 byte values to UUID string format of the form:

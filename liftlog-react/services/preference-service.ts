@@ -1,4 +1,4 @@
-import { IKeyValueStore } from '@/services/key-value-store';
+import { KeyValueStore } from '@/services/key-value-store';
 import { ColorSchemeSeed } from '@/store/settings';
 import { DayOfWeek, Instant } from '@js-joda/core';
 import { match, P } from 'ts-pattern';
@@ -28,7 +28,7 @@ function fromBooleanString(
 }
 
 export class PreferenceService {
-  constructor(private keyValueStore: IKeyValueStore) {}
+  constructor(private keyValueStore: KeyValueStore) {}
 
   async getProToken(): Promise<string | undefined> {
     const token = await this.keyValueStore.getItem('proToken');

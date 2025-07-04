@@ -1,8 +1,7 @@
-import { IKeyValueStore } from '@/services/key-value-store';
 import { uuid } from '@/utils/uuid';
 import { File, Paths } from 'expo-file-system/next';
 
-export class KeyValueStore implements IKeyValueStore {
+export class KeyValueStore {
   async getItem(key: string): Promise<string | undefined> {
     const file = getFile(key);
     if (file.exists) {
