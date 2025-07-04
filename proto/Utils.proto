@@ -1,0 +1,31 @@
+syntax = "proto3";
+package LiftLog.Ui.Models;
+
+
+message UuidDao {
+    bytes value = 1;
+}
+
+message DateOnlyDao {
+    int32 year = 1;
+    int32 month = 2;
+    int32 day = 3;
+}
+
+message DecimalValue {
+
+    // Whole units part of the amount
+    int64 units = 1;
+
+    // Nano units of the amount (10^-9)
+    // Must be same sign as units
+    sfixed32 nanos = 2;
+}
+
+message TimeOnlyDao {
+    int32 hour = 1;
+    int32 minute = 2;
+    int32 second = 3;
+    int32 millisecond = 4;
+    int32 microsecond = 5;
+}

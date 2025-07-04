@@ -1,0 +1,25 @@
+diff --git a/node_modules/react-native-web/dist/index.js b/node_modules/react-native-web/dist/index.js
+index 4f69987..0299669 100644
+--- a/node_modules/react-native-web/dist/index.js
++++ b/node_modules/react-native-web/dist/index.js
+@@ -60,6 +60,20 @@ export { default as VirtualizedList } from './exports/VirtualizedList';
+ export { default as YellowBox } from './exports/YellowBox';
+ export { default as LogBox } from './exports/LogBox';
+ 
++import Animated from './exports/Animated';
++import { useRef } from 'react';
++
++export function useAnimatedValue(
++    initialValue,
++    config,
++) {
++    const ref = useRef(null);
++    if (ref.current == null) {
++        ref.current = new Animated.Value(initialValue, config);
++    }
++    return ref.current;
++}
++
+ // plugins
+ export { default as DeviceEventEmitter } from './exports/DeviceEventEmitter';
+ 

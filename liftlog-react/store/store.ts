@@ -1,0 +1,38 @@
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { currentSessionReducer } from './current-session';
+import settingsReducer from './settings';
+import programReducer from './program';
+import appReducer from './app';
+import feedReducer from './feed';
+import storedSessionsReducer from './stored-sessions';
+import sessionEditorReducer from './session-editor';
+import { listenerMiddleware } from '@/store/listenerMiddleware';
+import { statsReducer } from '@/store/stats';
+
+const store = configureStore({
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      // We manually do persistence
+      serializableCheck: false,
+      immutableCheck: false,
+    }).prepend(listenerMiddleware.middleware),
+  reducer: combineReducers({
+    currentSession: currentSessionReducer,
+    settings: settingsReducer,
+    program: programReducer,
+    feed: feedReducer,
+    app: appReducer,
+    sessionEditor: sessionEditorReducer,
+    storedSessions: storedSessionsReducer,
+    stats: statsReducer,
+  }),
+});
+
+export function getState(): RootState {
+  return store.getState();
+}
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
+export default store;
