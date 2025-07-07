@@ -140,7 +140,10 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             alignItems: 'center',
           }}
         >
-          <ItemTitle title={recordedExercise.blueprint.name} />
+          <ItemTitle
+            style={{ marginVertical: spacing[2] }}
+            title={recordedExercise.blueprint.name}
+          />
           {interactiveButtons}
         </View>
         <View

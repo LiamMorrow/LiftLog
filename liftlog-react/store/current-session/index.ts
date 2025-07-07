@@ -243,7 +243,7 @@ const currentSessionSlice = createSlice({
             session.recordedExercises[
               action.exerciseIndex
             ].potentialSets.forEach((set, idx) => {
-              if (idx >= action.setIndex && set.set === undefined) {
+              if (!set.set) {
                 set.weight = action.weight;
               }
             });
