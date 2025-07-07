@@ -8,6 +8,7 @@ import {
   fetchInboxItems,
   selectFeedFollowers,
   selectFeedFollowRequests,
+  startRemoveFollower,
 } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
 import React, { useState } from 'react';
@@ -78,7 +79,10 @@ function FeedFollowRequest(props: { request: FollowRequest }) {
 }
 
 function FeedFollowersItem(props: { user: FeedUser; userId: string }) {
-  const unfollow = () => {}; // TODO
+  const dispatch = useDispatch();
+  const unfollow = () => {
+    dispatch(startRemoveFollower({ user: props.user, fromUserAction: true }));
+  };
   const { t } = useTranslate();
 
   const [confirmRemoveVisible, setConfirmRemoveVisible] = useState(false);

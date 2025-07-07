@@ -1,7 +1,11 @@
 import { useScroll } from '@/hooks/useScollListener';
 import { FeedUser } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
-import { fetchInboxItems, selectFeedFollowing } from '@/store/feed';
+import {
+  fetchInboxItems,
+  selectFeedFollowing,
+  unfollowFeedUser,
+} from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
 import React, { useState } from 'react';
 import { FlatList } from 'react-native';
@@ -31,7 +35,10 @@ export function FeedFollowing() {
 
 function FeedFollowingItem(props: { user: FeedUser; userId: string }) {
   const viewPlan = () => {}; // TODO
-  const unfollow = () => {}; // TODO
+  const dispatch = useDispatch();
+  const unfollow = () => {
+    dispatch(unfollowFeedUser({ feedUser: props.user }));
+  };
   const { t } = useTranslate();
   const [menuVisible, setMenuVisible] = useState(false);
   return (
