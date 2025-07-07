@@ -66,13 +66,15 @@ export class ApiResult<T> {
   }
 }
 
-type Base64Response<T> = {
-  [key in keyof T]: T[key] extends Uint8Array
-    ? string
-    : T[key] extends object
-      ? Base64Response<T[key]>
-      : T[key];
-};
+type Base64Response<T> = T extends Uint8Array
+  ? string
+  : T extends Uint8Array | undefined
+    ? string | undefined
+    : T extends (infer U)[]
+      ? Base64Response<U>[]
+      : T extends object
+        ? { [K in keyof T]: Base64Response<T[K]> }
+        : T;
 
 export class FeedApiService {
   private readonly baseUrl: string;
@@ -98,7 +100,21 @@ export class FeedApiService {
         body: stringify(request),
       });
       this.ensureSuccessStatusCode(response);
-      return (await response.json()) as GetEventsResponse;
+      const base64Response =
+        (await response.json()) as Base64Response<GetEventsResponse>;
+      return {
+        events: base64Response.events.map((event) => ({
+          userId: event.userId,
+          eventId: event.eventId,
+          timestamp: event.timestamp,
+          encryptedEventPayload: base64ToUint8Array(
+            event.encryptedEventPayload,
+          ),
+          encryptedEventIV: base64ToUint8Array(event.encryptedEventIV),
+          expiry: event.expiry,
+        })),
+        invalidFollowSecrets: base64Response.invalidFollowSecrets,
+      };
     });
   }
 
@@ -118,7 +134,23 @@ export class FeedApiService {
     return this.getApiResultAsync(async () => {
       const response = await fetch(`${this.baseUrl}user/${idOrLookup}`);
       this.ensureSuccessStatusCode(response);
-      return (await response.json()) as GetUserResponse;
+      const base64Response =
+        (await response.json()) as Base64Response<GetUserResponse>;
+      return {
+        id: base64Response.id,
+        lookup: base64Response.lookup,
+        encryptedCurrentPlan: base64Response.encryptedCurrentPlan
+          ? base64ToUint8Array(base64Response.encryptedCurrentPlan)
+          : undefined,
+        encryptedProfilePicture: base64Response.encryptedProfilePicture
+          ? base64ToUint8Array(base64Response.encryptedProfilePicture)
+          : undefined,
+        encryptedName: base64Response.encryptedName
+          ? base64ToUint8Array(base64Response.encryptedName)
+          : undefined,
+        encryptionIV: base64ToUint8Array(base64Response.encryptionIV),
+        rsaPublicKey: base64ToUint8Array(base64Response.rsaPublicKey),
+      };
     });
   }
 
@@ -158,7 +190,30 @@ export class FeedApiService {
         body: stringify(request),
       });
       this.ensureSuccessStatusCode(response);
-      return (await response.json()) as GetUsersResponse;
+      const base64Response =
+        (await response.json()) as Base64Response<GetUsersResponse>;
+      return {
+        users: Object.fromEntries(
+          Object.entries(base64Response.users).map(([key, user]) => [
+            key,
+            {
+              id: user.id,
+              lookup: user.lookup,
+              encryptedCurrentPlan: user.encryptedCurrentPlan
+                ? base64ToUint8Array(user.encryptedCurrentPlan)
+                : undefined,
+              encryptedProfilePicture: user.encryptedProfilePicture
+                ? base64ToUint8Array(user.encryptedProfilePicture)
+                : undefined,
+              encryptedName: user.encryptedName
+                ? base64ToUint8Array(user.encryptedName)
+                : undefined,
+              encryptionIV: base64ToUint8Array(user.encryptionIV),
+              rsaPublicKey: base64ToUint8Array(user.rsaPublicKey),
+            },
+          ]),
+        ),
+      };
     });
   }
 
@@ -196,7 +251,16 @@ export class FeedApiService {
         body: stringify(request),
       });
       this.ensureSuccessStatusCode(response);
-      return (await response.json()) as GetInboxMessagesResponse;
+      const base64Response =
+        (await response.json()) as Base64Response<GetInboxMessagesResponse>;
+      return {
+        inboxMessages: base64Response.inboxMessages.map((message) => ({
+          id: message.id,
+          encryptedMessage: message.encryptedMessage.map((chunk) =>
+            base64ToUint8Array(chunk),
+          ),
+        })),
+      };
     });
   }
 

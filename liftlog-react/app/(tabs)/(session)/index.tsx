@@ -17,6 +17,7 @@ import {
   selectCurrentSession,
   setCurrentSession,
 } from '@/store/current-session';
+import { publishUnpublishedSessions } from '@/store/feed';
 import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
 import { setEditingSession } from '@/store/session-editor';
 import { LocalDate } from '@js-joda/core';
@@ -195,6 +196,7 @@ export default function Index() {
 
   useFocusEffect(() => {
     dispatch(fetchUpcomingSessions());
+    dispatch(publishUnpublishedSessions());
   });
 
   const selectSession = (session: Session) => {

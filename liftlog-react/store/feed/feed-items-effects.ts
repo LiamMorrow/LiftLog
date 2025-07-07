@@ -1,4 +1,4 @@
-import { Instant, ZoneId } from '@js-joda/core';
+import { Instant, OffsetDateTime, ZoneId } from '@js-joda/core';
 import {
   publishUnpublishedSessions,
   replaceFeedItems,
@@ -50,6 +50,8 @@ export function addFeedItemEffects() {
       if (state.feed.isFetching) {
         return;
       }
+      dispatch(publishUnpublishedSessions());
+
       try {
         dispatch(setIsFetching(true));
         const originalFollowedUsers = Object.fromEntries(
@@ -173,20 +175,21 @@ export function addFeedItemEffects() {
         const existingFeedItems = state.feed.feed.map(FeedItem.fromPOJO);
         const allFeedItems = existingFeedItems.concat(feedItems);
 
-        const updatedFeed = allFeedItems
-          .filter((item) => item.expiry.isAfter(now))
-          .filter((item) => newUsers.some((user) => user.id === item.userId))
-          // Group by (userId, eventId) and take the latest
-          .reduce((acc, item) => {
-            const key = `${item.userId}-${item.eventId}`;
-            const existing = acc.get(key);
-            if (!existing || item.timestamp.isAfter(existing.timestamp)) {
-              acc.set(key, item);
-            }
-            return acc;
-          }, new Map<string, FeedItem>())
-          .values()
-          .toArray()
+        const updatedFeed = [
+          ...allFeedItems
+            .filter((item) => item.expiry.isAfter(now))
+            .filter((item) => newUsers.some((user) => user.id === item.userId))
+            // Group by (userId, eventId) and take the latest
+            .reduce((acc, item) => {
+              const key = `${item.userId}-${item.eventId}`;
+              const existing = acc.get(key);
+              if (!existing || item.timestamp.isAfter(existing.timestamp)) {
+                acc.set(key, item);
+              }
+              return acc;
+            }, new Map<string, FeedItem>())
+            .values(),
+        ]
           .sort((a, b) => {
             // Sort by session date for SessionFeedItems, otherwise by timestamp
             const aTime =
@@ -410,6 +413,7 @@ async function getDecryptedUserAsync(
     );
   } catch (error) {
     console.error('Failed to decrypt feed user', error);
+
     return null;
   }
 }
@@ -437,8 +441,8 @@ async function toFeedItemAsync(
 
     const payload = LiftLog.Ui.Models.UserEventPayload.decode(decryptedPayload);
 
-    const timestamp = Instant.parse(userEvent.timestamp);
-    const expiry = Instant.parse(userEvent.expiry);
+    const timestamp = OffsetDateTime.parse(userEvent.timestamp).toInstant();
+    const expiry = OffsetDateTime.parse(userEvent.expiry).toInstant();
 
     switch (payload.eventPayload) {
       case 'sessionPayload':
