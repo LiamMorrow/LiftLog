@@ -18,6 +18,7 @@ import {
 import { addExportBackupEffects } from '@/store/settings/export-backup-effects';
 import { addExportPlaintextEffects } from '@/store/settings/export-plaintext-effects';
 import { addImportBackupEffects } from '@/store/settings/import-backup-effects';
+import { addRemoteBackupEffects } from '@/store/settings/remote-backup-effects';
 
 export function applySettingsEffects() {
   addEffect(
@@ -149,6 +150,9 @@ export function applySettingsEffects() {
         await preferenceService.setLastBackupTime(
           action.payload.data.lastBackupTime,
         );
+        await preferenceService.setLastSuccessfulRemoteBackupHash(
+          action.payload.data.lastSuccessfulRemoteBackupHash,
+        );
       }
     },
   );
@@ -181,4 +185,5 @@ export function applySettingsEffects() {
   addExportPlaintextEffects();
   addExportBackupEffects();
   addImportBackupEffects();
+  addRemoteBackupEffects();
 }

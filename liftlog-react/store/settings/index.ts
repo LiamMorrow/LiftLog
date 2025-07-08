@@ -145,11 +145,12 @@ export const exportPlainText = createAction<{ format: PlaintextExportFormat }>(
   'exportPlainText',
 );
 
-// TODO implement
 export const executeRemoteBackup = createAction<{
-  settings: RemoteBackupSettings;
-  force: boolean;
+  settings?: RemoteBackupSettings;
+  force?: boolean;
 }>('executeRemoteBackup');
+
+export const remoteBackupSucceeded = createAction('remoteBackupSucceeded');
 
 export const {
   setIsHydrated,

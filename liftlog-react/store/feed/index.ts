@@ -218,9 +218,8 @@ export const createFeedIdentity = createAction<
   } & FeedAction
 >('createFeedIdentity');
 
-// TODO handle
 export const fetchFeedItems = createAction<FeedAction>('fetchFeedItems');
-// TODO handle
+
 export const fetchInboxItems = createAction<FeedAction>('fetchInboxItems');
 
 export const encryptAndShare = createAction<SharedItem>('encryptAndShare');

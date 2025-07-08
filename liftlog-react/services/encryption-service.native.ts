@@ -117,6 +117,10 @@ export class EncryptionService {
     };
   }
 
+  async sha256(data: Uint8Array<ArrayBuffer>): Promise<Uint8Array> {
+    return await sha256Hash(data);
+  }
+
   async decryptRsaOaepSha256Async(
     data: RsaEncryptedData,
     privateKey: RsaPrivateKey,

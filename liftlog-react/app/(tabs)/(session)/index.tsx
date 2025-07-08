@@ -20,6 +20,7 @@ import {
 import { publishUnpublishedSessions } from '@/store/feed';
 import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
 import { setEditingSession } from '@/store/session-editor';
+import { executeRemoteBackup } from '@/store/settings';
 import { LocalDate } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
@@ -197,6 +198,7 @@ export default function Index() {
   useFocusEffect(() => {
     dispatch(fetchUpcomingSessions());
     dispatch(publishUnpublishedSessions());
+    dispatch(executeRemoteBackup({}));
   });
 
   const selectSession = (session: Session) => {

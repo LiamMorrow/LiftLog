@@ -123,6 +123,10 @@ export class EncryptionService {
     };
   }
 
+  async sha256(data: Uint8Array): Promise<Uint8Array> {
+    return new Uint8Array(await crypto.subtle.digest('SHA-256', data));
+  }
+
   async generateRsaKeys(): Promise<RsaKeyPair> {
     const keyPair = await crypto.subtle.generateKey(
       {

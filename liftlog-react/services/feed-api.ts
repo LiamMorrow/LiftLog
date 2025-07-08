@@ -126,7 +126,7 @@ export class FeedApiService {
         body: '{}',
       });
       this.ensureSuccessStatusCode(response);
-      return (await response.json()) as CreateUserResponse;
+      return (await response.json()) as Base64Response<CreateUserResponse>;
     });
   }
 
@@ -302,7 +302,7 @@ export class FeedApiService {
         body: stringify(request),
       });
       this.ensureSuccessStatusCode(response);
-      return (await response.json()) as CreateSharedItemResponse;
+      return (await response.json()) as Base64Response<CreateSharedItemResponse>;
     });
   }
 

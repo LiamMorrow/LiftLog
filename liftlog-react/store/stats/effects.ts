@@ -1,4 +1,4 @@
-import { Session } from '@/models/session-models';
+import { NormalizedName, Session } from '@/models/session-models';
 import {
   ExerciseStatistics,
   GranularStatisticView,
@@ -74,7 +74,7 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
   for (const session of sessionsWithExercises) {
     for (const ex of session.recordedExercises) {
       const blueprint = ex.blueprint;
-      const key = blueprint.name.trim().toLowerCase();
+      const key = NormalizedName.fromExerciseBlueprint(blueprint).toString();
       const lastSet = ex.lastRecordedSet;
       if (!lastSet || !lastSet.set) continue;
       if (!exerciseStatsMap.has(key)) {
@@ -89,7 +89,13 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
       const maxWeight = ex.potentialSets
         .filter((ps) => ps.set)
         .map((ps) => ps.weight)
-        .reduce((a, b) => (a.isGreaterThan(b) ? a : b), new BigNumber(0));
+        .reduce(
+          (a, b) => (a === null ? b : a.isGreaterThan(b) ? a : b),
+          null as null | BigNumber,
+        );
+      if (!maxWeight) {
+        continue;
+      }
       // One rep max formula (Epley): 1RM = weight * (1 + reps/30)
       // We'll use the last set for this
       const reps = lastSet.set.repsCompleted;
