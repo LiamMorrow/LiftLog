@@ -269,4 +269,6 @@ export const publishUnpublishedSessions = createAction(
   'publishUnpublishedSessions',
 );
 
+export const resetFeedAccount = createAction<FeedAction>('resetFeedAccount');
+
 export default feedSlice.reducer;

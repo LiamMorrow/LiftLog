@@ -16,6 +16,7 @@ import { shareString } from '@/store/app';
 import {
   fetchFeedItems,
   fetchInboxItems,
+  resetFeedAccount,
   selectFeedIdentityRemote,
   selectFeedSessionItems,
 } from '@/store/feed';
@@ -164,7 +165,7 @@ function FeedProfileEditor({
     // TODO
   };
   const resetAccount = () => {
-    //TODO
+    dispatch(resetFeedAccount());
   };
   const [resetAccountDialogOpen, setResetAccountDialogOpen] = useState(false);
   return (

@@ -53,7 +53,13 @@ export class ApiResult<T> {
     return !this.error;
   }
 
-  static success<T>(data: T): ApiResult<T> {
+  isError(): this is { error: ApiError } {
+    return !!this.error;
+  }
+
+  static success(): ApiResult<void>;
+  static success<T>(data: T): ApiResult<T>;
+  static success<T>(data?: T): ApiResult<T> {
     return new ApiResult(data);
   }
 

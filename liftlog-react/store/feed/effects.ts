@@ -5,6 +5,8 @@ import {
   fetchInboxItems,
   initializeFeedStateSlice,
   patchFeedState,
+  resetFeedAccount,
+  selectFeedIdentityRemote,
   setIdentity,
   setIsHydrated,
 } from '@/store/feed';
@@ -18,6 +20,7 @@ import { showSnackbar } from '@/store/app';
 import { addFeedItemEffects } from '@/store/feed/feed-items-effects';
 import { addInboxEffects } from '@/store/feed/inbox-effects';
 import { addFollowingEffects } from '@/store/feed/following-effects';
+import { ApiResult } from '@/services/feed-api';
 
 const StorageKey = 'FeedState';
 export function applyFeedEffects() {
@@ -143,6 +146,39 @@ export function applyFeedEffects() {
         return;
       }
       dispatch(setIdentity(RemoteData.success(identityResult.data)));
+    },
+  );
+
+  addEffect(
+    resetFeedAccount,
+    async (
+      action,
+      { dispatch, stateAfterReduce, extra: { feedIdentityService } },
+    ) => {
+      const identityRemote = selectFeedIdentityRemote(stateAfterReduce);
+
+      const result = await identityRemote
+        .map(feedIdentityService.deleteFeedIdentityAsync)
+        .unwrapOr(Promise.resolve(ApiResult.success()));
+      if (result.isError()) {
+        dispatch(
+          feedApiError({
+            message: 'Failed to reset account',
+            error: result.error,
+            action,
+          }),
+        );
+        return;
+      }
+      dispatch(
+        createFeedIdentity({
+          fromUserAction: true,
+          name: undefined,
+          publishBodyweight: false,
+          publishPlan: false,
+          publishWorkouts: false,
+        }),
+      );
     },
   );
 
