@@ -126,7 +126,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
               dispatch(
                 shareString({
                   title: 'Share feed profile',
-                  value: `https://app.liftlog.online/feed/share?id=${identity.id}${
+                  value: `https://app.liftlog.online/feed/share?id=${identity.lookup}${
                     identity.name
                       ? `&name=${encodeURIComponent(identity.name)}`
                       : ''
