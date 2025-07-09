@@ -14,7 +14,6 @@ import { LiftLog } from '@/gen/proto';
 import { fromFeedStateDao } from '@/models/storage/conversions.from-dao';
 import { toFeedStateDao } from '@/models/storage/conversions.to-dao';
 import { RemoteData } from '@/models/remote';
-import { selectActiveProgram } from '@/store/program';
 import { addSharedItemEffects } from '@/store/feed/shared-item-effects';
 import { showSnackbar } from '@/store/app';
 import { addFeedItemEffects } from '@/store/feed/feed-items-effects';
@@ -117,7 +116,7 @@ export function applyFeedEffects() {
         cancelActiveListeners,
         getState,
         dispatch,
-        extra: { feedIdentityService, encryptionService },
+        extra: { feedIdentityService },
       },
     ) => {
       cancelActiveListeners();
@@ -132,7 +131,7 @@ export function applyFeedEffects() {
         payload.publishBodyweight,
         payload.publishPlan,
         payload.publishWorkouts,
-        selectActiveProgram(getState()).sessions,
+        [],
       );
       if (!identityResult.isSuccess()) {
         dispatch(
@@ -158,7 +157,7 @@ export function applyFeedEffects() {
       const identityRemote = selectFeedIdentityRemote(stateAfterReduce);
 
       const result = await identityRemote
-        .map(feedIdentityService.deleteFeedIdentityAsync)
+        .map((i) => feedIdentityService.deleteFeedIdentityAsync(i))
         .unwrapOr(Promise.resolve(ApiResult.success()));
       if (result.isError()) {
         dispatch(
@@ -170,6 +169,20 @@ export function applyFeedEffects() {
         );
         return;
       }
+      dispatch(
+        patchFeedState({
+          isHydrated: true,
+          identity: RemoteData.notAsked(),
+          isFetching: false,
+          feed: [],
+          followedUsers: {},
+          sharedFeedUser: RemoteData.notAsked(),
+          followRequests: [],
+          followers: {},
+          unpublishedSessionIds: [],
+          sharedItem: RemoteData.notAsked(),
+        }),
+      );
       dispatch(
         createFeedIdentity({
           fromUserAction: true,

@@ -28,7 +28,6 @@ export type FeedState = {
   sharedFeedUser: RemoteData<FeedUserPOJO>;
   followRequests: FollowRequestPOJO[];
   followers: Record<string, FeedUserPOJO>;
-  activeTab: string;
   unpublishedSessionIds: string[];
   sharedItem: RemoteData<SharedItemPOJO>;
   isFetching: boolean;
@@ -43,7 +42,6 @@ const initialState: FeedState = {
   sharedFeedUser: RemoteData.notAsked(),
   followRequests: [],
   followers: {},
-  activeTab: 'mainfeed-panel',
   unpublishedSessionIds: [],
   sharedItem: RemoteData.notAsked(),
 };
@@ -79,9 +77,6 @@ const feedSlice = createSlice({
       state.followers = Object.fromEntries(
         Object.entries(action.payload).map((x) => [x[0], x[1].toPOJO()]),
       );
-    },
-    setActiveTab(state, action: PayloadAction<string>) {
-      state.activeTab = action.payload;
     },
     setUnpublishedSessionIds(state, action: PayloadAction<string[]>) {
       state.unpublishedSessionIds = action.payload;
