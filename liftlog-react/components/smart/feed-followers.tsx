@@ -1,6 +1,7 @@
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
+import EmptyInfo from '@/components/presentation/empty-info';
 import LimitedHtml from '@/components/presentation/limited-html';
-import { useAppTheme } from '@/hooks/useAppTheme';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScollListener';
 import { FeedUser, FollowRequest } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
@@ -10,7 +11,7 @@ import {
   selectFeedFollowRequests,
   startRemoveFollower,
 } from '@/store/feed';
-import { useTranslate } from '@tolgee/react';
+import { T, useTranslate } from '@tolgee/react';
 import React, { useState } from 'react';
 import { FlatList, View } from 'react-native';
 import { IconButton, Button, List } from 'react-native-paper';
@@ -32,6 +33,11 @@ export function FeedFollowers() {
       onRefresh={() => {
         dispatch(fetchInboxItems({ fromUserAction: true }));
       }}
+      ListEmptyComponent={
+        <EmptyInfo style={{ marginTop: spacing[8] }}>
+          <T keyName="NobodyFollowingYou" />
+        </EmptyInfo>
+      }
       refreshing={fetchingFeedItems}
       onScroll={handleScroll}
       data={items}

@@ -1,4 +1,5 @@
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
+import EmptyInfo from '@/components/presentation/empty-info';
 import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import LabelledForm from '@/components/presentation/labelled-form';
 import LabelledFormRow from '@/components/presentation/labelled-form-row';
@@ -46,6 +47,11 @@ export default function Feed() {
         dispatch(fetchInboxItems({ fromUserAction: true }));
         dispatch(fetchFeedItems({ fromUserAction: true }));
       }}
+      ListEmptyComponent={
+        <EmptyInfo style={{ marginTop: spacing[8] }}>
+          <T keyName="NoFollowingData" />
+        </EmptyInfo>
+      }
       refreshing={fetchingFeedItems}
       onScroll={handleScroll}
       data={feedItems}

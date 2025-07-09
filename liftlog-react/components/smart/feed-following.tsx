@@ -1,3 +1,5 @@
+import EmptyInfo from '@/components/presentation/empty-info';
+import { spacing } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScollListener';
 import { FeedUser } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
@@ -6,7 +8,7 @@ import {
   selectFeedFollowing,
   unfollowFeedUser,
 } from '@/store/feed';
-import { useTranslate } from '@tolgee/react';
+import { T, useTranslate } from '@tolgee/react';
 import React, { useState } from 'react';
 import { FlatList } from 'react-native';
 import { IconButton, List, Menu } from 'react-native-paper';
@@ -22,6 +24,11 @@ export function FeedFollowing() {
       onRefresh={() => {
         dispatch(fetchInboxItems({ fromUserAction: true }));
       }}
+      ListEmptyComponent={
+        <EmptyInfo style={{ marginTop: spacing[8] }}>
+          <T keyName="NotFollowingAnyone" />
+        </EmptyInfo>
+      }
       refreshing={fetchingFeedItems}
       onScroll={handleScroll}
       data={following}

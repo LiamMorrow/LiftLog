@@ -12,6 +12,7 @@ export default function EmptyInfo(props: ViewProps & { icon?: string }) {
         {
           alignItems: 'center',
           justifyContent: 'center',
+          paddingHorizontal: spacing[4],
           gap: spacing[4],
         },
         style,
