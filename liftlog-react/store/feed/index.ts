@@ -172,7 +172,6 @@ export const {
   setSharedFeedUser,
   setFollowRequests,
   setFollowers,
-  setActiveTab,
   setUnpublishedSessionIds,
   setSharedItem,
   addUnpublishedSessionId,
@@ -265,5 +264,8 @@ export const publishUnpublishedSessions = createAction(
 );
 
 export const resetFeedAccount = createAction<FeedAction>('resetFeedAccount');
+
+export const updateFeedIdentity =
+  createAction<Partial<FeedIdentity>>('updateFeedIdentity');
 
 export default feedSlice.reducer;

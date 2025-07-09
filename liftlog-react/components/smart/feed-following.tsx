@@ -44,10 +44,7 @@ function FeedFollowingItem(props: { user: FeedUser; userId: string }) {
   return (
     <List.Item
       title={props.user.name}
-      description={
-        // TODO this aint right - it should just be unset. Bad deserialization/serialization maybe
-        props.user.aesKey?.value.length ? undefined : t('AwaitingResponse')
-      }
+      description={props.user.aesKey ? undefined : t('AwaitingResponse')}
       right={() => (
         <Menu
           visible={menuVisible}

@@ -207,7 +207,6 @@ export function fromSessionBlueprintDao(
   );
 }
 
-// Converts an ExerciseBlueprint DAO to an ExerciseBlueprint
 export function fromExerciseBlueprintDao(
   dao:
     | LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2
@@ -229,7 +228,6 @@ export function fromExerciseBlueprintDao(
   );
 }
 
-// Converts a Rest DAO to a Rest model
 export function fromRestDao(
   dao: LiftLog.Ui.Models.SessionBlueprintDao.IRestDaoV2,
 ): Rest {
@@ -330,7 +328,7 @@ export function fromFeedUserDao(
     dao.nickname?.value ?? undefined,
     dao.currentPlan ? fromCurrentPlanDao(dao.currentPlan) : [],
     (dao.profilePicture && Uint8Array.from(dao.profilePicture)) ?? undefined,
-    dao.aesKey ? { value: Uint8Array.from(dao.aesKey) } : undefined,
+    dao.aesKey?.length ? { value: Uint8Array.from(dao.aesKey) } : undefined,
     dao.followSecret?.value ?? undefined,
   );
 }

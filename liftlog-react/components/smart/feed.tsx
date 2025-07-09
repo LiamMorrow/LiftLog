@@ -19,6 +19,7 @@ import {
   resetFeedAccount,
   selectFeedIdentityRemote,
   selectFeedSessionItems,
+  updateFeedIdentity,
 } from '@/store/feed';
 import { T, useTranslate } from '@tolgee/react';
 import { useState } from 'react';
@@ -87,7 +88,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
             your workouts!
           </SurfaceText>
 
-          {identity.publishPlan ? undefined : (
+          {identity.publishWorkouts ? undefined : (
             <View
               style={{
                 flexDirection: 'row',
@@ -162,10 +163,10 @@ function FeedProfileEditor({
   const { t } = useTranslate();
   const dispatch = useDispatch();
   const updateProfile = (value: Partial<FeedIdentity>) => {
-    // TODO
+    dispatch(updateFeedIdentity(value));
   };
   const resetAccount = () => {
-    dispatch(resetFeedAccount());
+    dispatch(resetFeedAccount({ fromUserAction: true }));
   };
   const [resetAccountDialogOpen, setResetAccountDialogOpen] = useState(false);
   return (

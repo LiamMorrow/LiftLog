@@ -13,6 +13,7 @@ import {
   FeedIdentity,
   FeedItem,
   FeedUser,
+  FollowRequest,
   SessionFeedItem,
   SharedItem,
   SharedProgramBlueprint,
@@ -285,8 +286,9 @@ export function toFeedStateDao(
     followers: Object.values(state.followers).map((x) =>
       toFeedUserDao(FeedUser.fromPOJO(x)),
     ),
-    // TODO
-    followRequests: [],
+    followRequests: state.followRequests.map((x) =>
+      toFollowRequestDao(FollowRequest.fromPOJO(x)),
+    ),
     identity: state.identity
       .map(FeedIdentity.fromPOJO)
       .map(toFeedIdentityDao)
@@ -306,5 +308,16 @@ export function toSharedItemDao(
       : null;
   return new LiftLog.Ui.Models.SharedItemPayload({
     sharedProgramBlueprint,
+  });
+}
+
+function toFollowRequestDao(
+  request: FollowRequest,
+): LiftLog.Ui.Models.InboxMessageDao {
+  return new LiftLog.Ui.Models.InboxMessageDao({
+    fromUserId: toUuidDao(request.userId),
+    followRequest: {
+      name: toStringValue(request.name),
+    },
   });
 }

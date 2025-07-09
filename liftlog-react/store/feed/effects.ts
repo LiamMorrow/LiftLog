@@ -9,6 +9,7 @@ import {
   selectFeedIdentityRemote,
   setIdentity,
   setIsHydrated,
+  updateFeedIdentity,
 } from '@/store/feed';
 import { LiftLog } from '@/gen/proto';
 import { fromFeedStateDao } from '@/models/storage/conversions.from-dao';
@@ -20,6 +21,7 @@ import { addFeedItemEffects } from '@/store/feed/feed-items-effects';
 import { addInboxEffects } from '@/store/feed/inbox-effects';
 import { addFollowingEffects } from '@/store/feed/following-effects';
 import { ApiResult } from '@/services/feed-api';
+import { selectActiveProgram } from '@/store/program';
 
 const StorageKey = 'FeedState';
 export function applyFeedEffects() {
@@ -192,6 +194,51 @@ export function applyFeedEffects() {
           publishWorkouts: false,
         }),
       );
+    },
+  );
+
+  addEffect(
+    updateFeedIdentity,
+    async (
+      action,
+      { stateAfterReduce, dispatch, extra: { feedIdentityService } },
+    ) => {
+      const feedIdentityRemote = selectFeedIdentityRemote(stateAfterReduce);
+      const { payload } = action;
+      if (!feedIdentityRemote.isSuccess()) {
+        return;
+      }
+      const identity = feedIdentityRemote.data;
+
+      const result = await feedIdentityService.updateFeedIdentityAsync(
+        identity.id,
+        identity.lookup,
+        identity.password,
+        identity.aesKey,
+        identity.rsaKeyPair,
+        payload.name ?? identity.name,
+        payload.profilePicture ?? identity.profilePicture,
+        payload.publishBodyweight ?? identity.publishBodyweight,
+        payload.publishPlan ?? identity.publishPlan,
+        payload.publishWorkouts ?? identity.publishWorkouts,
+        selectActiveProgram(stateAfterReduce).sessions,
+      );
+
+      if (result.isError()) {
+        dispatch(
+          feedApiError({
+            message: 'Failed to update profile',
+            error: result.error,
+            action: {
+              ...action,
+              payload: { ...action.payload, fromUserAction: true },
+            },
+          }),
+        );
+        return;
+      }
+
+      dispatch(setIdentity(RemoteData.success(result.data!)));
     },
   );
 
