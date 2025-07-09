@@ -10,7 +10,7 @@ import {
   fetchSharedItem,
   setSharedItem,
 } from '@/store/feed';
-import { addEffect } from '@/store/listenerMiddleware';
+import { addEffect } from '@/store/store';
 import { toUrlSafeHexString } from '@/utils/to-url-safe-hex-string';
 
 export function addSharedItemEffects() {

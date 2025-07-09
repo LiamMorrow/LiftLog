@@ -10,7 +10,7 @@ import {
   showSnackbar,
   startIncreasingHoldHaptics,
 } from '@/store/app';
-import { addEffect } from '@/store/listenerMiddleware';
+import { addEffect } from '@/store/store';
 import { sleep } from '@/utils/sleep';
 import * as Haptics from 'expo-haptics';
 

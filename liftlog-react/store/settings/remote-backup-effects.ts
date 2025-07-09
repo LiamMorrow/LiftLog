@@ -5,7 +5,7 @@ import {
   toSessionDao,
 } from '@/models/storage/conversions.to-dao';
 import { RemoteData } from '@/models/remote';
-import { addEffect } from '@/store/listenerMiddleware';
+import { addEffect } from '@/store/store';
 import { selectAllPrograms } from '@/store/program';
 import {
   executeRemoteBackup,
@@ -19,6 +19,37 @@ import { toUrlSafeHexString } from '@/utils/to-url-safe-hex-string';
 import { Instant } from '@js-joda/core';
 import 'compression-streams-polyfill';
 import { tolgee } from '@/services/tolgee';
+import { TaskAbortError } from '@reduxjs/toolkit';
+
+// Helper function to yield control back to the event loop
+const yieldToEventLoop = () =>
+  new Promise((resolve) => setTimeout(resolve, 20));
+
+// Process data in chunks to avoid blocking the main thread
+async function processInChunks<T, R>(
+  items: T[],
+  processor: (item: T) => R,
+  chunkSize: number = 100,
+  throwIfCancelled: () => void,
+): Promise<R[]> {
+  const results: R[] = [];
+
+  for (let i = 0; i < items.length; i += chunkSize) {
+    throwIfCancelled();
+
+    const chunk = items.slice(i, i + chunkSize);
+    const chunkResults = chunk.map(processor);
+    results.push(...chunkResults);
+
+    // Yield control back to the event loop after each chunk
+    if (i + chunkSize < items.length) {
+      console.log('yield');
+      await yieldToEventLoop();
+    }
+  }
+
+  return results;
+}
 
 export function addRemoteBackupEffects() {
   addEffect(
@@ -29,8 +60,13 @@ export function addRemoteBackupEffects() {
         getState,
         dispatch,
         extra: { progressRepository, logger, encryptionService },
+        signal,
+        cancelActiveListeners,
+        throwIfCancelled,
       },
     ) => {
+      cancelActiveListeners();
+      const start = performance.now();
       settings ??= getState().settings.remoteBackupSettings;
       const { endpoint, apiKey, includeFeedAccount } = settings;
 
@@ -39,22 +75,43 @@ export function addRemoteBackupEffects() {
       }
 
       try {
-        // Generate data export
-        const sessions = progressRepository.getOrderedSessions().toArray();
-        const savedPrograms = selectAllPrograms(getState());
-        const savedProgramsDao = Object.fromEntries(
-          savedPrograms.map(({ id, program }) => [
-            id,
-            toProgramBlueprintDao(program),
-          ]),
+        throwIfCancelled();
+
+        // Generate data export with chunked processing
+        const sessions = progressRepository.getOrderedSessions();
+        throwIfCancelled();
+
+        // Process sessions in chunks to avoid blocking
+        const processedSessions = await processInChunks(
+          sessions.toArray(),
+          toSessionDao,
+          50, // Process 50 sessions at a time
+          throwIfCancelled,
         );
+
+        throwIfCancelled();
+        const savedPrograms = selectAllPrograms(getState());
+
+        // Process saved programs in chunks
+        const savedProgramEntries = Object.entries(savedPrograms);
+        const processedPrograms = await processInChunks(
+          savedProgramEntries,
+          ([id, { program }]) => [id, toProgramBlueprintDao(program)] as const,
+          20, // Process 20 programs at a time
+          throwIfCancelled,
+        );
+
+        const savedProgramsDao = Object.fromEntries(processedPrograms);
+
+        throwIfCancelled();
         const activeProgramId = getState().program.activeProgramId;
         const feedStateDao = includeFeedAccount
           ? toFeedStateDao(getState().feed)
           : null;
 
+        throwIfCancelled();
         const dao = new LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2({
-          sessions: sessions.map(toSessionDao),
+          sessions: processedSessions,
           activeProgramId: new google.protobuf.StringValue({
             value: activeProgramId,
           }),
@@ -62,22 +119,38 @@ export function addRemoteBackupEffects() {
           savedPrograms: savedProgramsDao,
         });
 
+        // Yield before expensive serialization
+        await yieldToEventLoop();
+        throwIfCancelled();
+
         // Serialize and compress data
         const daoBytes =
           LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2.encode(
             dao,
           ).finish();
 
+        throwIfCancelled();
+
+        // Compression with abort signal monitoring
         const stream = new CompressionStream('gzip');
         const writer = stream.writable.getWriter();
+
+        // Check abort signal before writing
+        throwIfCancelled();
         await writer.write(daoBytes);
         await writer.close();
+
+        throwIfCancelled();
         const readable = stream.readable as ReadableStream<Uint8Array>;
         const compressedBytes = await streamToUint8Array(readable);
 
-        // Calculate hash
+        throwIfCancelled();
+
+        // Calculate hash (CPU intensive)
         const hash = await encryptionService.sha256(daoBytes);
         const hashString = toUrlSafeHexString(hash);
+
+        throwIfCancelled();
 
         // Check if backup is needed (unless forced)
         const currentState = getState().settings;
@@ -87,6 +160,10 @@ export function addRemoteBackupEffects() {
           loading: () => null,
           notAsked: () => null,
         });
+        console.log(
+          `Calculated Hash ${hashString} in `,
+          performance.now() - start,
+        );
 
         if (
           !force &&
@@ -94,6 +171,8 @@ export function addRemoteBackupEffects() {
         ) {
           return;
         }
+
+        throwIfCancelled();
 
         // Prepare HTTP request
         const headers: Record<string, string> = {
@@ -104,7 +183,7 @@ export function addRemoteBackupEffects() {
           headers['X-Api-Key'] = apiKey;
         }
 
-        // Send backup request
+        // Send backup request with abort signal
         const response = await fetch(endpoint, {
           method: 'POST',
           headers,
@@ -114,6 +193,8 @@ export function addRemoteBackupEffects() {
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
+
+        throwIfCancelled();
 
         // Update state on success
         const now = Instant.now();
@@ -139,6 +220,11 @@ export function addRemoteBackupEffects() {
 
         logger.info('Remote backup completed successfully' + hashString);
       } catch (error) {
+        if (error instanceof TaskAbortError) {
+          logger.info('Cancelled due to concurrent remote backup');
+          return; // Don't show error message for user-initiated cancellation
+        }
+
         logger.warn('Failed to backup data to remote server', error);
 
         let errorMessage = 'Failed to backup to remote';

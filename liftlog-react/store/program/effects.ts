@@ -7,7 +7,7 @@ import {
   toProgramBlueprintDao,
   toStringValue,
 } from '@/models/storage/conversions.to-dao';
-import { addEffect } from '@/store/listenerMiddleware';
+import { addEffect } from '@/store/store';
 import {
   fetchUpcomingSessions,
   initializeProgramStateSlice,

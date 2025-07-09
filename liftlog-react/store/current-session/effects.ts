@@ -14,7 +14,7 @@ import {
   setIsHydrated,
   setLatestSetTimerNotificationId,
 } from '@/store/current-session';
-import { addEffect } from '@/store/listenerMiddleware';
+import { addEffect } from '@/store/store';
 import { fetchUpcomingSessions } from '@/store/program';
 import { addStoredSession } from '@/store/stored-sessions';
 import { LocalDateTime } from '@js-joda/core';

@@ -1,5 +1,5 @@
 import { RemoteData } from '@/models/remote';
-import { addEffect } from '@/store/listenerMiddleware';
+import { addEffect } from '@/store/store';
 import {
   initializeSettingsStateSlice,
   setBackupReminder,

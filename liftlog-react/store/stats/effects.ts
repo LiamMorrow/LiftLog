@@ -10,7 +10,7 @@ import {
 import { Duration, LocalDate, LocalDateTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { fetchOverallStats, setOverallStats, setStatsIsLoading } from './index';
-import { addEffect } from '@/store/listenerMiddleware';
+import { addEffect } from '@/store/store';
 import { selectSessionsBy } from '@/store/stored-sessions';
 
 function computeStats(sessions: Session[]): GranularStatisticView | undefined {

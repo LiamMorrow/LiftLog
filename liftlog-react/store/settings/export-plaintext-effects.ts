@@ -1,5 +1,5 @@
 import { RecordedExercise, Session } from '@/models/session-models';
-import { addEffect } from '@/store/listenerMiddleware';
+import { addEffect } from '@/store/store';
 import { exportPlainText } from '@/store/settings';
 import Enumerable from 'linq';
 import { match } from 'ts-pattern';

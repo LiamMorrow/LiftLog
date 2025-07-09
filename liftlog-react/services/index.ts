@@ -12,9 +12,12 @@ import { PreferenceService } from '@/services/preference-service';
 import { ProgressRepository } from '@/services/progress-repository';
 import { SessionService } from '@/services/session-service';
 import { StringSharer } from '@/services/string-sharer';
+import { RootState } from '@/store';
+import { Store } from '@reduxjs/toolkit';
 
-async function createServicesInternal() {
-  const { store } = await import('@/store');
+export type Services = Awaited<ReturnType<typeof resolveServices>>;
+
+function resolveServices(store: Store<RootState>) {
   const logger = new Logger();
   const keyValueStore = new KeyValueStore();
   const progressRepository = new ProgressRepository(store.getState);
@@ -58,14 +61,6 @@ async function createServicesInternal() {
     filePickerService,
     preferenceService,
   };
-}
-export type Services = Awaited<ReturnType<typeof createServicesInternal>>;
-
-// Cache the created services so they only get made once
-let createdServices: Promise<Services> | undefined;
-async function resolveServices(): Promise<Services> {
-  createdServices ??= createServicesInternal();
-  return await createdServices;
 }
 
 export { resolveServices };

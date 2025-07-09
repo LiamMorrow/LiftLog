@@ -4,7 +4,7 @@ import {
   toProgramBlueprintDao,
   toSessionDao,
 } from '@/models/storage/conversions.to-dao';
-import { addEffect } from '@/store/listenerMiddleware';
+import { addEffect } from '@/store/store';
 import { selectAllPrograms } from '@/store/program';
 import { exportData } from '@/store/settings';
 import { streamToUint8Array } from '@/utils/stream';

@@ -8,7 +8,7 @@ import {
   fetchFeedItems,
   setIsFetching,
 } from '@/store/feed';
-import { addEffect } from '@/store/listenerMiddleware';
+import { addEffect } from '@/store/store';
 import { LiftLog } from '@/gen/proto';
 import {
   FeedIdentity,

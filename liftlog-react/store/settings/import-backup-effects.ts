@@ -6,7 +6,7 @@ import {
 } from '@/models/storage/conversions.from-dao';
 import { Logger } from '@/services/logger';
 import { showSnackbar } from '@/store/app';
-import { addEffect } from '@/store/listenerMiddleware';
+import { addEffect } from '@/store/store';
 import {
   createSavedPlan,
   setActivePlan,
