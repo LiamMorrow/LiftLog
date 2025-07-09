@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "LiftLog",
+    "slug": "liftlog-react",
+    "version": "1.0.0",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "scheme": "com.limajuice.liftlogreact",
+    "android": {
+      "package": "com.limajuice.liftlogreact",
+      "edgeToEdgeEnabled": true,
+      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"]
+    },
+    "ios": {
+      "bundleIdentifier": "com.limajuice.liftlogreact",
+      "infoPlist": {
+        "UIViewControllerBasedStatusBarAppearance": true
+      }
+    },
+    "androidStatusBar": {
+      "translucent": true
+    },
+    "jsEngine": "hermes"
+  }
+}

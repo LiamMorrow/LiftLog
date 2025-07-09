@@ -55,19 +55,20 @@ internal partial class DateOnlyDao
 
 internal partial class TimeOnlyDao
 {
-    public TimeOnlyDao(int hour, int minute, int second, int millisecond)
+    public TimeOnlyDao(int hour, int minute, int second, int millisecond, int microsecond)
     {
         Hour = hour;
         Minute = minute;
         Second = second;
         Millisecond = millisecond;
+        Microsecond = microsecond;
     }
 
     public static implicit operator TimeOnly(TimeOnlyDao dao) =>
-        new(dao.Hour, dao.Minute, dao.Second, dao.Millisecond);
+        new(dao.Hour, dao.Minute, dao.Second, dao.Millisecond, dao.Microsecond);
 
     public static implicit operator TimeOnlyDao(TimeOnly model) =>
-        new(model.Hour, model.Minute, model.Second, model.Millisecond);
+        new(model.Hour, model.Minute, model.Second, model.Millisecond, model.Microsecond);
 
     public static implicit operator TimeOnly?(TimeOnlyDao? dao) =>
         dao is null ? null : (TimeOnly)dao;
@@ -80,12 +81,12 @@ internal partial class UuidDao
 {
     public UuidDao(Guid value)
     {
-        Value = ByteString.CopyFrom(value.ToByteArray());
+        Value = UnsafeByteOperations.UnsafeWrap(value.ToByteArray());
     }
 
     public static implicit operator UuidDao(Guid value) => new(value);
 
-    public static implicit operator Guid(UuidDao dao) => new(dao.Value.ToByteArray());
+    public static implicit operator Guid(UuidDao dao) => new(dao.Value.Span);
 
     public static implicit operator UuidDao?(Guid? value) =>
         value is null ? null : (UuidDao)value.Value;

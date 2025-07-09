@@ -1,0 +1,13 @@
+diff --git a/node_modules/linq/linq.d.ts b/node_modules/linq/linq.d.ts
+index 5faa252..380b627 100644
+--- a/node_modules/linq/linq.d.ts
++++ b/node_modules/linq/linq.d.ts
+@@ -230,7 +230,7 @@ declare namespace Enumerable {
+ 
+   export interface IDictionary<TKey, TValue> {
+     add(key: TKey, value: TValue): void;
+-    get(key: TKey): TValue;
++    get(key: TKey): TValue | undefined;
+     set(key: TKey, value: TValue): boolean;
+     contains(key: TKey): boolean;
+     clear(): void;
