@@ -53,6 +53,7 @@
     "react-dom": "19.0.0",
     "react-native": "0.79.5",
     "react-native-csv": "^0.2.0",
+    "react-native-executorch": "^0.4.7",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-gifted-charts": "^1.4.61",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",

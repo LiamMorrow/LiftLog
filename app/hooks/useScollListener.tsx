@@ -1,4 +1,3 @@
-import { useMountEffect } from '@/hooks/useMountEffect';
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 
@@ -56,8 +55,6 @@ export const useScroll = (invertedScroll?: boolean): ScrollContextValues => {
   const [scrollHandlerLastFired, setScrollHandlerLastFired] = useState<
     boolean | undefined
   >(undefined);
-
-  useMountEffect(() => ctx.setScrolled(!!invertedScroll));
 
   return {
     ...ctx,

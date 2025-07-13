@@ -6,24 +6,32 @@ import { Stack } from 'expo-router';
 import { FlatList, View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useDispatch } from 'react-redux';
-import { IconButton, Searchbar } from 'react-native-paper';
+import { IconButton, TextInput } from 'react-native-paper';
 import { useState } from 'react';
 import { useAppSelector } from '@/store';
-import { addMessage, ChatMessage } from '@/store/ai-planner';
+import {
+  addMessage,
+  ChatMessage,
+  selectIsLoadingAiPlannerMessage,
+} from '@/store/ai-planner';
 import Animated, { ZoomInLeft, ZoomInRight } from 'react-native-reanimated';
 import { uuid } from '@/utils/uuid';
 import { useScroll } from '@/hooks/useScollListener';
+import { LoadingDots } from '@/components/presentation/loading-dots';
 
 export default function AiPlanner() {
   const { t } = useTranslate();
   const dispatch = useDispatch();
   const messages = useAppSelector((x) => x.aiPlanner.plannerChat);
   const { handleScroll } = useScroll(true);
+  const isLoadingResponse = useAppSelector(selectIsLoadingAiPlannerMessage);
 
   const [messageText, setMessageText] = useState('');
   const sendMessage = (message: string) => {
-    setMessageText('');
-    dispatch(addMessage({ from: 'User', message, id: uuid() }));
+    if (!isLoadingResponse) {
+      setMessageText('');
+      dispatch(addMessage({ from: 'User', message, id: uuid() }));
+    }
   };
 
   return (
@@ -62,23 +70,33 @@ export default function AiPlanner() {
         style={{
           paddingHorizontal: spacing.pageHorizontalMargin,
           paddingVertical: spacing[2],
+          flexDirection: 'row',
+          alignItems: 'center',
         }}
       >
-        <Searchbar
+        <TextInput
           value={messageText}
+          style={{
+            flex: 1,
+            borderRadius: 30,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+          }}
           onChangeText={setMessageText}
-          right={(props) => (
-            <IconButton
-              icon={'send'}
-              onPress={() => sendMessage(messageText)}
-              {...props}
-            />
-          )}
-          icon={'promptSuggestion'}
+          multiline
           placeholder={t('Type your message')}
           onSubmitEditing={(e) => sendMessage(e.nativeEvent.text)}
           submitBehavior="submit"
-        ></Searchbar>
+          returnKeyType="send"
+          underlineStyle={{ display: 'none' }}
+        />
+
+        <IconButton
+          mode="contained-tonal"
+          icon={'send'}
+          size={35}
+          onPress={() => sendMessage(messageText)}
+        />
       </View>
     </KeyboardAvoidingView>
   );
@@ -128,6 +146,7 @@ function ChatBubble(props: {
         <SurfaceText color={isUser ? 'onPrimary' : 'onSurface'}>
           {message.message}
         </SurfaceText>
+        {message.isLoading && !message.message && <LoadingDots />}
       </Animated.View>
     </View>
   );
