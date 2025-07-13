@@ -16,6 +16,7 @@ import storedSessionsReducer from './stored-sessions';
 import sessionEditorReducer from './session-editor';
 import { statsReducer } from '@/store/stats';
 import { resolveServices, Services } from '@/services';
+import { aiPlannerReducer } from '@/store/ai-planner';
 
 const listenerMiddleware = createListenerMiddleware({
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
@@ -31,6 +32,7 @@ const store = configureStore({
     }).prepend(listenerMiddleware.middleware),
   reducer: combineReducers({
     currentSession: currentSessionReducer,
+    aiPlanner: aiPlannerReducer,
     settings: settingsReducer,
     program: programReducer,
     feed: feedReducer,

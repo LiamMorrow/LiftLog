@@ -1,13 +1,7 @@
 import { LiftLog } from '@/gen/proto';
-import { AiWorkoutAttributes, AiWorkoutPlan } from '@/models/ai-models';
 import { RemoteData } from '@/models/remote';
 import { DayOfWeek, Instant } from '@js-joda/core';
-import {
-  createAction,
-  createSlice,
-  Draft,
-  PayloadAction,
-} from '@reduxjs/toolkit';
+import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type ColorSchemeSeed = 'default' | `#${string}`;
 
@@ -20,10 +14,7 @@ export type LastBackup = {
 interface SettingsState {
   firstDayOfWeek: DayOfWeek;
   isHydrated: boolean;
-  aiWorkoutAttributes: AiWorkoutAttributes | undefined;
-  isGeneratingAiPlan: boolean;
-  aiPlanError: string | undefined;
-  aiPlan: AiWorkoutPlan | undefined;
+
   useImperialUnits: boolean;
   showBodyweight: boolean;
   showTips: boolean;
@@ -45,10 +36,6 @@ interface RemoteBackupSettings {
 const initialState: SettingsState = {
   isHydrated: false,
   firstDayOfWeek: DayOfWeek.SUNDAY,
-  aiWorkoutAttributes: undefined,
-  isGeneratingAiPlan: false,
-  aiPlanError: undefined,
-  aiPlan: undefined,
   useImperialUnits: false,
   showBodyweight: true,
   showTips: true,
@@ -71,21 +58,6 @@ const settingsSlice = createSlice({
   reducers: {
     setIsHydrated(state, action: PayloadAction<boolean>) {
       state.isHydrated = action.payload;
-    },
-    setIsGeneratingAiPlan(state, action: PayloadAction<boolean>) {
-      state.isGeneratingAiPlan = action.payload;
-    },
-    setAiPlanError(state, action: PayloadAction<string | undefined>) {
-      state.aiPlanError = action.payload;
-    },
-    setAiPlan(state, action: PayloadAction<AiWorkoutPlan | undefined>) {
-      state.aiPlan = action.payload as unknown as Draft<AiWorkoutPlan>;
-    },
-    setAiWorkoutAttributes(
-      state,
-      action: PayloadAction<AiWorkoutAttributes | undefined>,
-    ) {
-      state.aiWorkoutAttributes = action.payload;
     },
     setUseImperialUnits(state, action: PayloadAction<boolean>) {
       state.useImperialUnits = action.payload;
@@ -154,10 +126,6 @@ export const remoteBackupSucceeded = createAction('remoteBackupSucceeded');
 
 export const {
   setIsHydrated,
-  setIsGeneratingAiPlan,
-  setAiPlanError,
-  setAiPlan,
-  setAiWorkoutAttributes,
   setUseImperialUnits,
   setShowBodyweight,
   setShowTips,

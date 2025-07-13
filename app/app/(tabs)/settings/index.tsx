@@ -27,7 +27,6 @@ export default function Settings() {
           description={t('ManagePlansSubtitle')}
           left={(props) => <List.Icon icon={'assignment'} {...props} />}
         ></List.Item>
-        {/* TODO pro features */}
         <List.Item
           onPress={() => push('/(tabs)/settings/app-configuration')}
           title={t('AppConfiguration')}
@@ -49,6 +48,17 @@ export default function Settings() {
           left={(props) => (
             <List.Icon icon={'settingsBackupRestore'} {...props} />
           )}
+        ></List.Item>
+      </List.Section>
+
+      <List.Section title={t('ProFeatures')}>
+        {/* TODO pro */}
+
+        <List.Item
+          onPress={() => push('/(tabs)/settings/ai/planner')}
+          title={t('AiPlanner')}
+          description={t('AiPlannerSubtitle')}
+          left={(props) => <List.Icon icon={'bolt'} {...props} />}
         ></List.Item>
       </List.Section>
 

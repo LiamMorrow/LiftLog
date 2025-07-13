@@ -290,5 +290,6 @@
   "SessionsInMonth": "Sessions in month",
   "SessionNotesFor{name}": "Session notes for {name}",
   "SetFirstDayOfWeek": "First day of the week",
-  "SetFirstDayOfWeekSubtitle": "Set the first day of the week for the calendar"
+  "SetFirstDayOfWeekSubtitle": "Set the first day of the week for the calendar",
+  "Type your message": "Type your message"
 }

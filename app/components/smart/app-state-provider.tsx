@@ -2,7 +2,6 @@ import { Loader } from '@/components/presentation/loader';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
 import { ReactNode } from 'react';
-import { View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 export default function AppStateProvider(props: { children: ReactNode }) {
@@ -12,7 +11,8 @@ export default function AppStateProvider(props: { children: ReactNode }) {
       getLoadMessage(s.currentSession, 'current session') ||
       getLoadMessage(s.program, 'program') ||
       getLoadMessage(s.settings, 'settings') ||
-      getLoadMessage(s.storedSessions, 'stored sessions'),
+      getLoadMessage(s.storedSessions, 'stored sessions') ||
+      getLoadMessage(s.aiPlanner, 'ai planner'),
   );
   const { colors } = useAppTheme();
 

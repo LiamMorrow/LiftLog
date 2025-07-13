@@ -11,6 +11,7 @@ import SnackbarProvider from '@/components/smart/snackbar-provider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import '@/utils/date-locale';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 // import { install } from 'react-native-quick-crypto';
 
@@ -24,35 +25,37 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   return (
     <GestureHandlerRootView>
-      <Provider store={store}>
-        <SafeAreaProvider>
-          <TolgeeProvider tolgee={tolgee} fallback={<Text>Loading...</Text>}>
-            <AppThemeProvider>
-              <Stack
-                layout={(e) => (
-                  <AppStateProvider>
-                    <SnackbarProvider>{e.children}</SnackbarProvider>
-                  </AppStateProvider>
-                )}
-                screenOptions={{
-                  headerShown: false,
-                  statusBarTranslucent: true,
-                  statusBarBackgroundColor: 'transparent',
-                  navigationBarTranslucent: true,
-                  navigationBarColor: 'transparent',
-                  statusBarStyle:
-                    Platform.OS === 'android'
-                      ? colorScheme === 'dark'
-                        ? 'light'
-                        : 'dark'
-                      : undefined,
-                  gestureEnabled: false,
-                }}
-              />
-            </AppThemeProvider>
-          </TolgeeProvider>
-        </SafeAreaProvider>
-      </Provider>
+      <KeyboardProvider>
+        <Provider store={store}>
+          <SafeAreaProvider>
+            <TolgeeProvider tolgee={tolgee} fallback={<Text>Loading...</Text>}>
+              <AppThemeProvider>
+                <Stack
+                  layout={(e) => (
+                    <AppStateProvider>
+                      <SnackbarProvider>{e.children}</SnackbarProvider>
+                    </AppStateProvider>
+                  )}
+                  screenOptions={{
+                    headerShown: false,
+                    statusBarTranslucent: true,
+                    statusBarBackgroundColor: 'transparent',
+                    navigationBarTranslucent: true,
+                    navigationBarColor: 'transparent',
+                    statusBarStyle:
+                      Platform.OS === 'android'
+                        ? colorScheme === 'dark'
+                          ? 'light'
+                          : 'dark'
+                        : undefined,
+                    gestureEnabled: false,
+                  }}
+                />
+              </AppThemeProvider>
+            </TolgeeProvider>
+          </SafeAreaProvider>
+        </Provider>
+      </KeyboardProvider>
     </GestureHandlerRootView>
   );
 }

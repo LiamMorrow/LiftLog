@@ -9,6 +9,10 @@ import { msContentCopy } from '@material-symbols-react-native/outlined-400/msCon
 import { msDelete } from '@material-symbols-react-native/outlined-400/msDelete';
 import { msEdit } from '@material-symbols-react-native/outlined-400/msEdit';
 import { msFitnessCenter } from '@material-symbols-react-native/outlined-400/msFitnessCenter';
+import { msBolt } from '@material-symbols-react-native/outlined-400/msBolt';
+import { msStar } from '@material-symbols-react-native/outlined-400/msStar';
+import { msPromptSuggestion } from '@material-symbols-react-native/outlined-400/msPromptSuggestion';
+import { msSend } from '@material-symbols-react-native/outlined-400/msSend';
 import { msFitnessCenterFill } from '@material-symbols-react-native/outlined-400/msFitnessCenterFill';
 import { msHistory } from '@material-symbols-react-native/outlined-400/msHistory';
 import { msInfo } from '@material-symbols-react-native/outlined-400/msInfo';
@@ -30,7 +34,6 @@ import { msSettingsBackupRestore } from '@material-symbols-react-native/outlined
 import { msShare } from '@material-symbols-react-native/outlined-400/msShare';
 import { msIosShare } from '@material-symbols-react-native/outlined-400/msIosShare';
 import { msShareWindows } from '@material-symbols-react-native/outlined-400/msShareWindows';
-import { msStar } from '@material-symbols-react-native/outlined-400/msStar';
 import { msTextAd } from '@material-symbols-react-native/outlined-400/msTextAd';
 import { msTranslate } from '@material-symbols-react-native/outlined-400/msTranslate';
 import { msWeight } from '@material-symbols-react-native/outlined-400/msWeight';
@@ -101,6 +104,10 @@ const MaterialSymbols = {
   notesFill: msNotesFill,
   notifications: msNotifications,
   plus: msAdd,
+  star: msStar,
+  promptSuggestion: msPromptSuggestion,
+  send: msSend,
+  bolt: msBolt,
   remove: msRemove,
   save: msSave,
   forum: msForum,
@@ -121,7 +128,6 @@ const MaterialSymbols = {
     .with('web', () => msShare)
     .with('windows', () => msShareWindows)
     .otherwise(() => msShare),
-  star: msStar,
   text: msTextAd,
   reload: msRefresh,
   check: msCheck,
