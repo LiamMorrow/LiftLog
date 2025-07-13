@@ -12,7 +12,6 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  interpolate,
 } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import {
@@ -42,7 +41,6 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
   const { colors } = useAppTheme();
   const holdingScale = useSharedValue(1);
   const { t } = useTranslate();
-  const showWeightAnimatedValue = useSharedValue(props.showWeight ? 1 : 0);
   const [isHolding, setIsHolding] = useState(false);
   const [isWeightDialogOpen, setIsWeightDialogOpen] = useState(false);
   const repCountValue = props.set?.set?.repsCompleted;
@@ -62,40 +60,12 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
       value: 'thisSet',
     },
   ];
-  useEffect(() => {
-    showWeightAnimatedValue.value = withTiming(props.showWeight ? 1 : 0, {
-      duration: 150,
-    });
-  }, [props.showWeight, showWeightAnimatedValue]);
 
   useEffect(() => {
     holdingScale.value = withTiming(isHolding ? 1.1 : 1, {
       duration: 400,
     });
   }, [holdingScale, isHolding]);
-
-  const borderRadiusStyle = useAnimatedStyle(() => ({
-    borderBottomLeftRadius: interpolate(
-      showWeightAnimatedValue.value,
-      [0, 1],
-      [10, 0],
-    ),
-    borderBottomRightRadius: interpolate(
-      showWeightAnimatedValue.value,
-      [0, 1],
-      [10, 0],
-    ),
-  }));
-
-  const heightStyle = useAnimatedStyle(() => ({
-    height: interpolate(showWeightAnimatedValue.value, [0, 1], [0, spacing[9]]),
-    width: interpolate(showWeightAnimatedValue.value, [0, 1], [0, spacing[14]]),
-    padding: interpolate(
-      showWeightAnimatedValue.value,
-      [0, 1],
-      [0, spacing[2]],
-    ),
-  }));
 
   const scaleStyle = useAnimatedStyle(() => ({
     transform: [{ scale: holdingScale.value }],
@@ -141,9 +111,8 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
         style={[
           scaleStyle,
           {
-            justifyContent: 'center',
-            alignItems: 'center',
             userSelect: 'none',
+            minWidth: spacing[16],
           },
         ]}
       >
@@ -154,16 +123,13 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
               borderTopRightRadius: 10,
               overflow: 'hidden',
             },
-            borderRadiusStyle,
           ]}
         >
           <TouchableRipple
             style={{
-              aspectRatio: 1,
               flexShrink: 0,
               padding: 0,
-              height: spacing[14],
-              width: spacing[14],
+              height: spacing[16],
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor:
@@ -180,27 +146,32 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
                   repCountValue !== undefined
                     ? colors.onPrimary
                     : colors.onSecondaryContainer,
+                ...font['text-xl'],
               }}
             >
               <Text style={{ fontWeight: 'bold' }}>{repCountValue ?? '-'}</Text>
-              <Text style={{ fontSize: 12, verticalAlign: 'top' }}>
+              <Text
+                style={{
+                  ...font['text-sm'],
+                  verticalAlign: 'top',
+                }}
+              >
                 /{props.maxReps}
               </Text>
             </Text>
           </TouchableRipple>
         </Animated.View>
         <Animated.View
-          style={[
-            {
-              borderTopWidth: 1,
-              borderColor: colors.outline,
-              backgroundColor: colors.surfaceContainerHigh,
-              borderBottomLeftRadius: 10,
-              borderBottomRightRadius: 10,
-              overflow: 'hidden',
-            },
-            heightStyle,
-          ]}
+          style={{
+            borderTopWidth: 1,
+            borderColor: colors.outline,
+            backgroundColor: colors.surfaceContainerHigh,
+            borderBottomLeftRadius: 10,
+            borderBottomRightRadius: 10,
+            overflow: 'hidden',
+            padding: spacing[2],
+            width: '100%',
+          }}
         >
           <TouchableRipple
             style={{
@@ -213,7 +184,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
             }
             disabled={props.isReadonly}
           >
-            <Text style={{ color: colors.onSurface, ...font['text-xs'] }}>
+            <Text style={{ color: colors.onSurface, ...font['text-sm'] }}>
               <WeightFormat weight={props.set.weight} />
             </Text>
           </TouchableRipple>

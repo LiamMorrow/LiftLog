@@ -22,9 +22,10 @@ export class SessionService {
     private getState: () => RootState,
   ) {}
 
-  *getUpcomingSessions(
+  // TODO this is super inefficient, it should probably be done ahead of time or with a dirty mark.
+  async *getUpcomingSessions(
     sessionBlueprints: SessionBlueprint[],
-  ): IterableIterator<Session> {
+  ): AsyncIterableIterator<Session> {
     const currentState = this.getState();
     const currentSession = Session.fromPOJO(
       currentState.currentSession.workoutSession,
@@ -36,9 +37,11 @@ export class SessionService {
     if (!sessionBlueprints.length) {
       return;
     }
+    await yieldToEventLoop();
 
     const latestRecordedExercises =
       this.progressRepository.getLatestRecordedExercises();
+    await yieldToEventLoop();
     let latestSession = match(currentSession)
       .with({ isStarted: true }, (x) => x)
       .otherwise(() =>
@@ -46,6 +49,7 @@ export class SessionService {
           .getOrderedSessions()
           .firstOrDefault((x) => !x.isFreeform),
       );
+    await yieldToEventLoop();
     if (!latestSession) {
       latestSession = this.createNewSession(
         sessionBlueprints[0],
@@ -139,3 +143,6 @@ export class SessionService {
     );
   }
 }
+
+// Helper function to yield control back to the event loop
+const yieldToEventLoop = () => new Promise((resolve) => setTimeout(resolve, 5));

@@ -43,7 +43,6 @@ async function processInChunks<T, R>(
 
     // Yield control back to the event loop after each chunk
     if (i + chunkSize < items.length) {
-      console.log('yield');
       await yieldToEventLoop();
     }
   }
@@ -85,7 +84,7 @@ export function addRemoteBackupEffects() {
         const processedSessions = await processInChunks(
           sessions.toArray(),
           toSessionDao,
-          50, // Process 50 sessions at a time
+          50,
           throwIfCancelled,
         );
 

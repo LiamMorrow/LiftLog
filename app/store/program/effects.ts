@@ -20,7 +20,7 @@ import {
 } from '@/store/program';
 import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
-import Enumerable from 'linq';
+import { AsyncStream } from 'data-async-iterators';
 
 const storageKey = 'SavedPrograms';
 export function applyProgramEffects() {
@@ -169,7 +169,7 @@ export function applyProgramEffects() {
 
   addEffect(
     fetchUpcomingSessions,
-    (
+    async (
       _,
       {
         signal,
@@ -181,6 +181,7 @@ export function applyProgramEffects() {
     ) => {
       const start = performance.now();
       cancelActiveListeners();
+      await yieldToEventLoop();
 
       const state = getState();
       const sessionBlueprints = selectActiveProgram(state).sessions;
@@ -189,7 +190,9 @@ export function applyProgramEffects() {
       if (signal.aborted) {
         return;
       }
-      const sessions = Enumerable.from(
+      await yieldToEventLoop();
+
+      const sessions = await AsyncStream.from(
         sessionService.getUpcomingSessions(sessionBlueprints),
       )
         .takeWhile(() => !signal.aborted)
@@ -203,3 +206,5 @@ export function applyProgramEffects() {
     },
   );
 }
+// Helper function to yield control back to the event loop
+const yieldToEventLoop = () => new Promise((resolve) => setTimeout(resolve, 5));
