@@ -45,6 +45,8 @@
     "expo-sharing": "~13.1.5",
     "expo-splash-screen": "~0.30.10",
     "expo-status-bar": "~2.2.3",
+    "jsonrepair": "^3.13.0",
+    "jsonschema": "^1.5.0",
     "linq": "^4.0.3",
     "material-symbols-react-native": "^1.0.3",
     "protobufjs": "^7.5.0",
@@ -73,7 +75,8 @@
     "react-redux": "^9.2.0",
     "ts-pattern": "^5.6.2",
     "use-debounce": "^10.0.4",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "zod": "^4.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -13,6 +13,7 @@ import {
   addMessage,
   ChatMessage,
   selectIsLoadingAiPlannerMessage,
+  stopAiGenerator,
 } from '@/store/ai-planner';
 import Animated, { ZoomInLeft, ZoomInRight } from 'react-native-reanimated';
 import { uuid } from '@/utils/uuid';
@@ -28,7 +29,7 @@ export default function AiPlanner() {
 
   const [messageText, setMessageText] = useState('');
   const sendMessage = (message: string) => {
-    if (!isLoadingResponse) {
+    if (!isLoadingResponse && message) {
       setMessageText('');
       dispatch(addMessage({ from: 'User', message, id: uuid() }));
     }
@@ -85,14 +86,23 @@ export default function AiPlanner() {
           onChangeText={setMessageText}
           multiline
           placeholder={t('Type your message')}
-          onSubmitEditing={(e) => sendMessage(e.nativeEvent.text)}
+          onSubmitEditing={(e) => setMessageText(e.nativeEvent.text + '\n')}
           submitBehavior="submit"
-          returnKeyType="send"
+          returnKeyType="default"
           underlineStyle={{ display: 'none' }}
         />
 
+        {isLoadingResponse && (
+          <IconButton
+            mode="outlined"
+            icon={'stop'}
+            size={35}
+            onPress={() => dispatch(stopAiGenerator())}
+          />
+        )}
+
         <IconButton
-          mode="contained-tonal"
+          mode="contained"
           icon={'send'}
           size={35}
           onPress={() => sendMessage(messageText)}

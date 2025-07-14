@@ -3,9 +3,15 @@ import {
   ChatMessage,
   initializeAiPlannerStateSlice,
   restartChat,
+  stopAiGenerator,
   updateMessage,
 } from '@/store/ai-planner';
 import { setIsHydrated } from '@/store/ai-planner';
+import {
+  getStructuredOutputPrompt,
+  PLAN_SCHEMA,
+  PLAN_TOKEN,
+} from '@/store/ai-planner/tool-schemas';
 import { addEffect } from '@/store/store';
 import { uuid } from '@/utils/uuid';
 import {
@@ -32,20 +38,30 @@ export function applyAiPlannerEffects() {
       chatConfig: {
         systemPrompt: `You only cater to requests to create gym plans.
         DO NOT get sidetracked by nutrition or weird questions. You just create workouts, possibly entire plans for weekly sessions.
-        A workout can consist of exercises which are an amount of reps for an amount of sets.`,
+        A workout can consist of exercises which are an amount of reps for an amount of sets. Prefer shorter responses.
+        When a user messages with "${PLAN_TOKEN}" you MUST respond in JSON format with the users question parsed. It's important you only do this when they send that message.
+        \n${getStructuredOutputPrompt(PLAN_SCHEMA)}\n /no_think`,
+        contextWindowLength: 20,
       },
     });
     dispatch(setIsHydrated(true));
+    dispatch(
+      addMessage({
+        from: 'User',
+        id: uuid(),
+        message: 'Gimme a plan with a single day and single exercise',
+      }),
+    );
   });
 
   addEffect(
     addMessage,
     async ({ payload: message }, { getState, dispatch }) => {
-      if (message.from === 'System') {
+      if (message.from === 'Agent') {
         return;
       }
       const originalMessage: ChatMessage = {
-        from: 'System',
+        from: 'Agent',
         id: uuid(),
         message: '',
         isLoading: true,
@@ -69,16 +85,18 @@ export function applyAiPlannerEffects() {
           );
         },
       });
-      const response = await LLMModule.sendMessage(message.message);
+      await LLMModule.sendMessage(message.message);
       dispatch(
         updateMessage({
           id: originalMessage.id,
-          message: response.at(-1)!.content,
           isLoading: false,
         }),
       );
     },
   );
+  addEffect(stopAiGenerator, (_, { getState }) => {
+    LLMModule.interrupt();
+  });
   addEffect(restartChat, async () => {
     await LLMModule.deleteMessage(0);
   });

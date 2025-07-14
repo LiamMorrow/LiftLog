@@ -1,7 +1,7 @@
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface ChatMessage {
-  from: 'User' | 'System';
+  from: 'User' | 'Agent';
   message: string;
   id: string;
   isLoading?: boolean;
@@ -73,5 +73,7 @@ export const {
 } = aiPlannerSlice.actions;
 
 export const { selectIsLoadingAiPlannerMessage } = aiPlannerSlice.selectors;
+
+export const stopAiGenerator = createAction('stopAiGenerator');
 
 export const aiPlannerReducer = aiPlannerSlice.reducer;

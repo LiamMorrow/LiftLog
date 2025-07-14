@@ -30,6 +30,7 @@ import { msSave } from '@material-symbols-react-native/outlined-400/msSave';
 import { msError } from '@material-symbols-react-native/outlined-400/msError';
 import { msSettings } from '@material-symbols-react-native/outlined-400/msSettings';
 import { msSettingsFill } from '@material-symbols-react-native/outlined-400/msSettingsFill';
+import { msStop } from '@material-symbols-react-native/outlined-400/msStop';
 import { msSettingsBackupRestore } from '@material-symbols-react-native/outlined-400/msSettingsBackupRestore';
 import { msShare } from '@material-symbols-react-native/outlined-400/msShare';
 import { msIosShare } from '@material-symbols-react-native/outlined-400/msIosShare';
@@ -120,6 +121,7 @@ const MaterialSymbols = {
   public: msPublic,
   publicFill: msPublicFill,
   vpnKey: msVpnKey,
+  stop: msStop,
   vpnKeyFill: msVpnKeyFill,
   share: match(Platform.OS)
     .with('ios', () => msIosShare)
