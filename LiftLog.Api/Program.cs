@@ -4,6 +4,7 @@ using FluentValidation;
 using Google.Apis.AndroidPublisher.v3;
 using Google.Apis.Auth.OAuth2;
 using LiftLog.Api.Db;
+using LiftLog.Api.Hubs;
 using LiftLog.Api.Service;
 using LiftLog.Api.Validators;
 using LiftLog.Lib.Serialization;
@@ -40,12 +41,15 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddSignalR();
+
 var openAiApiKey =
     builder.Configuration.GetValue<string?>("OpenAiApiKey")
     ?? throw new Exception("OpenAiApiKey configuration is not set.");
 builder.Services.RegisterGptAiWorkoutPlanner(openAiApiKey);
 
 builder.Services.AddSingleton<PasswordService>();
+builder.Services.AddScoped<GptChatWorkoutPlanner>();
 builder.Services.AddHttpClient<AppleAppStorePurchaseVerificationService>();
 builder.Services.AddScoped<RateLimitService>();
 builder.Services.AddScoped<PurchaseVerificationService>();
@@ -109,6 +113,9 @@ app.UseCors();
 app.UseHttpsRedirection();
 
 app.MapControllers();
+
+// Map SignalR Hubs
+app.MapHub<AiWorkoutChatHub>("/ai-chat");
 
 app.MapMethods(
     "/health",
