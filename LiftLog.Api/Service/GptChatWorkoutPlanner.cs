@@ -39,12 +39,10 @@ public class GptChatWorkoutPlanner
                     new(
                         Role.System,
                         """
-                        You are a knowledgeable and enthusiastic personal fitness trainer and workout assistant.
-                        You help users with workout planning, exercise form, nutrition advice, and fitness goals.
-                        You only provide information related to fitness, health, and wellness.
-                        Keep your responses helpful, encouraging, and focused on the user's fitness journey.
-                        If asked about topics unrelated to fitness, politely redirect the conversation back to health and fitness.
-                        Only call the tool when a user says "MAKE_NOW"
+                        You only cater to requests to create gym plans. If a user asks for a plan, just make one. Don't ask them any more questions.
+                        DO NOT get sidetracked by nutrition or weird questions. You just create workouts, possibly entire plans for weekly sessions.
+                        A workout can consist of exercises which are an amount of reps for an amount of sets. Prefer shorter responses.
+                        You must call the plan tool if the user says "GET_PLAN". Do not answer directly unless asking for clarification.
                         """
                     ),
                 ]
@@ -69,11 +67,12 @@ public class GptChatWorkoutPlanner
             // Create chat request with conversation history
             var chatRequest = new ChatRequest(
                 messages,
-                model: OpenAI.Models.Model.GPT4,
+                model: OpenAI.Models.Model.GPT4o,
                 tools: tools,
                 toolChoice: "auto",
-                maxTokens: 500 // Limit response length for chat
+                maxTokens: 16_384
             );
+            Console.WriteLine(String.Join(',', messages.Select(x => x.Content as string)));
 
             var message = "";
             string? toolCallName = null;
@@ -104,7 +103,8 @@ public class GptChatWorkoutPlanner
                     {
                         await callback(new AiChatPlanResponse(plan));
                     }
-                }
+                },
+                streamUsage: true
             );
             var assistantResponse = result.FirstChoice.Message;
 
@@ -115,7 +115,7 @@ public class GptChatWorkoutPlanner
             if (messages.Count > 21) // System message + 20 conversation messages
             {
                 var systemMessage = messages[0];
-                var recentMessages = messages.Skip(messages.Count - 20).ToList();
+                var recentMessages = messages[2..];
                 messages.Clear();
                 messages.Add(systemMessage);
                 messages.AddRange(recentMessages);

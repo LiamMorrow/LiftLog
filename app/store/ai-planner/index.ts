@@ -1,11 +1,23 @@
+import { AiWorkoutPlan } from '@/models/ai-models';
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export interface ChatMessage {
+export interface AiChatResponse {
   from: 'User' | 'Agent';
-  message: string;
   id: string;
   isLoading?: boolean;
 }
+
+interface AiChatPlanResponse extends AiChatResponse {
+  type: 'chatPlan';
+  plan: AiWorkoutPlan;
+}
+
+interface AiChatMessageResponse extends AiChatResponse {
+  type: 'messageResponse';
+  message: string;
+}
+
+export type ChatMessage = AiChatMessageResponse | AiChatPlanResponse;
 
 const initialState: AppState = {
   isHydrated: false,
@@ -27,18 +39,12 @@ const aiPlannerSlice = createSlice({
     addMessage(state, action: PayloadAction<ChatMessage>) {
       state.plannerChat.unshift(action.payload);
     },
-    updateMessage(
-      state,
-      action: PayloadAction<{ id: string } & Partial<ChatMessage>>,
-    ) {
+    updateMessage(state, action: PayloadAction<ChatMessage>) {
       const messageIndex = state.plannerChat.findIndex(
         (x) => x.id === action.payload.id,
       );
       if (messageIndex !== -1) {
-        state.plannerChat[messageIndex] = {
-          ...state.plannerChat[messageIndex],
-          ...action.payload,
-        };
+        state.plannerChat[messageIndex] = action.payload;
       }
     },
     removeMessage(state, action: PayloadAction<string>) {

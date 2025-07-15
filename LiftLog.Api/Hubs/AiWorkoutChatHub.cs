@@ -4,23 +4,19 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace LiftLog.Api.Hubs;
 
-public record ChatMessage(string Id, AiChatResponse Message);
-
 public interface IChatClient
 {
-    Task ReceiveMessage(ChatMessage message);
+    Task ReceiveMessage(AiChatResponse message);
 }
 
 public class AiWorkoutChatHub(GptChatWorkoutPlanner planner) : Hub<IChatClient>
 {
     public async Task SendMessage(string message)
     {
-        // TODO auth
-        var responseId = Guid.CreateVersion7().ToString();
         await planner.SendMessageAsync(
             Context.ConnectionId,
             message,
-            response => Clients.Caller.ReceiveMessage(new ChatMessage(responseId, response))
+            Clients.Caller.ReceiveMessage
         );
     }
 

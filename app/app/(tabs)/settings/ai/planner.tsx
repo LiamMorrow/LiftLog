@@ -18,7 +18,6 @@ import {
 import Animated, { ZoomInLeft, ZoomInRight } from 'react-native-reanimated';
 import { uuid } from '@/utils/uuid';
 import { useScroll } from '@/hooks/useScollListener';
-import { LoadingDots } from '@/components/presentation/loading-dots';
 
 export default function AiPlanner() {
   const { t } = useTranslate();
@@ -31,7 +30,14 @@ export default function AiPlanner() {
   const sendMessage = (message: string) => {
     if (!isLoadingResponse && message) {
       setMessageText('');
-      dispatch(addMessage({ from: 'User', message, id: uuid() }));
+      dispatch(
+        addMessage({
+          from: 'User',
+          message,
+          id: uuid(),
+          type: 'messageResponse',
+        }),
+      );
     }
   };
 
@@ -153,10 +159,13 @@ function ChatBubble(props: {
           maxWidth: '90%',
         }}
       >
-        <SurfaceText color={isUser ? 'onPrimary' : 'onSurface'}>
-          {message.message}
-        </SurfaceText>
-        {message.isLoading && !message.message && <LoadingDots />}
+        {message.type === 'messageResponse' ? (
+          <SurfaceText color={isUser ? 'onPrimary' : 'onSurface'}>
+            {message.message}
+          </SurfaceText>
+        ) : (
+          <SurfaceText>PLANN {JSON.stringify(message.plan)}</SurfaceText>
+        )}
       </Animated.View>
     </View>
   );

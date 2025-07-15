@@ -1,5 +1,18 @@
 import { SessionBlueprint } from '@/models/session-models';
 
+export interface ServerAiChatMessageResponse {
+  type: 'messageResponse';
+  message: string;
+}
+
+export interface ServerAiChatPlanResponse {
+  type: 'chatPlan';
+  plan: AiWorkoutPlan;
+}
+export type ServerAiChatResponse =
+  | ServerAiChatMessageResponse
+  | ServerAiChatPlanResponse;
+
 export enum AppStore {
   Web = 'Web',
   Google = 'Google',

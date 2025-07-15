@@ -1,3 +1,4 @@
+import { ServerAiChatResponse } from '@/models/ai-models';
 import {
   addMessage,
   ChatMessage,
@@ -7,48 +8,19 @@ import {
   updateMessage,
 } from '@/store/ai-planner';
 import { setIsHydrated } from '@/store/ai-planner';
-import {
-  getStructuredOutputPrompt,
-  PLAN_SCHEMA,
-  PLAN_TOKEN,
-} from '@/store/ai-planner/tool-schemas';
+
 import { addEffect } from '@/store/store';
 import { uuid } from '@/utils/uuid';
-import {
-  LLAMA3_2_1B_QLORA,
-  LLAMA3_2_TOKENIZER,
-  LLAMA3_2_TOKENIZER_CONFIG,
-  LLMModule,
-} from 'react-native-executorch';
 
 export function applyAiPlannerEffects() {
   addEffect(initializeAiPlannerStateSlice, async (_, { dispatch }) => {
-    const printDownloadProgress = (progress: number) => {
-      console.log(progress);
-    };
-
-    // Loading the model
-    await LLMModule.load({
-      modelSource: LLAMA3_2_1B_QLORA,
-      tokenizerSource: LLAMA3_2_TOKENIZER,
-      tokenizerConfigSource: LLAMA3_2_TOKENIZER_CONFIG,
-      onDownloadProgressCallback: printDownloadProgress,
-    });
-    LLMModule.configure({
-      chatConfig: {
-        systemPrompt: `You only cater to requests to create gym plans.
-        DO NOT get sidetracked by nutrition or weird questions. You just create workouts, possibly entire plans for weekly sessions.
-        A workout can consist of exercises which are an amount of reps for an amount of sets. Prefer shorter responses.
-        When a user messages with "${PLAN_TOKEN}" you MUST respond in JSON format with the users question parsed. It's important you only do this when they send that message.
-        \n${getStructuredOutputPrompt(PLAN_SCHEMA)}\n /no_think`,
-        contextWindowLength: 20,
-      },
-    });
     dispatch(setIsHydrated(true));
+    // TODO remove me
     dispatch(
       addMessage({
         from: 'User',
         id: uuid(),
+        type: 'messageResponse',
         message: 'Gimme a plan with a single day and single exercise',
       }),
     );
@@ -56,48 +28,50 @@ export function applyAiPlannerEffects() {
 
   addEffect(
     addMessage,
-    async ({ payload: message }, { getState, dispatch }) => {
-      if (message.from === 'Agent') {
+    async (
+      { payload: message },
+      { getState, dispatch, extra: { aiChatService } },
+    ) => {
+      if (message.from === 'Agent' || message.type !== 'messageResponse') {
         return;
       }
       const originalMessage: ChatMessage = {
         from: 'Agent',
         id: uuid(),
         message: '',
+        type: 'messageResponse',
         isLoading: true,
       };
       dispatch(addMessage(originalMessage));
-      LLMModule.setTokenCallback({
-        tokenCallback: (token) => {
-          const currentMessage = getState().aiPlanner.plannerChat.find(
-            (x) => x.id === originalMessage.id,
-          );
-          if (!originalMessage || !currentMessage) {
-            return;
-          }
-
-          dispatch(
-            updateMessage({
-              id: originalMessage.id,
-              message: currentMessage.message + token,
-              isLoading: true,
-            }),
-          );
-        },
-      });
-      await LLMModule.sendMessage(message.message);
-      dispatch(
-        updateMessage({
-          id: originalMessage.id,
-          isLoading: false,
-        }),
-      );
+      let latestMessage: ServerAiChatResponse | undefined = undefined;
+      for await (const partialMessage of aiChatService.sendMessage(
+        message.message,
+      )) {
+        latestMessage = partialMessage;
+        dispatch(
+          updateMessage({
+            id: originalMessage.id,
+            from: 'Agent',
+            isLoading: true,
+            ...partialMessage,
+          }),
+        );
+      }
+      if (latestMessage)
+        dispatch(
+          updateMessage({
+            id: originalMessage.id,
+            from: 'Agent',
+            isLoading: false,
+            ...latestMessage,
+          }),
+        );
     },
   );
   addEffect(stopAiGenerator, (_, { getState }) => {
-    LLMModule.interrupt();
+    // TODO need to stop in the hub
   });
   addEffect(restartChat, async () => {
-    await LLMModule.deleteMessage(0);
+    // TODO implement in hub
   });
 }

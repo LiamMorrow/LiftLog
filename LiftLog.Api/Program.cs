@@ -49,7 +49,7 @@ var openAiApiKey =
 builder.Services.RegisterGptAiWorkoutPlanner(openAiApiKey);
 
 builder.Services.AddSingleton<PasswordService>();
-builder.Services.AddScoped<GptChatWorkoutPlanner>();
+builder.Services.AddSingleton<GptChatWorkoutPlanner>();
 builder.Services.AddHttpClient<AppleAppStorePurchaseVerificationService>();
 builder.Services.AddScoped<RateLimitService>();
 builder.Services.AddScoped<PurchaseVerificationService>();
@@ -110,7 +110,10 @@ builder
 var app = builder.Build();
 app.UseCors();
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.MapControllers();
 
