@@ -57,18 +57,19 @@ export function applyAiPlannerEffects() {
           }),
         );
       }
-      if (latestMessage)
-        dispatch(
-          updateMessage({
-            id: originalMessage.id,
-            from: 'Agent',
-            isLoading: false,
-            ...latestMessage,
-          }),
-        );
+
+      dispatch(
+        updateMessage({
+          id: originalMessage.id,
+          from: 'Agent',
+          ...(latestMessage ?? originalMessage),
+          isLoading: false,
+        }),
+      );
     },
   );
   addEffect(stopAiGenerator, async (_, { extra: { aiChatService } }) => {
+    console.log('STOPPING');
     await aiChatService.stopInProgress();
   });
 

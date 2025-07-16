@@ -1,8 +1,9 @@
 namespace LiftLog.Api.Service;
 
+extern alias OpenAICommunity;
+using OpenAICommunity::OpenAI;
 using LiftLog.Lib.Services;
 using Microsoft.Extensions.DependencyInjection;
-using OpenAI;
 
 public static class RegistrationHelpers
 {
@@ -14,6 +15,10 @@ public static class RegistrationHelpers
         var openAiClient = new OpenAIClient(apiKey, OpenAIClientSettings.Default, new HttpClient());
         source.AddSingleton(openAiClient);
         source.AddSingleton<IAiWorkoutPlanner, GptAiWorkoutPlanner>();
+
+        var openAiChatClient = new OpenAI.Chat.ChatClient("gpt-4.1", apiKey);
+        source.AddSingleton<GptChatWorkoutPlanner>();
+        source.AddSingleton(openAiChatClient);
         return source;
     }
 }

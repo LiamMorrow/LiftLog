@@ -41,7 +41,11 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(s =>
+{
+    // We need clients to be able to stop in flight chat requests
+    s.MaximumParallelInvocationsPerClient = 2;
+});
 
 var openAiApiKey =
     builder.Configuration.GetValue<string?>("OpenAiApiKey")
@@ -49,7 +53,6 @@ var openAiApiKey =
 builder.Services.RegisterGptAiWorkoutPlanner(openAiApiKey);
 
 builder.Services.AddSingleton<PasswordService>();
-builder.Services.AddSingleton<GptChatWorkoutPlanner>();
 builder.Services.AddHttpClient<AppleAppStorePurchaseVerificationService>();
 builder.Services.AddScoped<RateLimitService>();
 builder.Services.AddScoped<PurchaseVerificationService>();

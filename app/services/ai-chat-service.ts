@@ -17,7 +17,10 @@ export class AiChatService {
     if (!this.connection) {
       this.connection = this.hunConnectionFactory.create();
 
-      this.connection.onclose(() => (this.connection = undefined));
+      this.connection.onclose((e) => {
+        console.error(e);
+        this.connection = undefined;
+      });
 
       await this.connection.start();
     }
@@ -43,7 +46,10 @@ export class AiChatService {
     this.connection
       .invoke('SendMessage', message)
       .catch(console.error)
-      .finally(() => subject.end());
+      .finally(() => {
+        console.log('End');
+        subject.end();
+      });
     yield* subject;
     this.connection?.off('ReceiveMessage');
   }

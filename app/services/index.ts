@@ -17,9 +17,11 @@ import { StringSharer } from '@/services/string-sharer';
 import { RootState } from '@/store';
 import { Store } from '@reduxjs/toolkit';
 
-export type Services = Awaited<ReturnType<typeof resolveServices>>;
+export type Services = Awaited<ReturnType<typeof resolveServicesInternal>>;
 
-function resolveServices(store: Store<RootState>) {
+let resolvedServices: Services | undefined;
+
+function resolveServicesInternal(store: Store<RootState>) {
   const logger = new Logger();
   const keyValueStore = new KeyValueStore();
   const progressRepository = new ProgressRepository(store.getState);
@@ -65,6 +67,10 @@ function resolveServices(store: Store<RootState>) {
     preferenceService,
     aiChatService,
   };
+}
+
+function resolveServices(store: Store<RootState>) {
+  return (resolvedServices ??= resolveServicesInternal(store));
 }
 
 export { resolveServices };

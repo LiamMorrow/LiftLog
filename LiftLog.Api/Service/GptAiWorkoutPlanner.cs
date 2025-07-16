@@ -1,14 +1,17 @@
 namespace LiftLog.Api.Service;
 
+extern alias OpenAICommunity;
+
 using System.Collections.Immutable;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+
+using OpenAICommunity::OpenAI;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
 using LiftLog.Lib.Services;
-using OpenAI;
-using OpenAI.Chat;
+using OpenAICommunity::OpenAI.Chat;
 
 public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkoutPlanner> logger)
     : IAiWorkoutPlanner
@@ -71,7 +74,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
         };
         var chatRequest = new ChatRequest(
             messages,
-            model: OpenAI.Models.Model.GPT4o,
+            model: OpenAICommunity::OpenAI.Models.Model.GPT4o,
             toolChoice: "auto",
             tools: tools
         );
@@ -166,7 +169,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
         };
         var chatRequest = new ChatRequest(
             messages,
-            model: OpenAI.Models.Model.GPT4o,
+            model: OpenAICommunity::OpenAI.Models.Model.GPT4o,
             toolChoice: "auto",
             tools: tools
         );

@@ -11,40 +11,30 @@ using OpenAI.Chat;
 
 namespace LiftLog.Api.Service;
 
-public class GptChatWorkoutPlanner
+public class GptChatWorkoutPlanner(ChatClient _openAiClient, ILogger<GptChatWorkoutPlanner> _logger)
 {
-    private static readonly JsonNode aiWorkoutPlanJsonSchema = JsonNode.Parse(
-        File.ReadAllText("./AiWorkoutPlanOrMessage.json")
-    )!;
-
-    private readonly OpenAIClient _openAiClient;
-    private readonly ILogger<GptChatWorkoutPlanner> _logger;
+    private static readonly BinaryData aiWorkoutPlanJsonSchema = BinaryData.FromBytes(
+        File.ReadAllBytes("./AiWorkoutPlanOrMessage.json")
+    );
 
     // Store conversations per connection ID
-    private readonly ConcurrentDictionary<string, List<Message>> _chatSessions = new();
+    private readonly ConcurrentDictionary<string, List<ChatMessage>> _chatSessions = new();
 
     // Checked during an inflight chat, if present, will stop generating
     private readonly ConcurrentDictionary<string, CancellationTokenSource> _chatStopTokens = new();
 
-    public GptChatWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptChatWorkoutPlanner> logger)
-    {
-        _openAiClient = openAiClient;
-        _logger = logger;
-    }
-
-    private List<Message> GetOrCreateChatSession(string connectionId)
+    private List<ChatMessage> GetOrCreateChatSession(string connectionId)
     {
         return _chatSessions.GetOrAdd(
             connectionId,
             _ =>
                 [
-                    new(
-                        Role.System,
+                    ChatMessage.CreateSystemMessage(
                         """
                         You only cater to requests to create gym plans. If a user asks for a plan, just make one. Don't ask them any more questions.
                         DO NOT get sidetracked by nutrition or weird questions. You just create workouts, possibly entire plans for weekly sessions.
                         A workout can consist of exercises which are an amount of reps for an amount of sets. Prefer shorter responses.
-                        PRIORITIZE TOOL CALLS if you can make a plan. It is okay to ask for clarification or more info, but when you are ready to make a plan, USE THE TOOL.
+                        Prioritize chatPlan if you can make a plan. It is okay to ask for clarification or more info, but when you are ready to make a plan, respond with a chatPlan.
                         """
                     ),
                 ]
@@ -63,62 +53,61 @@ public class GptChatWorkoutPlanner
             var messages = GetOrCreateChatSession(connectionId);
 
             // Add the new user message
-            messages.Add(new Message(Role.User, userMessage));
+            messages.Add(ChatMessage.CreateUserMessage(userMessage));
 
             // Create chat request with conversation history
-            var chatRequest = new ChatRequest(
-                messages,
-                model: OpenAI.Models.Model.GPT4o,
-                maxTokens: 16_384,
-                responseFormat: ChatResponseFormat.JsonSchema,
-                jsonSchema: new JsonSchema("response", aiWorkoutPlanJsonSchema)
-            );
-
-            var message = "";
             var cancellationToken = new CancellationTokenSource();
             _chatStopTokens[connectionId] = cancellationToken;
 
-            var result = await _openAiClient.ChatEndpoint.StreamCompletionAsync(
-                chatRequest,
-                async res =>
-                {
-                    if (_chatStopTokens[connectionId].IsCancellationRequested)
-                    {
-                        return;
-                    }
-                    var choice = res.FirstChoice;
-                    if (choice?.Delta?.Content is not null)
-                    {
-                        message += choice.Delta.Content;
-                    }
-                    else if (choice?.Message?.Content is not null)
-                    {
-                        message = choice.Message.Content;
-                    }
-                    if (TryParsePartialResponse(message, out var response))
-                    {
-                        switch (response.Response)
+            var message = "";
+            await foreach (
+                var streamPortion in _openAiClient
+                    .CompleteChatStreamingAsync(
+                        messages,
+                        new ChatCompletionOptions
                         {
-                            case GptChatResponseWithMessage m:
-                                await callback(new AiChatMessageResponse(m.Message));
-                                break;
-                            case GptWorkoutPlan w:
-                                await callback(ToAiPlan(w));
-                                break;
-                        }
+                            ResponseFormat = OpenAI.Chat.ChatResponseFormat.CreateJsonSchemaFormat(
+                                "chat_response",
+                                aiWorkoutPlanJsonSchema,
+                                "Used for all responses. When you are talking to the user, use a messageResponse. When you are sending a plan, use a chatPlan",
+                                jsonSchemaIsStrict: true
+                            ),
+                            StoredOutputEnabled = true,
+                        },
+                        cancellationToken: cancellationToken.Token
+                    )
+                    .WithCancellation(cancellationToken.Token)
+            )
+            {
+                foreach (var contentUpdate in streamPortion.ContentUpdate)
+                {
+                    message += contentUpdate.Text;
+                }
+                if (streamPortion.FinishReason is not null)
+                {
+                    Console.WriteLine(streamPortion.FinishReason);
+                }
+                if (TryParsePartialResponse(message, out var response))
+                {
+                    switch (response.Response)
+                    {
+                        case GptChatResponseWithMessage m:
+                            await callback(new AiChatMessageResponse(m.Message));
+                            break;
+                        case GptWorkoutPlan w:
+                            await callback(ToAiPlan(w));
+                            break;
                     }
-                },
-                streamUsage: true,
-                cancellationToken: cancellationToken.Token
-            );
-            var assistantResponse = result.FirstChoice.Message;
+                }
+            }
 
             if (cancellationToken.IsCancellationRequested)
             {
                 return;
             }
             // Add assistant response to conversation history
-            messages.Add(assistantResponse);
+            messages.Add(ChatMessage.CreateAssistantMessage(message));
+            Console.WriteLine(message);
 
             // Keep conversation history manageable (last 20 messages)
             if (messages.Count > 21) // System message + 20 conversation messages
@@ -142,6 +131,22 @@ public class GptChatWorkoutPlanner
                 connectionId
             );
             throw;
+        }
+    }
+
+    public Task ClearConversationAsync(string connectionId)
+    {
+        _chatSessions.TryRemove(connectionId, out _);
+        _chatStopTokens.TryRemove(connectionId, out _);
+        return Task.CompletedTask;
+    }
+
+    public void StopInProgress(string connectionId)
+    {
+        if (_chatStopTokens.TryGetValue(connectionId, out var token))
+        {
+            Console.WriteLine("Stopping");
+            token.Cancel();
         }
     }
 
@@ -173,12 +178,6 @@ public class GptChatWorkoutPlanner
                     .ToImmutableList() ?? []
             )
         );
-    }
-
-    public Task ClearConversationAsync(string connectionId)
-    {
-        _chatSessions.TryRemove(connectionId, out _);
-        return Task.CompletedTask;
     }
 
     static JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions(
@@ -267,20 +266,9 @@ public class GptChatWorkoutPlanner
             )!;
             return response != null;
         }
-        catch (Exception e)
+        catch
         {
-            Console.WriteLine(completedJson);
-            Console.Error.WriteLine(e);
-
             return false;
-        }
-    }
-
-    public void StopInProgress(string connectionId)
-    {
-        if (_chatStopTokens.TryGetValue(connectionId, out var token))
-        {
-            token.Cancel();
         }
     }
 
