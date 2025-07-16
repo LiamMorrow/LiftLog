@@ -1,17 +1,16 @@
 import { SessionBlueprint } from '@/models/session-models';
 
-export interface ServerAiChatMessageResponse {
+interface AiChatPlanResponse {
+  type: 'chatPlan';
+  plan: AiWorkoutPlan;
+}
+
+interface AiChatMessageResponse {
   type: 'messageResponse';
   message: string;
 }
 
-export interface ServerAiChatPlanResponse {
-  type: 'chatPlan';
-  plan: AiWorkoutPlan;
-}
-export type ServerAiChatResponse =
-  | ServerAiChatMessageResponse
-  | ServerAiChatPlanResponse;
+export type AiChatResponse = AiChatMessageResponse | AiChatPlanResponse;
 
 export enum AppStore {
   Web = 'Web',
@@ -45,6 +44,7 @@ export interface AiWorkoutAttributes {
 }
 
 export interface AiWorkoutPlan {
+  name: string;
   description: string;
   sessions: SessionBlueprint[];
 }

@@ -39,3 +39,32 @@ export default function formatDuration(
 
   return str;
 }
+
+/**
+ * Takes a string formatted by the csharp format string: @"d\.hh\:mm\:ss\:FFF"
+ * and returns a js joda duration
+ * Days and milliseconds are optional (e.g., "02:30:45" or "1.02:30:45:123")
+ */
+export function parseDuration(val: string): Duration {
+  // Regex with optional days and milliseconds
+  const regex = /^(?:(\d+)\.)?(\d{2}):(\d{2}):(\d{2})(?::(\d{3}))?$/;
+  const matchResult = val.match(regex);
+
+  if (!matchResult) {
+    throw new Error(`Invalid duration format: ${val}`);
+  }
+
+  const [, daysStr, hoursStr, minutesStr, secondsStr, millisStr] = matchResult;
+
+  const days = daysStr ? Number(daysStr) : 0;
+  const hours = Number(hoursStr);
+  const minutes = Number(minutesStr);
+  const seconds = Number(secondsStr);
+  const millis = millisStr ? Number(millisStr) : 0;
+
+  return Duration.ofDays(days)
+    .plusHours(hours)
+    .plusMinutes(minutes)
+    .plusSeconds(seconds)
+    .plusMillis(millis);
+}

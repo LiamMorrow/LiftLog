@@ -1,27 +1,15 @@
-import { AiWorkoutPlan } from '@/models/ai-models';
+import { AiChatResponse } from '@/models/ai-models';
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-export interface AiChatResponse {
-  from: 'User' | 'Agent';
-  id: string;
-  isLoading?: boolean;
-}
-
-interface AiChatPlanResponse extends AiChatResponse {
-  type: 'chatPlan';
-  plan: AiWorkoutPlan;
-}
-
-interface AiChatMessageResponse extends AiChatResponse {
-  type: 'messageResponse';
-  message: string;
-}
-
-export type ChatMessage = AiChatMessageResponse | AiChatPlanResponse;
 
 const initialState: AppState = {
   isHydrated: false,
   plannerChat: [],
+};
+
+export type ChatMessage = AiChatResponse & {
+  id: string;
+  from: 'User' | 'Agent';
+  isLoading?: boolean;
 };
 
 export type AppState = {

@@ -1,4 +1,4 @@
-import { ServerAiChatResponse } from '@/models/ai-models';
+import { AiChatResponse } from '@/models/ai-models';
 import {
   addMessage,
   ChatMessage,
@@ -43,17 +43,17 @@ export function applyAiPlannerEffects() {
         isLoading: true,
       };
       dispatch(addMessage(originalMessage));
-      let latestMessage: ServerAiChatResponse | undefined = undefined;
-      for await (const partialMessage of aiChatService.sendMessage(
+      let latestMessage: AiChatResponse | undefined = undefined;
+      for await (const chatResponse of aiChatService.sendMessage(
         message.message,
       )) {
-        latestMessage = partialMessage;
+        latestMessage = chatResponse;
         dispatch(
           updateMessage({
             id: originalMessage.id,
             from: 'Agent',
             isLoading: true,
-            ...partialMessage,
+            ...chatResponse,
           }),
         );
       }
@@ -68,10 +68,11 @@ export function applyAiPlannerEffects() {
         );
     },
   );
-  addEffect(stopAiGenerator, (_, { getState }) => {
-    // TODO need to stop in the hub
+  addEffect(stopAiGenerator, async (_, { extra: { aiChatService } }) => {
+    await aiChatService.stopInProgress();
   });
-  addEffect(restartChat, async () => {
-    // TODO implement in hub
+
+  addEffect(restartChat, async (_, { extra: { aiChatService } }) => {
+    await aiChatService.restartChat();
   });
 }

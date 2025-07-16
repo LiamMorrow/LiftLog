@@ -2,12 +2,12 @@ import ItemTitle from '@/components/presentation/item-title';
 import { SurfaceText } from '@/components/presentation/surface-text';
 import { Session } from '@/models/session-models';
 import { formatDate } from '@/utils/format-date';
-import { DateTimeFormatter, LocalDate } from '@js-joda/core';
+import { LocalDate } from '@js-joda/core';
 import { View } from 'react-native';
 
 interface SessionSummaryTitleProps {
   session: Session;
-  isFilled: boolean;
+  isFilled?: boolean;
 }
 export default function SessionSummaryTitle({
   session,

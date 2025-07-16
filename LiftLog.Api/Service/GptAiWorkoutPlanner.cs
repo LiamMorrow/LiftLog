@@ -84,6 +84,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
             )!;
 
             return new AiWorkoutPlan(
+                gptPlan.Name,
                 gptPlan.Description,
                 gptPlan
                     .Sessions.Select(s => new SessionBlueprint(
@@ -207,6 +208,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
     }
 
     private record GptWorkoutPlan(
+        string Name,
         string Description,
         ImmutableListValue<GptSessionBlueprint> Sessions
     );
@@ -222,7 +224,8 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
         int Sets,
         int RepsPerSet,
         decimal WeightIncreaseOnSuccess,
-        GptRest RestBetweenSets
+        GptRest RestBetweenSets,
+        string Notes
     );
 
     private record GptRest(int MinRestSeconds, int MaxRestSeconds, int FailureRestSeconds);

@@ -35,6 +35,7 @@
     "eslint-plugin-react-compiler": "^19.0.0-beta-bafa41b-20250307",
     "expo": "53.0.17",
     "expo-constants": "~17.1.6",
+    "expo-dev-client": "~5.2.4",
     "expo-document-picker": "~13.1.5",
     "expo-file-system": "~18.1.10",
     "expo-haptics": "~14.1.4",
@@ -73,8 +74,7 @@
     "react-redux": "^9.2.0",
     "ts-pattern": "^5.6.2",
     "use-debounce": "^10.0.4",
-    "uuid": "^11.1.0",
-    "expo-dev-client": "~5.2.4"
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
@@ -86,6 +86,7 @@
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-unused-imports": "^4.1.4",
     "fast-check": "^4.1.1",
+    "jsdom": "^26.1.0",
     "patch-package": "^8.0.0",
     "prettier": "^3.5.3",
     "protobufjs-cli": "^1.1.3",

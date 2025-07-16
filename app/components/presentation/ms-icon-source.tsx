@@ -79,6 +79,7 @@ import { MsIcon } from 'material-symbols-react-native';
 import { IconProps } from 'react-native-paper/lib/typescript/components/MaterialCommunityIcon';
 import { Platform } from 'react-native';
 import { match } from 'ts-pattern';
+import { msReplay } from '@material-symbols-react-native/outlined-400/msReplay';
 
 // Importing these icons using the below methods causes android app to crash
 // import { msAdd, msArrowDownward } from '@material-symbols-react-native/outlined-400';
@@ -122,6 +123,7 @@ const MaterialSymbols = {
   publicFill: msPublicFill,
   vpnKey: msVpnKey,
   stop: msStop,
+  replay: msReplay,
   vpnKeyFill: msVpnKeyFill,
   share: match(Platform.OS)
     .with('ios', () => msIosShare)

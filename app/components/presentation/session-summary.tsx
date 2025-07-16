@@ -7,8 +7,8 @@ import { Divider } from 'react-native-paper';
 
 interface SessionSummaryProps {
   session: Session;
-  isFilled: boolean;
-  showWeight: boolean;
+  isFilled?: boolean;
+  showWeight?: boolean;
 }
 export default function SessionSummary({
   session,
@@ -21,9 +21,9 @@ export default function SessionSummary({
         <Fragment key={index}>
           <ExerciseSummary
             exercise={ex}
-            isFilled={isFilled}
+            isFilled={!!isFilled}
             showName={true}
-            showWeight={showWeight}
+            showWeight={!!showWeight}
             showDate={false}
           />
 

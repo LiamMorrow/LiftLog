@@ -6,18 +6,21 @@ import { Stack } from 'expo-router';
 import { FlatList, View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useDispatch } from 'react-redux';
-import { IconButton, TextInput } from 'react-native-paper';
-import { useState } from 'react';
+import { Appbar, IconButton, TextInput } from 'react-native-paper';
+import { Fragment, useState } from 'react';
 import { useAppSelector } from '@/store';
 import {
   addMessage,
   ChatMessage,
+  restartChat,
   selectIsLoadingAiPlannerMessage,
   stopAiGenerator,
 } from '@/store/ai-planner';
 import Animated, { ZoomInLeft, ZoomInRight } from 'react-native-reanimated';
 import { uuid } from '@/utils/uuid';
 import { useScroll } from '@/hooks/useScollListener';
+import SessionSummary from '@/components/presentation/session-summary';
+import SessionSummaryTitle from '@/components/presentation/session-summary-title';
 
 export default function AiPlanner() {
   const { t } = useTranslate();
@@ -40,13 +43,21 @@ export default function AiPlanner() {
       );
     }
   };
+  const reset = () => dispatch(restartChat());
 
   return (
     <KeyboardAvoidingView
       behavior={'translate-with-padding'}
       style={{ flex: 1 }}
     >
-      <Stack.Screen options={{ title: t('AiPlanner') }} />
+      <Stack.Screen
+        options={{
+          title: t('AiPlanner'),
+          headerRight: () => (
+            <Appbar.Action icon={'replay'} onPress={reset}></Appbar.Action>
+          ),
+        }}
+      />
       <View style={{ flex: 1 }}>
         <FlatList
           onScroll={handleScroll}
@@ -164,7 +175,24 @@ function ChatBubble(props: {
             {message.message}
           </SurfaceText>
         ) : (
-          <SurfaceText>PLANN {JSON.stringify(message.plan)}</SurfaceText>
+          <>
+            <SurfaceText
+              font="text-2xl"
+              weight={'bold'}
+              color={isUser ? 'onPrimary' : 'onSurface'}
+            >
+              {message.plan.name}
+            </SurfaceText>
+            <SurfaceText color={isUser ? 'onPrimary' : 'onSurface'}>
+              {message.plan.description}
+            </SurfaceText>
+            {message.plan.sessions.map((s, i) => (
+              <Fragment key={i}>
+                <SessionSummaryTitle session={s.getEmptySession()} />
+                <SessionSummary session={s.getEmptySession()} />
+              </Fragment>
+            ))}
+          </>
         )}
       </Animated.View>
     </View>

@@ -20,6 +20,17 @@ public class AiWorkoutChatHub(GptChatWorkoutPlanner planner) : Hub<IChatClient>
         );
     }
 
+    public async Task RestartChat()
+    {
+        await planner.ClearConversationAsync(Context.ConnectionId);
+    }
+
+    public Task StopInProgress()
+    {
+        planner.StopInProgress(Context.ConnectionId);
+        return Task.CompletedTask;
+    }
+
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         await planner.ClearConversationAsync(Context.ConnectionId);

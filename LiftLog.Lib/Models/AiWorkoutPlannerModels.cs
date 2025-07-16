@@ -37,7 +37,11 @@ public record AiWorkoutAttributes(
     string AdditionalInfo
 );
 
-public record AiWorkoutPlan(string Description, ImmutableListValue<SessionBlueprint> Sessions);
+public record AiWorkoutPlan(
+    string Name,
+    string Description,
+    ImmutableListValue<SessionBlueprint> Sessions
+);
 
 public record AiSessionAttributes(
     ImmutableListValue<string> AreasToWorkout,
