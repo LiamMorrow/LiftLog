@@ -2,9 +2,9 @@ using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using LiftLog.Api.Models;
+using LiftLog.Api.Utils;
 using LiftLog.Lib.Models;
 using OpenAI;
 using OpenAI.Chat;
@@ -87,7 +87,7 @@ public class GptChatWorkoutPlanner(ChatClient _openAiClient, ILogger<GptChatWork
                 {
                     Console.WriteLine(streamPortion.FinishReason);
                 }
-                if (TryParsePartialResponse(message, out var response))
+                if (PartialJsonParser.TryParsePartialJson(message, out GptChatResponse? response))
                 {
                     switch (response.Response)
                     {
@@ -145,7 +145,6 @@ public class GptChatWorkoutPlanner(ChatClient _openAiClient, ILogger<GptChatWork
     {
         if (_chatStopTokens.TryGetValue(connectionId, out var token))
         {
-            Console.WriteLine("Stopping");
             token.Cancel();
         }
     }
@@ -178,98 +177,6 @@ public class GptChatWorkoutPlanner(ChatClient _openAiClient, ILogger<GptChatWork
                     .ToImmutableList() ?? []
             )
         );
-    }
-
-    static JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions(
-        JsonSerializerOptions.Default
-    )
-    {
-        AllowOutOfOrderMetadataProperties = true,
-    };
-
-    private bool TryParsePartialResponse(
-        string incompleteJson,
-        [NotNullWhen(true)] out GptChatResponse? response
-    )
-    {
-        response = null;
-        // Count the number of JSON openers, and create a json string with the missing closers
-        if (string.IsNullOrWhiteSpace(incompleteJson))
-            return false;
-
-        try
-        {
-            response = JsonSerializer.Deserialize<GptChatResponse>(
-                incompleteJson,
-                jsonSerializerOptions
-            );
-        }
-        catch { }
-        if (response is not null)
-        {
-            return true;
-        }
-        string completedJson = "";
-
-        try
-        {
-            var closersStack = new Stack<char>();
-            bool inString = false;
-            bool escape = false;
-
-            for (int i = 0; i < incompleteJson.Length; i++)
-            {
-                char c = incompleteJson[i];
-                if (escape)
-                {
-                    escape = false;
-                    continue;
-                }
-                if (c == '\\')
-                {
-                    escape = true;
-                    continue;
-                }
-                if (c == '"')
-                {
-                    inString = !inString;
-                    continue;
-                }
-                if (inString)
-                    continue;
-
-                if (c == '{' || c == '[')
-                    closersStack.Push(c);
-                else if (c == '}')
-                {
-                    if (closersStack.Count > 0 && closersStack.Peek() == '{')
-                        closersStack.Pop();
-                }
-                else if (c == ']')
-                {
-                    if (closersStack.Count > 0 && closersStack.Peek() == '[')
-                        closersStack.Pop();
-                }
-            }
-
-            // Build the completed JSON string
-            completedJson = incompleteJson + (inString ? '"' : "");
-            while (closersStack.Count > 0)
-            {
-                var opener = closersStack.Pop();
-                completedJson += opener == '{' ? '}' : ']';
-            }
-
-            response = JsonSerializer.Deserialize<GptChatResponse>(
-                completedJson,
-                jsonSerializerOptions
-            )!;
-            return response != null;
-        }
-        catch
-        {
-            return false;
-        }
     }
 
     private record GptChatResponse(GptResponse Response);
