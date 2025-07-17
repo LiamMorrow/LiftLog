@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using LiftLog.Api.Models;
 using LiftLog.Api.Utils;
 using LiftLog.Lib.Models;
@@ -11,7 +12,10 @@ using OpenAI.Chat;
 
 namespace LiftLog.Api.Service;
 
-public class GptChatWorkoutPlanner(ChatClient _openAiClient, ILogger<GptChatWorkoutPlanner> _logger)
+public partial class GptChatWorkoutPlanner(
+    ChatClient _openAiClient,
+    ILogger<GptChatWorkoutPlanner> _logger
+)
 {
     private static readonly BinaryData aiWorkoutPlanJsonSchema = BinaryData.FromBytes(
         File.ReadAllBytes("./AiWorkoutPlanOrMessage.json")
@@ -30,9 +34,10 @@ public class GptChatWorkoutPlanner(ChatClient _openAiClient, ILogger<GptChatWork
             _ =>
                 [
                     ChatMessage.CreateSystemMessage(
-                        """
+                        $"""
                         You only cater to requests to create gym plans. If a user asks for a plan, just make one. Don't ask them any more questions.
                         DO NOT get sidetracked by nutrition or weird questions. You just create workouts, possibly entire plans for weekly sessions.
+                        The user may not be speaking english, respond in the language they are speaking or the language ask you to respond in.
                         A workout can consist of exercises which are an amount of reps for an amount of sets. Prefer shorter responses.
                         Prioritize chatPlan if you can make a plan. It is okay to ask for clarification or more info, but when you are ready to make a plan, respond with a chatPlan.
                         """
@@ -41,20 +46,48 @@ public class GptChatWorkoutPlanner(ChatClient _openAiClient, ILogger<GptChatWork
         );
     }
 
+    public async Task Introduce(
+        string connectionId,
+        string locale,
+        Func<AiChatResponse, Task> callback
+    )
+    {
+        if (!localeRegex().IsMatch(locale))
+        {
+            locale = "en-AU";
+        }
+        var messages = GetOrCreateChatSession(connectionId);
+        messages.Add(
+            ChatMessage.CreateUserMessage(
+                $"Hi there, can you introduce yourself? Please respond in my locale of {locale}"
+            )
+        );
+
+        await GetResponseToCurrentMessagesAsync(connectionId, callback);
+    }
+
     public async Task SendMessageAsync(
         string connectionId,
         string userMessage,
         Func<AiChatResponse, Task> callback
     )
     {
+        // Get or create chat session for this connection
+        var messages = GetOrCreateChatSession(connectionId);
+
+        // Add the new user message
+        messages.Add(ChatMessage.CreateUserMessage(userMessage));
+        await GetResponseToCurrentMessagesAsync(connectionId, callback);
+    }
+
+    private async Task GetResponseToCurrentMessagesAsync(
+        string connectionId,
+        Func<AiChatResponse, Task> callback
+    )
+    {
         try
         {
-            // Get or create chat session for this connection
             var messages = GetOrCreateChatSession(connectionId);
-
-            // Add the new user message
-            messages.Add(ChatMessage.CreateUserMessage(userMessage));
-
             // Create chat request with conversation history
             var cancellationToken = new CancellationTokenSource();
             _chatStopTokens[connectionId] = cancellationToken;
@@ -210,4 +243,7 @@ public class GptChatWorkoutPlanner(ChatClient _openAiClient, ILogger<GptChatWork
     );
 
     private record GptRest(int MinRestSeconds, int MaxRestSeconds, int FailureRestSeconds);
+
+    [GeneratedRegex("^[a-zA-Z]{2}-[a-zA-Z]{2}$")]
+    private static partial Regex localeRegex();
 }

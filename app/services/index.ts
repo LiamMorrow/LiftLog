@@ -14,6 +14,7 @@ import { PreferenceService } from '@/services/preference-service';
 import { ProgressRepository } from '@/services/progress-repository';
 import { SessionService } from '@/services/session-service';
 import { StringSharer } from '@/services/string-sharer';
+import { tolgee } from '@/services/tolgee';
 import { RootState } from '@/store';
 import { Store } from '@reduxjs/toolkit';
 
@@ -66,6 +67,7 @@ function resolveServicesInternal(store: Store<RootState>) {
     filePickerService,
     preferenceService,
     aiChatService,
+    tolgee,
   };
 }
 

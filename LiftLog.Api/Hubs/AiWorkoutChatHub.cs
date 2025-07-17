@@ -11,13 +11,18 @@ public interface IChatClient
 
 public class AiWorkoutChatHub(GptChatWorkoutPlanner planner) : Hub<IChatClient>
 {
-    public async Task SendMessage(string message)
+    public async Task SendMessage(string message, string locale)
     {
         await planner.SendMessageAsync(
             Context.ConnectionId,
             message,
             Clients.Caller.ReceiveMessage
         );
+    }
+
+    public async Task Introduce(string locale)
+    {
+        await planner.Introduce(Context.ConnectionId, locale, Clients.Caller.ReceiveMessage);
     }
 
     public async Task RestartChat()

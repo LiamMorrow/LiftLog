@@ -11,6 +11,46 @@ import { HubConnectionFactory } from '@/services/hub-connection-factory';
 export class AiChatService {
   private connection: HubConnection | undefined;
   constructor(private hunConnectionFactory: HubConnectionFactory) {}
+  async *introduce(): AsyncIterableIterator<AiChatResponse> {
+    const subject = new AsyncIterableSubject<AiChatResponse>();
+    if (!this.connection) {
+      this.connection = this.hunConnectionFactory.create();
+
+      this.connection.onclose((e) => {
+        this.connection = undefined;
+      });
+
+      await this.connection.start();
+    }
+    this.connection.on(
+      'ReceiveMessage',
+      async (m: JsonResponse<AiChatResponse>) => {
+        try {
+          subject.pushValue(
+            match(m)
+              .returnType<AiChatResponse>()
+              .with({ type: 'messageResponse' }, (chatMessage) => chatMessage)
+              .with({ type: 'chatPlan' }, ({ plan }) => ({
+                type: 'chatPlan',
+                plan: toAiWorkoutPlan(plan),
+              }))
+              .exhaustive(),
+          );
+        } catch (e) {
+          console.warn('Failed to parse ai response', e);
+        }
+      },
+    );
+    this.connection
+      .invoke('Introduce', 'en-AU')
+      .catch(console.error)
+      .finally(() => {
+        console.log('End');
+        subject.end();
+      });
+    yield* subject;
+    this.connection?.off('ReceiveMessage');
+  }
 
   async *sendMessage(message: string): AsyncIterableIterator<AiChatResponse> {
     const subject = new AsyncIterableSubject<AiChatResponse>();
