@@ -69,7 +69,6 @@ export function applyAiPlannerEffects() {
     },
   );
   addEffect(stopAiGenerator, async (_, { extra: { aiChatService } }) => {
-    console.log('STOPPING');
     await aiChatService.stopInProgress();
   });
 

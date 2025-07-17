@@ -1,11 +1,11 @@
 import { SessionBlueprint } from '@/models/session-models';
 
-interface AiChatPlanResponse {
+export interface AiChatPlanResponse {
   type: 'chatPlan';
   plan: AiWorkoutPlan;
 }
 
-interface AiChatMessageResponse {
+export interface AiChatMessageResponse {
   type: 'messageResponse';
   message: string;
 }

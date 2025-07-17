@@ -1,12 +1,12 @@
 import { SurfaceText } from '@/components/presentation/surface-text';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 
-import { useTranslate } from '@tolgee/react';
-import { Stack } from 'expo-router';
+import { T, useTranslate } from '@tolgee/react';
+import { Stack, useRouter } from 'expo-router';
 import { FlatList, View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useDispatch } from 'react-redux';
-import { Appbar, IconButton, TextInput } from 'react-native-paper';
+import { Appbar, Button, IconButton, TextInput } from 'react-native-paper';
 import { Fragment, useState } from 'react';
 import { useAppSelector } from '@/store';
 import {
@@ -16,11 +16,19 @@ import {
   selectIsLoadingAiPlannerMessage,
   stopAiGenerator,
 } from '@/store/ai-planner';
-import Animated, { ZoomInLeft, ZoomInRight } from 'react-native-reanimated';
+import Animated, {
+  ZoomIn,
+  ZoomInLeft,
+  ZoomInRight,
+} from 'react-native-reanimated';
 import { uuid } from '@/utils/uuid';
 import { useScroll } from '@/hooks/useScollListener';
 import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
+import { AiChatPlanResponse } from '@/models/ai-models';
+import { savePlan } from '@/store/program';
+import { ProgramBlueprint } from '@/models/session-models';
+import { LocalDate } from '@js-joda/core';
 
 export default function AiPlanner() {
   const { t } = useTranslate();
@@ -138,6 +146,22 @@ function ChatBubble(props: {
   const { message, sameSenderBelow, sameSenderAbove, isLastMessage } = props;
   const isUser = message.from === 'User';
   const { colors } = useAppTheme();
+  const dispatch = useDispatch();
+  const { push } = useRouter();
+  const saveAiPlan = (m: AiChatPlanResponse) => {
+    const programId = uuid();
+    dispatch(
+      savePlan({
+        programId,
+        programBlueprint: ProgramBlueprint.fromPOJO({
+          lastEdited: LocalDate.now(),
+          name: m.plan.name,
+          sessions: m.plan.sessions,
+        }),
+      }),
+    );
+    push(`/(tabs)/settings/program-list?focusprogramId=${programId}`);
+  };
 
   const smallRadius = spacing[1];
   const normalRadius = spacing[4];
@@ -175,7 +199,7 @@ function ChatBubble(props: {
             {message.message}
           </SurfaceText>
         ) : (
-          <>
+          <View style={{ gap: spacing[2] }}>
             <SurfaceText
               font="text-2xl"
               weight={'bold'}
@@ -192,7 +216,21 @@ function ChatBubble(props: {
                 <SessionSummary session={s.getEmptySession()} />
               </Fragment>
             ))}
-          </>
+            {!message.isLoading && (
+              <Animated.View
+                entering={ZoomIn.springify().duration(150)}
+                style={{ alignSelf: 'flex-end' }}
+              >
+                <Button
+                  mode="contained"
+                  icon={'assignmentAdd'}
+                  onPress={() => saveAiPlan(message)}
+                >
+                  <T keyName="Save new plan" />
+                </Button>
+              </Animated.View>
+            )}
+          </View>
         )}
       </Animated.View>
     </View>

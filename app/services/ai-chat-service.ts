@@ -18,7 +18,6 @@ export class AiChatService {
       this.connection = this.hunConnectionFactory.create();
 
       this.connection.onclose((e) => {
-        console.error(e);
         this.connection = undefined;
       });
 

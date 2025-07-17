@@ -13,7 +13,7 @@ import { uuid } from '@/utils/uuid';
 import { DateTimeFormatter } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
 import { IconButton, List, Menu, RadioButton } from 'react-native-paper';
@@ -110,12 +110,31 @@ export default function ProgramListItem({
   const { t } = useTranslate();
   const { push } = useRouter();
   const { colors } = useAppTheme();
-  const focusStyle = isFocused
-    ? {
-        backgroundColor: colors.secondaryContainer,
-        color: colors.onSecondaryContainer,
+  const [focusStyle, setFocusStyle] = useState({});
+  useEffect(() => {
+    let times = 0;
+    let timeout: number = 0;
+    const handleTimes = () => {
+      times++;
+      setFocusStyle(
+        times % 2 === 0
+          ? {
+              backgroundColor: colors.secondaryContainer,
+              color: colors.onSecondaryContainer,
+            }
+          : {},
+      );
+      if (times < 10) {
+        timeout = setTimeout(handleTimes, 150);
       }
-    : {};
+    };
+    if (isFocused) {
+      timeout = setTimeout(handleTimes, 150);
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [isFocused, colors.onSecondaryContainer, colors.secondaryContainer]);
   return (
     <List.Item
       title={program.name}
