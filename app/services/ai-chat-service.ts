@@ -41,8 +41,9 @@ export class AiChatService {
         }
       },
     );
+
     this.connection
-      .invoke('Introduce', 'en-AU')
+      .invoke('Introduce', Intl.DateTimeFormat().resolvedOptions().locale)
       .catch(console.error)
       .finally(() => {
         console.log('End');
