@@ -10,7 +10,14 @@ export interface AiChatMessageResponse {
   message: string;
 }
 
-export type AiChatResponse = AiChatMessageResponse | AiChatPlanResponse;
+export interface AiChatPurchaseProResponse {
+  type: 'purchasePro';
+}
+
+export type AiChatResponse =
+  | AiChatMessageResponse
+  | AiChatPlanResponse
+  | AiChatPurchaseProResponse;
 
 export enum AppStore {
   Web = 'Web',

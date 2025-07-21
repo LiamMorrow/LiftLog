@@ -6,8 +6,14 @@ import { Stack, useRouter } from 'expo-router';
 import { FlatList, View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useDispatch } from 'react-redux';
-import { Appbar, Button, IconButton, TextInput } from 'react-native-paper';
-import { Fragment, useState } from 'react';
+import {
+  Appbar,
+  Button,
+  IconButton,
+  TextInput,
+  ActivityIndicator,
+} from 'react-native-paper';
+import { Fragment, useEffect, useState } from 'react';
 import { useAppSelector } from '@/store';
 import {
   addMessage,
@@ -25,10 +31,13 @@ import { uuid } from '@/utils/uuid';
 import { useScroll } from '@/hooks/useScollListener';
 import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
-import { AiChatPlanResponse } from '@/models/ai-models';
+import { AiChatMessageResponse, AiChatPlanResponse } from '@/models/ai-models';
 import { savePlan } from '@/store/program';
 import { ProgramBlueprint } from '@/models/session-models';
 import { LocalDate } from '@js-joda/core';
+import { match } from 'ts-pattern';
+import LimitedHtml from '@/components/presentation/limited-html';
+import { useIAP } from 'expo-iap';
 
 export default function AiPlanner() {
   const { t } = useTranslate();
@@ -146,22 +155,6 @@ function ChatBubble(props: {
   const { message, sameSenderBelow, sameSenderAbove, isLastMessage } = props;
   const isUser = message.from === 'User';
   const { colors } = useAppTheme();
-  const dispatch = useDispatch();
-  const { push } = useRouter();
-  const saveAiPlan = (m: AiChatPlanResponse) => {
-    const programId = uuid();
-    dispatch(
-      savePlan({
-        programId,
-        programBlueprint: ProgramBlueprint.fromPOJO({
-          lastEdited: LocalDate.now(),
-          name: m.plan.name,
-          sessions: m.plan.sessions,
-        }),
-      }),
-    );
-    push(`/(tabs)/settings/program-list?focusprogramId=${programId}`);
-  };
 
   const smallRadius = spacing[1];
   const normalRadius = spacing[4];
@@ -194,45 +187,133 @@ function ChatBubble(props: {
           maxWidth: '90%',
         }}
       >
-        {message.type === 'messageResponse' ? (
-          <SurfaceText color={isUser ? 'onPrimary' : 'onSurface'}>
-            {message.message}
-          </SurfaceText>
-        ) : (
-          <View style={{ gap: spacing[2] }}>
-            <SurfaceText
-              font="text-2xl"
-              weight={'bold'}
-              color={isUser ? 'onPrimary' : 'onSurface'}
-            >
-              {message.plan.name}
-            </SurfaceText>
-            <SurfaceText color={isUser ? 'onPrimary' : 'onSurface'}>
-              {message.plan.description}
-            </SurfaceText>
-            {message.plan.sessions.map((s, i) => (
-              <Fragment key={i}>
-                <SessionSummaryTitle session={s.getEmptySession()} />
-                <SessionSummary session={s.getEmptySession()} />
-              </Fragment>
-            ))}
-            {!message.isLoading && (
-              <Animated.View
-                entering={ZoomIn.springify().duration(150)}
-                style={{ alignSelf: 'flex-end' }}
-              >
-                <Button
-                  mode="contained"
-                  icon={'assignmentAdd'}
-                  onPress={() => saveAiPlan(message)}
-                >
-                  <T keyName="Save new plan" />
-                </Button>
-              </Animated.View>
-            )}
-          </View>
-        )}
+        {match(message)
+          .with({ type: 'messageResponse' }, (message) => (
+            <GeneralMessage isUser={isUser} message={message} />
+          ))
+          .with({ type: 'chatPlan' }, (message) => (
+            <PlanMessage isUser={isUser} message={message} />
+          ))
+          .with({ type: 'purchasePro' }, () => <ProPrompt />)
+          .exhaustive()}
       </Animated.View>
     </View>
+  );
+}
+
+function GeneralMessage({
+  message,
+  isUser,
+}: {
+  message: AiChatMessageResponse;
+  isUser: boolean;
+}) {
+  return (
+    <SurfaceText color={isUser ? 'onPrimary' : 'onSurface'}>
+      {message.message}
+    </SurfaceText>
+  );
+}
+
+function PlanMessage({
+  message,
+  isUser,
+}: {
+  message: AiChatPlanResponse & ChatMessage;
+  isUser: boolean;
+}) {
+  const dispatch = useDispatch();
+  const { push } = useRouter();
+  const saveAiPlan = (m: AiChatPlanResponse) => {
+    const programId = uuid();
+    dispatch(
+      savePlan({
+        programId,
+        programBlueprint: ProgramBlueprint.fromPOJO({
+          lastEdited: LocalDate.now(),
+          name: m.plan.name,
+          sessions: m.plan.sessions,
+        }),
+      }),
+    );
+    push(`/(tabs)/settings/program-list?focusprogramId=${programId}`);
+  };
+  return (
+    <View style={{ gap: spacing[2] }}>
+      <SurfaceText
+        font="text-2xl"
+        weight={'bold'}
+        color={isUser ? 'onPrimary' : 'onSurface'}
+      >
+        {message.plan.name}
+      </SurfaceText>
+      <SurfaceText color={isUser ? 'onPrimary' : 'onSurface'}>
+        {message.plan.description}
+      </SurfaceText>
+      {message.plan.sessions.map((s, i) => (
+        <Fragment key={i}>
+          <SessionSummaryTitle session={s.getEmptySession()} />
+          <SessionSummary session={s.getEmptySession()} />
+        </Fragment>
+      ))}
+      {!message.isLoading && (
+        <Animated.View
+          entering={ZoomIn.springify().duration(150)}
+          style={{ alignSelf: 'flex-end' }}
+        >
+          <Button
+            mode="contained"
+            icon={'assignmentAdd'}
+            onPress={() => saveAiPlan(message)}
+          >
+            <T keyName="Save new plan" />
+          </Button>
+        </Animated.View>
+      )}
+    </View>
+  );
+}
+
+function ProPrompt() {
+  const { t } = useTranslate();
+  return (
+    <View>
+      <SurfaceText>{t('UpgradeToPro')}</SurfaceText>
+      <SurfaceText>
+        <LimitedHtml value={t('UpgradeToProDescription')} /> <ProPrice />
+      </SurfaceText>
+      <Button>{t('Upgrade')}</Button>
+    </View>
+  );
+}
+
+const productIds = ['pro'];
+function ProPrice() {
+  const {
+    connected,
+    products,
+    purchaseHistory,
+    getProducts,
+    requestPurchase,
+    finishTransaction,
+  } = useIAP();
+
+  useEffect(() => {
+    if (connected) {
+      getProducts({ skus: productIds }).catch(console.error);
+    }
+  }, [connected, getProducts]);
+  const price = products[0] ? products[0] : undefined;
+  if (!price) {
+    return (
+      <SurfaceText> {connected ? 'Connected' : 'Disconnected'}</SurfaceText>
+    );
+    return <ActivityIndicator />;
+  }
+
+  return (
+    <SurfaceText>
+      {price.displayPrice} {price.currency}
+    </SurfaceText>
   );
 }

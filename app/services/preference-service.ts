@@ -32,12 +32,16 @@ export class PreferenceService {
 
   async getProToken(): Promise<string | undefined> {
     const token = await this.keyValueStore.getItem('proToken');
-    // We used GUID tokens at one stage but they are invalid - delete them
-    if (token && /^[0-9a-fA-F-]{36}$/.test(token)) return undefined;
-    return token ?? undefined;
+    // if (__DEV__) {
+    //   return 'test';
+    // }
+    return token;
   }
 
   async setProToken(token?: string): Promise<void> {
+    if (__DEV__) {
+      return;
+    }
     if (token) await this.keyValueStore.setItem('proToken', token);
   }
 

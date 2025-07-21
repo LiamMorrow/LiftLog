@@ -14,7 +14,7 @@ export type LastBackup = {
 interface SettingsState {
   firstDayOfWeek: DayOfWeek;
   isHydrated: boolean;
-
+  proToken: string | undefined;
   useImperialUnits: boolean;
   showBodyweight: boolean;
   showTips: boolean;
@@ -42,6 +42,7 @@ const initialState: SettingsState = {
   tipToShow: 1,
   showFeed: true,
   restNotifications: true,
+  proToken: undefined,
   remoteBackupSettings: {
     endpoint: '',
     apiKey: '',
@@ -82,6 +83,9 @@ const settingsSlice = createSlice({
       action: PayloadAction<RemoteBackupSettings>,
     ) {
       state.remoteBackupSettings = action.payload;
+    },
+    setProToken(state, action: PayloadAction<string | undefined>) {
+      state.proToken = action.payload;
     },
     setLastBackup(
       state,
@@ -137,6 +141,7 @@ export const {
   setBackupReminder,
   setColorSchemeSeed,
   setFirstDayOfWeek,
+  setProToken,
 } = settingsSlice.actions;
 
-export default settingsSlice.reducer;
+export const settingsReducer = settingsSlice.reducer;

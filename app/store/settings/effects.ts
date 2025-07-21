@@ -7,6 +7,7 @@ import {
   setFirstDayOfWeek,
   setIsHydrated,
   setLastBackup,
+  setProToken,
   setRemoteBackupSettings,
   setRestNotifications,
   setShowBodyweight,
@@ -43,6 +44,7 @@ export function applySettingsEffects() {
         backupReminder,
         firstDayOfWeek,
         colorSchemeSeed,
+        proToken,
       ] = await Promise.all([
         preferenceService.getUseImperialUnits(),
         preferenceService.getShowBodyweight(),
@@ -56,6 +58,7 @@ export function applySettingsEffects() {
         preferenceService.getBackupReminder(),
         preferenceService.getFirstDayOfWeek(),
         preferenceService.getColorSchemeSeed(),
+        preferenceService.getProToken(),
       ]);
       dispatch(setColorSchemeSeed(colorSchemeSeed));
       dispatch(setUseImperialUnits(useImperialUnits));
@@ -78,6 +81,7 @@ export function applySettingsEffects() {
       );
       dispatch(setBackupReminder(backupReminder));
       dispatch(setFirstDayOfWeek(firstDayOfWeek));
+      dispatch(setProToken(proToken));
 
       dispatch(setIsHydrated(true));
       const end = performance.now();

@@ -3,93 +3,51 @@ import { SessionBlueprint } from '@/models/session-models';
 import { Duration } from '@js-joda/core';
 import { HubConnection } from '@microsoft/signalr';
 import { AsyncIterableSubject } from 'data-async-iterators';
-import { match } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import BigNumber from 'bignumber.js';
 import { parseDuration } from '@/utils/format-date';
 import { HubConnectionFactory } from '@/services/hub-connection-factory';
+import { RootState } from '@/store';
 
 export class AiChatService {
   private connection: HubConnection | undefined;
-  constructor(private hunConnectionFactory: HubConnectionFactory) {}
+  constructor(
+    private hunConnectionFactory: HubConnectionFactory,
+    private getState: () => RootState,
+  ) {}
+
   async *introduce(): AsyncIterableIterator<AiChatResponse> {
-    const subject = new AsyncIterableSubject<AiChatResponse>();
-    if (!this.connection) {
-      this.connection = this.hunConnectionFactory.create();
-
-      this.connection.onclose((e) => {
-        this.connection = undefined;
-      });
-
-      await this.connection.start();
+    const proToken = this.getState().settings.proToken;
+    if (!proToken) {
+      yield {
+        type: 'purchasePro',
+      };
+      return;
     }
-    this.connection.on(
-      'ReceiveMessage',
-      async (m: JsonResponse<AiChatResponse>) => {
-        try {
-          subject.pushValue(
-            match(m)
-              .returnType<AiChatResponse>()
-              .with({ type: 'messageResponse' }, (chatMessage) => chatMessage)
-              .with({ type: 'chatPlan' }, ({ plan }) => ({
-                type: 'chatPlan',
-                plan: toAiWorkoutPlan(plan),
-              }))
-              .exhaustive(),
-          );
-        } catch (e) {
-          console.warn('Failed to parse ai response', e);
-        }
-      },
-    );
+    const subject = await this.setupResponseListening(proToken);
 
-    this.connection
-      .invoke('Introduce', Intl.DateTimeFormat().resolvedOptions().locale)
+    this.connection!.invoke(
+      'Introduce',
+      Intl.DateTimeFormat().resolvedOptions().locale,
+    )
       .catch(console.error)
-      .finally(() => {
-        console.log('End');
-        subject.end();
-      });
+      .finally(() => subject.end());
     yield* subject;
     this.connection?.off('ReceiveMessage');
   }
 
   async *sendMessage(message: string): AsyncIterableIterator<AiChatResponse> {
-    const subject = new AsyncIterableSubject<AiChatResponse>();
-    if (!this.connection) {
-      this.connection = this.hunConnectionFactory.create();
-
-      this.connection.onclose((e) => {
-        this.connection = undefined;
-      });
-
-      await this.connection.start();
+    const proToken = this.getState().settings.proToken;
+    if (!proToken) {
+      yield {
+        type: 'purchasePro',
+      };
+      return;
     }
-    this.connection.on(
-      'ReceiveMessage',
-      async (m: JsonResponse<AiChatResponse>) => {
-        try {
-          subject.pushValue(
-            match(m)
-              .returnType<AiChatResponse>()
-              .with({ type: 'messageResponse' }, (chatMessage) => chatMessage)
-              .with({ type: 'chatPlan' }, ({ plan }) => ({
-                type: 'chatPlan',
-                plan: toAiWorkoutPlan(plan),
-              }))
-              .exhaustive(),
-          );
-        } catch (e) {
-          console.warn('Failed to parse ai response', e);
-        }
-      },
-    );
-    this.connection
-      .invoke('SendMessage', message)
+    const subject = await this.setupResponseListening(proToken);
+    this.connection!.invoke('SendMessage', message)
       .catch(console.error)
-      .finally(() => {
-        console.log('End');
-        subject.end();
-      });
+      .finally(() => subject.end());
     yield* subject;
     this.connection?.off('ReceiveMessage');
   }
@@ -100,6 +58,42 @@ export class AiChatService {
 
   async restartChat() {
     await this.connection?.send('RestartChat');
+  }
+
+  private async setupResponseListening(proToken: string) {
+    const subject = new AsyncIterableSubject<AiChatResponse>();
+    if (!this.connection) {
+      this.connection = this.hunConnectionFactory.create(proToken);
+
+      this.connection.onclose((e) => {
+        this.connection = undefined;
+      });
+
+      await this.connection.start().catch(() => (this.connection = undefined));
+    }
+    this.connection.on(
+      'ReceiveMessage',
+      async (m: JsonResponse<AiChatResponse>) => {
+        try {
+          subject.pushValue(
+            match(m)
+              .returnType<AiChatResponse>()
+              .with(
+                { type: P.union('messageResponse', 'purchasePro') },
+                (chatMessage) => chatMessage,
+              )
+              .with({ type: 'chatPlan' }, ({ plan }) => ({
+                type: 'chatPlan',
+                plan: toAiWorkoutPlan(plan),
+              }))
+              .exhaustive(),
+          );
+        } catch (e) {
+          console.warn('Failed to parse ai response', e);
+        }
+      },
+    );
+    return subject;
   }
 }
 

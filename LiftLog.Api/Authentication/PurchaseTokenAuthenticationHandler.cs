@@ -45,6 +45,10 @@ public class PurchaseTokenAuthenticationHandler
 
         // Parse the authorization header
         var authParts = authHeader.Split(' ');
+        if (authParts is ["Bearer", ..])
+        {
+            authParts = authParts[1..];
+        }
         if (authParts.Length != 2)
         {
             _logger.LogWarning("Invalid Authorization header format");

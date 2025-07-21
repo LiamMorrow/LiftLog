@@ -49,7 +49,10 @@ function resolveServicesInternal(store: Store<RootState>) {
   const fileExportService = new FileExportService();
   const filePickerService = new FilePickerService();
   const preferenceService = new PreferenceService(keyValueStore);
-  const aiChatService = new AiChatService(new HubConnectionFactory());
+  const aiChatService = new AiChatService(
+    new HubConnectionFactory(),
+    store.getState,
+  );
 
   return {
     logger,

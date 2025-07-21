@@ -22,14 +22,14 @@
       "typedRoutes": true,
       "reactCompiler": true
     },
-    "scheme": "com.limajuice.liftlogreact",
+    "scheme": "com.limajuice.liftlog",
     "android": {
-      "package": "com.limajuice.liftlogreact",
+      "package": "com.limajuice.liftlog",
       "edgeToEdgeEnabled": true,
       "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"]
     },
     "ios": {
-      "bundleIdentifier": "com.limajuice.liftlogreact",
+      "bundleIdentifier": "com.limajuice.liftlog",
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": true
       }

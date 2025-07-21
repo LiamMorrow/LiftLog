@@ -1,5 +1,7 @@
+using LiftLog.Api.Authentication;
 using LiftLog.Api.Models;
 using LiftLog.Api.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace LiftLog.Api.Hubs;
@@ -9,6 +11,7 @@ public interface IChatClient
     Task ReceiveMessage(AiChatResponse message);
 }
 
+[Authorize(AuthenticationSchemes = PurchaseTokenAuthenticationSchemeOptions.SchemeName)]
 public class AiWorkoutChatHub(GptChatWorkoutPlanner planner) : Hub<IChatClient>
 {
     public async Task SendMessage(string message, string locale)

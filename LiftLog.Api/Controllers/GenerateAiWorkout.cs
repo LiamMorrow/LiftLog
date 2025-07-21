@@ -34,7 +34,6 @@ public class GenerateAiWorkoutController(
         }
 
         // Get authenticated user information
-        var userId = this.GetUserId();
         var appStore = this.GetAppStore();
         var proToken = this.GetProToken();
 
