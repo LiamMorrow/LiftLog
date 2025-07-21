@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
+    "prebuild": "expo prebuild",
+    "build:android:release": "./android/gradlew assembleRelease",
     "android": "expo run:android",
     "android:release": "expo run:android --variant release",
     "ios": "expo run:ios",
