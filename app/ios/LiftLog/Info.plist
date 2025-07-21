@@ -27,8 +27,13 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>com.limajuice.liftlogreact</string>
-          <string>com.limajuice.liftlogreact</string>
+          <string>com.limajuice.liftlog</string>
+        </array>
+      </dict>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>exp+liftlog</string>
         </array>
       </dict>
     </array>

@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "LiftLog",
-    "slug": "liftlog-react",
+    "slug": "liftlog",
     "version": "1.0.0",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

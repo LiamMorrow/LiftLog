@@ -1,4 +1,4 @@
-package com.limajuice.liftlogreact
+package com.limajuice.liftlog
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build
