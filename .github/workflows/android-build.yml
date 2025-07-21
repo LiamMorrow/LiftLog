@@ -29,6 +29,16 @@ jobs:
       - name: Install
         run: npm i
         working-directory: ./app
-      - name: Build
-        run: ./gradlew assembleRelease
-        working-directory: ./app/android
+      - uses: burrunan/gradle-cache-action@v3
+        name: Build Android
+        with:
+          # If you have multiple jobs, use distinct job-id in in case you want to split caches
+          # For instance, jobs with different JDK versions can't share caches
+          # RUNNER_OS is added to job-id automatically
+          job-id: android
+          # Specifies arguments for Gradle execution
+          # If arguments is missing or empty, then Gradle is not executed
+          arguments: assembleRelease
+          build-root-directory: ./app/android
+
+          gradle-version: wrapper
