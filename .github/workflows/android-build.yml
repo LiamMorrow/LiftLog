@@ -13,30 +13,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          dotnet-version: 9.0.x
-      - name: Setup MAUI android
-        run: dotnet workload install android
-        # When running on a self hosted mac runner, the ios workload needs to be installed due to csproj configuration
-      - name: Setup MAUI iOS
-        if: ${{ runner.os == 'macOS' }}
-        run: dotnet workload install ios
-      - name: Setup MAUI
-        run: dotnet workload restore
-      - name: Restore dependencies
-        run: dotnet restore -p:TargetFramework=net9.0-android
+          node-version: "22"
+          cache: npm
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          distribution: "microsoft"
+          distribution: "openjdk"
           java-version: "17"
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v3.2.2
-      - name: Build Tailwind
-        run: npm i && npm run build
-        working-directory: ./LiftLog.Ui
+      - name: Install
+        run: npm i
+        working-directory: ./app
       - name: Build
-        run: dotnet build -p:TargetFramework=net9.0-android -f net9.0-android -p:BuildFor=android
-        working-directory: ./LiftLog.Maui
+        run: ./gradlew assembleRelease
+        working-directory: ./app/android
