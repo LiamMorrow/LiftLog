@@ -277,12 +277,14 @@ function PlanMessage({
 function ProPrompt() {
   const { t } = useTranslate();
   return (
-    <View>
+    <View style={{ gap: spacing[2] }}>
       <SurfaceText>{t('UpgradeToPro')}</SurfaceText>
       <SurfaceText>
         <LimitedHtml value={t('UpgradeToProDescription')} /> <ProPrice />
       </SurfaceText>
-      <Button>{t('Upgrade')}</Button>
+      <Button style={{ alignSelf: 'flex-end' }} mode="contained">
+        {t('Upgrade')}
+      </Button>
     </View>
   );
 }
