@@ -866,7 +866,7 @@
     <value>Planovi</value>
   </data>
   <data name="NewPlanDefaultName" xml:space="preserve">
-    <value>Podrazumevano ime dato kada korisnik napravi novi plan</value>
+    <value>Novi plan</value>
   </data>
   <data name="FinishWorkout" xml:space="preserve">
     <value>Upravo ćete završiti svoj trening. Da li ste sigurni?</value>
