@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -855,5 +855,20 @@
   </data>
   <data name="BackupRemindersSubtitle" xml:space="preserve">
     <value>Periodično predložiti pravljenje rezervne kopije kada niste pravili rezervnu kopiju neko vreme</value>
+  </data>
+  <data name="SplitWeightByDefault" xml:space="preserve">
+    <value>Individualna težina po seriji</value>
+  </data>
+  <data name="SplitWeightByDefaultSubtitle" xml:space="preserve">
+    <value>Omogućava da unapred postavite težinu za svaku seriju vežbi</value>
+  </data>
+  <data name="PlansPageTitle" xml:space="preserve">
+    <value>Planovi</value>
+  </data>
+  <data name="NewPlanDefaultName" xml:space="preserve">
+    <value>Novi plan</value>
+  </data>
+  <data name="FinishWorkout" xml:space="preserve">
+    <value>Upravo ćete završiti svoj trening. Da li ste sigurni?</value>
   </data>
 </root>
