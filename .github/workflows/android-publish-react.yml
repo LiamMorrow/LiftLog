@@ -43,10 +43,25 @@ jobs:
           run-id: ${{github.run_number}}
 
       - uses: burrunan/gradle-cache-action@v3
-        name: Build Android
+        name: Build Android Apk
         with:
           job-id: android
           arguments: bundleRelease
+          build-root-directory: ./app/android
+
+          gradle-version: wrapper
+          properties: |
+            ANDROID_UPLOAD_STORE_FILE=liftlog.keystore
+            ANDROID_UPLOAD_STORE_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
+            ANDROID_UPLOAD_KEY_ALIAS=liftlog
+            ANDROID_UPLOAD_KEY_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
+            DISPLAY_VERSION=${{ github.event.release.name }}
+            BUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}
+      - uses: burrunan/gradle-cache-action@v3
+        name: Build Android AAB
+        with:
+          job-id: android
+          arguments: assembleRelease
           build-root-directory: ./app/android
 
           gradle-version: wrapper
