@@ -92,8 +92,13 @@ android {
         applicationId 'com.limajuice.liftlog'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0.0"
+        if(project.hasProperty('BUILD_NUMBER')){
+            versionCode BUILD_NUMBER
+            versionName DISPLAY_VERSION
+        } else {
+            versionCode 1
+            versionName "1.0.0"
+        }
     }
     signingConfigs {
         debug {
@@ -102,15 +107,27 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            if (project.hasProperty('ANDROID_UPLOAD_STORE_FILE')) {
+                storeFile file(ANDROID_UPLOAD_STORE_FILE)
+                storePassword ANDROID_UPLOAD_STORE_PASSWORD
+                keyAlias ANDROID_UPLOAD_KEY_ALIAS
+                keyPassword ANDROID_UPLOAD_KEY_PASSWORD
+            }
+        }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            if (project.hasProperty('ANDROID_UPLOAD_STORE_FILE')) {
+                signingConfig signingConfigs.release
+            } else {
+                signingConfig signingConfigs.debug
+            }
+
             shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"

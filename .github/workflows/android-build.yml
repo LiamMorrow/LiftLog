@@ -38,7 +38,7 @@ jobs:
           job-id: android
           # Specifies arguments for Gradle execution
           # If arguments is missing or empty, then Gradle is not executed
-          arguments: assembleRelease
+          arguments: build
           build-root-directory: ./app/android
 
           gradle-version: wrapper
