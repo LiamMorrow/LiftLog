@@ -16,6 +16,14 @@
         {
           "launchMode": "most-recent"
         }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "app",
+          "organization": "liftlog"
+        }
       ]
     ],
     "experiments": {
@@ -26,13 +34,16 @@
     "android": {
       "package": "com.limajuice.liftlog",
       "edgeToEdgeEnabled": true,
-      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"]
+      "permissions": [
+        "android.permission.SCHEDULE_EXACT_ALARM"
+      ]
     },
     "ios": {
       "bundleIdentifier": "com.limajuice.liftlog",
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": true
-      }
+      },
+      "appleTeamId": "DM9JP7639R"
     },
     "androidStatusBar": {
       "translucent": true

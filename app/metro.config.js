@@ -1,9 +1,11 @@
-const { getDefaultConfig } = require('expo/metro-config');
 const {
   wrapWithReanimatedMetroConfig,
 } = require('react-native-reanimated/metro-config');
+const {
+  getSentryExpoConfig
+} = require("@sentry/react-native/metro");
 
-const config = getDefaultConfig(__dirname);
+const config = getSentryExpoConfig(__dirname);
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (moduleName === 'crypto') {
     // when importing crypto, resolve to react-native-quick-crypto

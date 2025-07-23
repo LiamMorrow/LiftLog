@@ -12,9 +12,23 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import '@/utils/date-locale';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
-import { useIAP } from 'expo-iap';
+import { initConnection, useIAP } from 'expo-iap';
 
 // import { install } from 'react-native-quick-crypto';
+import * as Sentry from '@sentry/react-native';
+import { useEffect } from 'react';
+
+Sentry.init({
+  dsn: 'https://86576716425e1558b5e8622ba65d4544@o4505937515249664.ingest.us.sentry.io/4509717493383168',
+
+  // Adds more context data to events (IP address, cookies, user, etc.)
+  // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
+  sendDefaultPii: true,
+  integrations: [Sentry.feedbackIntegration()],
+
+  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+  // spotlight: __DEV__,
+});
 
 // install();
 LogBox.ignoreLogs([
@@ -22,9 +36,12 @@ LogBox.ignoreLogs([
   /Open debugger to view warnings./,
 ]);
 
-export default function RootLayout() {
+export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
   useIAP();
+  useEffect(() => {
+    initConnection().catch(console.error);
+  });
   return (
     <GestureHandlerRootView>
       <KeyboardProvider>
@@ -60,4 +77,4 @@ export default function RootLayout() {
       </KeyboardProvider>
     </GestureHandlerRootView>
   );
-}
+});
