@@ -27,7 +27,7 @@ jobs:
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v3.2.2
       - name: Install
-        run: npm i
+        run: npm ci
         working-directory: ./app
       - uses: burrunan/gradle-cache-action@v3
         name: Build Android

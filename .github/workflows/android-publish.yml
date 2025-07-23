@@ -28,7 +28,7 @@ jobs:
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v3.2.2
       - name: Install
-        run: npm i
+        run: npm ci
         working-directory: ./app
       - name: Put keystore
         env:
