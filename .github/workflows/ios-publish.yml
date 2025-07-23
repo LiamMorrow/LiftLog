@@ -5,8 +5,11 @@
 name: Release iOS
 
 on:
-  release:
-    types: [created]
+  # release:
+  #   types: [created]
+
+  push:
+    branches-ignore: [main]
 
 jobs:
   build:
@@ -47,18 +50,69 @@ jobs:
           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
           api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
-      - name: Setup MAUI
-        run: dotnet workload install maui
-      - name: Build Tailwind
-        run: npm ci && npm run build
-        working-directory: ./LiftLog.Ui
-      - name: Build UI # Seems that the typescript built files dont get copied to the publish folder unless we build the project first
-        run: dotnet build -c Release
-        working-directory: ./LiftLog.Ui
-      - name: Build
-        run: 'dotnet publish -c Release -f:net9.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CompressionEnabled=false -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}" -p:CodesignProvision="LiftLog" -p:UseSentryCLI=true -p:ApplicationDisplayVersion=${{ github.event.release.name }} -p:ApplicationVersion=${{ steps.buildNumber.outputs.build-number }}'
-        working-directory: ./LiftLog.Maui
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - name: Install JS dependencies
+        run: npm ci
+        working-directory: ./app
+      - name: Build JS bundle (optional)
+        run: npx expo export --platform ios || echo "Skip if not needed"
+        working-directory: ./app
+      - name: Install CocoaPods dependencies
+        run: |
+          cd ios
+          pod install
+        working-directory: ./app
+      - name: Generate exportOptions.plist
+        working-directory: app
+        run: |
+          cat > exportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>teamID</key>
+            <string>${{ secrets.APPLE_TEAM_ID }}</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>com.limajuice.liftlog</key>
+              <string>LiftLog</string>
+            </dict>
+            <key>compileBitcode</key>
+            <true/>
+            <key>destination</key>
+            <string>export</string>
+            <key>stripSwiftSymbols</key>
+            <true/>
+            <key>thinning</key>
+            <string>&lt;none&gt;</string>
+          </dict>
+          </plist>
+          EOF
+      - name: Archive iOS app
+        run: |
+          xcodebuild -workspace ios/LiftLog.xcworkspace \
+            -scheme LiftLog \
+            -sdk iphoneos \
+            -configuration Release \
+            -archivePath ios/build/App.xcarchive \
+            -allowProvisioningUpdates \
+            APP_DISPLAY_VERSION="3.0.0-beta" \
+            APP_VERSION="${{ steps.buildNumber.outputs.build-number }}" \
+            OTHER_CODE_SIGN_FLAGS="--keychain ${{ env.KEYCHAIN }}"
+        working-directory: ./app
+      - name: Export IPA
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath ios/build/App.xcarchive \
+            -exportOptionsPlist exportOptions.plist \
+            -exportPath ios/build/export
+        working-directory: ./app
       - name: Upload with altool
-        run: xcrun altool --upload-app -f LiftLog.Maui/bin/Release/net9.0-ios/ios-arm64/publish/LiftLog.Maui.ipa -t ios -p '${{secrets.APPLE_UPLOAD_PASS}}' -u ${{secrets.APPLE_UPLOAD_USER}}
+        run: xcrun altool --upload-app -f app/ios/build/export/LiftLog.ipa -t ios -p '${{secrets.APPLE_UPLOAD_PASS}}' -u ${{secrets.APPLE_UPLOAD_USER}}
