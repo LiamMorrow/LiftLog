@@ -47,23 +47,23 @@ jobs:
           base: 100
           run-id: ${{github.run_number}}
 
-      # - uses: burrunan/gradle-cache-action@v3
-      #   name: Build Android Apk
-      #   with:
-      #     job-id: android
-      #     arguments: bundleRelease
-      #     build-root-directory: ./app/android
-
-      #     gradle-version: wrapper
-      #     properties: |
-      #       ANDROID_UPLOAD_STORE_FILE=liftlog.keystore
-      #       ANDROID_UPLOAD_STORE_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
-      #       ANDROID_UPLOAD_KEY_ALIAS=liftlog
-      #       ANDROID_UPLOAD_KEY_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
-      #       DISPLAY_VERSION=${{ github.event.release.name || '3.0.0-beta' }}
-      #       BUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}
       - uses: burrunan/gradle-cache-action@v3
         name: Build Android AAB
+        with:
+          job-id: android
+          arguments: bundleRelease
+          build-root-directory: ./app/android
+
+          gradle-version: wrapper
+          properties: |
+            ANDROID_UPLOAD_STORE_FILE=liftlog.keystore
+            ANDROID_UPLOAD_STORE_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
+            ANDROID_UPLOAD_KEY_ALIAS=liftlog
+            ANDROID_UPLOAD_KEY_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
+            DISPLAY_VERSION=${{ github.event.release.name || '3.0.0-beta' }}
+            BUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}
+      - uses: burrunan/gradle-cache-action@v3
+        name: Build Android APK
         env:
           EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY: ${{secrets.EXPO_REVENUECAT_GOOGLE_API_KEY}}
 
