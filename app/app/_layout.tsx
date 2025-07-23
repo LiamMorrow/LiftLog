@@ -46,7 +46,7 @@ export default Sentry.wrap(function RootLayout() {
     //    Purchases.configure({apiKey: <revenuecat_project_apple_api_key>});
     // } else if (Platform.OS === 'android') {
     Purchases.configure({
-      apiKey: process.env.EXPO_REVENUECAT_GOOGLE_API_KEY!,
+      apiKey: process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY!,
     });
   }, []);
   return (

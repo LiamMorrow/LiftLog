@@ -65,7 +65,7 @@ jobs:
       - uses: burrunan/gradle-cache-action@v3
         name: Build Android AAB
         env:
-          EXPO_REVENUECAT_GOOGLE_API_KEY: ${{secrets.EXPO_REVENUECAT_GOOGLE_API_KEY}}
+          EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY: ${{secrets.EXPO_REVENUECAT_GOOGLE_API_KEY}}
 
         with:
           job-id: android
