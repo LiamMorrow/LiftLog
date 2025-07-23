@@ -4,8 +4,8 @@
 name: Release Android
 
 on:
-  # release:
-  #   types: [created]
+  release:
+    types: [created]
   push:
     branches-ignore: [main]
 
@@ -57,7 +57,7 @@ jobs:
             ANDROID_UPLOAD_STORE_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
             ANDROID_UPLOAD_KEY_ALIAS=liftlog
             ANDROID_UPLOAD_KEY_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
-            DISPLAY_VERSION=3.0.0-beta
+            DISPLAY_VERSION=${{ github.event.release.name }}
             BUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}
       - uses: burrunan/gradle-cache-action@v3
         name: Build Android AAB
@@ -72,7 +72,7 @@ jobs:
             ANDROID_UPLOAD_STORE_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
             ANDROID_UPLOAD_KEY_ALIAS=liftlog
             ANDROID_UPLOAD_KEY_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
-            DISPLAY_VERSION=3.0.0-beta
+            DISPLAY_VERSION=${{ github.event.release.name }}
             BUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}
 
       - name: Upload Android Release to Play Store
