@@ -34,7 +34,7 @@ jobs:
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: echo "${ANDROID_KEYSTORE_BASE64}" | base64 -d > liftlog.keystore
-        working-directory: ./app/android
+        working-directory: ./app/android/app
       - uses: mlilback/build-number@v1
         name: Set build number
         id: buildNumber
