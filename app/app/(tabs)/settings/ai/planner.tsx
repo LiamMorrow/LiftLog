@@ -38,10 +38,13 @@ import { ProgramBlueprint } from '@/models/session-models';
 import { LocalDate } from '@js-joda/core';
 import { match } from 'ts-pattern';
 import LimitedHtml from '@/components/presentation/limited-html';
-import { useIAP } from 'expo-iap';
 import { useMountEffect } from '@/hooks/useMountEffect';
 
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
+import Purchases, {
+  PRODUCT_CATEGORY,
+  PurchasesStoreProduct,
+} from 'react-native-purchases';
 
 export default function AiPlanner() {
   const { t } = useTranslate();
@@ -284,7 +287,7 @@ function PlanMessage({
 function ProPrompt() {
   const { t } = useTranslate();
   const upgrade = () => {
-    presentPaywallIfNeeded().catch(console.error);
+    presentPaywall().catch(console.error);
   };
   return (
     <View style={{ gap: spacing[2] }}>
@@ -305,28 +308,24 @@ function ProPrompt() {
 
 const productIds = ['pro'];
 function ProPrice() {
-  const { connected, products, requestProducts } = useIAP();
+  const [product, setProduct] = useState<PurchasesStoreProduct>();
 
   useEffect(() => {
-    if (connected) {
-      requestProducts({ skus: productIds, type: 'inapp' }).catch(console.error);
-    }
-  }, [connected, requestProducts]);
-  const price = products[0] ? products[0] : undefined;
-  if (!price) {
+    Purchases.getProducts(['pro'], PRODUCT_CATEGORY.NON_SUBSCRIPTION)
+      .then((v) => {
+        setProduct(v[0]);
+      })
+      .catch(console.error);
+  }, []);
+  if (!product) {
     return (
       <SurfaceText>
-        {connected.toString()}
         <ActivityIndicator />
       </SurfaceText>
     );
   }
 
-  return (
-    <SurfaceText>
-      {price.displayPrice} {price.currency}
-    </SurfaceText>
-  );
+  return <SurfaceText>{product.priceString}</SurfaceText>;
 }
 
 async function presentPaywall(): Promise<boolean> {
