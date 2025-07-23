@@ -93,4 +93,6 @@ jobs:
             -sdk iphoneos \
             -configuration Release \
             -archivePath ios/build/App.xcarchive archive
+            DEVELOPMENT_TEAM="${{secrets.APPLE_TEAM_ID}}"
+
         working-directory: ./app
