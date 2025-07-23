@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN_REACT}}
+      EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY: ${{secrets.EXPO_REVENUECAT_GOOGLE_API_KEY}}
 
     steps:
       - uses: actions/checkout@v4
@@ -64,9 +65,6 @@ jobs:
             BUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}
       - uses: burrunan/gradle-cache-action@v3
         name: Build Android APK
-        env:
-          EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY: ${{secrets.EXPO_REVENUECAT_GOOGLE_API_KEY}}
-
         with:
           job-id: android
           arguments: assembleRelease
