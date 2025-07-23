@@ -12,6 +12,7 @@ jobs:
   build:
     runs-on: macos-15
     env:
+      SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN_REACT}}
       KEYCHAIN: job-${{ github.job }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
 
     steps:
