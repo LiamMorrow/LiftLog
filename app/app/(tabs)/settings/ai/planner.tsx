@@ -330,7 +330,12 @@ function ProPrice() {
   }, [connected, getProducts]);
   const price = products[0] ? products[0] : undefined;
   if (!price) {
-    return <ActivityIndicator />;
+    return (
+      <SurfaceText>
+        {connected}
+        <ActivityIndicator />
+      </SurfaceText>
+    );
   }
 
   return (

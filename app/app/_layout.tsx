@@ -12,6 +12,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import '@/utils/date-locale';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { useIAP } from 'expo-iap';
 
 // import { install } from 'react-native-quick-crypto';
 
@@ -23,6 +24,7 @@ LogBox.ignoreLogs([
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  useIAP();
   return (
     <GestureHandlerRootView>
       <KeyboardProvider>
