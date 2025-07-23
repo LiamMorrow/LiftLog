@@ -2,6 +2,7 @@ import { AiChatResponse } from '@/models/ai-models';
 import {
   addMessage,
   ChatMessage,
+  initChat,
   initializeAiPlannerStateSlice,
   restartChat,
   stopAiGenerator,
@@ -61,6 +62,13 @@ export function applyAiPlannerEffects() {
   );
   addEffect(stopAiGenerator, async (_, { extra: { aiChatService } }) => {
     await aiChatService.stopInProgress();
+  });
+
+  addEffect(initChat, async (_, { dispatch, getState }) => {
+    if (getState().aiPlanner.plannerChat.length) {
+      return;
+    }
+    dispatch(restartChat());
   });
 
   addEffect(restartChat, async (_, { dispatch, extra: { aiChatService } }) => {

@@ -52,8 +52,6 @@ export default function Settings() {
       </List.Section>
 
       <List.Section title={t('ProFeatures')}>
-        {/* TODO pro */}
-
         <List.Item
           onPress={() => push('/(tabs)/settings/ai/planner')}
           title={t('AiPlanner')}

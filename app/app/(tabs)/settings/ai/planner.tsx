@@ -18,6 +18,7 @@ import { useAppSelector } from '@/store';
 import {
   addMessage,
   ChatMessage,
+  initChat,
   restartChat,
   selectIsLoadingAiPlannerMessage,
   stopAiGenerator,
@@ -38,6 +39,7 @@ import { LocalDate } from '@js-joda/core';
 import { match } from 'ts-pattern';
 import LimitedHtml from '@/components/presentation/limited-html';
 import { useIAP } from 'expo-iap';
+import { useMountEffect } from '@/hooks/useMountEffect';
 
 export default function AiPlanner() {
   const { t } = useTranslate();
@@ -45,6 +47,9 @@ export default function AiPlanner() {
   const messages = useAppSelector((x) => x.aiPlanner.plannerChat);
   const { handleScroll } = useScroll(true);
   const isLoadingResponse = useAppSelector(selectIsLoadingAiPlannerMessage);
+  useMountEffect(() => {
+    dispatch(initChat());
+  });
 
   const [messageText, setMessageText] = useState('');
   const sendMessage = (message: string) => {
@@ -276,13 +281,38 @@ function PlanMessage({
 
 function ProPrompt() {
   const { t } = useTranslate();
+  const { connected, requestPurchase } = useIAP();
+  const upgrade = () => {
+    if (!connected) {
+      return;
+    }
+    const purchase = async (): Promise<unknown> => {
+      return await requestPurchase({
+        type: 'inapp',
+        request: {
+          ios: {
+            sku: 'pro',
+            andDangerouslyFinishTransactionAutomaticallyIOS: true,
+          },
+          android: {
+            skus: ['pro'],
+          },
+        },
+      });
+    };
+    purchase().then(console.log).catch(console.error);
+  };
   return (
     <View style={{ gap: spacing[2] }}>
       <SurfaceText>{t('UpgradeToPro')}</SurfaceText>
       <SurfaceText>
         <LimitedHtml value={t('UpgradeToProDescription')} /> <ProPrice />
       </SurfaceText>
-      <Button style={{ alignSelf: 'flex-end' }} mode="contained">
+      <Button
+        style={{ alignSelf: 'flex-end' }}
+        mode="contained"
+        onPress={upgrade}
+      >
         {t('Upgrade')}
       </Button>
     </View>
@@ -291,14 +321,7 @@ function ProPrompt() {
 
 const productIds = ['pro'];
 function ProPrice() {
-  const {
-    connected,
-    products,
-    purchaseHistory,
-    getProducts,
-    requestPurchase,
-    finishTransaction,
-  } = useIAP();
+  const { connected, products, getProducts } = useIAP();
 
   useEffect(() => {
     if (connected) {
@@ -307,9 +330,6 @@ function ProPrice() {
   }, [connected, getProducts]);
   const price = products[0] ? products[0] : undefined;
   if (!price) {
-    return (
-      <SurfaceText> {connected ? 'Connected' : 'Disconnected'}</SurfaceText>
-    );
     return <ActivityIndicator />;
   }
 

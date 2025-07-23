@@ -133,7 +133,7 @@ const MaterialSymbols = {
     .with('android', () => msShare)
     .with('web', () => msShare)
     .with('windows', () => msShareWindows)
-    .otherwise(() => msShare),
+    .exhaustive(),
   text: msTextAd,
   reload: msRefresh,
   check: msCheck,

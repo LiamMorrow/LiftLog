@@ -4,8 +4,10 @@
 name: Release Android
 
 on:
-  release:
-    types: [created]
+  # release:
+  #   types: [created]
+  push:
+    branches-ignore: [main]
 
 jobs:
   build:

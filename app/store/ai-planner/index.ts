@@ -69,5 +69,6 @@ export const {
 export const { selectIsLoadingAiPlannerMessage } = aiPlannerSlice.selectors;
 
 export const stopAiGenerator = createAction('stopAiGenerator');
+export const initChat = createAction('initChat');
 
 export const aiPlannerReducer = aiPlannerSlice.reducer;
