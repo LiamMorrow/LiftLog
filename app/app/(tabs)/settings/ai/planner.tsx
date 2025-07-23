@@ -321,18 +321,18 @@ function ProPrompt() {
 
 const productIds = ['pro'];
 function ProPrice() {
-  const { connected, products, getProducts } = useIAP();
+  const { connected, products, requestProducts } = useIAP();
 
   useEffect(() => {
     if (connected) {
-      getProducts(productIds).catch(console.error);
+      requestProducts({ skus: productIds, type: 'inapp' }).catch(console.error);
     }
-  }, [connected, getProducts]);
+  }, [connected, requestProducts]);
   const price = products[0] ? products[0] : undefined;
   if (!price) {
     return (
       <SurfaceText>
-        {connected}
+        {connected.toString()}
         <ActivityIndicator />
       </SurfaceText>
     );
