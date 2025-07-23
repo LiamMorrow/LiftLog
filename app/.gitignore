@@ -38,5 +38,3 @@ yarn-error.*
 app-example
 
 .env.local
-
-sentry.properties
