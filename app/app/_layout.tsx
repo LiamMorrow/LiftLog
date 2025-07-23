@@ -12,11 +12,11 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import '@/utils/date-locale';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
-import { initConnection, useIAP } from 'expo-iap';
 
 // import { install } from 'react-native-quick-crypto';
 import * as Sentry from '@sentry/react-native';
 import { useEffect } from 'react';
+import Purchases, { LOG_LEVEL } from 'react-native-purchases';
 
 Sentry.init({
   dsn: 'https://86576716425e1558b5e8622ba65d4544@o4505937515249664.ingest.us.sentry.io/4509717493383168',
@@ -38,10 +38,17 @@ LogBox.ignoreLogs([
 
 export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
-  useIAP();
+
   useEffect(() => {
-    initConnection().catch(console.error);
-  });
+    Purchases.setLogLevel(LOG_LEVEL.VERBOSE).catch(console.error);
+
+    // if (Platform.OS === 'ios') {
+    //    Purchases.configure({apiKey: <revenuecat_project_apple_api_key>});
+    // } else if (Platform.OS === 'android') {
+    Purchases.configure({
+      apiKey: process.env.EXPO_REVENUECAT_GOOGLE_API_KEY!,
+    });
+  }, []);
   return (
     <GestureHandlerRootView>
       <KeyboardProvider>

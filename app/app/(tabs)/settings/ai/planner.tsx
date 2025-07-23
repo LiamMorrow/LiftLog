@@ -41,6 +41,8 @@ import LimitedHtml from '@/components/presentation/limited-html';
 import { useIAP } from 'expo-iap';
 import { useMountEffect } from '@/hooks/useMountEffect';
 
+import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
+
 export default function AiPlanner() {
   const { t } = useTranslate();
   const dispatch = useDispatch();
@@ -281,26 +283,8 @@ function PlanMessage({
 
 function ProPrompt() {
   const { t } = useTranslate();
-  const { connected, requestPurchase } = useIAP();
   const upgrade = () => {
-    if (!connected) {
-      return;
-    }
-    const purchase = async (): Promise<unknown> => {
-      return await requestPurchase({
-        type: 'inapp',
-        request: {
-          ios: {
-            sku: 'pro',
-            andDangerouslyFinishTransactionAutomaticallyIOS: true,
-          },
-          android: {
-            skus: ['pro'],
-          },
-        },
-      });
-    };
-    purchase().then(console.log).catch(console.error);
+    presentPaywallIfNeeded().catch(console.error);
   };
   return (
     <View style={{ gap: spacing[2] }}>
@@ -343,4 +327,31 @@ function ProPrice() {
       {price.displayPrice} {price.currency}
     </SurfaceText>
   );
+}
+
+async function presentPaywall(): Promise<boolean> {
+  // Present paywall for current offering:
+  const paywallResult: PAYWALL_RESULT = await RevenueCatUI.presentPaywall();
+
+  switch (paywallResult) {
+    case PAYWALL_RESULT.NOT_PRESENTED:
+    case PAYWALL_RESULT.ERROR:
+    case PAYWALL_RESULT.CANCELLED:
+      return false;
+    case PAYWALL_RESULT.PURCHASED:
+    case PAYWALL_RESULT.RESTORED:
+      return true;
+    default:
+      return false;
+  }
+}
+
+async function presentPaywallIfNeeded() {
+  // Present paywall for current offering:
+  const paywallResult: PAYWALL_RESULT =
+    await RevenueCatUI.presentPaywallIfNeeded({
+      requiredEntitlementIdentifier: 'pro',
+    });
+
+  return { paywallResult };
 }
