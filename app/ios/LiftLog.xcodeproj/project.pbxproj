@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C4783962E308A6C0086E9D9 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C4783952E308A6B0086E9D9 /* StoreKit.framework */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		9E4BD0F431B158F98FF0E43F /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9BCD4DECC4F57E0F934561 /* ExpoModulesProvider.swift */; };
@@ -18,11 +19,12 @@
 
 /* Begin PBXFileReference section */
 		05AE7279CC6D43F2B0AE3A63 /* libPods-LiftLog.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-LiftLog.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C4783952E308A6B0086E9D9 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		13B07F961A680F5B00A75B9A /* LiftLog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LiftLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = LiftLog/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = LiftLog/Info.plist; sourceTree = "<group>"; };
 		28B768DB3FE249E2F6C0C072 /* Pods-LiftLog.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LiftLog.debug.xcconfig"; path = "Target Support Files/Pods-LiftLog/Pods-LiftLog.debug.xcconfig"; sourceTree = "<group>"; };
-		477A7FC046D724502D8C7B39 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = LiftLog/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		477A7FC046D724502D8C7B39 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = LiftLog/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		4C9BCD4DECC4F57E0F934561 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-LiftLog/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		67310D1DABA44FABE795758E /* Pods-LiftLog.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LiftLog.release.xcconfig"; path = "Target Support Files/Pods-LiftLog/Pods-LiftLog.release.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = LiftLog/SplashScreen.storyboard; sourceTree = "<group>"; };
@@ -38,6 +40,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9FEB227599FFFDE2BAEAB848 /* libPods-LiftLog.a in Frameworks */,
+				0C4783962E308A6C0086E9D9 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -69,6 +72,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0C4783952E308A6B0086E9D9 /* StoreKit.framework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				05AE7279CC6D43F2B0AE3A63 /* libPods-LiftLog.a */,
 			);
@@ -119,7 +123,6 @@
 				28B768DB3FE249E2F6C0C072 /* Pods-LiftLog.debug.xcconfig */,
 				67310D1DABA44FABE795758E /* Pods-LiftLog.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -344,6 +347,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = LiftLog/LiftLog.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = U8Q4NXKYES;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -380,6 +384,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = LiftLog/LiftLog.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = U8Q4NXKYES;
 				INFOPLIST_FILE = LiftLog/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -457,10 +462,7 @@
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -515,10 +517,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
