@@ -8,9 +8,6 @@ on:
   release:
     types: [created]
 
-  push:
-    branches-ignore: [main]
-
 jobs:
   build:
     runs-on: macos-15
@@ -103,7 +100,7 @@ jobs:
             -configuration Release \
             -archivePath ios/build/App.xcarchive \
             -allowProvisioningUpdates \
-            APP_DISPLAY_VERSION="3.0.0-BETA" \
+            APP_DISPLAY_VERSION="${{ github.event.release.name }}" \
             APP_VERSION="${{ steps.buildNumber.outputs.build-number }}" \
             OTHER_CODE_SIGN_FLAGS="--keychain ${{ env.KEYCHAIN }}"
         working-directory: ./app
