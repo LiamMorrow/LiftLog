@@ -325,7 +325,7 @@ function ProPrice() {
 
   useEffect(() => {
     if (connected) {
-      getProducts({ skus: productIds }).catch(console.error);
+      getProducts(productIds).catch(console.error);
     }
   }, [connected, getProducts]);
   const price = products[0] ? products[0] : undefined;
