@@ -65,39 +65,56 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
     <View
       style={{
         width: '30%',
-        alignItems: 'center',
-        justifyContent: 'center',
         overflow: 'hidden',
-        height: spacing[12],
-        gap: spacing[0.5],
-        backgroundColor: colors.surfaceContainer,
-        borderRadius: spacing[2],
+        borderRadius: 200,
+        borderColor: colors.outlineVariant,
+        borderWidth: 1,
+        backgroundColor: colors.surface,
       }}
     >
       <View
         style={{
-          flexDirection: 'row',
-          position: 'absolute',
-          bottom: 0,
+          height: spacing[14],
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: spacing[0.5],
         }}
       >
-        <View style={{ width: `${firstProgressBarWidthPercentage}%` }}>
-          <ProgressBar
-            progress={timerState.firstProgressBarProgress}
-            style={{ height: spacing[2] }}
-          />
+        <View
+          style={{
+            flexDirection: 'row',
+            position: 'absolute',
+            bottom: 0,
+          }}
+        >
+          <View style={{ width: `${firstProgressBarWidthPercentage}%` }}>
+            <ProgressBar
+              progress={timerState.firstProgressBarProgress}
+              style={{
+                height: spacing[2],
+                backgroundColor: colors.surfaceContainer,
+              }}
+            />
+          </View>
+          <View style={{ width: `${100 - firstProgressBarWidthPercentage}%` }}>
+            <ProgressBar
+              progress={timerState.secondProgressBarProgress}
+              color={colors.orange}
+              style={{
+                height: spacing[2],
+                backgroundColor: colors.surfaceContainer,
+              }}
+            />
+          </View>
         </View>
-        <View style={{ width: `${100 - firstProgressBarWidthPercentage}%` }}>
-          <ProgressBar
-            progress={timerState.secondProgressBarProgress}
-            color={colors.orange}
-            style={{ height: spacing[2] }}
-          />
-        </View>
+        <SurfaceText
+          font="text-2xl"
+          weight={'bold'}
+          color={timerState.textColor}
+        >
+          {timerState.timeSinceStart}
+        </SurfaceText>
       </View>
-      <SurfaceText font="text-2xl" weight={'bold'} color={timerState.textColor}>
-        {timerState.timeSinceStart}
-      </SurfaceText>
     </View>
   );
 }

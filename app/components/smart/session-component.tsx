@@ -12,7 +12,7 @@ import {
   updateNotesForExercise,
   updateWeightForSet,
 } from '@/store/current-session';
-import { Button, Card, Icon } from 'react-native-paper';
+import { Card, FAB, Icon } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { Text, View } from 'react-native';
 import EmptyInfo from '@/components/presentation/empty-info';
@@ -228,14 +228,12 @@ export default function SessionComponent(props: {
     />
   ) : undefined;
   const saveButton = props.saveAndClose && (
-    <Button
+    <FAB
       onPress={props.saveAndClose}
-      mode="contained"
-      labelStyle={{ ...font['text-xl'] }}
+      style={{ position: 'absolute', right: 0 }}
       icon={'inventory'}
-    >
-      {props.target === 'workoutSession' ? t('Finish') : t('Save')}
-    </Button>
+      label={props.target === 'workoutSession' ? t('Finish') : t('Save')}
+    ></FAB>
   );
 
   const floatingBottomContainer = isReadonly ? null : (
@@ -245,8 +243,7 @@ export default function SessionComponent(props: {
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'flex-end',
-            gap: spacing[2],
+            justifyContent: 'center',
           }}
         >
           {updatePlanButton}
