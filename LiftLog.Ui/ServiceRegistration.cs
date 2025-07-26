@@ -61,7 +61,7 @@ public static class ServiceRegistration
                 .AddMiddleware<FeedStateInitMiddleware>()
                 .AddMiddleware<LogActionMiddleware>()
 #if DEBUG
-        // .UseReduxDevTools()  // Fails to load
+        // .UseReduxDevTools() // Fails to load
 #endif
         );
 

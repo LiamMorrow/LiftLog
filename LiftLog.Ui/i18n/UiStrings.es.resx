@@ -815,7 +815,7 @@
     <value>Permitir establecer el peso de cada conjunto de ejercicios de forma predeterminada</value>
   </data>
   <data name="NewPlanDefaultName" xml:space="preserve">
-    <value>El nombre por defecto utilizado cuando un usuario crea un nuevo plan</value>
+    <value>Nuevo Plan</value>
   </data>
   <data name="BackupRemindersSubtitle" xml:space="preserve">
     <value>Sugerir periódicamente una copia de seguridad cuando no haya hecho una durante mucho tiempo</value>

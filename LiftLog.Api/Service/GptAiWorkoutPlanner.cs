@@ -1,14 +1,17 @@
 namespace LiftLog.Api.Service;
 
+extern alias OpenAICommunity;
+
 using System.Collections.Immutable;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+
+using OpenAICommunity::OpenAI;
 using LiftLog.Lib;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Serialization;
 using LiftLog.Lib.Services;
-using OpenAI;
-using OpenAI.Chat;
+using OpenAICommunity::OpenAI.Chat;
 
 public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkoutPlanner> logger)
     : IAiWorkoutPlanner
@@ -71,7 +74,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
         };
         var chatRequest = new ChatRequest(
             messages,
-            model: OpenAI.Models.Model.GPT4,
+            model: OpenAICommunity::OpenAI.Models.Model.GPT4o,
             toolChoice: "auto",
             tools: tools
         );
@@ -84,6 +87,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
             )!;
 
             return new AiWorkoutPlan(
+                gptPlan.Name,
                 gptPlan.Description,
                 gptPlan
                     .Sessions.Select(s => new SessionBlueprint(
@@ -165,7 +169,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
         };
         var chatRequest = new ChatRequest(
             messages,
-            model: OpenAI.Models.Model.GPT4,
+            model: OpenAICommunity::OpenAI.Models.Model.GPT4o,
             toolChoice: "auto",
             tools: tools
         );
@@ -207,6 +211,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
     }
 
     private record GptWorkoutPlan(
+        string Name,
         string Description,
         ImmutableListValue<GptSessionBlueprint> Sessions
     );
@@ -222,7 +227,8 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
         int Sets,
         int RepsPerSet,
         decimal WeightIncreaseOnSuccess,
-        GptRest RestBetweenSets
+        GptRest RestBetweenSets,
+        string Notes
     );
 
     private record GptRest(int MinRestSeconds, int MaxRestSeconds, int FailureRestSeconds);

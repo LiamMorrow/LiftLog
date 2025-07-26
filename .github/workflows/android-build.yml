@@ -6,37 +6,41 @@ name: Build Android
 on:
   push:
     branches-ignore: [main]
-
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN_REACT}}
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          dotnet-version: 9.0.x
-      - name: Setup MAUI android
-        run: dotnet workload install android
-        # When running on a self hosted mac runner, the ios workload needs to be installed due to csproj configuration
-      - name: Setup MAUI iOS
-        if: ${{ runner.os == 'macOS' }}
-        run: dotnet workload install ios
-      - name: Setup MAUI
-        run: dotnet workload restore
-      - name: Restore dependencies
-        run: dotnet restore -p:TargetFramework=net9.0-android
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: ./app/package-lock.json
+
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          distribution: "microsoft"
+          distribution: "temurin"
           java-version: "17"
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v3.2.2
-      - name: Build Tailwind
-        run: npm i && npm run build
-        working-directory: ./LiftLog.Ui
-      - name: Build
-        run: dotnet build -p:TargetFramework=net9.0-android -f net9.0-android -p:BuildFor=android
-        working-directory: ./LiftLog.Maui
+      - name: Install
+        run: npm ci
+        working-directory: ./app
+      - uses: burrunan/gradle-cache-action@v3
+        name: Build Android
+        with:
+          # If you have multiple jobs, use distinct job-id in in case you want to split caches
+          # For instance, jobs with different JDK versions can't share caches
+          # RUNNER_OS is added to job-id automatically
+          job-id: android
+          # Specifies arguments for Gradle execution
+          # If arguments is missing or empty, then Gradle is not executed
+          arguments: build
+          build-root-directory: ./app/android
+
+          gradle-version: wrapper

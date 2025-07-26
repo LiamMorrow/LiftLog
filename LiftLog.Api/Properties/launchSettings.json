@@ -14,7 +14,7 @@
       "dotnetRunMessages": true,
       "launchBrowser": false,
       "launchUrl": "health",
-      "applicationUrl": "http://+:5264",
+      "applicationUrl": "http://+:5264;https://+:7223",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

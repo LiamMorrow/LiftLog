@@ -3,7 +3,9 @@ using System.Text.Json.Serialization;
 using FluentValidation;
 using Google.Apis.AndroidPublisher.v3;
 using Google.Apis.Auth.OAuth2;
+using LiftLog.Api.Authentication;
 using LiftLog.Api.Db;
+using LiftLog.Api.Hubs;
 using LiftLog.Api.Service;
 using LiftLog.Api.Validators;
 using LiftLog.Lib.Serialization;
@@ -39,6 +41,22 @@ builder.Services.AddCors(options =>
         policy.WithOrigins("*").AllowAnyHeader().AllowAnyMethod();
     });
 });
+
+builder.Services.AddSignalR(s =>
+{
+    // We need clients to be able to stop in flight chat requests
+    s.MaximumParallelInvocationsPerClient = 2;
+});
+
+// Add Authentication
+builder
+    .Services.AddAuthentication(PurchaseTokenAuthenticationSchemeOptions.SchemeName)
+    .AddScheme<PurchaseTokenAuthenticationSchemeOptions, PurchaseTokenAuthenticationHandler>(
+        PurchaseTokenAuthenticationSchemeOptions.SchemeName,
+        options => { }
+    );
+
+builder.Services.AddAuthorization();
 
 var openAiApiKey =
     builder.Configuration.GetValue<string?>("OpenAiApiKey")
@@ -106,9 +124,18 @@ builder
 var app = builder.Build();
 app.UseCors();
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
+
+// Map SignalR Hubs
+app.MapHub<AiWorkoutChatHub>("/ai-chat");
 
 app.MapMethods(
     "/health",

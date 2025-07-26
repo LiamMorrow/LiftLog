@@ -1,0 +1,21 @@
+diff --git a/node_modules/data-async-iterators/lib/index.d.ts b/node_modules/data-async-iterators/lib/index.d.ts
+index 2a9284c..c14d47d 100644
+--- a/node_modules/data-async-iterators/lib/index.d.ts
++++ b/node_modules/data-async-iterators/lib/index.d.ts
+@@ -45,7 +45,6 @@ export { take, takeLast, takeUntil, takeWhile } from './slicers/take';
+ export { buffered } from './transformers/buffered';
+ export { cancellable } from './transformers/cancellable';
+ export { chunk, chunkEvery, chunkUntil, chunkWhile, chunkByLines, sep, reset, backlog } from './transformers/chunk';
+-export { describe } from './transformers/describe';
+ export { distinct, distinctUntilChanged } from './transformers/distinct';
+ export { filter, reject } from './transformers/filter';
+ export { map } from './transformers/map';
+diff --git a/node_modules/data-async-iterators/lib/transformers/describe.d.ts b/node_modules/data-async-iterators/lib/transformers/describe.d.ts
+index 2c9eeca..8d351f1 100644
+--- a/node_modules/data-async-iterators/lib/transformers/describe.d.ts
++++ b/node_modules/data-async-iterators/lib/transformers/describe.d.ts
+@@ -8,4 +8,3 @@ export declare type IterablePackage<T> = {
+     event: "error";
+     error: any;
+ };
+-export declare function describe<T>(iterable: AsyncIterableLike<T>): AsyncIterable<IterablePackage<T>>;

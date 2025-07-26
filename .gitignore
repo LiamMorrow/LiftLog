@@ -20,8 +20,6 @@ service-account.json
 # Mono auto generated files
 mono_crash.*
 
-// TEMP
-liftlog-react
 
 # Build results
 [Dd]ebug/

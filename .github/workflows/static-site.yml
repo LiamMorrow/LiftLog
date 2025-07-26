@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install
-        run: npm i
+        run: npm ci
         working-directory: ./site
       - name: Build
         run: npm run build

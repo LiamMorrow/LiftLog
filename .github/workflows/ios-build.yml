@@ -12,14 +12,11 @@ jobs:
   build:
     runs-on: macos-15
     env:
+      SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN_REACT}}
       KEYCHAIN: job-${{ github.job }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 9.0.x
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
@@ -41,11 +38,27 @@ jobs:
           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
           api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
-      - name: Setup MAUI
-        run: dotnet workload install maui
-      - name: Build Tailwind
-        run: npm i && npm run build
-        working-directory: ./LiftLog.Ui
-      - name: Build
-        run: 'dotnet publish -c Release -f:net9.0-ios -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:CodesignKey="${{ secrets.APPLE_CODESIGN_KEY_NAME }}" -p:CodesignProvision="LiftLog"'
-        working-directory: ./LiftLog.Maui
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - name: Install JS dependencies
+        run: npm ci
+        working-directory: ./app
+      - name: Build JS bundle (optional)
+        run: npx expo export --platform ios || echo "Skip if not needed"
+        working-directory: ./app
+      - name: Install CocoaPods dependencies
+        run: |
+          cd ios
+          pod install
+        working-directory: ./app
+      - name: Archive iOS app
+        run: |
+          xcodebuild -workspace ios/LiftLog.xcworkspace \
+            -scheme LiftLog \
+            -sdk iphoneos \
+            -configuration Release \
+            -archivePath ios/build/App.xcarchive archive
+
+        working-directory: ./app

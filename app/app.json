@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "LiftLog",
+    "slug": "liftlog",
+    "version": "1.0.0",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-dev-client",
+        {
+          "launchMode": "most-recent"
+        }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "app",
+          "organization": "liftlog"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "scheme": "com.limajuice.liftlog",
+    "android": {
+      "package": "com.limajuice.liftlog",
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.SCHEDULE_EXACT_ALARM"
+      ]
+    },
+    "ios": {
+      "bundleIdentifier": "com.limajuice.liftlog",
+      "infoPlist": {
+        "UIViewControllerBasedStatusBarAppearance": true
+      },
+      "appleTeamId": "DM9JP7639R"
+    },
+    "androidStatusBar": {
+      "translucent": true
+    },
+    "jsEngine": "hermes"
+  }
+}
