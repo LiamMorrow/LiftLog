@@ -9,16 +9,22 @@ import Animated, {
   useAnimatedProps,
   withTiming,
 } from 'react-native-reanimated';
-import { View } from 'react-native';
+import { View, ViewStyle } from 'react-native';
 import { SurfaceText } from '@/components/presentation/surface-text';
 
 interface RestTimerProps {
   rest: Rest;
   startTime: LocalDateTime;
   failed: boolean;
+  style?: ViewStyle;
 }
 
-export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
+export default function RestTimer({
+  rest,
+  startTime,
+  failed,
+  style,
+}: RestTimerProps) {
   const { colors } = useAppTheme();
   const isSameMinMaxRest = rest.minRest.equals(rest.maxRest);
   // Removed unused firstProgressBarWidthPercentage
@@ -41,9 +47,9 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
           );
     const [textColor, backgroundColor]: [ColorChoice, ColorChoice] =
       firstProgressBarProgress < 1
-        ? ['onTertiaryContainer', 'tertiaryContainer']
+        ? ['inverseOnSurface', 'inverseSurface']
         : secondProgressBarProgress < 1 && secondProgressBarProgress !== -1
-          ? ['onPrimaryContainer', 'primaryContainer']
+          ? ['inverseOnSurface', 'inverseSurface']
           : ['error', 'errorContainer'];
     return {
       timeSinceStart,
@@ -61,13 +67,6 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
   const orangeOffset = useSharedValue(0);
 
   // Animated props for SVG paths
-  const AnimatedPath = Animated.createAnimatedComponent(Path);
-  const animatedPrimaryProps = useAnimatedProps(() => ({
-    strokeDashoffset: primaryOffset.value,
-  }));
-  const animatedOrangeProps = useAnimatedProps(() => ({
-    strokeDashoffset: orangeOffset.value,
-  }));
   const pillHeight = spacing[14];
   const pillWidth = pillHeight * 2.2;
   const radius = (pillHeight - 6) / 2;
@@ -96,16 +95,19 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
 
   return (
     <View
-      style={{
-        width: pillWidth,
-        height: pillHeight,
-        pointerEvents: 'none',
-        overflow: 'hidden',
-        borderRadius: pillHeight,
-        backgroundColor: colors[timerState.backgroundColor],
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
+      style={[
+        {
+          width: pillWidth,
+          height: pillHeight,
+          pointerEvents: 'none',
+          overflow: 'hidden',
+          borderRadius: pillHeight,
+          backgroundColor: colors[timerState.backgroundColor],
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+        style,
+      ]}
     >
       {/* Circular progress bar wrapping the border */}
       <View
@@ -133,36 +135,26 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
             fill="none"
           />
           {/* Primary progress bar (minRest/failureRest) */}
-          <AnimatedPath
-            d={`M${3 + pillHeight / 2 - 3},3
-                h${pillWidth - pillHeight + 0}
-                a${pillHeight / 2 - 3},${pillHeight / 2 - 3} 0 0 1 0,${pillHeight - 6}
-                h-${pillWidth - pillHeight + 0}
-                a${pillHeight / 2 - 3},${pillHeight / 2 - 3} 0 0 1 0,-${pillHeight - 6}
-                z`}
-            stroke={colors.primary}
-            strokeWidth={6}
-            fill="none"
-            strokeDasharray={pillPerimeter}
-            animatedProps={animatedPrimaryProps}
+          <PillProgressBar
+            color={colors.primary}
+            progress={timerState.firstProgressBarProgress}
+            pillWidth={pillWidth}
+            pillHeight={pillHeight}
+            pillPerimeter={pillPerimeter}
           />
           {/* Orange progress bar (minRest to maxRest) */}
-          {!failed && !isSameMinMaxRest && (
-            <AnimatedPath
-              d={`M${3 + pillHeight / 2 - 3},3
-                  h${pillWidth - pillHeight + 0}
-                  a${pillHeight / 2 - 3},${pillHeight / 2 - 3} 0 0 1 0,${pillHeight - 6}
-                  h-${pillWidth - pillHeight + 0}
-                  a${pillHeight / 2 - 3},${pillHeight / 2 - 3} 0 0 1 0,-${pillHeight - 6}
-                  z`}
-              stroke={colors.orange}
-              strokeWidth={6}
-              fill="none"
-              strokeDasharray={pillPerimeter}
-              animatedProps={animatedOrangeProps}
-              opacity={timerState.secondProgressBarProgress > 0 ? 1 : 0}
-            />
-          )}
+          <PillProgressBar
+            color={colors.orange}
+            progress={timerState.secondProgressBarProgress}
+            pillWidth={pillWidth}
+            pillHeight={pillHeight}
+            pillPerimeter={pillPerimeter}
+            visible={
+              !failed &&
+              !isSameMinMaxRest &&
+              timerState.secondProgressBarProgress > 0
+            }
+          />
         </Svg>
       </View>
       <SurfaceText
@@ -183,4 +175,51 @@ function formatTimeSpan(ms: Duration): string {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
+
+interface PillProgressBarProps {
+  color: string;
+  progress: number;
+  pillWidth: number;
+  pillHeight: number;
+  pillPerimeter: number;
+  visible?: boolean;
+}
+
+function PillProgressBar({
+  color,
+  progress,
+  pillWidth,
+  pillHeight,
+  pillPerimeter,
+  visible = true,
+}: PillProgressBarProps) {
+  const AnimatedPath = Animated.createAnimatedComponent(Path);
+  const offset = useSharedValue(pillPerimeter);
+  const animatedProps = useAnimatedProps(() => ({
+    strokeDashoffset: offset.value,
+  }));
+  useEffect(() => {
+    offset.set(
+      withTiming(pillPerimeter * (1 - progress), {
+        duration: 200,
+      }),
+    );
+  }, [progress, pillPerimeter, offset]);
+  if (!visible) return null;
+  return (
+    <AnimatedPath
+      d={`M${3 + pillHeight / 2 - 3},3
+          h${pillWidth - pillHeight + 0}
+          a${pillHeight / 2 - 3},${pillHeight / 2 - 3} 0 0 1 0,${pillHeight - 6}
+          h-${pillWidth - pillHeight + 0}
+          a${pillHeight / 2 - 3},${pillHeight / 2 - 3} 0 0 1 0,-${pillHeight - 6}
+          z`}
+      stroke={color}
+      strokeWidth={6}
+      fill="none"
+      strokeDasharray={pillPerimeter}
+      animatedProps={animatedProps}
+    />
+  );
 }

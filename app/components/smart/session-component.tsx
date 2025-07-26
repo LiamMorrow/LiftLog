@@ -208,6 +208,9 @@ export default function SessionComponent(props: {
   const updatePlanButton = isReadonly ? null : (
     <UpdatePlanButton target={props.target} session={session} />
   );
+  const additionalActionsRow = (
+    <View style={{ flex: 1 }}>{updatePlanButton}</View>
+  );
 
   const lastExercise = session.lastExercise;
   const lastRecordedSet = lastExercise?.lastRecordedSet;
@@ -221,20 +224,23 @@ export default function SessionComponent(props: {
     lastExercise &&
     lastRecordedSet.set.repsCompleted < lastExercise.blueprint.repsPerSet;
   const restTimer = showSnackbar ? (
-    <RestTimer
-      rest={lastExercise.blueprint.restBetweenSets}
-      startTime={lastRecordedSet.set.completionDateTime}
-      failed={!!lastSetFailed}
-    />
+    <View style={{ flex: 1 }}>
+      <RestTimer
+        rest={lastExercise.blueprint.restBetweenSets}
+        startTime={lastRecordedSet.set.completionDateTime}
+        failed={!!lastSetFailed}
+      />
+    </View>
   ) : undefined;
   const saveButton = props.saveAndClose && (
-    <FAB
-      onPress={props.saveAndClose}
-      variant="surface"
-      style={{ position: 'absolute', right: 0 }}
-      icon={'inventory'}
-      label={props.target === 'workoutSession' ? t('Finish') : t('Save')}
-    ></FAB>
+    <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+      <FAB
+        onPress={props.saveAndClose}
+        variant="surface"
+        icon={'inventory'}
+        label={props.target === 'workoutSession' ? t('Finish') : t('Save')}
+      ></FAB>
+    </View>
   );
 
   const floatingBottomContainer = isReadonly ? null : (
@@ -244,10 +250,9 @@ export default function SessionComponent(props: {
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'center',
           }}
         >
-          {updatePlanButton}
+          {additionalActionsRow}
           {restTimer}
           {saveButton}
         </View>
