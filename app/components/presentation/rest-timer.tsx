@@ -3,7 +3,7 @@ import { ColorChoice, spacing, useAppTheme } from '@/hooks/useAppTheme';
 // Using Tolgee for localization
 import { Rest } from '@/models/session-models';
 import { Duration, LocalDateTime } from '@js-joda/core';
-import { ProgressBar } from 'react-native-paper';
+import Svg, { Path } from 'react-native-svg';
 import { View } from 'react-native';
 import { SurfaceText } from '@/components/presentation/surface-text';
 
@@ -16,10 +16,7 @@ interface RestTimerProps {
 export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
   const { colors } = useAppTheme();
   const isSameMinMaxRest = rest.minRest.equals(rest.maxRest);
-  const firstProgressBarWidthPercentage =
-    failed || isSameMinMaxRest
-      ? 100
-      : Math.round((rest.minRest.toMillis() / rest.maxRest.toMillis()) * 100);
+  // Removed unused firstProgressBarWidthPercentage
 
   // Callback to get all timer-related values
   const getTimerState = useCallback(() => {
@@ -64,57 +61,67 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
   return (
     <View
       style={{
-        width: '30%',
+        width: spacing[14] * 2.2,
+        height: spacing[14],
         overflow: 'hidden',
-        borderRadius: 200,
+        borderRadius: spacing[14],
         borderColor: colors.outlineVariant,
         borderWidth: 1,
         backgroundColor: colors.surface,
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
+      {/* Circular progress bar wrapping the border */}
       <View
         style={{
-          height: spacing[14],
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: spacing[0.5],
         }}
       >
-        <View
-          style={{
-            flexDirection: 'row',
-            position: 'absolute',
-            bottom: 0,
-          }}
-        >
-          <View style={{ width: `${firstProgressBarWidthPercentage}%` }}>
-            <ProgressBar
-              progress={timerState.firstProgressBarProgress}
-              style={{
-                height: spacing[2],
-                backgroundColor: colors.surfaceContainer,
-              }}
-            />
-          </View>
-          <View style={{ width: `${100 - firstProgressBarWidthPercentage}%` }}>
-            <ProgressBar
-              progress={timerState.secondProgressBarProgress}
-              color={colors.orange}
-              style={{
-                height: spacing[2],
-                backgroundColor: colors.surfaceContainer,
-              }}
-            />
-          </View>
-        </View>
-        <SurfaceText
-          font="text-2xl"
-          weight={'bold'}
-          color={timerState.textColor}
-        >
-          {timerState.timeSinceStart}
-        </SurfaceText>
+        <Svg width={spacing[14] * 2.2} height={spacing[14]}>
+          {/* Background rounded rectangle */}
+          <Path
+            d={`M${3 + spacing[14] / 2 - 3},3
+                h${spacing[14] * 2.2 - spacing[14] + 0}
+                a${spacing[14] / 2 - 3},${spacing[14] / 2 - 3} 0 0 1 0,${spacing[14] - 6}
+                h-${spacing[14] * 2.2 - spacing[14] + 0}
+                a${spacing[14] / 2 - 3},${spacing[14] / 2 - 3} 0 0 1 0,-${spacing[14] - 6}
+                z`}
+            stroke={colors.outlineVariant}
+            strokeWidth={6}
+            fill="none"
+          />
+          {/* Progress rounded rectangle */}
+          <Path
+            d={`M${3 + spacing[14] / 2 - 3},3
+                h${spacing[14] * 2.2 - spacing[14] + 0}
+                a${spacing[14] / 2 - 3},${spacing[14] / 2 - 3} 0 0 1 0,${spacing[14] - 6}
+                h-${spacing[14] * 2.2 - spacing[14] + 0}
+                a${spacing[14] / 2 - 3},${spacing[14] / 2 - 3} 0 0 1 0,-${spacing[14] - 6}
+                z`}
+            stroke={
+              timerState.textColor === 'error' ? colors.error : colors.primary
+            }
+            strokeWidth={6}
+            fill="none"
+            strokeDasharray={2 * (spacing[14] * 2.2 - 6 + spacing[14] - 6)}
+            strokeDashoffset={
+              2 *
+              (spacing[14] * 2.2 - 6 + spacing[14] - 6) *
+              (1 - timerState.firstProgressBarProgress)
+            }
+          />
+        </Svg>
       </View>
+      <SurfaceText font="text-2xl" weight={'bold'} color={timerState.textColor}>
+        {timerState.timeSinceStart}
+      </SurfaceText>
     </View>
   );
 }
