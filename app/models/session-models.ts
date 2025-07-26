@@ -145,6 +145,10 @@ export class Session {
     );
   }
 
+  get isComplete() {
+    return this.recordedExercises.every((x) => !x.hasRemainingSets);
+  }
+
   get isStarted(): boolean {
     return this.recordedExercises.some((x) => x.lastRecordedSet !== undefined);
   }

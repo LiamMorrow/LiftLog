@@ -112,7 +112,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
           scaleStyle,
           {
             userSelect: 'none',
-            minWidth: spacing[16],
+            minWidth: spacing[15],
           },
         ]}
       >
@@ -129,7 +129,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
             style={{
               flexShrink: 0,
               padding: 0,
-              height: spacing[16],
+              height: spacing[15],
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor:

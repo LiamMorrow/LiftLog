@@ -17,6 +17,7 @@ import { msFitnessCenterFill } from '@material-symbols-react-native/outlined-400
 import { msHistory } from '@material-symbols-react-native/outlined-400/msHistory';
 import { msInfo } from '@material-symbols-react-native/outlined-400/msInfo';
 import { msMoreHoriz } from '@material-symbols-react-native/outlined-400/msMoreHoriz';
+import { msMoreVert } from '@material-symbols-react-native/outlined-400/msMoreVert';
 import { msPersonRemove } from '@material-symbols-react-native/outlined-400/msPersonRemove';
 import { msNotes } from '@material-symbols-react-native/outlined-400/msNotes';
 import { msPlayCircle } from '@material-symbols-react-native/outlined-400/msPlayCircle';
@@ -103,6 +104,7 @@ const MaterialSymbols = {
   info: msInfo,
   minus: msRemove,
   moreHoriz: msMoreHoriz,
+  moreVert: msMoreVert,
   notes: msNotes,
   personRemove: msPersonRemove,
   notesFill: msNotesFill,

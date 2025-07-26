@@ -12,22 +12,18 @@ import {
   updateNotesForExercise,
   updateWeightForSet,
 } from '@/store/current-session';
-import { Card, FAB, Icon } from 'react-native-paper';
+import { Button, Card, Icon } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import EmptyInfo from '@/components/presentation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import ItemList from '@/components/presentation/item-list';
-import {
-  EmptyExerciseBlueprint,
-  RecordedExercise,
-} from '@/models/session-models';
+import { RecordedExercise } from '@/models/session-models';
 import WeightedExercise from '@/components/presentation/weighted-exercise';
 import WeightDisplay from '@/components/presentation/weight-display';
 import BigNumber from 'bignumber.js';
 import RestTimer from '@/components/presentation/rest-timer';
-import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
 import { useState } from 'react';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
 import { ExerciseBlueprint } from '@/models/session-models';
@@ -39,10 +35,12 @@ import UpdatePlanButton from '@/components/smart/update-plan-button';
 import { UnknownAction } from '@reduxjs/toolkit';
 
 import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
+import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
   showBodyweight: boolean;
+  saveAndClose?: () => void;
 }) {
   const { colors } = useAppTheme();
   const { t } = useTranslate();
@@ -222,29 +220,43 @@ export default function SessionComponent(props: {
     lastRecordedSet?.set &&
     lastExercise &&
     lastRecordedSet.set.repsCompleted < lastExercise.blueprint.repsPerSet;
-  const snackbar = showSnackbar ? (
+  const restTimer = showSnackbar ? (
     <RestTimer
       rest={lastExercise.blueprint.restBetweenSets}
       startTime={lastRecordedSet.set.completionDateTime}
       failed={!!lastSetFailed}
     />
   ) : undefined;
+  const saveButton = props.saveAndClose && (
+    <Button
+      onPress={props.saveAndClose}
+      mode="contained"
+      style={{
+        alignSelf: 'center',
+      }}
+      labelStyle={{ ...font['text-xl'] }}
+      icon={'inventory'}
+    >
+      {props.target === 'workoutSession' ? t('Finish') : t('Save')}
+    </Button>
+  );
 
   const floatingBottomContainer = isReadonly ? null : (
     <FloatingBottomContainer
-      fab={
-        <FAB
-          variant="surface"
-          size="small"
-          icon={'add'}
-          label={t('AddExercise')}
-          onPress={() => {
-            setEditingExerciseBlueprint(EmptyExerciseBlueprint);
-            setExerciseEditorOpen(true);
+      additionalContent={
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            gap: spacing[2],
           }}
-        />
+        >
+          {updatePlanButton}
+          {restTimer}
+          {saveButton}
+        </View>
       }
-      additionalContent={snackbar}
     />
   );
 
@@ -254,7 +266,6 @@ export default function SessionComponent(props: {
       {emptyInfo}
       <ItemList items={session.recordedExercises} renderItem={renderItem} />
       {bodyWeight}
-      {updatePlanButton}
       <FullScreenDialog
         title={
           exerciseToEditIndex === undefined

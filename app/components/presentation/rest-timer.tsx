@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
-import { useAppTheme } from '@/hooks/useAppTheme';
-import RestFormat from '@/components/presentation/rest-format';
-import LimitedHtml from '@/components/presentation/limited-html';
-import { useTranslate } from '@tolgee/react'; // Using Tolgee for localization
+import { ColorChoice, spacing, useAppTheme } from '@/hooks/useAppTheme';
+// Using Tolgee for localization
 import { Rest } from '@/models/session-models';
-import { Snackbar } from 'react-native-paper';
 import { Duration, LocalDateTime } from '@js-joda/core';
+import { ProgressBar } from 'react-native-paper';
+import { View } from 'react-native';
+import { SurfaceText } from '@/components/presentation/surface-text';
 
 interface RestTimerProps {
   rest: Rest;
@@ -16,58 +15,80 @@ interface RestTimerProps {
 
 export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
   const { colors } = useAppTheme();
-  const getTimeSinceStart = useCallback(() => {
-    const diffMs = Duration.between(startTime, LocalDateTime.now());
-    return formatTimeSpan(diffMs);
-  }, [startTime]);
-  const [timeSinceStart, setTimeSinceStart] =
-    useState<string>(getTimeSinceStart());
-  const { t } = useTranslate(); // Initialize Tolgee translations
+  const isSameMinMaxRest = rest.minRest.equals(rest.maxRest);
+  const firstProgressBarWidthPercentage =
+    failed || isSameMinMaxRest
+      ? 100
+      : Math.round((rest.minRest.toMillis() / rest.maxRest.toMillis()) * 100);
 
-  // Timer effect to update time every 200ms
+  // Callback to get all timer-related values
+  const getTimerState = useCallback(() => {
+    const now = LocalDateTime.now();
+    const diffMs = Duration.between(startTime, now);
+    const timeSinceStart = formatTimeSpan(diffMs);
+    const firstProgressBarProgress = failed
+      ? Math.min(diffMs.toMillis() / rest.failureRest.toMillis(), 1)
+      : Math.min(diffMs.toMillis() / rest.minRest.toMillis(), 1);
+    const secondProgressBarProgress =
+      failed || isSameMinMaxRest
+        ? -1
+        : Math.min(
+            (diffMs.toMillis() - rest.minRest.toMillis()) /
+              (rest.maxRest.toMillis() - rest.minRest.toMillis()),
+            1,
+          );
+    const textColor: ColorChoice =
+      firstProgressBarProgress < 1
+        ? 'onSurface'
+        : secondProgressBarProgress < 1 && secondProgressBarProgress !== -1
+          ? 'primary'
+          : 'error';
+    return {
+      timeSinceStart,
+      firstProgressBarProgress,
+      secondProgressBarProgress,
+      textColor,
+    };
+  }, [startTime, rest, failed, isSameMinMaxRest]);
+
+  const [timerState, setTimerState] = useState(getTimerState());
+
+  // Timer effect to update all timer-related values every 200ms
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeSinceStart(getTimeSinceStart());
+      setTimerState(getTimerState());
     }, 200);
-
-    // Cleanup timer on unmount
     return () => clearInterval(timer);
-  }, [getTimeSinceStart, startTime]);
+  }, [getTimerState]);
 
   return (
-    <Snackbar
-      wrapperStyle={{ position: 'relative', paddingBottom: 0 }}
-      visible={true}
-      onDismiss={() => {}}
+    <View
+      style={{
+        width: '30%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+        alignSelf: 'stretch',
+        gap: spacing[0.5],
+        backgroundColor: colors.surfaceContainer,
+        borderRadius: spacing[2],
+      }}
     >
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          width: '100%',
-        }}
-      >
-        {failed ? (
-          <LimitedHtml
-            style={{ color: colors.inverseOnSurface }}
-            value={t('RestSingular', {
-              0: formatTimeSpan(rest.failureRest),
-            })}
-            emStyles={{ fontWeight: 'bold' }}
+      <SurfaceText font="text-2xl" weight={'bold'} color={timerState.textColor}>
+        {timerState.timeSinceStart}
+      </SurfaceText>
+      <View style={{ flexDirection: 'row', position: 'absolute', bottom: 0 }}>
+        <View style={{ width: `${firstProgressBarWidthPercentage}%` }}>
+          <ProgressBar progress={timerState.firstProgressBarProgress} />
+        </View>
+        <View style={{ width: `${100 - firstProgressBarWidthPercentage}%` }}>
+          <ProgressBar
+            progress={timerState.secondProgressBarProgress}
+            color={colors.orange}
           />
-        ) : (
-          <RestFormat
-            style={{ color: colors.inverseOnSurface }}
-            highlight={false}
-            rest={rest}
-          />
-        )}
-        <Text style={{ fontWeight: 'bold', color: colors.inverseOnSurface }}>
-          {timeSinceStart}
-        </Text>
+        </View>
       </View>
-    </Snackbar>
+    </View>
   );
 }
 

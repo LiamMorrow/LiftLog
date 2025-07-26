@@ -1,4 +1,5 @@
 import SessionComponent from '@/components/smart/session-component';
+import SessionMoreMenuComponent from '@/components/smart/session-more-menu-component';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelector, RootState } from '@/store';
 import {
@@ -10,7 +11,6 @@ import { setStatsIsDirty } from '@/store/stats';
 import { LocalDate } from '@js-joda/core';
 import { useRouter, Stack } from 'expo-router';
 import { View } from 'react-native';
-import { Appbar } from 'react-native-paper';
 import { DatePickerInput } from 'react-native-paper-dates';
 import { useDispatch } from 'react-redux';
 
@@ -44,14 +44,13 @@ export default function HistoryEditPage() {
         options={{
           title: session?.blueprint.name ?? 'Workout',
           headerRight: () => (
-            <Appbar.Action icon={'save'} onPress={save}></Appbar.Action>
+            <SessionMoreMenuComponent target="historySession" />
           ),
         }}
       />
       <View
         style={{
-          paddingHorizontal: spacing[8],
-          marginVertical: spacing[2],
+          paddingHorizontal: spacing.pageHorizontalMargin,
           flexDirection: 'row',
         }}
       >
@@ -77,6 +76,7 @@ export default function HistoryEditPage() {
       <SessionComponent
         target="historySession"
         showBodyweight={showBodyweight}
+        saveAndClose={save}
       />
     </>
   );

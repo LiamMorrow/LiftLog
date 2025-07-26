@@ -1,7 +1,7 @@
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import LimitedHtml from '@/components/presentation/limited-html';
 import { SurfaceText } from '@/components/presentation/surface-text';
-import { spacing } from '@/hooks/useAppTheme';
+import { useAppTheme } from '@/hooks/useAppTheme';
 import { Session } from '@/models/session-models';
 import { useAppSelector } from '@/store';
 import { SessionTarget, setCurrentSession } from '@/store/current-session';
@@ -26,6 +26,7 @@ export default function UpdatePlanButton({
 }: UpdatePlanDialogProps) {
   const [open, setOpen] = useState(false);
   const onClose = () => setOpen(false);
+  const { colors } = useAppTheme();
   const { t } = useTranslate();
   const program = useAppSelector(selectActiveProgram);
   const programId = useAppSelector((x) => x.program.activeProgramId);
@@ -83,24 +84,15 @@ export default function UpdatePlanButton({
   return (
     <View>
       {!sessionInPlan ? (
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            gap: spacing[2],
-            marginTop: spacing[6],
-          }}
-        >
-          {session.recordedExercises.length > 0 ? (
-            <Button
-              mode="contained-tonal"
-              icon={'plus'}
-              onPress={() => setOpen(true)}
-            >
-              {t('UpdatePlan')}
-            </Button>
-          ) : null}
-        </View>
+        session.recordedExercises.length > 0 ? (
+          <Button
+            mode="outlined"
+            style={{ backgroundColor: colors.surface }}
+            onPress={() => setOpen(true)}
+          >
+            {t('UpdatePlan')}
+          </Button>
+        ) : null
       ) : undefined}
       <ConfirmationDialog
         headline={t('UpdatePlan')}
