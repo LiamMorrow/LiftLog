@@ -57,14 +57,19 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
     }, 200);
     return () => clearInterval(timer);
   }, [getTimerState]);
+  const pillHeight = spacing[14];
+  const pillWidth = pillHeight * 2.2;
+  const radius = (pillHeight - 6) / 2;
+  const straightLength = pillWidth - pillHeight;
+  const pillPerimeter = 2 * straightLength + 2 * Math.PI * radius;
 
   return (
     <View
       style={{
-        width: spacing[14] * 2.2,
-        height: spacing[14],
+        width: pillWidth,
+        height: pillHeight,
         overflow: 'hidden',
-        borderRadius: spacing[14],
+        borderRadius: pillHeight,
         borderColor: colors.outlineVariant,
         borderWidth: 1,
         backgroundColor: colors.surface,
@@ -84,14 +89,14 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
           justifyContent: 'center',
         }}
       >
-        <Svg width={spacing[14] * 2.2} height={spacing[14]}>
+        <Svg width={pillWidth} height={pillHeight}>
           {/* Background rounded rectangle */}
           <Path
-            d={`M${3 + spacing[14] / 2 - 3},3
-                h${spacing[14] * 2.2 - spacing[14] + 0}
-                a${spacing[14] / 2 - 3},${spacing[14] / 2 - 3} 0 0 1 0,${spacing[14] - 6}
-                h-${spacing[14] * 2.2 - spacing[14] + 0}
-                a${spacing[14] / 2 - 3},${spacing[14] / 2 - 3} 0 0 1 0,-${spacing[14] - 6}
+            d={`M${3 + pillHeight / 2 - 3},3
+                h${pillWidth - pillHeight + 0}
+                a${pillHeight / 2 - 3},${pillHeight / 2 - 3} 0 0 1 0,${pillHeight - 6}
+                h-${pillWidth - pillHeight + 0}
+                a${pillHeight / 2 - 3},${pillHeight / 2 - 3} 0 0 1 0,-${pillHeight - 6}
                 z`}
             stroke={colors.outlineVariant}
             strokeWidth={6}
@@ -99,22 +104,18 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
           />
           {/* Progress rounded rectangle */}
           <Path
-            d={`M${3 + spacing[14] / 2 - 3},3
-                h${spacing[14] * 2.2 - spacing[14] + 0}
-                a${spacing[14] / 2 - 3},${spacing[14] / 2 - 3} 0 0 1 0,${spacing[14] - 6}
-                h-${spacing[14] * 2.2 - spacing[14] + 0}
-                a${spacing[14] / 2 - 3},${spacing[14] / 2 - 3} 0 0 1 0,-${spacing[14] - 6}
+            d={`M${3 + pillHeight / 2 - 3},3
+                h${pillWidth - pillHeight + 0}
+                a${pillHeight / 2 - 3},${pillHeight / 2 - 3} 0 0 1 0,${pillHeight - 6}
+                h-${pillWidth - pillHeight + 0}
+                a${pillHeight / 2 - 3},${pillHeight / 2 - 3} 0 0 1 0,-${pillHeight - 6}
                 z`}
-            stroke={
-              timerState.textColor === 'error' ? colors.error : colors.primary
-            }
+            stroke={colors.primary}
             strokeWidth={6}
             fill="none"
-            strokeDasharray={2 * (spacing[14] * 2.2 - 6 + spacing[14] - 6)}
+            strokeDasharray={pillPerimeter}
             strokeDashoffset={
-              2 *
-              (spacing[14] * 2.2 - 6 + spacing[14] - 6) *
-              (1 - timerState.firstProgressBarProgress)
+              pillPerimeter * (1 - timerState.firstProgressBarProgress)
             }
           />
         </Svg>
