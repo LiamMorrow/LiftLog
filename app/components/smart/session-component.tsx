@@ -231,9 +231,6 @@ export default function SessionComponent(props: {
     <Button
       onPress={props.saveAndClose}
       mode="contained"
-      style={{
-        alignSelf: 'center',
-      }}
       labelStyle={{ ...font['text-xl'] }}
       icon={'inventory'}
     >

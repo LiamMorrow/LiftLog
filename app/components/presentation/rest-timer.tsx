@@ -68,7 +68,7 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
-        alignSelf: 'stretch',
+        height: spacing[12],
         gap: spacing[0.5],
         backgroundColor: colors.surfaceContainer,
         borderRadius: spacing[2],
