@@ -230,6 +230,7 @@ export default function SessionComponent(props: {
   const saveButton = props.saveAndClose && (
     <FAB
       onPress={props.saveAndClose}
+      variant="surface"
       style={{ position: 'absolute', right: 0 }}
       icon={'inventory'}
       label={props.target === 'workoutSession' ? t('Finish') : t('Save')}

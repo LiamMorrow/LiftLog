@@ -4,6 +4,11 @@ import { ColorChoice, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Rest } from '@/models/session-models';
 import { Duration, LocalDateTime } from '@js-joda/core';
 import Svg, { Path } from 'react-native-svg';
+import Animated, {
+  useSharedValue,
+  useAnimatedProps,
+  withTiming,
+} from 'react-native-reanimated';
 import { View } from 'react-native';
 import { SurfaceText } from '@/components/presentation/surface-text';
 
@@ -34,45 +39,70 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
               (rest.maxRest.toMillis() - rest.minRest.toMillis()),
             1,
           );
-    const textColor: ColorChoice =
+    const [textColor, backgroundColor]: [ColorChoice, ColorChoice] =
       firstProgressBarProgress < 1
-        ? 'onSurface'
+        ? ['onTertiaryContainer', 'tertiaryContainer']
         : secondProgressBarProgress < 1 && secondProgressBarProgress !== -1
-          ? 'primary'
-          : 'error';
+          ? ['onPrimaryContainer', 'primaryContainer']
+          : ['error', 'errorContainer'];
     return {
       timeSinceStart,
       firstProgressBarProgress,
       secondProgressBarProgress,
       textColor,
+      backgroundColor,
     };
   }, [startTime, rest, failed, isSameMinMaxRest]);
 
   const [timerState, setTimerState] = useState(getTimerState());
 
-  // Timer effect to update all timer-related values every 200ms
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimerState(getTimerState());
-    }, 200);
-    return () => clearInterval(timer);
-  }, [getTimerState]);
+  // Reanimated shared values for smooth progress
+  const primaryOffset = useSharedValue(0);
+  const orangeOffset = useSharedValue(0);
+
+  // Animated props for SVG paths
+  const AnimatedPath = Animated.createAnimatedComponent(Path);
+  const animatedPrimaryProps = useAnimatedProps(() => ({
+    strokeDashoffset: primaryOffset.value,
+  }));
+  const animatedOrangeProps = useAnimatedProps(() => ({
+    strokeDashoffset: orangeOffset.value,
+  }));
   const pillHeight = spacing[14];
   const pillWidth = pillHeight * 2.2;
   const radius = (pillHeight - 6) / 2;
   const straightLength = pillWidth - pillHeight;
   const pillPerimeter = 2 * straightLength + 2 * Math.PI * radius;
 
+  // Timer effect to update all timer-related values every 200ms
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const state = getTimerState();
+      setTimerState(state);
+      // Animate progress bars
+      primaryOffset.set(
+        withTiming(pillPerimeter * (1 - state.firstProgressBarProgress), {
+          duration: 200,
+        }),
+      );
+      orangeOffset.set(
+        withTiming(pillPerimeter * (1 - state.secondProgressBarProgress), {
+          duration: 200,
+        }),
+      );
+    }, 200);
+    return () => clearInterval(timer);
+  }, [getTimerState, pillPerimeter, primaryOffset, orangeOffset]);
+
   return (
     <View
       style={{
         width: pillWidth,
         height: pillHeight,
+        pointerEvents: 'none',
         overflow: 'hidden',
         borderRadius: pillHeight,
-        borderColor: colors.outlineVariant,
-        borderWidth: 1,
-        backgroundColor: colors.surface,
+        backgroundColor: colors[timerState.backgroundColor],
         alignItems: 'center',
         justifyContent: 'center',
       }}
@@ -103,7 +133,7 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
             fill="none"
           />
           {/* Primary progress bar (minRest/failureRest) */}
-          <Path
+          <AnimatedPath
             d={`M${3 + pillHeight / 2 - 3},3
                 h${pillWidth - pillHeight + 0}
                 a${pillHeight / 2 - 3},${pillHeight / 2 - 3} 0 0 1 0,${pillHeight - 6}
@@ -114,13 +144,11 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
             strokeWidth={6}
             fill="none"
             strokeDasharray={pillPerimeter}
-            strokeDashoffset={
-              pillPerimeter * (1 - timerState.firstProgressBarProgress)
-            }
+            animatedProps={animatedPrimaryProps}
           />
           {/* Orange progress bar (minRest to maxRest) */}
           {!failed && !isSameMinMaxRest && (
-            <Path
+            <AnimatedPath
               d={`M${3 + pillHeight / 2 - 3},3
                   h${pillWidth - pillHeight + 0}
                   a${pillHeight / 2 - 3},${pillHeight / 2 - 3} 0 0 1 0,${pillHeight - 6}
@@ -131,15 +159,18 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
               strokeWidth={6}
               fill="none"
               strokeDasharray={pillPerimeter}
-              strokeDashoffset={
-                pillPerimeter * (1 - timerState.secondProgressBarProgress)
-              }
+              animatedProps={animatedOrangeProps}
               opacity={timerState.secondProgressBarProgress > 0 ? 1 : 0}
             />
           )}
         </Svg>
       </View>
-      <SurfaceText font="text-2xl" weight={'bold'} color={timerState.textColor}>
+      <SurfaceText
+        style={{ fontVariant: ['tabular-nums'] }}
+        font="text-2xl"
+        weight={'bold'}
+        color={timerState.textColor}
+      >
         {timerState.timeSinceStart}
       </SurfaceText>
     </View>
