@@ -74,20 +74,30 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
         borderRadius: spacing[2],
       }}
     >
-      <SurfaceText font="text-2xl" weight={'bold'} color={timerState.textColor}>
-        {timerState.timeSinceStart}
-      </SurfaceText>
-      <View style={{ flexDirection: 'row', position: 'absolute', bottom: 0 }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          position: 'absolute',
+          bottom: 0,
+        }}
+      >
         <View style={{ width: `${firstProgressBarWidthPercentage}%` }}>
-          <ProgressBar progress={timerState.firstProgressBarProgress} />
+          <ProgressBar
+            progress={timerState.firstProgressBarProgress}
+            style={{ height: spacing[2] }}
+          />
         </View>
         <View style={{ width: `${100 - firstProgressBarWidthPercentage}%` }}>
           <ProgressBar
             progress={timerState.secondProgressBarProgress}
             color={colors.orange}
+            style={{ height: spacing[2] }}
           />
         </View>
       </View>
+      <SurfaceText font="text-2xl" weight={'bold'} color={timerState.textColor}>
+        {timerState.timeSinceStart}
+      </SurfaceText>
     </View>
   );
 }

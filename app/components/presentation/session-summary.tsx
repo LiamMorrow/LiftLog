@@ -3,7 +3,6 @@ import { spacing } from '@/hooks/useAppTheme';
 import { Session } from '@/models/session-models';
 import { Fragment } from 'react';
 import { View } from 'react-native';
-import { Divider } from 'react-native-paper';
 
 interface SessionSummaryProps {
   session: Session;
@@ -26,10 +25,6 @@ export default function SessionSummary({
             showWeight={!!showWeight}
             showDate={false}
           />
-
-          {session.recordedExercises.length - 1 !== index && (
-            <Divider style={{}} />
-          )}
         </Fragment>
       ))}
     </View>

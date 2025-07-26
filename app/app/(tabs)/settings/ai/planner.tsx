@@ -12,6 +12,7 @@ import {
   IconButton,
   TextInput,
   ActivityIndicator,
+  Tooltip,
 } from 'react-native-paper';
 import { Fragment, useEffect, useState } from 'react';
 import { useAppSelector } from '@/store';
@@ -81,7 +82,9 @@ export default function AiPlanner() {
         options={{
           title: t('AiPlanner'),
           headerRight: () => (
-            <Appbar.Action icon={'replay'} onPress={reset}></Appbar.Action>
+            <Tooltip title={t('Restart Chat')}>
+              <Appbar.Action icon={'replay'} onPress={reset}></Appbar.Action>
+            </Tooltip>
           ),
         }}
       />
