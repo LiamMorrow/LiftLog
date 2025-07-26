@@ -102,7 +102,7 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
             strokeWidth={6}
             fill="none"
           />
-          {/* Progress rounded rectangle */}
+          {/* Primary progress bar (minRest/failureRest) */}
           <Path
             d={`M${3 + pillHeight / 2 - 3},3
                 h${pillWidth - pillHeight + 0}
@@ -118,6 +118,25 @@ export default function RestTimer({ rest, startTime, failed }: RestTimerProps) {
               pillPerimeter * (1 - timerState.firstProgressBarProgress)
             }
           />
+          {/* Orange progress bar (minRest to maxRest) */}
+          {!failed && !isSameMinMaxRest && (
+            <Path
+              d={`M${3 + pillHeight / 2 - 3},3
+                  h${pillWidth - pillHeight + 0}
+                  a${pillHeight / 2 - 3},${pillHeight / 2 - 3} 0 0 1 0,${pillHeight - 6}
+                  h-${pillWidth - pillHeight + 0}
+                  a${pillHeight / 2 - 3},${pillHeight / 2 - 3} 0 0 1 0,-${pillHeight - 6}
+                  z`}
+              stroke={colors.orange}
+              strokeWidth={6}
+              fill="none"
+              strokeDasharray={pillPerimeter}
+              strokeDashoffset={
+                pillPerimeter * (1 - timerState.secondProgressBarProgress)
+              }
+              opacity={timerState.secondProgressBarProgress > 0 ? 1 : 0}
+            />
+          )}
         </Svg>
       </View>
       <SurfaceText font="text-2xl" weight={'bold'} color={timerState.textColor}>
