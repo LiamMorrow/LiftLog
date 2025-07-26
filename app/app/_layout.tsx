@@ -42,12 +42,15 @@ export default Sentry.wrap(function RootLayout() {
   useEffect(() => {
     Purchases.setLogLevel(LOG_LEVEL.VERBOSE).catch(console.error);
 
-    // if (Platform.OS === 'ios') {
-    //    Purchases.configure({apiKey: <revenuecat_project_apple_api_key>});
-    // } else if (Platform.OS === 'android') {
-    Purchases.configure({
-      apiKey: process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY!,
-    });
+    if (Platform.OS === 'ios') {
+      Purchases.configure({
+        apiKey: process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY!,
+      });
+    } else if (Platform.OS === 'android') {
+      Purchases.configure({
+        apiKey: process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY!,
+      });
+    }
   }, []);
   return (
     <GestureHandlerRootView>

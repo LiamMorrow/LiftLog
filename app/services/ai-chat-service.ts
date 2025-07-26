@@ -26,10 +26,8 @@ export class AiChatService {
     }
     const subject = await this.setupResponseListening(proToken);
 
-    this.connection!.invoke(
-      'Introduce',
-      Intl.DateTimeFormat().resolvedOptions().locale,
-    )
+    this.connection
+      ?.invoke('Introduce', Intl.DateTimeFormat().resolvedOptions().locale)
       .catch(console.error)
       .finally(() => subject.end());
     yield* subject;
@@ -45,7 +43,8 @@ export class AiChatService {
       return;
     }
     const subject = await this.setupResponseListening(proToken);
-    this.connection!.invoke('SendMessage', message)
+    this.connection
+      ?.invoke('SendMessage', message)
       .catch(console.error)
       .finally(() => subject.end());
     yield* subject;
@@ -70,6 +69,15 @@ export class AiChatService {
       });
 
       await this.connection.start().catch(() => (this.connection = undefined));
+    }
+    if (!this.connection) {
+      subject.pushValue({
+        type: 'messageResponse',
+        message:
+          'Failed to connect to server. Please refresh and try again with a strong internet connection',
+      });
+      subject.end();
+      return subject;
     }
     this.connection.on(
       'ReceiveMessage',

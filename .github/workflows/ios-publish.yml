@@ -14,6 +14,7 @@ jobs:
     env:
       KEYCHAIN: job-${{ github.job }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
       SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN_REACT}}
+      EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY: ${{ secrets.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY }}
 
     steps:
       - uses: actions/checkout@v4

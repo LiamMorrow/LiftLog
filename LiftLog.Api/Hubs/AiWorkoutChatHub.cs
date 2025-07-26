@@ -14,7 +14,7 @@ public interface IChatClient
 [Authorize(AuthenticationSchemes = PurchaseTokenAuthenticationSchemeOptions.SchemeName)]
 public class AiWorkoutChatHub(GptChatWorkoutPlanner planner) : Hub<IChatClient>
 {
-    public async Task SendMessage(string message, string locale)
+    public async Task SendMessage(string message)
     {
         await planner.SendMessageAsync(
             Context.ConnectionId,

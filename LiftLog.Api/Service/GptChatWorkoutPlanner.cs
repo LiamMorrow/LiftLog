@@ -116,10 +116,6 @@ public partial class GptChatWorkoutPlanner(
                 {
                     message += contentUpdate.Text;
                 }
-                if (streamPortion.FinishReason is not null)
-                {
-                    Console.WriteLine(streamPortion.FinishReason);
-                }
                 if (PartialJsonParser.TryParsePartialJson(message, out GptChatResponse? response))
                 {
                     switch (response.Response)
@@ -140,7 +136,6 @@ public partial class GptChatWorkoutPlanner(
             }
             // Add assistant response to conversation history
             messages.Add(ChatMessage.CreateAssistantMessage(message));
-            Console.WriteLine(message);
 
             // Keep conversation history manageable (last 20 messages)
             if (messages.Count > 21) // System message + 20 conversation messages
