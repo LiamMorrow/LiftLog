@@ -13,7 +13,7 @@ import {
 import { T, useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Button } from 'react-native-paper';
+import { IconButton, Tooltip } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 interface UpdatePlanDialogProps {
@@ -85,13 +85,13 @@ export default function UpdatePlanButton({
     <View>
       {!sessionInPlan ? (
         session.recordedExercises.length > 0 ? (
-          <Button
-            mode="outlined"
-            style={{ backgroundColor: colors.surface }}
-            onPress={() => setOpen(true)}
-          >
-            {t('UpdatePlan')}
-          </Button>
+          <Tooltip title={t('UpdatePlan')}>
+            <IconButton
+              style={{ backgroundColor: colors.surface }}
+              onPress={() => setOpen(true)}
+              icon={'assignmentAdd'}
+            />
+          </Tooltip>
         ) : null
       ) : undefined}
       <ConfirmationDialog

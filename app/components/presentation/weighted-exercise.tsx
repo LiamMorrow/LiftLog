@@ -12,6 +12,7 @@ import {
   Menu,
   Portal,
   TextInput,
+  Tooltip,
 } from 'react-native-paper';
 import { T, useTranslate } from '@tolgee/react';
 
@@ -73,11 +74,13 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
       }}
     >
       {props.showPreviousButton ? (
-        <IconButton
-          data-cy="prev-exercise-btn"
-          icon={'history'}
-          onPress={showPrevious}
-        />
+        <Tooltip title={t('Previously completed')}>
+          <IconButton
+            data-cy="prev-exercise-btn"
+            icon={'history'}
+            onPress={showPrevious}
+          />
+        </Tooltip>
       ) : null}
 
       <Menu
