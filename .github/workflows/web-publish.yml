@@ -5,9 +5,8 @@
 name: Release Web
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [created]
 
 jobs:
   build:

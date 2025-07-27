@@ -10,14 +10,7 @@ This is the backend API for LiftLog. It is built with ASP.NET Core and requires 
 
 ## Getting Started
 
-### 1. Clone the repository
-
-```sh
-git clone https://github.com/LiamMorrow/LiftLog.git
-cd LiftLog/LiftLog.Api
-```
-
-### 2. Start the database
+### 1. Start the database
 
 A `docker-compose.yml` is provided to start the required PostgreSQL containers.
 
@@ -25,9 +18,9 @@ A `docker-compose.yml` is provided to start the required PostgreSQL containers.
 docker compose up -d
 ```
 
-### 3. Configure environment variables
+### 2. Configure environment variables
 
-Create a file named `appsettings.Development.json` in the `LiftLog.Api` directory. Below is a sample configuration. Replace the dummy values with your actual credentials and keys.
+Create a file named `appsettings.Development.json` in this directory. Below is a sample configuration. Replace the dummy values with your actual credentials and keys.
 
 ```json
 {
@@ -53,14 +46,14 @@ Create a file named `appsettings.Development.json` in the `LiftLog.Api` director
 }
 ```
 
-### 4. Run database migrations
+### 3. Run database migrations
 
 Migrations are applied automatically on startup.
 
-### 5. Run the API
+### 4. Run the API
 
 ```sh
-dotnet run --project LiftLog.Api.csproj
+dotnet run
 ```
 
 The API will be available at `http://localhost:5000` (or the port specified in your launch settings).

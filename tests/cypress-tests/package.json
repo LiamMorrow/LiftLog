@@ -6,8 +6,8 @@
   "scripts": {
     "cypress-ci": "cypress run --browser=chrome",
     "cypress-open": "cypress open",
-    "server": "npm run web --prefix ../app",
-    "server-ci": "npm run web --prefix ../app",
+    "server": "npm run web --prefix ../../app",
+    "server-ci": "npm run web --prefix ../../app",
     "test": "run-p -r server cypress-open",
     "test-ci": "run-p -r server-ci cypress-ci"
   },

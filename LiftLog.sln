@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31220.234
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LiftLog.Lib", "LiftLog.Lib\LiftLog.Lib.csproj", "{62A2BF0B-DC89-4D25-8FD5-DA3BC3381088}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LiftLog.Lib", "backend\LiftLog.Lib\LiftLog.Lib.csproj", "{62A2BF0B-DC89-4D25-8FD5-DA3BC3381088}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FC3C2817-AD76-4796-B8B0-663433CD5F75}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,11 +13,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Nuget.config = Nuget.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.Api", "LiftLog.Api\LiftLog.Api.csproj", "{2569C97C-BA58-4DF6-B4CB-0E21E59E50F4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.Api", "backend\LiftLog.Api\LiftLog.Api.csproj", "{2569C97C-BA58-4DF6-B4CB-0E21E59E50F4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.Tests.Api", "tests\LiftLog.Tests.Api\LiftLog.Tests.Api.csproj", "{8306A2A4-BD01-48F5-B2F8-7A85B93D87FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RevenueCat", "RevenueCat\RevenueCat.csproj", "{C3642720-AB4F-41B0-BDAC-C18A0CB03600}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RevenueCat", "backend\RevenueCat\RevenueCat.csproj", "{C3642720-AB4F-41B0-BDAC-C18A0CB03600}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

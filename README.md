@@ -99,7 +99,7 @@ cd LiftLog.Api
 dotnet run
 ```
 
-See [`LiftLog.Api/README.md`](./LiftLog.Api/README.md) for backend details.
+See [`backend/LiftLog.Api/README.md`](./backend/LiftLog.Api/README.md) for backend details.
 
 ---
 
@@ -117,13 +117,13 @@ LiftLog is organized into several projects:
 - **Translations**: `i18n/` (Tolgee)
 - **Navigation**: Expo Router
 
-### Backend ([LiftLog.Api/](./LiftLog.Api/))
+### Backend ([LiftLog.Api/](./backend/LiftLog.Api/))
 
 - **Dotnet WebAPI** for feeds, AI plans, and secure data
 - **End-to-end encrypted feeds** (AES)
 - **OpenAI integration** for workout plans
 
-### RevenueCat ([RevenueCat/](./RevenueCat/))
+### RevenueCat ([RevenueCat/](./backend/RevenueCat/))
 
 - **Client library** for in-app purchases/subscriptions
 
