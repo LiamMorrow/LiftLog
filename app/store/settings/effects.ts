@@ -167,6 +167,14 @@ export function applySettingsEffects() {
     },
   );
   addEffect(
+    setProToken,
+    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+      if (stateAfterReduce.settings.isHydrated) {
+        await preferenceService.setProToken(action.payload);
+      }
+    },
+  );
+  addEffect(
     setLastBackup,
     async (action, { stateAfterReduce, extra: { preferenceService } }) => {
       if (stateAfterReduce.settings.isHydrated && action.payload.isSuccess()) {
