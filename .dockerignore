@@ -1,0 +1,29 @@
+# .NET build artifacts
+**/bin/
+**/obj/
+**/.vs/
+**/.vscode/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docker
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# Temporary files
+*.tmp
+*.temp
+*.log

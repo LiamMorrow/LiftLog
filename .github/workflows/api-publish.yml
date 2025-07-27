@@ -31,10 +31,11 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build image
-        run: dotnet publish --os linux --arch x64 /t:PublishContainer -c Release
-        working-directory: LiftLog.Api
-      - name: Tag image
-        run: docker tag liftlog-api:latest ghcr.io/liammorrow/liftlog:api
-      - name: Push image
-        run: docker push ghcr.io/liammorrow/liftlog:api
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./LiftLog.Api/Dockerfile
+          push: true
+          tags: ghcr.io/liammorrow/liftlog:api

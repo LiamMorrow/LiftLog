@@ -5,7 +5,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>true</InvariantGlobalization>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <ContainerRepository>liftlog-api</ContainerRepository>
     <!-- Enums not handled exhaustively with numbers -->
     <NoWarn>CS8524</NoWarn>
   </PropertyGroup>
