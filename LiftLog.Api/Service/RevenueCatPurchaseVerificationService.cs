@@ -9,7 +9,7 @@ public class RevenueCatPurchaseVerificationService(
     public async Task<bool> GetUserIdHasProEntitlementAsync(string userId)
     {
         logger.LogInformation("User {user}", userId);
-        var res = await new HttpClient().GetAsync("https://google.com");
+        var res = await new HttpClient().GetAsync("https://api.revenuecat.com/v2");
         logger.LogInformation("Got res {res}", await res.Content.ReadAsStringAsync());
         var subscriber = await client.Customers[userId].GetAsync();
         logger.LogInformation("Got subscriber");
