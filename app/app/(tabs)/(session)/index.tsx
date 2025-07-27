@@ -2,11 +2,11 @@ import CardList from '@/components/presentation/card-list';
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
+import ItemTitle from '@/components/presentation/item-title';
 import { Remote } from '@/components/presentation/remote';
 import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
 import SplitCardControl from '@/components/presentation/split-card-control';
-import { SurfaceText } from '@/components/presentation/surface-text';
 import AndroidNotificationAlert from '@/components/smart/android-notification-alert';
 import { Tips } from '@/components/smart/tips';
 import { spacing } from '@/hooks/useAppTheme';
@@ -26,58 +26,40 @@ import { T, useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Button, Card, FAB, Icon, IconButton } from 'react-native-paper';
+import { Button, Card, FAB, IconButton } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 
 function PlanManager() {
   const { push } = useRouter();
+  const { t } = useTranslate();
 
   const activeProgramId = useAppSelector(
     (s: RootState) => s.program.activeProgramId,
   );
+
   return (
-    <View
-      style={{
-        gap: spacing[2],
-      }}
-    >
-      <Card>
-        <Card.Content style={{ gap: spacing[4] }}>
-          <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-          >
-            <SurfaceText font="text-lg">
-              <T keyName="NoPlanCreated" />
-            </SurfaceText>
-            <Icon size={20} source={'info'} />
-          </View>
-          <View style={{ flexDirection: 'row', gap: spacing[2] }}>
-            <Button
-              mode="contained-tonal"
-              icon={'add'}
-              style={{ flex: 1 }}
-              onPress={() =>
-                push(`/settings/manage-workouts/${activeProgramId}`, {
-                  withAnchor: true,
-                })
-              }
-            >
-              <T keyName="AddWorkouts" />
-            </Button>
-            <Button
-              mode="contained"
-              style={{ flex: 1 }}
-              icon={'assignment'}
-              onPress={() =>
-                push(`/settings/program-list`, { withAnchor: true })
-              }
-            >
-              <T keyName="SelectAPlan" />
-            </Button>
-          </View>
-        </Card.Content>
-      </Card>
+    <View style={{ flexDirection: 'row', gap: spacing[2] }}>
+      <Button
+        mode="outlined"
+        style={{ flex: 1 }}
+        icon={'assignment'}
+        onPress={() => push(`/settings/program-list`, { withAnchor: true })}
+      >
+        <T keyName="Change plan" />
+      </Button>
+      <Button
+        mode="contained-tonal"
+        style={{ flex: 1 }}
+        icon={'edit'}
+        onPress={() =>
+          push(`/settings/manage-workouts/${activeProgramId}`, {
+            withAnchor: true,
+          })
+        }
+      >
+        <T keyName="Edit workouts" />
+      </Button>
     </View>
   );
 }
@@ -90,6 +72,11 @@ function ListUpcomingWorkouts({
   selectSession: (s: Session) => void;
 }) {
   const plan = useAppSelector(selectActiveProgram);
+  const { t } = useTranslate();
+  const currentSession = useAppSelectorWithArg(
+    selectCurrentSession,
+    'workoutSession',
+  );
   const planId = useAppSelector((x) => x.program.activeProgramId);
   const { push } = useRouter();
   const dispatch = useDispatch();
@@ -99,27 +86,33 @@ function ListUpcomingWorkouts({
         <Tips />
       </View>
       <PlanManager />
+      {currentSession && (
+        <>
+          <ItemTitle title="Current session" />
+          <Card mode="contained">
+            <Card.Content>
+              <SessionCardContent session={currentSession} />
+            </Card.Content>
+            <Card.Actions>
+              <Button
+                mode="contained"
+                icon={'playCircle'}
+                onPress={() => selectSession(currentSession)}
+              >
+                <T keyName={'Resume workout'} />
+              </Button>
+            </Card.Actions>
+          </Card>
+        </>
+      )}
+      {!!upcoming.length && <ItemTitle title={t('UpcomingWorkouts')} />}
       <CardList
         cardType="contained"
         items={upcoming}
         renderItemContent={(session) => {
           return (
             <Card.Content>
-              <SplitCardControl
-                titleContent={
-                  <SessionSummaryTitle
-                    isFilled={session.isStarted}
-                    session={session}
-                  />
-                }
-                mainContent={
-                  <SessionSummary
-                    session={session}
-                    isFilled={false}
-                    showWeight
-                  />
-                }
-              />
+              <SessionCardContent session={session} />
             </Card.Content>
           );
         }}
@@ -136,7 +129,7 @@ function ListUpcomingWorkouts({
           };
           return (
             <Card.Actions style={{ marginTop: spacing[2] }}>
-              {sessionPlanIndex !== -1 && !session.isStarted ? (
+              {sessionPlanIndex !== -1 ? (
                 <IconButton icon={'edit'} onPress={handleEditPress} />
               ) : undefined}
               <Button
@@ -154,6 +147,19 @@ function ListUpcomingWorkouts({
         }}
       />
     </View>
+  );
+}
+
+function SessionCardContent({ session }: { session: Session }) {
+  return (
+    <SplitCardControl
+      titleContent={
+        <SessionSummaryTitle isFilled={session.isStarted} session={session} />
+      }
+      mainContent={
+        <SessionSummary session={session} isFilled={false} showWeight />
+      }
+    />
   );
 }
 

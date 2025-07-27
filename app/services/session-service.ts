@@ -30,9 +30,6 @@ export class SessionService {
     const currentSession = Session.fromPOJO(
       currentState.currentSession.workoutSession,
     );
-    if (currentSession?.isStarted) {
-      yield currentSession;
-    }
 
     if (!sessionBlueprints.length) {
       return;
