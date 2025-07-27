@@ -1,7 +1,7 @@
 import { AiChatResponse, AiWorkoutPlan } from '@/models/ai-models';
 import { SessionBlueprint } from '@/models/session-models';
 import { Duration } from '@js-joda/core';
-import { HubConnection } from '@microsoft/signalr';
+import { HubConnection, HubConnectionState } from '@microsoft/signalr';
 import { AsyncIterableSubject } from 'data-async-iterators';
 import { match, P } from 'ts-pattern';
 import BigNumber from 'bignumber.js';
@@ -25,7 +25,6 @@ export class AiChatService {
       return;
     }
     const subject = await this.setupResponseListening(proToken);
-
     this.connection
       ?.invoke('Introduce', Intl.DateTimeFormat().resolvedOptions().locale)
       .catch(console.error)
@@ -56,7 +55,16 @@ export class AiChatService {
   }
 
   async restartChat() {
-    await this.connection?.send('RestartChat');
+    if (
+      this.connection &&
+      this.connection.state !== HubConnectionState.Connected
+    ) {
+      await this.connection.stop().catch(console.error);
+      this.connection = undefined;
+    }
+    if (this.connection?.state === HubConnectionState.Connected) {
+      await this.connection.send('RestartChat');
+    }
   }
 
   private async setupResponseListening(proToken: string) {
@@ -65,10 +73,14 @@ export class AiChatService {
       this.connection = this.hunConnectionFactory.create(proToken);
 
       this.connection.onclose((e) => {
+        console.error(e);
         this.connection = undefined;
       });
 
-      await this.connection.start().catch(() => (this.connection = undefined));
+      await this.connection.start().catch((e) => {
+        console.error(e);
+        this.connection = undefined;
+      });
     }
     if (!this.connection) {
       subject.pushValue({

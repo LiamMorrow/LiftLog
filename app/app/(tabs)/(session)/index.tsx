@@ -84,7 +84,7 @@ function ListUpcomingWorkouts({
       {currentSession && (
         <>
           <Text style={{ marginTop: spacing[2] }} variant="titleSmall">
-            {t('Current session')}
+            {t('Current workout')}
           </Text>
           <Card mode="contained">
             <Card.Content>
