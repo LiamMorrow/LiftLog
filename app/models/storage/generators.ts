@@ -32,7 +32,7 @@ import {
   RecordedSet,
   PotentialSet,
 } from '@/models/session-models';
-import { LocalDate, LocalDateTime, LocalTime } from '@js-joda/core';
+import { LocalDate, LocalDateTime, LocalTime, ZoneOffset } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import fc from 'fast-check';
 
@@ -62,6 +62,9 @@ export const LocalTimeGenerator = fc
 export const LocalDateTimeGenerator = fc
   .tuple(LocalDateGenerator, LocalTimeGenerator)
   .map(([date, time]) => LocalDateTime.of(date, time));
+export const InstantGenerator = LocalDateTimeGenerator.map((dt) =>
+  dt.atOffset(ZoneOffset.UTC).toInstant(),
+);
 
 // Generator for Rest
 export const RestGenerator = fc.constantFrom(
@@ -294,11 +297,11 @@ export const FollowResponseGenerator = fc
 // Generator for SessionFeedItemPOJO
 export const SessionFeedItemGenerator = fc
   .record<SessionFeedItemPOJO>({
-    _BRAND: fc.constant('FEED_ITEM_POJO'),
+    _BRAND: fc.constant('SESSION_FEED_ITEM_POJO'),
     userId: fc.uuid(),
     eventId: fc.uuid(),
-    timestamp: LocalDateTimeGenerator,
-    expiry: LocalDateTimeGenerator,
+    timestamp: InstantGenerator,
+    expiry: InstantGenerator,
     session: SessionGenerator.map((x) => x.toPOJO()),
   })
   .map(
@@ -315,11 +318,11 @@ export const SessionFeedItemGenerator = fc
 // Generator for RemovedSessionFeedItemPOJO
 export const RemovedSessionFeedItemGenerator = fc
   .record<RemovedSessionFeedItemPOJO>({
-    _BRAND: fc.constant('FEED_ITEM_POJO'),
+    _BRAND: fc.constant('REMOVED_SESSION_FEED_ITEM_POJO'),
     userId: fc.uuid(),
     eventId: fc.uuid(),
-    timestamp: LocalDateTimeGenerator,
-    expiry: LocalDateTimeGenerator,
+    timestamp: InstantGenerator,
+    expiry: InstantGenerator,
     sessionId: fc.uuid(),
   })
   .map(
