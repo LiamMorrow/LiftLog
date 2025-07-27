@@ -77,7 +77,7 @@ public static class RegistrationHelpers
                 ServiceAccountCredential credential = new(
                     new ServiceAccountCredential.Initializer(serviceAccountEmail)
                     {
-                        Scopes = new[] { AndroidPublisherService.Scope.Androidpublisher },
+                        Scopes = [AndroidPublisherService.Scope.Androidpublisher],
                     }.FromCertificate(certificate)
                 );
                 return new AndroidPublisherService(
