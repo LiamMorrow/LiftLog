@@ -191,6 +191,7 @@ function FeedProfileEditor({
               value={identity.name ?? ''}
               label={t('Optional')}
               mode="outlined"
+              onChangeText={(name) => updateProfile({ name })}
             />
           </LabelledFormRow>
         </LabelledForm>

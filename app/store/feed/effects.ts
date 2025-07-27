@@ -22,6 +22,7 @@ import { addInboxEffects } from '@/store/feed/inbox-effects';
 import { addFollowingEffects } from '@/store/feed/following-effects';
 import { selectActiveProgram } from '@/store/program';
 import { ApiResult } from '@/services/api-error';
+import { FeedIdentity } from '@/models/feed-models';
 
 const StorageKey = 'FeedState';
 export function applyFeedEffects() {
@@ -201,13 +202,27 @@ export function applyFeedEffects() {
     updateFeedIdentity,
     async (
       action,
-      { stateAfterReduce, dispatch, extra: { feedIdentityService } },
+      {
+        stateAfterReduce,
+        dispatch,
+        extra: { feedIdentityService },
+        cancelActiveListeners,
+        signal,
+      },
     ) => {
+      cancelActiveListeners();
       const feedIdentityRemote = selectFeedIdentityRemote(stateAfterReduce);
       const { payload } = action;
       if (!feedIdentityRemote.isSuccess()) {
         return;
       }
+      dispatch(
+        setIdentity(
+          feedIdentityRemote.map((x) =>
+            FeedIdentity.fromPOJO({ ...x, ...action.payload }),
+          ),
+        ),
+      );
       const identity = feedIdentityRemote.data;
 
       const result = await feedIdentityService.updateFeedIdentityAsync(
@@ -223,6 +238,9 @@ export function applyFeedEffects() {
         payload.publishWorkouts ?? identity.publishWorkouts,
         selectActiveProgram(stateAfterReduce).sessions,
       );
+      if (signal.aborted) {
+        return;
+      }
 
       if (result.isError()) {
         dispatch(
@@ -235,6 +253,7 @@ export function applyFeedEffects() {
             },
           }),
         );
+        dispatch(setIdentity(feedIdentityRemote));
         return;
       }
 
