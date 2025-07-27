@@ -2,24 +2,24 @@ using LiftLog.Lib.Models;
 
 namespace LiftLog.Api.Service;
 
-public class PurchaseVerificationService(
-    GooglePlayPurchaseVerificationService googlePlayPurchaseVerificationService,
-    WebAuthPurchaseVerificationService webAuthPurchaseVerificationService,
-    AppleAppStorePurchaseVerificationService appleAppStorePurchaseVerificationService,
-    RevenueCatPurchaseVerificationService revenueCatPurchaseVerificationService
-)
+public class PurchaseVerificationService(IServiceProvider services)
 {
     public Task<bool> IsValidPurchaseToken(AppStore appStore, string proToken)
     {
         return appStore switch
         {
-            AppStore.Google => googlePlayPurchaseVerificationService.IsValidPurchaseToken(proToken),
-            AppStore.Apple => appleAppStorePurchaseVerificationService.IsValidPurchaseToken(
-                proToken
-            ),
-            AppStore.Web => webAuthPurchaseVerificationService.IsValidPurchaseToken(proToken),
-            AppStore.RevenueCat =>
-                revenueCatPurchaseVerificationService.GetUserIdHasProEntitlementAsync(proToken),
+            AppStore.Google => services
+                .GetRequiredService<GooglePlayPurchaseVerificationService>()
+                .IsValidPurchaseToken(proToken),
+            AppStore.Apple => services
+                .GetRequiredService<AppleAppStorePurchaseVerificationService>()
+                .IsValidPurchaseToken(proToken),
+            AppStore.Web => services
+                .GetRequiredService<WebAuthPurchaseVerificationService>()
+                .IsValidPurchaseToken(proToken),
+            AppStore.RevenueCat => services
+                .GetRequiredService<RevenueCatPurchaseVerificationService>()
+                .GetUserIdHasProEntitlementAsync(proToken),
         };
     }
 }

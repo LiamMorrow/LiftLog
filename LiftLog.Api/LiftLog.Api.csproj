@@ -11,6 +11,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\LiftLog.Lib\LiftLog.Lib.csproj" />
+    <ProjectReference Include="..\RevenueCat\RevenueCat.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="cuid.net" Version="6.0.1" />
@@ -25,7 +26,6 @@
     <PackageReference Include="OpenAI" Version="2.2.0" />
     <PackageReference Include="OpenAI-DotNet" Version="8.6.4" Aliases="OpenAICommunity" />
     <PackageReference Include="Google.Apis.AndroidPublisher.v3" Version="1.69.0.3805" />
-    <PackageReference Include="Srcmkr.RevenueCat" Version="0.1.2" />
   </ItemGroup>
   <ItemGroup>
     <None Update="AiWorkoutPlan.json">

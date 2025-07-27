@@ -58,59 +58,17 @@ builder
 
 builder.Services.AddAuthorization();
 
-var openAiApiKey =
-    builder.Configuration.GetValue<string?>("OpenAiApiKey")
-    ?? throw new Exception("OpenAiApiKey configuration is not set.");
-builder.Services.RegisterGptAiWorkoutPlanner(openAiApiKey);
-
 builder.Services.AddSingleton<PasswordService>();
-builder.Services.AddHttpClient<AppleAppStorePurchaseVerificationService>();
 builder.Services.AddScoped<RateLimitService>();
 builder.Services.AddScoped<PurchaseVerificationService>();
-builder.Services.AddScoped<GooglePlayPurchaseVerificationService>();
 
 builder.Services.AddHostedService<CleanupExpiredDataHostedService>();
 
-builder.Services.AddScoped(
-    (service) =>
-    {
-        var webAuthKey = builder.Configuration.GetValue<string?>("WebAuthApiKey");
-        return new WebAuthPurchaseVerificationService(webAuthKey);
-    }
-);
-
-builder.Services.RegisterRevenueCat(builder.Configuration);
-
-builder.Services.AddSingleton(
-    (service) =>
-    {
-        var certificateBase64 =
-            builder.Configuration.GetValue<string>("GooglePlayServiceAccountKeyBase64")
-            ?? throw new Exception("GooglePlayServiceAccountKeyBase64 configuration is not set.");
-        var serviceAccountEmail =
-            builder.Configuration.GetValue<string>("GooglePlayServiceAccountEmail")
-            ?? throw new Exception("GooglePlayServiceAccountEmail configuration is not set.");
-        var certificateBytes = Convert.FromBase64String(certificateBase64);
-        var certificate = X509CertificateLoader.LoadPkcs12(
-            certificateBytes,
-            "notasecret",
-            X509KeyStorageFlags.Exportable
-        );
-        ServiceAccountCredential credential = new(
-            new ServiceAccountCredential.Initializer(serviceAccountEmail)
-            {
-                Scopes = new[] { AndroidPublisherService.Scope.Androidpublisher },
-            }.FromCertificate(certificate)
-        );
-        return new AndroidPublisherService(
-            new AndroidPublisherService.Initializer
-            {
-                ApplicationName = "LiftLog",
-                HttpClientInitializer = credential,
-            }
-        );
-    }
-);
+builder.Services.AddGooglePurchaseVerification();
+builder.Services.AddApplePurchaseVerification();
+builder.Services.AddGptAiWorkoutPlanner();
+builder.Services.AddWebAuthPurchaseVerification();
+builder.Services.AddRevenueCatPurchaseVerification();
 
 builder
     .Services.AddControllers()

@@ -1,22 +1,20 @@
-using System.Text.Json;
-using Srcmkr.RevenueCat;
-
 namespace LiftLog.Api.Service;
 
 public class RevenueCatPurchaseVerificationService(
-    RevenueCatClient client,
-    ILogger<RevenueCatPurchaseVerificationService> logger
+    RevenueCat.Client.Projects.Item.WithProject_ItemRequestBuilder client,
+    string proEntitlementId
 )
 {
     public async Task<bool> GetUserIdHasProEntitlementAsync(string userId)
     {
-        var subscriber = await client.GetSubscriber(userId);
-        var entitlement = subscriber.Entitlements.GetValueOrDefault("pro");
-        logger.LogInformation(
-            "RevCat {user} {entitlement}",
-            JsonSerializer.Serialize(subscriber),
-            entitlement
+        var subscriber = await client.Customers[userId].GetAsync();
+        if (subscriber is null)
+        {
+            return false;
+        }
+        var proEntitlement = subscriber.ActiveEntitlements?.Items?.FirstOrDefault(x =>
+            x.EntitlementId == proEntitlementId
         );
-        return entitlement is not null;
+        return proEntitlement is not null;
     }
 }
