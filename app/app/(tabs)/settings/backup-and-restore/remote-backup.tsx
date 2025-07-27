@@ -89,7 +89,7 @@ export default function RemoteBackupPage() {
           <Button
             onPress={() =>
               openUrl(
-                'https://github.com/LiamMorrow/LiftLog/blob/main/Docs/RemoteBackup.md',
+                'https://github.com/LiamMorrow/LiftLog/blob/main/docs/RemoteBackup.md',
               )
             }
           >

@@ -3,16 +3,16 @@
 [![Discord](https://img.shields.io/discord/1267316682737848330?logo=discord&cacheSeconds=3600)](https://discord.gg/YHhKEnEnFa)
 
 <p align="center">
-  <img src="./Assets/play_store_feature_graphic.png" alt="LiftLog Play Store Graphic"><br/>
-  <img width="250" src="./Assets/AppScreens-LiftLog-1719652395579 2/android/Android Phones - 169/01.png" alt="App Screenshot 1">
-  <img width="250" src="./Assets/AppScreens-LiftLog-1719652395579 2/android/Android Phones - 169/02.png" alt="App Screenshot 2">
-  <img width="250" src="./Assets/AppScreens-LiftLog-1719652395579 2/android/Android Phones - 169/03.png" alt="App Screenshot 3">
+  <img src="./assets/play_store_feature_graphic.png" alt="LiftLog Play Store Graphic"><br/>
+  <img width="250" src="./assets/AppScreens-LiftLog-1719652395579 2/android/Android Phones - 169/01.png" alt="App Screenshot 1">
+  <img width="250" src="./assets/AppScreens-LiftLog-1719652395579 2/android/Android Phones - 169/02.png" alt="App Screenshot 2">
+  <img width="250" src="./assets/AppScreens-LiftLog-1719652395579 2/android/Android Phones - 169/03.png" alt="App Screenshot 3">
 </p>
 
 <p align="center">
-  <a href='https://play.google.com/store/apps/details?id=com.limajuice.liftlog&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' style="height: 50px;" src='./Assets/google-play-badge.png'/></a>
+  <a href='https://play.google.com/store/apps/details?id=com.limajuice.liftlog&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' style="height: 50px;" src='./assets/google-play-badge.png'/></a>
   <a href="https://apps.apple.com/au/app/liftlog/id6467372581?itsct=apps_box_badge&amp;itscg=30200"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1696550400" alt="Download on the App Store" style="border-radius: 13px; width: 250px; height: 50px"></a>
-  <a href='https://app.liftlog.online'><img alt='Try demo in your browser' style="height: 50px;" src='./Assets/web-badge.png'/></a>
+  <a href='https://app.liftlog.online'><img alt='Try demo in your browser' style="height: 50px;" src='./assets/web-badge.png'/></a>
 </p>
 
 ---
@@ -145,9 +145,9 @@ Contributions, issues, and feature requests are welcome! See [CONTRIBUTING.md](.
 
 ## 📚 Documentation
 
-- [Feed Process](./Docs/FeedProcess.md)
-- [Remote Backup](./Docs/RemoteBackup.md)
-- [Plaintext Export](./Docs/PlaintextExport.md)
+- [Feed Process](./docs/FeedProcess.md)
+- [Remote Backup](./docs/RemoteBackup.md)
+- [Plaintext Export](./docs/PlaintextExport.md)
 
 ## 💬 Support & Community
 
