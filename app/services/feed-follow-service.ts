@@ -1,4 +1,4 @@
-import { ApiResult, FeedApiService } from './feed-api';
+import { FeedApiService } from './feed-api';
 import { EncryptionService } from './encryption-service';
 import { FeedIdentity, FeedUser, FollowRequest } from '@/models/feed-models';
 import { RsaPublicKey } from '@/models/encryption-models';
@@ -11,6 +11,7 @@ import { LiftLog } from '@/gen/proto';
 import { FeedInboxDecryptionService } from './feed-inbox-decryption-service';
 import { uuid } from '@/utils/uuid';
 import { toStringValue, toUuidDao } from '@/models/storage/conversions.to-dao';
+import { ApiResult } from '@/services/api-error';
 
 export class FeedFollowService {
   constructor(

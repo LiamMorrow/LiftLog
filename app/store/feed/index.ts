@@ -12,7 +12,7 @@ import {
   SharedItemPOJO,
 } from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
-import { ApiError } from '@/services/feed-api';
+import { ApiError } from '@/services/api-error';
 import {
   createAction,
   createSelector,

@@ -5,7 +5,7 @@
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": false,
-    "lib": ["ESNext"],
+    "lib": ["ESNext", "DOM.AsyncIterable", "DOM"],
     "module": "ESNext",
     "noUnusedParameters": false,
     "paths": {

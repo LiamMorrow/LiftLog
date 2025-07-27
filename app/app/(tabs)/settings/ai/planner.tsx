@@ -83,7 +83,7 @@ export default function AiPlanner() {
         options={{
           title: t('AiPlanner'),
           headerRight: () => (
-            <Tooltip title={t('Restart Chat')}>
+            <Tooltip title={t('Restart chat')}>
               <Appbar.Action icon={'replay'} onPress={reset}></Appbar.Action>
             </Tooltip>
           ),

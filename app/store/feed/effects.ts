@@ -20,8 +20,8 @@ import { showSnackbar } from '@/store/app';
 import { addFeedItemEffects } from '@/store/feed/feed-items-effects';
 import { addInboxEffects } from '@/store/feed/inbox-effects';
 import { addFollowingEffects } from '@/store/feed/following-effects';
-import { ApiResult } from '@/services/feed-api';
 import { selectActiveProgram } from '@/store/program';
+import { ApiResult } from '@/services/api-error';
 
 const StorageKey = 'FeedState';
 export function applyFeedEffects() {

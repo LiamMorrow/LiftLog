@@ -3,7 +3,7 @@ import { AesKey } from '@/models/encryption-models';
 import { RemoteData } from '@/models/remote';
 import { fromSharedItemDao } from '@/models/storage/conversions.from-dao';
 import { toSharedItemDao } from '@/models/storage/conversions.to-dao';
-import { ApiErrorType } from '@/services/feed-api';
+import { ApiErrorType } from '@/services/api-error';
 import {
   encryptAndShare,
   feedApiError,

@@ -30,7 +30,6 @@ import { useDebouncedCallback } from 'use-debounce';
 
 function PlanManager() {
   const { push } = useRouter();
-  const { t } = useTranslate();
 
   const activeProgramId = useAppSelector(
     (s: RootState) => s.program.activeProgramId,
