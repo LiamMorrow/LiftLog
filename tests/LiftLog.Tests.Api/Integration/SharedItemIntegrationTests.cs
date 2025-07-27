@@ -21,8 +21,6 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
     {
         builder.ConfigureServices(services =>
         {
-            services.AddScoped((a) => Substitute.For<AndroidPublisherService>());
-
             // Set TEST_MODE environment variable for rate limiting bypass in some scenarios
             Environment.SetEnvironmentVariable("TEST_MODE", "True");
         });
