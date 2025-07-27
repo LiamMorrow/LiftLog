@@ -70,6 +70,7 @@ export default function History() {
           onSessionSelect={onSelectSession}
         />
         <CardList
+          testID="history-list"
           items={sessionsInMonth}
           cardType="contained"
           onPress={onSelectSession}

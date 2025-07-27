@@ -24,21 +24,20 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-Cypress.Commands.add('getA', (selector, opts) => {
-    return cy.get('.transitioned ' + selector, opts)
+Cypress.Commands.add('getByTestId', (testId) => {
+    return cy.get('[data-testid=' + testId + ']')
 })
 
-Cypress.Commands.add('containsA', (selector, opts) => {
-    return cy.get('.transitioned').contains(selector, opts)
-})
-
+Cypress.Commands.add('findByTestId', { prevSubject: 'element' }, (subject, testId) => {
+    return cy.wrap(subject).find(`[data-testid="${testId}"]`);
+});
 
 Cypress.Commands.add('navigate', (navButtonText) => {
-    return cy.get('nav').contains(navButtonText).click().click()
+    return cy.get('[data-testid=nav]').contains(navButtonText).click({ force: true }).click({ force: true })
 })
 
 Cypress.Commands.add('dialog', () => {
-    return cy.get('md-dialog,.fullscreen-dialog')
+    return cy.get('[data-testid=fullscreen-dialog]:visible, [data-testid=modal-surface]:visible')
 });
 
 Cypress.Commands.add('recursionLoop', { times: 'optional' }, function (fn, times) {

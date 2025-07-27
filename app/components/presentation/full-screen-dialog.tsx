@@ -44,6 +44,7 @@ export default function FullScreenDialog(props: FullScreenDialogProps) {
             exiting={FadeOutDown.duration(150).easing(
               Easing.inOut(Easing.quad),
             )}
+            testID="fullscreen-dialog"
             style={{
               flex: 1,
             }}
@@ -117,7 +118,9 @@ function Header({
           {title}
         </SurfaceText>
         {action && onAction ? (
-          <Button onPress={onAction}>{action}</Button>
+          <Button testID="dialog-action" onPress={onAction}>
+            {action}
+          </Button>
         ) : null}
       </View>
     </Animated.View>

@@ -95,6 +95,7 @@ export default function RestTimer({
 
   return (
     <View
+      testID="rest-timer"
       style={[
         {
           width: pillWidth,

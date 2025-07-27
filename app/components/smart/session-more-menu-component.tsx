@@ -53,7 +53,11 @@ export default function SessionMoreMenuComponent(props: {
         anchorPosition="bottom"
         onDismiss={() => setMenuOpen(false)}
         anchor={
-          <Appbar.Action icon="moreVert" onPress={() => setMenuOpen(true)} />
+          <Appbar.Action
+            testID="session-more"
+            icon="moreVert"
+            onPress={() => setMenuOpen(true)}
+          />
         }
         visible={menuOpen}
       >
@@ -63,6 +67,7 @@ export default function SessionMoreMenuComponent(props: {
             setExerciseEditorOpen(true);
             setMenuOpen(false);
           }}
+          testID="session-add-exercise"
           leadingIcon={'add'}
           title={t('AddExercise')}
         />

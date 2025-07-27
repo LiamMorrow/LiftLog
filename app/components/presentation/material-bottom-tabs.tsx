@@ -2,6 +2,7 @@ import { Tabs } from 'expo-router';
 import { CommonActions } from '@react-navigation/core';
 import { PropsWithChildren } from 'react';
 import { BottomNavigation, BottomNavigationProps } from 'react-native-paper';
+import { Platform } from 'react-native';
 
 export type MaterialBottomTabsProps = PropsWithChildren<
   Omit<
@@ -25,10 +26,11 @@ export function MaterialBottomTabs({
     <Tabs
       screenOptions={{
         headerShown: false,
-        animation: 'shift',
+        animation: Platform.OS === 'web' ? 'none' : 'shift',
       }}
       tabBar={({ navigation, state, descriptors, insets }) => (
         <BottomNavigation.Bar
+          testID="nav"
           {...props}
           navigationState={{
             ...state,

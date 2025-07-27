@@ -15,7 +15,7 @@ export default function SessionSummary({
   showWeight,
 }: SessionSummaryProps) {
   return (
-    <View style={{ gap: spacing[2], flex: 1 }} data-cy="session-summary">
+    <View style={{ gap: spacing[2], flex: 1 }} testID="session-summary">
       {session.recordedExercises.map((ex, index) => (
         <Fragment key={index}>
           <ExerciseSummary

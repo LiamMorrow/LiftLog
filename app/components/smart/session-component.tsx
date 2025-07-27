@@ -238,6 +238,7 @@ export default function SessionComponent(props: {
         onPress={props.saveAndClose}
         variant="surface"
         icon={'inventory'}
+        testID="save-session-button"
         label={props.target === 'workoutSession' ? t('Finish') : t('Save')}
       ></FAB>
     </View>

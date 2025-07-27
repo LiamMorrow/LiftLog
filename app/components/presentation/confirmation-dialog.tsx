@@ -45,10 +45,14 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
   } = props;
 
   const cancelButton = (
-    <Button onPress={onCancel}>{cancelText ?? <T keyName="Cancel" />}</Button>
+    <Button testID="action-cancel" onPress={onCancel}>
+      {cancelText ?? <T keyName="Cancel" />}
+    </Button>
   );
   const okButton = (
-    <Button onPress={onOk}>{okText ?? <T keyName="Ok" />}</Button>
+    <Button testID="action-ok" onPress={onOk}>
+      {okText ?? <T keyName="Ok" />}
+    </Button>
   );
 
   const buttons = additionalActionText ? (
@@ -62,7 +66,9 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
       >
         {cancelButton}
         <View style={{ flexDirection: 'row' }}>
-          <Button onPress={onAdditionalAction}>{additionalActionText}</Button>
+          <Button testID="action-additional" onPress={onAdditionalAction}>
+            {additionalActionText}
+          </Button>
           {okButton}
         </View>
       </View>

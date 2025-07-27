@@ -23,7 +23,7 @@ export default function SessionSummaryTitle({
   return (
     <View
       style={{ flexShrink: 1, alignItems: 'flex-start', overflow: 'hidden' }}
-      data-cy="session-summary-title"
+      testID="session-summary-title"
     >
       <ItemTitle title={session.blueprint.name} />
       {isFilled ? (

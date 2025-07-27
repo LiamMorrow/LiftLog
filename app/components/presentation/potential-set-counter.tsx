@@ -139,6 +139,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
             }}
             {...callbacks}
             disabled={props.isReadonly}
+            testID="repcount"
           >
             <Text
               style={{
@@ -174,6 +175,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
           }}
         >
           <TouchableRipple
+            testID="repcount-weight"
             style={{
               alignItems: 'center',
               margin: -spacing[2],

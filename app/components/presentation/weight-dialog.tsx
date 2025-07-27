@@ -114,7 +114,7 @@ export default function WeightDialog(props: WeightDialogProps) {
               <Button
                 icon={'minus'}
                 mode="outlined"
-                data-cy="decrement-weight"
+                testID="decrement-weight"
                 onPress={decrementWeight}
               >
                 <WeightFormat weight={nonZeroIncrement} />
@@ -122,7 +122,7 @@ export default function WeightDialog(props: WeightDialogProps) {
               <Button
                 icon={'plus'}
                 mode="outlined"
-                data-cy="increment-weight"
+                testID="increment-weight"
                 onPress={incrementWeight}
               >
                 <WeightFormat weight={nonZeroIncrement} />
@@ -135,7 +135,7 @@ export default function WeightDialog(props: WeightDialogProps) {
           <Button onPress={props.onClose}>
             <T keyName="Close" />
           </Button>
-          <Button onPress={onSaveClick}>
+          <Button onPress={onSaveClick} testID="save">
             <T keyName="Save" />
           </Button>
         </Dialog.Actions>

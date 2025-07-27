@@ -6,8 +6,8 @@
   "scripts": {
     "cypress-ci": "cypress run --browser=chrome",
     "cypress-open": "cypress open",
-    "server": "DOTNET_WATCH_SUPPRESS_LAUNCH_BROWSER=1 dotnet watch --no-hot-reload --project ../LiftLog.Web",
-    "server-ci": "dotnet run -c Release --project ../LiftLog.Web",
+    "server": "npm run web --prefix ../app",
+    "server-ci": "npm run web --prefix ../app",
     "test": "run-p -r server cypress-open",
     "test-ci": "run-p -r server-ci cypress-ci"
   },
