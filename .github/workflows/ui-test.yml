@@ -12,16 +12,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 9.0.x
-      - name: Restore dependencies
-        run: dotnet restore
-        working-directory: ./LiftLog.Web
-      - name: Build Tailwind
-        run: npm ci && npm run build
-        working-directory: ./LiftLog.Ui
+      - name: App Dependencies
+        run: npm ci
+        working-directory: ./app
       - name: Dependencies
         run: npm ci
         working-directory: ./tests/cypress-tests
