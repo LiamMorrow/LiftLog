@@ -6,6 +6,7 @@
     "start": "expo start",
     "prebuild": "expo prebuild",
     "build:android:release": "./android/gradlew assembleRelease",
+    "build:web": "expo export -p web",
     "android": "expo run:android",
     "android:release": "expo run:android --variant release",
     "ios": "expo run:ios",

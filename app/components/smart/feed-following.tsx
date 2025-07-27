@@ -41,7 +41,6 @@ export function FeedFollowing() {
 }
 
 function FeedFollowingItem(props: { user: FeedUser; userId: string }) {
-  const viewPlan = () => {}; // TODO
   const dispatch = useDispatch();
   const unfollow = () => {
     dispatch(unfollowFeedUser({ feedUser: props.user }));
@@ -64,15 +63,6 @@ function FeedFollowingItem(props: { user: FeedUser; userId: string }) {
             />
           }
         >
-          <Menu.Item
-            onPress={() => {
-              viewPlan();
-              setMenuVisible(false);
-            }}
-            disabled={!props.user.currentPlan.length}
-            leadingIcon={'assignment'}
-            title={t('ViewTheirPlan')}
-          />
           <Menu.Item
             onPress={() => {
               unfollow();

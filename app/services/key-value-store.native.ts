@@ -62,7 +62,6 @@ export class KeyValueStore {
   }
 }
 
-//TODO - Verify this is the same as the MAUI path on iOS - it is on android :)
 function getFile(key: string): File {
   return new File(Paths.join(Paths.document, key));
 }

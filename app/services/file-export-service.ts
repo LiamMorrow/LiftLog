@@ -4,7 +4,6 @@ export class FileExportService {
     bytes: Uint8Array,
     contentType: string,
   ): Promise<void> {
-    // TODO download file
     const blob = new Blob([bytes], { type: contentType });
     const url = URL.createObjectURL(blob);
 

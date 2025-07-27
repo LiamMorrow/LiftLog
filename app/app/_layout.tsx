@@ -9,11 +9,8 @@ import AppStateProvider from '@/components/smart/app-state-provider';
 import { tolgee } from '@/services/tolgee';
 import SnackbarProvider from '@/components/smart/snackbar-provider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
 import '@/utils/date-locale';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
-
-// import { install } from 'react-native-quick-crypto';
 import * as Sentry from '@sentry/react-native';
 
 Sentry.init({

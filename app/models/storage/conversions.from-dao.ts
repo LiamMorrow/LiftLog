@@ -16,6 +16,8 @@ import {
   FeedIdentity,
   FeedItem,
   FeedUser,
+  FollowRequest,
+  FollowRequestPOJO,
   SessionFeedItem,
   SharedItem,
   SharedProgramBlueprint,
@@ -270,8 +272,7 @@ export function fromFeedStateDao(dao: LiftLog.Ui.Models.IFeedStateDaoV1) {
       (dao.identity &&
         RemoteData.success(fromFeedIdentityDao(dao.identity).toPOJO())) ??
       RemoteData.notAsked(),
-    // TODO
-    followRequests: [],
+    followRequests: dao.followRequests?.map(fromFollowRequestDao) ?? [],
     followers:
       (dao.followers &&
         Object.fromEntries(
@@ -362,4 +363,12 @@ export function fromSharedItemDao(
     );
   }
   return null;
+}
+function fromFollowRequestDao(
+  value: LiftLog.Ui.Models.IInboxMessageDao,
+): FollowRequestPOJO {
+  return FollowRequest.fromPOJO({
+    name: value.followRequest?.name?.value ?? '',
+    userId: fromUuidDao(value.fromUserId),
+  }).toPOJO();
 }
