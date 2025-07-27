@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.Api", "LiftLog.Api\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.Tests.Api", "tests\LiftLog.Tests.Api\LiftLog.Tests.Api.csproj", "{8306A2A4-BD01-48F5-B2F8-7A85B93D87FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.Tests.App", "tests\LiftLog.Tests.App\LiftLog.Tests.App.csproj", "{EAFB4E00-343C-4AA2-9CA0-CD186AC390C7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RevenueCat", "RevenueCat\RevenueCat.csproj", "{C3642720-AB4F-41B0-BDAC-C18A0CB03600}"
 EndProject
 Global

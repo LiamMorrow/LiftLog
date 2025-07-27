@@ -35,7 +35,6 @@ public class AuthenticationIntegrationTests : IClassFixture<WebApplicationFactor
                 mockAiWorkoutPlanner
                     .GenerateSessionAsync(default!)
                     .ThrowsAsyncForAnyArgs(new Exception());
-                services.AddScoped((a) => Substitute.For<AndroidPublisherService>());
                 services.AddSingleton((a) => mockAiWorkoutPlanner);
 
                 // Set TEST_MODE environment variable for rate limiting bypass in some scenarios
