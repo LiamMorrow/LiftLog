@@ -2,30 +2,64 @@
 
 [![Discord](https://img.shields.io/discord/1267316682737848330?logo=discord&cacheSeconds=3600)](https://discord.gg/YHhKEnEnFa)
 
-<img src="./Assets/play_store_feature_graphic.png"><br/>
-<img width="250" src="./Assets/AppScreens-LiftLog-1719652395579 2/android/Android Phones - 169/01.png">
-<img width="250" src="./Assets/AppScreens-LiftLog-1719652395579 2/android/Android Phones - 169/02.png">
-<img width="250" src="./Assets/AppScreens-LiftLog-1719652395579 2/android/Android Phones - 169/03.png">
+<p align="center">
+  <img src="./Assets/play_store_feature_graphic.png" alt="LiftLog Play Store Graphic"><br/>
+  <img width="250" src="./Assets/AppScreens-LiftLog-1719652395579 2/android/Android Phones - 169/01.png" alt="App Screenshot 1">
+  <img width="250" src="./Assets/AppScreens-LiftLog-1719652395579 2/android/Android Phones - 169/02.png" alt="App Screenshot 2">
+  <img width="250" src="./Assets/AppScreens-LiftLog-1719652395579 2/android/Android Phones - 169/03.png" alt="App Screenshot 3">
+</p>
 
-<a href='https://play.google.com/store/apps/details?id=com.limajuice.liftlog&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play'  style="height: 50px;" src='./Assets/google-play-badge.png?'/></a>
-<a href="https://apps.apple.com/au/app/liftlog/id6467372581?itsct=apps_box_badge&amp;itscg=30200" ><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1696550400" alt="Download on the App Store" style="border-radius: 13px; width: 250px; height: 50px "></a>
-<a href='https://app.liftlog.online'><img alt='Try demo in your browser'  style="height: 50px;" src='./Assets/web-badge.png?'/></a>
+<p align="center">
+  <a href='https://play.google.com/store/apps/details?id=com.limajuice.liftlog&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' style="height: 50px;" src='./Assets/google-play-badge.png'/></a>
+  <a href="https://apps.apple.com/au/app/liftlog/id6467372581?itsct=apps_box_badge&amp;itscg=30200"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1696550400" alt="Download on the App Store" style="border-radius: 13px; width: 250px; height: 50px"></a>
+  <a href='https://app.liftlog.online'><img alt='Try demo in your browser' style="height: 50px;" src='./Assets/web-badge.png'/></a>
+</p>
 
-LiftLog aims to be an intuitive, simple gym weight tracking app. It runs on all mobile platforms, and is built as a .NET MAUI Blazor Hybrid app.
-It incorporates material design 3, with designs and layout driven by [tailwindcss](https://tailwindcss.com/).
+---
 
-Built into it is an AI planner which will tailor a specific gym plan to your goals and body.
+## 🚀 Overview
 
-LiftLog also allows users to publish their workouts to their feed, and subscribe to other user's feeds. This data is end to end encrypted and totally opt in. User's have full control over who can follow them. The technical details of how this works are described in [the feed process docs](./Docs/FeedProcess.md).
+**LiftLog** is an intuitive, cross-platform gym weight tracking app built with React Native and Expo. It features Material Design 3, AI-powered workout planning, and secure, end-to-end encrypted social feeds. Available on Android, iOS, and the web.
 
-Checkout [the app website](https://liftlog.online) for screenshots and features. Or checkout https://app.liftlog.online to try it out without installing an app.
+### Key Features
 
-> [!NOTE]
-> Liftlog is currently being rewritten from the ground up in react native. New features will likely only be tackled in the rewrite. [See this issue for more info.](https://github.com/LiamMorrow/LiftLog/issues/420)
+- 📱 Runs on Android, iOS, and web
+- 🧠 AI planner tailors gym plans to your goals and body
+- 🔒 End-to-end encrypted social feeds (opt-in, privacy-first)
+- 🎨 Material Design 3 via React Native Paper
+- 🌐 Internationalization with Tolgee (10+ languages)
+- 🏋️‍♂️ Publish workouts, follow other users, and control your feed privacy
+- ⚡ Fast, modern UI with Expo Router and Redux Toolkit
+
+---
+
+---
+
+## 🌍 Translations
+
+LiftLog uses [Tolgee](https://tolgee.io/) for internationalization and translation management. Translation files are in [`app/i18n/`](./app/i18n/).
+
+Available languages:
+
+- 🇦🇺 English (default)
+- 🇮🇹 Italian
+- 🇩🇪 German
+- 🇷🇸 Serbian
+- 🇫🇷 French
+- 🇳🇱 Dutch
+- 🇫🇮 Finnish
+- 🇪🇸 Spanish
+- 🇷🇺 Russian
+
+Want to help translate? [Open an issue or PR](https://github.com/LiamMorrow/LiftLog/issues).
+
+---
 
 ## Translations
 
-LiftLog can be translated into different languages by filling out a translations file. If you are interested in translating, please submit an issue or pull request creating or amending a copy of the [UiStrings.resx](./LiftLog.Ui/i18n/UiStrings.resx) file.
+LiftLog uses [Tolgee](https://tolgee.io/) for internationalization and translation management. The translation files are located in the `app/i18n/` directory.
+
+If you are interested in contributing translations, please submit an issue or pull request.
 
 LiftLog is currently available in the following languages:
 
@@ -39,68 +73,88 @@ LiftLog is currently available in the following languages:
 - 🇪🇸 Spanish
 - 🇷🇺 Russian
 
-## Quickstart
+## ⚡ Quickstart
 
 ### Prerequisites
 
-Ensure the dotnet sdk is installed and on the latest version. You can do that by following the instructions [here](https://dotnet.microsoft.com/en-us/download).
-npm is also required to build some of the web assets.
+1. **Node.js** (v18+): [Download here](https://nodejs.org/)
+2. **Expo CLI**: `npm install -g expo-cli` ([Guide](https://docs.expo.dev/get-started/set-up-your-environment/))
+3. **Android Studio** (for Android) ([Setup](https://reactnative.dev/docs/environment-setup))
+4. **Xcode** (for iOS, macOS only) ([Setup](https://reactnative.dev/docs/environment-setup?os=macos&platform=ios))
 
-### Running
-
-Before running, you must build the web assets once, after they are built it is rare to need to build them again.
-
-```bash
-cd ./LiftLog.Ui
-npm i
-npm run build
-```
-
-Then, to run the app in the browser simply run:
+### Run the App
 
 ```bash
-cd ../LiftLog.Web
-dotnet watch
+cd app
+npm install
+npm run android   # For Android
+npm run ios       # For iOS (macOS only)
+npm run web       # For web
 ```
 
-## Project Structure
+### Run the Backend API
 
-As mentioned, LiftLog is a MAUI Hybrid Blazor app. What this means for LiftLog is that all of the UI is built with blazor in html, css, and a bit of JS.
-Since the entire UI is built this way, rapid development using the browser is possible; without having to develop on real devices or emulators.
+```bash
+cd LiftLog.Api
+dotnet run
+```
 
-LiftLog is split up into a couple of different dotnet projects:
+See [`LiftLog.Api/README.md`](./LiftLog.Api/README.md) for backend details.
 
-### Frontend
+---
 
-#### [LiftLog.Ui](./LiftLog.Ui/)
+## 🗂️ Project Structure
 
-LiftLog.Ui is where the majority of the application is developed. It is a blazor class library which contains all of the components and pages for the app.
-We use [Fluxor](https://github.com/mrpmorris/Fluxor) to manage state, and attempt to keep many components as dumb presentation components, without direct access to this state.
+LiftLog is organized into several projects:
 
-There are several services which are defined and used by LiftLog.Ui, some of which are platform specific. In these cases an interface is defined for the service for the relevant platform project to implement. [INotificationService](./LiftLog.Ui/Services/INotificationService.cs) is a good example of this, where richer notifications can be created on applications vs the web.
+### Frontend ([app/](./app/))
 
-#### [LiftLog.Web](./LiftLog.Web/)
+- **Main React Native app** (Expo)
+- **Components**: `components/` (layout, presentation, smart)
+- **State**: `store/` (Redux Toolkit)
+- **Services**: `services/` (API, business logic)
+- **Hooks**: `hooks/` (custom React hooks)
+- **Translations**: `i18n/` (Tolgee)
+- **Navigation**: Expo Router
 
-LiftLog.Web is a Blazor Webassembly application which can be used for local development. It implements the required services which are defined in LiftLog.Ui to run in a web environment. While this is useful for development, new features should be tested on emulated and real devices before release, as there are some differences between the webassembly runtime and the MAUI runtime.
+### Backend ([LiftLog.Api/](./LiftLog.Api/))
 
-#### [LiftLog.Maui](./LiftLog.Maui/)
+- **Dotnet WebAPI** for feeds, AI plans, and secure data
+- **End-to-end encrypted feeds** (AES)
+- **OpenAI integration** for workout plans
 
-LiftLog.Maui is a MAUI application utilizing a BlazorWebView to display the UI defined in LiftLog.Ui. It implements the specific services required for running the UI on an iOS or Android device.
-This is the application which is published to the relevant app store.
+### RevenueCat ([RevenueCat/](./RevenueCat/))
 
-### Backend
+- **Client library** for in-app purchases/subscriptions
 
-#### [LiftLog.Api](./LiftLog.Api/)
+### Website ([site/](./site))
 
-This project contains a dotnet webapi backend for LiftLog. It is in charge of storing, and serving feeds to people, however it has no knowledge of the content of feeds, aside from timestamps and user IDs.
-Feeds are end to end encrypted using a shared symmetric key via AES.
+- **Source for liftlog.online** and privacy policy
 
-It also handles the AI generated plans with OpenAI.
+---
 
-### [Site](./site)
-
-The site folder contains the source for the website at liftlog.online, along with the privacy policy etc.
-
-## Stats
+## 📊 Stats
 
 [![Star History Chart](https://api.star-history.com/svg?repos=LiamMorrow/LiftLog&type=Date)](https://star-history.com/#LiamMorrow/LiftLog&Date)
+
+---
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md) (or open an issue/PR).
+
+## 📚 Documentation
+
+- [Feed Process](./Docs/FeedProcess.md)
+- [Remote Backup](./Docs/RemoteBackup.md)
+- [Plaintext Export](./Docs/PlaintextExport.md)
+
+## 💬 Support & Community
+
+- [Discord](https://discord.gg/YHhKEnEnFa)
+- [App Website](https://liftlog.online)
+- [Try Demo](https://app.liftlog.online)
+
+---
+
+> **Note:** LiftLog was rewritten from the ground up in React Native. The previous .NET MAUI Blazor implementation is in the `dotnet` branch.
