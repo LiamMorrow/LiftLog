@@ -3,3 +3,5 @@ vitest.config.ts
 metro.config.js
 babel.config.js
 .eslintrc.js
+.env.local
+.expo
