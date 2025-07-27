@@ -226,19 +226,25 @@ function HistoryCalendarDay(props: {
         width: oneSeventh,
         borderRadius: 1000,
         overflow: 'hidden',
+        alignItems: 'center',
       }}
     >
       <TouchableRipple
         onPress={props.onPress}
         onLongPress={props.onLongPress}
         disabled={isFuture}
-        style={{ padding: spacing[1] }}
+        style={{
+          padding: spacing[1],
+          borderRadius: 1000,
+          overflow: 'hidden',
+        }}
       >
         <View
           style={{
             alignItems: 'center',
             justifyContent: 'center',
             aspectRatio: '1/1',
+            width: spacing[10],
             borderRadius: 1000,
             borderColor: isTodayWithNoSessions ? colors.primary : 'transparent',
             borderWidth: 1,

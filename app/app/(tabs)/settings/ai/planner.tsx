@@ -3,7 +3,7 @@ import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 
 import { T, useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
-import { FlatList, View } from 'react-native';
+import { FlatList, Platform, View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useDispatch } from 'react-redux';
 import {
@@ -302,6 +302,14 @@ function ProPrompt() {
     };
     run().catch(console.error);
   };
+  if (Platform.OS === 'web') {
+    return (
+      <SurfaceText>
+        Unfortunately the AI planner is not available on the web version. Please
+        download LiftLog for iOS or Android.
+      </SurfaceText>
+    );
+  }
   return (
     <View style={{ gap: spacing[2] }}>
       <SurfaceText>{t('UpgradeToPro')}</SurfaceText>
