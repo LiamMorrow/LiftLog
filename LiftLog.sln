@@ -13,12 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Nuget.config = Nuget.config
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LiftLog.Web", "LiftLog.Web\LiftLog.Web.csproj", "{48D061EC-D228-4923-ABD5-AB667139856D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.Ui", "LiftLog.Ui\LiftLog.Ui.csproj", "{F9050CF8-C0B9-4285-B47D-551D84FCEC13}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.Maui", "LiftLog.Maui\LiftLog.Maui.csproj", "{08D7B5DB-F7A2-4ECA-BE13-81128AB252B1}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.Api", "LiftLog.Api\LiftLog.Api.csproj", "{2569C97C-BA58-4DF6-B4CB-0E21E59E50F4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiftLog.Tests.Api", "tests\LiftLog.Tests.Api\LiftLog.Tests.Api.csproj", "{8306A2A4-BD01-48F5-B2F8-7A85B93D87FD}"

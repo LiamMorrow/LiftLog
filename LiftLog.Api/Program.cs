@@ -1,18 +1,13 @@
-using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Serialization;
 using FluentValidation;
-using Google.Apis.AndroidPublisher.v3;
-using Google.Apis.Auth.OAuth2;
 using LiftLog.Api.Authentication;
 using LiftLog.Api.Db;
 using LiftLog.Api.Hubs;
 using LiftLog.Api.Service;
 using LiftLog.Api.Validators;
 using LiftLog.Lib.Serialization;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
