@@ -23,6 +23,7 @@ jobs:
         working-directory: ./app
       - name: Typecheck
         run: npm run typecheck
+        working-directory: ./app
       - name: Lint
         run: npm run lint
         working-directory: ./app
