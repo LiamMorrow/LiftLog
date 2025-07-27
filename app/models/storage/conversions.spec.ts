@@ -91,6 +91,7 @@ describe('conversions', () => {
 interface ToPOJO {
   toPOJO(): unknown;
 }
+
 function toPOJOEquals(a: ToPOJO, b: ToPOJO) {
   expect(b.toPOJO()).toEqual(a.toPOJO());
 }

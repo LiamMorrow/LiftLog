@@ -176,7 +176,7 @@ export const RsaPublicKeyGenerator = fc.record<RsaPublicKey>({
       minLength: 256,
       maxLength: 256,
     })
-    .map(Buffer.from),
+    .map((arr) => Uint8Array.from(arr)),
 });
 
 // Generator for AesKey
@@ -186,7 +186,7 @@ export const AesKeyGenerator = fc.record<AesKey>({
       minLength: 32,
       maxLength: 32,
     })
-    .map(Buffer.from),
+    .map((arr) => Uint8Array.from(arr)),
 });
 
 // Generator for RsaKeyPair
@@ -198,7 +198,7 @@ export const RsaKeyPairGenerator = fc.record<RsaKeyPair>({
         minLength: 2048,
         maxLength: 2048,
       })
-      .map(Buffer.from),
+      .map((arr) => Uint8Array.from(arr)),
   }),
 });
 
@@ -219,7 +219,7 @@ export const FeedUserGenerator = fc
     profilePicture: fc.option(
       fc
         .array(fc.integer({ min: 0, max: 255 }), { maxLength: 1024 })
-        .map(Buffer.from),
+        .map((arr) => Uint8Array.from(arr)),
       { nil: undefined },
     ),
     aesKey: fc.option(AesKeyGenerator, { nil: undefined }),
@@ -240,7 +240,7 @@ export const FeedIdentityGenerator = fc
     profilePicture: fc.option(
       fc
         .array(fc.integer({ min: 0, max: 255 }), { maxLength: 1024 })
-        .map(Buffer.from),
+        .map((arr) => Uint8Array.from(arr)),
       { nil: undefined },
     ),
     publishBodyweight: fc.boolean(),
