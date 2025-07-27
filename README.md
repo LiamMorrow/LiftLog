@@ -55,24 +55,6 @@ Want to help translate? [Open an issue or PR](https://github.com/LiamMorrow/Lift
 
 ---
 
-## Translations
-
-LiftLog uses [Tolgee](https://tolgee.io/) for internationalization and translation management. The translation files are located in the `app/i18n/` directory.
-
-If you are interested in contributing translations, please submit an issue or pull request.
-
-LiftLog is currently available in the following languages:
-
-- 🇦🇺 English (default)
-- 🇮🇹 Italian
-- 🇩🇪 German
-- 🇷🇸 Serbian
-- 🇫🇷 French
-- 🇳🇱 Dutch
-- 🇫🇮 Finnish
-- 🇪🇸 Spanish
-- 🇷🇺 Russian
-
 ## ⚡ Quickstart
 
 ### Prerequisites
