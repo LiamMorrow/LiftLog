@@ -24,6 +24,8 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
+/// <reference types="./index.d.ts" />
+
 Cypress.Commands.add('getByTestId', (testId) => {
     return cy.get('[data-testid=' + testId + ']')
 })
