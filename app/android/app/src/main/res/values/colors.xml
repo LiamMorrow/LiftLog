@@ -1,5 +1,6 @@
 <resources>
   <color name="splashscreen_background">#E0EDDB</color>
   <color name="colorPrimary">#046F03</color>
-  <color name="colorPrimaryDark">#55e244</color>
+  <color name="colorPrimaryDark">#E0EDDB</color>
+  <color name="activityBackground">#E0EDDB</color>
 </resources>

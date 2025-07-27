@@ -377,7 +377,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "DM9JP7639R";
+				DEVELOPMENT_TEAM = DM9JP7639R;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = U8Q4NXKYES;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -398,13 +398,13 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.limajuice.liftlog;
-				PRODUCT_NAME = LiftLog;
+				PRODUCT_NAME = "LiftLog";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = LiftLog;
 				SWIFT_OBJC_BRIDGING_HEADER = "LiftLog/LiftLog-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -420,7 +420,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "DM9JP7639R";
+				DEVELOPMENT_TEAM = DM9JP7639R;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = U8Q4NXKYES;
 				INFOPLIST_FILE = LiftLog/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -436,12 +436,12 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.limajuice.liftlog;
-				PRODUCT_NAME = LiftLog;
+				PRODUCT_NAME = "LiftLog";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = LiftLog;
 				SWIFT_OBJC_BRIDGING_HEADER = "LiftLog/LiftLog-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

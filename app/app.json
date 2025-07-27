@@ -9,6 +9,13 @@
       "bundler": "metro",
       "output": "single"
     },
+    "splash": {
+      "backgroundColor": "#E0EDDB",
+      "image": "./assets/splash.png",
+      "resizeMode": "contain"
+    },
+    "backgroundColor": "#E0EDDB",
+    "primaryColor": "#046F03",
     "plugins": [
       "expo-router",
       [
@@ -30,13 +37,11 @@
       "typedRoutes": true,
       "reactCompiler": true
     },
-    "scheme": "com.limajuice.liftlog",
+    "scheme": "app.liftlog.online",
     "android": {
       "package": "com.limajuice.liftlog",
       "edgeToEdgeEnabled": true,
-      "permissions": [
-        "android.permission.SCHEDULE_EXACT_ALARM"
-      ]
+      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"]
     },
     "ios": {
       "bundleIdentifier": "com.limajuice.liftlog",
