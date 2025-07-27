@@ -122,18 +122,6 @@ export default function RestTimer({
         }}
       >
         <Svg width={pillWidth} height={pillHeight}>
-          {/* Background rounded rectangle */}
-          <Path
-            d={`M${3 + pillHeight / 2 - 3},3
-                h${pillWidth - pillHeight + 0}
-                a${pillHeight / 2 - 3},${pillHeight / 2 - 3} 0 0 1 0,${pillHeight - 6}
-                h-${pillWidth - pillHeight + 0}
-                a${pillHeight / 2 - 3},${pillHeight / 2 - 3} 0 0 1 0,-${pillHeight - 6}
-                z`}
-            stroke={colors.outlineVariant}
-            strokeWidth={6}
-            fill="none"
-          />
           {/* Primary progress bar (minRest/failureRest) */}
           <PillProgressBar
             color={colors.primary}
