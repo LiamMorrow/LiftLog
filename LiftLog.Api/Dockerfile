@@ -9,6 +9,9 @@ RUN apt-get update && apt-get install -y \
     wget \
     vim \
     net-tools \
+    dnsutils \
+    traceroute \
+    iputils-ping \
     && rm -rf /var/lib/apt/lists/*
 
 # Use the .NET 9 SDK for building
