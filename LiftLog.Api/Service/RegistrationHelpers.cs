@@ -117,7 +117,8 @@ public static class RegistrationHelpers
                 ?? throw new Exception("RevenueCatProEntitlementId not set");
             return new RevenueCatPurchaseVerificationService(
                 projectConfiguredRevenueCatApiClient,
-                proEntitlementId
+                proEntitlementId,
+                services.GetRequiredService<ILogger<RevenueCatPurchaseVerificationService>>()
             );
         });
 
