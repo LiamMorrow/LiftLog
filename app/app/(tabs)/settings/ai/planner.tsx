@@ -46,6 +46,7 @@ import Purchases, {
   PRODUCT_CATEGORY,
   PurchasesStoreProduct,
 } from 'react-native-purchases';
+import { setProToken } from '@/store/settings';
 
 export default function AiPlanner() {
   const { t } = useTranslate();
@@ -288,9 +289,18 @@ function PlanMessage({
 }
 
 function ProPrompt() {
+  const dispatch = useDispatch();
   const { t } = useTranslate();
   const upgrade = () => {
-    presentPaywall().catch(console.error);
+    const run = async () => {
+      const owned = await presentPaywall();
+      if (owned) {
+        const info = await Purchases.getCustomerInfo();
+        dispatch(setProToken(info.originalAppUserId));
+        dispatch(restartChat());
+      }
+    };
+    run().catch(console.error);
   };
   return (
     <View style={{ gap: spacing[2] }}>
@@ -346,14 +356,4 @@ async function presentPaywall(): Promise<boolean> {
     default:
       return false;
   }
-}
-
-async function presentPaywallIfNeeded() {
-  // Present paywall for current offering:
-  const paywallResult: PAYWALL_RESULT =
-    await RevenueCatUI.presentPaywallIfNeeded({
-      requiredEntitlementIdentifier: 'pro',
-    });
-
-  return { paywallResult };
 }

@@ -5,7 +5,8 @@ namespace LiftLog.Api.Service;
 public class PurchaseVerificationService(
     GooglePlayPurchaseVerificationService googlePlayPurchaseVerificationService,
     WebAuthPurchaseVerificationService webAuthPurchaseVerificationService,
-    AppleAppStorePurchaseVerificationService appleAppStorePurchaseVerificationService
+    AppleAppStorePurchaseVerificationService appleAppStorePurchaseVerificationService,
+    RevenueCatPurchaseVerificationService revenueCatPurchaseVerificationService
 )
 {
     public Task<bool> IsValidPurchaseToken(AppStore appStore, string proToken)
@@ -17,6 +18,8 @@ public class PurchaseVerificationService(
                 proToken
             ),
             AppStore.Web => webAuthPurchaseVerificationService.IsValidPurchaseToken(proToken),
+            AppStore.RevenueCat =>
+                revenueCatPurchaseVerificationService.GetUserIdHasProEntitlementAsync(proToken),
         };
     }
 }

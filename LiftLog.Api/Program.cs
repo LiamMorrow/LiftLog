@@ -79,6 +79,8 @@ builder.Services.AddScoped(
     }
 );
 
+builder.Services.RegisterRevenueCat(builder.Configuration);
+
 builder.Services.AddSingleton(
     (service) =>
     {

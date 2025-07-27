@@ -8,6 +8,7 @@ public enum AppStore
     Web,
     Google,
     Apple,
+    RevenueCat,
 }
 
 public enum Gender
