@@ -21,11 +21,8 @@ jobs:
       - name: Install
         run: npm ci
         working-directory: ./app
-      - name: Version
-        run: npm run typecheck -- --version
-        working-directory: ./app
-      - name: Config
-        run: npm run typecheck -- --showConfig
+      - name: Generate Expo types
+        run: npx expo customize tsconfig.json
         working-directory: ./app
       - name: Typecheck
         run: npm run typecheck
