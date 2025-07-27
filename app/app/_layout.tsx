@@ -15,8 +15,6 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 // import { install } from 'react-native-quick-crypto';
 import * as Sentry from '@sentry/react-native';
-import { useEffect } from 'react';
-import Purchases, { LOG_LEVEL } from 'react-native-purchases';
 
 Sentry.init({
   dsn: 'https://86576716425e1558b5e8622ba65d4544@o4505937515249664.ingest.us.sentry.io/4509717493383168',
@@ -39,19 +37,6 @@ LogBox.ignoreLogs([
 export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
 
-  useEffect(() => {
-    Purchases.setLogLevel(LOG_LEVEL.VERBOSE).catch(console.error);
-
-    if (Platform.OS === 'ios') {
-      Purchases.configure({
-        apiKey: process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY!,
-      });
-    } else if (Platform.OS === 'android') {
-      Purchases.configure({
-        apiKey: process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY!,
-      });
-    }
-  }, []);
   return (
     <GestureHandlerRootView>
       <KeyboardProvider>

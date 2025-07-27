@@ -185,7 +185,7 @@ export function applyProgramEffects() {
 
       const state = getState();
       const sessionBlueprints = selectActiveProgram(state).sessions;
-      const numberOfUpcomingSessions = sessionBlueprints.length;
+      const numberOfUpcomingSessions = sessionBlueprints.length + 1;
 
       if (signal.aborted) {
         return;

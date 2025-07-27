@@ -18,6 +18,7 @@ import {
   fetchFeedItems,
   fetchInboxItems,
   resetFeedAccount,
+  selectFeedFollowing,
   selectFeedIdentityRemote,
   selectFeedSessionItems,
   updateFeedIdentity,
@@ -235,6 +236,7 @@ function FeedProfileEditor({
 }
 
 function FeedItemRenderer(props: { feedItem: FeedItem }) {
+  const users = useAppSelector(selectFeedFollowing);
   switch (true) {
     case props.feedItem instanceof SessionFeedItem:
       return (
@@ -248,11 +250,20 @@ function FeedItemRenderer(props: { feedItem: FeedItem }) {
                 />
               }
               mainContent={
-                <SessionSummary
-                  session={props.feedItem.session}
-                  isFilled={false}
-                  showWeight
-                />
+                <View style={{ gap: spacing[2] }}>
+                  <SessionSummary
+                    session={props.feedItem.session}
+                    isFilled={false}
+                    showWeight
+                  />
+                  <SurfaceText>
+                    <SurfaceText weight={'bold'}>
+                      {users.find((x) => x.userId === props.feedItem.userId)
+                        ?.user.displayName ?? 'Anonymous user'}
+                    </SurfaceText>{' '}
+                    completed a workout
+                  </SurfaceText>
+                </View>
               }
             />
           </Card.Content>

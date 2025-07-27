@@ -30,7 +30,7 @@ import { Button, Card, FAB, Icon, IconButton } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 
-function NoUpcomingSessions() {
+function PlanManager() {
   const { push } = useRouter();
 
   const activeProgramId = useAppSelector(
@@ -94,10 +94,11 @@ function ListUpcomingWorkouts({
   const { push } = useRouter();
   const dispatch = useDispatch();
   return (
-    <>
+    <View style={{ flex: 1, gap: spacing[2] }}>
       <View style={{ margin: spacing.pageHorizontalMargin }}>
         <Tips />
       </View>
+      <PlanManager />
       <CardList
         cardType="contained"
         items={upcoming}
@@ -152,7 +153,7 @@ function ListUpcomingWorkouts({
           );
         }}
       />
-    </>
+    </View>
   );
 }
 
@@ -267,9 +268,6 @@ export default function Index() {
       <Remote
         value={upcomingSessions}
         success={(upcoming) => {
-          if (!upcoming.length) {
-            return <NoUpcomingSessions />;
-          }
           return (
             <ListUpcomingWorkouts
               selectSession={selectSession}

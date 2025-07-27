@@ -20,6 +20,8 @@ import { addExportBackupEffects } from '@/store/settings/export-backup-effects';
 import { addExportPlaintextEffects } from '@/store/settings/export-plaintext-effects';
 import { addImportBackupEffects } from '@/store/settings/import-backup-effects';
 import { addRemoteBackupEffects } from '@/store/settings/remote-backup-effects';
+import Purchases, { LOG_LEVEL } from 'react-native-purchases';
+import { Platform } from 'react-native';
 
 export function applySettingsEffects() {
   addEffect(
@@ -83,6 +85,23 @@ export function applySettingsEffects() {
       dispatch(setFirstDayOfWeek(firstDayOfWeek));
       dispatch(setProToken(proToken));
 
+      // migrate pro token to a revenuecat
+
+      Purchases.setLogLevel(LOG_LEVEL.VERBOSE).catch(console.error);
+
+      if (Platform.OS === 'ios') {
+        Purchases.configure({
+          apiKey: process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY!,
+        });
+      } else if (Platform.OS === 'android') {
+        Purchases.configure({
+          apiKey: process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY!,
+        });
+      }
+      if (proToken && !proToken.startsWith('$RCAnonymousID')) {
+        const customerInfo = await Purchases.getCustomerInfo();
+        setProToken(customerInfo.originalAppUserId);
+      }
       dispatch(setIsHydrated(true));
       const end = performance.now();
       console.log(

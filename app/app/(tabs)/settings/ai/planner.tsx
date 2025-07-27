@@ -319,7 +319,6 @@ function ProPrompt() {
   );
 }
 
-const productIds = ['pro'];
 function ProPrice() {
   const [product, setProduct] = useState<PurchasesStoreProduct>();
 
@@ -342,6 +341,10 @@ function ProPrice() {
 }
 
 async function presentPaywall(): Promise<boolean> {
+  const customer = await Purchases.getCustomerInfo();
+  if (customer.entitlements.active['pro']) {
+    return true;
+  }
   // Present paywall for current offering:
   const paywallResult: PAYWALL_RESULT = await RevenueCatUI.presentPaywall();
 
