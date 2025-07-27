@@ -17,16 +17,13 @@ import { formatDate, getDateOnDay } from '@/utils/format-date';
 import { DayOfWeek } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
-import { Button, List } from 'react-native-paper';
+import { List } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 export default function AppConfiguration() {
   const { t } = useTranslate();
   const settings = useAppSelector((state: RootState) => state.settings);
   const dispatch = useDispatch();
-
-  // TODO
-  const resetTips = () => {};
 
   const daysOfWeekOptions: SelectButtonOption<DayOfWeek>[] = [
     {
@@ -113,9 +110,6 @@ export default function AppConfiguration() {
           value={settings.showTips}
           onValueChange={(value) => dispatch(setShowTips(value))}
         />
-        <Button mode="text" onPress={resetTips}>
-          <T keyName="ResetTips" />
-        </Button>
 
         <ThemeChooser
           seed={settings.colorSchemeSeed}

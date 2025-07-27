@@ -7,7 +7,6 @@ import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
 import SplitCardControl from '@/components/presentation/split-card-control';
 import AndroidNotificationAlert from '@/components/smart/android-notification-alert';
-import { Tips } from '@/components/smart/tips';
 import { spacing } from '@/hooks/useAppTheme';
 import { useMountEffect } from '@/hooks/useMountEffect';
 import { Session } from '@/models/session-models';
@@ -45,7 +44,7 @@ function PlanManager() {
         icon={'assignment'}
         onPress={() => push(`/settings/program-list`, { withAnchor: true })}
       >
-        <T keyName="Change plan" />
+        <T keyName="Choose plan" />
       </Button>
       <Button
         mode="contained-tonal"
@@ -81,13 +80,12 @@ function ListUpcomingWorkouts({
   const dispatch = useDispatch();
   return (
     <View style={{ flex: 1, gap: spacing[2] }}>
-      <View style={{ margin: spacing.pageHorizontalMargin }}>
-        <Tips />
-      </View>
       <PlanManager />
       {currentSession && (
         <>
-          <Text variant="titleSmall">{t('Current session')}</Text>
+          <Text style={{ marginTop: spacing[2] }} variant="titleSmall">
+            {t('Current session')}
+          </Text>
           <Card mode="contained">
             <Card.Content>
               <SessionCardContent session={currentSession} />
@@ -105,7 +103,9 @@ function ListUpcomingWorkouts({
         </>
       )}
       {!!upcoming.length && (
-        <Text variant="titleSmall">{t('UpcomingWorkouts')}</Text>
+        <Text style={{ marginTop: spacing[2] }} variant="titleSmall">
+          {t('UpcomingWorkouts')}
+        </Text>
       )}
       <CardList
         cardType="contained"
