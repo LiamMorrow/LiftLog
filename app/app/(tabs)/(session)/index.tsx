@@ -2,7 +2,6 @@ import CardList from '@/components/presentation/card-list';
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
-import ItemTitle from '@/components/presentation/item-title';
 import { Remote } from '@/components/presentation/remote';
 import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
@@ -26,7 +25,7 @@ import { T, useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Button, Card, FAB, IconButton } from 'react-native-paper';
+import { Button, Card, FAB, IconButton, Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -88,7 +87,7 @@ function ListUpcomingWorkouts({
       <PlanManager />
       {currentSession && (
         <>
-          <ItemTitle title="Current session" />
+          <Text variant="titleSmall">{t('Current session')}</Text>
           <Card mode="contained">
             <Card.Content>
               <SessionCardContent session={currentSession} />
@@ -105,7 +104,9 @@ function ListUpcomingWorkouts({
           </Card>
         </>
       )}
-      {!!upcoming.length && <ItemTitle title={t('UpcomingWorkouts')} />}
+      {!!upcoming.length && (
+        <Text variant="titleSmall">{t('UpcomingWorkouts')}</Text>
+      )}
       <CardList
         cardType="contained"
         items={upcoming}
