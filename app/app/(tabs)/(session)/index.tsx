@@ -8,7 +8,6 @@ import SessionSummaryTitle from '@/components/presentation/session-summary-title
 import SplitCardControl from '@/components/presentation/split-card-control';
 import AndroidNotificationAlert from '@/components/smart/android-notification-alert';
 import { spacing } from '@/hooks/useAppTheme';
-import { useMountEffect } from '@/hooks/useMountEffect';
 import { Session } from '@/models/session-models';
 import { RootState, useAppSelector, useAppSelectorWithArg } from '@/store';
 import {
@@ -165,7 +164,7 @@ function SessionCardContent({ session }: { session: Session }) {
 
 export default function Index() {
   const upcomingSessions = useAppSelector((s) => s.program.upcomingSessions);
-  const program = useAppSelector(selectActiveProgram);
+  // const program = useAppSelector(selectActiveProgram);
   const dispatch = useDispatch();
   const { t } = useTranslate();
   const { push } = useRouter();
@@ -180,13 +179,13 @@ export default function Index() {
   // const rootNavigationState = useRootNavigationState();
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   // const navigatorReady = rootNavigationState?.key != null;
-  const [hasRedirected, setHasRedirected] = useState(false);
-  const [hasMounted, setHasMounted] = useState(false);
+  // const [hasRedirected, setHasRedirected] = useState(false);
+  // const [hasMounted, setHasMounted] = useState(false);
   const [selectedSession, setSelectedSession] = useState<Session | undefined>();
 
-  useMountEffect(() => {
-    setHasMounted(true);
-  });
+  // useMountEffect(() => {
+  //   setHasMounted(true);
+  // });
   // useEffect(() => {
   //   if (!navigatorReady || !hasMounted) return;
   //   // On app open from cold if we have a current session loaded, show it automatically.

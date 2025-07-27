@@ -44,7 +44,7 @@ export function addExportBackupEffects() {
       const writer = stream.writable.getWriter();
       await writer.write(daoBytes);
       await writer.close();
-      const readable = stream.readable as ReadableStream<Uint8Array>;
+      const readable = stream.readable;
       const gzipped = await streamToUint8Array(readable);
 
       await fileExportService.exportBytes(

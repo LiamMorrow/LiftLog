@@ -1,5 +1,3 @@
-import { SurfaceText } from '@/components/presentation/surface-text';
-import { spacing } from '@/hooks/useAppTheme';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';

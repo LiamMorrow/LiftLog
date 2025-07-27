@@ -102,7 +102,7 @@ async function unGzipIfZipped(
     const writer = stream.writable.getWriter();
     await writer.write(bytes);
     await writer.close();
-    const readable = stream.readable as ReadableStream<Uint8Array>;
+    const readable = stream.readable;
     const gunzipped = await streamToUint8Array(readable);
     return gunzipped;
   } catch (e) {

@@ -140,7 +140,7 @@ export function addRemoteBackupEffects() {
         await writer.close();
 
         throwIfCancelled();
-        const readable = stream.readable as ReadableStream<Uint8Array>;
+        const readable = stream.readable;
         const compressedBytes = await streamToUint8Array(readable);
 
         throwIfCancelled();
