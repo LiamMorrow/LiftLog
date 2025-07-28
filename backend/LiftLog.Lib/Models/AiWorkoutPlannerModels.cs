@@ -47,11 +47,8 @@ public record AiWorkoutPlan(
 public record AiSessionAttributes(
     ImmutableListValue<string> AreasToWorkout,
     int Volume,
-    // TODO: Legacy name
-    [property: JsonPropertyName("exerciseToKilograms")] ImmutableDictionary<
-        string,
-        decimal
-    > ExerciseToWeight,
+    [property: JsonPropertyName("exerciseToKilograms")]
+        ImmutableDictionary<string, decimal> ExerciseToWeight,
     bool UseImperialUnits,
     string AdditionalInfo
 );
