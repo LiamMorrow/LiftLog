@@ -154,22 +154,21 @@ describe('Completing a session', () => {
       })
 
       it('can complete a workout and change the number of reps with it not adding progressive overload', () => {
-        cy.contains('Workout A').click()
-        cy.contains('Rest between').should('not.exist')
+        cy.contains('Start workout').click()
         updateWeight(0, 20)
         cy.getByTestId('repcount').first().click().should('contain.text', '5/5')
         cy.getByTestId('rest-timer').should('be.visible')
 
-        cy.get('.itemlist div').eq(0).should('contain.text', 'Squat')
-        cy.get('[data-cy=weight-display]').first().should('contain.text', '20kg')
+        cy.getByTestId('weighted-exercise-title').eq(0).should('contain.text', 'Squat')
+        cy.getByTestId('repcount-weight').first().should('contain.text', '20kg')
 
         // Update number of reps on the exercise
-        cy.get('[data-cy=more-exercise-btn]').first().click()
-        cy.get('[data-cy=exercise-edit-menu-button]').first().click()
+        cy.getByTestId('more-exercise-btn').first().click()
+        cy.getByTestId('exercise-edit-menu-button').first().click()
 
         // Update the number of reps to 6
-        cy.dialog().find('[data-cy=exercise-reps]').should('contain.text', '5').find('[data-cy=fixed-increment]').click()
-        cy.dialog().find('[data-cy=dialog-action]').click()
+        cy.dialog().findByTestId('exercise-reps').should('contain.text', '5').findByTestId('fixed-increment').click()
+        cy.dialog().findByTestId('dialog-action').click()
 
         // Complete all sets
         for (let i = 1; i <= 6; i++) {
@@ -179,20 +178,20 @@ describe('Completing a session', () => {
         cy.getByTestId('save-session-button').click()
 
         cy.getByTestId('session-summary-title').eq(0).should('contain.text', 'Workout B')
-        cy.getByTestId('session-summary-title').eq(1).should('contain.text', 'Workout A').click()
+        cy.contains('Start workout').click()
 
-        cy.get('[data-cy=weighted-exercise]').eq(0).should('contain.text', 'Squat')
+        cy.getByTestId('weighted-exercise').eq(0).should('contain.text', 'Squat')
         // Since the number of reps was increased, the weight should not have increased because it is a "different" exercise
-        cy.get('[data-cy=weight-display]').first().should('contain.text', '0kg')
+        cy.getByTestId('repcount-weight').first().should('contain.text', '0kg')
       })
 
       it('can add notes to an exercise and see them the next time they do that exercise', () => {
-        cy.contains('Workout A').click()
+        cy.contains('Start workout').click()
 
-        cy.get('[data-cy=more-exercise-btn]').first().click()
-        cy.get('[data-cy=exercise-notes-btn]').first().click()
-        cy.dialog().find('md-outlined-text-field').find('textarea',).first().click().type('I am NoteTaker, master of notes')
-        cy.dialog().find('[data-cy=notes-dialog-actions]').find('[dialog-action=save]').click()
+        cy.getByTestId('more-exercise-btn').first().click()
+        cy.getByTestId('exercise-notes-btn').first().click()
+        cy.dialog().find('textarea').first().click().type('I am NoteTaker, master of notes')
+        cy.dialog().findByTestId('save-notes').click()
         cy.getByTestId('repcount').first().click().should('contain.text', '5/5')
 
         cy.getByTestId('save-session-button').click()
@@ -200,20 +199,20 @@ describe('Completing a session', () => {
 
         cy.navigate('History')
 
-        cy.getByTestId('session-summary-title').first().should('contain.text', 'Workout A').click()
+        cy.getByTestId('history-list').findByTestId('session-summary-title').first().should('contain.text', 'Workout A').click()
 
-        cy.get('[data-cy=more-exercise-btn]').first().click()
-        cy.get('[data-cy=exercise-notes-btn]').first().click()
-        cy.dialog().find('md-outlined-text-field').find('textarea',)
+        cy.getByTestId('more-exercise-btn').first().click()
+        cy.getByTestId('exercise-notes-btn').first().click()
+        cy.dialog().find('textarea')
           .first()
           .should('have.value', 'I am NoteTaker, master of notes')
           .type('Replace notes but do not save')
-        cy.dialog().find('[data-cy=notes-dialog-actions]').find("[dialog-action=close]").click()
+        cy.dialog().findByTestId('cancel-notes').click()
 
         cy.navigate('Workout')
-        cy.contains('Workout A').click()
+        cy.contains('Start workout').click()
 
-        cy.get('[data-cy=exercise-previous-notes]').should('contain.text', 'I am NoteTaker, master of notes')
+        cy.getByTestId('exercise-previous-notes').should('contain.text', 'I am NoteTaker, master of notes')
       })
     })
   })

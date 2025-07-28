@@ -7,6 +7,7 @@ interface FixedIncrementerProps<T> {
   label: string;
   increment: () => void;
   decrement: () => void;
+  testID?: string;
 }
 
 export default function FixedIncrementer<T extends { toString(): string }>(
@@ -19,6 +20,7 @@ export default function FixedIncrementer<T extends { toString(): string }>(
         justifyContent: 'center',
         flexDirection: 'row',
       }}
+      testID={props.testID}
     >
       <View
         style={{
@@ -35,7 +37,11 @@ export default function FixedIncrementer<T extends { toString(): string }>(
           {props.label}
         </Text>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <IconButton icon={'remove'} onPress={props.decrement} />
+          <IconButton
+            icon={'remove'}
+            onPress={props.decrement}
+            testID="fixed-decrement"
+          />
           <Text
             style={{
               color: colors.primary,
@@ -46,7 +52,11 @@ export default function FixedIncrementer<T extends { toString(): string }>(
           >
             {props.value?.toString()}
           </Text>
-          <IconButton icon={'add'} onPress={props.increment} />
+          <IconButton
+            icon={'add'}
+            onPress={props.increment}
+            testID="fixed-increment"
+          />
         </View>
       </View>
     </View>

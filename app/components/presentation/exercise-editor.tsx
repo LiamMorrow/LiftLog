@@ -58,7 +58,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
     <View style={{ gap: spacing[2] }}>
       <TextInput
         label={t('Exercise')}
-        data-cy="exercise-name"
+        testID="exercise-name"
         style={{ marginBottom: spacing[2] }}
         value={exercise.name}
         onChangeText={(name) => updateExercise({ name })}
@@ -87,7 +87,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
               increment={incrementSets}
               decrement={decrementSets}
               value={exercise.sets}
-              data-cy="exercise-sets"
+              testID="exercise-sets"
             />
           </Card.Content>
         </Card>
@@ -106,7 +106,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
               increment={incrementReps}
               decrement={decrementReps}
               value={exercise.repsPerSet}
-              data-cy="exercise-reps"
+              testID="exercise-reps"
             />
           </Card.Content>
         </Card>
@@ -114,7 +114,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
 
       <TextInput
         label={t('PlanNotes')}
-        data-cy="exercise-notes"
+        testID="exercise-notes"
         style={{ marginBottom: spacing[2] }}
         value={exercise.notes}
         onChangeText={setExerciseNotes}
@@ -123,7 +123,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
 
       <TextInput
         label={t('ExternalLink')}
-        data-cy="exercise-link"
+        testID="exercise-link"
         style={{ marginBottom: spacing[2] }}
         placeholder="https://"
         value={exercise.link}
@@ -134,7 +134,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
         <EditableIncrementer
           increment={new BigNumber('0.1')}
           label={t('ProgressiveOverload')}
-          data-cy="exercist-auto-increase"
+          testID="exercist-auto-increase"
           suffix={weightSuffix}
           value={exercise.weightIncreaseOnSuccess}
           onChange={setExerciseWeightIncrease}
@@ -145,7 +145,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
             headline={t('SupersetNextExercise')}
             value={exercise.supersetWithNext}
             supportingText=""
-            data-cy="exercise-superset"
+            testID="exercise-superset"
             onValueChange={(supersetWithNext) =>
               updateExercise({ supersetWithNext })
             }

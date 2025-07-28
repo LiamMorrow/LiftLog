@@ -8,6 +8,7 @@ interface ListSwitchProps {
   value: boolean;
   focus?: boolean;
   onValueChange: (value: boolean) => void;
+  testID?: string;
 }
 // Workaround - mount the switch after initial render. See: https://github.com/react-navigation/react-navigation/issues/8658#issuecomment-898486182
 function useDelay() {
@@ -26,6 +27,7 @@ export default function ListSwitch(props: ListSwitchProps) {
 
   return (
     <List.Item
+      testID={props.testID!}
       title={props.headline}
       description={props.supportingText}
       onPress={() => props.onValueChange(!props.value)}

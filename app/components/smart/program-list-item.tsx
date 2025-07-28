@@ -41,7 +41,7 @@ function ItemMenu({ id }: ItemProps) {
       onDismiss={() => setMenuVisible(false)}
       anchor={
         <IconButton
-          data-cy="more-program-btn"
+          testID="more-program-btn"
           onPress={() => setMenuVisible(true)}
           icon={'moreHoriz'}
         />

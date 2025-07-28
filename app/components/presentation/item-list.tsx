@@ -23,7 +23,7 @@ export default function ItemList<T>(
         { paddingVertical: (verticalPadding ?? true) ? spacing[2] : 0 },
         rest.style,
       ]}
-      data-cy="item-list"
+      testID="item-list"
     >
       {items.map((item, index) => (
         <Fragment key={index}>

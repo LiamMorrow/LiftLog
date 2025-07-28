@@ -76,7 +76,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
       {props.showPreviousButton ? (
         <Tooltip title={t('Previously completed')}>
           <IconButton
-            data-cy="prev-exercise-btn"
+            testID="prev-exercise-btn"
             icon={'history'}
             onPress={showPrevious}
           />
@@ -88,7 +88,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
         onDismiss={() => setMenuVisible(false)}
         anchor={
           <IconButton
-            data-cy="more-exercise-btn"
+            testID="more-exercise-btn"
             onPress={() => setMenuVisible(true)}
             icon={'moreHoriz'}
           />
@@ -99,11 +99,12 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             props.onEditExercise();
             setMenuVisible(false);
           }}
+          testID="exercise-edit-menu-button"
           leadingIcon={'edit'}
           title={t('Edit')}
         />
         <Menu.Item
-          data-cy="exercise-notes-btn"
+          testID="exercise-notes-btn"
           title={t('Notes')}
           leadingIcon={'notes'}
           onPress={() => {
@@ -133,7 +134,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
         paddingHorizontal: spacing.pageHorizontalMargin,
         width: '100%',
       }}
-      data-cy="weighted-exercise"
+      testID="weighted-exercise"
     >
       <View>
         <View
@@ -207,10 +208,14 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             />
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={() => setNotesDialogOpen(false)}>
+            <Button
+              testID="cancel-notes"
+              onPress={() => setNotesDialogOpen(false)}
+            >
               <T keyName="Cancel" />
             </Button>
             <Button
+              testID="save-notes"
               onPress={() => {
                 updateNotesForExercise(editorNotes);
                 setNotesDialogOpen(false);

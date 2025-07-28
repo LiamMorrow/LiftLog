@@ -29,7 +29,7 @@ export default function WeightDisplay(props: WeightDisplayProps) {
   return (
     <>
       <Button
-        data-cy="weight-display"
+        testID="weight-display"
         mode="text"
         onPress={() => setDialogOpen(true)}
         labelStyle={{ ...font['text-lg'] }}

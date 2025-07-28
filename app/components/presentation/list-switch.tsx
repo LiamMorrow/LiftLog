@@ -8,12 +8,14 @@ interface ListSwitchProps {
   value: boolean;
   focus?: boolean;
   onValueChange: (value: boolean) => void;
+  testID?: string;
 }
 
 export default function ListSwitch(props: ListSwitchProps) {
   const { colors } = useAppTheme();
   return (
     <List.Item
+      testID={props.testID!}
       title={props.headline}
       style={{
         backgroundColor: props.focus ? colors.tertiary + '33' : undefined!,

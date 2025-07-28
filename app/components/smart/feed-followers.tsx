@@ -115,7 +115,7 @@ function FeedFollowersItem(props: { user: FeedUser; userId: string }) {
         }
         right={() => (
           <IconButton
-            data-cy="following-more-btn"
+            testID="following-more-btn"
             icon={'personRemove'}
             onPress={() => {
               setConfirmRemoveVisible(true);

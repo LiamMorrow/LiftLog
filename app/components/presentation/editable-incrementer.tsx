@@ -9,6 +9,7 @@ interface EditableIncrementerProps {
   value: BigNumber;
   suffix: string;
   onChange: (val: BigNumber) => void;
+  testID?: string;
 }
 
 export default function EditableIncrementer(props: EditableIncrementerProps) {
@@ -36,6 +37,7 @@ export default function EditableIncrementer(props: EditableIncrementerProps) {
 
   return (
     <List.Item
+      testID={props.testID!}
       title={label}
       titleNumberOfLines={2}
       right={() => (
@@ -54,7 +56,7 @@ export default function EditableIncrementer(props: EditableIncrementerProps) {
               }}
             />
             <TextInput
-              data-cy="editable-field"
+              testID="editable-field"
               value={text}
               inputMode="decimal"
               onChangeText={handleTextChange}

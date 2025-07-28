@@ -57,7 +57,7 @@ function FeedFollowingItem(props: { user: FeedUser; userId: string }) {
           onDismiss={() => setMenuVisible(false)}
           anchor={
             <IconButton
-              data-cy="following-more-btn"
+              testID="following-more-btn"
               onPress={() => setMenuVisible(true)}
               icon={'moreHoriz'}
             />
