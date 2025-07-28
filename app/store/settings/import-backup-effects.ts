@@ -23,12 +23,17 @@ export function addImportBackupEffects() {
   addEffect(
     importData,
     async (_, { dispatch, extra: { filePickerService, logger } }) => {
+      console.log('FILE LOOKING ');
       const file = await filePickerService.pickFile();
       if (!file) {
+        console.log('FILE not here');
         return;
       }
+      console.log('FILE HERE ');
       const gunzipped = await unGzipIfZipped(file.bytes, logger);
+      console.log('FILE GUNZIPPED ');
       const parsedProto = tryParseProto(gunzipped, logger);
+      console.log('FILE  here', gunzipped, parsedProto);
       if (!parsedProto) {
         // We've dropped support for v1 for now. If people complain - we can bring it back
         // This is also a point we could try to import a csv, it's requested fairly often
@@ -98,12 +103,20 @@ async function unGzipIfZipped(
   logger: Logger,
 ): Promise<Uint8Array> {
   try {
+    console.log('Starting decompression stream');
     const stream = new DecompressionStream('gzip');
+
     const writer = stream.writable.getWriter();
-    await writer.write(bytes);
-    await writer.close();
     const readable = stream.readable;
-    const gunzipped = await streamToUint8Array(readable);
+    // Start reading from the stream immediately
+    const decompressPromise = streamToUint8Array(readable);
+    const chunkSize = 8192; // 8KB chunks
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      const chunk = bytes.slice(i, i + chunkSize);
+      await writer.write(chunk);
+    }
+    await writer.close();
+    const gunzipped = await decompressPromise;
     return gunzipped;
   } catch (e) {
     logger.warn('Could not unzip bytes', e);

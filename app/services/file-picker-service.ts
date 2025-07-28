@@ -13,8 +13,13 @@ export class FilePickerService {
       return undefined;
     }
     const pickedItem = picked.assets[0];
-    // TODO web
-    console.log(picked.output);
-    return { name: pickedItem.name, bytes: new Uint8Array() };
+    const bytes = await pickedItem.file?.arrayBuffer();
+    if (!bytes) {
+      return undefined;
+    }
+    return {
+      name: pickedItem.name,
+      bytes: new Uint8Array(bytes),
+    };
   }
 }

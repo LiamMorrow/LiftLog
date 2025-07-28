@@ -175,6 +175,7 @@ export default function SessionComponent(props: {
     <Card
       style={{ marginHorizontal: spacing.pageHorizontalMargin }}
       mode="contained"
+      testID="bodyweight-card"
     >
       <Card.Content
         style={{

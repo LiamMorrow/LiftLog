@@ -23,6 +23,7 @@ export default function ExerciseBlueprintSummary({
 }: ExerciseBlueprintSummaryProps) {
   return (
     <TouchableRipple
+      testID="exercise-blueprint-summary"
       onPress={onEdit}
       style={{
         paddingHorizontal: spacing.pageHorizontalMargin,

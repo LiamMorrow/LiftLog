@@ -132,7 +132,7 @@ export default function WeightDialog(props: WeightDialogProps) {
           </View>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={props.onClose}>
+          <Button onPress={props.onClose} testID="close">
             <T keyName="Close" />
           </Button>
           <Button onPress={onSaveClick} testID="save">

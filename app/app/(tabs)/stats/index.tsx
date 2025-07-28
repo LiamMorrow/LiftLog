@@ -128,6 +128,7 @@ function ListHeader({
           }}
         />
         <SelectButton
+          testID="stats-time-selector"
           value={time}
           options={timeOptions}
           onChange={(x) => {

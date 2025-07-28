@@ -32,6 +32,7 @@ export default function BodyweightStatGraphCard(props: {
     <View
       onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
       style={{ gap: spacing[2] }}
+      testID="bodyweight-stat-card"
     >
       <SurfaceText font="text-2xl" style={{ textAlign: 'center' }}>
         {t('Bodyweight')}

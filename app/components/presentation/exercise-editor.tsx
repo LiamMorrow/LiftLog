@@ -134,7 +134,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
         <EditableIncrementer
           increment={new BigNumber('0.1')}
           label={t('ProgressiveOverload')}
-          testID="exercist-auto-increase"
+          testID="exercise-auto-increase"
           suffix={weightSuffix}
           value={exercise.weightIncreaseOnSuccess}
           onChange={setExerciseWeightIncrease}
