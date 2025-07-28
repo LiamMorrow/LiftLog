@@ -77,7 +77,7 @@ function ListUpcomingWorkouts({
   const { push } = useRouter();
   const dispatch = useDispatch();
   return (
-    <View style={{ flex: 1, gap: spacing[2] }}>
+    <View style={{ flex: 1, gap: spacing[2], paddingTop: spacing[4] }}>
       <PlanManager />
       {currentSession?.isStarted && (
         <>

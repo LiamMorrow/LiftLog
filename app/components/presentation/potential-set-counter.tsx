@@ -206,6 +206,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
             }}
           >
             <SelectButton
+              testID="repcount-apply-weight-to"
               value={applyTo}
               onChange={setApplyTo}
               options={applyToSelections}

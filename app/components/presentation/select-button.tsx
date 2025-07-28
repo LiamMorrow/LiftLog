@@ -11,10 +11,11 @@ interface SelectButtonProps<T> {
   value: T;
   options: SelectButtonOption<T>[];
   onChange: (value: T) => void;
+  testID?: string;
 }
 export default function SelectButton<
   T extends number | string | Period | undefined | DayOfWeek,
->({ value, options, onChange }: SelectButtonProps<T>) {
+>({ value, options, onChange, testID }: SelectButtonProps<T>) {
   const valueLabel = options.find((x) => isEqual(x.value, value))?.label;
   const [open, setOpen] = useState(false);
   return (
@@ -23,6 +24,7 @@ export default function SelectButton<
       onDismiss={() => setOpen(false)}
       anchor={
         <Button
+          testID={testID!}
           icon={open ? 'arrowDropUp' : 'arrowDropDown'}
           onPress={() => setOpen(true)}
           contentStyle={{ flexDirection: 'row-reverse' }}

@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+/// <reference types="../support/index.d.ts" />
 
 describe('Completing a session', () => {
   beforeEach(() => {
@@ -16,7 +17,6 @@ describe('Completing a session', () => {
       cy.dialog().find('input').first().click().type('Squat')
 
       cy.dialog().find("[data-testid=dialog-action]").click()
-
 
       cy.getByTestId('repcount').first().click()
       cy.getByTestId('rest-timer').should('be.visible')
@@ -47,27 +47,25 @@ describe('Completing a session', () => {
       cy.contains('Show tips').click()
       cy.navigate('Settings')
       cy.contains('Manage plans').click()
-      cy.contains("Starting Strength").parent('md-list-item').find('[data-cy=use-plan-btn]').click()
+      cy.contains("Starting Strength").click()
       cy.navigate('Workout')
     })
 
 
     describe('and selects a workout', () => {
       it('can complete a workout and update its date', () => {
-        cy.contains('Workout A').click()
-        cy.contains('Rest between').should('not.exist')
+        cy.contains('Start workout').click()
         updateWeight(0, 20)
-        updateWeight(1, 20)
-        updateWeight(2, 20)
         cy.getByTestId('repcount').first().click()
-        cy.get('.snackbar').contains('Rest between').should('be.visible')
+        cy.getByTestId('rest-timer').should('be.visible')
         cy.getByTestId('repcount').first().click().should('contain.text', '4/5')
 
         for (let i = 1; i <= 6; i++) {
           cy.getByTestId('repcount').eq(i).click()
         }
 
-        cy.get('.snackbar').should('be.visible').should('contain.text', 'This session').should('contain.text', '680')
+        // TODO session summaries
+        // cy.get('.snackbar').should('be.visible').should('contain.text', 'This session').should('contain.text', '680')
 
         cy.getByTestId('save-session-button').click()
 
@@ -75,67 +73,84 @@ describe('Completing a session', () => {
 
         cy.navigate('History')
 
-        cy.getByTestId('session-summary-title').should('contain.text', 'Workout A').click()
+        cy.getByTestId('history-list').findByTestId('session-summary-title').should('contain.text', 'Workout A').click()
 
-        cy.get('md-filled-text-field[type=date]').get('input',).first().click().type('2023-05-22')
+        cy.getByTestId('session-date-input').first().click().clear().type('22052023')
 
         cy.getByTestId('save-session-button').click()
 
         cy.recursionLoop(() => {
-          if (Cypress.$('[data-cy=calendar-month]').text().includes('May 2023')) {
+          if (Cypress.$('[data-testid=calendar-month]').text().includes('May 2023')) {
             return false
           }
-          cy.get('[data-cy=calendar-nav-previous-month]').first().click()
+          cy.getByTestId('calendar-nav-previous-month').first().click()
         }, 200)
 
-        cy.getByTestId('session-summary-title').should('contain.text', 'Workout A').should('contain.text', '22 May 2023')
+        cy.getByTestId('history-list').findByTestId('session-summary-title').should('contain.text', 'Workout A').should('contain.text', '22 May 2023')
       })
 
       it('can complete a workout while switching to per set weights with it progressing properly', () => {
-        cy.contains('Workout A').click()
-        cy.contains('Rest between').should('not.exist')
+        cy.contains('Start workout').click()
         updateWeight(0, 20)
-        updateWeight(1, 20)
-        updateWeight(2, 20)
         cy.getByTestId('repcount').first().click().should('contain.text', '5/5')
-        cy.get('.snackbar').contains('Rest between').should('be.visible')
+        cy.getByTestId('rest-timer').should('be.visible')
 
-        cy.get('.itemlist div').eq(0).should('contain.text', 'Squat')
-        cy.get('[data-cy=weight-display]').first().should('contain.text', '20kg')
-        cy.get('[data-cy=per-rep-weight-btn]').first().click()
-
-        // Update top level weight - which should update all sets which aren't completed and have the same weight (i.e. the last set)
-        cy.get('[data-cy=weight-display]').first().should('not.be.visible')
-
+        cy.getByTestId('weighted-exercise-title').eq(0).should('contain.text', 'Squat')
+        cy.getByTestId('repcount-weight').first().should('contain.text', '20kg')
 
         // Update the weight of the second set to be lower than the top level weight
-        cy.get('[data-cy=set-weight-button]').eq(1).click()
-        cy.dialog().find('[data-cy=decrement-weight]:visible').click()
-        cy.dialog().find('[slot="actions"]:visible').find('[dialog-action=save]').click()
-        cy.get('[data-cy=set-weight-button]').eq(1).should('contain.text', '17.5kg')
-        cy.get('[data-cy=set-weight-button]').eq(2).should('contain.text', '20kg')
+        // Applying to uncompleted sets
+        cy.getByTestId('repcount-weight').eq(1).click()
+        cy.dialog().findByTestId('decrement-weight').click()
+        cy.dialog().findByTestId('save').click()
+        cy.getByTestId('modal').should('not.exist')
+
+        cy.getByTestId('repcount-weight').eq(0).should('contain.text', '20kg')
+        cy.getByTestId('repcount-weight').eq(1).should('contain.text', '17.5kg')
+        cy.getByTestId('repcount-weight').eq(2).should('contain.text', '17.5kg')
+
+        // Apply to this set
+        cy.getByTestId('repcount-weight').eq(2).click()
+        cy.dialog().findByTestId('decrement-weight').click()
+        cy.dialog().findByTestId('repcount-apply-weight-to').click()
+        cy.contains('Apply to this set').click({ force: true })
+        cy.dialog().findByTestId('save').click()
+        cy.getByTestId('modal').should('not.exist')
+
+        cy.getByTestId('repcount-weight').eq(0).should('contain.text', '20kg')
+        cy.getByTestId('repcount-weight').eq(1).should('contain.text', '17.5kg')
+        cy.getByTestId('repcount-weight').eq(2).should('contain.text', '15kg')
 
 
-        cy.get('[data-cy=set-weight-button]').eq(0).should('contain.text', '20kg')
-        cy.get('[data-cy=set-weight-button]').eq(1).should('contain.text', '17.5kg')
-        cy.get('[data-cy=set-weight-button]').eq(2).should('contain.text', '20kg')
+        // Apply to all sets
+        cy.getByTestId('repcount-weight').eq(2).click()
+        cy.dialog().findByTestId('decrement-weight').click()
+        cy.dialog().findByTestId('repcount-apply-weight-to').click()
+        cy.contains('Apply to all sets').click({ force: true })
+        cy.dialog().findByTestId('save').click()
+        cy.getByTestId('modal').should('not.exist')
+
+        cy.getByTestId('repcount-weight').eq(0).should('contain.text', '12.5kg')
+        cy.getByTestId('repcount-weight').eq(1).should('contain.text', '12.5kg')
+        cy.getByTestId('repcount-weight').eq(2).should('contain.text', '12.5kg')
 
         // Complete all sets
         for (let i = 1; i <= 6; i++) {
           cy.getByTestId('repcount').eq(i).click()
         }
 
-        cy.get('.snackbar').should('be.visible').should('contain.text', 'This session').should('contain.text', '687.5')
+        // TODO session summary
+        // cy.get('.snackbar').should('be.visible').should('contain.text', 'This session').should('contain.text', '687.5')
         cy.getByTestId('save-session-button').click()
 
         cy.getByTestId('session-summary-title').eq(0).should('contain.text', 'Workout B')
-        cy.getByTestId('session-summary-title').eq(1).should('contain.text', 'Workout A').click()
+        cy.contains('Start workout').click()
 
-        cy.get('[data-cy=weighted-exercise]').eq(0).should('contain.text', 'Squat')
+        cy.getByTestId('weighted-exercise-title').eq(0).should('contain.text', 'Squat')
         // Since all sets were completed - with at least one of the sets having equal or higher weight than the top level, the weight should have increased
-        cy.get('[data-cy=set-weight-button]').eq(0).should('contain.text', '22.5kg')
-        cy.get('[data-cy=set-weight-button]').eq(1).should('contain.text', '20kg')
-        cy.get('[data-cy=set-weight-button]').eq(2).should('contain.text', '22.5kg')
+        cy.getByTestId('repcount-weight').eq(0).should('contain.text', '15kg')
+        cy.getByTestId('repcount-weight').eq(1).should('contain.text', '15kg')
+        cy.getByTestId('repcount-weight').eq(2).should('contain.text', '15kg')
       })
 
       it('can complete a workout and change the number of reps with it not adding progressive overload', () => {
@@ -143,7 +158,7 @@ describe('Completing a session', () => {
         cy.contains('Rest between').should('not.exist')
         updateWeight(0, 20)
         cy.getByTestId('repcount').first().click().should('contain.text', '5/5')
-        cy.get('.snackbar').contains('Rest between').should('be.visible')
+        cy.getByTestId('rest-timer').should('be.visible')
 
         cy.get('.itemlist div').eq(0).should('contain.text', 'Squat')
         cy.get('[data-cy=weight-display]').first().should('contain.text', '20kg')
@@ -206,7 +221,9 @@ describe('Completing a session', () => {
 
 
 function updateWeight(index, amount) {
-  cy.get('[data-cy=weight-display]').eq(index).click()
-  cy.dialog().find('[data-cy=weight-input]:visible').find('input',).click().type(amount.toString())
-  cy.dialog().find('[slot="actions"]:visible').find('[dialog-action=save]').click()
+
+  cy.getByTestId('repcount-weight').eq(index).click()
+
+  cy.dialog().find('[data-testid=weight-input]:visible').click().type(amount.toString())
+  cy.dialog().findByTestId("save").click()
 }

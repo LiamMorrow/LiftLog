@@ -77,7 +77,7 @@ export default function HistoryCalendarCard({
     <>
       <View style={{ width: oneSeventh, marginVertical: spacing[2] }}>
         <IconButton
-          data-cy="calendar-nav-previous-month"
+          testID="calendar-nav-previous-month"
           icon={'chevronLeft'}
           onPress={previousMonth}
         />
@@ -90,7 +90,7 @@ export default function HistoryCalendarCard({
           alignItems: 'center',
         }}
       >
-        <SurfaceText data-cy="calendar-month">
+        <SurfaceText testID="calendar-month">
           {formatDate(firstDayOfMonth, {
             month: 'long',
             year:
@@ -103,7 +103,7 @@ export default function HistoryCalendarCard({
 
       <View style={{ width: oneSeventh, marginVertical: spacing[2] }}>
         <IconButton
-          data-cy="calendar-nav-next-month"
+          testID="calendar-nav-next-month"
           icon={'chevronRight'}
           onPress={nextMonth}
           disabled={disableNextMonth}

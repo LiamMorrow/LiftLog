@@ -144,6 +144,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
           }}
         >
           <ItemTitle
+            testID="weighted-exercise-title"
             style={{ marginVertical: spacing[2] }}
             title={recordedExercise.blueprint.name}
           />

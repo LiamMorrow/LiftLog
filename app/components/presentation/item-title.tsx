@@ -4,9 +4,10 @@ import { useAppTheme, font } from '@/hooks/useAppTheme';
 interface ItemTitleProps {
   title: string;
   style?: TextStyle;
+  testID?: string;
 }
 
-export default function ItemTitle({ title, style }: ItemTitleProps) {
+export default function ItemTitle({ title, style, testID }: ItemTitleProps) {
   const { colors } = useAppTheme();
 
   return (
@@ -22,6 +23,7 @@ export default function ItemTitle({ title, style }: ItemTitleProps) {
         },
         style,
       ]}
+      testID={testID}
     >
       {title}
     </Text>

@@ -93,7 +93,7 @@ export default function WeightDialog(props: WeightDialogProps) {
         <Dialog.Content>
           <View style={{ gap: spacing[2] }}>
             <TextInput
-              data-cy="weight-input"
+              testID="weight-input"
               label={props.label ?? <T keyName="Weight" />}
               right={<TextInput.Affix text={weightSuffix} />}
               selectTextOnFocus

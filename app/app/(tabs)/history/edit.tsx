@@ -22,6 +22,7 @@ export default function HistoryEditPage() {
   const { dismissTo } = useRouter();
 
   const save = () => {
+    console.log('SAVE');
     dispatch(persistCurrentSession('historySession'));
     if (session) {
       dispatch(addUnpublishedSessionId(session.id));
@@ -55,6 +56,7 @@ export default function HistoryEditPage() {
         }}
       >
         <DatePickerInput
+          testID="session-date-input"
           locale="default"
           inputMode="start"
           onChange={(e) => {
