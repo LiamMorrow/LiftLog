@@ -116,7 +116,9 @@ function ImportFeedDialog({ open, setOpen }: DialogProps) {
         />
       }
       onOk={importFeedData}
+      okText={t('Import')}
       onCancel={() => setOpen(false)}
+      cancelText={t("Don't import feed")}
       open={open}
     />
   );

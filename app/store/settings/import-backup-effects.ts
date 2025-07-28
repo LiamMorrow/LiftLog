@@ -18,22 +18,24 @@ import { upsertStoredSessions } from '@/store/stored-sessions';
 import { streamToUint8Array } from '@/utils/stream';
 import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
+import { sleep } from '@/utils/sleep';
 
 export function addImportBackupEffects() {
   addEffect(
     importData,
-    async (_, { dispatch, extra: { filePickerService, logger } }) => {
-      console.log('FILE LOOKING ');
+    async (_, { dispatch, extra: { filePickerService, logger, tolgee } }) => {
       const file = await filePickerService.pickFile();
       if (!file) {
-        console.log('FILE not here');
         return;
       }
-      console.log('FILE HERE ');
+      dispatch(
+        showSnackbar({
+          text: tolgee.t('Beginning restore'),
+        }),
+      );
+      await sleep(200);
       const gunzipped = await unGzipIfZipped(file.bytes, logger);
-      console.log('FILE GUNZIPPED ');
       const parsedProto = tryParseProto(gunzipped, logger);
-      console.log('FILE  here', gunzipped, parsedProto);
       if (!parsedProto) {
         // We've dropped support for v1 for now. If people complain - we can bring it back
         // This is also a point we could try to import a csv, it's requested fairly often
@@ -48,42 +50,50 @@ export function addImportBackupEffects() {
     },
   );
 
-  addEffect(importDataDao, async ({ payload: { dao } }, { dispatch }) => {
-    const sessions = dao.sessions.map(fromSessionDao);
-    dispatch(upsertStoredSessions(sessions));
-    const programs = Object.fromEntries(
-      Object.entries(dao.savedPrograms).map(
-        ([id, program]) => [id, fromProgramBlueprintDao(program)] as const,
-      ),
-    );
-    dispatch(upsertSavedPlans(programs));
-    // Will be null when an old export which did not have an active program is imported
-    // In this case, it will have an unnamed program, which will be set as the active program
-    if (!dao.activeProgramId?.value) {
-      const newId = uuid();
-      dispatch(
-        createSavedPlan({
-          name: 'My Program',
-          programId: newId,
-          time: LocalDate.now(),
-        }),
+  addEffect(
+    importDataDao,
+    async ({ payload: { dao } }, { dispatch, extra: { tolgee } }) => {
+      const sessions = dao.sessions.map(fromSessionDao);
+      dispatch(upsertStoredSessions(sessions));
+      const programs = Object.fromEntries(
+        Object.entries(dao.savedPrograms).map(
+          ([id, program]) => [id, fromProgramBlueprintDao(program)] as const,
+        ),
       );
-      dispatch(
-        setProgramSessions({
-          programId: newId,
-          sessionBlueprints: dao.program.map(fromSessionBlueprintDao),
-        }),
-      );
-      dispatch(setActivePlan({ programId: newId }));
-    } else {
-      if (dao.activeProgramId.value in programs) {
-        dispatch(setActivePlan({ programId: dao.activeProgramId.value }));
+      dispatch(upsertSavedPlans(programs));
+      // Will be null when an old export which did not have an active program is imported
+      // In this case, it will have an unnamed program, which will be set as the active program
+      if (!dao.activeProgramId?.value) {
+        const newId = uuid();
+        dispatch(
+          createSavedPlan({
+            name: 'My Program',
+            programId: newId,
+            time: LocalDate.now(),
+          }),
+        );
+        dispatch(
+          setProgramSessions({
+            programId: newId,
+            sessionBlueprints: dao.program.map(fromSessionBlueprintDao),
+          }),
+        );
+        dispatch(setActivePlan({ programId: newId }));
+      } else {
+        if (dao.activeProgramId.value in programs) {
+          dispatch(setActivePlan({ programId: dao.activeProgramId.value }));
+        }
       }
-    }
-    if (dao.feedState) {
-      dispatch(beginFeedImport(dao.feedState));
-    }
-  });
+      dispatch(
+        showSnackbar({
+          text: tolgee.t('Restore complete!'),
+        }),
+      );
+      if (dao.feedState) {
+        dispatch(beginFeedImport(dao.feedState));
+      }
+    },
+  );
 }
 
 function tryParseProto(
@@ -103,11 +113,11 @@ async function unGzipIfZipped(
   logger: Logger,
 ): Promise<Uint8Array> {
   try {
-    console.log('Starting decompression stream');
     const stream = new DecompressionStream('gzip');
 
     const writer = stream.writable.getWriter();
     const readable = stream.readable;
+
     // Start reading from the stream immediately
     const decompressPromise = streamToUint8Array(readable);
     const chunkSize = 8192; // 8KB chunks

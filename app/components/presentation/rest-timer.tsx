@@ -8,9 +8,13 @@ import Animated, {
   useSharedValue,
   useAnimatedProps,
   withTiming,
+  useAnimatedStyle,
+  withRepeat,
+  Easing,
 } from 'react-native-reanimated';
 import { View, ViewStyle } from 'react-native';
 import { SurfaceText } from '@/components/presentation/surface-text';
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 
 interface RestTimerProps {
   rest: Rest;
@@ -27,7 +31,10 @@ export default function RestTimer({
 }: RestTimerProps) {
   const { colors } = useAppTheme();
   const isSameMinMaxRest = rest.minRest.equals(rest.maxRest);
-  // Removed unused firstProgressBarWidthPercentage
+  const [jiggled, setJiggled] = useState(false);
+  useEffect(() => {
+    setJiggled(false);
+  }, [startTime]);
 
   // Callback to get all timer-related values
   const getTimerState = useCallback(() => {
@@ -61,11 +68,38 @@ export default function RestTimer({
   }, [startTime, rest, failed, isSameMinMaxRest]);
 
   const [timerState, setTimerState] = useState(getTimerState());
+  const rotation = useSharedValue(0);
 
-  // Reanimated shared values for smooth progress
-  const primaryOffset = useSharedValue(0);
-  const orangeOffset = useSharedValue(0);
+  const amplitude = 0.1;
+  const animatedStyle = useAnimatedStyle(() => {
+    const angle = amplitude * Math.sin(rotation.value);
+    return {
+      transform: [{ rotateZ: `${angle}rad` }],
+    };
+  });
 
+  // Set this once, then rotate it with sin
+  const duration = 100;
+  const triggerJiggle = useCallback(() => {
+    if (jiggled) {
+      return;
+    }
+    impactAsync(ImpactFeedbackStyle.Heavy).catch(console.log);
+    rotation.set(
+      withRepeat(
+        withTiming(2 * Math.PI, {
+          duration,
+          easing: Easing.linear,
+        }),
+        3,
+        false,
+        () => {
+          rotation.set(0); // Reset at end
+        },
+      ),
+    );
+    setJiggled(true);
+  }, [rotation, jiggled]);
   // Animated props for SVG paths
   const pillHeight = spacing[14];
   const pillWidth = pillHeight * 2.2;
@@ -78,23 +112,15 @@ export default function RestTimer({
     const timer = setInterval(() => {
       const state = getTimerState();
       setTimerState(state);
-      // Animate progress bars
-      primaryOffset.set(
-        withTiming(pillPerimeter * (1 - state.firstProgressBarProgress), {
-          duration: 200,
-        }),
-      );
-      orangeOffset.set(
-        withTiming(pillPerimeter * (1 - state.secondProgressBarProgress), {
-          duration: 200,
-        }),
-      );
+      if (state.firstProgressBarProgress === 1) {
+        triggerJiggle();
+      }
     }, 200);
     return () => clearInterval(timer);
-  }, [getTimerState, pillPerimeter, primaryOffset, orangeOffset]);
+  }, [getTimerState, pillPerimeter, triggerJiggle]);
 
   return (
-    <View
+    <Animated.View
       testID="rest-timer"
       style={[
         {
@@ -108,6 +134,7 @@ export default function RestTimer({
           justifyContent: 'center',
         },
         style,
+        animatedStyle,
       ]}
     >
       {/* Circular progress bar wrapping the border */}
@@ -154,7 +181,7 @@ export default function RestTimer({
       >
         {timerState.timeSinceStart}
       </SurfaceText>
-    </View>
+    </Animated.View>
   );
 }
 
