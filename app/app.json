@@ -10,11 +10,11 @@
       "output": "single"
     },
     "splash": {
-      "backgroundColor": "#E0EDDB",
+      "backgroundColor": "#fcfdf6",
       "image": "./assets/splash.png",
       "resizeMode": "contain"
     },
-    "backgroundColor": "#E0EDDB",
+    "backgroundColor": "#fcfdf6",
     "primaryColor": "#046F03",
     "plugins": [
       "expo-router",
@@ -41,10 +41,24 @@
     "android": {
       "package": "com.limajuice.liftlog",
       "edgeToEdgeEnabled": true,
-      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"]
+      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "app.liftlog.online"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "ios": {
       "bundleIdentifier": "com.limajuice.liftlog",
+      "associatedDomains": ["applinks:app.liftlog.online"],
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": true
       },

@@ -94,7 +94,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         if (project.hasProperty('BUILD_NUMBER')) {
-            versionCode project.property('BUILD_NUMBER').toInteger()
+            versionCode 1
             versionName project.property('DISPLAY_VERSION')
         } else {
             versionCode 1
