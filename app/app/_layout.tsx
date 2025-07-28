@@ -12,6 +12,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import '@/utils/date-locale';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import * as Sentry from '@sentry/react-native';
+import { captureConsoleIntegration } from '@sentry/core';
 
 Sentry.init({
   dsn: 'https://86576716425e1558b5e8622ba65d4544@o4505937515249664.ingest.us.sentry.io/4509717493383168',
@@ -19,7 +20,9 @@ Sentry.init({
   // Adds more context data to events (IP address, cookies, user, etc.)
   // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
   sendDefaultPii: true,
-  integrations: [Sentry.feedbackIntegration()],
+  integrations: [
+    captureConsoleIntegration({ levels: ['error'], handled: true }),
+  ],
 
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
   // spotlight: __DEV__,
