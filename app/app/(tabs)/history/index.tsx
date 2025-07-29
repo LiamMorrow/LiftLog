@@ -14,7 +14,11 @@ import {
   selectCurrentSession,
   setCurrentSession,
 } from '@/store/current-session';
-import { selectSessions, selectSessionsInMonth } from '@/store/stored-sessions';
+import {
+  deleteStoredSession,
+  selectSessions,
+  selectSessionsInMonth,
+} from '@/store/stored-sessions';
 import { formatDate } from '@/utils/format-date';
 import { uuid } from '@/utils/uuid';
 import { LocalDate, YearMonth } from '@js-joda/core';
@@ -55,8 +59,21 @@ export default function History() {
     replaceCurrentSessionConfirmOpen,
     setReplaceCurrentSessionConfirmOpen,
   ] = useState(false);
+  const [
+    deleteSelectedWorkoutConfirmOpen,
+    setDeleteSelectedWorkoutConfirmOpen,
+  ] = useState(false);
   const [selectedWorkout, setSelectedWorkout] = useState<Session>();
-  const startDeleteSession = (session: Session) => {};
+  const deleteWorkout = (session: Session, force = false) => {
+    if (!force) {
+      setSelectedWorkout(session);
+      setDeleteSelectedWorkoutConfirmOpen(true);
+    } else if (selectedWorkout) {
+      dispatch(deleteStoredSession(selectedWorkout.id));
+      setDeleteSelectedWorkoutConfirmOpen(false);
+      setSelectedWorkout(undefined);
+    }
+  };
 
   const startWorkout = (session: Session, force = false) => {
     if (currentWorkoutSession && !force) {
@@ -96,7 +113,7 @@ export default function History() {
           onDateSelect={createSessionAtDate}
           onMonthChange={setCurrentYearMonth}
           onDeleteSession={(s) => {
-            startDeleteSession(s);
+            deleteWorkout(s);
           }}
           onSessionSelect={onSelectSession}
         />
@@ -133,7 +150,7 @@ export default function History() {
                 <IconButton
                   mode="contained"
                   icon={'delete'}
-                  onPress={() => startDeleteSession(session)}
+                  onPress={() => deleteWorkout(session)}
                 />
               </Tooltip>
               <Button
@@ -169,6 +186,28 @@ export default function History() {
         onCancel={() => {
           setSelectedWorkout(undefined);
           setReplaceCurrentSessionConfirmOpen(false);
+        }}
+      />
+      <ConfirmationDialog
+        headline={t('DeleteSessionQuestion')}
+        textContent={
+          <LimitedHtml
+            value={t('DeleteSessionMessage{SessionName}{Date}', {
+              SessionName: selectedWorkout?.blueprint.name ?? '',
+              Date: formatDate(selectedWorkout?.date ?? LocalDate.now(), {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              }),
+            })}
+          />
+        }
+        open={deleteSelectedWorkoutConfirmOpen}
+        okText={t('Delete')}
+        onOk={() => selectedWorkout && deleteWorkout(selectedWorkout, true)}
+        onCancel={() => {
+          setSelectedWorkout(undefined);
+          setDeleteSelectedWorkoutConfirmOpen(false);
         }}
       />
     </>

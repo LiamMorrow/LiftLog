@@ -73,7 +73,8 @@ describe('Completing a session', () => {
 
         cy.navigate('History')
 
-        cy.getByTestId('history-list').findByTestId('session-summary-title').should('contain.text', 'Workout A').click()
+        cy.getByTestId('history-list').findByTestId('session-summary-title').should('contain.text', 'Workout A')
+        cy.getByTestId('history-edit-workout').first().click()
 
         cy.getByTestId('session-date-input').first().click().clear().type('22052023')
 
@@ -199,7 +200,9 @@ describe('Completing a session', () => {
 
         cy.navigate('History')
 
-        cy.getByTestId('history-list').findByTestId('session-summary-title').first().should('contain.text', 'Workout A').click()
+        cy.getByTestId('history-list').findByTestId('session-summary-title').first().should('contain.text', 'Workout A')
+        cy.getByTestId('history-edit-workout').click()
+
 
         cy.getByTestId('more-exercise-btn').first().click()
         cy.getByTestId('exercise-notes-btn').first().click()

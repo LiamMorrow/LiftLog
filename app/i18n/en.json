@@ -53,7 +53,7 @@
   "Date": "Date",
   "Default": "Default",
   "Delete": "Delete",
-  "DeleteSessionMessage{SessionName}{Date}": "The workout named <em>{0}</em>, on {1} will be deleted from history. This cannot be undone.",
+  "DeleteSessionMessage{SessionName}{Date}": "The workout named <em>{SessionName}</em>, on {Date} will be deleted from history. This cannot be undone.",
   "DeleteSessionQuestion": "Delete Workout?",
   "Deny": "Deny",
   "DontAskAgain": "Don't ask again",
