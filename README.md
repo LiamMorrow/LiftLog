@@ -35,7 +35,7 @@
 
 ## 🌍 Translations
 
-LiftLog uses [Tolgee](https://tolgee.io/) for internationalization and translation management. Translation files are in [`app/i18n/`](./app/i18n/).
+LiftLog uses [Tolgee](https://tolgee.io/) for internationalization and translation management. Translation files are in [`app/i18n/`](./app/i18n/). A huge thanks to them providing an open source license to LiftLog ❤️.
 
 Available languages:
 
