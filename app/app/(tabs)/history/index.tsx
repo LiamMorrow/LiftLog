@@ -1,4 +1,5 @@
 import CardList from '@/components/presentation/card-list';
+import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import EmptyInfo from '@/components/presentation/empty-info';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
 import HistoryCalendarCard from '@/components/presentation/history-calendar-card';
@@ -9,18 +10,18 @@ import SplitCardControl from '@/components/presentation/split-card-control';
 import { spacing } from '@/hooks/useAppTheme';
 import { Session } from '@/models/session-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { setCurrentSession } from '@/store/current-session';
 import {
-  deleteStoredSession,
-  selectSessions,
-  selectSessionsInMonth,
-} from '@/store/stored-sessions';
+  selectCurrentSession,
+  setCurrentSession,
+} from '@/store/current-session';
+import { selectSessions, selectSessionsInMonth } from '@/store/stored-sessions';
 import { formatDate } from '@/utils/format-date';
+import { uuid } from '@/utils/uuid';
 import { LocalDate, YearMonth } from '@js-joda/core';
-import { useTranslate } from '@tolgee/react';
+import { T, useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Card } from 'react-native-paper';
+import { Button, Card, IconButton, Tooltip } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 export default function History() {
@@ -38,6 +39,10 @@ export default function History() {
     currentYearMonth,
   );
   const { push } = useRouter();
+  const currentWorkoutSession = useAppSelectorWithArg(
+    selectCurrentSession,
+    'workoutSession',
+  );
   const onSelectSession = (session: Session) => {
     dispatch(setCurrentSession({ target: 'historySession', session }));
     push('/history/edit');
@@ -45,6 +50,32 @@ export default function History() {
   const createSessionAtDate = (date: LocalDate) => {
     const newSession = Session.freeformSession(date, latesBodyweight);
     onSelectSession(newSession);
+  };
+  const [
+    replaceCurrentSessionConfirmOpen,
+    setReplaceCurrentSessionConfirmOpen,
+  ] = useState(false);
+  const [selectedWorkout, setSelectedWorkout] = useState<Session>();
+  const startDeleteSession = (session: Session) => {};
+
+  const startWorkout = (session: Session, force = false) => {
+    if (currentWorkoutSession && !force) {
+      setSelectedWorkout(session);
+      setReplaceCurrentSessionConfirmOpen(true);
+    } else {
+      dispatch(
+        setCurrentSession({
+          target: 'workoutSession',
+          session: session
+            .withNoSetsCompleted()
+            .with({ date: LocalDate.now(), id: uuid() }),
+        }),
+      );
+      setReplaceCurrentSessionConfirmOpen(false);
+      setSelectedWorkout(undefined);
+
+      push('/(tabs)/(session)/session', { withAnchor: true });
+    }
   };
   return (
     <>
@@ -65,7 +96,7 @@ export default function History() {
           onDateSelect={createSessionAtDate}
           onMonthChange={setCurrentYearMonth}
           onDeleteSession={(s) => {
-            dispatch(deleteStoredSession(s.id));
+            startDeleteSession(s);
           }}
           onSessionSelect={onSelectSession}
         />
@@ -73,7 +104,6 @@ export default function History() {
           testID="history-list"
           items={sessionsInMonth}
           cardType="contained"
-          onPress={onSelectSession}
           renderItemContent={(session) => (
             <Card.Content>
               <SplitCardControl
@@ -85,6 +115,35 @@ export default function History() {
                 }
               />
             </Card.Content>
+          )}
+          renderItemActions={(session) => (
+            <Card.Actions>
+              <Tooltip
+                title={t('Start this workout')}
+                // @ts-expect-error -- Hack since the card actions does not work on cards with tooltips
+                mode="contained"
+              >
+                <IconButton
+                  mode="contained"
+                  icon={'playCircle'}
+                  onPress={() => startWorkout(session)}
+                />
+              </Tooltip>
+              <Tooltip title={t('Delete')}>
+                <IconButton
+                  mode="contained"
+                  icon={'delete'}
+                  onPress={() => startDeleteSession(session)}
+                />
+              </Tooltip>
+              <Button
+                onPress={() => onSelectSession(session)}
+                icon="edit"
+                testID="history-edit-workout"
+              >
+                <T keyName="Edit workout" />
+              </Button>
+            </Card.Actions>
           )}
           emptyTemplate={
             <EmptyInfo>
@@ -99,6 +158,19 @@ export default function History() {
           }
         />
       </FullHeightScrollView>
+      <ConfirmationDialog
+        headline={t('Replace current workout?')}
+        textContent={t(
+          'There is already a workout in progress, replace it without saving?',
+        )}
+        open={replaceCurrentSessionConfirmOpen}
+        okText={t('Replace')}
+        onOk={() => selectedWorkout && startWorkout(selectedWorkout, true)}
+        onCancel={() => {
+          setSelectedWorkout(undefined);
+          setReplaceCurrentSessionConfirmOpen(false);
+        }}
+      />
     </>
   );
 }

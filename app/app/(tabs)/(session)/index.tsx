@@ -102,9 +102,14 @@ function ListUpcomingWorkouts({
               <SessionCardContent session={currentSession} />
             </Card.Content>
             <Card.Actions>
-              <Tooltip title={t('Clear current workout')}>
+              <Tooltip
+                title={t('Clear current workout')}
+                // @ts-expect-error -- Hack since the card actions does not work on cards with tooltips
+                mode="contained"
+              >
                 <IconButton
                   icon={'delete'}
+                  mode="contained"
                   onPress={() => setConfirmDeleteSessionOpen(true)}
                 />
               </Tooltip>
@@ -147,7 +152,11 @@ function ListUpcomingWorkouts({
           return (
             <Card.Actions style={{ marginTop: spacing[2] }}>
               {sessionPlanIndex !== -1 ? (
-                <IconButton icon={'edit'} onPress={handleEditPress} />
+                <IconButton
+                  icon={'edit'}
+                  mode="contained"
+                  onPress={handleEditPress}
+                />
               ) : undefined}
               <Button
                 icon={'playCircle'}

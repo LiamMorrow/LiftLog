@@ -108,6 +108,14 @@ export class Session {
     );
   }
 
+  withNoSetsCompleted(): Session {
+    return this.with({
+      recordedExercises: this.recordedExercises.map((re) =>
+        re.withNoSetsCompleted(),
+      ),
+    });
+  }
+
   toPOJO(): SessionPOJO {
     return {
       _BRAND: 'SESSION_POJO',
@@ -317,9 +325,18 @@ export class RecordedExercise {
       'potentialSets' in other
         ? other.potentialSets.map((x) => PotentialSet.fromPOJO(x))
         : this.potentialSets,
-      'notes' in other ? other.notes! : this.notes,
+      'notes' in other ? other.notes : this.notes,
       'perSetWeight' in other ? other.perSetWeight : this.perSetWeight,
     );
+  }
+
+  withNoSetsCompleted(): RecordedExercise {
+    return this.with({
+      notes: undefined,
+      potentialSets: this.potentialSets.map((ps) =>
+        ps.with({ set: undefined }).toPOJO(),
+      ),
+    });
   }
 
   toPOJO(): RecordedExercisePOJO {
