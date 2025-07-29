@@ -6,12 +6,12 @@ describe('Completing a session', () => {
     cy.visit('/')
   })
 
-  describe('When a user adds a freeform session', () => {
+  describe('When a user adds a freeform workout', () => {
     beforeEach(() => {
       cy.contains('Freeform').click()
     })
 
-    it('can complete a freeform workout', () => {
+    it('can complete it', () => {
       cy.getByTestId('session-more').click()
       cy.getByTestId('session-add-exercise').click()
       cy.dialog().find('input').first().click().type('Squat')
@@ -33,7 +33,7 @@ describe('Completing a session', () => {
 
       cy.navigate('History')
 
-      cy.getByTestId('history-list').findByTestId('session-summary-title').should('be.visible').first().should('contain.text', 'Freeform Session');
+      cy.getByTestId('history-list').findByTestId('session-summary-title').should('be.visible').first().should('contain.text', 'Freeform Workout');
 
       cy.getByTestId('session-summary').should('contain.text', '7.5kg')
     })

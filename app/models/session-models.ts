@@ -127,7 +127,7 @@ export class Session {
       id: uuid(),
       date: date,
       bodyweight,
-      blueprint: EmptySession.blueprint.with({ name: 'Freeform Session' }),
+      blueprint: EmptySession.blueprint.with({ name: 'Freeform Workout' }),
     });
   }
 
@@ -238,7 +238,7 @@ export class Session {
   }
 
   get isFreeform(): boolean {
-    return this.blueprint.name === 'Freeform Session';
+    return this.blueprint.name === 'Freeform Workout';
   }
 }
 

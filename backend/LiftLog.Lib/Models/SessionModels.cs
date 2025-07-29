@@ -24,7 +24,7 @@ public record Session(
         {
             Bodyweight = bodyweight,
             Id = Guid.NewGuid(),
-            Blueprint = SessionBlueprint.Empty with { Name = "Freeform Session" },
+            Blueprint = SessionBlueprint.Empty with { Name = "Freeform Workout" },
             Date = date,
         };
 
@@ -121,7 +121,7 @@ public record Session(
             ex.PotentialSets.Sum(set => (set.Set?.RepsCompleted ?? 0) * set.Weight)
         );
 
-    public bool IsFreeform => Blueprint.Name == "Freeform Session";
+    public bool IsFreeform => Blueprint.Name == "Freeform Workout";
 }
 
 public record RecordedExercise(

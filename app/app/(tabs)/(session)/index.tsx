@@ -23,7 +23,14 @@ import { T, useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Button, Card, FAB, IconButton, Text } from 'react-native-paper';
+import {
+  Button,
+  Card,
+  FAB,
+  IconButton,
+  Text,
+  Tooltip,
+} from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -76,6 +83,12 @@ function ListUpcomingWorkouts({
   const planId = useAppSelector((x) => x.program.activeProgramId);
   const { push } = useRouter();
   const dispatch = useDispatch();
+  const [confirmDeleteSessionOpen, setConfirmDeleteSessionOpen] =
+    useState(false);
+  const clearCurrentSession = () =>
+    dispatch(
+      setCurrentSession({ session: undefined, target: 'workoutSession' }),
+    );
   return (
     <View style={{ flex: 1, gap: spacing[2], paddingTop: spacing[4] }}>
       <PlanManager />
@@ -89,8 +102,13 @@ function ListUpcomingWorkouts({
               <SessionCardContent session={currentSession} />
             </Card.Content>
             <Card.Actions>
+              <Tooltip title={t('Clear current workout')}>
+                <IconButton
+                  icon={'delete'}
+                  onPress={() => setConfirmDeleteSessionOpen(true)}
+                />
+              </Tooltip>
               <Button
-                mode="contained"
                 icon={'playCircle'}
                 onPress={() => selectSession(currentSession)}
               >
@@ -144,6 +162,19 @@ function ListUpcomingWorkouts({
             </Card.Actions>
           );
         }}
+      />
+      <ConfirmationDialog
+        headline={t('Clear current workout?')}
+        textContent={t(
+          'This will clear the current workout without saving it to your history',
+        )}
+        okText={t('Clear')}
+        onOk={() => {
+          clearCurrentSession();
+          setConfirmDeleteSessionOpen(false);
+        }}
+        open={confirmDeleteSessionOpen}
+        onCancel={() => setConfirmDeleteSessionOpen(false)}
       />
     </View>
   );
@@ -208,11 +239,7 @@ export default function Index() {
   });
 
   const selectSession = (session: Session) => {
-    if (
-      !currentSession ||
-      currentSession.equals(session) ||
-      !currentSession.isStarted
-    ) {
+    if (!currentSession || currentSession.equals(session)) {
       replaceSession(session);
     } else {
       setSelectedSession(session);
@@ -252,7 +279,7 @@ export default function Index() {
           variant="surface"
           size="small"
           icon="fitnessCenter"
-          label={t('Freeform Session')}
+          label={t('Freeform Workout')}
           onPress={createFreeformSession}
         />
       }
@@ -286,8 +313,10 @@ export default function Index() {
         onCancel={() => setSelectedSession(undefined)}
         okText="Replace"
         onOk={replaceSessionDialogAction}
-        headline={<T keyName="ReplaceCurrentSession" />}
-        textContent={<T keyName="SessionInProgress" />}
+        headline={<T keyName="Replace current workout?" />}
+        textContent={
+          <T keyName="There is already a workout in progress, replace it without saving?" />
+        }
       />
     </FullHeightScrollView>
   );
