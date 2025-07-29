@@ -39,13 +39,12 @@ export class SessionService {
     const latestRecordedExercises =
       this.progressRepository.getLatestRecordedExercises();
     await yieldToEventLoop();
-    let latestSession = match(currentSession)
-      .with({ isStarted: true }, (x) => x)
-      .otherwise(() =>
-        this.progressRepository
-          .getOrderedSessions()
-          .firstOrDefault((x) => !x.isFreeform),
-      );
+    let latestSession =
+      currentSession ??
+      this.progressRepository
+        .getOrderedSessions()
+        .firstOrDefault((x) => !x.isFreeform);
+
     await yieldToEventLoop();
     if (!latestSession) {
       latestSession = this.createNewSession(

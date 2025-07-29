@@ -79,7 +79,7 @@ function ListUpcomingWorkouts({
   return (
     <View style={{ flex: 1, gap: spacing[2], paddingTop: spacing[4] }}>
       <PlanManager />
-      {currentSession?.isStarted && (
+      {currentSession && (
         <>
           <Text style={{ marginTop: spacing[2] }} variant="titleSmall">
             {t('Current workout')}
