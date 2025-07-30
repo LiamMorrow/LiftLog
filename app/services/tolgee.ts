@@ -1,3 +1,4 @@
+import { DetectLanguage } from '@/utils/language-detector';
 import de from '../i18n/de.json';
 import en from '../i18n/en.json';
 import es from '../i18n/es.json';
@@ -14,7 +15,7 @@ export const tolgee = Tolgee()
   // DevTools will work only for web view
   .use(DevTools())
   .use(FormatSimple())
-  // replace with .use(FormatIcu()) for rendering plurals, formatted numbers, etc.
+  .use(DetectLanguage())
   .init({
     defaultLanguage: 'en',
     fallbackLanguage: 'en',

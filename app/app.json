@@ -61,7 +61,17 @@
       "associatedDomains": ["applinks:app.liftlog.online"],
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": true,
-        "ITSAppUsesNonExemptEncryption": true
+        "ITSAppUsesNonExemptEncryption": true,
+        "CFBundleLocalizations": [
+          "it",
+          "de",
+          "sr",
+          "fr",
+          "nl",
+          "fi",
+          "es",
+          "ru"
+        ]
       },
       "appleTeamId": "DM9JP7639R"
     },
