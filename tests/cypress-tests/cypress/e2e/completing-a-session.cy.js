@@ -76,7 +76,17 @@ describe('Completing a session', () => {
         cy.getByTestId('history-list').findByTestId('session-summary-title').should('contain.text', 'Workout A')
         cy.getByTestId('history-edit-workout').first().click()
 
-        cy.getByTestId('session-date-input').first().click().clear().type('22052023')
+
+        cy.getByTestId('session-date-input-icon-button').first().click()
+        cy.recursionLoop(() => {
+          if (Cypress.$('[aria-label="May 2023"]').text().includes('May 2023')) {
+            return false
+          }
+          cy.get('[aria-label="Previous"]').first().click()
+        }, 200)
+        // seems like months are zero based - so 22nd May 2023
+        cy.getByTestId('react-native-paper-dates-day-2023-4-22').click()
+        cy.getByTestId('react-native-paper-dates-save-text').click()
 
         cy.getByTestId('save-session-button').click()
 
