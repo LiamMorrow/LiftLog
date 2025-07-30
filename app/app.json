@@ -60,7 +60,8 @@
       "bundleIdentifier": "com.limajuice.liftlog",
       "associatedDomains": ["applinks:app.liftlog.online"],
       "infoPlist": {
-        "UIViewControllerBasedStatusBarAppearance": true
+        "UIViewControllerBasedStatusBarAppearance": true,
+        "ITSAppUsesNonExemptEncryption": true
       },
       "appleTeamId": "DM9JP7639R"
     },
