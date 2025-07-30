@@ -8,7 +8,7 @@
     "cypress-open": "cypress open",
     "server": "npm run web --prefix ../../app",
     "server-ci": "npm run web --prefix ../../app",
-    "test": "run-p -r server cypress-open",
+    "test": "LANG=en_AU.UTF-8 run-p -r server cypress-open",
     "test-ci": "LANG=en_AU.UTF-8 run-p -r server-ci cypress-ci"
   },
   "devDependencies": {
