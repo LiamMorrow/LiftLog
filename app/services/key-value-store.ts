@@ -17,7 +17,16 @@ export class KeyValueStore {
     if (typeof value === 'string') {
       window.localStorage.setItem(key, value);
     } else {
-      const base64Value = btoa(String.fromCharCode(...value));
+      // Convert Uint8Array to base64 without creating a massive stack by spreading into fromCharCode
+      function uint8ToBase64(bytes: Uint8Array): string {
+        let binary = '';
+        const len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binary);
+      }
+      const base64Value = uint8ToBase64(value);
       window.localStorage.setItem(key, base64Value);
     }
   }
