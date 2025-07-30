@@ -23,6 +23,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Install
+        run: npm ci
+        working-directory: ./app
       - name: Build
         run: npm run build:web
         working-directory: ./app
