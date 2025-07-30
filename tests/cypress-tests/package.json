@@ -9,7 +9,7 @@
     "server": "npm run web --prefix ../../app",
     "server-ci": "npm run web --prefix ../../app",
     "test": "run-p -r server cypress-open",
-    "test-ci": "run-p -r server-ci cypress-ci"
+    "test-ci": "LANG=en_AU.UTF-8 run-p -r server-ci cypress-ci"
   },
   "devDependencies": {
     "browser-sync": "^3.0.0",
