@@ -158,6 +158,7 @@ function ListUpcomingWorkouts({
                 />
               ) : undefined}
               <Button
+                mode="contained"
                 icon={'playCircle'}
                 onPress={() => selectSession(session)}
               >
