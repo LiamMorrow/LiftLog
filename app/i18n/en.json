@@ -313,5 +313,15 @@
   "Workout removed": "Workout removed",
   "Undo": "Undo",
   "Workout duplicated": "Workout duplicated",
-  "PlanDeleted": "Plan deleted"
+  "PlanDeleted": "Plan deleted",
+  "Clear current workout": "Clear current workout",
+  "Clear current workout?": "Clear current workout?",
+  "This will clear the current workout without saving it to your history": "This will clear the current workout without saving it to your history",
+  "Clear": "Clear",
+  "Replace current workout?": "Replace current workout?",
+  "There is already a workout in progress, replace it without saving?": "There is already a workout in progress, replace it without saving?",
+  "Start this workout": "Start this workout",
+  "Edit workout": "Edit workout",
+  "Replace": "Replace",
+  "Don't import feed": "Don't import feed"
 }
