@@ -4,7 +4,10 @@ export class KeyValueStore {
   }
 
   async getItemBytes(key: string): Promise<Uint8Array | undefined> {
-    const item = window.localStorage.getItem(key);
+    let item = window.localStorage.getItem(key);
+    if (item?.startsWith('"') && item.endsWith('"')) {
+      item = item.slice(1, -1);
+    }
     return item
       ? Uint8Array.from(atob(item), (char) => char.charCodeAt(0))
       : undefined;
