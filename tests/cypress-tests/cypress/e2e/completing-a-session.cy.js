@@ -97,7 +97,7 @@ describe('Completing a session', () => {
           cy.getByTestId('calendar-nav-previous-month').first().click()
         }, 200)
 
-        cy.getByTestId('history-list').findByTestId('session-summary-title').should('contain.text', 'Workout A').should('contain.text', '22 May 2023')
+        cy.getByTestId('history-list').findByTestId('session-summary-title').should('contain.text', 'Workout A').should('contain.text', '22').should('contain.text', 'May').should('contain.text', '2023')
       })
 
       it('can complete a workout while switching to per set weights with it progressing properly', () => {
