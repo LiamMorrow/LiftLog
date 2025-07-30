@@ -18,6 +18,7 @@
     "protojs": "pbjs -p ../proto  -t static-module ../proto/**/*.proto ../proto/SharedItem.proto -o ./gen/proto.js -w es6 --es6 --force-long",
     "protots": "pbts -o ./gen/proto.d.ts ./gen/proto.js",
     "proto": "npm run protojs && npm run protots",
+    "pull-translations": "tolgee  --api-key ${TOLGEE_PAT} pull --path ./i18n ",
     "test": "vitest",
     "typecheck": "tsc --noEmit"
   },
@@ -31,6 +32,7 @@
     "@reduxjs/toolkit": "^2.6.1",
     "@sentry/react-native": "~6.14.0",
     "@shopify/react-native-skia": "v2.0.0-next.4",
+    "@tolgee/cli": "^2.13.0",
     "@tolgee/react": "^6.2.2",
     "babel-plugin-react-compiler": "^19.0.0-beta-bafa41b-20250307",
     "bignumber.js": "^9.1.2",
