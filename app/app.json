@@ -14,6 +14,7 @@
       "image": "./assets/splash.png",
       "resizeMode": "contain"
     },
+    "icon": "./assets/icon.png",
     "backgroundColor": "#fcfdf6",
     "primaryColor": "#046F03",
     "plugins": [
@@ -54,7 +55,12 @@
           ],
           "category": ["BROWSABLE", "DEFAULT"]
         }
-      ]
+      ],
+      "adaptiveIcon": {
+        "backgroundColor": "#dfedda",
+        "foregroundImage": "./assets/icon_foreground.png",
+        "monochromeImage": "./assets/icon_monochrome.png"
+      }
     },
     "ios": {
       "bundleIdentifier": "com.limajuice.liftlog",
