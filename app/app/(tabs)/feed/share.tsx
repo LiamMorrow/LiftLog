@@ -2,7 +2,7 @@ import FullHeightScrollView from '@/components/presentation/full-height-scroll-v
 import LimitedHtml from '@/components/presentation/limited-html';
 import { Remote } from '@/components/presentation/remote';
 import { SurfaceText } from '@/components/presentation/surface-text';
-import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { spacing } from '@/hooks/useAppTheme';
 import { RemoteData } from '@/models/remote';
 import { useAppSelector } from '@/store';
 import {
@@ -19,7 +19,6 @@ import { Button, Card, Icon } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 export default function FeedSharePage() {
-  const { colors } = useAppTheme();
   const { t } = useTranslate();
   const { id, name } = useLocalSearchParams<{
     id?: string;
