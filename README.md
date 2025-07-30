@@ -1,6 +1,5 @@
 # LiftLog
 
-[![Discord](https://img.shields.io/discord/1267316682737848330?logo=discord&cacheSeconds=3600)](https://discord.gg/YHhKEnEnFa)
 
 <p align="center">
   <img src="./assets/play_store_feature_graphic.png" alt="LiftLog Play Store Graphic"><br/>
