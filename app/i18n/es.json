@@ -80,7 +80,7 @@
   "FailureRest": "Descanso por falla",
   "FeatureRequest": "Solicitar funcionalidad",
   "FeatureRequestSubtitle": "¡Sugerí una nueva funcionalidad que pensas que LiftLog debería tener!",
-  "Feed": "Actualizaciones",
+  "Feed": "Feed",
   "Feed_Followers": "Seguidores",
   "Feed_Following": "Siguiendo",
   "FeedUserCompletedAWorkout{UserName}": "¡<em>{0}</em> completó su entrenamiento!",

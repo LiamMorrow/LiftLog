@@ -80,7 +80,7 @@
   "FailureRest": "Отдых при отказе",
   "FeatureRequest": "Запрос функции",
   "FeatureRequestSubtitle": "Предложите новую функцию для LiftLog!",
-  "Feed": "Лента",
+  "Feed": "Feed",
   "Feed_Followers": "Подписчики",
   "Feed_Following": "Подписки",
   "FeedUserCompletedAWorkout{UserName}": "<em>{0}</em> завершил(а) тренировку!",

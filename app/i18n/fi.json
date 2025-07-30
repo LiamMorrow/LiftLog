@@ -74,7 +74,7 @@
   "FailureRest": "Lihasuupumuksen (failure) jälkeinen lepo",
   "FeatureRequest": "Ehdota ominaisuutta",
   "FeatureRequestSubtitle": "Ehdota uutta ominaisuutta, jonka LiftLog mielestäsi tarvitsee!",
-  "Feed": "Syöte",
+  "Feed": "Feed",
   "Feed_Followers": "Seuraajat",
   "Feed_Following": "Seuratut",
   "FeedUserCompletedAWorkout{UserName}": "<em>{0}</em> suoritti harjoituksen!",
