@@ -1,0 +1,30 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": false,
+    "lib": ["ESNext", "DOM.AsyncIterable", "DOM"],
+    "module": "ESNext",
+    "noUnusedParameters": false,
+    "paths": {
+      "@/*": ["./*"]
+    },
+    "types": ["vitest"],
+    "exactOptionalPropertyTypes": true
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "store/tolgee.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/vitest/dist/**",
+    "**/vitest/dist/chunks/**",
+    "vitest.config.ts"
+  ]
+}

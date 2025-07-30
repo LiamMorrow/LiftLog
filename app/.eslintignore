@@ -1,0 +1,10 @@
+gen
+vitest.config.ts
+metro.config.js
+babel.config.js
+.eslintrc.js
+.env.local
+.expo
+expo-env.d.ts
+dist
+node_modules

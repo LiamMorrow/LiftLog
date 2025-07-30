@@ -1,0 +1,92 @@
+{
+  "expo": {
+    "name": "LiftLog",
+    "slug": "liftlog",
+    "version": "1.0.0",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "splash": {
+      "backgroundColor": "#fcfdf6",
+      "image": "./assets/splash.png",
+      "resizeMode": "contain"
+    },
+    "icon": "./assets/icon.png",
+    "backgroundColor": "#fcfdf6",
+    "primaryColor": "#046F03",
+    "plugins": [
+      "expo-router",
+      [
+        "expo-dev-client",
+        {
+          "launchMode": "most-recent"
+        }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "app",
+          "organization": "liftlog"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "scheme": "liftlog",
+    "android": {
+      "package": "com.limajuice.liftlog",
+      "edgeToEdgeEnabled": true,
+      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "app.liftlog.online"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ],
+      "adaptiveIcon": {
+        "backgroundColor": "#dfedda",
+        "foregroundImage": "./assets/icon_foreground.png",
+        "monochromeImage": "./assets/icon_monochrome.png"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.limajuice.liftlog",
+      "associatedDomains": ["applinks:app.liftlog.online"],
+      "infoPlist": {
+        "UIViewControllerBasedStatusBarAppearance": true,
+        "ITSAppUsesNonExemptEncryption": true,
+        "CFBundleLocalizations": [
+          "it",
+          "de",
+          "sr",
+          "fr",
+          "nl",
+          "fi",
+          "es",
+          "ru"
+        ]
+      },
+      "appleTeamId": ""
+    },
+    "notification": {
+      "icon": "./assets/notification.png"
+    },
+    "androidStatusBar": {
+      "translucent": true
+    },
+    "jsEngine": "hermes"
+  }
+}

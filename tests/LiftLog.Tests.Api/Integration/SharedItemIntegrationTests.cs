@@ -1,4 +1,5 @@
 using System.Net;
+using Google.Apis.AndroidPublisher.v3;
 using LiftLog.Api.Service;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Services;
@@ -16,7 +17,14 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
         new(Enumerable.Repeat((byte)0x04, 16).ToArray())
     );
     private static readonly byte[] rsaPublicKey = Enumerable.Repeat((byte)0x05, 16).ToArray();
-    private readonly WebApplicationFactory<Program> _factory = factory;
+    private readonly WebApplicationFactory<Program> _factory = factory.WithWebHostBuilder(builder =>
+    {
+        builder.ConfigureServices(services =>
+        {
+            // Set TEST_MODE environment variable for rate limiting bypass in some scenarios
+            Environment.SetEnvironmentVariable("TEST_MODE", "True");
+        });
+    });
 
     [Fact]
     public async Task Post_SharedItemGivesAnId()

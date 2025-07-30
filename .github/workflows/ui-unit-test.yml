@@ -12,16 +12,24 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          dotnet-version: 9.0.x
-      - name: Restore dependencies
-        run: dotnet restore
-        working-directory: ./tests/LiftLog.Tests.App
-      - name: Build
-        run: dotnet build
-        working-directory: ./tests/LiftLog.Tests.App
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: ./app/package-lock.json
+      - name: Install
+        run: npm ci
+        working-directory: ./app
+      - name: Generate Expo types
+        run: npx expo customize tsconfig.json
+        working-directory: ./app
+      - name: Typecheck
+        run: npm run typecheck
+        working-directory: ./app
+      - name: Lint
+        run: npm run lint
+        working-directory: ./app
       - name: Test
-        run: dotnet test --no-restore --verbosity normal
-        working-directory: ./tests/LiftLog.Tests.App
+        run: npm test
+        working-directory: ./app

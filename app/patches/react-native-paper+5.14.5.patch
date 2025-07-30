@@ -1,0 +1,15 @@
+diff --git a/node_modules/react-native-paper/src/components/BottomNavigation/BottomNavigationBar.tsx b/node_modules/react-native-paper/src/components/BottomNavigation/BottomNavigationBar.tsx
+index 05264c6..e2ca0db 100644
+--- a/node_modules/react-native-paper/src/components/BottomNavigation/BottomNavigationBar.tsx
++++ b/node_modules/react-native-paper/src/components/BottomNavigation/BottomNavigationBar.tsx
+@@ -975,6 +975,10 @@ const styles = StyleSheet.create({
+     fontSize: 12,
+     height: BAR_HEIGHT,
+     textAlign: 'center',
++    // Unsure why - rendering issue the text is not being centered properly in ios
++    ...(Platform.OS==='ios' ?{
++      paddingLeft:6
++    }:null),
+     backgroundColor: 'transparent',
+     ...(Platform.OS === 'web'
+       ? {

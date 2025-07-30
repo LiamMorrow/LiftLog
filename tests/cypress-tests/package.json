@@ -1,0 +1,19 @@
+{
+  "name": "cypress-tests",
+  "version": "1.0.0",
+  "description": "A collection of cypress tests for testing LiftLog.Web",
+  "main": "index.js",
+  "scripts": {
+    "cypress-ci": "cypress run --browser=chrome",
+    "cypress-open": "cypress open",
+    "server": "npm run web --prefix ../../app",
+    "server-ci": "npm run web --prefix ../../app",
+    "test": "LANG=en_AU.UTF-8 run-p -r server cypress-open",
+    "test-ci": "LANG=en_AU.UTF-8 run-p -r server-ci cypress-ci"
+  },
+  "devDependencies": {
+    "browser-sync": "^3.0.0",
+    "cypress": "^14.0.0",
+    "npm-run-all2": "^8.0.0"
+  }
+}

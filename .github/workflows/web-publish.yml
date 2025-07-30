@@ -5,9 +5,8 @@
 name: Release Web
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [created]
 
 jobs:
   build:
@@ -24,27 +23,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 9.0.x
-      - name: Build Tailwind
-        run: npm i && npm run build
-        working-directory: ./LiftLog.Ui
-      - name: Build UI # Seems that the typescript built files dont get copied to the publish folder unless we build the project first
-        run: dotnet build -c Release
-        working-directory: ./LiftLog.Ui
       - name: Build
-        run: dotnet publish -c Release
-        working-directory: ./LiftLog.Web
+        run: npm run build:web
+        working-directory: ./app
       - name: Copy 404 page
-        run: cp ./404.html ./LiftLog.Web/bin/Release/net9.0/publish/wwwroot
-      - name: List files recusively
-        run: ls -R ./LiftLog.Web/bin/Release/net9.0/publish/wwwroot
+        run: cp ./404.html ./app/dist
       - name: Upload pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./LiftLog.Web/bin/Release/net9.0/publish/wwwroot
+          path: ./app/dist
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

@@ -12,30 +12,23 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 9.0.x
-      - name: Restore dependencies
-        run: dotnet restore
-        working-directory: ./LiftLog.Web
-      - name: Build Tailwind
-        run: npm i && npm run build
-        working-directory: ./LiftLog.Ui
+      - name: App Dependencies
+        run: npm ci
+        working-directory: ./app
       - name: Dependencies
-        run: npm i
-        working-directory: ./LiftLog.Cypress
+        run: npm ci
+        working-directory: ./tests/cypress-tests
       - name: Test
         uses: cypress-io/github-action@v6
         env:
           ELECTRON_ENABLE_LOGGING: 1
         with:
           start: npm run server-ci
-          wait-on: http://localhost:5001
-          working-directory: ./LiftLog.Cypress
+          wait-on: http://localhost:8081
+          working-directory: ./tests/cypress-tests
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: cypress-screenshots
-          path: ./LiftLog.Cypress/cypress/screenshots
+          path: ./tests/cypress-tests/cypress/screenshots

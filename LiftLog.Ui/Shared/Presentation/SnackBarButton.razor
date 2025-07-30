@@ -1,7 +1,0 @@
-<md-text-button @onclick=OnClick style="--md-sys-color-primary: var(--md-sys-color-inverse-primary);">@ChildContent</md-text-button>
-
-@code {
-    [Parameter] public RenderFragment? ChildContent { get; set; }
-
-    [Parameter] public EventCallback OnClick { get; set; }
-}

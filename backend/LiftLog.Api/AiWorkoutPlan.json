@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "An object containing a description of the plan, with recommendations for their skill level and goals. Should give guidance related to their skill level, age weight, and potential nutrients.  Should also say whether this plan will be suitable for them, and if not, why not.",
+  "required": ["Description", "Sessions", "Name"],
+  "properties": {
+    "Name": {
+      "type": "string",
+      "description": "A short name for the plan"
+    },
+    "Description": {
+      "type": "string",
+      "description": "A description of the plan, with recommendations for their skill level and goals."
+    },
+    "Sessions": {
+      "type": "array",
+      "description": "An array of sessions to perform.",
+      "items": {
+        "type": "object",
+        "description": "A session to perform.",
+        "required": ["Name", "Exercises"],
+        "properties": {
+          "Name": {
+            "type": "string",
+            "description": "The name of the session. This might relate to the day of the week, or the type of session (e.g. 'Legs')."
+          },
+          "Description": {
+            "type": "string",
+            "description": "A description of the session. (e.g. 'A session to work the legs')."
+          },
+          "Exercises": {
+            "type": "array",
+            "description": "An array of exercises to perform.",
+            "items": {
+              "type": "object",
+              "description": "An exercise to perform.",
+              "required": ["Name", "Sets", "RepsPerSet", "WeightIncreaseOnSuccess", "Rest"],
+              "properties": {
+                "Name": {
+                  "type": "string",
+                  "description": "The name of the exercise."
+                },
+                "Sets": {
+                  "type": "integer",
+                  "description": "The number of sets to perform."
+                },
+                "RepsPerSet": {
+                  "type": "integer",
+                  "description": "The number of reps to perform.  If the exercise is timed, this is the number of seconds to perform the exercise for."
+                },
+                "WeightIncreaseOnSuccess": {
+                  "type": "number",
+                  "description": "The amount of weight to increase by on successful completion of all reps in the set.  If the exercise is timed, this is the number of seconds to increase by on successful completion of all reps in the set. The units are the same that the user specifies."
+                },
+                "Notes": {
+                  "type": "string",
+                  "description": "An optional, very short description of how to do the exercise."
+                },
+                "RestBetweenSets": {
+                  "type": "object",
+                  "description": "The rest time to use for the exercise.",
+                  "required": ["MinRest", "MaxRest", "FailureRest"],
+                  "properties": {
+                    "MinRestSeconds": {
+                      "type": "integer",
+                      "description": "The minimum rest time to use for the exercise on successful completion of all reps"
+                    },
+                    "MaxRestSeconds": {
+                      "type": "integer",
+                      "description": "The maximum rest time to use for the exercise on successful completion of all reps.  It MUST be greater than MinRest"
+                    },
+                    "FailureRestSeconds": {
+                      "type": "integer",
+                      "description": "The rest time to use for the exercise on failure to complete all reps in the set. It MUST be greater than MaxRest"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
