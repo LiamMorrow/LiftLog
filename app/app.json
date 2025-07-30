@@ -79,7 +79,10 @@
           "ru"
         ]
       },
-      "appleTeamId": "DM9JP7639R"
+      "appleTeamId": ""
+    },
+    "notification": {
+      "icon": "./assets/notification.png"
     },
     "androidStatusBar": {
       "translucent": true
