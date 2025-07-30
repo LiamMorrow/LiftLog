@@ -6,6 +6,8 @@ import { useScroll } from '@/hooks/useScollListener';
 import { FeedUser, FollowRequest } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
 import {
+  acceptFollowRequest,
+  denyFollowRequest,
   fetchInboxItems,
   selectFeedFollowers,
   selectFeedFollowRequests,
@@ -60,6 +62,26 @@ function FeedFollowItem(props: { item: FeedFollowItem }) {
 function FeedFollowRequest(props: { request: FollowRequest }) {
   const { t } = useTranslate();
   const { colors } = useAppTheme();
+  const dispatch = useDispatch();
+
+  const handleAccept = () => {
+    dispatch(
+      acceptFollowRequest({
+        request: props.request,
+        fromUserAction: true,
+      }),
+    );
+  };
+
+  const handleDeny = () => {
+    dispatch(
+      denyFollowRequest({
+        request: props.request,
+        fromUserAction: true,
+      }),
+    );
+  };
+
   return (
     <List.Item
       title={props.request.name}
@@ -73,8 +95,12 @@ function FeedFollowRequest(props: { request: FollowRequest }) {
       right={() => {
         return (
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <IconButton icon={'close'} iconColor={colors.error} />
-            <Button mode="contained" icon={'check'}>
+            <IconButton
+              icon={'close'}
+              iconColor={colors.error}
+              onPress={handleDeny}
+            />
+            <Button mode="contained" icon={'check'} onPress={handleAccept}>
               {t('Accept')}
             </Button>
           </View>

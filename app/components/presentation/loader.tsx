@@ -21,7 +21,7 @@ export function Loader(props: LoaderProps) {
         <ActivityIndicator />
       </View>
       {props.children ?? (
-        <Text style={{ color: colors.onSurface }}>
+        <Text style={{ color: colors.onSurface, textAlign: 'center' }}>
           {props.loadingText ?? <T keyName="GenericLoading" />}
         </Text>
       )}

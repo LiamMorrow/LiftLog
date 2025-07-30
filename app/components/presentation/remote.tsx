@@ -1,7 +1,9 @@
 import { Loader } from '@/components/presentation/loader';
+import { SurfaceText } from '@/components/presentation/surface-text';
+import { spacing } from '@/hooks/useAppTheme';
 import { RemoteData } from '@/models/remote';
 import { ReactNode } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { Button, Icon } from 'react-native-paper';
 
 interface RemoteProps<T> {
@@ -18,10 +20,12 @@ export function Remote<T>(props: RemoteProps<T>) {
   loading ??= () => <Loader />;
   notAsked ??= loading;
   error ??= (value) => (
-    <View>
+    <View style={{ alignItems: 'center', gap: spacing[4] }}>
       <Icon source={'error'} size={30} />
-      <View>
-        <Text>{typeof value === 'string' ? value : 'Unknown error'}</Text>
+      <View style={{ justifyContent: 'center' }}>
+        <SurfaceText style={{ textAlign: 'center' }}>
+          {typeof value === 'string' ? value : 'Unknown error'}
+        </SurfaceText>
         {retry ? <Button onPress={retry}>Retry</Button> : undefined}
       </View>
     </View>

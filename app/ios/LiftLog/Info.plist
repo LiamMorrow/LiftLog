@@ -27,7 +27,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>app.liftlog.online</string>
+          <string>liftlog</string>
           <string>com.limajuice.liftlog</string>
         </array>
       </dict>

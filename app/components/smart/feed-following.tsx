@@ -49,7 +49,7 @@ function FeedFollowingItem(props: { user: FeedUser; userId: string }) {
   const [menuVisible, setMenuVisible] = useState(false);
   return (
     <List.Item
-      title={props.user.name}
+      title={props.user.name || 'Anonymous user'}
       description={props.user.aesKey ? undefined : t('AwaitingResponse')}
       right={() => (
         <Menu

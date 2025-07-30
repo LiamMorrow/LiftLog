@@ -121,6 +121,10 @@ const feedSlice = createSlice({
     },
   },
   selectors: {
+    selectSharedFeedUser: createSelector(
+      (state: FeedState) => state.sharedFeedUser,
+      (sharedUser) => sharedUser.map(FeedUser.fromPOJO),
+    ),
     selectSharedItem: createSelector(
       (state: FeedState) => state.sharedItem,
       (sharedItem) => sharedItem.map(SharedItem.fromPOJO),
@@ -186,6 +190,7 @@ export const {
 } = feedSlice.actions;
 
 export const {
+  selectSharedFeedUser,
   selectSharedItem,
   selectFollowRequestCount,
   selectFeedSessionItems,

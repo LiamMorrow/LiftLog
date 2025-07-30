@@ -37,7 +37,7 @@
       "typedRoutes": true,
       "reactCompiler": true
     },
-    "scheme": "app.liftlog.online",
+    "scheme": "liftlog",
     "android": {
       "package": "com.limajuice.liftlog",
       "edgeToEdgeEnabled": true,
