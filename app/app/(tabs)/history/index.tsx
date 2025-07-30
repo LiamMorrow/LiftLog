@@ -1,3 +1,4 @@
+import CardActions from '@/components/presentation/card-actionts';
 import CardList from '@/components/presentation/card-list';
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import EmptyInfo from '@/components/presentation/empty-info';
@@ -14,6 +15,7 @@ import {
   selectCurrentSession,
   setCurrentSession,
 } from '@/store/current-session';
+import { addUnpublishedSessionId } from '@/store/feed';
 import {
   deleteStoredSession,
   selectSessions,
@@ -70,6 +72,7 @@ export default function History() {
       setDeleteSelectedWorkoutConfirmOpen(true);
     } else if (selectedWorkout) {
       dispatch(deleteStoredSession(selectedWorkout.id));
+      dispatch(addUnpublishedSessionId(selectedWorkout.id));
       setDeleteSelectedWorkoutConfirmOpen(false);
       setSelectedWorkout(undefined);
     }
@@ -134,12 +137,8 @@ export default function History() {
             </Card.Content>
           )}
           renderItemActions={(session) => (
-            <Card.Actions>
-              <Tooltip
-                title={t('Start this workout')}
-                // @ts-expect-error -- Hack since the card actions does not work on cards with tooltips
-                mode="contained"
-              >
+            <CardActions style={{ marginTop: spacing[2] }}>
+              <Tooltip title={t('Start this workout')}>
                 <IconButton
                   mode="contained"
                   icon={'playCircle'}
@@ -156,11 +155,12 @@ export default function History() {
               <Button
                 onPress={() => onSelectSession(session)}
                 icon="edit"
+                mode="contained"
                 testID="history-edit-workout"
               >
                 <T keyName="Edit workout" />
               </Button>
-            </Card.Actions>
+            </CardActions>
           )}
           emptyTemplate={
             <EmptyInfo>

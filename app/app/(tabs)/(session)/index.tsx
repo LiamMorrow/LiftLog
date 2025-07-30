@@ -1,3 +1,4 @@
+import CardActions from '@/components/presentation/card-actionts';
 import CardList from '@/components/presentation/card-list';
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
@@ -101,12 +102,8 @@ function ListUpcomingWorkouts({
             <Card.Content>
               <SessionCardContent session={currentSession} />
             </Card.Content>
-            <Card.Actions>
-              <Tooltip
-                title={t('Clear current workout')}
-                // @ts-expect-error -- Hack since the card actions does not work on cards with tooltips
-                mode="contained"
-              >
+            <CardActions style={{ marginTop: spacing[2] }}>
+              <Tooltip title={t('Clear current workout')}>
                 <IconButton
                   icon={'delete'}
                   mode="contained"
@@ -115,11 +112,12 @@ function ListUpcomingWorkouts({
               </Tooltip>
               <Button
                 icon={'playCircle'}
+                mode="contained"
                 onPress={() => selectSession(currentSession)}
               >
                 <T keyName={'Resume workout'} />
               </Button>
-            </Card.Actions>
+            </CardActions>
           </Card>
         </>
       )}
@@ -150,7 +148,7 @@ function ListUpcomingWorkouts({
             );
           };
           return (
-            <Card.Actions style={{ marginTop: spacing[2] }}>
+            <CardActions style={{ marginTop: spacing[2] }}>
               {sessionPlanIndex !== -1 ? (
                 <IconButton
                   icon={'edit'}
@@ -168,7 +166,7 @@ function ListUpcomingWorkouts({
                   <T keyName={'Start workout'} />
                 )}
               </Button>
-            </Card.Actions>
+            </CardActions>
           );
         }}
       />

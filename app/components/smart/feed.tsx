@@ -1,3 +1,4 @@
+import CardActions from '@/components/presentation/card-actionts';
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import EmptyInfo from '@/components/presentation/empty-info';
 import FullScreenDialog from '@/components/presentation/full-screen-dialog';
@@ -119,8 +120,9 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
           )}
         </Card.Content>
 
-        <Card.Actions>
+        <CardActions>
           <IconButton
+            mode="contained"
             icon={'edit'}
             onPress={() => {
               setFocusPublish(false);
@@ -128,6 +130,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
             }}
           />
           <Button
+            mode="contained"
             icon={'share'}
             onPress={() => {
               dispatch(
@@ -144,7 +147,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
           >
             <T keyName={'Share'} />
           </Button>
-        </Card.Actions>
+        </CardActions>
       </Card>
       <FeedProfileEditor
         open={editDialogOpen}

@@ -23,8 +23,6 @@ export function useActionEffect(
   const dispatch = useDispatch();
   // @ts-expect-error dispatch returns unsubscribe when addListener is dispatched
   useEffect(() => {
-    // Could also just `return dispatch(addListener())` directly, but showing this
-    // as a separate variable to be clear on what's happening
     const unsubscribe = dispatch(
       addListener({
         predicate: (action) =>
