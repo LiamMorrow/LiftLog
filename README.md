@@ -48,6 +48,7 @@ Available languages:
 - 🇫🇮 Finnish
 - 🇪🇸 Spanish
 - 🇷🇺 Russian
+- 🇨🇿 Czech
 
 Want to help translate? [Open an issue or PR](https://github.com/LiamMorrow/LiftLog/issues).
 
