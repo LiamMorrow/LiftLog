@@ -105,6 +105,7 @@ function ListUpcomingWorkouts({
             <CardActions style={{ marginTop: spacing[2] }}>
               <Tooltip title={t('Clear current workout')}>
                 <IconButton
+                  testID="clear-current-workout"
                   icon={'delete'}
                   mode="contained"
                   onPress={() => setConfirmDeleteSessionOpen(true)}
