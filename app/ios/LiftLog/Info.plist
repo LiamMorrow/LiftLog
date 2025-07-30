@@ -24,6 +24,7 @@
       <string>fi</string>
       <string>es</string>
       <string>ru</string>
+      <string>cs</string>
     </array>
     <key>CFBundleName</key>
     <string>$(PRODUCT_NAME)</string>
