@@ -21,7 +21,7 @@ export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
       <Card.Content>
         <View style={{ flexDirection: 'row', gap: spacing[2] }}>
           <Icon source={'notes'} size={24} />
-          <View style={{ gap: spacing[2], flex: 1 }}>
+          <View style={{ gap: spacing[2], flex: 1, paddingRight: spacing[2] }}>
             {blueprintNotes && (
               <Notes value={blueprintNotes} testID="exercise-blueprint-notes" />
             )}
