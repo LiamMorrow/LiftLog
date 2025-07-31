@@ -7,6 +7,8 @@ name: Release iOS
 on:
   release:
     types: [created]
+  push:
+    branches: [ios-build-debugging]
 
 jobs:
   build:
@@ -99,12 +101,25 @@ jobs:
             -archivePath "${PWD}/ios/build/App.xcarchive" \
             -allowProvisioningUpdates \
             DEVELOPMENT_TEAM="${{secrets.APPLE_TEAM_ID}}" \
-            APP_DISPLAY_VERSION="${{ github.event.release.name }}" \
+            APP_DISPLAY_VERSION="${{ github.event.release.name || '3.0.0-beta' }}" \
             APP_VERSION="${{ steps.buildNumber.outputs.build-number }}" \
             OTHER_CODE_SIGN_FLAGS="--keychain ${{ env.KEYCHAIN }}"
         working-directory: ./app
+      - name: Debug - Check archive location
+        run: |
+          echo "Current working directory: ${PWD}"
+          echo "Listing contents of ios/build:"
+          ls -la ios/build/ || echo "ios/build directory does not exist"
+          echo "Looking for .xcarchive files:"
+          find . -name "*.xcarchive" -type d || echo "No .xcarchive files found"
+          echo "Full directory structure of ios/build:"
+          find ios/build -type f 2>/dev/null || echo "Cannot find ios/build directory"
+        working-directory: ./app
       - name: Export IPA
         run: |
+          echo "About to export with archive path: ${PWD}/ios/build/App.xcarchive"
+          echo "Checking if archive exists:"
+          ls -la "${PWD}/ios/build/App.xcarchive" || echo "Archive not found at expected location"
           xcodebuild -exportArchive \
             -archivePath "${PWD}/ios/build/App.xcarchive" \
             -exportOptionsPlist exportOptions.plist \
