@@ -94,7 +94,14 @@ jobs:
           EOF
       - name: Archive iOS app
         run: |
-          xcodebuild -workspace ios/LiftLog.xcworkspace \
+          echo "Starting archive process..."
+          echo "Current working directory: ${PWD}"
+          echo "Creating build directory if it doesn't exist:"
+          mkdir -p ios/build
+          echo "Archive will be created at: ${PWD}/ios/build/App.xcarchive"
+
+          xcodebuild archive \
+            -workspace ios/LiftLog.xcworkspace \
             -scheme LiftLog \
             -sdk iphoneos \
             -configuration Release \
@@ -104,16 +111,28 @@ jobs:
             APP_DISPLAY_VERSION="${{ github.event.release.name || '3.0.0-beta' }}" \
             APP_VERSION="${{ steps.buildNumber.outputs.build-number }}" \
             OTHER_CODE_SIGN_FLAGS="--keychain ${{ env.KEYCHAIN }}"
+
+          echo "Archive command completed with exit code: $?"
+          echo "Checking if archive was created:"
+          ls -la "${PWD}/ios/build/App.xcarchive" || echo "Archive was not created at expected location"
+          echo "Contents of ios/build after archive:"
+          ls -la ios/build/
         working-directory: ./app
       - name: Debug - Check archive location
         run: |
           echo "Current working directory: ${PWD}"
-          echo "Listing contents of ios/build:"
+          echo "=== Full app directory structure ==="
+          find . -type d -name "build" 2>/dev/null || echo "No build directories found"
+          echo "=== Looking for .xcarchive files anywhere in app dir ==="
+          find . -name "*.xcarchive" -type d 2>/dev/null || echo "No .xcarchive files found"
+          echo "=== Contents of app directory (top level) ==="
+          ls -la .
+          echo "=== Contents of ios directory ==="
+          ls -la ios/ || echo "ios directory does not exist"
+          echo "=== Contents of ios/build if it exists ==="
           ls -la ios/build/ || echo "ios/build directory does not exist"
-          echo "Looking for .xcarchive files:"
-          find . -name "*.xcarchive" -type d || echo "No .xcarchive files found"
-          echo "Full directory structure of ios/build:"
-          find ios/build -type f 2>/dev/null || echo "Cannot find ios/build directory"
+          echo "=== All build-related directories ==="
+          find . -type d -name "*build*" -exec ls -la {} \; 2>/dev/null || echo "No build directories found"
         working-directory: ./app
       - name: Export IPA
         run: |
