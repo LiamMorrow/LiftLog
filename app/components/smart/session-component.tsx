@@ -103,7 +103,7 @@ export default function SessionComponent(props: {
         }}
       >
         <Icon source={'text'} size={20} />
-        <View style={{ paddingHorizontal: spacing[2] }}>
+        <View style={{ paddingRight: spacing[2] }}>
           <SurfaceText>{session.blueprint.notes}</SurfaceText>
         </View>
       </Card.Content>

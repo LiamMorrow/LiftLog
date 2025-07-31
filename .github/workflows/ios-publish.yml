@@ -96,7 +96,7 @@ jobs:
             -scheme LiftLog \
             -sdk iphoneos \
             -configuration Release \
-            -archivePath ios/build/App.xcarchive \
+            -archivePath "${PWD}/ios/build/App.xcarchive" \
             -allowProvisioningUpdates \
             DEVELOPMENT_TEAM="${{secrets.APPLE_TEAM_ID}}" \
             APP_DISPLAY_VERSION="${{ github.event.release.name }}" \
@@ -106,9 +106,9 @@ jobs:
       - name: Export IPA
         run: |
           xcodebuild -exportArchive \
-            -archivePath ios/build/App.xcarchive \
+            -archivePath "${PWD}/ios/build/App.xcarchive" \
             -exportOptionsPlist exportOptions.plist \
-            -exportPath ios/build/export \
+            -exportPath "${PWD}/ios/build/export" \
             DEVELOPMENT_TEAM=${{secrets.APPLE_TEAM_ID}}
         working-directory: ./app
       - name: Upload with altool
