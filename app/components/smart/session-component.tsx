@@ -36,6 +36,7 @@ import { UnknownAction } from '@reduxjs/toolkit';
 
 import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
 import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
+import { SurfaceText } from '@/components/presentation/surface-text';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
@@ -102,9 +103,9 @@ export default function SessionComponent(props: {
         }}
       >
         <Icon source={'text'} size={20} />
-        <Text style={{ color: colors.onSurface }}>
-          {session.blueprint.notes}
-        </Text>
+        <View style={{ paddingHorizontal: spacing[2] }}>
+          <SurfaceText>{session.blueprint.notes}</SurfaceText>
+        </View>
       </Card.Content>
     </Card>
   ) : null;
