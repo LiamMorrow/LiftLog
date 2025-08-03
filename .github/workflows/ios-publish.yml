@@ -7,8 +7,6 @@ name: Release iOS
 on:
   release:
     types: [created]
-  push:
-    branches: [ios-build-debugging]
 
 jobs:
   build:
@@ -103,7 +101,7 @@ jobs:
             -archivePath "${PWD}/ios/build/App.xcarchive" \
             -allowProvisioningUpdates \
             DEVELOPMENT_TEAM="${{secrets.APPLE_TEAM_ID}}" \
-            APP_DISPLAY_VERSION="${{ github.event.release.name || '3.0.0' }}" \
+            APP_DISPLAY_VERSION="${{ github.event.release.name }}" \
             APP_VERSION="${{ steps.buildNumber.outputs.build-number }}" \
             OTHER_CODE_SIGN_FLAGS="--keychain ${{ env.KEYCHAIN }}"
         working-directory: ./app
