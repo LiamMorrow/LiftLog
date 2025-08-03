@@ -67,7 +67,7 @@ export class KeyValueStore {
 function getFile(key: string): File {
   // For iOS, use the Library/Application Support directory (equivalent to .NET MAUI's FileSystem.AppDataDirectory)
   // For Android, continue using the document directory as that is what is equivalent
-  if (Platform.OS === 'ios') {
+  if (Platform.OS === 'ios' || Platform.OS === 'macos') {
     const appSupportDir = getApplicationSupportDirectory();
     return new File(Paths.join(appSupportDir, key));
   } else {
