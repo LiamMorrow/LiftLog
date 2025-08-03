@@ -1,5 +1,7 @@
 import { uuid } from '@/utils/uuid';
 import { File, Paths } from 'expo-file-system/next';
+import { Platform } from 'react-native';
+import { getApplicationSupportDirectory } from '@/modules/native-crypto';
 
 export class KeyValueStore {
   async getItem(key: string): Promise<string | undefined> {
@@ -63,5 +65,12 @@ export class KeyValueStore {
 }
 
 function getFile(key: string): File {
-  return new File(Paths.join(Paths.document, key));
+  // For iOS, use the Library/Application Support directory (equivalent to .NET MAUI's FileSystem.AppDataDirectory)
+  // For Android, continue using the document directory as that is what is equivalent
+  if (Platform.OS === 'ios') {
+    const appSupportDir = getApplicationSupportDirectory();
+    return new File(Paths.join(appSupportDir, key));
+  } else {
+    return new File(Paths.join(Paths.document, key));
+  }
 }

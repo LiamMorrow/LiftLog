@@ -2,3 +2,4 @@
 // and on native platforms to ReactNativeWebcryptoModule.ts
 export * from './ReactNativeWebCryptoAes';
 export * from './ReactNativeWebcryptoRSA';
+export * from './ReactNativeFileSystemModule';

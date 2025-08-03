@@ -4,7 +4,8 @@
     "modules": [
       "ReactNativeWebcryptoModule",
       "ReactNativeWebcryptoAesModule",
-      "ReactNativeWebcryptoRSASha256Module"
+      "ReactNativeWebcryptoRSASha256Module",
+      "ReactNativeFileSystemModule"
     ]
   },
   "android": {
