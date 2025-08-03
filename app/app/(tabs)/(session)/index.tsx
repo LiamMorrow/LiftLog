@@ -86,10 +86,12 @@ function ListUpcomingWorkouts({
   const dispatch = useDispatch();
   const [confirmDeleteSessionOpen, setConfirmDeleteSessionOpen] =
     useState(false);
-  const clearCurrentSession = () =>
+  const clearCurrentSession = () => {
     dispatch(
       setCurrentSession({ session: undefined, target: 'workoutSession' }),
     );
+    dispatch(fetchUpcomingSessions());
+  };
   return (
     <View style={{ flex: 1, gap: spacing[2], paddingTop: spacing[4] }}>
       <PlanManager />
