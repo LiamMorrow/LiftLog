@@ -7,6 +7,8 @@ name: Release iOS
 on:
   release:
     types: [created]
+  push:
+    branches: [ios-build-debugging]
 
 jobs:
   build:
@@ -69,7 +71,7 @@ jobs:
           <plist version="1.0">
           <dict>
             <key>method</key>
-            <string>app-store</string>
+            <string>app-store-connect</string>
             <key>teamID</key>
             <string>${{ secrets.APPLE_TEAM_ID }}</string>
             <key>signingStyle</key>
@@ -92,14 +94,16 @@ jobs:
           EOF
       - name: Archive iOS app
         run: |
-          xcodebuild -workspace ios/LiftLog.xcworkspace \
+          mkdir -p ios/build
+          xcodebuild archive \
+            -workspace ios/LiftLog.xcworkspace \
             -scheme LiftLog \
             -sdk iphoneos \
             -configuration Release \
             -archivePath "${PWD}/ios/build/App.xcarchive" \
             -allowProvisioningUpdates \
             DEVELOPMENT_TEAM="${{secrets.APPLE_TEAM_ID}}" \
-            APP_DISPLAY_VERSION="${{ github.event.release.name }}" \
+            APP_DISPLAY_VERSION="${{ github.event.release.name || '3.0.0' }}" \
             APP_VERSION="${{ steps.buildNumber.outputs.build-number }}" \
             OTHER_CODE_SIGN_FLAGS="--keychain ${{ env.KEYCHAIN }}"
         working-directory: ./app

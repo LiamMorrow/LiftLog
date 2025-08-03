@@ -65,9 +65,10 @@
     "ios": {
       "bundleIdentifier": "com.limajuice.liftlog",
       "associatedDomains": ["applinks:app.liftlog.online"],
+      "supportsTablet": true,
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": true,
-        "ITSAppUsesNonExemptEncryption": true,
+        "ITSAppUsesNonExemptEncryption": false,
         "CFBundleLocalizations": [
           "it",
           "de",
@@ -79,7 +80,10 @@
           "ru",
           "cs"
         ]
-      }
+      },
+      "appleTeamId": "",
+      "version": "$(APP_DISPLAY_VERSION)",
+      "buildNumber": "$(APP_VERSION)"
     },
     "notification": {
       "icon": "./assets/notification.png"
