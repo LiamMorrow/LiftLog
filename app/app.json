@@ -65,6 +65,7 @@
     "ios": {
       "bundleIdentifier": "com.limajuice.liftlog",
       "associatedDomains": ["applinks:app.liftlog.online"],
+      "supportsTablet": true,
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": true,
         "ITSAppUsesNonExemptEncryption": false,
