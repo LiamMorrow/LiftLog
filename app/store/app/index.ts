@@ -61,7 +61,7 @@ export type SnackbarDescriptor =
   | {
       text: string;
       action: string;
-      dispatchAction: UnknownAction;
+      dispatchAction: UnknownAction | UnknownAction[];
     };
 export const showSnackbar = createAction<
   SnackbarDescriptor & { duration?: number }

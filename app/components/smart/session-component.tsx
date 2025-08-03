@@ -210,7 +210,7 @@ export default function SessionComponent(props: {
   const updatePlanButton = isReadonly ? null : (
     <UpdatePlanButton target={props.target} session={session} />
   );
-  const additionalActionsRow = (
+  const additionalActionsButtons = (
     <View style={{ flex: 1 }}>{updatePlanButton}</View>
   );
 
@@ -255,7 +255,7 @@ export default function SessionComponent(props: {
             alignItems: 'center',
           }}
         >
-          {additionalActionsRow}
+          {additionalActionsButtons}
           {restTimer}
           {saveButton}
         </View>

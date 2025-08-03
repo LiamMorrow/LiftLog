@@ -4,9 +4,11 @@ import { SurfaceText } from '@/components/presentation/surface-text';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { Session } from '@/models/session-models';
 import { useAppSelector } from '@/store';
+import { showSnackbar } from '@/store/app';
 import { SessionTarget, setCurrentSession } from '@/store/current-session';
 import {
   addProgramSession,
+  removeSessionFromProgram,
   selectActiveProgram,
   setProgramSession,
 } from '@/store/program';
@@ -37,6 +39,30 @@ export default function UpdatePlanButton({
   const sessionWithSameNameInPlan = program.sessions.some(
     (x) => x.name === session.blueprint.name,
   );
+  const onUpdate = () => {
+    const blueprintIndex = program.sessions.findIndex(
+      (x) => x.name === session.blueprint.name,
+    );
+    dispatch(
+      setProgramSession({
+        programId: programId,
+        sessionBlueprint: session.blueprint,
+        sessionIndex: blueprintIndex,
+      }),
+    );
+    dispatch(
+      showSnackbar({
+        text: t('Plan updated'),
+        action: t('Undo'),
+        dispatchAction: setProgramSession({
+          programId: programId,
+          sessionBlueprint: program.sessions[blueprintIndex],
+          sessionIndex: blueprintIndex,
+        }),
+      }),
+    );
+    onClose();
+  };
   const onAdd = () => {
     let blueprint = session.blueprint;
     if (sessionWithSameNameInPlan) {
@@ -60,26 +86,32 @@ export default function UpdatePlanButton({
     dispatch(
       addProgramSession({ programId: programId, sessionBlueprint: blueprint }),
     );
+    dispatch(
+      showSnackbar({
+        text: t('Workout added to plan'),
+        action: t('Undo'),
+        dispatchAction: [
+          removeSessionFromProgram({
+            programId: programId,
+            sessionBlueprint: blueprint,
+          }),
+          setCurrentSession({ target, session: session }),
+        ],
+      }),
+    );
     onClose();
   };
   const updateProps = sessionWithSameNameInPlan
     ? {
-        onAdditionalAction: () => {
-          const blueprintIndex = program.sessions.findIndex(
-            (x) => x.name === session.blueprint.name,
-          );
-          dispatch(
-            setProgramSession({
-              programId: programId,
-              sessionBlueprint: session.blueprint,
-              sessionIndex: blueprintIndex,
-            }),
-          );
-          onClose();
-        },
-        additionalActionText: t('Update'),
+        okText: t('Update'),
+        onOk: onUpdate,
+        additionalActionText: t('Add'),
+        onAdditionalAction: onAdd,
       }
-    : undefined;
+    : {
+        onOk: onAdd,
+        okText: t('Add'),
+      };
   const onCancel = onClose;
   return (
     <View>
@@ -98,8 +130,6 @@ export default function UpdatePlanButton({
         headline={t('UpdatePlan')}
         open={open}
         onCancel={onCancel}
-        onOk={onAdd}
-        okText={t('Add')}
         {...updateProps}
         textContent={
           <SurfaceText>
