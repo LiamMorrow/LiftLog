@@ -79,8 +79,7 @@
           "ru",
           "cs"
         ]
-      },
-      "appleTeamId": ""
+      }
     },
     "notification": {
       "icon": "./assets/notification.png"
