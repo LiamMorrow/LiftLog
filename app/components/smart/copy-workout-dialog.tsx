@@ -3,7 +3,7 @@ import { ProgramBlueprint, SessionBlueprint } from '@/models/session-models';
 import { useAppSelector } from '@/store';
 import { showSnackbar } from '@/store/app';
 import { addProgramSession, selectAllPrograms } from '@/store/program';
-import { T } from '@tolgee/react';
+import { T, useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { FlatList, View } from 'react-native';
 import {
@@ -30,6 +30,7 @@ export default function CopyWorkoutDialog({
   currentProgramId,
 }: CopyWorkoutDialogProps) {
   const dispatch = useDispatch();
+  const { t } = useTranslate();
   const allPrograms = useAppSelector(selectAllPrograms);
   const [selectedProgramId, setSelectedProgramId] = useState<string>('');
 
@@ -51,7 +52,9 @@ export default function CopyWorkoutDialog({
 
       dispatch(
         showSnackbar({
-          text: `Workout copied to ${targetProgram?.program.name}`,
+          text: t('Workout copied to {planName}', {
+            planName: targetProgram?.program.name,
+          }),
         }),
       );
 

@@ -335,5 +335,6 @@
   "Copy to": "Copy to",
   "Copy workout to plan": "Copy workout to plan",
   "No other plans available": "No other plans available",
-  "Copy": "Copy"
+  "Copy": "Copy",
+  "Workout copied to {planName}": "Workout copied to {planName}"
 }
