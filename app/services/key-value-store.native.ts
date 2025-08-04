@@ -11,7 +11,7 @@ export class KeyValueStore {
     }
     const oldFile = getOldDirFile(key);
     if (oldFile?.exists) {
-      return file.text();
+      return oldFile.text();
     }
     return undefined;
   }
