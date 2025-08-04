@@ -91,7 +91,7 @@ export default function CopyWorkoutDialog({
           <View style={{ gap: spacing[2] }}>
             <Text variant="bodyMedium">
               <T
-                keyName="Select a plan to copy '{workoutName}' to:"
+                keyName="Select a plan to copy {workoutName} to"
                 params={{ workoutName: sessionBlueprint.name }}
               />
             </Text>

@@ -641,7 +641,9 @@ export class SessionBlueprint {
     };
   }
 
-  with(other: Partial<SessionBlueprintPOJO>): SessionBlueprint {
+  with(
+    other: Partial<SessionBlueprintPOJO | SessionBlueprint>,
+  ): SessionBlueprint {
     return new SessionBlueprint(
       other.name ?? this.name,
       other.exercises
