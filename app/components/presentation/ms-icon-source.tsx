@@ -84,6 +84,7 @@ import { Platform } from 'react-native';
 import { match } from 'ts-pattern';
 import { msReplay } from '@material-symbols-react-native/outlined-400/msReplay';
 import { msAssignmentAdd } from '@material-symbols-react-native/outlined-400/msAssignmentAdd';
+import { msCopyAll } from '@material-symbols-react-native/outlined-400/msCopyAll';
 
 // Importing these icons using the below methods causes android app to crash
 // import { msAdd, msArrowDownward } from '@material-symbols-react-native/outlined-400';
@@ -98,6 +99,7 @@ const MaterialSymbols = {
   bugReport: msBugReport,
   close: msClose,
   contentCopy: msContentCopy,
+  copyAll: msCopyAll,
   assignmentAdd: msAssignmentAdd,
   delete: msDelete,
   edit: msEdit,

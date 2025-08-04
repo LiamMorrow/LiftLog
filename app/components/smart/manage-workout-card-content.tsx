@@ -1,6 +1,7 @@
 import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
 import SplitCardControl from '@/components/presentation/split-card-control';
+import CopyWorkoutDialog from '@/components/smart/copy-workout-dialog';
 import { SessionBlueprint } from '@/models/session-models';
 import { useAppSelectorWithArg } from '@/store';
 import { showSnackbar } from '@/store/app';
@@ -47,6 +48,7 @@ function Actions({
   const plan = useAppSelectorWithArg(selectProgram, programId);
   const { t } = useTranslate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [copyDialogOpen, setCopyDialogOpen] = useState(false);
   const moveSessionUp = () =>
     dispatch(
       moveSessionBlueprintUpInProgram({
@@ -128,7 +130,21 @@ function Actions({
             duplicateSession();
           }}
         />
+        <Menu.Item
+          title={t('Copy to')}
+          leadingIcon={'copyAll'}
+          onPress={() => {
+            setMenuOpen(false);
+            setCopyDialogOpen(true);
+          }}
+        />
       </Menu>
+      <CopyWorkoutDialog
+        visible={copyDialogOpen}
+        onDismiss={() => setCopyDialogOpen(false)}
+        sessionBlueprint={sessionBlueprint}
+        currentProgramId={programId}
+      />
     </>
   );
 }

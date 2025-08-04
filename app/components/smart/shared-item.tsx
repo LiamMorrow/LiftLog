@@ -4,6 +4,7 @@ import { SharedItem } from '@/models/feed-models';
 interface SharedItemProps {
   sharedItem: SharedItem;
 }
+// TODO
 export default function SharedItemComponent({ sharedItem }: SharedItemProps) {
   return (
     <>
