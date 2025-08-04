@@ -3,8 +3,10 @@ import RestFormat from '@/components/presentation/rest-format';
 import { SurfaceText } from '@/components/presentation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { ExerciseBlueprint } from '@/models/session-models';
+import { useState } from 'react';
 import { View } from 'react-native';
-import { IconButton, TouchableRipple } from 'react-native-paper';
+import { IconButton, Menu, TouchableRipple } from 'react-native-paper';
+import { useTranslate } from '@tolgee/react';
 
 interface ExerciseBlueprintSummaryProps {
   blueprint: ExerciseBlueprint;
@@ -12,6 +14,7 @@ interface ExerciseBlueprintSummaryProps {
   onMoveDown: () => void;
   onMoveUp: () => void;
   onRemove: () => void;
+  onCopyTo: () => void;
 }
 
 export default function ExerciseBlueprintSummary({
@@ -20,7 +23,11 @@ export default function ExerciseBlueprintSummary({
   onMoveDown,
   onMoveUp,
   onRemove,
+  onCopyTo,
 }: ExerciseBlueprintSummaryProps) {
+  const { t } = useTranslate();
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <TouchableRipple
       testID="exercise-blueprint-summary"
@@ -43,6 +50,25 @@ export default function ExerciseBlueprintSummary({
             <IconButton onPress={onMoveUp} icon={'arrowUpward'} />
             <IconButton onPress={onMoveDown} icon={'arrowDownward'} />
             <IconButton onPress={onRemove} icon={'delete'} />
+            <Menu
+              visible={menuOpen}
+              onDismiss={() => setMenuOpen(false)}
+              anchor={
+                <IconButton
+                  onPress={() => setMenuOpen(true)}
+                  icon={'moreHoriz'}
+                />
+              }
+            >
+              <Menu.Item
+                title={t('Copy to')}
+                leadingIcon={'copyAll'}
+                onPress={() => {
+                  setMenuOpen(false);
+                  onCopyTo();
+                }}
+              />
+            </Menu>
           </View>
         </View>
         <View style={{ gap: spacing[1], alignItems: 'flex-start' }}>
