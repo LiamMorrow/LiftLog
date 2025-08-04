@@ -330,5 +330,11 @@
   "WorkoutNotes": "Workout Notes",
   "Workout removed": "Workout removed",
   "Yes": "Yes",
-  "YourName": "Your Name"
+  "YourName": "Your Name",
+  "Select a plan to copy '{workoutName}' to:": "Select a plan to copy '{workoutName}' to:",
+  "Copy to": "Copy to",
+  "Copy workout to plan": "Copy workout to plan",
+  "No other plans available": "No other plans available",
+  "Copy": "Copy",
+  "Workout copied to {planName}": "Workout copied to {planName}"
 }
