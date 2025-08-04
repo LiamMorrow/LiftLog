@@ -9,6 +9,7 @@ import ItemList from '@/components/presentation/item-list';
 import LabelledForm from '@/components/presentation/labelled-form';
 import LabelledFormRow from '@/components/presentation/labelled-form-row';
 import LimitedHtml from '@/components/presentation/limited-html';
+import CopyExerciseDialog from '@/components/smart/copy-exercise-dialog';
 import { spacing } from '@/hooks/useAppTheme';
 import {
   ExerciseBlueprint,
@@ -175,6 +176,8 @@ function SessionEditor({
             renderItem={(blueprint, index) => (
               <ExerciseItem
                 blueprint={blueprint}
+                sessionIndex={sessionIndex}
+                programId={programId}
                 beginEdit={() => {
                   setSelectedExerciseIndex(index);
                   setSelectedExercise(blueprint);
@@ -236,22 +239,38 @@ function ExerciseItem({
   blueprint,
   beginEdit,
   beginRemove,
+  sessionIndex,
+  programId,
 }: {
   blueprint: ExerciseBlueprint;
   beginEdit: () => void;
   beginRemove: () => void;
+  sessionIndex: number;
+  programId: string;
 }) {
   const dispatch = useDispatch();
+  const [copyDialogOpen, setCopyDialogOpen] = useState(false);
 
   const moveDown = () => dispatch(moveExerciseDown(blueprint));
   const moveUp = () => dispatch(moveExerciseUp(blueprint));
+
   return (
-    <ExerciseBlueprintSummary
-      blueprint={blueprint}
-      onEdit={beginEdit}
-      onMoveDown={moveDown}
-      onMoveUp={moveUp}
-      onRemove={beginRemove}
-    />
+    <>
+      <ExerciseBlueprintSummary
+        blueprint={blueprint}
+        onEdit={beginEdit}
+        onMoveDown={moveDown}
+        onMoveUp={moveUp}
+        onRemove={beginRemove}
+        onCopyTo={() => setCopyDialogOpen(true)}
+      />
+      <CopyExerciseDialog
+        visible={copyDialogOpen}
+        onDismiss={() => setCopyDialogOpen(false)}
+        exerciseBlueprint={blueprint}
+        currentSessionIndex={sessionIndex}
+        programId={programId}
+      />
+    </>
   );
 }

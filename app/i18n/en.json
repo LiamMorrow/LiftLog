@@ -336,5 +336,9 @@
   "Copy workout to plan": "Copy workout to plan",
   "No other plans available": "No other plans available",
   "Copy": "Copy",
-  "Workout copied to {planName}": "Workout copied to {planName}"
+  "Workout copied to {planName}": "Workout copied to {planName}",
+  "Copy exercise to session": "Copy exercise to session",
+  "Select a session to copy '{exerciseName}' to:": "Select a session to copy '{exerciseName}' to:",
+  "No other sessions available": "No other sessions available",
+  "Exercise \"{exerciseBlueprint.name}\" copied to \"{targetSession.name}\"": "Exercise \"{exerciseBlueprint.name}\" copied to \"{targetSession.name}\""
 }
