@@ -6,6 +6,10 @@ import { getLibraryDirectory } from '@/modules/native-crypto';
 export class KeyValueStore {
   async getItem(key: string): Promise<string | undefined> {
     const file = getFile(key);
+    const oldFile = getOldDirFile(key);
+    if (oldFile?.exists) {
+      return file.text();
+    }
     if (file.exists) {
       return file.text();
     }
@@ -13,7 +17,11 @@ export class KeyValueStore {
   }
 
   async getItemBytes(key: string): Promise<Uint8Array | undefined> {
-    const file = getFile(key);
+    let file = getFile(key);
+    const oldFile = getOldDirFile(key);
+    if (oldFile?.exists) {
+      file = oldFile;
+    }
     if (file.exists) {
       const readBytes = new Uint8Array(file.size!);
       let offset = 0;
@@ -64,13 +72,17 @@ export class KeyValueStore {
   }
 }
 
-function getFile(key: string): File {
+function getOldDirFile(key: string): File | undefined {
   // For iOS, use the Library/Application Support directory (equivalent to .NET MAUI's FileSystem.AppDataDirectory)
   // For Android, continue using the document directory as that is what is equivalent
   if (Platform.OS === 'ios' || Platform.OS === 'macos') {
     const appSupportDir = getLibraryDirectory();
     return new File(Paths.join(appSupportDir, key));
   } else {
-    return new File(Paths.join(Paths.document, key));
+    return undefined;
   }
+}
+
+function getFile(key: string): File {
+  return new File(Paths.join(Paths.document, key));
 }
