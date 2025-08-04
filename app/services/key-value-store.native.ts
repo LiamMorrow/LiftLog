@@ -6,31 +6,24 @@ import { getLibraryDirectory } from '@/modules/native-crypto';
 export class KeyValueStore {
   async getItem(key: string): Promise<string | undefined> {
     const file = getFile(key);
-    const oldFile = getOldDirFile(key);
-    if (oldFile?.exists) {
+    if (file.exists) {
       return file.text();
     }
-    if (file.exists) {
+    const oldFile = getOldDirFile(key);
+    if (oldFile?.exists) {
       return file.text();
     }
     return undefined;
   }
 
   async getItemBytes(key: string): Promise<Uint8Array | undefined> {
-    let file = getFile(key);
+    const file = getFile(key);
+    if (file.exists) {
+      return this.readBytes(file);
+    }
     const oldFile = getOldDirFile(key);
     if (oldFile?.exists) {
-      file = oldFile;
-    }
-    if (file.exists) {
-      const readBytes = new Uint8Array(file.size!);
-      let offset = 0;
-      // This is probably slower than just using sync file.read, but it won't lock the UI thread...
-      for await (const bytes of file.readableStream().values()) {
-        readBytes.set(bytes, offset);
-        offset += bytes.length;
-      }
-      return readBytes;
+      return this.readBytes(oldFile);
     }
     return undefined;
   }
@@ -70,14 +63,25 @@ export class KeyValueStore {
       file.delete();
     }
   }
+
+  private async readBytes(file: File): Promise<Uint8Array> {
+    const readBytes = new Uint8Array(file.size!);
+    let offset = 0;
+    // This is probably slower than just using sync file.read, but it won't lock the UI thread...
+    for await (const bytes of file.readableStream().values()) {
+      readBytes.set(bytes, offset);
+      offset += bytes.length;
+    }
+    return readBytes;
+  }
 }
 
 function getOldDirFile(key: string): File | undefined {
-  // For iOS, use the Library/Application Support directory (equivalent to .NET MAUI's FileSystem.AppDataDirectory)
-  // For Android, continue using the document directory as that is what is equivalent
+  // For iOS, the Library/Application Support directory (equivalent to .NET MAUI's FileSystem.AppDataDirectory)
+  // We want to only read from this, and store in the appropriate documents dir
   if (Platform.OS === 'ios' || Platform.OS === 'macos') {
-    const appSupportDir = getLibraryDirectory();
-    return new File(Paths.join(appSupportDir, key));
+    const libraryDir = getLibraryDirectory();
+    return new File(Paths.join(libraryDir, key));
   } else {
     return undefined;
   }
