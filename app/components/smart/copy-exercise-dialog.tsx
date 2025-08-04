@@ -47,9 +47,8 @@ export default function CopyExerciseDialog({
 
       // Create a new session blueprint with the added exercise
       const newExercises = [...targetSession.exercises, exerciseBlueprint];
-      const updatedSession = SessionBlueprint.fromPOJO({
-        ...targetSession.toPOJO(),
-        exercises: newExercises.map((ex) => ex.toPOJO()),
+      const updatedSession = targetSession.with({
+        exercises: newExercises,
       });
 
       // Update the program session
@@ -63,13 +62,10 @@ export default function CopyExerciseDialog({
 
       dispatch(
         showSnackbar({
-          text: t(
-            'Exercise "{exerciseBlueprint.name}" copied to "{targetSession.name}"',
-            {
-              exerciseName: exerciseBlueprint.name,
-              targetSession: targetSession.name,
-            },
-          ),
+          text: t('Exercise {exerciseName} copied to {targetSessionName}', {
+            exerciseName: exerciseBlueprint.name,
+            targetSession: targetSession.name,
+          }),
         }),
       );
 
@@ -107,7 +103,7 @@ export default function CopyExerciseDialog({
           <View style={{ gap: spacing[2] }}>
             <Text variant="bodyMedium">
               <T
-                keyName="Select a session to copy '{exerciseName}' to:"
+                keyName="Select a session to copy {exerciseName} to"
                 params={{ exerciseName: exerciseBlueprint.name }}
               />
             </Text>
