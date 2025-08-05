@@ -31,9 +31,9 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   }
 
   const isBase64Encoded = event.isBase64Encoded;
-  
+
   let bodyBuffer: Buffer;
-  
+
   const contentType =
     event.headers["Content-Type"] || event.headers["content-type"];
 

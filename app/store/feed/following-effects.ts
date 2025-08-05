@@ -73,7 +73,6 @@ export function addFollowingEffects() {
         sharedFeedUser,
       );
 
-      console.log('RESULT', result);
       if (result.isSuccess()) {
         dispatch(putFollowedUser(sharedFeedUser));
         dispatch(setSharedFeedUser(RemoteData.notAsked()));
