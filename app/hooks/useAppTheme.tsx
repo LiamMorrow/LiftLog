@@ -126,7 +126,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   const isDark = colorScheme === 'dark';
   // If the device is not compatible, it will return a theme based on the fallback source color (optional, default to #6750A4)
   const { theme, updateTheme, resetTheme } = useMaterial3Theme({
-    fallbackSourceColor: '0x00AA00',
+    fallbackSourceColor: '0x005500',
     sourceColor: colorSchemeSeed === 'default' ? undefined! : colorSchemeSeed,
   });
   useEffect(() => {

@@ -7,7 +7,7 @@ import { sleep } from '@/utils/sleep';
 import { createMaterial3Theme } from '@pchmn/expo-material3-theme';
 import { T, useTranslate } from '@tolgee/react';
 import { useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { View, FlatList } from 'react-native';
 import { Button, List, TouchableRipple } from 'react-native-paper';
 
 interface ThemeChooserProps {
@@ -63,6 +63,25 @@ export default function ThemeChooser(props: ThemeChooserProps) {
     props.onUpdateTheme(seed);
   };
 
+  const colorSeeds = [
+    '#550000',
+    '#0x005500',
+    '#000055',
+    '#AA00AA',
+    '#00AAAA',
+    '#AAAA00',
+    '#FFC0CB',
+    '#7f3f00',
+  ] as const;
+
+  const renderColorBall = ({ item }: { item: `#${string}` }) => (
+    <ColorBall
+      selectedSeed={selectedSeed}
+      seed={item}
+      onUpdateTheme={updateSeed}
+    />
+  );
+
   return (
     <>
       <List.Item title={t('Theme')} />
@@ -84,48 +103,14 @@ export default function ThemeChooser(props: ThemeChooserProps) {
             <T keyName="Default" />
           </Button>
         </FocusRing>
-        <View style={{ gap: spacing[2], flexDirection: 'row' }}>
-          <ColorBall
-            selectedSeed={selectedSeed}
-            seed="#AA0000"
-            onUpdateTheme={updateSeed}
-          />
-          <ColorBall
-            selectedSeed={selectedSeed}
-            seed="#00AA00"
-            onUpdateTheme={updateSeed}
-          />
-          <ColorBall
-            selectedSeed={selectedSeed}
-            seed="#0000AA"
-            onUpdateTheme={updateSeed}
-          />
-          <ColorBall
-            selectedSeed={selectedSeed}
-            seed="#AA00AA"
-            onUpdateTheme={updateSeed}
-          />
-          <ColorBall
-            selectedSeed={selectedSeed}
-            seed="#00AAAA"
-            onUpdateTheme={updateSeed}
-          />
-          <ColorBall
-            selectedSeed={selectedSeed}
-            seed="#AAAA00"
-            onUpdateTheme={updateSeed}
-          />
-          <ColorBall
-            selectedSeed={selectedSeed}
-            seed="#FFC0CB"
-            onUpdateTheme={updateSeed}
-          />
-          <ColorBall
-            selectedSeed={selectedSeed}
-            seed="#7f3f00"
-            onUpdateTheme={updateSeed}
-          />
-        </View>
+        <FlatList
+          horizontal
+          data={colorSeeds}
+          renderItem={renderColorBall}
+          keyExtractor={(item) => item}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: spacing[2], padding: spacing[2] }}
+        />
       </View>
     </>
   );
