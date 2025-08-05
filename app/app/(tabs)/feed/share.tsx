@@ -97,6 +97,7 @@ export default function FeedSharePage() {
                   {t('Cancel')}
                 </Button>
                 <Button
+                  testID="feed-share-accept-button"
                   mode="contained"
                   onPress={handleAcceptRequest}
                   icon="check"

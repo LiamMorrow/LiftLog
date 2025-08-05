@@ -44,6 +44,7 @@ export default function Feed() {
   const dispatch = useDispatch();
   return (
     <FlatList
+      testID="feed-list"
       ListHeaderComponent={<FeedProfileHeader />}
       onRefresh={() => {
         dispatch(fetchInboxItems({ fromUserAction: true }));
@@ -82,6 +83,9 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
   const dispatch = useDispatch();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [focusPublish, setFocusPublish] = useState(false);
+  const shareUrl = `https://app.liftlog.online/feed/share?id=${identity.lookup}${
+    identity.name ? `&name=${encodeURIComponent(identity.name)}` : ''
+  }`;
   return (
     <>
       <Card mode="contained">
@@ -91,6 +95,12 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
           titleVariant="headlineSmall"
         />
         <Card.Content>
+          <View
+            style={{ display: 'none' }}
+            testID="share-url"
+            // @ts-expect-error -- This only works on web, ignored elsewhere
+            dataSet={{ shareUrl }}
+          />
           <SurfaceText>
             This is your feed, share it with your friends to let them follow
             your workouts!
@@ -108,6 +118,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
                 You are not publishing your workouts!
               </SurfaceText>
               <Button
+                testID="feed-fix-button"
                 onPress={() => {
                   setFocusPublish(true);
                   setEditDialogOpen(true);
@@ -130,17 +141,14 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
             }}
           />
           <Button
+            testID="feed-share-button"
             mode="contained"
             icon={'share'}
             onPress={() => {
               dispatch(
                 shareString({
                   title: 'Share feed profile',
-                  value: `https://app.liftlog.online/feed/share?id=${identity.lookup}${
-                    identity.name
-                      ? `&name=${encodeURIComponent(identity.name)}`
-                      : ''
-                  }`,
+                  value: shareUrl,
                 }),
               );
             }}
@@ -200,6 +208,7 @@ function FeedProfileEditor({
         </LabelledForm>
         <List.Section>
           <ListSwitch
+            testID="feed-publish-workouts-switch"
             focus={focusPublish}
             headline={t('PublishWorkout')}
             supportingText={t('PublishWorkoutSubtitle')}

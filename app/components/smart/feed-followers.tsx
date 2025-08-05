@@ -100,7 +100,12 @@ function FeedFollowRequest(props: { request: FollowRequest }) {
               iconColor={colors.error}
               onPress={handleDeny}
             />
-            <Button mode="contained" icon={'check'} onPress={handleAccept}>
+            <Button
+              testID="feed-accept-follow-request"
+              mode="contained"
+              icon={'check'}
+              onPress={handleAccept}
+            >
               {t('Accept')}
             </Button>
           </View>

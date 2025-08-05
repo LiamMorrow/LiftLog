@@ -108,7 +108,7 @@ function Header({
           padding: spacing[4],
         }}
       >
-        <IconButton icon={'close'} onPress={onClose} />
+        <IconButton testID="dialog-close" icon={'close'} onPress={onClose} />
         <SurfaceText
           style={{
             marginRight: 'auto',
