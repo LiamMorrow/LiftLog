@@ -22,7 +22,6 @@ export default function HistoryEditPage() {
   const { dismissTo } = useRouter();
 
   const save = () => {
-    console.log('SAVE');
     dispatch(persistCurrentSession('historySession'));
     if (session) {
       dispatch(addUnpublishedSessionId(session.id));

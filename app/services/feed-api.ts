@@ -248,8 +248,6 @@ export class FeedApiService {
   async postSharedItemAsync(
     request: CreateSharedItemRequest,
   ): Promise<ApiResult<CreateSharedItemResponse>> {
-    const body = stringify(request);
-    console.log(body);
     return this.getApiResultAsync(async () => {
       const response = await fetch(`${this.baseUrl}shareditem`, {
         method: 'POST',
