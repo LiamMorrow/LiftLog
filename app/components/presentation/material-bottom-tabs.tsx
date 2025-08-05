@@ -56,6 +56,10 @@ export function MaterialBottomTabs({
               });
             }
           }}
+          getTestID={({ route }) => {
+            const { options } = descriptors[route.key];
+            return options.tabBarButtonTestID;
+          }}
           getBadge={({ route }) => {
             const { options } = descriptors[route.key];
             return options.tabBarBadge;

@@ -116,6 +116,7 @@ function ListUpcomingWorkouts({
               <Button
                 icon={'playCircle'}
                 mode="contained"
+                testID="resume-workout-button"
                 onPress={() => selectSession(currentSession)}
               >
                 <T keyName={'Resume workout'} />
@@ -162,6 +163,7 @@ function ListUpcomingWorkouts({
               <Button
                 mode="contained"
                 icon={'playCircle'}
+                testID="start-resume-workout-button"
                 onPress={() => selectSession(session)}
               >
                 {session.isStarted ? (

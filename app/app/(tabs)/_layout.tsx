@@ -13,6 +13,7 @@ export default function Layout() {
         name="(session)"
         options={{
           tabBarLabel: t('Workout'),
+          tabBarButtonTestID: 'nav__workout',
           tabBarIcon: ({ color, size, focused }) => {
             return (
               <Icon
@@ -29,6 +30,7 @@ export default function Layout() {
         name="feed"
         options={{
           tabBarLabel: t('Feed'),
+          tabBarButtonTestID: 'nav__feed',
           tabBarBadge: followRequestCount || undefined!,
           tabBarIcon: ({ color, size, focused }) => {
             return (
@@ -46,6 +48,7 @@ export default function Layout() {
         name="stats"
         options={{
           tabBarLabel: t('Stats'),
+          tabBarButtonTestID: 'nav__stats',
           tabBarIcon: ({ color, size, focused }) => {
             return (
               <Icon
@@ -62,6 +65,7 @@ export default function Layout() {
         name="history"
         options={{
           tabBarLabel: t('History'),
+          tabBarButtonTestID: 'nav__history',
           tabBarIcon: ({ color, size }) => {
             return <Icon source={'history'} size={size} color={color} />;
           },
@@ -72,6 +76,7 @@ export default function Layout() {
         name="settings"
         options={{
           tabBarLabel: t('Settings'),
+          tabBarButtonTestID: 'nav__settings',
           tabBarIcon: ({ color, size, focused }) => {
             return (
               <Icon
