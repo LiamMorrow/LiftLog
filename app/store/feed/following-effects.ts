@@ -68,12 +68,12 @@ export function addFollowingEffects() {
 
       const identity = FeedIdentity.fromPOJO(identityRemote.data);
       const sharedFeedUser = FeedUser.fromPOJO(sharedFeedUserRemote.data);
-
       const result = await feedFollowService.requestToFollowAUserAsync(
         identity,
         sharedFeedUser,
       );
 
+      console.log('RESULT', result);
       if (result.isSuccess()) {
         dispatch(putFollowedUser(sharedFeedUser));
         dispatch(setSharedFeedUser(RemoteData.notAsked()));

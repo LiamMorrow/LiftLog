@@ -17,6 +17,7 @@ import sessionEditorReducer from './session-editor';
 import { statsReducer } from '@/store/stats';
 import { resolveServices, Services } from '@/services';
 import { aiPlannerReducer } from '@/store/ai-planner';
+import * as Sentry from '@sentry/react-native';
 
 const listenerMiddleware = createListenerMiddleware({
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
@@ -96,7 +97,11 @@ export function addEffect(
         });
       } catch (e) {
         services.logger.warn(`Error during effect [${action.type}]:`, e);
-        throw e;
+        Sentry.withScope(function (scope) {
+          scope.setFingerprint(['{{ default }}', action.type]);
+          Sentry.captureException(e);
+        });
+        return;
       }
     },
   });
