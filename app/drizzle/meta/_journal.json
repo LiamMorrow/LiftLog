@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1754441458864,
+      "tag": "0000_tearful_reavers",
+      "breakpoints": true
+    }
+  ]
+}

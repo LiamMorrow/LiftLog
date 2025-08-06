@@ -52,6 +52,10 @@ export const shareString = createAction<{ title: string; value: string }>(
   'shareString',
 );
 
+export const initializeBuiltInExerciseList = createAction(
+  'initializeBuiltInExerciseList',
+);
+
 export type SnackbarDescriptor =
   | {
       text: string;

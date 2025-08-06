@@ -17,6 +17,9 @@ import { StringSharer } from '@/services/string-sharer';
 import { tolgee } from '@/services/tolgee';
 import { RootState } from '@/store';
 import { Store } from '@reduxjs/toolkit';
+import { File } from 'expo-file-system/next';
+import { drizzle } from 'drizzle-orm/expo-sqlite';
+import { defaultDatabaseDirectory, openDatabaseSync } from 'expo-sqlite';
 
 export type Services = Awaited<ReturnType<typeof resolveServicesInternal>>;
 
@@ -54,6 +57,13 @@ function resolveServicesInternal(store: Store<RootState>) {
     store.getState,
   );
 
+  const dbFile = new File(defaultDatabaseDirectory + '/' + 'db.db');
+  if (dbFile.exists) {
+    dbFile.delete();
+  }
+  const expo = openDatabaseSync('db.db');
+  const db = drizzle(expo);
+
   return {
     logger,
     keyValueStore,
@@ -71,6 +81,7 @@ function resolveServicesInternal(store: Store<RootState>) {
     preferenceService,
     aiChatService,
     tolgee,
+    db,
   };
 }
 

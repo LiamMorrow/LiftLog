@@ -1,0 +1,1 @@
+exercises.json: https://github.com/wrkout/exercises.json
