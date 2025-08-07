@@ -17,15 +17,14 @@ import { StringSharer } from '@/services/string-sharer';
 import { tolgee } from '@/services/tolgee';
 import { RootState } from '@/store';
 import { Store } from '@reduxjs/toolkit';
-import { File } from 'expo-file-system/next';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
-import { defaultDatabaseDirectory, openDatabaseSync } from 'expo-sqlite';
+import { openDatabaseAsync } from 'expo-sqlite';
 
 export type Services = Awaited<ReturnType<typeof resolveServicesInternal>>;
 
-let resolvedServices: Services | undefined;
+let resolvedServices: Promise<Services> | undefined;
 
-function resolveServicesInternal(store: Store<RootState>) {
+async function resolveServicesInternal(store: Store<RootState>) {
   const logger = new Logger();
   const keyValueStore = new KeyValueStore();
   const progressRepository = new ProgressRepository(store.getState);
@@ -57,11 +56,11 @@ function resolveServicesInternal(store: Store<RootState>) {
     store.getState,
   );
 
-  const dbFile = new File(defaultDatabaseDirectory + '/' + 'db.db');
-  if (dbFile.exists) {
-    dbFile.delete();
-  }
-  const expo = openDatabaseSync('db.db');
+  // const dbFile = new File(defaultDatabaseDirectory + '/' + 'db.db');
+  // if (dbFile.exists) {
+  //   dbFile.delete();
+  // }
+  const expo = await openDatabaseAsync('db.db');
   const db = drizzle(expo);
 
   return {

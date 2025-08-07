@@ -26,12 +26,8 @@ import { Platform } from 'react-native';
 export function applySettingsEffects() {
   addEffect(
     initializeSettingsStateSlice,
-    async (
-      _,
-      { cancelActiveListeners, dispatch, extra: { preferenceService } },
-    ) => {
+    async (_, { dispatch, extra: { preferenceService } }) => {
       const start = performance.now();
-      cancelActiveListeners();
 
       const [
         useImperialUnits,
@@ -86,6 +82,7 @@ export function applySettingsEffects() {
       dispatch(setProToken(proToken));
 
       // migrate pro token to a revenuecat
+      await Purchases.setLogLevel(Purchases.LOG_LEVEL.INFO);
 
       if (Platform.OS === 'ios') {
         Purchases.configure({
@@ -107,6 +104,7 @@ export function applySettingsEffects() {
         `initializeSettingsStateSlice effect took ${(end - start).toFixed(2)}ms`,
       );
     },
+    { cancelActiveListeners: true },
   );
 
   addEffect(

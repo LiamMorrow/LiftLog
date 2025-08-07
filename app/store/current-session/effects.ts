@@ -27,7 +27,6 @@ export function applyCurrentSessionEffects() {
       _,
       { cancelActiveListeners, dispatch, extra: { keyValueStore, logger } },
     ) => {
-      cancelActiveListeners();
       try {
         const sw = performance.now();
         const currentSessionVersion =
@@ -88,6 +87,7 @@ export function applyCurrentSessionEffects() {
         throw e;
       }
     },
+    { cancelActiveListeners: true },
   );
 
   addEffect(

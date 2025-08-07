@@ -20,8 +20,7 @@ import { aiPlannerReducer } from '@/store/ai-planner';
 import * as Sentry from '@sentry/react-native';
 
 const listenerMiddleware = createListenerMiddleware({
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-  extra: (s: Store) => resolveServices(s as any),
+  extra: (s: Store) => resolveServices(s as Store<RootState>),
 });
 
 const store = configureStore({
@@ -47,7 +46,7 @@ const store = configureStore({
 export const startAppListening = listenerMiddleware.startListening.withTypes<
   RootState,
   AppDispatch,
-  (s: Store<RootState>) => Services
+  (s: Store<RootState>) => Promise<Services>
 >();
 
 type EffectFn<T> = (
@@ -64,30 +63,38 @@ type EffectFn<T> = (
   },
 ) => void | Promise<void>;
 
+type AddEffectOptions = { cancelActiveListeners: boolean };
 export function addEffect(
   allActions: undefined,
   effect: EffectFn<UnknownAction>,
+  options?: AddEffectOptions,
 ): void;
 export function addEffect<TAction extends { type: string }>(
   action: TAction[],
   effect: EffectFn<UnknownAction>,
+  options?: AddEffectOptions,
 ): void;
 export function addEffect<TAction extends { type: string }>(
   action: TAction,
   effect: EffectFn<TAction extends ActionCreator<infer U> ? U : TAction>,
+  options?: AddEffectOptions,
 ): void;
 export function addEffect(
   actionPredicate: { type: string } | { type: string }[] | undefined,
   effect: EffectFn<UnknownAction>,
+  options?: AddEffectOptions,
 ) {
   startAppListening({
     predicate: (action) =>
       !actionPredicate ||
       [actionPredicate].flat().some((x) => x.type === action.type),
     effect: async (action, listenerApi) => {
+      if (options?.cancelActiveListeners) {
+        listenerApi.cancelActiveListeners();
+      }
       const originalState = listenerApi.getOriginalState();
       const stateAfterReduce = listenerApi.getState();
-      const services = listenerApi.extra(store);
+      const services = await listenerApi.extra(store);
       try {
         await effect(action, {
           ...listenerApi,

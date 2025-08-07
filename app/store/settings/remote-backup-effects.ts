@@ -59,12 +59,9 @@ export function addRemoteBackupEffects() {
         getState,
         dispatch,
         extra: { progressRepository, logger, encryptionService },
-        signal,
-        cancelActiveListeners,
         throwIfCancelled,
       },
     ) => {
-      cancelActiveListeners();
       const start = performance.now();
       settings ??= getState().settings.remoteBackupSettings;
       const { endpoint, apiKey, includeFeedAccount } = settings;
@@ -250,5 +247,6 @@ export function addRemoteBackupEffects() {
         dispatch(setLastBackup(RemoteData.error(errorMessage)));
       }
     },
+    { cancelActiveListeners: true },
   );
 }

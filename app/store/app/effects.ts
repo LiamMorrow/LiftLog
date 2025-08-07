@@ -23,18 +23,13 @@ import { initializeProgramStateSlice } from '@/store/program';
 import { initializeSettingsStateSlice } from '@/store/settings';
 import { initializeStoredSessionsStateSlice } from '@/store/stored-sessions';
 import { exerciseTable, migrationVersionsTable } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import builtInExerciseListJson from '../../assets/exercises.json';
 
 export function applyAppEffects() {
   addEffect(
     initializeAppStateSlice,
-    async (
-      _,
-      { cancelActiveListeners, dispatch, extra: { notificationService, db } },
-    ) => {
-      cancelActiveListeners();
-
+    async (_, { dispatch, extra: { notificationService, db } }) => {
       // Ensure this runs first
       await migrate(db, migrations);
 
@@ -52,15 +47,16 @@ export function applyAppEffects() {
 
       dispatch(setIsHydrated(true));
     },
+    { cancelActiveListeners: true },
   );
 
   addEffect(initializeBuiltInExerciseList, async (_, { extra: { db } }) => {
     const migrationVersion = (
       await db.select().from(migrationVersionsTable)
     ).at(0);
-    if (migrationVersion?.builtInExerciseListVersion === 1) {
-      return;
-    }
+    // if (migrationVersion?.builtInExerciseListVersion === 1) {
+    //   return;
+    // }
 
     await db.delete(exerciseTable).where(eq(exerciseTable.isBuiltIn, true));
     const insertValues: (typeof exerciseTable.$inferInsert)[] =
@@ -76,7 +72,9 @@ export function applyAppEffects() {
         force: ex.force,
         mechanic: ex.mechanic,
       }));
-    await db.insert(exerciseTable).values(insertValues);
+    for (const exercise of insertValues) {
+      await db.insert(exerciseTable).values(exercise);
+    }
     if (!migrationVersion) {
       await db
         .insert(migrationVersionsTable)
@@ -86,6 +84,15 @@ export function applyAppEffects() {
         .update(migrationVersionsTable)
         .set({ builtInExerciseListVersion: 1 });
     }
+
+    console.log(await db.select().from(exerciseTable).limit(1));
+
+    // Test FTS search functionality
+    const exerciseSearch = db.all(
+      sql`SELECT * FROM exercise_fts
+          WHERE exercise_fts MATCH 'crunch'`,
+    );
+    console.log('FTS search working! Found exercises:', exerciseSearch);
   });
 
   addEffect(

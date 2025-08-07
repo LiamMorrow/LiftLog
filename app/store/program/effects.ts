@@ -26,17 +26,8 @@ const storageKey = 'SavedPrograms';
 export function applyProgramEffects() {
   addEffect(
     initializeProgramStateSlice,
-    async (
-      _,
-      {
-        getState,
-        cancelActiveListeners,
-        dispatch,
-        extra: { keyValueStore, logger },
-      },
-    ) => {
+    async (_, { getState, dispatch, extra: { keyValueStore, logger } }) => {
       const start = performance.now();
-      cancelActiveListeners();
       // eslint-disable-next-line prefer-const
       let [version, programBytes] = await Promise.all([
         keyValueStore.getItem(`${storageKey}-Version`),
@@ -116,6 +107,7 @@ export function applyProgramEffects() {
         `initializeProgramStateSlice effect took ${(end - start).toFixed(2)} ms`,
       );
     },
+    { cancelActiveListeners: true },
   );
 
   // Persist after changes
@@ -173,14 +165,14 @@ export function applyProgramEffects() {
       _,
       {
         signal,
-        cancelActiveListeners,
+
         dispatch,
         getState,
         extra: { sessionService, logger },
       },
     ) => {
       const start = performance.now();
-      cancelActiveListeners();
+
       await yieldToEventLoop();
 
       const state = getState();
@@ -204,6 +196,7 @@ export function applyProgramEffects() {
         `fetchUpcomingSessions effect took ${(end - start).toFixed(2)} ms`,
       );
     },
+    { cancelActiveListeners: true },
   );
 }
 // Helper function to yield control back to the event loop

@@ -33,7 +33,12 @@
           "organization": "liftlog"
         }
       ],
-      "expo-sqlite"
+      [
+        "expo-sqlite",
+        {
+          "enableFTS": true
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
@@ -43,9 +48,7 @@
     "android": {
       "package": "com.limajuice.liftlog",
       "edgeToEdgeEnabled": true,
-      "permissions": [
-        "android.permission.SCHEDULE_EXACT_ALARM"
-      ],
+      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"],
       "intentFilters": [
         {
           "action": "VIEW",
@@ -56,10 +59,7 @@
               "host": "app.liftlog.online"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
       "adaptiveIcon": {
@@ -70,9 +70,7 @@
     },
     "ios": {
       "bundleIdentifier": "com.limajuice.liftlog",
-      "associatedDomains": [
-        "applinks:app.liftlog.online"
-      ],
+      "associatedDomains": ["applinks:app.liftlog.online"],
       "supportsTablet": true,
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": true,

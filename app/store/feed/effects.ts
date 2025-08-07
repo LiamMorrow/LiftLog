@@ -28,15 +28,7 @@ const StorageKey = 'FeedState';
 export function applyFeedEffects() {
   addEffect(
     initializeFeedStateSlice,
-    async (
-      _,
-      {
-        cancelActiveListeners,
-        dispatch,
-        extra: { keyValueStore, logger, encryptionService },
-      },
-    ) => {
-      cancelActiveListeners();
+    async (_, { dispatch, extra: { keyValueStore, logger } }) => {
       const sw = performance.now();
       try {
         const state = await keyValueStore.getItemBytes(StorageKey);
@@ -73,6 +65,7 @@ export function applyFeedEffects() {
         throw e;
       }
     },
+    { cancelActiveListeners: true },
   );
 
   addEffect(feedApiError, async (action, { dispatch, extra: { logger } }) => {
@@ -89,14 +82,8 @@ export function applyFeedEffects() {
     undefined,
     async (
       _,
-      {
-        cancelActiveListeners,
-        stateAfterReduce,
-        originalState,
-        extra: { keyValueStore },
-      },
+      { stateAfterReduce, originalState, extra: { keyValueStore } },
     ) => {
-      cancelActiveListeners();
       if (
         stateAfterReduce.feed === originalState.feed ||
         !stateAfterReduce.feed.isHydrated
@@ -109,6 +96,7 @@ export function applyFeedEffects() {
       await keyValueStore.setItem(StorageKey, bytes);
       await keyValueStore.setItem(`${StorageKey}Version`, '1');
     },
+    { cancelActiveListeners: true },
   );
 
   addEffect(
@@ -122,7 +110,6 @@ export function applyFeedEffects() {
         extra: { feedIdentityService },
       },
     ) => {
-      cancelActiveListeners();
       if (getState().feed.identity.isLoading()) {
         return;
       }
@@ -149,6 +136,7 @@ export function applyFeedEffects() {
       }
       dispatch(setIdentity(RemoteData.success(identityResult.data)));
     },
+    { cancelActiveListeners: true },
   );
 
   addEffect(
@@ -210,7 +198,6 @@ export function applyFeedEffects() {
         signal,
       },
     ) => {
-      cancelActiveListeners();
       const feedIdentityRemote = selectFeedIdentityRemote(stateAfterReduce);
       const { payload } = action;
       if (!feedIdentityRemote.isSuccess()) {
@@ -259,6 +246,7 @@ export function applyFeedEffects() {
 
       dispatch(setIdentity(RemoteData.success(result.data!)));
     },
+    { cancelActiveListeners: true },
   );
 
   addSharedItemEffects();

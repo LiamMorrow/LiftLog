@@ -18,11 +18,7 @@ const storageKey = 'Progress';
 export function applyStoredSessionsEffects() {
   addEffect(
     initializeStoredSessionsStateSlice,
-    async (
-      _,
-      { cancelActiveListeners, dispatch, extra: { keyValueStore } },
-    ) => {
-      cancelActiveListeners();
+    async (_, { dispatch, extra: { keyValueStore } }) => {
       let version = await keyValueStore.getItem(`${storageKey}-Version`);
       if (!version) {
         version = '2';
@@ -50,15 +46,12 @@ export function applyStoredSessionsEffects() {
       dispatch(setIsHydrated(true));
       dispatch(fetchUpcomingSessions());
     },
+    { cancelActiveListeners: true },
   );
 
   addEffect(
     [deleteStoredSession, addStoredSession, upsertStoredSessions],
-    async (
-      _,
-      { cancelActiveListeners, getState, extra: { keyValueStore } },
-    ) => {
-      cancelActiveListeners();
+    async (_, { getState, extra: { keyValueStore } }) => {
       const s = LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2.encode(
         toSessionHistoryDao(getState().storedSessions.sessions),
       );
@@ -67,5 +60,6 @@ export function applyStoredSessionsEffects() {
         keyValueStore.setItem(storageKey, s.finish()),
       ]);
     },
+    { cancelActiveListeners: true },
   );
 }

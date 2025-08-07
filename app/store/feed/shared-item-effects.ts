@@ -25,7 +25,6 @@ export function addSharedItemEffects() {
         extra: { encryptionService, feedApiService, stringSharer, logger },
       },
     ) => {
-      cancelActiveListeners();
       const identity = getState().feed.identity;
       if (!identity.isSuccess()) {
         logger.debug('Identity', identity);
@@ -84,6 +83,7 @@ export function addSharedItemEffects() {
         'Share your plan!',
       );
     },
+    { cancelActiveListeners: true },
   );
 
   addEffect(
