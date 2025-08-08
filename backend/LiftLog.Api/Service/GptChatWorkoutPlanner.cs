@@ -105,7 +105,7 @@ public partial class GptChatWorkoutPlanner(
                                 "Used for all responses. When you are talking to the user, use a messageResponse. When you are sending a plan, use a chatPlan",
                                 jsonSchemaIsStrict: true
                             ),
-                            StoredOutputEnabled = true,
+                            StoredOutputEnabled = false,
                         },
                         cancellationToken: cancellationToken.Token
                     )
