@@ -55,20 +55,20 @@ export const useScroll = (invertedScroll?: boolean): ScrollContextValues => {
   const [scrollHandlerLastFired, setScrollHandlerLastFired] = useState<
     boolean | undefined
   >(undefined);
-
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    const contentHeight = event.nativeEvent.contentSize.height;
+    const layoutHeight = event.nativeEvent.layoutMeasurement.height;
+    const scrollHeight = contentHeight - layoutHeight;
+    const isScrolled = invertedScroll ? offsetY < scrollHeight : offsetY > 0;
+    if (scrollHandlerLastFired === isScrolled) {
+      return;
+    }
+    setScrollHandlerLastFired(isScrolled);
+    ctx.setScrolled(isScrolled);
+  };
   return {
     ...ctx,
-    handleScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const offsetY = event.nativeEvent.contentOffset.y;
-      const contentHeight = event.nativeEvent.contentSize.height;
-      const layoutHeight = event.nativeEvent.layoutMeasurement.height;
-      const scrollHeight = contentHeight - layoutHeight;
-      const isScrolled = invertedScroll ? offsetY < scrollHeight : offsetY > 0;
-      if (scrollHandlerLastFired === isScrolled) {
-        return;
-      }
-      setScrollHandlerLastFired(isScrolled);
-      ctx.setScrolled(isScrolled);
-    },
+    handleScroll,
   };
 };
