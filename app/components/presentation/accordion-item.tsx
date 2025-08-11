@@ -1,50 +1,72 @@
-import { ReactElement } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { View, LayoutChangeEvent, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
-  useDerivedValue,
-  withTiming,
+  Easing,
   useAnimatedStyle,
-  SharedValue,
+  withTiming,
+  runOnJS,
 } from 'react-native-reanimated';
 
-export interface AccordionItemProps {
-  isExpanded: SharedValue<boolean>;
-  children: ReactElement;
-  style?: ViewStyle;
-  viewKey?: string;
+type AccordionItemProps = {
+  isExpanded: boolean;
+  startsExpanded?: boolean;
   duration?: number;
-}
+  onToggled?: (expanded: boolean) => void;
+  children: React.ReactNode;
+  style?: object;
+};
 
 export function AccordionItem({
   isExpanded,
+  startsExpanded,
+  duration = 200,
+  onToggled,
   children,
-  viewKey,
   style,
-  duration = 500,
 }: AccordionItemProps) {
-  const height = useSharedValue(0);
+  const contentHeight = useSharedValue(0); // measured height of children
+  const animatedHeight = useSharedValue(0);
+  const animate = useCallback(() => {
+    const targetHeight = isExpanded ? measuredHeightRef.current : 0;
+    animatedHeight.set(
+      withTiming(
+        targetHeight,
+        { duration, easing: Easing.cubic },
+        (isFinished) => {
+          if (isFinished && onToggled) {
+            runOnJS(onToggled)(isExpanded);
+          }
+        },
+      ),
+    );
+  }, [isExpanded, duration, onToggled, animatedHeight]);
 
-  const derivedHeight = useDerivedValue(() =>
-    withTiming(height.value * Number(isExpanded.value), {
-      duration,
-    }),
-  );
-  const bodyStyle = useAnimatedStyle(() => ({
-    height: derivedHeight.value,
+  const measuredHeightRef = useRef(0);
+
+  // Animate height when isExpanded changes
+  useEffect(() => animate(), [animate]);
+
+  // Animated style for the container
+  const containerStyle = useAnimatedStyle(() => ({
+    height: animatedHeight.value,
+    overflow: 'hidden',
   }));
 
+  // Measure children height once
+  const onLayoutContent = (e: LayoutChangeEvent) => {
+    const height = e.nativeEvent.layout.height;
+    measuredHeightRef.current = height;
+    contentHeight.value = height;
+    if (isExpanded && startsExpanded) {
+      animatedHeight.set(height);
+    }
+    animate();
+  };
+
   return (
-    <Animated.View
-      key={`accordionItem_${viewKey}`}
-      style={[styles.animatedView, bodyStyle, style]}
-    >
-      <View
-        onLayout={(e) => {
-          height.value = e.nativeEvent.layout.height;
-        }}
-        style={styles.wrapper}
-      >
+    <Animated.View style={[containerStyle, style]}>
+      <View style={styles.content} onLayout={onLayoutContent}>
         {children}
       </View>
     </Animated.View>
@@ -52,14 +74,8 @@ export function AccordionItem({
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    width: '100%',
+  content: {
     position: 'absolute',
-    display: 'flex',
-    alignItems: 'center',
-  },
-  animatedView: {
     width: '100%',
-    overflow: 'hidden',
   },
 });

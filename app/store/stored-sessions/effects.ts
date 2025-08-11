@@ -2,7 +2,9 @@ import { addEffect } from '@/store/store';
 import {
   addStoredSession,
   deleteStoredSession,
+  ExerciseDescriptor,
   initializeStoredSessionsStateSlice,
+  setExercises,
   setIsHydrated,
   setStoredSessions,
   upsertStoredSessions,
@@ -46,6 +48,28 @@ export function applyStoredSessionsEffects() {
           .map((x) => [x.id, x.toPOJO()]) ?? [],
       );
       dispatch(setStoredSessions(map));
+
+      const { exercises } = await import('../../assets/exercises.json');
+      dispatch(
+        setExercises(
+          exercises.reduce(
+            (a, b) => {
+              a[b.name] = {
+                name: b.name,
+                force: b.force,
+                level: b.level,
+                mechanic: b.mechanic,
+                equipment: b.equipment,
+                category: b.category,
+                instructions: b.instructions.join('\n'),
+                muscles: b.primaryMuscles.concat(b.secondaryMuscles),
+              };
+              return a;
+            },
+            {} as Record<string, ExerciseDescriptor>,
+          ),
+        ),
+      );
 
       dispatch(setIsHydrated(true));
       dispatch(fetchUpcomingSessions());
