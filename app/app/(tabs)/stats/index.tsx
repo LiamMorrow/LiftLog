@@ -18,7 +18,6 @@ import { useDispatch } from 'react-redux';
 import { FlatGrid } from 'react-native-super-grid';
 import WeightFormat from '@/components/presentation/weight-format';
 import BigNumber from 'bignumber.js';
-import { FlatList } from 'react-native-gesture-handler';
 import ExerciseStatGraphCard from '@/components/presentation/exercise-stat-graph-card';
 import { spacing } from '@/hooks/useAppTheme';
 import SelectButton, {
@@ -30,6 +29,7 @@ import { Divider, Searchbar } from 'react-native-paper';
 import { useState } from 'react';
 import BodyweightStatGraphCard from '@/components/presentation/bodyweight-stat-graph-card';
 import { useScroll } from '@/hooks/useScollListener';
+import { FlashList } from '@shopify/flash-list';
 
 export default function StatsPage() {
   const { t } = useTranslate();
@@ -51,7 +51,7 @@ export default function StatsPage() {
           title: t('Statistics'),
         }}
       />
-      <FlatList
+      <FlashList
         onScroll={handleScroll}
         ListHeaderComponent={
           <ListHeader
