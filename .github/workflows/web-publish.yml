@@ -30,7 +30,9 @@ jobs:
         run: npm run build:web
         working-directory: ./app
       - name: Copy 404 page
-        run: cp ./404.html ./app/dist
+        run: cp ./assets/404.html ./app/dist
+      - name: Copy Well known
+        run: cp -r ./assets/.well-known ./app/dist/.well-known
       - name: Upload pages
         uses: actions/upload-pages-artifact@v3
         with:

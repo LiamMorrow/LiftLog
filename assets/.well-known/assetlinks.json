@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.limajuice.liftlog",
+      "sha256_cert_fingerprints": [
+        "A8:07:C2:6C:21:74:04:BB:70:80:F6:9E:D9:E3:FA:CD:53:49:FF:86:04:C9:03:8D:A7:B5:D4:41:BA:DF:77:25",
+        "3E:12:62:FC:61:B5:A6:A1:AF:39:5D:8C:1A:32:E2:83:C1:43:CF:9A:72:45:75:C9:0E:A5:ED:18:1C:BE:5F:17"
+      ]
+    }
+  }
+]
