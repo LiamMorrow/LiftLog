@@ -340,5 +340,14 @@
   "Copy exercise to session": "Copy exercise to session",
   "Select a session to copy {exerciseName} to": "Select a session to copy {exerciseName} to:",
   "No other sessions available": "No other sessions available",
-  "Exercise {exerciseName} copied to {targetSessionName}": "Exercise {exerciseName} copied to {targetSessionName}"
+  "Exercise {exerciseName} copied to {targetSessionName}": "Exercise {exerciseName} copied to {targetSessionName}",
+  "Add exercise": "Add exercise",
+  "Instructions": "Instructions",
+  "Exercise name": "Exercise name",
+  "Filters": "Filters",
+  "Muscle": "Muscle",
+  "Manage Exercises": "Manage Exercises",
+  "Manage exercises": "Manage exercises",
+  "Manage your exercise list": "Manage your exercise list",
+  "{name} deleted": "{name} deleted"
 }

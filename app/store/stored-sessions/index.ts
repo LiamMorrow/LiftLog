@@ -16,14 +16,29 @@ import {
 } from '@reduxjs/toolkit';
 import Enumerable from 'linq';
 
+export interface ExerciseDescriptor {
+  name: string;
+  force: string | null;
+  level: string;
+  mechanic: string | null;
+  equipment: string | null;
+  muscles: string[];
+  instructions: string;
+  category: string;
+}
+
 interface StoredSessionState {
   isHydrated: boolean;
   sessions: Record<string, SessionPOJO>;
+  savedExercises: Record<string, ExerciseDescriptor>;
+  filteredExerciseIds: string[];
 }
 
 const initialState: StoredSessionState = {
   isHydrated: false,
   sessions: {},
+  savedExercises: {},
+  filteredExerciseIds: [],
 };
 
 const storedSessionsSlice = createSlice({
@@ -51,6 +66,24 @@ const storedSessionsSlice = createSlice({
     deleteStoredSession(state, action: PayloadAction<string>) {
       delete state.sessions[action.payload];
     },
+    updateExercise(
+      state,
+      action: PayloadAction<{ id: string; exercise: ExerciseDescriptor }>,
+    ) {
+      state.savedExercises[action.payload.id] = action.payload.exercise;
+    },
+    deleteExercise(state, action: PayloadAction<string>) {
+      delete state.savedExercises[action.payload];
+    },
+    setExercises(
+      state,
+      action: PayloadAction<Record<string, ExerciseDescriptor>>,
+    ) {
+      state.savedExercises = action.payload;
+    },
+    setFilteredExerciseIds(state, action: PayloadAction<string[]>) {
+      state.filteredExerciseIds = action.payload;
+    },
   },
 
   selectors: {
@@ -74,6 +107,18 @@ const storedSessionsSlice = createSlice({
           .distinct()
           .toArray(),
     ),
+
+    selectExercises: (state: StoredSessionState) => state.savedExercises,
+    selectExerciseById: createSelector(
+      [
+        (state: StoredSessionState) => state.savedExercises,
+        (_, id: string) => id,
+      ],
+      (exercises, id) => exercises[id],
+    ),
+
+    selectExerciseIds: (state: StoredSessionState) =>
+      Object.keys(state.savedExercises),
   },
 });
 
@@ -101,12 +146,18 @@ export const {
   upsertStoredSessions,
   addStoredSession,
   deleteStoredSession,
+  updateExercise,
+  deleteExercise,
+  setExercises,
+  setFilteredExerciseIds,
 } = storedSessionsSlice.actions;
 
 export const {
   selectSessions,
   selectCompletedDistinctSessionNames,
   selectSession,
+  selectExercises,
+  selectExerciseById,
 } = storedSessionsSlice.selectors;
 
 export const selectLatestOrderedRecordedExercises = createSelector(
@@ -161,6 +212,19 @@ export const selectSessionsInMonth = createSelector(
         LocalDateTimeComparer,
       )
       .toArray(),
+);
+
+export const selectMuscles = createSelector([selectExercises], (exercises) =>
+  Enumerable.from(Object.entries(exercises))
+    .selectMany(([, x]) => x.muscles)
+    .distinct()
+    .orderBy((x) => x)
+    .toArray(),
+);
+
+export const selectExerciseIds = createSelector(
+  [selectExercises],
+  (exercises) => Object.keys(exercises),
 );
 
 export default storedSessionsSlice.reducer;

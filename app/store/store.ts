@@ -18,6 +18,7 @@ import { statsReducer } from '@/store/stats';
 import { resolveServices, Services } from '@/services';
 import { aiPlannerReducer } from '@/store/ai-planner';
 import * as Sentry from '@sentry/react-native';
+import debounce from 'debounce';
 
 const listenerMiddleware = createListenerMiddleware({
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
@@ -105,6 +106,32 @@ export function addEffect(
       }
     },
   });
+}
+
+export function addDebouncedEffect(
+  allActions: undefined,
+  effect: EffectFn<UnknownAction>,
+  time?: number,
+): void;
+export function addDebouncedEffect<TAction extends { type: string }>(
+  action: TAction[],
+  effect: EffectFn<UnknownAction>,
+  time?: number,
+): void;
+export function addDebouncedEffect<TAction extends { type: string }>(
+  action: TAction,
+  effect: EffectFn<TAction extends ActionCreator<infer U> ? U : TAction>,
+  time?: number,
+): void;
+export function addDebouncedEffect(
+  actionPredicate: { type: string } | { type: string }[] | undefined,
+  effect: EffectFn<UnknownAction>,
+  time = 1000,
+) {
+  addEffect<UnknownAction>(
+    actionPredicate as UnknownAction,
+    debounce(effect, time),
+  );
 }
 
 export const addAppListener = addListener.withTypes<RootState, AppDispatch>();

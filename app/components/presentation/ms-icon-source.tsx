@@ -85,6 +85,10 @@ import { match } from 'ts-pattern';
 import { msReplay } from '@material-symbols-react-native/outlined-400/msReplay';
 import { msAssignmentAdd } from '@material-symbols-react-native/outlined-400/msAssignmentAdd';
 import { msCopyAll } from '@material-symbols-react-native/outlined-400/msCopyAll';
+import { msExpandCircleDown } from '@material-symbols-react-native/outlined-400/msExpandCircleDown';
+import { msExpandCircleUp } from '@material-symbols-react-native/outlined-400/msExpandCircleUp';
+import { msSearch } from '@material-symbols-react-native/outlined-400/msSearch';
+import { msDirectionsRun } from '@material-symbols-react-native/outlined-400/msDirectionsRun';
 
 // Importing these icons using the below methods causes android app to crash
 // import { msAdd, msArrowDownward } from '@material-symbols-react-native/outlined-400';
@@ -124,6 +128,8 @@ const MaterialSymbols = {
   save: msSave,
   forum: msForum,
   forumFill: msForumFill,
+  search: msSearch,
+  directionsRun: msDirectionsRun,
   settings: msSettings,
   settingsFill: msSettingsFill,
   analytics: msAnalytics,
@@ -148,6 +154,8 @@ const MaterialSymbols = {
   'menu-down': msArrowDropDown,
   arrowDropDown: msArrowDropDown,
   arrowDropUp: msArrowDropUp,
+  expandCircleDown: msExpandCircleDown,
+  expandCircleUp: msExpandCircleUp,
   'pencil-outline': msEdit,
   'menu-up': msArrowDropUp,
   'chevron-left': msChevronLeft,

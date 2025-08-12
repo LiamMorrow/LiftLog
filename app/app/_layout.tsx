@@ -28,6 +28,7 @@ Sentry.init({
 LogBox.ignoreLogs([
   /.*is not a valid icon name.*/,
   /Open debugger to view warnings./,
+  /.*useInsertionEffect.*/,
 ]);
 
 export default Sentry.wrap(function RootLayout() {

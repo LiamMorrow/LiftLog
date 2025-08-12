@@ -28,6 +28,12 @@ export default function Settings() {
           left={(props) => <List.Icon icon={'assignment'} {...props} />}
         ></List.Item>
         <List.Item
+          onPress={() => push('/(tabs)/settings/manage-exercises')}
+          title={t('Manage exercises')}
+          description={t('Manage your exercise list')}
+          left={(props) => <List.Icon icon={'directionsRun'} {...props} />}
+        ></List.Item>
+        <List.Item
           onPress={() => push('/(tabs)/settings/app-configuration')}
           title={t('AppConfiguration')}
           description={t('AppConfigurationSubtitle')}
