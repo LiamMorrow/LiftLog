@@ -1,9 +1,11 @@
 /// <reference types="cypress" />
+/// <reference types="../support/index.d.ts"/>
 
 describe('Exercise Manager', () => {
     beforeEach(() => {
-        // Replace with your app's route to the exercise manager
-        cy.visit('/settings/manage-exercises');
+        cy.visit('/')
+        cy.navigate("Settings")
+        cy.contains("Manage exercises").click()
     });
 
     it('should add a new exercise', () => {
