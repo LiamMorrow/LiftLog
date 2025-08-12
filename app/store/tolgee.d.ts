@@ -1,7 +1,6 @@
 // tolgee.d.ts
 
 import type en from '../i18n/en.json';
-import 'react-native-paper';
 
 declare module '@tolgee/web' {
   type TranslationsType = typeof en;
