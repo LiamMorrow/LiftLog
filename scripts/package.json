@@ -5,13 +5,14 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@types/node": "^24.2.1",
-    "tsx": "4.20.3",
     "zx": "8.8.0"
   },
   "peerDependencies": {
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@types/semver": "^7.7.0",
+    "openai": "^5.12.2",
     "semver": "^7.7.2"
   }
 }
