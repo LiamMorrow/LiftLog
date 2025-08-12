@@ -39,6 +39,7 @@
     "bignumber.js": "^9.1.2",
     "compression-streams-polyfill": "^0.1.7",
     "data-async-iterators": "^1.4.6",
+    "debounce": "^2.2.0",
     "eslint-plugin-react-compiler": "^19.0.0-beta-bafa41b-20250307",
     "expo": "53.0.20",
     "expo-constants": "~17.1.6",

@@ -1,12 +1,14 @@
-import { addEffect } from '@/store/store';
+import { addDebouncedEffect, addEffect } from '@/store/store';
 import {
   addStoredSession,
+  deleteExercise,
   deleteStoredSession,
   ExerciseDescriptor,
   initializeStoredSessionsStateSlice,
   setExercises,
   setIsHydrated,
   setStoredSessions,
+  updateExercise,
   upsertStoredSessions,
 } from './index';
 import { LiftLog } from '@/gen/proto';
@@ -16,6 +18,7 @@ import { toSessionHistoryDao } from '@/models/storage/conversions.to-dao';
 import { fetchUpcomingSessions } from '@/store/program';
 
 const storageKey = 'Progress';
+const exerciseListStorageKey = 'ExerciseList';
 
 export function applyStoredSessionsEffects() {
   addEffect(
@@ -50,26 +53,27 @@ export function applyStoredSessionsEffects() {
       dispatch(setStoredSessions(map));
 
       const { exercises } = await import('../../assets/exercises.json');
-      dispatch(
-        setExercises(
-          exercises.reduce(
-            (a, b) => {
-              a[b.name] = {
-                name: b.name,
-                force: b.force,
-                level: b.level,
-                mechanic: b.mechanic,
-                equipment: b.equipment,
-                category: b.category,
-                instructions: b.instructions.join('\n'),
-                muscles: b.primaryMuscles.concat(b.secondaryMuscles),
-              };
-              return a;
-            },
-            {} as Record<string, ExerciseDescriptor>,
-          ),
-        ),
+      const builtInExercises = exercises.reduce(
+        (a, b) => {
+          a[b.name] = {
+            name: b.name,
+            force: b.force,
+            level: b.level,
+            mechanic: b.mechanic,
+            equipment: b.equipment,
+            category: b.category,
+            instructions: b.instructions.join('\n'),
+            muscles: b.primaryMuscles.concat(b.secondaryMuscles),
+          };
+          return a;
+        },
+        {} as Record<string, ExerciseDescriptor>,
       );
+      const savedExercises = JSON.parse(
+        (await keyValueStore.getItem(exerciseListStorageKey)) ?? '{}',
+      ) as Record<string, ExerciseDescriptor>;
+
+      dispatch(setExercises({ ...builtInExercises, ...savedExercises }));
 
       dispatch(setIsHydrated(true));
       dispatch(fetchUpcomingSessions());
@@ -90,6 +94,18 @@ export function applyStoredSessionsEffects() {
         keyValueStore.setItem(`${storageKey}-Version`, '2'),
         keyValueStore.setItem(storageKey, s.finish()),
       ]);
+    },
+  );
+
+  addDebouncedEffect(
+    [updateExercise, deleteExercise, setExercises],
+    async (_, { stateAfterReduce, extra: { keyValueStore } }) => {
+      if (!stateAfterReduce.storedSessions.isHydrated) {
+        return;
+      }
+
+      const data = stateAfterReduce.storedSessions.savedExercises;
+      await keyValueStore.setItem(exerciseListStorageKey, JSON.stringify(data));
     },
   );
 }
