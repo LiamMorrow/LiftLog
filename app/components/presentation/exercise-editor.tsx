@@ -1,15 +1,25 @@
+import AppBottomSheet from '@/components/presentation/app-bottom-sheet';
 import EditableIncrementer from '@/components/presentation/editable-incrementer';
+import ExerciseFilterer from '@/components/presentation/exercise-filterer';
 import FixedIncrementer from '@/components/presentation/fixed-incrementer';
 import ListSwitch from '@/components/presentation/list-switch';
 import RestEditorGroup from '@/components/presentation/rest-editor-group';
 import { spacing } from '@/hooks/useAppTheme';
 import { ExerciseBlueprint } from '@/models/session-models';
-import { RootState, useAppSelector } from '@/store';
+import { RootState, useAppSelector, useAppSelectorWithArg } from '@/store';
+import {
+  ExerciseDescriptor,
+  selectExerciseById,
+  selectExerciseIds,
+  selectExercises,
+} from '@/store/stored-sessions';
+import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { FlashList } from '@shopify/flash-list';
 import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
-import { Card, Divider, TextInput } from 'react-native-paper';
+import { Card, Divider, List, TextInput } from 'react-native-paper';
 
 interface ExerciseEditorProps {
   exercise: ExerciseBlueprint;
@@ -17,10 +27,13 @@ interface ExerciseEditorProps {
 }
 
 export function ExerciseEditor(props: ExerciseEditorProps) {
+  const exercises = useAppSelector(selectExercises);
+  const exerciseIds = useAppSelector(selectExerciseIds);
   const { exercise: propsExercise, updateExercise: updatePropsExercise } =
     props;
   const [exercise, setExercise] = useState(propsExercise);
   const { t } = useTranslate();
+  const bottomSheetRef = useRef<BottomSheet>(null);
 
   // Bit of a hack to let us update exercise immediately without going through the whole props loop
   useEffect(() => {
@@ -54,6 +67,14 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
   const setExerciseWeightIncrease = (weightIncreaseOnSuccess: BigNumber) =>
     updateExercise({ weightIncreaseOnSuccess });
 
+  const selectExerciseFromSearch = (ex: ExerciseDescriptor) => {
+    updateExercise({ name: ex.name, notes: ex.instructions });
+    bottomSheetRef.current?.close();
+  };
+
+  const [bottomSheetShown, setBottomSheetShown] = useState(false);
+  const [filteredExerciseIds, setFilteredExerciseIds] = useState(exerciseIds);
+
   return (
     <View style={{ gap: spacing[2] }}>
       <TextInput
@@ -63,6 +84,15 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
         value={exercise.name}
         onChangeText={(name) => updateExercise({ name })}
         selectTextOnFocus={true}
+        right={
+          <TextInput.Icon
+            icon="search"
+            onPress={() => {
+              setBottomSheetShown(true);
+              bottomSheetRef.current?.expand();
+            }}
+          />
+        }
       />
       <View
         style={{
@@ -159,6 +189,48 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
           }
         />
       </View>
+      <AppBottomSheet
+        index={-1}
+        sheetRef={bottomSheetRef}
+        enablePanDownToClose
+        enableDynamicSizing={false}
+      >
+        {bottomSheetShown && (
+          <FlashList
+            data={filteredExerciseIds}
+            // @ts-expect-error -- It does work - see:https://github.com/gorhom/react-native-bottom-sheet/issues/1120#issuecomment-1582872948
+            renderScrollComponent={BottomSheetScrollView}
+            getItemType={(_, index) => (index === 0 ? 'filters' : 'exercise')}
+            keyExtractor={(item, index) => (index === 0 ? 'filters' : item)}
+            renderItem={(i) => {
+              if (i.index === 0) {
+                return (
+                  <ExerciseFilterer
+                    exercises={exercises}
+                    onFilteredExerciseIdsChange={setFilteredExerciseIds}
+                  />
+                );
+              }
+              return (
+                <ExerciseSearchListItem
+                  exerciseId={i.item}
+                  onPress={selectExerciseFromSearch}
+                />
+              );
+            }}
+          />
+        )}
+      </AppBottomSheet>
     </View>
+  );
+}
+
+function ExerciseSearchListItem(props: {
+  exerciseId: string;
+  onPress: (exercise: ExerciseDescriptor) => void;
+}) {
+  const exercise = useAppSelectorWithArg(selectExerciseById, props.exerciseId);
+  return (
+    <List.Item title={exercise.name} onPress={() => props.onPress(exercise)} />
   );
 }

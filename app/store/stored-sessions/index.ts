@@ -222,4 +222,9 @@ export const selectMuscles = createSelector([selectExercises], (exercises) =>
     .toArray(),
 );
 
+export const selectExerciseIds = createSelector(
+  [selectExercises],
+  (exercises) => Object.keys(exercises),
+);
+
 export default storedSessionsSlice.reducer;
