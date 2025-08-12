@@ -1,14 +1,15 @@
 import ExerciseSearchAndFilters from '@/components/presentation/exercise-search-and-filters';
-import { ExerciseDescriptor } from '@/store/stored-sessions';
+import { useAppSelector } from '@/store';
+import { selectExercises } from '@/store/stored-sessions';
 import Enumerable from 'linq';
 import { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
 export default function ExerciseFilterer(props: {
-  exercises: Record<string, ExerciseDescriptor>;
   onFilteredExerciseIdsChange: (ids: string[]) => void;
 }) {
-  const { onFilteredExerciseIdsChange, exercises } = props;
+  const exercises = useAppSelector(selectExercises);
+  const { onFilteredExerciseIdsChange } = props;
   const [muscleFilters, setMuscleFilters] = useState([] as string[]);
   const [searchText, setSearchText] = useState('');
 

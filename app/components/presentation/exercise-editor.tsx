@@ -11,13 +11,12 @@ import {
   ExerciseDescriptor,
   selectExerciseById,
   selectExerciseIds,
-  selectExercises,
 } from '@/store/stored-sessions';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { FlashList } from '@shopify/flash-list';
 import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { Card, Divider, List, TextInput } from 'react-native-paper';
 
@@ -27,7 +26,6 @@ interface ExerciseEditorProps {
 }
 
 export function ExerciseEditor(props: ExerciseEditorProps) {
-  const exercises = useAppSelector(selectExercises);
   const exerciseIds = useAppSelector(selectExerciseIds);
   const { exercise: propsExercise, updateExercise: updatePropsExercise } =
     props;
@@ -74,6 +72,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
 
   const [bottomSheetShown, setBottomSheetShown] = useState(false);
   const [filteredExerciseIds, setFilteredExerciseIds] = useState(exerciseIds);
+  const exerciseListItems = useMemo(() => ['filter', ...filteredExerciseIds]);
 
   return (
     <View style={{ gap: spacing[2] }}>
@@ -197,7 +196,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
       >
         {bottomSheetShown && (
           <FlashList
-            data={filteredExerciseIds}
+            data={exerciseListItems}
             // @ts-expect-error -- It does work - see:https://github.com/gorhom/react-native-bottom-sheet/issues/1120#issuecomment-1582872948
             renderScrollComponent={BottomSheetScrollView}
             getItemType={(_, index) => (index === 0 ? 'filters' : 'exercise')}
@@ -206,7 +205,6 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
               if (i.index === 0) {
                 return (
                   <ExerciseFilterer
-                    exercises={exercises}
                     onFilteredExerciseIdsChange={setFilteredExerciseIds}
                   />
                 );

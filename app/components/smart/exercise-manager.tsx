@@ -177,7 +177,7 @@ export default function ExerciseManager() {
   };
 
   const flatListItems = useMemo(
-    () => [null!, ...filteredExerciseIds],
+    () => ['filter', ...filteredExerciseIds],
     [filteredExerciseIds],
   );
   const { handleScroll } = useScroll();
@@ -202,7 +202,6 @@ export default function ExerciseManager() {
           if (index === 0) {
             return (
               <ExerciseFilterer
-                exercises={exercises}
                 onFilteredExerciseIdsChange={setFilteredExerciseIds}
               />
             );
