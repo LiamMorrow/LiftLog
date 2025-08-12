@@ -2,7 +2,6 @@ import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
-import { useDebouncedCallback } from 'use-debounce';
 import {
   AnimatedFAB,
   Icon,
@@ -27,9 +26,8 @@ import { uuid } from '@/utils/uuid';
 import { SwipeRow } from 'react-native-swipe-list-view';
 import { showSnackbar } from '@/store/app';
 import { useMountEffect } from '@/hooks/useMountEffect';
-import Enumerable from 'linq';
-import ExerciseSearchAndFilters from '@/components/presentation/exercise-search-and-filters';
 import ExerciseMuscleSelector from '@/components/presentation/exercise-muscle-selector';
+import ExerciseFilterer from '@/components/presentation/exercise-filterer';
 
 function ExerciseListItem({
   exerciseId,
@@ -88,7 +86,10 @@ function ExerciseListItem({
       </View>
       <List.Accordion
         title={exercise.name}
-        description={exercise.muscles.join(', ')}
+        // Important to have a space to ensure they are all the same size
+        // Otherwise delete button can show through when there is no desc
+        description={exercise.muscles.join(', ') || ' '}
+        descriptionNumberOfLines={1}
         expanded={listExpanded}
         onPress={() => {
           if (rowRef.current?.isOpen) {
@@ -123,7 +124,6 @@ function ExerciseListItem({
 export default function ExerciseManager() {
   const dispatch = useDispatch();
   const { t } = useTranslate();
-  const [searchText, setSearchText] = useState('');
   const exercises = useAppSelector(selectExercises);
   const filteredExerciseIds = useAppSelector(
     (s) => s.storedSessions.filteredExerciseIds,
@@ -131,7 +131,6 @@ export default function ExerciseManager() {
   const setFilteredExerciseIds = (ids: string[]) => {
     dispatch(setFilteredExerciseIdsAction(ids));
   };
-  const [muscleFilters, setMuscleFilters] = useState([] as string[]);
 
   useMountEffect(() => {
     setFilteredExerciseIds(Object.keys(exercises));
@@ -154,7 +153,6 @@ export default function ExerciseManager() {
         },
       }),
     );
-    setSearchText('New exercise');
     setFilteredExerciseIds([newId]);
   };
 
@@ -177,24 +175,6 @@ export default function ExerciseManager() {
       }),
     );
   };
-
-  const search = useDebouncedCallback(() => {
-    const searchRegex = new RegExp(searchText, 'i');
-    const matchRegex = new RegExp('^' + searchText + '$', 'i');
-    const newFilteredExercises = Enumerable.from(Object.entries(exercises))
-      .where(
-        (x) =>
-          (!muscleFilters.length ||
-            x[1].muscles.some((exerciseMuscle) =>
-              muscleFilters.includes(exerciseMuscle),
-            )) &&
-          searchRegex.test(x[1].name),
-      )
-      .orderByDescending((x) => matchRegex.test(x[1].name))
-      .select((x) => x[0])
-      .toArray();
-    setFilteredExerciseIds(newFilteredExercises);
-  }, 100);
 
   const flatListItems = useMemo(
     () => [null!, ...filteredExerciseIds],
@@ -221,17 +201,9 @@ export default function ExerciseManager() {
         renderItem={({ item, index }) => {
           if (index === 0) {
             return (
-              <ExerciseSearchAndFilters
-                searchText={searchText}
-                setSearchText={(s) => {
-                  setSearchText(s);
-                  search();
-                }}
-                muscleFilters={muscleFilters}
-                setMuscleFilters={(m) => {
-                  setMuscleFilters(m);
-                  search();
-                }}
+              <ExerciseFilterer
+                exercises={exercises}
+                onFilteredExerciseIdsChange={setFilteredExerciseIds}
               />
             );
           }
