@@ -21,17 +21,20 @@ if (localHash !== remoteHash) {
 }
 
 const bumpType = process.argv[2];
+const prereleaseFlag = process.argv.includes("--prerelease");
 if (!["patch", "minor", "major"].includes(bumpType)) {
-  console.error("Usage: ./create-release.ts patch|minor|major");
+  console.error("Usage: ./create-release.ts patch|minor|major [--prerelease]");
   process.exit(1);
 }
 
 // Run get-release-notes and capture output
-const notes = await $`./get-release-notes.ts ${bumpType}`;
+const notes = await $`./get-release-notes.ts ${bumpType} ${
+  prereleaseFlag ? "--prerelease" : ""
+}`;
 
 // Extract the next version from the notes output
 const versionMatch = notes.stdout.match(
-  /\*\*Next release version:\*\* v([\d\.]+)/
+  /\*\*Next release version:\*\* v([\d\.\w\-\.]+)/
 );
 
 const version = versionMatch ? versionMatch[1] : null;
@@ -43,9 +46,13 @@ if (!version) {
 }
 
 // Create the release using gh CLI, piping notes to --notes-file -
-const rel = $`gh release create ${version} --notes-file -`;
+const rel = $`gh release create ${version} --notes-file - ${
+  prereleaseFlag ? "--prerelease" : ""
+}`;
 rel.stdin.write(notes.stdout);
 rel.stdin.end();
 await rel;
 
-console.log(`Release v${version} created.`);
+console.log(
+  `Release v${version} created.${prereleaseFlag ? " (prerelease)" : ""}`
+);

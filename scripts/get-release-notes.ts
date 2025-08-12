@@ -1,13 +1,16 @@
 #!/usr/bin/env -S node --experimental-strip-types
 // Usage: tsx create-release.ts minor|patch|major
 import { $ } from "zx";
-import semver from "semver";
+import semver, { type ReleaseType } from "semver";
 import { OpenAI } from "openai";
 
 async function main() {
-  const bumpType = process.argv[2];
+  const bumpType = process.argv[2] as ReleaseType;
+  const prereleaseFlag = process.argv.includes("--prerelease");
   if (!["major", "minor", "patch"].includes(bumpType)) {
-    console.error("Usage: ./create-release major|minor|patch");
+    console.error(
+      "Usage: ./get-release-notes.ts major|minor|patch [--prerelease]"
+    );
     process.exit(1);
   }
 
@@ -33,7 +36,7 @@ async function main() {
   const latestNonPre = nonPreReleases[0]?.tag;
 
   // Get commit SHAs for latest non-prerelease and HEAD
-  const fromTag = latestNonPre;
+  const fromTag = prereleaseFlag ? latestRelease : latestNonPre;
   const toRef = "HEAD";
 
   // Get all merge commits
