@@ -1,6 +1,25 @@
 #!/usr/bin/env -S node --experimental-strip-types
 import { $ } from "zx";
 
+// Ensure clean git status and no unpushed commits
+await $`git fetch`;
+const status = await $`git status --porcelain`;
+if (status.stdout.trim() !== "") {
+  console.error(
+    "Error: Working tree is not clean. Please commit or stash your changes."
+  );
+  process.exit(1);
+}
+const branch = (await $`git rev-parse --abbrev-ref HEAD`).stdout.trim();
+const localHash = (await $`git rev-parse ${branch}`).stdout.trim();
+const remoteHash = (await $`git rev-parse origin/${branch}`).stdout.trim();
+if (localHash !== remoteHash) {
+  console.error(
+    "Error: You have unpushed commits. Please push your changes before creating a release."
+  );
+  process.exit(1);
+}
+
 const bumpType = process.argv[2];
 if (!["patch", "minor", "major"].includes(bumpType)) {
   console.error("Usage: ./create-release.ts patch|minor|major");
