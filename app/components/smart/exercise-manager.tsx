@@ -1,31 +1,38 @@
-import { spacing } from '@/hooks/useAppTheme';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
 import { useDebouncedCallback } from 'use-debounce';
 import {
   AnimatedFAB,
   Card,
   Chip,
+  Icon,
   IconButton,
   List,
   Searchbar,
   Text,
   TextInput,
+  TouchableRipple,
 } from 'react-native-paper';
 import { AccordionItem } from '@/components/presentation/accordion-item';
 import { useScroll } from '@/hooks/useScollListener';
 import { FlashList, useRecyclingState } from '@shopify/flash-list';
 import {
+  deleteExercise as deleteExerciseAction,
   ExerciseDescriptor,
   selectExerciseById,
   selectExercises,
   selectMuscles,
+  setFilteredExerciseIds as setFilteredExerciseIdsAction,
   updateExercise,
 } from '@/store/stored-sessions';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { useDispatch } from 'react-redux';
 import { uuid } from '@/utils/uuid';
+import { SwipeRow } from 'react-native-swipe-list-view';
+import { showSnackbar } from '@/store/app';
+import { useMountEffect } from '@/hooks/useMountEffect';
 
 function SearchAndFilters({
   searchText,
@@ -127,10 +134,13 @@ function MuscleSelector(props: {
 function ExerciseListItem({
   exerciseId,
   expand,
+  onDelete,
 }: {
   exerciseId: string;
   expand: boolean;
+  onDelete: () => void;
 }) {
+  const { colors } = useAppTheme();
   const exercise = useAppSelectorWithArg(selectExerciseById, exerciseId);
   const [expanded, setExpanded] = useRecyclingState(expand, [
     exerciseId,
@@ -141,33 +151,69 @@ function ExerciseListItem({
     expand,
   ]);
 
+  const rowRef = useRef<SwipeRow<unknown>>(null);
+  useEffect(() => {
+    rowRef.current?.closeRowWithoutAnimation();
+  }, [exerciseId]);
+
   return (
-    <List.Accordion
-      title={exercise.name}
-      description={exercise.muscles.join(', ')}
-      expanded={listExpanded}
-      onPress={() => {
-        if (!expanded) {
-          setListExpanded(true);
-          setExpanded(true);
-        } else {
-          setExpanded(false);
-        }
-      }}
+    <SwipeRow
+      disableRightSwipe
+      ref={rowRef}
+      rightActivationValue={-70}
+      rightActionValue={-70}
+      rightOpenValue={-70}
     >
-      <AccordionItem
-        isExpanded={expanded}
-        onToggled={(isOpen) => {
-          setExpanded(isOpen);
-          if (!isOpen) {
-            // Wait until collapse finishes before unmounting
-            setListExpanded(false);
+      <View
+        style={{
+          alignItems: 'flex-end',
+          justifyContent: 'center',
+          flex: 1,
+          backgroundColor: colors.error,
+        }}
+      >
+        <TouchableRipple
+          onPress={onDelete}
+          style={{
+            height: '100%',
+            width: 70,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Icon source={'delete'} size={30} color={colors.onError} />
+        </TouchableRipple>
+      </View>
+      <List.Accordion
+        title={exercise.name}
+        description={exercise.muscles.join(', ')}
+        expanded={listExpanded}
+        onPress={() => {
+          if (rowRef.current?.isOpen) {
+            return;
+          }
+          if (!expanded) {
+            setListExpanded(true);
+            setExpanded(true);
+          } else {
+            setExpanded(false);
           }
         }}
       >
-        <ExerciseEditSheet exercise={exercise} exerciseId={exerciseId} />
-      </AccordionItem>
-    </List.Accordion>
+        <AccordionItem
+          isExpanded={expanded}
+          onToggled={(isOpen) => {
+            setExpanded(isOpen);
+            if (!isOpen) {
+              // Wait until collapse finishes before unmounting
+              setListExpanded(false);
+            }
+          }}
+        >
+          <ExerciseEditSheet exercise={exercise} exerciseId={exerciseId} />
+        </AccordionItem>
+      </List.Accordion>
+    </SwipeRow>
   );
 }
 
@@ -176,9 +222,17 @@ export default function ExerciseManager() {
   const { t } = useTranslate();
   const [searchText, setSearchText] = useState('');
   const exercises = useAppSelector(selectExercises);
-  const exerciseIds = useMemo(() => Object.keys(exercises), [exercises]);
+  const filteredExerciseIds = useAppSelector(
+    (s) => s.storedSessions.filteredExerciseIds,
+  );
+  const setFilteredExerciseIds = (ids: string[]) => {
+    dispatch(setFilteredExerciseIdsAction(ids));
+  };
   const [muscleFilters, setMuscleFilters] = useState([] as string[]);
-  const [filteredExerciseIds, setFilteredExerciseIds] = useState(exerciseIds);
+
+  useMountEffect(() => {
+    setFilteredExerciseIds(Object.keys(exercises));
+  });
 
   const addExercise = () => {
     const newId = uuid();
@@ -200,6 +254,27 @@ export default function ExerciseManager() {
     setSearchText('New exercise');
     setFilteredExerciseIds([newId]);
   };
+
+  const deleteExercise = (id: string) => {
+    const exercise = exercises[id];
+    if (!exercise) {
+      return;
+    }
+
+    setFilteredExerciseIds(filteredExerciseIds.filter((x) => x !== id));
+    dispatch(deleteExerciseAction(id));
+    dispatch(
+      showSnackbar({
+        text: t('{name} deleted', { name: exercise.name }),
+        action: t('Undo'),
+        dispatchAction: [
+          updateExercise({ id, exercise }),
+          setFilteredExerciseIdsAction(filteredExerciseIds),
+        ],
+      }),
+    );
+  };
+
   const search = useDebouncedCallback(() => {
     const regex = new RegExp(searchText, 'i');
     const newFilteredExercises = Object.entries(exercises)
@@ -258,6 +333,7 @@ export default function ExerciseManager() {
             <ExerciseListItem
               exerciseId={item}
               expand={flatListItems.length === 2}
+              onDelete={() => deleteExercise(item)}
             />
           );
         }}

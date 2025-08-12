@@ -80,6 +80,7 @@
     "react-native-screens": "~4.11.1",
     "react-native-super-grid": "^6.0.1",
     "react-native-svg": "15.11.2",
+    "react-native-swipe-list-view": "^3.2.9",
     "react-native-web": "^0.20.0",
     "react-redux": "^9.2.0",
     "ts-pattern": "^5.6.2",

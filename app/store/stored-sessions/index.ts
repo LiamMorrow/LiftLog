@@ -31,12 +31,14 @@ interface StoredSessionState {
   isHydrated: boolean;
   sessions: Record<string, SessionPOJO>;
   savedExercises: Record<string, ExerciseDescriptor>;
+  filteredExerciseIds: string[];
 }
 
 const initialState: StoredSessionState = {
   isHydrated: false,
   sessions: {},
   savedExercises: {},
+  filteredExerciseIds: [],
 };
 
 const storedSessionsSlice = createSlice({
@@ -78,6 +80,9 @@ const storedSessionsSlice = createSlice({
       action: PayloadAction<Record<string, ExerciseDescriptor>>,
     ) {
       state.savedExercises = action.payload;
+    },
+    setFilteredExerciseIds(state, action: PayloadAction<string[]>) {
+      state.filteredExerciseIds = action.payload;
     },
   },
 
@@ -144,6 +149,7 @@ export const {
   updateExercise,
   deleteExercise,
   setExercises,
+  setFilteredExerciseIds,
 } = storedSessionsSlice.actions;
 
 export const {

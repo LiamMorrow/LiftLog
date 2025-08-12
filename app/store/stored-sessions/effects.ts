@@ -19,6 +19,9 @@ import { fetchUpcomingSessions } from '@/store/program';
 
 const storageKey = 'Progress';
 const exerciseListStorageKey = 'ExerciseList';
+// We keep track of added builting exerciseIds (which are the exercise name for builtins)
+// Then we make sure builtins don't get re-added if they are deleted
+const addedBuiltInExerciseIdsStorageKey = 'AddedBuiltInExerciseIds';
 
 export function applyStoredSessionsEffects() {
   addEffect(
@@ -53,27 +56,46 @@ export function applyStoredSessionsEffects() {
       dispatch(setStoredSessions(map));
 
       const { exercises } = await import('../../assets/exercises.json');
-      const builtInExercises = exercises.reduce(
-        (a, b) => {
-          a[b.name] = {
-            name: b.name,
-            force: b.force,
-            level: b.level,
-            mechanic: b.mechanic,
-            equipment: b.equipment,
-            category: b.category,
-            instructions: b.instructions.join('\n'),
-            muscles: b.primaryMuscles.concat(b.secondaryMuscles),
-          };
-          return a;
-        },
-        {} as Record<string, ExerciseDescriptor>,
-      );
+      const alreadyAddedBuiltIns = JSON.parse(
+        (await keyValueStore.getItem(addedBuiltInExerciseIdsStorageKey)) ??
+          '[]',
+      ) as string[];
+      const builtInExercises = exercises
+        .filter((x) => !alreadyAddedBuiltIns.includes(x.name))
+        .reduce(
+          (a, b) => {
+            a[b.name] = {
+              name: b.name,
+              force: b.force,
+              level: b.level,
+              mechanic: b.mechanic,
+              equipment: b.equipment,
+              category: b.category,
+              instructions: b.instructions.join('\n'),
+              muscles: b.primaryMuscles.concat(b.secondaryMuscles),
+            };
+            return a;
+          },
+          {} as Record<string, ExerciseDescriptor>,
+        );
       const savedExercises = JSON.parse(
         (await keyValueStore.getItem(exerciseListStorageKey)) ?? '{}',
       ) as Record<string, ExerciseDescriptor>;
 
-      dispatch(setExercises({ ...builtInExercises, ...savedExercises }));
+      const currentExercises = Object.entries({
+        ...builtInExercises,
+        ...savedExercises,
+      }).sort((a, b) => a[1].name.localeCompare(b[1].name));
+
+      dispatch(setExercises(Object.fromEntries(currentExercises)));
+
+      const newBuiltIns = alreadyAddedBuiltIns.concat(
+        Object.keys(builtInExercises),
+      );
+      await keyValueStore.setItem(
+        addedBuiltInExerciseIdsStorageKey,
+        JSON.stringify(newBuiltIns),
+      );
 
       dispatch(setIsHydrated(true));
       dispatch(fetchUpcomingSessions());
