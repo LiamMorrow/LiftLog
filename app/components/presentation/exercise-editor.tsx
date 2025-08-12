@@ -72,7 +72,10 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
 
   const [bottomSheetShown, setBottomSheetShown] = useState(false);
   const [filteredExerciseIds, setFilteredExerciseIds] = useState(exerciseIds);
-  const exerciseListItems = useMemo(() => ['filter', ...filteredExerciseIds]);
+  const exerciseListItems = useMemo(
+    () => ['filter', ...filteredExerciseIds],
+    [filteredExerciseIds],
+  );
 
   return (
     <View style={{ gap: spacing[2] }}>
