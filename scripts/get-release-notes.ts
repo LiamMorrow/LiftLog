@@ -111,11 +111,6 @@ async function main() {
     const body = (await $`git log -1 --pretty=format:%b ${sha}`).stdout.trim();
     const shortSha = (await $`git rev-parse --short ${sha}`).stdout.trim();
     console.log(`- ${msg} (${shortSha})`);
-    if (body) {
-      console.log(
-        `<details><summary>Details</summary>\n\n${body}\n\n</details>`
-      );
-    }
   }
 
   // Print new version

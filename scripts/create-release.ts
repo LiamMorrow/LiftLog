@@ -14,6 +14,7 @@ const notes = await $`./get-release-notes.ts ${bumpType}`;
 const versionMatch = notes.stdout.match(
   /\*\*Next release version:\*\* v([\d\.]+)/
 );
+
 const version = versionMatch ? versionMatch[1] : null;
 if (!version) {
   console.error(
@@ -23,6 +24,9 @@ if (!version) {
 }
 
 // Create the release using gh CLI, piping notes to --notes-file -
-await $`gh release create ${version} --notes-file - <<< "${notes.stdout}"`;
+const rel = $`gh release create ${version} --notes-file -`;
+rel.stdin.write(notes.stdout);
+rel.stdin.end();
+await rel;
 
 console.log(`Release v${version} created.`);
