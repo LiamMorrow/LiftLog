@@ -1,17 +1,12 @@
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { T, useTranslate } from '@tolgee/react';
+import { useTranslate } from '@tolgee/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
 import { useDebouncedCallback } from 'use-debounce';
 import {
   AnimatedFAB,
-  Card,
-  Chip,
   Icon,
-  IconButton,
   List,
-  Searchbar,
-  Text,
   TextInput,
   TouchableRipple,
 } from 'react-native-paper';
@@ -23,7 +18,6 @@ import {
   ExerciseDescriptor,
   selectExerciseById,
   selectExercises,
-  selectMuscles,
   setFilteredExerciseIds as setFilteredExerciseIdsAction,
   updateExercise,
 } from '@/store/stored-sessions';
@@ -34,106 +28,8 @@ import { SwipeRow } from 'react-native-swipe-list-view';
 import { showSnackbar } from '@/store/app';
 import { useMountEffect } from '@/hooks/useMountEffect';
 import Enumerable from 'linq';
-
-function SearchAndFilters({
-  searchText,
-  setSearchText,
-  muscleFilters,
-  setMuscleFilters,
-}: {
-  searchText: string;
-  setSearchText: (text: string) => void;
-  muscleFilters: string[];
-  setMuscleFilters: (muscles: string[]) => void;
-}) {
-  const { t } = useTranslate();
-  const [filtersExpanded, setFiltersExpanded] = useState(false);
-  const selectedFiltersSubtitle =
-    muscleFilters.join(', ') || 'No filters applied';
-
-  return (
-    <View style={{ gap: spacing[2] }}>
-      <Searchbar
-        placeholder={t('Search')}
-        value={searchText}
-        onChangeText={setSearchText}
-        autoCorrect={false}
-        style={{ marginHorizontal: spacing.pageHorizontalMargin }}
-        testID="exercise-search-input"
-      />
-
-      <Card
-        mode="contained"
-        style={{ marginHorizontal: spacing.pageHorizontalMargin }}
-      >
-        <Card.Title
-          title={t('Filters')}
-          subtitle={selectedFiltersSubtitle}
-          right={() => (
-            <IconButton
-              icon={filtersExpanded ? 'expandCircleUp' : 'expandCircleDown'}
-              animated
-              testID="expand-filters-btn"
-              mode="contained-tonal"
-              onPress={() => {
-                setFiltersExpanded(!filtersExpanded);
-              }}
-            />
-          )}
-        />
-        <Card.Content>
-          <AccordionItem isExpanded={filtersExpanded}>
-            <MuscleSelector
-              muscles={muscleFilters}
-              onChange={setMuscleFilters}
-            />
-          </AccordionItem>
-        </Card.Content>
-      </Card>
-    </View>
-  );
-}
-
-function MuscleSelector(props: {
-  muscles: string[];
-  onChange: (muscles: string[]) => void;
-}) {
-  const { muscles, onChange } = props;
-  const muscleList = useAppSelector(selectMuscles);
-  return (
-    <View style={{ gap: spacing[2] }}>
-      <Text variant="labelLarge">
-        <T keyName="Muscle" />
-      </Text>
-      <View
-        style={{
-          flexDirection: 'row',
-          gap: spacing[1],
-          flexWrap: 'wrap',
-        }}
-      >
-        {muscleList.map((x) => (
-          <Chip
-            mode="outlined"
-            key={x}
-            onPress={() => {
-              onChange(
-                muscles.includes(x)
-                  ? muscles.filter((musc) => musc !== x)
-                  : muscles.concat([x]),
-              );
-            }}
-            showSelectedOverlay
-            selected={muscles.includes(x)}
-            testID={`exercise-muscle-chip`}
-          >
-            {x}
-          </Chip>
-        ))}
-      </View>
-    </View>
-  );
-}
+import ExerciseSearchAndFilters from '@/components/presentation/exercise-search-and-filters';
+import ExerciseMuscleSelector from '@/components/presentation/exercise-muscle-selector';
 
 function ExerciseListItem({
   exerciseId,
@@ -325,7 +221,7 @@ export default function ExerciseManager() {
         renderItem={({ item, index }) => {
           if (index === 0) {
             return (
-              <SearchAndFilters
+              <ExerciseSearchAndFilters
                 searchText={searchText}
                 setSearchText={(s) => {
                   setSearchText(s);
@@ -399,7 +295,7 @@ function ExerciseEditSheet({
         multiline
         testID="exercise-instructions-input"
       />
-      <MuscleSelector
+      <ExerciseMuscleSelector
         muscles={exercise.muscles}
         onChange={(muscles) => update({ muscles })}
       />
