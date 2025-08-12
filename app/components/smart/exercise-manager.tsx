@@ -55,6 +55,7 @@ function ExerciseListItem({
   }, [exerciseId]);
 
   return (
+    // @ts-expect-error -- Swipe row seems to have trouble with typescript, it works
     <SwipeRow
       disableRightSwipe
       ref={rowRef}
