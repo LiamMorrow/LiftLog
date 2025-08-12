@@ -1,9 +1,10 @@
 import { spacing } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
-import { useEffect, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
 import { useDebouncedCallback } from 'use-debounce';
 import {
+  AnimatedFAB,
   Card,
   Chip,
   IconButton,
@@ -24,6 +25,7 @@ import {
 } from '@/store/stored-sessions';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { useDispatch } from 'react-redux';
+import { uuid } from '@/utils/uuid';
 
 function SearchAndFilters({
   searchText,
@@ -122,11 +124,21 @@ function MuscleSelector(props: {
   );
 }
 
-function ExerciseListItem({ exerciseId }: { exerciseId: string }) {
+function ExerciseListItem({
+  exerciseId,
+  expand,
+}: {
+  exerciseId: string;
+  expand: boolean;
+}) {
   const exercise = useAppSelectorWithArg(selectExerciseById, exerciseId);
-  const [expanded, setExpanded] = useRecyclingState(false, [exerciseId]);
-  const [listExpanded, setListExpanded] = useRecyclingState(false, [
+  const [expanded, setExpanded] = useRecyclingState(expand, [
     exerciseId,
+    expand,
+  ]);
+  const [listExpanded, setListExpanded] = useRecyclingState(expand, [
+    exerciseId,
+    expand,
   ]);
 
   return (
@@ -160,56 +172,108 @@ function ExerciseListItem({ exerciseId }: { exerciseId: string }) {
 }
 
 export default function ExerciseManager() {
+  const dispatch = useDispatch();
+  const { t } = useTranslate();
   const [searchText, setSearchText] = useState('');
   const exercises = useAppSelector(selectExercises);
-  const exerciseEntries = useMemo(() => Object.entries(exercises), [exercises]);
+  const exerciseIds = useMemo(() => Object.keys(exercises), [exercises]);
   const [muscleFilters, setMuscleFilters] = useState([] as string[]);
+  const [filteredExerciseIds, setFilteredExerciseIds] = useState(exerciseIds);
 
-  const [filteredExercises, setFilteredExercises] = useState(exerciseEntries);
+  const addExercise = () => {
+    const newId = uuid();
+    dispatch(
+      updateExercise({
+        id: newId,
+        exercise: {
+          name: 'New exercise',
+          category: '',
+          equipment: null,
+          force: null,
+          instructions: '',
+          level: 'beginner',
+          mechanic: null,
+          muscles: [],
+        },
+      }),
+    );
+    setSearchText('New exercise');
+    setFilteredExerciseIds([newId]);
+  };
   const search = useDebouncedCallback(() => {
     const regex = new RegExp(searchText, 'i');
-    const newFilteredExercises = Object.entries(exercises).filter(
-      (x) =>
-        (!muscleFilters.length ||
-          x[1].muscles.some((exerciseMuscle) =>
-            muscleFilters.includes(exerciseMuscle),
-          )) &&
-        regex.test(x[1].name),
-    );
-    setFilteredExercises(newFilteredExercises);
+    const newFilteredExercises = Object.entries(exercises)
+      .filter(
+        (x) =>
+          (!muscleFilters.length ||
+            x[1].muscles.some((exerciseMuscle) =>
+              muscleFilters.includes(exerciseMuscle),
+            )) &&
+          regex.test(x[1].name),
+      )
+      .map((x) => x[0]);
+    setFilteredExerciseIds(newFilteredExercises);
   }, 100);
 
-  useEffect(() => {
-    search();
-  }, [search, searchText, muscleFilters]);
-
   const flatListItems = useMemo(
-    () => [null!, ...filteredExercises],
-    [filteredExercises],
+    () => [null!, ...filteredExerciseIds],
+    [filteredExerciseIds],
   );
   const { handleScroll } = useScroll();
-
+  const [fabExtended, setFabExtended] = useState(true);
+  const [lastScrollPosition, setLastScrollPosition] = useState(0);
+  const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    handleScroll(e);
+    setFabExtended(
+      e.nativeEvent.contentOffset.y <= Math.max(lastScrollPosition, 0),
+    );
+    setLastScrollPosition(e.nativeEvent.contentOffset.y);
+  };
   return (
-    <FlashList
-      onScroll={handleScroll}
-      style={{ flex: 1 }}
-      data={flatListItems}
-      getItemType={(_, index) => (index === 0 ? 'filters' : 'exercise')}
-      keyExtractor={(item, index) => (index === 0 ? 'filters' : item[0])}
-      renderItem={({ item, index }) => {
-        if (index === 0) {
+    <View style={{ flex: 1 }}>
+      <FlashList
+        onScroll={onScroll}
+        style={{ flex: 1 }}
+        data={flatListItems}
+        getItemType={(_, index) => (index === 0 ? 'filters' : 'exercise')}
+        keyExtractor={(item, index) => (index === 0 ? 'filters' : item)}
+        renderItem={({ item, index }) => {
+          if (index === 0) {
+            return (
+              <SearchAndFilters
+                searchText={searchText}
+                setSearchText={(s) => {
+                  setSearchText(s);
+                  search();
+                }}
+                muscleFilters={muscleFilters}
+                setMuscleFilters={(m) => {
+                  setMuscleFilters(m);
+                  search();
+                }}
+              />
+            );
+          }
           return (
-            <SearchAndFilters
-              searchText={searchText}
-              setSearchText={setSearchText}
-              muscleFilters={muscleFilters}
-              setMuscleFilters={setMuscleFilters}
+            <ExerciseListItem
+              exerciseId={item}
+              expand={flatListItems.length === 2}
             />
           );
-        }
-        return <ExerciseListItem exerciseId={item[0]} />;
-      }}
-    />
+        }}
+      />
+      <AnimatedFAB
+        style={{
+          bottom: spacing.pageHorizontalMargin,
+          right: spacing.pageHorizontalMargin,
+        }}
+        extended={fabExtended}
+        variant="secondary"
+        label={t('Add exercise')}
+        onPress={addExercise}
+        icon={'add'}
+      />
+    </View>
   );
 }
 
