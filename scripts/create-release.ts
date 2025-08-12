@@ -53,6 +53,17 @@ rel.stdin.write(notes.stdout);
 rel.stdin.end();
 await rel;
 
+// Get repo info to print release URL
+const repoInfoRaw = await $`gh repo view --json name,owner`;
+let repoInfo;
+try {
+  repoInfo = JSON.parse(repoInfoRaw.stdout);
+} catch {
+  repoInfo = { owner: "", name: "" };
+}
+const releaseUrl = `https://github.com/${repoInfo.owner}/${repoInfo.name}/releases/tag/${version}`;
+
 console.log(
   `Release v${version} created.${prereleaseFlag ? " (prerelease)" : ""}`
 );
+console.log(`View release: ${releaseUrl}`);
