@@ -33,6 +33,7 @@ import { uuid } from '@/utils/uuid';
 import { SwipeRow } from 'react-native-swipe-list-view';
 import { showSnackbar } from '@/store/app';
 import { useMountEffect } from '@/hooks/useMountEffect';
+import Enumerable from 'linq';
 
 function SearchAndFilters({
   searchText,
@@ -58,6 +59,7 @@ function SearchAndFilters({
         onChangeText={setSearchText}
         autoCorrect={false}
         style={{ marginHorizontal: spacing.pageHorizontalMargin }}
+        testID="exercise-search-input"
       />
 
       <Card
@@ -71,6 +73,7 @@ function SearchAndFilters({
             <IconButton
               icon={filtersExpanded ? 'expandCircleUp' : 'expandCircleDown'}
               animated
+              testID="expand-filters-btn"
               mode="contained-tonal"
               onPress={() => {
                 setFiltersExpanded(!filtersExpanded);
@@ -122,6 +125,7 @@ function MuscleSelector(props: {
             }}
             showSelectedOverlay
             selected={muscles.includes(x)}
+            testID={`exercise-muscle-chip`}
           >
             {x}
           </Chip>
@@ -169,7 +173,7 @@ function ExerciseListItem({
           alignItems: 'flex-end',
           justifyContent: 'center',
           flex: 1,
-          backgroundColor: colors.error,
+          paddingVertical: 4,
         }}
       >
         <TouchableRipple
@@ -177,9 +181,11 @@ function ExerciseListItem({
           style={{
             height: '100%',
             width: 70,
+            backgroundColor: colors.error,
             justifyContent: 'center',
             alignItems: 'center',
           }}
+          testID={`exercise-delete-btn`}
         >
           <Icon source={'delete'} size={30} color={colors.onError} />
         </TouchableRipple>
@@ -199,6 +205,7 @@ function ExerciseListItem({
             setExpanded(false);
           }
         }}
+        testID={`exercise-accordion`}
       >
         <AccordionItem
           isExpanded={expanded}
@@ -276,17 +283,20 @@ export default function ExerciseManager() {
   };
 
   const search = useDebouncedCallback(() => {
-    const regex = new RegExp(searchText, 'i');
-    const newFilteredExercises = Object.entries(exercises)
-      .filter(
+    const searchRegex = new RegExp(searchText, 'i');
+    const matchRegex = new RegExp('^' + searchText + '$', 'i');
+    const newFilteredExercises = Enumerable.from(Object.entries(exercises))
+      .where(
         (x) =>
           (!muscleFilters.length ||
             x[1].muscles.some((exerciseMuscle) =>
               muscleFilters.includes(exerciseMuscle),
             )) &&
-          regex.test(x[1].name),
+          searchRegex.test(x[1].name),
       )
-      .map((x) => x[0]);
+      .orderByDescending((x) => matchRegex.test(x[1].name))
+      .select((x) => x[0])
+      .toArray();
     setFilteredExerciseIds(newFilteredExercises);
   }, 100);
 
@@ -348,6 +358,7 @@ export default function ExerciseManager() {
         label={t('Add exercise')}
         onPress={addExercise}
         icon={'add'}
+        testID="exercise-add-fab"
       />
     </View>
   );
@@ -379,12 +390,14 @@ function ExerciseEditSheet({
         label={t('Exercise name')}
         value={exercise.name}
         onChangeText={(name) => update({ name })}
+        testID="exercise-name-input"
       />
       <TextInput
         label={t('Instructions')}
         value={exercise.instructions}
         onChangeText={(instructions) => update({ instructions })}
         multiline
+        testID="exercise-instructions-input"
       />
       <MuscleSelector
         muscles={exercise.muscles}
