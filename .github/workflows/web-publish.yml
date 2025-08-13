@@ -10,6 +10,8 @@ on:
 
 jobs:
   build:
+    env:
+      SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN_REACT}}
     runs-on: ubuntu-latest
     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
@@ -23,16 +25,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: ./app/package-lock.json
       - name: Install
         run: npm ci
         working-directory: ./app
       - name: Build
         run: npm run build:web
         working-directory: ./app
-      - name: Copy 404 page
-        run: cp ./assets/404.html ./app/dist
-      - name: Copy Well known
-        run: cp -r ./assets/.well-known ./app/dist/.well-known
+      - name: Upload source maps
+        run: npx sentry-expo-upload-sourcemaps dist
+        working-directory: ./app
       - name: Upload pages
         uses: actions/upload-pages-artifact@v3
         with:

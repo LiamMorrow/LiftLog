@@ -83,7 +83,7 @@ jobs:
             ANDROID_UPLOAD_STORE_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
             ANDROID_UPLOAD_KEY_ALIAS=liftlog
             ANDROID_UPLOAD_KEY_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
-            DISPLAY_VERSION=${{ github.event.release.name || '3.0.0-beta' }}
+            DISPLAY_VERSION=${{ github.event.release.name  }}
             BUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}
       - name: upload binaries to release
         uses: softprops/action-gh-release@v1
