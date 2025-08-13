@@ -1,4 +1,3 @@
-LiftLog is now available in Spanish!
-Additionally, bugs have been fixed when your session goes over midnight!
-
-Interested in adding translations for your language? Go to settings and submit your own!
+This is a complete rewrite of LiftLog using react native. It is a major overhaul which is the culmination of months of work.
+LiftLog should now feel a lot more native, and has a few quality of life improvements too.
+While it may look similar, rewriting LiftLog will now allow much faster development of requested features 🎉
