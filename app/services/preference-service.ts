@@ -100,15 +100,6 @@ export class PreferenceService {
     return isNaN(parsed) ? 1 : parsed;
   }
 
-  async setShowFeed(showFeed: boolean): Promise<void> {
-    await this.keyValueStore.setItem('showFeed', toBooleanString(showFeed));
-  }
-
-  async getShowFeed(): Promise<boolean> {
-    const value = await this.keyValueStore.getItem('showFeed');
-    return fromBooleanString(value, true);
-  }
-
   async getHasRequestedNotificationPermission(): Promise<boolean> {
     const value = await this.keyValueStore.getItem(
       'hasRequestedNotificationPermission',

@@ -11,7 +11,6 @@ import {
   setRemoteBackupSettings,
   setRestNotifications,
   setShowBodyweight,
-  setShowFeed,
   setShowTips,
   setTipToShow,
   setUseImperialUnits,
@@ -38,7 +37,6 @@ export function applySettingsEffects() {
         showBodyweight,
         showTips,
         tipToShow,
-        showFeed,
         restNotifications,
         remoteBackupSettings,
         lastSuccessfulRemoteBackupHash,
@@ -52,7 +50,6 @@ export function applySettingsEffects() {
         preferenceService.getShowBodyweight(),
         preferenceService.getShowTips(),
         preferenceService.getTipToShow(),
-        preferenceService.getShowFeed(),
         preferenceService.getRestNotifications(),
         preferenceService.getRemoteBackupSettings(),
         preferenceService.getLastSuccessfulRemoteBackupHash(),
@@ -67,7 +64,6 @@ export function applySettingsEffects() {
       dispatch(setShowBodyweight(showBodyweight));
       dispatch(setShowTips(showTips));
       dispatch(setTipToShow(tipToShow));
-      dispatch(setShowFeed(showFeed));
       dispatch(setRestNotifications(restNotifications));
       dispatch(setRemoteBackupSettings(remoteBackupSettings));
       dispatch(
@@ -138,14 +134,6 @@ export function applySettingsEffects() {
     async (action, { stateAfterReduce, extra: { preferenceService } }) => {
       if (stateAfterReduce.settings.isHydrated) {
         await preferenceService.setTipToShow(action.payload);
-      }
-    },
-  );
-  addEffect(
-    setShowFeed,
-    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
-      if (stateAfterReduce.settings.isHydrated) {
-        await preferenceService.setShowFeed(action.payload);
       }
     },
   );

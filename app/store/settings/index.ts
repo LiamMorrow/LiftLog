@@ -19,7 +19,6 @@ interface SettingsState {
   showBodyweight: boolean;
   showTips: boolean;
   tipToShow: number;
-  showFeed: boolean;
   restNotifications: boolean;
   remoteBackupSettings: RemoteBackupSettings;
   lastBackup: RemoteData<LastBackup, string>;
@@ -40,7 +39,6 @@ const initialState: SettingsState = {
   showBodyweight: true,
   showTips: true,
   tipToShow: 1,
-  showFeed: true,
   restNotifications: true,
   proToken: undefined,
   remoteBackupSettings: {
@@ -71,9 +69,6 @@ const settingsSlice = createSlice({
     },
     setTipToShow(state, action: PayloadAction<number>) {
       state.tipToShow = action.payload;
-    },
-    setShowFeed(state, action: PayloadAction<boolean>) {
-      state.showFeed = action.payload;
     },
     setRestNotifications(state, action: PayloadAction<boolean>) {
       state.restNotifications = action.payload;
@@ -134,7 +129,6 @@ export const {
   setShowBodyweight,
   setShowTips,
   setTipToShow,
-  setShowFeed,
   setRestNotifications,
   setRemoteBackupSettings,
   setLastBackup,

@@ -9,7 +9,6 @@ import {
   setColorSchemeSeed,
   setFirstDayOfWeek,
   setShowBodyweight,
-  setShowFeed,
   setShowTips,
   setUseImperialUnits,
 } from '@/store/settings';
@@ -96,12 +95,6 @@ export default function AppConfiguration() {
           supportingText={<T keyName="ShowBodyweightSubtitle" />}
           value={settings.showBodyweight}
           onValueChange={(value) => dispatch(setShowBodyweight(value))}
-        />
-        <ListSwitch
-          headline={<T keyName="ShowFeed" />}
-          supportingText={<T keyName="ShowFeedSubtitle" />}
-          value={settings.showFeed}
-          onValueChange={(value) => dispatch(setShowFeed(value))}
         />
 
         <ListSwitch
