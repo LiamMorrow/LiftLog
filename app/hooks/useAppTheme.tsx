@@ -88,6 +88,8 @@ export type FontChoice = keyof typeof font;
 export type AppThemeColors = Material3Scheme & {
   orange: string;
   red: string;
+  green: string;
+  onGreen: string;
 };
 
 export type ColorChoice = keyof {
@@ -151,6 +153,12 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
       ),
       red: argbToHexRGBA(
         Blend.harmonize(0xffff0000, hexToArgb(schemedTheme.primary)),
+      ),
+      green: argbToHexRGBA(
+        Blend.harmonize(0xff00aa00, hexToArgb(schemedTheme.primary)),
+      ),
+      onGreen: argbToHexRGBA(
+        Blend.harmonize(0xffffffff, hexToArgb(schemedTheme.primary)),
       ),
     },
     colorScheme: colorScheme ?? 'light',

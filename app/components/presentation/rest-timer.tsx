@@ -31,9 +31,9 @@ export default function RestTimer({
 }: RestTimerProps) {
   const { colors } = useAppTheme();
   const isSameMinMaxRest = rest.minRest.equals(rest.maxRest);
-  const [jiggled, setJiggled] = useState(false);
+  const [jiggled, setJiggled] = useState([] as number[]);
   useEffect(() => {
-    setJiggled(false);
+    setJiggled([]);
   }, [startTime]);
 
   // Callback to get all timer-related values
@@ -56,8 +56,8 @@ export default function RestTimer({
       firstProgressBarProgress < 1
         ? ['inverseOnSurface', 'inverseSurface']
         : secondProgressBarProgress < 1 && secondProgressBarProgress !== -1
-          ? ['inverseOnSurface', 'inverseSurface']
-          : ['error', 'errorContainer'];
+          ? ['onGreen', 'green']
+          : ['onErrorContainer', 'errorContainer'];
     return {
       timeSinceStart,
       firstProgressBarProgress,
@@ -80,26 +80,29 @@ export default function RestTimer({
 
   // Set this once, then rotate it with sin
   const duration = 100;
-  const triggerJiggle = useCallback(() => {
-    if (jiggled) {
-      return;
-    }
-    impactAsync(ImpactFeedbackStyle.Heavy).catch(console.log);
-    rotation.set(
-      withRepeat(
-        withTiming(2 * Math.PI, {
-          duration,
-          easing: Easing.linear,
-        }),
-        3,
-        false,
-        () => {
-          rotation.set(0); // Reset at end
-        },
-      ),
-    );
-    setJiggled(true);
-  }, [rotation, jiggled]);
+  const triggerJiggle = useCallback(
+    (index: number) => {
+      if (jiggled.includes(index)) {
+        return;
+      }
+      impactAsync(ImpactFeedbackStyle.Heavy).catch(console.log);
+      rotation.set(
+        withRepeat(
+          withTiming(2 * Math.PI, {
+            duration,
+            easing: Easing.linear,
+          }),
+          3,
+          false,
+          () => {
+            rotation.set(0); // Reset at end
+          },
+        ),
+      );
+      setJiggled((j) => [...j, index]);
+    },
+    [rotation, jiggled],
+  );
   // Animated props for SVG paths
   const pillHeight = spacing[14];
   const pillWidth = pillHeight * 2.2;
@@ -113,7 +116,10 @@ export default function RestTimer({
       const state = getTimerState();
       setTimerState(state);
       if (state.firstProgressBarProgress === 1) {
-        triggerJiggle();
+        triggerJiggle(1);
+      }
+      if (state.secondProgressBarProgress === 1) {
+        triggerJiggle(2);
       }
     }, 200);
     return () => clearInterval(timer);
