@@ -21,6 +21,7 @@ import { addImportBackupEffects } from '@/store/settings/import-backup-effects';
 import { addRemoteBackupEffects } from '@/store/settings/remote-backup-effects';
 import Purchases from 'react-native-purchases';
 import { Platform } from 'react-native';
+import { captureException } from '@sentry/react-native';
 
 export function applySettingsEffects() {
   addEffect(
@@ -92,10 +93,16 @@ export function applySettingsEffects() {
       }
       // migrate pro token to a revenuecat
       if (proToken && !proToken.startsWith('$RCAnonymousID')) {
-        const customerInfo = await Purchases.getCustomerInfo();
-        await Purchases.syncPurchases();
-        setProToken(customerInfo.originalAppUserId);
-        await preferenceService.setProToken(customerInfo.originalAppUserId);
+        try {
+          const customerInfo = await Purchases.getCustomerInfo();
+          await Purchases.syncPurchases();
+          setProToken(customerInfo.originalAppUserId);
+          await preferenceService.setProToken(customerInfo.originalAppUserId);
+        } catch (err) {
+          captureException(
+            new Error('Failed to sync customer', { cause: err }),
+          );
+        }
       }
       dispatch(setIsHydrated(true));
       const end = performance.now();

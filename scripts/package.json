@@ -2,6 +2,9 @@
   "name": "scripts",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "create-release": "./create-release.ts patch"
+  },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/node": "^24.2.1",

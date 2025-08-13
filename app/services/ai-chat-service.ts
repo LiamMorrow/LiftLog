@@ -87,7 +87,7 @@ export class AiChatService {
         if (e) {
           console.error(e);
           Sentry.captureException(e);
-          await Purchases.syncPurchases();
+          await Purchases.syncPurchases().catch(Sentry.captureException);
         }
       });
     }

@@ -62,9 +62,11 @@ if (!["y", "", "yes"].includes(releaseAnswer.toLocaleLowerCase())) {
 }
 
 // Create the release using gh CLI, passing notes file
-await $`gh release create ${version} --title ${version} --notes-file ${tmpFile} ${
-  prereleaseFlag ? "--prerelease" : ""
-}`;
+if (prereleaseFlag) {
+  await $`gh release create ${version} --title ${version} --notes-file ${tmpFile} --prerelease`;
+} else {
+  await $`gh release create ${version} --title ${version} --notes-file ${tmpFile}`;
+}
 
 // Clean up temp file
 try {
