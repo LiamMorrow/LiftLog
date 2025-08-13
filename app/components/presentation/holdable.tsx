@@ -1,0 +1,69 @@
+import {
+  startIncreasingHoldHaptics,
+  endIncreasingHoldHaptics,
+} from '@/store/app';
+import { ReactNode, useEffect, useState } from 'react';
+import { ViewProps } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import { useDispatch } from 'react-redux';
+
+export interface HoldableProps {
+  children: ReactNode;
+  onLongPress: () => void;
+  duration?: number;
+}
+export default function Holdable({
+  children,
+  onLongPress,
+  duration = 400,
+}: HoldableProps) {
+  const dispatch = useDispatch();
+  const holdingScale = useSharedValue(1);
+  const [isHolding, setIsHolding] = useState(false);
+  const [holdTimeout, setHoldTimeout] = useState<number>();
+
+  const handleLongPress = () => {
+    dispatch(endIncreasingHoldHaptics({ completedHold: true }));
+    onLongPress();
+  };
+  const enterHold = () => {
+    setIsHolding(true);
+    dispatch(startIncreasingHoldHaptics());
+    clearTimeout(holdTimeout);
+    setHoldTimeout(
+      setTimeout(() => {
+        handleLongPress();
+      }, duration),
+    );
+  };
+  const exitHold = () => {
+    clearTimeout(holdTimeout);
+    setIsHolding(false);
+    dispatch(endIncreasingHoldHaptics({ completedHold: false }));
+  };
+  const callbacks: Partial<ViewProps> = {
+    onTouchStart: enterHold,
+    onPointerDown: enterHold,
+    onPointerUp: exitHold,
+    onPointerLeave: exitHold,
+    onTouchEnd: exitHold,
+  };
+
+  useEffect(() => {
+    holdingScale.value = withTiming(isHolding ? 1.1 : 1, {
+      duration,
+    });
+  }, [holdingScale, isHolding, duration]);
+  const scaleStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: holdingScale.value }],
+  }));
+  return (
+    <Animated.View style={[scaleStyle]} {...callbacks}>
+      {children}
+    </Animated.View>
+  );
+}

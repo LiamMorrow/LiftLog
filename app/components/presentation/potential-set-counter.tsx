@@ -8,21 +8,13 @@ import WeightDialog from '@/components/presentation/weight-dialog';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { PressableProps } from 'react-native-paper/lib/typescript/components/TouchableRipple/Pressable';
 import FocusRing from '@/components/presentation/focus-ring';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated';
-import { useDispatch } from 'react-redux';
-import {
-  endIncreasingHoldHaptics,
-  startIncreasingHoldHaptics,
-} from '@/store/app';
+import Animated from 'react-native-reanimated';
 import { WeightAppliesTo } from '@/store/current-session';
 import SelectButton, {
   SelectButtonOption,
 } from '@/components/presentation/select-button';
 import { useTranslate } from '@tolgee/react';
+import Holdable from '@/components/presentation/holdable';
 
 interface PotentialSetCounterProps {
   set: PotentialSet;
@@ -39,12 +31,9 @@ interface PotentialSetCounterProps {
 
 export default function PotentialSetCounter(props: PotentialSetCounterProps) {
   const { colors } = useAppTheme();
-  const holdingScale = useSharedValue(1);
   const { t } = useTranslate();
-  const [isHolding, setIsHolding] = useState(false);
   const [isWeightDialogOpen, setIsWeightDialogOpen] = useState(false);
   const repCountValue = props.set?.set?.repsCompleted;
-  const dispatch = useDispatch();
 
   const applyToSelections: SelectButtonOption<WeightAppliesTo>[] = [
     {
@@ -61,38 +50,12 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
     },
   ];
 
-  useEffect(() => {
-    holdingScale.value = withTiming(isHolding ? 1.1 : 1, {
-      duration: 400,
-    });
-  }, [holdingScale, isHolding]);
-
-  const scaleStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: holdingScale.value }],
-  }));
-
-  const enterHold = () => {
-    setIsHolding(true);
-    dispatch(startIncreasingHoldHaptics());
-  };
-  const exitHold = () => {
-    setIsHolding(false);
-    dispatch(endIncreasingHoldHaptics({ completedHold: false }));
-  };
-
   const callbacks = props.isReadonly
     ? {}
     : ({
         onPress: props.onTap,
-        onLongPress: () => {
-          dispatch(endIncreasingHoldHaptics({ completedHold: true }));
-          props.onHold();
-        },
-        onTouchStart: enterHold,
-        onPointerDown: enterHold,
-        onPointerUp: exitHold,
-        onPointerLeave: exitHold,
-        onTouchEnd: exitHold,
+        // We use holdable long press so we don't want long press triggering onPress
+        onLongPress: () => {},
       } satisfies Touchable & Omit<PressableProps, 'children'>);
 
   const [applyTo, setApplyTo] = useState<WeightAppliesTo>('uncompletedSets');
@@ -106,114 +69,121 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
   }, [props.set.set]);
 
   return (
-    <FocusRing isSelected={props.toStartNext} radius={15}>
-      <Animated.View
-        style={[
-          scaleStyle,
-          {
-            userSelect: 'none',
-            minWidth: spacing[15],
-          },
-        ]}
-      >
-        <Animated.View
+    <Holdable onLongPress={props.onHold}>
+      <FocusRing isSelected={props.toStartNext} radius={15}>
+        <View
           style={[
             {
-              borderTopLeftRadius: 10,
-              borderTopRightRadius: 10,
-              overflow: 'hidden',
+              userSelect: 'none',
+              minWidth: spacing[15],
             },
           ]}
         >
-          <TouchableRipple
-            style={{
-              flexShrink: 0,
-              padding: 0,
-              height: spacing[15],
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor:
-                repCountValue !== undefined
-                  ? colors.primary
-                  : colors.secondaryContainer,
-            }}
-            {...callbacks}
-            disabled={props.isReadonly}
-            testID="repcount"
+          <Animated.View
+            style={[
+              {
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 10,
+                overflow: 'hidden',
+              },
+            ]}
           >
-            <Text
+            <TouchableRipple
               style={{
-                color:
+                flexShrink: 0,
+                padding: 0,
+                height: spacing[15],
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor:
                   repCountValue !== undefined
-                    ? colors.onPrimary
-                    : colors.onSecondaryContainer,
-                ...font['text-xl'],
+                    ? colors.primary
+                    : colors.secondaryContainer,
               }}
+              {...callbacks}
+              disabled={props.isReadonly}
+              testID="repcount"
             >
-              <Text style={{ fontWeight: 'bold' }}>{repCountValue ?? '-'}</Text>
               <Text
                 style={{
-                  ...font['text-sm'],
-                  verticalAlign: 'top',
+                  color:
+                    repCountValue !== undefined
+                      ? colors.onPrimary
+                      : colors.onSecondaryContainer,
+                  ...font['text-xl'],
                 }}
               >
-                /{props.maxReps}
+                <Text style={{ fontWeight: 'bold' }}>
+                  {repCountValue ?? '-'}
+                </Text>
+                <Text
+                  style={{
+                    ...font['text-sm'],
+                    verticalAlign: 'top',
+                  }}
+                >
+                  /{props.maxReps}
+                </Text>
               </Text>
-            </Text>
-          </TouchableRipple>
-        </Animated.View>
-        <Animated.View
-          style={{
-            borderTopWidth: 1,
-            borderColor: colors.outline,
-            backgroundColor: colors.surfaceContainerHigh,
-            borderBottomLeftRadius: 10,
-            borderBottomRightRadius: 10,
-            overflow: 'hidden',
-            padding: spacing[2],
-            width: '100%',
-          }}
-        >
-          <TouchableRipple
-            testID="repcount-weight"
+            </TouchableRipple>
+          </Animated.View>
+          <Animated.View
             style={{
-              alignItems: 'center',
-              margin: -spacing[2],
+              borderTopWidth: 1,
+              borderColor: colors.outline,
+              backgroundColor: colors.surfaceContainerHigh,
+              borderBottomLeftRadius: 10,
+              borderBottomRightRadius: 10,
+              overflow: 'hidden',
               padding: spacing[2],
-            }}
-            onPress={
-              props.isReadonly ? undefined! : () => setIsWeightDialogOpen(true)
-            }
-            disabled={props.isReadonly}
-          >
-            <Text style={{ color: colors.onSurface, ...font['text-sm'] }}>
-              <WeightFormat weight={props.set.weight} />
-            </Text>
-          </TouchableRipple>
-        </Animated.View>
-        <WeightDialog
-          open={isWeightDialogOpen}
-          increment={props.weightIncrement}
-          weight={props.set.weight}
-          onClose={() => setIsWeightDialogOpen(false)}
-          updateWeight={(w) => props.onUpdateWeight(w, applyTo)}
-        >
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
+              width: '100%',
             }}
           >
-            <SelectButton
-              testID="repcount-apply-weight-to"
-              value={applyTo}
-              onChange={setApplyTo}
-              options={applyToSelections}
-            />
-          </View>
-        </WeightDialog>
-      </Animated.View>
-    </FocusRing>
+            <TouchableRipple
+              testID="repcount-weight"
+              style={{
+                alignItems: 'center',
+                margin: -spacing[2],
+                padding: spacing[2],
+              }}
+              onPress={
+                props.isReadonly
+                  ? undefined!
+                  : () => setIsWeightDialogOpen(true)
+              }
+              // We use holdable long press so we don't want long press triggering onPress
+              onLongPress={() => {}}
+              disabled={props.isReadonly}
+            >
+              <Text style={{ color: colors.onSurface, ...font['text-sm'] }}>
+                <WeightFormat weight={props.set.weight} />
+              </Text>
+            </TouchableRipple>
+          </Animated.View>
+          <WeightDialog
+            open={isWeightDialogOpen}
+            increment={props.weightIncrement}
+            weight={props.set.weight}
+            onClose={() => setIsWeightDialogOpen(false)}
+            updateWeight={(w) => props.onUpdateWeight(w, applyTo)}
+          >
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <SelectButton
+                testID="repcount-apply-weight-to"
+                value={applyTo}
+                onChange={setApplyTo}
+                options={applyToSelections}
+              />
+            </View>
+          </WeightDialog>
+        </View>
+      </FocusRing>
+    </Holdable>
   );
 }

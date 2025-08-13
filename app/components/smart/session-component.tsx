@@ -7,6 +7,7 @@ import {
   selectCurrentSession,
   SessionTarget,
   setExerciseReps,
+  setWorkoutSessionLastSetTime,
   updateBodyweight,
   updateExerciseWeight,
   updateNotesForExercise,
@@ -30,7 +31,7 @@ import { ExerciseBlueprint } from '@/models/session-models';
 import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/exercise-editor';
 import { LocalDateTime } from '@js-joda/core';
-import { useAppSelectorWithArg } from '@/store';
+import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import UpdatePlanButton from '@/components/smart/update-plan-button';
 import { UnknownAction } from '@reduxjs/toolkit';
 
@@ -45,6 +46,9 @@ export default function SessionComponent(props: {
 }) {
   const { colors } = useAppTheme();
   const { t } = useTranslate();
+  const lastSetTime = useAppSelector(
+    (s) => s.currentSession.workoutSessionLastSetTime,
+  );
   const session = useAppSelectorWithArg(selectCurrentSession, props.target);
   const storeDispatch = useDispatch();
   const dispatch = <T,>(
@@ -55,6 +59,10 @@ export default function SessionComponent(props: {
     selectRecentlyCompletedExercises,
     10,
   );
+  const resetTimer = () => {
+    storeDispatch(setWorkoutSessionLastSetTime(LocalDateTime.now()));
+    storeDispatch(notifySetTimer());
+  };
 
   const isReadonly = props.target === 'feedSession';
 
@@ -216,21 +224,22 @@ export default function SessionComponent(props: {
 
   const lastExercise = session.lastExercise;
   const lastRecordedSet = lastExercise?.lastRecordedSet;
-  const showSnackbar =
+  const showRestTimer =
     props.target === 'workoutSession' &&
     session.nextExercise &&
     lastExercise &&
-    lastRecordedSet?.set;
+    lastSetTime;
   const lastSetFailed =
     lastRecordedSet?.set &&
     lastExercise &&
     lastRecordedSet.set.repsCompleted < lastExercise.blueprint.repsPerSet;
-  const restTimer = showSnackbar ? (
+  const restTimer = showRestTimer ? (
     <View style={{ flex: 1 }}>
       <RestTimer
         rest={lastExercise.blueprint.restBetweenSets}
-        startTime={lastRecordedSet.set.completionDateTime}
+        startTime={lastSetTime}
         failed={!!lastSetFailed}
+        resetTimer={resetTimer}
       />
     </View>
   ) : undefined;

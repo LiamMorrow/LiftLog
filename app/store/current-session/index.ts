@@ -24,6 +24,7 @@ interface CurrentSessionState {
   historySession: SessionPOJO | undefined;
   feedSession: SessionPOJO | undefined;
   latestSetTimerNotificationId: string | undefined;
+  workoutSessionLastSetTime: LocalDateTime | undefined;
 }
 
 export type SessionTarget = 'workoutSession' | 'historySession' | 'feedSession';
@@ -36,6 +37,7 @@ const initialState: CurrentSessionState = {
   historySession: undefined,
   feedSession: undefined,
   latestSetTimerNotificationId: undefined,
+  workoutSessionLastSetTime: undefined,
 };
 
 type TargetedSessionAction<TPayload> = PayloadAction<{
@@ -126,6 +128,8 @@ const currentSessionSlice = createSlice({
           setIndex: number;
           time: LocalDateTime;
         },
+        target,
+        state,
       ) => {
         const exerciseBlueprint =
           session.blueprint.exercises[action.exerciseIndex];
@@ -133,16 +137,19 @@ const currentSessionSlice = createSlice({
         if (!Session.fromPOJO(session).isStarted) {
           session.date = action.time.toLocalDate();
         }
-
-        session.recordedExercises[action.exerciseIndex].potentialSets[
-          action.setIndex
-        ].set = getCycledRepCount(
+        const repCount = getCycledRepCount(
           session.recordedExercises[action.exerciseIndex].potentialSets[
             action.setIndex
           ].set,
           exerciseBlueprint,
           action.time,
         );
+        session.recordedExercises[action.exerciseIndex].potentialSets[
+          action.setIndex
+        ].set = repCount;
+        if (target === 'workoutSession') {
+          state.workoutSessionLastSetTime = repCount?.completionDateTime;
+        }
       },
     ),
 
@@ -209,6 +216,8 @@ const currentSessionSlice = createSlice({
           reps: number | undefined;
           time: LocalDateTime;
         },
+        target,
+        state,
       ) => {
         session.recordedExercises[action.exerciseIndex].potentialSets[
           action.setIndex
@@ -220,6 +229,11 @@ const currentSessionSlice = createSlice({
                 repsCompleted: action.reps,
                 completionDateTime: action.time,
               };
+
+        if (target === 'workoutSession') {
+          state.workoutSessionLastSetTime =
+            action.reps === undefined ? undefined : action.time;
+        }
       },
     ),
 
@@ -288,6 +302,10 @@ const currentSessionSlice = createSlice({
     ) => {
       state[action.payload.target] =
         action.payload.session?.toPOJO() as unknown as WritableDraft<SessionPOJO>;
+      if (action.payload.target === 'workoutSession') {
+        state.workoutSessionLastSetTime =
+          action.payload.session?.lastExercise?.lastRecordedSet?.set?.completionDateTime;
+      }
     },
 
     updateNotesForExercise: targetedSessionAction(
@@ -304,6 +322,13 @@ const currentSessionSlice = createSlice({
         session.bodyweight = action.bodyweight;
       },
     ),
+
+    setWorkoutSessionLastSetTime(
+      state,
+      action: PayloadAction<LocalDateTime | undefined>,
+    ) {
+      state.workoutSessionLastSetTime = action.payload;
+    },
   },
   selectors: {
     selectState: (x) => x,
@@ -355,6 +380,7 @@ export const {
   setCurrentSession,
   updateNotesForExercise,
   updateBodyweight,
+  setWorkoutSessionLastSetTime,
 } = currentSessionSlice.actions;
 
 export const currentSessionReducer = currentSessionSlice.reducer;

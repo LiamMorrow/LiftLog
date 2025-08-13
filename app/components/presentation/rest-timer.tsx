@@ -15,12 +15,14 @@ import Animated, {
 import { View, ViewStyle } from 'react-native';
 import { SurfaceText } from '@/components/presentation/surface-text';
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
+import Holdable from '@/components/presentation/holdable';
 
 interface RestTimerProps {
   rest: Rest;
   startTime: LocalDateTime;
   failed: boolean;
   style?: ViewStyle;
+  resetTimer: () => void;
 }
 
 export default function RestTimer({
@@ -28,10 +30,11 @@ export default function RestTimer({
   startTime,
   failed,
   style,
+  resetTimer,
 }: RestTimerProps) {
   const { colors } = useAppTheme();
   const isSameMinMaxRest = rest.minRest.equals(rest.maxRest);
-  const [jiggled, setJiggled] = useState([] as number[]);
+  const [jiggled, setJiggled] = useState([] as string[]);
   useEffect(() => {
     setJiggled([]);
   }, [startTime]);
@@ -81,8 +84,8 @@ export default function RestTimer({
   // Set this once, then rotate it with sin
   const duration = 100;
   const triggerJiggle = useCallback(
-    (index: number) => {
-      if (jiggled.includes(index)) {
+    (milestone: string) => {
+      if (jiggled.includes(milestone)) {
         return;
       }
       impactAsync(ImpactFeedbackStyle.Heavy).catch(console.log);
@@ -99,7 +102,7 @@ export default function RestTimer({
           },
         ),
       );
-      setJiggled((j) => [...j, index]);
+      setJiggled((j) => [...j, milestone]);
     },
     [rotation, jiggled],
   );
@@ -116,78 +119,85 @@ export default function RestTimer({
       const state = getTimerState();
       setTimerState(state);
       if (state.firstProgressBarProgress === 1) {
-        triggerJiggle(1);
+        triggerJiggle('first');
       }
       if (state.secondProgressBarProgress === 1) {
-        triggerJiggle(2);
+        triggerJiggle('second');
       }
     }, 200);
     return () => clearInterval(timer);
   }, [getTimerState, pillPerimeter, triggerJiggle]);
 
   return (
-    <Animated.View
-      testID="rest-timer"
-      style={[
-        {
-          width: pillWidth,
-          height: pillHeight,
-          pointerEvents: 'none',
-          overflow: 'hidden',
-          borderRadius: pillHeight,
-          backgroundColor: colors[timerState.backgroundColor],
-          alignItems: 'center',
-          justifyContent: 'center',
-        },
-        style,
-        animatedStyle,
-      ]}
+    <Holdable
+      onLongPress={() => {
+        resetTimer();
+        triggerJiggle('reset');
+      }}
     >
-      {/* Circular progress bar wrapping the border */}
-      <View
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
+      <Animated.View
+        testID="rest-timer"
+        style={[
+          {
+            width: pillWidth,
+            height: pillHeight,
+            pointerEvents: 'none',
+            overflow: 'hidden',
+            borderRadius: pillHeight,
+            backgroundColor: colors[timerState.backgroundColor],
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+          style,
+          animatedStyle,
+        ]}
       >
-        <Svg width={pillWidth} height={pillHeight}>
-          {/* Primary progress bar (minRest/failureRest) */}
-          <PillProgressBar
-            color={colors.primary}
-            progress={timerState.firstProgressBarProgress}
-            pillWidth={pillWidth}
-            pillHeight={pillHeight}
-            pillPerimeter={pillPerimeter}
-          />
-          {/* Orange progress bar (minRest to maxRest) */}
-          <PillProgressBar
-            color={colors.orange}
-            progress={timerState.secondProgressBarProgress}
-            pillWidth={pillWidth}
-            pillHeight={pillHeight}
-            pillPerimeter={pillPerimeter}
-            visible={
-              !failed &&
-              !isSameMinMaxRest &&
-              timerState.secondProgressBarProgress > 0
-            }
-          />
-        </Svg>
-      </View>
-      <SurfaceText
-        style={{ fontVariant: ['tabular-nums'] }}
-        font="text-2xl"
-        weight={'bold'}
-        color={timerState.textColor}
-      >
-        {timerState.timeSinceStart}
-      </SurfaceText>
-    </Animated.View>
+        {/* Circular progress bar wrapping the border */}
+        <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Svg width={pillWidth} height={pillHeight}>
+            {/* Primary progress bar (minRest/failureRest) */}
+            <PillProgressBar
+              color={colors.primary}
+              progress={timerState.firstProgressBarProgress}
+              pillWidth={pillWidth}
+              pillHeight={pillHeight}
+              pillPerimeter={pillPerimeter}
+            />
+            {/* Orange progress bar (minRest to maxRest) */}
+            <PillProgressBar
+              color={colors.orange}
+              progress={timerState.secondProgressBarProgress}
+              pillWidth={pillWidth}
+              pillHeight={pillHeight}
+              pillPerimeter={pillPerimeter}
+              visible={
+                !failed &&
+                !isSameMinMaxRest &&
+                timerState.secondProgressBarProgress > 0
+              }
+            />
+          </Svg>
+        </View>
+        <SurfaceText
+          style={{ fontVariant: ['tabular-nums'] }}
+          font="text-2xl"
+          weight={'bold'}
+          color={timerState.textColor}
+        >
+          {timerState.timeSinceStart}
+        </SurfaceText>
+      </Animated.View>
+    </Holdable>
   );
 }
 
