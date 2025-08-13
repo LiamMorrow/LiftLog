@@ -1,4 +1,5 @@
 import { NativeModule, requireNativeModule } from 'expo';
+import { Platform, Vibration } from 'react-native';
 
 declare class ReactNativeHapticsModule extends NativeModule {
   triggerSlowRiseHaptic(): void;
@@ -6,7 +7,18 @@ declare class ReactNativeHapticsModule extends NativeModule {
   cancelHaptic(): void;
 }
 
-const module = requireNativeModule<ReactNativeHapticsModule>('LiftLogHaptics');
+const module =
+  Platform.OS === 'web'
+    ? {
+        triggerClickHaptic() {
+          try {
+            Vibration.vibrate(50);
+          } catch {}
+        },
+        triggerSlowRiseHaptic() {},
+        cancelHaptic() {},
+      }
+    : requireNativeModule<ReactNativeHapticsModule>('LiftLogHaptics');
 
 export const triggerSlowRiseHaptic = () => {
   module.triggerSlowRiseHaptic();
