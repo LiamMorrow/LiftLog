@@ -353,6 +353,14 @@ async function presentPaywall(): Promise<boolean> {
   if (customer.entitlements.active['pro']) {
     return true;
   }
+  try {
+    const restore = await Purchases.restorePurchases();
+    if (restore.entitlements.active['pro']) {
+      return true;
+    }
+  } catch (err) {
+    console.log('Failed to restore purchases', err, customer.originalAppUserId);
+  }
   // Present paywall for current offering:
   const paywallResult: PAYWALL_RESULT = await RevenueCatUI.presentPaywall();
 

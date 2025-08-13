@@ -8,11 +8,13 @@ import BigNumber from 'bignumber.js';
 import { parseDuration } from '@/utils/format-date';
 import { HubConnectionFactory } from '@/services/hub-connection-factory';
 import { RootState } from '@/store';
+import * as Sentry from '@sentry/react-native';
+import Purchases from 'react-native-purchases';
 
 export class AiChatService {
   private connection: HubConnection | undefined;
   constructor(
-    private hunConnectionFactory: HubConnectionFactory,
+    private hubConnectionFactory: HubConnectionFactory,
     private getState: () => RootState,
   ) {}
 
@@ -27,7 +29,7 @@ export class AiChatService {
     const subject = await this.setupResponseListening(proToken);
     this.connection
       ?.invoke('Introduce', Intl.DateTimeFormat().resolvedOptions().locale)
-      .catch(console.error)
+      .catch(Sentry.captureException)
       .finally(() => subject.end());
     yield* subject;
     this.connection?.off('ReceiveMessage');
@@ -44,7 +46,7 @@ export class AiChatService {
     const subject = await this.setupResponseListening(proToken);
     this.connection
       ?.invoke('SendMessage', message)
-      .catch(console.error)
+      .catch(Sentry.captureException)
       .finally(() => subject.end());
     yield* subject;
     this.connection?.off('ReceiveMessage');
@@ -70,16 +72,23 @@ export class AiChatService {
   private async setupResponseListening(proToken: string) {
     const subject = new AsyncIterableSubject<AiChatResponse>();
     if (!this.connection) {
-      this.connection = this.hunConnectionFactory.create(proToken);
+      this.connection = this.hubConnectionFactory.create(proToken);
 
       this.connection.onclose((e) => {
-        console.error(e);
         this.connection = undefined;
+        if (e) {
+          console.error(e);
+          Sentry.captureException(e);
+        }
       });
 
-      await this.connection.start().catch((e) => {
-        console.error(e);
+      await this.connection.start().catch(async (e) => {
         this.connection = undefined;
+        if (e) {
+          console.error(e);
+          Sentry.captureException(e);
+          await Purchases.syncPurchases();
+        }
       });
     }
     if (!this.connection) {

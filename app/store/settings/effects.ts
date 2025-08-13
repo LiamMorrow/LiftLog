@@ -81,8 +81,6 @@ export function applySettingsEffects() {
       dispatch(setFirstDayOfWeek(firstDayOfWeek));
       dispatch(setProToken(proToken));
 
-      // migrate pro token to a revenuecat
-
       if (Platform.OS === 'ios') {
         Purchases.configure({
           apiKey: process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY!,
@@ -92,8 +90,10 @@ export function applySettingsEffects() {
           apiKey: process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY!,
         });
       }
+      // migrate pro token to a revenuecat
       if (proToken && !proToken.startsWith('$RCAnonymousID')) {
         const customerInfo = await Purchases.getCustomerInfo();
+        await Purchases.syncPurchases();
         setProToken(customerInfo.originalAppUserId);
         await preferenceService.setProToken(customerInfo.originalAppUserId);
       }
