@@ -17,7 +17,7 @@ import { FlashList } from '@shopify/flash-list';
 import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import { Card, Divider, List, TextInput } from 'react-native-paper';
 
 interface ExerciseEditorProps {
@@ -91,6 +91,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
             icon="search"
             onPress={() => {
               setBottomSheetShown(true);
+              Keyboard.dismiss();
               bottomSheetRef.current?.expand();
             }}
           />
