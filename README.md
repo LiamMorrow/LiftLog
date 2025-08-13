@@ -122,6 +122,7 @@ LiftLog is organized into several projects:
    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=LiamMorrow/LiftLog&type=Date" />
  </picture>
 </a>
+
 ---
 
 ## 🤝 Contributing
