@@ -61,7 +61,7 @@ try {
 } catch {
   repoInfo = { owner: "", name: "" };
 }
-const releaseUrl = `https://github.com/${repoInfo.owner}/${repoInfo.name}/releases/tag/${version}`;
+const releaseUrl = `https://github.com/LiamMorrow/LiftLog/releases/tag/${version}`;
 
 console.log(
   `Release v${version} created.${prereleaseFlag ? " (prerelease)" : ""}`
