@@ -96,7 +96,7 @@ export function applySettingsEffects() {
         try {
           const customerInfo = await Purchases.getCustomerInfo();
           await Purchases.syncPurchases();
-          setProToken(customerInfo.originalAppUserId);
+          dispatch(setProToken(customerInfo.originalAppUserId));
           await preferenceService.setProToken(customerInfo.originalAppUserId);
         } catch (err) {
           captureException(
