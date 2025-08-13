@@ -1,15 +1,8 @@
 #!/usr/bin/env -S node --experimental-strip-types
-import { $ } from "zx";
+import { $, question } from "zx";
 
 // Ensure clean git status and no unpushed commits
 await $`git fetch`;
-const status = await $`git status --porcelain`;
-if (status.stdout.trim() !== "") {
-  console.error(
-    "Error: Working tree is not clean. Please commit or stash your changes."
-  );
-  process.exit(1);
-}
 const branch = (await $`git rev-parse --abbrev-ref HEAD`).stdout.trim();
 const localHash = (await $`git rev-parse ${branch}`).stdout.trim();
 const remoteHash = (await $`git rev-parse origin/${branch}`).stdout.trim();
@@ -52,12 +45,21 @@ if (!version) {
 const tmpFile = join(tmpdir(), `liftlog-release-notes-${version}.md`);
 writeFileSync(tmpFile, notes.stdout);
 
+console.log("Created temp file " + tmpFile + ". Opening..");
+
 // Open in system editor
 const editor = process.env.EDITOR || "vi";
-await $`${editor} ${tmpFile}`;
+await $({ stdio: "inherit" })`${editor} ${tmpFile}`;
 
-// Read possibly edited notes
-const editedNotes = readFileSync(tmpFile, "utf8");
+const releaseAnswer = await question(
+  `About to create release ${version}. Are you sure? [Y/n]`,
+  {
+    choices: ["y", "n", "Y", "N", ""],
+  }
+);
+if (!["y", "", "yes"].includes(releaseAnswer.toLocaleLowerCase())) {
+  process.exit(1);
+}
 
 // Create the release using gh CLI, passing notes file
 await $`gh release create ${version} --title ${version} --notes-file ${tmpFile} ${
@@ -69,14 +71,6 @@ try {
   unlinkSync(tmpFile);
 } catch {}
 
-// Get repo info to print release URL
-const repoInfoRaw = await $`gh repo view --json name,owner`;
-let repoInfo;
-try {
-  repoInfo = JSON.parse(repoInfoRaw.stdout);
-} catch {
-  repoInfo = { owner: "", name: "" };
-}
 const releaseUrl = `https://github.com/LiamMorrow/LiftLog/releases/tag/${version}`;
 
 console.log(
