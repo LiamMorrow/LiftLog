@@ -148,7 +148,11 @@ const currentSessionSlice = createSlice({
           action.setIndex
         ].set = repCount;
         if (target === 'workoutSession') {
-          state.workoutSessionLastSetTime = repCount?.completionDateTime;
+          state.workoutSessionLastSetTime =
+            repCount?.completionDateTime === undefined
+              ? Session.fromPOJO(session).lastExercise?.lastRecordedSet?.set
+                  ?.completionDateTime
+              : action.time;
         }
       },
     ),
@@ -232,7 +236,10 @@ const currentSessionSlice = createSlice({
 
         if (target === 'workoutSession') {
           state.workoutSessionLastSetTime =
-            action.reps === undefined ? undefined : action.time;
+            action.reps === undefined
+              ? Session.fromPOJO(session).lastExercise?.lastRecordedSet?.set
+                  ?.completionDateTime
+              : action.time;
         }
       },
     ),

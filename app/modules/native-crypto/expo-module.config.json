@@ -5,12 +5,14 @@
       "ReactNativeWebcryptoModule",
       "ReactNativeWebcryptoAesModule",
       "ReactNativeWebcryptoRSASha256Module",
+      "LiftLogHapticsModule",
       "ReactNativeFileSystemModule"
     ]
   },
   "android": {
     "modules": [
       "expo.modules.webcrypto.ReactNativeWebcryptoModule",
+      "expo.modules.webcrypto.LiftLogHapticsModule",
       "expo.modules.webcrypto.ReactNativeWebcryptoAesModule",
       "expo.modules.webcrypto.ReactNativeWebcryptoRSASha256Module"
     ]

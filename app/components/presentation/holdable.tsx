@@ -1,7 +1,8 @@
 import {
-  startIncreasingHoldHaptics,
-  endIncreasingHoldHaptics,
-} from '@/store/app';
+  cancelHaptic,
+  triggerClickHaptic,
+  triggerSlowRiseHaptic,
+} from '@/modules/native-crypto/src/ReactNativeHapticsModule';
 import { ReactNode, useEffect, useState } from 'react';
 import { ViewProps } from 'react-native';
 import Animated, {
@@ -9,7 +10,6 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { useDispatch } from 'react-redux';
 
 export interface HoldableProps {
   children: ReactNode;
@@ -19,20 +19,21 @@ export interface HoldableProps {
 export default function Holdable({
   children,
   onLongPress,
-  duration = 400,
+  duration = 500,
 }: HoldableProps) {
-  const dispatch = useDispatch();
   const holdingScale = useSharedValue(1);
   const [isHolding, setIsHolding] = useState(false);
   const [holdTimeout, setHoldTimeout] = useState<number>();
 
   const handleLongPress = () => {
-    dispatch(endIncreasingHoldHaptics({ completedHold: true }));
+    triggerClickHaptic();
     onLongPress();
+    setIsHolding(false);
   };
   const enterHold = () => {
     setIsHolding(true);
-    dispatch(startIncreasingHoldHaptics());
+
+    triggerSlowRiseHaptic();
     clearTimeout(holdTimeout);
     setHoldTimeout(
       setTimeout(() => {
@@ -43,7 +44,7 @@ export default function Holdable({
   const exitHold = () => {
     clearTimeout(holdTimeout);
     setIsHolding(false);
-    dispatch(endIncreasingHoldHaptics({ completedHold: false }));
+    cancelHaptic();
   };
   const callbacks: Partial<ViewProps> = {
     onTouchStart: enterHold,

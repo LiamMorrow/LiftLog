@@ -1,5 +1,4 @@
 import {
-  endIncreasingHoldHaptics,
   initializeAppStateSlice,
   refreshNotificationPermissionStatus,
   requestExactNotificationPermission,
@@ -8,11 +7,9 @@ import {
   setIsHydrated,
   shareString,
   showSnackbar,
-  startIncreasingHoldHaptics,
 } from '@/store/app';
 import { addEffect } from '@/store/store';
 import { sleep } from '@/utils/sleep';
-import * as Haptics from 'expo-haptics';
 
 export function applyAppEffects() {
   addEffect(
@@ -59,16 +56,4 @@ export function applyAppEffects() {
   addEffect(shareString, async (action, { extra: { stringSharer } }) => {
     await stringSharer.share(action.payload.value, action.payload.title);
   });
-
-  addEffect(startIncreasingHoldHaptics, (_, {}) => {
-    // TODO increasing amplitude of vibration until completed long press
-  });
-  addEffect(
-    endIncreasingHoldHaptics,
-    async ({ payload: { completedHold } }, {}) => {
-      if (completedHold) {
-        await Haptics.selectionAsync();
-      }
-    },
-  );
 }
