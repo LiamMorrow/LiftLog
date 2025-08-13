@@ -115,8 +115,13 @@ LiftLog is organized into several projects:
 
 ## 📊 Stats
 
-[![Star History Chart](https://api.star-history.com/svg?repos=LiamMorrow/LiftLog&type=Date)](https://star-history.com/#LiamMorrow/LiftLog&Date)
-
+<a href="https://www.star-history.com/#LiamMorrow/LiftLog&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=LiamMorrow/LiftLog&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=LiamMorrow/LiftLog&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=LiamMorrow/LiftLog&type=Date" />
+ </picture>
+</a>
 ---
 
 ## 🤝 Contributing
