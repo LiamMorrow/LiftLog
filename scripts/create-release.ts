@@ -27,6 +27,10 @@ if (!["patch", "minor", "major"].includes(bumpType)) {
   process.exit(1);
 }
 
+import { tmpdir } from "os";
+import { join } from "path";
+import { writeFileSync, readFileSync, unlinkSync } from "fs";
+
 // Run get-release-notes and capture output
 const notes = await $`./get-release-notes.ts ${bumpType} ${
   prereleaseFlag ? "--prerelease" : ""
@@ -36,7 +40,6 @@ const notes = await $`./get-release-notes.ts ${bumpType} ${
 const versionMatch = notes.stdout.match(
   /\*\*Next release version:\*\* v([\d\.\w\-\.]+)/
 );
-
 const version = versionMatch ? versionMatch[1] : null;
 if (!version) {
   console.error(
@@ -45,13 +48,26 @@ if (!version) {
   process.exit(1);
 }
 
-// Create the release using gh CLI, piping notes to --notes-file -
-const rel = $`gh release create ${version} --notes-file - ${
+// Write notes to a temp file
+const tmpFile = join(tmpdir(), `liftlog-release-notes-${version}.md`);
+writeFileSync(tmpFile, notes.stdout);
+
+// Open in system editor
+const editor = process.env.EDITOR || "vi";
+await $`${editor} ${tmpFile}`;
+
+// Read possibly edited notes
+const editedNotes = readFileSync(tmpFile, "utf8");
+
+// Create the release using gh CLI, passing notes file
+await $`gh release create ${version} --title ${version} --notes-file ${tmpFile} ${
   prereleaseFlag ? "--prerelease" : ""
 }`;
-rel.stdin.write(notes.stdout);
-rel.stdin.end();
-await rel;
+
+// Clean up temp file
+try {
+  unlinkSync(tmpFile);
+} catch {}
 
 // Get repo info to print release URL
 const repoInfoRaw = await $`gh repo view --json name,owner`;
