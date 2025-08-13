@@ -16,19 +16,20 @@ import { match } from 'ts-pattern';
 import { fromSessionDao } from '@/models/storage/conversions.from-dao';
 import { toSessionHistoryDao } from '@/models/storage/conversions.to-dao';
 import { fetchUpcomingSessions } from '@/store/program';
+import { KeyValueStore } from '@/services/key-value-store';
 
 const storageKey = 'Progress';
 const exerciseListStorageKey = 'ExerciseList';
 // We keep track of added builting exerciseIds (which are the exercise name for builtins)
 // Then we make sure builtins don't get re-added if they are deleted
-const addedBuiltInExerciseIdsStorageKey = 'AddedBuiltInExerciseIds';
+const addedBuiltInExerciseIdsStorageKey = 'AddedBuiltInExerciseIdList';
 
 export function applyStoredSessionsEffects() {
   addEffect(
     initializeStoredSessionsStateSlice,
     async (
       _,
-      { cancelActiveListeners, dispatch, extra: { keyValueStore } },
+      { cancelActiveListeners, getState, dispatch, extra: { keyValueStore } },
     ) => {
       cancelActiveListeners();
       let version = await keyValueStore.getItem(`${storageKey}-Version`);
@@ -60,7 +61,7 @@ export function applyStoredSessionsEffects() {
         (await keyValueStore.getItem(addedBuiltInExerciseIdsStorageKey)) ??
           '[]',
       ) as string[];
-      const builtInExercises = exercises
+      const builtInExercisesNotAlreadyAdded = exercises
         .filter((x) => !alreadyAddedBuiltIns.includes(x.name))
         .reduce(
           (a, b) => {
@@ -83,14 +84,22 @@ export function applyStoredSessionsEffects() {
       ) as Record<string, ExerciseDescriptor>;
 
       const currentExercises = Object.entries({
-        ...builtInExercises,
+        ...builtInExercisesNotAlreadyAdded,
         ...savedExercises,
       }).sort((a, b) => a[1].name.localeCompare(b[1].name));
 
       dispatch(setExercises(Object.fromEntries(currentExercises)));
 
+      // We added some, so we should persist it
+      if (Object.keys(builtInExercisesNotAlreadyAdded).length) {
+        await persistExercises(
+          getState().storedSessions.savedExercises,
+          keyValueStore,
+        );
+      }
+
       const newBuiltIns = alreadyAddedBuiltIns.concat(
-        Object.keys(builtInExercises),
+        Object.keys(builtInExercisesNotAlreadyAdded),
       );
       await keyValueStore.setItem(
         addedBuiltInExerciseIdsStorageKey,
@@ -127,7 +136,17 @@ export function applyStoredSessionsEffects() {
       }
 
       const data = stateAfterReduce.storedSessions.savedExercises;
-      await keyValueStore.setItem(exerciseListStorageKey, JSON.stringify(data));
+      await persistExercises(data, keyValueStore);
     },
   );
+
+  async function persistExercises(
+    exercises: Record<string, ExerciseDescriptor>,
+    keyValueStore: KeyValueStore,
+  ) {
+    await keyValueStore.setItem(
+      exerciseListStorageKey,
+      JSON.stringify(exercises),
+    );
+  }
 }
