@@ -51,19 +51,6 @@ public static class LinqExtensions
         return matchingTuple.First().Item1;
     }
 
-    public static async Task<ImmutableListValue<T>> ToImmutableListValueAsync<T>(
-        this IAsyncEnumerable<T> source
-    )
-    {
-        var immutableListBuilder = ImmutableList.CreateBuilder<T>();
-        await foreach (var item in source)
-        {
-            immutableListBuilder.Add(item);
-        }
-
-        return immutableListBuilder.ToImmutable();
-    }
-
     public static async ValueTask<ImmutableDictionary<K, V>> ToImmutableDictionaryAwaitAsync<
         T,
         K,

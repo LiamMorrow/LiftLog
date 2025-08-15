@@ -72,7 +72,7 @@ builder
         opts.JsonSerializerOptions.AllowTrailingCommas = true;
         opts.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
         opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        opts.JsonSerializerOptions.Converters.Add(new TimespanJsonConverter());
+        opts.JsonSerializerOptions.Converters.Add(new TimeSpanJsonConverter());
         opts.JsonSerializerOptions.Converters.Add(new ImmutableDictionaryJsonConverter());
     });
 

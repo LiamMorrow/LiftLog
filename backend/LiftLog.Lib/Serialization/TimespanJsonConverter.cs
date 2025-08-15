@@ -9,7 +9,7 @@ namespace LiftLog.Lib.Serialization;
 /// The new Json.NET doesn't support Timespan at this time
 /// https://github.com/dotnet/corefx/issues/38641
 /// </summary>
-public partial class TimespanJsonConverter : JsonConverter<TimeSpan>
+public partial class TimeSpanJsonConverter : JsonConverter<TimeSpan>
 {
     /// <summary>
     /// Format: Days.Hours:Minutes:Seconds:Milliseconds

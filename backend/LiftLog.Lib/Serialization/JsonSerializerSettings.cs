@@ -14,7 +14,7 @@ public static class JsonSerializerSettings
             Converters =
             {
                 new JsonStringEnumConverter(),
-                new TimespanJsonConverter(),
+                new TimeSpanJsonConverter(),
                 new ImmutableDictionaryJsonConverter(),
             },
         };
