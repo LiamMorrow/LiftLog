@@ -1,13 +1,20 @@
+import { PreferenceService } from '@/services/preference-service';
 import {
   detectLanguage,
   LanguageDetectorMiddleware,
   TolgeePlugin,
 } from '@tolgee/react';
 
-const createLanguageDetector = (): LanguageDetectorMiddleware => ({
-  getLanguage: (props) => {
+const createLanguageDetector = (
+  preferenceService: PreferenceService,
+): LanguageDetectorMiddleware => ({
+  getLanguage: async (props) => {
+    const preference = await preferenceService.getPreferredLanguage();
+    if (preference) {
+      return preference;
+    }
     console.log(
-      'Preferred language: ',
+      'Detected language: ',
       Intl.DateTimeFormat().resolvedOptions().locale,
     );
     return detectLanguage(
@@ -17,7 +24,9 @@ const createLanguageDetector = (): LanguageDetectorMiddleware => ({
   },
 });
 
-export const DetectLanguage = (): TolgeePlugin => (tolgee, tools) => {
-  tools.setLanguageDetector(createLanguageDetector());
-  return tolgee;
-};
+export const DetectLanguage =
+  (preferenceService: PreferenceService): TolgeePlugin =>
+  (tolgee, tools) => {
+    tools.setLanguageDetector(createLanguageDetector(preferenceService));
+    return tolgee;
+  };

@@ -1,4 +1,5 @@
 import { NativeModule, requireNativeModule } from 'expo';
+import type { webcrypto } from 'node:crypto';
 
 declare class ReactNativeWebcryptoModule extends NativeModule {
   getRandomValues(length: number): Uint8Array;
@@ -11,7 +12,7 @@ const module = requireNativeModule<ReactNativeWebcryptoModule>(
   'ReactNativeWebcrypto',
 );
 
-const Crypto: Crypto = {
+const Crypto = {
   getRandomValues<T extends ArrayBufferView | null>(arr: T) {
     if (!arr) {
       return arr;
@@ -57,7 +58,7 @@ export function sha256Hash(payload: Uint8Array): Promise<Uint8Array> {
   return module.sha256(payload);
 }
 
-globalThis.crypto ??= {} as Crypto;
+globalThis.crypto ??= {} as webcrypto.Crypto;
 globalThis.crypto.randomUUID = Crypto.randomUUID;
 globalThis.crypto.getRandomValues = Crypto.getRandomValues;
 export default module;

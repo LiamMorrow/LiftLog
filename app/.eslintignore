@@ -8,3 +8,4 @@ babel.config.js
 expo-env.d.ts
 dist
 node_modules
+types/dom.slim.d.ts

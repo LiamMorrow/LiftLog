@@ -24,6 +24,7 @@ interface SettingsState {
   lastBackup: RemoteData<LastBackup, string>;
   backupReminder: boolean;
   colorSchemeSeed: ColorSchemeSeed;
+  preferredLanguage: string | undefined;
 }
 
 interface RemoteBackupSettings {
@@ -49,6 +50,7 @@ const initialState: SettingsState = {
   lastBackup: RemoteData.notAsked(),
   backupReminder: true,
   colorSchemeSeed: 'default',
+  preferredLanguage: undefined,
 };
 
 const settingsSlice = createSlice({
@@ -97,6 +99,9 @@ const settingsSlice = createSlice({
     setFirstDayOfWeek(state, action: PayloadAction<DayOfWeek>) {
       state.firstDayOfWeek = action.payload;
     },
+    setPreferredLanguage(state, action: PayloadAction<string | undefined>) {
+      state.preferredLanguage = action.payload;
+    },
   },
 });
 export const initializeSettingsStateSlice = createAction(
@@ -136,6 +141,7 @@ export const {
   setColorSchemeSeed,
   setFirstDayOfWeek,
   setProToken,
+  setPreferredLanguage,
 } = settingsSlice.actions;
 
 export const settingsReducer = settingsSlice.reducer;
