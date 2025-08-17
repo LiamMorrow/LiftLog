@@ -5,6 +5,13 @@ import {
   TolgeePlugin,
 } from '@tolgee/react';
 
+export function detectLanguageFromDateLocale(availableLanguages: string[]) {
+  return detectLanguage(
+    Intl.DateTimeFormat().resolvedOptions().locale,
+    availableLanguages,
+  );
+}
+
 const createLanguageDetector = (
   preferenceService: PreferenceService,
 ): LanguageDetectorMiddleware => ({
@@ -13,14 +20,7 @@ const createLanguageDetector = (
     if (preference) {
       return preference;
     }
-    console.log(
-      'Detected language: ',
-      Intl.DateTimeFormat().resolvedOptions().locale,
-    );
-    return detectLanguage(
-      Intl.DateTimeFormat().resolvedOptions().locale,
-      props.availableLanguages,
-    );
+    return detectLanguageFromDateLocale(props.availableLanguages);
   },
 });
 

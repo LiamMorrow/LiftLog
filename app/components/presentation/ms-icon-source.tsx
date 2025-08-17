@@ -89,6 +89,7 @@ import { msExpandCircleDown } from '@material-symbols-react-native/outlined-400/
 import { msExpandCircleUp } from '@material-symbols-react-native/outlined-400/msExpandCircleUp';
 import { msSearch } from '@material-symbols-react-native/outlined-400/msSearch';
 import { msDirectionsRun } from '@material-symbols-react-native/outlined-400/msDirectionsRun';
+import { msLanguage } from '@material-symbols-react-native/outlined-400/msLanguage';
 
 // Importing these icons using the below methods causes android app to crash
 // import { msAdd, msArrowDownward } from '@material-symbols-react-native/outlined-400';
@@ -105,6 +106,7 @@ const MaterialSymbols = {
   contentCopy: msContentCopy,
   copyAll: msCopyAll,
   assignmentAdd: msAssignmentAdd,
+  language: msLanguage,
   delete: msDelete,
   edit: msEdit,
   error: msError,

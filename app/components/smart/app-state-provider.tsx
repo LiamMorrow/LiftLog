@@ -1,16 +1,8 @@
 import { Loader } from '@/components/presentation/loader';
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { resolveServices, Services } from '@/services';
-import { RootState, useAppSelector } from '@/store';
-import { Store } from '@reduxjs/toolkit';
-import { ReactNode, createContext, useContext, useMemo } from 'react';
+import { useAppSelector } from '@/store';
+import { ReactNode } from 'react';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { useStore } from 'react-redux';
-import { TolgeeProvider } from '@tolgee/react';
-import { Text } from 'react-native-paper';
-
-// Create context for services
-const ServicesContext = createContext<Services | null>(null);
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
   const waitingOn = useAppSelector(
@@ -21,11 +13,6 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       getLoadMessage(s.settings, 'settings') ||
       getLoadMessage(s.storedSessions, 'stored sessions') ||
       getLoadMessage(s.aiPlanner, 'ai planner'),
-  );
-  const store = useStore();
-  const services = useMemo(
-    () => resolveServices(store as Store<RootState>),
-    [store],
   );
   const { colors } = useAppTheme();
 
@@ -45,22 +32,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     );
   }
 
-  return (
-    <ServicesContext.Provider value={services}>
-      <TolgeeProvider
-        tolgee={services.tolgee}
-        fallback={<Text>Loading...</Text>}
-      >
-        {children}
-      </TolgeeProvider>
-    </ServicesContext.Provider>
-  );
-}
-
-export function useServices() {
-  const ctx = useContext(ServicesContext);
-  if (!ctx) throw new Error('useServices must be used within AppStateProvider');
-  return ctx;
+  return children;
 }
 
 function getLoadMessage(state: { isHydrated: boolean }, type: string) {

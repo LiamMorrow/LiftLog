@@ -7,6 +7,7 @@ import {
   setFirstDayOfWeek,
   setIsHydrated,
   setLastBackup,
+  setPreferredLanguage,
   setProToken,
   setRemoteBackupSettings,
   setRestNotifications,
@@ -22,6 +23,8 @@ import { addRemoteBackupEffects } from '@/store/settings/remote-backup-effects';
 import Purchases from 'react-native-purchases';
 import { Platform } from 'react-native';
 import { captureException } from '@sentry/react-native';
+import { detectLanguageFromDateLocale } from '@/utils/language-detector';
+import { supportedLanguages } from '@/services/tolgee';
 
 export function applySettingsEffects() {
   addEffect(
@@ -136,6 +139,23 @@ export function applySettingsEffects() {
       }
     },
   );
+
+  addEffect(
+    setPreferredLanguage,
+    async (
+      action,
+      { stateAfterReduce, extra: { preferenceService, tolgee } },
+    ) => {
+      if (stateAfterReduce.settings.isHydrated) {
+        await preferenceService.setPreferredLanguage(action.payload);
+        await tolgee.changeLanguage(
+          action.payload ??
+            detectLanguageFromDateLocale(supportedLanguages.map((x) => x.code)),
+        );
+      }
+    },
+  );
+
   addEffect(
     setTipToShow,
     async (action, { stateAfterReduce, extra: { preferenceService } }) => {

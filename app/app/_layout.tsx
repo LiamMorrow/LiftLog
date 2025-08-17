@@ -10,6 +10,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import '@/utils/date-locale';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import * as Sentry from '@sentry/react-native';
+import ServicesProvider from '@/components/smart/services-provider';
 
 Sentry.init({
   dsn: 'https://86576716425e1558b5e8622ba65d4544@o4505937515249664.ingest.us.sentry.io/4509717493383168',
@@ -37,29 +38,31 @@ export default Sentry.wrap(function RootLayout() {
       <KeyboardProvider>
         <Provider store={store}>
           <SafeAreaProvider>
-            <AppThemeProvider>
-              <Stack
-                layout={(e) => (
-                  <AppStateProvider>
-                    <SnackbarProvider>{e.children}</SnackbarProvider>
-                  </AppStateProvider>
-                )}
-                screenOptions={{
-                  headerShown: false,
-                  statusBarTranslucent: true,
-                  statusBarBackgroundColor: 'transparent',
-                  navigationBarTranslucent: true,
-                  navigationBarColor: 'transparent',
-                  statusBarStyle:
-                    Platform.OS === 'android'
-                      ? colorScheme === 'dark'
-                        ? 'light'
-                        : 'dark'
-                      : undefined,
-                  gestureEnabled: false,
-                }}
-              />
-            </AppThemeProvider>
+            <ServicesProvider>
+              <AppThemeProvider>
+                <Stack
+                  layout={(e) => (
+                    <AppStateProvider>
+                      <SnackbarProvider>{e.children}</SnackbarProvider>
+                    </AppStateProvider>
+                  )}
+                  screenOptions={{
+                    headerShown: false,
+                    statusBarTranslucent: true,
+                    statusBarBackgroundColor: 'transparent',
+                    navigationBarTranslucent: true,
+                    navigationBarColor: 'transparent',
+                    statusBarStyle:
+                      Platform.OS === 'android'
+                        ? colorScheme === 'dark'
+                          ? 'light'
+                          : 'dark'
+                        : undefined,
+                    gestureEnabled: false,
+                  }}
+                />
+              </AppThemeProvider>
+            </ServicesProvider>
           </SafeAreaProvider>
         </Provider>
       </KeyboardProvider>

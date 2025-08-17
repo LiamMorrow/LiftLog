@@ -1,19 +1,12 @@
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
 import ListSwitch from '@/components/presentation/list-switch';
-import SelectButton, {
-  SelectButtonOption,
-} from '@/components/presentation/select-button';
 import ThemeChooser from '@/components/presentation/theme-chooser';
 import { RootState, useAppSelector } from '@/store';
 import {
   setColorSchemeSeed,
-  setFirstDayOfWeek,
   setShowBodyweight,
   setShowTips,
-  setUseImperialUnits,
 } from '@/store/settings';
-import { formatDate, getDateOnDay } from '@/utils/format-date';
-import { DayOfWeek } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
 import { List } from 'react-native-paper';
@@ -24,73 +17,12 @@ export default function AppConfiguration() {
   const settings = useAppSelector((state: RootState) => state.settings);
   const dispatch = useDispatch();
 
-  const daysOfWeekOptions: SelectButtonOption<DayOfWeek>[] = [
-    {
-      value: DayOfWeek.SUNDAY,
-      label: formatDate(getDateOnDay(DayOfWeek.SUNDAY), {
-        weekday: 'long',
-      }),
-    },
-    {
-      value: DayOfWeek.MONDAY,
-      label: formatDate(getDateOnDay(DayOfWeek.MONDAY), {
-        weekday: 'long',
-      }),
-    },
-    {
-      value: DayOfWeek.TUESDAY,
-      label: formatDate(getDateOnDay(DayOfWeek.TUESDAY), {
-        weekday: 'long',
-      }),
-    },
-    {
-      value: DayOfWeek.WEDNESDAY,
-      label: formatDate(getDateOnDay(DayOfWeek.WEDNESDAY), {
-        weekday: 'long',
-      }),
-    },
-    {
-      value: DayOfWeek.THURSDAY,
-      label: formatDate(getDateOnDay(DayOfWeek.THURSDAY), {
-        weekday: 'long',
-      }),
-    },
-    {
-      value: DayOfWeek.FRIDAY,
-      label: formatDate(getDateOnDay(DayOfWeek.FRIDAY), {
-        weekday: 'long',
-      }),
-    },
-    {
-      value: DayOfWeek.SATURDAY,
-      label: formatDate(getDateOnDay(DayOfWeek.SATURDAY), {
-        weekday: 'long',
-      }),
-    },
-  ];
-
   return (
     <FullHeightScrollView>
       <Stack.Screen options={{ title: t('AppConfiguration') }} />
       <List.Section>
         <ListSwitch
-          headline={<T keyName="UseImperialUnits" />}
-          supportingText={<T keyName="UseImperialUnitsSubtitle" />}
-          value={settings.useImperialUnits}
-          onValueChange={(value) => dispatch(setUseImperialUnits(value))}
-        />
-        <List.Item
-          title={t('SetFirstDayOfWeek')}
-          description={t('SetFirstDayOfWeekSubtitle')}
-          right={() => (
-            <SelectButton
-              value={settings.firstDayOfWeek}
-              options={daysOfWeekOptions}
-              onChange={(value) => dispatch(setFirstDayOfWeek(value))}
-            />
-          )}
-        />
-        <ListSwitch
+          testID="setShowBodyweight"
           headline={<T keyName="ShowBodyweight" />}
           supportingText={<T keyName="ShowBodyweightSubtitle" />}
           value={settings.showBodyweight}
