@@ -237,4 +237,13 @@ export class PreferenceService {
       .with('saturday', () => DayOfWeek.SATURDAY)
       .otherwise(() => DayOfWeek.SUNDAY);
   }
+
+  getPreferredLanguage() {
+    return this.keyValueStore.getItem('preferredLanguage');
+  }
+  setPreferredLanguage(lang: string | undefined) {
+    return lang
+      ? this.keyValueStore.setItem('preferredLanguage', lang)
+      : this.keyValueStore.removeItem('preferredLanguage');
+  }
 }

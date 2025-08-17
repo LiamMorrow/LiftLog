@@ -213,12 +213,12 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
     private record GptWorkoutPlan(
         string Name,
         string Description,
-        ImmutableListValue<GptSessionBlueprint> Sessions
+        ImmutableList<GptSessionBlueprint> Sessions
     );
 
     private record GptSessionBlueprint(
         string Name,
-        ImmutableListValue<GptExerciseBlueprint> Exercises,
+        ImmutableList<GptExerciseBlueprint> Exercises,
         string Description
     );
 

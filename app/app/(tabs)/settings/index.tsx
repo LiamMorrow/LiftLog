@@ -34,10 +34,18 @@ export default function Settings() {
           left={(props) => <List.Icon icon={'directionsRun'} {...props} />}
         ></List.Item>
         <List.Item
+          testID="appConfiguration"
           onPress={() => push('/(tabs)/settings/app-configuration')}
           title={t('AppConfiguration')}
           description={t('AppConfigurationSubtitle')}
           left={(props) => <List.Icon icon={'settings'} {...props} />}
+        ></List.Item>
+        <List.Item
+          testID="localization"
+          onPress={() => push('/(tabs)/settings/localization')}
+          title={t('Localisation')}
+          description={t('LocalisationSubtitle')}
+          left={(props) => <List.Icon icon={'language'} {...props} />}
         ></List.Item>
 
         <List.Item

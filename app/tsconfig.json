@@ -5,7 +5,7 @@
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": false,
-    "lib": ["ESNext", "DOM.AsyncIterable", "DOM"],
+    "lib": ["ESNext", "DOM.AsyncIterable"],
     "module": "ESNext",
     "noUnusedParameters": false,
     "paths": {
@@ -17,6 +17,7 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
+    "types/*.d.ts",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "store/tolgee.d.ts"

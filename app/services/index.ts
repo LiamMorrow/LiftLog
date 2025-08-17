@@ -14,7 +14,7 @@ import { PreferenceService } from '@/services/preference-service';
 import { ProgressRepository } from '@/services/progress-repository';
 import { SessionService } from '@/services/session-service';
 import { StringSharer } from '@/services/string-sharer';
-import { tolgee } from '@/services/tolgee';
+import { getTolgee } from '@/services/tolgee';
 import { RootState } from '@/store';
 import { Store } from '@reduxjs/toolkit';
 
@@ -23,6 +23,9 @@ export type Services = Awaited<ReturnType<typeof resolveServicesInternal>>;
 let resolvedServices: Services | undefined;
 
 function resolveServicesInternal(store: Store<RootState>) {
+  if (!store) {
+    throw new Error('Tried to resolve services without store');
+  }
   const logger = new Logger();
   const keyValueStore = new KeyValueStore();
   const progressRepository = new ProgressRepository(store.getState);
@@ -70,7 +73,7 @@ function resolveServicesInternal(store: Store<RootState>) {
     filePickerService,
     preferenceService,
     aiChatService,
-    tolgee,
+    tolgee: getTolgee(preferenceService),
   };
 }
 

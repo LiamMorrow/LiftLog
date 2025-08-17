@@ -1,8 +1,9 @@
 import { registerTranslation } from 'react-native-paper-dates';
-import { tolgee } from '@/services/tolgee';
+import { resolveServices } from '@/services';
 
 registerTranslation('default', () => {
-  const t = tolgee.t;
+  // I don't expect this to cause issues because it will only resolve after rendering, and we should have the services by then
+  const t = resolveServices(null!).tolgee.t;
   return {
     save: t('Save'),
     selectSingle: t('SelectDate'),

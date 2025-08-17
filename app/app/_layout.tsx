@@ -1,17 +1,16 @@
 import { Stack } from 'expo-router';
 import { AppThemeProvider } from '@/hooks/useAppTheme';
-import { TolgeeProvider } from '@tolgee/react';
-import { LogBox, Platform, Text, useColorScheme } from 'react-native';
+import { LogBox, Platform, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import { store } from '@/store';
-import AppStateProvider from '@/components/smart/app-state-provider';
-import { tolgee } from '@/services/tolgee';
+import { AppStateProvider } from '@/components/smart/app-state-provider';
 import SnackbarProvider from '@/components/smart/snackbar-provider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import '@/utils/date-locale';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import * as Sentry from '@sentry/react-native';
+import ServicesProvider from '@/components/smart/services-provider';
 
 Sentry.init({
   dsn: 'https://86576716425e1558b5e8622ba65d4544@o4505937515249664.ingest.us.sentry.io/4509717493383168',
@@ -39,7 +38,7 @@ export default Sentry.wrap(function RootLayout() {
       <KeyboardProvider>
         <Provider store={store}>
           <SafeAreaProvider>
-            <TolgeeProvider tolgee={tolgee} fallback={<Text>Loading...</Text>}>
+            <ServicesProvider>
               <AppThemeProvider>
                 <Stack
                   layout={(e) => (
@@ -63,7 +62,7 @@ export default Sentry.wrap(function RootLayout() {
                   }}
                 />
               </AppThemeProvider>
-            </TolgeeProvider>
+            </ServicesProvider>
           </SafeAreaProvider>
         </Provider>
       </KeyboardProvider>

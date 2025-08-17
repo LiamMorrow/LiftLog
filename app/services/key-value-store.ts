@@ -1,10 +1,25 @@
+type Global = {
+  window: Window;
+};
+type Window = {
+  localStorage: LocalStorage;
+};
+
+type LocalStorage = {
+  getItem(key: string): string;
+  removeItem(key: string): void;
+  setItem(key: string, value: string): void;
+};
 export class KeyValueStore {
   async getItem(key: string): Promise<string | undefined> {
-    return window.localStorage.getItem(key) ?? undefined;
+    return (
+      (global as unknown as Global).window.localStorage.getItem(key) ??
+      undefined
+    );
   }
 
   async getItemBytes(key: string): Promise<Uint8Array | undefined> {
-    let item = window.localStorage.getItem(key);
+    let item = (global as unknown as Global).window.localStorage.getItem(key);
     if (item?.startsWith('"') && item.endsWith('"')) {
       item = item.slice(1, -1);
     }
@@ -15,7 +30,7 @@ export class KeyValueStore {
 
   async setItem(key: string, value: string | Uint8Array): Promise<void> {
     if (typeof value === 'string') {
-      window.localStorage.setItem(key, value);
+      (global as unknown as Global).window.localStorage.setItem(key, value);
     } else {
       // Convert Uint8Array to base64 without creating a massive stack by spreading into fromCharCode
       function uint8ToBase64(bytes: Uint8Array): string {
@@ -27,11 +42,14 @@ export class KeyValueStore {
         return btoa(binary);
       }
       const base64Value = uint8ToBase64(value);
-      window.localStorage.setItem(key, base64Value);
+      (global as unknown as Global).window.localStorage.setItem(
+        key,
+        base64Value,
+      );
     }
   }
 
   async removeItem(key: string): Promise<void> {
-    window.localStorage.removeItem(key);
+    (global as unknown as Global).window.localStorage.removeItem(key);
   }
 }

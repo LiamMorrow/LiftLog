@@ -18,7 +18,6 @@ import { streamToUint8Array } from '@/utils/stream';
 import { toUrlSafeHexString } from '@/utils/to-url-safe-hex-string';
 import { Instant } from '@js-joda/core';
 import 'compression-streams-polyfill';
-import { tolgee } from '@/services/tolgee';
 import { TaskAbortError } from '@reduxjs/toolkit';
 
 // Helper function to yield control back to the event loop
@@ -58,7 +57,7 @@ export function addRemoteBackupEffects() {
       {
         getState,
         dispatch,
-        extra: { progressRepository, logger, encryptionService },
+        extra: { progressRepository, logger, encryptionService, tolgee },
         signal,
         cancelActiveListeners,
         throwIfCancelled,

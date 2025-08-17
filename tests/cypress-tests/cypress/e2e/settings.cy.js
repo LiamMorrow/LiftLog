@@ -24,12 +24,25 @@ describe('Settings', () => {
       it('should display weights in the correct units on all pages', () => {
         assertCorrectWeightUnitsOnAllPages('kg')
         cy.navigate('Settings')
-        cy.contains('App configuration').click()
-        cy.contains('Use imperial units').click()
+        cy.getByTestId('localization').click()
+        cy.getByTestId('setUseImperialUnits').click()
         cy.navigate('Workout')
         cy.getByTestId('clear-current-workout').click()
         cy.dialog().findByTestId('action-ok').click()
         assertCorrectWeightUnitsOnAllPages('lbs')
+      })
+    })
+
+    describe('and updates the app language', () => {
+      it('should change the language of the UI', () => {
+        cy.navigate('Settings')
+        cy.getByTestId('localization').click()
+        cy.getByTestId('setPreferredLanguage').click()
+        // Select a language, e.g., German
+        cy.contains('Deutsch').click({ force: true })
+        // Verify a UI element is now in German
+        cy.navigate('Settings')
+        cy.contains('Einstellungen') // 'Settings' in German
       })
     })
 

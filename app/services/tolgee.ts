@@ -8,29 +8,42 @@ import it from '../i18n/it.json';
 import nl from '../i18n/nl.json';
 import ru from '../i18n/ru.json';
 import sr from '../i18n/sr.json';
-
 import { DevTools, FormatSimple, Tolgee } from '@tolgee/react';
+import { PreferenceService } from '@/services/preference-service';
 
-export const tolgee = Tolgee()
-  // DevTools will work only for web view
-  .use(DevTools())
-  .use(FormatSimple())
-  .use(DetectLanguage())
-  .init({
-    defaultLanguage: 'en',
-    fallbackLanguage: 'en',
-    // // for development
-    // apiUrl: process.env.EXPO_PUBLIC_TOLGEE_API_URL!,
-    // apiKey: process.env.EXPO_PUBLIC_TOLGEE_API_KEY!,
-    staticData: {
-      de,
-      en,
-      es,
-      fi,
-      fr,
-      it,
-      nl,
-      ru,
-      sr,
-    },
-  });
+export const supportedLanguages = [
+  { translationJson: de, code: 'de', label: 'Deutsch' },
+  { translationJson: en, code: 'en', label: 'English' },
+  { translationJson: es, code: 'es', label: 'Español' },
+  { translationJson: fi, code: 'fi', label: 'Suomi' },
+  { translationJson: fr, code: 'fr', label: 'Français' },
+  { translationJson: it, code: 'it', label: 'Italiano' },
+  { translationJson: nl, code: 'nl', label: 'Nederlands' },
+  { translationJson: ru, code: 'ru', label: 'Русский' },
+  { translationJson: sr, code: 'sr', label: 'Srpski' },
+];
+
+export const getTolgee = (preferenceService: PreferenceService) =>
+  Tolgee()
+    // DevTools will work only for web view
+    .use(DevTools())
+    .use(FormatSimple())
+    .use(DetectLanguage(preferenceService))
+    .init({
+      defaultLanguage: 'en',
+      fallbackLanguage: 'en',
+      // // for development
+      // apiUrl: process.env.EXPO_PUBLIC_TOLGEE_API_URL!,
+      // apiKey: process.env.EXPO_PUBLIC_TOLGEE_API_KEY!,
+      staticData: {
+        de,
+        en,
+        es,
+        fi,
+        fr,
+        it,
+        nl,
+        ru,
+        sr,
+      },
+    });

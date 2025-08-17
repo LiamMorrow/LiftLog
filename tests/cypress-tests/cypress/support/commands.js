@@ -35,7 +35,7 @@ Cypress.Commands.add('findByTestId', { prevSubject: 'element' }, (subject, testI
 });
 
 Cypress.Commands.add('navigate', (navButtonText) => {
-    return cy.get('[data-testid=nav]').contains(navButtonText).click({ force: true }).click({ force: true })
+    return cy.get('[data-testid=nav]').findByTestId('nav__' + navButtonText.toLowerCase()).click({ force: true }).click({ force: true })
 })
 
 Cypress.Commands.add('dialog', () => {

@@ -7,6 +7,7 @@ import {
   RsaPrivateKey,
   RsaPublicKey,
 } from '@/models/encryption-models';
+import type { webcrypto } from 'node:crypto';
 
 // SHA-256 hash length in bytes
 const HashLengthBytes = 32;
@@ -14,7 +15,7 @@ const SignatureLengthBytes = 256;
 
 export class EncryptionService {
   async generateAesKey(): Promise<AesKey> {
-    const params: AesKeyGenParams = {
+    const params: webcrypto.AesKeyGenParams = {
       name: 'AES-CBC',
       length: 128,
     };
@@ -31,7 +32,7 @@ export class EncryptionService {
     key: AesKey,
     publicKey: RsaPublicKey,
   ): Promise<Uint8Array> {
-    const params: AesCbcParams = {
+    const params: webcrypto.AesCbcParams = {
       name: 'AES-CBC',
       iv: data.iv.value,
     };
@@ -51,11 +52,12 @@ export class EncryptionService {
 
     const payloadHash = await crypto.subtle.digest('SHA-256', payload);
 
-    const rsaParams: RsaHashedImportParams & RsaPssParams = {
-      name: 'RSA-PSS',
-      hash: 'SHA-256',
-      saltLength: HashLengthBytes,
-    };
+    const rsaParams: webcrypto.RsaHashedImportParams & webcrypto.RsaPssParams =
+      {
+        name: 'RSA-PSS',
+        hash: 'SHA-256',
+        saltLength: HashLengthBytes,
+      };
     const rsaKey = await crypto.subtle.importKey(
       'spki',
       publicKey.spkiPublicKeyBytes,
@@ -84,7 +86,7 @@ export class EncryptionService {
     aesIv?: AesIV | null,
   ): Promise<AesEncryptedAndRsaSignedData> {
     const iv = aesIv?.value ?? crypto.getRandomValues(new Uint8Array(16));
-    const params: AesCbcParams = {
+    const params: webcrypto.AesCbcParams = {
       name: 'AES-CBC',
       iv,
     };
@@ -96,11 +98,12 @@ export class EncryptionService {
       ['encrypt'],
     );
 
-    const rsaParams: RsaHashedImportParams & RsaPssParams = {
-      name: 'RSA-PSS',
-      hash: 'SHA-256',
-      saltLength: HashLengthBytes,
-    };
+    const rsaParams: webcrypto.RsaHashedImportParams & webcrypto.RsaPssParams =
+      {
+        name: 'RSA-PSS',
+        hash: 'SHA-256',
+        saltLength: HashLengthBytes,
+      };
     const rsaKey = await crypto.subtle.importKey(
       'pkcs8',
       privateKey.pkcs8PrivateKeyBytes,
@@ -134,7 +137,9 @@ export class EncryptionService {
         modulusLength: 2048,
         publicExponent: new Uint8Array([1, 0, 1]),
         hash: 'SHA-256',
-      } satisfies RsaHashedKeyGenParams & RsaOaepParams & RsaKeyGenParams,
+      } satisfies webcrypto.RsaHashedKeyGenParams &
+        webcrypto.RsaOaepParams &
+        webcrypto.RsaKeyGenParams,
       true,
       ['encrypt', 'decrypt'],
     );
@@ -161,7 +166,7 @@ export class EncryptionService {
       {
         name: 'RSA-OAEP',
         hash: 'SHA-256',
-      } satisfies RsaHashedImportParams & RsaOaepParams,
+      } satisfies webcrypto.RsaHashedImportParams & webcrypto.RsaOaepParams,
       true,
       ['encrypt'],
     );
@@ -197,7 +202,7 @@ export class EncryptionService {
       {
         name: 'RSA-OAEP',
         hash: 'SHA-256',
-      } satisfies RsaHashedImportParams & RsaOaepParams,
+      } satisfies webcrypto.RsaHashedImportParams & webcrypto.RsaOaepParams,
       true,
       ['decrypt'],
     );
@@ -236,7 +241,7 @@ export class EncryptionService {
       {
         name: 'RSA-PSS',
         hash: 'SHA-256',
-      } satisfies RsaHashedImportParams,
+      } satisfies webcrypto.RsaHashedImportParams,
       true,
       ['sign'],
     );
@@ -265,7 +270,7 @@ export class EncryptionService {
       {
         name: 'RSA-PSS',
         hash: 'SHA-256',
-      } satisfies RsaHashedImportParams,
+      } satisfies webcrypto.RsaHashedImportParams,
       true,
       ['verify'],
     );

@@ -4,7 +4,7 @@ import { useAppSelector } from '@/store';
 import { ReactNode } from 'react';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
-export default function AppStateProvider(props: { children: ReactNode }) {
+export function AppStateProvider({ children }: { children: ReactNode }) {
   const waitingOn = useAppSelector(
     (s) =>
       getLoadMessage(s.app, 'app settings') ||
@@ -16,17 +16,23 @@ export default function AppStateProvider(props: { children: ReactNode }) {
   );
   const { colors } = useAppTheme();
 
-  return !waitingOn ? (
-    props.children
-  ) : (
-    <Animated.View
-      entering={FadeIn}
-      exiting={FadeOut}
-      style={{ flex: 1, backgroundColor: colors.surface, alignItems: 'center' }}
-    >
-      <Loader loadingText={waitingOn} />
-    </Animated.View>
-  );
+  if (waitingOn) {
+    return (
+      <Animated.View
+        entering={FadeIn}
+        exiting={FadeOut}
+        style={{
+          flex: 1,
+          backgroundColor: colors.surface,
+          alignItems: 'center',
+        }}
+      >
+        <Loader loadingText={waitingOn} />
+      </Animated.View>
+    );
+  }
+
+  return children;
 }
 
 function getLoadMessage(state: { isHydrated: boolean }, type: string) {
