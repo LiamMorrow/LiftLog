@@ -2,7 +2,7 @@ import { registerTranslation } from 'react-native-paper-dates';
 import { resolveServices } from '@/services';
 
 registerTranslation('default', () => {
-  // I don't expect this to cause issues cause it will only resolve after rendering, and we should have the services by then
+  // I don't expect this to cause issues because it will only resolve after rendering, and we should have the services by then
   const t = resolveServices(null!).tolgee.t;
   return {
     save: t('Save'),
