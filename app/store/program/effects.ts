@@ -23,6 +23,7 @@ import { LocalDate } from '@js-joda/core';
 import { AsyncStream } from 'data-async-iterators';
 
 const storageKey = 'SavedPrograms';
+const builtInProgramsStorageKey = 'hasSavedDefaultPrograms';
 export function applyProgramEffects() {
   addEffect(
     initializeProgramStateSlice,
@@ -96,11 +97,14 @@ export function applyProgramEffects() {
         }
       }
 
-      for (const [id, program] of Object.entries(BuiltInPrograms)) {
-        if (id in getState().program.savedPrograms) {
-          continue;
+      if (!(await keyValueStore.getItem(builtInProgramsStorageKey))) {
+        for (const [id, program] of Object.entries(BuiltInPrograms)) {
+          if (id in getState().program.savedPrograms) {
+            continue;
+          }
+          dispatch(savePlan({ programId: id, programBlueprint: program }));
+          await keyValueStore.setItem(builtInProgramsStorageKey, 'true');
         }
-        dispatch(savePlan({ programId: id, programBlueprint: program }));
       }
       if (!hasSetActivePlan) {
         dispatch(
