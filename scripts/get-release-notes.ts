@@ -47,14 +47,29 @@ async function main() {
     .split("\n")
     .filter(Boolean);
 
-  // Get all commits
+  // Get all commits in the range
   const allCommitsRaw =
     await $`git log ${fromTag}..${toRef} --pretty=format:%H`;
   const allCommits = allCommitsRaw.stdout.trim().split("\n").filter(Boolean);
 
-  // Get all commits that are not merge commits
+  // Get all descendants of merge commits
+  let mergeDescendants = new Set<string>();
+  for (const mergeSha of mergeCommits) {
+    // Get all descendants of this merge commit (including itself)
+    // --ancestry-path gives the commits that are descendants of mergeSha up to HEAD
+    const descendantsRaw =
+      await $`git log ${mergeSha}..${toRef} --ancestry-path --pretty=format:%H`;
+    const descendants = descendantsRaw.stdout
+      .trim()
+      .split("\n")
+      .filter(Boolean);
+    descendants.forEach((sha) => mergeDescendants.add(sha));
+    mergeDescendants.add(mergeSha); // include the merge commit itself
+  }
+
+  // Non-merge commits that are NOT descendants of any merge commit
   const nonMergeCommits = allCommits.filter(
-    (sha) => !mergeCommits.includes(sha)
+    (sha) => !mergeCommits.includes(sha) && !mergeDescendants.has(sha)
   );
   // Collect all commit messages for summary
   let allMessages: string[] = [];
