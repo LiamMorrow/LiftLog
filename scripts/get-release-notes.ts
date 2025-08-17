@@ -71,7 +71,7 @@ async function main() {
   let summary = "";
   try {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    const prompt = `Summarize the following release notes for a GitHub release. Focus on user-facing changes and improvements. There's no need to provide justification on why something was done unless the user specifies it.\n\n${allMessages.join(
+    const prompt = `Summarize the following release notes for a GitHub release. Focus on user-facing changes and improvements. AVOID listing reasons for changes unless you are explicitly quoting a commit message. Do not say stuff like "ensuring a smoother user experience."\n\n${allMessages.join(
       "\n"
     )}`;
     const completion = await openai.chat.completions.create({
