@@ -5,7 +5,8 @@ import FullHeightScrollView from '@/components/presentation/full-height-scroll-v
 import LimitedHtml from '@/components/presentation/limited-html';
 import ManageWorkoutCardContent from '@/components/smart/manage-workout-card-content';
 import { spacing } from '@/hooks/useAppTheme';
-import { EmptySession, SessionBlueprint } from '@/models/session-models';
+import { SessionBlueprint } from '@/models/blueprint-models';
+import { EmptySession } from '@/models/session-models';
 import { useAppSelectorWithArg } from '@/store';
 import {
   addProgramSession,

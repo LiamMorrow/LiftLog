@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ColorChoice, spacing, useAppTheme } from '@/hooks/useAppTheme';
-// Using Tolgee for localization
-import { Rest } from '@/models/session-models';
+import { Rest } from '@/models/blueprint-models';
 import { Duration, LocalDateTime } from '@js-joda/core';
 import Svg, { Path } from 'react-native-svg';
 import Animated, {

@@ -3,7 +3,7 @@ import { StyleProp, TextProps, TextStyle } from 'react-native';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import LimitedHtml from '@/components/presentation/limited-html';
 import { useTranslate } from '@tolgee/react';
-import { Rest } from '@/models/session-models';
+import { Rest } from '@/models/blueprint-models';
 import { Duration } from '@js-joda/core';
 
 interface RestFormatProps {

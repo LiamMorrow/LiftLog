@@ -3,7 +3,7 @@ import { EncryptionService } from './encryption-service';
 import { AesKey, RsaKeyPair } from '@/models/encryption-models';
 import { DeleteUserRequest } from '@/models/feed-api-models';
 import { FeedIdentity } from '@/models/feed-models';
-import { SessionBlueprint } from '@/models/session-models';
+import { SessionBlueprint } from '@/models/blueprint-models';
 import { toCurrentPlanDao } from '@/models/storage/conversions.to-dao';
 import { LiftLog } from '@/gen/proto';
 import { ApiResult } from '@/services/api-error';

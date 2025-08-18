@@ -5,7 +5,7 @@ import FixedIncrementer from '@/components/presentation/fixed-incrementer';
 import ListSwitch from '@/components/presentation/list-switch';
 import RestEditorGroup from '@/components/presentation/rest-editor-group';
 import { spacing } from '@/hooks/useAppTheme';
-import { ExerciseBlueprint } from '@/models/session-models';
+import { ExerciseBlueprint } from '@/models/blueprint-models';
 import { RootState, useAppSelector, useAppSelectorWithArg } from '@/store';
 import {
   ExerciseDescriptor,

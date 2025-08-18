@@ -15,7 +15,7 @@ import {
   ExerciseBlueprint,
   Rest,
   SessionBlueprint,
-} from '@/models/session-models';
+} from '@/models/blueprint-models';
 import { useAppSelector } from '@/store';
 import { setProgramSession } from '@/store/program';
 import {

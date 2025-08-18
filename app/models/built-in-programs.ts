@@ -2,7 +2,7 @@ import {
   ProgramBlueprint,
   SessionBlueprint,
   Rest,
-} from '@/models/session-models';
+} from '@/models/blueprint-models';
 import BigNumber from 'bignumber.js';
 import { LocalDate } from '@js-joda/core';
 

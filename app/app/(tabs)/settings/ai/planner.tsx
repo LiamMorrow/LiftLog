@@ -35,7 +35,7 @@ import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
 import { AiChatMessageResponse, AiChatPlanResponse } from '@/models/ai-models';
 import { savePlan } from '@/store/program';
-import { ProgramBlueprint } from '@/models/session-models';
+import { ProgramBlueprint } from '@/models/blueprint-models';
 import { LocalDate } from '@js-joda/core';
 import { match } from 'ts-pattern';
 import LimitedHtml from '@/components/presentation/limited-html';
@@ -47,6 +47,7 @@ import Purchases, {
   PurchasesStoreProduct,
 } from 'react-native-purchases';
 import { setProToken } from '@/store/settings';
+import { Session } from '@/models/session-models';
 
 export default function AiPlanner() {
   const { t } = useTranslate();
@@ -266,8 +267,8 @@ function PlanMessage({
       </SurfaceText>
       {message.plan.sessions.map((s, i) => (
         <Fragment key={i}>
-          <SessionSummaryTitle session={s.getEmptySession()} />
-          <SessionSummary session={s.getEmptySession()} />
+          <SessionSummaryTitle session={Session.getEmptySession(s)} />
+          <SessionSummary session={Session.getEmptySession(s)} />
         </Fragment>
       ))}
       {!message.isLoading && (

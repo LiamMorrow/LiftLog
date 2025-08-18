@@ -3,7 +3,7 @@ import {
   ExerciseBlueprintPOJO,
   SessionBlueprint,
   SessionBlueprintPOJO,
-} from '@/models/session-models';
+} from '@/models/blueprint-models';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 const initialState: SessionEditorState = {

@@ -1,5 +1,5 @@
 import { AiChatResponse, AiWorkoutPlan } from '@/models/ai-models';
-import { SessionBlueprint } from '@/models/session-models';
+import { SessionBlueprint } from '@/models/blueprint-models';
 import { Duration } from '@js-joda/core';
 import { HubConnection, HubConnectionState } from '@microsoft/signalr';
 import { AsyncIterableSubject } from 'data-async-iterators';

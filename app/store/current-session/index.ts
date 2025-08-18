@@ -1,4 +1,4 @@
-import { ExerciseBlueprint, SessionBlueprint } from '@/models/session-models';
+import { ExerciseBlueprint, SessionBlueprint } from '@/models/blueprint-models';
 import {
   RecordedExercise,
   RecordedExercisePOJO,

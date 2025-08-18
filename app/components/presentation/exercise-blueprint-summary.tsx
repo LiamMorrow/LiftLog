@@ -2,7 +2,7 @@ import ItemTitle from '@/components/presentation/item-title';
 import RestFormat from '@/components/presentation/rest-format';
 import { SurfaceText } from '@/components/presentation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
-import { ExerciseBlueprint } from '@/models/session-models';
+import { ExerciseBlueprint } from '@/models/blueprint-models';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { IconButton, Menu, TouchableRipple } from 'react-native-paper';

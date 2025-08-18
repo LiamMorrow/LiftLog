@@ -1,7 +1,7 @@
 import { LiftLog } from '@/gen/proto';
 import { BuiltInPrograms } from '@/models/built-in-programs';
 import { RemoteData } from '@/models/remote';
-import { ProgramBlueprint } from '@/models/session-models';
+import { ProgramBlueprint } from '@/models/blueprint-models';
 import { fromProgramBlueprintDao } from '@/models/storage/conversions.from-dao';
 import {
   toProgramBlueprintDao,

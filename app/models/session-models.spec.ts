@@ -1,16 +1,18 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   Session,
-  SessionBlueprint,
-  ExerciseBlueprint,
   RecordedExercise,
   RecordedSet,
   PotentialSet,
-  Rest,
 } from '@/models/session-models';
 import { LocalDate, LocalDateTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { v4 as uuid } from 'uuid';
+import {
+  ExerciseBlueprint,
+  Rest,
+  SessionBlueprint,
+} from '@/models/blueprint-models';
 
 // Helper functions to match the C# test structure
 function createExerciseBlueprint(

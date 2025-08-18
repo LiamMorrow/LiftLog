@@ -1,4 +1,4 @@
-import { Rest, SessionBlueprint } from '@/models/session-models';
+import { Rest, SessionBlueprint } from '@/models/blueprint-models';
 import {
   PotentialSetPOJO,
   RecordedExercise,

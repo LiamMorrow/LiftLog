@@ -7,8 +7,7 @@ import {
   ProgramBlueprint,
   Rest,
   SessionBlueprint,
-  SessionPOJO,
-} from '@/models/session-models';
+} from '@/models/blueprint-models';
 import {
   FeedIdentity,
   FeedItem,
@@ -19,6 +18,7 @@ import {
   SharedProgramBlueprint,
 } from '@/models/feed-models';
 import {
+  SessionPOJO,
   PotentialSet,
   RecordedExercise,
   RecordedSet,

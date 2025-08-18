@@ -1,12 +1,14 @@
 import { LocalDateComparer, LocalDateTimeComparer } from '@/models/comparers';
 import {
-  ExerciseBlueprint,
-  NormalizedName,
-  NormalizedNameKey,
   RecordedExercise,
   Session,
   SessionPOJO,
 } from '@/models/session-models';
+import {
+  ExerciseBlueprint,
+  NormalizedName,
+  NormalizedNameKey,
+} from '@/models/blueprint-models';
 import { LocalDate, YearMonth } from '@js-joda/core';
 import {
   createAction,

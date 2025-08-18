@@ -1,8 +1,9 @@
-import { KeyedExerciseBlueprint, SessionPOJO } from '@/models/session-models';
+import { SessionPOJO } from '@/models/session-models';
 import { TemporalComparer } from '@/models/comparers';
 import { RecordedExercise, Session } from '@/models/session-models';
 import Enumerable from 'linq';
 import { RootState } from '@/store';
+import { KeyedExerciseBlueprint } from '@/models/blueprint-models';
 
 export class ProgressRepository {
   constructor(private getState: () => RootState) {}

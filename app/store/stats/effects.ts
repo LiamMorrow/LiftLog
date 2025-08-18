@@ -1,4 +1,4 @@
-import { NormalizedName, Session } from '@/models/session-models';
+import { NormalizedName } from '@/models/blueprint-models';
 import {
   ExerciseStatistics,
   GranularStatisticView,
@@ -12,6 +12,7 @@ import BigNumber from 'bignumber.js';
 import { fetchOverallStats, setOverallStats, setStatsIsLoading } from './index';
 import { addEffect } from '@/store/store';
 import { selectSessionsBy } from '@/store/stored-sessions';
+import { Session } from '@/models/session-models';
 
 function computeStats(sessions: Session[]): GranularStatisticView | undefined {
   if (!sessions.length)
