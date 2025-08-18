@@ -1,11 +1,11 @@
 import {
-  ExerciseBlueprint,
+  WeightedExerciseBlueprint,
   KeyedExerciseBlueprint,
   SessionBlueprint,
 } from '@/models/blueprint-models';
 import {
   PotentialSet,
-  RecordedExercise,
+  RecordedWeightedExercise,
   Session,
 } from '@/models/session-models';
 import { ProgressRepository } from '@/services/progress-repository';
@@ -75,7 +75,7 @@ export class SessionService {
     sessionBlueprints: SessionBlueprint[],
     latestRecordedExercises: Enumerable.IDictionary<
       string, //KeyedExerciseBlueprint,
-      RecordedExercise
+      RecordedWeightedExercise
     >,
   ): Session {
     const lastBlueprint = previousSession.blueprint;
@@ -94,10 +94,12 @@ export class SessionService {
     sessionBlueprint: SessionBlueprint,
     latestRecordedExercises: Enumerable.IDictionary<
       string, //KeyedExerciseBlueprint,
-      RecordedExercise
+      RecordedWeightedExercise
     >,
   ): Session {
-    function getNextExercise(e: ExerciseBlueprint): RecordedExercise {
+    function getNextExercise(
+      e: WeightedExerciseBlueprint,
+    ): RecordedWeightedExercise {
       const lastExercise = latestRecordedExercises.get(
         KeyedExerciseBlueprint.fromExerciseBlueprint(e).toString(),
       );
@@ -128,7 +130,7 @@ export class SessionService {
           ),
         );
 
-      return new RecordedExercise(e, potentialSets, undefined);
+      return new RecordedWeightedExercise(e, potentialSets, undefined);
     }
     return new Session(
       uuid(),

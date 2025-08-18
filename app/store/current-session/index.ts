@@ -1,7 +1,10 @@
-import { ExerciseBlueprint, SessionBlueprint } from '@/models/blueprint-models';
 import {
-  RecordedExercise,
-  RecordedExercisePOJO,
+  WeightedExerciseBlueprint,
+  SessionBlueprint,
+} from '@/models/blueprint-models';
+import {
+  RecordedWeightedExercise,
+  RecordedWeightedExercisePOJO,
   Session,
   SessionPOJO,
 } from '@/models/session-models';
@@ -167,7 +170,10 @@ const currentSessionSlice = createSlice({
     editExercise: targetedSessionAction(
       (
         session,
-        action: { exerciseIndex: number; newBlueprint: ExerciseBlueprint },
+        action: {
+          exerciseIndex: number;
+          newBlueprint: WeightedExerciseBlueprint;
+        },
       ) => {
         const existingExercise =
           session.recordedExercises[action.exerciseIndex];
@@ -180,7 +186,9 @@ const currentSessionSlice = createSlice({
             .select(
               (index) =>
                 existingExercise.potentialSets[index] ?? {
-                  weight: RecordedExercise.fromPOJO(existingExercise).maxWeight,
+                  weight:
+                    RecordedWeightedExercise.fromPOJO(existingExercise)
+                      .maxWeight,
                   set: undefined,
                 },
             )
@@ -192,7 +200,7 @@ const currentSessionSlice = createSlice({
     ),
 
     addExercise: targetedSessionAction(
-      (session, action: { blueprint: ExerciseBlueprint }) => {
+      (session, action: { blueprint: WeightedExerciseBlueprint }) => {
         session.blueprint.exercises.push(action.blueprint.toPOJO());
         const newRecordedExercise = {
           blueprint: action.blueprint.toPOJO(),
@@ -204,8 +212,8 @@ const currentSessionSlice = createSlice({
             }))
             .toArray(),
           notes: undefined,
-          _BRAND: 'RECORDED_EXERCISE_POJO',
-        } satisfies RecordedExercisePOJO;
+          _BRAND: 'RECORDED_WEIGHTED_EXERCISE_POJO',
+        } satisfies RecordedWeightedExercisePOJO;
         session.recordedExercises.push(newRecordedExercise);
       },
     ),

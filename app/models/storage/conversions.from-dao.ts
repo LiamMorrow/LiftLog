@@ -1,13 +1,13 @@
 import { google, LiftLog } from '@/gen/proto';
 import {
   SessionBlueprint,
-  ExerciseBlueprint,
+  WeightedExerciseBlueprint,
   Rest,
   ProgramBlueprint,
 } from '@/models/blueprint-models';
 import {
   PotentialSet,
-  RecordedExercise,
+  RecordedWeightedExercise,
   RecordedSet,
   Session,
 } from '@/models/session-models';
@@ -144,14 +144,14 @@ function fromPotentialSetDao(
 function fromRecordedExerciseDao(
   sessionDate: LiftLog.Ui.Models.IDateOnlyDao,
   dao:
-    | LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2
+    | LiftLog.Ui.Models.SessionHistoryDao.IRecordedWeightedExerciseDaoV2
     | null
     | undefined,
-): RecordedExercise {
+): RecordedWeightedExercise {
   if (!dao) {
     throw new Error('Recorded exercise DAO cannot be null');
   }
-  return RecordedExercise.fromPOJO({
+  return RecordedWeightedExercise.fromPOJO({
     notes: dao.notes?.value ?? undefined,
     blueprint: fromExerciseBlueprintDao(dao.exerciseBlueprint).toPOJO(),
     potentialSets: dao.potentialSets!.map((x) =>
@@ -210,14 +210,14 @@ export function fromSessionBlueprintDao(
 
 export function fromExerciseBlueprintDao(
   dao:
-    | LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2
+    | LiftLog.Ui.Models.SessionBlueprintDao.IWeightedExerciseBlueprintDaoV2
     | null
     | undefined,
-): ExerciseBlueprint {
+): WeightedExerciseBlueprint {
   if (!dao) {
     throw new Error('ExerciseBlueprint dao should not be null');
   }
-  return new ExerciseBlueprint(
+  return new WeightedExerciseBlueprint(
     dao.name!,
     dao.sets!,
     dao.repsPerSet!,

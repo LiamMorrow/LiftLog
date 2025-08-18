@@ -1,13 +1,13 @@
 import EmptyInfo from '@/components/presentation/empty-info';
 import ExerciseSummary from '@/components/presentation/exercise-summary';
 import { spacing } from '@/hooks/useAppTheme';
-import { RecordedExercise } from '@/models/session-models';
+import { RecordedWeightedExercise } from '@/models/session-models';
 import { T } from '@tolgee/react';
 import { View } from 'react-native';
 import { Button, Portal, Dialog } from 'react-native-paper';
 
 function PreviousExerciseContent(props: {
-  previousRecordedExercises: RecordedExercise[];
+  previousRecordedExercises: RecordedWeightedExercise[];
 }) {
   return (
     <View style={{ gap: spacing[2] }}>
@@ -34,7 +34,7 @@ function PreviousExerciseContent(props: {
 
 export default function PreviousExerciseViewer(props: {
   name: string;
-  previousRecordedExercises: RecordedExercise[];
+  previousRecordedExercises: RecordedWeightedExercise[];
   open: boolean;
   close: () => void;
 }) {

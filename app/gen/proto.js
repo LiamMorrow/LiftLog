@@ -1613,7 +1613,7 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @interface ISessionDaoV2
                      * @property {LiftLog.Ui.Models.IUuidDao|null} [id] SessionDaoV2 id
                      * @property {string|null} [sessionName] SessionDaoV2 sessionName
-                     * @property {Array.<LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2>|null} [recordedExercises] SessionDaoV2 recordedExercises
+                     * @property {Array.<LiftLog.Ui.Models.SessionHistoryDao.IRecordedWeightedExerciseDaoV2>|null} [recordedExercises] SessionDaoV2 recordedExercises
                      * @property {LiftLog.Ui.Models.IDateOnlyDao|null} [date] SessionDaoV2 date
                      * @property {LiftLog.Ui.Models.IDecimalValue|null} [bodyweight] SessionDaoV2 bodyweight
                      * @property {string|null} [blueprintNotes] SessionDaoV2 blueprintNotes
@@ -1653,7 +1653,7 @@ export const LiftLog = $root.LiftLog = (() => {
 
                     /**
                      * SessionDaoV2 recordedExercises.
-                     * @member {Array.<LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2>} recordedExercises
+                     * @member {Array.<LiftLog.Ui.Models.SessionHistoryDao.IRecordedWeightedExerciseDaoV2>} recordedExercises
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2
                      * @instance
                      */
@@ -1727,7 +1727,7 @@ export const LiftLog = $root.LiftLog = (() => {
                             writer.uint32(/* id 2, wireType 2 =*/18).string(message.sessionName);
                         if (message.recordedExercises != null && message.recordedExercises.length)
                             for (let i = 0; i < message.recordedExercises.length; ++i)
-                                $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.encode(message.recordedExercises[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                                $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2.encode(message.recordedExercises[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
                         if (message.date != null && Object.hasOwnProperty.call(message, "date"))
                             $root.LiftLog.Ui.Models.DateOnlyDao.encode(message.date, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
                         if (message.bodyweight != null && Object.hasOwnProperty.call(message, "bodyweight"))
@@ -1781,7 +1781,7 @@ export const LiftLog = $root.LiftLog = (() => {
                             case 3: {
                                     if (!(message.recordedExercises && message.recordedExercises.length))
                                         message.recordedExercises = [];
-                                    message.recordedExercises.push($root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.decode(reader, reader.uint32()));
+                                    message.recordedExercises.push($root.LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2.decode(reader, reader.uint32()));
                                     break;
                                 }
                             case 4: {
@@ -1844,7 +1844,7 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (!Array.isArray(message.recordedExercises))
                                 return "recordedExercises: array expected";
                             for (let i = 0; i < message.recordedExercises.length; ++i) {
-                                let error = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.verify(message.recordedExercises[i]);
+                                let error = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2.verify(message.recordedExercises[i]);
                                 if (error)
                                     return "recordedExercises." + error;
                             }
@@ -1894,7 +1894,7 @@ export const LiftLog = $root.LiftLog = (() => {
                             for (let i = 0; i < object.recordedExercises.length; ++i) {
                                 if (typeof object.recordedExercises[i] !== "object")
                                     throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.recordedExercises: object expected");
-                                message.recordedExercises[i] = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.fromObject(object.recordedExercises[i]);
+                                message.recordedExercises[i] = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2.fromObject(object.recordedExercises[i]);
                             }
                         }
                         if (object.date != null) {
@@ -1940,7 +1940,7 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (message.recordedExercises && message.recordedExercises.length) {
                             object.recordedExercises = [];
                             for (let j = 0; j < message.recordedExercises.length; ++j)
-                                object.recordedExercises[j] = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.toObject(message.recordedExercises[j], options);
+                                object.recordedExercises[j] = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2.toObject(message.recordedExercises[j], options);
                         }
                         if (message.date != null && message.hasOwnProperty("date"))
                             object.date = $root.LiftLog.Ui.Models.DateOnlyDao.toObject(message.date, options);
@@ -1983,27 +1983,27 @@ export const LiftLog = $root.LiftLog = (() => {
                     return SessionDaoV2;
                 })();
 
-                SessionHistoryDao.RecordedExerciseDaoV2 = (function() {
+                SessionHistoryDao.RecordedWeightedExerciseDaoV2 = (function() {
 
                     /**
-                     * Properties of a RecordedExerciseDaoV2.
+                     * Properties of a RecordedWeightedExerciseDaoV2.
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao
-                     * @interface IRecordedExerciseDaoV2
-                     * @property {LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2|null} [exerciseBlueprint] RecordedExerciseDaoV2 exerciseBlueprint
-                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [weight] RecordedExerciseDaoV2 weight
-                     * @property {Array.<LiftLog.Ui.Models.SessionHistoryDao.IPotentialSetDaoV2>|null} [potentialSets] RecordedExerciseDaoV2 potentialSets
-                     * @property {google.protobuf.IStringValue|null} [notes] RecordedExerciseDaoV2 notes
+                     * @interface IRecordedWeightedExerciseDaoV2
+                     * @property {LiftLog.Ui.Models.SessionBlueprintDao.IWeightedExerciseBlueprintDaoV2|null} [exerciseBlueprint] RecordedWeightedExerciseDaoV2 exerciseBlueprint
+                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [weight] RecordedWeightedExerciseDaoV2 weight
+                     * @property {Array.<LiftLog.Ui.Models.SessionHistoryDao.IPotentialSetDaoV2>|null} [potentialSets] RecordedWeightedExerciseDaoV2 potentialSets
+                     * @property {google.protobuf.IStringValue|null} [notes] RecordedWeightedExerciseDaoV2 notes
                      */
 
                     /**
-                     * Constructs a new RecordedExerciseDaoV2.
+                     * Constructs a new RecordedWeightedExerciseDaoV2.
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao
-                     * @classdesc Represents a RecordedExerciseDaoV2.
-                     * @implements IRecordedExerciseDaoV2
+                     * @classdesc Represents a RecordedWeightedExerciseDaoV2.
+                     * @implements IRecordedWeightedExerciseDaoV2
                      * @constructor
-                     * @param {LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2=} [properties] Properties to set
+                     * @param {LiftLog.Ui.Models.SessionHistoryDao.IRecordedWeightedExerciseDaoV2=} [properties] Properties to set
                      */
-                    function RecordedExerciseDaoV2(properties) {
+                    function RecordedWeightedExerciseDaoV2(properties) {
                         this.potentialSets = [];
                         if (properties)
                             for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -2012,88 +2012,88 @@ export const LiftLog = $root.LiftLog = (() => {
                     }
 
                     /**
-                     * RecordedExerciseDaoV2 exerciseBlueprint.
-                     * @member {LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2|null|undefined} exerciseBlueprint
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * RecordedWeightedExerciseDaoV2 exerciseBlueprint.
+                     * @member {LiftLog.Ui.Models.SessionBlueprintDao.IWeightedExerciseBlueprintDaoV2|null|undefined} exerciseBlueprint
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2
                      * @instance
                      */
-                    RecordedExerciseDaoV2.prototype.exerciseBlueprint = null;
+                    RecordedWeightedExerciseDaoV2.prototype.exerciseBlueprint = null;
 
                     /**
-                     * RecordedExerciseDaoV2 weight.
+                     * RecordedWeightedExerciseDaoV2 weight.
                      * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} weight
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2
                      * @instance
                      */
-                    RecordedExerciseDaoV2.prototype.weight = null;
+                    RecordedWeightedExerciseDaoV2.prototype.weight = null;
 
                     /**
-                     * RecordedExerciseDaoV2 potentialSets.
+                     * RecordedWeightedExerciseDaoV2 potentialSets.
                      * @member {Array.<LiftLog.Ui.Models.SessionHistoryDao.IPotentialSetDaoV2>} potentialSets
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2
                      * @instance
                      */
-                    RecordedExerciseDaoV2.prototype.potentialSets = $util.emptyArray;
+                    RecordedWeightedExerciseDaoV2.prototype.potentialSets = $util.emptyArray;
 
                     /**
-                     * RecordedExerciseDaoV2 notes.
+                     * RecordedWeightedExerciseDaoV2 notes.
                      * @member {google.protobuf.IStringValue|null|undefined} notes
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2
                      * @instance
                      */
-                    RecordedExerciseDaoV2.prototype.notes = null;
+                    RecordedWeightedExerciseDaoV2.prototype.notes = null;
 
                     // OneOf field names bound to virtual getters and setters
                     let $oneOfFields;
 
                     /**
-                     * RecordedExerciseDaoV2 _weight.
+                     * RecordedWeightedExerciseDaoV2 _weight.
                      * @member {"weight"|undefined} _weight
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2
                      * @instance
                      */
-                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_weight", {
+                    Object.defineProperty(RecordedWeightedExerciseDaoV2.prototype, "_weight", {
                         get: $util.oneOfGetter($oneOfFields = ["weight"]),
                         set: $util.oneOfSetter($oneOfFields)
                     });
 
                     /**
-                     * RecordedExerciseDaoV2 _notes.
+                     * RecordedWeightedExerciseDaoV2 _notes.
                      * @member {"notes"|undefined} _notes
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2
                      * @instance
                      */
-                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_notes", {
+                    Object.defineProperty(RecordedWeightedExerciseDaoV2.prototype, "_notes", {
                         get: $util.oneOfGetter($oneOfFields = ["notes"]),
                         set: $util.oneOfSetter($oneOfFields)
                     });
 
                     /**
-                     * Creates a new RecordedExerciseDaoV2 instance using the specified properties.
+                     * Creates a new RecordedWeightedExerciseDaoV2 instance using the specified properties.
                      * @function create
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2
                      * @static
-                     * @param {LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2=} [properties] Properties to set
-                     * @returns {LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2} RecordedExerciseDaoV2 instance
+                     * @param {LiftLog.Ui.Models.SessionHistoryDao.IRecordedWeightedExerciseDaoV2=} [properties] Properties to set
+                     * @returns {LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2} RecordedWeightedExerciseDaoV2 instance
                      */
-                    RecordedExerciseDaoV2.create = function create(properties) {
-                        return new RecordedExerciseDaoV2(properties);
+                    RecordedWeightedExerciseDaoV2.create = function create(properties) {
+                        return new RecordedWeightedExerciseDaoV2(properties);
                     };
 
                     /**
-                     * Encodes the specified RecordedExerciseDaoV2 message. Does not implicitly {@link LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.verify|verify} messages.
+                     * Encodes the specified RecordedWeightedExerciseDaoV2 message. Does not implicitly {@link LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2.verify|verify} messages.
                      * @function encode
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2
                      * @static
-                     * @param {LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2} message RecordedExerciseDaoV2 message or plain object to encode
+                     * @param {LiftLog.Ui.Models.SessionHistoryDao.IRecordedWeightedExerciseDaoV2} message RecordedWeightedExerciseDaoV2 message or plain object to encode
                      * @param {$protobuf.Writer} [writer] Writer to encode to
                      * @returns {$protobuf.Writer} Writer
                      */
-                    RecordedExerciseDaoV2.encode = function encode(message, writer) {
+                    RecordedWeightedExerciseDaoV2.encode = function encode(message, writer) {
                         if (!writer)
                             writer = $Writer.create();
                         if (message.exerciseBlueprint != null && Object.hasOwnProperty.call(message, "exerciseBlueprint"))
-                            $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.encode(message.exerciseBlueprint, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            $root.LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2.encode(message.exerciseBlueprint, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
                         if (message.weight != null && Object.hasOwnProperty.call(message, "weight"))
                             $root.LiftLog.Ui.Models.DecimalValue.encode(message.weight, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
                         if (message.potentialSets != null && message.potentialSets.length)
@@ -2105,40 +2105,40 @@ export const LiftLog = $root.LiftLog = (() => {
                     };
 
                     /**
-                     * Encodes the specified RecordedExerciseDaoV2 message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.verify|verify} messages.
+                     * Encodes the specified RecordedWeightedExerciseDaoV2 message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2.verify|verify} messages.
                      * @function encodeDelimited
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2
                      * @static
-                     * @param {LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2} message RecordedExerciseDaoV2 message or plain object to encode
+                     * @param {LiftLog.Ui.Models.SessionHistoryDao.IRecordedWeightedExerciseDaoV2} message RecordedWeightedExerciseDaoV2 message or plain object to encode
                      * @param {$protobuf.Writer} [writer] Writer to encode to
                      * @returns {$protobuf.Writer} Writer
                      */
-                    RecordedExerciseDaoV2.encodeDelimited = function encodeDelimited(message, writer) {
+                    RecordedWeightedExerciseDaoV2.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
 
                     /**
-                     * Decodes a RecordedExerciseDaoV2 message from the specified reader or buffer.
+                     * Decodes a RecordedWeightedExerciseDaoV2 message from the specified reader or buffer.
                      * @function decode
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2
                      * @static
                      * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
                      * @param {number} [length] Message length if known beforehand
-                     * @returns {LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2} RecordedExerciseDaoV2
+                     * @returns {LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2} RecordedWeightedExerciseDaoV2
                      * @throws {Error} If the payload is not a reader or valid buffer
                      * @throws {$protobuf.util.ProtocolError} If required fields are missing
                      */
-                    RecordedExerciseDaoV2.decode = function decode(reader, length, error) {
+                    RecordedWeightedExerciseDaoV2.decode = function decode(reader, length, error) {
                         if (!(reader instanceof $Reader))
                             reader = $Reader.create(reader);
-                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2();
+                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2();
                         while (reader.pos < end) {
                             let tag = reader.uint32();
                             if (tag === error)
                                 break;
                             switch (tag >>> 3) {
                             case 1: {
-                                    message.exerciseBlueprint = $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.decode(reader, reader.uint32());
+                                    message.exerciseBlueprint = $root.LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2.decode(reader, reader.uint32());
                                     break;
                                 }
                             case 2: {
@@ -2164,35 +2164,35 @@ export const LiftLog = $root.LiftLog = (() => {
                     };
 
                     /**
-                     * Decodes a RecordedExerciseDaoV2 message from the specified reader or buffer, length delimited.
+                     * Decodes a RecordedWeightedExerciseDaoV2 message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2
                      * @static
                      * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                     * @returns {LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2} RecordedExerciseDaoV2
+                     * @returns {LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2} RecordedWeightedExerciseDaoV2
                      * @throws {Error} If the payload is not a reader or valid buffer
                      * @throws {$protobuf.util.ProtocolError} If required fields are missing
                      */
-                    RecordedExerciseDaoV2.decodeDelimited = function decodeDelimited(reader) {
+                    RecordedWeightedExerciseDaoV2.decodeDelimited = function decodeDelimited(reader) {
                         if (!(reader instanceof $Reader))
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
 
                     /**
-                     * Verifies a RecordedExerciseDaoV2 message.
+                     * Verifies a RecordedWeightedExerciseDaoV2 message.
                      * @function verify
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2
                      * @static
                      * @param {Object.<string,*>} message Plain object to verify
                      * @returns {string|null} `null` if valid, otherwise the reason why it is not
                      */
-                    RecordedExerciseDaoV2.verify = function verify(message) {
+                    RecordedWeightedExerciseDaoV2.verify = function verify(message) {
                         if (typeof message !== "object" || message === null)
                             return "object expected";
                         let properties = {};
                         if (message.exerciseBlueprint != null && message.hasOwnProperty("exerciseBlueprint")) {
-                            let error = $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.verify(message.exerciseBlueprint);
+                            let error = $root.LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2.verify(message.exerciseBlueprint);
                             if (error)
                                 return "exerciseBlueprint." + error;
                         }
@@ -2225,55 +2225,55 @@ export const LiftLog = $root.LiftLog = (() => {
                     };
 
                     /**
-                     * Creates a RecordedExerciseDaoV2 message from a plain object. Also converts values to their respective internal types.
+                     * Creates a RecordedWeightedExerciseDaoV2 message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2
                      * @static
                      * @param {Object.<string,*>} object Plain object
-                     * @returns {LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2} RecordedExerciseDaoV2
+                     * @returns {LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2} RecordedWeightedExerciseDaoV2
                      */
-                    RecordedExerciseDaoV2.fromObject = function fromObject(object) {
-                        if (object instanceof $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2)
+                    RecordedWeightedExerciseDaoV2.fromObject = function fromObject(object) {
+                        if (object instanceof $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2)
                             return object;
-                        let message = new $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2();
+                        let message = new $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2();
                         if (object.exerciseBlueprint != null) {
                             if (typeof object.exerciseBlueprint !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.exerciseBlueprint: object expected");
-                            message.exerciseBlueprint = $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.fromObject(object.exerciseBlueprint);
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2.exerciseBlueprint: object expected");
+                            message.exerciseBlueprint = $root.LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2.fromObject(object.exerciseBlueprint);
                         }
                         if (object.weight != null) {
                             if (typeof object.weight !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.weight: object expected");
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2.weight: object expected");
                             message.weight = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.weight);
                         }
                         if (object.potentialSets) {
                             if (!Array.isArray(object.potentialSets))
-                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.potentialSets: array expected");
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2.potentialSets: array expected");
                             message.potentialSets = [];
                             for (let i = 0; i < object.potentialSets.length; ++i) {
                                 if (typeof object.potentialSets[i] !== "object")
-                                    throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.potentialSets: object expected");
+                                    throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2.potentialSets: object expected");
                                 message.potentialSets[i] = $root.LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2.fromObject(object.potentialSets[i]);
                             }
                         }
                         if (object.notes != null) {
                             if (typeof object.notes !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.notes: object expected");
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2.notes: object expected");
                             message.notes = $root.google.protobuf.StringValue.fromObject(object.notes);
                         }
                         return message;
                     };
 
                     /**
-                     * Creates a plain object from a RecordedExerciseDaoV2 message. Also converts values to other types if specified.
+                     * Creates a plain object from a RecordedWeightedExerciseDaoV2 message. Also converts values to other types if specified.
                      * @function toObject
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2
                      * @static
-                     * @param {LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2} message RecordedExerciseDaoV2
+                     * @param {LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2} message RecordedWeightedExerciseDaoV2
                      * @param {$protobuf.IConversionOptions} [options] Conversion options
                      * @returns {Object.<string,*>} Plain object
                      */
-                    RecordedExerciseDaoV2.toObject = function toObject(message, options) {
+                    RecordedWeightedExerciseDaoV2.toObject = function toObject(message, options) {
                         if (!options)
                             options = {};
                         let object = {};
@@ -2282,7 +2282,7 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (options.defaults)
                             object.exerciseBlueprint = null;
                         if (message.exerciseBlueprint != null && message.hasOwnProperty("exerciseBlueprint"))
-                            object.exerciseBlueprint = $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.toObject(message.exerciseBlueprint, options);
+                            object.exerciseBlueprint = $root.LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2.toObject(message.exerciseBlueprint, options);
                         if (message.weight != null && message.hasOwnProperty("weight")) {
                             object.weight = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.weight, options);
                             if (options.oneofs)
@@ -2302,32 +2302,32 @@ export const LiftLog = $root.LiftLog = (() => {
                     };
 
                     /**
-                     * Converts this RecordedExerciseDaoV2 to JSON.
+                     * Converts this RecordedWeightedExerciseDaoV2 to JSON.
                      * @function toJSON
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2
                      * @instance
                      * @returns {Object.<string,*>} JSON object
                      */
-                    RecordedExerciseDaoV2.prototype.toJSON = function toJSON() {
+                    RecordedWeightedExerciseDaoV2.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
 
                     /**
-                     * Gets the default type url for RecordedExerciseDaoV2
+                     * Gets the default type url for RecordedWeightedExerciseDaoV2
                      * @function getTypeUrl
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2
                      * @static
                      * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                      * @returns {string} The default type url
                      */
-                    RecordedExerciseDaoV2.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    RecordedWeightedExerciseDaoV2.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                         if (typeUrlPrefix === undefined) {
                             typeUrlPrefix = "type.googleapis.com";
                         }
-                        return typeUrlPrefix + "/LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2";
+                        return typeUrlPrefix + "/LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2";
                     };
 
-                    return RecordedExerciseDaoV2;
+                    return RecordedWeightedExerciseDaoV2;
                 })();
 
                 SessionHistoryDao.PotentialSetDaoV2 = (function() {
@@ -3115,7 +3115,7 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @memberof LiftLog.Ui.Models.SessionBlueprintDao
                      * @interface ISessionBlueprintDaoV2
                      * @property {string|null} [name] SessionBlueprintDaoV2 name
-                     * @property {Array.<LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2>|null} [exerciseBlueprints] SessionBlueprintDaoV2 exerciseBlueprints
+                     * @property {Array.<LiftLog.Ui.Models.SessionBlueprintDao.IWeightedExerciseBlueprintDaoV2>|null} [exerciseBlueprints] SessionBlueprintDaoV2 exerciseBlueprints
                      * @property {string|null} [notes] SessionBlueprintDaoV2 notes
                      */
 
@@ -3145,7 +3145,7 @@ export const LiftLog = $root.LiftLog = (() => {
 
                     /**
                      * SessionBlueprintDaoV2 exerciseBlueprints.
-                     * @member {Array.<LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2>} exerciseBlueprints
+                     * @member {Array.<LiftLog.Ui.Models.SessionBlueprintDao.IWeightedExerciseBlueprintDaoV2>} exerciseBlueprints
                      * @memberof LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2
                      * @instance
                      */
@@ -3187,7 +3187,7 @@ export const LiftLog = $root.LiftLog = (() => {
                             writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
                         if (message.exerciseBlueprints != null && message.exerciseBlueprints.length)
                             for (let i = 0; i < message.exerciseBlueprints.length; ++i)
-                                $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.encode(message.exerciseBlueprints[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                                $root.LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2.encode(message.exerciseBlueprints[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
                         if (message.notes != null && Object.hasOwnProperty.call(message, "notes"))
                             writer.uint32(/* id 3, wireType 2 =*/26).string(message.notes);
                         return writer;
@@ -3233,7 +3233,7 @@ export const LiftLog = $root.LiftLog = (() => {
                             case 2: {
                                     if (!(message.exerciseBlueprints && message.exerciseBlueprints.length))
                                         message.exerciseBlueprints = [];
-                                    message.exerciseBlueprints.push($root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.decode(reader, reader.uint32()));
+                                    message.exerciseBlueprints.push($root.LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2.decode(reader, reader.uint32()));
                                     break;
                                 }
                             case 3: {
@@ -3282,7 +3282,7 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (!Array.isArray(message.exerciseBlueprints))
                                 return "exerciseBlueprints: array expected";
                             for (let i = 0; i < message.exerciseBlueprints.length; ++i) {
-                                let error = $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.verify(message.exerciseBlueprints[i]);
+                                let error = $root.LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2.verify(message.exerciseBlueprints[i]);
                                 if (error)
                                     return "exerciseBlueprints." + error;
                             }
@@ -3314,7 +3314,7 @@ export const LiftLog = $root.LiftLog = (() => {
                             for (let i = 0; i < object.exerciseBlueprints.length; ++i) {
                                 if (typeof object.exerciseBlueprints[i] !== "object")
                                     throw TypeError(".LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2.exerciseBlueprints: object expected");
-                                message.exerciseBlueprints[i] = $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.fromObject(object.exerciseBlueprints[i]);
+                                message.exerciseBlueprints[i] = $root.LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2.fromObject(object.exerciseBlueprints[i]);
                             }
                         }
                         if (object.notes != null)
@@ -3346,7 +3346,7 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (message.exerciseBlueprints && message.exerciseBlueprints.length) {
                             object.exerciseBlueprints = [];
                             for (let j = 0; j < message.exerciseBlueprints.length; ++j)
-                                object.exerciseBlueprints[j] = $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.toObject(message.exerciseBlueprints[j], options);
+                                object.exerciseBlueprints[j] = $root.LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2.toObject(message.exerciseBlueprints[j], options);
                         }
                         if (message.notes != null && message.hasOwnProperty("notes"))
                             object.notes = message.notes;
@@ -3382,31 +3382,31 @@ export const LiftLog = $root.LiftLog = (() => {
                     return SessionBlueprintDaoV2;
                 })();
 
-                SessionBlueprintDao.ExerciseBlueprintDaoV2 = (function() {
+                SessionBlueprintDao.WeightedExerciseBlueprintDaoV2 = (function() {
 
                     /**
-                     * Properties of an ExerciseBlueprintDaoV2.
+                     * Properties of a WeightedExerciseBlueprintDaoV2.
                      * @memberof LiftLog.Ui.Models.SessionBlueprintDao
-                     * @interface IExerciseBlueprintDaoV2
-                     * @property {string|null} [name] ExerciseBlueprintDaoV2 name
-                     * @property {number|null} [sets] ExerciseBlueprintDaoV2 sets
-                     * @property {number|null} [repsPerSet] ExerciseBlueprintDaoV2 repsPerSet
-                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [weightIncreaseOnSuccess] ExerciseBlueprintDaoV2 weightIncreaseOnSuccess
-                     * @property {LiftLog.Ui.Models.SessionBlueprintDao.IRestDaoV2|null} [restBetweenSets] ExerciseBlueprintDaoV2 restBetweenSets
-                     * @property {boolean|null} [supersetWithNext] ExerciseBlueprintDaoV2 supersetWithNext
-                     * @property {string|null} [notes] ExerciseBlueprintDaoV2 notes
-                     * @property {string|null} [link] ExerciseBlueprintDaoV2 link
+                     * @interface IWeightedExerciseBlueprintDaoV2
+                     * @property {string|null} [name] WeightedExerciseBlueprintDaoV2 name
+                     * @property {number|null} [sets] WeightedExerciseBlueprintDaoV2 sets
+                     * @property {number|null} [repsPerSet] WeightedExerciseBlueprintDaoV2 repsPerSet
+                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [weightIncreaseOnSuccess] WeightedExerciseBlueprintDaoV2 weightIncreaseOnSuccess
+                     * @property {LiftLog.Ui.Models.SessionBlueprintDao.IRestDaoV2|null} [restBetweenSets] WeightedExerciseBlueprintDaoV2 restBetweenSets
+                     * @property {boolean|null} [supersetWithNext] WeightedExerciseBlueprintDaoV2 supersetWithNext
+                     * @property {string|null} [notes] WeightedExerciseBlueprintDaoV2 notes
+                     * @property {string|null} [link] WeightedExerciseBlueprintDaoV2 link
                      */
 
                     /**
-                     * Constructs a new ExerciseBlueprintDaoV2.
+                     * Constructs a new WeightedExerciseBlueprintDaoV2.
                      * @memberof LiftLog.Ui.Models.SessionBlueprintDao
-                     * @classdesc Represents an ExerciseBlueprintDaoV2.
-                     * @implements IExerciseBlueprintDaoV2
+                     * @classdesc Represents a WeightedExerciseBlueprintDaoV2.
+                     * @implements IWeightedExerciseBlueprintDaoV2
                      * @constructor
-                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2=} [properties] Properties to set
+                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.IWeightedExerciseBlueprintDaoV2=} [properties] Properties to set
                      */
-                    function ExerciseBlueprintDaoV2(properties) {
+                    function WeightedExerciseBlueprintDaoV2(properties) {
                         if (properties)
                             for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                                 if (properties[keys[i]] != null)
@@ -3414,91 +3414,91 @@ export const LiftLog = $root.LiftLog = (() => {
                     }
 
                     /**
-                     * ExerciseBlueprintDaoV2 name.
+                     * WeightedExerciseBlueprintDaoV2 name.
                      * @member {string} name
-                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2
                      * @instance
                      */
-                    ExerciseBlueprintDaoV2.prototype.name = "";
+                    WeightedExerciseBlueprintDaoV2.prototype.name = "";
 
                     /**
-                     * ExerciseBlueprintDaoV2 sets.
+                     * WeightedExerciseBlueprintDaoV2 sets.
                      * @member {number} sets
-                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2
                      * @instance
                      */
-                    ExerciseBlueprintDaoV2.prototype.sets = 0;
+                    WeightedExerciseBlueprintDaoV2.prototype.sets = 0;
 
                     /**
-                     * ExerciseBlueprintDaoV2 repsPerSet.
+                     * WeightedExerciseBlueprintDaoV2 repsPerSet.
                      * @member {number} repsPerSet
-                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2
                      * @instance
                      */
-                    ExerciseBlueprintDaoV2.prototype.repsPerSet = 0;
+                    WeightedExerciseBlueprintDaoV2.prototype.repsPerSet = 0;
 
                     /**
-                     * ExerciseBlueprintDaoV2 weightIncreaseOnSuccess.
+                     * WeightedExerciseBlueprintDaoV2 weightIncreaseOnSuccess.
                      * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} weightIncreaseOnSuccess
-                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2
                      * @instance
                      */
-                    ExerciseBlueprintDaoV2.prototype.weightIncreaseOnSuccess = null;
+                    WeightedExerciseBlueprintDaoV2.prototype.weightIncreaseOnSuccess = null;
 
                     /**
-                     * ExerciseBlueprintDaoV2 restBetweenSets.
+                     * WeightedExerciseBlueprintDaoV2 restBetweenSets.
                      * @member {LiftLog.Ui.Models.SessionBlueprintDao.IRestDaoV2|null|undefined} restBetweenSets
-                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2
                      * @instance
                      */
-                    ExerciseBlueprintDaoV2.prototype.restBetweenSets = null;
+                    WeightedExerciseBlueprintDaoV2.prototype.restBetweenSets = null;
 
                     /**
-                     * ExerciseBlueprintDaoV2 supersetWithNext.
+                     * WeightedExerciseBlueprintDaoV2 supersetWithNext.
                      * @member {boolean} supersetWithNext
-                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2
                      * @instance
                      */
-                    ExerciseBlueprintDaoV2.prototype.supersetWithNext = false;
+                    WeightedExerciseBlueprintDaoV2.prototype.supersetWithNext = false;
 
                     /**
-                     * ExerciseBlueprintDaoV2 notes.
+                     * WeightedExerciseBlueprintDaoV2 notes.
                      * @member {string} notes
-                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2
                      * @instance
                      */
-                    ExerciseBlueprintDaoV2.prototype.notes = "";
+                    WeightedExerciseBlueprintDaoV2.prototype.notes = "";
 
                     /**
-                     * ExerciseBlueprintDaoV2 link.
+                     * WeightedExerciseBlueprintDaoV2 link.
                      * @member {string} link
-                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2
                      * @instance
                      */
-                    ExerciseBlueprintDaoV2.prototype.link = "";
+                    WeightedExerciseBlueprintDaoV2.prototype.link = "";
 
                     /**
-                     * Creates a new ExerciseBlueprintDaoV2 instance using the specified properties.
+                     * Creates a new WeightedExerciseBlueprintDaoV2 instance using the specified properties.
                      * @function create
-                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2
                      * @static
-                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2=} [properties] Properties to set
-                     * @returns {LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2} ExerciseBlueprintDaoV2 instance
+                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.IWeightedExerciseBlueprintDaoV2=} [properties] Properties to set
+                     * @returns {LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2} WeightedExerciseBlueprintDaoV2 instance
                      */
-                    ExerciseBlueprintDaoV2.create = function create(properties) {
-                        return new ExerciseBlueprintDaoV2(properties);
+                    WeightedExerciseBlueprintDaoV2.create = function create(properties) {
+                        return new WeightedExerciseBlueprintDaoV2(properties);
                     };
 
                     /**
-                     * Encodes the specified ExerciseBlueprintDaoV2 message. Does not implicitly {@link LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.verify|verify} messages.
+                     * Encodes the specified WeightedExerciseBlueprintDaoV2 message. Does not implicitly {@link LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2.verify|verify} messages.
                      * @function encode
-                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2
                      * @static
-                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2} message ExerciseBlueprintDaoV2 message or plain object to encode
+                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.IWeightedExerciseBlueprintDaoV2} message WeightedExerciseBlueprintDaoV2 message or plain object to encode
                      * @param {$protobuf.Writer} [writer] Writer to encode to
                      * @returns {$protobuf.Writer} Writer
                      */
-                    ExerciseBlueprintDaoV2.encode = function encode(message, writer) {
+                    WeightedExerciseBlueprintDaoV2.encode = function encode(message, writer) {
                         if (!writer)
                             writer = $Writer.create();
                         if (message.name != null && Object.hasOwnProperty.call(message, "name"))
@@ -3521,33 +3521,33 @@ export const LiftLog = $root.LiftLog = (() => {
                     };
 
                     /**
-                     * Encodes the specified ExerciseBlueprintDaoV2 message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.verify|verify} messages.
+                     * Encodes the specified WeightedExerciseBlueprintDaoV2 message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2.verify|verify} messages.
                      * @function encodeDelimited
-                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2
                      * @static
-                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2} message ExerciseBlueprintDaoV2 message or plain object to encode
+                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.IWeightedExerciseBlueprintDaoV2} message WeightedExerciseBlueprintDaoV2 message or plain object to encode
                      * @param {$protobuf.Writer} [writer] Writer to encode to
                      * @returns {$protobuf.Writer} Writer
                      */
-                    ExerciseBlueprintDaoV2.encodeDelimited = function encodeDelimited(message, writer) {
+                    WeightedExerciseBlueprintDaoV2.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
 
                     /**
-                     * Decodes an ExerciseBlueprintDaoV2 message from the specified reader or buffer.
+                     * Decodes a WeightedExerciseBlueprintDaoV2 message from the specified reader or buffer.
                      * @function decode
-                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2
                      * @static
                      * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
                      * @param {number} [length] Message length if known beforehand
-                     * @returns {LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2} ExerciseBlueprintDaoV2
+                     * @returns {LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2} WeightedExerciseBlueprintDaoV2
                      * @throws {Error} If the payload is not a reader or valid buffer
                      * @throws {$protobuf.util.ProtocolError} If required fields are missing
                      */
-                    ExerciseBlueprintDaoV2.decode = function decode(reader, length, error) {
+                    WeightedExerciseBlueprintDaoV2.decode = function decode(reader, length, error) {
                         if (!(reader instanceof $Reader))
                             reader = $Reader.create(reader);
-                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2();
+                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2();
                         while (reader.pos < end) {
                             let tag = reader.uint32();
                             if (tag === error)
@@ -3594,30 +3594,30 @@ export const LiftLog = $root.LiftLog = (() => {
                     };
 
                     /**
-                     * Decodes an ExerciseBlueprintDaoV2 message from the specified reader or buffer, length delimited.
+                     * Decodes a WeightedExerciseBlueprintDaoV2 message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
-                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2
                      * @static
                      * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                     * @returns {LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2} ExerciseBlueprintDaoV2
+                     * @returns {LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2} WeightedExerciseBlueprintDaoV2
                      * @throws {Error} If the payload is not a reader or valid buffer
                      * @throws {$protobuf.util.ProtocolError} If required fields are missing
                      */
-                    ExerciseBlueprintDaoV2.decodeDelimited = function decodeDelimited(reader) {
+                    WeightedExerciseBlueprintDaoV2.decodeDelimited = function decodeDelimited(reader) {
                         if (!(reader instanceof $Reader))
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
 
                     /**
-                     * Verifies an ExerciseBlueprintDaoV2 message.
+                     * Verifies a WeightedExerciseBlueprintDaoV2 message.
                      * @function verify
-                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2
                      * @static
                      * @param {Object.<string,*>} message Plain object to verify
                      * @returns {string|null} `null` if valid, otherwise the reason why it is not
                      */
-                    ExerciseBlueprintDaoV2.verify = function verify(message) {
+                    WeightedExerciseBlueprintDaoV2.verify = function verify(message) {
                         if (typeof message !== "object" || message === null)
                             return "object expected";
                         if (message.name != null && message.hasOwnProperty("name"))
@@ -3652,17 +3652,17 @@ export const LiftLog = $root.LiftLog = (() => {
                     };
 
                     /**
-                     * Creates an ExerciseBlueprintDaoV2 message from a plain object. Also converts values to their respective internal types.
+                     * Creates a WeightedExerciseBlueprintDaoV2 message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
-                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2
                      * @static
                      * @param {Object.<string,*>} object Plain object
-                     * @returns {LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2} ExerciseBlueprintDaoV2
+                     * @returns {LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2} WeightedExerciseBlueprintDaoV2
                      */
-                    ExerciseBlueprintDaoV2.fromObject = function fromObject(object) {
-                        if (object instanceof $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2)
+                    WeightedExerciseBlueprintDaoV2.fromObject = function fromObject(object) {
+                        if (object instanceof $root.LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2)
                             return object;
-                        let message = new $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2();
+                        let message = new $root.LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2();
                         if (object.name != null)
                             message.name = String(object.name);
                         if (object.sets != null)
@@ -3671,12 +3671,12 @@ export const LiftLog = $root.LiftLog = (() => {
                             message.repsPerSet = object.repsPerSet | 0;
                         if (object.weightIncreaseOnSuccess != null) {
                             if (typeof object.weightIncreaseOnSuccess !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.weightIncreaseOnSuccess: object expected");
+                                throw TypeError(".LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2.weightIncreaseOnSuccess: object expected");
                             message.weightIncreaseOnSuccess = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.weightIncreaseOnSuccess);
                         }
                         if (object.restBetweenSets != null) {
                             if (typeof object.restBetweenSets !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.restBetweenSets: object expected");
+                                throw TypeError(".LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2.restBetweenSets: object expected");
                             message.restBetweenSets = $root.LiftLog.Ui.Models.SessionBlueprintDao.RestDaoV2.fromObject(object.restBetweenSets);
                         }
                         if (object.supersetWithNext != null)
@@ -3689,15 +3689,15 @@ export const LiftLog = $root.LiftLog = (() => {
                     };
 
                     /**
-                     * Creates a plain object from an ExerciseBlueprintDaoV2 message. Also converts values to other types if specified.
+                     * Creates a plain object from a WeightedExerciseBlueprintDaoV2 message. Also converts values to other types if specified.
                      * @function toObject
-                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2
                      * @static
-                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2} message ExerciseBlueprintDaoV2
+                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2} message WeightedExerciseBlueprintDaoV2
                      * @param {$protobuf.IConversionOptions} [options] Conversion options
                      * @returns {Object.<string,*>} Plain object
                      */
-                    ExerciseBlueprintDaoV2.toObject = function toObject(message, options) {
+                    WeightedExerciseBlueprintDaoV2.toObject = function toObject(message, options) {
                         if (!options)
                             options = {};
                         let object = {};
@@ -3731,32 +3731,32 @@ export const LiftLog = $root.LiftLog = (() => {
                     };
 
                     /**
-                     * Converts this ExerciseBlueprintDaoV2 to JSON.
+                     * Converts this WeightedExerciseBlueprintDaoV2 to JSON.
                      * @function toJSON
-                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2
                      * @instance
                      * @returns {Object.<string,*>} JSON object
                      */
-                    ExerciseBlueprintDaoV2.prototype.toJSON = function toJSON() {
+                    WeightedExerciseBlueprintDaoV2.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
 
                     /**
-                     * Gets the default type url for ExerciseBlueprintDaoV2
+                     * Gets the default type url for WeightedExerciseBlueprintDaoV2
                      * @function getTypeUrl
-                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2
                      * @static
                      * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                      * @returns {string} The default type url
                      */
-                    ExerciseBlueprintDaoV2.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    WeightedExerciseBlueprintDaoV2.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                         if (typeUrlPrefix === undefined) {
                             typeUrlPrefix = "type.googleapis.com";
                         }
-                        return typeUrlPrefix + "/LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2";
+                        return typeUrlPrefix + "/LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2";
                     };
 
-                    return ExerciseBlueprintDaoV2;
+                    return WeightedExerciseBlueprintDaoV2;
                 })();
 
                 SessionBlueprintDao.RestDaoV2 = (function() {

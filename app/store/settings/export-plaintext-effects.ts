@@ -1,4 +1,4 @@
-import { RecordedExercise, Session } from '@/models/session-models';
+import { RecordedWeightedExercise, Session } from '@/models/session-models';
 import { addEffect } from '@/store/store';
 import { exportPlainText } from '@/store/settings';
 import Enumerable from 'linq';
@@ -60,7 +60,7 @@ class ExportedSetCsvRow {
   ) {}
   static fromModel(
     session: Session,
-    exercise: RecordedExercise,
+    exercise: RecordedWeightedExercise,
     unit: string,
   ): ExportedSetCsvRow[] {
     return exercise.potentialSets

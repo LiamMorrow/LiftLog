@@ -83,21 +83,29 @@ export class ProgramBlueprint {
 export interface SessionBlueprintPOJO {
   _BRAND: 'SESSION_BLUEPRINT_POJO';
   name: string;
-  exercises: ExerciseBlueprintPOJO[];
+  exercises: WeightedExerciseBlueprintPOJO[];
   notes: string;
 }
 
 export class SessionBlueprint {
   readonly name: string;
-  readonly exercises: ExerciseBlueprint[];
+  readonly exercises: WeightedExerciseBlueprint[];
   readonly notes: string;
 
   /**
    * @deprecated please use full constructor. Here only for serialization
    */
   constructor();
-  constructor(name: string, exercises: ExerciseBlueprint[], notes: string);
-  constructor(name?: string, exercises?: ExerciseBlueprint[], notes?: string) {
+  constructor(
+    name: string,
+    exercises: WeightedExerciseBlueprint[],
+    notes: string,
+  );
+  constructor(
+    name?: string,
+    exercises?: WeightedExerciseBlueprint[],
+    notes?: string,
+  ) {
     this.name = name!;
     this.exercises = exercises!;
     this.notes = notes!;
@@ -108,7 +116,7 @@ export class SessionBlueprint {
   ): SessionBlueprint {
     return new SessionBlueprint(
       pojo.name,
-      pojo.exercises.map(ExerciseBlueprint.fromPOJO),
+      pojo.exercises.map(WeightedExerciseBlueprint.fromPOJO),
       pojo.notes,
     );
   }
@@ -146,15 +154,15 @@ export class SessionBlueprint {
     return new SessionBlueprint(
       other.name ?? this.name,
       other.exercises
-        ? other.exercises.map(ExerciseBlueprint.fromPOJO)
+        ? other.exercises.map(WeightedExerciseBlueprint.fromPOJO)
         : this.exercises,
       other.notes ?? this.notes,
     );
   }
 }
 
-export interface ExerciseBlueprintPOJO {
-  _BRAND: 'EXERCISE_BLUEPRINT_POJO';
+export interface WeightedExerciseBlueprintPOJO {
+  _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO';
   name: string;
   sets: number;
   repsPerSet: number;
@@ -165,7 +173,7 @@ export interface ExerciseBlueprintPOJO {
   link: string;
 }
 
-export class ExerciseBlueprint {
+export class WeightedExerciseBlueprint {
   readonly name: string;
   readonly sets: number;
   readonly repsPerSet: number;
@@ -210,9 +218,9 @@ export class ExerciseBlueprint {
   }
 
   static fromPOJO(
-    pojo: DeepOmit<ExerciseBlueprintPOJO, '_BRAND'>,
-  ): ExerciseBlueprint {
-    return new ExerciseBlueprint(
+    pojo: DeepOmit<WeightedExerciseBlueprintPOJO, '_BRAND'>,
+  ): WeightedExerciseBlueprint {
+    return new WeightedExerciseBlueprint(
       pojo.name,
       pojo.sets,
       pojo.repsPerSet,
@@ -224,7 +232,12 @@ export class ExerciseBlueprint {
     );
   }
 
-  equals(other: ExerciseBlueprint | ExerciseBlueprintPOJO | undefined) {
+  equals(
+    other:
+      | WeightedExerciseBlueprint
+      | WeightedExerciseBlueprintPOJO
+      | undefined,
+  ) {
     if (!other) {
       return false;
     }
@@ -248,9 +261,9 @@ export class ExerciseBlueprint {
     );
   }
 
-  toPOJO(): ExerciseBlueprintPOJO {
+  toPOJO(): WeightedExerciseBlueprintPOJO {
     return {
-      _BRAND: 'EXERCISE_BLUEPRINT_POJO',
+      _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
       name: this.name,
       sets: this.sets,
       repsPerSet: this.repsPerSet,
@@ -262,8 +275,10 @@ export class ExerciseBlueprint {
     };
   }
 
-  with(other: Partial<ExerciseBlueprintPOJO>): ExerciseBlueprint {
-    return new ExerciseBlueprint(
+  with(
+    other: Partial<WeightedExerciseBlueprintPOJO>,
+  ): WeightedExerciseBlueprint {
+    return new WeightedExerciseBlueprint(
       other.name ?? this.name,
       other.sets ?? this.sets,
       other.repsPerSet ?? this.repsPerSet,
@@ -283,7 +298,9 @@ export class KeyedExerciseBlueprint {
     public repsPerSet: number,
   ) {}
 
-  static fromExerciseBlueprint(e: ExerciseBlueprint): KeyedExerciseBlueprint {
+  static fromExerciseBlueprint(
+    e: WeightedExerciseBlueprint,
+  ): KeyedExerciseBlueprint {
     return new KeyedExerciseBlueprint(e.name, e.sets, e.repsPerSet);
   }
 
@@ -296,7 +313,7 @@ export type NormalizedNameKey = string;
 
 export class NormalizedName {
   constructor(public name: string) {}
-  static fromExerciseBlueprint(e: ExerciseBlueprint): NormalizedName {
+  static fromExerciseBlueprint(e: WeightedExerciseBlueprint): NormalizedName {
     return new NormalizedName(e.name);
   }
 
@@ -346,7 +363,7 @@ export const Rest = {
     failureRest: Duration.ofMinutes(8),
   },
 } as const;
-export const EmptyExerciseBlueprint = new ExerciseBlueprint(
+export const EmptyExerciseBlueprint = new WeightedExerciseBlueprint(
   '',
   3,
   10,

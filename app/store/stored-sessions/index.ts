@@ -1,11 +1,11 @@
 import { LocalDateComparer, LocalDateTimeComparer } from '@/models/comparers';
 import {
-  RecordedExercise,
+  RecordedWeightedExercise,
   Session,
   SessionPOJO,
 } from '@/models/session-models';
 import {
-  ExerciseBlueprint,
+  WeightedExerciseBlueprint,
   NormalizedName,
   NormalizedNameKey,
 } from '@/models/blueprint-models';
@@ -170,7 +170,7 @@ export const selectLatestOrderedRecordedExercises = createSelector(
   (
     sessions,
     maxRecordsPerExercise,
-  ): Record<NormalizedNameKey, RecordedExercise[]> => {
+  ): Record<NormalizedNameKey, RecordedWeightedExercise[]> => {
     return Enumerable.from(sessions)
       .selectMany((x) =>
         x.recordedExercises.filter((x) => x.lastRecordedSet?.set),
@@ -195,7 +195,7 @@ export const selectLatestOrderedRecordedExercises = createSelector(
 export const selectRecentlyCompletedExercises = createSelector(
   selectLatestOrderedRecordedExercises,
   (recentlyCompletedExercises) =>
-    (blueprint: ExerciseBlueprint): RecordedExercise[] =>
+    (blueprint: WeightedExerciseBlueprint): RecordedWeightedExercise[] =>
       recentlyCompletedExercises[
         NormalizedName.fromExerciseBlueprint(blueprint).toString()
       ] ?? [],

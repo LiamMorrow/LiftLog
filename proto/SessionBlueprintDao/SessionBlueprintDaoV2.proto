@@ -10,12 +10,12 @@ message SessionBlueprintContainerDaoV2 {
 
 message SessionBlueprintDaoV2 {
     string name = 1;
-    repeated ExerciseBlueprintDaoV2 exercise_blueprints = 2;
+    repeated WeightedExerciseBlueprintDaoV2 exercise_blueprints = 2;
     string notes = 3;
 }
 
 
-message ExerciseBlueprintDaoV2 {
+message WeightedExerciseBlueprintDaoV2 {
     string name = 1;
     int32 sets  = 2;
     int32 reps_per_set = 3;

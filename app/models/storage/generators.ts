@@ -1,9 +1,9 @@
 import {
   ProgramBlueprintPOJO,
   SessionBlueprintPOJO,
-  ExerciseBlueprintPOJO,
+  WeightedExerciseBlueprintPOJO,
   Rest,
-  ExerciseBlueprint,
+  WeightedExerciseBlueprint,
   SessionBlueprint,
   ProgramBlueprint,
 } from '@/models/blueprint-models';
@@ -24,11 +24,11 @@ import {
 } from '@/models/feed-models';
 import {
   SessionPOJO,
-  RecordedExercisePOJO,
+  RecordedWeightedExercisePOJO,
   RecordedSetPOJO,
   PotentialSetPOJO,
   Session,
-  RecordedExercise,
+  RecordedWeightedExercise,
   RecordedSet,
   PotentialSet,
 } from '@/models/session-models';
@@ -75,8 +75,8 @@ export const RestGenerator = fc.constantFrom(
 
 // Generator for ExerciseBlueprintPOJO
 export const ExerciseBlueprintGenerator = fc
-  .record<ExerciseBlueprintPOJO>({
-    _BRAND: fc.constant('EXERCISE_BLUEPRINT_POJO'),
+  .record<WeightedExerciseBlueprintPOJO>({
+    _BRAND: fc.constant('WEIGHTED_EXERCISE_BLUEPRINT_POJO'),
     name: fc.string(),
     sets: fc.integer({ min: 1, max: 10 }),
     repsPerSet: fc.integer({ min: 1, max: 20 }),
@@ -86,7 +86,7 @@ export const ExerciseBlueprintGenerator = fc
     notes: fc.string(),
     link: fc.webUrl(),
   })
-  .map(ExerciseBlueprint.fromPOJO);
+  .map(WeightedExerciseBlueprint.fromPOJO);
 
 // Generator for SessionBlueprintPOJO
 export const SessionBlueprintGenerator = fc
@@ -137,8 +137,8 @@ export const PotentialSetGenerator = fc
 
 // Generator for RecordedExercisePOJO
 export const RecordedExerciseGenerator = fc
-  .record<RecordedExercisePOJO>({
-    _BRAND: fc.constant('RECORDED_EXERCISE_POJO'),
+  .record<RecordedWeightedExercisePOJO>({
+    _BRAND: fc.constant('RECORDED_WEIGHTED_EXERCISE_POJO'),
     blueprint: ExerciseBlueprintGenerator.map((x) => x.toPOJO()),
     potentialSets: fc.array(
       PotentialSetGenerator.map((x) => x.toPOJO()),
@@ -146,7 +146,7 @@ export const RecordedExerciseGenerator = fc
     ),
     notes: fc.string(),
   })
-  .map(RecordedExercise.fromPOJO);
+  .map(RecordedWeightedExercise.fromPOJO);
 
 // Generator for SessionPOJO
 export const SessionGenerator = fc

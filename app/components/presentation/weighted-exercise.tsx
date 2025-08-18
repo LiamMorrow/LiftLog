@@ -1,7 +1,7 @@
 import ItemTitle from '@/components/presentation/item-title';
 import PotentialSetCounter from '@/components/presentation/potential-set-counter';
 import { spacing } from '@/hooks/useAppTheme';
-import { RecordedExercise } from '@/models/session-models';
+import { RecordedWeightedExercise } from '@/models/session-models';
 import BigNumber from 'bignumber.js';
 import { useState } from 'react';
 import { View } from 'react-native';
@@ -23,8 +23,8 @@ import ExerciseNotesDisplay from '@/components/presentation/exercise-notes-displ
 import { WeightAppliesTo } from '@/store/current-session';
 
 interface WeightedExerciseProps {
-  recordedExercise: RecordedExercise;
-  previousRecordedExercises: RecordedExercise[];
+  recordedExercise: RecordedWeightedExercise;
+  previousRecordedExercises: RecordedWeightedExercise[];
   toStartNext: boolean;
   isReadonly: boolean;
   showPreviousButton: boolean;

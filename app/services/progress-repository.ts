@@ -1,6 +1,6 @@
 import { SessionPOJO } from '@/models/session-models';
 import { TemporalComparer } from '@/models/comparers';
-import { RecordedExercise, Session } from '@/models/session-models';
+import { RecordedWeightedExercise, Session } from '@/models/session-models';
 import Enumerable from 'linq';
 import { RootState } from '@/store';
 import { KeyedExerciseBlueprint } from '@/models/blueprint-models';
@@ -29,7 +29,7 @@ export class ProgressRepository {
 
   getLatestRecordedExercises(): Enumerable.IDictionary<
     string,
-    RecordedExercise
+    RecordedWeightedExercise
   > {
     return this.getOrderedSessions()
       .selectMany((x) => x.recordedExercises)

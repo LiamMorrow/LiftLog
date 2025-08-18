@@ -1,6 +1,6 @@
 import {
-  ExerciseBlueprint,
-  ExerciseBlueprintPOJO,
+  WeightedExerciseBlueprint,
+  WeightedExerciseBlueprintPOJO,
   SessionBlueprint,
   SessionBlueprintPOJO,
 } from '@/models/blueprint-models';
@@ -17,7 +17,7 @@ export interface SessionPOJO {
   _BRAND: 'SESSION_POJO';
   id: string;
   blueprint: SessionBlueprintPOJO;
-  recordedExercises: RecordedExercisePOJO[];
+  recordedExercises: RecordedWeightedExercisePOJO[];
   date: LocalDate;
   bodyweight: BigNumber | undefined;
 }
@@ -25,7 +25,7 @@ export interface SessionPOJO {
 export class Session {
   readonly id: string;
   readonly blueprint: SessionBlueprint;
-  readonly recordedExercises: RecordedExercise[];
+  readonly recordedExercises: RecordedWeightedExercise[];
   readonly date: LocalDate;
   readonly bodyweight: BigNumber | undefined;
 
@@ -36,14 +36,14 @@ export class Session {
   constructor(
     id: string,
     blueprint: SessionBlueprint,
-    recordedExercises: RecordedExercise[],
+    recordedExercises: RecordedWeightedExercise[],
     date: LocalDate,
     bodyweight: BigNumber | undefined,
   );
   constructor(
     id?: string,
     blueprint?: SessionBlueprint,
-    recordedExercises?: RecordedExercise[],
+    recordedExercises?: RecordedWeightedExercise[],
     date?: LocalDate,
     bodyweight?: BigNumber,
   ) {
@@ -67,7 +67,7 @@ export class Session {
       new Session(
         pojo.id,
         SessionBlueprint.fromPOJO(pojo.blueprint),
-        pojo.recordedExercises.map(RecordedExercise.fromPOJO),
+        pojo.recordedExercises.map(RecordedWeightedExercise.fromPOJO),
         pojo.date,
         pojo.bodyweight,
       )
@@ -75,8 +75,8 @@ export class Session {
   }
 
   static getEmptySession(blueprint: SessionBlueprint): Session {
-    function getNextExercise(e: ExerciseBlueprint) {
-      return new RecordedExercise(
+    function getNextExercise(e: WeightedExerciseBlueprint) {
+      return new RecordedWeightedExercise(
         e,
         Array.from({ length: e.sets }).map(
           () => new PotentialSet(undefined, BigNumber(0)),
@@ -175,7 +175,7 @@ export class Session {
     return this.recordedExercises.some((x) => x.lastRecordedSet !== undefined);
   }
 
-  get nextExercise(): RecordedExercise | undefined {
+  get nextExercise(): RecordedWeightedExercise | undefined {
     const recordedExercises = this.recordedExercises;
     const latestExerciseIndex = Enumerable.from(recordedExercises)
       .select(indexed)
@@ -228,7 +228,7 @@ export class Session {
       }
     }
 
-    let result: RecordedExercise | undefined = undefined;
+    let result: RecordedWeightedExercise | undefined = undefined;
     let maxEpochSecond = Number.MIN_VALUE;
 
     for (const recordedExercise of recordedExercises) {
@@ -248,7 +248,7 @@ export class Session {
     return result;
   }
 
-  get lastExercise(): RecordedExercise | undefined {
+  get lastExercise(): RecordedWeightedExercise | undefined {
     return Enumerable.from(this.recordedExercises)
       .where((x) => x.potentialSets.some((set) => set.set))
       .defaultIfEmpty(undefined)
@@ -264,15 +264,15 @@ export class Session {
   }
 }
 
-export interface RecordedExercisePOJO {
-  _BRAND: 'RECORDED_EXERCISE_POJO';
-  blueprint: ExerciseBlueprintPOJO;
+export interface RecordedWeightedExercisePOJO {
+  _BRAND: 'RECORDED_WEIGHTED_EXERCISE_POJO';
+  blueprint: WeightedExerciseBlueprintPOJO;
   potentialSets: PotentialSetPOJO[];
   notes: string | undefined;
 }
 
-export class RecordedExercise {
-  readonly blueprint: ExerciseBlueprint;
+export class RecordedWeightedExercise {
+  readonly blueprint: WeightedExerciseBlueprint;
   readonly potentialSets: readonly PotentialSet[];
   readonly notes: string | undefined;
 
@@ -281,12 +281,12 @@ export class RecordedExercise {
    */
   constructor();
   constructor(
-    blueprint: ExerciseBlueprint,
+    blueprint: WeightedExerciseBlueprint,
     potentialSets: readonly PotentialSet[],
     notes: string | undefined,
   );
   constructor(
-    blueprint?: ExerciseBlueprint,
+    blueprint?: WeightedExerciseBlueprint,
     potentialSets?: readonly PotentialSet[],
     notes?: string,
   ) {
@@ -296,16 +296,16 @@ export class RecordedExercise {
   }
 
   static fromPOJO(
-    fromPOJO: DeepOmit<RecordedExercisePOJO, '_BRAND'>,
-  ): RecordedExercise {
-    return new RecordedExercise(
-      ExerciseBlueprint.fromPOJO(fromPOJO.blueprint),
+    fromPOJO: DeepOmit<RecordedWeightedExercisePOJO, '_BRAND'>,
+  ): RecordedWeightedExercise {
+    return new RecordedWeightedExercise(
+      WeightedExerciseBlueprint.fromPOJO(fromPOJO.blueprint),
       fromPOJO.potentialSets.map((x) => PotentialSet.fromPOJO(x)),
       fromPOJO.notes,
     );
   }
 
-  equals(other: RecordedExercise | undefined) {
+  equals(other: RecordedWeightedExercise | undefined) {
     if (!other) {
       return false;
     }
@@ -324,10 +324,10 @@ export class RecordedExercise {
     );
   }
 
-  with(other: Partial<RecordedExercisePOJO>) {
-    return new RecordedExercise(
+  with(other: Partial<RecordedWeightedExercisePOJO>) {
+    return new RecordedWeightedExercise(
       'blueprint' in other
-        ? ExerciseBlueprint.fromPOJO(other.blueprint)
+        ? WeightedExerciseBlueprint.fromPOJO(other.blueprint)
         : this.blueprint,
       'potentialSets' in other
         ? other.potentialSets.map((x) => PotentialSet.fromPOJO(x))
@@ -336,7 +336,7 @@ export class RecordedExercise {
     );
   }
 
-  withNoSetsCompleted(): RecordedExercise {
+  withNoSetsCompleted(): RecordedWeightedExercise {
     return this.with({
       notes: undefined,
       potentialSets: this.potentialSets.map((ps) =>
@@ -345,9 +345,9 @@ export class RecordedExercise {
     });
   }
 
-  toPOJO(): RecordedExercisePOJO {
+  toPOJO(): RecordedWeightedExercisePOJO {
     return {
-      _BRAND: 'RECORDED_EXERCISE_POJO',
+      _BRAND: 'RECORDED_WEIGHTED_EXERCISE_POJO',
       blueprint: this.blueprint.toPOJO(),
       potentialSets: this.potentialSets.map((x) => x.toPOJO()),
       notes: this.notes,

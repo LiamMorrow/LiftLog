@@ -1,6 +1,6 @@
 import {
-  ExerciseBlueprint,
-  ExerciseBlueprintPOJO,
+  WeightedExerciseBlueprint,
+  WeightedExerciseBlueprintPOJO,
   SessionBlueprint,
   SessionBlueprintPOJO,
 } from '@/models/blueprint-models';
@@ -34,23 +34,23 @@ const sessionEditorSlice = createSlice({
         state.sessionBlueprint.notes = action.payload;
       }
     },
-    addExercise(state, action: PayloadAction<ExerciseBlueprint>) {
+    addExercise(state, action: PayloadAction<WeightedExerciseBlueprint>) {
       if (state.sessionBlueprint) {
         state.sessionBlueprint.exercises.push(action.payload.toPOJO());
       }
     },
-    removeExercise(state, action: PayloadAction<ExerciseBlueprint>) {
+    removeExercise(state, action: PayloadAction<WeightedExerciseBlueprint>) {
       if (state.sessionBlueprint) {
         state.sessionBlueprint.exercises =
           state.sessionBlueprint.exercises.filter(
-            (x) => !action.payload.equals(x as ExerciseBlueprintPOJO),
+            (x) => !action.payload.equals(x as WeightedExerciseBlueprintPOJO),
           );
       }
     },
-    moveExerciseUp(state, action: PayloadAction<ExerciseBlueprint>) {
+    moveExerciseUp(state, action: PayloadAction<WeightedExerciseBlueprint>) {
       if (state.sessionBlueprint) {
         const index = state.sessionBlueprint.exercises.findIndex((x) =>
-          action.payload.equals(x as ExerciseBlueprintPOJO),
+          action.payload.equals(x as WeightedExerciseBlueprintPOJO),
         );
         if (index > 0) {
           const exercises = [...state.sessionBlueprint.exercises];
@@ -65,10 +65,10 @@ const sessionEditorSlice = createSlice({
         }
       }
     },
-    moveExerciseDown(state, action: PayloadAction<ExerciseBlueprint>) {
+    moveExerciseDown(state, action: PayloadAction<WeightedExerciseBlueprint>) {
       if (state.sessionBlueprint) {
         const index = state.sessionBlueprint.exercises.findIndex((x) =>
-          action.payload.equals(x as ExerciseBlueprintPOJO),
+          action.payload.equals(x as WeightedExerciseBlueprintPOJO),
         );
         if (index >= 0 && index < state.sessionBlueprint.exercises.length - 1) {
           const exercises = [...state.sessionBlueprint.exercises];
@@ -85,7 +85,10 @@ const sessionEditorSlice = createSlice({
     },
     updateSessionExercise(
       state,
-      action: PayloadAction<{ index: number; exercise: ExerciseBlueprint }>,
+      action: PayloadAction<{
+        index: number;
+        exercise: WeightedExerciseBlueprint;
+      }>,
     ) {
       if (state.sessionBlueprint) {
         const { index, exercise } = action.payload;

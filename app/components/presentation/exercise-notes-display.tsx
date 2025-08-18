@@ -1,12 +1,12 @@
 import { SurfaceText } from '@/components/presentation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
-import { RecordedExercise } from '@/models/session-models';
+import { RecordedWeightedExercise } from '@/models/session-models';
 import { View } from 'react-native';
 import { Card, Divider, Icon } from 'react-native-paper';
 
 interface ExerciseNotesDisplayProps {
-  exercise: RecordedExercise;
-  previousExercise: RecordedExercise | undefined;
+  exercise: RecordedWeightedExercise;
+  previousExercise: RecordedWeightedExercise | undefined;
 }
 export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
   const notes = props.exercise.notes ?? '';

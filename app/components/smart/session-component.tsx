@@ -20,14 +20,14 @@ import EmptyInfo from '@/components/presentation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import ItemList from '@/components/presentation/item-list';
-import { RecordedExercise } from '@/models/session-models';
+import { RecordedWeightedExercise } from '@/models/session-models';
 import WeightedExercise from '@/components/presentation/weighted-exercise';
 import WeightDisplay from '@/components/presentation/weight-display';
 import BigNumber from 'bignumber.js';
 import RestTimer from '@/components/presentation/rest-timer';
 import { useState } from 'react';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
-import { ExerciseBlueprint } from '@/models/blueprint-models';
+import { WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/exercise-editor';
 import { LocalDateTime } from '@js-joda/core';
@@ -70,7 +70,7 @@ export default function SessionComponent(props: {
     number | undefined
   >(undefined);
   const [editingExerciseBlueprint, setEditingExerciseBlueprint] = useState<
-    ExerciseBlueprint | undefined
+    WeightedExerciseBlueprint | undefined
   >(undefined);
   const [exerciseEditorOpen, setExerciseEditorOpen] = useState(false);
 
@@ -125,7 +125,7 @@ export default function SessionComponent(props: {
       </EmptyInfo>
     ) : null;
 
-  const renderItem = (item: RecordedExercise, index: number) => (
+  const renderItem = (item: RecordedWeightedExercise, index: number) => (
     <WeightedExercise
       recordedExercise={item}
       toStartNext={session.nextExercise === item}

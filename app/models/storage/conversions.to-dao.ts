@@ -3,7 +3,7 @@ import { Instant, LocalDate, LocalTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Long from 'long';
 import {
-  ExerciseBlueprint,
+  WeightedExerciseBlueprint,
   ProgramBlueprint,
   Rest,
   SessionBlueprint,
@@ -20,7 +20,7 @@ import {
 import {
   SessionPOJO,
   PotentialSet,
-  RecordedExercise,
+  RecordedWeightedExercise,
   RecordedSet,
   Session,
 } from '@/models/session-models';
@@ -107,18 +107,20 @@ export function toSessionBlueprintDao(
 
 // Converts an ExerciseBlueprint to an ExerciseBlueprint DAO
 export function toExerciseBlueprintDao(
-  model: ExerciseBlueprint,
-): LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2 {
-  return new LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2({
-    name: model.name,
-    sets: model.sets,
-    repsPerSet: model.repsPerSet,
-    weightIncreaseOnSuccess: toDecimalDao(model.weightIncreaseOnSuccess),
-    restBetweenSets: toRestDao(model.restBetweenSets),
-    supersetWithNext: model.supersetWithNext,
-    notes: model.notes,
-    link: model.link,
-  });
+  model: WeightedExerciseBlueprint,
+): LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2 {
+  return new LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2(
+    {
+      name: model.name,
+      sets: model.sets,
+      repsPerSet: model.repsPerSet,
+      weightIncreaseOnSuccess: toDecimalDao(model.weightIncreaseOnSuccess),
+      restBetweenSets: toRestDao(model.restBetweenSets),
+      supersetWithNext: model.supersetWithNext,
+      notes: model.notes,
+      link: model.link,
+    },
+  );
 }
 
 // Converts a Rest model to a Rest DAO
@@ -216,9 +218,9 @@ export function toSessionDao(
 
 // Converts a RecordedExercise to a RecordedExercise DAO
 export function toRecordedExerciseDao(
-  model: RecordedExercise,
-): LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2 {
-  return new LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2({
+  model: RecordedWeightedExercise,
+): LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2 {
+  return new LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2({
     exerciseBlueprint: toExerciseBlueprintDao(model.blueprint),
     potentialSets: model.potentialSets.map(toPotentialSetDao),
     notes: toStringValue(model.notes),

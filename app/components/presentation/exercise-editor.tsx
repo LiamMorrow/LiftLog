@@ -5,7 +5,7 @@ import FixedIncrementer from '@/components/presentation/fixed-incrementer';
 import ListSwitch from '@/components/presentation/list-switch';
 import RestEditorGroup from '@/components/presentation/rest-editor-group';
 import { spacing } from '@/hooks/useAppTheme';
-import { ExerciseBlueprint } from '@/models/blueprint-models';
+import { WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import { RootState, useAppSelector, useAppSelectorWithArg } from '@/store';
 import {
   ExerciseDescriptor,
@@ -21,8 +21,8 @@ import { Keyboard, View } from 'react-native';
 import { Card, Divider, List, TextInput } from 'react-native-paper';
 
 interface ExerciseEditorProps {
-  exercise: ExerciseBlueprint;
-  updateExercise: (ex: ExerciseBlueprint) => void;
+  exercise: WeightedExerciseBlueprint;
+  updateExercise: (ex: WeightedExerciseBlueprint) => void;
 }
 
 export function ExerciseEditor(props: ExerciseEditorProps) {
@@ -37,8 +37,11 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
   useEffect(() => {
     setExercise(propsExercise);
   }, [propsExercise]);
-  const updateExercise = (ex: Partial<ExerciseBlueprint>) => {
-    const update = ExerciseBlueprint.fromPOJO({ ...exercise.toPOJO(), ...ex });
+  const updateExercise = (ex: Partial<WeightedExerciseBlueprint>) => {
+    const update = WeightedExerciseBlueprint.fromPOJO({
+      ...exercise.toPOJO(),
+      ...ex,
+    });
     setExercise(update);
     updatePropsExercise(update);
   };

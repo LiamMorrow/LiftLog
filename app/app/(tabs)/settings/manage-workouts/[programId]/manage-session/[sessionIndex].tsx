@@ -12,7 +12,7 @@ import LimitedHtml from '@/components/presentation/limited-html';
 import CopyExerciseDialog from '@/components/smart/copy-exercise-dialog';
 import { spacing } from '@/hooks/useAppTheme';
 import {
-  ExerciseBlueprint,
+  WeightedExerciseBlueprint,
   Rest,
   SessionBlueprint,
 } from '@/models/blueprint-models';
@@ -66,7 +66,7 @@ function SessionEditor({
 }) {
   const dispatch = useDispatch();
   const [selectedExercise, setSelectedExercise] = useState<
-    ExerciseBlueprint | undefined
+    WeightedExerciseBlueprint | undefined
   >(undefined);
   const [selectedExerciseIndex, setSelectedExerciseIndex] = useState<
     number | undefined
@@ -89,7 +89,7 @@ function SessionEditor({
   const beginAddExercise = () => {
     setSelectedExerciseIndex(undefined);
     setSelectedExercise(
-      ExerciseBlueprint.fromPOJO({
+      WeightedExerciseBlueprint.fromPOJO({
         name: `Exercise ${session.exercises.length + 1}`,
         repsPerSet: 10,
         sets: 3,
@@ -242,7 +242,7 @@ function ExerciseItem({
   sessionIndex,
   programId,
 }: {
-  blueprint: ExerciseBlueprint;
+  blueprint: WeightedExerciseBlueprint;
   beginEdit: () => void;
   beginRemove: () => void;
   sessionIndex: number;

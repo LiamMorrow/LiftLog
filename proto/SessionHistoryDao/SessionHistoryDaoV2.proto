@@ -12,15 +12,15 @@ message SessionHistoryDaoV2 {
 message SessionDaoV2 {
     LiftLog.Ui.Models.UuidDao id = 1;
     string session_name = 2;
-    repeated RecordedExerciseDaoV2 recorded_exercises = 3;
+    repeated RecordedWeightedExerciseDaoV2 recorded_exercises = 3;
     LiftLog.Ui.Models.DateOnlyDao date = 4;
     optional LiftLog.Ui.Models.DecimalValue bodyweight = 5;
     string blueprint_notes = 6;
 }
 
 
-message RecordedExerciseDaoV2 {
-    LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2 exercise_blueprint = 1;
+message RecordedWeightedExerciseDaoV2 {
+    LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2 exercise_blueprint = 1;
     optional LiftLog.Ui.Models.DecimalValue weight = 2; // deprecated
     repeated PotentialSetDaoV2 potential_sets = 3;
     optional google.protobuf.StringValue notes = 4;

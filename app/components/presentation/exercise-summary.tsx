@@ -1,7 +1,7 @@
 import { SurfaceText } from '@/components/presentation/surface-text';
 import WeightFormat from '@/components/presentation/weight-format';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { RecordedExercise } from '@/models/session-models';
+import { RecordedWeightedExercise } from '@/models/session-models';
 import { DateTimeFormatter } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
@@ -9,7 +9,7 @@ import { ReactNode } from 'react';
 import { ScrollView, View } from 'react-native';
 
 interface ExerciseSummaryProps {
-  exercise: RecordedExercise;
+  exercise: RecordedWeightedExercise;
   showName: boolean;
   showDate: boolean;
   showWeight: boolean;
@@ -62,7 +62,7 @@ function ChipScroller(props: { children: ReactNode }) {
 }
 
 function FilledChips(props: {
-  exercise: RecordedExercise;
+  exercise: RecordedWeightedExercise;
   showWeight: boolean;
 }) {
   return getWeightAndRepsChips(props.exercise).map((chip, index) => (
@@ -81,7 +81,7 @@ function FilledChips(props: {
 }
 
 function PlannedChips(props: {
-  exercise: RecordedExercise;
+  exercise: RecordedWeightedExercise;
   showWeight: boolean;
 }) {
   return getPlannedChipData(props.exercise).map((chip, index) => (
@@ -154,7 +154,7 @@ interface PotentialSetChipData {
 }
 
 function getWeightAndRepsChips(
-  exercise: RecordedExercise,
+  exercise: RecordedWeightedExercise,
 ): WeightAndRepsChipData[] {
   return exercise.potentialSets.map((set) => ({
     repsCompleted: set.set?.repsCompleted,
@@ -164,7 +164,7 @@ function getWeightAndRepsChips(
 }
 
 function getPlannedChipData(
-  exercise: RecordedExercise,
+  exercise: RecordedWeightedExercise,
 ): PotentialSetChipData[] {
   return Enumerable.from(exercise.potentialSets)
     .groupBy((x) => x.weight.toString())
