@@ -85,6 +85,7 @@ import { match } from 'ts-pattern';
 import { msReplay } from '@material-symbols-react-native/outlined-400/msReplay';
 import { msAssignmentAdd } from '@material-symbols-react-native/outlined-400/msAssignmentAdd';
 import { msCopyAll } from '@material-symbols-react-native/outlined-400/msCopyAll';
+import { msOpenInBrowser } from '@material-symbols-react-native/outlined-400/msOpenInBrowser';
 import { msExpandCircleDown } from '@material-symbols-react-native/outlined-400/msExpandCircleDown';
 import { msExpandCircleUp } from '@material-symbols-react-native/outlined-400/msExpandCircleUp';
 import { msSearch } from '@material-symbols-react-native/outlined-400/msSearch';
@@ -123,6 +124,7 @@ const MaterialSymbols = {
   notifications: msNotifications,
   plus: msAdd,
   star: msStar,
+  openInBrowser: msOpenInBrowser,
   promptSuggestion: msPromptSuggestion,
   send: msSend,
   bolt: msBolt,

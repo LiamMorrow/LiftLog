@@ -15,7 +15,7 @@ import {
 } from '@/store/current-session';
 import { Card, FAB, Icon } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import { Text, View } from 'react-native';
+import { Linking, Text, View } from 'react-native';
 import EmptyInfo from '@/components/presentation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
@@ -38,6 +38,7 @@ import { UnknownAction } from '@reduxjs/toolkit';
 import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
 import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
 import { SurfaceText } from '@/components/presentation/surface-text';
+import { openURL } from 'expo-linking';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
@@ -73,6 +74,9 @@ export default function SessionComponent(props: {
     ExerciseBlueprint | undefined
   >(undefined);
   const [exerciseEditorOpen, setExerciseEditorOpen] = useState(false);
+  const openUrl = (url: string) => {
+    void Linking.canOpenURL(url).then(() => Linking.openURL(url));
+  };
 
   const handleEditExercise = () => {
     if (editingExerciseBlueprint !== undefined) {
@@ -173,7 +177,9 @@ export default function SessionComponent(props: {
           exerciseIndex: index,
         })
       }
-      onOpenLink={() => {}}
+      onOpenLink={() => {
+        openURL(item.blueprint.link);
+      }}
       isReadonly={isReadonly}
       showPreviousButton={props.target === 'workoutSession'}
       previousRecordedExercises={recentlyCompletedExercises(item.blueprint)}

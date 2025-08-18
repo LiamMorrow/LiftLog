@@ -21,6 +21,7 @@ import PreviousExerciseViewer from '@/components/presentation/previous-exercixe-
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import ExerciseNotesDisplay from '@/components/presentation/exercise-notes-display';
 import { WeightAppliesTo } from '@/store/current-session';
+import MenuItem from 'react-native-paper/lib/typescript/components/Menu/MenuItem';
 
 interface WeightedExerciseProps {
   recordedExercise: RecordedExercise;
@@ -38,7 +39,7 @@ interface WeightedExerciseProps {
   ) => void;
   updateWeightForExercise: (weight: BigNumber) => void;
   updateNotesForExercise: (notes: string) => void;
-  onOpenLink: (link: string) => void;
+  onOpenLink: () => void;
   onEditExercise: () => void;
   onRemoveExercise: () => void;
 }
@@ -121,6 +122,16 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
           leadingIcon={'delete'}
           title={t('Remove')}
         />
+        {!!props.recordedExercise.blueprint.link && (
+          <Menu.Item
+            onPress={() => {
+              props.onOpenLink();
+              setMenuVisible(false);
+            }}
+            leadingIcon={'openInBrowser'}
+            title={t('OpenLink')}
+          />
+        )}
       </Menu>
     </View>
   );
