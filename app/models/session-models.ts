@@ -255,14 +255,12 @@ export interface RecordedExercisePOJO {
   blueprint: ExerciseBlueprintPOJO;
   potentialSets: PotentialSetPOJO[];
   notes: string | undefined;
-  perSetWeight: boolean;
 }
 
 export class RecordedExercise {
   readonly blueprint: ExerciseBlueprint;
   readonly potentialSets: readonly PotentialSet[];
   readonly notes: string | undefined;
-  readonly perSetWeight: boolean;
 
   /**
    * @deprecated please use full constructor. Here only for serialization
@@ -272,18 +270,15 @@ export class RecordedExercise {
     blueprint: ExerciseBlueprint,
     potentialSets: readonly PotentialSet[],
     notes: string | undefined,
-    perSetWeight: boolean,
   );
   constructor(
     blueprint?: ExerciseBlueprint,
     potentialSets?: readonly PotentialSet[],
     notes?: string,
-    perSetWeight?: boolean,
   ) {
     this.blueprint = blueprint!;
     this.potentialSets = potentialSets!;
     this.notes = notes!;
-    this.perSetWeight = perSetWeight!;
   }
 
   static fromPOJO(
@@ -293,7 +288,6 @@ export class RecordedExercise {
       ExerciseBlueprint.fromPOJO(fromPOJO.blueprint),
       fromPOJO.potentialSets.map((x) => PotentialSet.fromPOJO(x)),
       fromPOJO.notes,
-      fromPOJO.perSetWeight,
     );
   }
 
@@ -307,7 +301,6 @@ export class RecordedExercise {
 
     return (
       this.blueprint.equals(other.blueprint) &&
-      this.perSetWeight === other.perSetWeight &&
       this.notes === other.notes &&
       this.potentialSets.length === other.potentialSets.length &&
       this.potentialSets.every((set, index) => {
@@ -326,7 +319,6 @@ export class RecordedExercise {
         ? other.potentialSets.map((x) => PotentialSet.fromPOJO(x))
         : this.potentialSets,
       'notes' in other ? other.notes : this.notes,
-      'perSetWeight' in other ? other.perSetWeight : this.perSetWeight,
     );
   }
 
@@ -343,7 +335,6 @@ export class RecordedExercise {
     return {
       _BRAND: 'RECORDED_EXERCISE_POJO',
       blueprint: this.blueprint.toPOJO(),
-      perSetWeight: this.perSetWeight,
       potentialSets: this.potentialSets.map((x) => x.toPOJO()),
       notes: this.notes,
     };
@@ -661,7 +652,6 @@ export class SessionBlueprint {
           () => new PotentialSet(undefined, BigNumber(0)),
         ),
         undefined,
-        false,
       );
     }
     return new Session(

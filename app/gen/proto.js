@@ -1993,7 +1993,6 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @property {LiftLog.Ui.Models.IDecimalValue|null} [weight] RecordedExerciseDaoV2 weight
                      * @property {Array.<LiftLog.Ui.Models.SessionHistoryDao.IPotentialSetDaoV2>|null} [potentialSets] RecordedExerciseDaoV2 potentialSets
                      * @property {google.protobuf.IStringValue|null} [notes] RecordedExerciseDaoV2 notes
-                     * @property {boolean|null} [perSetWeight] RecordedExerciseDaoV2 perSetWeight
                      */
 
                     /**
@@ -2043,14 +2042,6 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @instance
                      */
                     RecordedExerciseDaoV2.prototype.notes = null;
-
-                    /**
-                     * RecordedExerciseDaoV2 perSetWeight.
-                     * @member {boolean} perSetWeight
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
-                     * @instance
-                     */
-                    RecordedExerciseDaoV2.prototype.perSetWeight = false;
 
                     // OneOf field names bound to virtual getters and setters
                     let $oneOfFields;
@@ -2110,8 +2101,6 @@ export const LiftLog = $root.LiftLog = (() => {
                                 $root.LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2.encode(message.potentialSets[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
                         if (message.notes != null && Object.hasOwnProperty.call(message, "notes"))
                             $root.google.protobuf.StringValue.encode(message.notes, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-                        if (message.perSetWeight != null && Object.hasOwnProperty.call(message, "perSetWeight"))
-                            writer.uint32(/* id 5, wireType 0 =*/40).bool(message.perSetWeight);
                         return writer;
                     };
 
@@ -2164,10 +2153,6 @@ export const LiftLog = $root.LiftLog = (() => {
                                 }
                             case 4: {
                                     message.notes = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
-                                    break;
-                                }
-                            case 5: {
-                                    message.perSetWeight = reader.bool();
                                     break;
                                 }
                             default:
@@ -2236,9 +2221,6 @@ export const LiftLog = $root.LiftLog = (() => {
                                     return "notes." + error;
                             }
                         }
-                        if (message.perSetWeight != null && message.hasOwnProperty("perSetWeight"))
-                            if (typeof message.perSetWeight !== "boolean")
-                                return "perSetWeight: boolean expected";
                         return null;
                     };
 
@@ -2279,8 +2261,6 @@ export const LiftLog = $root.LiftLog = (() => {
                                 throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.notes: object expected");
                             message.notes = $root.google.protobuf.StringValue.fromObject(object.notes);
                         }
-                        if (object.perSetWeight != null)
-                            message.perSetWeight = Boolean(object.perSetWeight);
                         return message;
                     };
 
@@ -2299,10 +2279,8 @@ export const LiftLog = $root.LiftLog = (() => {
                         let object = {};
                         if (options.arrays || options.defaults)
                             object.potentialSets = [];
-                        if (options.defaults) {
+                        if (options.defaults)
                             object.exerciseBlueprint = null;
-                            object.perSetWeight = false;
-                        }
                         if (message.exerciseBlueprint != null && message.hasOwnProperty("exerciseBlueprint"))
                             object.exerciseBlueprint = $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.toObject(message.exerciseBlueprint, options);
                         if (message.weight != null && message.hasOwnProperty("weight")) {
@@ -2320,8 +2298,6 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (options.oneofs)
                                 object._notes = "notes";
                         }
-                        if (message.perSetWeight != null && message.hasOwnProperty("perSetWeight"))
-                            object.perSetWeight = message.perSetWeight;
                         return object;
                     };
 

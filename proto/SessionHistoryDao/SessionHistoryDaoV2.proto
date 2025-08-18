@@ -24,7 +24,7 @@ message RecordedExerciseDaoV2 {
     optional LiftLog.Ui.Models.DecimalValue weight = 2; // deprecated
     repeated PotentialSetDaoV2 potential_sets = 3;
     optional google.protobuf.StringValue notes = 4;
-    bool per_set_weight = 5;
+    reserved 5; // Per set weight
 }
 
 message PotentialSetDaoV2 {

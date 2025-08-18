@@ -154,7 +154,6 @@ function fromRecordedExerciseDao(
   return RecordedExercise.fromPOJO({
     notes: dao.notes?.value ?? undefined,
     blueprint: fromExerciseBlueprintDao(dao.exerciseBlueprint).toPOJO(),
-    perSetWeight: dao.perSetWeight!,
     potentialSets: dao.potentialSets!.map((x) =>
       fromPotentialSetDao(sessionDate, x).toPOJO(),
     ),

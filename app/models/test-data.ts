@@ -30,7 +30,6 @@ export const benchPress: RecordedExercise = RecordedExercise.fromPOJO({
     )
     .toArray(),
   notes: '',
-  perSetWeight: true,
 });
 
 export const squats: RecordedExercise = RecordedExercise.fromPOJO({
@@ -55,7 +54,6 @@ export const squats: RecordedExercise = RecordedExercise.fromPOJO({
     )
     .toArray(),
   notes: '',
-  perSetWeight: true,
 });
 
 export const overheadPress: RecordedExercise = RecordedExercise.fromPOJO({
@@ -80,7 +78,6 @@ export const overheadPress: RecordedExercise = RecordedExercise.fromPOJO({
     )
     .toArray(),
   notes: '',
-  perSetWeight: true,
 });
 
 export const defaultSessionBlueprint: SessionBlueprint =

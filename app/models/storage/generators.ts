@@ -145,7 +145,6 @@ export const RecordedExerciseGenerator = fc
       { maxLength: 10 },
     ),
     notes: fc.string(),
-    perSetWeight: fc.boolean(),
   })
   .map(RecordedExercise.fromPOJO);
 

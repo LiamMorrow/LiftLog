@@ -805,9 +805,6 @@ export namespace LiftLog {
 
                     /** RecordedExerciseDaoV2 notes */
                     notes?: (google.protobuf.IStringValue|null);
-
-                    /** RecordedExerciseDaoV2 perSetWeight */
-                    perSetWeight?: (boolean|null);
                 }
 
                 /** Represents a RecordedExerciseDaoV2. */
@@ -830,9 +827,6 @@ export namespace LiftLog {
 
                     /** RecordedExerciseDaoV2 notes. */
                     public notes?: (google.protobuf.IStringValue|null);
-
-                    /** RecordedExerciseDaoV2 perSetWeight. */
-                    public perSetWeight: boolean;
 
                     /** RecordedExerciseDaoV2 _weight. */
                     public _weight?: "weight";

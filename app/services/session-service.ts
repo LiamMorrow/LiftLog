@@ -128,7 +128,7 @@ export class SessionService {
           ),
         );
 
-      return new RecordedExercise(e, potentialSets, undefined, true);
+      return new RecordedExercise(e, potentialSets, undefined);
     }
     return new Session(
       uuid(),

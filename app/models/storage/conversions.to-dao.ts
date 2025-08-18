@@ -222,7 +222,6 @@ export function toRecordedExerciseDao(
     exerciseBlueprint: toExerciseBlueprintDao(model.blueprint),
     potentialSets: model.potentialSets.map(toPotentialSetDao),
     notes: toStringValue(model.notes),
-    perSetWeight: model.perSetWeight,
   });
 }
 

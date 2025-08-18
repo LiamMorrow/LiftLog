@@ -204,7 +204,6 @@ const currentSessionSlice = createSlice({
             }))
             .toArray(),
           notes: undefined,
-          perSetWeight: true,
           _BRAND: 'RECORDED_EXERCISE_POJO',
         } satisfies RecordedExercisePOJO;
         session.recordedExercises.push(newRecordedExercise);

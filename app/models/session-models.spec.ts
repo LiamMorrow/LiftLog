@@ -61,7 +61,6 @@ function createSession(
         exerciseBlueprint,
         potentialSets,
         undefined, // notes
-        true, // perSetWeight
       );
     },
   );
