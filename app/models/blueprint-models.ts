@@ -161,6 +161,95 @@ export class SessionBlueprint {
   }
 }
 
+export type CardioTarget =
+  | {
+      type: 'time';
+      value: Duration;
+    }
+  | {
+      type: 'distance';
+      value: BigNumber;
+    };
+
+export interface CardioExerciseBlueprintPOJO {
+  _BRAND: 'CARDIO_EXERCISE_BLUEPRINT_POJO';
+  name: string;
+  target: CardioTarget;
+  notes: string;
+  link: string;
+}
+export class CardioExerciseBlueprint {
+  readonly name: string;
+  readonly target: CardioTarget;
+  readonly notes: string;
+  readonly link: string;
+
+  /**
+   * @deprecated please use full constructor. Here only for serialization
+   */
+  constructor();
+  constructor(name: string, target: CardioTarget, notes: string, link: string);
+  constructor(
+    name?: string,
+    target?: CardioTarget,
+    notes?: string,
+    link?: string,
+  ) {
+    this.name = name!;
+    this.target = target!;
+    this.notes = notes!;
+    this.link = link!;
+  }
+
+  static fromPOJO(
+    pojo: DeepOmit<CardioExerciseBlueprintPOJO, '_BRAND'>,
+  ): CardioExerciseBlueprint {
+    return new CardioExerciseBlueprint(
+      pojo.name,
+      pojo.target,
+      pojo.notes,
+      pojo.link,
+    );
+  }
+
+  equals(
+    other: CardioExerciseBlueprint | CardioExerciseBlueprintPOJO | undefined,
+  ) {
+    if (!other) {
+      return false;
+    }
+    if (other === this) {
+      return true;
+    }
+    return (
+      this.name === other.name &&
+      this.target.type === other.target.type &&
+      this.target.value.toString() === other.target.value.toString() &&
+      this.notes === other.notes &&
+      this.link === other.link
+    );
+  }
+
+  toPOJO(): CardioExerciseBlueprintPOJO {
+    return {
+      _BRAND: 'CARDIO_EXERCISE_BLUEPRINT_POJO',
+      name: this.name,
+      target: this.target,
+      notes: this.notes,
+      link: this.link,
+    };
+  }
+
+  with(other: Partial<CardioExerciseBlueprintPOJO>): CardioExerciseBlueprint {
+    return new CardioExerciseBlueprint(
+      other.name ?? this.name,
+      other.target ?? this.target,
+      other.notes ?? this.notes,
+      other.link ?? this.link,
+    );
+  }
+}
+
 export interface WeightedExerciseBlueprintPOJO {
   _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO';
   name: string;

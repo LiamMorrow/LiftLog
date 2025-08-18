@@ -3,12 +3,14 @@ import {
   WeightedExerciseBlueprintPOJO,
   SessionBlueprint,
   SessionBlueprintPOJO,
+  CardioExerciseBlueprintPOJO,
+  CardioExerciseBlueprint,
 } from '@/models/blueprint-models';
 import { LocalDateTimeComparer } from '@/models/comparers';
 import { DeepOmit } from '@/utils/deep-omit';
 import { indexed } from '@/utils/enumerable';
 import { uuid } from '@/utils/uuid';
-import { LocalDate, LocalDateTime, ZoneOffset } from '@js-joda/core';
+import { Duration, LocalDate, LocalDateTime, ZoneOffset } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
 import { match, P } from 'ts-pattern';
@@ -261,6 +263,140 @@ export class Session {
 
   get isFreeform(): boolean {
     return this.blueprint.name === 'Freeform Workout';
+  }
+}
+
+export interface RecordedCardioExercisePOJO {
+  _BRAND: 'RECORDED_CARDIO_EXERCISE_POJO';
+  blueprint: CardioExerciseBlueprintPOJO;
+  completionDateTime: LocalDateTime | undefined;
+  actualTime: Duration | undefined;
+  actualDistance: BigNumber | undefined;
+  resistance: BigNumber | undefined;
+  incline: BigNumber | undefined;
+  avgHeartRate: number | undefined;
+  notes: string | undefined;
+}
+export class RecordedCardioExercise {
+  readonly blueprint: CardioExerciseBlueprint;
+  readonly completionDateTime: LocalDateTime | undefined;
+  readonly actualTime: Duration | undefined;
+  readonly actualDistance: BigNumber | undefined;
+  readonly resistance: BigNumber | undefined;
+  readonly incline: BigNumber | undefined;
+  readonly avgHeartRate: number | undefined;
+  readonly notes: string | undefined;
+
+  /**
+   * @deprecated please use full constructor. Here only for serialization
+   */
+  constructor();
+  constructor(
+    blueprint: CardioExerciseBlueprint,
+    completionDateTime: LocalDateTime | undefined,
+    actualTime: Duration | undefined,
+    actualDistance: BigNumber | undefined,
+    resistance: BigNumber | undefined,
+    incline: BigNumber | undefined,
+    avgHeartRate: number | undefined,
+    notes: string | undefined,
+  );
+  constructor(
+    blueprint?: CardioExerciseBlueprint,
+    completionDateTime?: LocalDateTime,
+    actualTime?: Duration,
+    actualDistance?: BigNumber,
+    resistance?: BigNumber,
+    incline?: BigNumber,
+    avgHeartRate?: number,
+    notes?: string,
+  ) {
+    this.blueprint = blueprint!;
+    this.completionDateTime = completionDateTime;
+    this.actualTime = actualTime;
+    this.actualDistance = actualDistance;
+    this.resistance = resistance;
+    this.incline = incline;
+    this.avgHeartRate = avgHeartRate;
+    this.notes = notes;
+  }
+
+  static fromPOJO(
+    pojo: DeepOmit<RecordedCardioExercisePOJO, '_BRAND'>,
+  ): RecordedCardioExercise {
+    return new RecordedCardioExercise(
+      CardioExerciseBlueprint.fromPOJO(pojo.blueprint),
+      pojo.completionDateTime,
+      pojo.actualTime,
+      pojo.actualDistance,
+      pojo.resistance,
+      pojo.incline,
+      pojo.avgHeartRate,
+      pojo.notes,
+    );
+  }
+
+  equals(other: RecordedCardioExercise | undefined): boolean {
+    if (!other) {
+      return false;
+    }
+    if (other === this) {
+      return true;
+    }
+    return (
+      this.blueprint === other.blueprint &&
+      ((this.completionDateTime &&
+        other.completionDateTime &&
+        this.completionDateTime.equals(other.completionDateTime)) ||
+        this.completionDateTime === other.completionDateTime) &&
+      ((this.actualTime &&
+        other.actualTime &&
+        this.actualTime.equals(other.actualTime)) ||
+        this.actualTime === other.actualTime) &&
+      ((this.actualDistance &&
+        other.actualDistance &&
+        this.actualDistance.isEqualTo(other.actualDistance)) ||
+        this.actualDistance === other.actualDistance) &&
+      ((this.resistance &&
+        other.resistance &&
+        this.resistance.isEqualTo(other.resistance)) ||
+        this.resistance === other.resistance) &&
+      ((this.incline &&
+        other.incline &&
+        this.incline.isEqualTo(other.incline)) ||
+        this.incline === other.incline) &&
+      this.avgHeartRate === other.avgHeartRate &&
+      this.notes === other.notes
+    );
+  }
+
+  with(
+    other: DeepOmit<RecordedCardioExercisePOJO, 'BRAND'>,
+  ): RecordedCardioExercise {
+    return new RecordedCardioExercise(
+      CardioExerciseBlueprint.fromPOJO(other.blueprint ?? this.blueprint),
+      other.completionDateTime ?? this.completionDateTime,
+      other.actualTime ?? this.actualTime,
+      other.actualDistance ?? this.actualDistance,
+      other.resistance ?? this.resistance,
+      other.incline ?? this.incline,
+      other.avgHeartRate ?? this.avgHeartRate,
+      other.notes ?? this.notes,
+    );
+  }
+
+  toPOJO(): RecordedCardioExercisePOJO {
+    return {
+      _BRAND: 'RECORDED_CARDIO_EXERCISE_POJO',
+      blueprint: this.blueprint.toPOJO(),
+      completionDateTime: this.completionDateTime,
+      actualTime: this.actualTime,
+      actualDistance: this.actualDistance,
+      resistance: this.resistance,
+      incline: this.incline,
+      avgHeartRate: this.avgHeartRate,
+      notes: this.notes,
+    };
   }
 }
 
