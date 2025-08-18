@@ -22,9 +22,8 @@ import { match, P } from 'ts-pattern';
 
 setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
     shouldShowBanner: true,
     shouldShowList: true,
   }),
@@ -32,16 +31,18 @@ setNotificationHandler({
 
 const nextSetNotificationChannelId = 'Set Timers';
 const nextSetNotificationIdentifier = '1000';
-void setNotificationChannelAsync(nextSetNotificationChannelId, {
-  name: 'Sets',
-  description:
-    'Notifications which remind you when your next set should be started',
-  importance: AndroidImportance.HIGH,
-  enableVibrate: true,
-  showBadge: true,
-  lockscreenVisibility: AndroidNotificationVisibility.PUBLIC,
-  bypassDnd: false,
-});
+if (Platform.OS === 'android') {
+  void setNotificationChannelAsync(nextSetNotificationChannelId, {
+    name: 'Sets',
+    description:
+      'Notifications which remind you when your next set should be started',
+    importance: AndroidImportance.HIGH,
+    enableVibrate: true,
+    showBadge: true,
+    lockscreenVisibility: AndroidNotificationVisibility.PUBLIC,
+    bypassDnd: false,
+  });
+}
 export class NotificationService {
   constructor(
     readonly getState: () => RootState,
@@ -76,6 +77,7 @@ export class NotificationService {
       content: {
         title: 'Rest Over',
         body: 'Start your next set!',
+        sound: true,
       },
       trigger: {
         type: SchedulableTriggerInputTypes.DATE,
