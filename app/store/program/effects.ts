@@ -7,7 +7,7 @@ import {
   toProgramBlueprintDao,
   toStringValue,
 } from '@/models/storage/conversions.to-dao';
-import { addEffect } from '@/store/store';
+import { addEffect, RootState } from '@/store/store';
 import {
   fetchUpcomingSessions,
   initializeProgramStateSlice,
@@ -21,9 +21,11 @@ import {
 import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
 import { AsyncStream } from 'data-async-iterators';
+import { KeyValueStore } from '@/services/key-value-store';
+import { Logger } from '@/services/logger';
 
 const storageKey = 'SavedPrograms';
-const builtInProgramsStorageKey = 'hasSavedDefaultPrograms';
+const builtInProgramsStorageKey = 'hasSavedDefaultPlans';
 export function applyProgramEffects() {
   addEffect(
     initializeProgramStateSlice,
@@ -103,8 +105,9 @@ export function applyProgramEffects() {
             continue;
           }
           dispatch(savePlan({ programId: id, programBlueprint: program }));
-          await keyValueStore.setItem(builtInProgramsStorageKey, 'true');
         }
+        await keyValueStore.setItem(builtInProgramsStorageKey, 'true');
+        await persistPrograms(getState(), keyValueStore, logger);
       }
       if (!hasSetActivePlan) {
         dispatch(
@@ -137,32 +140,7 @@ export function applyProgramEffects() {
           stateAfterReduce.program.savedPrograms !==
             originalState.program.savedPrograms);
       if (shouldPersist) {
-        try {
-          const currentSessionStateDao =
-            new LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1(
-              {
-                activeProgramId: toStringValue(
-                  stateAfterReduce.program.activeProgramId,
-                ),
-                programBlueprints: Object.fromEntries(
-                  Object.entries(stateAfterReduce.program.savedPrograms).map(
-                    ([key, program]) => [
-                      key,
-                      toProgramBlueprintDao(ProgramBlueprint.fromPOJO(program)),
-                    ],
-                  ),
-                ),
-              },
-            );
-          const bytes =
-            LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1.encode(
-              currentSessionStateDao,
-            ).finish();
-          await keyValueStore.setItem(`${storageKey}-Version`, '1');
-          await keyValueStore.setItem(storageKey, bytes);
-        } catch (e) {
-          logger.error('Failed to persist program state', e);
-        }
+        await persistPrograms(stateAfterReduce, keyValueStore, logger);
         const end = performance.now();
         logger.info(
           `Persist program state effect took ${(end - start).toFixed(2)} ms`,
@@ -212,3 +190,34 @@ export function applyProgramEffects() {
 }
 // Helper function to yield control back to the event loop
 const yieldToEventLoop = () => new Promise((resolve) => setTimeout(resolve, 5));
+
+async function persistPrograms(
+  stateAfterReduce: RootState,
+  keyValueStore: KeyValueStore,
+  logger: Logger,
+) {
+  try {
+    const currentSessionStateDao =
+      new LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1({
+        activeProgramId: toStringValue(
+          stateAfterReduce.program.activeProgramId,
+        ),
+        programBlueprints: Object.fromEntries(
+          Object.entries(stateAfterReduce.program.savedPrograms).map(
+            ([key, program]) => [
+              key,
+              toProgramBlueprintDao(ProgramBlueprint.fromPOJO(program)),
+            ],
+          ),
+        ),
+      });
+    const bytes =
+      LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1.encode(
+        currentSessionStateDao,
+      ).finish();
+    await keyValueStore.setItem(`${storageKey}-Version`, '1');
+    await keyValueStore.setItem(storageKey, bytes);
+  } catch (e) {
+    logger.error('Failed to persist program state', e);
+  }
+}
