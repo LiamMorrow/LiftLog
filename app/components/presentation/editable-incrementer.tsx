@@ -1,3 +1,7 @@
+import {
+  localeFormatBigNumber,
+  localeParseBigNumber,
+} from '@/utils/locale-bignumber';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
@@ -14,7 +18,7 @@ interface EditableIncrementerProps {
 
 export default function EditableIncrementer(props: EditableIncrementerProps) {
   const { increment, label, value, onChange } = props;
-  const [text, setText] = useState(props.value.toFormat());
+  const [text, setText] = useState(localeFormatBigNumber(props.value));
   const [editorValue, setEditorValue] = useState<BigNumber>(value);
 
   const handleTextChange = (text: string) => {
@@ -24,14 +28,14 @@ export default function EditableIncrementer(props: EditableIncrementerProps) {
       return;
     }
 
-    const parsed = BigNumber(text);
+    const parsed = localeParseBigNumber(text);
     if (!parsed.isNaN()) {
       setEditorValue(parsed);
       return;
     }
   };
   useEffect(() => {
-    setText(value?.toFormat() ?? '');
+    setText(localeFormatBigNumber(value));
     setEditorValue(value);
   }, [value]);
 

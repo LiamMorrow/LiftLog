@@ -19,6 +19,7 @@
     "primaryColor": "#046F03",
     "plugins": [
       "expo-router",
+      "expo-localization",
       [
         "expo-dev-client",
         {
@@ -32,7 +33,8 @@
           "project": "app",
           "organization": "liftlog"
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,

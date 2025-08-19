@@ -71,5 +71,5 @@ export default function ExerciseStatGraphCard(props: {
  * @param value
  */
 function formatNumber(value: number) {
-  return value % 1 === 0 ? value.toString() : value.toFixed(2);
+  return value.toLocaleString(undefined, { maximumFractionDigits: 2 });
 }

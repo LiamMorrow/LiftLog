@@ -5,6 +5,7 @@ import {
   useAppTheme,
 } from '@/hooks/useAppTheme';
 import { useWeightSuffix } from '@/hooks/useWeightSuffix';
+import { localeFormatBigNumber } from '@/utils/locale-bignumber';
 import BigNumber from 'bignumber.js';
 import { Text, TextStyle } from 'react-native';
 
@@ -16,7 +17,8 @@ interface WeightFormatProps {
   fontWeight?: TextStyle['fontWeight'];
 }
 export default function WeightFormat(props: WeightFormatProps) {
-  const weightDisplay = props.weight?.decimalPlaces(4).toFormat() ?? '-';
+  const weightDisplay =
+    localeFormatBigNumber(props.weight?.decimalPlaces(4)) || '-';
   const suffix = useWeightSuffix();
   const { colors } = useAppTheme();
 
