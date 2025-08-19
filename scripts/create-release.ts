@@ -57,7 +57,7 @@ const releaseAnswer = await question(
     choices: ["y", "n", "Y", "N", ""],
   }
 );
-if (!["y", "", "yes"].includes(releaseAnswer.toLocaleLowerCase())) {
+if (["n", "", "no"].includes(releaseAnswer.toLocaleLowerCase())) {
   process.exit(1);
 }
 
