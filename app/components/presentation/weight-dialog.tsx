@@ -5,6 +5,7 @@ import { T } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { ReactNode, useEffect, useState } from 'react';
 import { View } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import {
   Button,
   Dialog,
@@ -88,58 +89,63 @@ export default function WeightDialog(props: WeightDialogProps) {
 
   return (
     <Portal>
-      <Dialog visible={props.open} onDismiss={props.onClose}>
-        <Dialog.Title>{props.label ?? <T keyName="Weight" />}</Dialog.Title>
-        <Dialog.Content>
-          <View style={{ gap: spacing[2] }}>
-            <TextInput
-              testID="weight-input"
-              label={props.label ?? <T keyName="Weight" />}
-              right={<TextInput.Affix text={weightSuffix} />}
-              selectTextOnFocus
-              mode="outlined"
-              inputMode="decimal"
-              keyboardType="decimal-pad"
-              value={text}
-              onChangeText={handleTextChange}
-              style={{ backgroundColor: theme.colors.elevation.level3 }}
-            />
-            <View
-              style={{
-                flexDirection: 'row',
-                gap: spacing[2],
-                justifyContent: 'center',
-              }}
-            >
-              <Button
-                icon={'minus'}
+      <KeyboardAvoidingView
+        behavior={'height'}
+        style={{ flex: 1, pointerEvents: 'box-none' }}
+      >
+        <Dialog visible={props.open} onDismiss={props.onClose}>
+          <Dialog.Title>{props.label ?? <T keyName="Weight" />}</Dialog.Title>
+          <Dialog.Content>
+            <View style={{ gap: spacing[2] }}>
+              <TextInput
+                testID="weight-input"
+                label={props.label ?? <T keyName="Weight" />}
+                right={<TextInput.Affix text={weightSuffix} />}
+                selectTextOnFocus
                 mode="outlined"
-                testID="decrement-weight"
-                onPress={decrementWeight}
+                inputMode="decimal"
+                keyboardType="decimal-pad"
+                value={text}
+                onChangeText={handleTextChange}
+                style={{ backgroundColor: theme.colors.elevation.level3 }}
+              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  gap: spacing[2],
+                  justifyContent: 'center',
+                }}
               >
-                <WeightFormat weight={nonZeroIncrement} />
-              </Button>
-              <Button
-                icon={'plus'}
-                mode="outlined"
-                testID="increment-weight"
-                onPress={incrementWeight}
-              >
-                <WeightFormat weight={nonZeroIncrement} />
-              </Button>
+                <Button
+                  icon={'minus'}
+                  mode="outlined"
+                  testID="decrement-weight"
+                  onPress={decrementWeight}
+                >
+                  <WeightFormat weight={nonZeroIncrement} />
+                </Button>
+                <Button
+                  icon={'plus'}
+                  mode="outlined"
+                  testID="increment-weight"
+                  onPress={incrementWeight}
+                >
+                  <WeightFormat weight={nonZeroIncrement} />
+                </Button>
+              </View>
+              {props.children}
             </View>
-            {props.children}
-          </View>
-        </Dialog.Content>
-        <Dialog.Actions>
-          <Button onPress={props.onClose} testID="close">
-            <T keyName="Close" />
-          </Button>
-          <Button onPress={onSaveClick} testID="save">
-            <T keyName="Save" />
-          </Button>
-        </Dialog.Actions>
-      </Dialog>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={props.onClose} testID="close">
+              <T keyName="Close" />
+            </Button>
+            <Button onPress={onSaveClick} testID="save">
+              <T keyName="Save" />
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </KeyboardAvoidingView>
     </Portal>
   );
 }

@@ -21,7 +21,7 @@ import PreviousExerciseViewer from '@/components/presentation/previous-exercixe-
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import ExerciseNotesDisplay from '@/components/presentation/exercise-notes-display';
 import { WeightAppliesTo } from '@/store/current-session';
-import MenuItem from 'react-native-paper/lib/typescript/components/Menu/MenuItem';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 interface WeightedExerciseProps {
   recordedExercise: RecordedExercise;
@@ -203,39 +203,45 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
         close={() => setAdditionalPotentialSetIndex(-1)}
       />
       <Portal>
-        <Dialog visible={notesDialogOpen}>
-          <Dialog.Title>
-            <T
-              keyName="SessionNotesFor{name}"
-              params={{ name: recordedExercise.blueprint.name }}
-            />
-          </Dialog.Title>
-          <Dialog.Content>
-            <TextInput
-              value={editorNotes}
-              multiline
-              mode="outlined"
-              onChangeText={setEditorNotes}
-            />
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button
-              testID="cancel-notes"
-              onPress={() => setNotesDialogOpen(false)}
-            >
-              <T keyName="Cancel" />
-            </Button>
-            <Button
-              testID="save-notes"
-              onPress={() => {
-                updateNotesForExercise(editorNotes);
-                setNotesDialogOpen(false);
-              }}
-            >
-              <T keyName="Save" />
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
+        <KeyboardAvoidingView
+          behavior={'height'}
+          style={{ flex: 1, pointerEvents: 'box-none' }}
+        >
+          <Dialog visible={notesDialogOpen}>
+            <Dialog.Title>
+              <T
+                keyName="SessionNotesFor{name}"
+                params={{ name: recordedExercise.blueprint.name }}
+              />
+            </Dialog.Title>
+            <Dialog.Content>
+              <TextInput
+                value={editorNotes}
+                multiline
+                mode="outlined"
+                numberOfLines={6}
+                onChangeText={setEditorNotes}
+              />
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button
+                testID="cancel-notes"
+                onPress={() => setNotesDialogOpen(false)}
+              >
+                <T keyName="Cancel" />
+              </Button>
+              <Button
+                testID="save-notes"
+                onPress={() => {
+                  updateNotesForExercise(editorNotes);
+                  setNotesDialogOpen(false);
+                }}
+              >
+                <T keyName="Save" />
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </KeyboardAvoidingView>
       </Portal>
       <ConfirmationDialog
         headline={t('RemoveExerciseQuestion')}
