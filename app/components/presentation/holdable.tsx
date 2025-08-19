@@ -52,6 +52,8 @@ export default function Holdable({
     onPointerUp: exitHold,
     onPointerLeave: exitHold,
     onTouchEnd: exitHold,
+    onTouchMove: exitHold,
+    onPointerMove: exitHold,
   };
 
   useEffect(() => {
