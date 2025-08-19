@@ -38,7 +38,6 @@ import { UnknownAction } from '@reduxjs/toolkit';
 import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
 import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
 import { SurfaceText } from '@/components/presentation/surface-text';
-import { openURL } from 'expo-linking';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
@@ -178,7 +177,7 @@ export default function SessionComponent(props: {
         })
       }
       onOpenLink={() => {
-        openURL(item.blueprint.link);
+        openUrl(item.blueprint.link);
       }}
       isReadonly={isReadonly}
       showPreviousButton={props.target === 'workoutSession'}
