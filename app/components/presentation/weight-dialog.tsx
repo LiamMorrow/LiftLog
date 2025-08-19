@@ -1,6 +1,10 @@
 import WeightFormat from '@/components/presentation/weight-format';
 import { spacing } from '@/hooks/useAppTheme';
 import { useWeightSuffix } from '@/hooks/useWeightSuffix';
+import {
+  localeFormatBigNumber,
+  localeParseBigNumber,
+} from '@/utils/locale-bignumber';
 import { T } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { ReactNode, useEffect, useState } from 'react';
@@ -35,14 +39,14 @@ type WeightDialogProps = {
 
 export default function WeightDialog(props: WeightDialogProps) {
   const theme = useTheme();
-  const [text, setText] = useState(props.weight?.toFormat() ?? '');
+  const [text, setText] = useState(localeFormatBigNumber(props.weight));
   const [editorWeight, setEditorWeight] = useState<BigNumber | undefined>(
     props.weight,
   );
   const weightSuffix = useWeightSuffix();
 
   useEffect(() => {
-    setText(props.weight?.toFormat() ?? '');
+    setText(localeFormatBigNumber(props.weight));
     setEditorWeight(props.weight);
   }, [props.open, props.weight, setText]);
 
@@ -55,14 +59,14 @@ export default function WeightDialog(props: WeightDialogProps) {
       return;
     }
     setEditorWeight(editorWeight.plus(nonZeroIncrement));
-    setText(editorWeight.plus(nonZeroIncrement).toFormat());
+    setText(localeFormatBigNumber(editorWeight.plus(nonZeroIncrement)));
   };
   const decrementWeight = () => {
     if (editorWeight === undefined) {
       return;
     }
     setEditorWeight(editorWeight.minus(nonZeroIncrement));
-    setText(editorWeight.minus(nonZeroIncrement).toFormat());
+    setText(localeFormatBigNumber(editorWeight.minus(nonZeroIncrement)));
   };
 
   const handleTextChange = (text: string) => {
@@ -72,8 +76,8 @@ export default function WeightDialog(props: WeightDialogProps) {
       return;
     }
 
-    if (!BigNumber(text).isNaN()) {
-      setEditorWeight(new BigNumber(text));
+    if (!localeParseBigNumber(text).isNaN()) {
+      setEditorWeight(localeParseBigNumber(text));
       return;
     }
   };

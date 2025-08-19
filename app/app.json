@@ -32,7 +32,8 @@
           "project": "app",
           "organization": "liftlog"
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,
