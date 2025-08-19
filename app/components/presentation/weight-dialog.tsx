@@ -91,7 +91,7 @@ export default function WeightDialog(props: WeightDialogProps) {
     <Portal>
       <KeyboardAvoidingView
         behavior={'height'}
-        style={{ flex: 1, pointerEvents: 'box-none' }}
+        style={{ flex: 1, pointerEvents: props.open ? 'box-none' : 'none' }}
       >
         <Dialog visible={props.open} onDismiss={props.onClose}>
           <Dialog.Title>{props.label ?? <T keyName="Weight" />}</Dialog.Title>

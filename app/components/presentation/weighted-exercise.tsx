@@ -205,7 +205,10 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
       <Portal>
         <KeyboardAvoidingView
           behavior={'height'}
-          style={{ flex: 1, pointerEvents: 'box-none' }}
+          style={{
+            flex: 1,
+            pointerEvents: notesDialogOpen ? 'box-none' : 'none',
+          }}
         >
           <Dialog visible={notesDialogOpen}>
             <Dialog.Title>

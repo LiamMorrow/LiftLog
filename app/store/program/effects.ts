@@ -106,10 +106,15 @@ export function applyProgramEffects() {
           }
           dispatch(savePlan({ programId: id, programBlueprint: program }));
         }
-        await keyValueStore.setItem(builtInProgramsStorageKey, 'true');
         await persistPrograms(getState(), keyValueStore, logger);
+        await keyValueStore.setItem(builtInProgramsStorageKey, 'true');
       }
-      if (!hasSetActivePlan) {
+      if (
+        !hasSetActivePlan ||
+        !Object.keys(getState().program.savedPrograms).includes(
+          getState().program.activeProgramId,
+        )
+      ) {
         dispatch(
           setActivePlan({
             programId: Object.keys(getState().program.savedPrograms)[0],

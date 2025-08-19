@@ -48,7 +48,7 @@ export default function PotentialSetAdditionalActionsDialog({
     <Portal>
       <KeyboardAvoidingView
         behavior={'height'}
-        style={{ flex: 1, pointerEvents: 'box-none' }}
+        style={{ flex: 1, pointerEvents: open ? 'box-none' : 'none' }}
       >
         <Dialog visible={open} onDismiss={close}>
           <Dialog.Title>
