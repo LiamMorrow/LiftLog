@@ -209,6 +209,18 @@ export class PreferenceService {
     return fromBooleanString(value, true);
   }
 
+  async getNotesExpandedByDefault(): Promise<boolean> {
+    const value = await this.keyValueStore.getItem('notesExpandedByDefault');
+    return fromBooleanString(value, false);
+  }
+
+  async setNotesExpandedByDefault(value: boolean): Promise<void> {
+    await this.keyValueStore.setItem(
+      'notesExpandedByDefault',
+      toBooleanString(value),
+    );
+  }
+
   async setColorSchemeSeed(payload: ColorSchemeSeed): Promise<void> {
     await this.keyValueStore.setItem('colorSchemeSeed', payload);
   }

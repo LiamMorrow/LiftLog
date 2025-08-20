@@ -4,6 +4,7 @@ import ThemeChooser from '@/components/presentation/theme-chooser';
 import { RootState, useAppSelector } from '@/store';
 import {
   setColorSchemeSeed,
+  setNotesExpandedByDefault,
   setShowBodyweight,
   setShowTips,
 } from '@/store/settings';
@@ -29,6 +30,11 @@ export default function AppConfiguration() {
           onValueChange={(value) => dispatch(setShowBodyweight(value))}
         />
 
+        <ListSwitch
+          headline={<T keyName="Workout notes expanded by default" />}
+          value={settings.notesExpandedByDefault}
+          onValueChange={(value) => dispatch(setNotesExpandedByDefault(value))}
+        />
         <ListSwitch
           headline={<T keyName="ShowTips" />}
           supportingText={<T keyName="ShowTipsSubtitle" />}

@@ -10,6 +10,7 @@ import Animated, {
 
 type AccordionItemProps = {
   isExpanded: boolean;
+  unexpandedHeight?: number;
   startsExpanded?: boolean;
   duration?: number;
   onToggled?: (expanded: boolean) => void;
@@ -24,11 +25,14 @@ export function AccordionItem({
   onToggled,
   children,
   style,
+  unexpandedHeight = 0,
 }: AccordionItemProps) {
-  const contentHeight = useSharedValue(0); // measured height of children
-  const animatedHeight = useSharedValue(0);
+  const contentHeight = useSharedValue(unexpandedHeight); // measured height of children
+  const animatedHeight = useSharedValue(unexpandedHeight);
   const animate = useCallback(() => {
-    const targetHeight = isExpanded ? measuredHeightRef.current : 0;
+    const targetHeight = isExpanded
+      ? measuredHeightRef.current
+      : unexpandedHeight;
     animatedHeight.set(
       withTiming(
         targetHeight,
@@ -40,9 +44,9 @@ export function AccordionItem({
         },
       ),
     );
-  }, [isExpanded, duration, onToggled, animatedHeight]);
+  }, [isExpanded, duration, onToggled, animatedHeight, unexpandedHeight]);
 
-  const measuredHeightRef = useRef(0);
+  const measuredHeightRef = useRef(unexpandedHeight);
 
   // Animate height when isExpanded changes
   useEffect(() => animate(), [animate]);

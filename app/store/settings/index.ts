@@ -25,6 +25,7 @@ interface SettingsState {
   backupReminder: boolean;
   colorSchemeSeed: ColorSchemeSeed;
   preferredLanguage: string | undefined;
+  notesExpandedByDefault: boolean;
 }
 
 interface RemoteBackupSettings {
@@ -51,6 +52,7 @@ const initialState: SettingsState = {
   backupReminder: true,
   colorSchemeSeed: 'default',
   preferredLanguage: undefined,
+  notesExpandedByDefault: false,
 };
 
 const settingsSlice = createSlice({
@@ -74,6 +76,9 @@ const settingsSlice = createSlice({
     },
     setRestNotifications(state, action: PayloadAction<boolean>) {
       state.restNotifications = action.payload;
+    },
+    setNotesExpandedByDefault(state, action: PayloadAction<boolean>) {
+      state.notesExpandedByDefault = action.payload;
     },
     setRemoteBackupSettings(
       state,
@@ -142,6 +147,7 @@ export const {
   setFirstDayOfWeek,
   setProToken,
   setPreferredLanguage,
+  setNotesExpandedByDefault,
 } = settingsSlice.actions;
 
 export const settingsReducer = settingsSlice.reducer;

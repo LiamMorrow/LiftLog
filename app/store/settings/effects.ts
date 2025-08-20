@@ -7,6 +7,7 @@ import {
   setFirstDayOfWeek,
   setIsHydrated,
   setLastBackup,
+  setNotesExpandedByDefault,
   setPreferredLanguage,
   setProToken,
   setRemoteBackupSettings,
@@ -49,6 +50,7 @@ export function applySettingsEffects() {
         firstDayOfWeek,
         colorSchemeSeed,
         proToken,
+        notesExpandedByDefault,
       ] = await Promise.all([
         preferenceService.getUseImperialUnits(),
         preferenceService.getShowBodyweight(),
@@ -62,6 +64,7 @@ export function applySettingsEffects() {
         preferenceService.getFirstDayOfWeek(),
         preferenceService.getColorSchemeSeed(),
         preferenceService.getProToken(),
+        preferenceService.getNotesExpandedByDefault(),
       ]);
       dispatch(setColorSchemeSeed(colorSchemeSeed));
       dispatch(setUseImperialUnits(useImperialUnits));
@@ -84,6 +87,7 @@ export function applySettingsEffects() {
       dispatch(setBackupReminder(backupReminder));
       dispatch(setFirstDayOfWeek(firstDayOfWeek));
       dispatch(setProToken(proToken));
+      dispatch(setNotesExpandedByDefault(notesExpandedByDefault));
 
       if (Platform.OS === 'ios') {
         Purchases.configure({
@@ -223,6 +227,15 @@ export function applySettingsEffects() {
     async (action, { stateAfterReduce, extra: { preferenceService } }) => {
       if (stateAfterReduce.settings.isHydrated) {
         await preferenceService.setColorSchemeSeed(action.payload);
+      }
+    },
+  );
+
+  addEffect(
+    setNotesExpandedByDefault,
+    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+      if (stateAfterReduce.settings.isHydrated) {
+        await preferenceService.setNotesExpandedByDefault(action.payload);
       }
     },
   );
