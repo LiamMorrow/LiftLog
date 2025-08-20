@@ -83,6 +83,15 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
           />
         </Tooltip>
       ) : null}
+      {!props.isReadonly ? (
+        <Tooltip title={t('Notes')}>
+          <IconButton
+            testID="exercise-notes-btn"
+            icon={'notes'}
+            onPress={() => setNotesDialogOpen(true)}
+          />
+        </Tooltip>
+      ) : null}
 
       <Menu
         visible={menuVisible}
@@ -105,7 +114,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
           title={t('Edit')}
         />
         <Menu.Item
-          testID="exercise-notes-btn"
+          testID="exercise-notes-more-btn"
           title={t('Notes')}
           leadingIcon={'notes'}
           onPress={() => {
@@ -210,7 +219,10 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             pointerEvents: notesDialogOpen ? 'box-none' : 'none',
           }}
         >
-          <Dialog visible={notesDialogOpen}>
+          <Dialog
+            visible={notesDialogOpen}
+            onDismiss={() => setNotesDialogOpen(false)}
+          >
             <Dialog.Title>
               <T
                 keyName="SessionNotesFor{name}"

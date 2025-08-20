@@ -199,7 +199,6 @@ describe('Completing a session', () => {
       it('can add notes to an exercise and see them the next time they do that exercise', () => {
         cy.contains('Start workout').click()
 
-        cy.getByTestId('more-exercise-btn').first().click()
         cy.getByTestId('exercise-notes-btn').first().click()
         cy.dialog().find('textarea').first().click().type('I am NoteTaker, master of notes')
         cy.dialog().findByTestId('save-notes').click()
@@ -214,7 +213,6 @@ describe('Completing a session', () => {
         cy.getByTestId('history-edit-workout').click()
 
 
-        cy.getByTestId('more-exercise-btn').first().click()
         cy.getByTestId('exercise-notes-btn').first().click()
         cy.dialog().find('textarea')
           .first()

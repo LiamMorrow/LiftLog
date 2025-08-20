@@ -8,6 +8,7 @@
   "typescript.preferences.autoImportSpecifierExcludeRegexes": [
     "vitest/dist/chunks.*",
     "react-native/Libraries/TurboModule/TurboModuleRegistry",
-    "react-native-reanimated/lib/typescript/Animated"
+    "react-native-reanimated/lib/typescript/Animated",
+    "^@material-symbols-react-native/outlined-400$"
   ]
 }
