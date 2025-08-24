@@ -74,7 +74,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
         };
         var chatRequest = new ChatRequest(
             messages,
-            model: "gpt-5",
+            model: "gpt-4o",
             toolChoice: "auto",
             tools: tools
         );
@@ -169,7 +169,7 @@ public class GptAiWorkoutPlanner(OpenAIClient openAiClient, ILogger<GptAiWorkout
         };
         var chatRequest = new ChatRequest(
             messages,
-            model: "gpt-5",
+            model: "gpt-4o",
             toolChoice: "auto",
             tools: tools
         );
