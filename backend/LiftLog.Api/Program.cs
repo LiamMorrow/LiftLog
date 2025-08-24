@@ -41,6 +41,8 @@ builder.Services.AddSignalR(s =>
 {
     // We need clients to be able to stop in flight chat requests
     s.MaximumParallelInvocationsPerClient = 2;
+    s.ClientTimeoutInterval = TimeSpan.FromSeconds(120);
+    s.HandshakeTimeout = TimeSpan.FromSeconds(60);
 });
 
 // Add Authentication
