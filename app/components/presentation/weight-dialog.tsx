@@ -1,4 +1,3 @@
-import WeightFormat from '@/components/presentation/weight-format';
 import { spacing } from '@/hooks/useAppTheme';
 import { useWeightSuffix } from '@/hooks/useWeightSuffix';
 import {
@@ -13,6 +12,7 @@ import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import {
   Button,
   Dialog,
+  IconButton,
   Portal,
   TextInput,
   useTheme,
@@ -101,41 +101,37 @@ export default function WeightDialog(props: WeightDialogProps) {
           <Dialog.Title>{props.label ?? <T keyName="Weight" />}</Dialog.Title>
           <Dialog.Content>
             <View style={{ gap: spacing[2] }}>
-              <TextInput
-                testID="weight-input"
-                label={props.label ?? <T keyName="Weight" />}
-                right={<TextInput.Affix text={weightSuffix} />}
-                selectTextOnFocus
-                mode="outlined"
-                inputMode="decimal"
-                keyboardType="decimal-pad"
-                value={text}
-                onChangeText={handleTextChange}
-                style={{ backgroundColor: theme.colors.elevation.level3 }}
-              />
               <View
                 style={{
                   flexDirection: 'row',
                   gap: spacing[2],
                   justifyContent: 'center',
+                  alignItems: 'center',
                 }}
               >
-                <Button
+                <IconButton
                   icon={'minus'}
                   mode="outlined"
                   testID="decrement-weight"
                   onPress={decrementWeight}
-                >
-                  <WeightFormat weight={nonZeroIncrement} />
-                </Button>
-                <Button
+                />
+                <TextInput
+                  testID="weight-input"
+                  right={<TextInput.Affix text={weightSuffix} />}
+                  selectTextOnFocus
+                  mode="outlined"
+                  inputMode="decimal"
+                  keyboardType="decimal-pad"
+                  value={text}
+                  onChangeText={handleTextChange}
+                  style={{ backgroundColor: theme.colors.elevation.level3 }}
+                />
+                <IconButton
                   icon={'plus'}
                   mode="outlined"
                   testID="increment-weight"
                   onPress={incrementWeight}
-                >
-                  <WeightFormat weight={nonZeroIncrement} />
-                </Button>
+                />
               </View>
               {props.children}
             </View>
