@@ -13,7 +13,7 @@ interface StatsState {
 
 export interface TimeTrackedStatistic {
   dateTime: LocalDateTime;
-  value: number;
+  value: number | undefined;
 }
 
 export interface ExerciseStatistics {
@@ -33,6 +33,8 @@ export interface PinnedExerciseStatistic {
 export interface StatisticOverTime {
   title: string;
   statistics: TimeTrackedStatistic[];
+  maxValue: number;
+  minValue: number;
 }
 
 export interface TimeSpentExercise {

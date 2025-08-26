@@ -17,7 +17,7 @@ export default function ExerciseStatGraphCard(props: {
   const exercisePoints: lineDataItem[] =
     props.exerciseStats.statistics.statistics.map(
       (stat): lineDataItem => ({
-        value: stat.value,
+        value: stat.value!,
         dataPointText: formatNumber(stat.value) + weightSuffix,
         textShiftY: -10,
         label: formatDate(stat.dateTime.toLocalDate(), {
@@ -30,13 +30,14 @@ export default function ExerciseStatGraphCard(props: {
   const oneRepMaxPoints: lineDataItem[] =
     props.exerciseStats.oneRepMaxStatistics.statistics.map(
       (stat): lineDataItem => ({
-        value: stat.value,
+        value: stat.value!,
         textShiftY: -10,
         label: formatDate(stat.dateTime.toLocalDate(), {
           day: 'numeric',
           month: 'short',
         }),
         dataPointColor: colors.red,
+        dataPointText: formatNumber(stat.value) + weightSuffix,
         focusedDataPointLabelComponent: () => <SurfaceText>'HI'</SurfaceText>,
       }),
     );
@@ -50,21 +51,26 @@ export default function ExerciseStatGraphCard(props: {
         {props.title}
       </SurfaceText>
       <LineChart
-        areaChart
         data={oneRepMaxPoints}
-        startFillColor={colors.primary}
-        endFillColor={colors.primary}
-        startOpacity={0.8}
-        endOpacity={0.3}
         color1={colors.red}
         strokeDashArray1={[5, 10]}
         data2={exercisePoints}
         color2={colors.primary}
         strokeDashArray2={[1]}
-        endOpacity1={0}
-        startOpacity1={0}
-        {...lineGraphProps(colors)}
-        width={width}
+        {...lineGraphProps(colors, width, exercisePoints.length)}
+        negativeStepValue={
+          props.exerciseStats.oneRepMaxStatistics.minValue < 0
+            ? -0.2 * props.exerciseStats.oneRepMaxStatistics.minValue
+            : undefined!
+        }
+        mostNegativeValue={
+          props.exerciseStats.oneRepMaxStatistics.minValue < 0
+            ? props.exerciseStats.oneRepMaxStatistics.minValue
+            : undefined!
+        }
+        noOfSectionsBelowXAxis={
+          props.exerciseStats.oneRepMaxStatistics.minValue < 0 ? 5 : 0
+        }
       />
     </View>
   );
@@ -74,6 +80,6 @@ export default function ExerciseStatGraphCard(props: {
  * Formats showing up to 2 decimal places
  * @param value
  */
-function formatNumber(value: number) {
-  return value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+function formatNumber(value: number | undefined) {
+  return value?.toLocaleString(undefined, { maximumFractionDigits: 2 });
 }

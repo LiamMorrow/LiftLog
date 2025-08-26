@@ -18,14 +18,14 @@ export default function BodyweightStatGraphCard(props: {
   const { colors } = useAppTheme();
   const points: lineDataItem[] = props.bodyweightStats.statistics.map(
     (stat): lineDataItem => ({
-      value: stat.value,
+      value: stat.value!,
       dataPointText: formatNumber(stat.value) + weightSuffix,
       textShiftY: -10,
       dataPointColor: colors.primary,
     }),
   );
   const [width, setWidth] = useState(0);
-  if (!showBodyweight) {
+  if (!showBodyweight || !props.bodyweightStats.statistics.length) {
     return undefined;
   }
   return (
@@ -38,16 +38,11 @@ export default function BodyweightStatGraphCard(props: {
         {t('Bodyweight')}
       </SurfaceText>
       <LineChart
-        areaChart
-        startFillColor={colors.primary}
-        endFillColor={colors.primary}
-        startOpacity={0.8}
-        endOpacity={0.3}
         color={colors.primary}
         data={points}
         strokeDashArray={[1]}
-        {...lineGraphProps(colors)}
-        width={width}
+        yAxisOffset={props.bodyweightStats.minValue * 0.9}
+        {...lineGraphProps(colors, width, points.length)}
       />
     </View>
   );
@@ -57,6 +52,6 @@ export default function BodyweightStatGraphCard(props: {
  * Formats showing up to 2 decimal places
  * @param value
  */
-function formatNumber(value: number) {
-  return value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+function formatNumber(value: number | undefined) {
+  return value?.toLocaleString(undefined, { maximumFractionDigits: 2 });
 }

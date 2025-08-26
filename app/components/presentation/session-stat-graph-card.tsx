@@ -21,27 +21,24 @@ export default function SessionStatGraphCard(props: {
     colors.red,
     colors.orange,
     colors.blue,
-    colors.yellow,
     colors.purple,
     colors.pink,
     colors.teal,
     colors.cyan,
     colors.brown,
     colors.indigo,
-    colors.lime,
     colors.amber,
   ];
   const points: lineDataItem[][] = props.sessionStats.map((x) =>
     x.statistics.map(
       (stat): lineDataItem => ({
-        value: stat.value,
+        value: stat.value!,
         dataPointText: formatNumber(stat.value) + weightSuffix,
         textShiftY: -10,
         label: formatDate(stat.dateTime.toLocalDate(), {
           day: 'numeric',
           month: 'short',
         }),
-        dataPointColor: colors.primary,
       }),
     ),
   );
@@ -50,30 +47,30 @@ export default function SessionStatGraphCard(props: {
     key: stat.title ?? `Series ${i + 1}`,
     color: pointColors[i % pointColors.length],
   }));
+  if (!props.sessionStats.length) {
+    return undefined;
+  }
   return (
     <View
       onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
       style={{ gap: spacing[2] }}
-      testID="bodyweight-stat-card"
+      testID="session-stat-card"
     >
       <SurfaceText font="text-2xl" style={{ textAlign: 'center' }}>
         {t('Sessions')}
       </SurfaceText>
       <LineChart
-        areaChart
-        startFillColor={colors.primary}
-        endFillColor={colors.primary}
-        startOpacity={0}
-        endOpacity={0}
-        color={colors.primary}
         dataSet={points.map((x, i) => ({
           data: x,
           color: pointColors[i % pointColors.length],
+          dataPointsColor: pointColors[i % pointColors.length],
         }))}
-        strokeDashArray={[1]}
-        {...lineGraphProps(colors)}
-        width={width}
-      />{' '}
+        {...lineGraphProps(
+          colors,
+          width,
+          Math.max(...points.map((x) => x.length)),
+        )}
+      />
       <View
         testID="stats-legend"
         style={{
@@ -116,6 +113,6 @@ export default function SessionStatGraphCard(props: {
  * Formats showing up to 2 decimal places
  * @param value
  */
-function formatNumber(value: number) {
-  return value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+function formatNumber(value: number | undefined) {
+  return value?.toLocaleString(undefined, { maximumFractionDigits: 2 });
 }
