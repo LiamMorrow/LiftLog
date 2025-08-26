@@ -48,7 +48,7 @@ export default function WeightDialog(props: WeightDialogProps) {
   useEffect(() => {
     setText(localeFormatBigNumber(props.weight));
     setEditorWeight(props.weight);
-  }, [props.open, props.weight, setText]);
+  }, [props.open, props.weight]);
 
   const nonZeroIncrement = props.increment.isZero()
     ? new BigNumber('2.5')
@@ -122,9 +122,13 @@ export default function WeightDialog(props: WeightDialogProps) {
                   mode="outlined"
                   inputMode="decimal"
                   keyboardType="decimal-pad"
+                  autoFocus
                   value={text}
                   onChangeText={handleTextChange}
-                  style={{ backgroundColor: theme.colors.elevation.level3 }}
+                  style={{
+                    backgroundColor: theme.colors.elevation.level3,
+                    flex: 1,
+                  }}
                 />
                 <IconButton
                   icon={'plus'}

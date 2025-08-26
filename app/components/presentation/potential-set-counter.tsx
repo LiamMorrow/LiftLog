@@ -1,6 +1,6 @@
 import { PotentialSet } from '@/models/session-models';
 import BigNumber from 'bignumber.js';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { TouchableRipple, Text as PaperText, Chip } from 'react-native-paper';
 import { Text, Touchable, View } from 'react-native';
 import WeightFormat from '@/components/presentation/weight-format';
@@ -39,15 +39,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
         onLongPress: () => {},
       } satisfies Touchable & Omit<PressableProps, 'children'>);
 
-  const [applyTo, setApplyTo] = useState<WeightAppliesTo>('uncompletedSets');
-
-  useEffect(() => {
-    if (props.set.set) {
-      setApplyTo('thisSet');
-    } else {
-      setApplyTo('uncompletedSets');
-    }
-  }, [props.set.set]);
+  const [applyTo, setApplyTo] = useState<WeightAppliesTo>('thisSet');
 
   return (
     <Holdable onLongPress={props.onHold}>
@@ -160,18 +152,18 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
                 }}
               >
                 <Chip
-                  selected={applyTo === 'uncompletedSets'}
-                  testID="repcount-apply-weight-to-uncompleted-sets"
-                  onPress={() => setApplyTo('uncompletedSets')}
-                >
-                  <T keyName="Uncompleted sets" />
-                </Chip>
-                <Chip
                   selected={applyTo === 'thisSet'}
                   testID="repcount-apply-weight-to-this-set"
                   onPress={() => setApplyTo('thisSet')}
                 >
                   <T keyName="This set" />
+                </Chip>
+                <Chip
+                  selected={applyTo === 'uncompletedSets'}
+                  testID="repcount-apply-weight-to-uncompleted-sets"
+                  onPress={() => setApplyTo('uncompletedSets')}
+                >
+                  <T keyName="Uncompleted sets" />
                 </Chip>
                 <Chip
                   selected={applyTo === 'allSets'}
