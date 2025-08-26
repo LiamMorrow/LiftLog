@@ -220,7 +220,7 @@ export class PreferenceService {
 
   async getNotesExpandedByDefault(): Promise<boolean> {
     const value = await this.keyValueStore.getItem('notesExpandedByDefault');
-    return fromBooleanString(value, false);
+    return fromBooleanString(value, true);
   }
 
   async setNotesExpandedByDefault(value: boolean): Promise<void> {
