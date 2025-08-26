@@ -7,6 +7,7 @@ import { Icon } from 'react-native-paper';
 export default function Layout() {
   const { t } = useTranslate();
   const followRequestCount = useAppSelector(selectFollowRequestCount);
+  const showFeed = useAppSelector((x) => x.settings.showFeed);
   return (
     <Tabs>
       <Tabs.Screen
@@ -28,8 +29,10 @@ export default function Layout() {
 
       <Tabs.Screen
         name="feed"
+        redirect={!showFeed}
         options={{
           tabBarLabel: t('Feed'),
+
           tabBarButtonTestID: 'nav__feed',
           tabBarBadge: followRequestCount || undefined!,
           tabBarIcon: ({ color, size, focused }) => {

@@ -3,6 +3,7 @@ import { CommonActions } from '@react-navigation/core';
 import { PropsWithChildren } from 'react';
 import { BottomNavigation, BottomNavigationProps } from 'react-native-paper';
 import { Platform } from 'react-native';
+import { useAppSelector } from '@/store';
 
 export type MaterialBottomTabsProps = PropsWithChildren<
   Omit<
@@ -22,71 +23,77 @@ export function MaterialBottomTabs({
   children,
   ...props
 }: MaterialBottomTabsProps) {
+  const showFeed = useAppSelector((x) => x.settings.showFeed);
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         animation: Platform.OS === 'web' ? 'none' : 'shift',
       }}
-      tabBar={({ navigation, state, descriptors, insets }) => (
-        <BottomNavigation.Bar
-          testID="nav"
-          {...props}
-          navigationState={{
-            ...state,
-            routes: state.routes,
-          }}
-          safeAreaInsets={insets}
-          labeled
-          onTabPress={({ route, preventDefault }) => {
-            const event = navigation.emit({
-              type: 'tabPress',
-              target: route.key,
-              canPreventDefault: true,
-            });
-
-            if (event.defaultPrevented) {
-              preventDefault();
-            } else {
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              //@ts-expect-error
-              navigation.dispatch({
-                ...CommonActions.navigate(route.name, route.params),
-                target: state.key,
+      tabBar={({ navigation, state, descriptors, insets }) => {
+        const routes = state.routes.filter(
+          (x) => showFeed || !x.name.includes('feed'),
+        );
+        return (
+          <BottomNavigation.Bar
+            testID="nav"
+            {...props}
+            navigationState={{
+              ...state,
+              routes: routes,
+            }}
+            safeAreaInsets={insets}
+            labeled
+            onTabPress={({ route, preventDefault }) => {
+              const event = navigation.emit({
+                type: 'tabPress',
+                target: route.key,
+                canPreventDefault: true,
               });
-            }
-          }}
-          getTestID={({ route }) => {
-            const { options } = descriptors[route.key];
-            return options.tabBarButtonTestID;
-          }}
-          getBadge={({ route }) => {
-            const { options } = descriptors[route.key];
-            return options.tabBarBadge;
-          }}
-          renderIcon={({ route, focused, color }) => {
-            const { options } = descriptors[route.key];
-            if (options.tabBarIcon) {
-              return options.tabBarIcon({ focused, color, size: 24 });
-            }
 
-            return null;
-          }}
-          getLabelText={({ route }) => {
-            const { options } = descriptors[route.key];
-            const label =
-              options.tabBarLabel !== undefined
-                ? options.tabBarLabel
-                : options.title !== undefined
-                  ? options.title
-                  : 'title' in route
-                    ? route.title
-                    : route.name;
+              if (event.defaultPrevented) {
+                preventDefault();
+              } else {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //@ts-expect-error
+                navigation.dispatch({
+                  ...CommonActions.navigate(route.name, route.params),
+                  target: state.key,
+                });
+              }
+            }}
+            getTestID={({ route }) => {
+              const { options } = descriptors[route.key];
+              return options.tabBarButtonTestID;
+            }}
+            getBadge={({ route }) => {
+              const { options } = descriptors[route.key];
+              return options.tabBarBadge;
+            }}
+            renderIcon={({ route, focused, color }) => {
+              const { options } = descriptors[route.key];
+              if (options.tabBarIcon) {
+                return options.tabBarIcon({ focused, color, size: 24 });
+              }
 
-            return String(label);
-          }}
-        />
-      )}
+              return null;
+            }}
+            getLabelText={({ route }) => {
+              const { options } = descriptors[route.key];
+              const label =
+                options.tabBarLabel !== undefined
+                  ? options.tabBarLabel
+                  : options.title !== undefined
+                    ? options.title
+                    : 'title' in route
+                      ? route.title
+                      : route.name;
+
+              return String(label);
+            }}
+          />
+        );
+      }}
     >
       {children}
     </Tabs>
