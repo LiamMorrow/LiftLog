@@ -84,7 +84,11 @@ export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
       <Card.Content style={{ flexDirection: 'row' }}>
         <IconButton
           icon={expanded ? 'unfoldLess' : 'unfoldMore'}
-          style={{ margin: 0, alignSelf: 'flex-start' }}
+          style={{
+            margin: 0,
+            marginLeft: -spacing[3],
+            alignSelf: 'flex-start',
+          }}
           animated
           onPress={handleToggleExpanded}
         />
