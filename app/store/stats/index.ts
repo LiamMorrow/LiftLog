@@ -61,7 +61,7 @@ export interface HeaviestLift {
 }
 
 export interface GranularStatisticView {
-  averageTimeBetweenSets: Duration;
+  maxWeightLiftedInAWorkout: number | undefined;
   averageSessionLength: Duration;
   heaviestLift: HeaviestLift | undefined;
   exerciseMostTimeSpent: TimeSpentExercise | undefined;

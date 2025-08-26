@@ -3,6 +3,7 @@ import SingleValueStatisticCard from '@/components/presentation/single-value-sta
 import { SurfaceText } from '@/components/presentation/surface-text';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import {
+  ExerciseStatistics,
   fetchOverallStats,
   GranularStatisticView,
   selectOverallView,
@@ -26,10 +27,10 @@ import SelectButton, {
 import { LocalDate, Period } from '@js-joda/core';
 import { selectCompletedDistinctSessionNames } from '@/store/stored-sessions';
 import { Divider, Searchbar } from 'react-native-paper';
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import BodyweightStatGraphCard from '@/components/presentation/bodyweight-stat-graph-card';
 import { useScroll } from '@/hooks/useScollListener';
-import { FlashList } from '@shopify/flash-list';
+import { FlashList, FlashListRef } from '@shopify/flash-list';
 import SessionStatGraphCard from '@/components/presentation/session-stat-graph-card';
 
 export default function StatsPage() {
@@ -41,6 +42,19 @@ export default function StatsPage() {
   const stats = useAppSelector(selectOverallView);
   const [searchText, setSearchText] = useState<string>('');
   const { handleScroll } = useScroll();
+  const scrollRef = useRef<FlashListRef<ExerciseStatistics>>(null);
+  const data = useMemo(
+    () =>
+      stats?.exerciseStats.filter((x) =>
+        x.exerciseName
+          .toLocaleLowerCase()
+          .includes(searchText.toLocaleLowerCase()),
+      ),
+    [stats?.exerciseStats, searchText],
+  );
+  useEffect(() => {
+    scrollRef.current?.scrollToTop();
+  }, [data]);
   if (!stats) {
     return <Loader />;
   }
@@ -53,6 +67,7 @@ export default function StatsPage() {
         }}
       />
       <FlashList
+        ref={scrollRef}
         onScroll={handleScroll}
         ListHeaderComponent={
           <ListHeader
@@ -61,11 +76,7 @@ export default function StatsPage() {
             stats={stats}
           />
         }
-        data={stats.exerciseStats.filter((x) =>
-          x.exerciseName
-            .toLocaleLowerCase()
-            .includes(searchText.toLocaleLowerCase()),
-        )}
+        data={data}
         ItemSeparatorComponent={() => (
           <Divider style={{ marginVertical: spacing[4] }} />
         )}
@@ -172,15 +183,17 @@ function TopLevelStatCard(props: {
   switch (index) {
     case 0:
       return (
-        <SingleValueStatisticCard title={t('AverageTimeBetweenSets')}>
-          <SurfaceText
-            color="tertiary"
-            font="text-xl"
-            weight={'bold'}
-            style={{ textAlign: 'center' }}
-          >
-            {formatDuration(stats.averageTimeBetweenSets)}
-          </SurfaceText>
+        <SingleValueStatisticCard title={t('Max weight lifted in a workout')}>
+          <WeightFormat
+            color={'tertiary'}
+            fontSize="text-xl"
+            fontWeight={'bold'}
+            weight={
+              stats.maxWeightLiftedInAWorkout !== undefined
+                ? BigNumber(stats.maxWeightLiftedInAWorkout)
+                : BigNumber(0)
+            }
+          />
         </SingleValueStatisticCard>
       );
     case 1:

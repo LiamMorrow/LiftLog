@@ -19,7 +19,7 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
   if (!sessions.length)
     return {
       averageSessionLength: Duration.ZERO,
-      averageTimeBetweenSets: Duration.ZERO,
+      maxWeightLiftedInAWorkout: undefined,
       bodyweightStats: {
         statistics: [],
         title: 'Bodyweight',
@@ -209,15 +209,6 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
     }
   }
   allSetTimes.sort((a, b) => a.compareTo(b));
-  let averageTimeBetweenSets = Duration.ZERO;
-  if (allSetTimes.length > 1) {
-    let total = Duration.ZERO;
-    for (let i = 1; i < allSetTimes.length; i++) {
-      total = total.plus(Duration.between(allSetTimes[i - 1], allSetTimes[i]));
-    }
-    averageTimeBetweenSets = total.dividedBy(allSetTimes.length - 1);
-  }
-
   // --- Average session length ---
   const sessionLengths: Duration[] = [];
   for (const session of sessionsWithExercises) {
@@ -300,7 +291,9 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
   }
 
   return {
-    averageTimeBetweenSets,
+    maxWeightLiftedInAWorkout: Enumerable.from(sessionStats).max(
+      (x) => x.maxValue,
+    ),
     averageSessionLength,
     heaviestLift,
     exerciseMostTimeSpent,
