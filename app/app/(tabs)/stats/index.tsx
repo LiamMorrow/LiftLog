@@ -10,7 +10,7 @@ import {
   setOverallViewTime,
   setStatsIsDirty,
 } from '@/store/stats';
-import formatDuration from '@/utils/format-date';
+import { formatDuration } from '@/utils/format-date';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect } from 'expo-router';
 import { View } from 'react-native';
@@ -30,6 +30,7 @@ import { useState } from 'react';
 import BodyweightStatGraphCard from '@/components/presentation/bodyweight-stat-graph-card';
 import { useScroll } from '@/hooks/useScollListener';
 import { FlashList } from '@shopify/flash-list';
+import SessionStatGraphCard from '@/components/presentation/session-stat-graph-card';
 
 export default function StatsPage() {
   const { t } = useTranslate();
@@ -154,6 +155,7 @@ function ListHeader({
               <TopLevelStatCard index={item} stats={stats} />
             )}
           ></FlatGrid>
+          <SessionStatGraphCard sessionStats={stats.sessionStats} />
           <BodyweightStatGraphCard bodyweightStats={stats.bodyweightStats} />
         </>
       )}

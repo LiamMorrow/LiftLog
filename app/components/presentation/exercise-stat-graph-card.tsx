@@ -20,6 +20,10 @@ export default function ExerciseStatGraphCard(props: {
         value: stat.value,
         dataPointText: formatNumber(stat.value) + weightSuffix,
         textShiftY: -10,
+        label: formatDate(stat.dateTime.toLocalDate(), {
+          day: 'numeric',
+          month: 'short',
+        }),
         dataPointColor: colors.primary,
       }),
     );

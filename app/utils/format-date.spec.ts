@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { DayOfWeek, Duration, LocalDate } from '@js-joda/core';
 import { formatDate, getDateOnDay, parseDuration } from './format-date';
-import formatDuration from './format-date';
+import { formatDuration } from './format-date';
 
 describe('format-date utilities', () => {
   describe('formatDate', () => {

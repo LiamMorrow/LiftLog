@@ -18,10 +18,7 @@ export function getDateOnDay(dayOfWeek: DayOfWeek) {
   return dateWithSpecifiedDayOfWeek;
 }
 
-export default function formatDuration(
-  duration: Duration,
-  truncateToMins = false,
-) {
+export function formatDuration(duration: Duration, truncateToMins = false) {
   const str = match({ duration, truncateToMins })
     .with(
       { truncateToMins: true },

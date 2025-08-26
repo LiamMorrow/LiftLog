@@ -8,7 +8,7 @@ export const lineGraphProps = (colors: AppThemeColors): LineChartPropsType => ({
   yAxisColor: colors.outline,
   xAxisIndicesColor: colors.onSurface,
   yAxisIndicesColor: colors.onSurface,
-  hideYAxisText: true,
+  hideYAxisText: false,
   rulesColor: colors.onSurface,
   scrollToEnd: true,
   hideRules: true,
@@ -18,6 +18,4 @@ export const lineGraphProps = (colors: AppThemeColors): LineChartPropsType => ({
   yAxisTextStyle: {
     color: colors.onSurface,
   },
-  yAxisLabelWidth: 0,
-  yAxisThickness: 0,
 });
