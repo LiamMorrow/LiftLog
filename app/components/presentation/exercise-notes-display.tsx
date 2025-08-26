@@ -54,7 +54,7 @@ export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
           </Text>
         )}
         {renderNotes && (renderPreviousNotes || renderBlueprintNotes) && (
-          <Divider style={{ height: spacing[2] }} />
+          <Divider />
         )}
         {renderBlueprintNotes && (
           <Text
@@ -64,9 +64,7 @@ export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
             {blueprintNotes}
           </Text>
         )}
-        {renderPreviousNotes && renderBlueprintNotes && (
-          <Divider style={{ height: spacing[2] }} />
-        )}
+        {renderPreviousNotes && renderBlueprintNotes && <Divider />}
         {renderPreviousNotes && (
           <Text
             testID="exercise-previous-notes"
@@ -105,14 +103,14 @@ export default function ExerciseNotesDisplay(props: ExerciseNotesDisplayProps) {
                 marginTop: spacing[3],
               }}
             >
-              <View
-                style={{ gap: spacing[2], flex: 1, paddingRight: spacing[2] }}
-              >
-                <View style={{ position: 'absolute' }}>
+              <View style={{ flex: 1, paddingRight: spacing[2] }}>
+                <View style={{ position: 'absolute', gap: spacing[2] }}>
                   {renderText(maxNumberOfLines)}
                 </View>
                 {/* Render this so it doesn't jump around when expanding - need to always reserve the full text space */}
-                <View style={{ visibility: 'hidden', opacity: 0 }}>
+                <View
+                  style={{ visibility: 'hidden', opacity: 0, gap: spacing[2] }}
+                >
                   {renderText(undefined)}
                 </View>
               </View>
