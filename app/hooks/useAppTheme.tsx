@@ -89,7 +89,17 @@ export type AppThemeColors = Material3Scheme & {
   orange: string;
   red: string;
   green: string;
+  blue: string;
+  yellow: string;
   onGreen: string;
+  purple: string;
+  pink: string;
+  teal: string;
+  cyan: string;
+  brown: string;
+  indigo: string;
+  lime: string;
+  amber: string;
 };
 
 export type ColorChoice = keyof {
@@ -157,8 +167,38 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
       green: argbToHexRGBA(
         Blend.harmonize(0xff00aa00, hexToArgb(schemedTheme.primary)),
       ),
+      yellow: argbToHexRGBA(
+        Blend.harmonize(0xffffff00, hexToArgb(schemedTheme.primary)),
+      ),
+      blue: argbToHexRGBA(
+        Blend.harmonize(0xff0000aa, hexToArgb(schemedTheme.primary)),
+      ),
       onGreen: argbToHexRGBA(
         Blend.harmonize(0xffffffff, hexToArgb(schemedTheme.primary)),
+      ),
+      purple: argbToHexRGBA(
+        Blend.harmonize(0xff800080, hexToArgb(schemedTheme.primary)),
+      ),
+      pink: argbToHexRGBA(
+        Blend.harmonize(0xffff69b4, hexToArgb(schemedTheme.primary)),
+      ),
+      teal: argbToHexRGBA(
+        Blend.harmonize(0xff008080, hexToArgb(schemedTheme.primary)),
+      ),
+      cyan: argbToHexRGBA(
+        Blend.harmonize(0xff00ffff, hexToArgb(schemedTheme.primary)),
+      ),
+      brown: argbToHexRGBA(
+        Blend.harmonize(0xff8b4513, hexToArgb(schemedTheme.primary)),
+      ),
+      indigo: argbToHexRGBA(
+        Blend.harmonize(0xff4b0082, hexToArgb(schemedTheme.primary)),
+      ),
+      lime: argbToHexRGBA(
+        Blend.harmonize(0xffcddc39, hexToArgb(schemedTheme.primary)),
+      ),
+      amber: argbToHexRGBA(
+        Blend.harmonize(0xffffc107, hexToArgb(schemedTheme.primary)),
       ),
     },
     colorScheme: colorScheme ?? 'light',
