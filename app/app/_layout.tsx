@@ -21,6 +21,7 @@ Sentry.init({
 
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
   // spotlight: __DEV__,
+  attachViewHierarchy: true,
 });
 
 // install();
