@@ -3,6 +3,7 @@ import {
   ExerciseStatistics,
   GranularStatisticView,
   HeaviestLift,
+  OptionalStatisticOverTime,
   StatisticOverTime,
   TimeSpentExercise,
   TimeTrackedStatistic,
@@ -57,7 +58,7 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
   };
 
   // --- Session stats grouped by blueprint name ---
-  const sessionStats: StatisticOverTime[] = [];
+  const sessionStats: OptionalStatisticOverTime[] = [];
   const sessionsByBlueprint = new Map<string, Session[]>();
   for (const session of sessionsWithExercises) {
     const key = session.blueprint.name;

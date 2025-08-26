@@ -10,6 +10,7 @@ module.exports = {
     '@typescript-eslint/no-redeclare': 'off',
     '@typescript-eslint/unbound-method': 'off',
     '@typescript-eslint/require-await': 'off',
+    '@typescript-eslint/no-unnecessary-type-assertion': 'error',
     'no-empty-pattern': 'off',
     'no-restricted-imports': [
       'error',

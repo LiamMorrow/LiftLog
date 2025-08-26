@@ -17,7 +17,7 @@ export default function ExerciseStatGraphCard(props: {
   const exercisePoints: lineDataItem[] =
     props.exerciseStats.statistics.statistics.map(
       (stat): lineDataItem => ({
-        value: stat.value!,
+        value: stat.value,
         dataPointText: formatNumber(stat.value) + weightSuffix,
         textShiftY: -10,
         label: formatDate(stat.dateTime.toLocalDate(), {
@@ -30,7 +30,7 @@ export default function ExerciseStatGraphCard(props: {
   const oneRepMaxPoints: lineDataItem[] =
     props.exerciseStats.oneRepMaxStatistics.statistics.map(
       (stat): lineDataItem => ({
-        value: stat.value!,
+        value: stat.value,
         textShiftY: -10,
         label: formatDate(stat.dateTime.toLocalDate(), {
           day: 'numeric',

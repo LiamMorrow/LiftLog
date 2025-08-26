@@ -13,6 +13,12 @@ interface StatsState {
 
 export interface TimeTrackedStatistic {
   dateTime: LocalDateTime;
+  value: number;
+}
+
+// We use this to ensure that when showing multiple series with disparate data, we can ensure that the x axis points are properly aligned
+export interface OptionalTimeTrackedStatistic {
+  dateTime: LocalDateTime;
   value: number | undefined;
 }
 
@@ -37,6 +43,13 @@ export interface StatisticOverTime {
   minValue: number;
 }
 
+export interface OptionalStatisticOverTime {
+  title: string;
+  statistics: OptionalTimeTrackedStatistic[];
+  maxValue: number;
+  minValue: number;
+}
+
 export interface TimeSpentExercise {
   exerciseName: string;
   timeSpent: Duration;
@@ -53,7 +66,7 @@ export interface GranularStatisticView {
   heaviestLift: HeaviestLift | undefined;
   exerciseMostTimeSpent: TimeSpentExercise | undefined;
   exerciseStats: ExerciseStatistics[];
-  sessionStats: StatisticOverTime[];
+  sessionStats: OptionalStatisticOverTime[];
   bodyweightStats: StatisticOverTime;
 }
 

@@ -18,7 +18,7 @@ export default function BodyweightStatGraphCard(props: {
   const { colors } = useAppTheme();
   const points: lineDataItem[] = props.bodyweightStats.statistics.map(
     (stat): lineDataItem => ({
-      value: stat.value!,
+      value: stat.value,
       dataPointText: formatNumber(stat.value) + weightSuffix,
       textShiftY: -10,
       dataPointColor: colors.primary,

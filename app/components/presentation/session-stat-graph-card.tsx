@@ -1,4 +1,4 @@
-import { StatisticOverTime } from '@/store/stats';
+import { OptionalStatisticOverTime } from '@/store/stats';
 import { useWeightSuffix } from '@/hooks/useWeightSuffix';
 import { LineChart, lineDataItem } from 'react-native-gifted-charts';
 import { View } from 'react-native';
@@ -11,7 +11,7 @@ import { Text } from 'react-native-paper';
 import { formatDate } from '@/utils/format-date';
 
 export default function SessionStatGraphCard(props: {
-  sessionStats: StatisticOverTime[];
+  sessionStats: OptionalStatisticOverTime[];
 }) {
   const weightSuffix = useWeightSuffix();
   const { t } = useTranslate();
