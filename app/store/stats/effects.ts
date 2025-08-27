@@ -291,9 +291,9 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
   }
 
   return {
-    maxWeightLiftedInAWorkout: Enumerable.from(sessionStats).max(
-      (x) => x.maxValue,
-    ),
+    maxWeightLiftedInAWorkout: Enumerable.from(sessionStats)
+      .defaultIfEmpty({ maxValue: 0, minValue: 0, title: '', statistics: [] })
+      .max((x) => x.maxValue),
     averageSessionLength,
     heaviestLift,
     exerciseMostTimeSpent,
