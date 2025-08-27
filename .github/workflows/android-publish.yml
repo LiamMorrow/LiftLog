@@ -15,7 +15,7 @@ jobs:
       EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY: ${{secrets.EXPO_REVENUECAT_GOOGLE_API_KEY}}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
