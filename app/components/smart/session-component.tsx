@@ -30,7 +30,7 @@ import FullHeightScrollView from '@/components/presentation/full-height-scroll-v
 import { ExerciseBlueprint } from '@/models/session-models';
 import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/exercise-editor';
-import { Duration, LocalDateTime } from '@js-joda/core';
+import { Duration, LocalDateTime, LocalTime } from '@js-joda/core';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import UpdatePlanButton from '@/components/smart/update-plan-button';
 import { UnknownAction } from '@reduxjs/toolkit';
@@ -138,7 +138,11 @@ export default function SessionComponent(props: {
           exerciseIndex: index,
           reps,
           setIndex,
-          time: LocalDateTime.now(),
+          time:
+            props.target === 'workoutSession'
+              ? LocalDateTime.now()
+              : (session.lastExercise?.lastRecordedSet?.set
+                  ?.completionDateTime ?? session.date.atTime(LocalTime.now())),
         });
         if (props.target === 'workoutSession') storeDispatch(notifySetTimer());
       }}
@@ -146,7 +150,11 @@ export default function SessionComponent(props: {
         dispatch(cycleExerciseReps, {
           exerciseIndex: index,
           setIndex,
-          time: LocalDateTime.now(),
+          time:
+            props.target === 'workoutSession'
+              ? LocalDateTime.now()
+              : (session.lastExercise?.lastRecordedSet?.set
+                  ?.completionDateTime ?? session.date.atTime(LocalTime.now())),
         });
         if (props.target === 'workoutSession') storeDispatch(notifySetTimer());
       }}
