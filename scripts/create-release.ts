@@ -31,7 +31,7 @@ const notes = await $`./get-release-notes.ts ${bumpType} ${
 
 // Extract the next version from the notes output
 const versionMatch = notes.stdout.match(
-  /\*\*Next release version:\*\* v([\d\.\w\-\.]+)/
+  /\*\*Release version:\*\* v([\d\.\w\-\.]+)/
 );
 const version = versionMatch ? versionMatch[1] : null;
 if (!version) {

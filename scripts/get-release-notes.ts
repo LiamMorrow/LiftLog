@@ -47,6 +47,8 @@ async function main() {
     console.error("Could not increment version");
     process.exit(1);
   }
+  // Print new version
+  console.log(`**Release version:** v${newVersion}\n`);
 
   // Get latest non-prerelease release (status is not Pre-release)
   const nonPreReleases = allReleases.filter((r) => r.status !== "Pre-release");
@@ -140,9 +142,6 @@ async function main() {
     const shortSha = (await $`git rev-parse --short ${sha}`).stdout.trim();
     console.log(`- ${msg} (${shortSha})`);
   }
-
-  // Print new version
-  console.log(`\n**Next release version:** v${newVersion}`);
 }
 
 main().catch((e) => {
