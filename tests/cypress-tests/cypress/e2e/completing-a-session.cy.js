@@ -102,6 +102,7 @@ describe('Completing a session', () => {
 
       it('can complete a workout while switching to per set weights with it progressing properly', () => {
         cy.contains('Start workout').click()
+
         updateWeight(0, 20)
         cy.getByTestId('repcount').first().click().should('contain.text', '5/5')
         cy.getByTestId('rest-timer').should('be.visible')
@@ -112,6 +113,7 @@ describe('Completing a session', () => {
         // Update the weight of the second set to be lower than the top level weight
         // Applying to uncompleted sets
         cy.getByTestId('repcount-weight').eq(1).click()
+        cy.dialog().findByTestId('repcount-apply-weight-to-uncompleted-sets').click()
         cy.dialog().findByTestId('decrement-weight').click()
         cy.dialog().findByTestId('save').click()
         cy.getByTestId('modal').should('not.exist')
@@ -123,8 +125,7 @@ describe('Completing a session', () => {
         // Apply to this set
         cy.getByTestId('repcount-weight').eq(2).click()
         cy.dialog().findByTestId('decrement-weight').click()
-        cy.dialog().findByTestId('repcount-apply-weight-to').click()
-        cy.contains('Apply to this set').click({ force: true })
+        cy.dialog().findByTestId('repcount-apply-weight-to-this-set').click()
         cy.dialog().findByTestId('save').click()
         cy.getByTestId('modal').should('not.exist')
 
@@ -136,8 +137,7 @@ describe('Completing a session', () => {
         // Apply to all sets
         cy.getByTestId('repcount-weight').eq(2).click()
         cy.dialog().findByTestId('decrement-weight').click()
-        cy.dialog().findByTestId('repcount-apply-weight-to').click()
-        cy.contains('Apply to all sets').click({ force: true })
+        cy.dialog().findByTestId('repcount-apply-weight-to-all-sets').click()
         cy.dialog().findByTestId('save').click()
         cy.getByTestId('modal').should('not.exist')
 
@@ -235,5 +235,6 @@ function updateWeight(index, amount) {
   cy.getByTestId('repcount-weight').eq(index).click()
 
   cy.dialog().find('[data-testid=weight-input]:visible').click().type(amount.toString())
+  cy.dialog().findByTestId('repcount-apply-weight-to-uncompleted-sets').click()
   cy.dialog().findByTestId("save").click()
 }
