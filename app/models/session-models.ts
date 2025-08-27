@@ -245,6 +245,17 @@ export class Session {
       );
   }
 
+  get firstExercise(): RecordedExercise | undefined {
+    return Enumerable.from(this.recordedExercises)
+      .where((x) => x.potentialSets.some((set) => set.set))
+      .defaultIfEmpty(undefined)
+      .minBy((x) =>
+        x.lastRecordedSet?.set?.completionDateTime
+          .toInstant(ZoneOffset.UTC)
+          .toEpochMilli(),
+      );
+  }
+
   get isFreeform(): boolean {
     return this.blueprint.name === 'Freeform Workout';
   }
@@ -366,6 +377,13 @@ export class RecordedExercise {
         (x) => x.set?.completionDateTime,
         LocalDateTimeComparer,
       )
+      .firstOrDefault((x) => x.set !== undefined);
+    return result;
+  }
+
+  get firstRecordedSet(): PotentialSet | undefined {
+    const result = Enumerable.from(this.potentialSets)
+      .orderBy((x) => x.set?.completionDateTime, LocalDateTimeComparer)
       .firstOrDefault((x) => x.set !== undefined);
     return result;
   }

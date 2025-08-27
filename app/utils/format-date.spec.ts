@@ -63,6 +63,38 @@ describe('format-date utilities', () => {
     it('should return Sunday for DayOfWeek.SUNDAY', () => {
       const result = getDateOnDay(DayOfWeek.SUNDAY);
       expect(result.dayOfWeek()).toBe(DayOfWeek.SUNDAY);
+
+      describe('when truncateTo is hours-mins', () => {
+        it('should format durations >= 1 hour with hours and minutes', () => {
+          const duration = Duration.ofMinutes(90); // 1 hr 30 mins
+          const result = formatDuration(duration, 'hours-mins');
+          expect(result).toBe('1 hrs 30 mins');
+        });
+
+        it('should format durations with only hours (no extra minutes)', () => {
+          const duration = Duration.ofHours(2); // 2 hrs 0 mins
+          const result = formatDuration(duration, 'hours-mins');
+          expect(result).toBe('2 hrs 0 mins');
+        });
+
+        it('should format durations with hours and minutes', () => {
+          const duration = Duration.ofHours(2).plusMinutes(45); // 2 hrs 45 mins
+          const result = formatDuration(duration, 'hours-mins');
+          expect(result).toBe('2 hrs 45 mins');
+        });
+
+        it('should format durations < 1 hour in minutes', () => {
+          const duration = Duration.ofMinutes(45);
+          const result = formatDuration(duration, 'hours-mins');
+          expect(result).toBe('45 mins');
+        });
+
+        it('should format durations < 1 minute in seconds', () => {
+          const duration = Duration.ofSeconds(30);
+          const result = formatDuration(duration, 'hours-mins');
+          expect(result).toBe('30 secs');
+        });
+      });
     });
 
     it('should return Monday for DayOfWeek.MONDAY', () => {
@@ -100,25 +132,25 @@ describe('format-date utilities', () => {
     describe('when truncateToMins is true', () => {
       it('should format short durations in minutes', () => {
         const duration = Duration.ofSeconds(30);
-        const result = formatDuration(duration, true);
+        const result = formatDuration(duration, 'mins');
         expect(result).toBe('0 mins');
       });
 
       it('should format 1 minute duration', () => {
         const duration = Duration.ofMinutes(1);
-        const result = formatDuration(duration, true);
+        const result = formatDuration(duration, 'mins');
         expect(result).toBe('1 mins');
       });
 
       it('should format 90 minutes duration', () => {
         const duration = Duration.ofMinutes(90);
-        const result = formatDuration(duration, true);
+        const result = formatDuration(duration, 'mins');
         expect(result).toBe('90 mins');
       });
 
       it('should format hours as minutes when truncateToMins is true', () => {
         const duration = Duration.ofHours(2);
-        const result = formatDuration(duration, true);
+        const result = formatDuration(duration, 'mins');
         expect(result).toBe('120 mins');
       });
     });
@@ -126,43 +158,43 @@ describe('format-date utilities', () => {
     describe('when truncateToMins is false', () => {
       it('should format durations >= 1 hour in hours', () => {
         const duration = Duration.ofHours(2);
-        const result = formatDuration(duration, false);
+        const result = formatDuration(duration, 'none');
         expect(result).toBe('2 hrs');
       });
 
       it('should format exactly 1 hour in hours', () => {
         const duration = Duration.ofHours(1);
-        const result = formatDuration(duration, false);
+        const result = formatDuration(duration, 'none');
         expect(result).toBe('1 hrs');
       });
 
       it('should format durations >= 1 minute but < 1 hour in minutes', () => {
         const duration = Duration.ofMinutes(45);
-        const result = formatDuration(duration, false);
+        const result = formatDuration(duration, 'none');
         expect(result).toBe('45 mins');
       });
 
       it('should format exactly 1 minute in minutes', () => {
         const duration = Duration.ofMinutes(1);
-        const result = formatDuration(duration, false);
+        const result = formatDuration(duration, 'none');
         expect(result).toBe('1 mins');
       });
 
       it('should format durations < 1 minute in seconds', () => {
         const duration = Duration.ofSeconds(30);
-        const result = formatDuration(duration, false);
+        const result = formatDuration(duration, 'none');
         expect(result).toBe('30 secs');
       });
 
       it('should format sub-second durations in decimal seconds', () => {
         const duration = Duration.ofMillis(500);
-        const result = formatDuration(duration, false);
+        const result = formatDuration(duration, 'none');
         expect(result).toBe('0.5 secs');
       });
 
       it('should format very small durations', () => {
         const duration = Duration.ofMillis(100);
-        const result = formatDuration(duration, false);
+        const result = formatDuration(duration, 'none');
         expect(result).toBe('0.1 secs');
       });
     });
@@ -170,13 +202,13 @@ describe('format-date utilities', () => {
     describe('edge cases', () => {
       it('should handle zero duration', () => {
         const duration = Duration.ofMillis(0);
-        const result = formatDuration(duration, false);
+        const result = formatDuration(duration, 'none');
         expect(result).toBe('0 secs');
       });
 
       it('should handle zero duration with truncateToMins', () => {
         const duration = Duration.ofMillis(0);
-        const result = formatDuration(duration, true);
+        const result = formatDuration(duration, 'mins');
         expect(result).toBe('0 mins');
       });
     });

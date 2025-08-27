@@ -205,7 +205,7 @@ function TopLevelStatCard(props: {
             weight={'bold'}
             style={{ textAlign: 'center' }}
           >
-            {formatDuration(stats.averageSessionLength, true)}
+            {formatDuration(stats.averageSessionLength, 'mins')}
           </SurfaceText>
         </SingleValueStatisticCard>
       );

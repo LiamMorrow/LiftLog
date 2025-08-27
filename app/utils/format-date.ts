@@ -18,11 +18,20 @@ export function getDateOnDay(dayOfWeek: DayOfWeek) {
   return dateWithSpecifiedDayOfWeek;
 }
 
-export function formatDuration(duration: Duration, truncateToMins = false) {
-  const str = match({ duration, truncateToMins })
+export function formatDuration(
+  duration: Duration,
+  truncateTo: 'mins' | 'none' | 'hours-mins' = 'none',
+) {
+  const str = match({ duration, truncateTo })
     .with(
-      { truncateToMins: true },
+      { truncateTo: 'mins' },
       () => `${Math.floor(duration.toMinutes())} mins`,
+    )
+    .when(
+      ({ duration, truncateTo }) =>
+        duration.toHours() >= 1 && truncateTo === 'hours-mins',
+      () =>
+        `${duration.toHours()} hrs ${Math.floor(duration.toMinutes() - 60 * duration.toHours())} mins`,
     )
     .when(
       ({ duration }) => duration.toHours() >= 1,
