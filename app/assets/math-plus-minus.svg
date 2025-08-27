@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+	<!-- Plus (vertical + horizontal) -->
+	<line x1="20" y1="5" x2="20" y2="25" stroke-width="3" />
+	<line x1="10" y1="15" x2="30" y2="15" stroke-width="3" />
+
+	<!-- Minus -->
+	<line x1="10" y1="32" x2="30" y2="32" stroke-width="3" />
+</svg>

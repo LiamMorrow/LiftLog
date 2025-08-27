@@ -222,7 +222,12 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
       <PaperProvider
         theme={paperTheme}
         settings={{
-          icon: (props) => <MsIconSrc {...props} />,
+          icon: (props) => (
+            <MsIconSrc
+              {...props}
+              color={props.color ?? appTheme.colors.onSurface}
+            />
+          ),
         }}
       >
         <NavigationThemeProvider value={navigationTheme}>

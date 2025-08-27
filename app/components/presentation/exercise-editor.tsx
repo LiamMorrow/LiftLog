@@ -165,7 +165,6 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
 
       <View style={{ gap: spacing[2] }}>
         <EditableIncrementer
-          increment={new BigNumber('0.1')}
           label={t('ProgressiveOverload')}
           testID="exercise-auto-increase"
           suffix={weightSuffix}

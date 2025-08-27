@@ -93,10 +93,16 @@ import { msDirectionsRun } from '@material-symbols-react-native/outlined-400/msD
 import { msLanguage } from '@material-symbols-react-native/outlined-400/msLanguage';
 import { msUnfoldLess } from '@material-symbols-react-native/outlined-400/msUnfoldLess';
 import { msUnfoldMore } from '@material-symbols-react-native/outlined-400/msUnfoldMore';
+import plusMinus from '../../assets/math-plus-minus.svg';
+import { SvgXml } from 'react-native-svg';
 
 // Importing these icons using the below methods causes android app to crash
 // import { msAdd, msArrowDownward } from '@material-symbols-react-native/outlined-400';
 // import * as AllIcons from '@material-symbols-react-native/outlined-400';
+
+const CustomIcons = {
+  plusMinus: plusMinus,
+};
 
 const MaterialSymbols = {
   add: msAdd,
@@ -206,6 +212,18 @@ const MaterialSymbols = {
 };
 
 export function MsIconSrc({ name, ...rest }: IconProps) {
+  if ((name as keyof typeof CustomIcons) in CustomIcons) {
+    return (
+      <SvgXml
+        width={rest.size}
+        stroke={rest.color ?? 'white'}
+        height={rest.size}
+        fill={rest.color ?? 'white'}
+        xml={CustomIcons[name as keyof typeof CustomIcons]}
+        {...rest}
+      />
+    );
+  }
   const icon = MaterialSymbols[name as keyof typeof MaterialSymbols];
   if (!icon) {
     return <MsIcon icon={MaterialSymbols['info']} {...rest} />;
