@@ -4,7 +4,7 @@ import {
   localeFormatBigNumber,
   localeParseBigNumber,
 } from '@/utils/locale-bignumber';
-import { T } from '@tolgee/react';
+import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { ReactNode, useEffect, useState } from 'react';
 import { View } from 'react-native';
@@ -15,6 +15,7 @@ import {
   IconButton,
   Portal,
   TextInput,
+  Tooltip,
   useTheme,
 } from 'react-native-paper';
 
@@ -39,6 +40,7 @@ type WeightDialogProps = {
 
 export default function WeightDialog(props: WeightDialogProps) {
   const theme = useTheme();
+  const { t } = useTranslate();
   const [text, setText] = useState(localeFormatBigNumber(props.weight));
   const [editorWeight, setEditorWeight] = useState<BigNumber | undefined>(
     props.weight,
@@ -109,12 +111,6 @@ export default function WeightDialog(props: WeightDialogProps) {
                   alignItems: 'center',
                 }}
               >
-                <IconButton
-                  icon={'minus'}
-                  mode="outlined"
-                  testID="decrement-weight"
-                  onPress={decrementWeight}
-                />
                 <TextInput
                   testID="weight-input"
                   right={<TextInput.Affix text={weightSuffix} />}
@@ -129,6 +125,26 @@ export default function WeightDialog(props: WeightDialogProps) {
                     backgroundColor: theme.colors.elevation.level3,
                     flex: 1,
                   }}
+                />
+                <Tooltip title={t('Toggle negative')}>
+                  <IconButton
+                    mode="outlined"
+                    icon={'plusMinus'}
+                    onPress={() => {
+                      setEditorWeight(
+                        editorWeight?.multipliedBy(-1) as BigNumber,
+                      );
+                      setText(
+                        localeFormatBigNumber(editorWeight?.multipliedBy(-1)),
+                      );
+                    }}
+                  />
+                </Tooltip>
+                <IconButton
+                  icon={'minus'}
+                  mode="outlined"
+                  testID="decrement-weight"
+                  onPress={decrementWeight}
                 />
                 <IconButton
                   icon={'plus'}
