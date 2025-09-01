@@ -1,19 +1,22 @@
-import { spacing } from '@/hooks/useAppTheme';
+import { useAppTheme } from '@/hooks/useAppTheme';
 import { PotentialSet } from '@/models/session-models';
 import { T } from '@tolgee/react';
 import { useEffect, useState } from 'react';
+import { View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import {
   Button,
   Dialog,
   IconButton,
   Portal,
+  Text,
   TextInput,
 } from 'react-native-paper';
 
 interface PotentialSetAdditionalActionsDialogProps {
   open: boolean;
   set: PotentialSet | undefined;
+  repTarget: number;
   updateRepCount: (reps: number | undefined) => void;
   close: () => void;
 }
@@ -23,7 +26,9 @@ export default function PotentialSetAdditionalActionsDialog({
   open,
   set,
   updateRepCount,
+  repTarget,
 }: PotentialSetAdditionalActionsDialogProps) {
+  const { colors } = useAppTheme();
   const originalReps = set?.set?.repsCompleted;
 
   const [repCountText, setRepCountText] = useState<string>(
@@ -54,15 +59,8 @@ export default function PotentialSetAdditionalActionsDialog({
           <Dialog.Title>
             <T keyName="SelectReps" />
           </Dialog.Title>
-          <Dialog.Content
-            style={{
-              flexDirection: 'row',
-              gap: spacing[2],
-              alignItems: 'center',
-            }}
-          >
+          <Dialog.Content>
             <TextInput
-              style={{ flex: 1 }}
               label={<T keyName="Reps" />}
               inputMode="numeric"
               value={repCountText}
@@ -71,15 +69,32 @@ export default function PotentialSetAdditionalActionsDialog({
               onChangeText={setRepCountText}
               autoFocus
             />
-            <IconButton
-              mode="outlined"
-              icon={'close'}
-              onPress={() => {
-                setRepCountText('');
-                updateRepCount(undefined);
-                close();
-              }}
-            />
+
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+              {Array.from({ length: repTarget + 3 }).map((_, i) => (
+                <IconButton
+                  key={i}
+                  mode="outlined"
+                  icon={() => <Text>{i}</Text>}
+                  onPress={() => {
+                    setRepCountText(i.toString());
+                    updateRepCount(i);
+                    close();
+                  }}
+                />
+              ))}
+              <IconButton
+                mode="contained"
+                iconColor={colors.error}
+                containerColor={colors.errorContainer}
+                icon={'close'}
+                onPress={() => {
+                  setRepCountText('');
+                  updateRepCount(undefined);
+                  close();
+                }}
+              />
+            </View>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={close}>{<T keyName="Cancel" />}</Button>

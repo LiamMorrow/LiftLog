@@ -205,6 +205,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
 
       <PotentialSetAdditionalActionsDialog
         open={additionalPotentialSetIndex !== -1}
+        repTarget={props.recordedExercise.blueprint.repsPerSet}
         set={props.recordedExercise.potentialSets[additionalPotentialSetIndex]}
         updateRepCount={(reps) =>
           updateRepCountForSet(additionalPotentialSetIndex, reps)
