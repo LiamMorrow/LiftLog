@@ -135,6 +135,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
           </Animated.View>
           <WeightDialog
             open={isWeightDialogOpen}
+            allowNegative
             increment={props.weightIncrement}
             weight={props.set.weight}
             onClose={() => setIsWeightDialogOpen(false)}

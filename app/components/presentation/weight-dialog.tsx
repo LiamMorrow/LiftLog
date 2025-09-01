@@ -25,6 +25,7 @@ type WeightDialogProps = {
   increment: BigNumber;
   label?: string;
   children?: ReactNode;
+  allowNegative?: boolean | undefined;
 } & (
   | {
       weight: BigNumber;
@@ -67,6 +68,9 @@ export default function WeightDialog(props: WeightDialogProps) {
     if (editorWeight === undefined) {
       return;
     }
+    if (!props.allowNegative && editorWeight.isLessThan(nonZeroIncrement)) {
+      return;
+    }
     setEditorWeight(editorWeight.minus(nonZeroIncrement));
     setText(localeFormatBigNumber(editorWeight.minus(nonZeroIncrement)));
   };
@@ -87,6 +91,9 @@ export default function WeightDialog(props: WeightDialogProps) {
   const onSaveClick = () => {
     if (editorWeight === undefined && !props.allowNull) {
       props.onClose();
+      return;
+    }
+    if (!props.allowNegative && editorWeight?.isLessThan(0)) {
       return;
     }
     props.updateWeight(editorWeight!);
@@ -126,20 +133,22 @@ export default function WeightDialog(props: WeightDialogProps) {
                     flex: 1,
                   }}
                 />
-                <Tooltip title={t('Toggle negative')}>
-                  <IconButton
-                    mode="outlined"
-                    icon={'plusMinus'}
-                    onPress={() => {
-                      setEditorWeight(
-                        editorWeight?.multipliedBy(-1) as BigNumber,
-                      );
-                      setText(
-                        localeFormatBigNumber(editorWeight?.multipliedBy(-1)),
-                      );
-                    }}
-                  />
-                </Tooltip>
+                {props.allowNegative && (
+                  <Tooltip title={t('Toggle negative')}>
+                    <IconButton
+                      mode="outlined"
+                      icon={'plusMinus'}
+                      onPress={() => {
+                        setEditorWeight(
+                          editorWeight?.multipliedBy(-1) as BigNumber,
+                        );
+                        setText(
+                          localeFormatBigNumber(editorWeight?.multipliedBy(-1)),
+                        );
+                      }}
+                    />
+                  </Tooltip>
+                )}
                 <IconButton
                   icon={'minus'}
                   mode="outlined"
