@@ -36,17 +36,17 @@
         "url": "https://github.com/StartBootstrap/startbootstrap-new-age.git"
     },
     "dependencies": {
-        "bootstrap": "5.3.6"
+        "bootstrap": "5.3.8"
     },
     "devDependencies": {
         "autoprefixer": "10.4.21",
         "browser-sync": "3.0.4",
         "chokidar": "4.0.3",
-        "concurrently": "9.1.2",
-        "postcss": "8.5.4",
-        "prettier": "3.5.3",
+        "concurrently": "9.2.1",
+        "postcss": "8.5.6",
+        "prettier": "3.6.2",
         "pug": "3.0.3",
-        "sass": "1.89.1",
+        "sass": "1.92.1",
         "shelljs": "0.10.0",
         "upath": "2.0.1"
     }
