@@ -90,7 +90,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "@react-native-community/cli": "^18.0.0",
+    "@react-native-community/cli": "^20.0.0",
     "@types/react": "~19.0.14",
     "babel-plugin-inline-import": "^3.0.0",
     "eslint": "^8.57.0",
