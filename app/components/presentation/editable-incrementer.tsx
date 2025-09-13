@@ -26,19 +26,23 @@ export default function EditableIncrementer(props: EditableIncrementerProps) {
     setText(text);
     if (text.trim() === '') {
       setEditorValue(new BigNumber('0'));
+      onChange(BigNumber(0));
       return;
     }
 
     const parsed = localeParseBigNumber(text);
     if (!parsed.isNaN()) {
       setEditorValue(parsed);
+      onChange(parsed);
       return;
     }
   };
   useEffect(() => {
-    setText(localeFormatBigNumber(value));
-    setEditorValue(value);
-  }, [value]);
+    if (!editorValue.eq(value)) {
+      setText(localeFormatBigNumber(value));
+      setEditorValue(value);
+    }
+  }, [value, editorValue]);
 
   return (
     <List.Item
@@ -58,6 +62,8 @@ export default function EditableIncrementer(props: EditableIncrementerProps) {
               icon={'plusMinus'}
               onPress={() => {
                 onChange(editorValue.multipliedBy(-1));
+                setText(localeFormatBigNumber(editorValue.multipliedBy(-1)));
+                setEditorValue(editorValue.multipliedBy(-1));
               }}
             />
           </Tooltip>
@@ -67,7 +73,12 @@ export default function EditableIncrementer(props: EditableIncrementerProps) {
             inputMode="decimal"
             keyboardType="decimal-pad"
             onChangeText={handleTextChange}
-            onBlur={() => onChange(editorValue)}
+            onBlur={() => {
+              if (text === '') {
+                setText('0');
+              }
+              onChange(editorValue);
+            }}
             right={<TextInput.Affix text={props.suffix} />}
           />
         </View>
