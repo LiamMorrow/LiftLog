@@ -22,7 +22,7 @@ jobs:
           cache-dependency-path: ./app/package-lock.json
 
       - name: Setup JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: "temurin"
           java-version: "17"
