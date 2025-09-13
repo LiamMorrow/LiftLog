@@ -232,7 +232,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             </Dialog.Title>
             <Dialog.Content>
               <TextInput
-                value={editorNotes}
+                defaultValue={editorNotes}
                 multiline
                 mode="outlined"
                 numberOfLines={6}

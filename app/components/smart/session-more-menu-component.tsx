@@ -158,7 +158,7 @@ function WorkoutEditor(props: {
           label={t('PlanNotes')}
           testID="workout-notes"
           style={{ marginBottom: spacing[2] }}
-          value={editorWorkout.blueprint.notes}
+          defaultValue={editorWorkout.blueprint.notes}
           onChangeText={(notes) =>
             setEditorWorkout(
               editorWorkout.with({
