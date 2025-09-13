@@ -42,7 +42,6 @@
     "scheme": "liftlog",
     "android": {
       "package": "com.limajuice.liftlog",
-      "edgeToEdgeEnabled": true,
       "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"],
       "intentFilters": [
         {
@@ -82,7 +81,7 @@
           "cs"
         ]
       },
-      "appleTeamId": "",
+      "appleTeamId": "U8Q4NXKYES",
       "version": "$(APP_DISPLAY_VERSION)",
       "buildNumber": "$(APP_VERSION)"
     },
