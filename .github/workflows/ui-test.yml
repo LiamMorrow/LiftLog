@@ -44,7 +44,7 @@ jobs:
           ELECTRON_ENABLE_LOGGING: 1
         with:
           start: npm run server-ci, npm run local-api
-          wait-on: "http://localhost:8081, http://localhost:5264"
+          wait-on: "http://localhost:8081, http://localhost:5264/health"
           working-directory: ./tests/cypress-tests
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
