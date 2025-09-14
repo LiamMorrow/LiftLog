@@ -9,6 +9,5 @@ module.exports = defineConfig({
     viewportWidth: 400,
     defaultCommandTimeout: 30000,
     baseUrl: 'http://127.0.0.1:8081',
-    video: true
   },
 });
