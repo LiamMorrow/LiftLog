@@ -17,6 +17,7 @@ describe('Settings', () => {
       cy.contains('restore').click()
       cy.contains('Restore data').click()
       cy.get('input[type=file]').selectFile('export.liftlogbackup.gz', { force: true })
+      cy.contains('Restore complete!').should('be.visible')
     })
 
 
