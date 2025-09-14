@@ -90,7 +90,7 @@
           "cs"
         ]
       },
-      "appleTeamId": "U8Q4NXKYES",
+      "appleTeamId": "",
       "version": "$(APP_DISPLAY_VERSION)",
       "buildNumber": "$(APP_VERSION)"
     },
