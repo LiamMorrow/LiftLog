@@ -49,10 +49,6 @@ export default Sentry.wrap(function RootLayout() {
                   )}
                   screenOptions={{
                     headerShown: false,
-                    statusBarTranslucent: true,
-                    statusBarBackgroundColor: 'transparent',
-                    navigationBarTranslucent: true,
-                    navigationBarColor: 'transparent',
                     statusBarStyle:
                       Platform.OS === 'android'
                         ? colorScheme === 'dark'

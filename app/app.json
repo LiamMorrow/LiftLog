@@ -33,7 +33,16 @@
           "organization": "liftlog"
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      [
+        "react-native-edge-to-edge",
+        {
+          "android": {
+            "parentTheme": "Default",
+            "enforceNavigationBarContrast": false
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
@@ -88,9 +97,7 @@
     "notification": {
       "icon": "./assets/notification.png"
     },
-    "androidStatusBar": {
-      "translucent": true
-    },
+
     "jsEngine": "hermes"
   }
 }
