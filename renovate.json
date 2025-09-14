@@ -4,5 +4,6 @@
   "schedule": ["before 4am on monday"],
   "automerge": false,
   "gitIgnoredAuthors": ["renovate[bot]@users.noreply.github.com"],
-  "ignoreDeps": ["FluentAssertions"]
+  "ignoreDeps": ["FluentAssertions"],
+  "ignorePaths": ["app/**"]
 }
