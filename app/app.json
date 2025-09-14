@@ -33,7 +33,16 @@
           "organization": "liftlog"
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      [
+        "react-native-edge-to-edge",
+        {
+          "android": {
+            "parentTheme": "Default",
+            "enforceNavigationBarContrast": false
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
@@ -42,7 +51,6 @@
     "scheme": "liftlog",
     "android": {
       "package": "com.limajuice.liftlog",
-      "edgeToEdgeEnabled": true,
       "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"],
       "intentFilters": [
         {
@@ -89,9 +97,7 @@
     "notification": {
       "icon": "./assets/notification.png"
     },
-    "androidStatusBar": {
-      "translucent": true
-    },
+
     "jsEngine": "hermes"
   }
 }

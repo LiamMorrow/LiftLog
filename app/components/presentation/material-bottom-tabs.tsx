@@ -1,4 +1,4 @@
-import { Tabs } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
 import { CommonActions } from '@react-navigation/core';
 import { PropsWithChildren } from 'react';
 import { BottomNavigation, BottomNavigationProps } from 'react-native-paper';
@@ -24,6 +24,7 @@ export function MaterialBottomTabs({
   ...props
 }: MaterialBottomTabsProps) {
   const showFeed = useAppSelector((x) => x.settings.showFeed);
+  const { dismissTo } = useRouter();
   return (
     <Tabs
       screenOptions={{
@@ -53,12 +54,27 @@ export function MaterialBottomTabs({
 
               if (event.defaultPrevented) {
                 preventDefault();
+                return;
+              }
+
+              // Emulates the behaviour of popping to the top of the stack
+              // when tapping the tab of a stack you're already on
+              // on web
+              const shouldPopToTop =
+                Platform.OS === 'web' &&
+                state.index ===
+                  state.routes.findIndex((r) => r.key === route.key);
+
+              if (shouldPopToTop) {
+                navigation.navigate(route.name, route.params);
+                dismissTo(('/' + route.name) as '/');
               } else {
+                // Not focused: navigate normally
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                //@ts-expect-error
+                // @ts-expect-error
                 navigation.dispatch({
                   ...CommonActions.navigate(route.name, route.params),
-                  target: state.key,
+                  target: state.key, // target the tab navigator
                 });
               }
             }}

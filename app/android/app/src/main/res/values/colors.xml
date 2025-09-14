@@ -4,4 +4,5 @@
   <color name="colorPrimaryDark">#fcfdf6</color>
   <color name="activityBackground">#fcfdf6</color>
   <color name="iconBackground">#dfedda</color>
+  <color name="navigationBarColor">#00000000</color>
 </resources>

@@ -6,10 +6,12 @@
   "scripts": {
     "cypress-ci": "cypress run --browser=chrome",
     "cypress-open": "cypress open",
+    "local-api": "dotnet run --project ../../backend/LiftLog.Api",
+    "local-api-with-deps": "docker compose -f ../../backend/LiftLog.Api/docker-compose.yml up -d && npm run local-api",
     "server": "npm run web --prefix ../../app",
     "server-ci": "npm run web --prefix ../../app",
-    "test": "LANG=en_AU.UTF-8 run-p -r server cypress-open",
-    "test-ci": "LANG=en_AU.UTF-8 run-p -r server-ci cypress-ci"
+    "test": "LANG=en_AU.UTF-8 run-p -r server cypress-open local-api-with-deps",
+    "test-ci": "LANG=en_AU.UTF-8 run-p -r server-ci cypress-ci local-api"
   },
   "devDependencies": {
     "browser-sync": "^3.0.0",

@@ -79,8 +79,7 @@ function assertPlanFromEditPage(exerciseName, workoutName) {
   cy.dialog().findByTestId('exercise-reps').should('contain.text', '9')
 
   //  TODO - this works manually, but fails in cypress.
-  // I have actually seen this need a blur in android idk
-  // cy.dialog().findByTestId('exercise-auto-increase').findByTestId('editable-field').should('have.value', '4.5')
+  cy.dialog().findByTestId('exercise-auto-increase').findByTestId('editable-field').should('have.value', '4.5')
   cy.dialog().findByTestId('exercise-superset').children().find('[checked]')
   // Can't really test this in rn -manual verified it works
   cy.dialog().contains('Long')

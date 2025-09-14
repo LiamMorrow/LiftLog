@@ -41,27 +41,22 @@ export default Sentry.wrap(function RootLayout() {
           <SafeAreaProvider>
             <ServicesProvider>
               <AppThemeProvider>
-                <Stack
-                  layout={(e) => (
-                    <AppStateProvider>
-                      <SnackbarProvider>{e.children}</SnackbarProvider>
-                    </AppStateProvider>
-                  )}
-                  screenOptions={{
-                    headerShown: false,
-                    statusBarTranslucent: true,
-                    statusBarBackgroundColor: 'transparent',
-                    navigationBarTranslucent: true,
-                    navigationBarColor: 'transparent',
-                    statusBarStyle:
-                      Platform.OS === 'android'
-                        ? colorScheme === 'dark'
-                          ? 'light'
-                          : 'dark'
-                        : undefined,
-                    gestureEnabled: false,
-                  }}
-                />
+                <AppStateProvider>
+                  <SnackbarProvider>
+                    <Stack
+                      screenOptions={{
+                        headerShown: false,
+                        statusBarStyle:
+                          Platform.OS === 'android'
+                            ? colorScheme === 'dark'
+                              ? 'light'
+                              : 'dark'
+                            : undefined,
+                        gestureEnabled: false,
+                      }}
+                    />
+                  </SnackbarProvider>
+                </AppStateProvider>
               </AppThemeProvider>
             </ServicesProvider>
           </SafeAreaProvider>

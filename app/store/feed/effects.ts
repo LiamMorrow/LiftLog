@@ -79,10 +79,18 @@ export function applyFeedEffects() {
     if (action.payload.action.payload.fromUserAction) {
       dispatch(showSnackbar({ text: action.payload.message }));
     }
-    logger.error(action.payload.message, {
-      action,
-      error: action.payload.error,
-    });
+    logger.error(
+      action.payload.message +
+        ' [msg=' +
+        action.payload.error.message +
+        '; type=' +
+        action.payload.error.type +
+        ']',
+      {
+        action,
+        error: action.payload.error,
+      },
+    );
   });
 
   addEffect(
