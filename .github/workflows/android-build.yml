@@ -6,6 +6,9 @@ name: Build Android
 on:
   push:
     branches-ignore: [main]
+    paths:
+      - app/**
+      - .github/**
 jobs:
   build:
     runs-on: ubuntu-latest

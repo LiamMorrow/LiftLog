@@ -2,6 +2,10 @@ name: Test UI
 
 on:
   push:
+    paths:
+      - backend/**
+      - .github/**
+      - app/**
 
 jobs:
   test:

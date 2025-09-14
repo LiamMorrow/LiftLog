@@ -3,6 +3,9 @@ name: Build Api
 on:
   push:
     branches-ignore: [main]
+    paths:
+      - backend/**
+      - .github/**
 
 jobs:
   build:

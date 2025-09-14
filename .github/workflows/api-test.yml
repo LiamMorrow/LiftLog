@@ -5,6 +5,10 @@ name: Api Tests
 
 on:
   push:
+    paths:
+      - backend/**
+      - .github/**
+      - tests/**
 
 jobs:
   api-test:

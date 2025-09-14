@@ -5,6 +5,9 @@ name: UI Unit Tests
 
 on:
   push:
+    paths:
+      - app/**
+      - .github/**
 
 jobs:
   test:
