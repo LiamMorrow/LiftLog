@@ -23,7 +23,7 @@ export default function ExerciseFilterer(props: {
             x[1].muscles.some((exerciseMuscle) =>
               muscleFilters.includes(exerciseMuscle),
             )) &&
-          searchRegex.test(x[1].name),
+          (!searchText || searchRegex.test(x[1].name)),
       )
       .orderByDescending((x) => matchRegex.test(x[1].name))
       .select((x) => x[0])
