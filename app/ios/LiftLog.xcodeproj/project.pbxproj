@@ -172,8 +172,8 @@
 				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = U8Q4NXKYES;
 						LastSwiftMigration = 1250;
-						DevelopmentTeam = "U8Q4NXKYES";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -408,7 +408,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.limajuice.liftlog;
-				PRODUCT_NAME = "LiftLog";
+				PRODUCT_NAME = LiftLog;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = LiftLog;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -449,7 +449,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.limajuice.liftlog;
-				PRODUCT_NAME = "LiftLog";
+				PRODUCT_NAME = LiftLog;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = LiftLog;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
