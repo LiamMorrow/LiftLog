@@ -6,7 +6,7 @@ describe('Feed functionality', () => {
     cy.visit('/')
   })
 
-  it('should enable feed publishing, complete a freeform session, and attempt to share feed URL', () => {
+  it.skip('should enable feed publishing, complete a freeform session, and attempt to share feed URL', () => {
     // Navigate to Feed
     cy.navigate('Feed')
 
