@@ -43,6 +43,8 @@ describe('Feed functionality', () => {
     // Go back to Feed
     cy.navigate('Feed')
 
+    cy.reload()
+
     // Navigate to followers tab (index 2)
     cy.getByTestId('tab_2').should('be.visible').click()
 
