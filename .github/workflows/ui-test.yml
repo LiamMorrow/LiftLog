@@ -9,7 +9,27 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: liftlog
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+    env:
+      ConnectionStrings__UserDataContext: Host=localhost;Port=5432;Database=liftlog;Username=postgres;Password=password
+      ConnectionStrings__RateLimitContext: Host=localhost;Port=5432;Database=liftlog;Username=postgres;Password=password
+      OpenAiApiKey: "sk-123"
+      WebAuthApiKey: "1234"
+      GooglePlayServiceAccountEmail: "123"
+      GooglePlayServiceAccountKeyBase64: "123"
     steps:
       - uses: actions/checkout@v4
       - name: App Dependencies
