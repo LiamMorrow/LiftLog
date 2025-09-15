@@ -342,8 +342,8 @@ export function fromDurationDao(
     return undefined;
   }
   return Duration.ofSeconds(
-    Long.fromValue(duration!.seconds!).toNumber(),
-  ).plusNanos(Long.fromValue(duration!.nanos!).toNumber());
+    Long.fromValue(duration.seconds!).toNumber(),
+  ).plusNanos(Long.fromValue(duration.nanos!).toNumber());
 }
 
 export function fromFeedItemDao(
