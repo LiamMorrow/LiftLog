@@ -100,7 +100,7 @@ describe('conversions', () => {
     expect(sessions.size).toBe(85);
     // Just some general checksums
     expect(totalWeightLifted).toEqual(BigNumber('705959.136'));
-    expect(bodyweightSum).toEqual(BigNumber('"3065.3'));
+    expect(bodyweightSum).toEqual(BigNumber('3065.3'));
   });
 });
 
