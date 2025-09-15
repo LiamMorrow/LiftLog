@@ -88,7 +88,19 @@ describe('conversions', () => {
     const decoded =
       Models.SessionHistoryDao.SessionHistoryDaoV2.decode(decompressed);
     const sessions = fromSessionHistoryDao(decoded);
+    const totalWeightLifted = sessions
+      .values()
+      .map((x) => x.totalWeightLifted)
+      .reduce((a, b) => a.plus(b));
+    const bodyweightSum = sessions
+      .values()
+      .map((x) => x.bodyweight)
+      .reduce((a, b) => (a && b ? a.plus(b) : a ? a : b));
+
     expect(sessions.size).toBe(85);
+    // Just some general checksums
+    expect(totalWeightLifted).toEqual(BigNumber('705959.136'));
+    expect(bodyweightSum).toEqual(BigNumber('"3065.3'));
   });
 });
 
