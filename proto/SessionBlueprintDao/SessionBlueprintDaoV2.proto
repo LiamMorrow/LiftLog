@@ -10,21 +10,40 @@ message SessionBlueprintContainerDaoV2 {
 
 message SessionBlueprintDaoV2 {
     string name = 1;
-    repeated WeightedExerciseBlueprintDaoV2 exercise_blueprints = 2;
+    repeated ExerciseBlueprintDaoV2 exercise_blueprints = 2;
     string notes = 3;
 }
 
+enum ExerciseType {
+    WEIGHTED = 0;
+    CARDIO = 1;
+}
 
-message WeightedExerciseBlueprintDaoV2 {
+message CardioTarget {
+    string type = 1;
+    oneof value {
+        google.protobuf.Duration time_value = 2;
+        LiftLog.Ui.Models.DecimalValue distance_value = 3;
+    }
+}
+
+message ExerciseBlueprintDaoV2 {
+    // Common
     string name = 1;
+    string notes = 8;
+    string link = 9;
+    ExerciseType type = 10;
+
+    // Weighted
     int32 sets  = 2;
     int32 reps_per_set = 3;
     reserved 4; // was initial weight
     LiftLog.Ui.Models.DecimalValue weight_increase_on_success = 5;
     RestDaoV2 rest_between_sets = 6;
     bool superset_with_next = 7;
-    string notes = 8;
-    string link = 9;
+
+    // Cardio
+    CardioTarget cardio_target = 11;
 }
 
 message RestDaoV2 {

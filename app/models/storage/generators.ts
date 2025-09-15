@@ -32,16 +32,20 @@ import {
   RecordedSet,
   PotentialSet,
 } from '@/models/session-models';
-import { LocalDate, LocalDateTime, LocalTime, ZoneOffset } from '@js-joda/core';
+import {
+  Duration,
+  LocalDate,
+  LocalDateTime,
+  LocalTime,
+  ZoneOffset,
+} from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import fc from 'fast-check';
 
-// Generator for BigNumber
 export const BigNumberGenerator = fc
   .tuple(fc.integer(), fc.nat({ max: 1_000_000_000 }))
   .map(([whole, fractional]) => new BigNumber(`${whole}.${fractional}`));
 
-// Generator for LocalDate
 export const LocalDateGenerator = fc
   .tuple(
     fc.integer({ min: 1900, max: 2100 }),
@@ -50,7 +54,10 @@ export const LocalDateGenerator = fc
   )
   .map(([year, month, day]) => LocalDate.of(year, month, day));
 
-// Generator for LocalTime
+export const DurationGenerator = fc
+  .tuple(fc.integer({ min: 0 }), fc.integer({ min: 0 }))
+  .map(([second, nano]) => Duration.ofSeconds(second).plusNanos(nano));
+
 export const LocalTimeGenerator = fc
   .tuple(
     fc.integer({ min: 0, max: 23 }),
@@ -66,14 +73,12 @@ export const InstantGenerator = LocalDateTimeGenerator.map((dt) =>
   dt.atOffset(ZoneOffset.UTC).toInstant(),
 );
 
-// Generator for Rest
 export const RestGenerator = fc.constantFrom(
   Rest.short,
   Rest.medium,
   Rest.long,
 );
 
-// Generator for ExerciseBlueprintPOJO
 export const ExerciseBlueprintGenerator = fc
   .record<WeightedExerciseBlueprintPOJO>({
     _BRAND: fc.constant('WEIGHTED_EXERCISE_BLUEPRINT_POJO'),
@@ -88,7 +93,6 @@ export const ExerciseBlueprintGenerator = fc
   })
   .map(WeightedExerciseBlueprint.fromPOJO);
 
-// Generator for SessionBlueprintPOJO
 export const SessionBlueprintGenerator = fc
   .record<SessionBlueprintPOJO>({
     _BRAND: fc.constant('SESSION_BLUEPRINT_POJO'),
@@ -100,7 +104,6 @@ export const SessionBlueprintGenerator = fc
   })
   .map(SessionBlueprint.fromPOJO);
 
-// Generator for ProgramBlueprintPOJO
 export const ProgramBlueprintGenerator = fc
   .record<ProgramBlueprintPOJO>({
     _BRAND: fc.constant('PROGRAM_BLUEPRINT_POJO'),
@@ -112,7 +115,6 @@ export const ProgramBlueprintGenerator = fc
   })
   .map(ProgramBlueprint.fromPOJO);
 
-// Generator for RecordedSetPOJO
 export const RecordedSetGenerator = fc
   .record<RecordedSetPOJO>({
     _BRAND: fc.constant('RECORDED_SET_POJO'),
@@ -121,7 +123,6 @@ export const RecordedSetGenerator = fc
   })
   .map(RecordedSet.fromPOJO);
 
-// Generator for PotentialSetPOJO
 export const PotentialSetGenerator = fc
   .record<PotentialSetPOJO>({
     _BRAND: fc.constant('POTENTIAL_SET_POJO'),
@@ -135,7 +136,6 @@ export const PotentialSetGenerator = fc
   })
   .map(PotentialSet.fromPOJO);
 
-// Generator for RecordedExercisePOJO
 export const RecordedExerciseGenerator = fc
   .record<RecordedWeightedExercisePOJO>({
     _BRAND: fc.constant('RECORDED_WEIGHTED_EXERCISE_POJO'),
@@ -148,7 +148,6 @@ export const RecordedExerciseGenerator = fc
   })
   .map(RecordedWeightedExercise.fromPOJO);
 
-// Generator for SessionPOJO
 export const SessionGenerator = fc
   .tuple(
     fc.record<Omit<SessionPOJO, 'recordedExercises'>>({
@@ -171,7 +170,6 @@ export const SessionGenerator = fc
     }),
   );
 
-// Generator for RsaPublicKey
 export const RsaPublicKeyGenerator = fc.record<RsaPublicKey>({
   spkiPublicKeyBytes: fc
     .array(fc.integer({ min: 0, max: 255 }), {
@@ -181,7 +179,6 @@ export const RsaPublicKeyGenerator = fc.record<RsaPublicKey>({
     .map((arr) => Uint8Array.from(arr)),
 });
 
-// Generator for AesKey
 export const AesKeyGenerator = fc.record<AesKey>({
   value: fc
     .array(fc.integer({ min: 0, max: 255 }), {
@@ -191,7 +188,6 @@ export const AesKeyGenerator = fc.record<AesKey>({
     .map((arr) => Uint8Array.from(arr)),
 });
 
-// Generator for RsaKeyPair
 export const RsaKeyPairGenerator = fc.record<RsaKeyPair>({
   publicKey: RsaPublicKeyGenerator,
   privateKey: fc.record({
@@ -204,7 +200,6 @@ export const RsaKeyPairGenerator = fc.record<RsaKeyPair>({
   }),
 });
 
-// Generator for FeedUserPOJO
 export const FeedUserGenerator = fc
   .record<FeedUserPOJO>({
     _BRAND: fc.constant('FEED_USER_POJO'),
@@ -229,7 +224,6 @@ export const FeedUserGenerator = fc
   })
   .map(FeedUser.fromPOJO);
 
-// Generator for FeedIdentityPOJO
 export const FeedIdentityGenerator = fc
   .record<FeedIdentityPOJO>({
     _BRAND: fc.constant('FEED_IDENTITY_POJO'),
@@ -265,7 +259,6 @@ export const FeedIdentityGenerator = fc
       ),
   );
 
-// Generator for FollowRequestPOJO
 export const FollowRequestGenerator = fc
   .record<FollowRequestPOJO>({
     _BRAND: fc.constant('FOLLOW_REQUEST_POJO'),
@@ -274,7 +267,6 @@ export const FollowRequestGenerator = fc
   })
   .map((pojo) => new FollowRequest(pojo.userId, pojo.name));
 
-// Generator for FollowResponsePOJO
 export const FollowResponseGenerator = fc
   .record<FollowResponsePOJO>({
     _BRAND: fc.constant('FOLLOW_RESPONSE_POJO'),
@@ -293,7 +285,6 @@ export const FollowResponseGenerator = fc
       ),
   );
 
-// Generator for SessionFeedItemPOJO
 export const SessionFeedItemGenerator = fc
   .record<SessionFeedItemPOJO>({
     _BRAND: fc.constant('SESSION_FEED_ITEM_POJO'),
@@ -314,7 +305,6 @@ export const SessionFeedItemGenerator = fc
       ),
   );
 
-// Generator for RemovedSessionFeedItemPOJO
 export const RemovedSessionFeedItemGenerator = fc
   .record<RemovedSessionFeedItemPOJO>({
     _BRAND: fc.constant('REMOVED_SESSION_FEED_ITEM_POJO'),
@@ -335,7 +325,6 @@ export const RemovedSessionFeedItemGenerator = fc
       ),
   );
 
-// Generator for SharedProgramBlueprint
 export const SharedProgramBlueprintGenerator = fc.record({
   program: ProgramBlueprintGenerator.map((x) => x.toPOJO()),
   sharedWith: fc.array(

@@ -11,6 +11,7 @@ import Enumerable from 'linq';
 export const benchPress: RecordedWeightedExercise =
   RecordedWeightedExercise.fromPOJO({
     blueprint: {
+      _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
       name: 'Bench Press',
       sets: 3,
       repsPerSet: 10,
@@ -36,6 +37,7 @@ export const benchPress: RecordedWeightedExercise =
 export const squats: RecordedWeightedExercise =
   RecordedWeightedExercise.fromPOJO({
     blueprint: {
+      _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
       name: 'Squats',
       sets: 3,
       repsPerSet: 10,
@@ -61,6 +63,7 @@ export const squats: RecordedWeightedExercise =
 export const overheadPress: RecordedWeightedExercise =
   RecordedWeightedExercise.fromPOJO({
     blueprint: {
+      _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
       name: 'Overhead Press',
       sets: 3,
       repsPerSet: 10,

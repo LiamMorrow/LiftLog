@@ -37,7 +37,6 @@ interface WeightedExerciseProps {
     weight: BigNumber,
     applyTo: WeightAppliesTo,
   ) => void;
-  updateWeightForExercise: (weight: BigNumber) => void;
   updateNotesForExercise: (notes: string) => void;
   onOpenLink: () => void;
   onEditExercise: () => void;

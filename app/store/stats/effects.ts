@@ -13,7 +13,11 @@ import BigNumber from 'bignumber.js';
 import { fetchOverallStats, setOverallStats, setStatsIsLoading } from './index';
 import { addEffect } from '@/store/store';
 import { selectSessionsBy } from '@/store/stored-sessions';
-import { Session } from '@/models/session-models';
+import {
+  RecordedCardioExercise,
+  RecordedWeightedExercise,
+  Session,
+} from '@/models/session-models';
 import Enumerable from 'linq';
 
 function computeStats(sessions: Session[]): GranularStatisticView | undefined {
@@ -101,8 +105,7 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
     for (const ex of session.recordedExercises) {
       const blueprint = ex.blueprint;
       const key = NormalizedName.fromExerciseBlueprint(blueprint).toString();
-      const lastSet = ex.lastRecordedSet;
-      if (!lastSet || !lastSet.set) continue;
+      if (!ex.isStarted) continue;
       if (!exerciseStatsMap.has(key)) {
         exerciseStatsMap.set(key, {
           exerciseName: blueprint.name,
@@ -110,6 +113,9 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
           oneRepMaxStatistics: [],
           allLifted: [],
         });
+      }
+      if (!(ex instanceof RecordedWeightedExercise)) {
+        continue;
       }
       // Max weight lifted for this exercise in this session
       const maxWeight = ex.potentialSets
@@ -124,18 +130,19 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
       }
       // One rep max formula (Epley): 1RM = weight * (1 + reps/30)
       // We'll use the last set for this
-      const reps = lastSet.set.repsCompleted;
+      const lastSet = ex.lastRecordedSet!;
+      const reps = lastSet.set!.repsCompleted;
       const weight = lastSet.weight;
       const oneRepMax = weight.multipliedBy(
         new BigNumber(1).plus(new BigNumber(reps).div(30)),
       );
 
       exerciseStatsMap.get(key)!.statistics.push({
-        dateTime: lastSet.set.completionDateTime,
+        dateTime: lastSet.set!.completionDateTime,
         value: maxWeight.toNumber(),
       });
       exerciseStatsMap.get(key)!.oneRepMaxStatistics.push({
-        dateTime: lastSet.set.completionDateTime,
+        dateTime: lastSet.set!.completionDateTime,
         value: oneRepMax.toNumber(),
       });
       exerciseStatsMap.get(key)!.allLifted.push(maxWeight.toNumber());
@@ -204,34 +211,26 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
   const allSetTimes: LocalDateTime[] = [];
   for (const session of sessionsWithExercises) {
     for (const ex of session.recordedExercises) {
-      for (const ps of ex.potentialSets) {
-        if (ps.set) allSetTimes.push(ps.set.completionDateTime);
+      if (ex instanceof RecordedWeightedExercise) {
+        for (const ps of ex.potentialSets) {
+          if (ps.set) allSetTimes.push(ps.set.completionDateTime);
+        }
       }
     }
   }
   allSetTimes.sort((a, b) => a.compareTo(b));
   // --- Average session length ---
-  const sessionLengths: Duration[] = [];
+  const sessionDurations: Duration[] = [];
   for (const session of sessionsWithExercises) {
-    // Find earliest and latest set times in the session
-    const setTimes: LocalDateTime[] = [];
-    for (const ex of session.recordedExercises) {
-      for (const ps of ex.potentialSets) {
-        if (ps.set) setTimes.push(ps.set.completionDateTime);
-      }
-    }
-    if (setTimes.length > 0) {
-      setTimes.sort((a, b) => a.compareTo(b));
-      sessionLengths.push(
-        Duration.between(setTimes[0], setTimes[setTimes.length - 1]),
-      );
+    if (session.duration) {
+      sessionDurations.push(session.duration);
     }
   }
   let averageSessionLength = Duration.ZERO;
-  if (sessionLengths.length > 0) {
-    averageSessionLength = sessionLengths
+  if (sessionDurations.length > 0) {
+    averageSessionLength = sessionDurations
       .reduce((a, b) => a.plus(b), Duration.ZERO)
-      .dividedBy(sessionLengths.length);
+      .dividedBy(sessionDurations.length);
   }
 
   // --- Exercise most time spent ---
@@ -242,16 +241,8 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
   for (const session of sessionsWithExercises) {
     for (const ex of session.recordedExercises) {
       const key = ex.blueprint.name.trim().toLowerCase();
-      // Time spent = between first and last set
-      const setTimes = ex.potentialSets
-        .filter((ps) => ps.set)
-        .map((ps) => ps.set!.completionDateTime);
-      if (setTimes.length > 0) {
-        setTimes.sort((a, b) => a.compareTo(b));
-        const timeSpent = Duration.between(
-          setTimes[0],
-          setTimes[setTimes.length - 1],
-        );
+      const timeSpent = ex.duration;
+      if (timeSpent) {
         if (!exerciseTimeMap.has(key)) {
           exerciseTimeMap.set(key, {
             exerciseName: ex.blueprint.name,
@@ -278,6 +269,9 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
   let heaviestLift: HeaviestLift | undefined = undefined;
   for (const session of sessionsWithExercises) {
     for (const ex of session.recordedExercises) {
+      if (ex instanceof RecordedCardioExercise) {
+        continue;
+      }
       const maxWeight = ex.potentialSets
         .filter((ps) => ps.set)
         .map((ps) => ps.weight)

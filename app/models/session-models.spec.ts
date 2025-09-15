@@ -41,31 +41,31 @@ function createSession(
   sessionBlueprint: SessionBlueprint,
   fillSets: number[] = [],
 ): Session {
-  const recordedExercises = sessionBlueprint.exercises.map(
-    (exerciseBlueprint, exerciseIndex) => {
-      const potentialSets = Array.from({ length: exerciseBlueprint.sets }).map(
-        (_, setIndex) => {
-          const shouldFillSet = fillSets.includes(exerciseIndex);
-          const set = shouldFillSet
-            ? new RecordedSet(
-                exerciseBlueprint.repsPerSet,
-                LocalDateTime.now().plusSeconds(
-                  exerciseIndex * 60 + setIndex * 10,
-                ),
-              )
-            : undefined;
+  const recordedExercises = (
+    sessionBlueprint.exercises as WeightedExerciseBlueprint[]
+  ).map((exerciseBlueprint, exerciseIndex) => {
+    const potentialSets = Array.from({ length: exerciseBlueprint.sets }).map(
+      (_, setIndex) => {
+        const shouldFillSet = fillSets.includes(exerciseIndex);
+        const set = shouldFillSet
+          ? new RecordedSet(
+              exerciseBlueprint.repsPerSet,
+              LocalDateTime.now().plusSeconds(
+                exerciseIndex * 60 + setIndex * 10,
+              ),
+            )
+          : undefined;
 
-          return new PotentialSet(set, new BigNumber(100));
-        },
-      );
+        return new PotentialSet(set, new BigNumber(100));
+      },
+    );
 
-      return new RecordedWeightedExercise(
-        exerciseBlueprint,
-        potentialSets,
-        undefined, // notes
-      );
-    },
-  );
+    return new RecordedWeightedExercise(
+      exerciseBlueprint,
+      potentialSets,
+      undefined, // notes
+    );
+  });
 
   return new Session(
     uuid(),
@@ -82,7 +82,9 @@ function cycleExerciseReps(
   setIndex: number,
 ): Session {
   const recordedExercises = [...session.recordedExercises];
-  const targetExercise = recordedExercises[exerciseIndex];
+  const targetExercise = recordedExercises[
+    exerciseIndex
+  ] as RecordedWeightedExercise;
   const potentialSets = [...targetExercise.potentialSets];
 
   // Complete the set

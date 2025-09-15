@@ -1,5 +1,10 @@
 import { AiChatResponse, AiWorkoutPlan } from '@/models/ai-models';
-import { SessionBlueprint } from '@/models/blueprint-models';
+import {
+  CardioTarget,
+  ExerciseBlueprint,
+  ExerciseBlueprintPOJO,
+  SessionBlueprint,
+} from '@/models/blueprint-models';
 import { Duration } from '@js-joda/core';
 import { HubConnection, HubConnectionState } from '@microsoft/signalr';
 import { AsyncIterableSubject } from 'data-async-iterators';
@@ -148,21 +153,48 @@ export function toAiWorkoutPlan(
       SessionBlueprint.fromPOJO({
         name: s.name,
         notes: s.notes,
-        exercises: s.exercises.map((ex) => ({
-          name: ex.name,
-          link: ex.link,
-          notes: ex.notes,
-          repsPerSet: ex.repsPerSet,
-          sets: ex.sets,
-          supersetWithNext: ex.supersetWithNext,
-          weightIncreaseOnSuccess: new BigNumber(ex.weightIncreaseOnSuccess),
-          restBetweenSets: {
-            minRest: parseDuration(ex.restBetweenSets.minRest),
-            maxRest: parseDuration(ex.restBetweenSets.maxRest),
-            failureRest: parseDuration(ex.restBetweenSets.failureRest),
-          },
-        })),
+        exercises: s.exercises.map(parseAiExercise),
       }),
     ),
+  };
+}
+
+function parseAiExercise(
+  ex: JsonResponse<ExerciseBlueprint>,
+): ExerciseBlueprintPOJO {
+  if ('repsPerSet' in ex) {
+    return {
+      _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+      name: ex.name,
+      link: ex.link,
+      notes: ex.notes,
+      repsPerSet: ex.repsPerSet,
+      sets: ex.sets,
+      supersetWithNext: ex.supersetWithNext,
+      weightIncreaseOnSuccess: new BigNumber(ex.weightIncreaseOnSuccess),
+      restBetweenSets: {
+        minRest: parseDuration(ex.restBetweenSets.minRest),
+        maxRest: parseDuration(ex.restBetweenSets.maxRest),
+        failureRest: parseDuration(ex.restBetweenSets.failureRest),
+      },
+    };
+  }
+
+  return {
+    _BRAND: 'CARDIO_EXERCISE_BLUEPRINT_POJO',
+    name: ex.name,
+    link: ex.link,
+    notes: ex.notes,
+    target: match(ex.target)
+      .returnType<CardioTarget>()
+      .with({ type: 'distance' }, (t) => ({
+        type: 'distance',
+        value: BigNumber(t.value),
+      }))
+      .with({ type: 'time' }, (t) => ({
+        type: 'time',
+        value: parseDuration(t.value),
+      }))
+      .exhaustive(),
   };
 }

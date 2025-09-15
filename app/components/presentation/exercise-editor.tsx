@@ -5,7 +5,11 @@ import FixedIncrementer from '@/components/presentation/fixed-incrementer';
 import ListSwitch from '@/components/presentation/list-switch';
 import RestEditorGroup from '@/components/presentation/rest-editor-group';
 import { spacing } from '@/hooks/useAppTheme';
-import { WeightedExerciseBlueprint } from '@/models/blueprint-models';
+import {
+  ExerciseBlueprint,
+  WeightedExerciseBlueprint,
+} from '@/models/blueprint-models';
+import { assertWeightedExerciseBlueprint } from '@/models/temp';
 import { RootState, useAppSelector, useAppSelectorWithArg } from '@/store';
 import {
   ExerciseDescriptor,
@@ -21,30 +25,55 @@ import { Keyboard, View } from 'react-native';
 import { Card, Divider, List, TextInput } from 'react-native-paper';
 
 interface ExerciseEditorProps {
-  exercise: WeightedExerciseBlueprint;
-  updateExercise: (ex: WeightedExerciseBlueprint) => void;
+  exercise: ExerciseBlueprint;
+  updateExercise: (ex: ExerciseBlueprint) => void;
 }
 
 export function ExerciseEditor(props: ExerciseEditorProps) {
-  const exerciseIds = useAppSelector(selectExerciseIds);
   const { exercise: propsExercise, updateExercise: updatePropsExercise } =
     props;
   const [exercise, setExercise] = useState(propsExercise);
-  const { t } = useTranslate();
-  const bottomSheetRef = useRef<BottomSheet>(null);
 
   // Bit of a hack to let us update exercise immediately without going through the whole props loop
   useEffect(() => {
     setExercise(propsExercise);
   }, [propsExercise]);
-  const updateExercise = (ex: Partial<WeightedExerciseBlueprint>) => {
-    const update = WeightedExerciseBlueprint.fromPOJO({
-      ...exercise.toPOJO(),
-      ...ex,
-    });
+  const updateExercise = (ex: Partial<ExerciseBlueprint>) => {
+    const update = exercise.with(ex);
     setExercise(update);
     updatePropsExercise(update);
   };
+
+  assertWeightedExerciseBlueprint(exercise);
+
+  return (
+    <WeightedExerciseEditor
+      exercise={exercise}
+      updateExercise={updateExercise}
+    />
+  );
+}
+
+function ExerciseSearchListItem(props: {
+  exerciseId: string;
+  onPress: (exercise: ExerciseDescriptor) => void;
+}) {
+  const exercise = useAppSelectorWithArg(selectExerciseById, props.exerciseId);
+  return (
+    <List.Item title={exercise.name} onPress={() => props.onPress(exercise)} />
+  );
+}
+
+function WeightedExerciseEditor({
+  exercise,
+  updateExercise,
+}: {
+  exercise: WeightedExerciseBlueprint;
+  updateExercise: (ex: Partial<ExerciseBlueprint>) => void;
+}) {
+  const exerciseIds = useAppSelector(selectExerciseIds);
+  const { t } = useTranslate();
+  const bottomSheetRef = useRef<BottomSheet>(null);
   const useImperialUnits = useAppSelector(
     (s: RootState) => s.settings.useImperialUnits,
   );
@@ -226,15 +255,5 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
         )}
       </AppBottomSheet>
     </View>
-  );
-}
-
-function ExerciseSearchListItem(props: {
-  exerciseId: string;
-  onPress: (exercise: ExerciseDescriptor) => void;
-}) {
-  const exercise = useAppSelectorWithArg(selectExerciseById, props.exerciseId);
-  return (
-    <List.Item title={exercise.name} onPress={() => props.onPress(exercise)} />
   );
 }

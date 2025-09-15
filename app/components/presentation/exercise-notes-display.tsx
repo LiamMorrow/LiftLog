@@ -1,7 +1,6 @@
 import { AccordionItem } from '@/components/presentation/accordion-item';
 import { spacing } from '@/hooks/useAppTheme';
 import { RecordedWeightedExercise } from '@/models/session-models';
-import { RecordedExercise } from '@/models/session-models';
 import { useAppSelector } from '@/store';
 import { useCallback, useState } from 'react';
 import { View } from 'react-native';

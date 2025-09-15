@@ -1,8 +1,5 @@
 import { spacing } from '@/hooks/useAppTheme';
-import {
-  WeightedExerciseBlueprint,
-  SessionBlueprint,
-} from '@/models/blueprint-models';
+import { ExerciseBlueprint, SessionBlueprint } from '@/models/blueprint-models';
 import { useAppSelectorWithArg } from '@/store';
 import { showSnackbar } from '@/store/app';
 import { selectProgram, setProgramSession } from '@/store/program';
@@ -22,7 +19,7 @@ import { useDispatch } from 'react-redux';
 type CopyExerciseDialogProps = {
   visible: boolean;
   onDismiss: () => void;
-  exerciseBlueprint: WeightedExerciseBlueprint;
+  exerciseBlueprint: ExerciseBlueprint;
   currentSessionIndex: number;
   programId: string;
 };

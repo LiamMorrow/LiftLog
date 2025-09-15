@@ -7,7 +7,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
-import { WeightedExerciseBlueprint } from '@/models/blueprint-models';
+import { ExerciseBlueprint } from '@/models/blueprint-models';
 import { EmptyExerciseBlueprint } from '@/models/blueprint-models';
 import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/exercise-editor';
@@ -31,7 +31,7 @@ export default function SessionMoreMenuComponent(props: {
 
   const isReadonly = props.target === 'feedSession';
   const [editingExerciseBlueprint, setEditingExerciseBlueprint] = useState<
-    WeightedExerciseBlueprint | undefined
+    ExerciseBlueprint | undefined
   >(undefined);
   const [exerciseEditorOpen, setExerciseEditorOpen] = useState(false);
   const [workoutEditorOpen, setWorkoutEditorOpen] = useState(false);

@@ -1,10 +1,13 @@
 import {
-  WeightedExerciseBlueprint,
   KeyedExerciseBlueprint,
   SessionBlueprint,
+  ExerciseBlueprint,
+  CardioExerciseBlueprint,
 } from '@/models/blueprint-models';
 import {
   PotentialSet,
+  RecordedCardioExercise,
+  RecordedExercise,
   RecordedWeightedExercise,
   Session,
 } from '@/models/session-models';
@@ -75,7 +78,7 @@ export class SessionService {
     sessionBlueprints: SessionBlueprint[],
     latestRecordedExercises: Enumerable.IDictionary<
       string, //KeyedExerciseBlueprint,
-      RecordedWeightedExercise
+      RecordedExercise
     >,
   ): Session {
     const lastBlueprint = previousSession.blueprint;
@@ -94,21 +97,34 @@ export class SessionService {
     sessionBlueprint: SessionBlueprint,
     latestRecordedExercises: Enumerable.IDictionary<
       string, //KeyedExerciseBlueprint,
-      RecordedWeightedExercise
+      RecordedExercise
     >,
   ): Session {
-    function getNextExercise(
-      e: WeightedExerciseBlueprint,
-    ): RecordedWeightedExercise {
+    function getNextExercise(e: ExerciseBlueprint): RecordedExercise {
       const lastExercise = latestRecordedExercises.get(
         KeyedExerciseBlueprint.fromExerciseBlueprint(e).toString(),
       );
-      const potentialSets: PotentialSet[] = match(lastExercise)
+      if (e instanceof CardioExerciseBlueprint) {
+        const cardioLastExercise =
+          lastExercise instanceof RecordedCardioExercise
+            ? lastExercise
+            : undefined;
+        return RecordedCardioExercise.empty(e).with({
+          incline: cardioLastExercise?.incline,
+          resistance: cardioLastExercise?.resistance,
+        });
+      }
+      const weightedLastExercise =
+        lastExercise instanceof RecordedWeightedExercise
+          ? lastExercise
+          : undefined;
+      const potentialSets: PotentialSet[] = match(weightedLastExercise)
         .returnType<PotentialSet[]>()
         .with(undefined, () =>
           Array.from({ length: e.sets }, () =>
             PotentialSet.fromPOJO({
-              weight: lastExercise?.potentialSets[0]?.weight ?? BigNumber(0),
+              weight:
+                weightedLastExercise?.potentialSets[0]?.weight ?? BigNumber(0),
               set: undefined,
             }),
           ),

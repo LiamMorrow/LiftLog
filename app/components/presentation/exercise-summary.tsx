@@ -1,7 +1,11 @@
 import { SurfaceText } from '@/components/presentation/surface-text';
 import WeightFormat from '@/components/presentation/weight-format';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { RecordedWeightedExercise } from '@/models/session-models';
+import {
+  RecordedExercise,
+  RecordedWeightedExercise,
+} from '@/models/session-models';
+import { assertWeightedExercise } from '@/models/temp';
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
 import { DateTimeFormatter } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
@@ -10,7 +14,7 @@ import { ReactNode } from 'react';
 import { ScrollView, View } from 'react-native';
 
 interface ExerciseSummaryProps {
-  exercise: RecordedWeightedExercise;
+  exercise: RecordedExercise;
   showName: boolean;
   showDate: boolean;
   showWeight: boolean;
@@ -109,6 +113,7 @@ export default function ExerciseSummary({
   showWeight,
   isFilled,
 }: ExerciseSummaryProps) {
+  assertWeightedExercise(exercise);
   return (
     <View
       style={{

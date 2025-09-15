@@ -1,10 +1,11 @@
-import { RecordedWeightedExercise, Session } from '@/models/session-models';
+import { RecordedExercise, Session } from '@/models/session-models';
 import { addEffect } from '@/store/store';
 import { exportPlainText } from '@/store/settings';
 import Enumerable from 'linq';
 import { match } from 'ts-pattern';
 import BigNumber from 'bignumber.js';
 import { jsonToCSV } from 'react-native-csv';
+import { assertWeightedExercise } from '@/models/temp';
 
 export function addExportPlaintextEffects() {
   addEffect(
@@ -60,9 +61,10 @@ class ExportedSetCsvRow {
   ) {}
   static fromModel(
     session: Session,
-    exercise: RecordedWeightedExercise,
+    exercise: RecordedExercise,
     unit: string,
   ): ExportedSetCsvRow[] {
+    assertWeightedExercise(exercise);
     return exercise.potentialSets
       .filter((x) => x.set)
       .map(

@@ -1,12 +1,14 @@
 import {
   WeightedExerciseBlueprint,
   SessionBlueprint,
+  ExerciseBlueprint,
 } from '@/models/blueprint-models';
 import {
   RecordedWeightedExercise,
   RecordedWeightedExercisePOJO,
   Session,
   SessionPOJO,
+  createEmptyRecordedExercise,
 } from '@/models/session-models';
 import { getCycledRepCount } from '@/store/current-session/helpers';
 import { SafeDraft, toSafeDraft } from '@/utils/store-helpers';
@@ -90,11 +92,15 @@ const currentSessionSlice = createSlice({
       const newDate = date;
 
       // Gather all unique, non-null completion dates from all sets
-      const allCompletionDates = session.recordedExercises.flatMap((re) =>
-        re.potentialSets
-          .map((ps) => ps.set?.completionDateTime?.toLocalDate())
-          .filter((d): d is LocalDate => d !== undefined),
-      );
+      const allCompletionDates = session.recordedExercises
+        .flatMap((re) =>
+          re._BRAND === 'RECORDED_WEIGHTED_EXERCISE_POJO'
+            ? re.potentialSets.map((ps) =>
+                ps.set?.completionDateTime?.toLocalDate(),
+              )
+            : [re.completionDateTime?.toLocalDate()],
+        )
+        .filter((d): d is LocalDate => d !== undefined);
 
       // If all sets have the same completion date, use absolute date
       const useAbsoluteDate =
@@ -112,14 +118,27 @@ const currentSessionSlice = createSlice({
 
       // Update all sets' completionDateTime
       session.recordedExercises.forEach((re) => {
-        re.potentialSets.forEach((ps) => {
-          if (ps.set && ps.set.completionDateTime) {
-            const setDate = ps.set.completionDateTime.toLocalDate();
-            ps.set.completionDateTime = ps.set.completionDateTime
+        if (re._BRAND === 'RECORDED_WEIGHTED_EXERCISE_POJO') {
+          re.potentialSets.forEach((ps) => {
+            if (ps.set && ps.set.completionDateTime) {
+              const setDate = ps.set.completionDateTime.toLocalDate();
+              ps.set.completionDateTime = ps.set.completionDateTime
+                .toLocalTime()
+                .atDate(getAdjustedDate(setDate));
+            }
+          });
+        } else {
+          if (re.completionDateTime) {
+            re.completionDateTime = re.completionDateTime
               .toLocalTime()
-              .atDate(getAdjustedDate(setDate));
+              .atDate(getAdjustedDate(re.completionDateTime.toLocalDate()));
           }
-        });
+          if (re.startedAt) {
+            re.startedAt = re.startedAt
+              .toLocalTime()
+              .atDate(getAdjustedDate(re.startedAt.toLocalDate()));
+          }
+        }
       });
     }),
 
@@ -136,25 +155,26 @@ const currentSessionSlice = createSlice({
       ) => {
         const exerciseBlueprint =
           session.blueprint.exercises[action.exerciseIndex];
+        if (exerciseBlueprint._BRAND !== 'WEIGHTED_EXERCISE_BLUEPRINT_POJO') {
+          return;
+        }
 
         if (!Session.fromPOJO(session).isStarted) {
           session.date = action.time.toLocalDate();
         }
+        const weightedRecorded = session.recordedExercises[
+          action.exerciseIndex
+        ] as RecordedWeightedExercisePOJO;
         const repCount = getCycledRepCount(
-          session.recordedExercises[action.exerciseIndex].potentialSets[
-            action.setIndex
-          ].set,
+          weightedRecorded.potentialSets[action.setIndex].set,
           exerciseBlueprint,
           action.time,
         );
-        session.recordedExercises[action.exerciseIndex].potentialSets[
-          action.setIndex
-        ].set = repCount;
+        weightedRecorded.potentialSets[action.setIndex].set = repCount;
         if (target === 'workoutSession') {
           state.workoutSessionLastSetTime =
             repCount?.completionDateTime === undefined
-              ? Session.fromPOJO(session).lastExercise?.lastRecordedSet?.set
-                  ?.completionDateTime
+              ? Session.fromPOJO(session).lastExercise?.latestTime
               : action.time;
         }
       },
@@ -172,7 +192,7 @@ const currentSessionSlice = createSlice({
         session,
         action: {
           exerciseIndex: number;
-          newBlueprint: WeightedExerciseBlueprint;
+          newBlueprint: ExerciseBlueprint;
         },
       ) => {
         const existingExercise =
@@ -181,39 +201,49 @@ const currentSessionSlice = createSlice({
         session.blueprint.exercises[action.exerciseIndex] =
           action.newBlueprint.toPOJO();
 
-        session.recordedExercises[action.exerciseIndex].potentialSets =
-          Enumerable.range(0, action.newBlueprint.sets)
-            .select(
-              (index) =>
-                existingExercise.potentialSets[index] ?? {
-                  weight:
-                    RecordedWeightedExercise.fromPOJO(existingExercise)
-                      .maxWeight,
-                  set: undefined,
-                },
+        if (
+          existingExercise.blueprint._BRAND !==
+          action.newBlueprint.toPOJO()._BRAND
+        ) {
+          session.recordedExercises[action.exerciseIndex] =
+            createEmptyRecordedExercise(action.newBlueprint).toPOJO();
+        } else {
+          const weightedExistingExercise =
+            session.recordedExercises[action.exerciseIndex]._BRAND ===
+            'RECORDED_WEIGHTED_EXERCISE_POJO'
+              ? (session.recordedExercises[
+                  action.exerciseIndex
+                ] as RecordedWeightedExercisePOJO)
+              : undefined;
+          if (weightedExistingExercise) {
+            weightedExistingExercise.potentialSets = Enumerable.range(
+              0,
+              (action.newBlueprint as WeightedExerciseBlueprint).sets,
             )
-            .toArray();
+              .select(
+                (index) =>
+                  weightedExistingExercise.potentialSets[index] ?? {
+                    weight: RecordedWeightedExercise.fromPOJO(
+                      weightedExistingExercise,
+                    ).maxWeight,
+                    set: undefined,
+                  },
+              )
+              .toArray();
+          }
 
-        session.recordedExercises[action.exerciseIndex].blueprint =
-          action.newBlueprint.toPOJO();
+          session.recordedExercises[action.exerciseIndex].blueprint =
+            action.newBlueprint.toPOJO();
+        }
       },
     ),
 
     addExercise: targetedSessionAction(
-      (session, action: { blueprint: WeightedExerciseBlueprint }) => {
+      (session, action: { blueprint: ExerciseBlueprint }) => {
         session.blueprint.exercises.push(action.blueprint.toPOJO());
-        const newRecordedExercise = {
-          blueprint: action.blueprint.toPOJO(),
-          potentialSets: Enumerable.range(0, action.blueprint.sets)
-            .select(() => ({
-              _BRAND: 'POTENTIAL_SET_POJO' as const,
-              weight: new BigNumber(0),
-              set: undefined,
-            }))
-            .toArray(),
-          notes: undefined,
-          _BRAND: 'RECORDED_WEIGHTED_EXERCISE_POJO',
-        } satisfies RecordedWeightedExercisePOJO;
+        const newRecordedExercise = createEmptyRecordedExercise(
+          action.blueprint,
+        ).toPOJO();
         session.recordedExercises.push(newRecordedExercise);
       },
     ),
@@ -230,9 +260,11 @@ const currentSessionSlice = createSlice({
         target,
         state,
       ) => {
-        session.recordedExercises[action.exerciseIndex].potentialSets[
-          action.setIndex
-        ].set =
+        const exercise = session.recordedExercises[action.exerciseIndex];
+        if (exercise._BRAND !== 'RECORDED_WEIGHTED_EXERCISE_POJO') {
+          return;
+        }
+        exercise.potentialSets[action.setIndex].set =
           action.reps === undefined
             ? undefined
             : {
@@ -244,8 +276,7 @@ const currentSessionSlice = createSlice({
         if (target === 'workoutSession') {
           state.workoutSessionLastSetTime =
             action.reps === undefined
-              ? Session.fromPOJO(session).lastExercise?.lastRecordedSet?.set
-                  ?.completionDateTime
+              ? Session.fromPOJO(session).lastExercise?.latestTime
               : action.time;
         }
       },
@@ -261,45 +292,27 @@ const currentSessionSlice = createSlice({
           applyTo: WeightAppliesTo;
         },
       ) => {
+        const exercise = session.recordedExercises[action.exerciseIndex];
+        if (exercise._BRAND !== 'RECORDED_WEIGHTED_EXERCISE_POJO') {
+          return;
+        }
         switch (action.applyTo) {
           case 'thisSet':
-            session.recordedExercises[action.exerciseIndex].potentialSets[
-              action.setIndex
-            ].weight = action.weight;
+            exercise.potentialSets[action.setIndex].weight = action.weight;
             break;
           case 'uncompletedSets':
-            session.recordedExercises[
-              action.exerciseIndex
-            ].potentialSets.forEach((set, idx) => {
+            exercise.potentialSets.forEach((set, idx) => {
               if (!set.set) {
                 set.weight = action.weight;
               }
             });
             break;
           case 'allSets':
-            session.recordedExercises[
-              action.exerciseIndex
-            ].potentialSets.forEach((set) => {
+            exercise.potentialSets.forEach((set) => {
               set.weight = action.weight;
             });
             break;
         }
-      },
-    ),
-
-    updateExerciseWeight: targetedSessionAction(
-      (
-        session,
-        action: {
-          exerciseIndex: number;
-          weight: BigNumber;
-        },
-      ) => {
-        session.recordedExercises[action.exerciseIndex].potentialSets.forEach(
-          (set) => {
-            set.weight = action.weight;
-          },
-        );
       },
     ),
 
@@ -318,7 +331,7 @@ const currentSessionSlice = createSlice({
         action.payload.session?.toPOJO() as unknown as WritableDraft<SessionPOJO>;
       if (action.payload.target === 'workoutSession') {
         state.workoutSessionLastSetTime =
-          action.payload.session?.lastExercise?.lastRecordedSet?.set?.completionDateTime;
+          action.payload.session?.lastExercise?.latestTime;
       }
     },
 
@@ -389,7 +402,6 @@ export const {
   addExercise,
   setExerciseReps,
   updateWeightForSet,
-  updateExerciseWeight,
   setLatestSetTimerNotificationId,
   setCurrentSession,
   updateNotesForExercise,

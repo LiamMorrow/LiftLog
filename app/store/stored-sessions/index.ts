@@ -1,6 +1,6 @@
 import { LocalDateComparer, LocalDateTimeComparer } from '@/models/comparers';
 import {
-  RecordedWeightedExercise,
+  RecordedExercise,
   Session,
   SessionPOJO,
 } from '@/models/session-models';
@@ -170,11 +170,9 @@ export const selectLatestOrderedRecordedExercises = createSelector(
   (
     sessions,
     maxRecordsPerExercise,
-  ): Record<NormalizedNameKey, RecordedWeightedExercise[]> => {
+  ): Record<NormalizedNameKey, RecordedExercise[]> => {
     return Enumerable.from(sessions)
-      .selectMany((x) =>
-        x.recordedExercises.filter((x) => x.lastRecordedSet?.set),
-      )
+      .selectMany((x) => x.recordedExercises.filter((x) => x.isStarted))
       .groupBy((x) =>
         NormalizedName.fromExerciseBlueprint(x.blueprint).toString(),
       )
@@ -182,10 +180,7 @@ export const selectLatestOrderedRecordedExercises = createSelector(
         (x) => x.key(),
         (x) =>
           x
-            .orderByDescending(
-              (x) => x.lastRecordedSet!.set!.completionDateTime,
-              LocalDateTimeComparer,
-            )
+            .orderByDescending((x) => x.latestTime, LocalDateTimeComparer)
             .take(maxRecordsPerExercise)
             .toArray(),
       );
@@ -195,7 +190,7 @@ export const selectLatestOrderedRecordedExercises = createSelector(
 export const selectRecentlyCompletedExercises = createSelector(
   selectLatestOrderedRecordedExercises,
   (recentlyCompletedExercises) =>
-    (blueprint: WeightedExerciseBlueprint): RecordedWeightedExercise[] =>
+    (blueprint: WeightedExerciseBlueprint): RecordedExercise[] =>
       recentlyCompletedExercises[
         NormalizedName.fromExerciseBlueprint(blueprint).toString()
       ] ?? [],
@@ -210,7 +205,7 @@ export const selectSessionsInMonth = createSelector(
       )
       .orderByDescending((x) => x.date, LocalDateComparer)
       .thenByDescending(
-        (x) => x.lastExercise?.lastRecordedSet?.set?.completionDateTime,
+        (x) => x.lastExercise?.latestTime,
         LocalDateTimeComparer,
       )
       .toArray(),

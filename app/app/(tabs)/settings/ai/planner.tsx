@@ -247,7 +247,7 @@ function PlanMessage({
         programBlueprint: ProgramBlueprint.fromPOJO({
           lastEdited: LocalDate.now(),
           name: m.plan.name,
-          sessions: m.plan.sessions,
+          sessions: m.plan.sessions.map((x) => x.toPOJO()),
         }),
       }),
     );

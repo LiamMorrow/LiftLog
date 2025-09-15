@@ -561,6 +561,109 @@ export namespace LiftLog {
                 public static getTypeUrl(typeUrlPrefix?: string): string;
             }
 
+            /** Properties of a DateTimeDao. */
+            interface IDateTimeDao {
+
+                /** DateTimeDao date */
+                date?: (LiftLog.Ui.Models.IDateOnlyDao|null);
+
+                /** DateTimeDao time */
+                time?: (LiftLog.Ui.Models.ITimeOnlyDao|null);
+            }
+
+            /** Represents a DateTimeDao. */
+            class DateTimeDao implements IDateTimeDao {
+
+                /**
+                 * Constructs a new DateTimeDao.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: LiftLog.Ui.Models.IDateTimeDao);
+
+                /** DateTimeDao date. */
+                public date?: (LiftLog.Ui.Models.IDateOnlyDao|null);
+
+                /** DateTimeDao time. */
+                public time?: (LiftLog.Ui.Models.ITimeOnlyDao|null);
+
+                /**
+                 * Creates a new DateTimeDao instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns DateTimeDao instance
+                 */
+                public static create(properties?: LiftLog.Ui.Models.IDateTimeDao): LiftLog.Ui.Models.DateTimeDao;
+
+                /**
+                 * Encodes the specified DateTimeDao message. Does not implicitly {@link LiftLog.Ui.Models.DateTimeDao.verify|verify} messages.
+                 * @param message DateTimeDao message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: LiftLog.Ui.Models.IDateTimeDao, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified DateTimeDao message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.DateTimeDao.verify|verify} messages.
+                 * @param message DateTimeDao message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: LiftLog.Ui.Models.IDateTimeDao, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a DateTimeDao message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns DateTimeDao
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): LiftLog.Ui.Models.DateTimeDao;
+
+                /**
+                 * Decodes a DateTimeDao message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns DateTimeDao
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): LiftLog.Ui.Models.DateTimeDao;
+
+                /**
+                 * Verifies a DateTimeDao message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a DateTimeDao message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns DateTimeDao
+                 */
+                public static fromObject(object: { [k: string]: any }): LiftLog.Ui.Models.DateTimeDao;
+
+                /**
+                 * Creates a plain object from a DateTimeDao message. Also converts values to other types if specified.
+                 * @param message DateTimeDao
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: LiftLog.Ui.Models.DateTimeDao, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this DateTimeDao to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for DateTimeDao
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
             /** Namespace SessionHistoryDao. */
             namespace SessionHistoryDao {
 
@@ -671,7 +774,7 @@ export namespace LiftLog {
                     sessionName?: (string|null);
 
                     /** SessionDaoV2 recordedExercises */
-                    recordedExercises?: (LiftLog.Ui.Models.SessionHistoryDao.IRecordedWeightedExerciseDaoV2[]|null);
+                    recordedExercises?: (LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2[]|null);
 
                     /** SessionDaoV2 date */
                     date?: (LiftLog.Ui.Models.IDateOnlyDao|null);
@@ -699,7 +802,7 @@ export namespace LiftLog {
                     public sessionName: string;
 
                     /** SessionDaoV2 recordedExercises. */
-                    public recordedExercises: LiftLog.Ui.Models.SessionHistoryDao.IRecordedWeightedExerciseDaoV2[];
+                    public recordedExercises: LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2[];
 
                     /** SessionDaoV2 date. */
                     public date?: (LiftLog.Ui.Models.IDateOnlyDao|null);
@@ -791,121 +894,181 @@ export namespace LiftLog {
                     public static getTypeUrl(typeUrlPrefix?: string): string;
                 }
 
-                /** Properties of a RecordedWeightedExerciseDaoV2. */
-                interface IRecordedWeightedExerciseDaoV2 {
+                /** Properties of a RecordedExerciseDaoV2. */
+                interface IRecordedExerciseDaoV2 {
 
-                    /** RecordedWeightedExerciseDaoV2 exerciseBlueprint */
-                    exerciseBlueprint?: (LiftLog.Ui.Models.SessionBlueprintDao.IWeightedExerciseBlueprintDaoV2|null);
+                    /** RecordedExerciseDaoV2 exerciseBlueprint */
+                    exerciseBlueprint?: (LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2|null);
 
-                    /** RecordedWeightedExerciseDaoV2 weight */
-                    weight?: (LiftLog.Ui.Models.IDecimalValue|null);
+                    /** RecordedExerciseDaoV2 type */
+                    type?: (LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType|null);
 
-                    /** RecordedWeightedExerciseDaoV2 potentialSets */
+                    /** RecordedExerciseDaoV2 notes */
+                    notes?: (google.protobuf.IStringValue|null);
+
+                    /** RecordedExerciseDaoV2 potentialSets */
                     potentialSets?: (LiftLog.Ui.Models.SessionHistoryDao.IPotentialSetDaoV2[]|null);
 
-                    /** RecordedWeightedExerciseDaoV2 notes */
-                    notes?: (google.protobuf.IStringValue|null);
+                    /** RecordedExerciseDaoV2 startedAt */
+                    startedAt?: (LiftLog.Ui.Models.IDateTimeDao|null);
+
+                    /** RecordedExerciseDaoV2 completionDateTime */
+                    completionDateTime?: (LiftLog.Ui.Models.IDateTimeDao|null);
+
+                    /** RecordedExerciseDaoV2 actualTime */
+                    actualTime?: (google.protobuf.IDuration|null);
+
+                    /** RecordedExerciseDaoV2 actualDistance */
+                    actualDistance?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** RecordedExerciseDaoV2 resistance */
+                    resistance?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** RecordedExerciseDaoV2 incline */
+                    incline?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** RecordedExerciseDaoV2 avgHeartRate */
+                    avgHeartRate?: (LiftLog.Ui.Models.IDecimalValue|null);
                 }
 
-                /** Represents a RecordedWeightedExerciseDaoV2. */
-                class RecordedWeightedExerciseDaoV2 implements IRecordedWeightedExerciseDaoV2 {
+                /** Represents a RecordedExerciseDaoV2. */
+                class RecordedExerciseDaoV2 implements IRecordedExerciseDaoV2 {
 
                     /**
-                     * Constructs a new RecordedWeightedExerciseDaoV2.
+                     * Constructs a new RecordedExerciseDaoV2.
                      * @param [properties] Properties to set
                      */
-                    constructor(properties?: LiftLog.Ui.Models.SessionHistoryDao.IRecordedWeightedExerciseDaoV2);
+                    constructor(properties?: LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2);
 
-                    /** RecordedWeightedExerciseDaoV2 exerciseBlueprint. */
-                    public exerciseBlueprint?: (LiftLog.Ui.Models.SessionBlueprintDao.IWeightedExerciseBlueprintDaoV2|null);
+                    /** RecordedExerciseDaoV2 exerciseBlueprint. */
+                    public exerciseBlueprint?: (LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2|null);
 
-                    /** RecordedWeightedExerciseDaoV2 weight. */
-                    public weight?: (LiftLog.Ui.Models.IDecimalValue|null);
+                    /** RecordedExerciseDaoV2 type. */
+                    public type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType;
 
-                    /** RecordedWeightedExerciseDaoV2 potentialSets. */
-                    public potentialSets: LiftLog.Ui.Models.SessionHistoryDao.IPotentialSetDaoV2[];
-
-                    /** RecordedWeightedExerciseDaoV2 notes. */
+                    /** RecordedExerciseDaoV2 notes. */
                     public notes?: (google.protobuf.IStringValue|null);
 
-                    /** RecordedWeightedExerciseDaoV2 _weight. */
-                    public _weight?: "weight";
+                    /** RecordedExerciseDaoV2 potentialSets. */
+                    public potentialSets: LiftLog.Ui.Models.SessionHistoryDao.IPotentialSetDaoV2[];
 
-                    /** RecordedWeightedExerciseDaoV2 _notes. */
+                    /** RecordedExerciseDaoV2 startedAt. */
+                    public startedAt?: (LiftLog.Ui.Models.IDateTimeDao|null);
+
+                    /** RecordedExerciseDaoV2 completionDateTime. */
+                    public completionDateTime?: (LiftLog.Ui.Models.IDateTimeDao|null);
+
+                    /** RecordedExerciseDaoV2 actualTime. */
+                    public actualTime?: (google.protobuf.IDuration|null);
+
+                    /** RecordedExerciseDaoV2 actualDistance. */
+                    public actualDistance?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** RecordedExerciseDaoV2 resistance. */
+                    public resistance?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** RecordedExerciseDaoV2 incline. */
+                    public incline?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** RecordedExerciseDaoV2 avgHeartRate. */
+                    public avgHeartRate?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** RecordedExerciseDaoV2 _notes. */
                     public _notes?: "notes";
 
+                    /** RecordedExerciseDaoV2 _startedAt. */
+                    public _startedAt?: "startedAt";
+
+                    /** RecordedExerciseDaoV2 _completionDateTime. */
+                    public _completionDateTime?: "completionDateTime";
+
+                    /** RecordedExerciseDaoV2 _actualTime. */
+                    public _actualTime?: "actualTime";
+
+                    /** RecordedExerciseDaoV2 _actualDistance. */
+                    public _actualDistance?: "actualDistance";
+
+                    /** RecordedExerciseDaoV2 _resistance. */
+                    public _resistance?: "resistance";
+
+                    /** RecordedExerciseDaoV2 _incline. */
+                    public _incline?: "incline";
+
+                    /** RecordedExerciseDaoV2 _avgHeartRate. */
+                    public _avgHeartRate?: "avgHeartRate";
+
                     /**
-                     * Creates a new RecordedWeightedExerciseDaoV2 instance using the specified properties.
+                     * Creates a new RecordedExerciseDaoV2 instance using the specified properties.
                      * @param [properties] Properties to set
-                     * @returns RecordedWeightedExerciseDaoV2 instance
+                     * @returns RecordedExerciseDaoV2 instance
                      */
-                    public static create(properties?: LiftLog.Ui.Models.SessionHistoryDao.IRecordedWeightedExerciseDaoV2): LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2;
+                    public static create(properties?: LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2): LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2;
 
                     /**
-                     * Encodes the specified RecordedWeightedExerciseDaoV2 message. Does not implicitly {@link LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2.verify|verify} messages.
-                     * @param message RecordedWeightedExerciseDaoV2 message or plain object to encode
+                     * Encodes the specified RecordedExerciseDaoV2 message. Does not implicitly {@link LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.verify|verify} messages.
+                     * @param message RecordedExerciseDaoV2 message or plain object to encode
                      * @param [writer] Writer to encode to
                      * @returns Writer
                      */
-                    public static encode(message: LiftLog.Ui.Models.SessionHistoryDao.IRecordedWeightedExerciseDaoV2, writer?: $protobuf.Writer): $protobuf.Writer;
+                    public static encode(message: LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2, writer?: $protobuf.Writer): $protobuf.Writer;
 
                     /**
-                     * Encodes the specified RecordedWeightedExerciseDaoV2 message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2.verify|verify} messages.
-                     * @param message RecordedWeightedExerciseDaoV2 message or plain object to encode
+                     * Encodes the specified RecordedExerciseDaoV2 message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.verify|verify} messages.
+                     * @param message RecordedExerciseDaoV2 message or plain object to encode
                      * @param [writer] Writer to encode to
                      * @returns Writer
                      */
-                    public static encodeDelimited(message: LiftLog.Ui.Models.SessionHistoryDao.IRecordedWeightedExerciseDaoV2, writer?: $protobuf.Writer): $protobuf.Writer;
+                    public static encodeDelimited(message: LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2, writer?: $protobuf.Writer): $protobuf.Writer;
 
                     /**
-                     * Decodes a RecordedWeightedExerciseDaoV2 message from the specified reader or buffer.
+                     * Decodes a RecordedExerciseDaoV2 message from the specified reader or buffer.
                      * @param reader Reader or buffer to decode from
                      * @param [length] Message length if known beforehand
-                     * @returns RecordedWeightedExerciseDaoV2
+                     * @returns RecordedExerciseDaoV2
                      * @throws {Error} If the payload is not a reader or valid buffer
                      * @throws {$protobuf.util.ProtocolError} If required fields are missing
                      */
-                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2;
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2;
 
                     /**
-                     * Decodes a RecordedWeightedExerciseDaoV2 message from the specified reader or buffer, length delimited.
+                     * Decodes a RecordedExerciseDaoV2 message from the specified reader or buffer, length delimited.
                      * @param reader Reader or buffer to decode from
-                     * @returns RecordedWeightedExerciseDaoV2
+                     * @returns RecordedExerciseDaoV2
                      * @throws {Error} If the payload is not a reader or valid buffer
                      * @throws {$protobuf.util.ProtocolError} If required fields are missing
                      */
-                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2;
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2;
 
                     /**
-                     * Verifies a RecordedWeightedExerciseDaoV2 message.
+                     * Verifies a RecordedExerciseDaoV2 message.
                      * @param message Plain object to verify
                      * @returns `null` if valid, otherwise the reason why it is not
                      */
                     public static verify(message: { [k: string]: any }): (string|null);
 
                     /**
-                     * Creates a RecordedWeightedExerciseDaoV2 message from a plain object. Also converts values to their respective internal types.
+                     * Creates a RecordedExerciseDaoV2 message from a plain object. Also converts values to their respective internal types.
                      * @param object Plain object
-                     * @returns RecordedWeightedExerciseDaoV2
+                     * @returns RecordedExerciseDaoV2
                      */
-                    public static fromObject(object: { [k: string]: any }): LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2;
+                    public static fromObject(object: { [k: string]: any }): LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2;
 
                     /**
-                     * Creates a plain object from a RecordedWeightedExerciseDaoV2 message. Also converts values to other types if specified.
-                     * @param message RecordedWeightedExerciseDaoV2
+                     * Creates a plain object from a RecordedExerciseDaoV2 message. Also converts values to other types if specified.
+                     * @param message RecordedExerciseDaoV2
                      * @param [options] Conversion options
                      * @returns Plain object
                      */
-                    public static toObject(message: LiftLog.Ui.Models.SessionHistoryDao.RecordedWeightedExerciseDaoV2, options?: $protobuf.IConversionOptions): { [k: string]: any };
+                    public static toObject(message: LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
                     /**
-                     * Converts this RecordedWeightedExerciseDaoV2 to JSON.
+                     * Converts this RecordedExerciseDaoV2 to JSON.
                      * @returns JSON object
                      */
                     public toJSON(): { [k: string]: any };
 
                     /**
-                     * Gets the default type url for RecordedWeightedExerciseDaoV2
+                     * Gets the default type url for RecordedExerciseDaoV2
                      * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                      * @returns The default type url
                      */
@@ -1238,7 +1401,7 @@ export namespace LiftLog {
                     name?: (string|null);
 
                     /** SessionBlueprintDaoV2 exerciseBlueprints */
-                    exerciseBlueprints?: (LiftLog.Ui.Models.SessionBlueprintDao.IWeightedExerciseBlueprintDaoV2[]|null);
+                    exerciseBlueprints?: (LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2[]|null);
 
                     /** SessionBlueprintDaoV2 notes */
                     notes?: (string|null);
@@ -1257,7 +1420,7 @@ export namespace LiftLog {
                     public name: string;
 
                     /** SessionBlueprintDaoV2 exerciseBlueprints. */
-                    public exerciseBlueprints: LiftLog.Ui.Models.SessionBlueprintDao.IWeightedExerciseBlueprintDaoV2[];
+                    public exerciseBlueprints: LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2[];
 
                     /** SessionBlueprintDaoV2 notes. */
                     public notes: string;
@@ -1340,139 +1503,269 @@ export namespace LiftLog {
                     public static getTypeUrl(typeUrlPrefix?: string): string;
                 }
 
-                /** Properties of a WeightedExerciseBlueprintDaoV2. */
-                interface IWeightedExerciseBlueprintDaoV2 {
-
-                    /** WeightedExerciseBlueprintDaoV2 name */
-                    name?: (string|null);
-
-                    /** WeightedExerciseBlueprintDaoV2 sets */
-                    sets?: (number|null);
-
-                    /** WeightedExerciseBlueprintDaoV2 repsPerSet */
-                    repsPerSet?: (number|null);
-
-                    /** WeightedExerciseBlueprintDaoV2 weightIncreaseOnSuccess */
-                    weightIncreaseOnSuccess?: (LiftLog.Ui.Models.IDecimalValue|null);
-
-                    /** WeightedExerciseBlueprintDaoV2 restBetweenSets */
-                    restBetweenSets?: (LiftLog.Ui.Models.SessionBlueprintDao.IRestDaoV2|null);
-
-                    /** WeightedExerciseBlueprintDaoV2 supersetWithNext */
-                    supersetWithNext?: (boolean|null);
-
-                    /** WeightedExerciseBlueprintDaoV2 notes */
-                    notes?: (string|null);
-
-                    /** WeightedExerciseBlueprintDaoV2 link */
-                    link?: (string|null);
+                /** ExerciseType enum. */
+                enum ExerciseType {
+                    WEIGHTED = 0,
+                    CARDIO = 1
                 }
 
-                /** Represents a WeightedExerciseBlueprintDaoV2. */
-                class WeightedExerciseBlueprintDaoV2 implements IWeightedExerciseBlueprintDaoV2 {
+                /** Properties of a CardioTarget. */
+                interface ICardioTarget {
+
+                    /** CardioTarget type */
+                    type?: (string|null);
+
+                    /** CardioTarget timeValue */
+                    timeValue?: (google.protobuf.IDuration|null);
+
+                    /** CardioTarget distanceValue */
+                    distanceValue?: (LiftLog.Ui.Models.IDecimalValue|null);
+                }
+
+                /** Represents a CardioTarget. */
+                class CardioTarget implements ICardioTarget {
 
                     /**
-                     * Constructs a new WeightedExerciseBlueprintDaoV2.
+                     * Constructs a new CardioTarget.
                      * @param [properties] Properties to set
                      */
-                    constructor(properties?: LiftLog.Ui.Models.SessionBlueprintDao.IWeightedExerciseBlueprintDaoV2);
+                    constructor(properties?: LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget);
 
-                    /** WeightedExerciseBlueprintDaoV2 name. */
-                    public name: string;
+                    /** CardioTarget type. */
+                    public type: string;
 
-                    /** WeightedExerciseBlueprintDaoV2 sets. */
-                    public sets: number;
+                    /** CardioTarget timeValue. */
+                    public timeValue?: (google.protobuf.IDuration|null);
 
-                    /** WeightedExerciseBlueprintDaoV2 repsPerSet. */
-                    public repsPerSet: number;
+                    /** CardioTarget distanceValue. */
+                    public distanceValue?: (LiftLog.Ui.Models.IDecimalValue|null);
 
-                    /** WeightedExerciseBlueprintDaoV2 weightIncreaseOnSuccess. */
-                    public weightIncreaseOnSuccess?: (LiftLog.Ui.Models.IDecimalValue|null);
-
-                    /** WeightedExerciseBlueprintDaoV2 restBetweenSets. */
-                    public restBetweenSets?: (LiftLog.Ui.Models.SessionBlueprintDao.IRestDaoV2|null);
-
-                    /** WeightedExerciseBlueprintDaoV2 supersetWithNext. */
-                    public supersetWithNext: boolean;
-
-                    /** WeightedExerciseBlueprintDaoV2 notes. */
-                    public notes: string;
-
-                    /** WeightedExerciseBlueprintDaoV2 link. */
-                    public link: string;
+                    /** CardioTarget value. */
+                    public value?: ("timeValue"|"distanceValue");
 
                     /**
-                     * Creates a new WeightedExerciseBlueprintDaoV2 instance using the specified properties.
+                     * Creates a new CardioTarget instance using the specified properties.
                      * @param [properties] Properties to set
-                     * @returns WeightedExerciseBlueprintDaoV2 instance
+                     * @returns CardioTarget instance
                      */
-                    public static create(properties?: LiftLog.Ui.Models.SessionBlueprintDao.IWeightedExerciseBlueprintDaoV2): LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2;
+                    public static create(properties?: LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget): LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget;
 
                     /**
-                     * Encodes the specified WeightedExerciseBlueprintDaoV2 message. Does not implicitly {@link LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2.verify|verify} messages.
-                     * @param message WeightedExerciseBlueprintDaoV2 message or plain object to encode
+                     * Encodes the specified CardioTarget message. Does not implicitly {@link LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.verify|verify} messages.
+                     * @param message CardioTarget message or plain object to encode
                      * @param [writer] Writer to encode to
                      * @returns Writer
                      */
-                    public static encode(message: LiftLog.Ui.Models.SessionBlueprintDao.IWeightedExerciseBlueprintDaoV2, writer?: $protobuf.Writer): $protobuf.Writer;
+                    public static encode(message: LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget, writer?: $protobuf.Writer): $protobuf.Writer;
 
                     /**
-                     * Encodes the specified WeightedExerciseBlueprintDaoV2 message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2.verify|verify} messages.
-                     * @param message WeightedExerciseBlueprintDaoV2 message or plain object to encode
+                     * Encodes the specified CardioTarget message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.verify|verify} messages.
+                     * @param message CardioTarget message or plain object to encode
                      * @param [writer] Writer to encode to
                      * @returns Writer
                      */
-                    public static encodeDelimited(message: LiftLog.Ui.Models.SessionBlueprintDao.IWeightedExerciseBlueprintDaoV2, writer?: $protobuf.Writer): $protobuf.Writer;
+                    public static encodeDelimited(message: LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget, writer?: $protobuf.Writer): $protobuf.Writer;
 
                     /**
-                     * Decodes a WeightedExerciseBlueprintDaoV2 message from the specified reader or buffer.
+                     * Decodes a CardioTarget message from the specified reader or buffer.
                      * @param reader Reader or buffer to decode from
                      * @param [length] Message length if known beforehand
-                     * @returns WeightedExerciseBlueprintDaoV2
+                     * @returns CardioTarget
                      * @throws {Error} If the payload is not a reader or valid buffer
                      * @throws {$protobuf.util.ProtocolError} If required fields are missing
                      */
-                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2;
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget;
 
                     /**
-                     * Decodes a WeightedExerciseBlueprintDaoV2 message from the specified reader or buffer, length delimited.
+                     * Decodes a CardioTarget message from the specified reader or buffer, length delimited.
                      * @param reader Reader or buffer to decode from
-                     * @returns WeightedExerciseBlueprintDaoV2
+                     * @returns CardioTarget
                      * @throws {Error} If the payload is not a reader or valid buffer
                      * @throws {$protobuf.util.ProtocolError} If required fields are missing
                      */
-                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2;
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget;
 
                     /**
-                     * Verifies a WeightedExerciseBlueprintDaoV2 message.
+                     * Verifies a CardioTarget message.
                      * @param message Plain object to verify
                      * @returns `null` if valid, otherwise the reason why it is not
                      */
                     public static verify(message: { [k: string]: any }): (string|null);
 
                     /**
-                     * Creates a WeightedExerciseBlueprintDaoV2 message from a plain object. Also converts values to their respective internal types.
+                     * Creates a CardioTarget message from a plain object. Also converts values to their respective internal types.
                      * @param object Plain object
-                     * @returns WeightedExerciseBlueprintDaoV2
+                     * @returns CardioTarget
                      */
-                    public static fromObject(object: { [k: string]: any }): LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2;
+                    public static fromObject(object: { [k: string]: any }): LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget;
 
                     /**
-                     * Creates a plain object from a WeightedExerciseBlueprintDaoV2 message. Also converts values to other types if specified.
-                     * @param message WeightedExerciseBlueprintDaoV2
+                     * Creates a plain object from a CardioTarget message. Also converts values to other types if specified.
+                     * @param message CardioTarget
                      * @param [options] Conversion options
                      * @returns Plain object
                      */
-                    public static toObject(message: LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2, options?: $protobuf.IConversionOptions): { [k: string]: any };
+                    public static toObject(message: LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
                     /**
-                     * Converts this WeightedExerciseBlueprintDaoV2 to JSON.
+                     * Converts this CardioTarget to JSON.
                      * @returns JSON object
                      */
                     public toJSON(): { [k: string]: any };
 
                     /**
-                     * Gets the default type url for WeightedExerciseBlueprintDaoV2
+                     * Gets the default type url for CardioTarget
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of an ExerciseBlueprintDaoV2. */
+                interface IExerciseBlueprintDaoV2 {
+
+                    /** ExerciseBlueprintDaoV2 name */
+                    name?: (string|null);
+
+                    /** ExerciseBlueprintDaoV2 notes */
+                    notes?: (string|null);
+
+                    /** ExerciseBlueprintDaoV2 link */
+                    link?: (string|null);
+
+                    /** ExerciseBlueprintDaoV2 type */
+                    type?: (LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType|null);
+
+                    /** ExerciseBlueprintDaoV2 sets */
+                    sets?: (number|null);
+
+                    /** ExerciseBlueprintDaoV2 repsPerSet */
+                    repsPerSet?: (number|null);
+
+                    /** ExerciseBlueprintDaoV2 weightIncreaseOnSuccess */
+                    weightIncreaseOnSuccess?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** ExerciseBlueprintDaoV2 restBetweenSets */
+                    restBetweenSets?: (LiftLog.Ui.Models.SessionBlueprintDao.IRestDaoV2|null);
+
+                    /** ExerciseBlueprintDaoV2 supersetWithNext */
+                    supersetWithNext?: (boolean|null);
+
+                    /** ExerciseBlueprintDaoV2 cardioTarget */
+                    cardioTarget?: (LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null);
+                }
+
+                /** Represents an ExerciseBlueprintDaoV2. */
+                class ExerciseBlueprintDaoV2 implements IExerciseBlueprintDaoV2 {
+
+                    /**
+                     * Constructs a new ExerciseBlueprintDaoV2.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2);
+
+                    /** ExerciseBlueprintDaoV2 name. */
+                    public name: string;
+
+                    /** ExerciseBlueprintDaoV2 notes. */
+                    public notes: string;
+
+                    /** ExerciseBlueprintDaoV2 link. */
+                    public link: string;
+
+                    /** ExerciseBlueprintDaoV2 type. */
+                    public type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType;
+
+                    /** ExerciseBlueprintDaoV2 sets. */
+                    public sets: number;
+
+                    /** ExerciseBlueprintDaoV2 repsPerSet. */
+                    public repsPerSet: number;
+
+                    /** ExerciseBlueprintDaoV2 weightIncreaseOnSuccess. */
+                    public weightIncreaseOnSuccess?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** ExerciseBlueprintDaoV2 restBetweenSets. */
+                    public restBetweenSets?: (LiftLog.Ui.Models.SessionBlueprintDao.IRestDaoV2|null);
+
+                    /** ExerciseBlueprintDaoV2 supersetWithNext. */
+                    public supersetWithNext: boolean;
+
+                    /** ExerciseBlueprintDaoV2 cardioTarget. */
+                    public cardioTarget?: (LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null);
+
+                    /**
+                     * Creates a new ExerciseBlueprintDaoV2 instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns ExerciseBlueprintDaoV2 instance
+                     */
+                    public static create(properties?: LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2): LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2;
+
+                    /**
+                     * Encodes the specified ExerciseBlueprintDaoV2 message. Does not implicitly {@link LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.verify|verify} messages.
+                     * @param message ExerciseBlueprintDaoV2 message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified ExerciseBlueprintDaoV2 message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.verify|verify} messages.
+                     * @param message ExerciseBlueprintDaoV2 message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes an ExerciseBlueprintDaoV2 message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns ExerciseBlueprintDaoV2
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2;
+
+                    /**
+                     * Decodes an ExerciseBlueprintDaoV2 message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns ExerciseBlueprintDaoV2
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2;
+
+                    /**
+                     * Verifies an ExerciseBlueprintDaoV2 message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates an ExerciseBlueprintDaoV2 message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns ExerciseBlueprintDaoV2
+                     */
+                    public static fromObject(object: { [k: string]: any }): LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2;
+
+                    /**
+                     * Creates a plain object from an ExerciseBlueprintDaoV2 message. Also converts values to other types if specified.
+                     * @param message ExerciseBlueprintDaoV2
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this ExerciseBlueprintDaoV2 to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for ExerciseBlueprintDaoV2
                      * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                      * @returns The default type url
                      */

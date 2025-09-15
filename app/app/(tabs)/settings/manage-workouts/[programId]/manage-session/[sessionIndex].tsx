@@ -15,6 +15,7 @@ import {
   WeightedExerciseBlueprint,
   Rest,
   SessionBlueprint,
+  ExerciseBlueprint,
 } from '@/models/blueprint-models';
 import { useAppSelector } from '@/store';
 import { setProgramSession } from '@/store/program';
@@ -66,7 +67,7 @@ function SessionEditor({
 }) {
   const dispatch = useDispatch();
   const [selectedExercise, setSelectedExercise] = useState<
-    WeightedExerciseBlueprint | undefined
+    ExerciseBlueprint | undefined
   >(undefined);
   const [selectedExerciseIndex, setSelectedExerciseIndex] = useState<
     number | undefined
@@ -250,7 +251,7 @@ function ExerciseItem({
   programId,
   saveSession,
 }: {
-  blueprint: WeightedExerciseBlueprint;
+  blueprint: ExerciseBlueprint;
   beginEdit: () => void;
   beginRemove: () => void;
   sessionIndex: number;

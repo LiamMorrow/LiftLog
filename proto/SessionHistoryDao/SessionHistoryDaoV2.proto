@@ -12,19 +12,32 @@ message SessionHistoryDaoV2 {
 message SessionDaoV2 {
     LiftLog.Ui.Models.UuidDao id = 1;
     string session_name = 2;
-    repeated RecordedWeightedExerciseDaoV2 recorded_exercises = 3;
+    repeated RecordedExerciseDaoV2 recorded_exercises = 3;
     LiftLog.Ui.Models.DateOnlyDao date = 4;
     optional LiftLog.Ui.Models.DecimalValue bodyweight = 5;
     string blueprint_notes = 6;
 }
 
 
-message RecordedWeightedExerciseDaoV2 {
-    LiftLog.Ui.Models.SessionBlueprintDao.WeightedExerciseBlueprintDaoV2 exercise_blueprint = 1;
-    optional LiftLog.Ui.Models.DecimalValue weight = 2; // deprecated
-    repeated PotentialSetDaoV2 potential_sets = 3;
+message RecordedExerciseDaoV2 {
+    // Common
+    LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2 exercise_blueprint = 1;
+    ExerciseType type = 6;
     optional google.protobuf.StringValue notes = 4;
+
+    // Weighted
+    reserved 2; // was weight
+    repeated PotentialSetDaoV2 potential_sets = 3;
     reserved 5; // Per set weight
+
+    // Cardio
+    optional LiftLog.Ui.Models.DateTimeDao started_at = 7;
+    optional LiftLog.Ui.Models.DateTimeDao completion_date_time = 8;
+    optional google.protobuf.Duration actual_time = 9;
+    optional LiftLog.Ui.Models.DecimalValue actual_distance = 10;
+    optional LiftLog.Ui.Models.DecimalValue resistance = 11;
+    optional LiftLog.Ui.Models.DecimalValue incline = 12;
+    optional LiftLog.Ui.Models.DecimalValue avgHeartRate = 13;
 }
 
 message PotentialSetDaoV2 {

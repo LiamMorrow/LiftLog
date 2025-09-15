@@ -2,14 +2,15 @@ import ItemTitle from '@/components/presentation/item-title';
 import RestFormat from '@/components/presentation/rest-format';
 import { SurfaceText } from '@/components/presentation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
-import { WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { IconButton, Menu, TouchableRipple } from 'react-native-paper';
 import { useTranslate } from '@tolgee/react';
+import { ExerciseBlueprint } from '@/models/blueprint-models';
+import { assertWeightedExerciseBlueprint } from '@/models/temp';
 
 interface ExerciseBlueprintSummaryProps {
-  blueprint: WeightedExerciseBlueprint;
+  blueprint: ExerciseBlueprint;
   onEdit: () => void;
   onMoveDown: () => void;
   onMoveUp: () => void;
@@ -27,6 +28,7 @@ export default function ExerciseBlueprintSummary({
 }: ExerciseBlueprintSummaryProps) {
   const { t } = useTranslate();
   const [menuOpen, setMenuOpen] = useState(false);
+  assertWeightedExerciseBlueprint(blueprint);
 
   return (
     <TouchableRipple

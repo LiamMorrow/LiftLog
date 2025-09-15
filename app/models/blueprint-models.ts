@@ -1,5 +1,7 @@
 import { DeepOmit } from '@/utils/deep-omit';
 import { Duration, LocalDate } from '@js-joda/core';
+import { BigNumber } from 'bignumber.js';
+import { match, P } from 'ts-pattern';
 
 export interface ProgramBlueprintPOJO {
   _BRAND: 'PROGRAM_BLUEPRINT_POJO';
@@ -33,7 +35,7 @@ export class ProgramBlueprint {
   }
 
   static fromPOJO(
-    pojo: DeepOmit<ProgramBlueprintPOJO, '_BRAND'>,
+    pojo: Omit<ProgramBlueprintPOJO, '_BRAND'>,
   ): ProgramBlueprint {
     return new ProgramBlueprint(
       pojo.name,
@@ -83,40 +85,32 @@ export class ProgramBlueprint {
 export interface SessionBlueprintPOJO {
   _BRAND: 'SESSION_BLUEPRINT_POJO';
   name: string;
-  exercises: WeightedExerciseBlueprintPOJO[];
+  exercises: ExerciseBlueprintPOJO[];
   notes: string;
 }
 
 export class SessionBlueprint {
   readonly name: string;
-  readonly exercises: WeightedExerciseBlueprint[];
+  readonly exercises: ExerciseBlueprint[];
   readonly notes: string;
 
   /**
    * @deprecated please use full constructor. Here only for serialization
    */
   constructor();
-  constructor(
-    name: string,
-    exercises: WeightedExerciseBlueprint[],
-    notes: string,
-  );
-  constructor(
-    name?: string,
-    exercises?: WeightedExerciseBlueprint[],
-    notes?: string,
-  ) {
+  constructor(name: string, exercises: ExerciseBlueprint[], notes: string);
+  constructor(name?: string, exercises?: ExerciseBlueprint[], notes?: string) {
     this.name = name!;
     this.exercises = exercises!;
     this.notes = notes!;
   }
 
   static fromPOJO(
-    pojo: DeepOmit<SessionBlueprintPOJO, '_BRAND'>,
+    pojo: Omit<SessionBlueprintPOJO, '_BRAND'>,
   ): SessionBlueprint {
     return new SessionBlueprint(
       pojo.name,
-      pojo.exercises.map(WeightedExerciseBlueprint.fromPOJO),
+      pojo.exercises.map(fromExerciseBlueprintPOJO),
       pojo.notes,
     );
   }
@@ -154,11 +148,40 @@ export class SessionBlueprint {
     return new SessionBlueprint(
       other.name ?? this.name,
       other.exercises
-        ? other.exercises.map(WeightedExerciseBlueprint.fromPOJO)
+        ? other.exercises.map(fromExerciseBlueprintPOJO)
         : this.exercises,
       other.notes ?? this.notes,
     );
   }
+}
+
+export type ExerciseBlueprint =
+  | WeightedExerciseBlueprint
+  | CardioExerciseBlueprint;
+
+export type ExerciseBlueprintPOJO =
+  | WeightedExerciseBlueprintPOJO
+  | CardioExerciseBlueprintPOJO;
+
+export function fromExerciseBlueprintPOJO(
+  pojo: ExerciseBlueprintPOJO | ExerciseBlueprint,
+): ExerciseBlueprint {
+  return match(pojo)
+    .with(
+      P.union(
+        { _BRAND: 'CARDIO_EXERCISE_BLUEPRINT_POJO' },
+        P.instanceOf(CardioExerciseBlueprint),
+      ),
+      CardioExerciseBlueprint.fromPOJO,
+    )
+    .with(
+      P.union(
+        { _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO' },
+        P.instanceOf(WeightedExerciseBlueprint),
+      ),
+      WeightedExerciseBlueprint.fromPOJO,
+    )
+    .exhaustive();
 }
 
 export type CardioTarget =
@@ -212,14 +235,18 @@ export class CardioExerciseBlueprint {
     );
   }
 
-  equals(
-    other: CardioExerciseBlueprint | CardioExerciseBlueprintPOJO | undefined,
-  ) {
+  equals(other: ExerciseBlueprint | ExerciseBlueprintPOJO | undefined) {
     if (!other) {
       return false;
     }
     if (other === this) {
       return true;
+    }
+    if (
+      other instanceof WeightedExerciseBlueprint ||
+      ('_BRAND' in other && other._BRAND === 'WEIGHTED_EXERCISE_BLUEPRINT_POJO')
+    ) {
+      return false;
     }
     return (
       this.name === other.name &&
@@ -321,17 +348,18 @@ export class WeightedExerciseBlueprint {
     );
   }
 
-  equals(
-    other:
-      | WeightedExerciseBlueprint
-      | WeightedExerciseBlueprintPOJO
-      | undefined,
-  ) {
+  equals(other: ExerciseBlueprint | ExerciseBlueprintPOJO | undefined) {
     if (!other) {
       return false;
     }
     if (other === this) {
       return true;
+    }
+    if (
+      other instanceof CardioExerciseBlueprint ||
+      ('_BRAND' in other && other._BRAND === 'CARDIO_EXERCISE_BLUEPRINT_POJO')
+    ) {
+      return false;
     }
 
     return (
@@ -381,20 +409,28 @@ export class WeightedExerciseBlueprint {
 }
 
 export class KeyedExerciseBlueprint {
-  constructor(
+  private constructor(
     public name: string,
-    public sets: number,
-    public repsPerSet: number,
+    private differentiator: string,
   ) {}
 
-  static fromExerciseBlueprint(
-    e: WeightedExerciseBlueprint,
-  ): KeyedExerciseBlueprint {
-    return new KeyedExerciseBlueprint(e.name, e.sets, e.repsPerSet);
+  static fromExerciseBlueprint(e: ExerciseBlueprint): KeyedExerciseBlueprint {
+    return new KeyedExerciseBlueprint(
+      e.name,
+      match(e)
+        .with(
+          P.instanceOf(WeightedExerciseBlueprint),
+          (ex) => `${ex.sets}_${ex.repsPerSet}`,
+        )
+        .with(P.instanceOf(CardioExerciseBlueprint), (t) =>
+          JSON.stringify(t.target),
+        )
+        .exhaustive(),
+    );
   }
 
   toString() {
-    return `${this.name}_${this.sets}_${this.repsPerSet}`;
+    return `${this.name}_${this.differentiator}`;
   }
 }
 
@@ -402,7 +438,7 @@ export type NormalizedNameKey = string;
 
 export class NormalizedName {
   constructor(public name: string) {}
-  static fromExerciseBlueprint(e: WeightedExerciseBlueprint): NormalizedName {
+  static fromExerciseBlueprint(e: ExerciseBlueprint): NormalizedName {
     return new NormalizedName(e.name);
   }
 
