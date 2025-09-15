@@ -1,7 +1,7 @@
 import { PotentialSet } from '@/models/session-models';
 import BigNumber from 'bignumber.js';
-import { useEffect, useState } from 'react';
-import { TouchableRipple } from 'react-native-paper';
+import { useState } from 'react';
+import { TouchableRipple, Text as PaperText, Chip } from 'react-native-paper';
 import { Text, Touchable, View } from 'react-native';
 import WeightFormat from '@/components/presentation/weight-format';
 import WeightDialog from '@/components/presentation/weight-dialog';
@@ -10,10 +10,7 @@ import { PressableProps } from 'react-native-paper/lib/typescript/components/Tou
 import FocusRing from '@/components/presentation/focus-ring';
 import Animated from 'react-native-reanimated';
 import { WeightAppliesTo } from '@/store/current-session';
-import SelectButton, {
-  SelectButtonOption,
-} from '@/components/presentation/select-button';
-import { useTranslate } from '@tolgee/react';
+import { T } from '@tolgee/react';
 import Holdable from '@/components/presentation/holdable';
 
 interface PotentialSetCounterProps {
@@ -31,24 +28,8 @@ interface PotentialSetCounterProps {
 
 export default function PotentialSetCounter(props: PotentialSetCounterProps) {
   const { colors } = useAppTheme();
-  const { t } = useTranslate();
   const [isWeightDialogOpen, setIsWeightDialogOpen] = useState(false);
   const repCountValue = props.set?.set?.repsCompleted;
-
-  const applyToSelections: SelectButtonOption<WeightAppliesTo>[] = [
-    {
-      label: t('Apply to uncompleted sets'),
-      value: 'uncompletedSets',
-    },
-    {
-      label: t('Apply to all sets'),
-      value: 'allSets',
-    },
-    {
-      label: t('Apply to this set'),
-      value: 'thisSet',
-    },
-  ];
 
   const callbacks = props.isReadonly
     ? {}
@@ -58,15 +39,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
         onLongPress: () => {},
       } satisfies Touchable & Omit<PressableProps, 'children'>);
 
-  const [applyTo, setApplyTo] = useState<WeightAppliesTo>('uncompletedSets');
-
-  useEffect(() => {
-    if (props.set.set) {
-      setApplyTo('thisSet');
-    } else {
-      setApplyTo('uncompletedSets');
-    }
-  }, [props.set.set]);
+  const [applyTo, setApplyTo] = useState<WeightAppliesTo>('thisSet');
 
   return (
     <Holdable onLongPress={props.onHold}>
@@ -162,24 +135,45 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
           </Animated.View>
           <WeightDialog
             open={isWeightDialogOpen}
+            allowNegative
             increment={props.weightIncrement}
             weight={props.set.weight}
             onClose={() => setIsWeightDialogOpen(false)}
             updateWeight={(w) => props.onUpdateWeight(w, applyTo)}
           >
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <SelectButton
-                testID="repcount-apply-weight-to"
-                value={applyTo}
-                onChange={setApplyTo}
-                options={applyToSelections}
-              />
+            <View style={{ gap: spacing[2] }}>
+              <PaperText variant="labelLarge">
+                <T keyName="Apply weight to" />
+              </PaperText>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  gap: spacing[1],
+                }}
+              >
+                <Chip
+                  selected={applyTo === 'thisSet'}
+                  testID="repcount-apply-weight-to-this-set"
+                  onPress={() => setApplyTo('thisSet')}
+                >
+                  <T keyName="This set" />
+                </Chip>
+                <Chip
+                  selected={applyTo === 'uncompletedSets'}
+                  testID="repcount-apply-weight-to-uncompleted-sets"
+                  onPress={() => setApplyTo('uncompletedSets')}
+                >
+                  <T keyName="Uncompleted sets" />
+                </Chip>
+                <Chip
+                  selected={applyTo === 'allSets'}
+                  testID="repcount-apply-weight-to-all-sets"
+                  onPress={() => setApplyTo('allSets')}
+                >
+                  <T keyName="All sets" />
+                </Chip>
+              </View>
             </View>
           </WeightDialog>
         </View>

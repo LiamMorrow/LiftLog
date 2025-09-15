@@ -4,7 +4,13 @@ module.exports = function (api) {
     presets: ['babel-preset-expo'],
     plugins: [
       '@babel/plugin-proposal-export-namespace-from',
-      'react-native-reanimated/plugin',
+      [
+        "babel-plugin-inline-import",
+        {
+          "extensions": [".svg"]
+        }
+      ],
+      'react-native-worklets/plugin',
     ],
   };
 };

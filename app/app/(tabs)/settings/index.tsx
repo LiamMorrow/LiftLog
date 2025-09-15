@@ -4,8 +4,9 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
 import { Link, Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Linking, Text } from 'react-native';
-import { Button, Dialog, Icon, List, Portal } from 'react-native-paper';
+import { Linking } from 'react-native';
+import { Button, Text, Dialog, Icon, List, Portal } from 'react-native-paper';
+import * as Application from 'expo-application';
 
 export default function Settings() {
   const { t } = useTranslate();
@@ -121,7 +122,7 @@ export default function Settings() {
             <T keyName="AppInfo" />
           </Dialog.Title>
           <Dialog.Content>
-            <Text style={{ color: colors.onSurface }}>
+            <Text>
               LiftLog is an entirely open source app, licensed under the
               AGPL-3.0 license. You can find the source code on{' '}
               <Link
@@ -132,6 +133,12 @@ export default function Settings() {
                 GitHub
               </Link>
               .
+            </Text>
+            <Text>
+              LiftLog is currently version{' '}
+              {Application.nativeApplicationVersion ??
+                Application.nativeBuildVersion ??
+                'Unknown'}
             </Text>
           </Dialog.Content>
           <Dialog.Actions>

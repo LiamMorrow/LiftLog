@@ -10,6 +10,7 @@ module.exports = {
     '@typescript-eslint/no-redeclare': 'off',
     '@typescript-eslint/unbound-method': 'off',
     '@typescript-eslint/require-await': 'off',
+    '@typescript-eslint/no-unnecessary-type-assertion': 'error',
     'no-empty-pattern': 'off',
     'no-restricted-imports': [
       'error',
@@ -19,6 +20,10 @@ module.exports = {
             name: 'react-redux',
             importNames: ['useSelector'],
             message: 'Use useSelector from @/store',
+          },
+          {
+            name: '@material-symbols-react-native/outlined-400',
+            message: 'This import does not work on android -- too big. We need to use the individual imports',
           },
         ],
       },

@@ -32,6 +32,16 @@
           "project": "app",
           "organization": "liftlog"
         }
+      ],
+      "expo-localization",
+      [
+        "react-native-edge-to-edge",
+        {
+          "android": {
+            "parentTheme": "Default",
+            "enforceNavigationBarContrast": false
+          }
+        }
       ]
     ],
     "experiments": {
@@ -41,7 +51,6 @@
     "scheme": "liftlog",
     "android": {
       "package": "com.limajuice.liftlog",
-      "edgeToEdgeEnabled": true,
       "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"],
       "intentFilters": [
         {
@@ -88,9 +97,7 @@
     "notification": {
       "icon": "./assets/notification.png"
     },
-    "androidStatusBar": {
-      "translucent": true
-    },
+
     "jsEngine": "hermes"
   }
 }

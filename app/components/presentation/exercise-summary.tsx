@@ -2,6 +2,7 @@ import { SurfaceText } from '@/components/presentation/surface-text';
 import WeightFormat from '@/components/presentation/weight-format';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { RecordedWeightedExercise } from '@/models/session-models';
+import { localeFormatBigNumber } from '@/utils/locale-bignumber';
 import { DateTimeFormatter } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
@@ -167,7 +168,7 @@ function getPlannedChipData(
   exercise: RecordedWeightedExercise,
 ): PotentialSetChipData[] {
   return Enumerable.from(exercise.potentialSets)
-    .groupBy((x) => x.weight.toString())
+    .groupBy((x) => localeFormatBigNumber(x.weight))
     .select((x) => ({
       repTarget: exercise.blueprint.repsPerSet,
       numSets: x.count(),

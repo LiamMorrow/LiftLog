@@ -1,7 +1,7 @@
 import BottomSheet, { BottomSheetProps } from '@gorhom/bottom-sheet';
 import { Portal } from 'react-native-paper';
-import { Ref } from 'react';
 import { useAppTheme } from '@/hooks/useAppTheme';
+import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 
 export default function AppBottomSheet({
   children,
@@ -10,13 +10,15 @@ export default function AppBottomSheet({
   handleIndicatorStyle,
   snapPoints,
   ...rest
-}: BottomSheetProps & { sheetRef: Ref<BottomSheet> }) {
+}: BottomSheetProps & {
+  sheetRef: React.RefObject<BottomSheetMethods | null>;
+}) {
   const { colors } = useAppTheme();
   return (
     <Portal>
       <BottomSheet
         ref={sheetRef}
-        snapPoints={snapPoints ?? ['40%', '70%', '90%']}
+        snapPoints={snapPoints ?? ['40%', '70%', '80%']}
         backgroundStyle={[
           { backgroundColor: colors.surfaceContainerHighest },
           backgroundStyle,

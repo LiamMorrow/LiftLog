@@ -1,3 +1,1 @@
-This is a complete rewrite of LiftLog using react native. It is a major overhaul which is the culmination of months of work.
-LiftLog should now feel a lot more native, and has a few quality of life improvements too.
-While it may look similar, rewriting LiftLog will now allow much faster development of requested features 🎉
+This update fixes a few bugs that have been reported. View the full changelog on Github.

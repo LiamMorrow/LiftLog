@@ -3,8 +3,8 @@ import {
   triggerClickHaptic,
   triggerSlowRiseHaptic,
 } from '@/modules/native-crypto/src/ReactNativeHapticsModule';
-import { ReactNode, useEffect, useState } from 'react';
-import { ViewProps } from 'react-native';
+import { ReactNode } from 'react';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -22,49 +22,36 @@ export default function Holdable({
   duration = 500,
 }: HoldableProps) {
   const holdingScale = useSharedValue(1);
-  const [isHolding, setIsHolding] = useState(false);
-  const [holdTimeout, setHoldTimeout] = useState<number>();
 
   const handleLongPress = () => {
-    triggerClickHaptic();
     onLongPress();
-    setIsHolding(false);
+    triggerClickHaptic();
   };
   const enterHold = () => {
-    setIsHolding(true);
-
-    triggerSlowRiseHaptic();
-    clearTimeout(holdTimeout);
-    setHoldTimeout(
-      setTimeout(() => {
-        handleLongPress();
-      }, duration),
-    );
-  };
-  const exitHold = () => {
-    clearTimeout(holdTimeout);
-    setIsHolding(false);
-    cancelHaptic();
-  };
-  const callbacks: Partial<ViewProps> = {
-    onTouchStart: enterHold,
-    onPointerDown: enterHold,
-    onPointerUp: exitHold,
-    onPointerLeave: exitHold,
-    onTouchEnd: exitHold,
-  };
-
-  useEffect(() => {
-    holdingScale.value = withTiming(isHolding ? 1.1 : 1, {
+    holdingScale.value = withTiming(1.1, {
       duration,
     });
-  }, [holdingScale, isHolding, duration]);
+    triggerSlowRiseHaptic();
+  };
+  const exitHold = (triggered: boolean) => {
+    holdingScale.value = withTiming(1, {
+      duration,
+    });
+    if (!triggered) cancelHaptic();
+  };
+  const gesture = Gesture.LongPress()
+    .minDuration(duration)
+    .runOnJS(true)
+    .onBegin(enterHold)
+    .onFinalize((_, triggered) => exitHold(triggered))
+    .onStart(handleLongPress);
+
   const scaleStyle = useAnimatedStyle(() => ({
     transform: [{ scale: holdingScale.value }],
   }));
   return (
-    <Animated.View style={[scaleStyle]} {...callbacks}>
-      {children}
-    </Animated.View>
+    <GestureDetector gesture={gesture}>
+      <Animated.View style={[scaleStyle]}>{children}</Animated.View>
+    </GestureDetector>
   );
 }

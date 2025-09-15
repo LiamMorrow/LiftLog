@@ -32,7 +32,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="SplashScreenLogo" width="414" height="736"/>
+        <image name="SplashScreenLegacy" width="414" height="736"/>
         <namedColor name="SplashScreenBackground">
             <color alpha="1.000" blue="0.964705882352941" green="0.992156862745098" red="0.988235294117647" customColorSpace="sRGB" colorSpace="custom"/>
         </namedColor>

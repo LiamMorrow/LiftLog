@@ -7,11 +7,13 @@ import {
   setFirstDayOfWeek,
   setIsHydrated,
   setLastBackup,
+  setNotesExpandedByDefault,
   setPreferredLanguage,
   setProToken,
   setRemoteBackupSettings,
   setRestNotifications,
   setShowBodyweight,
+  setShowFeed,
   setShowTips,
   setTipToShow,
   setUseImperialUnits,
@@ -41,6 +43,7 @@ export function applySettingsEffects() {
         showBodyweight,
         showTips,
         tipToShow,
+        showFeed,
         restNotifications,
         remoteBackupSettings,
         lastSuccessfulRemoteBackupHash,
@@ -49,11 +52,13 @@ export function applySettingsEffects() {
         firstDayOfWeek,
         colorSchemeSeed,
         proToken,
+        notesExpandedByDefault,
       ] = await Promise.all([
         preferenceService.getUseImperialUnits(),
         preferenceService.getShowBodyweight(),
         preferenceService.getShowTips(),
         preferenceService.getTipToShow(),
+        preferenceService.getShowFeed(),
         preferenceService.getRestNotifications(),
         preferenceService.getRemoteBackupSettings(),
         preferenceService.getLastSuccessfulRemoteBackupHash(),
@@ -62,12 +67,14 @@ export function applySettingsEffects() {
         preferenceService.getFirstDayOfWeek(),
         preferenceService.getColorSchemeSeed(),
         preferenceService.getProToken(),
+        preferenceService.getNotesExpandedByDefault(),
       ]);
       dispatch(setColorSchemeSeed(colorSchemeSeed));
       dispatch(setUseImperialUnits(useImperialUnits));
       dispatch(setShowBodyweight(showBodyweight));
       dispatch(setShowTips(showTips));
       dispatch(setTipToShow(tipToShow));
+      dispatch(setShowFeed(showFeed));
       dispatch(setRestNotifications(restNotifications));
       dispatch(setRemoteBackupSettings(remoteBackupSettings));
       dispatch(
@@ -84,6 +91,7 @@ export function applySettingsEffects() {
       dispatch(setBackupReminder(backupReminder));
       dispatch(setFirstDayOfWeek(firstDayOfWeek));
       dispatch(setProToken(proToken));
+      dispatch(setNotesExpandedByDefault(notesExpandedByDefault));
 
       if (Platform.OS === 'ios') {
         Purchases.configure({
@@ -165,6 +173,14 @@ export function applySettingsEffects() {
     },
   );
   addEffect(
+    setShowFeed,
+    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+      if (stateAfterReduce.settings.isHydrated) {
+        await preferenceService.setShowFeed(action.payload);
+      }
+    },
+  );
+  addEffect(
     setRestNotifications,
     async (action, { stateAfterReduce, extra: { preferenceService } }) => {
       if (stateAfterReduce.settings.isHydrated) {
@@ -223,6 +239,15 @@ export function applySettingsEffects() {
     async (action, { stateAfterReduce, extra: { preferenceService } }) => {
       if (stateAfterReduce.settings.isHydrated) {
         await preferenceService.setColorSchemeSeed(action.payload);
+      }
+    },
+  );
+
+  addEffect(
+    setNotesExpandedByDefault,
+    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+      if (stateAfterReduce.settings.isHydrated) {
+        await preferenceService.setNotesExpandedByDefault(action.payload);
       }
     },
   );

@@ -102,8 +102,14 @@ function SessionEditor({
     );
     setIsEditOpen(true);
   };
-  const setName = (name: string) => dispatch(setEditingSessionName(name));
-  const setNotes = (notes: string) => dispatch(setEditingSessionNotes(notes));
+  const setName = (name: string) => {
+    dispatch(setEditingSessionName(name));
+    saveSession();
+  };
+  const setNotes = (notes: string) => {
+    dispatch(setEditingSessionNotes(notes));
+    saveSession();
+  };
   const saveExercise = () => {
     if (!selectedExercise) {
       return;
@@ -188,6 +194,7 @@ function SessionEditor({
                   setIsRemoveOpen(true);
                   setSelectedExerciseIndex(index);
                 }}
+                saveSession={saveSession}
               />
             )}
           />
@@ -241,18 +248,26 @@ function ExerciseItem({
   beginRemove,
   sessionIndex,
   programId,
+  saveSession,
 }: {
   blueprint: WeightedExerciseBlueprint;
   beginEdit: () => void;
   beginRemove: () => void;
   sessionIndex: number;
   programId: string;
+  saveSession: () => void;
 }) {
   const dispatch = useDispatch();
   const [copyDialogOpen, setCopyDialogOpen] = useState(false);
 
-  const moveDown = () => dispatch(moveExerciseDown(blueprint));
-  const moveUp = () => dispatch(moveExerciseUp(blueprint));
+  const moveDown = () => {
+    dispatch(moveExerciseDown(blueprint));
+    saveSession();
+  };
+  const moveUp = () => {
+    dispatch(moveExerciseUp(blueprint));
+    saveSession();
+  };
 
   return (
     <>

@@ -1,5 +1,5 @@
 import { uuid } from '@/utils/uuid';
-import { File, Paths } from 'expo-file-system/next';
+import { File, Paths } from 'expo-file-system';
 import { Platform } from 'react-native';
 import { getLibraryDirectory } from '@/modules/native-crypto';
 
@@ -65,7 +65,7 @@ export class KeyValueStore {
   }
 
   private async readBytes(file: File): Promise<Uint8Array> {
-    const readBytes = new Uint8Array(file.size!);
+    const readBytes = new Uint8Array(file.size);
     let offset = 0;
     // This is probably slower than just using sync file.read, but it won't lock the UI thread...
     for await (const bytesAny of file.readableStream().values()) {

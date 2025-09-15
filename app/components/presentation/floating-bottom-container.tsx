@@ -17,8 +17,8 @@ export default function FloatingBottomContainer({
         padding: spacing.pageHorizontalMargin,
         gap: spacing[2],
         zIndex: 10,
+        pointerEvents: 'box-none',
       }}
-      pointerEvents="box-none"
     >
       {fab ? (
         <View

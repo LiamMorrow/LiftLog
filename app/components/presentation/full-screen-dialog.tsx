@@ -61,7 +61,7 @@ export default function FullScreenDialog(props: FullScreenDialogProps) {
               }}
             >
               {children}
-              <View style={{ height: bottom * 4, width: '100%' }}></View>
+              <View style={{ height: bottom, width: '100%' }}></View>
             </FullHeightScrollView>
           </Animated.View>
         </ScrollProvider>

@@ -100,6 +100,15 @@ export class PreferenceService {
     return isNaN(parsed) ? 1 : parsed;
   }
 
+  async setShowFeed(showFeed: boolean): Promise<void> {
+    await this.keyValueStore.setItem('showFeed', toBooleanString(showFeed));
+  }
+
+  async getShowFeed(): Promise<boolean> {
+    const value = await this.keyValueStore.getItem('showFeed');
+    return fromBooleanString(value, true);
+  }
+
   async getHasRequestedNotificationPermission(): Promise<boolean> {
     const value = await this.keyValueStore.getItem(
       'hasRequestedNotificationPermission',
@@ -207,6 +216,18 @@ export class PreferenceService {
   async getBackupReminder(): Promise<boolean> {
     const value = await this.keyValueStore.getItem('backupReminder');
     return fromBooleanString(value, true);
+  }
+
+  async getNotesExpandedByDefault(): Promise<boolean> {
+    const value = await this.keyValueStore.getItem('notesExpandedByDefault');
+    return fromBooleanString(value, true);
+  }
+
+  async setNotesExpandedByDefault(value: boolean): Promise<void> {
+    await this.keyValueStore.setItem(
+      'notesExpandedByDefault',
+      toBooleanString(value),
+    );
   }
 
   async setColorSchemeSeed(payload: ColorSchemeSeed): Promise<void> {

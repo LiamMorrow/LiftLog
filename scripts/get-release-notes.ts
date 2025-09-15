@@ -3,7 +3,24 @@
 import { $ } from "zx";
 import semver, { type ReleaseType } from "semver";
 import { OpenAI } from "openai";
+async function commitsInMerge(mergeHash: string, mainline: number = 1) {
+  // Get the parent commits
+  const parentsRaw = await $`git rev-list --parents -n 1 ${mergeHash}`;
+  const [commit, ...parents] = parentsRaw.stdout.trim().split(" ");
+  if (parents.length < 2) return []; // not a merge commit
 
+  const mainlineParent = parents[mainline - 1];
+  const otherParents = parents.filter((p, i) => i !== mainline - 1);
+
+  // Commits reachable from other parents but not mainline parent
+  const commits: string[] = [];
+  for (const parent of otherParents) {
+    const { stdout } = await $`git rev-list ${parent} ^${mainlineParent}`;
+    commits.push(...stdout.trim().split("\n").filter(Boolean));
+  }
+
+  return commits;
+}
 async function main() {
   const bumpType = process.argv[2] as ReleaseType;
   const prereleaseFlag = process.argv.includes("--prerelease");
@@ -30,6 +47,8 @@ async function main() {
     console.error("Could not increment version");
     process.exit(1);
   }
+  // Print new version
+  console.log(`**Release version:** v${newVersion}\n`);
 
   // Get latest non-prerelease release (status is not Pre-release)
   const nonPreReleases = allReleases.filter((r) => r.status !== "Pre-release");
@@ -55,22 +74,15 @@ async function main() {
   // Get all descendants of merge commits
   let mergeDescendants = new Set<string>();
   for (const mergeSha of mergeCommits) {
-    // Get all descendants of this merge commit (including itself)
-    // --ancestry-path gives the commits that are descendants of mergeSha up to HEAD
-    const descendantsRaw =
-      await $`git log ${mergeSha}..${toRef} --ancestry-path --pretty=format:%H`;
-    const descendants = descendantsRaw.stdout
-      .trim()
-      .split("\n")
-      .filter(Boolean);
-    descendants.forEach((sha) => mergeDescendants.add(sha));
-    mergeDescendants.add(mergeSha); // include the merge commit itself
+    const commitsPartOfThisMerge = await commitsInMerge(mergeSha);
+    commitsPartOfThisMerge.forEach((x) => mergeDescendants.add(x));
   }
 
   // Non-merge commits that are NOT descendants of any merge commit
   const nonMergeCommits = allCommits.filter(
     (sha) => !mergeCommits.includes(sha) && !mergeDescendants.has(sha)
   );
+
   // Collect all commit messages for summary
   let allMessages: string[] = [];
   for (const sha of mergeCommits) {
@@ -130,9 +142,6 @@ async function main() {
     const shortSha = (await $`git rev-parse --short ${sha}`).stdout.trim();
     console.log(`- ${msg} (${shortSha})`);
   }
-
-  // Print new version
-  console.log(`\n**Next release version:** v${newVersion}`);
 }
 
 main().catch((e) => {

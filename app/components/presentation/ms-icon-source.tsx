@@ -85,15 +85,24 @@ import { match } from 'ts-pattern';
 import { msReplay } from '@material-symbols-react-native/outlined-400/msReplay';
 import { msAssignmentAdd } from '@material-symbols-react-native/outlined-400/msAssignmentAdd';
 import { msCopyAll } from '@material-symbols-react-native/outlined-400/msCopyAll';
+import { msOpenInBrowser } from '@material-symbols-react-native/outlined-400/msOpenInBrowser';
 import { msExpandCircleDown } from '@material-symbols-react-native/outlined-400/msExpandCircleDown';
 import { msExpandCircleUp } from '@material-symbols-react-native/outlined-400/msExpandCircleUp';
 import { msSearch } from '@material-symbols-react-native/outlined-400/msSearch';
 import { msDirectionsRun } from '@material-symbols-react-native/outlined-400/msDirectionsRun';
 import { msLanguage } from '@material-symbols-react-native/outlined-400/msLanguage';
+import { msUnfoldLess } from '@material-symbols-react-native/outlined-400/msUnfoldLess';
+import { msUnfoldMore } from '@material-symbols-react-native/outlined-400/msUnfoldMore';
+import plusMinus from '../../assets/math-plus-minus.svg';
+import { SvgXml } from 'react-native-svg';
 
 // Importing these icons using the below methods causes android app to crash
 // import { msAdd, msArrowDownward } from '@material-symbols-react-native/outlined-400';
 // import * as AllIcons from '@material-symbols-react-native/outlined-400';
+
+const CustomIcons = {
+  plusMinus: plusMinus,
+};
 
 const MaterialSymbols = {
   add: msAdd,
@@ -123,6 +132,9 @@ const MaterialSymbols = {
   notifications: msNotifications,
   plus: msAdd,
   star: msStar,
+  unfoldLess: msUnfoldLess,
+  unfoldMore: msUnfoldMore,
+  openInBrowser: msOpenInBrowser,
   promptSuggestion: msPromptSuggestion,
   send: msSend,
   bolt: msBolt,
@@ -200,6 +212,18 @@ const MaterialSymbols = {
 };
 
 export function MsIconSrc({ name, ...rest }: IconProps) {
+  if ((name as keyof typeof CustomIcons) in CustomIcons) {
+    return (
+      <SvgXml
+        width={rest.size}
+        stroke={rest.color ?? 'white'}
+        height={rest.size}
+        fill={rest.color ?? 'white'}
+        xml={CustomIcons[name as keyof typeof CustomIcons]}
+        {...rest}
+      />
+    );
+  }
   const icon = MaterialSymbols[name as keyof typeof MaterialSymbols];
   if (!icon) {
     return <MsIcon icon={MaterialSymbols['info']} {...rest} />;

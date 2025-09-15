@@ -4,7 +4,9 @@ import ThemeChooser from '@/components/presentation/theme-chooser';
 import { RootState, useAppSelector } from '@/store';
 import {
   setColorSchemeSeed,
+  setNotesExpandedByDefault,
   setShowBodyweight,
+  setShowFeed,
   setShowTips,
 } from '@/store/settings';
 import { T, useTranslate } from '@tolgee/react';
@@ -28,7 +30,18 @@ export default function AppConfiguration() {
           value={settings.showBodyweight}
           onValueChange={(value) => dispatch(setShowBodyweight(value))}
         />
+        <ListSwitch
+          headline={<T keyName="ShowFeed" />}
+          supportingText={<T keyName="ShowFeedSubtitle" />}
+          value={settings.showFeed}
+          onValueChange={(value) => dispatch(setShowFeed(value))}
+        />
 
+        <ListSwitch
+          headline={<T keyName="Workout notes expanded by default" />}
+          value={settings.notesExpandedByDefault}
+          onValueChange={(value) => dispatch(setNotesExpandedByDefault(value))}
+        />
         <ListSwitch
           headline={<T keyName="ShowTips" />}
           supportingText={<T keyName="ShowTipsSubtitle" />}

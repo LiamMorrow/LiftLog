@@ -67,7 +67,7 @@ export default function CopyExerciseDialog({
         showSnackbar({
           text: t('Exercise {exerciseName} copied to {targetSessionName}', {
             exerciseName: exerciseBlueprint.name,
-            targetSession: targetSession.name,
+            targetSessionName: targetSession.name,
           }),
         }),
       );

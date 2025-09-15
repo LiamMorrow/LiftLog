@@ -15,16 +15,16 @@ jobs:
       EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY: ${{secrets.EXPO_REVENUECAT_GOOGLE_API_KEY}}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "22"
           cache: npm
           cache-dependency-path: ./app/package-lock.json
 
       - name: Setup JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: "temurin"
           java-version: "17"
@@ -86,7 +86,7 @@ jobs:
             DISPLAY_VERSION=${{ github.event.release.name  }}
             BUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}
       - name: upload binaries to release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: ${{startsWith(github.ref, 'refs/tags/') }}
         with:
           files: app/android/app/build/outputs/apk/release/app-release.apk

@@ -10,6 +10,7 @@ type WeightDisplayProps = {
   increment: BigNumber;
   label?: string;
   isReadonly?: boolean;
+  allowNegative?: boolean;
 } & (
   | {
       allowNull: true;
@@ -41,6 +42,7 @@ export default function WeightDisplay(props: WeightDisplayProps) {
           open={dialogOpen}
           weight={props.weight as BigNumber}
           increment={props.increment}
+          allowNegative={props.allowNegative}
           label={props.label ?? t('Weight')}
           allowNull={props.allowNull as false}
           updateWeight={props.updateWeight as (weight: BigNumber) => void}

@@ -1,15 +1,21 @@
-import WeightFormat from '@/components/presentation/weight-format';
 import { spacing } from '@/hooks/useAppTheme';
 import { useWeightSuffix } from '@/hooks/useWeightSuffix';
-import { T } from '@tolgee/react';
+import {
+  localeFormatBigNumber,
+  localeParseBigNumber,
+} from '@/utils/locale-bignumber';
+import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { ReactNode, useEffect, useState } from 'react';
 import { View } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import {
   Button,
   Dialog,
+  IconButton,
   Portal,
   TextInput,
+  Tooltip,
   useTheme,
 } from 'react-native-paper';
 
@@ -19,6 +25,7 @@ type WeightDialogProps = {
   increment: BigNumber;
   label?: string;
   children?: ReactNode;
+  allowNegative?: boolean | undefined;
 } & (
   | {
       weight: BigNumber;
@@ -34,16 +41,17 @@ type WeightDialogProps = {
 
 export default function WeightDialog(props: WeightDialogProps) {
   const theme = useTheme();
-  const [text, setText] = useState(props.weight?.toFormat() ?? '');
+  const { t } = useTranslate();
+  const [text, setText] = useState(localeFormatBigNumber(props.weight));
   const [editorWeight, setEditorWeight] = useState<BigNumber | undefined>(
     props.weight,
   );
   const weightSuffix = useWeightSuffix();
 
   useEffect(() => {
-    setText(props.weight?.toFormat() ?? '');
+    setText(localeFormatBigNumber(props.weight));
     setEditorWeight(props.weight);
-  }, [props.open, props.weight, setText]);
+  }, [props.open, props.weight]);
 
   const nonZeroIncrement = props.increment.isZero()
     ? new BigNumber('2.5')
@@ -54,14 +62,17 @@ export default function WeightDialog(props: WeightDialogProps) {
       return;
     }
     setEditorWeight(editorWeight.plus(nonZeroIncrement));
-    setText(editorWeight.plus(nonZeroIncrement).toFormat());
+    setText(localeFormatBigNumber(editorWeight.plus(nonZeroIncrement)));
   };
   const decrementWeight = () => {
     if (editorWeight === undefined) {
       return;
     }
+    if (!props.allowNegative && editorWeight.isLessThan(nonZeroIncrement)) {
+      return;
+    }
     setEditorWeight(editorWeight.minus(nonZeroIncrement));
-    setText(editorWeight.minus(nonZeroIncrement).toFormat());
+    setText(localeFormatBigNumber(editorWeight.minus(nonZeroIncrement)));
   };
 
   const handleTextChange = (text: string) => {
@@ -71,8 +82,8 @@ export default function WeightDialog(props: WeightDialogProps) {
       return;
     }
 
-    if (!BigNumber(text).isNaN()) {
-      setEditorWeight(new BigNumber(text));
+    if (!localeParseBigNumber(text).isNaN()) {
+      setEditorWeight(localeParseBigNumber(text));
       return;
     }
   };
@@ -82,64 +93,88 @@ export default function WeightDialog(props: WeightDialogProps) {
       props.onClose();
       return;
     }
+    if (!props.allowNegative && editorWeight?.isLessThan(0)) {
+      return;
+    }
     props.updateWeight(editorWeight!);
     props.onClose();
   };
 
   return (
     <Portal>
-      <Dialog visible={props.open} onDismiss={props.onClose}>
-        <Dialog.Title>{props.label ?? <T keyName="Weight" />}</Dialog.Title>
-        <Dialog.Content>
-          <View style={{ gap: spacing[2] }}>
-            <TextInput
-              testID="weight-input"
-              label={props.label ?? <T keyName="Weight" />}
-              right={<TextInput.Affix text={weightSuffix} />}
-              selectTextOnFocus
-              mode="outlined"
-              inputMode="decimal"
-              keyboardType="decimal-pad"
-              value={text}
-              onChangeText={handleTextChange}
-              style={{ backgroundColor: theme.colors.elevation.level3 }}
-            />
-            <View
-              style={{
-                flexDirection: 'row',
-                gap: spacing[2],
-                justifyContent: 'center',
-              }}
-            >
-              <Button
-                icon={'minus'}
-                mode="outlined"
-                testID="decrement-weight"
-                onPress={decrementWeight}
+      <KeyboardAvoidingView
+        behavior={'height'}
+        style={{ flex: 1, pointerEvents: props.open ? 'box-none' : 'none' }}
+      >
+        <Dialog visible={props.open} onDismiss={props.onClose}>
+          <Dialog.Title>{props.label ?? <T keyName="Weight" />}</Dialog.Title>
+          <Dialog.Content>
+            <View style={{ gap: spacing[2] }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  gap: spacing[2],
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
               >
-                <WeightFormat weight={nonZeroIncrement} />
-              </Button>
-              <Button
-                icon={'plus'}
-                mode="outlined"
-                testID="increment-weight"
-                onPress={incrementWeight}
-              >
-                <WeightFormat weight={nonZeroIncrement} />
-              </Button>
+                <TextInput
+                  testID="weight-input"
+                  right={<TextInput.Affix text={weightSuffix} />}
+                  selectTextOnFocus
+                  mode="outlined"
+                  inputMode="decimal"
+                  keyboardType="decimal-pad"
+                  autoFocus
+                  value={text}
+                  onChangeText={handleTextChange}
+                  style={{
+                    backgroundColor: theme.colors.elevation.level3,
+                    flex: 1,
+                  }}
+                />
+                {props.allowNegative && (
+                  <Tooltip title={t('Toggle negative')}>
+                    <IconButton
+                      mode="outlined"
+                      icon={'plusMinus'}
+                      onPress={() => {
+                        setEditorWeight(
+                          editorWeight?.multipliedBy(-1) as BigNumber,
+                        );
+                        setText(
+                          localeFormatBigNumber(editorWeight?.multipliedBy(-1)),
+                        );
+                      }}
+                    />
+                  </Tooltip>
+                )}
+                <IconButton
+                  icon={'minus'}
+                  mode="outlined"
+                  testID="decrement-weight"
+                  onPress={decrementWeight}
+                />
+                <IconButton
+                  icon={'plus'}
+                  mode="outlined"
+                  testID="increment-weight"
+                  onPress={incrementWeight}
+                />
+              </View>
+              {props.children}
             </View>
-            {props.children}
-          </View>
-        </Dialog.Content>
-        <Dialog.Actions>
-          <Button onPress={props.onClose} testID="close">
-            <T keyName="Close" />
-          </Button>
-          <Button onPress={onSaveClick} testID="save">
-            <T keyName="Save" />
-          </Button>
-        </Dialog.Actions>
-      </Dialog>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={props.onClose} testID="close">
+              <T keyName="Close" />
+            </Button>
+            <Button onPress={onSaveClick} testID="save">
+              <T keyName="Save" />
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </KeyboardAvoidingView>
     </Portal>
   );
 }

@@ -13,12 +13,12 @@ import {
   updateNotesForExercise,
   updateWeightForSet,
 } from '@/store/current-session';
-import { Card, FAB, Icon } from 'react-native-paper';
+import { Card, FAB, Icon, Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import { Text, View } from 'react-native';
+import { Linking, View } from 'react-native';
 import EmptyInfo from '@/components/presentation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
-import { useTranslate } from '@tolgee/react';
+import { T, useTranslate } from '@tolgee/react';
 import ItemList from '@/components/presentation/item-list';
 import { RecordedWeightedExercise } from '@/models/session-models';
 import WeightedExercise from '@/components/presentation/weighted-exercise';
@@ -30,14 +30,15 @@ import FullHeightScrollView from '@/components/presentation/full-height-scroll-v
 import { WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/exercise-editor';
-import { LocalDateTime } from '@js-joda/core';
+import { Duration, LocalDateTime, LocalTime } from '@js-joda/core';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import UpdatePlanButton from '@/components/smart/update-plan-button';
 import { UnknownAction } from '@reduxjs/toolkit';
-
 import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
 import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
 import { SurfaceText } from '@/components/presentation/surface-text';
+import WeightFormat from '@/components/presentation/weight-format';
+import { formatDuration } from '@/utils/format-date';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
@@ -73,6 +74,9 @@ export default function SessionComponent(props: {
     WeightedExerciseBlueprint | undefined
   >(undefined);
   const [exerciseEditorOpen, setExerciseEditorOpen] = useState(false);
+  const openUrl = (url: string) => {
+    void Linking.canOpenURL(url).then(() => Linking.openURL(url));
+  };
 
   const handleEditExercise = () => {
     if (editingExerciseBlueprint !== undefined) {
@@ -134,7 +138,11 @@ export default function SessionComponent(props: {
           exerciseIndex: index,
           reps,
           setIndex,
-          time: LocalDateTime.now(),
+          time:
+            props.target === 'workoutSession'
+              ? LocalDateTime.now()
+              : (session.lastExercise?.lastRecordedSet?.set
+                  ?.completionDateTime ?? session.date.atTime(LocalTime.now())),
         });
         if (props.target === 'workoutSession') storeDispatch(notifySetTimer());
       }}
@@ -142,7 +150,11 @@ export default function SessionComponent(props: {
         dispatch(cycleExerciseReps, {
           exerciseIndex: index,
           setIndex,
-          time: LocalDateTime.now(),
+          time:
+            props.target === 'workoutSession'
+              ? LocalDateTime.now()
+              : (session.lastExercise?.lastRecordedSet?.set
+                  ?.completionDateTime ?? session.date.atTime(LocalTime.now())),
         });
         if (props.target === 'workoutSession') storeDispatch(notifySetTimer());
       }}
@@ -173,7 +185,9 @@ export default function SessionComponent(props: {
           exerciseIndex: index,
         })
       }
-      onOpenLink={() => {}}
+      onOpenLink={() => {
+        openUrl(item.blueprint.link);
+      }}
       isReadonly={isReadonly}
       showPreviousButton={props.target === 'workoutSession'}
       previousRecordedExercises={recentlyCompletedExercises(item.blueprint)}
@@ -272,12 +286,64 @@ export default function SessionComponent(props: {
     />
   );
 
+  const sessionDuration =
+    session.lastExercise?.lastRecordedSet?.set?.completionDateTime &&
+    session.firstExercise?.firstRecordedSet?.set?.completionDateTime
+      ? Duration.between(
+          session.firstExercise.firstRecordedSet.set.completionDateTime,
+          session.lastExercise.lastRecordedSet.set.completionDateTime,
+        )
+      : undefined;
+
+  const totalWeightLifted = (
+    <Card mode="contained" style={{ margin: spacing.pageHorizontalMargin }}>
+      <Card.Content>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Text variant="bodyMedium">
+            <T keyName="Total weight lifted this workout" />
+          </Text>
+          <WeightFormat
+            fontWeight="bold"
+            color="primary"
+            weight={session.totalWeightLifted}
+          />
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Text variant="bodyMedium">
+            <T keyName="Total workout time" />
+          </Text>
+          <Text
+            variant="bodyMedium"
+            style={{ color: colors.primary, fontWeight: 'bold' }}
+          >
+            {(sessionDuration &&
+              formatDuration(sessionDuration, 'hours-mins')) ||
+              '-'}
+          </Text>
+        </View>
+      </Card.Content>
+    </Card>
+  );
+
   return (
     <FullHeightScrollView floatingChildren={floatingBottomContainer}>
       {notesComponent}
       {emptyInfo}
       <ItemList items={session.recordedExercises} renderItem={renderItem} />
       {bodyWeight}
+      {totalWeightLifted}
       <FullScreenDialog
         title={
           exerciseToEditIndex === undefined

@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { WeightedExerciseBlueprint } from '@/models/blueprint-models';
+import { EmptyExerciseBlueprint } from '@/models/blueprint-models';
 import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/exercise-editor';
 import { useAppSelectorWithArg } from '@/store';
@@ -64,7 +65,8 @@ export default function SessionMoreMenuComponent(props: {
       >
         <Menu.Item
           onPress={() => {
-            setWorkoutEditorOpen(true);
+            setExerciseEditorOpen(true);
+            setEditingExerciseBlueprint(EmptyExerciseBlueprint);
             setMenuOpen(false);
           }}
           testID="session-add-exercise"
@@ -154,7 +156,7 @@ function WorkoutEditor(props: {
           label={t('PlanNotes')}
           testID="workout-notes"
           style={{ marginBottom: spacing[2] }}
-          value={editorWorkout.blueprint.notes}
+          defaultValue={editorWorkout.blueprint.notes}
           onChangeText={(notes) =>
             setEditorWorkout(
               editorWorkout.with({

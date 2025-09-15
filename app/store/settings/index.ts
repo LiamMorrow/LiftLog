@@ -19,12 +19,14 @@ interface SettingsState {
   showBodyweight: boolean;
   showTips: boolean;
   tipToShow: number;
+  showFeed: boolean;
   restNotifications: boolean;
   remoteBackupSettings: RemoteBackupSettings;
   lastBackup: RemoteData<LastBackup, string>;
   backupReminder: boolean;
   colorSchemeSeed: ColorSchemeSeed;
   preferredLanguage: string | undefined;
+  notesExpandedByDefault: boolean;
 }
 
 interface RemoteBackupSettings {
@@ -40,6 +42,7 @@ const initialState: SettingsState = {
   showBodyweight: true,
   showTips: true,
   tipToShow: 1,
+  showFeed: true,
   restNotifications: true,
   proToken: undefined,
   remoteBackupSettings: {
@@ -51,6 +54,7 @@ const initialState: SettingsState = {
   backupReminder: true,
   colorSchemeSeed: 'default',
   preferredLanguage: undefined,
+  notesExpandedByDefault: false,
 };
 
 const settingsSlice = createSlice({
@@ -72,8 +76,14 @@ const settingsSlice = createSlice({
     setTipToShow(state, action: PayloadAction<number>) {
       state.tipToShow = action.payload;
     },
+    setShowFeed(state, action: PayloadAction<boolean>) {
+      state.showFeed = action.payload;
+    },
     setRestNotifications(state, action: PayloadAction<boolean>) {
       state.restNotifications = action.payload;
+    },
+    setNotesExpandedByDefault(state, action: PayloadAction<boolean>) {
+      state.notesExpandedByDefault = action.payload;
     },
     setRemoteBackupSettings(
       state,
@@ -134,6 +144,7 @@ export const {
   setShowBodyweight,
   setShowTips,
   setTipToShow,
+  setShowFeed,
   setRestNotifications,
   setRemoteBackupSettings,
   setLastBackup,
@@ -142,6 +153,7 @@ export const {
   setFirstDayOfWeek,
   setProToken,
   setPreferredLanguage,
+  setNotesExpandedByDefault,
 } = settingsSlice.actions;
 
 export const settingsReducer = settingsSlice.reducer;

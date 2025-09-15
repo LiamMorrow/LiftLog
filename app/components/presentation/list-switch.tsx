@@ -4,7 +4,7 @@ import { List, Switch } from 'react-native-paper';
 
 interface ListSwitchProps {
   headline: ReactNode;
-  supportingText: ReactNode;
+  supportingText?: ReactNode;
   value: boolean;
   focus?: boolean;
   onValueChange: (value: boolean) => void;

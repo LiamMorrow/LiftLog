@@ -14,8 +14,8 @@ export default function ExerciseFilterer(props: {
   const [searchText, setSearchText] = useState('');
 
   const search = useDebouncedCallback(() => {
-    const searchRegex = new RegExp(searchText, 'i');
-    const matchRegex = new RegExp('^' + searchText + '$', 'i');
+    const searchRegex = new RegExp(escapeRegExp(searchText), 'i');
+    const matchRegex = new RegExp('^' + escapeRegExp(searchText) + '$', 'i');
     const newFilteredExercises = Enumerable.from(Object.entries(exercises))
       .where(
         (x) =>
@@ -23,7 +23,7 @@ export default function ExerciseFilterer(props: {
             x[1].muscles.some((exerciseMuscle) =>
               muscleFilters.includes(exerciseMuscle),
             )) &&
-          searchRegex.test(x[1].name),
+          (!searchText || searchRegex.test(x[1].name)),
       )
       .orderByDescending((x) => matchRegex.test(x[1].name))
       .select((x) => x[0])
@@ -45,4 +45,7 @@ export default function ExerciseFilterer(props: {
       }}
     />
   );
+}
+function escapeRegExp(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

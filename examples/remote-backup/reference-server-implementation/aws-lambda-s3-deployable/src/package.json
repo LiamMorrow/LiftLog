@@ -8,14 +8,14 @@
   "dependencies": {
     "@types/aws-lambda": "^8.10.119",
     "aws-sdk": "^2.1691.0",
-    "mime-types": "^2.1.35"
+    "mime-types": "^3.0.0"
   },
   "devDependencies": {
-    "@types/mime-types": "^2.1.4",
+    "@types/mime-types": "^3.0.0",
     "ts-loader": "^9.4.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.3.3",
     "webpack": "^5.88.0",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^6.0.0"
   }
 }

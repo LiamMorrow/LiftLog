@@ -1,10 +1,14 @@
+import {
+  localeFormatBigNumber,
+  localeParseBigNumber,
+} from '@/utils/locale-bignumber';
+import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { IconButton, List, TextInput } from 'react-native-paper';
+import { IconButton, List, TextInput, Tooltip } from 'react-native-paper';
 
 interface EditableIncrementerProps {
-  increment: BigNumber;
   label: string;
   value: BigNumber;
   suffix: string;
@@ -13,27 +17,32 @@ interface EditableIncrementerProps {
 }
 
 export default function EditableIncrementer(props: EditableIncrementerProps) {
-  const { increment, label, value, onChange } = props;
-  const [text, setText] = useState(props.value.toFormat());
+  const { label, value, onChange } = props;
+  const { t } = useTranslate();
+  const [text, setText] = useState(localeFormatBigNumber(props.value));
   const [editorValue, setEditorValue] = useState<BigNumber>(value);
 
   const handleTextChange = (text: string) => {
     setText(text);
     if (text.trim() === '') {
       setEditorValue(new BigNumber('0'));
+      onChange(BigNumber(0));
       return;
     }
 
-    const parsed = BigNumber(text);
+    const parsed = localeParseBigNumber(text);
     if (!parsed.isNaN()) {
       setEditorValue(parsed);
+      onChange(parsed);
       return;
     }
   };
   useEffect(() => {
-    setText(value?.toFormat() ?? '');
-    setEditorValue(value);
-  }, [value]);
+    if (!editorValue.eq(value)) {
+      setText(localeFormatBigNumber(value));
+      setEditorValue(value);
+    }
+  }, [value, editorValue]);
 
   return (
     <List.Item
@@ -41,35 +50,38 @@ export default function EditableIncrementer(props: EditableIncrementerProps) {
       title={label}
       titleNumberOfLines={2}
       right={() => (
-        <>
-          <View
-            style={{
-              alignItems: 'center',
-              flexDirection: 'row',
-              justifyContent: 'center',
-            }}
-          >
+        <View
+          style={{
+            alignItems: 'center',
+            flexDirection: 'row',
+            justifyContent: 'center',
+          }}
+        >
+          <Tooltip title={t('Toggle negative')}>
             <IconButton
-              icon={'remove'}
+              icon={'plusMinus'}
               onPress={() => {
-                onChange(editorValue.minus(increment));
+                onChange(editorValue.multipliedBy(-1));
+                setText(localeFormatBigNumber(editorValue.multipliedBy(-1)));
+                setEditorValue(editorValue.multipliedBy(-1));
               }}
             />
-            <TextInput
-              testID="editable-field"
-              value={text}
-              inputMode="decimal"
-              onChangeText={handleTextChange}
-              selectTextOnFocus
-              onBlur={() => onChange(editorValue)}
-              right={<TextInput.Affix text={props.suffix} />}
-            />
-            <IconButton
-              icon={'add'}
-              onPress={() => onChange(editorValue.plus(increment))}
-            />
-          </View>
-        </>
+          </Tooltip>
+          <TextInput
+            testID="editable-field"
+            value={text}
+            inputMode="decimal"
+            keyboardType="decimal-pad"
+            onChangeText={handleTextChange}
+            onBlur={() => {
+              if (text === '') {
+                setText('0');
+              }
+              onChange(editorValue);
+            }}
+            right={<TextInput.Affix text={props.suffix} />}
+          />
+        </View>
       )}
     ></List.Item>
   );

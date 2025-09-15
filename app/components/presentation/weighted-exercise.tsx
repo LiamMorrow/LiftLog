@@ -21,6 +21,7 @@ import PreviousExerciseViewer from '@/components/presentation/previous-exercixe-
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import ExerciseNotesDisplay from '@/components/presentation/exercise-notes-display';
 import { WeightAppliesTo } from '@/store/current-session';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 interface WeightedExerciseProps {
   recordedExercise: RecordedWeightedExercise;
@@ -38,7 +39,7 @@ interface WeightedExerciseProps {
   ) => void;
   updateWeightForExercise: (weight: BigNumber) => void;
   updateNotesForExercise: (notes: string) => void;
-  onOpenLink: (link: string) => void;
+  onOpenLink: () => void;
   onEditExercise: () => void;
   onRemoveExercise: () => void;
 }
@@ -82,6 +83,15 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
           />
         </Tooltip>
       ) : null}
+      {!props.isReadonly ? (
+        <Tooltip title={t('Notes')}>
+          <IconButton
+            testID="exercise-notes-btn"
+            icon={'notes'}
+            onPress={() => setNotesDialogOpen(true)}
+          />
+        </Tooltip>
+      ) : null}
 
       <Menu
         visible={menuVisible}
@@ -104,7 +114,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
           title={t('Edit')}
         />
         <Menu.Item
-          testID="exercise-notes-btn"
+          testID="exercise-notes-more-btn"
           title={t('Notes')}
           leadingIcon={'notes'}
           onPress={() => {
@@ -121,6 +131,16 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
           leadingIcon={'delete'}
           title={t('Remove')}
         />
+        {!!props.recordedExercise.blueprint.link && (
+          <Menu.Item
+            onPress={() => {
+              props.onOpenLink();
+              setMenuVisible(false);
+            }}
+            leadingIcon={'openInBrowser'}
+            title={t('OpenLink')}
+          />
+        )}
       </Menu>
     </View>
   );
@@ -185,6 +205,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
 
       <PotentialSetAdditionalActionsDialog
         open={additionalPotentialSetIndex !== -1}
+        repTarget={props.recordedExercise.blueprint.repsPerSet}
         set={props.recordedExercise.potentialSets[additionalPotentialSetIndex]}
         updateRepCount={(reps) =>
           updateRepCountForSet(additionalPotentialSetIndex, reps)
@@ -192,39 +213,51 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
         close={() => setAdditionalPotentialSetIndex(-1)}
       />
       <Portal>
-        <Dialog visible={notesDialogOpen}>
-          <Dialog.Title>
-            <T
-              keyName="SessionNotesFor{name}"
-              params={{ name: recordedExercise.blueprint.name }}
-            />
-          </Dialog.Title>
-          <Dialog.Content>
-            <TextInput
-              value={editorNotes}
-              multiline
-              mode="outlined"
-              onChangeText={setEditorNotes}
-            />
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button
-              testID="cancel-notes"
-              onPress={() => setNotesDialogOpen(false)}
-            >
-              <T keyName="Cancel" />
-            </Button>
-            <Button
-              testID="save-notes"
-              onPress={() => {
-                updateNotesForExercise(editorNotes);
-                setNotesDialogOpen(false);
-              }}
-            >
-              <T keyName="Save" />
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
+        <KeyboardAvoidingView
+          behavior={'height'}
+          style={{
+            flex: 1,
+            pointerEvents: notesDialogOpen ? 'box-none' : 'none',
+          }}
+        >
+          <Dialog
+            visible={notesDialogOpen}
+            onDismiss={() => setNotesDialogOpen(false)}
+          >
+            <Dialog.Title>
+              <T
+                keyName="SessionNotesFor{name}"
+                params={{ name: recordedExercise.blueprint.name }}
+              />
+            </Dialog.Title>
+            <Dialog.Content>
+              <TextInput
+                defaultValue={editorNotes}
+                multiline
+                mode="outlined"
+                numberOfLines={6}
+                onChangeText={setEditorNotes}
+              />
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button
+                testID="cancel-notes"
+                onPress={() => setNotesDialogOpen(false)}
+              >
+                <T keyName="Cancel" />
+              </Button>
+              <Button
+                testID="save-notes"
+                onPress={() => {
+                  updateNotesForExercise(editorNotes);
+                  setNotesDialogOpen(false);
+                }}
+              >
+                <T keyName="Save" />
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </KeyboardAvoidingView>
       </Portal>
       <ConfirmationDialog
         headline={t('RemoveExerciseQuestion')}
