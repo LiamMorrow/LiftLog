@@ -360,5 +360,10 @@
   "Workout notes expanded by default": "Workout notes expanded by default",
   "Workout removed": "Workout removed",
   "Yes": "Yes",
-  "YourName": "Your Name"
+  "YourName": "Your Name",
+  "trackTime": "Track Time",
+  "trackDistance": "Track Distance",
+  "trackResistance": "Track Resistance",
+  "trackIncline": "Track Incline",
+  "trackAvgHeartRate": "Track Average Heart Rate"
 }

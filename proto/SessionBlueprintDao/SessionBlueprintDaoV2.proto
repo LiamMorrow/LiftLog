@@ -21,10 +21,10 @@ enum ExerciseType {
 
 message CardioTarget {
     string type = 1;
-    oneof value {
-        google.protobuf.Duration time_value = 2;
-        LiftLog.Ui.Models.DecimalValue distance_value = 3;
-    }
+    google.protobuf.Duration time_value = 2;
+    LiftLog.Ui.Models.DecimalValue distance_value = 3;
+    optional string distance_unit =  4;
+
 }
 
 message ExerciseBlueprintDaoV2 {
@@ -44,6 +44,11 @@ message ExerciseBlueprintDaoV2 {
 
     // Cardio
     CardioTarget cardio_target = 11;
+    bool track_time = 12;
+    bool track_distance = 13;
+    bool track_resistance = 14;
+    bool track_incline = 15;
+    bool track_avgHeartRate = 16;
 }
 
 message RestDaoV2 {

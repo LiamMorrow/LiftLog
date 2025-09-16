@@ -21,7 +21,9 @@ export default function SelectButton<
   return (
     <Menu
       visible={open}
-      onDismiss={() => setOpen(false)}
+      onDismiss={() => {
+        setOpen(false);
+      }}
       anchor={
         <Button
           testID={testID!}

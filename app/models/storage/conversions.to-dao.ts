@@ -130,7 +130,13 @@ export function toExerciseBlueprintDao(
           supersetWithNext: model.supersetWithNext,
         }
       : {
+          type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO,
           cardioTarget: toCardioTargetDao(model.target),
+          trackTime: model.trackTime,
+          trackDistance: model.trackDistance,
+          trackResistance: model.trackResistance,
+          trackIncline: model.trackIncline,
+          trackAvgHeartRate: model.trackAvgHeartRate,
         }),
   });
 }
@@ -142,6 +148,7 @@ function toCardioTargetDao(
     type: target.type,
     distanceValue:
       target.value instanceof BigNumber ? toDecimalDao(target.value) : null,
+    distanceUnit: target.type === 'distance' ? target.unit : null,
     timeValue:
       target.value instanceof Duration ? toDurationDao(target.value) : null,
   });

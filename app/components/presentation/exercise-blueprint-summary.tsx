@@ -1,13 +1,22 @@
 import ItemTitle from '@/components/presentation/item-title';
-import RestFormat from '@/components/presentation/rest-format';
+import RestFormat, {
+  formatTimeSpan,
+} from '@/components/presentation/rest-format';
 import { SurfaceText } from '@/components/presentation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { IconButton, Menu, TouchableRipple } from 'react-native-paper';
 import { useTranslate } from '@tolgee/react';
-import { ExerciseBlueprint } from '@/models/blueprint-models';
-import { assertWeightedExerciseBlueprint } from '@/models/temp';
+import {
+  CardioExerciseBlueprint,
+  CardioTarget,
+  ExerciseBlueprint,
+  WeightedExerciseBlueprint,
+} from '@/models/blueprint-models';
+import { match, P } from 'ts-pattern';
+import { localeFormatBigNumber } from '@/utils/locale-bignumber';
+import { assertUnreachable } from '@/utils/assert-unreachable';
 
 interface ExerciseBlueprintSummaryProps {
   blueprint: ExerciseBlueprint;
@@ -28,7 +37,6 @@ export default function ExerciseBlueprintSummary({
 }: ExerciseBlueprintSummaryProps) {
   const { t } = useTranslate();
   const [menuOpen, setMenuOpen] = useState(false);
-  assertWeightedExerciseBlueprint(blueprint);
 
   return (
     <TouchableRipple
@@ -73,19 +81,63 @@ export default function ExerciseBlueprintSummary({
             </Menu>
           </View>
         </View>
-        <View style={{ gap: spacing[1], alignItems: 'flex-start' }}>
-          <SurfaceText>
-            <SurfaceText color="primary">{blueprint.sets}</SurfaceText>{' '}
-            {pluralize(blueprint.sets, 'set')} of{' '}
-            <SurfaceText color="primary">{blueprint.repsPerSet}</SurfaceText>{' '}
-            {pluralize(blueprint.repsPerSet, 'rep')}
-          </SurfaceText>
-          <SurfaceText>
-            <RestFormat rest={blueprint.restBetweenSets} />
-          </SurfaceText>
-        </View>
+        {match(blueprint)
+          .with(P.instanceOf(WeightedExerciseBlueprint), (b) => (
+            <WeightedExerciseBlueprintSummary blueprint={b} />
+          ))
+          .with(P.instanceOf(CardioExerciseBlueprint), (b) => (
+            <CardioExerciseBlueprintSummary blueprint={b} />
+          ))
+          .exhaustive()}
       </View>
     </TouchableRipple>
+  );
+}
+
+function CardioExerciseBlueprintSummary({
+  blueprint,
+}: {
+  blueprint: CardioExerciseBlueprint;
+}) {
+  return (
+    <View style={{ gap: spacing[1], alignItems: 'flex-start' }}>
+      <SurfaceText>
+        <SurfaceText color="primary">{blueprint.target.type}</SurfaceText>
+        {': '}
+        <SurfaceText color="primary">
+          {formatCardioTarget(blueprint.target)}
+        </SurfaceText>
+      </SurfaceText>
+    </View>
+  );
+}
+
+export function formatCardioTarget(target: CardioTarget): string {
+  if (target.type === 'distance') {
+    return `${localeFormatBigNumber(target.value)} ${pluralize(target.value.toNumber(), target.unit)}`;
+  } else if (target.type === 'time') {
+    return formatTimeSpan(target.value);
+  }
+  assertUnreachable(target);
+}
+
+function WeightedExerciseBlueprintSummary({
+  blueprint,
+}: {
+  blueprint: WeightedExerciseBlueprint;
+}) {
+  return (
+    <View style={{ gap: spacing[1], alignItems: 'flex-start' }}>
+      <SurfaceText>
+        <SurfaceText color="primary">{blueprint.sets}</SurfaceText>{' '}
+        {pluralize(blueprint.sets, 'set')} of{' '}
+        <SurfaceText color="primary">{blueprint.repsPerSet}</SurfaceText>{' '}
+        {pluralize(blueprint.repsPerSet, 'rep')}
+      </SurfaceText>
+      <SurfaceText>
+        <RestFormat rest={blueprint.restBetweenSets} />
+      </SurfaceText>
+    </View>
   );
 }
 

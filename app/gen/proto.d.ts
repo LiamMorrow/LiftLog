@@ -1520,6 +1520,9 @@ export namespace LiftLog {
 
                     /** CardioTarget distanceValue */
                     distanceValue?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** CardioTarget distanceUnit */
+                    distanceUnit?: (string|null);
                 }
 
                 /** Represents a CardioTarget. */
@@ -1540,8 +1543,11 @@ export namespace LiftLog {
                     /** CardioTarget distanceValue. */
                     public distanceValue?: (LiftLog.Ui.Models.IDecimalValue|null);
 
-                    /** CardioTarget value. */
-                    public value?: ("timeValue"|"distanceValue");
+                    /** CardioTarget distanceUnit. */
+                    public distanceUnit?: (string|null);
+
+                    /** CardioTarget _distanceUnit. */
+                    public _distanceUnit?: "distanceUnit";
 
                     /**
                      * Creates a new CardioTarget instance using the specified properties.
@@ -1653,6 +1659,21 @@ export namespace LiftLog {
 
                     /** ExerciseBlueprintDaoV2 cardioTarget */
                     cardioTarget?: (LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null);
+
+                    /** ExerciseBlueprintDaoV2 trackTime */
+                    trackTime?: (boolean|null);
+
+                    /** ExerciseBlueprintDaoV2 trackDistance */
+                    trackDistance?: (boolean|null);
+
+                    /** ExerciseBlueprintDaoV2 trackResistance */
+                    trackResistance?: (boolean|null);
+
+                    /** ExerciseBlueprintDaoV2 trackIncline */
+                    trackIncline?: (boolean|null);
+
+                    /** ExerciseBlueprintDaoV2 trackAvgHeartRate */
+                    trackAvgHeartRate?: (boolean|null);
                 }
 
                 /** Represents an ExerciseBlueprintDaoV2. */
@@ -1693,6 +1714,21 @@ export namespace LiftLog {
 
                     /** ExerciseBlueprintDaoV2 cardioTarget. */
                     public cardioTarget?: (LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null);
+
+                    /** ExerciseBlueprintDaoV2 trackTime. */
+                    public trackTime: boolean;
+
+                    /** ExerciseBlueprintDaoV2 trackDistance. */
+                    public trackDistance: boolean;
+
+                    /** ExerciseBlueprintDaoV2 trackResistance. */
+                    public trackResistance: boolean;
+
+                    /** ExerciseBlueprintDaoV2 trackIncline. */
+                    public trackIncline: boolean;
+
+                    /** ExerciseBlueprintDaoV2 trackAvgHeartRate. */
+                    public trackAvgHeartRate: boolean;
 
                     /**
                      * Creates a new ExerciseBlueprintDaoV2 instance using the specified properties.

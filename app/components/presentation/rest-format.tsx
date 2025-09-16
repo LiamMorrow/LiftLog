@@ -19,13 +19,6 @@ export default function RestFormat({
   const { colors } = useAppTheme();
   const { t } = useTranslate();
 
-  const formatTimeSpan = (duration: Duration): string => {
-    const totalSeconds = duration.seconds();
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
   // Determine highlight styles based on the highlight prop
   const emStyles: StyleProp<TextStyle> = {
     fontWeight: 'bold',
@@ -55,3 +48,10 @@ export default function RestFormat({
     </>
   );
 }
+
+export const formatTimeSpan = (duration: Duration): string => {
+  const totalSeconds = duration.seconds();
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+};

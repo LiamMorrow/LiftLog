@@ -1,5 +1,5 @@
 import LimitedHtml from '@/components/presentation/limited-html';
-import RestEditor from '@/components/presentation/rest-editor';
+import DurationEditor from '@/components/presentation/duration-editor';
 import RestFormat from '@/components/presentation/rest-format';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { Rest } from '@/models/blueprint-models';
@@ -48,20 +48,20 @@ export default function RestEditorGroup(props: RestEditorGroupProps) {
           gap: spacing[2],
         }}
       >
-        <RestEditor
+        <DurationEditor
           label={t('MinRest')}
-          rest={rest.minRest}
-          onRestUpdated={updateRest('minRest')}
+          duration={rest.minRest}
+          onDurationUpdated={updateRest('minRest')}
         />
-        <RestEditor
+        <DurationEditor
           label={t('MaxRest')}
-          rest={rest.maxRest}
-          onRestUpdated={updateRest('maxRest')}
+          duration={rest.maxRest}
+          onDurationUpdated={updateRest('maxRest')}
         />
-        <RestEditor
+        <DurationEditor
           label={t('FailureRest')}
-          rest={rest.failureRest}
-          onRestUpdated={updateRest('failureRest')}
+          duration={rest.failureRest}
+          onDurationUpdated={updateRest('failureRest')}
         />
       </View>
     ) : (

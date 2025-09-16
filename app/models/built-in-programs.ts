@@ -4,7 +4,7 @@ import {
   Rest,
 } from '@/models/blueprint-models';
 import BigNumber from 'bignumber.js';
-import { LocalDate } from '@js-joda/core';
+import { Duration, LocalDate } from '@js-joda/core';
 
 export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
   'a303c855-9ed7-4ff8-ae60-11e9a573193e': ProgramBlueprint.fromPOJO({
@@ -893,6 +893,49 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             supersetWithNext: false,
             notes: '',
             link: '',
+          },
+        ],
+      }).toPOJO(),
+    ],
+  }),
+  '590a285b-f883-4536-a1ce-cdc9e2d90399': ProgramBlueprint.fromPOJO({
+    name: 'Cardio',
+    lastEdited: LocalDate.of(2024, 1, 1),
+    sessions: [
+      SessionBlueprint.fromPOJO({
+        name: 'Cardio A',
+        notes: '',
+        exercises: [
+          {
+            _BRAND: 'CARDIO_EXERCISE_BLUEPRINT_POJO',
+            name: 'Jogging',
+            notes: '',
+            link: '',
+            trackTime: true,
+            trackDistance: true,
+            trackResistance: false,
+            trackIncline: false,
+            trackAvgHeartRate: false,
+            target: {
+              type: 'distance',
+              unit: 'metre',
+              value: BigNumber(1200),
+            },
+          },
+          {
+            _BRAND: 'CARDIO_EXERCISE_BLUEPRINT_POJO',
+            name: 'Elliptical',
+            notes: '',
+            link: '',
+            trackTime: true,
+            trackDistance: true,
+            trackResistance: false,
+            trackIncline: false,
+            trackAvgHeartRate: false,
+            target: {
+              type: 'time',
+              value: Duration.ofMinutes(30),
+            },
           },
         ],
       }).toPOJO(),

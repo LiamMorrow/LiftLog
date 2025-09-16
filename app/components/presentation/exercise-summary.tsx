@@ -1,3 +1,4 @@
+import { formatCardioTarget } from '@/components/presentation/exercise-blueprint-summary';
 import { SurfaceText } from '@/components/presentation/surface-text';
 import WeightFormat from '@/components/presentation/weight-format';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
@@ -5,7 +6,6 @@ import {
   RecordedExercise,
   RecordedWeightedExercise,
 } from '@/models/session-models';
-import { assertWeightedExercise } from '@/models/temp';
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
 import { DateTimeFormatter } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
@@ -67,43 +67,61 @@ function ChipScroller(props: { children: ReactNode }) {
 }
 
 function FilledChips(props: {
-  exercise: RecordedWeightedExercise;
+  exercise: RecordedExercise;
   showWeight: boolean;
 }) {
-  return getWeightAndRepsChips(props.exercise).map((chip, index) => (
-    <Chip key={index}>
-      <SurfaceText>{chip.repsCompleted?.toString() ?? '-'}</SurfaceText>
-      {props.showWeight ? (
-        <>
-          <SurfaceText font="text-2xs" color="onSurface">
-            @
-          </SurfaceText>
-          <WeightFormat color="onSurface" weight={chip.weight} />
-        </>
-      ) : undefined}
+  if (props.exercise instanceof RecordedWeightedExercise) {
+    return getWeightAndRepsChips(props.exercise).map((chip, index) => (
+      <Chip key={index}>
+        <SurfaceText>{chip.repsCompleted?.toString() ?? '-'}</SurfaceText>
+        {props.showWeight ? (
+          <>
+            <SurfaceText font="text-2xs" color="onSurface">
+              @
+            </SurfaceText>
+            <WeightFormat color="onSurface" weight={chip.weight} />
+          </>
+        ) : undefined}
+      </Chip>
+    ));
+  }
+  return (
+    <Chip>
+      <SurfaceText>
+        {formatCardioTarget(props.exercise.blueprint.target)}
+      </SurfaceText>
     </Chip>
-  ));
+  );
 }
 
 function PlannedChips(props: {
-  exercise: RecordedWeightedExercise;
+  exercise: RecordedExercise;
   showWeight: boolean;
 }) {
-  return getPlannedChipData(props.exercise).map((chip, index) => (
-    <Chip key={index}>
-      <SurfaceText color="onSurface">
-        {chip.numSets}x{chip.repTarget}
+  if (props.exercise instanceof RecordedWeightedExercise) {
+    return getPlannedChipData(props.exercise).map((chip, index) => (
+      <Chip key={index}>
+        <SurfaceText color="onSurface">
+          {chip.numSets}x{chip.repTarget}
+        </SurfaceText>
+        {props.showWeight ? (
+          <>
+            <SurfaceText color="onSurface" font="text-2xs">
+              @
+            </SurfaceText>
+            <WeightFormat color="onSurface" weight={chip.weight} />
+          </>
+        ) : undefined}
+      </Chip>
+    ));
+  }
+  return (
+    <Chip>
+      <SurfaceText>
+        {formatCardioTarget(props.exercise.blueprint.target)}
       </SurfaceText>
-      {props.showWeight ? (
-        <>
-          <SurfaceText color="onSurface" font="text-2xs">
-            @
-          </SurfaceText>
-          <WeightFormat color="onSurface" weight={chip.weight} />
-        </>
-      ) : undefined}
     </Chip>
-  ));
+  );
 }
 
 export default function ExerciseSummary({
@@ -113,7 +131,6 @@ export default function ExerciseSummary({
   showWeight,
   isFilled,
 }: ExerciseSummaryProps) {
-  assertWeightedExercise(exercise);
   return (
     <View
       style={{
@@ -131,9 +148,7 @@ export default function ExerciseSummary({
       ) : undefined}
       {showDate ? (
         <SurfaceText>
-          {exercise.lastRecordedSet?.set?.completionDateTime.format(
-            DateTimeFormatter.ISO_DATE,
-          )}
+          {exercise.latestTime?.format(DateTimeFormatter.ISO_DATE)}
         </SurfaceText>
       ) : undefined}
       <ChipScroller>

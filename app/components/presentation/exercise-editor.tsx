@@ -1,15 +1,23 @@
 import AppBottomSheet from '@/components/presentation/app-bottom-sheet';
+import DurationEditor from '@/components/presentation/duration-editor';
 import EditableIncrementer from '@/components/presentation/editable-incrementer';
 import ExerciseFilterer from '@/components/presentation/exercise-filterer';
 import FixedIncrementer from '@/components/presentation/fixed-incrementer';
+import LabelledForm from '@/components/presentation/labelled-form';
+import LabelledFormRow from '@/components/presentation/labelled-form-row';
 import ListSwitch from '@/components/presentation/list-switch';
 import RestEditorGroup from '@/components/presentation/rest-editor-group';
+import SelectButton from '@/components/presentation/select-button';
 import { spacing } from '@/hooks/useAppTheme';
 import {
+  CardioExerciseBlueprint,
+  CardioTarget,
+  DistanceCardioTarget,
+  DistanceUnits,
   ExerciseBlueprint,
+  TimeCardioTarget,
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
-import { assertWeightedExerciseBlueprint } from '@/models/temp';
 import { RootState, useAppSelector, useAppSelectorWithArg } from '@/store';
 import {
   ExerciseDescriptor,
@@ -17,19 +25,31 @@ import {
   selectExerciseIds,
 } from '@/store/stored-sessions';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { Duration } from '@js-joda/core';
 import { FlashList } from '@shopify/flash-list';
 import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Keyboard, View } from 'react-native';
-import { Card, Divider, List, TextInput } from 'react-native-paper';
+import {
+  Card,
+  Divider,
+  List,
+  SegmentedButtons,
+  TextInput,
+} from 'react-native-paper';
+import { match, P } from 'ts-pattern';
 
 interface ExerciseEditorProps {
   exercise: ExerciseBlueprint;
   updateExercise: (ex: ExerciseBlueprint) => void;
 }
-
+const distanceUnitOptions = DistanceUnits.map((value) => ({
+  value,
+  label: value + 's',
+}));
 export function ExerciseEditor(props: ExerciseEditorProps) {
+  const { t } = useTranslate();
   const { exercise: propsExercise, updateExercise: updatePropsExercise } =
     props;
   const [exercise, setExercise] = useState(propsExercise);
@@ -44,13 +64,52 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
     updatePropsExercise(update);
   };
 
-  assertWeightedExerciseBlueprint(exercise);
+  const handleTypeChange = (type: string) => {
+    let newExercise = exercise;
+    if (type === 'weighted') {
+      newExercise = WeightedExerciseBlueprint.empty().with(exercise);
+    } else {
+      newExercise = CardioExerciseBlueprint.empty().with(exercise);
+    }
+    setExercise(newExercise);
+    updatePropsExercise(newExercise);
+  };
+
+  const exerciseEditor = match(exercise)
+    .with(P.instanceOf(WeightedExerciseBlueprint), (e) => (
+      <WeightedExerciseEditor exercise={e} updateExercise={updateExercise} />
+    ))
+    .with(P.instanceOf(CardioExerciseBlueprint), (e) => (
+      <CardioExerciseEditor exercise={e} updateExercise={updateExercise} />
+    ))
+    .exhaustive();
 
   return (
-    <WeightedExerciseEditor
-      exercise={exercise}
-      updateExercise={updateExercise}
-    />
+    <View style={{ gap: spacing[4] }}>
+      <LabelledForm>
+        <LabelledFormRow label={t('Exercise type')} icon={'fitnessCenter'}>
+          <SegmentedButtons
+            value={
+              exercise instanceof WeightedExerciseBlueprint
+                ? 'weighted'
+                : 'cardio'
+            }
+            buttons={[
+              {
+                value: 'weighted',
+                label: 'Weighted',
+              },
+              {
+                value: 'cardio',
+                label: 'Cardio/Time',
+              },
+            ]}
+            onValueChange={handleTypeChange}
+          />
+        </LabelledFormRow>
+      </LabelledForm>
+      {exerciseEditor}
+    </View>
   );
 }
 
@@ -61,6 +120,202 @@ function ExerciseSearchListItem(props: {
   const exercise = useAppSelectorWithArg(selectExerciseById, props.exerciseId);
   return (
     <List.Item title={exercise.name} onPress={() => props.onPress(exercise)} />
+  );
+}
+
+function CardioExerciseEditor({
+  exercise,
+  updateExercise,
+}: {
+  exercise: CardioExerciseBlueprint;
+  updateExercise: (ex: Partial<ExerciseBlueprint>) => void;
+}) {
+  const { t } = useTranslate();
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const [bottomSheetShown, setBottomSheetShown] = useState(false);
+  return (
+    <View style={{ gap: spacing[2] }}>
+      <TextInput
+        label={t('Exercise')}
+        testID="exercise-name"
+        style={{ marginBottom: spacing[2] }}
+        value={exercise.name}
+        onChangeText={(name) => updateExercise({ name })}
+        selectTextOnFocus={true}
+        right={
+          <TextInput.Icon
+            icon="search"
+            onPress={() => {
+              setBottomSheetShown(true);
+              Keyboard.dismiss();
+              bottomSheetRef.current?.expand();
+            }}
+          />
+        }
+      />
+
+      <TextInput
+        label={t('PlanNotes')}
+        testID="exercise-notes"
+        style={{ marginBottom: spacing[2] }}
+        value={exercise.notes}
+        onChangeText={(notes) => updateExercise({ notes })}
+        multiline
+      />
+
+      <TextInput
+        label={t('ExternalLink')}
+        testID="exercise-link"
+        style={{ marginBottom: spacing[2] }}
+        placeholder="https://"
+        value={exercise.link}
+        onChangeText={(link) => updateExercise({ link })}
+      />
+
+      <CardioTargetEditor
+        target={exercise.target}
+        onValueChange={(target) => updateExercise({ target })}
+      />
+
+      <List.Section>
+        <ListSwitch
+          value={exercise.trackTime || exercise.target.type === 'time'}
+          onValueChange={(trackTime) => updateExercise({ trackTime })}
+          headline={t('trackTime')}
+          disabled={exercise.target.type === 'time'}
+        />
+        <ListSwitch
+          value={exercise.trackDistance || exercise.target.type === 'distance'}
+          onValueChange={(trackDistance) => updateExercise({ trackDistance })}
+          headline={t('trackDistance')}
+          disabled={exercise.target.type === 'distance'}
+        />
+        <ListSwitch
+          value={exercise.trackResistance}
+          onValueChange={(trackResistance) =>
+            updateExercise({ trackResistance })
+          }
+          headline={t('trackResistance')}
+        />
+        <ListSwitch
+          value={exercise.trackIncline}
+          onValueChange={(trackIncline) => updateExercise({ trackIncline })}
+          headline={t('trackIncline')}
+        />
+        <ListSwitch
+          value={exercise.trackAvgHeartRate}
+          onValueChange={(trackAvgHeartRate) =>
+            updateExercise({ trackAvgHeartRate })
+          }
+          headline={t('trackAvgHeartRate')}
+        />
+      </List.Section>
+    </View>
+  );
+}
+
+function CardioTargetEditor(props: {
+  target: CardioTarget;
+  onValueChange: (t: CardioTarget) => void;
+}) {
+  const useImperialUnits = useAppSelector((x) => x.settings.useImperialUnits);
+  const { target, onValueChange } = props;
+  const { t } = useTranslate();
+  const handleTypeChange = (type: string) => {
+    if (type === target.type) {
+      return;
+    }
+    if (type === 'distance') {
+      onValueChange({
+        type: 'distance',
+        unit: useImperialUnits ? 'mile' : 'metre',
+        value: BigNumber(useImperialUnits ? 2.5 : 5000),
+      });
+    } else {
+      onValueChange({
+        type: 'time',
+        value: Duration.ofMinutes(30),
+      });
+    }
+  };
+  return (
+    // Intentionally not a card, but I like the card spacing
+    <View>
+      <Card.Title title={t('Cardio target')} />
+
+      <Card.Content style={{ gap: spacing[2] }}>
+        <SegmentedButtons
+          value={target.type}
+          onValueChange={handleTypeChange}
+          buttons={[
+            {
+              value: 'distance',
+              label: t('Distance'),
+            },
+            {
+              value: 'time',
+              label: t('Time'),
+            },
+          ]}
+        />
+
+        {match(target)
+          .with({ type: 'distance' }, (t) => (
+            <DistanceTargetEditor target={t} onValueChange={onValueChange} />
+          ))
+          .with({ type: 'time' }, (t) => (
+            <TimeTargetEditor target={t} onValueChange={onValueChange} />
+          ))
+          .exhaustive()}
+      </Card.Content>
+    </View>
+  );
+}
+
+function DistanceTargetEditor(props: {
+  target: DistanceCardioTarget;
+  onValueChange: (t: DistanceCardioTarget) => void;
+}) {
+  const { target, onValueChange } = props;
+  const { t } = useTranslate();
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,
+      }}
+    >
+      <EditableIncrementer
+        onChange={() => {}}
+        suffix=""
+        disallowNegative
+        value={props.target.value}
+      />
+
+      <SelectButton
+        testID="setDistancUnit"
+        value={target.unit}
+        options={distanceUnitOptions}
+        onChange={(unit) => onValueChange({ ...target, unit })}
+      />
+    </View>
+  );
+}
+
+function TimeTargetEditor(props: {
+  target: TimeCardioTarget;
+  onValueChange: (t: TimeCardioTarget) => void;
+}) {
+  return (
+    <DurationEditor
+      duration={props.target.value}
+      showHours
+      onDurationUpdated={(value) =>
+        props.onValueChange({ type: 'time', value })
+      }
+    />
   );
 }
 
@@ -196,12 +451,17 @@ function WeightedExerciseEditor({
       />
 
       <View style={{ gap: spacing[2] }}>
-        <EditableIncrementer
-          label={t('ProgressiveOverload')}
-          testID="exercise-auto-increase"
-          suffix={weightSuffix}
-          value={exercise.weightIncreaseOnSuccess}
-          onChange={setExerciseWeightIncrease}
+        <List.Item
+          title={t('ProgressiveOverload')}
+          titleNumberOfLines={2}
+          right={() => (
+            <EditableIncrementer
+              testID="exercise-auto-increase"
+              suffix={weightSuffix}
+              value={exercise.weightIncreaseOnSuccess}
+              onChange={setExerciseWeightIncrease}
+            />
+          )}
         />
         <Divider />
         <View style={{ width: '100%' }}>

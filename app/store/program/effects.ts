@@ -25,7 +25,7 @@ import { KeyValueStore } from '@/services/key-value-store';
 import { Logger } from '@/services/logger';
 
 const storageKey = 'SavedPrograms';
-const builtInProgramsStorageKey = 'hasSavedDefaultPlans';
+const builtInProgramsStorageKey = 'hasSavedDefaultPlans2';
 export function applyProgramEffects() {
   addEffect(
     initializeProgramStateSlice,

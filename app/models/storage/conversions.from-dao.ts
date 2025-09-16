@@ -258,6 +258,11 @@ export function fromExerciseBlueprintDao(
     return new CardioExerciseBlueprint(
       dao.name!,
       fromCardioTargetDao(dao.cardioTarget!),
+      dao.trackTime ?? false,
+      dao.trackDistance ?? false,
+      dao.trackResistance ?? false,
+      dao.trackIncline ?? false,
+      dao.trackAvgHeartRate ?? false,
       dao.notes ?? '',
       dao.link ?? '',
     );
@@ -283,6 +288,7 @@ function fromCardioTargetDao(
       dao.type === 'distance'
         ? fromDecimalDao(dao.distanceValue)
         : fromDurationDao(dao.timeValue)!,
+    unit: dao.type === 'distance' ? dao.distanceUnit : null,
   } as CardioTarget;
 }
 
