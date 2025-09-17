@@ -273,10 +273,8 @@ export function toRecordedExerciseDao(
           type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO,
           startedAt: toDateTimeDao(model.startedAt),
           completionDateTime: toDateTimeDao(model.completionDateTime),
-          actualTime: toDurationDao(model.actualTime),
-          actualDistance: model.actualDistance
-            ? toDecimalDao(model.actualDistance)
-            : null,
+          duration: toDurationDao(model.duration),
+          distance: model.distance ? toDecimalDao(model.distance) : null,
           resistance: model.resistance ? toDecimalDao(model.resistance) : null,
           incline: model.incline ? toDecimalDao(model.incline) : null,
           avgHeartRate: model.avgHeartRate

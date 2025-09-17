@@ -356,8 +356,8 @@ export interface RecordedCardioExercisePOJO {
   blueprint: CardioExerciseBlueprintPOJO;
   startedAt: LocalDateTime | undefined;
   completionDateTime: LocalDateTime | undefined;
-  actualTime: Duration | undefined;
-  actualDistance: BigNumber | undefined;
+  duration: Duration | undefined;
+  distance: BigNumber | undefined;
   resistance: BigNumber | undefined;
   incline: BigNumber | undefined;
   avgHeartRate: BigNumber | undefined;
@@ -367,8 +367,8 @@ export class RecordedCardioExercise {
   readonly blueprint: CardioExerciseBlueprint;
   readonly startedAt: LocalDateTime | undefined;
   readonly completionDateTime: LocalDateTime | undefined;
-  readonly actualTime: Duration | undefined;
-  readonly actualDistance: BigNumber | undefined;
+  readonly duration: Duration | undefined;
+  readonly distance: BigNumber | undefined;
   readonly resistance: BigNumber | undefined;
   readonly incline: BigNumber | undefined;
   readonly avgHeartRate: BigNumber | undefined;
@@ -382,8 +382,8 @@ export class RecordedCardioExercise {
     blueprint: CardioExerciseBlueprint,
     startedAt: LocalDateTime | undefined,
     completionDateTime: LocalDateTime | undefined,
-    actualTime: Duration | undefined,
-    actualDistance: BigNumber | undefined,
+    duration: Duration | undefined,
+    distance: BigNumber | undefined,
     resistance: BigNumber | undefined,
     incline: BigNumber | undefined,
     avgHeartRate: BigNumber | undefined,
@@ -393,8 +393,8 @@ export class RecordedCardioExercise {
     blueprint?: CardioExerciseBlueprint,
     startedAt?: LocalDateTime,
     completionDateTime?: LocalDateTime,
-    actualTime?: Duration,
-    actualDistance?: BigNumber,
+    duration?: Duration,
+    distance?: BigNumber,
     resistance?: BigNumber,
     incline?: BigNumber,
     avgHeartRate?: BigNumber,
@@ -403,8 +403,8 @@ export class RecordedCardioExercise {
     this.blueprint = blueprint!;
     this.startedAt = startedAt!;
     this.completionDateTime = completionDateTime;
-    this.actualTime = actualTime;
-    this.actualDistance = actualDistance;
+    this.duration = duration;
+    this.distance = distance;
     this.resistance = resistance;
     this.incline = incline;
     this.avgHeartRate = avgHeartRate;
@@ -418,8 +418,8 @@ export class RecordedCardioExercise {
       CardioExerciseBlueprint.fromPOJO(pojo.blueprint),
       pojo.startedAt,
       pojo.completionDateTime,
-      pojo.actualTime,
-      pojo.actualDistance,
+      pojo.duration,
+      pojo.distance,
       pojo.resistance,
       pojo.incline,
       pojo.avgHeartRate,
@@ -441,10 +441,6 @@ export class RecordedCardioExercise {
     );
   }
 
-  get duration(): Duration | undefined {
-    return this.actualTime;
-  }
-
   get isComplete(): boolean {
     return !!this.completionDateTime;
   }
@@ -464,8 +460,8 @@ export class RecordedCardioExercise {
   withNothingCompleted(): RecordedCardioExercise {
     return this.with({
       notes: undefined,
-      actualDistance: undefined,
-      actualTime: undefined,
+      distance: undefined,
+      duration: undefined,
       avgHeartRate: undefined,
       completionDateTime: undefined,
       incline: undefined,
@@ -489,14 +485,14 @@ export class RecordedCardioExercise {
         other.completionDateTime &&
         this.completionDateTime.equals(other.completionDateTime)) ||
         this.completionDateTime === other.completionDateTime) &&
-      ((this.actualTime &&
-        other.actualTime &&
-        this.actualTime.equals(other.actualTime)) ||
-        this.actualTime === other.actualTime) &&
-      ((this.actualDistance &&
-        other.actualDistance &&
-        this.actualDistance.isEqualTo(other.actualDistance)) ||
-        this.actualDistance === other.actualDistance) &&
+      ((this.duration &&
+        other.duration &&
+        this.duration.equals(other.duration)) ||
+        this.duration === other.duration) &&
+      ((this.distance &&
+        other.distance &&
+        this.distance.isEqualTo(other.distance)) ||
+        this.distance === other.distance) &&
       ((this.resistance &&
         other.resistance &&
         this.resistance.isEqualTo(other.resistance)) ||
@@ -517,8 +513,8 @@ export class RecordedCardioExercise {
       CardioExerciseBlueprint.fromPOJO(other.blueprint ?? this.blueprint),
       other.startedAt ?? this.startedAt,
       other.completionDateTime ?? this.completionDateTime,
-      other.actualTime ?? this.actualTime,
-      other.actualDistance ?? this.actualDistance,
+      other.duration ?? this.duration,
+      other.distance ?? this.distance,
       other.resistance ?? this.resistance,
       other.incline ?? this.incline,
       other.avgHeartRate ?? this.avgHeartRate,
@@ -532,8 +528,8 @@ export class RecordedCardioExercise {
       blueprint: this.blueprint.toPOJO(),
       startedAt: this.startedAt,
       completionDateTime: this.completionDateTime,
-      actualTime: this.actualTime,
-      actualDistance: this.actualDistance,
+      duration: this.duration,
+      distance: this.distance,
       resistance: this.resistance,
       incline: this.incline,
       avgHeartRate: this.avgHeartRate,

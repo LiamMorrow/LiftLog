@@ -12,7 +12,7 @@ import {
 } from '@/models/session-models';
 import { getCycledRepCount } from '@/store/current-session/helpers';
 import { SafeDraft, toSafeDraft } from '@/utils/store-helpers';
-import { LocalDate, LocalDateTime } from '@js-joda/core';
+import { Duration, LocalDate, LocalDateTime } from '@js-joda/core';
 import {
   createAction,
   createSelector,
@@ -356,6 +356,31 @@ const currentSessionSlice = createSlice({
     ) {
       state.workoutSessionLastSetTime = action.payload;
     },
+
+    updateDurationForCardioExercise: targetedSessionAction(
+      (
+        session,
+        action: { duration: Duration | undefined; exerciseIndex: number },
+      ) => {
+        const exercise = session.recordedExercises[action.exerciseIndex];
+        if (exercise._BRAND !== 'RECORDED_CARDIO_EXERCISE_POJO') {
+          return;
+        }
+        exercise.duration = action.duration;
+      },
+    ),
+    updateStartedAtForCardioExercise: targetedSessionAction(
+      (
+        session,
+        action: { startedAt: LocalDateTime | undefined; exerciseIndex: number },
+      ) => {
+        const exercise = session.recordedExercises[action.exerciseIndex];
+        if (exercise._BRAND !== 'RECORDED_CARDIO_EXERCISE_POJO') {
+          return;
+        }
+        exercise.startedAt = action.startedAt;
+      },
+    ),
   },
   selectors: {
     selectState: (x) => x,
@@ -407,6 +432,8 @@ export const {
   updateNotesForExercise,
   updateBodyweight,
   setWorkoutSessionLastSetTime,
+  updateDurationForCardioExercise,
+  updateStartedAtForCardioExercise,
 } = currentSessionSlice.actions;
 
 export const currentSessionReducer = currentSessionSlice.reducer;

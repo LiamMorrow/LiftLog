@@ -8,10 +8,12 @@ import {
 } from '@/models/blueprint-models';
 import { useTranslate } from '@tolgee/react';
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
-import { match } from 'ts-pattern';
-import { formatDuration } from '@/utils/format-date';
+import { match, P } from 'ts-pattern';
 import LimitedHtml from '@/components/presentation/limited-html';
-import { IconButton } from 'react-native-paper';
+import { IconButton, Text } from 'react-native-paper';
+import { useEffect, useState } from 'react';
+import { Duration, LocalDateTime } from '@js-joda/core';
+import { View } from 'react-native';
 
 interface CardioExerciseProps {
   recordedExercise: RecordedCardioExercise;
@@ -20,6 +22,8 @@ interface CardioExerciseProps {
   isReadonly: boolean;
   showPreviousButton: boolean;
 
+  updateStartedAt: (startedAt: LocalDateTime | undefined) => void;
+  updateDuration: (duration: Duration | undefined) => void;
   updateNotesForExercise: (notes: string) => void;
   onOpenLink: () => void;
   onEditExercise: () => void;
@@ -31,7 +35,11 @@ export default function CardioExercise(props: CardioExerciseProps) {
     props.recordedExercise.blueprint.trackTime ||
     props.recordedExercise.blueprint.target.type === 'time';
   const timer = showTimer && (
-    <CardioTimer recordedExercise={props.recordedExercise} />
+    <CardioTimer
+      recordedExercise={props.recordedExercise}
+      updateStartedAt={props.updateStartedAt}
+      updateDuration={props.updateDuration}
+    />
   );
   return (
     <ExerciseSection
@@ -51,8 +59,97 @@ export default function CardioExercise(props: CardioExerciseProps) {
   );
 }
 
-function CardioTimer(props: { recordedExercise: RecordedCardioExercise }) {
-  return <IconButton icon={'playCircle'} />;
+function CardioTimer({
+  recordedExercise,
+  updateDuration,
+  updateStartedAt,
+}: {
+  recordedExercise: RecordedCardioExercise;
+  updateStartedAt: (startedAt: LocalDateTime | undefined) => void;
+  updateDuration: (duration: Duration | undefined) => void;
+}) {
+  const [currentBlockStartTime, setCurrentBlockStartTime] = useState<
+    LocalDateTime | undefined
+  >();
+  const [timerState, setTimerState] = useState<string>('-:-:-');
+  const handlePlay = () => {
+    const now = LocalDateTime.now();
+    setCurrentBlockStartTime(now);
+    if (!recordedExercise.startedAt) {
+      updateStartedAt(now);
+    }
+  };
+  const handlePause = () => {
+    if (!currentBlockStartTime) {
+      return;
+    }
+    const now = LocalDateTime.now();
+    setCurrentBlockStartTime(undefined);
+
+    updateDuration(
+      Duration.between(currentBlockStartTime, now).plus(
+        recordedExercise.duration ?? Duration.ZERO,
+      ),
+    );
+  };
+
+  const handlePlayPause = () => {
+    if (currentBlockStartTime) {
+      handlePause();
+    } else {
+      handlePlay();
+    }
+  };
+
+  const getTimerState = () => {
+    const now = LocalDateTime.now();
+    const duration = match({
+      recordedDuration: recordedExercise.duration,
+      currentBlockStartTime,
+    })
+      .with(
+        {
+          recordedDuration: P.nonNullable,
+          currentBlockStartTime: P.nonNullable,
+        },
+        ({ recordedDuration, currentBlockStartTime }) =>
+          recordedDuration.plus(Duration.between(currentBlockStartTime, now)),
+      )
+      .with(
+        { recordedDuration: P.nonNullable },
+        ({ recordedDuration }) => recordedDuration,
+      )
+      .with(
+        { currentBlockStartTime: P.nonNullable },
+        ({ currentBlockStartTime }) =>
+          Duration.between(currentBlockStartTime, now),
+      )
+      .with(
+        { currentBlockStartTime: undefined, recordedDuration: undefined },
+        () => undefined,
+      )
+      .exhaustive();
+
+    return formatDuration(duration);
+  };
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const state = getTimerState();
+      setTimerState(state);
+    }, 200);
+    return () => clearInterval(timer);
+  });
+
+  return (
+    <View>
+      <IconButton
+        icon={currentBlockStartTime ? 'pauseCircle' : 'playCircle'}
+        animated
+        onPress={handlePlayPause}
+      />
+      <Text>{timerState}</Text>
+    </View>
+  );
 }
 
 function CardioTargetHandler(props: { target: CardioTarget }) {
@@ -93,4 +190,16 @@ function getShortUnit(unit: DistanceUnit): string {
     .with('mile', () => 'mi')
     .with('yard', () => 'yd')
     .exhaustive();
+}
+
+// Function to format time in m:ss format
+function formatDuration(duration: Duration | undefined): string {
+  if (!duration) {
+    return '-:-:-';
+  }
+  const totalSeconds = Math.floor(duration.toMillis() / 1000);
+  const minutes = Math.floor(totalSeconds / 60) % 60;
+  const hours = Math.floor(totalSeconds / 60 / 60);
+  const seconds = totalSeconds % 60;
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }

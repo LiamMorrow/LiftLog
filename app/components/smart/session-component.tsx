@@ -9,7 +9,9 @@ import {
   setExerciseReps,
   setWorkoutSessionLastSetTime,
   updateBodyweight,
+  updateDurationForCardioExercise,
   updateNotesForExercise,
+  updateStartedAtForCardioExercise,
   updateWeightForSet,
 } from '@/store/current-session';
 import { Card, FAB, Icon, Text } from 'react-native-paper';
@@ -204,6 +206,18 @@ export default function SessionComponent(props: {
         <CardioExercise
           recordedExercise={item}
           toStartNext={session.nextExercise === item}
+          updateDuration={(duration) =>
+            dispatch(updateDurationForCardioExercise, {
+              duration,
+              exerciseIndex: index,
+            })
+          }
+          updateStartedAt={(startedAt) =>
+            dispatch(updateStartedAtForCardioExercise, {
+              startedAt,
+              exerciseIndex: index,
+            })
+          }
           updateNotesForExercise={(notes) =>
             dispatch(updateNotesForExercise, { notes, exerciseIndex: index })
           }

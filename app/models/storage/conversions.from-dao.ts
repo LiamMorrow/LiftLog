@@ -181,9 +181,9 @@ function fromRecordedExerciseDao(
       blueprint: fromExerciseBlueprintDao(
         dao.exerciseBlueprint,
       ).toPOJO() as CardioExerciseBlueprintPOJO,
-      actualDistance: fromDecimalDao(dao.actualDistance),
+      distance: fromDecimalDao(dao.distance),
       avgHeartRate: fromDecimalDao(dao.avgHeartRate),
-      actualTime: fromDurationDao(dao.actualTime),
+      duration: fromDurationDao(dao.duration),
       startedAt: fromDateTimeDao(dao.startedAt),
       completionDateTime: fromDateTimeDao(dao.completionDateTime),
       incline: fromDecimalDao(dao.incline),
