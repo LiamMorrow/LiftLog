@@ -26,7 +26,7 @@ export default function DurationEditor(props: DurationEditorProps) {
     const hours = Number.parseInt(text);
     if (!isNaN(hours)) {
       const seconds = duration.seconds() % 60;
-      const mins = duration.toMinutes();
+      const mins = duration.toMinutes() % 60;
       onDurationUpdated(
         Duration.ofSeconds(seconds + mins * 60 + hours * 60 * 60),
       );
@@ -50,6 +50,7 @@ export default function DurationEditor(props: DurationEditorProps) {
   };
 
   const resetValues = () => {
+    setHours(duration.toHours().toString());
     setMinutes((duration.toMinutes() % 60).toString());
     setSeconds((duration.seconds() % 60).toString());
   };
@@ -77,8 +78,9 @@ export default function DurationEditor(props: DurationEditorProps) {
         {props.showHours ? (
           <>
             <TextInput
+              mode="outlined"
               inputMode="numeric"
-              style={{ width: spacing[20], textAlign: 'center' }}
+              style={{ width: spacing[24], textAlign: 'center' }}
               value={hours}
               onChangeText={updateHours}
               onBlur={resetValues}
@@ -91,12 +93,15 @@ export default function DurationEditor(props: DurationEditorProps) {
                 fontWeight: 'bold',
                 color: colors.onSecondaryContainer,
               }}
-            />
+            >
+              :
+            </Text>
           </>
         ) : undefined}
         <TextInput
+          mode="outlined"
           inputMode="numeric"
-          style={{ width: spacing[20], textAlign: 'center' }}
+          style={{ width: spacing[24], textAlign: 'center' }}
           value={minutes}
           onChangeText={updateMinutes}
           onBlur={resetValues}
@@ -113,8 +118,9 @@ export default function DurationEditor(props: DurationEditorProps) {
           :
         </Text>
         <TextInput
+          mode="outlined"
           inputMode="numeric"
-          style={{ width: spacing[20], textAlign: 'center' }}
+          style={{ width: spacing[24], textAlign: 'center' }}
           value={seconds}
           onChangeText={updateSeconds}
           onBlur={resetValues}

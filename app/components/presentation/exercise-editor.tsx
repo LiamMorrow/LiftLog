@@ -31,13 +31,7 @@ import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Keyboard, View } from 'react-native';
-import {
-  Card,
-  Divider,
-  List,
-  SegmentedButtons,
-  TextInput,
-} from 'react-native-paper';
+import { Card, List, SegmentedButtons, TextInput } from 'react-native-paper';
 import { match, P } from 'ts-pattern';
 
 interface ExerciseEditorProps {
@@ -49,6 +43,19 @@ const distanceUnitOptions = DistanceUnits.map((value) => ({
   label: value + 's',
 }));
 export function ExerciseEditor(props: ExerciseEditorProps) {
+  const exerciseIds = useAppSelector(selectExerciseIds);
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const selectExerciseFromSearch = (ex: ExerciseDescriptor) => {
+    updateExercise({ name: ex.name, notes: ex.instructions });
+    bottomSheetRef.current?.close();
+  };
+
+  const [bottomSheetShown, setBottomSheetShown] = useState(false);
+  const [filteredExerciseIds, setFilteredExerciseIds] = useState(exerciseIds);
+  const exerciseListItems = useMemo(
+    () => ['filter', ...filteredExerciseIds],
+    [filteredExerciseIds],
+  );
   const { t } = useTranslate();
   const { exercise: propsExercise, updateExercise: updatePropsExercise } =
     props;
@@ -87,7 +94,27 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
   return (
     <View style={{ gap: spacing[4] }}>
       <LabelledForm>
-        <LabelledFormRow label={t('Exercise type')} icon={'fitnessCenter'}>
+        <LabelledFormRow label={t('Exercise name')} icon="infoFill">
+          <TextInput
+            testID="exercise-name"
+            mode="outlined"
+            style={{ marginBottom: spacing[2] }}
+            value={exercise.name}
+            onChangeText={(name) => updateExercise({ name })}
+            selectTextOnFocus={true}
+            right={
+              <TextInput.Icon
+                icon="search"
+                onPress={() => {
+                  setBottomSheetShown(true);
+                  Keyboard.dismiss();
+                  bottomSheetRef.current?.expand();
+                }}
+              />
+            }
+          />
+        </LabelledFormRow>
+        <LabelledFormRow label={t('Exercise type')} icon={'fitnessCenterFill'}>
           <SegmentedButtons
             value={
               exercise instanceof WeightedExerciseBlueprint
@@ -98,17 +125,50 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
               {
                 value: 'weighted',
                 label: 'Weighted',
+                icon: 'fitnessCenter',
               },
               {
                 value: 'cardio',
                 label: 'Cardio/Time',
+                icon: 'directionsRun',
               },
             ]}
             onValueChange={handleTypeChange}
           />
         </LabelledFormRow>
+        {exerciseEditor}
       </LabelledForm>
-      {exerciseEditor}
+      <AppBottomSheet
+        index={-1}
+        sheetRef={bottomSheetRef}
+        enablePanDownToClose
+        enableDynamicSizing={false}
+      >
+        {bottomSheetShown && (
+          <FlashList
+            data={exerciseListItems}
+            // @ts-expect-error -- It does work - see:https://github.com/gorhom/react-native-bottom-sheet/issues/1120#issuecomment-1582872948
+            renderScrollComponent={BottomSheetScrollView}
+            getItemType={(_, index) => (index === 0 ? 'filters' : 'exercise')}
+            keyExtractor={(item, index) => (index === 0 ? 'filters' : item)}
+            renderItem={(i) => {
+              if (i.index === 0) {
+                return (
+                  <ExerciseFilterer
+                    onFilteredExerciseIdsChange={setFilteredExerciseIds}
+                  />
+                );
+              }
+              return (
+                <ExerciseSearchListItem
+                  exerciseId={i.item}
+                  onPress={selectExerciseFromSearch}
+                />
+              );
+            }}
+          />
+        )}
+      </AppBottomSheet>
     </View>
   );
 }
@@ -131,51 +191,13 @@ function CardioExerciseEditor({
   updateExercise: (ex: Partial<ExerciseBlueprint>) => void;
 }) {
   const { t } = useTranslate();
-  const bottomSheetRef = useRef<BottomSheet>(null);
-  const [bottomSheetShown, setBottomSheetShown] = useState(false);
   return (
-    <View style={{ gap: spacing[2] }}>
-      <TextInput
-        label={t('Exercise')}
-        testID="exercise-name"
-        style={{ marginBottom: spacing[2] }}
-        value={exercise.name}
-        onChangeText={(name) => updateExercise({ name })}
-        selectTextOnFocus={true}
-        right={
-          <TextInput.Icon
-            icon="search"
-            onPress={() => {
-              setBottomSheetShown(true);
-              Keyboard.dismiss();
-              bottomSheetRef.current?.expand();
-            }}
-          />
-        }
-      />
-
-      <TextInput
-        label={t('PlanNotes')}
-        testID="exercise-notes"
-        style={{ marginBottom: spacing[2] }}
-        value={exercise.notes}
-        onChangeText={(notes) => updateExercise({ notes })}
-        multiline
-      />
-
-      <TextInput
-        label={t('ExternalLink')}
-        testID="exercise-link"
-        style={{ marginBottom: spacing[2] }}
-        placeholder="https://"
-        value={exercise.link}
-        onChangeText={(link) => updateExercise({ link })}
-      />
-
+    <>
       <CardioTargetEditor
         target={exercise.target}
         onValueChange={(target) => updateExercise({ target })}
       />
+      <SharedFieldsEditor exercise={exercise} updateExercise={updateExercise} />
 
       <List.Section>
         <ListSwitch
@@ -210,7 +232,41 @@ function CardioExerciseEditor({
           headline={t('trackAvgHeartRate')}
         />
       </List.Section>
-    </View>
+    </>
+  );
+}
+
+function SharedFieldsEditor({
+  exercise,
+  updateExercise,
+}: {
+  exercise: ExerciseBlueprint;
+  updateExercise: (ex: Partial<ExerciseBlueprint>) => void;
+}) {
+  const { t } = useTranslate();
+  return (
+    <>
+      <LabelledFormRow label={t('PlanNotes')} icon="notesFill">
+        <TextInput
+          mode="outlined"
+          testID="exercise-notes"
+          style={{ marginBottom: spacing[2] }}
+          value={exercise.notes}
+          onChangeText={(notes) => updateExercise({ notes })}
+          multiline
+        />
+      </LabelledFormRow>
+      <LabelledFormRow label={t('ExternalLink')} icon="publicFill">
+        <TextInput
+          mode="outlined"
+          testID="exercise-link"
+          style={{ marginBottom: spacing[2] }}
+          placeholder="https://"
+          value={exercise.link}
+          onChangeText={(link) => updateExercise({ link })}
+        />
+      </LabelledFormRow>
+    </>
   );
 }
 
@@ -239,11 +295,8 @@ function CardioTargetEditor(props: {
     }
   };
   return (
-    // Intentionally not a card, but I like the card spacing
-    <View>
-      <Card.Title title={t('Cardio target')} />
-
-      <Card.Content style={{ gap: spacing[2] }}>
+    <>
+      <LabelledFormRow label={t('Cardio target')} icon={'targetFill'}>
         <SegmentedButtons
           value={target.type}
           onValueChange={handleTypeChange}
@@ -251,24 +304,26 @@ function CardioTargetEditor(props: {
             {
               value: 'distance',
               label: t('Distance'),
+              icon: 'trailLength',
             },
             {
               value: 'time',
               label: t('Time'),
+              icon: 'timer',
             },
           ]}
         />
+      </LabelledFormRow>
 
-        {match(target)
-          .with({ type: 'distance' }, (t) => (
-            <DistanceTargetEditor target={t} onValueChange={onValueChange} />
-          ))
-          .with({ type: 'time' }, (t) => (
-            <TimeTargetEditor target={t} onValueChange={onValueChange} />
-          ))
-          .exhaustive()}
-      </Card.Content>
-    </View>
+      {match(target)
+        .with({ type: 'distance' }, (t) => (
+          <DistanceTargetEditor target={t} onValueChange={onValueChange} />
+        ))
+        .with({ type: 'time' }, (t) => (
+          <TimeTargetEditor target={t} onValueChange={onValueChange} />
+        ))
+        .exhaustive()}
+    </>
   );
 }
 
@@ -277,25 +332,23 @@ function DistanceTargetEditor(props: {
   onValueChange: (t: DistanceCardioTarget) => void;
 }) {
   const { target, onValueChange } = props;
-  const { t } = useTranslate();
   return (
     <View
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        flex: 1,
       }}
     >
-      <EditableIncrementer
-        onChange={() => {}}
-        suffix=""
-        disallowNegative
-        value={props.target.value}
-      />
+      <View style={{ flex: 1 }}>
+        <EditableIncrementer
+          onChange={(value) => onValueChange({ ...target, value })}
+          disallowNegative
+          value={props.target.value}
+        />
+      </View>
 
       <SelectButton
-        testID="setDistancUnit"
+        testID="setDistanceUnit"
         value={target.unit}
         options={distanceUnitOptions}
         onChange={(unit) => onValueChange({ ...target, unit })}
@@ -326,9 +379,7 @@ function WeightedExerciseEditor({
   exercise: WeightedExerciseBlueprint;
   updateExercise: (ex: Partial<ExerciseBlueprint>) => void;
 }) {
-  const exerciseIds = useAppSelector(selectExerciseIds);
   const { t } = useTranslate();
-  const bottomSheetRef = useRef<BottomSheet>(null);
   const useImperialUnits = useAppSelector(
     (s: RootState) => s.settings.useImperialUnits,
   );
@@ -352,38 +403,8 @@ function WeightedExerciseEditor({
   const setExerciseWeightIncrease = (weightIncreaseOnSuccess: BigNumber) =>
     updateExercise({ weightIncreaseOnSuccess });
 
-  const selectExerciseFromSearch = (ex: ExerciseDescriptor) => {
-    updateExercise({ name: ex.name, notes: ex.instructions });
-    bottomSheetRef.current?.close();
-  };
-
-  const [bottomSheetShown, setBottomSheetShown] = useState(false);
-  const [filteredExerciseIds, setFilteredExerciseIds] = useState(exerciseIds);
-  const exerciseListItems = useMemo(
-    () => ['filter', ...filteredExerciseIds],
-    [filteredExerciseIds],
-  );
-
   return (
     <View style={{ gap: spacing[2] }}>
-      <TextInput
-        label={t('Exercise')}
-        testID="exercise-name"
-        style={{ marginBottom: spacing[2] }}
-        value={exercise.name}
-        onChangeText={(name) => updateExercise({ name })}
-        selectTextOnFocus={true}
-        right={
-          <TextInput.Icon
-            icon="search"
-            onPress={() => {
-              setBottomSheetShown(true);
-              Keyboard.dismiss();
-              bottomSheetRef.current?.expand();
-            }}
-          />
-        }
-      />
       <View
         style={{
           flexDirection: 'row',
@@ -432,88 +453,31 @@ function WeightedExerciseEditor({
         </Card>
       </View>
 
-      <TextInput
-        label={t('PlanNotes')}
-        testID="exercise-notes"
-        style={{ marginBottom: spacing[2] }}
-        value={exercise.notes}
-        onChangeText={setExerciseNotes}
-        multiline
+      <SharedFieldsEditor exercise={exercise} updateExercise={updateExercise} />
+
+      <LabelledFormRow label={t('ProgressiveOverload')} icon="speedFill">
+        <EditableIncrementer
+          testID="exercise-auto-increase"
+          suffix={weightSuffix}
+          value={exercise.weightIncreaseOnSuccess}
+          onChange={setExerciseWeightIncrease}
+        />
+      </LabelledFormRow>
+
+      <RestEditorGroup
+        rest={exercise.restBetweenSets}
+        onRestUpdated={(restBetweenSets) => updateExercise({ restBetweenSets })}
       />
 
-      <TextInput
-        label={t('ExternalLink')}
-        testID="exercise-link"
-        style={{ marginBottom: spacing[2] }}
-        placeholder="https://"
-        value={exercise.link}
-        onChangeText={setExerciseLink}
+      <ListSwitch
+        headline={t('SupersetNextExercise')}
+        value={exercise.supersetWithNext}
+        supportingText=""
+        testID="exercise-superset"
+        onValueChange={(supersetWithNext) =>
+          updateExercise({ supersetWithNext })
+        }
       />
-
-      <View style={{ gap: spacing[2] }}>
-        <List.Item
-          title={t('ProgressiveOverload')}
-          titleNumberOfLines={2}
-          right={() => (
-            <EditableIncrementer
-              testID="exercise-auto-increase"
-              suffix={weightSuffix}
-              value={exercise.weightIncreaseOnSuccess}
-              onChange={setExerciseWeightIncrease}
-            />
-          )}
-        />
-        <Divider />
-        <View style={{ width: '100%' }}>
-          <ListSwitch
-            headline={t('SupersetNextExercise')}
-            value={exercise.supersetWithNext}
-            supportingText=""
-            testID="exercise-superset"
-            onValueChange={(supersetWithNext) =>
-              updateExercise({ supersetWithNext })
-            }
-          />
-        </View>
-        <Divider />
-        <RestEditorGroup
-          rest={exercise.restBetweenSets}
-          onRestUpdated={(restBetweenSets) =>
-            updateExercise({ restBetweenSets })
-          }
-        />
-      </View>
-      <AppBottomSheet
-        index={-1}
-        sheetRef={bottomSheetRef}
-        enablePanDownToClose
-        enableDynamicSizing={false}
-      >
-        {bottomSheetShown && (
-          <FlashList
-            data={exerciseListItems}
-            // @ts-expect-error -- It does work - see:https://github.com/gorhom/react-native-bottom-sheet/issues/1120#issuecomment-1582872948
-            renderScrollComponent={BottomSheetScrollView}
-            getItemType={(_, index) => (index === 0 ? 'filters' : 'exercise')}
-            keyExtractor={(item, index) => (index === 0 ? 'filters' : item)}
-            renderItem={(i) => {
-              if (i.index === 0) {
-                return (
-                  <ExerciseFilterer
-                    onFilteredExerciseIdsChange={setFilteredExerciseIds}
-                  />
-                );
-              }
-              return (
-                <ExerciseSearchListItem
-                  exerciseId={i.item}
-                  onPress={selectExerciseFromSearch}
-                />
-              );
-            }}
-          />
-        )}
-      </AppBottomSheet>
     </View>
   );
 }
