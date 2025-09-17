@@ -5,5 +5,6 @@
   "automerge": false,
   "gitIgnoredAuthors": ["renovate[bot]@users.noreply.github.com"],
   "ignoreDeps": ["FluentAssertions"],
-  "ignorePaths": ["app/**"]
+  "ignorePaths": ["app/**"],
+  "minimumReleaseAge": "14 days"
 }

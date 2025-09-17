@@ -98,7 +98,7 @@ async function main() {
   let summary = "";
   try {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    const prompt = `Summarize the following release notes for a GitHub release. Focus on user-facing changes and improvements. AVOID listing reasons for changes unless you are explicitly quoting a commit message. Do not say stuff like "ensuring a smoother user experience."\n\n${allMessages.join(
+    const prompt = `Summarize the following release notes for a GitHub release. Focus on user-facing changes and improvements. AVOID listing reasons for changes unless you are explicitly quoting a commit message. NEVER say stuff like "ensuring a smoother user experience." or "improving efficiency." or things like that. The change is the change, the reasons are either implicit from the commit, or you DEFINITELY DO NOT need to infer them to say what they improve."\n\n${allMessages.join(
       "\n"
     )}`;
     const completion = await openai.chat.completions.create({
@@ -128,11 +128,6 @@ async function main() {
     const body = (await $`git log -1 --pretty=format:%b ${sha}`).stdout.trim();
     const shortSha = (await $`git rev-parse --short ${sha}`).stdout.trim();
     console.log(`- ${msg} (${shortSha})`);
-    if (body) {
-      console.log(
-        `<details><summary>Details</summary>\n\n${body}\n\n</details>`
-      );
-    }
   }
 
   console.log(`\n## Non-merge commits since ${fromTag}`);
