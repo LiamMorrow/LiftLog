@@ -13,3 +13,55 @@ index 05264c6..e2ca0db 100644
      backgroundColor: 'transparent',
      ...(Platform.OS === 'web'
        ? {
+diff --git a/node_modules/react-native-paper/src/components/Menu/Menu.tsx b/node_modules/react-native-paper/src/components/Menu/Menu.tsx
+index 55922c1..77f3400 100644
+--- a/node_modules/react-native-paper/src/components/Menu/Menu.tsx
++++ b/node_modules/react-native-paper/src/components/Menu/Menu.tsx
+@@ -299,10 +299,10 @@ const Menu = ({
+           });
+         }
+       }),
+-    [anchor]
+-  );
++      [anchor]
++    );
+ 
+-  const show = React.useCallback(async () => {
++    const show = React.useCallback(async () => {
+     const windowLayoutResult = Dimensions.get('window');
+     const [menuLayoutResult, anchorLayoutResult] = await Promise.all([
+       measureMenuLayout(),
+@@ -359,11 +359,9 @@ const Menu = ({
+         easing: EASING,
+         useNativeDriver: true,
+       }),
+-    ]).start(({ finished }) => {
+-      if (finished) {
+-        focusFirstDOMNode(menuRef.current);
+-        prevRendered.current = true;
+-      }
++    ]).start(() => {
++      focusFirstDOMNode(menuRef.current);
++      prevRendered.current = true;
+     });
+   }, [anchor, attachListeners, measureAnchorLayout, theme]);
+ 
+@@ -377,13 +375,11 @@ const Menu = ({
+       duration: ANIMATION_DURATION * animation.scale,
+       easing: EASING,
+       useNativeDriver: true,
+-    }).start(({ finished }) => {
+-      if (finished) {
+-        setMenuLayout({ width: 0, height: 0 });
+-        setRendered(false);
+-        prevRendered.current = false;
+-        focusFirstDOMNode(anchorRef.current);
+-      }
++    }).start(() => {
++      setMenuLayout({ width: 0, height: 0 });
++      setRendered(false);
++      prevRendered.current = false;
++      focusFirstDOMNode(anchorRef.current);
+     });
+   }, [removeListeners, theme]);
+ 
