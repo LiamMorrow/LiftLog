@@ -12,10 +12,11 @@ import LimitedHtml from '@/components/presentation/limited-html';
 import CopyExerciseDialog from '@/components/smart/copy-exercise-dialog';
 import { spacing } from '@/hooks/useAppTheme';
 import {
-  ExerciseBlueprint,
+  WeightedExerciseBlueprint,
   Rest,
   SessionBlueprint,
-} from '@/models/session-models';
+  ExerciseBlueprint,
+} from '@/models/blueprint-models';
 import { useAppSelector } from '@/store';
 import { setProgramSession } from '@/store/program';
 import {
@@ -89,7 +90,7 @@ function SessionEditor({
   const beginAddExercise = () => {
     setSelectedExerciseIndex(undefined);
     setSelectedExercise(
-      ExerciseBlueprint.fromPOJO({
+      WeightedExerciseBlueprint.fromPOJO({
         name: `Exercise ${session.exercises.length + 1}`,
         repsPerSet: 10,
         sets: 3,
@@ -145,7 +146,7 @@ function SessionEditor({
     <FullHeightScrollView floatingChildren={floatingBottomContainer}>
       <Stack.Screen options={{ title: session.name }} />
       <LabelledForm>
-        <LabelledFormRow label={t('WorkoutName')} icon={'assignment'}>
+        <LabelledFormRow label={t('WorkoutName')} icon={'assignmentFill'}>
           <TextInput
             mode="flat"
             value={session.name}
@@ -153,7 +154,7 @@ function SessionEditor({
             selectTextOnFocus
           />
         </LabelledFormRow>
-        <LabelledFormRow label={t('WorkoutNotes')} icon={'notes'}>
+        <LabelledFormRow label={t('WorkoutNotes')} icon={'notesFill'}>
           <TextInput
             mode="flat"
             value={session.notes}
@@ -163,7 +164,7 @@ function SessionEditor({
         </LabelledFormRow>
         <LabelledFormRow
           label={t('Exercises')}
-          icon={'fitnessCenter'}
+          icon={'fitnessCenterFill'}
           undoFormPadding
           noGap
         >

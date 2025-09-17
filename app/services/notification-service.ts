@@ -1,4 +1,4 @@
-import { RecordedExercise } from '@/models/session-models';
+import { RecordedWeightedExercise } from '@/models/session-models';
 import { RootState } from '@/store';
 import { Dispatch } from '@reduxjs/toolkit';
 export class NotificationService {
@@ -7,7 +7,7 @@ export class NotificationService {
     readonly dispatch: Dispatch,
   ) {}
 
-  async scheduleNextSetNotification(exercise: RecordedExercise) {}
+  async scheduleNextSetNotification(exercise: RecordedWeightedExercise) {}
 
   async clearSetTimerNotification() {}
 

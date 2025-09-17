@@ -3,7 +3,7 @@ import { StyleProp, TextProps, TextStyle } from 'react-native';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import LimitedHtml from '@/components/presentation/limited-html';
 import { useTranslate } from '@tolgee/react';
-import { Rest } from '@/models/session-models';
+import { Rest } from '@/models/blueprint-models';
 import { Duration } from '@js-joda/core';
 
 interface RestFormatProps {
@@ -18,13 +18,6 @@ export default function RestFormat({
 }: RestFormatProps & TextProps) {
   const { colors } = useAppTheme();
   const { t } = useTranslate();
-
-  const formatTimeSpan = (duration: Duration): string => {
-    const totalSeconds = duration.seconds();
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
 
   // Determine highlight styles based on the highlight prop
   const emStyles: StyleProp<TextStyle> = {
@@ -55,3 +48,10 @@ export default function RestFormat({
     </>
   );
 }
+
+export const formatTimeSpan = (duration: Duration): string => {
+  const totalSeconds = duration.seconds();
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+};

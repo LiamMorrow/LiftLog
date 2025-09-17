@@ -16,7 +16,7 @@ export const LiftLog = $root.LiftLog = (() => {
      */
     const LiftLog = {};
 
-    LiftLog.Ui = (function() {
+    LiftLog.Ui = (function () {
 
         /**
          * Namespace Ui.
@@ -25,7 +25,7 @@ export const LiftLog = $root.LiftLog = (() => {
          */
         const Ui = {};
 
-        Ui.Models = (function() {
+        Ui.Models = (function () {
 
             /**
              * Namespace Models.
@@ -34,7 +34,7 @@ export const LiftLog = $root.LiftLog = (() => {
              */
             const Models = {};
 
-            Models.CurrentSessionStateDao = (function() {
+            Models.CurrentSessionStateDao = (function () {
 
                 /**
                  * Namespace CurrentSessionStateDao.
@@ -43,7 +43,7 @@ export const LiftLog = $root.LiftLog = (() => {
                  */
                 const CurrentSessionStateDao = {};
 
-                CurrentSessionStateDao.CurrentSessionStateDaoV2 = (function() {
+                CurrentSessionStateDao.CurrentSessionStateDaoV2 = (function () {
 
                     /**
                      * Properties of a CurrentSessionStateDaoV2.
@@ -195,21 +195,21 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (tag === error)
                                 break;
                             switch (tag >>> 3) {
-                            case 1: {
+                                case 1: {
                                     message.workoutSession = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.decode(reader, reader.uint32());
                                     break;
                                 }
-                            case 2: {
+                                case 2: {
                                     message.historySession = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.decode(reader, reader.uint32());
                                     break;
                                 }
-                            case 3: {
+                                case 3: {
                                     message.latestSetTimerNotificationId = $root.LiftLog.Ui.Models.UuidDao.decode(reader, reader.uint32());
                                     break;
                                 }
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
                             }
                         }
                         return message;
@@ -363,7 +363,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return CurrentSessionStateDao;
             })();
 
-            Models.UuidDao = (function() {
+            Models.UuidDao = (function () {
 
                 /**
                  * Properties of an UuidDao.
@@ -457,13 +457,13 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        case 1: {
+                            case 1: {
                                 message.value = reader.bytes();
                                 break;
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -577,7 +577,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return UuidDao;
             })();
 
-            Models.DateOnlyDao = (function() {
+            Models.DateOnlyDao = (function () {
 
                 /**
                  * Properties of a DateOnlyDao.
@@ -693,21 +693,21 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        case 1: {
+                            case 1: {
                                 message.year = reader.int32();
                                 break;
                             }
-                        case 2: {
+                            case 2: {
                                 message.month = reader.int32();
                                 break;
                             }
-                        case 3: {
+                            case 3: {
                                 message.day = reader.int32();
                                 break;
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -829,7 +829,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return DateOnlyDao;
             })();
 
-            Models.DecimalValue = (function() {
+            Models.DecimalValue = (function () {
 
                 /**
                  * Properties of a DecimalValue.
@@ -860,7 +860,7 @@ export const LiftLog = $root.LiftLog = (() => {
                  * @memberof LiftLog.Ui.Models.DecimalValue
                  * @instance
                  */
-                DecimalValue.prototype.units = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                DecimalValue.prototype.units = $util.Long ? $util.Long.fromBits(0, 0, false) : 0;
 
                 /**
                  * DecimalValue nanos.
@@ -934,17 +934,17 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        case 1: {
+                            case 1: {
                                 message.units = reader.int64();
                                 break;
                             }
-                        case 2: {
+                            case 2: {
                                 message.nanos = reader.sfixed32();
                                 break;
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -1072,7 +1072,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return DecimalValue;
             })();
 
-            Models.TimeOnlyDao = (function() {
+            Models.TimeOnlyDao = (function () {
 
                 /**
                  * Properties of a TimeOnlyDao.
@@ -1210,29 +1210,29 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        case 1: {
+                            case 1: {
                                 message.hour = reader.int32();
                                 break;
                             }
-                        case 2: {
+                            case 2: {
                                 message.minute = reader.int32();
                                 break;
                             }
-                        case 3: {
+                            case 3: {
                                 message.second = reader.int32();
                                 break;
                             }
-                        case 4: {
+                            case 4: {
                                 message.millisecond = reader.int32();
                                 break;
                             }
-                        case 5: {
+                            case 5: {
                                 message.microsecond = reader.int32();
                                 break;
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -1370,7 +1370,246 @@ export const LiftLog = $root.LiftLog = (() => {
                 return TimeOnlyDao;
             })();
 
-            Models.SessionHistoryDao = (function() {
+            Models.DateTimeDao = (function () {
+
+                /**
+                 * Properties of a DateTimeDao.
+                 * @memberof LiftLog.Ui.Models
+                 * @interface IDateTimeDao
+                 * @property {LiftLog.Ui.Models.IDateOnlyDao|null} [date] DateTimeDao date
+                 * @property {LiftLog.Ui.Models.ITimeOnlyDao|null} [time] DateTimeDao time
+                 */
+
+                /**
+                 * Constructs a new DateTimeDao.
+                 * @memberof LiftLog.Ui.Models
+                 * @classdesc Represents a DateTimeDao.
+                 * @implements IDateTimeDao
+                 * @constructor
+                 * @param {LiftLog.Ui.Models.IDateTimeDao=} [properties] Properties to set
+                 */
+                function DateTimeDao(properties) {
+                    if (properties)
+                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * DateTimeDao date.
+                 * @member {LiftLog.Ui.Models.IDateOnlyDao|null|undefined} date
+                 * @memberof LiftLog.Ui.Models.DateTimeDao
+                 * @instance
+                 */
+                DateTimeDao.prototype.date = null;
+
+                /**
+                 * DateTimeDao time.
+                 * @member {LiftLog.Ui.Models.ITimeOnlyDao|null|undefined} time
+                 * @memberof LiftLog.Ui.Models.DateTimeDao
+                 * @instance
+                 */
+                DateTimeDao.prototype.time = null;
+
+                /**
+                 * Creates a new DateTimeDao instance using the specified properties.
+                 * @function create
+                 * @memberof LiftLog.Ui.Models.DateTimeDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IDateTimeDao=} [properties] Properties to set
+                 * @returns {LiftLog.Ui.Models.DateTimeDao} DateTimeDao instance
+                 */
+                DateTimeDao.create = function create(properties) {
+                    return new DateTimeDao(properties);
+                };
+
+                /**
+                 * Encodes the specified DateTimeDao message. Does not implicitly {@link LiftLog.Ui.Models.DateTimeDao.verify|verify} messages.
+                 * @function encode
+                 * @memberof LiftLog.Ui.Models.DateTimeDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IDateTimeDao} message DateTimeDao message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                DateTimeDao.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.date != null && Object.hasOwnProperty.call(message, "date"))
+                        $root.LiftLog.Ui.Models.DateOnlyDao.encode(message.date, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    if (message.time != null && Object.hasOwnProperty.call(message, "time"))
+                        $root.LiftLog.Ui.Models.TimeOnlyDao.encode(message.time, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified DateTimeDao message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.DateTimeDao.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof LiftLog.Ui.Models.DateTimeDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IDateTimeDao} message DateTimeDao message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                DateTimeDao.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a DateTimeDao message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof LiftLog.Ui.Models.DateTimeDao
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {LiftLog.Ui.Models.DateTimeDao} DateTimeDao
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                DateTimeDao.decode = function decode(reader, length, error) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.DateTimeDao();
+                    while (reader.pos < end) {
+                        let tag = reader.uint32();
+                        if (tag === error)
+                            break;
+                        switch (tag >>> 3) {
+                            case 1: {
+                                message.date = $root.LiftLog.Ui.Models.DateOnlyDao.decode(reader, reader.uint32());
+                                break;
+                            }
+                            case 2: {
+                                message.time = $root.LiftLog.Ui.Models.TimeOnlyDao.decode(reader, reader.uint32());
+                                break;
+                            }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a DateTimeDao message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof LiftLog.Ui.Models.DateTimeDao
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {LiftLog.Ui.Models.DateTimeDao} DateTimeDao
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                DateTimeDao.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a DateTimeDao message.
+                 * @function verify
+                 * @memberof LiftLog.Ui.Models.DateTimeDao
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                DateTimeDao.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.date != null && message.hasOwnProperty("date")) {
+                        let error = $root.LiftLog.Ui.Models.DateOnlyDao.verify(message.date);
+                        if (error)
+                            return "date." + error;
+                    }
+                    if (message.time != null && message.hasOwnProperty("time")) {
+                        let error = $root.LiftLog.Ui.Models.TimeOnlyDao.verify(message.time);
+                        if (error)
+                            return "time." + error;
+                    }
+                    return null;
+                };
+
+                /**
+                 * Creates a DateTimeDao message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof LiftLog.Ui.Models.DateTimeDao
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {LiftLog.Ui.Models.DateTimeDao} DateTimeDao
+                 */
+                DateTimeDao.fromObject = function fromObject(object) {
+                    if (object instanceof $root.LiftLog.Ui.Models.DateTimeDao)
+                        return object;
+                    let message = new $root.LiftLog.Ui.Models.DateTimeDao();
+                    if (object.date != null) {
+                        if (typeof object.date !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.DateTimeDao.date: object expected");
+                        message.date = $root.LiftLog.Ui.Models.DateOnlyDao.fromObject(object.date);
+                    }
+                    if (object.time != null) {
+                        if (typeof object.time !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.DateTimeDao.time: object expected");
+                        message.time = $root.LiftLog.Ui.Models.TimeOnlyDao.fromObject(object.time);
+                    }
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a DateTimeDao message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof LiftLog.Ui.Models.DateTimeDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.DateTimeDao} message DateTimeDao
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                DateTimeDao.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    let object = {};
+                    if (options.defaults) {
+                        object.date = null;
+                        object.time = null;
+                    }
+                    if (message.date != null && message.hasOwnProperty("date"))
+                        object.date = $root.LiftLog.Ui.Models.DateOnlyDao.toObject(message.date, options);
+                    if (message.time != null && message.hasOwnProperty("time"))
+                        object.time = $root.LiftLog.Ui.Models.TimeOnlyDao.toObject(message.time, options);
+                    return object;
+                };
+
+                /**
+                 * Converts this DateTimeDao to JSON.
+                 * @function toJSON
+                 * @memberof LiftLog.Ui.Models.DateTimeDao
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                DateTimeDao.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                /**
+                 * Gets the default type url for DateTimeDao
+                 * @function getTypeUrl
+                 * @memberof LiftLog.Ui.Models.DateTimeDao
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                DateTimeDao.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/LiftLog.Ui.Models.DateTimeDao";
+                };
+
+                return DateTimeDao;
+            })();
+
+            Models.SessionHistoryDao = (function () {
 
                 /**
                  * Namespace SessionHistoryDao.
@@ -1379,7 +1618,7 @@ export const LiftLog = $root.LiftLog = (() => {
                  */
                 const SessionHistoryDao = {};
 
-                SessionHistoryDao.SessionHistoryDaoV2 = (function() {
+                SessionHistoryDao.SessionHistoryDaoV2 = (function () {
 
                     /**
                      * Properties of a SessionHistoryDaoV2.
@@ -1475,15 +1714,15 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (tag === error)
                                 break;
                             switch (tag >>> 3) {
-                            case 1: {
+                                case 1: {
                                     if (!(message.completedSessions && message.completedSessions.length))
                                         message.completedSessions = [];
                                     message.completedSessions.push($root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.decode(reader, reader.uint32()));
                                     break;
                                 }
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
                             }
                         }
                         return message;
@@ -1605,7 +1844,7 @@ export const LiftLog = $root.LiftLog = (() => {
                     return SessionHistoryDaoV2;
                 })();
 
-                SessionHistoryDao.SessionDaoV2 = (function() {
+                SessionHistoryDao.SessionDaoV2 = (function () {
 
                     /**
                      * Properties of a SessionDaoV2.
@@ -1770,35 +2009,35 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (tag === error)
                                 break;
                             switch (tag >>> 3) {
-                            case 1: {
+                                case 1: {
                                     message.id = $root.LiftLog.Ui.Models.UuidDao.decode(reader, reader.uint32());
                                     break;
                                 }
-                            case 2: {
+                                case 2: {
                                     message.sessionName = reader.string();
                                     break;
                                 }
-                            case 3: {
+                                case 3: {
                                     if (!(message.recordedExercises && message.recordedExercises.length))
                                         message.recordedExercises = [];
                                     message.recordedExercises.push($root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.decode(reader, reader.uint32()));
                                     break;
                                 }
-                            case 4: {
+                                case 4: {
                                     message.date = $root.LiftLog.Ui.Models.DateOnlyDao.decode(reader, reader.uint32());
                                     break;
                                 }
-                            case 5: {
+                                case 5: {
                                     message.bodyweight = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
                                     break;
                                 }
-                            case 6: {
+                                case 6: {
                                     message.blueprintNotes = reader.string();
                                     break;
                                 }
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
                             }
                         }
                         return message;
@@ -1983,17 +2222,23 @@ export const LiftLog = $root.LiftLog = (() => {
                     return SessionDaoV2;
                 })();
 
-                SessionHistoryDao.RecordedExerciseDaoV2 = (function() {
+                SessionHistoryDao.RecordedExerciseDaoV2 = (function () {
 
                     /**
                      * Properties of a RecordedExerciseDaoV2.
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao
                      * @interface IRecordedExerciseDaoV2
                      * @property {LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2|null} [exerciseBlueprint] RecordedExerciseDaoV2 exerciseBlueprint
-                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [weight] RecordedExerciseDaoV2 weight
-                     * @property {Array.<LiftLog.Ui.Models.SessionHistoryDao.IPotentialSetDaoV2>|null} [potentialSets] RecordedExerciseDaoV2 potentialSets
+                     * @property {LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType|null} [type] RecordedExerciseDaoV2 type
                      * @property {google.protobuf.IStringValue|null} [notes] RecordedExerciseDaoV2 notes
-                     * @property {boolean|null} [perSetWeight] RecordedExerciseDaoV2 perSetWeight
+                     * @property {Array.<LiftLog.Ui.Models.SessionHistoryDao.IPotentialSetDaoV2>|null} [potentialSets] RecordedExerciseDaoV2 potentialSets
+                     * @property {LiftLog.Ui.Models.IDateTimeDao|null} [startedAt] RecordedExerciseDaoV2 startedAt
+                     * @property {LiftLog.Ui.Models.IDateTimeDao|null} [completionDateTime] RecordedExerciseDaoV2 completionDateTime
+                     * @property {google.protobuf.IDuration|null} [duration] RecordedExerciseDaoV2 duration
+                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [distance] RecordedExerciseDaoV2 distance
+                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [resistance] RecordedExerciseDaoV2 resistance
+                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [incline] RecordedExerciseDaoV2 incline
+                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [avgHeartRate] RecordedExerciseDaoV2 avgHeartRate
                      */
 
                     /**
@@ -2021,20 +2266,12 @@ export const LiftLog = $root.LiftLog = (() => {
                     RecordedExerciseDaoV2.prototype.exerciseBlueprint = null;
 
                     /**
-                     * RecordedExerciseDaoV2 weight.
-                     * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} weight
+                     * RecordedExerciseDaoV2 type.
+                     * @member {LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType} type
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
                      * @instance
                      */
-                    RecordedExerciseDaoV2.prototype.weight = null;
-
-                    /**
-                     * RecordedExerciseDaoV2 potentialSets.
-                     * @member {Array.<LiftLog.Ui.Models.SessionHistoryDao.IPotentialSetDaoV2>} potentialSets
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
-                     * @instance
-                     */
-                    RecordedExerciseDaoV2.prototype.potentialSets = $util.emptyArray;
+                    RecordedExerciseDaoV2.prototype.type = 0;
 
                     /**
                      * RecordedExerciseDaoV2 notes.
@@ -2045,26 +2282,71 @@ export const LiftLog = $root.LiftLog = (() => {
                     RecordedExerciseDaoV2.prototype.notes = null;
 
                     /**
-                     * RecordedExerciseDaoV2 perSetWeight.
-                     * @member {boolean} perSetWeight
+                     * RecordedExerciseDaoV2 potentialSets.
+                     * @member {Array.<LiftLog.Ui.Models.SessionHistoryDao.IPotentialSetDaoV2>} potentialSets
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
                      * @instance
                      */
-                    RecordedExerciseDaoV2.prototype.perSetWeight = false;
+                    RecordedExerciseDaoV2.prototype.potentialSets = $util.emptyArray;
+
+                    /**
+                     * RecordedExerciseDaoV2 startedAt.
+                     * @member {LiftLog.Ui.Models.IDateTimeDao|null|undefined} startedAt
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @instance
+                     */
+                    RecordedExerciseDaoV2.prototype.startedAt = null;
+
+                    /**
+                     * RecordedExerciseDaoV2 completionDateTime.
+                     * @member {LiftLog.Ui.Models.IDateTimeDao|null|undefined} completionDateTime
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @instance
+                     */
+                    RecordedExerciseDaoV2.prototype.completionDateTime = null;
+
+                    /**
+                     * RecordedExerciseDaoV2 duration.
+                     * @member {google.protobuf.IDuration|null|undefined} duration
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @instance
+                     */
+                    RecordedExerciseDaoV2.prototype.duration = null;
+
+                    /**
+                     * RecordedExerciseDaoV2 distance.
+                     * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} distance
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @instance
+                     */
+                    RecordedExerciseDaoV2.prototype.distance = null;
+
+                    /**
+                     * RecordedExerciseDaoV2 resistance.
+                     * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} resistance
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @instance
+                     */
+                    RecordedExerciseDaoV2.prototype.resistance = null;
+
+                    /**
+                     * RecordedExerciseDaoV2 incline.
+                     * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} incline
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @instance
+                     */
+                    RecordedExerciseDaoV2.prototype.incline = null;
+
+                    /**
+                     * RecordedExerciseDaoV2 avgHeartRate.
+                     * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} avgHeartRate
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @instance
+                     */
+                    RecordedExerciseDaoV2.prototype.avgHeartRate = null;
 
                     // OneOf field names bound to virtual getters and setters
                     let $oneOfFields;
-
-                    /**
-                     * RecordedExerciseDaoV2 _weight.
-                     * @member {"weight"|undefined} _weight
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
-                     * @instance
-                     */
-                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_weight", {
-                        get: $util.oneOfGetter($oneOfFields = ["weight"]),
-                        set: $util.oneOfSetter($oneOfFields)
-                    });
 
                     /**
                      * RecordedExerciseDaoV2 _notes.
@@ -2074,6 +2356,83 @@ export const LiftLog = $root.LiftLog = (() => {
                      */
                     Object.defineProperty(RecordedExerciseDaoV2.prototype, "_notes", {
                         get: $util.oneOfGetter($oneOfFields = ["notes"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * RecordedExerciseDaoV2 _startedAt.
+                     * @member {"startedAt"|undefined} _startedAt
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @instance
+                     */
+                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_startedAt", {
+                        get: $util.oneOfGetter($oneOfFields = ["startedAt"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * RecordedExerciseDaoV2 _completionDateTime.
+                     * @member {"completionDateTime"|undefined} _completionDateTime
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @instance
+                     */
+                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_completionDateTime", {
+                        get: $util.oneOfGetter($oneOfFields = ["completionDateTime"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * RecordedExerciseDaoV2 _duration.
+                     * @member {"duration"|undefined} _duration
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @instance
+                     */
+                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_duration", {
+                        get: $util.oneOfGetter($oneOfFields = ["duration"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * RecordedExerciseDaoV2 _distance.
+                     * @member {"distance"|undefined} _distance
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @instance
+                     */
+                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_distance", {
+                        get: $util.oneOfGetter($oneOfFields = ["distance"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * RecordedExerciseDaoV2 _resistance.
+                     * @member {"resistance"|undefined} _resistance
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @instance
+                     */
+                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_resistance", {
+                        get: $util.oneOfGetter($oneOfFields = ["resistance"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * RecordedExerciseDaoV2 _incline.
+                     * @member {"incline"|undefined} _incline
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @instance
+                     */
+                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_incline", {
+                        get: $util.oneOfGetter($oneOfFields = ["incline"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * RecordedExerciseDaoV2 _avgHeartRate.
+                     * @member {"avgHeartRate"|undefined} _avgHeartRate
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @instance
+                     */
+                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_avgHeartRate", {
+                        get: $util.oneOfGetter($oneOfFields = ["avgHeartRate"]),
                         set: $util.oneOfSetter($oneOfFields)
                     });
 
@@ -2103,15 +2462,27 @@ export const LiftLog = $root.LiftLog = (() => {
                             writer = $Writer.create();
                         if (message.exerciseBlueprint != null && Object.hasOwnProperty.call(message, "exerciseBlueprint"))
                             $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.encode(message.exerciseBlueprint, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                        if (message.weight != null && Object.hasOwnProperty.call(message, "weight"))
-                            $root.LiftLog.Ui.Models.DecimalValue.encode(message.weight, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
                         if (message.potentialSets != null && message.potentialSets.length)
                             for (let i = 0; i < message.potentialSets.length; ++i)
                                 $root.LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2.encode(message.potentialSets[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
                         if (message.notes != null && Object.hasOwnProperty.call(message, "notes"))
                             $root.google.protobuf.StringValue.encode(message.notes, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-                        if (message.perSetWeight != null && Object.hasOwnProperty.call(message, "perSetWeight"))
-                            writer.uint32(/* id 5, wireType 0 =*/40).bool(message.perSetWeight);
+                        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+                            writer.uint32(/* id 6, wireType 0 =*/48).int32(message.type);
+                        if (message.startedAt != null && Object.hasOwnProperty.call(message, "startedAt"))
+                            $root.LiftLog.Ui.Models.DateTimeDao.encode(message.startedAt, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                        if (message.completionDateTime != null && Object.hasOwnProperty.call(message, "completionDateTime"))
+                            $root.LiftLog.Ui.Models.DateTimeDao.encode(message.completionDateTime, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
+                        if (message.duration != null && Object.hasOwnProperty.call(message, "duration"))
+                            $root.google.protobuf.Duration.encode(message.duration, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
+                        if (message.distance != null && Object.hasOwnProperty.call(message, "distance"))
+                            $root.LiftLog.Ui.Models.DecimalValue.encode(message.distance, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
+                        if (message.resistance != null && Object.hasOwnProperty.call(message, "resistance"))
+                            $root.LiftLog.Ui.Models.DecimalValue.encode(message.resistance, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
+                        if (message.incline != null && Object.hasOwnProperty.call(message, "incline"))
+                            $root.LiftLog.Ui.Models.DecimalValue.encode(message.incline, writer.uint32(/* id 12, wireType 2 =*/98).fork()).ldelim();
+                        if (message.avgHeartRate != null && Object.hasOwnProperty.call(message, "avgHeartRate"))
+                            $root.LiftLog.Ui.Models.DecimalValue.encode(message.avgHeartRate, writer.uint32(/* id 13, wireType 2 =*/106).fork()).ldelim();
                         return writer;
                     };
 
@@ -2148,31 +2519,55 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (tag === error)
                                 break;
                             switch (tag >>> 3) {
-                            case 1: {
+                                case 1: {
                                     message.exerciseBlueprint = $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.decode(reader, reader.uint32());
                                     break;
                                 }
-                            case 2: {
-                                    message.weight = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                case 6: {
+                                    message.type = reader.int32();
                                     break;
                                 }
-                            case 3: {
+                                case 4: {
+                                    message.notes = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
+                                    break;
+                                }
+                                case 3: {
                                     if (!(message.potentialSets && message.potentialSets.length))
                                         message.potentialSets = [];
                                     message.potentialSets.push($root.LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2.decode(reader, reader.uint32()));
                                     break;
                                 }
-                            case 4: {
-                                    message.notes = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
+                                case 7: {
+                                    message.startedAt = $root.LiftLog.Ui.Models.DateTimeDao.decode(reader, reader.uint32());
                                     break;
                                 }
-                            case 5: {
-                                    message.perSetWeight = reader.bool();
+                                case 8: {
+                                    message.completionDateTime = $root.LiftLog.Ui.Models.DateTimeDao.decode(reader, reader.uint32());
                                     break;
                                 }
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
+                                case 9: {
+                                    message.duration = $root.google.protobuf.Duration.decode(reader, reader.uint32());
+                                    break;
+                                }
+                                case 10: {
+                                    message.distance = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                    break;
+                                }
+                                case 11: {
+                                    message.resistance = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                    break;
+                                }
+                                case 12: {
+                                    message.incline = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                    break;
+                                }
+                                case 13: {
+                                    message.avgHeartRate = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                    break;
+                                }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
                             }
                         }
                         return message;
@@ -2211,12 +2606,20 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (error)
                                 return "exerciseBlueprint." + error;
                         }
-                        if (message.weight != null && message.hasOwnProperty("weight")) {
-                            properties._weight = 1;
+                        if (message.type != null && message.hasOwnProperty("type"))
+                            switch (message.type) {
+                                default:
+                                    return "type: enum value expected";
+                                case 0:
+                                case 1:
+                                    break;
+                            }
+                        if (message.notes != null && message.hasOwnProperty("notes")) {
+                            properties._notes = 1;
                             {
-                                let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.weight);
+                                let error = $root.google.protobuf.StringValue.verify(message.notes);
                                 if (error)
-                                    return "weight." + error;
+                                    return "notes." + error;
                             }
                         }
                         if (message.potentialSets != null && message.hasOwnProperty("potentialSets")) {
@@ -2228,17 +2631,62 @@ export const LiftLog = $root.LiftLog = (() => {
                                     return "potentialSets." + error;
                             }
                         }
-                        if (message.notes != null && message.hasOwnProperty("notes")) {
-                            properties._notes = 1;
+                        if (message.startedAt != null && message.hasOwnProperty("startedAt")) {
+                            properties._startedAt = 1;
                             {
-                                let error = $root.google.protobuf.StringValue.verify(message.notes);
+                                let error = $root.LiftLog.Ui.Models.DateTimeDao.verify(message.startedAt);
                                 if (error)
-                                    return "notes." + error;
+                                    return "startedAt." + error;
                             }
                         }
-                        if (message.perSetWeight != null && message.hasOwnProperty("perSetWeight"))
-                            if (typeof message.perSetWeight !== "boolean")
-                                return "perSetWeight: boolean expected";
+                        if (message.completionDateTime != null && message.hasOwnProperty("completionDateTime")) {
+                            properties._completionDateTime = 1;
+                            {
+                                let error = $root.LiftLog.Ui.Models.DateTimeDao.verify(message.completionDateTime);
+                                if (error)
+                                    return "completionDateTime." + error;
+                            }
+                        }
+                        if (message.duration != null && message.hasOwnProperty("duration")) {
+                            properties._duration = 1;
+                            {
+                                let error = $root.google.protobuf.Duration.verify(message.duration);
+                                if (error)
+                                    return "duration." + error;
+                            }
+                        }
+                        if (message.distance != null && message.hasOwnProperty("distance")) {
+                            properties._distance = 1;
+                            {
+                                let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.distance);
+                                if (error)
+                                    return "distance." + error;
+                            }
+                        }
+                        if (message.resistance != null && message.hasOwnProperty("resistance")) {
+                            properties._resistance = 1;
+                            {
+                                let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.resistance);
+                                if (error)
+                                    return "resistance." + error;
+                            }
+                        }
+                        if (message.incline != null && message.hasOwnProperty("incline")) {
+                            properties._incline = 1;
+                            {
+                                let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.incline);
+                                if (error)
+                                    return "incline." + error;
+                            }
+                        }
+                        if (message.avgHeartRate != null && message.hasOwnProperty("avgHeartRate")) {
+                            properties._avgHeartRate = 1;
+                            {
+                                let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.avgHeartRate);
+                                if (error)
+                                    return "avgHeartRate." + error;
+                            }
+                        }
                         return null;
                     };
 
@@ -2259,10 +2707,26 @@ export const LiftLog = $root.LiftLog = (() => {
                                 throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.exerciseBlueprint: object expected");
                             message.exerciseBlueprint = $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.fromObject(object.exerciseBlueprint);
                         }
-                        if (object.weight != null) {
-                            if (typeof object.weight !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.weight: object expected");
-                            message.weight = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.weight);
+                        switch (object.type) {
+                            default:
+                                if (typeof object.type === "number") {
+                                    message.type = object.type;
+                                    break;
+                                }
+                                break;
+                            case "WEIGHTED":
+                            case 0:
+                                message.type = 0;
+                                break;
+                            case "CARDIO":
+                            case 1:
+                                message.type = 1;
+                                break;
+                        }
+                        if (object.notes != null) {
+                            if (typeof object.notes !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.notes: object expected");
+                            message.notes = $root.google.protobuf.StringValue.fromObject(object.notes);
                         }
                         if (object.potentialSets) {
                             if (!Array.isArray(object.potentialSets))
@@ -2274,13 +2738,41 @@ export const LiftLog = $root.LiftLog = (() => {
                                 message.potentialSets[i] = $root.LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2.fromObject(object.potentialSets[i]);
                             }
                         }
-                        if (object.notes != null) {
-                            if (typeof object.notes !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.notes: object expected");
-                            message.notes = $root.google.protobuf.StringValue.fromObject(object.notes);
+                        if (object.startedAt != null) {
+                            if (typeof object.startedAt !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.startedAt: object expected");
+                            message.startedAt = $root.LiftLog.Ui.Models.DateTimeDao.fromObject(object.startedAt);
                         }
-                        if (object.perSetWeight != null)
-                            message.perSetWeight = Boolean(object.perSetWeight);
+                        if (object.completionDateTime != null) {
+                            if (typeof object.completionDateTime !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.completionDateTime: object expected");
+                            message.completionDateTime = $root.LiftLog.Ui.Models.DateTimeDao.fromObject(object.completionDateTime);
+                        }
+                        if (object.duration != null) {
+                            if (typeof object.duration !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.duration: object expected");
+                            message.duration = $root.google.protobuf.Duration.fromObject(object.duration);
+                        }
+                        if (object.distance != null) {
+                            if (typeof object.distance !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.distance: object expected");
+                            message.distance = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.distance);
+                        }
+                        if (object.resistance != null) {
+                            if (typeof object.resistance !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.resistance: object expected");
+                            message.resistance = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.resistance);
+                        }
+                        if (object.incline != null) {
+                            if (typeof object.incline !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.incline: object expected");
+                            message.incline = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.incline);
+                        }
+                        if (object.avgHeartRate != null) {
+                            if (typeof object.avgHeartRate !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.avgHeartRate: object expected");
+                            message.avgHeartRate = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.avgHeartRate);
+                        }
                         return message;
                     };
 
@@ -2301,15 +2793,10 @@ export const LiftLog = $root.LiftLog = (() => {
                             object.potentialSets = [];
                         if (options.defaults) {
                             object.exerciseBlueprint = null;
-                            object.perSetWeight = false;
+                            object.type = options.enums === String ? "WEIGHTED" : 0;
                         }
                         if (message.exerciseBlueprint != null && message.hasOwnProperty("exerciseBlueprint"))
                             object.exerciseBlueprint = $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.toObject(message.exerciseBlueprint, options);
-                        if (message.weight != null && message.hasOwnProperty("weight")) {
-                            object.weight = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.weight, options);
-                            if (options.oneofs)
-                                object._weight = "weight";
-                        }
                         if (message.potentialSets && message.potentialSets.length) {
                             object.potentialSets = [];
                             for (let j = 0; j < message.potentialSets.length; ++j)
@@ -2320,8 +2807,43 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (options.oneofs)
                                 object._notes = "notes";
                         }
-                        if (message.perSetWeight != null && message.hasOwnProperty("perSetWeight"))
-                            object.perSetWeight = message.perSetWeight;
+                        if (message.type != null && message.hasOwnProperty("type"))
+                            object.type = options.enums === String ? $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType[message.type] === undefined ? message.type : $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType[message.type] : message.type;
+                        if (message.startedAt != null && message.hasOwnProperty("startedAt")) {
+                            object.startedAt = $root.LiftLog.Ui.Models.DateTimeDao.toObject(message.startedAt, options);
+                            if (options.oneofs)
+                                object._startedAt = "startedAt";
+                        }
+                        if (message.completionDateTime != null && message.hasOwnProperty("completionDateTime")) {
+                            object.completionDateTime = $root.LiftLog.Ui.Models.DateTimeDao.toObject(message.completionDateTime, options);
+                            if (options.oneofs)
+                                object._completionDateTime = "completionDateTime";
+                        }
+                        if (message.duration != null && message.hasOwnProperty("duration")) {
+                            object.duration = $root.google.protobuf.Duration.toObject(message.duration, options);
+                            if (options.oneofs)
+                                object._duration = "duration";
+                        }
+                        if (message.distance != null && message.hasOwnProperty("distance")) {
+                            object.distance = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.distance, options);
+                            if (options.oneofs)
+                                object._distance = "distance";
+                        }
+                        if (message.resistance != null && message.hasOwnProperty("resistance")) {
+                            object.resistance = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.resistance, options);
+                            if (options.oneofs)
+                                object._resistance = "resistance";
+                        }
+                        if (message.incline != null && message.hasOwnProperty("incline")) {
+                            object.incline = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.incline, options);
+                            if (options.oneofs)
+                                object._incline = "incline";
+                        }
+                        if (message.avgHeartRate != null && message.hasOwnProperty("avgHeartRate")) {
+                            object.avgHeartRate = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.avgHeartRate, options);
+                            if (options.oneofs)
+                                object._avgHeartRate = "avgHeartRate";
+                        }
                         return object;
                     };
 
@@ -2354,7 +2876,7 @@ export const LiftLog = $root.LiftLog = (() => {
                     return RecordedExerciseDaoV2;
                 })();
 
-                SessionHistoryDao.PotentialSetDaoV2 = (function() {
+                SessionHistoryDao.PotentialSetDaoV2 = (function () {
 
                     /**
                      * Properties of a PotentialSetDaoV2.
@@ -2473,17 +2995,17 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (tag === error)
                                 break;
                             switch (tag >>> 3) {
-                            case 1: {
+                                case 1: {
                                     message.recordedSet = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedSetDaoV2.decode(reader, reader.uint32());
                                     break;
                                 }
-                            case 2: {
+                                case 2: {
                                     message.weight = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
                                     break;
                                 }
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
                             }
                         }
                         return message;
@@ -2612,7 +3134,7 @@ export const LiftLog = $root.LiftLog = (() => {
                     return PotentialSetDaoV2;
                 })();
 
-                SessionHistoryDao.RecordedSetDaoV2 = (function() {
+                SessionHistoryDao.RecordedSetDaoV2 = (function () {
 
                     /**
                      * Properties of a RecordedSetDaoV2.
@@ -2742,21 +3264,21 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (tag === error)
                                 break;
                             switch (tag >>> 3) {
-                            case 1: {
+                                case 1: {
                                     message.repsCompleted = reader.int32();
                                     break;
                                 }
-                            case 2: {
+                                case 2: {
                                     message.completionTime = $root.LiftLog.Ui.Models.TimeOnlyDao.decode(reader, reader.uint32());
                                     break;
                                 }
-                            case 3: {
+                                case 3: {
                                     message.completionDate = $root.LiftLog.Ui.Models.DateOnlyDao.decode(reader, reader.uint32());
                                     break;
                                 }
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
                             }
                         }
                         return message;
@@ -2897,7 +3419,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return SessionHistoryDao;
             })();
 
-            Models.SessionBlueprintDao = (function() {
+            Models.SessionBlueprintDao = (function () {
 
                 /**
                  * Namespace SessionBlueprintDao.
@@ -2906,7 +3428,7 @@ export const LiftLog = $root.LiftLog = (() => {
                  */
                 const SessionBlueprintDao = {};
 
-                SessionBlueprintDao.SessionBlueprintContainerDaoV2 = (function() {
+                SessionBlueprintDao.SessionBlueprintContainerDaoV2 = (function () {
 
                     /**
                      * Properties of a SessionBlueprintContainerDaoV2.
@@ -3002,15 +3524,15 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (tag === error)
                                 break;
                             switch (tag >>> 3) {
-                            case 1: {
+                                case 1: {
                                     if (!(message.sessionBlueprints && message.sessionBlueprints.length))
                                         message.sessionBlueprints = [];
                                     message.sessionBlueprints.push($root.LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2.decode(reader, reader.uint32()));
                                     break;
                                 }
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
                             }
                         }
                         return message;
@@ -3132,7 +3654,7 @@ export const LiftLog = $root.LiftLog = (() => {
                     return SessionBlueprintContainerDaoV2;
                 })();
 
-                SessionBlueprintDao.SessionBlueprintDaoV2 = (function() {
+                SessionBlueprintDao.SessionBlueprintDaoV2 = (function () {
 
                     /**
                      * Properties of a SessionBlueprintDaoV2.
@@ -3250,23 +3772,23 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (tag === error)
                                 break;
                             switch (tag >>> 3) {
-                            case 1: {
+                                case 1: {
                                     message.name = reader.string();
                                     break;
                                 }
-                            case 2: {
+                                case 2: {
                                     if (!(message.exerciseBlueprints && message.exerciseBlueprints.length))
                                         message.exerciseBlueprints = [];
                                     message.exerciseBlueprints.push($root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.decode(reader, reader.uint32()));
                                     break;
                                 }
-                            case 3: {
+                                case 3: {
                                     message.notes = reader.string();
                                     break;
                                 }
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
                             }
                         }
                         return message;
@@ -3406,20 +3928,345 @@ export const LiftLog = $root.LiftLog = (() => {
                     return SessionBlueprintDaoV2;
                 })();
 
-                SessionBlueprintDao.ExerciseBlueprintDaoV2 = (function() {
+                /**
+                 * ExerciseType enum.
+                 * @name LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType
+                 * @enum {number}
+                 * @property {number} WEIGHTED=0 WEIGHTED value
+                 * @property {number} CARDIO=1 CARDIO value
+                 */
+                SessionBlueprintDao.ExerciseType = (function () {
+                    const valuesById = {}, values = Object.create(valuesById);
+                    values[valuesById[0] = "WEIGHTED"] = 0;
+                    values[valuesById[1] = "CARDIO"] = 1;
+                    return values;
+                })();
+
+                SessionBlueprintDao.CardioTarget = (function () {
+
+                    /**
+                     * Properties of a CardioTarget.
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao
+                     * @interface ICardioTarget
+                     * @property {string|null} [type] CardioTarget type
+                     * @property {google.protobuf.IDuration|null} [timeValue] CardioTarget timeValue
+                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [distanceValue] CardioTarget distanceValue
+                     * @property {string|null} [distanceUnit] CardioTarget distanceUnit
+                     */
+
+                    /**
+                     * Constructs a new CardioTarget.
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao
+                     * @classdesc Represents a CardioTarget.
+                     * @implements ICardioTarget
+                     * @constructor
+                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget=} [properties] Properties to set
+                     */
+                    function CardioTarget(properties) {
+                        if (properties)
+                            for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * CardioTarget type.
+                     * @member {string} type
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget
+                     * @instance
+                     */
+                    CardioTarget.prototype.type = "";
+
+                    /**
+                     * CardioTarget timeValue.
+                     * @member {google.protobuf.IDuration|null|undefined} timeValue
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget
+                     * @instance
+                     */
+                    CardioTarget.prototype.timeValue = null;
+
+                    /**
+                     * CardioTarget distanceValue.
+                     * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} distanceValue
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget
+                     * @instance
+                     */
+                    CardioTarget.prototype.distanceValue = null;
+
+                    /**
+                     * CardioTarget distanceUnit.
+                     * @member {string|null|undefined} distanceUnit
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget
+                     * @instance
+                     */
+                    CardioTarget.prototype.distanceUnit = null;
+
+                    // OneOf field names bound to virtual getters and setters
+                    let $oneOfFields;
+
+                    /**
+                     * CardioTarget _distanceUnit.
+                     * @member {"distanceUnit"|undefined} _distanceUnit
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget
+                     * @instance
+                     */
+                    Object.defineProperty(CardioTarget.prototype, "_distanceUnit", {
+                        get: $util.oneOfGetter($oneOfFields = ["distanceUnit"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * Creates a new CardioTarget instance using the specified properties.
+                     * @function create
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget
+                     * @static
+                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget=} [properties] Properties to set
+                     * @returns {LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget} CardioTarget instance
+                     */
+                    CardioTarget.create = function create(properties) {
+                        return new CardioTarget(properties);
+                    };
+
+                    /**
+                     * Encodes the specified CardioTarget message. Does not implicitly {@link LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.verify|verify} messages.
+                     * @function encode
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget
+                     * @static
+                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget} message CardioTarget message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    CardioTarget.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+                            writer.uint32(/* id 1, wireType 2 =*/10).string(message.type);
+                        if (message.timeValue != null && Object.hasOwnProperty.call(message, "timeValue"))
+                            $root.google.protobuf.Duration.encode(message.timeValue, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                        if (message.distanceValue != null && Object.hasOwnProperty.call(message, "distanceValue"))
+                            $root.LiftLog.Ui.Models.DecimalValue.encode(message.distanceValue, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                        if (message.distanceUnit != null && Object.hasOwnProperty.call(message, "distanceUnit"))
+                            writer.uint32(/* id 4, wireType 2 =*/34).string(message.distanceUnit);
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified CardioTarget message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget
+                     * @static
+                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget} message CardioTarget message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    CardioTarget.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a CardioTarget message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget} CardioTarget
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    CardioTarget.decode = function decode(reader, length, error) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget();
+                        while (reader.pos < end) {
+                            let tag = reader.uint32();
+                            if (tag === error)
+                                break;
+                            switch (tag >>> 3) {
+                                case 1: {
+                                    message.type = reader.string();
+                                    break;
+                                }
+                                case 2: {
+                                    message.timeValue = $root.google.protobuf.Duration.decode(reader, reader.uint32());
+                                    break;
+                                }
+                                case 3: {
+                                    message.distanceValue = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                    break;
+                                }
+                                case 4: {
+                                    message.distanceUnit = reader.string();
+                                    break;
+                                }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a CardioTarget message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget} CardioTarget
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    CardioTarget.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a CardioTarget message.
+                     * @function verify
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    CardioTarget.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        let properties = {};
+                        if (message.type != null && message.hasOwnProperty("type"))
+                            if (!$util.isString(message.type))
+                                return "type: string expected";
+                        if (message.timeValue != null && message.hasOwnProperty("timeValue")) {
+                            let error = $root.google.protobuf.Duration.verify(message.timeValue);
+                            if (error)
+                                return "timeValue." + error;
+                        }
+                        if (message.distanceValue != null && message.hasOwnProperty("distanceValue")) {
+                            let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.distanceValue);
+                            if (error)
+                                return "distanceValue." + error;
+                        }
+                        if (message.distanceUnit != null && message.hasOwnProperty("distanceUnit")) {
+                            properties._distanceUnit = 1;
+                            if (!$util.isString(message.distanceUnit))
+                                return "distanceUnit: string expected";
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Creates a CardioTarget message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget} CardioTarget
+                     */
+                    CardioTarget.fromObject = function fromObject(object) {
+                        if (object instanceof $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget)
+                            return object;
+                        let message = new $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget();
+                        if (object.type != null)
+                            message.type = String(object.type);
+                        if (object.timeValue != null) {
+                            if (typeof object.timeValue !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.timeValue: object expected");
+                            message.timeValue = $root.google.protobuf.Duration.fromObject(object.timeValue);
+                        }
+                        if (object.distanceValue != null) {
+                            if (typeof object.distanceValue !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.distanceValue: object expected");
+                            message.distanceValue = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.distanceValue);
+                        }
+                        if (object.distanceUnit != null)
+                            message.distanceUnit = String(object.distanceUnit);
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a CardioTarget message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget
+                     * @static
+                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget} message CardioTarget
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    CardioTarget.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        let object = {};
+                        if (options.defaults) {
+                            object.type = "";
+                            object.timeValue = null;
+                            object.distanceValue = null;
+                        }
+                        if (message.type != null && message.hasOwnProperty("type"))
+                            object.type = message.type;
+                        if (message.timeValue != null && message.hasOwnProperty("timeValue"))
+                            object.timeValue = $root.google.protobuf.Duration.toObject(message.timeValue, options);
+                        if (message.distanceValue != null && message.hasOwnProperty("distanceValue"))
+                            object.distanceValue = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.distanceValue, options);
+                        if (message.distanceUnit != null && message.hasOwnProperty("distanceUnit")) {
+                            object.distanceUnit = message.distanceUnit;
+                            if (options.oneofs)
+                                object._distanceUnit = "distanceUnit";
+                        }
+                        return object;
+                    };
+
+                    /**
+                     * Converts this CardioTarget to JSON.
+                     * @function toJSON
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    CardioTarget.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    /**
+                     * Gets the default type url for CardioTarget
+                     * @function getTypeUrl
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    CardioTarget.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget";
+                    };
+
+                    return CardioTarget;
+                })();
+
+                SessionBlueprintDao.ExerciseBlueprintDaoV2 = (function () {
 
                     /**
                      * Properties of an ExerciseBlueprintDaoV2.
                      * @memberof LiftLog.Ui.Models.SessionBlueprintDao
                      * @interface IExerciseBlueprintDaoV2
                      * @property {string|null} [name] ExerciseBlueprintDaoV2 name
+                     * @property {string|null} [notes] ExerciseBlueprintDaoV2 notes
+                     * @property {string|null} [link] ExerciseBlueprintDaoV2 link
+                     * @property {LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType|null} [type] ExerciseBlueprintDaoV2 type
                      * @property {number|null} [sets] ExerciseBlueprintDaoV2 sets
                      * @property {number|null} [repsPerSet] ExerciseBlueprintDaoV2 repsPerSet
                      * @property {LiftLog.Ui.Models.IDecimalValue|null} [weightIncreaseOnSuccess] ExerciseBlueprintDaoV2 weightIncreaseOnSuccess
                      * @property {LiftLog.Ui.Models.SessionBlueprintDao.IRestDaoV2|null} [restBetweenSets] ExerciseBlueprintDaoV2 restBetweenSets
                      * @property {boolean|null} [supersetWithNext] ExerciseBlueprintDaoV2 supersetWithNext
-                     * @property {string|null} [notes] ExerciseBlueprintDaoV2 notes
-                     * @property {string|null} [link] ExerciseBlueprintDaoV2 link
+                     * @property {LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null} [cardioTarget] ExerciseBlueprintDaoV2 cardioTarget
+                     * @property {boolean|null} [trackTime] ExerciseBlueprintDaoV2 trackTime
+                     * @property {boolean|null} [trackDistance] ExerciseBlueprintDaoV2 trackDistance
+                     * @property {boolean|null} [trackResistance] ExerciseBlueprintDaoV2 trackResistance
+                     * @property {boolean|null} [trackIncline] ExerciseBlueprintDaoV2 trackIncline
+                     * @property {boolean|null} [trackAvgHeartRate] ExerciseBlueprintDaoV2 trackAvgHeartRate
                      */
 
                     /**
@@ -3444,6 +4291,30 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @instance
                      */
                     ExerciseBlueprintDaoV2.prototype.name = "";
+
+                    /**
+                     * ExerciseBlueprintDaoV2 notes.
+                     * @member {string} notes
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @instance
+                     */
+                    ExerciseBlueprintDaoV2.prototype.notes = "";
+
+                    /**
+                     * ExerciseBlueprintDaoV2 link.
+                     * @member {string} link
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @instance
+                     */
+                    ExerciseBlueprintDaoV2.prototype.link = "";
+
+                    /**
+                     * ExerciseBlueprintDaoV2 type.
+                     * @member {LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType} type
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @instance
+                     */
+                    ExerciseBlueprintDaoV2.prototype.type = 0;
 
                     /**
                      * ExerciseBlueprintDaoV2 sets.
@@ -3486,20 +4357,52 @@ export const LiftLog = $root.LiftLog = (() => {
                     ExerciseBlueprintDaoV2.prototype.supersetWithNext = false;
 
                     /**
-                     * ExerciseBlueprintDaoV2 notes.
-                     * @member {string} notes
+                     * ExerciseBlueprintDaoV2 cardioTarget.
+                     * @member {LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null|undefined} cardioTarget
                      * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
                      * @instance
                      */
-                    ExerciseBlueprintDaoV2.prototype.notes = "";
+                    ExerciseBlueprintDaoV2.prototype.cardioTarget = null;
 
                     /**
-                     * ExerciseBlueprintDaoV2 link.
-                     * @member {string} link
+                     * ExerciseBlueprintDaoV2 trackTime.
+                     * @member {boolean} trackTime
                      * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
                      * @instance
                      */
-                    ExerciseBlueprintDaoV2.prototype.link = "";
+                    ExerciseBlueprintDaoV2.prototype.trackTime = false;
+
+                    /**
+                     * ExerciseBlueprintDaoV2 trackDistance.
+                     * @member {boolean} trackDistance
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @instance
+                     */
+                    ExerciseBlueprintDaoV2.prototype.trackDistance = false;
+
+                    /**
+                     * ExerciseBlueprintDaoV2 trackResistance.
+                     * @member {boolean} trackResistance
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @instance
+                     */
+                    ExerciseBlueprintDaoV2.prototype.trackResistance = false;
+
+                    /**
+                     * ExerciseBlueprintDaoV2 trackIncline.
+                     * @member {boolean} trackIncline
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @instance
+                     */
+                    ExerciseBlueprintDaoV2.prototype.trackIncline = false;
+
+                    /**
+                     * ExerciseBlueprintDaoV2 trackAvgHeartRate.
+                     * @member {boolean} trackAvgHeartRate
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @instance
+                     */
+                    ExerciseBlueprintDaoV2.prototype.trackAvgHeartRate = false;
 
                     /**
                      * Creates a new ExerciseBlueprintDaoV2 instance using the specified properties.
@@ -3541,6 +4444,20 @@ export const LiftLog = $root.LiftLog = (() => {
                             writer.uint32(/* id 8, wireType 2 =*/66).string(message.notes);
                         if (message.link != null && Object.hasOwnProperty.call(message, "link"))
                             writer.uint32(/* id 9, wireType 2 =*/74).string(message.link);
+                        if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+                            writer.uint32(/* id 10, wireType 0 =*/80).int32(message.type);
+                        if (message.cardioTarget != null && Object.hasOwnProperty.call(message, "cardioTarget"))
+                            $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.encode(message.cardioTarget, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
+                        if (message.trackTime != null && Object.hasOwnProperty.call(message, "trackTime"))
+                            writer.uint32(/* id 12, wireType 0 =*/96).bool(message.trackTime);
+                        if (message.trackDistance != null && Object.hasOwnProperty.call(message, "trackDistance"))
+                            writer.uint32(/* id 13, wireType 0 =*/104).bool(message.trackDistance);
+                        if (message.trackResistance != null && Object.hasOwnProperty.call(message, "trackResistance"))
+                            writer.uint32(/* id 14, wireType 0 =*/112).bool(message.trackResistance);
+                        if (message.trackIncline != null && Object.hasOwnProperty.call(message, "trackIncline"))
+                            writer.uint32(/* id 15, wireType 0 =*/120).bool(message.trackIncline);
+                        if (message.trackAvgHeartRate != null && Object.hasOwnProperty.call(message, "trackAvgHeartRate"))
+                            writer.uint32(/* id 16, wireType 0 =*/128).bool(message.trackAvgHeartRate);
                         return writer;
                     };
 
@@ -3577,41 +4494,69 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (tag === error)
                                 break;
                             switch (tag >>> 3) {
-                            case 1: {
+                                case 1: {
                                     message.name = reader.string();
                                     break;
                                 }
-                            case 2: {
-                                    message.sets = reader.int32();
-                                    break;
-                                }
-                            case 3: {
-                                    message.repsPerSet = reader.int32();
-                                    break;
-                                }
-                            case 5: {
-                                    message.weightIncreaseOnSuccess = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
-                                    break;
-                                }
-                            case 6: {
-                                    message.restBetweenSets = $root.LiftLog.Ui.Models.SessionBlueprintDao.RestDaoV2.decode(reader, reader.uint32());
-                                    break;
-                                }
-                            case 7: {
-                                    message.supersetWithNext = reader.bool();
-                                    break;
-                                }
-                            case 8: {
+                                case 8: {
                                     message.notes = reader.string();
                                     break;
                                 }
-                            case 9: {
+                                case 9: {
                                     message.link = reader.string();
                                     break;
                                 }
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
+                                case 10: {
+                                    message.type = reader.int32();
+                                    break;
+                                }
+                                case 2: {
+                                    message.sets = reader.int32();
+                                    break;
+                                }
+                                case 3: {
+                                    message.repsPerSet = reader.int32();
+                                    break;
+                                }
+                                case 5: {
+                                    message.weightIncreaseOnSuccess = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                    break;
+                                }
+                                case 6: {
+                                    message.restBetweenSets = $root.LiftLog.Ui.Models.SessionBlueprintDao.RestDaoV2.decode(reader, reader.uint32());
+                                    break;
+                                }
+                                case 7: {
+                                    message.supersetWithNext = reader.bool();
+                                    break;
+                                }
+                                case 11: {
+                                    message.cardioTarget = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.decode(reader, reader.uint32());
+                                    break;
+                                }
+                                case 12: {
+                                    message.trackTime = reader.bool();
+                                    break;
+                                }
+                                case 13: {
+                                    message.trackDistance = reader.bool();
+                                    break;
+                                }
+                                case 14: {
+                                    message.trackResistance = reader.bool();
+                                    break;
+                                }
+                                case 15: {
+                                    message.trackIncline = reader.bool();
+                                    break;
+                                }
+                                case 16: {
+                                    message.trackAvgHeartRate = reader.bool();
+                                    break;
+                                }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
                             }
                         }
                         return message;
@@ -3647,6 +4592,20 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (message.name != null && message.hasOwnProperty("name"))
                             if (!$util.isString(message.name))
                                 return "name: string expected";
+                        if (message.notes != null && message.hasOwnProperty("notes"))
+                            if (!$util.isString(message.notes))
+                                return "notes: string expected";
+                        if (message.link != null && message.hasOwnProperty("link"))
+                            if (!$util.isString(message.link))
+                                return "link: string expected";
+                        if (message.type != null && message.hasOwnProperty("type"))
+                            switch (message.type) {
+                                default:
+                                    return "type: enum value expected";
+                                case 0:
+                                case 1:
+                                    break;
+                            }
                         if (message.sets != null && message.hasOwnProperty("sets"))
                             if (!$util.isInteger(message.sets))
                                 return "sets: integer expected";
@@ -3666,12 +4625,26 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (message.supersetWithNext != null && message.hasOwnProperty("supersetWithNext"))
                             if (typeof message.supersetWithNext !== "boolean")
                                 return "supersetWithNext: boolean expected";
-                        if (message.notes != null && message.hasOwnProperty("notes"))
-                            if (!$util.isString(message.notes))
-                                return "notes: string expected";
-                        if (message.link != null && message.hasOwnProperty("link"))
-                            if (!$util.isString(message.link))
-                                return "link: string expected";
+                        if (message.cardioTarget != null && message.hasOwnProperty("cardioTarget")) {
+                            let error = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.verify(message.cardioTarget);
+                            if (error)
+                                return "cardioTarget." + error;
+                        }
+                        if (message.trackTime != null && message.hasOwnProperty("trackTime"))
+                            if (typeof message.trackTime !== "boolean")
+                                return "trackTime: boolean expected";
+                        if (message.trackDistance != null && message.hasOwnProperty("trackDistance"))
+                            if (typeof message.trackDistance !== "boolean")
+                                return "trackDistance: boolean expected";
+                        if (message.trackResistance != null && message.hasOwnProperty("trackResistance"))
+                            if (typeof message.trackResistance !== "boolean")
+                                return "trackResistance: boolean expected";
+                        if (message.trackIncline != null && message.hasOwnProperty("trackIncline"))
+                            if (typeof message.trackIncline !== "boolean")
+                                return "trackIncline: boolean expected";
+                        if (message.trackAvgHeartRate != null && message.hasOwnProperty("trackAvgHeartRate"))
+                            if (typeof message.trackAvgHeartRate !== "boolean")
+                                return "trackAvgHeartRate: boolean expected";
                         return null;
                     };
 
@@ -3689,6 +4662,26 @@ export const LiftLog = $root.LiftLog = (() => {
                         let message = new $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2();
                         if (object.name != null)
                             message.name = String(object.name);
+                        if (object.notes != null)
+                            message.notes = String(object.notes);
+                        if (object.link != null)
+                            message.link = String(object.link);
+                        switch (object.type) {
+                            default:
+                                if (typeof object.type === "number") {
+                                    message.type = object.type;
+                                    break;
+                                }
+                                break;
+                            case "WEIGHTED":
+                            case 0:
+                                message.type = 0;
+                                break;
+                            case "CARDIO":
+                            case 1:
+                                message.type = 1;
+                                break;
+                        }
                         if (object.sets != null)
                             message.sets = object.sets | 0;
                         if (object.repsPerSet != null)
@@ -3705,10 +4698,21 @@ export const LiftLog = $root.LiftLog = (() => {
                         }
                         if (object.supersetWithNext != null)
                             message.supersetWithNext = Boolean(object.supersetWithNext);
-                        if (object.notes != null)
-                            message.notes = String(object.notes);
-                        if (object.link != null)
-                            message.link = String(object.link);
+                        if (object.cardioTarget != null) {
+                            if (typeof object.cardioTarget !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.cardioTarget: object expected");
+                            message.cardioTarget = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.fromObject(object.cardioTarget);
+                        }
+                        if (object.trackTime != null)
+                            message.trackTime = Boolean(object.trackTime);
+                        if (object.trackDistance != null)
+                            message.trackDistance = Boolean(object.trackDistance);
+                        if (object.trackResistance != null)
+                            message.trackResistance = Boolean(object.trackResistance);
+                        if (object.trackIncline != null)
+                            message.trackIncline = Boolean(object.trackIncline);
+                        if (object.trackAvgHeartRate != null)
+                            message.trackAvgHeartRate = Boolean(object.trackAvgHeartRate);
                         return message;
                     };
 
@@ -3734,6 +4738,13 @@ export const LiftLog = $root.LiftLog = (() => {
                             object.supersetWithNext = false;
                             object.notes = "";
                             object.link = "";
+                            object.type = options.enums === String ? "WEIGHTED" : 0;
+                            object.cardioTarget = null;
+                            object.trackTime = false;
+                            object.trackDistance = false;
+                            object.trackResistance = false;
+                            object.trackIncline = false;
+                            object.trackAvgHeartRate = false;
                         }
                         if (message.name != null && message.hasOwnProperty("name"))
                             object.name = message.name;
@@ -3751,6 +4762,20 @@ export const LiftLog = $root.LiftLog = (() => {
                             object.notes = message.notes;
                         if (message.link != null && message.hasOwnProperty("link"))
                             object.link = message.link;
+                        if (message.type != null && message.hasOwnProperty("type"))
+                            object.type = options.enums === String ? $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType[message.type] === undefined ? message.type : $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType[message.type] : message.type;
+                        if (message.cardioTarget != null && message.hasOwnProperty("cardioTarget"))
+                            object.cardioTarget = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.toObject(message.cardioTarget, options);
+                        if (message.trackTime != null && message.hasOwnProperty("trackTime"))
+                            object.trackTime = message.trackTime;
+                        if (message.trackDistance != null && message.hasOwnProperty("trackDistance"))
+                            object.trackDistance = message.trackDistance;
+                        if (message.trackResistance != null && message.hasOwnProperty("trackResistance"))
+                            object.trackResistance = message.trackResistance;
+                        if (message.trackIncline != null && message.hasOwnProperty("trackIncline"))
+                            object.trackIncline = message.trackIncline;
+                        if (message.trackAvgHeartRate != null && message.hasOwnProperty("trackAvgHeartRate"))
+                            object.trackAvgHeartRate = message.trackAvgHeartRate;
                         return object;
                     };
 
@@ -3783,7 +4808,7 @@ export const LiftLog = $root.LiftLog = (() => {
                     return ExerciseBlueprintDaoV2;
                 })();
 
-                SessionBlueprintDao.RestDaoV2 = (function() {
+                SessionBlueprintDao.RestDaoV2 = (function () {
 
                     /**
                      * Properties of a RestDaoV2.
@@ -3899,21 +4924,21 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (tag === error)
                                 break;
                             switch (tag >>> 3) {
-                            case 1: {
+                                case 1: {
                                     message.minRest = $root.google.protobuf.Duration.decode(reader, reader.uint32());
                                     break;
                                 }
-                            case 2: {
+                                case 2: {
                                     message.maxRest = $root.google.protobuf.Duration.decode(reader, reader.uint32());
                                     break;
                                 }
-                            case 3: {
+                                case 3: {
                                     message.failureRest = $root.google.protobuf.Duration.decode(reader, reader.uint32());
                                     break;
                                 }
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
                             }
                         }
                         return message;
@@ -4053,7 +5078,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return SessionBlueprintDao;
             })();
 
-            Models.ExportedDataDao = (function() {
+            Models.ExportedDataDao = (function () {
 
                 /**
                  * Namespace ExportedDataDao.
@@ -4062,7 +5087,7 @@ export const LiftLog = $root.LiftLog = (() => {
                  */
                 const ExportedDataDao = {};
 
-                ExportedDataDao.ExportedDataDaoV2 = (function() {
+                ExportedDataDao.ExportedDataDaoV2 = (function () {
 
                     /**
                      * Properties of an ExportedDataDaoV2.
@@ -4208,19 +5233,19 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (tag === error)
                                 break;
                             switch (tag >>> 3) {
-                            case 1: {
+                                case 1: {
                                     if (!(message.sessions && message.sessions.length))
                                         message.sessions = [];
                                     message.sessions.push($root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.decode(reader, reader.uint32()));
                                     break;
                                 }
-                            case 2: {
+                                case 2: {
                                     if (!(message.program && message.program.length))
                                         message.program = [];
                                     message.program.push($root.LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2.decode(reader, reader.uint32()));
                                     break;
                                 }
-                            case 3: {
+                                case 3: {
                                     if (message.savedPrograms === $util.emptyObject)
                                         message.savedPrograms = {};
                                     let end2 = reader.uint32() + reader.pos;
@@ -4229,31 +5254,31 @@ export const LiftLog = $root.LiftLog = (() => {
                                     while (reader.pos < end2) {
                                         let tag2 = reader.uint32();
                                         switch (tag2 >>> 3) {
-                                        case 1:
-                                            key = reader.string();
-                                            break;
-                                        case 2:
-                                            value = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.decode(reader, reader.uint32());
-                                            break;
-                                        default:
-                                            reader.skipType(tag2 & 7);
-                                            break;
+                                            case 1:
+                                                key = reader.string();
+                                                break;
+                                            case 2:
+                                                value = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.decode(reader, reader.uint32());
+                                                break;
+                                            default:
+                                                reader.skipType(tag2 & 7);
+                                                break;
                                         }
                                     }
                                     message.savedPrograms[key] = value;
                                     break;
                                 }
-                            case 4: {
+                                case 4: {
                                     message.activeProgramId = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
                                     break;
                                 }
-                            case 5: {
+                                case 5: {
                                     message.feedState = $root.LiftLog.Ui.Models.FeedStateDaoV1.decode(reader, reader.uint32());
                                     break;
                                 }
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
                             }
                         }
                         return message;
@@ -4460,7 +5485,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return ExportedDataDao;
             })();
 
-            Models.ProgramBlueprintDao = (function() {
+            Models.ProgramBlueprintDao = (function () {
 
                 /**
                  * Namespace ProgramBlueprintDao.
@@ -4469,7 +5494,7 @@ export const LiftLog = $root.LiftLog = (() => {
                  */
                 const ProgramBlueprintDao = {};
 
-                ProgramBlueprintDao.ProgramBlueprintDaoContainerV1 = (function() {
+                ProgramBlueprintDao.ProgramBlueprintDaoContainerV1 = (function () {
 
                     /**
                      * Properties of a ProgramBlueprintDaoContainerV1.
@@ -4592,7 +5617,7 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (tag === error)
                                 break;
                             switch (tag >>> 3) {
-                            case 1: {
+                                case 1: {
                                     if (message.programBlueprints === $util.emptyObject)
                                         message.programBlueprints = {};
                                     let end2 = reader.uint32() + reader.pos;
@@ -4601,27 +5626,27 @@ export const LiftLog = $root.LiftLog = (() => {
                                     while (reader.pos < end2) {
                                         let tag2 = reader.uint32();
                                         switch (tag2 >>> 3) {
-                                        case 1:
-                                            key = reader.string();
-                                            break;
-                                        case 2:
-                                            value = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.decode(reader, reader.uint32());
-                                            break;
-                                        default:
-                                            reader.skipType(tag2 & 7);
-                                            break;
+                                            case 1:
+                                                key = reader.string();
+                                                break;
+                                            case 2:
+                                                value = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.decode(reader, reader.uint32());
+                                                break;
+                                            default:
+                                                reader.skipType(tag2 & 7);
+                                                break;
                                         }
                                     }
                                     message.programBlueprints[key] = value;
                                     break;
                                 }
-                            case 2: {
+                                case 2: {
                                     message.activeProgramId = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
                                     break;
                                 }
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
                             }
                         }
                         return message;
@@ -4764,7 +5789,7 @@ export const LiftLog = $root.LiftLog = (() => {
                     return ProgramBlueprintDaoContainerV1;
                 })();
 
-                ProgramBlueprintDao.ProgramBlueprintDaoV1 = (function() {
+                ProgramBlueprintDao.ProgramBlueprintDaoV1 = (function () {
 
                     /**
                      * Properties of a ProgramBlueprintDaoV1.
@@ -4896,23 +5921,23 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (tag === error)
                                 break;
                             switch (tag >>> 3) {
-                            case 1: {
+                                case 1: {
                                     message.name = reader.string();
                                     break;
                                 }
-                            case 5: {
+                                case 5: {
                                     if (!(message.sessions && message.sessions.length))
                                         message.sessions = [];
                                     message.sessions.push($root.LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2.decode(reader, reader.uint32()));
                                     break;
                                 }
-                            case 6: {
+                                case 6: {
                                     message.lastEdited = $root.LiftLog.Ui.Models.DateOnlyDao.decode(reader, reader.uint32());
                                     break;
                                 }
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
                             }
                         }
                         return message;
@@ -5065,7 +6090,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return ProgramBlueprintDao;
             })();
 
-            Models.FeedIdentityDaoV1 = (function() {
+            Models.FeedIdentityDaoV1 = (function () {
 
                 /**
                  * Properties of a FeedIdentityDaoV1.
@@ -5294,53 +6319,53 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        case 1: {
+                            case 1: {
                                 message.id = $root.LiftLog.Ui.Models.UuidDao.decode(reader, reader.uint32());
                                 break;
                             }
-                        case 12: {
+                            case 12: {
                                 message.lookup = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
                                 break;
                             }
-                        case 2: {
+                            case 2: {
                                 message.aesKey = reader.bytes();
                                 break;
                             }
-                        case 9: {
+                            case 9: {
                                 message.publicKey = reader.bytes();
                                 break;
                             }
-                        case 10: {
+                            case 10: {
                                 message.privateKey = reader.bytes();
                                 break;
                             }
-                        case 4: {
+                            case 4: {
                                 message.password = reader.string();
                                 break;
                             }
-                        case 5: {
+                            case 5: {
                                 message.name = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
                                 break;
                             }
-                        case 6: {
+                            case 6: {
                                 message.profilePicture = reader.bytes();
                                 break;
                             }
-                        case 7: {
+                            case 7: {
                                 message.publishBodyweight = reader.bool();
                                 break;
                             }
-                        case 8: {
+                            case 8: {
                                 message.publishPlan = reader.bool();
                                 break;
                             }
-                        case 11: {
+                            case 11: {
                                 message.publishWorkouts = reader.bool();
                                 break;
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -5581,7 +6606,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return FeedIdentityDaoV1;
             })();
 
-            Models.FeedUserDaoV1 = (function() {
+            Models.FeedUserDaoV1 = (function () {
 
                 /**
                  * Properties of a FeedUserDaoV1.
@@ -5832,45 +6857,45 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        case 1: {
+                            case 1: {
                                 message.id = $root.LiftLog.Ui.Models.UuidDao.decode(reader, reader.uint32());
                                 break;
                             }
-                        case 9: {
+                            case 9: {
                                 message.lookup = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
                                 break;
                             }
-                        case 8: {
+                            case 8: {
                                 message.publicKey = reader.bytes();
                                 break;
                             }
-                        case 2: {
+                            case 2: {
                                 message.name = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
                                 break;
                             }
-                        case 6: {
+                            case 6: {
                                 message.nickname = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
                                 break;
                             }
-                        case 3: {
+                            case 3: {
                                 message.currentPlan = $root.LiftLog.Ui.Models.CurrentPlanDaoV1.decode(reader, reader.uint32());
                                 break;
                             }
-                        case 4: {
+                            case 4: {
                                 message.profilePicture = reader.bytes();
                                 break;
                             }
-                        case 5: {
+                            case 5: {
                                 message.aesKey = reader.bytes();
                                 break;
                             }
-                        case 7: {
+                            case 7: {
                                 message.followSecret = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
                                 break;
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -6114,7 +7139,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return FeedUserDaoV1;
             })();
 
-            Models.CurrentPlanDaoV1 = (function() {
+            Models.CurrentPlanDaoV1 = (function () {
 
                 /**
                  * Properties of a CurrentPlanDaoV1.
@@ -6210,15 +7235,15 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        case 1: {
+                            case 1: {
                                 if (!(message.sessions && message.sessions.length))
                                     message.sessions = [];
                                 message.sessions.push($root.LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2.decode(reader, reader.uint32()));
                                 break;
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -6340,7 +7365,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return CurrentPlanDaoV1;
             })();
 
-            Models.FeedItemDaoV1 = (function() {
+            Models.FeedItemDaoV1 = (function () {
 
                 /**
                  * Properties of a FeedItemDaoV1.
@@ -6492,29 +7517,29 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        case 1: {
+                            case 1: {
                                 message.userId = $root.LiftLog.Ui.Models.UuidDao.decode(reader, reader.uint32());
                                 break;
                             }
-                        case 2: {
+                            case 2: {
                                 message.eventId = $root.LiftLog.Ui.Models.UuidDao.decode(reader, reader.uint32());
                                 break;
                             }
-                        case 3: {
+                            case 3: {
                                 message.timestamp = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                                 break;
                             }
-                        case 4: {
+                            case 4: {
                                 message.expiry = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                                 break;
                             }
-                        case 5: {
+                            case 5: {
                                 message.session = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.decode(reader, reader.uint32());
                                 break;
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -6683,7 +7708,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return FeedItemDaoV1;
             })();
 
-            Models.FeedStateDaoV1 = (function() {
+            Models.FeedStateDaoV1 = (function () {
 
                 /**
                  * Properties of a FeedStateDaoV1.
@@ -6856,43 +7881,43 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        case 1: {
+                            case 1: {
                                 if (!(message.feedItems && message.feedItems.length))
                                     message.feedItems = [];
                                 message.feedItems.push($root.LiftLog.Ui.Models.FeedItemDaoV1.decode(reader, reader.uint32()));
                                 break;
                             }
-                        case 2: {
+                            case 2: {
                                 if (!(message.followedUsers && message.followedUsers.length))
                                     message.followedUsers = [];
                                 message.followedUsers.push($root.LiftLog.Ui.Models.FeedUserDaoV1.decode(reader, reader.uint32()));
                                 break;
                             }
-                        case 3: {
+                            case 3: {
                                 message.identity = $root.LiftLog.Ui.Models.FeedIdentityDaoV1.decode(reader, reader.uint32());
                                 break;
                             }
-                        case 4: {
+                            case 4: {
                                 if (!(message.followRequests && message.followRequests.length))
                                     message.followRequests = [];
                                 message.followRequests.push($root.LiftLog.Ui.Models.InboxMessageDao.decode(reader, reader.uint32()));
                                 break;
                             }
-                        case 5: {
+                            case 5: {
                                 if (!(message.followers && message.followers.length))
                                     message.followers = [];
                                 message.followers.push($root.LiftLog.Ui.Models.FeedUserDaoV1.decode(reader, reader.uint32()));
                                 break;
                             }
-                        case 6: {
+                            case 6: {
                                 if (!(message.unpublishedSessionIds && message.unpublishedSessionIds.length))
                                     message.unpublishedSessionIds = [];
                                 message.unpublishedSessionIds.push($root.LiftLog.Ui.Models.UuidDao.decode(reader, reader.uint32()));
                                 break;
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -7134,7 +8159,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return FeedStateDaoV1;
             })();
 
-            Models.UserEventPayload = (function() {
+            Models.UserEventPayload = (function () {
 
                 /**
                  * Properties of a UserEventPayload.
@@ -7253,17 +8278,17 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        case 1: {
+                            case 1: {
                                 message.sessionPayload = $root.LiftLog.Ui.Models.SessionUserEvent.decode(reader, reader.uint32());
                                 break;
                             }
-                        case 2: {
+                            case 2: {
                                 message.removedSessionPayload = $root.LiftLog.Ui.Models.RemovedSessionUserEvent.decode(reader, reader.uint32());
                                 break;
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -7398,7 +8423,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return UserEventPayload;
             })();
 
-            Models.SessionUserEvent = (function() {
+            Models.SessionUserEvent = (function () {
 
                 /**
                  * Properties of a SessionUserEvent.
@@ -7492,13 +8517,13 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        case 1: {
+                            case 1: {
                                 message.session = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.decode(reader, reader.uint32());
                                 break;
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -7608,7 +8633,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return SessionUserEvent;
             })();
 
-            Models.RemovedSessionUserEvent = (function() {
+            Models.RemovedSessionUserEvent = (function () {
 
                 /**
                  * Properties of a RemovedSessionUserEvent.
@@ -7702,13 +8727,13 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        case 1: {
+                            case 1: {
                                 message.sessionId = $root.LiftLog.Ui.Models.UuidDao.decode(reader, reader.uint32());
                                 break;
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -7818,7 +8843,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return RemovedSessionUserEvent;
             })();
 
-            Models.InboxMessageDao = (function() {
+            Models.InboxMessageDao = (function () {
 
                 /**
                  * Properties of an InboxMessageDao.
@@ -7970,29 +8995,29 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        case 1: {
+                            case 1: {
                                 message.fromUserId = $root.LiftLog.Ui.Models.UuidDao.decode(reader, reader.uint32());
                                 break;
                             }
-                        case 2: {
+                            case 2: {
                                 message.followRequest = $root.LiftLog.Ui.Models.FollowRequestDao.decode(reader, reader.uint32());
                                 break;
                             }
-                        case 3: {
+                            case 3: {
                                 message.followResponse = $root.LiftLog.Ui.Models.FollowResponseDao.decode(reader, reader.uint32());
                                 break;
                             }
-                        case 4: {
+                            case 4: {
                                 message.unfollowNotification = $root.LiftLog.Ui.Models.UnFollowNotification.decode(reader, reader.uint32());
                                 break;
                             }
-                        case 5: {
+                            case 5: {
                                 message.signature = reader.bytes();
                                 break;
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -8179,7 +9204,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return InboxMessageDao;
             })();
 
-            Models.FollowRequestDao = (function() {
+            Models.FollowRequestDao = (function () {
 
                 /**
                  * Properties of a FollowRequestDao.
@@ -8287,13 +9312,13 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        case 1: {
+                            case 1: {
                                 message.name = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
                                 break;
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -8408,7 +9433,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return FollowRequestDao;
             })();
 
-            Models.FollowResponseDao = (function() {
+            Models.FollowResponseDao = (function () {
 
                 /**
                  * Properties of a FollowResponseDao.
@@ -8527,17 +9552,17 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        case 1: {
+                            case 1: {
                                 message.accepted = $root.LiftLog.Ui.Models.FollowResponseAcceptedDao.decode(reader, reader.uint32());
                                 break;
                             }
-                        case 2: {
+                            case 2: {
                                 message.rejected = $root.LiftLog.Ui.Models.FollowResponseRejectedDao.decode(reader, reader.uint32());
                                 break;
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -8672,7 +9697,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return FollowResponseDao;
             })();
 
-            Models.FollowResponseAcceptedDao = (function() {
+            Models.FollowResponseAcceptedDao = (function () {
 
                 /**
                  * Properties of a FollowResponseAcceptedDao.
@@ -8777,17 +9802,17 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        case 1: {
+                            case 1: {
                                 message.aesKey = reader.bytes();
                                 break;
                             }
-                        case 2: {
+                            case 2: {
                                 message.followSecret = reader.string();
                                 break;
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -8910,7 +9935,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return FollowResponseAcceptedDao;
             })();
 
-            Models.FollowResponseRejectedDao = (function() {
+            Models.FollowResponseRejectedDao = (function () {
 
                 /**
                  * Properties of a FollowResponseRejectedDao.
@@ -8993,9 +10018,9 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -9087,7 +10112,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return FollowResponseRejectedDao;
             })();
 
-            Models.UnFollowNotification = (function() {
+            Models.UnFollowNotification = (function () {
 
                 /**
                  * Properties of an UnFollowNotification.
@@ -9181,13 +10206,13 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        case 1: {
+                            case 1: {
                                 message.followSecret = reader.string();
                                 break;
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -9292,7 +10317,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return UnFollowNotification;
             })();
 
-            Models.SharedItemPayload = (function() {
+            Models.SharedItemPayload = (function () {
 
                 /**
                  * Properties of a SharedItemPayload.
@@ -9400,13 +10425,13 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        case 1: {
+                            case 1: {
                                 message.sharedProgramBlueprint = $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.decode(reader, reader.uint32());
                                 break;
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -9521,7 +10546,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 return SharedItemPayload;
             })();
 
-            Models.SharedProgramBlueprintPayload = (function() {
+            Models.SharedProgramBlueprintPayload = (function () {
 
                 /**
                  * Properties of a SharedProgramBlueprintPayload.
@@ -9615,13 +10640,13 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (tag === error)
                             break;
                         switch (tag >>> 3) {
-                        case 1: {
+                            case 1: {
                                 message.programBlueprint = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.decode(reader, reader.uint32());
                                 break;
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
                         }
                     }
                     return message;
@@ -9749,7 +10774,7 @@ export const google = $root.google = (() => {
      */
     const google = {};
 
-    google.protobuf = (function() {
+    google.protobuf = (function () {
 
         /**
          * Namespace protobuf.
@@ -9758,7 +10783,7 @@ export const google = $root.google = (() => {
          */
         const protobuf = {};
 
-        protobuf.DoubleValue = (function() {
+        protobuf.DoubleValue = (function () {
 
             /**
              * Properties of a DoubleValue.
@@ -9852,13 +10877,13 @@ export const google = $root.google = (() => {
                     if (tag === error)
                         break;
                     switch (tag >>> 3) {
-                    case 1: {
+                        case 1: {
                             message.value = reader.double();
                             break;
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
                     }
                 }
                 return message;
@@ -9963,7 +10988,7 @@ export const google = $root.google = (() => {
             return DoubleValue;
         })();
 
-        protobuf.FloatValue = (function() {
+        protobuf.FloatValue = (function () {
 
             /**
              * Properties of a FloatValue.
@@ -10057,13 +11082,13 @@ export const google = $root.google = (() => {
                     if (tag === error)
                         break;
                     switch (tag >>> 3) {
-                    case 1: {
+                        case 1: {
                             message.value = reader.float();
                             break;
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
                     }
                 }
                 return message;
@@ -10168,7 +11193,7 @@ export const google = $root.google = (() => {
             return FloatValue;
         })();
 
-        protobuf.Int64Value = (function() {
+        protobuf.Int64Value = (function () {
 
             /**
              * Properties of an Int64Value.
@@ -10198,7 +11223,7 @@ export const google = $root.google = (() => {
              * @memberof google.protobuf.Int64Value
              * @instance
              */
-            Int64Value.prototype.value = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+            Int64Value.prototype.value = $util.Long ? $util.Long.fromBits(0, 0, false) : 0;
 
             /**
              * Creates a new Int64Value instance using the specified properties.
@@ -10262,13 +11287,13 @@ export const google = $root.google = (() => {
                     if (tag === error)
                         break;
                     switch (tag >>> 3) {
-                    case 1: {
+                        case 1: {
                             message.value = reader.int64();
                             break;
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
                     }
                 }
                 return message;
@@ -10387,7 +11412,7 @@ export const google = $root.google = (() => {
             return Int64Value;
         })();
 
-        protobuf.UInt64Value = (function() {
+        protobuf.UInt64Value = (function () {
 
             /**
              * Properties of a UInt64Value.
@@ -10417,7 +11442,7 @@ export const google = $root.google = (() => {
              * @memberof google.protobuf.UInt64Value
              * @instance
              */
-            UInt64Value.prototype.value = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+            UInt64Value.prototype.value = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
 
             /**
              * Creates a new UInt64Value instance using the specified properties.
@@ -10481,13 +11506,13 @@ export const google = $root.google = (() => {
                     if (tag === error)
                         break;
                     switch (tag >>> 3) {
-                    case 1: {
+                        case 1: {
                             message.value = reader.uint64();
                             break;
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
                     }
                 }
                 return message;
@@ -10606,7 +11631,7 @@ export const google = $root.google = (() => {
             return UInt64Value;
         })();
 
-        protobuf.Int32Value = (function() {
+        protobuf.Int32Value = (function () {
 
             /**
              * Properties of an Int32Value.
@@ -10700,13 +11725,13 @@ export const google = $root.google = (() => {
                     if (tag === error)
                         break;
                     switch (tag >>> 3) {
-                    case 1: {
+                        case 1: {
                             message.value = reader.int32();
                             break;
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
                     }
                 }
                 return message;
@@ -10811,7 +11836,7 @@ export const google = $root.google = (() => {
             return Int32Value;
         })();
 
-        protobuf.UInt32Value = (function() {
+        protobuf.UInt32Value = (function () {
 
             /**
              * Properties of a UInt32Value.
@@ -10905,13 +11930,13 @@ export const google = $root.google = (() => {
                     if (tag === error)
                         break;
                     switch (tag >>> 3) {
-                    case 1: {
+                        case 1: {
                             message.value = reader.uint32();
                             break;
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
                     }
                 }
                 return message;
@@ -11016,7 +12041,7 @@ export const google = $root.google = (() => {
             return UInt32Value;
         })();
 
-        protobuf.BoolValue = (function() {
+        protobuf.BoolValue = (function () {
 
             /**
              * Properties of a BoolValue.
@@ -11110,13 +12135,13 @@ export const google = $root.google = (() => {
                     if (tag === error)
                         break;
                     switch (tag >>> 3) {
-                    case 1: {
+                        case 1: {
                             message.value = reader.bool();
                             break;
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
                     }
                 }
                 return message;
@@ -11221,7 +12246,7 @@ export const google = $root.google = (() => {
             return BoolValue;
         })();
 
-        protobuf.StringValue = (function() {
+        protobuf.StringValue = (function () {
 
             /**
              * Properties of a StringValue.
@@ -11315,13 +12340,13 @@ export const google = $root.google = (() => {
                     if (tag === error)
                         break;
                     switch (tag >>> 3) {
-                    case 1: {
+                        case 1: {
                             message.value = reader.string();
                             break;
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
                     }
                 }
                 return message;
@@ -11426,7 +12451,7 @@ export const google = $root.google = (() => {
             return StringValue;
         })();
 
-        protobuf.BytesValue = (function() {
+        protobuf.BytesValue = (function () {
 
             /**
              * Properties of a BytesValue.
@@ -11520,13 +12545,13 @@ export const google = $root.google = (() => {
                     if (tag === error)
                         break;
                     switch (tag >>> 3) {
-                    case 1: {
+                        case 1: {
                             message.value = reader.bytes();
                             break;
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
                     }
                 }
                 return message;
@@ -11640,7 +12665,7 @@ export const google = $root.google = (() => {
             return BytesValue;
         })();
 
-        protobuf.Duration = (function() {
+        protobuf.Duration = (function () {
 
             /**
              * Properties of a Duration.
@@ -11671,7 +12696,7 @@ export const google = $root.google = (() => {
              * @memberof google.protobuf.Duration
              * @instance
              */
-            Duration.prototype.seconds = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+            Duration.prototype.seconds = $util.Long ? $util.Long.fromBits(0, 0, false) : 0;
 
             /**
              * Duration nanos.
@@ -11745,17 +12770,17 @@ export const google = $root.google = (() => {
                     if (tag === error)
                         break;
                     switch (tag >>> 3) {
-                    case 1: {
+                        case 1: {
                             message.seconds = reader.int64();
                             break;
                         }
-                    case 2: {
+                        case 2: {
                             message.nanos = reader.int32();
                             break;
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
                     }
                 }
                 return message;
@@ -11883,7 +12908,7 @@ export const google = $root.google = (() => {
             return Duration;
         })();
 
-        protobuf.Timestamp = (function() {
+        protobuf.Timestamp = (function () {
 
             /**
              * Properties of a Timestamp.
@@ -11914,7 +12939,7 @@ export const google = $root.google = (() => {
              * @memberof google.protobuf.Timestamp
              * @instance
              */
-            Timestamp.prototype.seconds = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+            Timestamp.prototype.seconds = $util.Long ? $util.Long.fromBits(0, 0, false) : 0;
 
             /**
              * Timestamp nanos.
@@ -11988,17 +13013,17 @@ export const google = $root.google = (() => {
                     if (tag === error)
                         break;
                     switch (tag >>> 3) {
-                    case 1: {
+                        case 1: {
                             message.seconds = reader.int64();
                             break;
                         }
-                    case 2: {
+                        case 2: {
                             message.nanos = reader.int32();
                             break;
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
                     }
                 }
                 return message;
