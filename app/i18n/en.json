@@ -370,5 +370,7 @@
   "Cardio target": "Cardio target",
   "Time": "Time",
   "Distance": "Distance",
-  "Rest": "Rest"
+  "Rest": "Rest",
+  "Target distance {distance}": "Target distance <em>{distance}</em>",
+  "Target time {time}": "Target time <em>{time}</em>"
 }

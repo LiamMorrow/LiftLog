@@ -184,7 +184,7 @@ export function fromExerciseBlueprintPOJO(
     .exhaustive();
 }
 
-export const DistanceUnits = ['metre', 'yard', 'mile'] as const;
+export const DistanceUnits = ['metre', 'yard', 'mile', 'kilometre'] as const;
 export type DistanceUnit = (typeof DistanceUnits)[number];
 
 export type TimeCardioTarget = {
@@ -503,9 +503,7 @@ export class KeyedExerciseBlueprint {
           P.instanceOf(WeightedExerciseBlueprint),
           (ex) => `${ex.sets}_${ex.repsPerSet}`,
         )
-        .with(P.instanceOf(CardioExerciseBlueprint), (t) =>
-          JSON.stringify(t.target),
-        )
+        .with(P.instanceOf(CardioExerciseBlueprint), (t) => t.target.type)
         .exhaustive(),
     );
   }
