@@ -396,10 +396,6 @@ function WeightedExerciseEditor({
   const decrementReps = () =>
     updateExercise({ repsPerSet: Math.max(exercise.repsPerSet - 1, 0) });
 
-  const setExerciseNotes = (notes: string) => updateExercise({ notes });
-
-  const setExerciseLink = (link: string) => updateExercise({ link });
-
   const setExerciseWeightIncrease = (weightIncreaseOnSuccess: BigNumber) =>
     updateExercise({ weightIncreaseOnSuccess });
 

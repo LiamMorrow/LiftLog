@@ -146,7 +146,7 @@ function SessionEditor({
     <FullHeightScrollView floatingChildren={floatingBottomContainer}>
       <Stack.Screen options={{ title: session.name }} />
       <LabelledForm>
-        <LabelledFormRow label={t('WorkoutName')} icon={'assignment'}>
+        <LabelledFormRow label={t('WorkoutName')} icon={'assignmentFill'}>
           <TextInput
             mode="flat"
             value={session.name}
@@ -154,7 +154,7 @@ function SessionEditor({
             selectTextOnFocus
           />
         </LabelledFormRow>
-        <LabelledFormRow label={t('WorkoutNotes')} icon={'notes'}>
+        <LabelledFormRow label={t('WorkoutNotes')} icon={'notesFill'}>
           <TextInput
             mode="flat"
             value={session.notes}
@@ -164,7 +164,7 @@ function SessionEditor({
         </LabelledFormRow>
         <LabelledFormRow
           label={t('Exercises')}
-          icon={'fitnessCenter'}
+          icon={'fitnessCenterFill'}
           undoFormPadding
           noGap
         >

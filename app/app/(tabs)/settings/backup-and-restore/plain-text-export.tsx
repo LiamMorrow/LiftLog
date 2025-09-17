@@ -49,7 +49,7 @@ export default function PlainTextExportPage() {
       <LabelledForm>
         <LabelledFormRow
           label={t('PlaintextExportFormat')}
-          icon={'description'}
+          icon={'descriptionFill'}
         >
           <Dropdown
             options={[{ label: 'CSV', value: 'CSV' }]}

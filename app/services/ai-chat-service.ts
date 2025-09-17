@@ -190,11 +190,17 @@ function parseAiExercise(
       .with({ type: 'distance' }, (t) => ({
         type: 'distance',
         value: BigNumber(t.value),
+        unit: t.unit,
       }))
       .with({ type: 'time' }, (t) => ({
         type: 'time',
         value: parseDuration(t.value),
       }))
       .exhaustive(),
+    trackAvgHeartRate: ex.trackAvgHeartRate,
+    trackDistance: ex.trackDistance,
+    trackIncline: ex.trackIncline,
+    trackResistance: ex.trackResistance,
+    trackTime: ex.trackTime,
   };
 }

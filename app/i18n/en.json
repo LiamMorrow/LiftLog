@@ -365,5 +365,10 @@
   "trackDistance": "Track Distance",
   "trackResistance": "Track Resistance",
   "trackIncline": "Track Incline",
-  "trackAvgHeartRate": "Track Average Heart Rate"
+  "trackAvgHeartRate": "Track Average Heart Rate",
+  "Exercise type": "Exercise type",
+  "Cardio target": "Cardio target",
+  "Time": "Time",
+  "Distance": "Distance",
+  "Rest": "Rest"
 }
