@@ -20,6 +20,7 @@ import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
 import ItemList from '@/components/presentation/item-list';
 import {
+  RecordedCardioExercise,
   RecordedExercise,
   RecordedWeightedExercise,
 } from '@/models/session-models';
@@ -41,7 +42,8 @@ import FloatingBottomContainer from '@/components/presentation/floating-bottom-c
 import { SurfaceText } from '@/components/presentation/surface-text';
 import WeightFormat from '@/components/presentation/weight-format';
 import { formatDuration } from '@/utils/format-date';
-import { assertWeightedExercise } from '@/models/temp';
+import { match, P } from 'ts-pattern';
+import CardioExercise from '@/components/presentation/cardio-exercise';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
@@ -133,71 +135,101 @@ export default function SessionComponent(props: {
     ) : null;
 
   const renderItem = (item: RecordedExercise, index: number) => {
-    assertWeightedExercise(item);
-    return (
-      <WeightedExercise
-        recordedExercise={item}
-        toStartNext={session.nextExercise === item}
-        updateRepCountForSet={(setIndex, reps) => {
-          dispatch(setExerciseReps, {
-            exerciseIndex: index,
-            reps,
-            setIndex,
-            time:
-              props.target === 'workoutSession'
-                ? LocalDateTime.now()
-                : (session.lastExercise?.latestTime ??
-                  session.date.atTime(LocalTime.now())),
-          });
-          if (props.target === 'workoutSession')
-            storeDispatch(notifySetTimer());
-        }}
-        cycleRepCountForSet={(setIndex) => {
-          dispatch(cycleExerciseReps, {
-            exerciseIndex: index,
-            setIndex,
-            time:
-              props.target === 'workoutSession'
-                ? LocalDateTime.now()
-                : (session.lastExercise?.latestTime ??
-                  session.date.atTime(LocalTime.now())),
-          });
-          if (props.target === 'workoutSession')
-            storeDispatch(notifySetTimer());
-        }}
-        updateWeightForSet={(setIndex, weight, applyTo) =>
-          dispatch(updateWeightForSet, {
-            exerciseIndex: index,
-            weight,
-            setIndex,
-            applyTo,
-          })
-        }
-        updateNotesForExercise={(notes) =>
-          dispatch(updateNotesForExercise, { notes, exerciseIndex: index })
-        }
-        onEditExercise={() => {
-          setEditingExerciseBlueprint(item.blueprint);
-          setExerciseToEditIndex(index);
-          setExerciseEditorOpen(true);
-        }}
-        onRemoveExercise={() =>
-          dispatch(removeExercise, {
-            exerciseIndex: index,
-          })
-        }
-        onOpenLink={() => {
-          openUrl(item.blueprint.link);
-        }}
-        isReadonly={isReadonly}
-        showPreviousButton={props.target === 'workoutSession'}
-        previousRecordedExercises={
-          recentlyCompletedExercises(
-            item.blueprint,
-          ) as RecordedWeightedExercise[]
-        }
-      />
-    );
+    return match(item)
+      .with(P.instanceOf(RecordedWeightedExercise), (item) => (
+        <WeightedExercise
+          recordedExercise={item}
+          toStartNext={session.nextExercise === item}
+          updateRepCountForSet={(setIndex, reps) => {
+            dispatch(setExerciseReps, {
+              exerciseIndex: index,
+              reps,
+              setIndex,
+              time:
+                props.target === 'workoutSession'
+                  ? LocalDateTime.now()
+                  : (session.lastExercise?.latestTime ??
+                    session.date.atTime(LocalTime.now())),
+            });
+            if (props.target === 'workoutSession')
+              storeDispatch(notifySetTimer());
+          }}
+          cycleRepCountForSet={(setIndex) => {
+            dispatch(cycleExerciseReps, {
+              exerciseIndex: index,
+              setIndex,
+              time:
+                props.target === 'workoutSession'
+                  ? LocalDateTime.now()
+                  : (session.lastExercise?.latestTime ??
+                    session.date.atTime(LocalTime.now())),
+            });
+            if (props.target === 'workoutSession')
+              storeDispatch(notifySetTimer());
+          }}
+          updateWeightForSet={(setIndex, weight, applyTo) =>
+            dispatch(updateWeightForSet, {
+              exerciseIndex: index,
+              weight,
+              setIndex,
+              applyTo,
+            })
+          }
+          updateNotesForExercise={(notes) =>
+            dispatch(updateNotesForExercise, { notes, exerciseIndex: index })
+          }
+          onEditExercise={() => {
+            setEditingExerciseBlueprint(item.blueprint);
+            setExerciseToEditIndex(index);
+            setExerciseEditorOpen(true);
+          }}
+          onRemoveExercise={() =>
+            dispatch(removeExercise, {
+              exerciseIndex: index,
+            })
+          }
+          onOpenLink={() => {
+            openUrl(item.blueprint.link);
+          }}
+          isReadonly={isReadonly}
+          showPreviousButton={props.target === 'workoutSession'}
+          previousRecordedExercises={
+            recentlyCompletedExercises(
+              item.blueprint,
+            ) as RecordedWeightedExercise[]
+          }
+        />
+      ))
+      .with(P.instanceOf(RecordedCardioExercise), (item) => (
+        <CardioExercise
+          recordedExercise={item}
+          toStartNext={session.nextExercise === item}
+          updateNotesForExercise={(notes) =>
+            dispatch(updateNotesForExercise, { notes, exerciseIndex: index })
+          }
+          onEditExercise={() => {
+            setEditingExerciseBlueprint(item.blueprint);
+            setExerciseToEditIndex(index);
+            setExerciseEditorOpen(true);
+          }}
+          onRemoveExercise={() =>
+            dispatch(removeExercise, {
+              exerciseIndex: index,
+            })
+          }
+          onOpenLink={() => {
+            openUrl(item.blueprint.link);
+          }}
+          isReadonly={isReadonly}
+          showPreviousButton={props.target === 'workoutSession'}
+          previousRecordedExercises={
+            recentlyCompletedExercises(
+              item.blueprint,
+            ) as RecordedCardioExercise[]
+          }
+        />
+      ))
+      .exhaustive();
   };
 
   const bodyWeight = props.showBodyweight ? (
@@ -247,27 +279,30 @@ export default function SessionComponent(props: {
     lastExercise instanceof RecordedWeightedExercise
       ? lastExercise?.lastRecordedSet
       : undefined;
+  // We only want to show the rest timer - which is primarily for weights
+  // When we are currently working out, and the exercises we are on (or were just on) are weighted - rests for cardio aren't implemented
   const showRestTimer =
     props.target === 'workoutSession' &&
     session.nextExercise &&
+    session.nextExercise instanceof RecordedWeightedExercise &&
     lastExercise &&
+    lastExercise instanceof RecordedWeightedExercise &&
     lastSetTime;
   const lastSetFailed =
     lastRecordedSet?.set &&
     lastExercise &&
     lastExercise instanceof RecordedWeightedExercise &&
     lastRecordedSet.set.repsCompleted < lastExercise.blueprint.repsPerSet;
-  const restTimer =
-    showRestTimer && lastExercise instanceof RecordedWeightedExercise ? (
-      <View style={{ flex: 1 }}>
-        <RestTimer
-          rest={lastExercise.blueprint.restBetweenSets}
-          startTime={lastSetTime}
-          failed={!!lastSetFailed}
-          resetTimer={resetTimer}
-        />
-      </View>
-    ) : undefined;
+  const restTimer = showRestTimer ? (
+    <View style={{ flex: 1 }}>
+      <RestTimer
+        rest={lastExercise.blueprint.restBetweenSets}
+        startTime={lastSetTime}
+        failed={!!lastSetFailed}
+        resetTimer={resetTimer}
+      />
+    </View>
+  ) : undefined;
   const saveButton = props.saveAndClose && (
     <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
       <FAB

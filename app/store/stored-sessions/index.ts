@@ -5,9 +5,9 @@ import {
   SessionPOJO,
 } from '@/models/session-models';
 import {
-  WeightedExerciseBlueprint,
   NormalizedName,
   NormalizedNameKey,
+  ExerciseBlueprint,
 } from '@/models/blueprint-models';
 import { LocalDate, YearMonth } from '@js-joda/core';
 import {
@@ -190,7 +190,7 @@ export const selectLatestOrderedRecordedExercises = createSelector(
 export const selectRecentlyCompletedExercises = createSelector(
   selectLatestOrderedRecordedExercises,
   (recentlyCompletedExercises) =>
-    (blueprint: WeightedExerciseBlueprint): RecordedExercise[] =>
+    (blueprint: ExerciseBlueprint): RecordedExercise[] =>
       recentlyCompletedExercises[
         NormalizedName.fromExerciseBlueprint(blueprint).toString()
       ] ?? [],

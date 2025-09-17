@@ -74,11 +74,15 @@ export function fromUuidDao(
 const nanoFactor = BigNumber('1000000000');
 
 // Converts a DecimalValue DAO to a BigNumber
+export function fromDecimalDao(dao: LiftLog.Ui.Models.IDecimalValue): BigNumber;
 export function fromDecimalDao(
   dao: LiftLog.Ui.Models.IDecimalValue | null | undefined,
-): BigNumber {
+): BigNumber | undefined;
+export function fromDecimalDao(
+  dao: LiftLog.Ui.Models.IDecimalValue | null | undefined,
+): BigNumber | undefined {
   if (dao?.nanos == null || dao?.units == null) {
-    throw new Error('DecimalDao cannot be null');
+    return undefined;
   }
   return BigNumber(dao.units.toString()).plus(
     BigNumber(dao.nanos).div(nanoFactor),
@@ -156,7 +160,7 @@ function fromPotentialSetDao(
     set: dao.recordedSet
       ? fromRecordedSetDao(sessionDate, dao.recordedSet).toPOJO()
       : undefined,
-    weight: fromDecimalDao(dao.weight),
+    weight: fromDecimalDao(dao.weight) ?? BigNumber(0),
   });
 }
 
@@ -271,7 +275,7 @@ export function fromExerciseBlueprintDao(
     dao.name!,
     dao.sets!,
     dao.repsPerSet!,
-    fromDecimalDao(dao.weightIncreaseOnSuccess),
+    fromDecimalDao(dao.weightIncreaseOnSuccess) ?? BigNumber(0),
     fromRestDao(dao.restBetweenSets!),
     dao.supersetWithNext ?? false,
     dao.notes ?? '',
