@@ -38,9 +38,11 @@ export function applyAppEffects() {
 
   addEffect(
     requestExactNotificationPermission,
-    async (_, { dispatch, extra: { notificationService } }) => {
+    async (action, { dispatch, extra: { notificationService } }) => {
       const result =
-        await notificationService.requestScheduleExactNotificationPermission();
+        await notificationService.requestScheduleExactNotificationPermission(
+          action.payload,
+        );
       dispatch(setCanScheduleExactNotifications(result));
     },
   );

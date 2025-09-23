@@ -2,6 +2,7 @@ import FullHeightScrollView from '@/components/presentation/full-height-scroll-v
 import ListSwitch from '@/components/presentation/list-switch';
 import AndroidNotificationAlert from '@/components/smart/android-notification-alert';
 import { RootState, useAppSelector } from '@/store';
+import { requestExactNotificationPermission } from '@/store/app';
 import { setRestNotifications } from '@/store/settings';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
@@ -22,6 +23,10 @@ export default function AppConfiguration() {
           supportingText={<T keyName="RestNotificationsSubtitle" />}
           value={settings.restNotifications}
           onValueChange={(value) => dispatch(setRestNotifications(value))}
+        />
+        <List.Item
+          title={t('Request exact notification permission')}
+          onPress={() => dispatch(requestExactNotificationPermission(true))}
         />
       </List.Section>
       <AndroidNotificationAlert />
