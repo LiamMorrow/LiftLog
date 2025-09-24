@@ -14,11 +14,11 @@ export default function TouchableRipple({
 }: GesturePressableProps<TouchableRippleProps>) {
   const tap = Gesture.Tap()
     .runOnJS(true)
-    .onEnd(() => onPress?.());
+    .onStart(() => onPress?.());
   const longPress = onLongPress
     ? Gesture.LongPress()
         .runOnJS(true)
-        .onEnd(() => onLongPress())
+        .onStart(() => onLongPress())
     : undefined;
   const gesture = Gesture.Simultaneous(
     ...[tap, longPress].filter(isNotNullOrUndefined),
