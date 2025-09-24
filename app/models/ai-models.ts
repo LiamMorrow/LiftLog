@@ -1,4 +1,4 @@
-import { SessionBlueprint } from '@/models/session-models';
+import { SessionBlueprint } from '@/models/blueprint-models';
 
 export interface AiChatPlanResponse {
   type: 'chatPlan';

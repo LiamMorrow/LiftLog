@@ -3,7 +3,7 @@ import {
   ProgramBlueprintPOJO,
   SessionBlueprint,
   SessionBlueprintPOJO,
-} from '@/models/session-models';
+} from '@/models/blueprint-models';
 import { RemoteData } from '@/models/remote';
 import { Session, SessionPOJO } from '@/models/session-models';
 

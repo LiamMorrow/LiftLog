@@ -361,5 +361,17 @@
   "Workout removed": "Workout removed",
   "Yes": "Yes",
   "YourName": "Your Name",
-  "Request exact notification permission": "Request exact notification permission"
+  "Request exact notification permission": "Request exact notification permission",
+  "trackTime": "Track Time",
+  "trackDistance": "Track Distance",
+  "trackResistance": "Track Resistance",
+  "trackIncline": "Track Incline",
+  "trackAvgHeartRate": "Track Average Heart Rate",
+  "Exercise type": "Exercise type",
+  "Cardio target": "Cardio target",
+  "Time": "Time",
+  "Distance": "Distance",
+  "Rest": "Rest",
+  "Target distance {distance}": "Target distance <em>{distance}</em>",
+  "Target time {time}": "Target time <em>{time}</em>"
 }
