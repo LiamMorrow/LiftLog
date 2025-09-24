@@ -4,7 +4,8 @@ import { spacing } from '@/hooks/useAppTheme';
 import { RemoteData } from '@/models/remote';
 import { ReactNode } from 'react';
 import { View } from 'react-native';
-import { Button, Icon } from 'react-native-paper';
+import { Icon } from 'react-native-paper';
+import Button from '@/components/presentation/gesture-wrappers/button';
 
 interface RemoteProps<T> {
   value: RemoteData<T>;

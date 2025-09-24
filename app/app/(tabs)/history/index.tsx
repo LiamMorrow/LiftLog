@@ -3,6 +3,7 @@ import CardList from '@/components/presentation/card-list';
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import EmptyInfo from '@/components/presentation/empty-info';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import HistoryCalendarCard from '@/components/presentation/history-calendar-card';
 import LimitedHtml from '@/components/presentation/limited-html';
 import SessionSummary from '@/components/presentation/session-summary';
@@ -27,7 +28,8 @@ import { LocalDate, YearMonth } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Button, Card, IconButton, Tooltip } from 'react-native-paper';
+import { Card, Tooltip } from 'react-native-paper';
+import Button from '@/components/presentation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 
 export default function History() {

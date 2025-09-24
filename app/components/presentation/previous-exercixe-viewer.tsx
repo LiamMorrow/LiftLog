@@ -4,7 +4,8 @@ import { spacing } from '@/hooks/useAppTheme';
 import { RecordedExercise } from '@/models/session-models';
 import { T } from '@tolgee/react';
 import { View } from 'react-native';
-import { Button, Portal, Dialog } from 'react-native-paper';
+import { Portal, Dialog } from 'react-native-paper';
+import Button from '@/components/presentation/gesture-wrappers/button';
 
 function PreviousExerciseContent(props: {
   previousRecordedExercises: RecordedExercise[];

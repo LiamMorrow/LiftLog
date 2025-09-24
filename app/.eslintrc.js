@@ -19,11 +19,16 @@ module.exports = {
           {
             name: 'react-redux',
             importNames: ['useSelector'],
-            message: 'Use useSelector from @/store',
+            message: 'Use useAppSelector from @/store',
           },
           {
             name: '@material-symbols-react-native/outlined-400',
             message: 'This import does not work on android -- too big. We need to use the individual imports',
+          },
+          {
+            name: 'react-native-paper',
+            importNames: ['IconButton', 'TouchableRipple', 'Button'],
+            message: 'Use our wrappers in @/components/presentation/gesture-wrappers/ - they are more reliable as they use GestureHandler',
           },
         ],
       },

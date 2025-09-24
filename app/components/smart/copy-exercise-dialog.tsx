@@ -6,15 +6,9 @@ import { selectProgram, setProgramSession } from '@/store/program';
 import { T, useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { FlatList, View } from 'react-native';
-import {
-  Button,
-  Dialog,
-  List,
-  Portal,
-  RadioButton,
-  Text,
-} from 'react-native-paper';
+import { Dialog, List, Portal, RadioButton, Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
+import Button from '@/components/presentation/gesture-wrappers/button';
 
 type CopyExerciseDialogProps = {
   visible: boolean;

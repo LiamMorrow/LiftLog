@@ -6,7 +6,9 @@ import { formatDate, getDateOnDay } from '@/utils/format-date';
 import { DayOfWeek, LocalDate, Year, YearMonth } from '@js-joda/core';
 import Enumerable from 'linq';
 import { View } from 'react-native';
-import { Card, IconButton, TouchableRipple } from 'react-native-paper';
+import { Card } from 'react-native-paper';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
+import TouchableRipple from '@/components/presentation/gesture-wrappers/touchable-ripple';
 import Animated, { ZoomIn } from 'react-native-reanimated';
 
 const oneSeventh = `${100 / 7}%`;

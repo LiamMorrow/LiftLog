@@ -222,7 +222,9 @@ export function fromExerciseBlueprintDao(
     dao.name!,
     dao.sets!,
     dao.repsPerSet!,
-    fromDecimalDao(dao.weightIncreaseOnSuccess),
+    dao.weightIncreaseOnSuccess
+      ? fromDecimalDao(dao.weightIncreaseOnSuccess)
+      : BigNumber(0),
     fromRestDao(dao.restBetweenSets!),
     dao.supersetWithNext ?? false,
     dao.notes ?? '',
@@ -234,15 +236,15 @@ export function fromRestDao(
   dao: LiftLog.Ui.Models.SessionBlueprintDao.IRestDaoV2,
 ): Rest {
   return {
-    minRest: Duration.ofSeconds(
-      Long.fromValue(dao.minRest!.seconds!).toNumber(),
-    ),
-    maxRest: Duration.ofSeconds(
-      Long.fromValue(dao.maxRest!.seconds!).toNumber(),
-    ),
-    failureRest: Duration.ofSeconds(
-      Long.fromValue(dao.failureRest!.seconds!).toNumber(),
-    ),
+    minRest: dao?.minRest
+      ? Duration.ofSeconds(Long.fromValue(dao.minRest.seconds!).toNumber())
+      : Duration.ZERO,
+    maxRest: dao?.maxRest
+      ? Duration.ofSeconds(Long.fromValue(dao.maxRest.seconds!).toNumber())
+      : Duration.ZERO,
+    failureRest: dao?.failureRest
+      ? Duration.ofSeconds(Long.fromValue(dao.failureRest.seconds!).toNumber())
+      : Duration.ZERO,
   };
 }
 

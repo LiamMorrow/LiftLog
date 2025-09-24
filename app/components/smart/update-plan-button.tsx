@@ -1,4 +1,5 @@
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import LimitedHtml from '@/components/presentation/limited-html';
 import { SurfaceText } from '@/components/presentation/surface-text';
 import { useAppTheme } from '@/hooks/useAppTheme';
@@ -15,7 +16,7 @@ import {
 import { T, useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { IconButton, Tooltip } from 'react-native-paper';
+import { Tooltip } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 interface UpdatePlanDialogProps {

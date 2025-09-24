@@ -2,7 +2,8 @@ import { SurfaceText } from '@/components/presentation/surface-text';
 import { T } from '@tolgee/react';
 import { ReactNode } from 'react';
 import { View } from 'react-native';
-import { Button, Dialog, Portal } from 'react-native-paper';
+import { Dialog, Portal } from 'react-native-paper';
+import Button from '@/components/presentation/gesture-wrappers/button';
 
 type ConfirmationDialogWithoutAdditionalActionProps = {
   open: boolean;

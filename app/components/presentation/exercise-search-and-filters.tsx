@@ -4,7 +4,8 @@ import { spacing } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Searchbar, Card, IconButton } from 'react-native-paper';
+import { Searchbar, Card } from 'react-native-paper';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 
 export default function ExerciseSearchAndFilters({
   searchText,

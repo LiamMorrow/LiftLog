@@ -2,13 +2,8 @@ import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
-import {
-  AnimatedFAB,
-  Icon,
-  List,
-  TextInput,
-  TouchableRipple,
-} from 'react-native-paper';
+import { AnimatedFAB, Icon, List, TextInput } from 'react-native-paper';
+import TouchableRipple from '@/components/presentation/gesture-wrappers/touchable-ripple';
 import { AccordionItem } from '@/components/presentation/accordion-item';
 import { useScroll } from '@/hooks/useScollListener';
 import { FlashList, useRecyclingState } from '@shopify/flash-list';

@@ -1,3 +1,4 @@
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
 import SplitCardControl from '@/components/presentation/split-card-control';
@@ -15,7 +16,7 @@ import {
 } from '@/store/program';
 import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
-import { IconButton, Menu } from 'react-native-paper';
+import { Menu } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 interface ManageWorkoutCardContentProps {

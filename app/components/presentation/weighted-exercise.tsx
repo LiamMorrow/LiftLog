@@ -5,17 +5,10 @@ import { RecordedExercise } from '@/models/session-models';
 import BigNumber from 'bignumber.js';
 import { useState } from 'react';
 import { View } from 'react-native';
-import {
-  Button,
-  Dialog,
-  IconButton,
-  Menu,
-  Portal,
-  TextInput,
-  Tooltip,
-} from 'react-native-paper';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
+import Button from '@/components/presentation/gesture-wrappers/button';
+import { Dialog, Menu, Portal, TextInput, Tooltip } from 'react-native-paper';
 import { T, useTranslate } from '@tolgee/react';
-
 import PotentialSetAdditionalActionsDialog from '@/components/presentation/potential-sets-addition-actions-dialog';
 import PreviousExerciseViewer from '@/components/presentation/previous-exercixe-viewer';
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
