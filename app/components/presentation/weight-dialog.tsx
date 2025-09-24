@@ -9,10 +9,10 @@ import BigNumber from 'bignumber.js';
 import { ReactNode, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import {
   Button,
   Dialog,
-  IconButton,
   Portal,
   TextInput,
   Tooltip,

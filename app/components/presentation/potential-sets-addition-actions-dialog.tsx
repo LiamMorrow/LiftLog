@@ -4,14 +4,8 @@ import { T } from '@tolgee/react';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
-import {
-  Button,
-  Dialog,
-  IconButton,
-  Portal,
-  Text,
-  TextInput,
-} from 'react-native-paper';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
+import { Button, Dialog, Portal, Text, TextInput } from 'react-native-paper';
 
 interface PotentialSetAdditionalActionsDialogProps {
   open: boolean;

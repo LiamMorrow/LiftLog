@@ -1,6 +1,7 @@
 import FocusRing, {
   ANIMATION_DURATION,
 } from '@/components/presentation/focus-ring';
+import TouchableRipple from '@/components/presentation/gesture-wrappers/touchable-ripple';
 import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { ColorSchemeSeed } from '@/store/settings';
 import { sleep } from '@/utils/sleep';
@@ -8,7 +9,7 @@ import { createMaterial3Theme } from '@pchmn/expo-material3-theme';
 import { T, useTranslate } from '@tolgee/react';
 import { useMemo, useState } from 'react';
 import { View, FlatList } from 'react-native';
-import { Button, List, TouchableRipple } from 'react-native-paper';
+import { Button, List } from 'react-native-paper';
 
 interface ThemeChooserProps {
   seed: ColorSchemeSeed;

@@ -15,8 +15,8 @@ import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-
-import { IconButton, List, Menu, RadioButton } from 'react-native-paper';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
+import { List, Menu, RadioButton } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 interface ProgramListItemProps {

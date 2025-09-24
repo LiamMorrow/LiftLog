@@ -16,8 +16,9 @@ import {
 import { T, useTranslate } from '@tolgee/react';
 import React, { useState } from 'react';
 import { FlatList, View } from 'react-native';
-import { IconButton, Button, List } from 'react-native-paper';
+import { Button, List } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 
 type FeedFollowItem = FollowRequest | { userId: string; user: FeedUser };
 

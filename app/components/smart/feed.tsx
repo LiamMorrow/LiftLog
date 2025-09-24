@@ -27,15 +27,9 @@ import {
 import { T, useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { FlatList, View } from 'react-native';
-import {
-  Button,
-  Card,
-  Icon,
-  IconButton,
-  List,
-  TextInput,
-} from 'react-native-paper';
+import { Button, Card, Icon, List, TextInput } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 
 export default function Feed() {
   const feedItems = useAppSelector(selectFeedSessionItems);

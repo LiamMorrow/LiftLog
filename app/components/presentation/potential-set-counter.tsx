@@ -1,17 +1,16 @@
 import { PotentialSet } from '@/models/session-models';
 import BigNumber from 'bignumber.js';
 import { useState } from 'react';
-import { TouchableRipple, Text as PaperText, Chip } from 'react-native-paper';
-import { Text, Touchable, View } from 'react-native';
+import { Text as PaperText, Chip } from 'react-native-paper';
+import { Text, View } from 'react-native';
 import WeightFormat from '@/components/presentation/weight-format';
 import WeightDialog from '@/components/presentation/weight-dialog';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
-import { PressableProps } from 'react-native-paper/lib/typescript/components/TouchableRipple/Pressable';
 import FocusRing from '@/components/presentation/focus-ring';
-import Animated from 'react-native-reanimated';
 import { WeightAppliesTo } from '@/store/current-session';
 import { T } from '@tolgee/react';
 import Holdable from '@/components/presentation/holdable';
+import TouchableRipple from '@/components/presentation/gesture-wrappers/touchable-ripple';
 
 interface PotentialSetCounterProps {
   set: PotentialSet;
@@ -31,14 +30,6 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
   const [isWeightDialogOpen, setIsWeightDialogOpen] = useState(false);
   const repCountValue = props.set?.set?.repsCompleted;
 
-  const callbacks = props.isReadonly
-    ? {}
-    : ({
-        onPress: props.onTap,
-        // We use holdable long press so we don't want long press triggering onPress
-        onLongPress: () => {},
-      } satisfies Touchable & Omit<PressableProps, 'children'>);
-
   const [applyTo, setApplyTo] = useState<WeightAppliesTo>('thisSet');
 
   return (
@@ -52,7 +43,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
             },
           ]}
         >
-          <Animated.View
+          <View
             style={[
               {
                 borderTopLeftRadius: 10,
@@ -73,7 +64,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
                     ? colors.primary
                     : colors.secondaryContainer,
               }}
-              {...callbacks}
+              onPress={props.isReadonly ? undefined : props.onTap}
               disabled={props.isReadonly}
               testID="repcount"
             >
@@ -99,8 +90,8 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
                 </Text>
               </Text>
             </TouchableRipple>
-          </Animated.View>
-          <Animated.View
+          </View>
+          <View
             style={{
               borderTopWidth: 1,
               borderColor: colors.outline,
@@ -120,19 +111,15 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
                 padding: spacing[2],
               }}
               onPress={
-                props.isReadonly
-                  ? undefined!
-                  : () => setIsWeightDialogOpen(true)
+                props.isReadonly ? undefined : () => setIsWeightDialogOpen(true)
               }
-              // We use holdable long press so we don't want long press triggering onPress
-              onLongPress={() => {}}
               disabled={props.isReadonly}
             >
               <Text style={{ color: colors.onSurface, ...font['text-sm'] }}>
                 <WeightFormat weight={props.set.weight} />
               </Text>
             </TouchableRipple>
-          </Animated.View>
+          </View>
           <WeightDialog
             open={isWeightDialogOpen}
             allowNegative

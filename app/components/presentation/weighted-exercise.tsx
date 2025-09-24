@@ -5,10 +5,10 @@ import { RecordedExercise } from '@/models/session-models';
 import BigNumber from 'bignumber.js';
 import { useState } from 'react';
 import { View } from 'react-native';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import {
   Button,
   Dialog,
-  IconButton,
   Menu,
   Portal,
   TextInput,

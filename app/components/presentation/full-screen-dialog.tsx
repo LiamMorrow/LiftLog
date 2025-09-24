@@ -3,7 +3,8 @@ import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { usePreventNavigate } from '@/hooks/usePreventNavigate';
 import { ReactNode, useEffect } from 'react';
 import { View } from 'react-native';
-import { Button, IconButton, Portal } from 'react-native-paper';
+import { Button, Portal } from 'react-native-paper';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   useSharedValue,

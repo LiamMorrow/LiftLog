@@ -6,7 +6,8 @@ import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { IconButton, List, TextInput, Tooltip } from 'react-native-paper';
+import { List, TextInput, Tooltip } from 'react-native-paper';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 
 interface EditableIncrementerProps {
   label: string;
