@@ -1,6 +1,6 @@
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { Duration } from '@js-joda/core';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { TextInput } from 'react-native-paper';
 
@@ -9,11 +9,12 @@ interface DurationEditorProps {
   duration: Duration;
   showHours?: boolean;
   onDurationUpdated: (rest: Duration) => void;
+  readonly?: boolean;
 }
 
 export default function DurationEditor(props: DurationEditorProps) {
   const { colors } = useAppTheme();
-  const { duration, onDurationUpdated } = props;
+  const { duration, onDurationUpdated, readonly } = props;
 
   const [hours, setHours] = useState(duration.toHours().toString());
   const [minutes, setMinutes] = useState(
@@ -49,11 +50,16 @@ export default function DurationEditor(props: DurationEditorProps) {
     }
   };
 
-  const resetValues = () => {
+  const resetValues = useCallback(() => {
     setHours(duration.toHours().toString());
     setMinutes((duration.toMinutes() % 60).toString());
     setSeconds((duration.seconds() % 60).toString());
-  };
+  }, [duration]);
+  useEffect(() => {
+    if (readonly) {
+      resetValues();
+    }
+  }, [readonly, resetValues]);
 
   return (
     <>
@@ -80,6 +86,7 @@ export default function DurationEditor(props: DurationEditorProps) {
             <TextInput
               mode="outlined"
               inputMode="numeric"
+              readOnly={readonly}
               style={{ width: spacing[24], textAlign: 'center' }}
               value={hours}
               onChangeText={updateHours}
@@ -103,6 +110,7 @@ export default function DurationEditor(props: DurationEditorProps) {
           inputMode="numeric"
           style={{ width: spacing[24], textAlign: 'center' }}
           value={minutes}
+          readOnly={readonly}
           onChangeText={updateMinutes}
           onBlur={resetValues}
           right={<TextInput.Affix text="m" />}
@@ -122,6 +130,7 @@ export default function DurationEditor(props: DurationEditorProps) {
           inputMode="numeric"
           style={{ width: spacing[24], textAlign: 'center' }}
           value={seconds}
+          readOnly={readonly}
           onChangeText={updateSeconds}
           onBlur={resetValues}
           right={<TextInput.Affix text="s" />}

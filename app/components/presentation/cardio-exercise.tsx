@@ -10,10 +10,11 @@ import { useTranslate } from '@tolgee/react';
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
 import { match, P } from 'ts-pattern';
 import LimitedHtml from '@/components/presentation/limited-html';
-import { IconButton, Text } from 'react-native-paper';
+import { IconButton } from 'react-native-paper';
 import { useEffect, useState } from 'react';
 import { Duration, LocalDateTime } from '@js-joda/core';
 import { View } from 'react-native';
+import DurationEditor from '@/components/presentation/duration-editor';
 
 interface CardioExerciseProps {
   recordedExercise: RecordedCardioExercise;
@@ -71,7 +72,39 @@ function CardioTimer({
   const [currentBlockStartTime, setCurrentBlockStartTime] = useState<
     LocalDateTime | undefined
   >();
-  const [timerState, setTimerState] = useState<string>('-:-:-');
+
+  const getTimerState = () => {
+    const now = LocalDateTime.now();
+    const duration = match({
+      recordedDuration: recordedExercise.duration,
+      currentBlockStartTime,
+    })
+      .with(
+        {
+          recordedDuration: P.nonNullable,
+          currentBlockStartTime: P.nonNullable,
+        },
+        ({ recordedDuration, currentBlockStartTime }) =>
+          recordedDuration.plus(Duration.between(currentBlockStartTime, now)),
+      )
+      .with(
+        { recordedDuration: P.nonNullable },
+        ({ recordedDuration }) => recordedDuration,
+      )
+      .with(
+        { currentBlockStartTime: P.nonNullable },
+        ({ currentBlockStartTime }) =>
+          Duration.between(currentBlockStartTime, now),
+      )
+      .with(
+        { currentBlockStartTime: undefined, recordedDuration: undefined },
+        () => Duration.ZERO,
+      )
+      .exhaustive();
+
+    return duration;
+  };
+  const [timerState, setTimerState] = useState<Duration>(getTimerState());
   const handlePlay = () => {
     const now = LocalDateTime.now();
     setCurrentBlockStartTime(now);
@@ -101,37 +134,6 @@ function CardioTimer({
     }
   };
 
-  const getTimerState = () => {
-    const now = LocalDateTime.now();
-    const duration = match({
-      recordedDuration: recordedExercise.duration,
-      currentBlockStartTime,
-    })
-      .with(
-        {
-          recordedDuration: P.nonNullable,
-          currentBlockStartTime: P.nonNullable,
-        },
-        ({ recordedDuration, currentBlockStartTime }) =>
-          recordedDuration.plus(Duration.between(currentBlockStartTime, now)),
-      )
-      .with(
-        { recordedDuration: P.nonNullable },
-        ({ recordedDuration }) => recordedDuration,
-      )
-      .with(
-        { currentBlockStartTime: P.nonNullable },
-        ({ currentBlockStartTime }) =>
-          Duration.between(currentBlockStartTime, now),
-      )
-      .with(
-        { currentBlockStartTime: undefined, recordedDuration: undefined },
-        () => undefined,
-      )
-      .exhaustive();
-
-    return formatDuration(duration);
-  };
   useEffect(() => {
     const timer = setInterval(() => {
       const state = getTimerState();
@@ -141,13 +143,18 @@ function CardioTimer({
   });
 
   return (
-    <View>
+    <View style={{ alignItems: 'center' }}>
+      <DurationEditor
+        showHours
+        readonly={!!currentBlockStartTime}
+        duration={timerState}
+        onDurationUpdated={(d) => updateDuration(d)}
+      />
       <IconButton
         icon={currentBlockStartTime ? 'pauseCircle' : 'playCircle'}
         animated
         onPress={handlePlayPause}
       />
-      <Text>{timerState}</Text>
     </View>
   );
 }
