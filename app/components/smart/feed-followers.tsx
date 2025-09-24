@@ -16,7 +16,8 @@ import {
 import { T, useTranslate } from '@tolgee/react';
 import React, { useState } from 'react';
 import { FlatList, View } from 'react-native';
-import { Button, List } from 'react-native-paper';
+import { List } from 'react-native-paper';
+import Button from '@/components/presentation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 

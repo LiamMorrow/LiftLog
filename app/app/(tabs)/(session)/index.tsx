@@ -25,7 +25,8 @@ import { T, useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Button, Card, FAB, Text, Tooltip } from 'react-native-paper';
+import { Card, FAB, Text, Tooltip } from 'react-native-paper';
+import Button from '@/components/presentation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 

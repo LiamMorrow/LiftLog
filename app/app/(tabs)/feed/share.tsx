@@ -15,7 +15,8 @@ import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
-import { Button, Card, Icon } from 'react-native-paper';
+import { Card, Icon } from 'react-native-paper';
+import Button from '@/components/presentation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 
 export default function FeedSharePage() {

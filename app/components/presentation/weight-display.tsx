@@ -4,7 +4,7 @@ import { font } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useState } from 'react';
-import { Button } from 'react-native-paper';
+import Button from '@/components/presentation/gesture-wrappers/button';
 
 type WeightDisplayProps = {
   increment: BigNumber;

@@ -5,7 +5,8 @@ import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
-import { Button, Dialog, Portal, Text, TextInput } from 'react-native-paper';
+import { Dialog, Portal, Text, TextInput } from 'react-native-paper';
+import Button from '@/components/presentation/gesture-wrappers/button';
 
 interface PotentialSetAdditionalActionsDialogProps {
   open: boolean;

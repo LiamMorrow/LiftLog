@@ -7,9 +7,9 @@ import { FlatList, Platform, View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
+import Button from '@/components/presentation/gesture-wrappers/button';
 import {
   Appbar,
-  Button,
   TextInput,
   ActivityIndicator,
   Tooltip,

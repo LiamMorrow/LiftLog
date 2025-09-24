@@ -5,7 +5,8 @@ import { T, useTranslate } from '@tolgee/react';
 import { Link, Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Linking } from 'react-native';
-import { Button, Text, Dialog, Icon, List, Portal } from 'react-native-paper';
+import { Text, Dialog, Icon, List, Portal } from 'react-native-paper';
+import Button from '@/components/presentation/gesture-wrappers/button';
 import * as Application from 'expo-application';
 
 export default function Settings() {

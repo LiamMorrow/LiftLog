@@ -9,7 +9,8 @@ import { createMaterial3Theme } from '@pchmn/expo-material3-theme';
 import { T, useTranslate } from '@tolgee/react';
 import { useMemo, useState } from 'react';
 import { View, FlatList } from 'react-native';
-import { Button, List } from 'react-native-paper';
+import { List } from 'react-native-paper';
+import Button from '@/components/presentation/gesture-wrappers/button';
 
 interface ThemeChooserProps {
   seed: ColorSchemeSeed;

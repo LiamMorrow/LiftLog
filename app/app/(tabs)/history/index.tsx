@@ -28,7 +28,8 @@ import { LocalDate, YearMonth } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Button, Card, Tooltip } from 'react-native-paper';
+import { Card, Tooltip } from 'react-native-paper';
+import Button from '@/components/presentation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 
 export default function History() {

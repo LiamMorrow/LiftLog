@@ -8,7 +8,8 @@ import { T, useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
 import { useState } from 'react';
 import { Linking, View } from 'react-native';
-import { Button, Card } from 'react-native-paper';
+import { Card } from 'react-native-paper';
+import Button from '@/components/presentation/gesture-wrappers/button';
 import { Dropdown } from 'react-native-paper-dropdown';
 import { useDispatch } from 'react-redux';
 

@@ -27,7 +27,7 @@ module.exports = {
           },
           {
             name: 'react-native-paper',
-            importNames: ['IconButton', 'TouchableRipple'],
+            importNames: ['IconButton', 'TouchableRipple', 'Button'],
             message: 'Use our wrappers in @/components/presentation/gesture-wrappers/ - they are more reliable as they use GestureHandler',
           },
         ],
