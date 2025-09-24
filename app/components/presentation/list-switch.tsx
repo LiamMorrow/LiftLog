@@ -1,6 +1,7 @@
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { ReactNode } from 'react';
-import { List, Switch } from 'react-native-paper';
+import { List } from 'react-native-paper';
+import NativeSwitch from '@/components/presentation/native-wrappers/native-switch';
 
 interface ListSwitchProps {
   headline: ReactNode;
@@ -22,10 +23,10 @@ export default function ListSwitch(props: ListSwitchProps) {
         backgroundColor: props.focus ? colors.tertiary + '33' : undefined!,
       }}
       description={props.supportingText}
-      onPress={() => props.onValueChange(!props.value)}
+      // onPress={() => props.onValueChange(!props.value)}
       disabled={props.disabled!}
       right={() => (
-        <Switch
+        <NativeSwitch
           value={props.value}
           disabled={props.disabled!}
           onValueChange={props.onValueChange}
