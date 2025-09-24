@@ -7,10 +7,8 @@ import {
 import { useDispatch } from 'react-redux';
 import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
-import {
-  EmptyExerciseBlueprint,
-  ExerciseBlueprint,
-} from '@/models/session-models';
+import { ExerciseBlueprint } from '@/models/blueprint-models';
+import { EmptyExerciseBlueprint } from '@/models/blueprint-models';
 import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/exercise-editor';
 import { useAppSelectorWithArg } from '@/store';

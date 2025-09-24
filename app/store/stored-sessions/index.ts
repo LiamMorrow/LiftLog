@@ -1,12 +1,14 @@
 import { LocalDateComparer, LocalDateTimeComparer } from '@/models/comparers';
 import {
-  ExerciseBlueprint,
-  NormalizedName,
-  NormalizedNameKey,
   RecordedExercise,
   Session,
   SessionPOJO,
 } from '@/models/session-models';
+import {
+  NormalizedName,
+  NormalizedNameKey,
+  ExerciseBlueprint,
+} from '@/models/blueprint-models';
 import { LocalDate, YearMonth } from '@js-joda/core';
 import {
   createAction,
@@ -170,9 +172,7 @@ export const selectLatestOrderedRecordedExercises = createSelector(
     maxRecordsPerExercise,
   ): Record<NormalizedNameKey, RecordedExercise[]> => {
     return Enumerable.from(sessions)
-      .selectMany((x) =>
-        x.recordedExercises.filter((x) => x.lastRecordedSet?.set),
-      )
+      .selectMany((x) => x.recordedExercises.filter((x) => x.isStarted))
       .groupBy((x) =>
         NormalizedName.fromExerciseBlueprint(x.blueprint).toString(),
       )
@@ -180,10 +180,7 @@ export const selectLatestOrderedRecordedExercises = createSelector(
         (x) => x.key(),
         (x) =>
           x
-            .orderByDescending(
-              (x) => x.lastRecordedSet!.set!.completionDateTime,
-              LocalDateTimeComparer,
-            )
+            .orderByDescending((x) => x.latestTime, LocalDateTimeComparer)
             .take(maxRecordsPerExercise)
             .toArray(),
       );
@@ -208,7 +205,7 @@ export const selectSessionsInMonth = createSelector(
       )
       .orderByDescending((x) => x.date, LocalDateComparer)
       .thenByDescending(
-        (x) => x.lastExercise?.lastRecordedSet?.set?.completionDateTime,
+        (x) => x.lastExercise?.latestTime,
         LocalDateTimeComparer,
       )
       .toArray(),

@@ -1,4 +1,4 @@
-import { RecordedExercise } from '@/models/session-models';
+import { RecordedWeightedExercise } from '@/models/session-models';
 import { RootState } from '@/store';
 import { setLatestSetTimerNotificationId } from '@/store/current-session';
 import { uuid } from '@/utils/uuid';
@@ -49,7 +49,7 @@ export class NotificationService {
     readonly dispatch: Dispatch,
   ) {}
 
-  async scheduleNextSetNotification(exercise: RecordedExercise) {
+  async scheduleNextSetNotification(exercise: RecordedWeightedExercise) {
     await this.clearSetTimerNotification();
 
     const id = uuid();

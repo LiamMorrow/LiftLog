@@ -9,6 +9,7 @@ interface ListSwitchProps {
   focus?: boolean;
   onValueChange: (value: boolean) => void;
   testID?: string;
+  disabled?: boolean;
 }
 
 export default function ListSwitch(props: ListSwitchProps) {
@@ -22,8 +23,13 @@ export default function ListSwitch(props: ListSwitchProps) {
       }}
       description={props.supportingText}
       onPress={() => props.onValueChange(!props.value)}
+      disabled={props.disabled!}
       right={() => (
-        <Switch value={props.value} onValueChange={props.onValueChange} />
+        <Switch
+          value={props.value}
+          disabled={props.disabled!}
+          onValueChange={props.onValueChange}
+        />
       )}
     />
   );

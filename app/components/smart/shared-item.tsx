@@ -14,6 +14,7 @@ import { Card, Text, Button } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { uuid } from '@/utils/uuid';
 import { useRouter } from 'expo-router';
+import { Session } from '@/models/session-models';
 
 interface SharedItemProps {
   sharedItem: SharedItem;
@@ -30,7 +31,7 @@ function SharedProgramBlueprintContent({
 
   // Convert session blueprints to sessions for display
   const sessions = program.sessions.map((sessionBlueprint) =>
-    sessionBlueprint.getEmptySession(),
+    Session.getEmptySession(sessionBlueprint),
   );
 
   const handleSave = () => {
