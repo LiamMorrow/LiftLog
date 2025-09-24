@@ -19,7 +19,7 @@ export class NotificationService {
     return true;
   }
 
-  async requestScheduleExactNotificationPermission() {
+  async requestScheduleExactNotificationPermission(force = false) {
     return true;
   }
 }

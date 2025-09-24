@@ -38,9 +38,9 @@ const appSlice = createSlice({
   },
 });
 
-export const requestExactNotificationPermission = createAction(
-  'requestExactNotificationPermission',
-);
+export const requestExactNotificationPermission = createAction<
+  boolean | undefined
+>('requestExactNotificationPermission');
 
 export const refreshNotificationPermissionStatus = createAction(
   'refreshNotificationPermissionStatus',
