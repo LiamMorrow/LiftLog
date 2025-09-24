@@ -20,7 +20,7 @@ export default function IconButton({
         .runOnJS(true)
         .onStart(() => onLongPress())
     : undefined;
-  const gesture = Gesture.Simultaneous(
+  const gesture = Gesture.Race(
     ...[tap, longPress].filter(isNotNullOrUndefined),
   );
   return (
