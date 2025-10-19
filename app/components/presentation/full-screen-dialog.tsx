@@ -104,7 +104,6 @@ function Header({
       <View
         style={{
           flexDirection: 'row',
-          justifyContent: 'flex-start',
           alignItems: 'center',
           gap: spacing[2],
           padding: spacing[4],
@@ -114,8 +113,11 @@ function Header({
         <SurfaceText
           style={{
             marginRight: 'auto',
+            flexShrink: 1, //
           }}
           font="text-2xl"
+          numberOfLines={1}
+          ellipsizeMode="tail"
         >
           {title}
         </SurfaceText>
