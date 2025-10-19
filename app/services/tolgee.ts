@@ -22,6 +22,7 @@ export const supportedLanguages = [
   { translationJson: nl, code: 'nl', label: 'Nederlands' },
   { translationJson: ru, code: 'ru', label: 'Русский' },
   { translationJson: sr, code: 'sr', label: 'Srpski' },
+  { translationJson: uk, code: 'uk', label: 'Українська' },
 ];
 
 export const getTolgee = (preferenceService: PreferenceService) =>
