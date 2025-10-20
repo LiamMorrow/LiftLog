@@ -6,15 +6,17 @@ import {
   DistanceUnit,
   TimeCardioTarget,
 } from '@/models/blueprint-models';
-import { useTranslate } from '@tolgee/react';
+import { T, useTranslate } from '@tolgee/react';
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
 import { match, P } from 'ts-pattern';
 import LimitedHtml from '@/components/presentation/limited-html';
-import { IconButton } from 'react-native-paper';
 import { useEffect, useState } from 'react';
 import { Duration, LocalDateTime } from '@js-joda/core';
-import { View } from 'react-native';
-import DurationEditor from '@/components/presentation/duration-editor';
+import { Animated, useAnimatedValue, View } from 'react-native';
+import TimerEditor from '@/components/presentation/timer-editor';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { Card, Text } from 'react-native-paper';
 
 interface CardioExerciseProps {
   recordedExercise: RecordedCardioExercise;
@@ -54,8 +56,10 @@ export default function CardioExercise(props: CardioExerciseProps) {
       onEditExercise={props.onEditExercise}
       onRemoveExercise={props.onRemoveExercise}
     >
-      <CardioTargetHandler target={props.recordedExercise.blueprint.target} />
-      {timer}
+      <View style={{ gap: spacing[4] }}>
+        <CardioTargetHandler target={props.recordedExercise.blueprint.target} />
+        {timer}
+      </View>
     </ExerciseSection>
   );
 }
@@ -69,6 +73,9 @@ function CardioTimer({
   updateStartedAt: (startedAt: LocalDateTime | undefined) => void;
   updateDuration: (duration: Duration | undefined) => void;
 }) {
+  const playPauseButtonSize = 34;
+  const { colors } = useAppTheme();
+  const animatedRadius = useAnimatedValue(40);
   const [currentBlockStartTime, setCurrentBlockStartTime] = useState<
     LocalDateTime | undefined
   >();
@@ -127,11 +134,18 @@ function CardioTimer({
   };
 
   const handlePlayPause = () => {
+    const toValue = currentBlockStartTime ? playPauseButtonSize : 10;
     if (currentBlockStartTime) {
       handlePause();
     } else {
       handlePlay();
     }
+
+    Animated.timing(animatedRadius, {
+      toValue,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
   };
 
   useEffect(() => {
@@ -143,19 +157,29 @@ function CardioTimer({
   });
 
   return (
-    <View style={{ alignItems: 'center' }}>
-      <DurationEditor
-        showHours
-        readonly={!!currentBlockStartTime}
-        duration={timerState}
-        onDurationUpdated={(d) => updateDuration(d)}
-      />
-      <IconButton
-        icon={currentBlockStartTime ? 'pauseCircle' : 'playCircle'}
-        animated
-        onPress={handlePlayPause}
-      />
-    </View>
+    <Card mode="contained" style={{ alignSelf: 'flex-start' }}>
+      <Card.Content>
+        <View style={{ alignItems: 'center', gap: spacing[2] }}>
+          <TimerEditor
+            readonly={!!currentBlockStartTime}
+            duration={timerState}
+            onDurationUpdated={(d) => updateDuration(d)}
+          />
+          <IconButton
+            icon={currentBlockStartTime ? 'pause' : 'playArrow'}
+            animated
+            size={playPauseButtonSize}
+            onPress={handlePlayPause}
+            containerColor={currentBlockStartTime ? colors.amber : colors.green}
+            iconColor={currentBlockStartTime ? colors.onAmber : colors.onGreen}
+            style={{
+              borderRadius: animatedRadius,
+            }}
+            mode="contained-tonal"
+          />
+        </View>
+      </Card.Content>
+    </Card>
   );
 }
 
@@ -180,13 +204,16 @@ function DistanceCardioTargetHandler(props: { target: DistanceCardioTarget }) {
 }
 
 function TimeCardioTargetHandler(props: { target: TimeCardioTarget }) {
-  const { t } = useTranslate();
+  const { colors } = useAppTheme();
   return (
-    <LimitedHtml
-      value={t('Target time {time}', {
-        time: formatDuration(props.target.value),
-      })}
-    />
+    <View style={{ flexDirection: 'row', gap: spacing[2] }}>
+      <Text variant="bodyLarge">
+        <T keyName="Target time" />
+      </Text>
+      <Text variant="bodyLarge" style={{ color: colors.primary }}>
+        {formatDuration(props.target.value)}
+      </Text>
+    </View>
   );
 }
 

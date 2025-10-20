@@ -102,6 +102,7 @@ import { msTargetFill } from '@material-symbols-react-native/outlined-400/msTarg
 import { msExerciseFill } from '@material-symbols-react-native/outlined-400/msExerciseFill';
 import { msAirlineSeatReclineExtraFill } from '@material-symbols-react-native/outlined-400/msAirlineSeatReclineExtraFill';
 import { msPauseCircle } from '@material-symbols-react-native/outlined-400/msPauseCircle';
+import { msPause } from '@material-symbols-react-native/outlined-400/msPause';
 
 // Importing these icons using the below methods causes android app to crash
 // import { msAdd, msArrowDownward } from '@material-symbols-react-native/outlined-400';
@@ -223,6 +224,8 @@ const MaterialSymbols = {
   targetFill: msTargetFill,
   pauseCircle: msPauseCircle,
   airlineSeatReclineExtraFill: msAirlineSeatReclineExtraFill,
+
+  pause: msPause,
 };
 
 export type AppIconSource = keyof typeof MaterialSymbols;
