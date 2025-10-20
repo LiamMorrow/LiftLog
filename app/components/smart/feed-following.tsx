@@ -11,8 +11,9 @@ import {
 import { T, useTranslate } from '@tolgee/react';
 import React, { useState } from 'react';
 import { FlatList } from 'react-native';
-import { IconButton, List, Menu } from 'react-native-paper';
+import { List, Menu } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 
 export function FeedFollowing() {
   const following = useAppSelector(selectFeedFollowing);

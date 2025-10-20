@@ -3,6 +3,7 @@ import CardList from '@/components/presentation/card-list';
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import { Remote } from '@/components/presentation/remote';
 import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
@@ -24,14 +25,8 @@ import { T, useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
-import {
-  Button,
-  Card,
-  FAB,
-  IconButton,
-  Text,
-  Tooltip,
-} from 'react-native-paper';
+import { Card, FAB, Text, Tooltip } from 'react-native-paper';
+import Button from '@/components/presentation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 

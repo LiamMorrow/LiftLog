@@ -1,7 +1,8 @@
 import { DayOfWeek, Period } from '@js-joda/core';
 import { useState } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Button, Menu } from 'react-native-paper';
+import { Menu } from 'react-native-paper';
+import Button from '@/components/presentation/gesture-wrappers/button';
 
 export interface SelectButtonOption<T> {
   value: T;

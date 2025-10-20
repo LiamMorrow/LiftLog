@@ -1,6 +1,5 @@
 # LiftLog
 
-
 <p align="center">
   <img src="./assets/play_store_feature_graphic.png" alt="LiftLog Play Store Graphic"><br/>
   <img width="250" src="./assets/AppScreens-LiftLog-1719652395579 2/android/Android Phones - 169/01.png" alt="App Screenshot 1">
@@ -48,6 +47,7 @@ Available languages:
 - 🇪🇸 Spanish
 - 🇷🇺 Russian
 - 🇨🇿 Czech
+- 🇺🇦 Ukrainian
 
 Want to help translate? [Open an issue or PR](https://github.com/LiamMorrow/LiftLog/issues).
 

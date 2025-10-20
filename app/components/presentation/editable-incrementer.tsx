@@ -2,7 +2,6 @@ import {
   localeFormatBigNumber,
   localeParseBigNumber,
 } from '@/utils/locale-bignumber';
-import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
@@ -18,7 +17,6 @@ interface EditableIncrementerProps {
 
 export default function EditableIncrementer(props: EditableIncrementerProps) {
   const { value, onChange } = props;
-  const { t } = useTranslate();
   const [text, setText] = useState(localeFormatBigNumber(props.value));
   const [editorValue, setEditorValue] = useState<BigNumber>(value);
 

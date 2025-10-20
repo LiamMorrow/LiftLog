@@ -300,9 +300,9 @@ export function fromRestDao(
   dao: LiftLog.Ui.Models.SessionBlueprintDao.IRestDaoV2,
 ): Rest {
   return {
-    minRest: fromDurationDao(dao.minRest)!,
-    maxRest: fromDurationDao(dao.maxRest)!,
-    failureRest: fromDurationDao(dao.failureRest)!,
+    minRest: fromDurationDao(dao.minRest) ?? Duration.ZERO,
+    maxRest: fromDurationDao(dao.maxRest) ?? Duration.ZERO,
+    failureRest: fromDurationDao(dao.failureRest) ?? Duration.ZERO,
   };
 }
 

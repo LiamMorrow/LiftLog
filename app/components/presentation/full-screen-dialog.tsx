@@ -3,7 +3,9 @@ import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { usePreventNavigate } from '@/hooks/usePreventNavigate';
 import { ReactNode, useEffect } from 'react';
 import { View } from 'react-native';
-import { Button, IconButton, Portal } from 'react-native-paper';
+import { Portal } from 'react-native-paper';
+import Button from '@/components/presentation/gesture-wrappers/button';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   useSharedValue,
@@ -102,7 +104,6 @@ function Header({
       <View
         style={{
           flexDirection: 'row',
-          justifyContent: 'flex-start',
           alignItems: 'center',
           gap: spacing[2],
           padding: spacing[4],
@@ -112,8 +113,11 @@ function Header({
         <SurfaceText
           style={{
             marginRight: 'auto',
+            flexShrink: 1, //
           }}
           font="text-2xl"
+          numberOfLines={1}
+          ellipsizeMode="tail"
         >
           {title}
         </SurfaceText>

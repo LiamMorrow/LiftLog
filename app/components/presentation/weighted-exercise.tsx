@@ -4,7 +4,6 @@ import { RecordedWeightedExercise } from '@/models/session-models';
 import BigNumber from 'bignumber.js';
 import { useState } from 'react';
 import { View } from 'react-native';
-
 import { WeightAppliesTo } from '@/store/current-session';
 import ExerciseSection from '@/components/presentation/exercise-section';
 import PotentialSetAdditionalActionsDialog from '@/components/presentation/potential-sets-addition-actions-dialog';

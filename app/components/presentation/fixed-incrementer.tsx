@@ -1,6 +1,6 @@
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { Text, View } from 'react-native';
-import { IconButton } from 'react-native-paper';
 
 interface FixedIncrementerProps<T> {
   value: T;

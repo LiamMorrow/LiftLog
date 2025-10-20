@@ -6,7 +6,9 @@ import { SurfaceText } from '@/components/presentation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { IconButton, Menu, TouchableRipple } from 'react-native-paper';
+import { Menu } from 'react-native-paper';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
+import TouchableRipple from '@/components/presentation/gesture-wrappers/touchable-ripple';
 import { useTranslate } from '@tolgee/react';
 import {
   CardioExerciseBlueprint,

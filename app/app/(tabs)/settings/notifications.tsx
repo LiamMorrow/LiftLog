@@ -6,6 +6,7 @@ import { requestExactNotificationPermission } from '@/store/app';
 import { setRestNotifications } from '@/store/settings';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
+import { Platform } from 'react-native';
 import { List } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
@@ -24,10 +25,12 @@ export default function AppConfiguration() {
           value={settings.restNotifications}
           onValueChange={(value) => dispatch(setRestNotifications(value))}
         />
-        <List.Item
-          title={t('Request exact notification permission')}
-          onPress={() => dispatch(requestExactNotificationPermission(true))}
-        />
+        {Platform.OS === 'android' && (
+          <List.Item
+            title={t('Request exact notification permission')}
+            onPress={() => dispatch(requestExactNotificationPermission(true))}
+          />
+        )}
       </List.Section>
       <AndroidNotificationAlert />
     </FullHeightScrollView>
