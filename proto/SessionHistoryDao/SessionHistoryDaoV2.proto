@@ -34,7 +34,8 @@ message RecordedExerciseDaoV2 {
     optional LiftLog.Ui.Models.DateTimeDao started_at = 7;
     optional LiftLog.Ui.Models.DateTimeDao completion_date_time = 8;
     optional google.protobuf.Duration duration = 9;
-    optional LiftLog.Ui.Models.DecimalValue distance = 10;
+    optional LiftLog.Ui.Models.DecimalValue distance_value = 10;
+    optional google.protobuf.StringValue distance_unit = 14;
     optional LiftLog.Ui.Models.DecimalValue resistance = 11;
     optional LiftLog.Ui.Models.DecimalValue incline = 12;
     optional LiftLog.Ui.Models.DecimalValue avgHeartRate = 13;

@@ -372,6 +372,6 @@
   "Distance": "Distance",
   "Rest": "Rest",
   "Target distance {distance}": "Target distance <em>{distance}</em>",
-  "Target time {time}": "Target time <em>{time}</em>",
+  "Target time": "Target time",
   "Request exact notification permission": "Request exact notification permission"
 }

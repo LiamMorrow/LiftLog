@@ -2,21 +2,34 @@ import { RecordedCardioExercise } from '@/models/session-models';
 import ExerciseSection from '@/components/presentation/exercise-section';
 import {
   CardioTarget,
+  Distance,
   DistanceCardioTarget,
   DistanceUnit,
   TimeCardioTarget,
 } from '@/models/blueprint-models';
 import { T, useTranslate } from '@tolgee/react';
-import { localeFormatBigNumber } from '@/utils/locale-bignumber';
+import {
+  localeFormatBigNumber,
+  localeParseBigNumber,
+} from '@/utils/locale-bignumber';
 import { match, P } from 'ts-pattern';
 import LimitedHtml from '@/components/presentation/limited-html';
 import { useEffect, useState } from 'react';
 import { Duration, LocalDateTime } from '@js-joda/core';
-import { Animated, useAnimatedValue, View } from 'react-native';
+import {
+  Animated,
+  StyleSheet,
+  TextInput,
+  useAnimatedValue,
+  View,
+} from 'react-native';
 import TimerEditor from '@/components/presentation/timer-editor';
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
-import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { font, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Card, Text } from 'react-native-paper';
+import BigNumber from 'bignumber.js';
+import Button from '@/components/presentation/gesture-wrappers/button';
+import { useAppSelector } from '@/store';
 
 interface CardioExerciseProps {
   recordedExercise: RecordedCardioExercise;
@@ -27,6 +40,7 @@ interface CardioExerciseProps {
 
   updateStartedAt: (startedAt: LocalDateTime | undefined) => void;
   updateDuration: (duration: Duration | undefined) => void;
+  updateDistance: (distance: Distance | undefined) => void;
   updateNotesForExercise: (notes: string) => void;
   onOpenLink: () => void;
   onEditExercise: () => void;
@@ -44,6 +58,15 @@ export default function CardioExercise(props: CardioExerciseProps) {
       updateDuration={props.updateDuration}
     />
   );
+  const showDistanceTracker =
+    props.recordedExercise.blueprint.trackDistance ||
+    props.recordedExercise.blueprint.target.type === 'distance';
+  const distanceTracker = showDistanceTracker && (
+    <CardioDistanceTracker
+      recordedExercise={props.recordedExercise}
+      updateDistance={props.updateDistance}
+    />
+  );
   return (
     <ExerciseSection
       recordedExercise={props.recordedExercise}
@@ -58,7 +81,17 @@ export default function CardioExercise(props: CardioExerciseProps) {
     >
       <View style={{ gap: spacing[4] }}>
         <CardioTargetHandler target={props.recordedExercise.blueprint.target} />
-        {timer}
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            alignItems: 'stretch',
+            gap: spacing[2],
+          }}
+        >
+          {timer}
+          {distanceTracker}
+        </View>
       </View>
     </ExerciseSection>
   );
@@ -157,7 +190,7 @@ function CardioTimer({
   });
 
   return (
-    <Card mode="contained" style={{ alignSelf: 'flex-start' }}>
+    <Card mode="contained">
       <Card.Content>
         <View style={{ alignItems: 'center', gap: spacing[2] }}>
           <TimerEditor
@@ -183,6 +216,109 @@ function CardioTimer({
   );
 }
 
+function CardioDistanceTracker({
+  recordedExercise,
+  updateDistance,
+}: {
+  recordedExercise: RecordedCardioExercise;
+  updateDistance: (distance: Distance | undefined) => void;
+}) {
+  const { colors } = useAppTheme();
+  const imperialByDefault = useAppSelector((x) => x.settings.useImperialUnits);
+  const distance = recordedExercise.distance;
+  const distanceTarget: Distance =
+    recordedExercise.blueprint.target.type === 'distance'
+      ? recordedExercise.blueprint.target.value
+      : {
+          value: BigNumber(0),
+          unit: imperialByDefault ? 'mile' : 'kilometre',
+        };
+  return distance ? (
+    <Card mode="contained">
+      <Card.Content style={{ flex: 1 }}>
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flex: 1,
+            gap: spacing[2],
+          }}
+        >
+          <DecimalEditor
+            value={distance.value}
+            onChange={(value) => updateDistance({ value, unit: distance.unit })}
+          />
+          <Text
+            style={[styles.textInput, { color: colors.onSecondaryContainer }]}
+          >
+            {distance.unit}
+          </Text>
+        </View>
+      </Card.Content>
+    </Card>
+  ) : (
+    <Button
+      icon={'plus'}
+      mode="contained"
+      style={{ alignSelf: 'center' }}
+      onPress={() => updateDistance(distanceTarget)}
+    >
+      <T keyName="Record distance" />
+    </Button>
+  );
+}
+
+interface DecimalEditorProps {
+  value: BigNumber;
+  onChange: (val: BigNumber) => void;
+  testID?: string;
+}
+
+function DecimalEditor(props: DecimalEditorProps) {
+  const { value, onChange } = props;
+  const { colors } = useAppTheme();
+  const [text, setText] = useState(localeFormatBigNumber(props.value) || '-');
+  const [editorValue, setEditorValue] = useState(value);
+
+  const handleTextChange = (text: string) => {
+    setText(text);
+    if (text.trim() === '') {
+      setEditorValue(BigNumber(0));
+      onChange(BigNumber(0));
+      return;
+    }
+
+    const parsed = localeParseBigNumber(text);
+    if (!parsed.isNaN()) {
+      setEditorValue(parsed);
+      onChange(parsed);
+      return;
+    }
+  };
+  useEffect(() => {
+    if (!editorValue.eq(value)) {
+      setText(localeFormatBigNumber(value) || '0');
+      setEditorValue(value);
+    }
+  }, [value, editorValue]);
+  return (
+    <TextInput
+      testID={props.testID}
+      value={text}
+      style={[styles.textInput, { color: colors.onSecondaryContainer }]}
+      inputMode={'decimal'}
+      keyboardType={'decimal-pad'}
+      onChangeText={handleTextChange}
+      onBlur={() => {
+        if (text === '') {
+          setText('0');
+        }
+        onChange(editorValue);
+      }}
+    />
+  );
+}
+
 function CardioTargetHandler(props: { target: CardioTarget }) {
   if (props.target.type === 'distance') {
     return <DistanceCardioTargetHandler target={props.target} />;
@@ -196,8 +332,8 @@ function DistanceCardioTargetHandler(props: { target: DistanceCardioTarget }) {
     <LimitedHtml
       value={t('Target distance {distance}', {
         distance:
-          localeFormatBigNumber(props.target.value) +
-          getShortUnit(props.target.unit),
+          localeFormatBigNumber(props.target.value.value) +
+          getShortUnit(props.target.value.unit),
       })}
     />
   );
@@ -237,3 +373,11 @@ function formatDuration(duration: Duration | undefined): string {
   const seconds = totalSeconds % 60;
   return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
+
+const styles = StyleSheet.create({
+  textInput: {
+    fontVariant: ['tabular-nums'],
+    textAlign: 'center',
+    ...font['text-2xl'],
+  },
+});

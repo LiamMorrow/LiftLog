@@ -284,8 +284,10 @@ function CardioTargetEditor(props: {
     if (type === 'distance') {
       onValueChange({
         type: 'distance',
-        unit: useImperialUnits ? 'mile' : 'metre',
-        value: BigNumber(useImperialUnits ? 2.5 : 5000),
+        value: {
+          unit: useImperialUnits ? 'mile' : 'metre',
+          value: BigNumber(useImperialUnits ? 2.5 : 5000),
+        },
       });
     } else {
       onValueChange({
@@ -341,17 +343,21 @@ function DistanceTargetEditor(props: {
     >
       <View style={{ flex: 1 }}>
         <EditableIncrementer
-          onChange={(value) => onValueChange({ ...target, value })}
+          onChange={(value) =>
+            onValueChange({ ...target, value: { ...target.value, value } })
+          }
           disallowNegative
-          value={props.target.value}
+          value={props.target.value.value}
         />
       </View>
 
       <SelectButton
         testID="setDistanceUnit"
-        value={target.unit}
+        value={target.value.unit}
         options={distanceUnitOptions}
-        onChange={(unit) => onValueChange({ ...target, unit })}
+        onChange={(unit) =>
+          onValueChange({ ...target, value: { ...target.value, unit } })
+        }
       />
     </View>
   );

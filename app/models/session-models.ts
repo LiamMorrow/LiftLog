@@ -6,6 +6,7 @@ import {
   CardioExerciseBlueprintPOJO,
   CardioExerciseBlueprint,
   ExerciseBlueprint,
+  Distance,
 } from '@/models/blueprint-models';
 import { LocalDateTimeComparer } from '@/models/comparers';
 import { DeepOmit } from '@/utils/deep-omit';
@@ -357,7 +358,7 @@ export interface RecordedCardioExercisePOJO {
   startedAt: LocalDateTime | undefined;
   completionDateTime: LocalDateTime | undefined;
   duration: Duration | undefined;
-  distance: BigNumber | undefined;
+  distance: Distance | undefined;
   resistance: BigNumber | undefined;
   incline: BigNumber | undefined;
   avgHeartRate: BigNumber | undefined;
@@ -368,7 +369,7 @@ export class RecordedCardioExercise {
   readonly startedAt: LocalDateTime | undefined;
   readonly completionDateTime: LocalDateTime | undefined;
   readonly duration: Duration | undefined;
-  readonly distance: BigNumber | undefined;
+  readonly distance: Distance | undefined;
   readonly resistance: BigNumber | undefined;
   readonly incline: BigNumber | undefined;
   readonly avgHeartRate: BigNumber | undefined;
@@ -383,7 +384,7 @@ export class RecordedCardioExercise {
     startedAt: LocalDateTime | undefined,
     completionDateTime: LocalDateTime | undefined,
     duration: Duration | undefined,
-    distance: BigNumber | undefined,
+    distance: Distance | undefined,
     resistance: BigNumber | undefined,
     incline: BigNumber | undefined,
     avgHeartRate: BigNumber | undefined,
@@ -394,7 +395,7 @@ export class RecordedCardioExercise {
     startedAt?: LocalDateTime,
     completionDateTime?: LocalDateTime,
     duration?: Duration,
-    distance?: BigNumber,
+    distance?: Distance,
     resistance?: BigNumber,
     incline?: BigNumber,
     avgHeartRate?: BigNumber,
@@ -489,10 +490,7 @@ export class RecordedCardioExercise {
         other.duration &&
         this.duration.equals(other.duration)) ||
         this.duration === other.duration) &&
-      ((this.distance &&
-        other.distance &&
-        this.distance.isEqualTo(other.distance)) ||
-        this.distance === other.distance) &&
+      distanceEqual(this.distance, other.distance) &&
       ((this.resistance &&
         other.resistance &&
         this.resistance.isEqualTo(other.resistance)) ||
@@ -838,3 +836,13 @@ export const EmptySession: Session = new Session(
   LocalDate.MIN,
   undefined,
 );
+
+function distanceEqual(a: Distance | undefined, b: Distance | undefined) {
+  return match([a, b])
+    .with([undefined, undefined], () => true)
+    .with(
+      [P.nonNullable, P.nonNullable],
+      ([a, b]) => a.unit === b.unit && b.value.isEqualTo(b.value),
+    )
+    .otherwise(() => false);
+}

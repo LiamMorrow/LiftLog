@@ -9,6 +9,7 @@ import {
   CardioTarget,
   WeightedExerciseBlueprintPOJO,
   CardioExerciseBlueprintPOJO,
+  DistanceUnit,
 } from '@/models/blueprint-models';
 import {
   PotentialSet,
@@ -181,7 +182,13 @@ function fromRecordedExerciseDao(
       blueprint: fromExerciseBlueprintDao(
         dao.exerciseBlueprint,
       ).toPOJO() as CardioExerciseBlueprintPOJO,
-      distance: fromDecimalDao(dao.distance),
+      distance:
+        dao.distanceValue && dao.distanceUnit
+          ? {
+              value: fromDecimalDao(dao.distanceValue),
+              unit: dao.distanceUnit.value as DistanceUnit,
+            }
+          : undefined,
       avgHeartRate: fromDecimalDao(dao.avgHeartRate),
       duration: fromDurationDao(dao.duration),
       startedAt: fromDateTimeDao(dao.startedAt),
@@ -290,9 +297,11 @@ function fromCardioTargetDao(
     type: dao.type as 'distance' | 'time',
     value:
       dao.type === 'distance'
-        ? fromDecimalDao(dao.distanceValue)
+        ? {
+            value: fromDecimalDao(dao.distanceValue) ?? BigNumber(0),
+            unit: dao.distanceUnit ?? 'metre',
+          }
         : fromDurationDao(dao.timeValue)!,
-    unit: dao.type === 'distance' ? dao.distanceUnit : null,
   } as CardioTarget;
 }
 

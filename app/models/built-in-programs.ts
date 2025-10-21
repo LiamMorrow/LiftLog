@@ -918,8 +918,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             trackAvgHeartRate: false,
             target: {
               type: 'distance',
-              unit: 'metre',
-              value: BigNumber(1200),
+              value: { unit: 'metre', value: BigNumber(1200) },
             },
           },
           {

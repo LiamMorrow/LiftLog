@@ -9,6 +9,7 @@ import {
   setExerciseReps,
   setWorkoutSessionLastSetTime,
   updateBodyweight,
+  updateDistanceForCardioExercise,
   updateDurationForCardioExercise,
   updateNotesForExercise,
   updateStartedAtForCardioExercise,
@@ -206,6 +207,12 @@ export default function SessionComponent(props: {
         <CardioExercise
           recordedExercise={item}
           toStartNext={session.nextExercise === item}
+          updateDistance={(distance) =>
+            dispatch(updateDistanceForCardioExercise, {
+              distance,
+              exerciseIndex: index,
+            })
+          }
           updateDuration={(duration) =>
             dispatch(updateDurationForCardioExercise, {
               duration,

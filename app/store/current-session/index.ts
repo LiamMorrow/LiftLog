@@ -369,6 +369,19 @@ const currentSessionSlice = createSlice({
         exercise.duration = action.duration;
       },
     ),
+
+    updateDistanceForCardioExercise: targetedSessionAction(
+      (
+        session,
+        action: { distance: BigNumber | undefined; exerciseIndex: number },
+      ) => {
+        const exercise = session.recordedExercises[action.exerciseIndex];
+        if (exercise._BRAND !== 'RECORDED_CARDIO_EXERCISE_POJO') {
+          return;
+        }
+        exercise.distance = action.distance;
+      },
+    ),
     updateStartedAtForCardioExercise: targetedSessionAction(
       (
         session,
@@ -433,6 +446,7 @@ export const {
   updateBodyweight,
   setWorkoutSessionLastSetTime,
   updateDurationForCardioExercise,
+  updateDistanceForCardioExercise,
   updateStartedAtForCardioExercise,
 } = currentSessionSlice.actions;
 

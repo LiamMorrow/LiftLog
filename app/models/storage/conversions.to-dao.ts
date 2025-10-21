@@ -147,10 +147,9 @@ function toCardioTargetDao(
   return new LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget({
     type: target.type,
     distanceValue:
-      target.value instanceof BigNumber ? toDecimalDao(target.value) : null,
-    distanceUnit: target.type === 'distance' ? target.unit : null,
-    timeValue:
-      target.value instanceof Duration ? toDurationDao(target.value) : null,
+      target.type === 'distance' ? toDecimalDao(target.value.value) : null,
+    distanceUnit: target.type === 'distance' ? target.value.unit : null,
+    timeValue: target.type === 'time' ? toDurationDao(target.value) : null,
   });
 }
 
@@ -274,7 +273,10 @@ export function toRecordedExerciseDao(
           startedAt: toDateTimeDao(model.startedAt),
           completionDateTime: toDateTimeDao(model.completionDateTime),
           duration: toDurationDao(model.duration),
-          distance: model.distance ? toDecimalDao(model.distance) : null,
+          distanceValue: model.distance
+            ? toDecimalDao(model.distance.value)
+            : null,
+          distanceUnit: model.distance ? { value: model.distance.unit } : null,
           resistance: model.resistance ? toDecimalDao(model.resistance) : null,
           incline: model.incline ? toDecimalDao(model.incline) : null,
           avgHeartRate: model.avgHeartRate

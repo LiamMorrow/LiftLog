@@ -116,7 +116,7 @@ function CardioExerciseBlueprintSummary({
 
 export function formatCardioTarget(target: CardioTarget): string {
   if (target.type === 'distance') {
-    return `${localeFormatBigNumber(target.value)} ${pluralize(target.value.toNumber(), target.unit)}`;
+    return `${localeFormatBigNumber(target.value.value)} ${pluralize(target.value.value.toNumber(), target.value.unit)}`;
   } else if (target.type === 'time') {
     return formatTimeSpan(target.value);
   }

@@ -194,6 +194,10 @@ export type TimeCardioTarget = {
 
 export type DistanceCardioTarget = {
   type: 'distance';
+  value: Distance;
+};
+
+export type Distance = {
   value: BigNumber;
   unit: DistanceUnit;
 };
@@ -309,7 +313,13 @@ export class CardioExerciseBlueprint {
     return (
       this.name === other.name &&
       this.target.type === other.target.type &&
-      this.target.value.toString() === other.target.value.toString() &&
+      ((this.target.type === 'distance' &&
+        other.target.type === 'distance' &&
+        this.target.value.value.eq(other.target.value.value) &&
+        this.target.value.unit === other.target.value.unit) ||
+        (this.target.type === 'time' &&
+          other.target.type === 'time' &&
+          this.target.value.equals(other.target.value))) &&
       this.notes === other.notes &&
       this.link === other.link
     );
