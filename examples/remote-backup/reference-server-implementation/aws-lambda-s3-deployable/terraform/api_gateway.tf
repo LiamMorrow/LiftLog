@@ -4,7 +4,9 @@ resource "aws_api_gateway_rest_api" "liftlog_api" {
   description = "Public API for LiftLog Lambda"
 
   binary_media_types = [
-    "application/x-www-form-urlencoded" # We explicity tell API Gateway the body for this is a binary payload so it will enode the whole thing as a base64 string
+    "application/x-www-form-urlencoded", # legacy client bug: base64 text wrapping a binary payload
+    "application/octet-stream",          # new client: raw binary uploads
+    "multipart/form-data"                # future/compat: some clients may still post multipart
   ]
 }
 
@@ -38,10 +40,27 @@ resource "aws_api_gateway_integration" "lambda_integration" {
 resource "aws_api_gateway_deployment" "api_deployment" {
   rest_api_id = aws_api_gateway_rest_api.liftlog_api.id
 
+  triggers = {
+    # Trigger redeployment when any of these configurations change
+    redeployment = sha1(jsonencode([
+      aws_api_gateway_rest_api.liftlog_api,
+      aws_api_gateway_method.post_method,
+      aws_api_gateway_integration.lambda_integration,
+      aws_lambda_function.liftlog_lambda.source_code_hash,
+      var.enable_rate_limit,
+      var.daily_rate_limit,
+      var.limit_per_second
+    ]))
+  }
+
   depends_on = [
     aws_api_gateway_method.post_method,            # Ensure the POST method is created before deployment
     aws_api_gateway_integration.lambda_integration # Ensure the integration is created before deployment
   ]
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_api_gateway_stage" "prod_stage" {
