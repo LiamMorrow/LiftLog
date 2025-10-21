@@ -11,6 +11,7 @@ import { View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import Button from '@/components/presentation/gesture-wrappers/button';
+import PlateCalculator from '@/components/presentation/plate-calculator';
 import {
   Dialog,
   Portal,
@@ -163,6 +164,17 @@ export default function WeightDialog(props: WeightDialogProps) {
                 />
               </View>
               {props.children}
+
+              {/* Plate Calculator — keeps the input synced */}
+              <PlateCalculator
+                value={editorWeight}
+                defaultOpen={false}
+                unitSuffix={weightSuffix}
+                onChange={(w) => {
+                  setEditorWeight(w);
+                  setText(localeFormatBigNumber(w));
+                }}
+              />
             </View>
           </Dialog.Content>
           <Dialog.Actions>
