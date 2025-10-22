@@ -201,8 +201,8 @@ function CardioExerciseEditor({
 
       <List.Section>
         <ListSwitch
-          value={exercise.trackTime || exercise.target.type === 'time'}
-          onValueChange={(trackTime) => updateExercise({ trackTime })}
+          value={exercise.trackDuration || exercise.target.type === 'time'}
+          onValueChange={(trackDuration) => updateExercise({ trackDuration })}
           headline={t('trackTime')}
           disabled={exercise.target.type === 'time'}
         />
@@ -223,13 +223,6 @@ function CardioExerciseEditor({
           value={exercise.trackIncline}
           onValueChange={(trackIncline) => updateExercise({ trackIncline })}
           headline={t('trackIncline')}
-        />
-        <ListSwitch
-          value={exercise.trackAvgHeartRate}
-          onValueChange={(trackAvgHeartRate) =>
-            updateExercise({ trackAvgHeartRate })
-          }
-          headline={t('trackAvgHeartRate')}
         />
       </List.Section>
     </>

@@ -208,11 +208,10 @@ export interface CardioExerciseBlueprintPOJO {
   _BRAND: 'CARDIO_EXERCISE_BLUEPRINT_POJO';
   name: string;
   target: CardioTarget;
-  trackTime: boolean;
+  trackDuration: boolean;
   trackDistance: boolean;
   trackResistance: boolean;
   trackIncline: boolean;
-  trackAvgHeartRate: boolean;
   notes: string;
   link: string;
 }
@@ -221,11 +220,10 @@ export class CardioExerciseBlueprint {
   readonly target: CardioTarget;
   readonly notes: string;
   readonly link: string;
-  readonly trackTime: boolean;
+  readonly trackDuration: boolean;
   readonly trackDistance: boolean;
   readonly trackResistance: boolean;
   readonly trackIncline: boolean;
-  readonly trackAvgHeartRate: boolean;
 
   /**
    * @deprecated please use full constructor. Here only for serialization
@@ -234,32 +232,29 @@ export class CardioExerciseBlueprint {
   constructor(
     name: string,
     target: CardioTarget,
-    trackTime: boolean,
+    trackDuration: boolean,
     trackDistance: boolean,
     trackResistance: boolean,
     trackIncline: boolean,
-    trackAvgHeartRate: boolean,
     notes: string,
     link: string,
   );
   constructor(
     name?: string,
     target?: CardioTarget,
-    trackTime?: boolean,
+    trackDuration?: boolean,
     trackDistance?: boolean,
     trackResistance?: boolean,
     trackIncline?: boolean,
-    trackAvgHeartRate?: boolean,
     notes?: string,
     link?: string,
   ) {
     this.name = name!;
     this.target = target!;
-    this.trackTime = trackTime!;
+    this.trackDuration = trackDuration!;
     this.trackDistance = trackDistance!;
     this.trackResistance = trackResistance!;
     this.trackIncline = trackIncline!;
-    this.trackAvgHeartRate = trackAvgHeartRate!;
     this.notes = notes!;
     this.link = link!;
   }
@@ -275,7 +270,6 @@ export class CardioExerciseBlueprint {
       false,
       false,
       false,
-      false,
       '',
       '',
     );
@@ -287,11 +281,10 @@ export class CardioExerciseBlueprint {
     return new CardioExerciseBlueprint(
       pojo.name,
       pojo.target,
-      pojo.trackTime,
+      pojo.trackDuration,
       pojo.trackDistance,
       pojo.trackResistance,
       pojo.trackIncline,
-      pojo.trackAvgHeartRate,
       pojo.notes,
       pojo.link,
     );
@@ -330,11 +323,10 @@ export class CardioExerciseBlueprint {
       _BRAND: 'CARDIO_EXERCISE_BLUEPRINT_POJO',
       name: this.name,
       target: this.target,
-      trackTime: this.trackTime,
+      trackDuration: this.trackDuration,
       trackDistance: this.trackDistance,
       trackResistance: this.trackResistance,
       trackIncline: this.trackIncline,
-      trackAvgHeartRate: this.trackAvgHeartRate,
       notes: this.notes,
       link: this.link,
     };
@@ -344,11 +336,10 @@ export class CardioExerciseBlueprint {
     return new CardioExerciseBlueprint(
       other.name ?? this.name,
       other.target ?? this.target,
-      other.trackTime ?? this.trackTime,
+      other.trackDuration ?? this.trackDuration,
       other.trackDistance ?? this.trackDistance,
       other.trackResistance ?? this.trackResistance,
       other.trackIncline ?? this.trackIncline,
-      other.trackAvgHeartRate ?? this.trackAvgHeartRate,
       other.notes ?? this.notes,
       other.link ?? this.link,
     );

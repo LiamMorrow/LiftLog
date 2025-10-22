@@ -112,7 +112,6 @@ export class Session {
               undefined,
               undefined,
               undefined,
-              undefined,
             ),
         )
         .exhaustive();
@@ -361,7 +360,6 @@ export interface RecordedCardioExercisePOJO {
   distance: Distance | undefined;
   resistance: BigNumber | undefined;
   incline: BigNumber | undefined;
-  avgHeartRate: BigNumber | undefined;
   notes: string | undefined;
 }
 export class RecordedCardioExercise {
@@ -372,7 +370,6 @@ export class RecordedCardioExercise {
   readonly distance: Distance | undefined;
   readonly resistance: BigNumber | undefined;
   readonly incline: BigNumber | undefined;
-  readonly avgHeartRate: BigNumber | undefined;
   readonly notes: string | undefined;
 
   /**
@@ -387,7 +384,6 @@ export class RecordedCardioExercise {
     distance: Distance | undefined,
     resistance: BigNumber | undefined,
     incline: BigNumber | undefined,
-    avgHeartRate: BigNumber | undefined,
     notes: string | undefined,
   );
   constructor(
@@ -398,7 +394,6 @@ export class RecordedCardioExercise {
     distance?: Distance,
     resistance?: BigNumber,
     incline?: BigNumber,
-    avgHeartRate?: BigNumber,
     notes?: string,
   ) {
     this.blueprint = blueprint!;
@@ -408,7 +403,6 @@ export class RecordedCardioExercise {
     this.distance = distance;
     this.resistance = resistance;
     this.incline = incline;
-    this.avgHeartRate = avgHeartRate;
     this.notes = notes;
   }
 
@@ -423,7 +417,6 @@ export class RecordedCardioExercise {
       pojo.distance,
       pojo.resistance,
       pojo.incline,
-      pojo.avgHeartRate,
       pojo.notes,
     );
   }
@@ -431,7 +424,6 @@ export class RecordedCardioExercise {
   static empty(blueprint: CardioExerciseBlueprint): RecordedCardioExercise {
     return new RecordedCardioExercise(
       blueprint,
-      undefined,
       undefined,
       undefined,
       undefined,
@@ -463,7 +455,6 @@ export class RecordedCardioExercise {
       notes: undefined,
       distance: undefined,
       duration: undefined,
-      avgHeartRate: undefined,
       completionDateTime: undefined,
       incline: undefined,
       resistance: undefined,
@@ -499,7 +490,6 @@ export class RecordedCardioExercise {
         other.incline &&
         this.incline.isEqualTo(other.incline)) ||
         this.incline === other.incline) &&
-      this.avgHeartRate === other.avgHeartRate &&
       this.notes === other.notes
     );
   }
@@ -515,7 +505,6 @@ export class RecordedCardioExercise {
       other.distance ?? this.distance,
       other.resistance ?? this.resistance,
       other.incline ?? this.incline,
-      other.avgHeartRate ?? this.avgHeartRate,
       other.notes ?? this.notes,
     );
   }
@@ -530,7 +519,6 @@ export class RecordedCardioExercise {
       distance: this.distance,
       resistance: this.resistance,
       incline: this.incline,
-      avgHeartRate: this.avgHeartRate,
       notes: this.notes,
     };
   }

@@ -2,6 +2,7 @@ import {
   WeightedExerciseBlueprint,
   SessionBlueprint,
   ExerciseBlueprint,
+  Distance,
 } from '@/models/blueprint-models';
 import {
   RecordedWeightedExercise,
@@ -369,11 +370,36 @@ const currentSessionSlice = createSlice({
         exercise.duration = action.duration;
       },
     ),
+    updateResistanceForCardioExercise: targetedSessionAction(
+      (
+        session,
+        action: { resistance: BigNumber | undefined; exerciseIndex: number },
+      ) => {
+        const exercise = session.recordedExercises[action.exerciseIndex];
+        if (exercise._BRAND !== 'RECORDED_CARDIO_EXERCISE_POJO') {
+          return;
+        }
+        exercise.resistance = action.resistance;
+      },
+    ),
+
+    updateInclineForCardioExercise: targetedSessionAction(
+      (
+        session,
+        action: { incline: BigNumber | undefined; exerciseIndex: number },
+      ) => {
+        const exercise = session.recordedExercises[action.exerciseIndex];
+        if (exercise._BRAND !== 'RECORDED_CARDIO_EXERCISE_POJO') {
+          return;
+        }
+        exercise.incline = action.incline;
+      },
+    ),
 
     updateDistanceForCardioExercise: targetedSessionAction(
       (
         session,
-        action: { distance: BigNumber | undefined; exerciseIndex: number },
+        action: { distance: Distance | undefined; exerciseIndex: number },
       ) => {
         const exercise = session.recordedExercises[action.exerciseIndex];
         if (exercise._BRAND !== 'RECORDED_CARDIO_EXERCISE_POJO') {
@@ -447,6 +473,8 @@ export const {
   setWorkoutSessionLastSetTime,
   updateDurationForCardioExercise,
   updateDistanceForCardioExercise,
+  updateInclineForCardioExercise,
+  updateResistanceForCardioExercise,
   updateStartedAtForCardioExercise,
 } = currentSessionSlice.actions;
 

@@ -4,6 +4,7 @@ import {
   triggerSlowRiseHaptic,
 } from '@/modules/native-crypto/src/ReactNativeHapticsModule';
 import { ReactNode } from 'react';
+import { ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -15,11 +16,13 @@ export interface HoldableProps {
   children: ReactNode;
   onLongPress: () => void;
   duration?: number;
+  style?: ViewStyle;
 }
 export default function Holdable({
   children,
   onLongPress,
   duration = 500,
+  style,
 }: HoldableProps) {
   const holdingScale = useSharedValue(1);
 
@@ -51,7 +54,7 @@ export default function Holdable({
   }));
   return (
     <GestureDetector gesture={gesture}>
-      <Animated.View style={[scaleStyle]}>{children}</Animated.View>
+      <Animated.View style={[scaleStyle, style]}>{children}</Animated.View>
     </GestureDetector>
   );
 }

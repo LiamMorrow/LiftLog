@@ -11,7 +11,9 @@ import {
   updateBodyweight,
   updateDistanceForCardioExercise,
   updateDurationForCardioExercise,
+  updateInclineForCardioExercise,
   updateNotesForExercise,
+  updateResistanceForCardioExercise,
   updateStartedAtForCardioExercise,
   updateWeightForSet,
 } from '@/store/current-session';
@@ -216,6 +218,18 @@ export default function SessionComponent(props: {
           updateDuration={(duration) =>
             dispatch(updateDurationForCardioExercise, {
               duration,
+              exerciseIndex: index,
+            })
+          }
+          updateIncline={(incline) =>
+            dispatch(updateInclineForCardioExercise, {
+              incline,
+              exerciseIndex: index,
+            })
+          }
+          updateResistance={(resistance) =>
+            dispatch(updateResistanceForCardioExercise, {
+              resistance,
               exerciseIndex: index,
             })
           }

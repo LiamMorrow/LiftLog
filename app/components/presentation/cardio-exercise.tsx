@@ -13,7 +13,6 @@ import {
   localeParseBigNumber,
 } from '@/utils/locale-bignumber';
 import { match, P } from 'ts-pattern';
-import LimitedHtml from '@/components/presentation/limited-html';
 import { useEffect, useState } from 'react';
 import { Duration, LocalDateTime } from '@js-joda/core';
 import {
@@ -26,10 +25,11 @@ import {
 import TimerEditor from '@/components/presentation/timer-editor';
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import { font, spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { Card, Text } from 'react-native-paper';
+import { Card, Menu, Text } from 'react-native-paper';
 import BigNumber from 'bignumber.js';
-import Button from '@/components/presentation/gesture-wrappers/button';
 import { useAppSelector } from '@/store';
+import { isNotNullOrUndefinedOrFalse } from '@/utils/null';
+import Holdable from '@/components/presentation/holdable';
 
 interface CardioExerciseProps {
   recordedExercise: RecordedCardioExercise;
@@ -41,6 +41,8 @@ interface CardioExerciseProps {
   updateStartedAt: (startedAt: LocalDateTime | undefined) => void;
   updateDuration: (duration: Duration | undefined) => void;
   updateDistance: (distance: Distance | undefined) => void;
+  updateIncline: (incline: BigNumber | undefined) => void;
+  updateResistance: (resistance: BigNumber | undefined) => void;
   updateNotesForExercise: (notes: string) => void;
   onOpenLink: () => void;
   onEditExercise: () => void;
@@ -48,23 +50,29 @@ interface CardioExerciseProps {
 }
 
 export default function CardioExercise(props: CardioExerciseProps) {
-  const showTimer =
-    props.recordedExercise.blueprint.trackTime ||
-    props.recordedExercise.blueprint.target.type === 'time';
-  const timer = showTimer && (
+  const timer = props.recordedExercise.duration && (
     <CardioTimer
       recordedExercise={props.recordedExercise}
       updateStartedAt={props.updateStartedAt}
       updateDuration={props.updateDuration}
     />
   );
-  const showDistanceTracker =
-    props.recordedExercise.blueprint.trackDistance ||
-    props.recordedExercise.blueprint.target.type === 'distance';
-  const distanceTracker = showDistanceTracker && (
+  const distanceTracker = props.recordedExercise.distance && (
     <CardioDistanceTracker
-      recordedExercise={props.recordedExercise}
+      distance={props.recordedExercise.distance}
       updateDistance={props.updateDistance}
+    />
+  );
+  const inclineTracker = props.recordedExercise.incline && (
+    <CardioInclineTracker
+      incline={props.recordedExercise.incline}
+      updateIncline={props.updateIncline}
+    />
+  );
+  const resistanceTracker = props.recordedExercise.resistance && (
+    <CardioResistanceTracker
+      resistance={props.recordedExercise.resistance}
+      updateResistance={props.updateResistance}
     />
   );
   return (
@@ -85,15 +93,99 @@ export default function CardioExercise(props: CardioExerciseProps) {
           style={{
             flexDirection: 'row',
             flexWrap: 'wrap',
-            alignItems: 'stretch',
+            alignItems: 'center',
             gap: spacing[2],
           }}
         >
           {timer}
           {distanceTracker}
+          {inclineTracker}
+          {resistanceTracker}
+          <AddTrackerButtonMenu
+            recordedExercise={props.recordedExercise}
+            updateDistance={props.updateDistance}
+            updateDuration={props.updateDuration}
+            updateIncline={props.updateIncline}
+            updateResistance={props.updateResistance}
+          />
         </View>
       </View>
     </ExerciseSection>
+  );
+}
+
+function AddTrackerButtonMenu(props: {
+  recordedExercise: RecordedCardioExercise;
+  updateDuration: (duration: Duration | undefined) => void;
+  updateDistance: (distance: Distance | undefined) => void;
+  updateIncline: (incline: BigNumber | undefined) => void;
+  updateResistance: (updateResistance: BigNumber | undefined) => void;
+}) {
+  const { t } = useTranslate();
+  const imperialByDefault = useAppSelector((x) => x.settings.useImperialUnits);
+  const {
+    recordedExercise,
+    updateDistance,
+    updateDuration,
+    updateIncline,
+    updateResistance,
+  } = props;
+  const { blueprint } = recordedExercise;
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const distanceTarget = (blueprint.target.type === 'distance' &&
+    blueprint.target.value) || {
+    value: BigNumber(0),
+    unit: imperialByDefault ? 'mile' : 'kilometre',
+  };
+
+  const menuItem = (name: string, action: () => void) => (
+    <Menu.Item
+      key={name}
+      title={name}
+      onPress={() => {
+        setMenuOpen(false);
+        action();
+      }}
+    />
+  );
+
+  const menuItems = [
+    !recordedExercise.distance &&
+      (blueprint.trackDistance || blueprint.target.type === 'distance') &&
+      menuItem(t('Distance'), () => updateDistance(distanceTarget)),
+
+    !recordedExercise.duration &&
+      (blueprint.trackDuration || blueprint.target.type === 'time') &&
+      menuItem(t('Time'), () => updateDuration(Duration.ZERO)),
+
+    !recordedExercise.incline &&
+      blueprint.trackIncline &&
+      menuItem(t('Incline'), () => updateIncline(BigNumber(0))),
+
+    !recordedExercise.resistance &&
+      blueprint.trackResistance &&
+      menuItem(t('Resistance'), () => updateResistance(BigNumber(0))),
+  ].filter(isNotNullOrUndefinedOrFalse);
+  const showAddButton = !!menuItems.length;
+  if (!showAddButton) {
+    return undefined;
+  }
+  return (
+    <Menu
+      visible={menuOpen}
+      style={{ justifyContent: 'center' }}
+      onDismiss={() => setMenuOpen(false)}
+      anchor={
+        <IconButton
+          icon={'plus'}
+          mode="contained"
+          onPress={() => setMenuOpen(true)}
+        />
+      }
+    >
+      {menuItems}
+    </Menu>
   );
 }
 
@@ -190,57 +282,120 @@ function CardioTimer({
   });
 
   return (
-    <Card mode="contained">
-      <Card.Content>
-        <View style={{ alignItems: 'center', gap: spacing[2] }}>
-          <TimerEditor
-            readonly={!!currentBlockStartTime}
-            duration={timerState}
-            onDurationUpdated={(d) => updateDuration(d)}
+    <Holdable onLongPress={() => updateDuration(undefined)}>
+      <Card mode="contained">
+        <Card.Content>
+          <View style={{ alignItems: 'center', gap: spacing[2] }}>
+            <TimerEditor
+              readonly={!!currentBlockStartTime}
+              duration={timerState}
+              onDurationUpdated={(d) => updateDuration(d)}
+            />
+            <IconButton
+              icon={currentBlockStartTime ? 'pause' : 'playArrow'}
+              animated
+              size={playPauseButtonSize}
+              onPress={handlePlayPause}
+              containerColor={
+                currentBlockStartTime ? colors.amber : colors.green
+              }
+              iconColor={
+                currentBlockStartTime ? colors.onAmber : colors.onGreen
+              }
+              style={{
+                borderRadius: animatedRadius,
+              }}
+              mode="contained-tonal"
+            />
+          </View>
+        </Card.Content>
+      </Card>
+    </Holdable>
+  );
+}
+function CardioResistanceTracker({
+  resistance,
+  updateResistance,
+}: {
+  resistance: BigNumber;
+  updateResistance: (resistance: BigNumber | undefined) => void;
+}) {
+  return (
+    <Holdable
+      onLongPress={() => updateResistance(undefined)}
+      style={{ flexDirection: 'row' }}
+    >
+      <Card mode="contained">
+        <Card.Content
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            gap: spacing[2],
+          }}
+        >
+          <DecimalEditor
+            value={resistance}
+            onChange={(value) => updateResistance(value)}
           />
-          <IconButton
-            icon={currentBlockStartTime ? 'pause' : 'playArrow'}
-            animated
-            size={playPauseButtonSize}
-            onPress={handlePlayPause}
-            containerColor={currentBlockStartTime ? colors.amber : colors.green}
-            iconColor={currentBlockStartTime ? colors.onAmber : colors.onGreen}
-            style={{
-              borderRadius: animatedRadius,
-            }}
-            mode="contained-tonal"
+          <Text style={styles.textInput}>
+            <T keyName="resistance" />
+          </Text>
+        </Card.Content>
+      </Card>
+    </Holdable>
+  );
+}
+function CardioInclineTracker({
+  incline,
+  updateIncline,
+}: {
+  incline: BigNumber;
+  updateIncline: (incline: BigNumber | undefined) => void;
+}) {
+  return (
+    <Holdable
+      onLongPress={() => updateIncline(undefined)}
+      style={{ flexDirection: 'row' }}
+    >
+      <Card mode="contained">
+        <Card.Content
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            gap: spacing[2],
+          }}
+        >
+          <DecimalEditor
+            value={incline}
+            onChange={(value) => updateIncline(value)}
           />
-        </View>
-      </Card.Content>
-    </Card>
+          <Text style={styles.textInput}>
+            <T keyName="incline" />
+          </Text>
+        </Card.Content>
+      </Card>
+    </Holdable>
   );
 }
 
 function CardioDistanceTracker({
-  recordedExercise,
+  distance,
   updateDistance,
 }: {
-  recordedExercise: RecordedCardioExercise;
+  distance: Distance;
   updateDistance: (distance: Distance | undefined) => void;
 }) {
   const { colors } = useAppTheme();
-  const imperialByDefault = useAppSelector((x) => x.settings.useImperialUnits);
-  const distance = recordedExercise.distance;
-  const distanceTarget: Distance =
-    recordedExercise.blueprint.target.type === 'distance'
-      ? recordedExercise.blueprint.target.value
-      : {
-          value: BigNumber(0),
-          unit: imperialByDefault ? 'mile' : 'kilometre',
-        };
-  return distance ? (
-    <Card mode="contained">
-      <Card.Content style={{ flex: 1 }}>
-        <View
+  return (
+    <Holdable
+      onLongPress={() => updateDistance(undefined)}
+      style={{ flexDirection: 'row' }}
+    >
+      <Card mode="contained">
+        <Card.Content
           style={{
-            alignItems: 'center',
-            justifyContent: 'space-between',
             flex: 1,
+            alignItems: 'center',
             gap: spacing[2],
           }}
         >
@@ -251,20 +406,11 @@ function CardioDistanceTracker({
           <Text
             style={[styles.textInput, { color: colors.onSecondaryContainer }]}
           >
-            {distance.unit}
+            {distance.unit}s
           </Text>
-        </View>
-      </Card.Content>
-    </Card>
-  ) : (
-    <Button
-      icon={'plus'}
-      mode="contained"
-      style={{ alignSelf: 'center' }}
-      onPress={() => updateDistance(distanceTarget)}
-    >
-      <T keyName="Record distance" />
-    </Button>
+        </Card.Content>
+      </Card>
+    </Holdable>
   );
 }
 
@@ -309,6 +455,7 @@ function DecimalEditor(props: DecimalEditorProps) {
       inputMode={'decimal'}
       keyboardType={'decimal-pad'}
       onChangeText={handleTextChange}
+      selectTextOnFocus
       onBlur={() => {
         if (text === '') {
           setText('0');
@@ -327,15 +474,17 @@ function CardioTargetHandler(props: { target: CardioTarget }) {
 }
 
 function DistanceCardioTargetHandler(props: { target: DistanceCardioTarget }) {
-  const { t } = useTranslate();
+  const { colors } = useAppTheme();
   return (
-    <LimitedHtml
-      value={t('Target distance {distance}', {
-        distance:
-          localeFormatBigNumber(props.target.value.value) +
-          getShortUnit(props.target.value.unit),
-      })}
-    />
+    <View style={{ flexDirection: 'row', gap: spacing[2] }}>
+      <Text variant="bodyLarge">
+        <T keyName="Target distance" />
+      </Text>
+      <Text variant="bodyLarge" style={{ color: colors.primary }}>
+        {localeFormatBigNumber(props.target.value.value) +
+          getShortUnit(props.target.value.unit)}
+      </Text>
+    </View>
   );
 }
 
@@ -378,6 +527,6 @@ const styles = StyleSheet.create({
   textInput: {
     fontVariant: ['tabular-nums'],
     textAlign: 'center',
-    ...font['text-2xl'],
+    ...font['text-xl'],
   },
 });

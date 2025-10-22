@@ -44,11 +44,10 @@ message ExerciseBlueprintDaoV2 {
 
     // Cardio
     CardioTarget cardio_target = 11;
-    bool track_time = 12;
+    bool track_duration = 12;
     bool track_distance = 13;
     bool track_resistance = 14;
     bool track_incline = 15;
-    bool track_avgHeartRate = 16;
 }
 
 message RestDaoV2 {

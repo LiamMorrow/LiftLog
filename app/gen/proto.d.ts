@@ -929,9 +929,6 @@ export namespace LiftLog {
 
                     /** RecordedExerciseDaoV2 incline */
                     incline?: (LiftLog.Ui.Models.IDecimalValue|null);
-
-                    /** RecordedExerciseDaoV2 avgHeartRate */
-                    avgHeartRate?: (LiftLog.Ui.Models.IDecimalValue|null);
                 }
 
                 /** Represents a RecordedExerciseDaoV2. */
@@ -976,9 +973,6 @@ export namespace LiftLog {
                     /** RecordedExerciseDaoV2 incline. */
                     public incline?: (LiftLog.Ui.Models.IDecimalValue|null);
 
-                    /** RecordedExerciseDaoV2 avgHeartRate. */
-                    public avgHeartRate?: (LiftLog.Ui.Models.IDecimalValue|null);
-
                     /** RecordedExerciseDaoV2 _notes. */
                     public _notes?: "notes";
 
@@ -1002,9 +996,6 @@ export namespace LiftLog {
 
                     /** RecordedExerciseDaoV2 _incline. */
                     public _incline?: "incline";
-
-                    /** RecordedExerciseDaoV2 _avgHeartRate. */
-                    public _avgHeartRate?: "avgHeartRate";
 
                     /**
                      * Creates a new RecordedExerciseDaoV2 instance using the specified properties.
@@ -1669,8 +1660,8 @@ export namespace LiftLog {
                     /** ExerciseBlueprintDaoV2 cardioTarget */
                     cardioTarget?: (LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null);
 
-                    /** ExerciseBlueprintDaoV2 trackTime */
-                    trackTime?: (boolean|null);
+                    /** ExerciseBlueprintDaoV2 trackDuration */
+                    trackDuration?: (boolean|null);
 
                     /** ExerciseBlueprintDaoV2 trackDistance */
                     trackDistance?: (boolean|null);
@@ -1680,9 +1671,6 @@ export namespace LiftLog {
 
                     /** ExerciseBlueprintDaoV2 trackIncline */
                     trackIncline?: (boolean|null);
-
-                    /** ExerciseBlueprintDaoV2 trackAvgHeartRate */
-                    trackAvgHeartRate?: (boolean|null);
                 }
 
                 /** Represents an ExerciseBlueprintDaoV2. */
@@ -1724,8 +1712,8 @@ export namespace LiftLog {
                     /** ExerciseBlueprintDaoV2 cardioTarget. */
                     public cardioTarget?: (LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null);
 
-                    /** ExerciseBlueprintDaoV2 trackTime. */
-                    public trackTime: boolean;
+                    /** ExerciseBlueprintDaoV2 trackDuration. */
+                    public trackDuration: boolean;
 
                     /** ExerciseBlueprintDaoV2 trackDistance. */
                     public trackDistance: boolean;
@@ -1735,9 +1723,6 @@ export namespace LiftLog {
 
                     /** ExerciseBlueprintDaoV2 trackIncline. */
                     public trackIncline: boolean;
-
-                    /** ExerciseBlueprintDaoV2 trackAvgHeartRate. */
-                    public trackAvgHeartRate: boolean;
 
                     /**
                      * Creates a new ExerciseBlueprintDaoV2 instance using the specified properties.

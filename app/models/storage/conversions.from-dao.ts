@@ -189,7 +189,6 @@ function fromRecordedExerciseDao(
               unit: dao.distanceUnit.value as DistanceUnit,
             }
           : undefined,
-      avgHeartRate: fromDecimalDao(dao.avgHeartRate),
       duration: fromDurationDao(dao.duration),
       startedAt: fromDateTimeDao(dao.startedAt),
       completionDateTime: fromDateTimeDao(dao.completionDateTime),
@@ -269,11 +268,10 @@ export function fromExerciseBlueprintDao(
     return new CardioExerciseBlueprint(
       dao.name!,
       fromCardioTargetDao(dao.cardioTarget!),
-      dao.trackTime ?? false,
+      dao.trackDuration ?? false,
       dao.trackDistance ?? false,
       dao.trackResistance ?? false,
       dao.trackIncline ?? false,
-      dao.trackAvgHeartRate ?? false,
       dao.notes ?? '',
       dao.link ?? '',
     );

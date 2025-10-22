@@ -132,11 +132,10 @@ export function toExerciseBlueprintDao(
       : {
           type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO,
           cardioTarget: toCardioTargetDao(model.target),
-          trackTime: model.trackTime,
+          trackDuration: model.trackDuration,
           trackDistance: model.trackDistance,
           trackResistance: model.trackResistance,
           trackIncline: model.trackIncline,
-          trackAvgHeartRate: model.trackAvgHeartRate,
         }),
   });
 }
@@ -279,9 +278,6 @@ export function toRecordedExerciseDao(
           distanceUnit: model.distance ? { value: model.distance.unit } : null,
           resistance: model.resistance ? toDecimalDao(model.resistance) : null,
           incline: model.incline ? toDecimalDao(model.incline) : null,
-          avgHeartRate: model.avgHeartRate
-            ? toDecimalDao(model.avgHeartRate)
-            : null,
         }),
   });
 }

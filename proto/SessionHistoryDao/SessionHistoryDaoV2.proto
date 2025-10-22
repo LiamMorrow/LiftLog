@@ -38,7 +38,6 @@ message RecordedExerciseDaoV2 {
     optional google.protobuf.StringValue distance_unit = 14;
     optional LiftLog.Ui.Models.DecimalValue resistance = 11;
     optional LiftLog.Ui.Models.DecimalValue incline = 12;
-    optional LiftLog.Ui.Models.DecimalValue avgHeartRate = 13;
 }
 
 message PotentialSetDaoV2 {
