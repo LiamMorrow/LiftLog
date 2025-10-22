@@ -13,8 +13,13 @@ import {
   localeParseBigNumber,
 } from '@/utils/locale-bignumber';
 import { match, P } from 'ts-pattern';
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { Duration, LocalDateTime } from '@js-joda/core';
+import Reanimated, {
+  FadeIn,
+  FadeOut,
+  LinearTransition,
+} from 'react-native-reanimated';
 import {
   Animated,
   StyleSheet,
@@ -89,7 +94,7 @@ export default function CardioExercise(props: CardioExerciseProps) {
     >
       <View style={{ gap: spacing[4] }}>
         <CardioTargetHandler target={props.recordedExercise.blueprint.target} />
-        <View
+        <Reanimated.View
           style={{
             flexDirection: 'row',
             flexWrap: 'wrap',
@@ -108,7 +113,7 @@ export default function CardioExercise(props: CardioExerciseProps) {
             updateIncline={props.updateIncline}
             updateResistance={props.updateResistance}
           />
-        </View>
+        </Reanimated.View>
       </View>
     </ExerciseSection>
   );
@@ -172,20 +177,26 @@ function AddTrackerButtonMenu(props: {
     return undefined;
   }
   return (
-    <Menu
-      visible={menuOpen}
-      style={{ justifyContent: 'center' }}
-      onDismiss={() => setMenuOpen(false)}
-      anchor={
-        <IconButton
-          icon={'plus'}
-          mode="contained"
-          onPress={() => setMenuOpen(true)}
-        />
-      }
+    <Reanimated.View
+      entering={FadeIn}
+      exiting={FadeOut}
+      layout={LinearTransition}
     >
-      {menuItems}
-    </Menu>
+      <Menu
+        visible={menuOpen}
+        style={{ justifyContent: 'center' }}
+        onDismiss={() => setMenuOpen(false)}
+        anchor={
+          <IconButton
+            icon={'plus'}
+            mode="contained"
+            onPress={() => setMenuOpen(true)}
+          />
+        }
+      >
+        {menuItems}
+      </Menu>
+    </Reanimated.View>
   );
 }
 
@@ -282,35 +293,27 @@ function CardioTimer({
   });
 
   return (
-    <Holdable onLongPress={() => updateDuration(undefined)}>
-      <Card mode="contained">
-        <Card.Content>
-          <View style={{ alignItems: 'center', gap: spacing[2] }}>
-            <TimerEditor
-              readonly={!!currentBlockStartTime}
-              duration={timerState}
-              onDurationUpdated={(d) => updateDuration(d)}
-            />
-            <IconButton
-              icon={currentBlockStartTime ? 'pause' : 'playArrow'}
-              animated
-              size={playPauseButtonSize}
-              onPress={handlePlayPause}
-              containerColor={
-                currentBlockStartTime ? colors.amber : colors.green
-              }
-              iconColor={
-                currentBlockStartTime ? colors.onAmber : colors.onGreen
-              }
-              style={{
-                borderRadius: animatedRadius,
-              }}
-              mode="contained-tonal"
-            />
-          </View>
-        </Card.Content>
-      </Card>
-    </Holdable>
+    <CardioTrackerCard onHold={() => updateDuration(undefined)}>
+      <View style={{ alignItems: 'center', gap: spacing[2] }}>
+        <TimerEditor
+          readonly={!!currentBlockStartTime}
+          duration={timerState}
+          onDurationUpdated={(d) => updateDuration(d)}
+        />
+        <IconButton
+          icon={currentBlockStartTime ? 'pause' : 'playArrow'}
+          animated
+          size={playPauseButtonSize}
+          onPress={handlePlayPause}
+          containerColor={currentBlockStartTime ? colors.amber : colors.green}
+          iconColor={currentBlockStartTime ? colors.onAmber : colors.onGreen}
+          style={{
+            borderRadius: animatedRadius,
+          }}
+          mode="contained-tonal"
+        />
+      </View>
+    </CardioTrackerCard>
   );
 }
 function CardioResistanceTracker({
@@ -321,28 +324,15 @@ function CardioResistanceTracker({
   updateResistance: (resistance: BigNumber | undefined) => void;
 }) {
   return (
-    <Holdable
-      onLongPress={() => updateResistance(undefined)}
-      style={{ flexDirection: 'row' }}
-    >
-      <Card mode="contained">
-        <Card.Content
-          style={{
-            flex: 1,
-            alignItems: 'center',
-            gap: spacing[2],
-          }}
-        >
-          <DecimalEditor
-            value={resistance}
-            onChange={(value) => updateResistance(value)}
-          />
-          <Text style={styles.textInput}>
-            <T keyName="resistance" />
-          </Text>
-        </Card.Content>
-      </Card>
-    </Holdable>
+    <CardioTrackerCard onHold={() => updateResistance(undefined)}>
+      <DecimalEditor
+        value={resistance}
+        onChange={(value) => updateResistance(value)}
+      />
+      <Text style={styles.bigText}>
+        <T keyName="resistance" />
+      </Text>
+    </CardioTrackerCard>
   );
 }
 function CardioInclineTracker({
@@ -353,25 +343,42 @@ function CardioInclineTracker({
   updateIncline: (incline: BigNumber | undefined) => void;
 }) {
   return (
+    <CardioTrackerCard onHold={() => updateIncline(undefined)}>
+      <DecimalEditor
+        value={incline}
+        onChange={(value) => updateIncline(value)}
+      />
+      <Text style={styles.bigText}>
+        <T keyName="incline" />
+      </Text>
+    </CardioTrackerCard>
+  );
+}
+
+function CardioTrackerCard(props: { onHold: () => void; children: ReactNode }) {
+  return (
     <Holdable
-      onLongPress={() => updateIncline(undefined)}
-      style={{ flexDirection: 'row' }}
+      onLongPress={props.onHold}
+      style={{ alignSelf: 'stretch' }}
+      entering={FadeIn}
+      exiting={FadeOut}
+      layout={LinearTransition}
     >
-      <Card mode="contained">
+      <Card
+        mode="contained"
+        container={false} // needed to allow container to grow to fit stretched card
+        style={{ flex: 1 }}
+        contentStyle={{ flex: 1 }}
+      >
         <Card.Content
           style={{
-            flex: 1,
             alignItems: 'center',
+            justifyContent: 'center',
             gap: spacing[2],
+            flex: 1,
           }}
         >
-          <DecimalEditor
-            value={incline}
-            onChange={(value) => updateIncline(value)}
-          />
-          <Text style={styles.textInput}>
-            <T keyName="incline" />
-          </Text>
+          {props.children}
         </Card.Content>
       </Card>
     </Holdable>
@@ -387,30 +394,15 @@ function CardioDistanceTracker({
 }) {
   const { colors } = useAppTheme();
   return (
-    <Holdable
-      onLongPress={() => updateDistance(undefined)}
-      style={{ flexDirection: 'row' }}
-    >
-      <Card mode="contained">
-        <Card.Content
-          style={{
-            flex: 1,
-            alignItems: 'center',
-            gap: spacing[2],
-          }}
-        >
-          <DecimalEditor
-            value={distance.value}
-            onChange={(value) => updateDistance({ value, unit: distance.unit })}
-          />
-          <Text
-            style={[styles.textInput, { color: colors.onSecondaryContainer }]}
-          >
-            {distance.unit}s
-          </Text>
-        </Card.Content>
-      </Card>
-    </Holdable>
+    <CardioTrackerCard onHold={() => updateDistance(undefined)}>
+      <DecimalEditor
+        value={distance.value}
+        onChange={(value) => updateDistance({ value, unit: distance.unit })}
+      />
+      <Text style={[styles.bigText, { color: colors.onSecondaryContainer }]}>
+        {distance.unit}s
+      </Text>
+    </CardioTrackerCard>
   );
 }
 
@@ -451,7 +443,7 @@ function DecimalEditor(props: DecimalEditorProps) {
     <TextInput
       testID={props.testID}
       value={text}
-      style={[styles.textInput, { color: colors.onSecondaryContainer }]}
+      style={[styles.bigText, { color: colors.primary }]}
       inputMode={'decimal'}
       keyboardType={'decimal-pad'}
       onChangeText={handleTextChange}
@@ -524,7 +516,7 @@ function formatDuration(duration: Duration | undefined): string {
 }
 
 const styles = StyleSheet.create({
-  textInput: {
+  bigText: {
     fontVariant: ['tabular-nums'],
     textAlign: 'center',
     ...font['text-xl'],
