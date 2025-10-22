@@ -1,23 +1,25 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   Session,
-  SessionBlueprint,
-  ExerciseBlueprint,
-  RecordedExercise,
+  RecordedWeightedExercise,
   RecordedSet,
   PotentialSet,
-  Rest,
 } from '@/models/session-models';
 import { LocalDate, LocalDateTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { v4 as uuid } from 'uuid';
+import {
+  WeightedExerciseBlueprint,
+  Rest,
+  SessionBlueprint,
+} from '@/models/blueprint-models';
 
 // Helper functions to match the C# test structure
 function createExerciseBlueprint(
   index: number,
   supersetWithNext: boolean,
-): ExerciseBlueprint {
-  return new ExerciseBlueprint(
+): WeightedExerciseBlueprint {
+  return new WeightedExerciseBlueprint(
     `Ex${index}`,
     3, // sets
     10, // repsPerSet
@@ -30,7 +32,7 @@ function createExerciseBlueprint(
 }
 
 function createSessionBlueprint(
-  exercises: ExerciseBlueprint[],
+  exercises: WeightedExerciseBlueprint[],
 ): SessionBlueprint {
   return new SessionBlueprint('Test Session', exercises, '');
 }
@@ -39,32 +41,31 @@ function createSession(
   sessionBlueprint: SessionBlueprint,
   fillSets: number[] = [],
 ): Session {
-  const recordedExercises = sessionBlueprint.exercises.map(
-    (exerciseBlueprint, exerciseIndex) => {
-      const potentialSets = Array.from({ length: exerciseBlueprint.sets }).map(
-        (_, setIndex) => {
-          const shouldFillSet = fillSets.includes(exerciseIndex);
-          const set = shouldFillSet
-            ? new RecordedSet(
-                exerciseBlueprint.repsPerSet,
-                LocalDateTime.now().plusSeconds(
-                  exerciseIndex * 60 + setIndex * 10,
-                ),
-              )
-            : undefined;
+  const recordedExercises = (
+    sessionBlueprint.exercises as WeightedExerciseBlueprint[]
+  ).map((exerciseBlueprint, exerciseIndex) => {
+    const potentialSets = Array.from({ length: exerciseBlueprint.sets }).map(
+      (_, setIndex) => {
+        const shouldFillSet = fillSets.includes(exerciseIndex);
+        const set = shouldFillSet
+          ? new RecordedSet(
+              exerciseBlueprint.repsPerSet,
+              LocalDateTime.now().plusSeconds(
+                exerciseIndex * 60 + setIndex * 10,
+              ),
+            )
+          : undefined;
 
-          return new PotentialSet(set, new BigNumber(100));
-        },
-      );
+        return new PotentialSet(set, new BigNumber(100));
+      },
+    );
 
-      return new RecordedExercise(
-        exerciseBlueprint,
-        potentialSets,
-        undefined, // notes
-        true, // perSetWeight
-      );
-    },
-  );
+    return new RecordedWeightedExercise(
+      exerciseBlueprint,
+      potentialSets,
+      undefined, // notes
+    );
+  });
 
   return new Session(
     uuid(),
@@ -81,7 +82,9 @@ function cycleExerciseReps(
   setIndex: number,
 ): Session {
   const recordedExercises = [...session.recordedExercises];
-  const targetExercise = recordedExercises[exerciseIndex];
+  const targetExercise = recordedExercises[
+    exerciseIndex
+  ] as RecordedWeightedExercise;
   const potentialSets = [...targetExercise.potentialSets];
 
   // Complete the set

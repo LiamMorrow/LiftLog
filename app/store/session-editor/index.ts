@@ -3,7 +3,7 @@ import {
   ExerciseBlueprintPOJO,
   SessionBlueprint,
   SessionBlueprintPOJO,
-} from '@/models/session-models';
+} from '@/models/blueprint-models';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 const initialState: SessionEditorState = {
@@ -85,7 +85,10 @@ const sessionEditorSlice = createSlice({
     },
     updateSessionExercise(
       state,
-      action: PayloadAction<{ index: number; exercise: ExerciseBlueprint }>,
+      action: PayloadAction<{
+        index: number;
+        exercise: ExerciseBlueprint;
+      }>,
     ) {
       if (state.sessionBlueprint) {
         const { index, exercise } = action.payload;

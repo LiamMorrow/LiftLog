@@ -1,5 +1,6 @@
 /* eslint-disable no-restricted-imports */
 import { GesturePressableProps } from '@/components/presentation/gesture-wrappers/pressable-props';
+import { AppIconSource } from '@/components/presentation/ms-icon-source';
 import { isNotNullOrUndefined } from '@/utils/null';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import {
@@ -7,11 +8,15 @@ import {
   IconButtonProps,
 } from 'react-native-paper';
 
+type ICProps = {
+  icon: AppIconSource;
+} & Omit<IconButtonProps, 'icon'>;
+
 export default function IconButton({
   onPress,
   onLongPress,
   ...rest
-}: GesturePressableProps<IconButtonProps>) {
+}: GesturePressableProps<ICProps>) {
   const tap = Gesture.Tap()
     .runOnJS(true)
     .onStart(() => onPress?.());

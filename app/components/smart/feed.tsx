@@ -191,7 +191,7 @@ function FeedProfileEditor({
         }}
       >
         <LabelledForm>
-          <LabelledFormRow icon={'person'} label={t('YourName')}>
+          <LabelledFormRow icon={'personFill'} label={t('YourName')}>
             <TextInput
               placeholder={t('Optional')}
               value={identity.name ?? ''}

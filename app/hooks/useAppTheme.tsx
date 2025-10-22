@@ -13,7 +13,12 @@ import {
   Theme,
 } from '@react-navigation/native';
 import { MsIconSrc } from '@/components/presentation/ms-icon-source';
-import { Blend } from '@material/material-color-utilities';
+import {
+  argbFromHex,
+  Blend,
+  Hct,
+  hexFromArgb,
+} from '@material/material-color-utilities';
 
 export const spacing = {
   pageHorizontalMargin: 16, // spacing[4]
@@ -81,25 +86,43 @@ export const font = {
     fontSize: 30,
     lineHeight: 40,
   },
+  'text-4xl': {
+    fontSize: 40,
+    lineHeight: 50,
+  },
 } as const;
 
 export type FontChoice = keyof typeof font;
 
+type ColorPair<T extends string> = { [k in T | `on${Capitalize<T>}`]: string };
+
 export type AppThemeColors = Material3Scheme & {
   orange: string;
+  onOrange: string;
   red: string;
+  onRed: string;
   green: string;
-  blue: string;
-  yellow: string;
   onGreen: string;
+  blue: string;
+  onBlue: string;
+  yellow: string;
+  onYellow: string;
   purple: string;
+  onPurple: string;
   pink: string;
+  onPink: string;
   teal: string;
+  onTeal: string;
   cyan: string;
+  onCyan: string;
   brown: string;
+  onBrown: string;
   indigo: string;
+  onIndigo: string;
   lime: string;
+  onLime: string;
   amber: string;
+  onAmber: string;
 };
 
 export type ColorChoice = keyof {
@@ -158,49 +181,20 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   const appTheme = {
     colors: {
       ...schemedTheme,
-      orange: argbToHexRGBA(
-        Blend.harmonize(0xffffa500, hexToArgb(schemedTheme.primary)),
-      ),
-      red: argbToHexRGBA(
-        Blend.harmonize(0xffff0000, hexToArgb(schemedTheme.primary)),
-      ),
-      green: argbToHexRGBA(
-        Blend.harmonize(0xff00aa00, hexToArgb(schemedTheme.primary)),
-      ),
-      yellow: argbToHexRGBA(
-        Blend.harmonize(0xffffff00, hexToArgb(schemedTheme.primary)),
-      ),
-      blue: argbToHexRGBA(
-        Blend.harmonize(0xff0000aa, hexToArgb(schemedTheme.primary)),
-      ),
-      onGreen: argbToHexRGBA(
-        Blend.harmonize(0xffffffff, hexToArgb(schemedTheme.primary)),
-      ),
-      purple: argbToHexRGBA(
-        Blend.harmonize(0xff800080, hexToArgb(schemedTheme.primary)),
-      ),
-      pink: argbToHexRGBA(
-        Blend.harmonize(0xffff69b4, hexToArgb(schemedTheme.primary)),
-      ),
-      teal: argbToHexRGBA(
-        Blend.harmonize(0xff008080, hexToArgb(schemedTheme.primary)),
-      ),
-      cyan: argbToHexRGBA(
-        Blend.harmonize(0xff00ffff, hexToArgb(schemedTheme.primary)),
-      ),
-      brown: argbToHexRGBA(
-        Blend.harmonize(0xff8b4513, hexToArgb(schemedTheme.primary)),
-      ),
-      indigo: argbToHexRGBA(
-        Blend.harmonize(0xff4b0082, hexToArgb(schemedTheme.primary)),
-      ),
-      lime: argbToHexRGBA(
-        Blend.harmonize(0xffcddc39, hexToArgb(schemedTheme.primary)),
-      ),
-      amber: argbToHexRGBA(
-        Blend.harmonize(0xffffc107, hexToArgb(schemedTheme.primary)),
-      ),
-    },
+      ...colorPair('orange', 'ffffa500', schemedTheme.primary, isDark),
+      ...colorPair('red', 'ffff0000', schemedTheme.primary, isDark),
+      ...colorPair('yellow', 'ffffff00', schemedTheme.primary, isDark),
+      ...colorPair('blue', 'ff0000aa', schemedTheme.primary, isDark),
+      ...colorPair('green', 'ff00aa00', schemedTheme.primary, isDark),
+      ...colorPair('purple', 'ff800080', schemedTheme.primary, isDark),
+      ...colorPair('pink', 'ffff69b4', schemedTheme.primary, isDark),
+      ...colorPair('teal', 'ff008080', schemedTheme.primary, isDark),
+      ...colorPair('cyan', 'ff00ffff', schemedTheme.primary, isDark),
+      ...colorPair('brown', 'ff8b4513', schemedTheme.primary, isDark),
+      ...colorPair('indigo', 'ff4b0082', schemedTheme.primary, isDark),
+      ...colorPair('lime', 'ffcddc39', schemedTheme.primary, isDark),
+      ...colorPair('amber', 'ffffc107', schemedTheme.primary, isDark),
+    } satisfies AppThemeColors,
     colorScheme: colorScheme ?? 'light',
   };
 
@@ -238,36 +232,36 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   );
 };
 
-/**
- * Converts a hex color string (e.g. "#FFAABB" or "#FFAABBCC") to an ARGB number.
- * @param hex - The hex color string.
- * @returns The ARGB number.
- */
-function hexToArgb(hexRGBA: string): number {
-  hexRGBA = hexRGBA.replace('#', '');
-  let a = 255,
-    r = 0,
-    g = 0,
-    b = 0;
-  if (hexRGBA.length === 6) {
-    r = parseInt(hexRGBA.slice(0, 2), 16);
-    g = parseInt(hexRGBA.slice(2, 4), 16);
-    b = parseInt(hexRGBA.slice(4, 6), 16);
-  } else if (hexRGBA.length === 8) {
-    a = parseInt(hexRGBA.slice(6, 8), 16);
-    r = parseInt(hexRGBA.slice(0, 2), 16);
-    g = parseInt(hexRGBA.slice(2, 4), 16);
-    b = parseInt(hexRGBA.slice(4, 6), 16);
-  }
-  return (
-    ((a & 0xff) << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff)
-  );
-}
-
 export function argbToHexRGBA(argb: number): string {
   const a = (argb >> 24) & 0xff;
   const r = (argb >> 16) & 0xff;
   const g = (argb >> 8) & 0xff;
   const b = argb & 0xff;
   return `rgba(${r},${g},${b},${(a / 255).toFixed(3)})`;
+}
+
+function colorPair<T extends string>(
+  name: T,
+  hex: string,
+  primary: string,
+  isDark: boolean,
+): ColorPair<T> {
+  // Step 1: Harmonize the input with the seed
+  const harmonized = Blend.harmonize(argbFromHex(hex), argbFromHex(primary));
+  const baseHct = Hct.fromInt(harmonized);
+
+  // Step 2: Adjust tone based on theme context
+  baseHct.tone = isDark ? 80 : 40; // Material-like defaults
+
+  // Step 3: Derive on-color from tone inversion
+  const onTone = baseHct.tone > 60 ? 10 : 100;
+  const onColor = Hct.from(baseHct.hue, baseHct.chroma, onTone);
+
+  // Step 4: Material-style return shape
+  const onName = `on${name.charAt(0).toUpperCase()}${name.slice(1)}` as const;
+
+  return {
+    [name]: hexFromArgb(baseHct.toInt()),
+    [onName]: hexFromArgb(onColor.toInt()),
+  } as ColorPair<T>;
 }

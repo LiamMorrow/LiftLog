@@ -24,7 +24,6 @@ Sentry.init({
   attachViewHierarchy: true,
 });
 
-// install();
 LogBox.ignoreLogs([
   /.*is not a valid icon name.*/,
   /Open debugger to view warnings./,

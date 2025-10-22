@@ -107,7 +107,7 @@ async function main() {
         {
           role: "system",
           content:
-            "You are a helpful assistant that writes concise, user-friendly release note summaries.",
+            "You are a helpful assistant that writes concise, release note summaries.",
         },
         { role: "user", content: prompt },
       ],

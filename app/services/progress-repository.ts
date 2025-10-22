@@ -1,8 +1,9 @@
-import { KeyedExerciseBlueprint, SessionPOJO } from '@/models/session-models';
+import { RecordedExercise, SessionPOJO } from '@/models/session-models';
 import { TemporalComparer } from '@/models/comparers';
-import { RecordedExercise, Session } from '@/models/session-models';
+import { Session } from '@/models/session-models';
 import Enumerable from 'linq';
 import { RootState } from '@/store';
+import { KeyedExerciseBlueprint } from '@/models/blueprint-models';
 
 export class ProgressRepository {
   constructor(private getState: () => RootState) {}
@@ -20,10 +21,7 @@ export class ProgressRepository {
     return Enumerable.from(sessions)
       .select((x) => Session.fromPOJO(x.value))
       .orderByDescending((x) => x.date, TemporalComparer)
-      .thenByDescending(
-        (x) => x.lastExercise?.lastRecordedSet?.set?.completionDateTime,
-        TemporalComparer,
-      );
+      .thenByDescending((x) => x.lastExercise?.latestTime, TemporalComparer);
   }
 
   getLatestRecordedExercises(): Enumerable.IDictionary<

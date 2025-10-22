@@ -1,5 +1,5 @@
 import { LiftLog } from '@/gen/proto';
-import { Session } from '@/models/session-models';
+import { RecordedWeightedExercise, Session } from '@/models/session-models';
 import { fromCurrentSessionDao } from '@/models/storage/conversions.from-dao';
 import { toCurrentSessionDao } from '@/models/storage/conversions.to-dao';
 import {
@@ -153,7 +153,11 @@ export function applyCurrentSessionEffects() {
         return;
       }
       const session = Session.fromPOJO(sessionPOJO);
-      if (session?.nextExercise && session.lastExercise) {
+      if (
+        session?.nextExercise &&
+        session.lastExercise &&
+        session.lastExercise instanceof RecordedWeightedExercise
+      ) {
         await notificationService.scheduleNextSetNotification(
           session.lastExercise,
         );
@@ -167,7 +171,10 @@ export function applyCurrentSessionEffects() {
       await notificationService.clearSetTimerNotification();
       const state = getState();
       const session = Session.fromPOJO(state.currentSession.workoutSession);
-      if (session?.nextExercise) {
+      if (
+        session?.nextExercise &&
+        session.nextExercise instanceof RecordedWeightedExercise
+      ) {
         const exerciseIndex = session.recordedExercises.indexOf(
           session.nextExercise,
         );

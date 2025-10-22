@@ -89,7 +89,7 @@ export default function History() {
         setCurrentSession({
           target: 'workoutSession',
           session: session
-            .withNoSetsCompleted()
+            .withNothingCompleted()
             .with({ date: LocalDate.now(), id: uuid() }),
         }),
       );
