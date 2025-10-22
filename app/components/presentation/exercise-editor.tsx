@@ -7,6 +7,8 @@ import RestEditorGroup from '@/components/presentation/rest-editor-group';
 import { spacing } from '@/hooks/useAppTheme';
 import { ExerciseBlueprint } from '@/models/session-models';
 import { RootState, useAppSelector, useAppSelectorWithArg } from '@/store';
+import { showSnackbar } from '@/store/app';
+import { useDispatch } from 'react-redux';
 import {
   ExerciseDescriptor,
   selectExerciseById,
@@ -17,8 +19,9 @@ import { FlashList } from '@shopify/flash-list';
 import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Keyboard, View } from 'react-native';
-import { Card, Divider, List, TextInput } from 'react-native-paper';
+import { Image, Keyboard, View } from 'react-native';
+import { Button, Card, Divider, IconButton, List, TextInput } from 'react-native-paper';
+import * as ImagePicker from 'expo-image-picker';
 
 interface ExerciseEditorProps {
   exercise: ExerciseBlueprint;
@@ -26,6 +29,7 @@ interface ExerciseEditorProps {
 }
 
 export function ExerciseEditor(props: ExerciseEditorProps) {
+  const dispatch = useDispatch();
   const exerciseIds = useAppSelector(selectExerciseIds);
   const { exercise: propsExercise, updateExercise: updatePropsExercise } =
     props;
@@ -62,11 +66,40 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
 
   const setExerciseLink = (link: string) => updateExercise({ link });
 
+  const pickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+    if (!permissionResult.granted) {
+      dispatch(showSnackbar({ text: 'Permission to access media library is required!' }));
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      updateExercise({ imageUri: result.assets[0].uri });
+    }
+  };
+
+  const removeImage = () => {
+    const updated = exercise.toPOJO();
+    delete updated.imageUri;
+    updateExercise(ExerciseBlueprint.fromPOJO(updated));
+  };
+
   const setExerciseWeightIncrease = (weightIncreaseOnSuccess: BigNumber) =>
     updateExercise({ weightIncreaseOnSuccess });
 
   const selectExerciseFromSearch = (ex: ExerciseDescriptor) => {
-    updateExercise({ name: ex.name, notes: ex.instructions });
+    updateExercise({ 
+      name: ex.name, 
+      notes: ex.instructions,
+      ...(ex.imageUri !== undefined && { imageUri: ex.imageUri }),
+    });
     bottomSheetRef.current?.close();
   };
 
@@ -162,6 +195,43 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
         value={exercise.link}
         onChangeText={setExerciseLink}
       />
+
+      <View style={{ gap: spacing[2] }}>
+        {exercise.imageUri ? (
+          <>
+            <Card mode="elevated" style={{ overflow: 'hidden' }} elevation={2}>
+              <Image
+                source={{ uri: exercise.imageUri }}
+                style={{ width: '100%', height: 220 }}
+                resizeMode="contain"
+              />
+            </Card>
+            <View style={{ flexDirection: 'row', gap: spacing[2] }}>
+              <Button
+                mode="outlined"
+                onPress={pickImage}
+                icon="image-edit"
+                style={{ flex: 1 }}
+              >
+                Change Image
+              </Button>
+              <IconButton
+                icon="delete"
+                mode="outlined"
+                onPress={removeImage}
+              />
+            </View>
+          </>
+        ) : (
+          <Button
+            mode="contained"
+            onPress={pickImage}
+            icon="image-plus"
+          >
+            Add Exercise Image
+          </Button>
+        )}
+      </View>
 
       <View style={{ gap: spacing[2] }}>
         <EditableIncrementer
