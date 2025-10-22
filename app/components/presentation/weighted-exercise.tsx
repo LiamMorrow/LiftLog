@@ -2,7 +2,8 @@ import PotentialSetCounter from '@/components/presentation/potential-set-counter
 import { spacing } from '@/hooks/useAppTheme';
 import { RecordedWeightedExercise } from '@/models/session-models';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { Image, View } from 'react-native';
+import { Card } from 'react-native-paper';
 import { WeightAppliesTo } from '@/store/current-session';
 import ExerciseSection from '@/components/presentation/exercise-section';
 import { Weight } from '@/models/weight';
@@ -53,6 +54,19 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
       onEditExercise={props.onEditExercise}
       onRemoveExercise={props.onRemoveExercise}
     >
+      {recordedExercise.blueprint.imageUri && (
+        <Card
+          mode="elevated"
+          style={{ marginBottom: spacing[3], overflow: 'hidden' }}
+          elevation={2}
+        >
+          <Image
+            source={{ uri: recordedExercise.blueprint.imageUri }}
+            style={{ width: '100%', height: 200 }}
+            resizeMode="contain"
+          />
+        </Card>
+      )}
       <View style={{ flexDirection: 'row', gap: spacing[2], flexWrap: 'wrap' }}>
         {recordedExercise.potentialSets.map((set, index) => (
           <PotentialSetCounter

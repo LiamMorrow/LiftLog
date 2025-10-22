@@ -1,8 +1,8 @@
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
-import { AnimatedFAB, Icon, List, TextInput } from 'react-native-paper';
+import { Image, NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
+import { AnimatedFAB, Button, Card, Icon, IconButton, List, TextInput } from 'react-native-paper';
 import TouchableRipple from '@/components/presentation/gesture-wrappers/touchable-ripple';
 import { AccordionItem } from '@/components/presentation/accordion-item';
 import { useScroll } from '@/hooks/useScrollListener';
@@ -23,6 +23,7 @@ import { showSnackbar } from '@/store/app';
 import { useMountEffect } from '@/hooks/useMountEffect';
 import ExerciseMuscleSelector from '@/components/presentation/exercise-muscle-selector';
 import ExerciseFilterer from '@/components/presentation/exercise-filterer';
+import * as ImagePicker from 'expo-image-picker';
 
 function ExerciseListItem({
   exerciseId,
@@ -98,6 +99,21 @@ function ExerciseListItem({
             setExpanded(false);
           }
         }}
+        left={() =>
+          exercise.imageUri ? (
+            <Image
+              source={{ uri: exercise.imageUri }}
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 8,
+                marginLeft: spacing[2],
+                alignSelf: 'center',
+              }}
+              resizeMode="cover"
+            />
+          ) : null
+        }
         testID={`exercise-accordion`}
       >
         <AccordionItem
@@ -241,6 +257,34 @@ function ExerciseEditSheet({
       updateExercise({ exercise: { ...exercise, ...ex }, id: exerciseId }),
     );
   };
+
+  const pickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+    if (!permissionResult.granted) {
+      dispatch(showSnackbar({ text: 'Permission to access media library is required!' }));
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      update({ imageUri: result.assets[0].uri });
+    }
+  };
+
+  const removeImage = () => {
+    const updated = { ...exercise };
+    delete updated.imageUri;
+    dispatch(
+      updateExercise({ exercise: updated, id: exerciseId }),
+    );
+  };
+
   return (
     <View
       style={{
@@ -266,6 +310,42 @@ function ExerciseEditSheet({
         muscles={exercise.muscles}
         onChange={(muscles) => update({ muscles })}
       />
+      <View style={{ gap: spacing[2], marginTop: spacing[2] }}>
+        {exercise.imageUri ? (
+          <>
+            <Card mode="elevated" style={{ overflow: 'hidden' }} elevation={2}>
+              <Image
+                source={{ uri: exercise.imageUri }}
+                style={{ width: '100%', height: 220 }}
+                resizeMode="contain"
+              />
+            </Card>
+            <View style={{ flexDirection: 'row', gap: spacing[2] }}>
+              <Button
+                mode="outlined"
+                onPress={pickImage}
+                icon="image-edit"
+                style={{ flex: 1 }}
+              >
+                Change Image
+              </Button>
+              <IconButton
+                icon="delete"
+                mode="outlined"
+                onPress={removeImage}
+              />
+            </View>
+          </>
+        ) : (
+          <Button
+            mode="contained"
+            onPress={pickImage}
+            icon="image-plus"
+          >
+            Add Exercise Image
+          </Button>
+        )}
+      </View>
     </View>
   );
 }

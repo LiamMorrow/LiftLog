@@ -28,6 +28,7 @@ export interface ExerciseDescriptor {
   muscles: string[];
   instructions: string;
   category: string;
+  imageUri?: string;
 }
 
 export interface WeightMigrateableExercise {
