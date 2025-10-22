@@ -4,10 +4,10 @@ import { spacing } from '@/hooks/useAppTheme';
 import { RecordedExercise } from '@/models/session-models';
 import BigNumber from 'bignumber.js';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { Image, View } from 'react-native';
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import Button from '@/components/presentation/gesture-wrappers/button';
-import { Dialog, Menu, Portal, TextInput, Tooltip } from 'react-native-paper';
+import { Card, Dialog, Menu, Portal, TextInput, Tooltip } from 'react-native-paper';
 import { T, useTranslate } from '@tolgee/react';
 import PotentialSetAdditionalActionsDialog from '@/components/presentation/potential-sets-addition-actions-dialog';
 import PreviousExerciseViewer from '@/components/presentation/previous-exercixe-viewer';
@@ -164,6 +164,15 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
           />
           {interactiveButtons}
         </View>
+        {recordedExercise.blueprint.imageUri && (
+          <Card mode="elevated" style={{ marginBottom: spacing[3], overflow: 'hidden' }} elevation={2}>
+            <Image
+              source={{ uri: recordedExercise.blueprint.imageUri }}
+              style={{ width: '100%', height: 200 }}
+              resizeMode="contain"
+            />
+          </Card>
+        )}
         <View
           style={{ flexDirection: 'row', gap: spacing[2], flexWrap: 'wrap' }}
         >

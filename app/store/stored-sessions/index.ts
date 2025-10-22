@@ -25,6 +25,7 @@ export interface ExerciseDescriptor {
   muscles: string[];
   instructions: string;
   category: string;
+  imageUri?: string;
 }
 
 interface StoredSessionState {

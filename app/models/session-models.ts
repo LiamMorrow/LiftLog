@@ -702,6 +702,7 @@ export interface ExerciseBlueprintPOJO {
   supersetWithNext: boolean;
   notes: string;
   link: string;
+  imageUri?: string;
 }
 
 export class ExerciseBlueprint {
@@ -713,6 +714,7 @@ export class ExerciseBlueprint {
   readonly supersetWithNext: boolean;
   readonly notes: string;
   readonly link: string;
+  readonly imageUri?: string;
 
   /**
    * @deprecated please use full constructor. Here only for serialization
@@ -727,6 +729,7 @@ export class ExerciseBlueprint {
     supersetWithNext: boolean,
     notes: string,
     link: string,
+    imageUri?: string,
   );
   constructor(
     name?: string,
@@ -737,6 +740,7 @@ export class ExerciseBlueprint {
     supersetWithNext?: boolean,
     notes?: string,
     link?: string,
+    imageUri?: string,
   ) {
     this.name = name!;
     this.sets = sets!;
@@ -746,6 +750,9 @@ export class ExerciseBlueprint {
     this.supersetWithNext = supersetWithNext!;
     this.notes = notes!;
     this.link = link!;
+    if (imageUri !== undefined) {
+      this.imageUri = imageUri;
+    }
   }
 
   static fromPOJO(
@@ -760,6 +767,7 @@ export class ExerciseBlueprint {
       pojo.supersetWithNext,
       pojo.notes,
       pojo.link,
+      pojo.imageUri,
     );
   }
 
@@ -783,7 +791,8 @@ export class ExerciseBlueprint {
       ) &&
       this.supersetWithNext === other.supersetWithNext &&
       this.notes === other.notes &&
-      this.link === other.link
+      this.link === other.link &&
+      this.imageUri === other.imageUri
     );
   }
 
@@ -798,6 +807,7 @@ export class ExerciseBlueprint {
       supersetWithNext: this.supersetWithNext,
       notes: this.notes,
       link: this.link,
+      ...(this.imageUri !== undefined && { imageUri: this.imageUri }),
     };
   }
 
@@ -811,6 +821,7 @@ export class ExerciseBlueprint {
       other.supersetWithNext ?? this.supersetWithNext,
       other.notes ?? this.notes,
       other.link ?? this.link,
+      other.imageUri ?? this.imageUri,
     );
   }
 }
