@@ -7,6 +7,7 @@ import {
   DistanceUnit,
   TimeCardioTarget,
 } from '@/models/blueprint-models';
+import { TextInput as MaterialTextInput } from 'react-native-paper';
 import { T, useTranslate } from '@tolgee/react';
 import {
   localeFormatBigNumber,
@@ -24,17 +25,19 @@ import {
   Animated,
   StyleSheet,
   TextInput,
+  TextStyle,
   useAnimatedValue,
   View,
 } from 'react-native';
 import TimerEditor from '@/components/presentation/timer-editor';
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import { font, spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { Card, Menu, Text } from 'react-native-paper';
+import { Card, Dialog, Menu, Portal, Text } from 'react-native-paper';
 import BigNumber from 'bignumber.js';
 import { useAppSelector } from '@/store';
 import { isNotNullOrUndefinedOrFalse } from '@/utils/null';
 import Holdable from '@/components/presentation/holdable';
+import Button from '@/components/presentation/gesture-wrappers/button';
 
 interface CardioExerciseProps {
   recordedExercise: RecordedCardioExercise;
@@ -330,7 +333,7 @@ function CardioResistanceTracker({
         onChange={(value) => updateResistance(value)}
       />
       <Text style={styles.bigText}>
-        <T keyName="resistance" />
+        <T keyName="Resistance" />
       </Text>
     </CardioTrackerCard>
   );
@@ -349,7 +352,7 @@ function CardioInclineTracker({
         onChange={(value) => updateIncline(value)}
       />
       <Text style={styles.bigText}>
-        <T keyName="incline" />
+        <T keyName="Incline" />
       </Text>
     </CardioTrackerCard>
   );
@@ -393,15 +396,80 @@ function CardioDistanceTracker({
   updateDistance: (distance: Distance | undefined) => void;
 }) {
   const { colors } = useAppTheme();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogValue, setDialogValue] = useState(distance);
+  const getMenuItem = (unit: DistanceUnit) => (
+    <Menu.Item
+      key={unit}
+      title={unit}
+      onPress={() => {
+        setMenuOpen(false);
+        setDialogValue((dv) => ({ ...dv, unit }));
+      }}
+    />
+  );
   return (
     <CardioTrackerCard onHold={() => updateDistance(undefined)}>
-      <DecimalEditor
-        value={distance.value}
-        onChange={(value) => updateDistance({ value, unit: distance.unit })}
-      />
+      <Button
+        mode="contained"
+        onPress={() => {
+          setDialogOpen(true);
+          setDialogValue(distance);
+        }}
+      >
+        {localeFormatBigNumber(distance.value)}
+        {getShortUnit(distance.unit)}
+      </Button>
       <Text style={[styles.bigText, { color: colors.onSecondaryContainer }]}>
-        {distance.unit}s
+        <T keyName="Distance" />
       </Text>
+      <Portal>
+        <Dialog visible={dialogOpen} onDismiss={() => setDialogOpen(false)}>
+          <Dialog.Title>Distance</Dialog.Title>
+          <Dialog.Content
+            style={{ flexDirection: 'row', alignItems: 'center' }}
+          >
+            <DecimalEditor
+              materialTextBox
+              style={{ flex: 1 }}
+              value={dialogValue.value}
+              onChange={(value) => setDialogValue((dv) => ({ ...dv, value }))}
+            />
+            <Menu
+              visible={menuOpen}
+              onDismiss={() => setMenuOpen(false)}
+              anchor={
+                <IconButton
+                  onPress={() => {
+                    setMenuOpen(true);
+                  }}
+                  mode="outlined"
+                  icon={() => <Text>{getShortUnit(dialogValue.unit)}</Text>}
+                />
+              }
+            >
+              {getMenuItem('kilometre')}
+              {getMenuItem('metre')}
+              {getMenuItem('mile')}
+              {getMenuItem('yard')}
+            </Menu>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setDialogOpen(false)}>
+              {<T keyName="Cancel" />}
+            </Button>
+            <Button
+              onPress={() => {
+                setDialogOpen(false);
+                updateDistance(dialogValue);
+              }}
+            >
+              {<T keyName="Save" />}
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </CardioTrackerCard>
   );
 }
@@ -409,6 +477,8 @@ function CardioDistanceTracker({
 interface DecimalEditorProps {
   value: BigNumber;
   onChange: (val: BigNumber) => void;
+  materialTextBox?: boolean;
+  style?: TextStyle;
   testID?: string;
 }
 
@@ -439,11 +509,30 @@ function DecimalEditor(props: DecimalEditorProps) {
       setEditorValue(value);
     }
   }, [value, editorValue]);
+  if (props.materialTextBox) {
+    return (
+      <MaterialTextInput
+        testID={props.testID!}
+        value={text}
+        inputMode={'decimal'}
+        keyboardType={'decimal-pad'}
+        onChangeText={handleTextChange}
+        selectTextOnFocus
+        style={[props.style]}
+        onBlur={() => {
+          if (text === '') {
+            setText('0');
+          }
+          onChange(editorValue);
+        }}
+      />
+    );
+  }
   return (
     <TextInput
       testID={props.testID}
       value={text}
-      style={[styles.bigText, { color: colors.primary }]}
+      style={[styles.bigText, { color: colors.primary }, props.style]}
       inputMode={'decimal'}
       keyboardType={'decimal-pad'}
       onChangeText={handleTextChange}
