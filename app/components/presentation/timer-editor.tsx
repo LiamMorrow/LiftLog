@@ -66,11 +66,12 @@ export default function TimerEditor(props: DurationEditorProps) {
     textInput: {
       fontVariant: ['tabular-nums'],
       textAlign: 'center',
-      ...font['text-2xl'],
+      ...font['text-xl'],
       color: colors.onSecondaryContainer,
     },
     separator: {
       fontWeight: 'bold',
+      alignSelf: 'flex-end',
     },
   });
   return (
