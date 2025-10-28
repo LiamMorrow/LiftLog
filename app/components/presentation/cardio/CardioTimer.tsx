@@ -17,7 +17,7 @@ export function CardioTimer({
   updateStartedAt: (startedAt: LocalDateTime | undefined) => void;
   updateDuration: (duration: Duration | undefined) => void;
 }) {
-  const playPauseButtonSize = 20;
+  const playPauseButtonSize = 24;
   const { colors } = useAppTheme();
   const animatedRadius = useAnimatedValue(40);
   const [currentBlockStartTime, setCurrentBlockStartTime] = useState<
