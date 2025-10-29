@@ -5,7 +5,7 @@ output "check_output_file" {
 
 resource "local_file" "output_file" {
   content = <<EOT
-API URL: ${aws_api_gateway_deployment.api_deployment.invoke_url}/backup
+API URL: ${aws_api_gateway_stage.prod_stage.invoke_url}/backup
 API Key: ${aws_api_gateway_api_key.liftlog_api_key.value}
 EOT
 

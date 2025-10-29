@@ -121,5 +121,5 @@ If you want to verify the backup without restoring it, you can use the protoc co
 
 ```bash
 # from the root of this repo - change the filename accordingly:
-gunzip -c ~/Downloads/export.liftlogbackup.gz | protoc --decode=LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2 --proto_path=LiftLog.Ui Models/ExportedDataDao/ExportedDataDaoV2.proto
+gunzip -c ~/Downloads/export.liftlogbackup.gz | protoc --decode=LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2 --proto_path=proto ExportedDataDao/ExportedDataDaoV2.proto
 ```
