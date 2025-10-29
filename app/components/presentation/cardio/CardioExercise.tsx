@@ -7,7 +7,7 @@ import {
   DistanceUnit,
   TimeCardioTarget,
 } from '@/models/blueprint-models';
-import { T, useTranslate } from '@tolgee/react';
+import { T, TranslationKey, useTranslate } from '@tolgee/react';
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
 import { useState } from 'react';
 import { Duration } from '@js-joda/core';
@@ -137,10 +137,11 @@ function AddTrackerButtonMenu(props: {
     unit: imperialByDefault ? 'mile' : 'kilometre',
   };
 
-  const menuItem = (name: string, action: () => void) => (
+  const menuItem = (name: TranslationKey, action: () => void) => (
     <Menu.Item
       key={name}
-      title={name}
+      title={t(name)}
+      testID={'add-tracker-menu-' + name}
       onPress={() => {
         setMenuOpen(false);
         action();
@@ -151,19 +152,19 @@ function AddTrackerButtonMenu(props: {
   const menuItems = [
     !recordedExercise.distance &&
       (blueprint.trackDistance || blueprint.target.type === 'distance') &&
-      menuItem(t('Distance'), () => updateDistance(distanceTarget)),
+      menuItem('Distance', () => updateDistance(distanceTarget)),
 
     !recordedExercise.duration &&
       (blueprint.trackDuration || blueprint.target.type === 'time') &&
-      menuItem(t('Time'), () => updateDuration(Duration.ZERO)),
+      menuItem('Time', () => updateDuration(Duration.ZERO)),
 
     !recordedExercise.incline &&
       blueprint.trackIncline &&
-      menuItem(t('Incline'), () => updateIncline(BigNumber(0))),
+      menuItem('Incline', () => updateIncline(BigNumber(0))),
 
     !recordedExercise.resistance &&
       blueprint.trackResistance &&
-      menuItem(t('Resistance'), () => updateResistance(BigNumber(0))),
+      menuItem('Resistance', () => updateResistance(BigNumber(0))),
   ].filter(isNotNullOrUndefinedOrFalse);
   const showAddButton = !!menuItems.length;
   if (!showAddButton) {
@@ -181,6 +182,7 @@ function AddTrackerButtonMenu(props: {
         onDismiss={() => setMenuOpen(false)}
         anchor={
           <IconButton
+            testID="add-tracker-button"
             icon={'plus'}
             mode="contained"
             onPress={() => setMenuOpen(true)}

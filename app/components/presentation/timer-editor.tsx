@@ -67,6 +67,7 @@ export default function TimerEditor(props: DurationEditorProps) {
       fontVariant: ['tabular-nums'],
       textAlign: 'center',
       ...font['text-xl'],
+      maxWidth: 60, // unsure why but this is required in web otherwise the inputs stretch
       color: colors.onSecondaryContainer,
     },
     separator: {
@@ -83,6 +84,7 @@ export default function TimerEditor(props: DurationEditorProps) {
     >
       <TextInput
         inputMode="numeric"
+        testID="timer-editor-hours"
         readOnly={readonly}
         selectTextOnFocus
         style={fontProps.textInput}
@@ -93,6 +95,7 @@ export default function TimerEditor(props: DurationEditorProps) {
       <Text style={[fontProps.textInput, fontProps.separator]}>:</Text>
       <TextInput
         inputMode="numeric"
+        testID="timer-editor-minutes"
         selectTextOnFocus
         style={fontProps.textInput}
         value={minutes}
@@ -103,6 +106,7 @@ export default function TimerEditor(props: DurationEditorProps) {
       <Text style={[fontProps.textInput, fontProps.separator]}>:</Text>
       <TextInput
         inputMode="numeric"
+        testID="timer-editor-seconds"
         selectTextOnFocus
         style={fontProps.textInput}
         value={seconds}

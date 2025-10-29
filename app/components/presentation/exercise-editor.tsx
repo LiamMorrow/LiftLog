@@ -126,11 +126,13 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
                 value: 'weighted',
                 label: 'Weighted',
                 icon: 'fitnessCenter',
+                testID: 'weighted-button',
               },
               {
                 value: 'cardio',
                 label: 'Cardio/Time',
                 icon: 'directionsRun',
+                testID: 'cardio-button',
               },
             ]}
             onValueChange={handleTypeChange}
@@ -300,11 +302,13 @@ function CardioTargetEditor(props: {
               value: 'distance',
               label: t('Distance'),
               icon: 'trailLength',
+              testID: 'distance-button',
             },
             {
               value: 'time',
               label: t('Time'),
               icon: 'timer',
+              testID: 'time-button',
             },
           ]}
         />

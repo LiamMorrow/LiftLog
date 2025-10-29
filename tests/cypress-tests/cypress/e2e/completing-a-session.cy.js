@@ -37,6 +37,32 @@ describe('Completing a session', () => {
 
       cy.getByTestId('session-summary').should('contain.text', '7.5kg')
     })
+
+    it.only('can complete one with cardio', () => {
+      cy.getByTestId('session-more').click()
+      cy.getByTestId('session-add-exercise').click()
+      cy.dialog().find('input').first().click().type('Jogging (time only)')
+      cy.dialog().findByTestId('cardio-button').click()
+
+      cy.dialog().findByTestId("dialog-action").click()
+
+      cy.getByTestId('add-tracker-button').click()
+      cy.getByTestId('add-tracker-menu-Time').click()
+      cy.getByTestId('cardio-timer-play-pause').click().wait(1100).click()
+      cy.getByTestId('timer-editor-seconds').should('have.value', '01')
+
+
+      cy.getByTestId('session-more').click()
+      cy.getByTestId('session-add-exercise').click()
+      cy.dialog().find('input').first().click().type('Elliptical')
+      cy.dialog().findByTestId('cardio-button').click()
+      cy.dialog().findByTestId('distance-button').click()
+
+      cy.dialog().findByTestId("dialog-action").click()
+
+      cy.getByTestId('add-tracker-button').click()
+      cy.getByTestId('add-tracker-menu-Distance').click()
+    })
   })
 
   describe('When a user selects a pre-made program', () => {

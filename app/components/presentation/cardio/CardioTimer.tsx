@@ -126,6 +126,7 @@ export function CardioTimer({
           icon={currentBlockStartTime ? 'pause' : 'playArrow'}
           animated
           size={playPauseButtonSize}
+          testID="cardio-timer-play-pause"
           onPress={handlePlayPause}
           containerColor={currentBlockStartTime ? colors.amber : colors.green}
           iconColor={currentBlockStartTime ? colors.onAmber : colors.onGreen}
