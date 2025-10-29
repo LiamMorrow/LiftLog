@@ -1,4 +1,15 @@
+import {
+  WeightedExerciseBlueprint,
+  WeightedExerciseBlueprintPOJO,
+  SessionBlueprint,
+  SessionBlueprintPOJO,
+  CardioExerciseBlueprintPOJO,
+  CardioExerciseBlueprint,
+  ExerciseBlueprint,
+  Distance,
+} from '@/models/blueprint-models';
 import { LocalDateTimeComparer } from '@/models/comparers';
+import { DeepOmit } from '@/utils/deep-omit';
 import { indexed } from '@/utils/enumerable';
 import { uuid } from '@/utils/uuid';
 import { Duration, LocalDate, LocalDateTime, ZoneOffset } from '@js-joda/core';
@@ -14,18 +25,6 @@ export interface SessionPOJO {
   date: LocalDate;
   bodyweight: BigNumber | undefined;
 }
-
-export type DeepOmit<T, K extends PropertyKey> = K extends keyof T
-  ? T extends object
-    ? T extends (infer U)[]
-      ? DeepOmit<U, K>[]
-      : {
-          [P in keyof T as P extends K ? never : P]: DeepOmit<T[P], K>;
-        }
-    : T
-  : T extends (infer U)[]
-    ? DeepOmit<U, K>[]
-    : T;
 
 export class Session {
   readonly id: string;
@@ -58,24 +57,70 @@ export class Session {
     this.date = date!;
     this.bodyweight = bodyweight!;
   }
+  get duration(): Duration | undefined {
+    return this.lastExercise?.latestTime && this.firstExercise?.earliestTime
+      ? Duration.between(
+          this.firstExercise.earliestTime,
+          this.lastExercise.latestTime,
+        )
+      : undefined;
+  }
 
-  static fromPOJO(pojo: DeepOmit<SessionPOJO, '_BRAND'>): Session;
+  static fromPOJO(pojo: Omit<SessionPOJO, '_BRAND'>): Session;
   static fromPOJO(pojo: undefined): undefined;
   static fromPOJO(
-    pojo: DeepOmit<SessionPOJO, '_BRAND'> | undefined,
+    pojo: Omit<SessionPOJO, '_BRAND'> | undefined,
   ): Session | undefined;
   static fromPOJO(
-    pojo: DeepOmit<SessionPOJO, '_BRAND'> | undefined,
+    pojo: Omit<SessionPOJO, '_BRAND'> | undefined,
   ): Session | undefined {
     return (
       pojo &&
       new Session(
         pojo.id,
         SessionBlueprint.fromPOJO(pojo.blueprint),
-        pojo.recordedExercises.map(RecordedExercise.fromPOJO),
+        pojo.recordedExercises.map(fromRecordedExercisePOJO),
         pojo.date,
         pojo.bodyweight,
       )
+    );
+  }
+
+  static getEmptySession(blueprint: SessionBlueprint): Session {
+    function getNextExercise(e: ExerciseBlueprint) {
+      return match(e)
+        .with(
+          P.instanceOf(WeightedExerciseBlueprint),
+          (we) =>
+            new RecordedWeightedExercise(
+              we,
+              Array.from({ length: we.sets }).map(
+                () => new PotentialSet(undefined, BigNumber(0)),
+              ),
+              undefined,
+            ),
+        )
+        .with(
+          P.instanceOf(CardioExerciseBlueprint),
+          (ce) =>
+            new RecordedCardioExercise(
+              ce,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+            ),
+        )
+        .exhaustive();
+    }
+    return new Session(
+      uuid(),
+      blueprint,
+      blueprint.exercises.map(getNextExercise),
+      LocalDate.now(),
+      undefined,
     );
   }
 
@@ -108,10 +153,10 @@ export class Session {
     );
   }
 
-  withNoSetsCompleted(): Session {
+  withNothingCompleted(): Session {
     return this.with({
       recordedExercises: this.recordedExercises.map((re) =>
-        re.withNoSetsCompleted(),
+        re.withNothingCompleted(),
       ),
     });
   }
@@ -143,48 +188,57 @@ export class Session {
     return this.recordedExercises.reduce(
       (b, ex) =>
         b.plus(
-          ex.potentialSets.reduce(
-            (c, set) =>
-              c.plus(set.weight.multipliedBy(set.set?.repsCompleted ?? 0)),
-            new BigNumber(0),
-          ),
+          ex instanceof RecordedWeightedExercise
+            ? ex.potentialSets.reduce(
+                (c, set) =>
+                  c.plus(set.weight.multipliedBy(set.set?.repsCompleted ?? 0)),
+                new BigNumber(0),
+              )
+            : BigNumber(0),
         ),
       new BigNumber(0),
     );
   }
 
   get isComplete() {
-    return this.recordedExercises.every((x) => !x.hasRemainingSets);
+    return this.recordedExercises.every((x) => x.isComplete);
   }
 
   get isStarted(): boolean {
-    return this.recordedExercises.some((x) => x.lastRecordedSet !== undefined);
+    return this.recordedExercises.some((x) => x.isStarted);
   }
 
   get nextExercise(): RecordedExercise | undefined {
     const recordedExercises = this.recordedExercises;
     const latestExerciseIndex = Enumerable.from(recordedExercises)
       .select(indexed)
-      .where((x) => !!x.item.lastRecordedSet)
-      .orderByDescending(
-        ({ item }) => item.lastRecordedSet!.set?.completionDateTime,
-        LocalDateTimeComparer,
-      )
+      .where((x) => x.item.isStarted)
+      .orderByDescending(({ item }) => item.latestTime, LocalDateTimeComparer)
       .select((x) => x.index)
       .firstOrDefault(-1);
 
     const latestExerciseSupersetsWithNext = match(latestExerciseIndex)
       .with(-1, () => false)
       .with(recordedExercises.length - 1, () => false) // can never superset with next if its the last exercise
-      .otherwise((i) => recordedExercises[i].blueprint.supersetWithNext);
+      .otherwise(
+        (i) =>
+          recordedExercises[i] instanceof RecordedWeightedExercise &&
+          recordedExercises[i].blueprint.supersetWithNext,
+      );
 
     const latestExerciseSupersetsWithPrevious = match(latestExerciseIndex)
       .with(P.union(-1, 0), () => false)
-      .otherwise((i) => recordedExercises[i - 1].blueprint.supersetWithNext);
+      .otherwise((i) => {
+        const prevIndex = i - 1;
+        return (
+          recordedExercises[prevIndex] instanceof RecordedWeightedExercise &&
+          recordedExercises[prevIndex].blueprint.supersetWithNext
+        );
+      });
 
     if (
       latestExerciseSupersetsWithNext &&
-      recordedExercises[latestExerciseIndex + 1]?.hasRemainingSets
+      !recordedExercises[latestExerciseIndex + 1]?.isComplete
     ) {
       return recordedExercises[latestExerciseIndex + 1];
     }
@@ -194,7 +248,12 @@ export class Session {
       let indexToJumpBackTo = latestExerciseIndex - 1;
       while (
         indexToJumpBackTo >= 0 &&
-        recordedExercises[indexToJumpBackTo].blueprint.supersetWithNext
+        recordedExercises[indexToJumpBackTo] instanceof
+          RecordedWeightedExercise &&
+        (
+          recordedExercises[indexToJumpBackTo]
+            .blueprint as WeightedExerciseBlueprint
+        ).supersetWithNext
       ) {
         indexToJumpBackTo--;
       }
@@ -204,7 +263,7 @@ export class Session {
       // Now jump to the first exercise which has remaining sets in the chain
       while (
         indexToJumpBackTo < recordedExercises.length &&
-        !recordedExercises[indexToJumpBackTo].hasRemainingSets
+        recordedExercises[indexToJumpBackTo].isComplete
       ) {
         indexToJumpBackTo++;
       }
@@ -218,12 +277,10 @@ export class Session {
     let maxEpochSecond = Number.MIN_VALUE;
 
     for (const recordedExercise of recordedExercises) {
-      if (recordedExercise.hasRemainingSets) {
-        const lastRecordedSet = recordedExercise.lastRecordedSet;
+      if (!recordedExercise.isComplete) {
+        const latestTime = recordedExercise.latestTime;
         const epochSecond =
-          lastRecordedSet?.set?.completionDateTime.toEpochSecond(
-            ZoneOffset.UTC,
-          ) ?? Number.MIN_VALUE;
+          latestTime?.toEpochSecond(ZoneOffset.UTC) ?? Number.MIN_VALUE;
 
         if (epochSecond > maxEpochSecond || !result) {
           maxEpochSecond = epochSecond;
@@ -236,24 +293,24 @@ export class Session {
 
   get lastExercise(): RecordedExercise | undefined {
     return Enumerable.from(this.recordedExercises)
-      .where((x) => x.potentialSets.some((set) => set.set))
+      .where((x) => x.isStarted)
       .defaultIfEmpty(undefined)
-      .maxBy((x) =>
-        x.lastRecordedSet?.set?.completionDateTime
-          .toInstant(ZoneOffset.UTC)
-          .toEpochMilli(),
-      );
+      .maxBy((x) => x.latestTime?.toInstant(ZoneOffset.UTC).toEpochMilli());
+  }
+
+  get latestWeightedExercise(): RecordedWeightedExercise | undefined {
+    return Enumerable.from(this.recordedExercises)
+      .where((x) => x.isStarted)
+      .where((x) => x instanceof RecordedWeightedExercise)
+      .defaultIfEmpty(undefined)
+      .maxBy((x) => x.latestTime?.toInstant(ZoneOffset.UTC).toEpochMilli());
   }
 
   get firstExercise(): RecordedExercise | undefined {
     return Enumerable.from(this.recordedExercises)
-      .where((x) => x.potentialSets.some((set) => set.set))
+      .where((x) => x.isStarted)
       .defaultIfEmpty(undefined)
-      .minBy((x) =>
-        x.lastRecordedSet?.set?.completionDateTime
-          .toInstant(ZoneOffset.UTC)
-          .toEpochMilli(),
-      );
+      .minBy((x) => x.latestTime?.toInstant(ZoneOffset.UTC).toEpochMilli());
   }
 
   get isFreeform(): boolean {
@@ -261,50 +318,264 @@ export class Session {
   }
 }
 
-export interface RecordedExercisePOJO {
-  _BRAND: 'RECORDED_EXERCISE_POJO';
-  blueprint: ExerciseBlueprintPOJO;
-  potentialSets: PotentialSetPOJO[];
-  notes: string | undefined;
-  perSetWeight: boolean;
+export type RecordedExercise =
+  | RecordedCardioExercise
+  | RecordedWeightedExercise;
+
+export type RecordedExercisePOJO =
+  | RecordedCardioExercisePOJO
+  | RecordedWeightedExercisePOJO;
+
+export function fromRecordedExercisePOJO(
+  pojo: RecordedExercisePOJO | RecordedExercise,
+): RecordedExercise {
+  return match(pojo)
+    .with(
+      P.union(
+        { _BRAND: 'RECORDED_CARDIO_EXERCISE_POJO' },
+        P.instanceOf(RecordedCardioExercise),
+      ),
+      RecordedCardioExercise.fromPOJO,
+    )
+    .with(
+      P.union(
+        { _BRAND: 'RECORDED_WEIGHTED_EXERCISE_POJO' },
+        P.instanceOf(RecordedWeightedExercise),
+      ),
+      RecordedWeightedExercise.fromPOJO,
+    )
+    .exhaustive();
 }
 
-export class RecordedExercise {
-  readonly blueprint: ExerciseBlueprint;
-  readonly potentialSets: readonly PotentialSet[];
+export function createEmptyRecordedExercise(blueprint: ExerciseBlueprint) {
+  return match(blueprint)
+    .with(P.instanceOf(WeightedExerciseBlueprint), (b) =>
+      RecordedWeightedExercise.empty(b),
+    )
+    .with(P.instanceOf(CardioExerciseBlueprint), (b) =>
+      RecordedCardioExercise.empty(b),
+    )
+    .exhaustive();
+}
+
+export interface RecordedCardioExercisePOJO {
+  _BRAND: 'RECORDED_CARDIO_EXERCISE_POJO';
+  blueprint: CardioExerciseBlueprintPOJO;
+  completionDateTime: LocalDateTime | undefined;
+  duration: Duration | undefined;
+  distance: Distance | undefined;
+  resistance: BigNumber | undefined;
+  incline: BigNumber | undefined;
+  notes: string | undefined;
+}
+export class RecordedCardioExercise {
+  readonly blueprint: CardioExerciseBlueprint;
+  readonly completionDateTime: LocalDateTime | undefined;
+  readonly duration: Duration | undefined;
+  readonly distance: Distance | undefined;
+  readonly resistance: BigNumber | undefined;
+  readonly incline: BigNumber | undefined;
   readonly notes: string | undefined;
-  readonly perSetWeight: boolean;
 
   /**
    * @deprecated please use full constructor. Here only for serialization
    */
   constructor();
   constructor(
-    blueprint: ExerciseBlueprint,
-    potentialSets: readonly PotentialSet[],
+    blueprint: CardioExerciseBlueprint,
+    completionDateTime: LocalDateTime | undefined,
+    duration: Duration | undefined,
+    distance: Distance | undefined,
+    resistance: BigNumber | undefined,
+    incline: BigNumber | undefined,
     notes: string | undefined,
-    perSetWeight: boolean,
   );
   constructor(
-    blueprint?: ExerciseBlueprint,
+    blueprint?: CardioExerciseBlueprint,
+    completionDateTime?: LocalDateTime,
+    duration?: Duration,
+    distance?: Distance,
+    resistance?: BigNumber,
+    incline?: BigNumber,
+    notes?: string,
+  ) {
+    this.blueprint = blueprint!;
+    this.completionDateTime = completionDateTime;
+    this.duration = duration;
+    this.distance = distance;
+    this.resistance = resistance;
+    this.incline = incline;
+    this.notes = notes;
+  }
+
+  static fromPOJO(
+    pojo: DeepOmit<RecordedCardioExercisePOJO, '_BRAND'>,
+  ): RecordedCardioExercise {
+    return new RecordedCardioExercise(
+      CardioExerciseBlueprint.fromPOJO(pojo.blueprint),
+      pojo.completionDateTime,
+      pojo.duration,
+      pojo.distance,
+      pojo.resistance,
+      pojo.incline,
+      pojo.notes,
+    );
+  }
+
+  static empty(blueprint: CardioExerciseBlueprint): RecordedCardioExercise {
+    return new RecordedCardioExercise(
+      blueprint,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+    );
+  }
+
+  get isComplete(): boolean {
+    return !!this.completionDateTime;
+  }
+
+  get isStarted() {
+    return !!this.completionDateTime;
+  }
+
+  get latestTime(): LocalDateTime | undefined {
+    return this.completionDateTime;
+  }
+
+  get earliestTime(): LocalDateTime | undefined {
+    return this.completionDateTime;
+  }
+
+  withNothingCompleted(): RecordedCardioExercise {
+    return this.with({
+      notes: undefined,
+      distance: undefined,
+      duration: undefined,
+      completionDateTime: undefined,
+      incline: undefined,
+      resistance: undefined,
+    });
+  }
+
+  equals(other: RecordedExercise | undefined): boolean {
+    if (!other) {
+      return false;
+    }
+    if (other === this) {
+      return true;
+    }
+    if (other instanceof RecordedWeightedExercise) {
+      return false;
+    }
+    return (
+      this.blueprint.equals(other.blueprint) &&
+      ((this.completionDateTime &&
+        other.completionDateTime &&
+        this.completionDateTime.equals(other.completionDateTime)) ||
+        this.completionDateTime === other.completionDateTime) &&
+      ((this.duration &&
+        other.duration &&
+        this.duration.equals(other.duration)) ||
+        this.duration === other.duration) &&
+      distanceEqual(this.distance, other.distance) &&
+      ((this.resistance &&
+        other.resistance &&
+        this.resistance.isEqualTo(other.resistance)) ||
+        this.resistance === other.resistance) &&
+      ((this.incline &&
+        other.incline &&
+        this.incline.isEqualTo(other.incline)) ||
+        this.incline === other.incline) &&
+      this.notes === other.notes
+    );
+  }
+
+  with(
+    other: Partial<Omit<RecordedCardioExercisePOJO, '_BRAND'>>,
+  ): RecordedCardioExercise {
+    return new RecordedCardioExercise(
+      CardioExerciseBlueprint.fromPOJO(other.blueprint ?? this.blueprint),
+      other.completionDateTime ?? this.completionDateTime,
+      other.duration ?? this.duration,
+      other.distance ?? this.distance,
+      other.resistance ?? this.resistance,
+      other.incline ?? this.incline,
+      other.notes ?? this.notes,
+    );
+  }
+
+  toPOJO(): RecordedCardioExercisePOJO {
+    return {
+      _BRAND: 'RECORDED_CARDIO_EXERCISE_POJO',
+      blueprint: this.blueprint.toPOJO(),
+      completionDateTime: this.completionDateTime,
+      duration: this.duration,
+      distance: this.distance,
+      resistance: this.resistance,
+      incline: this.incline,
+      notes: this.notes,
+    };
+  }
+}
+
+export interface RecordedWeightedExercisePOJO {
+  _BRAND: 'RECORDED_WEIGHTED_EXERCISE_POJO';
+  blueprint: WeightedExerciseBlueprintPOJO;
+  potentialSets: PotentialSetPOJO[];
+  notes: string | undefined;
+}
+
+export class RecordedWeightedExercise {
+  readonly blueprint: WeightedExerciseBlueprint;
+  readonly potentialSets: readonly PotentialSet[];
+  readonly notes: string | undefined;
+
+  /**
+   * @deprecated please use full constructor. Here only for serialization
+   */
+  constructor();
+  constructor(
+    blueprint: WeightedExerciseBlueprint,
+    potentialSets: readonly PotentialSet[],
+    notes: string | undefined,
+  );
+  constructor(
+    blueprint?: WeightedExerciseBlueprint,
     potentialSets?: readonly PotentialSet[],
     notes?: string,
-    perSetWeight?: boolean,
   ) {
     this.blueprint = blueprint!;
     this.potentialSets = potentialSets!;
     this.notes = notes!;
-    this.perSetWeight = perSetWeight!;
   }
 
   static fromPOJO(
-    fromPOJO: DeepOmit<RecordedExercisePOJO, '_BRAND'>,
-  ): RecordedExercise {
-    return new RecordedExercise(
-      ExerciseBlueprint.fromPOJO(fromPOJO.blueprint),
+    fromPOJO:
+      | Omit<RecordedWeightedExercisePOJO, '_BRAND'>
+      | RecordedWeightedExercise,
+  ): RecordedWeightedExercise {
+    return new RecordedWeightedExercise(
+      WeightedExerciseBlueprint.fromPOJO(fromPOJO.blueprint),
       fromPOJO.potentialSets.map((x) => PotentialSet.fromPOJO(x)),
       fromPOJO.notes,
-      fromPOJO.perSetWeight,
+    );
+  }
+  static empty(b: WeightedExerciseBlueprint): RecordedWeightedExercise {
+    return new RecordedWeightedExercise(
+      b,
+      Enumerable.range(0, b.sets)
+        .select(() =>
+          PotentialSet.fromPOJO({
+            weight: BigNumber(0),
+            set: undefined,
+          }),
+        )
+        .toArray(),
+      undefined,
     );
   }
 
@@ -315,10 +586,12 @@ export class RecordedExercise {
     if (other === this) {
       return true;
     }
+    if (other instanceof RecordedCardioExercise) {
+      return false;
+    }
 
     return (
       this.blueprint.equals(other.blueprint) &&
-      this.perSetWeight === other.perSetWeight &&
       this.notes === other.notes &&
       this.potentialSets.length === other.potentialSets.length &&
       this.potentialSets.every((set, index) => {
@@ -328,20 +601,19 @@ export class RecordedExercise {
     );
   }
 
-  with(other: Partial<RecordedExercisePOJO>) {
-    return new RecordedExercise(
+  with(other: Partial<RecordedWeightedExercisePOJO>) {
+    return new RecordedWeightedExercise(
       'blueprint' in other
-        ? ExerciseBlueprint.fromPOJO(other.blueprint)
+        ? WeightedExerciseBlueprint.fromPOJO(other.blueprint)
         : this.blueprint,
       'potentialSets' in other
         ? other.potentialSets.map((x) => PotentialSet.fromPOJO(x))
         : this.potentialSets,
       'notes' in other ? other.notes : this.notes,
-      'perSetWeight' in other ? other.perSetWeight : this.perSetWeight,
     );
   }
 
-  withNoSetsCompleted(): RecordedExercise {
+  withNothingCompleted(): RecordedWeightedExercise {
     return this.with({
       notes: undefined,
       potentialSets: this.potentialSets.map((ps) =>
@@ -350,11 +622,10 @@ export class RecordedExercise {
     });
   }
 
-  toPOJO(): RecordedExercisePOJO {
+  toPOJO(): RecordedWeightedExercisePOJO {
     return {
-      _BRAND: 'RECORDED_EXERCISE_POJO',
+      _BRAND: 'RECORDED_WEIGHTED_EXERCISE_POJO',
       blueprint: this.blueprint.toPOJO(),
-      perSetWeight: this.perSetWeight,
       potentialSets: this.potentialSets.map((x) => x.toPOJO()),
       notes: this.notes,
     };
@@ -369,6 +640,24 @@ export class RecordedExercise {
         undefined as BigNumber | undefined,
       ) ?? BigNumber(0)
     );
+  }
+
+  get isStarted() {
+    return !!this.firstRecordedSet;
+  }
+
+  get duration(): Duration | undefined {
+    return this.latestTime && this.earliestTime
+      ? Duration.between(this.earliestTime, this.latestTime)
+      : undefined;
+  }
+
+  get latestTime(): LocalDateTime | undefined {
+    return this.lastRecordedSet?.set?.completionDateTime;
+  }
+
+  get earliestTime(): LocalDateTime | undefined {
+    return this.firstRecordedSet?.set?.completionDateTime;
   }
 
   get lastRecordedSet(): PotentialSet | undefined {
@@ -388,8 +677,8 @@ export class RecordedExercise {
     return result;
   }
 
-  get hasRemainingSets(): boolean {
-    return this.potentialSets.some((x) => x.set === undefined);
+  get isComplete(): boolean {
+    return !this.potentialSets.some((x) => x.set === undefined);
   }
 
   /// <summary>
@@ -477,7 +766,9 @@ export class PotentialSet {
     this.weight = weight!;
   }
 
-  static fromPOJO(pojo: DeepOmit<PotentialSetPOJO, '_BRAND'>): PotentialSet {
+  static fromPOJO(
+    pojo: DeepOmit<PotentialSetPOJO, '_BRAND'> | PotentialSet,
+  ): PotentialSet {
     return new PotentialSet(
       pojo.set ? RecordedSet.fromPOJO(pojo.set) : undefined,
       pojo.weight,
@@ -520,372 +811,6 @@ function BigNumberEqual(a: BigNumber | undefined, b: BigNumber | undefined) {
   return a.isEqualTo(b);
 }
 
-export interface ProgramBlueprintPOJO {
-  _BRAND: 'PROGRAM_BLUEPRINT_POJO';
-  readonly name: string;
-  readonly sessions: SessionBlueprintPOJO[];
-  lastEdited: LocalDate;
-}
-
-export class ProgramBlueprint {
-  readonly name: string;
-  readonly sessions: SessionBlueprint[];
-  lastEdited: LocalDate;
-
-  /**
-   * @deprecated please use full constructor. Here only for serialization
-   */
-  constructor();
-  constructor(
-    name: string,
-    sessions: SessionBlueprint[],
-    lastEdited: LocalDate,
-  );
-  constructor(
-    name?: string,
-    sessions?: SessionBlueprint[],
-    lastEdited?: LocalDate,
-  ) {
-    this.name = name!;
-    this.sessions = sessions!;
-    this.lastEdited = lastEdited!;
-  }
-
-  static fromPOJO(
-    pojo: DeepOmit<ProgramBlueprintPOJO, '_BRAND'>,
-  ): ProgramBlueprint {
-    return new ProgramBlueprint(
-      pojo.name,
-      pojo.sessions.map(SessionBlueprint.fromPOJO),
-      pojo.lastEdited,
-    );
-  }
-
-  equals(other: ProgramBlueprint | undefined) {
-    if (!other) {
-      return false;
-    }
-    if (other === this) {
-      return true;
-    }
-
-    return (
-      this.name === other.name &&
-      this.lastEdited.equals(other.lastEdited) &&
-      this.sessions.length === other.sessions.length &&
-      this.sessions.every((session, index) =>
-        session.equals(other.sessions[index]),
-      )
-    );
-  }
-
-  toPOJO(): ProgramBlueprintPOJO {
-    return {
-      _BRAND: 'PROGRAM_BLUEPRINT_POJO',
-      name: this.name,
-      sessions: this.sessions.map((session) => session.toPOJO()),
-      lastEdited: this.lastEdited,
-    };
-  }
-
-  with(other: Partial<ProgramBlueprintPOJO>): ProgramBlueprint {
-    return new ProgramBlueprint(
-      other.name ?? this.name,
-      other.sessions
-        ? other.sessions.map(SessionBlueprint.fromPOJO)
-        : this.sessions,
-      other.lastEdited ?? this.lastEdited,
-    );
-  }
-}
-
-export interface SessionBlueprintPOJO {
-  _BRAND: 'SESSION_BLUEPRINT_POJO';
-  name: string;
-  exercises: ExerciseBlueprintPOJO[];
-  notes: string;
-}
-
-export class SessionBlueprint {
-  readonly name: string;
-  readonly exercises: ExerciseBlueprint[];
-  readonly notes: string;
-
-  /**
-   * @deprecated please use full constructor. Here only for serialization
-   */
-  constructor();
-  constructor(name: string, exercises: ExerciseBlueprint[], notes: string);
-  constructor(name?: string, exercises?: ExerciseBlueprint[], notes?: string) {
-    this.name = name!;
-    this.exercises = exercises!;
-    this.notes = notes!;
-  }
-
-  static fromPOJO(
-    pojo: DeepOmit<SessionBlueprintPOJO, '_BRAND'>,
-  ): SessionBlueprint {
-    return new SessionBlueprint(
-      pojo.name,
-      pojo.exercises.map(ExerciseBlueprint.fromPOJO),
-      pojo.notes,
-    );
-  }
-
-  equals(other: SessionBlueprint | SessionBlueprintPOJO | undefined) {
-    if (!other) {
-      return false;
-    }
-    if (other === this) {
-      return true;
-    }
-
-    return (
-      this.name === other.name &&
-      this.notes === other.notes &&
-      this.exercises.length === other.exercises.length &&
-      this.exercises.every((exercise, index) =>
-        exercise.equals(other.exercises[index]),
-      )
-    );
-  }
-
-  toPOJO(): SessionBlueprintPOJO {
-    return {
-      _BRAND: 'SESSION_BLUEPRINT_POJO',
-      name: this.name,
-      exercises: this.exercises.map((exercise) => exercise.toPOJO()),
-      notes: this.notes,
-    };
-  }
-
-  with(
-    other: Partial<SessionBlueprintPOJO | SessionBlueprint>,
-  ): SessionBlueprint {
-    return new SessionBlueprint(
-      other.name ?? this.name,
-      other.exercises
-        ? other.exercises.map(ExerciseBlueprint.fromPOJO)
-        : this.exercises,
-      other.notes ?? this.notes,
-    );
-  }
-
-  getEmptySession(): Session {
-    function getNextExercise(e: ExerciseBlueprint) {
-      return new RecordedExercise(
-        e,
-        Array.from({ length: e.sets }).map(
-          () => new PotentialSet(undefined, BigNumber(0)),
-        ),
-        undefined,
-        false,
-      );
-    }
-    return new Session(
-      uuid(),
-      this,
-      this.exercises.map(getNextExercise),
-      LocalDate.now(),
-      undefined,
-    );
-  }
-}
-
-export interface ExerciseBlueprintPOJO {
-  _BRAND: 'EXERCISE_BLUEPRINT_POJO';
-  name: string;
-  sets: number;
-  repsPerSet: number;
-  weightIncreaseOnSuccess: BigNumber;
-  restBetweenSets: Rest;
-  supersetWithNext: boolean;
-  notes: string;
-  link: string;
-}
-
-export class ExerciseBlueprint {
-  readonly name: string;
-  readonly sets: number;
-  readonly repsPerSet: number;
-  readonly weightIncreaseOnSuccess: BigNumber;
-  readonly restBetweenSets: Rest;
-  readonly supersetWithNext: boolean;
-  readonly notes: string;
-  readonly link: string;
-
-  /**
-   * @deprecated please use full constructor. Here only for serialization
-   */
-  constructor();
-  constructor(
-    name: string,
-    sets: number,
-    repsPerSet: number,
-    weightIncreaseOnSuccess: BigNumber,
-    restBetweenSets: Rest,
-    supersetWithNext: boolean,
-    notes: string,
-    link: string,
-  );
-  constructor(
-    name?: string,
-    sets?: number,
-    repsPerSet?: number,
-    weightIncreaseOnSuccess?: BigNumber,
-    restBetweenSets?: Rest,
-    supersetWithNext?: boolean,
-    notes?: string,
-    link?: string,
-  ) {
-    this.name = name!;
-    this.sets = sets!;
-    this.repsPerSet = repsPerSet!;
-    this.weightIncreaseOnSuccess = weightIncreaseOnSuccess!;
-    this.restBetweenSets = restBetweenSets!;
-    this.supersetWithNext = supersetWithNext!;
-    this.notes = notes!;
-    this.link = link!;
-  }
-
-  static fromPOJO(
-    pojo: DeepOmit<ExerciseBlueprintPOJO, '_BRAND'>,
-  ): ExerciseBlueprint {
-    return new ExerciseBlueprint(
-      pojo.name,
-      pojo.sets,
-      pojo.repsPerSet,
-      pojo.weightIncreaseOnSuccess,
-      pojo.restBetweenSets,
-      pojo.supersetWithNext,
-      pojo.notes,
-      pojo.link,
-    );
-  }
-
-  equals(other: ExerciseBlueprint | ExerciseBlueprintPOJO | undefined) {
-    if (!other) {
-      return false;
-    }
-    if (other === this) {
-      return true;
-    }
-
-    return (
-      this.name === other.name &&
-      this.sets === other.sets &&
-      this.repsPerSet === other.repsPerSet &&
-      this.weightIncreaseOnSuccess.isEqualTo(other.weightIncreaseOnSuccess) &&
-      this.restBetweenSets.minRest.equals(other.restBetweenSets.minRest) &&
-      this.restBetweenSets.maxRest.equals(other.restBetweenSets.maxRest) &&
-      this.restBetweenSets.failureRest.equals(
-        other.restBetweenSets.failureRest,
-      ) &&
-      this.supersetWithNext === other.supersetWithNext &&
-      this.notes === other.notes &&
-      this.link === other.link
-    );
-  }
-
-  toPOJO(): ExerciseBlueprintPOJO {
-    return {
-      _BRAND: 'EXERCISE_BLUEPRINT_POJO',
-      name: this.name,
-      sets: this.sets,
-      repsPerSet: this.repsPerSet,
-      weightIncreaseOnSuccess: this.weightIncreaseOnSuccess,
-      restBetweenSets: this.restBetweenSets,
-      supersetWithNext: this.supersetWithNext,
-      notes: this.notes,
-      link: this.link,
-    };
-  }
-
-  with(other: Partial<ExerciseBlueprintPOJO>): ExerciseBlueprint {
-    return new ExerciseBlueprint(
-      other.name ?? this.name,
-      other.sets ?? this.sets,
-      other.repsPerSet ?? this.repsPerSet,
-      other.weightIncreaseOnSuccess ?? this.weightIncreaseOnSuccess,
-      other.restBetweenSets ?? this.restBetweenSets,
-      other.supersetWithNext ?? this.supersetWithNext,
-      other.notes ?? this.notes,
-      other.link ?? this.link,
-    );
-  }
-}
-
-export class KeyedExerciseBlueprint {
-  constructor(
-    public name: string,
-    public sets: number,
-    public repsPerSet: number,
-  ) {}
-
-  static fromExerciseBlueprint(e: ExerciseBlueprint): KeyedExerciseBlueprint {
-    return new KeyedExerciseBlueprint(e.name, e.sets, e.repsPerSet);
-  }
-
-  toString() {
-    return `${this.name}_${this.sets}_${this.repsPerSet}`;
-  }
-}
-
-export type NormalizedNameKey = string;
-
-export class NormalizedName {
-  constructor(public name: string) {}
-  static fromExerciseBlueprint(e: ExerciseBlueprint): NormalizedName {
-    return new NormalizedName(e.name);
-  }
-
-  toString(): NormalizedNameKey {
-    return NormalizedName.normalizeName(this.name);
-  }
-
-  private static normalizeName(name?: string): string {
-    if (!name) {
-      return '';
-    }
-    const lowerName = name
-      .toLowerCase()
-      .trim()
-      .replace(/flies/g, 'flys')
-      .replace(/flyes/g, 'flys');
-    const withoutPlural = lowerName.endsWith('es')
-      ? lowerName.slice(0, -2)
-      : lowerName.endsWith('s')
-        ? lowerName.slice(0, -1)
-        : lowerName;
-
-    return withoutPlural;
-  }
-}
-
-export interface Rest {
-  minRest: Duration;
-  maxRest: Duration;
-  failureRest: Duration;
-}
-
-export const Rest = {
-  short: {
-    minRest: Duration.ofSeconds(60),
-    maxRest: Duration.ofSeconds(90),
-    failureRest: Duration.ofSeconds(180),
-  },
-  medium: {
-    minRest: Duration.ofSeconds(90),
-    maxRest: Duration.ofSeconds(180),
-    failureRest: Duration.ofSeconds(300),
-  },
-  long: {
-    minRest: Duration.ofMinutes(3),
-    maxRest: Duration.ofMinutes(5),
-    failureRest: Duration.ofMinutes(8),
-  },
-} as const;
-
 export const EmptySession: Session = new Session(
   '00000000-0000-0000-0000-000000000000',
   SessionBlueprint.fromPOJO({
@@ -898,13 +823,12 @@ export const EmptySession: Session = new Session(
   undefined,
 );
 
-export const EmptyExerciseBlueprint = new ExerciseBlueprint(
-  '',
-  3,
-  10,
-  BigNumber(0),
-  Rest.medium,
-  false,
-  '',
-  '',
-);
+function distanceEqual(a: Distance | undefined, b: Distance | undefined) {
+  return match([a, b])
+    .with([undefined, undefined], () => true)
+    .with(
+      [P.nonNullable, P.nonNullable],
+      ([a, b]) => a.unit === b.unit && b.value.isEqualTo(b.value),
+    )
+    .otherwise(() => false);
+}

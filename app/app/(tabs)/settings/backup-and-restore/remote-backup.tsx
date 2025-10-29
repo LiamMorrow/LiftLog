@@ -99,7 +99,7 @@ export default function RemoteBackupPage() {
         </Card.Content>
       </Card>
       <LabelledForm>
-        <LabelledFormRow label={t('Endpoint')} icon={'public'}>
+        <LabelledFormRow label={t('Endpoint')} icon={'publicFill'}>
           <TextInput
             mode="outlined"
             placeholder="https://example.com/backup"
@@ -110,7 +110,7 @@ export default function RemoteBackupPage() {
           />
           <HelperText type="error">{endpointError}</HelperText>
         </LabelledFormRow>
-        <LabelledFormRow label={t('ApiKey')} icon={'vpnKey'}>
+        <LabelledFormRow label={t('ApiKey')} icon={'vpnKeyFill'}>
           <TextInput
             mode="outlined"
             value={apiKeyValue}

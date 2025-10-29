@@ -1,14 +1,21 @@
 import { google, LiftLog } from '@/gen/proto';
-import { Instant, LocalDate, LocalTime } from '@js-joda/core';
+import {
+  Duration,
+  Instant,
+  LocalDate,
+  LocalDateTime,
+  LocalTime,
+} from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Long from 'long';
 import {
-  ExerciseBlueprint,
+  WeightedExerciseBlueprint,
   ProgramBlueprint,
   Rest,
   SessionBlueprint,
-  SessionPOJO,
-} from '@/models/session-models';
+  ExerciseBlueprint,
+  CardioTarget,
+} from '@/models/blueprint-models';
 import {
   FeedIdentity,
   FeedItem,
@@ -19,10 +26,12 @@ import {
   SharedProgramBlueprint,
 } from '@/models/feed-models';
 import {
+  SessionPOJO,
   PotentialSet,
-  RecordedExercise,
+  RecordedWeightedExercise,
   RecordedSet,
   Session,
+  RecordedExercise,
 } from '@/models/session-models';
 import Enumerable from 'linq';
 import { FeedState } from '@/store/feed';
@@ -73,7 +82,6 @@ function toTimestampDao(instant: Instant): google.protobuf.Timestamp {
   });
 }
 
-// Converts a LocalDate to a DateOnly DAO
 export function toDateOnlyDao(date: LocalDate): LiftLog.Ui.Models.DateOnlyDao {
   return new LiftLog.Ui.Models.DateOnlyDao({
     year: date.year(),
@@ -82,7 +90,6 @@ export function toDateOnlyDao(date: LocalDate): LiftLog.Ui.Models.DateOnlyDao {
   });
 }
 
-// Converts a LocalTime to a TimeOnly DAO
 export function toTimeOnlyDao(time: LocalTime): LiftLog.Ui.Models.TimeOnlyDao {
   const nano = time.nano();
   return new LiftLog.Ui.Models.TimeOnlyDao({
@@ -111,13 +118,37 @@ export function toExerciseBlueprintDao(
 ): LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2 {
   return new LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2({
     name: model.name,
-    sets: model.sets,
-    repsPerSet: model.repsPerSet,
-    weightIncreaseOnSuccess: toDecimalDao(model.weightIncreaseOnSuccess),
-    restBetweenSets: toRestDao(model.restBetweenSets),
-    supersetWithNext: model.supersetWithNext,
     notes: model.notes,
     link: model.link,
+    ...(model instanceof WeightedExerciseBlueprint
+      ? {
+          type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.WEIGHTED,
+          sets: model.sets,
+          repsPerSet: model.repsPerSet,
+          weightIncreaseOnSuccess: toDecimalDao(model.weightIncreaseOnSuccess),
+          restBetweenSets: toRestDao(model.restBetweenSets),
+          supersetWithNext: model.supersetWithNext,
+        }
+      : {
+          type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO,
+          cardioTarget: toCardioTargetDao(model.target),
+          trackDuration: model.trackDuration,
+          trackDistance: model.trackDistance,
+          trackResistance: model.trackResistance,
+          trackIncline: model.trackIncline,
+        }),
+  });
+}
+
+function toCardioTargetDao(
+  target: CardioTarget,
+): LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget {
+  return new LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget({
+    type: target.type,
+    distanceValue:
+      target.type === 'distance' ? toDecimalDao(target.value.value) : null,
+    distanceUnit: target.type === 'distance' ? target.value.unit : null,
+    timeValue: target.type === 'time' ? toDurationDao(target.value) : null,
   });
 }
 
@@ -126,11 +157,21 @@ export function toRestDao(
   model: Rest,
 ): LiftLog.Ui.Models.SessionBlueprintDao.RestDaoV2 {
   return new LiftLog.Ui.Models.SessionBlueprintDao.RestDaoV2({
-    minRest: { seconds: Long.fromNumber(model.minRest.toMillis() / 1000) },
-    maxRest: { seconds: Long.fromNumber(model.maxRest.toMillis() / 1000) },
-    failureRest: {
-      seconds: Long.fromNumber(model.failureRest.toMillis() / 1000),
-    },
+    minRest: toDurationDao(model.minRest),
+    maxRest: toDurationDao(model.maxRest),
+    failureRest: toDurationDao(model.failureRest),
+  });
+}
+
+export function toDurationDao(
+  duration: Duration | undefined,
+): google.protobuf.Duration | null {
+  if (!duration) {
+    return null;
+  }
+  return new google.protobuf.Duration({
+    seconds: Long.fromNumber(Math.floor(duration.seconds())),
+    nanos: duration.nano(),
   });
 }
 
@@ -220,13 +261,38 @@ export function toRecordedExerciseDao(
 ): LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2 {
   return new LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2({
     exerciseBlueprint: toExerciseBlueprintDao(model.blueprint),
-    potentialSets: model.potentialSets.map(toPotentialSetDao),
     notes: toStringValue(model.notes),
-    perSetWeight: model.perSetWeight,
+    ...(model instanceof RecordedWeightedExercise
+      ? {
+          type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.WEIGHTED,
+          potentialSets: model.potentialSets.map(toPotentialSetDao),
+        }
+      : {
+          type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO,
+          completionDateTime: toDateTimeDao(model.completionDateTime),
+          duration: toDurationDao(model.duration),
+          distanceValue: model.distance
+            ? toDecimalDao(model.distance.value)
+            : null,
+          distanceUnit: model.distance ? { value: model.distance.unit } : null,
+          resistance: model.resistance ? toDecimalDao(model.resistance) : null,
+          incline: model.incline ? toDecimalDao(model.incline) : null,
+        }),
   });
 }
 
-// Converts a PotentialSet to a PotentialSet DAO
+function toDateTimeDao(
+  model: LocalDateTime | undefined,
+): LiftLog.Ui.Models.DateTimeDao | null {
+  if (!model) {
+    return null;
+  }
+  return new LiftLog.Ui.Models.DateTimeDao({
+    date: toDateOnlyDao(model.toLocalDate()),
+    time: toTimeOnlyDao(model.toLocalTime()),
+  });
+}
+
 export function toPotentialSetDao(
   model: PotentialSet,
 ): LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2 {

@@ -1,4 +1,8 @@
-import { RecordedExercise, Session } from '@/models/session-models';
+import {
+  RecordedCardioExercise,
+  RecordedExercise,
+  Session,
+} from '@/models/session-models';
 import { addEffect } from '@/store/store';
 import { exportPlainText } from '@/store/settings';
 import Enumerable from 'linq';
@@ -63,6 +67,10 @@ class ExportedSetCsvRow {
     exercise: RecordedExercise,
     unit: string,
   ): ExportedSetCsvRow[] {
+    // TODO: What do we do about cardio?
+    if (exercise instanceof RecordedCardioExercise) {
+      return [];
+    }
     return exercise.potentialSets
       .filter((x) => x.set)
       .map(

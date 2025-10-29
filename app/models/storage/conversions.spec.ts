@@ -9,6 +9,7 @@ import {
   toSessionDao,
   toFeedIdentityDao,
   toFeedUserDao,
+  toDurationDao,
 } from '@/models/storage/conversions.to-dao';
 import {
   fromDecimalDao,
@@ -19,12 +20,14 @@ import {
   fromFeedIdentityDao,
   fromFeedUserDao,
   fromSessionHistoryDao,
+  fromDurationDao,
 } from '@/models/storage/conversions.from-dao';
 import BigNumber from 'bignumber.js';
 import fc from 'fast-check';
-import { LocalDate, LocalTime } from '@js-joda/core';
+import { Duration, LocalDate, LocalTime } from '@js-joda/core';
 import {
   BigNumberGenerator,
+  DurationGenerator,
   FeedIdentityGenerator,
   FeedUserGenerator,
   LocalDateGenerator,
@@ -32,7 +35,7 @@ import {
   SessionBlueprintGenerator,
   SessionGenerator,
 } from '@/models/storage/generators';
-import { LiftLog } from '@/gen/proto';
+import { google, LiftLog } from '@/gen/proto';
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { gunzipSync } from 'zlib';
@@ -44,6 +47,7 @@ describe('conversions', () => {
     name                  | protoType                                           | initialValueGenerator        | convertToDao             | convertFromDao             | assertEquals
     ${'Decimal'}          | ${Models.DecimalValue}                              | ${BigNumberGenerator}        | ${toDecimalDao}          | ${fromDecimalDao}          | ${(a: BigNumber, b: BigNumber) => expect(a.isEqualTo(b)).toBeTruthy()}
     ${'DateOnly'}         | ${Models.DateOnlyDao}                               | ${LocalDateGenerator}        | ${toDateOnlyDao}         | ${fromDateOnlyDao}         | ${(a: LocalDate, b: LocalDate) => expect(a.equals(b)).toBeTruthy()}
+    ${'Duration'}         | ${google.protobuf.Duration}                         | ${DurationGenerator}         | ${toDurationDao}         | ${fromDurationDao}         | ${(a: Duration, b: Duration) => expect(a.equals(b)).toBeTruthy()}
     ${'TimeOnly'}         | ${Models.TimeOnlyDao}                               | ${LocalTimeGenerator}        | ${toTimeOnlyDao}         | ${fromTimeOnlyDao}         | ${(a: LocalTime, b: LocalTime) => expect(a.equals(b)).toBeTruthy()}
     ${'SessionBlueprint'} | ${Models.SessionBlueprintDao.SessionBlueprintDaoV2} | ${SessionBlueprintGenerator} | ${toSessionBlueprintDao} | ${fromSessionBlueprintDao} | ${toPOJOEquals}
     ${'Session'}          | ${Models.SessionHistoryDao.SessionDaoV2}            | ${SessionGenerator}          | ${toSessionDao}          | ${fromSessionDao}          | ${toPOJOEquals}

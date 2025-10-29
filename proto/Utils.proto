@@ -29,3 +29,8 @@ message TimeOnlyDao {
     int32 millisecond = 4;
     int32 microsecond = 5;
 }
+
+message DateTimeDao {
+    DateOnlyDao date = 1;
+    TimeOnlyDao time = 2;
+}

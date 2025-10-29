@@ -1,7 +1,7 @@
 import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
 import ProgramListItem from '@/components/smart/program-list-item';
-import { ProgramBlueprint } from '@/models/session-models';
+import { ProgramBlueprint } from '@/models/blueprint-models';
 import { useAppSelector } from '@/store';
 import { savePlan, selectAllPrograms } from '@/store/program';
 import { uuid } from '@/utils/uuid';

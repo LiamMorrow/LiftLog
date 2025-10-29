@@ -95,6 +95,15 @@ import { msUnfoldLess } from '@material-symbols-react-native/outlined-400/msUnfo
 import { msUnfoldMore } from '@material-symbols-react-native/outlined-400/msUnfoldMore';
 import plusMinus from '../../assets/math-plus-minus.svg';
 import { SvgXml } from 'react-native-svg';
+import { msDirectionsRunFill } from '@material-symbols-react-native/outlined-400/msDirectionsRunFill';
+import { msTrailLength } from '@material-symbols-react-native/outlined-400/msTrailLength';
+import { msTimer } from '@material-symbols-react-native/outlined-400/msTimer';
+import { msTargetFill } from '@material-symbols-react-native/outlined-400/msTargetFill';
+import { msExerciseFill } from '@material-symbols-react-native/outlined-400/msExerciseFill';
+import { msAirlineSeatReclineExtraFill } from '@material-symbols-react-native/outlined-400/msAirlineSeatReclineExtraFill';
+import { msPauseCircle } from '@material-symbols-react-native/outlined-400/msPauseCircle';
+import { msPause } from '@material-symbols-react-native/outlined-400/msPause';
+import { JSX } from 'react';
 
 // Importing these icons using the below methods causes android app to crash
 // import { msAdd, msArrowDownward } from '@material-symbols-react-native/outlined-400';
@@ -144,6 +153,9 @@ const MaterialSymbols = {
   forumFill: msForumFill,
   search: msSearch,
   directionsRun: msDirectionsRun,
+  directionsRunFill: msDirectionsRunFill,
+  trailLength: msTrailLength,
+  timer: msTimer,
   settings: msSettings,
   settingsFill: msSettingsFill,
   analytics: msAnalytics,
@@ -201,6 +213,7 @@ const MaterialSymbols = {
   socialLeaderboardFill: msSocialLeaderboardFill,
   male: msMale,
   maleFill: msMaleFill,
+  exerciseFill: msExerciseFill,
   speed: msSpeed,
   speedFill: msSpeedFill,
   event: msEvent,
@@ -209,7 +222,17 @@ const MaterialSymbols = {
   monitorWeightFill: msMonitorWeightFill,
   person: msPerson,
   personFill: msPersonFill,
+  targetFill: msTargetFill,
+  pauseCircle: msPauseCircle,
+  airlineSeatReclineExtraFill: msAirlineSeatReclineExtraFill,
+
+  pause: msPause,
 };
+
+export type AppIconSource =
+  | keyof typeof MaterialSymbols
+  | keyof typeof CustomIcons
+  | (() => JSX.Element);
 
 export function MsIconSrc({ name, ...rest }: IconProps) {
   if ((name as keyof typeof CustomIcons) in CustomIcons) {

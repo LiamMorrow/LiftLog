@@ -33,7 +33,7 @@ describe('Creating a plan', () => {
       cy.navigate('Settings')
       cy.contains('Manage plans').click()
       cy.contains('Add plan').click()
-      cy.get('input',).first().click().clear().type('I am a new plan')
+      cy.get('input',).first().click().clear().type('I am a new plab{backspace}n')
 
       populatePlanFromEditPage(benchFromNewPlan)
     })
@@ -60,7 +60,7 @@ function populatePlanFromEditPage(exerciseName) {
   cy.dialog().findByTestId('exercise-name').clear().type(exerciseName)
   cy.dialog().findByTestId('exercise-reps').should('contain.text', '10').findByTestId('fixed-decrement').click()
   cy.dialog().findByTestId('exercise-sets').should('contain.text', '3').findByTestId('fixed-increment').click()
-  cy.dialog().findByTestId('exercise-auto-increase').findByTestId('editable-field').clear().type('4.5')
+  cy.dialog().findByTestId('exercise-auto-increase').clear().type('4.5')
   cy.dialog().findByTestId('exercise-superset').click()
   cy.dialog().contains('Long').click()
 
@@ -79,7 +79,7 @@ function assertPlanFromEditPage(exerciseName, workoutName) {
   cy.dialog().findByTestId('exercise-reps').should('contain.text', '9')
 
   //  TODO - this works manually, but fails in cypress.
-  cy.dialog().findByTestId('exercise-auto-increase').findByTestId('editable-field').should('have.value', '4.5')
+  cy.dialog().findByTestId('exercise-auto-increase').should('have.value', '4.5')
   cy.dialog().findByTestId('exercise-superset').children().find('[checked]')
   // Can't really test this in rn -manual verified it works
   cy.dialog().contains('Long')

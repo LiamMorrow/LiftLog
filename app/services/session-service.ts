@@ -1,11 +1,14 @@
 import {
-  ExerciseBlueprint,
   KeyedExerciseBlueprint,
   SessionBlueprint,
-} from '@/models/session-models';
+  ExerciseBlueprint,
+  CardioExerciseBlueprint,
+} from '@/models/blueprint-models';
 import {
   PotentialSet,
+  RecordedCardioExercise,
   RecordedExercise,
+  RecordedWeightedExercise,
   Session,
 } from '@/models/session-models';
 import { ProgressRepository } from '@/services/progress-repository';
@@ -101,12 +104,27 @@ export class SessionService {
       const lastExercise = latestRecordedExercises.get(
         KeyedExerciseBlueprint.fromExerciseBlueprint(e).toString(),
       );
-      const potentialSets: PotentialSet[] = match(lastExercise)
+      if (e instanceof CardioExerciseBlueprint) {
+        const cardioLastExercise =
+          lastExercise instanceof RecordedCardioExercise
+            ? lastExercise
+            : undefined;
+        return RecordedCardioExercise.empty(e).with({
+          incline: cardioLastExercise?.incline,
+          resistance: cardioLastExercise?.resistance,
+        });
+      }
+      const weightedLastExercise =
+        lastExercise instanceof RecordedWeightedExercise
+          ? lastExercise
+          : undefined;
+      const potentialSets: PotentialSet[] = match(weightedLastExercise)
         .returnType<PotentialSet[]>()
         .with(undefined, () =>
           Array.from({ length: e.sets }, () =>
             PotentialSet.fromPOJO({
-              weight: lastExercise?.potentialSets[0]?.weight ?? BigNumber(0),
+              weight:
+                weightedLastExercise?.potentialSets[0]?.weight ?? BigNumber(0),
               set: undefined,
             }),
           ),
@@ -128,7 +146,7 @@ export class SessionService {
           ),
         );
 
-      return new RecordedExercise(e, potentialSets, undefined, true);
+      return new RecordedWeightedExercise(e, potentialSets, undefined);
     }
     return new Session(
       uuid(),

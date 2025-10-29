@@ -3,7 +3,8 @@ import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
 import SplitCardControl from '@/components/presentation/split-card-control';
 import CopyWorkoutDialog from '@/components/smart/copy-workout-dialog';
-import { SessionBlueprint } from '@/models/session-models';
+import { SessionBlueprint } from '@/models/blueprint-models';
+import { Session } from '@/models/session-models';
 import { useAppSelectorWithArg } from '@/store';
 import { showSnackbar } from '@/store/app';
 import {
@@ -27,7 +28,7 @@ export default function ManageWorkoutCardContent({
   sessionBlueprint,
   programId,
 }: ManageWorkoutCardContentProps) {
-  const session = sessionBlueprint.getEmptySession();
+  const session = Session.getEmptySession(sessionBlueprint);
   return (
     <SplitCardControl
       titleContent={<SessionSummaryTitle session={session} isFilled={false} />}

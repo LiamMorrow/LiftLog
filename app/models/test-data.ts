@@ -1,87 +1,90 @@
-import { Rest, SessionBlueprint } from '@/models/session-models';
+import { Rest, SessionBlueprint } from '@/models/blueprint-models';
 import {
   PotentialSetPOJO,
-  RecordedExercise,
+  RecordedWeightedExercise,
   Session,
 } from '@/models/session-models';
 import { LocalDate } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
 
-export const benchPress: RecordedExercise = RecordedExercise.fromPOJO({
-  blueprint: {
-    name: 'Bench Press',
-    sets: 3,
-    repsPerSet: 10,
-    supersetWithNext: true,
-    link: '',
+export const benchPress: RecordedWeightedExercise =
+  RecordedWeightedExercise.fromPOJO({
+    blueprint: {
+      _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+      name: 'Bench Press',
+      sets: 3,
+      repsPerSet: 10,
+      supersetWithNext: true,
+      link: '',
+      notes: '',
+      restBetweenSets: Rest.medium,
+      weightIncreaseOnSuccess: new BigNumber('2.5'),
+    },
+    potentialSets: Enumerable.range(0, 10)
+      .select(
+        () =>
+          ({
+            _BRAND: 'POTENTIAL_SET_POJO',
+            weight: new BigNumber(100),
+            set: undefined,
+          }) satisfies PotentialSetPOJO,
+      )
+      .toArray(),
     notes: '',
-    restBetweenSets: Rest.medium,
-    weightIncreaseOnSuccess: new BigNumber('2.5'),
-  },
-  potentialSets: Enumerable.range(0, 10)
-    .select(
-      () =>
-        ({
-          _BRAND: 'POTENTIAL_SET_POJO',
-          weight: new BigNumber(100),
-          set: undefined,
-        }) satisfies PotentialSetPOJO,
-    )
-    .toArray(),
-  notes: '',
-  perSetWeight: true,
-});
+  });
 
-export const squats: RecordedExercise = RecordedExercise.fromPOJO({
-  blueprint: {
-    name: 'Squats',
-    sets: 3,
-    repsPerSet: 10,
-    supersetWithNext: true,
-    link: '',
+export const squats: RecordedWeightedExercise =
+  RecordedWeightedExercise.fromPOJO({
+    blueprint: {
+      _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+      name: 'Squats',
+      sets: 3,
+      repsPerSet: 10,
+      supersetWithNext: true,
+      link: '',
+      notes: '',
+      restBetweenSets: Rest.medium,
+      weightIncreaseOnSuccess: new BigNumber('5'),
+    },
+    potentialSets: Enumerable.range(0, 3)
+      .select(
+        () =>
+          ({
+            _BRAND: 'POTENTIAL_SET_POJO',
+            weight: new BigNumber(150),
+            set: undefined,
+          }) as const,
+      )
+      .toArray(),
     notes: '',
-    restBetweenSets: Rest.medium,
-    weightIncreaseOnSuccess: new BigNumber('5'),
-  },
-  potentialSets: Enumerable.range(0, 3)
-    .select(
-      () =>
-        ({
-          _BRAND: 'POTENTIAL_SET_POJO',
-          weight: new BigNumber(150),
-          set: undefined,
-        }) as const,
-    )
-    .toArray(),
-  notes: '',
-  perSetWeight: true,
-});
+  });
 
-export const overheadPress: RecordedExercise = RecordedExercise.fromPOJO({
-  blueprint: {
-    name: 'Overhead Press',
-    sets: 3,
-    repsPerSet: 10,
-    supersetWithNext: true,
-    link: '',
+export const overheadPress: RecordedWeightedExercise =
+  RecordedWeightedExercise.fromPOJO({
+    blueprint: {
+      _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+      name: 'Overhead Press',
+      sets: 3,
+      repsPerSet: 10,
+      supersetWithNext: true,
+      link: '',
+      notes: '',
+      restBetweenSets: Rest.medium,
+      weightIncreaseOnSuccess: new BigNumber('2.5'),
+    },
+    potentialSets: Enumerable.range(0, 3)
+      .select(
+        () =>
+          ({
+            _BRAND: 'POTENTIAL_SET_POJO',
+            weight: new BigNumber(75),
+            set: undefined,
+          }) as const,
+      )
+      .toArray(),
     notes: '',
-    restBetweenSets: Rest.medium,
-    weightIncreaseOnSuccess: new BigNumber('2.5'),
-  },
-  potentialSets: Enumerable.range(0, 3)
-    .select(
-      () =>
-        ({
-          _BRAND: 'POTENTIAL_SET_POJO',
-          weight: new BigNumber(75),
-          set: undefined,
-        }) as const,
-    )
-    .toArray(),
-  notes: '',
-  perSetWeight: true,
-});
+  });
 
 export const defaultSessionBlueprint: SessionBlueprint =
   SessionBlueprint.fromPOJO({

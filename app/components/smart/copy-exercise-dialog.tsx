@@ -1,5 +1,5 @@
 import { spacing } from '@/hooks/useAppTheme';
-import { ExerciseBlueprint, SessionBlueprint } from '@/models/session-models';
+import { ExerciseBlueprint, SessionBlueprint } from '@/models/blueprint-models';
 import { useAppSelectorWithArg } from '@/store';
 import { showSnackbar } from '@/store/app';
 import { selectProgram, setProgramSession } from '@/store/program';

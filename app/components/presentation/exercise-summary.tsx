@@ -1,8 +1,15 @@
+import { formatCardioTarget } from '@/components/presentation/exercise-blueprint-summary';
+import { formatTimeSpan } from '@/components/presentation/rest-format';
 import { SurfaceText } from '@/components/presentation/surface-text';
 import WeightFormat from '@/components/presentation/weight-format';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { RecordedExercise } from '@/models/session-models';
+import {
+  RecordedExercise,
+  RecordedWeightedExercise,
+} from '@/models/session-models';
+import { formatDistance } from '@/utils/distance';
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
+import { isNotNullOrUndefined } from '@/utils/null';
 import { DateTimeFormatter } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
@@ -66,40 +73,80 @@ function FilledChips(props: {
   exercise: RecordedExercise;
   showWeight: boolean;
 }) {
-  return getWeightAndRepsChips(props.exercise).map((chip, index) => (
-    <Chip key={index}>
-      <SurfaceText>{chip.repsCompleted?.toString() ?? '-'}</SurfaceText>
-      {props.showWeight ? (
-        <>
-          <SurfaceText font="text-2xs" color="onSurface">
-            @
-          </SurfaceText>
-          <WeightFormat color="onSurface" weight={chip.weight} />
-        </>
-      ) : undefined}
-    </Chip>
-  ));
+  if (props.exercise instanceof RecordedWeightedExercise) {
+    return getWeightAndRepsChips(props.exercise).map((chip, index) => (
+      <Chip key={index}>
+        <SurfaceText>{chip.repsCompleted?.toString() ?? '-'}</SurfaceText>
+        {props.showWeight ? (
+          <>
+            <SurfaceText font="text-2xs" color="onSurface">
+              @
+            </SurfaceText>
+            <WeightFormat color="onSurface" weight={chip.weight} />
+          </>
+        ) : undefined}
+      </Chip>
+    ));
+  }
+  return [
+    props.exercise.duration && (
+      <Chip key="duration">
+        <SurfaceText>{formatTimeSpan(props.exercise.duration)}</SurfaceText>
+      </Chip>
+    ),
+
+    props.exercise.distance && (
+      <Chip key="distance">
+        <SurfaceText>{formatDistance(props.exercise.distance)}</SurfaceText>
+      </Chip>
+    ),
+
+    props.exercise.incline && (
+      <Chip key="incline">
+        <SurfaceText>
+          {localeFormatBigNumber(props.exercise.incline)} incl
+        </SurfaceText>
+      </Chip>
+    ),
+
+    props.exercise.resistance && (
+      <Chip key="resistance">
+        <SurfaceText>
+          {localeFormatBigNumber(props.exercise.resistance)} res
+        </SurfaceText>
+      </Chip>
+    ),
+  ].filter(isNotNullOrUndefined);
 }
 
 function PlannedChips(props: {
   exercise: RecordedExercise;
   showWeight: boolean;
 }) {
-  return getPlannedChipData(props.exercise).map((chip, index) => (
-    <Chip key={index}>
-      <SurfaceText color="onSurface">
-        {chip.numSets}x{chip.repTarget}
+  if (props.exercise instanceof RecordedWeightedExercise) {
+    return getPlannedChipData(props.exercise).map((chip, index) => (
+      <Chip key={index}>
+        <SurfaceText color="onSurface">
+          {chip.numSets}x{chip.repTarget}
+        </SurfaceText>
+        {props.showWeight ? (
+          <>
+            <SurfaceText color="onSurface" font="text-2xs">
+              @
+            </SurfaceText>
+            <WeightFormat color="onSurface" weight={chip.weight} />
+          </>
+        ) : undefined}
+      </Chip>
+    ));
+  }
+  return (
+    <Chip>
+      <SurfaceText>
+        {formatCardioTarget(props.exercise.blueprint.target)}
       </SurfaceText>
-      {props.showWeight ? (
-        <>
-          <SurfaceText color="onSurface" font="text-2xs">
-            @
-          </SurfaceText>
-          <WeightFormat color="onSurface" weight={chip.weight} />
-        </>
-      ) : undefined}
     </Chip>
-  ));
+  );
 }
 
 export default function ExerciseSummary({
@@ -126,9 +173,7 @@ export default function ExerciseSummary({
       ) : undefined}
       {showDate ? (
         <SurfaceText>
-          {exercise.lastRecordedSet?.set?.completionDateTime.format(
-            DateTimeFormatter.ISO_DATE,
-          )}
+          {exercise.latestTime?.format(DateTimeFormatter.ISO_DATE)}
         </SurfaceText>
       ) : undefined}
       <ChipScroller>
@@ -155,7 +200,7 @@ interface PotentialSetChipData {
 }
 
 function getWeightAndRepsChips(
-  exercise: RecordedExercise,
+  exercise: RecordedWeightedExercise,
 ): WeightAndRepsChipData[] {
   return exercise.potentialSets.map((set) => ({
     repsCompleted: set.set?.repsCompleted,
@@ -165,7 +210,7 @@ function getWeightAndRepsChips(
 }
 
 function getPlannedChipData(
-  exercise: RecordedExercise,
+  exercise: RecordedWeightedExercise,
 ): PotentialSetChipData[] {
   return Enumerable.from(exercise.potentialSets)
     .groupBy((x) => localeFormatBigNumber(x.weight))

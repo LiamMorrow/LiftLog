@@ -1,14 +1,14 @@
-import LimitedHtml from '@/components/presentation/limited-html';
-import RestEditor from '@/components/presentation/rest-editor';
+import DurationEditor from '@/components/presentation/duration-editor';
 import RestFormat from '@/components/presentation/rest-format';
-import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
-import { Rest } from '@/models/session-models';
+import { useAppTheme, spacing } from '@/hooks/useAppTheme';
+import { Rest } from '@/models/blueprint-models';
 import { Duration } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { SegmentedButtons } from 'react-native-paper';
 import { match } from 'ts-pattern';
+import LabelledFormRow from '@/components/presentation/labelled-form-row';
 
 type ButtonValues = keyof typeof Rest | 'custom';
 
@@ -48,37 +48,29 @@ export default function RestEditorGroup(props: RestEditorGroupProps) {
           gap: spacing[2],
         }}
       >
-        <RestEditor
+        <DurationEditor
           label={t('MinRest')}
-          rest={rest.minRest}
-          onRestUpdated={updateRest('minRest')}
+          duration={rest.minRest}
+          onDurationUpdated={updateRest('minRest')}
         />
-        <RestEditor
+        <DurationEditor
           label={t('MaxRest')}
-          rest={rest.maxRest}
-          onRestUpdated={updateRest('maxRest')}
+          duration={rest.maxRest}
+          onDurationUpdated={updateRest('maxRest')}
         />
-        <RestEditor
+        <DurationEditor
           label={t('FailureRest')}
-          rest={rest.failureRest}
-          onRestUpdated={updateRest('failureRest')}
+          duration={rest.failureRest}
+          onDurationUpdated={updateRest('failureRest')}
         />
       </View>
     ) : (
-      <View>
+      <View style={{ marginTop: spacing[4] }}>
         <RestFormat style={{ color: colors.onSurface }} rest={rest} />
       </View>
     );
   return (
-    <View style={{ gap: spacing[5] }}>
-      <LimitedHtml
-        style={{
-          ...font['text-lg'],
-          color: colors.onSurface,
-          marginLeft: spacing[4],
-        }}
-        value={t('RestSingular', { 0: '' })}
-      />
+    <LabelledFormRow label={t('Rest')} icon="airlineSeatReclineExtraFill">
       <View style={{ width: '100%' }}>
         <SegmentedButtons
           style={{ width: '100%' }}
@@ -105,6 +97,6 @@ export default function RestEditorGroup(props: RestEditorGroupProps) {
         />
       </View>
       {customView}
-    </View>
+    </LabelledFormRow>
   );
 }

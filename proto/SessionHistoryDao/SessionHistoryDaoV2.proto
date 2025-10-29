@@ -20,11 +20,24 @@ message SessionDaoV2 {
 
 
 message RecordedExerciseDaoV2 {
+    // Common
     LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2 exercise_blueprint = 1;
-    optional LiftLog.Ui.Models.DecimalValue weight = 2; // deprecated
-    repeated PotentialSetDaoV2 potential_sets = 3;
+    ExerciseType type = 6;
     optional google.protobuf.StringValue notes = 4;
-    bool per_set_weight = 5;
+
+    // Weighted
+    reserved 2; // was weight
+    repeated PotentialSetDaoV2 potential_sets = 3;
+    reserved 5; // Per set weight
+
+    // Cardio
+    optional LiftLog.Ui.Models.DateTimeDao started_at = 7;
+    optional LiftLog.Ui.Models.DateTimeDao completion_date_time = 8;
+    optional google.protobuf.Duration duration = 9;
+    optional LiftLog.Ui.Models.DecimalValue distance_value = 10;
+    optional google.protobuf.StringValue distance_unit = 14;
+    optional LiftLog.Ui.Models.DecimalValue resistance = 11;
+    optional LiftLog.Ui.Models.DecimalValue incline = 12;
 }
 
 message PotentialSetDaoV2 {

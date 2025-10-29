@@ -17,7 +17,7 @@ import {
   SessionFeedItem,
   RemovedSessionFeedItem,
 } from '@/models/feed-models';
-import { Session, SessionBlueprint } from '@/models/session-models';
+import { Session } from '@/models/session-models';
 import {
   GetEventsRequest,
   GetUsersRequest,
@@ -36,6 +36,7 @@ import {
 import { EncryptionService } from '@/services/encryption-service';
 import { FeedApiService } from '@/services/feed-api';
 import { selectSession } from '@/store/stored-sessions';
+import { SessionBlueprint } from '@/models/blueprint-models';
 
 const MIN_TIMESTAMP = Instant.parse('2000-01-01T00:00:00Z');
 
