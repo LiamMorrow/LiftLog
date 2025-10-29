@@ -1,8 +1,9 @@
+import Button from '@/components/presentation/gesture-wrappers/button';
 import { T } from '@tolgee/react';
 import { useEffect, useState } from 'react';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
-import { Portal, Dialog, Button, TextInput } from 'react-native-paper';
+import { Portal, Dialog, TextInput } from 'react-native-paper';
 
 export default function RecordedExerciseNotesEditor(props: {
   exerciseName: string;

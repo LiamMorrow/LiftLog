@@ -3,12 +3,13 @@ import { spacing } from '@/hooks/useAppTheme';
 import { RecordedExercise } from '@/models/session-models';
 import { ReactNode, useState } from 'react';
 import { View } from 'react-native';
-import { IconButton, Menu, Tooltip } from 'react-native-paper';
+import { Menu, Tooltip } from 'react-native-paper';
 import { useTranslate } from '@tolgee/react';
-import PreviousExerciseViewer from '@/components/presentation/previous-exercixe-viewer';
+import PreviousExerciseViewer from '@/components/presentation/previous-exercise-viewer';
 import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import ExerciseNotesDisplay from '@/components/presentation/exercise-notes-display';
 import RecordedExerciseNotesEditor from '@/components/presentation/recorded-exercise-notes-editor';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 
 interface ExerciseSectionProps {
   recordedExercise: RecordedExercise;
