@@ -111,7 +111,6 @@ export class Session {
               undefined,
               undefined,
               undefined,
-              undefined,
             ),
         )
         .exhaustive();
@@ -299,6 +298,14 @@ export class Session {
       .maxBy((x) => x.latestTime?.toInstant(ZoneOffset.UTC).toEpochMilli());
   }
 
+  get latestWeightedExercise(): RecordedWeightedExercise | undefined {
+    return Enumerable.from(this.recordedExercises)
+      .where((x) => x.isStarted)
+      .where((x) => x instanceof RecordedWeightedExercise)
+      .defaultIfEmpty(undefined)
+      .maxBy((x) => x.latestTime?.toInstant(ZoneOffset.UTC).toEpochMilli());
+  }
+
   get firstExercise(): RecordedExercise | undefined {
     return Enumerable.from(this.recordedExercises)
       .where((x) => x.isStarted)
@@ -354,7 +361,6 @@ export function createEmptyRecordedExercise(blueprint: ExerciseBlueprint) {
 export interface RecordedCardioExercisePOJO {
   _BRAND: 'RECORDED_CARDIO_EXERCISE_POJO';
   blueprint: CardioExerciseBlueprintPOJO;
-  startedAt: LocalDateTime | undefined;
   completionDateTime: LocalDateTime | undefined;
   duration: Duration | undefined;
   distance: Distance | undefined;
@@ -364,7 +370,6 @@ export interface RecordedCardioExercisePOJO {
 }
 export class RecordedCardioExercise {
   readonly blueprint: CardioExerciseBlueprint;
-  readonly startedAt: LocalDateTime | undefined;
   readonly completionDateTime: LocalDateTime | undefined;
   readonly duration: Duration | undefined;
   readonly distance: Distance | undefined;
@@ -378,7 +383,6 @@ export class RecordedCardioExercise {
   constructor();
   constructor(
     blueprint: CardioExerciseBlueprint,
-    startedAt: LocalDateTime | undefined,
     completionDateTime: LocalDateTime | undefined,
     duration: Duration | undefined,
     distance: Distance | undefined,
@@ -388,7 +392,6 @@ export class RecordedCardioExercise {
   );
   constructor(
     blueprint?: CardioExerciseBlueprint,
-    startedAt?: LocalDateTime,
     completionDateTime?: LocalDateTime,
     duration?: Duration,
     distance?: Distance,
@@ -397,7 +400,6 @@ export class RecordedCardioExercise {
     notes?: string,
   ) {
     this.blueprint = blueprint!;
-    this.startedAt = startedAt!;
     this.completionDateTime = completionDateTime;
     this.duration = duration;
     this.distance = distance;
@@ -411,7 +413,6 @@ export class RecordedCardioExercise {
   ): RecordedCardioExercise {
     return new RecordedCardioExercise(
       CardioExerciseBlueprint.fromPOJO(pojo.blueprint),
-      pojo.startedAt,
       pojo.completionDateTime,
       pojo.duration,
       pojo.distance,
@@ -430,7 +431,6 @@ export class RecordedCardioExercise {
       undefined,
       undefined,
       undefined,
-      undefined,
     );
   }
 
@@ -439,15 +439,15 @@ export class RecordedCardioExercise {
   }
 
   get isStarted() {
-    return !!this.startedAt || !!this.completionDateTime;
+    return !!this.completionDateTime;
   }
 
   get latestTime(): LocalDateTime | undefined {
-    return this.completionDateTime ?? this.startedAt;
+    return this.completionDateTime;
   }
 
   get earliestTime(): LocalDateTime | undefined {
-    return this.startedAt ?? this.completionDateTime;
+    return this.completionDateTime;
   }
 
   withNothingCompleted(): RecordedCardioExercise {
@@ -472,7 +472,7 @@ export class RecordedCardioExercise {
       return false;
     }
     return (
-      this.blueprint === other.blueprint &&
+      this.blueprint.equals(other.blueprint) &&
       ((this.completionDateTime &&
         other.completionDateTime &&
         this.completionDateTime.equals(other.completionDateTime)) ||
@@ -499,7 +499,6 @@ export class RecordedCardioExercise {
   ): RecordedCardioExercise {
     return new RecordedCardioExercise(
       CardioExerciseBlueprint.fromPOJO(other.blueprint ?? this.blueprint),
-      other.startedAt ?? this.startedAt,
       other.completionDateTime ?? this.completionDateTime,
       other.duration ?? this.duration,
       other.distance ?? this.distance,
@@ -513,7 +512,6 @@ export class RecordedCardioExercise {
     return {
       _BRAND: 'RECORDED_CARDIO_EXERCISE_POJO',
       blueprint: this.blueprint.toPOJO(),
-      startedAt: this.startedAt,
       completionDateTime: this.completionDateTime,
       duration: this.duration,
       distance: this.distance,

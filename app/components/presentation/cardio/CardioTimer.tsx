@@ -11,10 +11,8 @@ import { match, P } from 'ts-pattern';
 export function CardioTimer({
   recordedExercise,
   updateDuration,
-  updateStartedAt,
 }: {
   recordedExercise: RecordedCardioExercise;
-  updateStartedAt: (startedAt: LocalDateTime | undefined) => void;
   updateDuration: (duration: Duration | undefined) => void;
 }) {
   const playPauseButtonSize = 24;
@@ -59,9 +57,6 @@ export function CardioTimer({
   const handlePlay = () => {
     const now = LocalDateTime.now();
     setCurrentBlockStartTime(now);
-    if (!recordedExercise.startedAt) {
-      updateStartedAt(now);
-    }
   };
   const handlePause = () => {
     if (!currentBlockStartTime) {

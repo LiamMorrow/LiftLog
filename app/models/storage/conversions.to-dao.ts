@@ -269,7 +269,6 @@ export function toRecordedExerciseDao(
         }
       : {
           type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO,
-          startedAt: toDateTimeDao(model.startedAt),
           completionDateTime: toDateTimeDao(model.completionDateTime),
           duration: toDurationDao(model.duration),
           distanceValue: model.distance

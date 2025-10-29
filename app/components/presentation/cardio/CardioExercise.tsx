@@ -10,7 +10,7 @@ import {
 import { T, useTranslate } from '@tolgee/react';
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
 import { useState } from 'react';
-import { Duration, LocalDateTime } from '@js-joda/core';
+import { Duration } from '@js-joda/core';
 import Reanimated, {
   FadeIn,
   FadeOut,
@@ -38,7 +38,6 @@ interface CardioExerciseProps {
   isReadonly: boolean;
   showPreviousButton: boolean;
 
-  updateStartedAt: (startedAt: LocalDateTime | undefined) => void;
   updateDuration: (duration: Duration | undefined) => void;
   updateDistance: (distance: Distance | undefined) => void;
   updateIncline: (incline: BigNumber | undefined) => void;
@@ -53,7 +52,6 @@ export function CardioExercise(props: CardioExerciseProps) {
   const timer = props.recordedExercise.duration && (
     <CardioTimer
       recordedExercise={props.recordedExercise}
-      updateStartedAt={props.updateStartedAt}
       updateDuration={props.updateDuration}
     />
   );

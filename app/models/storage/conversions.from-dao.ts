@@ -190,7 +190,6 @@ function fromRecordedExerciseDao(
             }
           : undefined,
       duration: fromDurationDao(dao.duration),
-      startedAt: fromDateTimeDao(dao.startedAt),
       completionDateTime: fromDateTimeDao(dao.completionDateTime),
       incline: fromDecimalDao(dao.incline),
       resistance: fromDecimalDao(dao.resistance),

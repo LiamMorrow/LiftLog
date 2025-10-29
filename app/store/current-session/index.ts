@@ -134,11 +134,6 @@ const currentSessionSlice = createSlice({
               .toLocalTime()
               .atDate(getAdjustedDate(re.completionDateTime.toLocalDate()));
           }
-          if (re.startedAt) {
-            re.startedAt = re.startedAt
-              .toLocalTime()
-              .atDate(getAdjustedDate(re.startedAt.toLocalDate()));
-          }
         }
       });
     }),
@@ -408,16 +403,17 @@ const currentSessionSlice = createSlice({
         exercise.distance = action.distance;
       },
     ),
-    updateStartedAtForCardioExercise: targetedSessionAction(
+
+    setCompletionTimeForCardioExercise: targetedSessionAction(
       (
         session,
-        action: { startedAt: LocalDateTime | undefined; exerciseIndex: number },
+        action: { time: LocalDateTime | undefined; exerciseIndex: number },
       ) => {
         const exercise = session.recordedExercises[action.exerciseIndex];
         if (exercise._BRAND !== 'RECORDED_CARDIO_EXERCISE_POJO') {
           return;
         }
-        exercise.startedAt = action.startedAt;
+        exercise.completionDateTime = action.time;
       },
     ),
   },
@@ -475,7 +471,7 @@ export const {
   updateDistanceForCardioExercise,
   updateInclineForCardioExercise,
   updateResistanceForCardioExercise,
-  updateStartedAtForCardioExercise,
+  setCompletionTimeForCardioExercise,
 } = currentSessionSlice.actions;
 
 export const currentSessionReducer = currentSessionSlice.reducer;

@@ -6,6 +6,7 @@ import {
   removeExercise,
   selectCurrentSession,
   SessionTarget,
+  setCompletionTimeForCardioExercise,
   setExerciseReps,
   setWorkoutSessionLastSetTime,
   updateBodyweight,
@@ -14,11 +15,10 @@ import {
   updateInclineForCardioExercise,
   updateNotesForExercise,
   updateResistanceForCardioExercise,
-  updateStartedAtForCardioExercise,
   updateWeightForSet,
 } from '@/store/current-session';
 import { Card, FAB, Icon, Text } from 'react-native-paper';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useStore } from 'react-redux';
 import { Linking, View } from 'react-native';
 import EmptyInfo from '@/components/presentation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
@@ -61,6 +61,7 @@ export default function SessionComponent(props: {
     (s) => s.currentSession.workoutSessionLastSetTime,
   );
   const session = useAppSelectorWithArg(selectCurrentSession, props.target);
+  const store = useStore();
   const storeDispatch = useDispatch();
   const dispatch = <T,>(
     reducer: (a: { payload: T; target: SessionTarget }) => UnknownAction,
@@ -131,6 +132,42 @@ export default function SessionComponent(props: {
       </Card.Content>
     </Card>
   ) : null;
+
+  const updateCompletionTimeAndClearTimer = <T,>(
+    exerciseIndex: number,
+    cb: (arg: T) => void,
+  ) => {
+    return (arg: T) => {
+      cb(arg);
+      const exercise = selectCurrentSession(store.getState(), props.target)
+        ?.recordedExercises[exerciseIndex];
+      if (!(exercise instanceof RecordedCardioExercise)) {
+        return;
+      }
+      const hasData = !!(
+        exercise.distance ||
+        exercise.duration ||
+        exercise.incline ||
+        exercise.resistance
+      );
+      const newCompletionDateTime = hasData
+        ? (exercise.completionDateTime ?? LocalDateTime.now())
+        : undefined;
+
+      dispatch(setCompletionTimeForCardioExercise, {
+        exerciseIndex,
+        time: newCompletionDateTime,
+      });
+
+      if (props.target === 'workoutSession') {
+        const newWorkoutTime = hasData
+          ? undefined
+          : session.latestWeightedExercise?.latestTime;
+        storeDispatch(setWorkoutSessionLastSetTime(newWorkoutTime));
+        storeDispatch(notifySetTimer());
+      }
+    };
+  };
 
   const emptyInfo =
     session.recordedExercises.length === 0 ? (
@@ -209,36 +246,32 @@ export default function SessionComponent(props: {
         <CardioExercise
           recordedExercise={item}
           toStartNext={session.nextExercise === item}
-          updateDistance={(distance) =>
+          updateDistance={updateCompletionTimeAndClearTimer(index, (distance) =>
             dispatch(updateDistanceForCardioExercise, {
               distance,
               exerciseIndex: index,
-            })
-          }
-          updateDuration={(duration) =>
+            }),
+          )}
+          updateDuration={updateCompletionTimeAndClearTimer(index, (duration) =>
             dispatch(updateDurationForCardioExercise, {
               duration,
               exerciseIndex: index,
-            })
-          }
-          updateIncline={(incline) =>
+            }),
+          )}
+          updateIncline={updateCompletionTimeAndClearTimer(index, (incline) =>
             dispatch(updateInclineForCardioExercise, {
               incline,
               exerciseIndex: index,
-            })
-          }
-          updateResistance={(resistance) =>
-            dispatch(updateResistanceForCardioExercise, {
-              resistance,
-              exerciseIndex: index,
-            })
-          }
-          updateStartedAt={(startedAt) =>
-            dispatch(updateStartedAtForCardioExercise, {
-              startedAt,
-              exerciseIndex: index,
-            })
-          }
+            }),
+          )}
+          updateResistance={updateCompletionTimeAndClearTimer(
+            index,
+            (resistance) =>
+              dispatch(updateResistanceForCardioExercise, {
+                resistance,
+                exerciseIndex: index,
+              }),
+          )}
           updateNotesForExercise={(notes) =>
             dispatch(updateNotesForExercise, { notes, exerciseIndex: index })
           }
