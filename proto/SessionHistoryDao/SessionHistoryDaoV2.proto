@@ -31,7 +31,6 @@ message RecordedExerciseDaoV2 {
     reserved 5; // Per set weight
 
     // Cardio
-    optional LiftLog.Ui.Models.DateTimeDao started_at = 7;
     optional LiftLog.Ui.Models.DateTimeDao completion_date_time = 8;
     optional google.protobuf.Duration duration = 9;
     optional LiftLog.Ui.Models.DecimalValue distance_value = 10;

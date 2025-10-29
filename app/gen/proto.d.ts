@@ -909,9 +909,6 @@ export namespace LiftLog {
                     /** RecordedExerciseDaoV2 potentialSets */
                     potentialSets?: (LiftLog.Ui.Models.SessionHistoryDao.IPotentialSetDaoV2[]|null);
 
-                    /** RecordedExerciseDaoV2 startedAt */
-                    startedAt?: (LiftLog.Ui.Models.IDateTimeDao|null);
-
                     /** RecordedExerciseDaoV2 completionDateTime */
                     completionDateTime?: (LiftLog.Ui.Models.IDateTimeDao|null);
 
@@ -952,9 +949,6 @@ export namespace LiftLog {
                     /** RecordedExerciseDaoV2 potentialSets. */
                     public potentialSets: LiftLog.Ui.Models.SessionHistoryDao.IPotentialSetDaoV2[];
 
-                    /** RecordedExerciseDaoV2 startedAt. */
-                    public startedAt?: (LiftLog.Ui.Models.IDateTimeDao|null);
-
                     /** RecordedExerciseDaoV2 completionDateTime. */
                     public completionDateTime?: (LiftLog.Ui.Models.IDateTimeDao|null);
 
@@ -975,9 +969,6 @@ export namespace LiftLog {
 
                     /** RecordedExerciseDaoV2 _notes. */
                     public _notes?: "notes";
-
-                    /** RecordedExerciseDaoV2 _startedAt. */
-                    public _startedAt?: "startedAt";
 
                     /** RecordedExerciseDaoV2 _completionDateTime. */
                     public _completionDateTime?: "completionDateTime";

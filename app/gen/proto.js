@@ -2232,7 +2232,6 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @property {LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType|null} [type] RecordedExerciseDaoV2 type
                      * @property {google.protobuf.IStringValue|null} [notes] RecordedExerciseDaoV2 notes
                      * @property {Array.<LiftLog.Ui.Models.SessionHistoryDao.IPotentialSetDaoV2>|null} [potentialSets] RecordedExerciseDaoV2 potentialSets
-                     * @property {LiftLog.Ui.Models.IDateTimeDao|null} [startedAt] RecordedExerciseDaoV2 startedAt
                      * @property {LiftLog.Ui.Models.IDateTimeDao|null} [completionDateTime] RecordedExerciseDaoV2 completionDateTime
                      * @property {google.protobuf.IDuration|null} [duration] RecordedExerciseDaoV2 duration
                      * @property {LiftLog.Ui.Models.IDecimalValue|null} [distanceValue] RecordedExerciseDaoV2 distanceValue
@@ -2288,14 +2287,6 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @instance
                      */
                     RecordedExerciseDaoV2.prototype.potentialSets = $util.emptyArray;
-
-                    /**
-                     * RecordedExerciseDaoV2 startedAt.
-                     * @member {LiftLog.Ui.Models.IDateTimeDao|null|undefined} startedAt
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
-                     * @instance
-                     */
-                    RecordedExerciseDaoV2.prototype.startedAt = null;
 
                     /**
                      * RecordedExerciseDaoV2 completionDateTime.
@@ -2356,17 +2347,6 @@ export const LiftLog = $root.LiftLog = (() => {
                      */
                     Object.defineProperty(RecordedExerciseDaoV2.prototype, "_notes", {
                         get: $util.oneOfGetter($oneOfFields = ["notes"]),
-                        set: $util.oneOfSetter($oneOfFields)
-                    });
-
-                    /**
-                     * RecordedExerciseDaoV2 _startedAt.
-                     * @member {"startedAt"|undefined} _startedAt
-                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
-                     * @instance
-                     */
-                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_startedAt", {
-                        get: $util.oneOfGetter($oneOfFields = ["startedAt"]),
                         set: $util.oneOfSetter($oneOfFields)
                     });
 
@@ -2469,8 +2449,6 @@ export const LiftLog = $root.LiftLog = (() => {
                             $root.google.protobuf.StringValue.encode(message.notes, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
                         if (message.type != null && Object.hasOwnProperty.call(message, "type"))
                             writer.uint32(/* id 6, wireType 0 =*/48).int32(message.type);
-                        if (message.startedAt != null && Object.hasOwnProperty.call(message, "startedAt"))
-                            $root.LiftLog.Ui.Models.DateTimeDao.encode(message.startedAt, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
                         if (message.completionDateTime != null && Object.hasOwnProperty.call(message, "completionDateTime"))
                             $root.LiftLog.Ui.Models.DateTimeDao.encode(message.completionDateTime, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
                         if (message.duration != null && Object.hasOwnProperty.call(message, "duration"))
@@ -2535,10 +2513,6 @@ export const LiftLog = $root.LiftLog = (() => {
                                     if (!(message.potentialSets && message.potentialSets.length))
                                         message.potentialSets = [];
                                     message.potentialSets.push($root.LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2.decode(reader, reader.uint32()));
-                                    break;
-                                }
-                            case 7: {
-                                    message.startedAt = $root.LiftLog.Ui.Models.DateTimeDao.decode(reader, reader.uint32());
                                     break;
                                 }
                             case 8: {
@@ -2629,14 +2603,6 @@ export const LiftLog = $root.LiftLog = (() => {
                                 let error = $root.LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2.verify(message.potentialSets[i]);
                                 if (error)
                                     return "potentialSets." + error;
-                            }
-                        }
-                        if (message.startedAt != null && message.hasOwnProperty("startedAt")) {
-                            properties._startedAt = 1;
-                            {
-                                let error = $root.LiftLog.Ui.Models.DateTimeDao.verify(message.startedAt);
-                                if (error)
-                                    return "startedAt." + error;
                             }
                         }
                         if (message.completionDateTime != null && message.hasOwnProperty("completionDateTime")) {
@@ -2738,11 +2704,6 @@ export const LiftLog = $root.LiftLog = (() => {
                                 message.potentialSets[i] = $root.LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2.fromObject(object.potentialSets[i]);
                             }
                         }
-                        if (object.startedAt != null) {
-                            if (typeof object.startedAt !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.startedAt: object expected");
-                            message.startedAt = $root.LiftLog.Ui.Models.DateTimeDao.fromObject(object.startedAt);
-                        }
                         if (object.completionDateTime != null) {
                             if (typeof object.completionDateTime !== "object")
                                 throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.completionDateTime: object expected");
@@ -2809,11 +2770,6 @@ export const LiftLog = $root.LiftLog = (() => {
                         }
                         if (message.type != null && message.hasOwnProperty("type"))
                             object.type = options.enums === String ? $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType[message.type] === undefined ? message.type : $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType[message.type] : message.type;
-                        if (message.startedAt != null && message.hasOwnProperty("startedAt")) {
-                            object.startedAt = $root.LiftLog.Ui.Models.DateTimeDao.toObject(message.startedAt, options);
-                            if (options.oneofs)
-                                object._startedAt = "startedAt";
-                        }
                         if (message.completionDateTime != null && message.hasOwnProperty("completionDateTime")) {
                             object.completionDateTime = $root.LiftLog.Ui.Models.DateTimeDao.toObject(message.completionDateTime, options);
                             if (options.oneofs)
