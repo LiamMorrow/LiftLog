@@ -38,7 +38,7 @@ describe('Completing a session', () => {
       cy.getByTestId('session-summary').should('contain.text', '7.5kg')
     })
 
-    it.only('can complete one with cardio', () => {
+    it('can complete one with cardio', () => {
       cy.getByTestId('session-more').click()
       cy.getByTestId('session-add-exercise').click()
       cy.dialog().find('input').first().click().type('Jogging (time only)')
