@@ -1,4 +1,5 @@
 import { formatCardioTarget } from '@/components/presentation/exercise-blueprint-summary';
+import { formatTimeSpan } from '@/components/presentation/rest-format';
 import { SurfaceText } from '@/components/presentation/surface-text';
 import WeightFormat from '@/components/presentation/weight-format';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
@@ -6,7 +7,9 @@ import {
   RecordedExercise,
   RecordedWeightedExercise,
 } from '@/models/session-models';
+import { formatDistance } from '@/utils/distance';
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
+import { isNotNullOrUndefined } from '@/utils/null';
 import { DateTimeFormatter } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
@@ -85,13 +88,35 @@ function FilledChips(props: {
       </Chip>
     ));
   }
-  return (
-    <Chip>
-      <SurfaceText>
-        {formatCardioTarget(props.exercise.blueprint.target)}
-      </SurfaceText>
-    </Chip>
-  );
+  return [
+    props.exercise.duration && (
+      <Chip key="duration">
+        <SurfaceText>{formatTimeSpan(props.exercise.duration)}</SurfaceText>
+      </Chip>
+    ),
+
+    props.exercise.distance && (
+      <Chip key="distance">
+        <SurfaceText>{formatDistance(props.exercise.distance)}</SurfaceText>
+      </Chip>
+    ),
+
+    props.exercise.incline && (
+      <Chip key="incline">
+        <SurfaceText>
+          {localeFormatBigNumber(props.exercise.incline)} incl
+        </SurfaceText>
+      </Chip>
+    ),
+
+    props.exercise.resistance && (
+      <Chip key="resistance">
+        <SurfaceText>
+          {localeFormatBigNumber(props.exercise.resistance)} res
+        </SurfaceText>
+      </Chip>
+    ),
+  ].filter(isNotNullOrUndefined);
 }
 
 function PlannedChips(props: {

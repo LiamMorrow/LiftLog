@@ -17,8 +17,8 @@ import {
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
 import { match, P } from 'ts-pattern';
-import { localeFormatBigNumber } from '@/utils/locale-bignumber';
 import { assertUnreachable } from '@/utils/assert-unreachable';
+import { formatDistance } from '@/utils/distance';
 
 interface ExerciseBlueprintSummaryProps {
   blueprint: ExerciseBlueprint;
@@ -116,7 +116,7 @@ function CardioExerciseBlueprintSummary({
 
 export function formatCardioTarget(target: CardioTarget): string {
   if (target.type === 'distance') {
-    return `${localeFormatBigNumber(target.value.value)} ${pluralize(target.value.value.toNumber(), target.value.unit)}`;
+    return formatDistance(target.value);
   } else if (target.type === 'time') {
     return formatTimeSpan(target.value);
   }
