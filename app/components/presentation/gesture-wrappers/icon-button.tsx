@@ -15,15 +15,16 @@ type ICProps = {
 export default function IconButton({
   onPress,
   onLongPress,
+  disabled,
   ...rest
 }: GesturePressableProps<ICProps>) {
   const tap = Gesture.Tap()
     .runOnJS(true)
-    .onStart(() => onPress?.());
+    .onStart(() => !disabled && onPress?.());
   const longPress = onLongPress
     ? Gesture.LongPress()
         .runOnJS(true)
-        .onStart(() => onLongPress())
+        .onStart(() => !disabled && onLongPress())
     : undefined;
   const gesture = Gesture.Race(
     ...[tap, longPress].filter(isNotNullOrUndefined),
@@ -31,6 +32,7 @@ export default function IconButton({
   return (
     <GestureDetector gesture={gesture}>
       <NativeIconButton
+        disabled={disabled!}
         onPress={onPress ? () => {} : undefined!}
         onLongPress={onLongPress || onPress ? () => {} : undefined!}
         {...rest}

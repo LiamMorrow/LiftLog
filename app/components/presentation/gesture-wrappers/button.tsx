@@ -7,15 +7,16 @@ import { Button as NativeButton, ButtonProps } from 'react-native-paper';
 export default function Button({
   onPress,
   onLongPress,
+  disabled,
   ...rest
 }: GesturePressableProps<ButtonProps>) {
   const tap = Gesture.Tap()
     .runOnJS(true)
-    .onStart(() => onPress?.());
+    .onStart(() => !disabled && onPress?.());
   const longPress = onLongPress
     ? Gesture.LongPress()
         .runOnJS(true)
-        .onStart(() => onLongPress())
+        .onStart(() => !disabled && onLongPress())
     : undefined;
   const gesture = Gesture.Race(
     ...[tap, longPress].filter(isNotNullOrUndefined),
@@ -23,6 +24,7 @@ export default function Button({
   return (
     <GestureDetector gesture={gesture}>
       <NativeButton
+        disabled={disabled!}
         onPress={onPress ? () => {} : undefined!}
         onLongPress={onLongPress || onPress ? () => {} : undefined!}
         {...rest}
