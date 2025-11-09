@@ -66,13 +66,13 @@ export default function TimerEditor(props: DurationEditorProps) {
     textInput: {
       fontVariant: ['tabular-nums'],
       textAlign: 'center',
+      textAlignVertical: 'center',
       ...font['text-xl'],
       maxWidth: 60, // unsure why but this is required in web otherwise the inputs stretch
       color: colors.onSecondaryContainer,
     },
     separator: {
       fontWeight: 'bold',
-      alignSelf: 'flex-end',
     },
   });
   return (
@@ -80,6 +80,7 @@ export default function TimerEditor(props: DurationEditorProps) {
       style={{
         flexDirection: 'row',
         gap: spacing[2],
+        alignItems: 'center',
       }}
     >
       <TextInput
