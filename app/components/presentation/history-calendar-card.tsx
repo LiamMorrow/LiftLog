@@ -10,9 +10,7 @@ import { Card } from 'react-native-paper';
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import TouchableRipple from '@/components/presentation/gesture-wrappers/touchable-ripple';
 import Animated, { ZoomIn } from 'react-native-reanimated';
-
-const oneSeventh = `${100 / 7}%`;
-const fiveSevenths = `${(100 / 7) * 5}%`;
+import { ReactNode } from 'react';
 
 interface HistoryCalendarCardProps {
   currentYearMonth: YearMonth;
@@ -76,8 +74,8 @@ export default function HistoryCalendarCard({
   };
 
   const navButtons = (
-    <>
-      <View style={{ width: oneSeventh, marginVertical: spacing[2] }}>
+    <View style={{ flexDirection: 'row' }}>
+      <View style={{ flex: 1, marginVertical: spacing[2] }}>
         <IconButton
           testID="calendar-nav-previous-month"
           icon={'chevronLeft'}
@@ -86,7 +84,7 @@ export default function HistoryCalendarCard({
       </View>
       <View
         style={{
-          width: fiveSevenths,
+          flex: 5,
           marginVertical: spacing[2],
           justifyContent: 'center',
           alignItems: 'center',
@@ -103,7 +101,7 @@ export default function HistoryCalendarCard({
         </SurfaceText>
       </View>
 
-      <View style={{ width: oneSeventh, marginVertical: spacing[2] }}>
+      <View style={{ flex: 1, marginVertical: spacing[2] }}>
         <IconButton
           testID="calendar-nav-next-month"
           icon={'chevronRight'}
@@ -111,26 +109,30 @@ export default function HistoryCalendarCard({
           disabled={disableNextMonth}
         />
       </View>
-    </>
+    </View>
   );
 
-  const dayHeaders = Array.from({ length: 7 }, (_, offset) => {
-    const dayOfWeek = (offset + firstDayOfWeek.ordinal()) % 7;
-    return (
-      <SurfaceText
-        key={dayOfWeek}
-        style={{
-          marginBottom: spacing[2],
-          width: oneSeventh,
-          textAlign: 'center',
-        }}
-      >
-        {formatDate(getDateOnDay(DayOfWeek.of(dayOfWeek + 1)), {
-          weekday: 'short',
-        })}
-      </SurfaceText>
-    );
-  });
+  const dayHeaders = (
+    <View style={{ flexDirection: 'row' }}>
+      {Array.from({ length: 7 }, (_, offset) => {
+        const dayOfWeek = (offset + firstDayOfWeek.ordinal()) % 7;
+        return (
+          <SurfaceText
+            key={dayOfWeek}
+            style={{
+              marginBottom: spacing[2],
+              flex: 1,
+              textAlign: 'center',
+            }}
+          >
+            {formatDate(getDateOnDay(DayOfWeek.of(dayOfWeek + 1)), {
+              weekday: 'short',
+            })}
+          </SurfaceText>
+        );
+      })}
+    </View>
+  );
   let dateEnterDelay = 0;
   const daysFromPreviousMonth = Array.from(
     { length: numberOfDaysToShowFromPreviousMonth },
@@ -178,6 +180,7 @@ export default function HistoryCalendarCard({
         <HistoryCalendarDay
           key={date.toString() + dateEnterDelay}
           sessions={sessionsByDate.get(date.toString())}
+          // eslint-disable-next-line react-compiler/react-compiler
           delayEntranceAnimMs={(dateEnterDelay += 5)}
           day={date}
           onPress={() => handleDayPress(date)}
@@ -186,6 +189,18 @@ export default function HistoryCalendarCard({
       );
     },
   );
+  const daysInSections = [daysFromPreviousMonth, daysInMonth, daysFromNextMonth]
+    .flat()
+    .reduce(
+      (acc, cur) => {
+        if (acc[acc.length - 1].length === 7) {
+          acc.push([]);
+        }
+        acc[acc.length - 1].push(cur);
+        return acc;
+      },
+      [[]] as ReactNode[][],
+    );
 
   return (
     <Card mode="contained">
@@ -196,13 +211,16 @@ export default function HistoryCalendarCard({
             justifyContent: 'center',
             alignItems: 'center',
             flexWrap: 'wrap',
+            flex: 3,
           }}
         >
           {navButtons}
           {dayHeaders}
-          {daysFromPreviousMonth}
-          {daysInMonth}
-          {daysFromNextMonth}
+          {daysInSections.map((days, i) => (
+            <View key={i} style={{ flexDirection: 'row' }}>
+              {days}
+            </View>
+          ))}
         </View>
       </Card.Content>
     </Card>
@@ -225,7 +243,7 @@ function HistoryCalendarDay(props: {
     <Animated.View
       entering={ZoomIn.delay(props.delayEntranceAnimMs)}
       style={{
-        width: oneSeventh,
+        flex: 1,
         borderRadius: 1000,
         overflow: 'hidden',
         alignItems: 'center',
