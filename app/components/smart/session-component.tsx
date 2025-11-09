@@ -172,7 +172,12 @@ export default function SessionComponent(props: {
   const emptyInfo =
     session.recordedExercises.length === 0 ? (
       <EmptyInfo style={{ marginVertical: spacing[8] }}>
-        {t('SessionContainsNoExercises')}
+        <SurfaceText>
+          {t('SessionContainsNoExercises')} {'\n'}
+        </SurfaceText>
+        <SurfaceText>
+          {t('Add an exercise by tapping the more button in the top right')}
+        </SurfaceText>
       </EmptyInfo>
     ) : null;
 
