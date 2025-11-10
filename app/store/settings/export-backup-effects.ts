@@ -42,14 +42,17 @@ export function addExportBackupEffects() {
         ).finish();
       const stream = new CompressionStream('gzip');
       const writer = stream.writable.getWriter();
-      await writer.write(daoBytes);
-      await writer.close();
+      // Don't await this until we start reading
+      const writePromise = writer.write(daoBytes);
       const readable = stream.readable;
-      const gzipped = await streamToUint8Array(readable);
+      const gzippedPromise = streamToUint8Array(readable);
+
+      await writePromise;
+      await writer.close();
 
       await fileExportService.exportBytes(
         'export.liftlogbackup.gz',
-        gzipped,
+        await gzippedPromise,
         'application/octet-stream',
       );
     },
