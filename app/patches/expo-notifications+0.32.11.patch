@@ -1,0 +1,31 @@
+diff --git a/node_modules/expo-notifications/android/src/main/java/expo/modules/notifications/service/delegates/ExpoSchedulingDelegate.kt b/node_modules/expo-notifications/android/src/main/java/expo/modules/notifications/service/delegates/ExpoSchedulingDelegate.kt
+index eddd142..d436a19 100644
+--- a/node_modules/expo-notifications/android/src/main/java/expo/modules/notifications/service/delegates/ExpoSchedulingDelegate.kt
++++ b/node_modules/expo-notifications/android/src/main/java/expo/modules/notifications/service/delegates/ExpoSchedulingDelegate.kt
+@@ -103,20 +103,11 @@ class ExpoSchedulingDelegate(protected val context: Context) : SchedulingDelegat
+   }
+ 
+   private fun setupAlarm(triggerAtMillis: Long, operation: PendingIntent) {
+-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()) {
+-      AlarmManagerCompat.setExactAndAllowWhileIdle(
+-        alarmManager,
+-        AlarmManager.RTC_WAKEUP,
+-        triggerAtMillis,
+-        operation
+-      )
+-    } else {
+-      AlarmManagerCompat.setAndAllowWhileIdle(
+-        alarmManager,
+-        AlarmManager.RTC_WAKEUP,
+-        triggerAtMillis,
+-        operation
+-      )
+-    }
++    AlarmManagerCompat.setExactAndAllowWhileIdle(
++      alarmManager,
++      AlarmManager.RTC_WAKEUP,
++      triggerAtMillis,
++      operation
++    )
+   }
+ }
