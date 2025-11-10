@@ -14,7 +14,8 @@ import { DateTimeFormatter } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
 import { ReactNode } from 'react';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 interface ExerciseSummaryProps {
   exercise: RecordedExercise;

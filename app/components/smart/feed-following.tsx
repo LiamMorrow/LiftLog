@@ -10,7 +10,7 @@ import {
 } from '@/store/feed';
 import { T, useTranslate } from '@tolgee/react';
 import React, { useState } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import { List, Menu } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';

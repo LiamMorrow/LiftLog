@@ -8,7 +8,8 @@ import { sleep } from '@/utils/sleep';
 import { createMaterial3Theme } from '@pchmn/expo-material3-theme';
 import { T, useTranslate } from '@tolgee/react';
 import { useMemo, useState } from 'react';
-import { View, FlatList } from 'react-native';
+import { View } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import { List } from 'react-native-paper';
 import Button from '@/components/presentation/gesture-wrappers/button';
 
