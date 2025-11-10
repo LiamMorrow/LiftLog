@@ -1,6 +1,3 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
 name: Build Android
 
 on:
@@ -9,14 +6,18 @@ on:
     paths:
       - app/**
       - .github/**
+
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
       SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN_REACT}}
+      # Speeds up Gradle by caching configuration and running tasks in parallel
+      GRADLE_OPTS: -Dorg.gradle.configuration-cache=true -Dorg.gradle.parallel=true
 
     steps:
       - uses: actions/checkout@v5
+
       - name: Setup Node
         uses: actions/setup-node@v5
         with:
@@ -29,21 +30,30 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "17"
+
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v3.2.2
-      - name: Install
+
+      - name: Install dependencies
         run: npm ci
         working-directory: ./app
-      - uses: burrunan/gradle-cache-action@v3
-        name: Build Android
-        with:
-          # If you have multiple jobs, use distinct job-id in in case you want to split caches
-          # For instance, jobs with different JDK versions can't share caches
-          # RUNNER_OS is added to job-id automatically
-          job-id: android
-          # Specifies arguments for Gradle execution
-          # If arguments is missing or empty, then Gradle is not executed
-          arguments: build
-          build-root-directory: ./app/android
 
+      # Pre-bundle JS to avoid doing it inside Gradle
+      - name: Prebundle JavaScript
+        run: |
+          npx react-native bundle \
+            --platform android \
+            --dev false \
+            --entry-file index.js \
+            --bundle-output android/app/src/main/assets/index.android.bundle \
+            --assets-dest android/app/src/main/res
+        working-directory: ./app
+
+      # Cache Gradle, node_modules, and build intermediates
+      - uses: burrunan/gradle-cache-action@v3
+        name: Build Android (optimized)
+        with:
+          job-id: android
+          arguments: assembleDebug
+          build-root-directory: ./app/android
           gradle-version: wrapper
