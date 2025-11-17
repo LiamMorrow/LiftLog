@@ -8,7 +8,7 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@types/node": "^24.2.1",
-    "zx": "8.8.1"
+    "zx": "8.8.5"
   },
   "peerDependencies": {
     "typescript": "^5.3.3"
