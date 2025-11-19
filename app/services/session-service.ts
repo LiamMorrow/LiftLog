@@ -4,6 +4,7 @@ import {
   ExerciseBlueprint,
   CardioExerciseBlueprint,
 } from '@/models/blueprint-models';
+import { Weight } from '@/models/weight';
 import {
   PotentialSet,
   RecordedCardioExercise,
@@ -15,7 +16,6 @@ import { ProgressRepository } from '@/services/progress-repository';
 import type { RootState } from '@/store';
 import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
-import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
 import { match } from 'ts-pattern';
 
@@ -124,7 +124,7 @@ export class SessionService {
           Array.from({ length: e.sets }, () =>
             PotentialSet.fromPOJO({
               weight:
-                weightedLastExercise?.potentialSets[0]?.weight ?? BigNumber(0),
+                weightedLastExercise?.potentialSets[0]?.weight ?? Weight.NIL,
               set: undefined,
             }),
           ),

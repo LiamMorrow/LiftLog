@@ -1,4 +1,5 @@
 import { Rest, SessionBlueprint } from '@/models/blueprint-models';
+import { Weight } from '@/models/weight';
 import {
   PotentialSetPOJO,
   RecordedWeightedExercise,
@@ -26,7 +27,7 @@ export const benchPress: RecordedWeightedExercise =
         () =>
           ({
             _BRAND: 'POTENTIAL_SET_POJO',
-            weight: new BigNumber(100),
+            weight: new Weight(100, 'kilograms'),
             set: undefined,
           }) satisfies PotentialSetPOJO,
       )
@@ -52,7 +53,7 @@ export const squats: RecordedWeightedExercise =
         () =>
           ({
             _BRAND: 'POTENTIAL_SET_POJO',
-            weight: new BigNumber(150),
+            weight: new Weight(150, 'kilograms'),
             set: undefined,
           }) as const,
       )
@@ -78,7 +79,7 @@ export const overheadPress: RecordedWeightedExercise =
         () =>
           ({
             _BRAND: 'POTENTIAL_SET_POJO',
-            weight: new BigNumber(75),
+            weight: new Weight(75, 'kilograms'),
             set: undefined,
           }) as const,
       )
@@ -108,5 +109,5 @@ export const defaultSession: Session = Session.fromPOJO({
     overheadPress.toPOJO(),
   ],
   date: LocalDate.now(),
-  bodyweight: new BigNumber(0),
+  bodyweight: new Weight(0, 'kilograms'),
 });

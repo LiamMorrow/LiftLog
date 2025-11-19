@@ -18,7 +18,6 @@ import { View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { FlatGrid } from 'react-native-super-grid';
 import WeightFormat from '@/components/presentation/weight-format';
-import BigNumber from 'bignumber.js';
 import ExerciseStatGraphCard from '@/components/presentation/exercise-stat-graph-card';
 import { spacing } from '@/hooks/useAppTheme';
 import SelectButton, {
@@ -32,6 +31,7 @@ import BodyweightStatGraphCard from '@/components/presentation/bodyweight-stat-g
 import { useScroll } from '@/hooks/useScollListener';
 import { FlashList, FlashListRef } from '@shopify/flash-list';
 import SessionStatGraphCard from '@/components/presentation/session-stat-graph-card';
+import { Weight } from '@/models/weight';
 
 export default function StatsPage() {
   const { t } = useTranslate();
@@ -190,8 +190,8 @@ function TopLevelStatCard(props: {
             fontWeight={'bold'}
             weight={
               stats.maxWeightLiftedInAWorkout !== undefined
-                ? BigNumber(stats.maxWeightLiftedInAWorkout)
-                : BigNumber(0)
+                ? stats.maxWeightLiftedInAWorkout
+                : Weight.NIL
             }
           />
         </SingleValueStatisticCard>
@@ -230,7 +230,7 @@ function TopLevelStatCard(props: {
               color={'tertiary'}
               fontSize="text-xl"
               fontWeight={'bold'}
-              weight={stats.heaviestLift?.weight ?? BigNumber(0)}
+              weight={stats.heaviestLift?.weight ?? Weight.NIL}
             />
             <SurfaceText
               color="tertiary"

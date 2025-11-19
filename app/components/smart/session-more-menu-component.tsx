@@ -11,7 +11,7 @@ import { ExerciseBlueprint } from '@/models/blueprint-models';
 import { EmptyExerciseBlueprint } from '@/models/blueprint-models';
 import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/exercise-editor';
-import { useAppSelectorWithArg } from '@/store';
+import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { UnknownAction } from '@reduxjs/toolkit';
 import { Appbar, Menu, TextInput } from 'react-native-paper';
 import { View } from 'react-native';
@@ -21,6 +21,7 @@ export default function SessionMoreMenuComponent(props: {
   target: SessionTarget;
 }) {
   const { t } = useTranslate();
+  const useImperialUnits = useAppSelector((x) => x.settings.useImperialUnits);
   const session = useAppSelectorWithArg(selectCurrentSession, props.target);
   const storeDispatch = useDispatch();
   const dispatch = <T,>(
@@ -40,6 +41,7 @@ export default function SessionMoreMenuComponent(props: {
     if (editingExerciseBlueprint !== undefined) {
       dispatch(addExercise, {
         blueprint: editingExerciseBlueprint,
+        useImperialUnits,
       });
       setExerciseEditorOpen(false);
     }

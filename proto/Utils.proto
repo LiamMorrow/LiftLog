@@ -34,3 +34,15 @@ message DateTimeDao {
     DateOnlyDao date = 1;
     TimeOnlyDao time = 2;
 }
+
+
+enum WeightUnit {
+    NIL = 0;
+    KILOGRAMS = 1;
+    POUNDS = 2;
+}
+
+message Weight {
+    DecimalValue value = 1;
+    WeightUnit unit = 2;
+}

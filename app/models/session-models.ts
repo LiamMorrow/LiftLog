@@ -9,6 +9,7 @@ import {
   Distance,
 } from '@/models/blueprint-models';
 import { LocalDateTimeComparer } from '@/models/comparers';
+import { Weight, WeightUnit } from '@/models/weight';
 import { DeepOmit } from '@/utils/deep-omit';
 import { indexed } from '@/utils/enumerable';
 import { uuid } from '@/utils/uuid';
@@ -23,7 +24,7 @@ export interface SessionPOJO {
   blueprint: SessionBlueprintPOJO;
   recordedExercises: RecordedExercisePOJO[];
   date: LocalDate;
-  bodyweight: BigNumber | undefined;
+  bodyweight: Weight | undefined;
 }
 
 export class Session {
@@ -31,25 +32,14 @@ export class Session {
   readonly blueprint: SessionBlueprint;
   readonly recordedExercises: RecordedExercise[];
   readonly date: LocalDate;
-  readonly bodyweight: BigNumber | undefined;
+  readonly bodyweight: Weight | undefined;
 
-  /**
-   * @deprecated please use full constructor. Here only for serialization
-   */
-  constructor();
   constructor(
     id: string,
     blueprint: SessionBlueprint,
     recordedExercises: RecordedExercise[],
     date: LocalDate,
-    bodyweight: BigNumber | undefined,
-  );
-  constructor(
-    id?: string,
-    blueprint?: SessionBlueprint,
-    recordedExercises?: RecordedExercise[],
-    date?: LocalDate,
-    bodyweight?: BigNumber,
+    bodyweight: Weight | undefined,
   ) {
     this.id = id!;
     this.blueprint = blueprint!;
@@ -95,7 +85,7 @@ export class Session {
             new RecordedWeightedExercise(
               we,
               Array.from({ length: we.sets }).map(
-                () => new PotentialSet(undefined, BigNumber(0)),
+                () => new PotentialSet(undefined, Weight.NIL),
               ),
               undefined,
             ),
@@ -132,7 +122,7 @@ export class Session {
     return (
       this.id === other.id &&
       this.date.equals(other.date) &&
-      BigNumberEqual(this.bodyweight, other.bodyweight) &&
+      WeightEqual(this.bodyweight, other.bodyweight) &&
       this.blueprint.equals(other.blueprint) &&
       this.recordedExercises.length === other.recordedExercises.length &&
       this.recordedExercises.every((exercise, index) =>
@@ -174,7 +164,7 @@ export class Session {
 
   static freeformSession(
     date: LocalDate,
-    bodyweight: BigNumber | undefined,
+    bodyweight: Weight | undefined,
   ): Session {
     return EmptySession.with({
       id: uuid(),
@@ -184,7 +174,7 @@ export class Session {
     });
   }
 
-  get totalWeightLifted(): BigNumber {
+  get totalWeightLifted(): Weight {
     return this.recordedExercises.reduce(
       (b, ex) =>
         b.plus(
@@ -192,11 +182,11 @@ export class Session {
             ? ex.potentialSets.reduce(
                 (c, set) =>
                   c.plus(set.weight.multipliedBy(set.set?.repsCompleted ?? 0)),
-                new BigNumber(0),
+                Weight.NIL,
               )
-            : BigNumber(0),
+            : Weight.NIL,
         ),
-      new BigNumber(0),
+      Weight.NIL,
     );
   }
 
@@ -347,10 +337,13 @@ export function fromRecordedExercisePOJO(
     .exhaustive();
 }
 
-export function createEmptyRecordedExercise(blueprint: ExerciseBlueprint) {
+export function createEmptyRecordedExercise(
+  blueprint: ExerciseBlueprint,
+  unit: WeightUnit,
+) {
   return match(blueprint)
     .with(P.instanceOf(WeightedExerciseBlueprint), (b) =>
-      RecordedWeightedExercise.empty(b),
+      RecordedWeightedExercise.empty(b, unit),
     )
     .with(P.instanceOf(CardioExerciseBlueprint), (b) =>
       RecordedCardioExercise.empty(b),
@@ -564,13 +557,16 @@ export class RecordedWeightedExercise {
       fromPOJO.notes,
     );
   }
-  static empty(b: WeightedExerciseBlueprint): RecordedWeightedExercise {
+  static empty(
+    b: WeightedExerciseBlueprint,
+    unit: WeightUnit,
+  ): RecordedWeightedExercise {
     return new RecordedWeightedExercise(
       b,
       Enumerable.range(0, b.sets)
         .select(() =>
           PotentialSet.fromPOJO({
-            weight: BigNumber(0),
+            weight: new Weight(0, unit),
             set: undefined,
           }),
         )
@@ -631,14 +627,14 @@ export class RecordedWeightedExercise {
     };
   }
 
-  get maxWeight(): BigNumber {
+  get maxWeight(): Weight {
     return (
       this.potentialSets.reduce(
         (max, set) => {
           return !max || set.weight.isGreaterThan(max) ? set.weight : max;
         },
-        undefined as BigNumber | undefined,
-      ) ?? BigNumber(0)
+        undefined as Weight | undefined,
+      ) ?? new Weight(0, 'kilograms')
     );
   }
 
@@ -749,21 +745,16 @@ export class RecordedSet {
 export interface PotentialSetPOJO {
   _BRAND: 'POTENTIAL_SET_POJO';
   set: RecordedSetPOJO | undefined;
-  weight: BigNumber;
+  weight: Weight;
 }
 
 export class PotentialSet {
   readonly set: RecordedSet | undefined;
-  readonly weight: BigNumber;
+  readonly weight: Weight;
 
-  /**
-   * @deprecated please use full constructor. Here only for serialization
-   */
-  constructor();
-  constructor(set: RecordedSet | undefined, weight: BigNumber);
-  constructor(set?: RecordedSet, weight?: BigNumber) {
+  constructor(set: RecordedSet | undefined, weight: Weight) {
     this.set = set;
-    this.weight = weight!;
+    this.weight = weight;
   }
 
   static fromPOJO(
@@ -784,7 +775,7 @@ export class PotentialSet {
     }
     return (
       (this.set?.equals(other.set) ?? other.set === undefined) &&
-      this.weight.isEqualTo(other.weight)
+      this.weight.equals(other.weight)
     );
   }
 
@@ -804,11 +795,11 @@ export class PotentialSet {
   }
 }
 
-function BigNumberEqual(a: BigNumber | undefined, b: BigNumber | undefined) {
+function WeightEqual(a: Weight | undefined, b: Weight | undefined) {
   if (a === undefined || b === undefined) {
     return a === b;
   }
-  return a.isEqualTo(b);
+  return a.equals(b);
 }
 
 export const EmptySession: Session = new Session(

@@ -1,5 +1,4 @@
 import { spacing } from '@/hooks/useAppTheme';
-import { useWeightSuffix } from '@/hooks/useWeightSuffix';
 import {
   localeFormatBigNumber,
   localeParseBigNumber,
@@ -18,6 +17,7 @@ import {
   Tooltip,
   useTheme,
 } from 'react-native-paper';
+import { shortFormatWeightUnit, Weight } from '@/models/weight';
 
 type WeightDialogProps = {
   open: boolean;
@@ -28,13 +28,13 @@ type WeightDialogProps = {
   allowNegative?: boolean | undefined;
 } & (
   | {
-      weight: BigNumber;
-      updateWeight: (weight: BigNumber) => void;
+      weight: Weight;
+      updateWeight: (weight: Weight) => void;
       allowNull?: false;
     }
   | {
-      weight: BigNumber | undefined;
-      updateWeight: (weight: BigNumber | undefined) => void;
+      weight: Weight | undefined;
+      updateWeight: (weight: Weight | undefined) => void;
       allowNull: true;
     }
 );
@@ -42,14 +42,13 @@ type WeightDialogProps = {
 export default function WeightDialog(props: WeightDialogProps) {
   const theme = useTheme();
   const { t } = useTranslate();
-  const [text, setText] = useState(localeFormatBigNumber(props.weight));
-  const [editorWeight, setEditorWeight] = useState<BigNumber | undefined>(
+  const [text, setText] = useState(localeFormatBigNumber(props.weight?.value));
+  const [editorWeight, setEditorWeight] = useState<Weight | undefined>(
     props.weight,
   );
-  const weightSuffix = useWeightSuffix();
 
   useEffect(() => {
-    setText(localeFormatBigNumber(props.weight));
+    setText(localeFormatBigNumber(props.weight?.value));
     setEditorWeight(props.weight);
   }, [props.open, props.weight]);
 
@@ -62,17 +61,20 @@ export default function WeightDialog(props: WeightDialogProps) {
       return;
     }
     setEditorWeight(editorWeight.plus(nonZeroIncrement));
-    setText(localeFormatBigNumber(editorWeight.plus(nonZeroIncrement)));
+    setText(localeFormatBigNumber(editorWeight.plus(nonZeroIncrement).value));
   };
   const decrementWeight = () => {
     if (editorWeight === undefined) {
       return;
     }
-    if (!props.allowNegative && editorWeight.isLessThan(nonZeroIncrement)) {
+    if (
+      !props.allowNegative &&
+      editorWeight.value.isLessThan(nonZeroIncrement)
+    ) {
       return;
     }
     setEditorWeight(editorWeight.minus(nonZeroIncrement));
-    setText(localeFormatBigNumber(editorWeight.minus(nonZeroIncrement)));
+    setText(localeFormatBigNumber(editorWeight.minus(nonZeroIncrement).value));
   };
 
   const handleTextChange = (text: string) => {
@@ -83,7 +85,9 @@ export default function WeightDialog(props: WeightDialogProps) {
     }
 
     if (!localeParseBigNumber(text).isNaN()) {
-      setEditorWeight(localeParseBigNumber(text));
+      setEditorWeight(
+        editorWeight?.with({ value: localeParseBigNumber(text) }),
+      );
       return;
     }
   };
@@ -93,7 +97,7 @@ export default function WeightDialog(props: WeightDialogProps) {
       props.onClose();
       return;
     }
-    if (!props.allowNegative && editorWeight?.isLessThan(0)) {
+    if (!props.allowNegative && editorWeight?.value.isLessThan(0)) {
       return;
     }
     props.updateWeight(editorWeight!);
@@ -120,7 +124,11 @@ export default function WeightDialog(props: WeightDialogProps) {
               >
                 <TextInput
                   testID="weight-input"
-                  right={<TextInput.Affix text={weightSuffix} />}
+                  right={
+                    <TextInput.Affix
+                      text={shortFormatWeightUnit(props.weight?.unit)}
+                    />
+                  }
                   selectTextOnFocus
                   mode="outlined"
                   inputMode="decimal"
@@ -139,11 +147,11 @@ export default function WeightDialog(props: WeightDialogProps) {
                       mode="outlined"
                       icon={'plusMinus'}
                       onPress={() => {
-                        setEditorWeight(
-                          editorWeight?.multipliedBy(-1) as BigNumber,
-                        );
+                        setEditorWeight(editorWeight?.multipliedBy(-1));
                         setText(
-                          localeFormatBigNumber(editorWeight?.multipliedBy(-1)),
+                          localeFormatBigNumber(
+                            editorWeight?.multipliedBy(-1).value,
+                          ),
                         );
                       }}
                     />

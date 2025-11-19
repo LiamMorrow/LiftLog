@@ -664,6 +664,116 @@ export namespace LiftLog {
                 public static getTypeUrl(typeUrlPrefix?: string): string;
             }
 
+            /** WeightUnit enum. */
+            enum WeightUnit {
+                NIL = 0,
+                KILOGRAMS = 1,
+                POUNDS = 2
+            }
+
+            /** Properties of a Weight. */
+            interface IWeight {
+
+                /** Weight value */
+                value?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                /** Weight unit */
+                unit?: (LiftLog.Ui.Models.WeightUnit|null);
+            }
+
+            /** Represents a Weight. */
+            class Weight implements IWeight {
+
+                /**
+                 * Constructs a new Weight.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: LiftLog.Ui.Models.IWeight);
+
+                /** Weight value. */
+                public value?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                /** Weight unit. */
+                public unit: LiftLog.Ui.Models.WeightUnit;
+
+                /**
+                 * Creates a new Weight instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns Weight instance
+                 */
+                public static create(properties?: LiftLog.Ui.Models.IWeight): LiftLog.Ui.Models.Weight;
+
+                /**
+                 * Encodes the specified Weight message. Does not implicitly {@link LiftLog.Ui.Models.Weight.verify|verify} messages.
+                 * @param message Weight message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: LiftLog.Ui.Models.IWeight, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified Weight message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.Weight.verify|verify} messages.
+                 * @param message Weight message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: LiftLog.Ui.Models.IWeight, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a Weight message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns Weight
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): LiftLog.Ui.Models.Weight;
+
+                /**
+                 * Decodes a Weight message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns Weight
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): LiftLog.Ui.Models.Weight;
+
+                /**
+                 * Verifies a Weight message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a Weight message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns Weight
+                 */
+                public static fromObject(object: { [k: string]: any }): LiftLog.Ui.Models.Weight;
+
+                /**
+                 * Creates a plain object from a Weight message. Also converts values to other types if specified.
+                 * @param message Weight
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: LiftLog.Ui.Models.Weight, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this Weight to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for Weight
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
             /** Namespace SessionHistoryDao. */
             namespace SessionHistoryDao {
 
@@ -779,8 +889,11 @@ export namespace LiftLog {
                     /** SessionDaoV2 date */
                     date?: (LiftLog.Ui.Models.IDateOnlyDao|null);
 
-                    /** SessionDaoV2 bodyweight */
-                    bodyweight?: (LiftLog.Ui.Models.IDecimalValue|null);
+                    /** SessionDaoV2 bodyweightValue */
+                    bodyweightValue?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** SessionDaoV2 bodyweightUnit */
+                    bodyweightUnit?: (LiftLog.Ui.Models.WeightUnit|null);
 
                     /** SessionDaoV2 blueprintNotes */
                     blueprintNotes?: (string|null);
@@ -807,14 +920,17 @@ export namespace LiftLog {
                     /** SessionDaoV2 date. */
                     public date?: (LiftLog.Ui.Models.IDateOnlyDao|null);
 
-                    /** SessionDaoV2 bodyweight. */
-                    public bodyweight?: (LiftLog.Ui.Models.IDecimalValue|null);
+                    /** SessionDaoV2 bodyweightValue. */
+                    public bodyweightValue?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** SessionDaoV2 bodyweightUnit. */
+                    public bodyweightUnit: LiftLog.Ui.Models.WeightUnit;
 
                     /** SessionDaoV2 blueprintNotes. */
                     public blueprintNotes: string;
 
-                    /** SessionDaoV2 _bodyweight. */
-                    public _bodyweight?: "bodyweight";
+                    /** SessionDaoV2 _bodyweightValue. */
+                    public _bodyweightValue?: "bodyweightValue";
 
                     /**
                      * Creates a new SessionDaoV2 instance using the specified properties.
@@ -1072,8 +1188,11 @@ export namespace LiftLog {
                     /** PotentialSetDaoV2 recordedSet */
                     recordedSet?: (LiftLog.Ui.Models.SessionHistoryDao.IRecordedSetDaoV2|null);
 
-                    /** PotentialSetDaoV2 weight */
-                    weight?: (LiftLog.Ui.Models.IDecimalValue|null);
+                    /** PotentialSetDaoV2 weightValue */
+                    weightValue?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** PotentialSetDaoV2 weightUnit */
+                    weightUnit?: (LiftLog.Ui.Models.WeightUnit|null);
                 }
 
                 /** Represents a PotentialSetDaoV2. */
@@ -1088,8 +1207,11 @@ export namespace LiftLog {
                     /** PotentialSetDaoV2 recordedSet. */
                     public recordedSet?: (LiftLog.Ui.Models.SessionHistoryDao.IRecordedSetDaoV2|null);
 
-                    /** PotentialSetDaoV2 weight. */
-                    public weight?: (LiftLog.Ui.Models.IDecimalValue|null);
+                    /** PotentialSetDaoV2 weightValue. */
+                    public weightValue?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** PotentialSetDaoV2 weightUnit. */
+                    public weightUnit: LiftLog.Ui.Models.WeightUnit;
 
                     /** PotentialSetDaoV2 _recordedSet. */
                     public _recordedSet?: "recordedSet";

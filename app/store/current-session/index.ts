@@ -4,6 +4,7 @@ import {
   ExerciseBlueprint,
   Distance,
 } from '@/models/blueprint-models';
+import { Weight } from '@/models/weight';
 import {
   RecordedWeightedExercise,
   RecordedWeightedExercisePOJO,
@@ -189,6 +190,7 @@ const currentSessionSlice = createSlice({
         action: {
           exerciseIndex: number;
           newBlueprint: ExerciseBlueprint;
+          useImperialUnits: boolean;
         },
       ) => {
         const existingExercise =
@@ -202,7 +204,10 @@ const currentSessionSlice = createSlice({
           action.newBlueprint.toPOJO()._BRAND
         ) {
           session.recordedExercises[action.exerciseIndex] =
-            createEmptyRecordedExercise(action.newBlueprint).toPOJO();
+            createEmptyRecordedExercise(
+              action.newBlueprint,
+              action.useImperialUnits ? 'pounds' : 'kilograms',
+            ).toPOJO();
         } else {
           const weightedExistingExercise =
             session.recordedExercises[action.exerciseIndex]._BRAND ===
@@ -235,10 +240,14 @@ const currentSessionSlice = createSlice({
     ),
 
     addExercise: targetedSessionAction(
-      (session, action: { blueprint: ExerciseBlueprint }) => {
+      (
+        session,
+        action: { blueprint: ExerciseBlueprint; useImperialUnits: boolean },
+      ) => {
         session.blueprint.exercises.push(action.blueprint.toPOJO());
         const newRecordedExercise = createEmptyRecordedExercise(
           action.blueprint,
+          action.useImperialUnits ? 'pounds' : 'kilograms',
         ).toPOJO();
         session.recordedExercises.push(newRecordedExercise);
       },
@@ -284,7 +293,7 @@ const currentSessionSlice = createSlice({
         action: {
           exerciseIndex: number;
           setIndex: number;
-          weight: BigNumber;
+          weight: Weight;
           applyTo: WeightAppliesTo;
         },
       ) => {
@@ -341,7 +350,7 @@ const currentSessionSlice = createSlice({
     ),
 
     updateBodyweight: targetedSessionAction(
-      (session, action: { bodyweight: BigNumber | undefined }) => {
+      (session, action: { bodyweight: Weight | undefined }) => {
         session.bodyweight = action.bodyweight;
       },
     ),

@@ -1,6 +1,6 @@
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Duration, LocalDateTime, Period } from '@js-joda/core';
-import BigNumber from 'bignumber.js';
+import { Weight } from '@/models/weight';
 
 interface StatsState {
   isDirty: boolean;
@@ -11,25 +11,25 @@ interface StatsState {
   pinnedExerciseStatistics: PinnedExerciseStatistic[];
 }
 
-export interface TimeTrackedStatistic {
+export interface TimeTrackedStatistic<T> {
   dateTime: LocalDateTime;
-  value: number;
+  value: T;
 }
 
 // We use this to ensure that when showing multiple series with disparate data, we can ensure that the x axis points are properly aligned
-export interface OptionalTimeTrackedStatistic {
+export interface OptionalTimeTrackedStatistic<T> {
   dateTime: LocalDateTime;
-  value: number | undefined;
+  value: T | undefined;
 }
 
 export interface ExerciseStatistics {
   exerciseName: string;
   statistics: StatisticOverTime;
   oneRepMaxStatistics: StatisticOverTime;
-  totalLifted: number;
-  max: number;
-  current: number;
-  oneRepMax: number;
+  totalLifted: Weight;
+  max: Weight;
+  current: Weight;
+  oneRepMax: Weight;
 }
 
 export interface PinnedExerciseStatistic {
@@ -38,16 +38,16 @@ export interface PinnedExerciseStatistic {
 
 export interface StatisticOverTime {
   title: string;
-  statistics: TimeTrackedStatistic[];
-  maxValue: number;
-  minValue: number;
+  statistics: TimeTrackedStatistic<Weight>[];
+  maxValue: Weight;
+  minValue: Weight;
 }
 
-export interface OptionalStatisticOverTime {
+export interface OptionalStatisticOverTime<T> {
   title: string;
-  statistics: OptionalTimeTrackedStatistic[];
-  maxValue: number;
-  minValue: number;
+  statistics: OptionalTimeTrackedStatistic<T>[];
+  maxValue: T;
+  minValue: T;
 }
 
 export interface TimeSpentExercise {
@@ -57,16 +57,16 @@ export interface TimeSpentExercise {
 
 export interface HeaviestLift {
   exerciseName: string;
-  weight: BigNumber;
+  weight: Weight;
 }
 
 export interface GranularStatisticView {
-  maxWeightLiftedInAWorkout: number | undefined;
+  maxWeightLiftedInAWorkout: Weight | undefined;
   averageSessionLength: Duration;
   heaviestLift: HeaviestLift | undefined;
   exerciseMostTimeSpent: TimeSpentExercise | undefined;
   exerciseStats: ExerciseStatistics[];
-  sessionStats: OptionalStatisticOverTime[];
+  sessionStats: OptionalStatisticOverTime<Weight>[];
   bodyweightStats: StatisticOverTime;
 }
 

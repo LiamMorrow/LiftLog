@@ -42,6 +42,8 @@ import { UuidConversionError } from '@/models/storage/uuid-conversion-error';
 import { FeedState } from '@/store/feed';
 import { RemoteData } from '@/models/remote';
 import { uuidStringify } from '@/utils/uuid';
+import { Weight, WeightUnit } from '@/models/weight';
+import { match, P } from 'ts-pattern';
 
 // Converts a UUID DAO to a string
 export function fromUuidDao(
@@ -161,7 +163,10 @@ function fromPotentialSetDao(
     set: dao.recordedSet
       ? fromRecordedSetDao(sessionDate, dao.recordedSet).toPOJO()
       : undefined,
-    weight: fromDecimalDao(dao.weight) ?? BigNumber(0),
+    weight: fromWeight(
+      fromDecimalDao(dao.weightValue) ?? BigNumber(0),
+      dao.weightUnit,
+    ),
   });
 }
 
@@ -224,10 +229,27 @@ export function fromSessionDao(
       exercises: recordedExercises.map((x) => x.blueprint),
       notes: dao.blueprintNotes ?? '',
     }).toPOJO(),
-    bodyweight: dao.bodyweight ? fromDecimalDao(dao.bodyweight) : undefined,
+    bodyweight: dao.bodyweightValue
+      ? fromWeight(fromDecimalDao(dao.bodyweightValue), dao.bodyweightUnit)
+      : undefined,
     date: fromDateOnlyDao(dao.date),
     recordedExercises,
   });
+}
+
+function fromWeight(
+  value: BigNumber,
+  daoUnit: LiftLog.Ui.Models.WeightUnit | null | undefined,
+): Weight {
+  const unit = match(daoUnit)
+    .returnType<WeightUnit>()
+    .with(LiftLog.Ui.Models.WeightUnit.NIL, () => 'nil')
+    .with(LiftLog.Ui.Models.WeightUnit.KILOGRAMS, () => 'kilograms')
+    .with(LiftLog.Ui.Models.WeightUnit.POUNDS, () => 'pounds')
+    .with(P.nullish, () => 'nil')
+    .run();
+
+  return new Weight(value, unit);
 }
 
 // Converts a SessionHistory DAO to a Map of Sessions

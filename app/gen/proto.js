@@ -1609,6 +1609,280 @@ export const LiftLog = $root.LiftLog = (() => {
                 return DateTimeDao;
             })();
 
+            /**
+             * WeightUnit enum.
+             * @name LiftLog.Ui.Models.WeightUnit
+             * @enum {number}
+             * @property {number} NIL=0 NIL value
+             * @property {number} KILOGRAMS=1 KILOGRAMS value
+             * @property {number} POUNDS=2 POUNDS value
+             */
+            Models.WeightUnit = (function() {
+                const valuesById = {}, values = Object.create(valuesById);
+                values[valuesById[0] = "NIL"] = 0;
+                values[valuesById[1] = "KILOGRAMS"] = 1;
+                values[valuesById[2] = "POUNDS"] = 2;
+                return values;
+            })();
+
+            Models.Weight = (function() {
+
+                /**
+                 * Properties of a Weight.
+                 * @memberof LiftLog.Ui.Models
+                 * @interface IWeight
+                 * @property {LiftLog.Ui.Models.IDecimalValue|null} [value] Weight value
+                 * @property {LiftLog.Ui.Models.WeightUnit|null} [unit] Weight unit
+                 */
+
+                /**
+                 * Constructs a new Weight.
+                 * @memberof LiftLog.Ui.Models
+                 * @classdesc Represents a Weight.
+                 * @implements IWeight
+                 * @constructor
+                 * @param {LiftLog.Ui.Models.IWeight=} [properties] Properties to set
+                 */
+                function Weight(properties) {
+                    if (properties)
+                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * Weight value.
+                 * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} value
+                 * @memberof LiftLog.Ui.Models.Weight
+                 * @instance
+                 */
+                Weight.prototype.value = null;
+
+                /**
+                 * Weight unit.
+                 * @member {LiftLog.Ui.Models.WeightUnit} unit
+                 * @memberof LiftLog.Ui.Models.Weight
+                 * @instance
+                 */
+                Weight.prototype.unit = 0;
+
+                /**
+                 * Creates a new Weight instance using the specified properties.
+                 * @function create
+                 * @memberof LiftLog.Ui.Models.Weight
+                 * @static
+                 * @param {LiftLog.Ui.Models.IWeight=} [properties] Properties to set
+                 * @returns {LiftLog.Ui.Models.Weight} Weight instance
+                 */
+                Weight.create = function create(properties) {
+                    return new Weight(properties);
+                };
+
+                /**
+                 * Encodes the specified Weight message. Does not implicitly {@link LiftLog.Ui.Models.Weight.verify|verify} messages.
+                 * @function encode
+                 * @memberof LiftLog.Ui.Models.Weight
+                 * @static
+                 * @param {LiftLog.Ui.Models.IWeight} message Weight message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                Weight.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.value != null && Object.hasOwnProperty.call(message, "value"))
+                        $root.LiftLog.Ui.Models.DecimalValue.encode(message.value, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    if (message.unit != null && Object.hasOwnProperty.call(message, "unit"))
+                        writer.uint32(/* id 2, wireType 0 =*/16).int32(message.unit);
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified Weight message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.Weight.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof LiftLog.Ui.Models.Weight
+                 * @static
+                 * @param {LiftLog.Ui.Models.IWeight} message Weight message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                Weight.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a Weight message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof LiftLog.Ui.Models.Weight
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {LiftLog.Ui.Models.Weight} Weight
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                Weight.decode = function decode(reader, length, error) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.Weight();
+                    while (reader.pos < end) {
+                        let tag = reader.uint32();
+                        if (tag === error)
+                            break;
+                        switch (tag >>> 3) {
+                        case 1: {
+                                message.value = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                break;
+                            }
+                        case 2: {
+                                message.unit = reader.int32();
+                                break;
+                            }
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a Weight message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof LiftLog.Ui.Models.Weight
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {LiftLog.Ui.Models.Weight} Weight
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                Weight.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a Weight message.
+                 * @function verify
+                 * @memberof LiftLog.Ui.Models.Weight
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                Weight.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.value != null && message.hasOwnProperty("value")) {
+                        let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.value);
+                        if (error)
+                            return "value." + error;
+                    }
+                    if (message.unit != null && message.hasOwnProperty("unit"))
+                        switch (message.unit) {
+                        default:
+                            return "unit: enum value expected";
+                        case 0:
+                        case 1:
+                        case 2:
+                            break;
+                        }
+                    return null;
+                };
+
+                /**
+                 * Creates a Weight message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof LiftLog.Ui.Models.Weight
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {LiftLog.Ui.Models.Weight} Weight
+                 */
+                Weight.fromObject = function fromObject(object) {
+                    if (object instanceof $root.LiftLog.Ui.Models.Weight)
+                        return object;
+                    let message = new $root.LiftLog.Ui.Models.Weight();
+                    if (object.value != null) {
+                        if (typeof object.value !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.Weight.value: object expected");
+                        message.value = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.value);
+                    }
+                    switch (object.unit) {
+                    default:
+                        if (typeof object.unit === "number") {
+                            message.unit = object.unit;
+                            break;
+                        }
+                        break;
+                    case "NIL":
+                    case 0:
+                        message.unit = 0;
+                        break;
+                    case "KILOGRAMS":
+                    case 1:
+                        message.unit = 1;
+                        break;
+                    case "POUNDS":
+                    case 2:
+                        message.unit = 2;
+                        break;
+                    }
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a Weight message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof LiftLog.Ui.Models.Weight
+                 * @static
+                 * @param {LiftLog.Ui.Models.Weight} message Weight
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                Weight.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    let object = {};
+                    if (options.defaults) {
+                        object.value = null;
+                        object.unit = options.enums === String ? "NIL" : 0;
+                    }
+                    if (message.value != null && message.hasOwnProperty("value"))
+                        object.value = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.value, options);
+                    if (message.unit != null && message.hasOwnProperty("unit"))
+                        object.unit = options.enums === String ? $root.LiftLog.Ui.Models.WeightUnit[message.unit] === undefined ? message.unit : $root.LiftLog.Ui.Models.WeightUnit[message.unit] : message.unit;
+                    return object;
+                };
+
+                /**
+                 * Converts this Weight to JSON.
+                 * @function toJSON
+                 * @memberof LiftLog.Ui.Models.Weight
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                Weight.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                /**
+                 * Gets the default type url for Weight
+                 * @function getTypeUrl
+                 * @memberof LiftLog.Ui.Models.Weight
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                Weight.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/LiftLog.Ui.Models.Weight";
+                };
+
+                return Weight;
+            })();
+
             Models.SessionHistoryDao = (function() {
 
                 /**
@@ -1854,7 +2128,8 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @property {string|null} [sessionName] SessionDaoV2 sessionName
                      * @property {Array.<LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2>|null} [recordedExercises] SessionDaoV2 recordedExercises
                      * @property {LiftLog.Ui.Models.IDateOnlyDao|null} [date] SessionDaoV2 date
-                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [bodyweight] SessionDaoV2 bodyweight
+                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [bodyweightValue] SessionDaoV2 bodyweightValue
+                     * @property {LiftLog.Ui.Models.WeightUnit|null} [bodyweightUnit] SessionDaoV2 bodyweightUnit
                      * @property {string|null} [blueprintNotes] SessionDaoV2 blueprintNotes
                      */
 
@@ -1907,12 +2182,20 @@ export const LiftLog = $root.LiftLog = (() => {
                     SessionDaoV2.prototype.date = null;
 
                     /**
-                     * SessionDaoV2 bodyweight.
-                     * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} bodyweight
+                     * SessionDaoV2 bodyweightValue.
+                     * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} bodyweightValue
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2
                      * @instance
                      */
-                    SessionDaoV2.prototype.bodyweight = null;
+                    SessionDaoV2.prototype.bodyweightValue = null;
+
+                    /**
+                     * SessionDaoV2 bodyweightUnit.
+                     * @member {LiftLog.Ui.Models.WeightUnit} bodyweightUnit
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2
+                     * @instance
+                     */
+                    SessionDaoV2.prototype.bodyweightUnit = 0;
 
                     /**
                      * SessionDaoV2 blueprintNotes.
@@ -1926,13 +2209,13 @@ export const LiftLog = $root.LiftLog = (() => {
                     let $oneOfFields;
 
                     /**
-                     * SessionDaoV2 _bodyweight.
-                     * @member {"bodyweight"|undefined} _bodyweight
+                     * SessionDaoV2 _bodyweightValue.
+                     * @member {"bodyweightValue"|undefined} _bodyweightValue
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2
                      * @instance
                      */
-                    Object.defineProperty(SessionDaoV2.prototype, "_bodyweight", {
-                        get: $util.oneOfGetter($oneOfFields = ["bodyweight"]),
+                    Object.defineProperty(SessionDaoV2.prototype, "_bodyweightValue", {
+                        get: $util.oneOfGetter($oneOfFields = ["bodyweightValue"]),
                         set: $util.oneOfSetter($oneOfFields)
                     });
 
@@ -1969,10 +2252,12 @@ export const LiftLog = $root.LiftLog = (() => {
                                 $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.encode(message.recordedExercises[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
                         if (message.date != null && Object.hasOwnProperty.call(message, "date"))
                             $root.LiftLog.Ui.Models.DateOnlyDao.encode(message.date, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-                        if (message.bodyweight != null && Object.hasOwnProperty.call(message, "bodyweight"))
-                            $root.LiftLog.Ui.Models.DecimalValue.encode(message.bodyweight, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                        if (message.bodyweightValue != null && Object.hasOwnProperty.call(message, "bodyweightValue"))
+                            $root.LiftLog.Ui.Models.DecimalValue.encode(message.bodyweightValue, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
                         if (message.blueprintNotes != null && Object.hasOwnProperty.call(message, "blueprintNotes"))
                             writer.uint32(/* id 6, wireType 2 =*/50).string(message.blueprintNotes);
+                        if (message.bodyweightUnit != null && Object.hasOwnProperty.call(message, "bodyweightUnit"))
+                            writer.uint32(/* id 7, wireType 0 =*/56).int32(message.bodyweightUnit);
                         return writer;
                     };
 
@@ -2028,7 +2313,11 @@ export const LiftLog = $root.LiftLog = (() => {
                                     break;
                                 }
                             case 5: {
-                                    message.bodyweight = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                    message.bodyweightValue = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 7: {
+                                    message.bodyweightUnit = reader.int32();
                                     break;
                                 }
                             case 6: {
@@ -2093,14 +2382,23 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (error)
                                 return "date." + error;
                         }
-                        if (message.bodyweight != null && message.hasOwnProperty("bodyweight")) {
-                            properties._bodyweight = 1;
+                        if (message.bodyweightValue != null && message.hasOwnProperty("bodyweightValue")) {
+                            properties._bodyweightValue = 1;
                             {
-                                let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.bodyweight);
+                                let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.bodyweightValue);
                                 if (error)
-                                    return "bodyweight." + error;
+                                    return "bodyweightValue." + error;
                             }
                         }
+                        if (message.bodyweightUnit != null && message.hasOwnProperty("bodyweightUnit"))
+                            switch (message.bodyweightUnit) {
+                            default:
+                                return "bodyweightUnit: enum value expected";
+                            case 0:
+                            case 1:
+                            case 2:
+                                break;
+                            }
                         if (message.blueprintNotes != null && message.hasOwnProperty("blueprintNotes"))
                             if (!$util.isString(message.blueprintNotes))
                                 return "blueprintNotes: string expected";
@@ -2141,10 +2439,30 @@ export const LiftLog = $root.LiftLog = (() => {
                                 throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.date: object expected");
                             message.date = $root.LiftLog.Ui.Models.DateOnlyDao.fromObject(object.date);
                         }
-                        if (object.bodyweight != null) {
-                            if (typeof object.bodyweight !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.bodyweight: object expected");
-                            message.bodyweight = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.bodyweight);
+                        if (object.bodyweightValue != null) {
+                            if (typeof object.bodyweightValue !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.bodyweightValue: object expected");
+                            message.bodyweightValue = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.bodyweightValue);
+                        }
+                        switch (object.bodyweightUnit) {
+                        default:
+                            if (typeof object.bodyweightUnit === "number") {
+                                message.bodyweightUnit = object.bodyweightUnit;
+                                break;
+                            }
+                            break;
+                        case "NIL":
+                        case 0:
+                            message.bodyweightUnit = 0;
+                            break;
+                        case "KILOGRAMS":
+                        case 1:
+                            message.bodyweightUnit = 1;
+                            break;
+                        case "POUNDS":
+                        case 2:
+                            message.bodyweightUnit = 2;
+                            break;
                         }
                         if (object.blueprintNotes != null)
                             message.blueprintNotes = String(object.blueprintNotes);
@@ -2171,6 +2489,7 @@ export const LiftLog = $root.LiftLog = (() => {
                             object.sessionName = "";
                             object.date = null;
                             object.blueprintNotes = "";
+                            object.bodyweightUnit = options.enums === String ? "NIL" : 0;
                         }
                         if (message.id != null && message.hasOwnProperty("id"))
                             object.id = $root.LiftLog.Ui.Models.UuidDao.toObject(message.id, options);
@@ -2183,13 +2502,15 @@ export const LiftLog = $root.LiftLog = (() => {
                         }
                         if (message.date != null && message.hasOwnProperty("date"))
                             object.date = $root.LiftLog.Ui.Models.DateOnlyDao.toObject(message.date, options);
-                        if (message.bodyweight != null && message.hasOwnProperty("bodyweight")) {
-                            object.bodyweight = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.bodyweight, options);
+                        if (message.bodyweightValue != null && message.hasOwnProperty("bodyweightValue")) {
+                            object.bodyweightValue = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.bodyweightValue, options);
                             if (options.oneofs)
-                                object._bodyweight = "bodyweight";
+                                object._bodyweightValue = "bodyweightValue";
                         }
                         if (message.blueprintNotes != null && message.hasOwnProperty("blueprintNotes"))
                             object.blueprintNotes = message.blueprintNotes;
+                        if (message.bodyweightUnit != null && message.hasOwnProperty("bodyweightUnit"))
+                            object.bodyweightUnit = options.enums === String ? $root.LiftLog.Ui.Models.WeightUnit[message.bodyweightUnit] === undefined ? message.bodyweightUnit : $root.LiftLog.Ui.Models.WeightUnit[message.bodyweightUnit] : message.bodyweightUnit;
                         return object;
                     };
 
@@ -2839,7 +3160,8 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao
                      * @interface IPotentialSetDaoV2
                      * @property {LiftLog.Ui.Models.SessionHistoryDao.IRecordedSetDaoV2|null} [recordedSet] PotentialSetDaoV2 recordedSet
-                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [weight] PotentialSetDaoV2 weight
+                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [weightValue] PotentialSetDaoV2 weightValue
+                     * @property {LiftLog.Ui.Models.WeightUnit|null} [weightUnit] PotentialSetDaoV2 weightUnit
                      */
 
                     /**
@@ -2866,12 +3188,20 @@ export const LiftLog = $root.LiftLog = (() => {
                     PotentialSetDaoV2.prototype.recordedSet = null;
 
                     /**
-                     * PotentialSetDaoV2 weight.
-                     * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} weight
+                     * PotentialSetDaoV2 weightValue.
+                     * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} weightValue
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2
                      * @instance
                      */
-                    PotentialSetDaoV2.prototype.weight = null;
+                    PotentialSetDaoV2.prototype.weightValue = null;
+
+                    /**
+                     * PotentialSetDaoV2 weightUnit.
+                     * @member {LiftLog.Ui.Models.WeightUnit} weightUnit
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2
+                     * @instance
+                     */
+                    PotentialSetDaoV2.prototype.weightUnit = 0;
 
                     // OneOf field names bound to virtual getters and setters
                     let $oneOfFields;
@@ -2913,8 +3243,10 @@ export const LiftLog = $root.LiftLog = (() => {
                             writer = $Writer.create();
                         if (message.recordedSet != null && Object.hasOwnProperty.call(message, "recordedSet"))
                             $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedSetDaoV2.encode(message.recordedSet, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                        if (message.weight != null && Object.hasOwnProperty.call(message, "weight"))
-                            $root.LiftLog.Ui.Models.DecimalValue.encode(message.weight, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                        if (message.weightValue != null && Object.hasOwnProperty.call(message, "weightValue"))
+                            $root.LiftLog.Ui.Models.DecimalValue.encode(message.weightValue, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                        if (message.weightUnit != null && Object.hasOwnProperty.call(message, "weightUnit"))
+                            writer.uint32(/* id 3, wireType 0 =*/24).int32(message.weightUnit);
                         return writer;
                     };
 
@@ -2956,7 +3288,11 @@ export const LiftLog = $root.LiftLog = (() => {
                                     break;
                                 }
                             case 2: {
-                                    message.weight = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                    message.weightValue = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 3: {
+                                    message.weightUnit = reader.int32();
                                     break;
                                 }
                             default:
@@ -3003,11 +3339,20 @@ export const LiftLog = $root.LiftLog = (() => {
                                     return "recordedSet." + error;
                             }
                         }
-                        if (message.weight != null && message.hasOwnProperty("weight")) {
-                            let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.weight);
+                        if (message.weightValue != null && message.hasOwnProperty("weightValue")) {
+                            let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.weightValue);
                             if (error)
-                                return "weight." + error;
+                                return "weightValue." + error;
                         }
+                        if (message.weightUnit != null && message.hasOwnProperty("weightUnit"))
+                            switch (message.weightUnit) {
+                            default:
+                                return "weightUnit: enum value expected";
+                            case 0:
+                            case 1:
+                            case 2:
+                                break;
+                            }
                         return null;
                     };
 
@@ -3028,10 +3373,30 @@ export const LiftLog = $root.LiftLog = (() => {
                                 throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2.recordedSet: object expected");
                             message.recordedSet = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedSetDaoV2.fromObject(object.recordedSet);
                         }
-                        if (object.weight != null) {
-                            if (typeof object.weight !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2.weight: object expected");
-                            message.weight = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.weight);
+                        if (object.weightValue != null) {
+                            if (typeof object.weightValue !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2.weightValue: object expected");
+                            message.weightValue = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.weightValue);
+                        }
+                        switch (object.weightUnit) {
+                        default:
+                            if (typeof object.weightUnit === "number") {
+                                message.weightUnit = object.weightUnit;
+                                break;
+                            }
+                            break;
+                        case "NIL":
+                        case 0:
+                            message.weightUnit = 0;
+                            break;
+                        case "KILOGRAMS":
+                        case 1:
+                            message.weightUnit = 1;
+                            break;
+                        case "POUNDS":
+                        case 2:
+                            message.weightUnit = 2;
+                            break;
                         }
                         return message;
                     };
@@ -3049,15 +3414,19 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (!options)
                             options = {};
                         let object = {};
-                        if (options.defaults)
-                            object.weight = null;
+                        if (options.defaults) {
+                            object.weightValue = null;
+                            object.weightUnit = options.enums === String ? "NIL" : 0;
+                        }
                         if (message.recordedSet != null && message.hasOwnProperty("recordedSet")) {
                             object.recordedSet = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedSetDaoV2.toObject(message.recordedSet, options);
                             if (options.oneofs)
                                 object._recordedSet = "recordedSet";
                         }
-                        if (message.weight != null && message.hasOwnProperty("weight"))
-                            object.weight = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.weight, options);
+                        if (message.weightValue != null && message.hasOwnProperty("weightValue"))
+                            object.weightValue = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.weightValue, options);
+                        if (message.weightUnit != null && message.hasOwnProperty("weightUnit"))
+                            object.weightUnit = options.enums === String ? $root.LiftLog.Ui.Models.WeightUnit[message.weightUnit] === undefined ? message.weightUnit : $root.LiftLog.Ui.Models.WeightUnit[message.weightUnit] : message.weightUnit;
                         return object;
                     };
 

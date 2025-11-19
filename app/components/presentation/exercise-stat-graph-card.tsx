@@ -1,5 +1,5 @@
 import { ExerciseStatistics } from '@/store/stats';
-import { useWeightSuffix } from '@/hooks/useWeightSuffix';
+import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 import { LineChart, lineDataItem } from 'react-native-gifted-charts';
 import { View } from 'react-native';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
@@ -12,13 +12,13 @@ export default function ExerciseStatGraphCard(props: {
   exerciseStats: ExerciseStatistics;
   title: string;
 }) {
-  const weightSuffix = useWeightSuffix();
+  const weightUnit = usePreferredWeightUnit();
   const { colors } = useAppTheme();
   const exercisePoints: lineDataItem[] =
     props.exerciseStats.statistics.statistics.map(
       (stat): lineDataItem => ({
-        value: stat.value,
-        dataPointText: formatNumber(stat.value) + weightSuffix,
+        value: stat.value.convertTo(weightUnit).value.toNumber(),
+        dataPointText: stat.value.shortLocaleFormat(),
         textShiftY: -10,
         label: formatDate(stat.dateTime.toLocalDate(), {
           day: 'numeric',
@@ -30,14 +30,14 @@ export default function ExerciseStatGraphCard(props: {
   const oneRepMaxPoints: lineDataItem[] =
     props.exerciseStats.oneRepMaxStatistics.statistics.map(
       (stat): lineDataItem => ({
-        value: stat.value,
+        value: stat.value.convertTo(weightUnit).value.toNumber(),
         textShiftY: -10,
         label: formatDate(stat.dateTime.toLocalDate(), {
           day: 'numeric',
           month: 'short',
         }),
         dataPointColor: colors.red,
-        dataPointText: formatNumber(stat.value) + weightSuffix,
+        dataPointText: stat.value.shortLocaleFormat(),
         focusedDataPointLabelComponent: () => <SurfaceText>'HI'</SurfaceText>,
       }),
     );
@@ -59,27 +59,24 @@ export default function ExerciseStatGraphCard(props: {
         strokeDashArray2={[1]}
         {...lineGraphProps(colors, width, exercisePoints.length)}
         negativeStepValue={
-          props.exerciseStats.oneRepMaxStatistics.minValue < 0
-            ? -0.2 * props.exerciseStats.oneRepMaxStatistics.minValue
+          props.exerciseStats.oneRepMaxStatistics.minValue.value.lt(0)
+            ? -0.2 *
+              props.exerciseStats.oneRepMaxStatistics.minValue
+                .convertTo(weightUnit)
+                .value.toNumber()
             : undefined!
         }
         mostNegativeValue={
-          props.exerciseStats.oneRepMaxStatistics.minValue < 0
+          props.exerciseStats.oneRepMaxStatistics.minValue.value.lt(0)
             ? props.exerciseStats.oneRepMaxStatistics.minValue
+                .convertTo(weightUnit)
+                .value.toNumber()
             : undefined!
         }
         noOfSectionsBelowXAxis={
-          props.exerciseStats.oneRepMaxStatistics.minValue < 0 ? 5 : 0
+          props.exerciseStats.oneRepMaxStatistics.minValue.value.lt(0) ? 5 : 0
         }
       />
     </View>
   );
-}
-
-/**
- * Formats showing up to 2 decimal places
- * @param value
- */
-function formatNumber(value: number | undefined) {
-  return value?.toLocaleString(undefined, { maximumFractionDigits: 2 });
 }

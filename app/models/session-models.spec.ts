@@ -13,6 +13,7 @@ import {
   Rest,
   SessionBlueprint,
 } from '@/models/blueprint-models';
+import { Weight } from '@/models/weight';
 
 // Helper functions to match the C# test structure
 function createExerciseBlueprint(
@@ -56,7 +57,7 @@ function createSession(
             )
           : undefined;
 
-        return new PotentialSet(set, new BigNumber(100));
+        return new PotentialSet(set, new Weight(100, 'kilograms'));
       },
     );
 

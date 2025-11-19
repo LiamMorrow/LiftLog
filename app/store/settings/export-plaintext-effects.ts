@@ -9,6 +9,7 @@ import Enumerable from 'linq';
 import { match } from 'ts-pattern';
 import BigNumber from 'bignumber.js';
 import { jsonToCSV } from 'react-native-csv';
+import { shortFormatWeightUnit } from '@/models/weight';
 
 export function addExportPlaintextEffects() {
   addEffect(
@@ -17,7 +18,6 @@ export function addExportPlaintextEffects() {
       { payload: { format } },
       { getState, extra: { progressRepository, fileExportService } },
     ) => {
-      const unit = getState().settings.useImperialUnits ? 'lbs' : 'kg';
       const sessions = progressRepository.getOrderedSessions();
       const [fileName, bytes, contentType] = await match(format)
         .with(
@@ -25,7 +25,7 @@ export function addExportPlaintextEffects() {
           async () =>
             [
               'liftlog-export.csv',
-              await exportToCsv(sessions, unit),
+              await exportToCsv(sessions),
               'text/csv',
             ] as const,
         )
@@ -38,14 +38,13 @@ export function addExportPlaintextEffects() {
 
 async function exportToCsv(
   sessions: Enumerable.IEnumerable<Session>,
-  unit: string,
 ): Promise<Uint8Array> {
   const exportedSets = sessions
     .selectMany((session) =>
       session.recordedExercises.map((exercise) => ({ session, exercise })),
     )
     .selectMany(({ session, exercise }) =>
-      ExportedSetCsvRow.fromModel(session, exercise, unit),
+      ExportedSetCsvRow.fromModel(session, exercise),
     );
   const csvString = jsonToCSV(exportedSets.toArray());
   return new TextEncoder().encode(csvString);
@@ -65,7 +64,6 @@ class ExportedSetCsvRow {
   static fromModel(
     session: Session,
     exercise: RecordedExercise,
-    unit: string,
   ): ExportedSetCsvRow[] {
     // TODO: What do we do about cardio?
     if (exercise instanceof RecordedCardioExercise) {
@@ -79,8 +77,8 @@ class ExportedSetCsvRow {
             session.id,
             set.set!.completionDateTime.toString(),
             exercise.blueprint.name,
-            set.weight,
-            unit,
+            set.weight.value,
+            shortFormatWeightUnit(set.weight.unit),
             set.set!.repsCompleted,
             exercise.blueprint.repsPerSet,
             exercise.notes ?? '',

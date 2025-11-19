@@ -39,6 +39,7 @@ import { google, LiftLog } from '@/gen/proto';
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { gunzipSync } from 'zlib';
+import { Weight } from '@/models/weight';
 
 const Models = LiftLog.Ui.Models;
 
@@ -99,8 +100,8 @@ describe('conversions', () => {
 
     expect(sessions.size).toBe(85);
     // Just some general checksums
-    expect(totalWeightLifted).toEqual(BigNumber('705959.136'));
-    expect(bodyweightSum).toEqual(BigNumber('3065.3'));
+    expect(totalWeightLifted).toEqual(new Weight(705959.136, 'nil'));
+    expect(bodyweightSum).toEqual(new Weight(3065.3, 'nil'));
   });
 });
 
