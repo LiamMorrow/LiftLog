@@ -24,8 +24,8 @@ export function CardioResistanceTracker({
     >
       <DecimalEditor
         style={{ flex: 1 }}
-        value={resistance}
-        onChange={(value) => updateResistance(value)}
+        value={dialogValue}
+        onChange={(value) => setDialogValue(value)}
       />
     </CardioValueSelector>
   );
