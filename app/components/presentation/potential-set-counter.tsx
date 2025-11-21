@@ -31,7 +31,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
   const [isWeightDialogOpen, setIsWeightDialogOpen] = useState(false);
   const repCountValue = props.set?.set?.repsCompleted;
 
-  const [applyTo, setApplyTo] = useState<WeightAppliesTo>('thisSet');
+  const [applyTo, setApplyTo] = useState<WeightAppliesTo>('uncompletedSets');
 
   return (
     <Holdable onLongPress={props.onHold}>

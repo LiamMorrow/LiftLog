@@ -17,7 +17,8 @@ import {
   Tooltip,
   useTheme,
 } from 'react-native-paper';
-import { shortFormatWeightUnit, Weight } from '@/models/weight';
+import { Weight } from '@/models/weight';
+import SelectButton from '@/components/presentation/select-button';
 
 type WeightDialogProps = {
   open: boolean;
@@ -124,11 +125,6 @@ export default function WeightDialog(props: WeightDialogProps) {
               >
                 <TextInput
                   testID="weight-input"
-                  right={
-                    <TextInput.Affix
-                      text={shortFormatWeightUnit(props.weight?.unit)}
-                    />
-                  }
                   selectTextOnFocus
                   mode="outlined"
                   inputMode="decimal"
@@ -141,6 +137,26 @@ export default function WeightDialog(props: WeightDialogProps) {
                     flex: 1,
                   }}
                 />
+
+                <SelectButton
+                  options={[
+                    { label: 'kg', value: 'kilograms' },
+                    { label: 'lbs', value: 'pounds' },
+                    { label: 'Unit', value: 'nil', disabledAndHidden: true },
+                  ]}
+                  value={editorWeight?.unit ?? 'nil'}
+                  onChange={(unit) =>
+                    editorWeight && setEditorWeight(editorWeight.with({ unit }))
+                  }
+                />
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  gap: spacing[2],
+                  alignItems: 'center',
+                }}
+              >
                 {props.allowNegative && (
                   <Tooltip title={t('Toggle negative')}>
                     <IconButton
