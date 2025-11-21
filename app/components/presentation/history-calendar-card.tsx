@@ -117,18 +117,23 @@ export default function HistoryCalendarCard({
       {Array.from({ length: 7 }, (_, offset) => {
         const dayOfWeek = (offset + firstDayOfWeek.ordinal()) % 7;
         return (
-          <SurfaceText
-            key={dayOfWeek}
+          <View
             style={{
-              marginBottom: spacing[2],
               flex: 1,
-              textAlign: 'center',
             }}
           >
-            {formatDate(getDateOnDay(DayOfWeek.of(dayOfWeek + 1)), {
-              weekday: 'short',
-            })}
-          </SurfaceText>
+            <SurfaceText
+              key={dayOfWeek}
+              style={{
+                marginBottom: spacing[2],
+                textAlign: 'center',
+              }}
+            >
+              {formatDate(getDateOnDay(DayOfWeek.of(dayOfWeek + 1)), {
+                weekday: 'short',
+              })}
+            </SurfaceText>
+          </View>
         );
       })}
     </View>

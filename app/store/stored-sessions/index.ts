@@ -166,6 +166,9 @@ export const initializeStoredSessionsStateSlice = createAction(
 );
 
 export const migrateExerciseWeights = createAction('migrateExerciseWeights');
+export const checkIfWeightMigrationRequired = createAction(
+  'checkIfWeightMigrationRequired',
+);
 
 export const {
   setIsHydrated,

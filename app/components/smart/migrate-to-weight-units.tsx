@@ -64,6 +64,7 @@ export function MigrateToWeightUnitsWizard() {
             >
               <Button
                 mode="contained"
+                testID="all-kilograms"
                 onPress={() =>
                   dispatch(
                     setExercisesRequiringWeightMigration(

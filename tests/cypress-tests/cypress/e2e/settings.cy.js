@@ -18,6 +18,9 @@ describe('Settings', () => {
       cy.contains('Restore data').click()
       cy.get('input[type=file]').selectFile('export.liftlogbackup.gz', { force: true })
       cy.contains('Restore complete!').should('be.visible')
+      cy.navigate('Workout')
+      cy.dialog().findByTestId('all-kilograms').click()
+      cy.dialog().findByTestId('dialog-action').click()
     })
 
 
@@ -87,7 +90,7 @@ function assertCorrectWeightUnitsOnAllPages(units) {
     if (Cypress.$('[data-testid=calendar-month]').text().includes('September 2023')) {
       return false
     }
-    cy.getByTestId('calendar-nav-previous-month').first().click()
+    cy.getByTestId('calendar-nav-previous-month').first().click({ force: true })
   }, 200)
   cy.getByTestId('history-list').findByTestId('session-summary').first().should('contain.text', units)
   cy.navigate('Stats')
@@ -99,6 +102,6 @@ function assertCorrectWeightUnitsOnAllPages(units) {
   cy.getByTestId('session-summary').first().should('contain.text', units).click()
   cy.contains('Start workout').click()
   cy.getByTestId('repcount-weight').eq(1).should('contain.text', units).click()
-  cy.dialog().findByTestId('right-affix-adornment-text',).should('contain.text', units)
+  cy.dialog().findByTestId('weight-dialog-unit-selector').should('contain.text', units)
   cy.dialog().findByTestId('close').click()
 }

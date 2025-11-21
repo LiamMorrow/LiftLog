@@ -139,6 +139,7 @@ export default function WeightDialog(props: WeightDialogProps) {
                 />
 
                 <SelectButton
+                  testID="weight-dialog-unit-selector"
                   options={[
                     { label: 'kg', value: 'kilograms' },
                     { label: 'lbs', value: 'pounds' },

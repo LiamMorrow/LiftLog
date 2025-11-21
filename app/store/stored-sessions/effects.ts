@@ -1,6 +1,7 @@
 import { addDebouncedEffect, addEffect } from '@/store/store';
 import {
   addStoredSession,
+  checkIfWeightMigrationRequired,
   deleteExercise,
   deleteStoredSession,
   ExerciseDescriptor,
@@ -131,6 +132,18 @@ export function applyStoredSessionsEffects() {
         JSON.stringify(newBuiltIns),
       );
 
+      dispatch(checkIfWeightMigrationRequired());
+
+      dispatch(setIsHydrated(true));
+      dispatch(fetchUpcomingSessions());
+    },
+  );
+
+  addEffect(
+    checkIfWeightMigrationRequired,
+    (_, { dispatch, stateAfterReduce }) => {
+      const completedSessionsList = selectSessions(stateAfterReduce);
+
       const weightsNeedMigration = Enumerable.from(completedSessionsList)
         .selectMany((x) =>
           Enumerable.from(x.recordedExercises)
@@ -153,9 +166,6 @@ export function applyStoredSessionsEffects() {
         .orderBy((x) => x.name)
         .toArray();
       dispatch(setExercisesRequiringWeightMigration(weightsNeedMigration));
-
-      dispatch(setIsHydrated(true));
-      dispatch(fetchUpcomingSessions());
     },
   );
 
