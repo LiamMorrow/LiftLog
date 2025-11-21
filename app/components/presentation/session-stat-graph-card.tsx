@@ -1,5 +1,5 @@
 import { OptionalStatisticOverTime } from '@/store/stats';
-import { useWeightSuffix } from '@/hooks/useWeightSuffix';
+import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 import { LineChart, lineDataItem } from 'react-native-gifted-charts';
 import { View } from 'react-native';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
@@ -9,11 +9,12 @@ import { useTranslate } from '@tolgee/react';
 import { lineGraphProps } from '@/components/presentation/line-graph-props';
 import { Text } from 'react-native-paper';
 import { formatDate } from '@/utils/format-date';
+import { Weight } from '@/models/weight';
 
 export default function SessionStatGraphCard(props: {
-  sessionStats: OptionalStatisticOverTime[];
+  sessionStats: OptionalStatisticOverTime<Weight>[];
 }) {
-  const weightSuffix = useWeightSuffix();
+  const weightUnit = usePreferredWeightUnit();
   const { t } = useTranslate();
   const { colors } = useAppTheme();
   const pointColors = [
@@ -32,8 +33,8 @@ export default function SessionStatGraphCard(props: {
   const points: lineDataItem[][] = props.sessionStats.map((x) =>
     x.statistics.map(
       (stat): lineDataItem => ({
-        value: stat.value!,
-        dataPointText: formatNumber(stat.value) + weightSuffix,
+        value: stat.value?.convertTo(weightUnit).value.toNumber() ?? 0,
+        dataPointText: stat.value?.shortLocaleFormat() ?? '',
         textShiftY: -10,
         label: formatDate(stat.dateTime.toLocalDate(), {
           day: 'numeric',
@@ -107,12 +108,4 @@ export default function SessionStatGraphCard(props: {
       </View>
     </View>
   );
-}
-
-/**
- * Formats showing up to 2 decimal places
- * @param value
- */
-function formatNumber(value: number | undefined) {
-  return value?.toLocaleString(undefined, { maximumFractionDigits: 2 });
 }

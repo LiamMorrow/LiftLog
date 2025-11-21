@@ -14,7 +14,10 @@ import {
   upsertSavedPlans,
 } from '@/store/program';
 import { beginFeedImport, importData, importDataDao } from '@/store/settings';
-import { upsertStoredSessions } from '@/store/stored-sessions';
+import {
+  checkIfWeightMigrationRequired,
+  upsertStoredSessions,
+} from '@/store/stored-sessions';
 import { streamToUint8Array } from '@/utils/stream';
 import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
@@ -89,6 +92,7 @@ export function addImportBackupEffects() {
           text: tolgee.t('Restore complete!'),
         }),
       );
+      dispatch(checkIfWeightMigrationRequired());
       if (dao.feedState) {
         dispatch(beginFeedImport(dao.feedState));
       }

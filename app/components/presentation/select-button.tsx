@@ -7,6 +7,7 @@ import Button from '@/components/presentation/gesture-wrappers/button';
 export interface SelectButtonOption<T> {
   value: T;
   label: string;
+  disabledAndHidden?: true;
 }
 interface SelectButtonProps<T> {
   value: T;
@@ -38,17 +39,20 @@ export default function SelectButton<
       anchorPosition="bottom"
     >
       <ScrollView>
-        {options.map((option) => (
-          <Menu.Item
-            key={option.label}
-            title={option.label}
-            onPress={() => {
-              onChange(option.value);
-              setOpen(false);
-            }}
-            trailingIcon={option.value === value ? 'check' : undefined!}
-          />
-        ))}
+        {options.map(
+          (option) =>
+            !option.disabledAndHidden && (
+              <Menu.Item
+                key={option.label}
+                title={option.label}
+                onPress={() => {
+                  onChange(option.value);
+                  setOpen(false);
+                }}
+                trailingIcon={option.value === value ? 'check' : undefined!}
+              />
+            ),
+        )}
       </ScrollView>
     </Menu>
   );

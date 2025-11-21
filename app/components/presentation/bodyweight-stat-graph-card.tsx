@@ -1,5 +1,5 @@
 import { StatisticOverTime } from '@/store/stats';
-import { useWeightSuffix } from '@/hooks/useWeightSuffix';
+import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 import { LineChart, lineDataItem } from 'react-native-gifted-charts';
 import { View } from 'react-native';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
@@ -12,14 +12,14 @@ import { lineGraphProps } from '@/components/presentation/line-graph-props';
 export default function BodyweightStatGraphCard(props: {
   bodyweightStats: StatisticOverTime;
 }) {
-  const weightSuffix = useWeightSuffix();
+  const weightUnit = usePreferredWeightUnit();
   const { t } = useTranslate();
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
   const { colors } = useAppTheme();
   const points: lineDataItem[] = props.bodyweightStats.statistics.map(
     (stat): lineDataItem => ({
-      value: stat.value,
-      dataPointText: formatNumber(stat.value) + weightSuffix,
+      value: stat.value.convertTo(weightUnit).value.toNumber(),
+      dataPointText: stat.value.shortLocaleFormat(),
       textShiftY: -10,
       dataPointColor: colors.primary,
     }),
@@ -41,17 +41,13 @@ export default function BodyweightStatGraphCard(props: {
         color={colors.primary}
         data={points}
         strokeDashArray={[1]}
-        yAxisOffset={props.bodyweightStats.minValue * 0.9}
+        yAxisOffset={
+          props.bodyweightStats.minValue
+            .convertTo(weightUnit)
+            .value.toNumber() * 0.9
+        }
         {...lineGraphProps(colors, width, points.length)}
       />
     </View>
   );
-}
-
-/**
- * Formats showing up to 2 decimal places
- * @param value
- */
-function formatNumber(value: number | undefined) {
-  return value?.toLocaleString(undefined, { maximumFractionDigits: 2 });
 }

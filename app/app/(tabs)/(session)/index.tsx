@@ -29,6 +29,7 @@ import { Card, FAB, Text, Tooltip } from 'react-native-paper';
 import Button from '@/components/presentation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
+import { MigrateToWeightUnitsWizard } from '@/components/smart/migrate-to-weight-units';
 
 function PlanManager() {
   const { push } = useRouter();
@@ -305,6 +306,7 @@ export default function Index() {
         }}
       />
       <AndroidNotificationAlert />
+      <MigrateToWeightUnitsWizard />
       <Remote
         value={upcomingSessions}
         success={(upcoming) => {

@@ -3,6 +3,7 @@ import { formatTimeSpan } from '@/components/presentation/rest-format';
 import { SurfaceText } from '@/components/presentation/surface-text';
 import WeightFormat from '@/components/presentation/weight-format';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { Weight } from '@/models/weight';
 import {
   RecordedExercise,
   RecordedWeightedExercise,
@@ -11,7 +12,6 @@ import { formatDistance } from '@/utils/distance';
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
 import { isNotNullOrUndefined } from '@/utils/null';
 import { DateTimeFormatter } from '@js-joda/core';
-import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
 import { ReactNode } from 'react';
 import { View } from 'react-native';
@@ -191,13 +191,13 @@ export default function ExerciseSummary({
 interface WeightAndRepsChipData {
   repsCompleted: number | undefined;
   repTarget: number;
-  weight: BigNumber;
+  weight: Weight;
 }
 
 interface PotentialSetChipData {
   repTarget: number;
   numSets: number;
-  weight: BigNumber;
+  weight: Weight;
 }
 
 function getWeightAndRepsChips(
@@ -214,7 +214,7 @@ function getPlannedChipData(
   exercise: RecordedWeightedExercise,
 ): PotentialSetChipData[] {
   return Enumerable.from(exercise.potentialSets)
-    .groupBy((x) => localeFormatBigNumber(x.weight))
+    .groupBy((x) => x.weight.shortLocaleFormat())
     .select((x) => ({
       repTarget: exercise.blueprint.repsPerSet,
       numSets: x.count(),

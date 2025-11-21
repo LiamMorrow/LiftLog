@@ -28,6 +28,7 @@ LogBox.ignoreLogs([
   /.*is not a valid icon name.*/,
   /Open debugger to view warnings./,
   /.*useInsertionEffect.*/,
+  /.*Failed to fetch inbox.*/,
 ]);
 
 export default Sentry.wrap(function RootLayout() {

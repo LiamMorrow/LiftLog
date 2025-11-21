@@ -19,6 +19,7 @@ import {
   Session,
 } from '@/models/session-models';
 import Enumerable from 'linq';
+import { Weight } from '@/models/weight';
 
 function computeStats(sessions: Session[]): GranularStatisticView | undefined {
   if (!sessions.length)
@@ -28,8 +29,8 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
       bodyweightStats: {
         statistics: [],
         title: 'Bodyweight',
-        minValue: 0,
-        maxValue: 0,
+        minValue: Weight.NIL,
+        maxValue: Weight.NIL,
       },
       exerciseMostTimeSpent: undefined,
       exerciseStats: [],
@@ -47,10 +48,10 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
     .toArray();
 
   const bodyWeightStatistics = Enumerable.from(sessions)
-    .where((s) => !!s.bodyweight && !s.bodyweight.isNaN())
+    .where((s) => !!s.bodyweight)
     .select((session) => ({
       dateTime: session.date.atTime(12, 0), // Use noon for LocalDate
-      value: session.bodyweight!.toNumber(),
+      value: session.bodyweight!,
     }))
     .orderBy((x) => x.dateTime.toString())
     .toArray();
@@ -58,12 +59,12 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
   const bodyweightStats: StatisticOverTime = {
     title: 'Bodyweight',
     statistics: bodyWeightStatistics,
-    minValue: Math.min(...bodyWeightStatistics.map((x) => x.value)),
-    maxValue: Math.max(...bodyWeightStatistics.map((x) => x.value)),
+    minValue: Weight.min(...bodyWeightStatistics.map((x) => x.value)),
+    maxValue: Weight.max(...bodyWeightStatistics.map((x) => x.value)),
   };
 
   // --- Session stats grouped by blueprint name ---
-  const sessionStats: OptionalStatisticOverTime[] = [];
+  const sessionStats: OptionalStatisticOverTime<Weight>[] = [];
   const sessionsByBlueprint = new Map<string, Session[]>();
   for (const session of sessionsWithExercises) {
     const key = session.blueprint.name;
@@ -76,14 +77,14 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
         const session = group.find((s) => s.date.equals(date));
         return {
           dateTime: date.atTime(12, 0),
-          value: session ? session.totalWeightLifted.toNumber() : undefined,
-        };
+          value: session ? session.totalWeightLifted : undefined,
+        } satisfies TimeTrackedStatistic<Weight | undefined>;
       })
       .orderBy((x) => x.dateTime.toString())
       .toArray();
     const statsWithValue = statistics.filter((x) => x.value !== undefined);
-    const min = Math.min(...statsWithValue.map((x) => x.value!));
-    const max = Math.max(...statsWithValue.map((x) => x.value!));
+    const min = Weight.min(...statsWithValue.map((x) => x.value!));
+    const max = Weight.max(...statsWithValue.map((x) => x.value!));
     sessionStats.push({
       title: name,
       statistics,
@@ -95,9 +96,9 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
   // --- Exercise stats grouped by normalized exercise name ---
   interface ExerciseStatAcc {
     exerciseName: string;
-    statistics: TimeTrackedStatistic[];
-    oneRepMaxStatistics: TimeTrackedStatistic[];
-    allLifted: number[];
+    statistics: TimeTrackedStatistic<Weight>[];
+    oneRepMaxStatistics: TimeTrackedStatistic<Weight>[];
+    allLifted: Weight[];
   }
   const exerciseStatsMap = new Map<string, ExerciseStatAcc>();
 
@@ -123,7 +124,7 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
         .map((ps) => ps.weight)
         .reduce(
           (a, b) => (a === null ? b : a.isGreaterThan(b) ? a : b),
-          null as null | BigNumber,
+          null as null | Weight,
         );
       if (!maxWeight) {
         continue;
@@ -139,13 +140,13 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
 
       exerciseStatsMap.get(key)!.statistics.push({
         dateTime: lastSet.set!.completionDateTime,
-        value: maxWeight.toNumber(),
+        value: maxWeight,
       });
       exerciseStatsMap.get(key)!.oneRepMaxStatistics.push({
         dateTime: lastSet.set!.completionDateTime,
-        value: oneRepMax.toNumber(),
+        value: oneRepMax,
       });
-      exerciseStatsMap.get(key)!.allLifted.push(maxWeight.toNumber());
+      exerciseStatsMap.get(key)!.allLifted.push(maxWeight);
     }
   }
 
@@ -159,29 +160,29 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
       .orderBy((x) => x.dateTime.toString())
       .toArray();
     const max = statistics.length
-      ? Math.max(
+      ? Weight.max(
           ...statistics.map((s) => s.value).filter((x) => x !== undefined),
         )
-      : 0;
+      : Weight.NIL;
     const min = statistics.length
-      ? Math.min(
+      ? Weight.min(
           ...statistics.map((s) => s.value).filter((x) => x !== undefined),
         )
-      : 0;
+      : Weight.NIL;
     const oneRMmax = oneRepMaxStatistics.length
-      ? Math.max(
+      ? Weight.max(
           ...oneRepMaxStatistics
             .map((s) => s.value)
             .filter((x) => x !== undefined),
         )
-      : 0;
+      : Weight.NIL;
     const oneRMMin = oneRepMaxStatistics.length
-      ? Math.min(
+      ? Weight.min(
           ...oneRepMaxStatistics
             .map((s) => s.value)
             .filter((x) => x !== undefined),
         )
-      : 0;
+      : Weight.NIL;
     return {
       exerciseName: ex.exerciseName,
       statistics: {
@@ -196,14 +197,15 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
         maxValue: oneRMmax,
         minValue: oneRMMin,
       },
-      totalLifted: ex.allLifted.reduce((a, b) => a + b, 0),
+      totalLifted: ex.allLifted.reduce((a, b) => a.plus(b), Weight.NIL),
       max,
       current: statistics.length
-        ? (statistics[statistics.length - 1].value ?? 0)
-        : 0,
+        ? (statistics[statistics.length - 1].value ?? Weight.NIL)
+        : Weight.NIL,
       oneRepMax: ex.oneRepMaxStatistics.length
-        ? (ex.oneRepMaxStatistics[ex.oneRepMaxStatistics.length - 1].value ?? 0)
-        : 0,
+        ? (ex.oneRepMaxStatistics[ex.oneRepMaxStatistics.length - 1].value ??
+          Weight.NIL)
+        : Weight.NIL,
     };
   });
 
@@ -275,7 +277,7 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
       const maxWeight = ex.potentialSets
         .filter((ps) => ps.set)
         .map((ps) => ps.weight)
-        .reduce((a, b) => (a.isGreaterThan(b) ? a : b), new BigNumber(0));
+        .reduce((a, b) => (a.isGreaterThan(b) ? a : b), Weight.NIL);
       if (!heaviestLift || maxWeight.isGreaterThan(heaviestLift.weight)) {
         heaviestLift = {
           exerciseName: ex.blueprint.name,
@@ -286,9 +288,17 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
   }
 
   return {
-    maxWeightLiftedInAWorkout: Enumerable.from(sessionStats)
-      .defaultIfEmpty({ maxValue: 0, minValue: 0, title: '', statistics: [] })
-      .max((x) => x.maxValue),
+    maxWeightLiftedInAWorkout: Weight.max(
+      ...Enumerable.from(sessionStats)
+        .defaultIfEmpty({
+          maxValue: Weight.NIL,
+          minValue: Weight.NIL,
+          title: '',
+          statistics: [],
+        })
+        .select((x) => x.maxValue)
+        .toArray(),
+    ),
     averageSessionLength,
     heaviestLift,
     exerciseMostTimeSpent,

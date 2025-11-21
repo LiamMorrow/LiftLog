@@ -36,6 +36,8 @@ import {
 import Enumerable from 'linq';
 import { FeedState } from '@/store/feed';
 import { uuidParse } from '@/utils/uuid';
+import { WeightUnit } from '@/models/weight';
+import { match } from 'ts-pattern';
 
 export function toUuidDao(uuid: string): LiftLog.Ui.Models.IUuidDao {
   const parsed = uuidParse(uuid);
@@ -251,8 +253,23 @@ export function toSessionDao(
     blueprintNotes: model.blueprint.notes,
     recordedExercises: model.recordedExercises.map(toRecordedExerciseDao),
     date: toDateOnlyDao(model.date),
-    bodyweight: model.bodyweight ? toDecimalDao(model.bodyweight) : null,
+    bodyweightValue: model.bodyweight
+      ? toDecimalDao(model.bodyweight.value)
+      : null,
+    bodyweightUnit: model.bodyweight
+      ? toWeightUnitDao(model.bodyweight.unit)
+      : LiftLog.Ui.Models.WeightUnit.NIL,
   });
+}
+
+export function toWeightUnitDao(
+  weightUnit: WeightUnit,
+): LiftLog.Ui.Models.WeightUnit {
+  return match(weightUnit)
+    .with('kilograms', () => LiftLog.Ui.Models.WeightUnit.KILOGRAMS)
+    .with('pounds', () => LiftLog.Ui.Models.WeightUnit.POUNDS)
+    .with('nil', () => LiftLog.Ui.Models.WeightUnit.NIL)
+    .exhaustive();
 }
 
 // Converts a RecordedExercise to a RecordedExercise DAO
@@ -298,7 +315,8 @@ export function toPotentialSetDao(
 ): LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2 {
   return new LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2({
     recordedSet: model.set ? toRecordedSetDao(model.set) : null,
-    weight: toDecimalDao(model.weight),
+    weightValue: toDecimalDao(model.weight.value),
+    weightUnit: toWeightUnitDao(model.weight.unit),
   });
 }
 

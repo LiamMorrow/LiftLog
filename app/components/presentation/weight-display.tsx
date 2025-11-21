@@ -5,6 +5,7 @@ import { useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useState } from 'react';
 import Button from '@/components/presentation/gesture-wrappers/button';
+import { Weight } from '@/models/weight';
 
 type WeightDisplayProps = {
   increment: BigNumber;
@@ -14,13 +15,13 @@ type WeightDisplayProps = {
 } & (
   | {
       allowNull: true;
-      weight: BigNumber | undefined;
-      updateWeight: (weight: BigNumber | undefined) => void;
+      weight: Weight | undefined;
+      updateWeight: (weight: Weight | undefined) => void;
     }
   | {
       allowNull?: false;
-      weight: BigNumber;
-      updateWeight: (weight: BigNumber) => void;
+      weight: Weight;
+      updateWeight: (weight: Weight) => void;
     }
 );
 export default function WeightDisplay(props: WeightDisplayProps) {
@@ -40,12 +41,12 @@ export default function WeightDisplay(props: WeightDisplayProps) {
       {props.isReadonly ? null : (
         <WeightDialog
           open={dialogOpen}
-          weight={props.weight as BigNumber}
+          weight={props.weight as Weight}
           increment={props.increment}
           allowNegative={props.allowNegative}
           label={props.label ?? t('Weight')}
           allowNull={props.allowNull as false}
-          updateWeight={props.updateWeight as (weight: BigNumber) => void}
+          updateWeight={props.updateWeight as (weight: Weight) => void}
           onClose={() => setDialogOpen(false)}
         />
       )}

@@ -377,5 +377,10 @@
   "Target distance": "Target distance",
   "Target time": "Target time",
   "Request exact notification permission": "Request exact notification permission",
-  "Add an exercise by tapping the more button in the top right": "Add an exercise by tapping the more button in the top right"
+  "Add an exercise by tapping the more button in the top right": "Add an exercise by tapping the more button in the top right",
+  "Migrate weights": "Migrate weights",
+  "MigrateWeightMessage": "LiftLog now supports setting either pounds or kilograms on each exercise!",
+  "MigrateWeightPrompt": "Just this once, we'll need you to specify which units for each exercise you've completed in the past.",
+  "All kilograms": "All kilograms",
+  "All pounds": "All pounds"
 }

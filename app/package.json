@@ -20,7 +20,7 @@
     "proto": "npm run protojs && npm run protots",
     "pull-translations": "tolgee  --api-key ${TOLGEE_PAT} pull --path ./i18n ",
     "test": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
     "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
@@ -95,6 +95,7 @@
     "@babel/core": "^7.20.0",
     "@react-native-community/cli": "^18.0.0",
     "@types/react": "~19.1.10",
+    "@typescript/native-preview": "^7.0.0-dev.20251121.1",
     "babel-plugin-inline-import": "^3.0.0",
     "eslint": "^8.57.0",
     "eslint-config-expo": "~10.0.0",

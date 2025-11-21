@@ -24,6 +24,7 @@ interface FullScreenDialogProps {
   action?: string;
   open: boolean;
   children: ReactNode;
+  noScroll?: boolean;
   onAction?: () => void;
   onClose: () => void;
 }
@@ -32,6 +33,7 @@ export default function FullScreenDialog(props: FullScreenDialogProps) {
   const { action, open, onAction, onClose, title, children } = props;
 
   const { bottom } = useSafeAreaInsets();
+  const { colors } = useAppTheme();
 
   usePreventNavigate(open, onClose);
 
@@ -57,14 +59,27 @@ export default function FullScreenDialog(props: FullScreenDialogProps) {
               onAction={onAction!}
               title={title}
             />
-            <FullHeightScrollView
-              scrollStyle={{
-                padding: spacing.pageHorizontalMargin,
-              }}
-            >
-              {children}
-              <View style={{ height: bottom, width: '100%' }}></View>
-            </FullHeightScrollView>
+            {props.noScroll ? (
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: colors.surface,
+                  paddingHorizontal: spacing.pageHorizontalMargin,
+                }}
+              >
+                {children}
+                <View style={{ height: bottom, width: '100%' }}></View>
+              </View>
+            ) : (
+              <FullHeightScrollView
+                scrollStyle={{
+                  padding: spacing.pageHorizontalMargin,
+                }}
+              >
+                {children}
+                <View style={{ height: bottom, width: '100%' }}></View>
+              </FullHeightScrollView>
+            )}
           </Animated.View>
         </ScrollProvider>
       ) : undefined}

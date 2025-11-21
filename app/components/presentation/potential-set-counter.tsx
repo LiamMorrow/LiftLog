@@ -11,6 +11,7 @@ import { WeightAppliesTo } from '@/store/current-session';
 import { T } from '@tolgee/react';
 import Holdable from '@/components/presentation/holdable';
 import TouchableRipple from '@/components/presentation/gesture-wrappers/touchable-ripple';
+import { Weight } from '@/models/weight';
 
 interface PotentialSetCounterProps {
   set: PotentialSet;
@@ -22,7 +23,7 @@ interface PotentialSetCounterProps {
 
   onTap: () => void;
   onHold: () => void;
-  onUpdateWeight: (weight: BigNumber, applyTo: WeightAppliesTo) => void;
+  onUpdateWeight: (weight: Weight, applyTo: WeightAppliesTo) => void;
 }
 
 export default function PotentialSetCounter(props: PotentialSetCounterProps) {
@@ -30,7 +31,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
   const [isWeightDialogOpen, setIsWeightDialogOpen] = useState(false);
   const repCountValue = props.set?.set?.repsCompleted;
 
-  const [applyTo, setApplyTo] = useState<WeightAppliesTo>('thisSet');
+  const [applyTo, setApplyTo] = useState<WeightAppliesTo>('uncompletedSets');
 
   return (
     <Holdable onLongPress={props.onHold}>

@@ -56,6 +56,7 @@ export default function SessionComponent(props: {
   saveAndClose?: () => void;
 }) {
   const { colors } = useAppTheme();
+  const useImperialUnits = useAppSelector((x) => x.settings.useImperialUnits);
   const { t } = useTranslate();
   const lastSetTime = useAppSelector(
     (s) => s.currentSession.workoutSessionLastSetTime,
@@ -95,11 +96,13 @@ export default function SessionComponent(props: {
         dispatch(editExercise, {
           exerciseIndex: exerciseToEditIndex,
           newBlueprint: editingExerciseBlueprint,
+          useImperialUnits,
         });
         setExerciseToEditIndex(undefined);
       } else {
         dispatch(addExercise, {
           blueprint: editingExerciseBlueprint,
+          useImperialUnits,
         });
       }
       setExerciseEditorOpen(false);

@@ -27,6 +27,7 @@ import { Platform } from 'react-native';
 import { captureException } from '@sentry/react-native';
 import { detectLanguageFromDateLocale } from '@/utils/language-detector';
 import { supportedLanguages } from '@/services/tolgee';
+import { initializeStoredSessionsStateSlice } from '@/store/stored-sessions';
 
 export function applySettingsEffects() {
   addEffect(
@@ -116,6 +117,7 @@ export function applySettingsEffects() {
         }
       }
       dispatch(setIsHydrated(true));
+      dispatch(initializeStoredSessionsStateSlice());
       const end = performance.now();
       console.log(
         `initializeSettingsStateSlice effect took ${(end - start).toFixed(2)}ms`,

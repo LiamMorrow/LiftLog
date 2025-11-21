@@ -22,6 +22,7 @@ import {
   RemovedSessionFeedItemPOJO,
   RemovedSessionFeedItem,
 } from '@/models/feed-models';
+import { Weight, WeightUnit } from '@/models/weight';
 import {
   SessionPOJO,
   RecordedWeightedExercisePOJO,
@@ -45,6 +46,14 @@ import fc from 'fast-check';
 export const BigNumberGenerator = fc
   .tuple(fc.integer(), fc.nat({ max: 1_000_000_000 }))
   .map(([whole, fractional]) => new BigNumber(`${whole}.${fractional}`));
+
+export const WeightUnitGenerator = fc
+  .boolean()
+  .map((x) => (x ? ('kilograms' as WeightUnit) : 'pounds'));
+
+export const WeightGenerator = fc
+  .tuple(WeightUnitGenerator, BigNumberGenerator)
+  .map(([unit, value]) => new Weight(value, unit));
 
 export const LocalDateGenerator = fc
   .tuple(
@@ -132,7 +141,7 @@ export const PotentialSetGenerator = fc
         nil: undefined,
       },
     ),
-    weight: BigNumberGenerator,
+    weight: WeightGenerator,
   })
   .map(PotentialSet.fromPOJO);
 
@@ -155,7 +164,7 @@ export const SessionGenerator = fc
       id: fc.uuid(),
       blueprint: SessionBlueprintGenerator.map((x) => x.toPOJO()),
       date: LocalDateGenerator,
-      bodyweight: fc.option(BigNumberGenerator, { nil: undefined }),
+      bodyweight: fc.option(WeightGenerator, { nil: undefined }),
     }),
     fc.array(RecordedExerciseGenerator, { maxLength: 10 }),
   )

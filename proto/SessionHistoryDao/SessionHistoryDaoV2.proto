@@ -14,7 +14,8 @@ message SessionDaoV2 {
     string session_name = 2;
     repeated RecordedExerciseDaoV2 recorded_exercises = 3;
     LiftLog.Ui.Models.DateOnlyDao date = 4;
-    optional LiftLog.Ui.Models.DecimalValue bodyweight = 5;
+    optional LiftLog.Ui.Models.DecimalValue bodyweight_value = 5;
+    LiftLog.Ui.Models.WeightUnit bodyweight_unit = 7;
     string blueprint_notes = 6;
 }
 
@@ -41,7 +42,8 @@ message RecordedExerciseDaoV2 {
 
 message PotentialSetDaoV2 {
     optional RecordedSetDaoV2 recorded_set = 1;
-    LiftLog.Ui.Models.DecimalValue weight = 2;
+    LiftLog.Ui.Models.DecimalValue weight_value = 2;
+    LiftLog.Ui.Models.WeightUnit weight_unit = 3;
 }
 
 message RecordedSetDaoV2 {
