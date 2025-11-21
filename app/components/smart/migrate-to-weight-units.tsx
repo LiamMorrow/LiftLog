@@ -75,7 +75,7 @@ export function MigrateToWeightUnitsWizard() {
                   )
                 }
               >
-                {t('All Kilograms')}
+                {t('All kilograms')}
               </Button>
               <Button
                 mode="contained"
@@ -90,7 +90,7 @@ export function MigrateToWeightUnitsWizard() {
                   )
                 }
               >
-                {t('All Pounds')}
+                {t('All pounds')}
               </Button>
             </View>
           </View>
@@ -98,7 +98,7 @@ export function MigrateToWeightUnitsWizard() {
         data={exercisesRequiringWeightMigration}
         renderItem={(d) => (
           <List.Item
-            title={d.item.name}
+            title={d.item.name || 'Empty exercise name'}
             right={() => (
               <SelectButton
                 options={[
