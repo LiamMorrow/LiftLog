@@ -23,6 +23,7 @@ import { fetchUpcomingSessions } from '@/store/program';
 import { KeyValueStore } from '@/services/key-value-store';
 import Enumerable from 'linq';
 import { RecordedWeightedExercise } from '@/models/session-models';
+import { Weight } from '@/models/weight';
 
 const storageKey = 'Progress';
 const exerciseListStorageKey = 'ExerciseList';
@@ -31,6 +32,7 @@ const exerciseListStorageKey = 'ExerciseList';
 const addedBuiltInExerciseIdsStorageKey = 'AddedBuiltInExerciseIdList';
 
 export function applyStoredSessionsEffects() {
+  // Dispatched AFTER settings, so we can safely access settings
   addEffect(
     initializeStoredSessionsStateSlice,
     async (
@@ -38,6 +40,9 @@ export function applyStoredSessionsEffects() {
       { cancelActiveListeners, getState, dispatch, extra: { keyValueStore } },
     ) => {
       cancelActiveListeners();
+      if (!getState().settings.isHydrated) {
+        throw new Error('Settings must be hydrated before stored sessions');
+      }
       let version = await keyValueStore.getItem(`${storageKey}-Version`);
       if (!version) {
         version = '2';
@@ -54,9 +59,23 @@ export function applyStoredSessionsEffects() {
         .otherwise((x) => {
           throw new Error(`Unsupported version ${x}`);
         });
+      const preferredUnit = getState().settings.useImperialUnits
+        ? 'pounds'
+        : 'kilograms';
+
+      // Convert old bodyweights with nil to be the set weight
+      const coalesceWeightUnit = (weight: undefined | Weight) =>
+        weight?.with({
+          unit: weight.unit === 'nil' ? preferredUnit : weight.unit,
+        });
 
       const completedSessionsList =
-        storedData?.completedSessions.map(fromSessionDao) ?? [];
+        storedData?.completedSessions.map((x) => {
+          const s = fromSessionDao(x);
+          return s.with({
+            bodyweight: coalesceWeightUnit(s.bodyweight),
+          });
+        }) ?? [];
       const completedSessions = Object.fromEntries(
         completedSessionsList.map((x) => [x.id, x.toPOJO()]),
       );
