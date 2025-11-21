@@ -45,7 +45,6 @@ export default function SelectButton<
               <Menu.Item
                 key={option.label}
                 title={option.label}
-                disabled={option.disabledAndHidden!}
                 onPress={() => {
                   onChange(option.value);
                   setOpen(false);
