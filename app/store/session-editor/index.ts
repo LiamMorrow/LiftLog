@@ -119,4 +119,4 @@ export const {
 
 export const { selectCurrentlyEditingSession } = sessionEditorSlice.selectors;
 
-export default sessionEditorSlice.reducer;
+export const sessionEditorReducer = sessionEditorSlice.reducer;

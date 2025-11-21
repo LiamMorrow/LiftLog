@@ -5,11 +5,15 @@ import {
   deleteStoredSession,
   ExerciseDescriptor,
   initializeStoredSessionsStateSlice,
+  migrateExerciseWeights,
+  selectSessions,
   setExercises,
+  setExercisesRequiringWeightMigration,
   setIsHydrated,
   setStoredSessions,
   updateExercise,
   upsertStoredSessions,
+  WeightMigrateableExercise,
 } from './index';
 import { LiftLog } from '@/gen/proto';
 import { match } from 'ts-pattern';
@@ -17,6 +21,8 @@ import { fromSessionDao } from '@/models/storage/conversions.from-dao';
 import { toSessionHistoryDao } from '@/models/storage/conversions.to-dao';
 import { fetchUpcomingSessions } from '@/store/program';
 import { KeyValueStore } from '@/services/key-value-store';
+import Enumerable from 'linq';
+import { RecordedWeightedExercise } from '@/models/session-models';
 
 const storageKey = 'Progress';
 const exerciseListStorageKey = 'ExerciseList';
@@ -49,12 +55,12 @@ export function applyStoredSessionsEffects() {
           throw new Error(`Unsupported version ${x}`);
         });
 
-      const map = Object.fromEntries(
-        storedData?.completedSessions
-          .map(fromSessionDao)
-          .map((x) => [x.id, x.toPOJO()]) ?? [],
+      const completedSessionsList =
+        storedData?.completedSessions.map(fromSessionDao) ?? [];
+      const completedSessions = Object.fromEntries(
+        completedSessionsList.map((x) => [x.id, x.toPOJO()]),
       );
-      dispatch(setStoredSessions(map));
+      dispatch(setStoredSessions(completedSessions));
 
       const { exercises } = await import('../../assets/exercises.json');
       const alreadyAddedBuiltIns = JSON.parse(
@@ -106,10 +112,65 @@ export function applyStoredSessionsEffects() {
         JSON.stringify(newBuiltIns),
       );
 
+      const weightsNeedMigration = Enumerable.from(completedSessionsList)
+        .selectMany((x) =>
+          Enumerable.from(x.recordedExercises)
+            .ofType<RecordedWeightedExercise>(RecordedWeightedExercise)
+            .selectMany((ex) =>
+              Enumerable.from(ex.potentialSets)
+                .where((set) => set.weight.unit === 'nil')
+                .select(() => ex)
+                .take(1),
+            ),
+        )
+        .select(
+          (ex) =>
+            ({
+              name: ex.blueprint.name,
+              unit: 'nil',
+            }) satisfies WeightMigrateableExercise,
+        )
+        .distinct((x) => x.name)
+        .orderBy((x) => x.name)
+        .toArray();
+      dispatch(setExercisesRequiringWeightMigration(weightsNeedMigration));
+
       dispatch(setIsHydrated(true));
       dispatch(fetchUpcomingSessions());
     },
   );
+
+  addEffect(migrateExerciseWeights, (_, { dispatch, stateAfterReduce }) => {
+    const sessions = selectSessions(stateAfterReduce);
+    const migrations =
+      stateAfterReduce.storedSessions.exercisesRequiringWeightMigration;
+    const findUnit = (exerciseName: string) =>
+      migrations.find((x) => x.name === exerciseName)?.unit;
+    const newSessions = sessions.map((session) =>
+      session.with({
+        recordedExercises: session.recordedExercises.map((re) =>
+          re instanceof RecordedWeightedExercise
+            ? re.with({
+                potentialSets: re.potentialSets.map((ps) =>
+                  ps
+                    .with({
+                      weight: ps.weight.with({
+                        unit:
+                          ps.weight.unit === 'nil'
+                            ? (findUnit(re.blueprint.name) ?? 'nil')
+                            : ps.weight.unit,
+                      }),
+                    })
+                    .toPOJO(),
+                ),
+              })
+            : re,
+        ),
+      }),
+    );
+    dispatch(upsertStoredSessions(newSessions));
+    dispatch(setExercisesRequiringWeightMigration([]));
+  });
 
   addEffect(
     [deleteStoredSession, addStoredSession, upsertStoredSessions],

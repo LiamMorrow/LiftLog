@@ -17,6 +17,7 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import Enumerable from 'linq';
+import { WeightUnit } from '@/models/weight';
 
 export interface ExerciseDescriptor {
   name: string;
@@ -29,11 +30,17 @@ export interface ExerciseDescriptor {
   category: string;
 }
 
+export interface WeightMigrateableExercise {
+  name: string;
+  unit: WeightUnit;
+}
+
 interface StoredSessionState {
   isHydrated: boolean;
   sessions: Record<string, SessionPOJO>;
   savedExercises: Record<string, ExerciseDescriptor>;
   filteredExerciseIds: string[];
+  exercisesRequiringWeightMigration: WeightMigrateableExercise[];
 }
 
 const initialState: StoredSessionState = {
@@ -41,6 +48,7 @@ const initialState: StoredSessionState = {
   sessions: {},
   savedExercises: {},
   filteredExerciseIds: [],
+  exercisesRequiringWeightMigration: [],
 };
 
 const storedSessionsSlice = createSlice({
@@ -85,6 +93,21 @@ const storedSessionsSlice = createSlice({
     },
     setFilteredExerciseIds(state, action: PayloadAction<string[]>) {
       state.filteredExerciseIds = action.payload;
+    },
+    setExercisesRequiringWeightMigration(
+      state,
+      action: PayloadAction<WeightMigrateableExercise[]>,
+    ) {
+      state.exercisesRequiringWeightMigration = action.payload;
+    },
+    updateExerciseRequiringWeightMigration(
+      state,
+      action: PayloadAction<WeightMigrateableExercise>,
+    ) {
+      const val = state.exercisesRequiringWeightMigration.find(
+        (x) => x.name === action.payload.name,
+      );
+      if (val) val.unit = action.payload.unit;
     },
   },
 
@@ -142,6 +165,8 @@ export const initializeStoredSessionsStateSlice = createAction(
   'initializeStoredSessionsStateSlice',
 );
 
+export const migrateExerciseWeights = createAction('migrateExerciseWeights');
+
 export const {
   setIsHydrated,
   setStoredSessions,
@@ -152,6 +177,8 @@ export const {
   deleteExercise,
   setExercises,
   setFilteredExerciseIds,
+  setExercisesRequiringWeightMigration,
+  updateExerciseRequiringWeightMigration,
 } = storedSessionsSlice.actions;
 
 export const {
@@ -224,4 +251,4 @@ export const selectExerciseIds = createSelector(
   (exercises) => Object.keys(exercises),
 );
 
-export default storedSessionsSlice.reducer;
+export const storedSessionsReducer = storedSessionsSlice.reducer;
