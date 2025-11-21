@@ -16,6 +16,7 @@ import { useDispatch } from 'react-redux';
 import { uuid } from '@/utils/uuid';
 import { useRouter } from 'expo-router';
 import { Session } from '@/models/session-models';
+import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 
 interface SharedItemProps {
   sharedItem: SharedItem;
@@ -28,11 +29,12 @@ function SharedProgramBlueprintContent({
 }) {
   const program = sharedItem.programBlueprint;
   const dispatch = useDispatch();
+  const preferredWeightUnit = usePreferredWeightUnit();
   const { push } = useRouter();
 
   // Convert session blueprints to sessions for display
   const sessions = program.sessions.map((sessionBlueprint) =>
-    Session.getEmptySession(sessionBlueprint),
+    Session.getEmptySession(sessionBlueprint, preferredWeightUnit),
   );
 
   const handleSave = () => {

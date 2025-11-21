@@ -3,6 +3,7 @@ import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
 import SplitCardControl from '@/components/presentation/split-card-control';
 import CopyWorkoutDialog from '@/components/smart/copy-workout-dialog';
+import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 import { SessionBlueprint } from '@/models/blueprint-models';
 import { Session } from '@/models/session-models';
 import { useAppSelectorWithArg } from '@/store';
@@ -28,7 +29,11 @@ export default function ManageWorkoutCardContent({
   sessionBlueprint,
   programId,
 }: ManageWorkoutCardContentProps) {
-  const session = Session.getEmptySession(sessionBlueprint);
+  const preferredWeightUnit = usePreferredWeightUnit();
+  const session = Session.getEmptySession(
+    sessionBlueprint,
+    preferredWeightUnit,
+  );
   return (
     <SplitCardControl
       titleContent={<SessionSummaryTitle session={session} isFilled={false} />}

@@ -76,7 +76,10 @@ export class Session {
     );
   }
 
-  static getEmptySession(blueprint: SessionBlueprint): Session {
+  static getEmptySession(
+    blueprint: SessionBlueprint,
+    defaultWeightUnit: WeightUnit,
+  ): Session {
     function getNextExercise(e: ExerciseBlueprint) {
       return match(e)
         .with(
@@ -85,7 +88,8 @@ export class Session {
             new RecordedWeightedExercise(
               we,
               Array.from({ length: we.sets }).map(
-                () => new PotentialSet(undefined, Weight.NIL),
+                () =>
+                  new PotentialSet(undefined, new Weight(0, defaultWeightUnit)),
               ),
               undefined,
             ),

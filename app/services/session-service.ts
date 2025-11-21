@@ -4,7 +4,7 @@ import {
   ExerciseBlueprint,
   CardioExerciseBlueprint,
 } from '@/models/blueprint-models';
-import { Weight } from '@/models/weight';
+import { Weight, WeightUnit } from '@/models/weight';
 import {
   PotentialSet,
   RecordedCardioExercise,
@@ -100,6 +100,8 @@ export class SessionService {
       RecordedExercise
     >,
   ): Session {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const $this = this;
     function getNextExercise(e: ExerciseBlueprint): RecordedExercise {
       const lastExercise = latestRecordedExercises.get(
         KeyedExerciseBlueprint.fromExerciseBlueprint(e).toString(),
@@ -124,7 +126,8 @@ export class SessionService {
           Array.from({ length: e.sets }, () =>
             PotentialSet.fromPOJO({
               weight:
-                weightedLastExercise?.potentialSets[0]?.weight ?? Weight.NIL,
+                weightedLastExercise?.potentialSets[0]?.weight ??
+                new Weight(0, $this.getDefaultWeightUnit()),
               set: undefined,
             }),
           ),
@@ -155,6 +158,10 @@ export class SessionService {
       LocalDate.now(),
       undefined,
     );
+  }
+
+  private getDefaultWeightUnit(): WeightUnit {
+    return this.getState().settings.useImperialUnits ? 'pounds' : 'kilograms';
   }
 }
 

@@ -49,6 +49,7 @@ import Purchases, {
 } from 'react-native-purchases';
 import { setProToken } from '@/store/settings';
 import { Session } from '@/models/session-models';
+import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 
 export default function AiPlanner() {
   const { t } = useTranslate();
@@ -240,6 +241,7 @@ function PlanMessage({
 }) {
   const dispatch = useDispatch();
   const { push } = useRouter();
+  const preferredWeightUnit = usePreferredWeightUnit();
   const saveAiPlan = (m: AiChatPlanResponse) => {
     const programId = uuid();
     dispatch(
@@ -268,8 +270,12 @@ function PlanMessage({
       </SurfaceText>
       {message.plan.sessions.map((s, i) => (
         <Fragment key={i}>
-          <SessionSummaryTitle session={Session.getEmptySession(s)} />
-          <SessionSummary session={Session.getEmptySession(s)} />
+          <SessionSummaryTitle
+            session={Session.getEmptySession(s, preferredWeightUnit)}
+          />
+          <SessionSummary
+            session={Session.getEmptySession(s, preferredWeightUnit)}
+          />
         </Fragment>
       ))}
       {!message.isLoading && (
