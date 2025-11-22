@@ -198,6 +198,7 @@ export function applyStoredSessionsEffects() {
       }),
     );
     dispatch(upsertStoredSessions(newSessions));
+    dispatch(fetchUpcomingSessions());
     dispatch(setExercisesRequiringWeightMigration([]));
   });
 
