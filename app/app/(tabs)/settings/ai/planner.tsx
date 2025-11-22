@@ -116,7 +116,7 @@ export default function AiPlanner() {
               />
             );
           }}
-        ></FlatList>
+        />
       </View>
       <View
         style={{

@@ -15,6 +15,7 @@ import {
   removeFollowRequest,
   replaceFeedFollowedUsers,
   fetchFeedItems,
+  removeFollowedUser,
 } from '@/store/feed';
 import { LiftLog } from '@/gen/proto';
 import { FeedIdentity, FeedUser } from '@/models/feed-models';
@@ -135,7 +136,7 @@ export function addFollowingEffects() {
     unfollowFeedUser,
     async (
       action,
-      { getState, extra: { encryptionService, feedApiService } },
+      { getState, dispatch, extra: { encryptionService, feedApiService } },
     ) => {
       const state = getState();
       const identityRemote = state.feed.identity;
@@ -146,6 +147,8 @@ export function addFollowingEffects() {
 
       const identity = FeedIdentity.fromPOJO(identityRemote.data);
       const feedUser = action.payload.feedUser;
+
+      dispatch(removeFollowedUser(feedUser));
 
       if (!feedUser.followSecret) {
         return;

@@ -10,10 +10,10 @@ import {
 } from '@/store/feed';
 import { T, useTranslate } from '@tolgee/react';
 import React, { useState } from 'react';
-import { FlatList } from 'react-native-gesture-handler';
 import { List, Menu } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
+import { FlashList } from '@shopify/flash-list';
 
 export function FeedFollowing() {
   const following = useAppSelector(selectFeedFollowing);
@@ -21,7 +21,8 @@ export function FeedFollowing() {
   const fetchingFeedItems = useAppSelector((x) => x.feed.isFetching);
   const dispatch = useDispatch();
   return (
-    <FlatList
+    <FlashList
+      style={{ flex: 1 }}
       onRefresh={() => {
         dispatch(fetchInboxItems({ fromUserAction: true }));
       }}

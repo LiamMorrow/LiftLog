@@ -16,11 +16,11 @@ import {
 import { T, useTranslate } from '@tolgee/react';
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
 import { List } from 'react-native-paper';
 import Button from '@/components/presentation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
+import { FlashList } from '@shopify/flash-list';
 
 type FeedFollowItem = FollowRequest | { userId: string; user: FeedUser };
 
@@ -34,7 +34,8 @@ export function FeedFollowers() {
   const fetchingFeedItems = useAppSelector((x) => x.feed.isFetching);
   const dispatch = useDispatch();
   return (
-    <FlatList
+    <FlashList
+      style={{ flex: 1 }}
       onRefresh={() => {
         dispatch(fetchInboxItems({ fromUserAction: true }));
       }}

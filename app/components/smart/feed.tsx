@@ -27,11 +27,11 @@ import {
 import { T, useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
 import { Card, Icon, List, TextInput } from 'react-native-paper';
 import Button from '@/components/presentation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
+import { FlashList } from '@shopify/flash-list';
 
 export default function Feed() {
   const feedItems = useAppSelector(selectFeedSessionItems);
@@ -39,7 +39,7 @@ export default function Feed() {
   const fetchingFeedItems = useAppSelector((x) => x.feed.isFetching);
   const dispatch = useDispatch();
   return (
-    <FlatList
+    <FlashList
       testID="feed-list"
       ListHeaderComponent={<FeedProfileHeader />}
       onRefresh={() => {

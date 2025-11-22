@@ -67,6 +67,9 @@ const feedSlice = createSlice({
         Object.entries(action.payload).map((x) => [x[0], x[1].toPOJO()]),
       );
     },
+    removeFollowedUser(state, action: PayloadAction<FeedUser>) {
+      delete state.followedUsers[action.payload.id];
+    },
     setSharedFeedUser(state, action: PayloadAction<RemoteData<FeedUser>>) {
       state.sharedFeedUser = action.payload.map((x) => x.toPOJO());
     },
@@ -187,6 +190,7 @@ export const {
   putFollowedUser,
   replaceFeedItems,
   removeUnpublishedSessionId,
+  removeFollowedUser,
 } = feedSlice.actions;
 
 export const {
