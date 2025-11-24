@@ -23,8 +23,9 @@ import { toSessionHistoryDao } from '@/models/storage/conversions.to-dao';
 import { fetchUpcomingSessions } from '@/store/program';
 import { KeyValueStore } from '@/services/key-value-store';
 import Enumerable from 'linq';
-import { RecordedWeightedExercise } from '@/models/session-models';
+import { RecordedWeightedExercise, Session } from '@/models/session-models';
 import { Weight } from '@/models/weight';
+import { setCurrentSession } from '@/store/current-session';
 
 const storageKey = 'Progress';
 const exerciseListStorageKey = 'ExerciseList';
@@ -175,7 +176,7 @@ export function applyStoredSessionsEffects() {
       stateAfterReduce.storedSessions.exercisesRequiringWeightMigration;
     const findUnit = (exerciseName: string) =>
       migrations.find((x) => x.name === exerciseName)?.unit;
-    const newSessions = sessions.map((session) =>
+    const applyWeightToSession = (session: Session) =>
       session.with({
         recordedExercises: session.recordedExercises.map((re) =>
           re instanceof RecordedWeightedExercise
@@ -195,8 +196,19 @@ export function applyStoredSessionsEffects() {
               })
             : re,
         ),
-      }),
+      });
+    const newSessions = sessions.map(applyWeightToSession);
+    const currentSession = Session.fromPOJO(
+      stateAfterReduce.currentSession.workoutSession,
     );
+    if (currentSession) {
+      dispatch(
+        setCurrentSession({
+          target: 'workoutSession',
+          session: applyWeightToSession(currentSession),
+        }),
+      );
+    }
     dispatch(upsertStoredSessions(newSessions));
     dispatch(fetchUpcomingSessions());
     dispatch(setExercisesRequiringWeightMigration([]));
