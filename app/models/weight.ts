@@ -103,8 +103,11 @@ export class Weight {
       .exhaustive();
   }
 
-  shortLocaleFormat() {
-    return localeFormatBigNumber(this.value) + shortFormatWeightUnit(this.unit);
+  shortLocaleFormat(decimalPlaces?: number) {
+    return (
+      localeFormatBigNumber(this.value, decimalPlaces) +
+      shortFormatWeightUnit(this.unit)
+    );
   }
 }
 

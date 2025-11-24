@@ -18,7 +18,7 @@ export default function ExerciseStatGraphCard(props: {
     props.exerciseStats.statistics.statistics.map(
       (stat): lineDataItem => ({
         value: stat.value.convertTo(weightUnit).value.toNumber(),
-        dataPointText: stat.value.shortLocaleFormat(),
+        dataPointText: stat.value.shortLocaleFormat(2),
         textShiftY: -10,
         label: formatDate(stat.dateTime.toLocalDate(), {
           day: 'numeric',
@@ -37,7 +37,7 @@ export default function ExerciseStatGraphCard(props: {
           month: 'short',
         }),
         dataPointColor: colors.red,
-        dataPointText: stat.value.shortLocaleFormat(),
+        dataPointText: stat.value.shortLocaleFormat(2),
         focusedDataPointLabelComponent: () => <SurfaceText>'HI'</SurfaceText>,
       }),
     );

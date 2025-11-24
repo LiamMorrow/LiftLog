@@ -33,8 +33,9 @@ export default function SessionStatGraphCard(props: {
   const points: lineDataItem[][] = props.sessionStats.map((x) =>
     x.statistics.map(
       (stat): lineDataItem => ({
-        value: stat.value?.convertTo(weightUnit).value.toNumber() ?? 0,
-        dataPointText: stat.value?.shortLocaleFormat() ?? '',
+        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+        value: stat.value?.convertTo(weightUnit).value.toNumber()!,
+        dataPointText: stat.value?.shortLocaleFormat(2) ?? '',
         textShiftY: -10,
         label: formatDate(stat.dateTime.toLocalDate(), {
           day: 'numeric',

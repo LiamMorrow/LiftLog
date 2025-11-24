@@ -12,12 +12,17 @@ export function localeParseBigNumber(numStr: string): BigNumber {
   return new BigNumber(numStr);
 }
 
-export function localeFormatBigNumber(num: BigNumber | undefined): string {
+export function localeFormatBigNumber(
+  num: BigNumber | undefined,
+  decimalPlaces?: number,
+): string {
   if (!num) {
     return '';
   }
   if (localeUsesComma()) {
-    return num.toFormat({ decimalSeparator: ',' });
+    return decimalPlaces !== undefined
+      ? num.toFormat(decimalPlaces, { decimalSeparator: ',' })
+      : num.toFormat({ decimalSeparator: ',' });
   }
-  return num.toFormat();
+  return num.toFormat(decimalPlaces);
 }

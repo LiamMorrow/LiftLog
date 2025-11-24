@@ -19,7 +19,7 @@ export default function BodyweightStatGraphCard(props: {
   const points: lineDataItem[] = props.bodyweightStats.statistics.map(
     (stat): lineDataItem => ({
       value: stat.value.convertTo(weightUnit).value.toNumber(),
-      dataPointText: stat.value.shortLocaleFormat(),
+      dataPointText: stat.value.shortLocaleFormat(2),
       textShiftY: -10,
       dataPointColor: colors.primary,
     }),
