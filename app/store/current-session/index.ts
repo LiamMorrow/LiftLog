@@ -24,6 +24,7 @@ import {
 import BigNumber from 'bignumber.js';
 import { Draft, WritableDraft } from 'immer';
 import Enumerable from 'linq';
+import * as Sentry from '@sentry/react-native';
 
 interface CurrentSessionState {
   isHydrated: boolean;
@@ -267,6 +268,17 @@ const currentSessionSlice = createSlice({
       ) => {
         const exercise = session.recordedExercises[action.exerciseIndex];
         if (exercise._BRAND !== 'RECORDED_WEIGHTED_EXERCISE_POJO') {
+          return;
+        }
+        if (!exercise.potentialSets[action.setIndex]) {
+          Sentry.captureEvent({
+            level: 'error',
+            message: 'Tried to set exercise reps out of bounds',
+            extra: {
+              action,
+              exercise,
+            },
+          });
           return;
         }
         exercise.potentialSets[action.setIndex].set =
