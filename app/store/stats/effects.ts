@@ -59,8 +59,12 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
   const bodyweightStats: StatisticOverTime = {
     title: 'Bodyweight',
     statistics: bodyWeightStatistics,
-    minValue: Weight.min(...bodyWeightStatistics.map((x) => x.value)),
-    maxValue: Weight.max(...bodyWeightStatistics.map((x) => x.value)),
+    minValue: bodyWeightStatistics.length
+      ? Weight.min(...bodyWeightStatistics.map((x) => x.value))
+      : Weight.NIL,
+    maxValue: bodyWeightStatistics.length
+      ? Weight.max(...bodyWeightStatistics.map((x) => x.value))
+      : Weight.NIL,
   };
 
   // --- Session stats grouped by blueprint name ---
@@ -83,8 +87,12 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
       .orderBy((x) => x.dateTime.toString())
       .toArray();
     const statsWithValue = statistics.filter((x) => x.value !== undefined);
-    const min = Weight.min(...statsWithValue.map((x) => x.value!));
-    const max = Weight.max(...statsWithValue.map((x) => x.value!));
+    const min = statsWithValue.length
+      ? Weight.min(...statsWithValue.map((x) => x.value!))
+      : Weight.NIL;
+    const max = statsWithValue.length
+      ? Weight.max(...statsWithValue.map((x) => x.value!))
+      : Weight.NIL;
     sessionStats.push({
       title: name,
       statistics,
