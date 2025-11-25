@@ -44,13 +44,18 @@ export function applyFeedEffects() {
         if (state) {
           const version = await keyValueStore.getItem(`${StorageKey}Version`);
           if (!version || version === '1') {
-            const feedStateDao = LiftLog.Ui.Models.FeedStateDaoV1.decode(state);
-            const feedState = fromFeedStateDao(feedStateDao);
+            try {
+              const feedStateDao =
+                LiftLog.Ui.Models.FeedStateDaoV1.decode(state);
+              const feedState = fromFeedStateDao(feedStateDao);
 
-            if (feedState.identity.isSuccess()) {
-              hasIdentity = true;
+              if (feedState.identity.isSuccess()) {
+                hasIdentity = true;
+              }
+              dispatch(patchFeedState(feedState));
+            } catch (e) {
+              logger.error('Could not decode feed state', e);
             }
-            dispatch(patchFeedState(feedState));
           }
         }
         if (!hasIdentity) {
