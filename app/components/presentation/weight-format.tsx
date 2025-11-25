@@ -19,7 +19,6 @@ export default function WeightFormat(props: WeightFormatProps) {
   const weightDisplay =
     localeFormatBigNumber(props.weight?.value.decimalPlaces(4)) || '-';
   const { colors } = useAppTheme();
-
   return (
     <Text
       style={{

@@ -1,6 +1,6 @@
 import { DeepOmit } from '@/utils/deep-omit';
 import { Duration, LocalDate } from '@js-joda/core';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { match, P } from 'ts-pattern';
 
 export interface ProgramBlueprintPOJO {

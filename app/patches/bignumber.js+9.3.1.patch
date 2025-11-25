@@ -1,0 +1,34 @@
+diff --git a/node_modules/bignumber.js/bignumber.d.mts b/node_modules/bignumber.js/bignumber.d.mts
+index 5d39f2e..a560d8c 100644
+--- a/node_modules/bignumber.js/bignumber.d.mts
++++ b/node_modules/bignumber.js/bignumber.d.mts
+@@ -1,4 +1,5 @@
+-/// <reference path="./types.d.ts" />
++
++import { BigNumber } from "./types";
+
+ export default BigNumber;
+
+diff --git a/node_modules/bignumber.js/bignumber.d.ts b/node_modules/bignumber.js/bignumber.d.ts
+index 3ee5405..dd6a522 100644
+--- a/node_modules/bignumber.js/bignumber.d.ts
++++ b/node_modules/bignumber.js/bignumber.d.ts
+@@ -1,4 +1,5 @@
+-/// <reference path="./types.d.ts" />
++
++import { BigNumber } from "./types";
+
+ export = BigNumber;
+
+diff --git a/node_modules/bignumber.js/types.d.ts b/node_modules/bignumber.js/types.d.ts
+index 8e51dd6..15ba652 100644
+--- a/node_modules/bignumber.js/types.d.ts
++++ b/node_modules/bignumber.js/types.d.ts
+@@ -1819,3 +1819,7 @@ declare class BigNumber implements BigNumber.Instance {
+ }
+
+ declare function BigNumber(n: BigNumber.Value, base?: number): BigNumber;
++
++
++// Exporting prevents polluting the global namespace in TypeScript projects
++export { BigNumber };
