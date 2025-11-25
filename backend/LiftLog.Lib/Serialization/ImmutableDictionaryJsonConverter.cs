@@ -25,9 +25,10 @@ namespace LiftLog.Lib.Serialization
         public override JsonConverter? CreateConverter(Type type, JsonSerializerOptions options)
         {
             var genericArgs = type.GetGenericArguments();
-            var converterType = typeof(ImmutableDictionaryJsonConverterInner<,>).MakeGenericType(
-                [genericArgs[0], genericArgs[1]]
-            );
+            var converterType = typeof(ImmutableDictionaryJsonConverterInner<,>).MakeGenericType([
+                genericArgs[0],
+                genericArgs[1],
+            ]);
             return (JsonConverter?)Activator.CreateInstance(converterType, new[] { options });
         }
 
