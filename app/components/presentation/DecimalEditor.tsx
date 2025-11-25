@@ -5,6 +5,7 @@ import {
 import React, { useState, useEffect } from 'react';
 import { TextStyle } from 'react-native';
 import { TextInput } from 'react-native-paper';
+import { BigNumber } from 'bignumber.js';
 
 interface DecimalEditorProps {
   value: BigNumber;
