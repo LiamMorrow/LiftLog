@@ -18,16 +18,16 @@ import { addEffect } from '@/store/store';
 import { fetchUpcomingSessions } from '@/store/program';
 import { addStoredSession } from '@/store/stored-sessions';
 import { LocalDateTime } from '@js-joda/core';
+import { selectPreferredWeightUnit } from '@/store/settings';
 
 const storageKey = 'CurrentSessionStateV1';
 export function applyCurrentSessionEffects() {
   addEffect(
     initializeCurrentSessionStateSlice,
-    async (
-      _,
-      { cancelActiveListeners, dispatch, extra: { keyValueStore, logger } },
-    ) => {
-      cancelActiveListeners();
+    async (_, { dispatch, getState, extra: { keyValueStore, logger } }) => {
+      if (!getState().settings.isHydrated) {
+        throw new Error('Settings must be hydrated before stored sessions');
+      }
       try {
         const sw = performance.now();
         const currentSessionVersion =
@@ -61,7 +61,9 @@ export function applyCurrentSessionEffects() {
             dispatch(
               setCurrentSession({
                 target: 'workoutSession',
-                session: currentSessionState.workoutSession,
+                session: currentSessionState.workoutSession.withNoNilWeights(
+                  selectPreferredWeightUnit(getState()),
+                ),
               }),
             );
           }
@@ -69,7 +71,9 @@ export function applyCurrentSessionEffects() {
             dispatch(
               setCurrentSession({
                 target: 'historySession',
-                session: currentSessionState.historySession,
+                session: currentSessionState.historySession.withNoNilWeights(
+                  selectPreferredWeightUnit(getState()),
+                ),
               }),
             );
           }

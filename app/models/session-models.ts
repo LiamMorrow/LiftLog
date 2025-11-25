@@ -118,6 +118,29 @@ export class Session {
     );
   }
 
+  withNoNilWeights(fallbackWeightUnit: WeightUnit): Session | undefined {
+    return this.with({
+      recordedExercises: this.recordedExercises.map((re) =>
+        re instanceof RecordedWeightedExercise
+          ? re.with({
+              potentialSets: re.potentialSets.map((ps) =>
+                ps
+                  .with({
+                    weight: ps.weight.with({
+                      unit:
+                        ps.weight.unit === 'nil'
+                          ? fallbackWeightUnit
+                          : ps.weight.unit,
+                    }),
+                  })
+                  .toPOJO(),
+              ),
+            })
+          : re,
+      ),
+    });
+  }
+
   equals(other: Session | undefined): boolean {
     if (!other) {
       return false;

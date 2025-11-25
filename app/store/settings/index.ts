@@ -1,5 +1,6 @@
 import { LiftLog } from '@/gen/proto';
 import { RemoteData } from '@/models/remote';
+import { WeightUnit } from '@/models/weight';
 import { DayOfWeek, Instant } from '@js-joda/core';
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
@@ -113,6 +114,10 @@ const settingsSlice = createSlice({
       state.preferredLanguage = action.payload;
     },
   },
+  selectors: {
+    selectPreferredWeightUnit: (state): WeightUnit =>
+      state.useImperialUnits ? 'pounds' : 'kilograms',
+  },
 });
 export const initializeSettingsStateSlice = createAction(
   'initializeSettingsStateSlice',
@@ -155,5 +160,7 @@ export const {
   setPreferredLanguage,
   setNotesExpandedByDefault,
 } = settingsSlice.actions;
+
+export const { selectPreferredWeightUnit } = settingsSlice.selectors;
 
 export const settingsReducer = settingsSlice.reducer;
