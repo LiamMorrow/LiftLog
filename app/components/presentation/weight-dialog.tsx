@@ -17,8 +17,9 @@ import {
   Tooltip,
   useTheme,
 } from 'react-native-paper';
-import { Weight } from '@/models/weight';
+import { Weight, WeightUnit } from '@/models/weight';
 import SelectButton from '@/components/presentation/select-button';
+import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 
 type WeightDialogProps = {
   open: boolean;
@@ -43,65 +44,72 @@ type WeightDialogProps = {
 export default function WeightDialog(props: WeightDialogProps) {
   const theme = useTheme();
   const { t } = useTranslate();
+  const preferredWeightUnit = usePreferredWeightUnit();
   const [text, setText] = useState(localeFormatBigNumber(props.weight?.value));
-  const [editorWeight, setEditorWeight] = useState<Weight | undefined>(
-    props.weight,
+  const [editorWeightValue, setEditorWeightValue] = useState<
+    BigNumber | undefined
+  >(props.weight?.value);
+  const [editorWeightUnit, setEditorWeightUnit] = useState<WeightUnit>(
+    props.weight?.unit ?? preferredWeightUnit,
   );
 
   useEffect(() => {
     setText(localeFormatBigNumber(props.weight?.value));
-    setEditorWeight(props.weight);
-  }, [props.open, props.weight]);
+    setEditorWeightValue(props.weight?.value);
+    setEditorWeightUnit(props.weight?.unit ?? preferredWeightUnit);
+  }, [preferredWeightUnit, props.open, props.weight]);
 
   const nonZeroIncrement = props.increment.isZero()
     ? new BigNumber('2.5')
     : props.increment;
 
   const incrementWeight = () => {
-    if (editorWeight === undefined) {
+    if (editorWeightValue === undefined) {
       return;
     }
-    setEditorWeight(editorWeight.plus(nonZeroIncrement));
-    setText(localeFormatBigNumber(editorWeight.plus(nonZeroIncrement).value));
+    setEditorWeightValue(editorWeightValue.plus(nonZeroIncrement));
+    setText(localeFormatBigNumber(editorWeightValue.plus(nonZeroIncrement)));
   };
   const decrementWeight = () => {
-    if (editorWeight === undefined) {
+    if (editorWeightValue === undefined) {
       return;
     }
     if (
       !props.allowNegative &&
-      editorWeight.value.isLessThan(nonZeroIncrement)
+      editorWeightValue.isLessThan(nonZeroIncrement)
     ) {
       return;
     }
-    setEditorWeight(editorWeight.minus(nonZeroIncrement));
-    setText(localeFormatBigNumber(editorWeight.minus(nonZeroIncrement).value));
+    setEditorWeightValue(editorWeightValue.minus(nonZeroIncrement));
+    setText(localeFormatBigNumber(editorWeightValue.minus(nonZeroIncrement)));
   };
 
   const handleTextChange = (text: string) => {
     setText(text);
     if (text.trim() === '') {
-      setEditorWeight(undefined);
+      setEditorWeightValue(undefined);
       return;
     }
 
     if (!localeParseBigNumber(text).isNaN()) {
-      setEditorWeight(
-        editorWeight?.with({ value: localeParseBigNumber(text) }),
-      );
+      setEditorWeightValue(localeParseBigNumber(text));
       return;
     }
   };
 
   const onSaveClick = () => {
-    if (editorWeight === undefined && !props.allowNull) {
+    if (editorWeightValue === undefined && !props.allowNull) {
       props.onClose();
       return;
     }
-    if (!props.allowNegative && editorWeight?.value.isLessThan(0)) {
+    if (!props.allowNegative && editorWeightValue?.isLessThan(0)) {
       return;
     }
-    props.updateWeight(editorWeight!);
+    if (!editorWeightValue) {
+      props.updateWeight(undefined!);
+    } else {
+      props.updateWeight(new Weight(editorWeightValue, editorWeightUnit));
+    }
     props.onClose();
   };
 
@@ -145,10 +153,8 @@ export default function WeightDialog(props: WeightDialogProps) {
                     { label: 'lbs', value: 'pounds' },
                     { label: 'Unit', value: 'nil', disabledAndHidden: true },
                   ]}
-                  value={editorWeight?.unit ?? 'nil'}
-                  onChange={(unit) =>
-                    editorWeight && setEditorWeight(editorWeight.with({ unit }))
-                  }
+                  value={editorWeightUnit}
+                  onChange={(unit) => setEditorWeightUnit(unit)}
                 />
               </View>
               <View
@@ -164,10 +170,12 @@ export default function WeightDialog(props: WeightDialogProps) {
                       mode="outlined"
                       icon={'plusMinus'}
                       onPress={() => {
-                        setEditorWeight(editorWeight?.multipliedBy(-1));
+                        setEditorWeightValue(
+                          editorWeightValue?.multipliedBy(-1),
+                        );
                         setText(
                           localeFormatBigNumber(
-                            editorWeight?.multipliedBy(-1).value,
+                            editorWeightValue?.multipliedBy(-1),
                           ),
                         );
                       }}
