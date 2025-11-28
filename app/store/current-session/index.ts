@@ -276,7 +276,8 @@ const currentSessionSlice = createSlice({
             message: 'Tried to set exercise reps out of bounds',
             extra: {
               action,
-              exercise,
+              exercise: RecordedWeightedExercise.fromPOJO(exercise),
+              target,
             },
           });
           return;

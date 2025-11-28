@@ -112,7 +112,12 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
                 padding: spacing[2],
               }}
               onPress={
-                props.isReadonly ? undefined : () => setIsWeightDialogOpen(true)
+                props.isReadonly
+                  ? undefined
+                  : () => {
+                      setApplyTo(props.set.set ? 'thisSet' : 'uncompletedSets');
+                      setIsWeightDialogOpen(true);
+                    }
               }
               disabled={props.isReadonly}
             >
