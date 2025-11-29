@@ -227,6 +227,7 @@
   "RestNotifications": "Notifikace odpočinku",
   "RestNotificationsSubtitle": "Zobrazit notifikaci když vyprší časovač odpočinku",
   "RestShort": "Krátký",
+  "RestSingular": "Odpočívejte <em>{0}</em>",
   "RestSingular{Time}": "Odpočívejte <em>{0}</em>",
   "Restart chat": "Restartovat chat",
   "RestoreData": "Obnovit data",
