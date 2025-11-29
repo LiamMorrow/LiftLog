@@ -29,7 +29,7 @@ export default function CopyExerciseDialog({
   const dispatch = useDispatch();
   const { t } = useTranslate();
   const program = useAppSelectorWithArg(selectProgram, programId);
-  const [selectedSessionIndex, setSelectedSessionIndex] = useState<number>(-1);
+  const [selectedSessionIndex, setSelectedSessionIndex] = useState<number>();
 
   // Filter out the current session and map sessions to have indices
   const otherSessions = program.sessions
@@ -37,7 +37,7 @@ export default function CopyExerciseDialog({
     .filter(({ index }) => index !== currentSessionIndex);
 
   const handleCopy = () => {
-    if (selectedSessionIndex !== -1) {
+    if (selectedSessionIndex !== undefined) {
       const targetSession = program.sessions[selectedSessionIndex];
 
       // Create a new session blueprint with the added exercise
@@ -65,7 +65,7 @@ export default function CopyExerciseDialog({
       );
 
       onDismiss();
-      setSelectedSessionIndex(-1); // Reset selection
+      setSelectedSessionIndex(undefined); // Reset selection
     }
   };
 
@@ -123,7 +123,9 @@ export default function CopyExerciseDialog({
           </Button>
           <Button
             onPress={handleCopy}
-            disabled={selectedSessionIndex === -1 || otherSessions.length === 0}
+            disabled={
+              selectedSessionIndex === undefined || otherSessions.length === 0
+            }
           >
             <T keyName="Copy" />
           </Button>
