@@ -35,19 +35,7 @@
 
 LiftLog uses [Weblate](https://translate.liftlog.online/user/) for internationalization and translation management. Anyone can create an account and start translating!
 
-Available languages:
-
-- 🇦🇺 English (default)
-- 🇮🇹 Italian
-- 🇩🇪 German
-- 🇷🇸 Serbian
-- 🇫🇷 French
-- 🇳🇱 Dutch
-- 🇫🇮 Finnish
-- 🇪🇸 Spanish
-- 🇷🇺 Russian
-- 🇨🇿 Czech
-- 🇺🇦 Ukrainian
+[![Translation status](https://translate.liftlog.online/widget/liftlog/multi-auto.svg)](https://translate.liftlog.online/engage/liftlog/)
 
 Want to help translate? [Open an issue or PR](https://github.com/LiamMorrow/LiftLog/issues).
 
