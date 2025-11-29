@@ -9,6 +9,7 @@ import nl from '../i18n/nl.json';
 import ru from '../i18n/ru.json';
 import sr from '../i18n/sr.json';
 import uk from '../i18n/uk.json';
+import pt from '../i18n/pt.json';
 import { DevTools, FormatSimple, Tolgee } from '@tolgee/react';
 import { PreferenceService } from '@/services/preference-service';
 
@@ -23,6 +24,7 @@ export const supportedLanguages = [
   { translationJson: ru, code: 'ru', label: 'Русский' },
   { translationJson: sr, code: 'sr', label: 'Srpski' },
   { translationJson: uk, code: 'uk', label: 'Українська' },
+  { translationJson: pt, code: 'pt', label: 'Português' },
 ];
 
 export const getTolgee = (preferenceService: PreferenceService) =>
@@ -48,5 +50,6 @@ export const getTolgee = (preferenceService: PreferenceService) =>
         ru,
         sr,
         uk,
+        pt,
       },
     });
