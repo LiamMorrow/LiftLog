@@ -33,7 +33,7 @@
 
 ## 🌍 Translations
 
-LiftLog uses [Weblate](https://translate.liftlog.online/user/) for internationalization and translation management. Anyone can create an account and start translating!
+LiftLog uses [Weblate](https://translate.liftlog.online/) for internationalization and translation management. Anyone can create an account and start translating!
 
 [![Translation status](https://translate.liftlog.online/widget/liftlog/multi-auto.svg)](https://translate.liftlog.online/engage/liftlog/)
 
