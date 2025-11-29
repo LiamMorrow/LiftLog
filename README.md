@@ -25,7 +25,7 @@
 - 🧠 AI planner tailors gym plans to your goals and body
 - 🔒 End-to-end encrypted social feeds (opt-in, privacy-first)
 - 🎨 Material Design 3 via React Native Paper
-- 🌐 Internationalization with Tolgee (10+ languages)
+- 🌐 Internationalization with Tolgee/Weblate (10+ languages)
 - 🏋️‍♂️ Publish workouts, follow other users, and control your feed privacy
 - ⚡ Fast, modern UI with Expo Router and Redux Toolkit
 
