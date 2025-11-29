@@ -33,7 +33,7 @@
 
 ## 🌍 Translations
 
-LiftLog uses [Tolgee](https://tolgee.io/) for internationalization and translation management. Translation files are in [`app/i18n/`](./app/i18n/). A huge thanks to them providing an open source license to LiftLog ❤️.
+LiftLog uses [Weblate](https://translate.liftlog.online/user/) for internationalization and translation management. Anyone can create an account and start translating!
 
 Available languages:
 
