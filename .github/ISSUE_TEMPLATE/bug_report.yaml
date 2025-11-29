@@ -1,4 +1,3 @@
----
 name: Bug Report
 description: Create a report to help us improve
 title: "[Bug]: "
@@ -8,7 +7,7 @@ body:
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report!
-  
+
   - type: textarea
     id: description
     attributes:
@@ -17,7 +16,7 @@ body:
       placeholder: Tell us what you see!
     validations:
       required: true
-  
+
   - type: textarea
     id: reproduction
     attributes:
@@ -30,21 +29,29 @@ body:
         4. See error
     validations:
       required: true
-  
+
   - type: textarea
     id: expected
     attributes:
       label: Expected behavior
       description: A clear and concise description of what you expected to happen.
     validations:
-      required: true
-  
+      required: false
+
   - type: textarea
     id: screenshots
     attributes:
       label: Screenshots
       description: If applicable, add screenshots to help explain your problem.
-  
+
+  - type: input
+    id: app-version
+    attributes:
+      label: App Version
+      placeholder: e.g., 4.1.2 (found in Settings > App Info)
+    validations:
+      required: true
+
   - type: input
     id: os-version
     attributes:
@@ -52,18 +59,19 @@ body:
       placeholder: e.g., iOS 17.0, Android 14
     validations:
       required: true
-  
+
   - type: dropdown
     id: platform
     attributes:
       label: Platform
       description: What platform are you using?
       options:
-        - iOS
-        - Android
+        - ios
+        - android
+        - web
     validations:
       required: true
-  
+
   - type: textarea
     id: additional-context
     attributes:

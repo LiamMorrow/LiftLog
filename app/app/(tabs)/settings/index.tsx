@@ -4,7 +4,7 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
 import { Link, Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Linking } from 'react-native';
+import { Linking, Platform } from 'react-native';
 import { Text, Dialog, Icon, List, Portal } from 'react-native-paper';
 import Button from '@/components/presentation/gesture-wrappers/button';
 import * as Application from 'expo-application';
@@ -18,6 +18,13 @@ export default function Settings() {
   const openUrl = (url: string) => {
     void Linking.canOpenURL(url).then(() => Linking.openURL(url));
   };
+
+  const appVersion =
+    Application.nativeApplicationVersion ??
+    Application.nativeBuildVersion ??
+    'Unknown';
+
+  const bugReportUrl = `https://github.com/LiamMorrow/LiftLog/issues/new?assignees=&labels=bug&projects=&template=bug_report.yaml&app-version=${encodeURIComponent(appVersion)}&platform=${Platform.OS}&os-version=${Platform.Version}`;
 
   return (
     <FullHeightScrollView>
@@ -89,11 +96,7 @@ export default function Settings() {
         ></List.Item>
 
         <List.Item
-          onPress={() =>
-            openUrl(
-              'https://github.com/LiamMorrow/LiftLog/issues/new?assignees=&labels=bug&projects=&template=bug_report.md',
-            )
-          }
+          onPress={() => openUrl(bugReportUrl)}
           title={t('BugReport')}
           description={t('BugReportSubtitle')}
           left={(props) => <List.Icon icon={'bugReport'} {...props} />}
@@ -135,12 +138,7 @@ export default function Settings() {
               </Link>
               .
             </Text>
-            <Text>
-              LiftLog is currently version{' '}
-              {Application.nativeApplicationVersion ??
-                Application.nativeBuildVersion ??
-                'Unknown'}
-            </Text>
+            <Text>LiftLog is currently version {appVersion}</Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setAppInfoOpen(false)}>
