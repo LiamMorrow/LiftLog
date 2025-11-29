@@ -10,7 +10,7 @@ import Button from '@/components/presentation/gesture-wrappers/button';
 
 interface PotentialSetAdditionalActionsDialogProps {
   open: boolean;
-  set: PotentialSet | undefined;
+  set: PotentialSet;
   repTarget: number;
   updateRepCount: (reps: number | undefined) => void;
   close: () => void;

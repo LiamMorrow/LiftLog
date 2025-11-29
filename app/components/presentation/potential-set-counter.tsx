@@ -12,6 +12,7 @@ import { T } from '@tolgee/react';
 import Holdable from '@/components/presentation/holdable';
 import TouchableRipple from '@/components/presentation/gesture-wrappers/touchable-ripple';
 import { Weight } from '@/models/weight';
+import PotentialSetAdditionalActionsDialog from '@/components/presentation/potential-sets-addition-actions-dialog';
 
 interface PotentialSetCounterProps {
   set: PotentialSet;
@@ -22,19 +23,20 @@ interface PotentialSetCounterProps {
   isReadonly: boolean;
 
   onTap: () => void;
-  onHold: () => void;
   onUpdateWeight: (weight: Weight, applyTo: WeightAppliesTo) => void;
+  onUpdateReps: (reps: number | undefined) => void;
 }
 
 export default function PotentialSetCounter(props: PotentialSetCounterProps) {
   const { colors } = useAppTheme();
   const [isWeightDialogOpen, setIsWeightDialogOpen] = useState(false);
+  const [isRepsDialogOpen, setIsRepsDialogOpen] = useState(false);
   const repCountValue = props.set?.set?.repsCompleted;
 
   const [applyTo, setApplyTo] = useState<WeightAppliesTo>('uncompletedSets');
 
   return (
-    <Holdable onLongPress={props.onHold}>
+    <Holdable onLongPress={() => setIsRepsDialogOpen(true)}>
       <FocusRing isSelected={props.toStartNext} radius={15}>
         <View
           style={[
@@ -171,6 +173,14 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
           </WeightDialog>
         </View>
       </FocusRing>
+
+      <PotentialSetAdditionalActionsDialog
+        open={isRepsDialogOpen}
+        repTarget={props.maxReps}
+        set={props.set}
+        updateRepCount={(reps) => props.onUpdateReps(reps)}
+        close={() => setIsRepsDialogOpen(false)}
+      />
     </Holdable>
   );
 }

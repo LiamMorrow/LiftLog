@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import { WeightAppliesTo } from '@/store/current-session';
 import ExerciseSection from '@/components/presentation/exercise-section';
-import PotentialSetAdditionalActionsDialog from '@/components/presentation/potential-sets-addition-actions-dialog';
 import { Weight } from '@/models/weight';
 
 interface WeightedExerciseProps {
@@ -29,11 +28,14 @@ interface WeightedExerciseProps {
 }
 
 export default function WeightedExercise(props: WeightedExerciseProps) {
-  const { updateRepCountForSet } = props;
+  const {
+    updateRepCountForSet,
+    cycleRepCountForSet,
+    updateNotesForExercise,
+    updateWeightForSet,
+  } = props;
   const { recordedExercise } = props;
   useState(false);
-  const [additionalPotentialSetIndex, setAdditionalPotentialSetIndex] =
-    useState(-1);
 
   const setToStartNext = recordedExercise.potentialSets.findIndex(
     (x) => !x.set,
@@ -46,7 +48,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
       toStartNext={props.toStartNext}
       isReadonly={props.isReadonly}
       showPreviousButton={props.showPreviousButton}
-      updateNotesForExercise={props.updateNotesForExercise}
+      updateNotesForExercise={updateNotesForExercise}
       onOpenLink={props.onOpenLink}
       onEditExercise={props.onEditExercise}
       onRemoveExercise={props.onRemoveExercise}
@@ -57,10 +59,10 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             isReadonly={props.isReadonly}
             key={index}
             maxReps={recordedExercise.blueprint.repsPerSet}
-            onTap={() => props.cycleRepCountForSet(index)}
-            onHold={() => setAdditionalPotentialSetIndex(index)}
+            onTap={() => cycleRepCountForSet(index)}
+            onUpdateReps={(reps) => updateRepCountForSet(index, reps)}
             onUpdateWeight={(w, applyTo) =>
-              props.updateWeightForSet(index, w, applyTo)
+              updateWeightForSet(index, w, applyTo)
             }
             set={set}
             showWeight={true}
@@ -71,15 +73,6 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
           />
         ))}
       </View>
-      <PotentialSetAdditionalActionsDialog
-        open={additionalPotentialSetIndex !== -1}
-        repTarget={props.recordedExercise.blueprint.repsPerSet}
-        set={props.recordedExercise.potentialSets[additionalPotentialSetIndex]}
-        updateRepCount={(reps) =>
-          updateRepCountForSet(additionalPotentialSetIndex, reps)
-        }
-        close={() => setAdditionalPotentialSetIndex(-1)}
-      />
     </ExerciseSection>
   );
 }
