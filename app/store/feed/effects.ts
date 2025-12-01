@@ -1,4 +1,4 @@
-import { addEffect } from '@/store/store';
+import { addEffect, getState } from '@/store/store';
 import {
   createFeedIdentity,
   feedApiError,
@@ -23,6 +23,7 @@ import { addFollowingEffects } from '@/store/feed/following-effects';
 import { selectActiveProgram } from '@/store/program';
 import { ApiResult } from '@/services/api-error';
 import { FeedIdentity } from '@/models/feed-models';
+import { Platform } from 'react-native';
 
 const StorageKey = 'FeedState';
 export function applyFeedEffects() {
@@ -32,6 +33,7 @@ export function applyFeedEffects() {
       _,
       {
         cancelActiveListeners,
+        getState,
         dispatch,
         extra: { keyValueStore, logger, encryptionService },
       },
@@ -52,6 +54,7 @@ export function applyFeedEffects() {
               if (feedState.identity.isSuccess()) {
                 hasIdentity = true;
               }
+
               dispatch(patchFeedState(feedState));
             } catch (e) {
               logger.error('Could not decode feed state', e);
@@ -68,6 +71,30 @@ export function applyFeedEffects() {
               fromUserAction: false,
             }),
           );
+        } else {
+          if (Platform.OS === 'ios') {
+            try {
+              await selectFeedIdentityRemote(getState())
+                .map((identity) =>
+                  encryptionService.encryptRsaOaepSha256Async(
+                    new Uint8Array([1, 2, 3]),
+                    identity.rsaKeyPair.publicKey,
+                  ),
+                )
+                .unwrapOr(Promise.resolve());
+            } catch (error) {
+              logger.warn(
+                'Failed to encrypt with RSA public key, generating a new one',
+                { error },
+              );
+              const newKeyPair = await encryptionService.generateRsaKeys();
+              dispatch(
+                updateFeedIdentity({
+                  rsaKeyPair: newKeyPair,
+                }),
+              );
+            }
+          }
         }
         dispatch(setIsHydrated(true));
         dispatch(fetchInboxItems({ fromUserAction: false }));
@@ -224,7 +251,7 @@ export function applyFeedEffects() {
       },
     ) => {
       cancelActiveListeners();
-      const feedIdentityRemote = selectFeedIdentityRemote(stateAfterReduce);
+      let feedIdentityRemote = selectFeedIdentityRemote(stateAfterReduce);
       const { payload } = action;
       if (!feedIdentityRemote.isSuccess()) {
         return;
@@ -236,8 +263,11 @@ export function applyFeedEffects() {
           ),
         ),
       );
+      feedIdentityRemote = selectFeedIdentityRemote(getState());
+      if (!feedIdentityRemote.isSuccess()) {
+        return;
+      }
       const identity = feedIdentityRemote.data;
-
       const result = await feedIdentityService.updateFeedIdentityAsync(
         identity.id,
         identity.lookup,
