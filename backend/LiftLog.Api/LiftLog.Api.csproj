@@ -23,7 +23,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
-    <PackageReference Include="OpenAI" Version="2.6.0" />
+    <PackageReference Include="OpenAI" Version="2.7.0" />
     <PackageReference Include="OpenAI-DotNet" Version="8.8.7" Aliases="OpenAICommunity" />
     <PackageReference Include="Google.Apis.AndroidPublisher.v3" Version="1.72.0.3953" />
   </ItemGroup>
