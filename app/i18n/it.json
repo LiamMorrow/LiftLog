@@ -97,7 +97,7 @@
   "FeatureRequest": "Suggerisci una funzione",
   "FeatureRequestSubtitle": "Suggerisci una nuova funzione che pensi LiftLog debba avere!",
   "Feed": "Feed",
-  "FeedUserCompletedAWorkout{UserName}": "\n<em>{0}</em> ha completato un allenamento!",
+  "FeedUserCompletedAWorkout{UserName}": "<em>{0}</em> ha completato un allenamento!",
   "Feed_Followers": "Seguaci",
   "Feed_Following": "Seguiti",
   "Filters": "Filtri",
