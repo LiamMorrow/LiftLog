@@ -382,5 +382,8 @@
   "trackTime": "Track Time",
   "workout": "Workout",
   "{NumDays}NumDays": "{0} days",
-  "{name} deleted": "{name} deleted"
+  "{name} deleted": "{name} deleted",
+  "Profile": "Profile",
+  "FeedExplanation": "This is your feed, share it with your friends to let them follow your workouts!",
+  "NotPublishingWorkoutsError": "You are not publishing your workouts!"
 }

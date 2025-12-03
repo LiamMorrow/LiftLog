@@ -56,6 +56,7 @@ export default function Feed() {
       data={feedItems}
       keyExtractor={(x) => x.eventId}
       renderItem={({ item }) => <FeedItemRenderer feedItem={item} />}
+      style={{ gap: spacing[2] }}
       contentContainerStyle={{
         gap: spacing[2],
         padding: spacing.pageHorizontalMargin,
@@ -82,12 +83,13 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
   const shareUrl = `https://app.liftlog.online/feed/share?id=${identity.lookup}${
     identity.name ? `&name=${encodeURIComponent(identity.name)}` : ''
   }`;
+  const { t } = useTranslate();
   return (
     <>
       <Card mode="contained">
         <Card.Title
           left={({ size }) => <Icon source={'personFill'} size={size} />}
-          title="Profile"
+          title={t('Profile')}
           titleVariant="headlineSmall"
         />
         <Card.Content>
@@ -98,8 +100,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
             dataSet={{ shareUrl }}
           />
           <SurfaceText>
-            This is your feed, share it with your friends to let them follow
-            your workouts!
+            <T keyName="FeedExplanation" />
           </SurfaceText>
 
           {identity.publishWorkouts ? undefined : (
@@ -107,13 +108,15 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
+                flexWrap: 'wrap',
                 justifyContent: 'space-between',
               }}
             >
               <SurfaceText color="error">
-                You are not publishing your workouts!
+                <T keyName="NotPublishingWorkoutsError" />
               </SurfaceText>
               <Button
+                style={{ marginLeft: 'auto' }}
                 testID="feed-fix-button"
                 onPress={() => {
                   setFocusPublish(true);
@@ -177,7 +180,7 @@ function FeedProfileEditor({
   const { t } = useTranslate();
   const dispatch = useDispatch();
   const updateProfile = (value: Partial<FeedIdentity>) => {
-    dispatch(updateFeedIdentity(value));
+    dispatch(updateFeedIdentity({ updates: value, fromUserAction: true }));
   };
   const resetAccount = () => {
     dispatch(resetFeedAccount({ fromUserAction: true }));

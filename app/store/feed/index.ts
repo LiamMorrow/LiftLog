@@ -270,9 +270,12 @@ export const publishUnpublishedSessions = createAction(
   'publishUnpublishedSessions',
 );
 
-export const resetFeedAccount = createAction<FeedAction>('resetFeedAccount');
+export const resetFeedAccount = createAction<
+  FeedAction & { newIdentity?: FeedIdentity }
+>('resetFeedAccount');
 
-export const updateFeedIdentity =
-  createAction<Partial<FeedIdentity>>('updateFeedIdentity');
+export const updateFeedIdentity = createAction<
+  { updates: Partial<FeedIdentity> } & FeedAction
+>('updateFeedIdentity');
 
 export default feedSlice.reducer;

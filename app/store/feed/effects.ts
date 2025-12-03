@@ -21,7 +21,7 @@ import { addFeedItemEffects } from '@/store/feed/feed-items-effects';
 import { addInboxEffects } from '@/store/feed/inbox-effects';
 import { addFollowingEffects } from '@/store/feed/following-effects';
 import { selectActiveProgram } from '@/store/program';
-import { ApiResult } from '@/services/api-error';
+import { ApiErrorType, ApiResult } from '@/services/api-error';
 import { FeedIdentity } from '@/models/feed-models';
 import { Platform } from 'react-native';
 
@@ -90,13 +90,18 @@ export function applyFeedEffects() {
               const newKeyPair = await encryptionService.generateRsaKeys();
               dispatch(
                 updateFeedIdentity({
-                  rsaKeyPair: newKeyPair,
+                  updates: {
+                    rsaKeyPair: newKeyPair,
+                  },
+                  fromUserAction: false,
                 }),
               );
             }
           }
         }
         dispatch(setIsHydrated(true));
+        // Refreshes the identity, if it no longer exists on the server
+        dispatch(updateFeedIdentity({ fromUserAction: false, updates: {} }));
         dispatch(fetchInboxItems({ fromUserAction: false }));
         const elapsedMilliseconds = performance.now() - sw;
         logger.info(`Feed state initialized in ${elapsedMilliseconds}ms`);
@@ -202,7 +207,7 @@ export function applyFeedEffects() {
       const result = await identityRemote
         .map((i) => feedIdentityService.deleteFeedIdentityAsync(i))
         .unwrapOr(Promise.resolve(ApiResult.success()));
-      if (result.isError()) {
+      if (result.isError() && result.error.type !== ApiErrorType.NotFound) {
         dispatch(
           feedApiError({
             message: 'Failed to reset account',
@@ -229,10 +234,11 @@ export function applyFeedEffects() {
       dispatch(
         createFeedIdentity({
           fromUserAction: true,
-          name: undefined,
-          publishBodyweight: false,
-          publishPlan: false,
-          publishWorkouts: false,
+          name: action.payload.newIdentity?.name,
+          publishBodyweight:
+            action.payload.newIdentity?.publishBodyweight ?? false,
+          publishPlan: action.payload.newIdentity?.publishPlan ?? false,
+          publishWorkouts: action.payload.newIdentity?.publishWorkouts ?? false,
         }),
       );
     },
@@ -251,34 +257,35 @@ export function applyFeedEffects() {
       },
     ) => {
       cancelActiveListeners();
-      let feedIdentityRemote = selectFeedIdentityRemote(stateAfterReduce);
-      const { payload } = action;
-      if (!feedIdentityRemote.isSuccess()) {
+      const oldFeedIdentity = selectFeedIdentityRemote(stateAfterReduce);
+      if (!oldFeedIdentity.isSuccess()) {
         return;
       }
       dispatch(
         setIdentity(
-          feedIdentityRemote.map((x) =>
-            FeedIdentity.fromPOJO({ ...x, ...action.payload }),
+          oldFeedIdentity.map((x) =>
+            FeedIdentity.fromPOJO({ ...x, ...action.payload.updates }),
           ),
         ),
       );
-      feedIdentityRemote = selectFeedIdentityRemote(getState());
+      const feedIdentityRemote = selectFeedIdentityRemote(getState());
       if (!feedIdentityRemote.isSuccess()) {
+        dispatch(setIdentity(oldFeedIdentity));
         return;
       }
       const identity = feedIdentityRemote.data;
+      // We optimistically updated the identity, so now we can just use its values
       const result = await feedIdentityService.updateFeedIdentityAsync(
         identity.id,
         identity.lookup,
         identity.password,
         identity.aesKey,
         identity.rsaKeyPair,
-        payload.name ?? identity.name,
-        payload.profilePicture ?? identity.profilePicture,
-        payload.publishBodyweight ?? identity.publishBodyweight,
-        payload.publishPlan ?? identity.publishPlan,
-        payload.publishWorkouts ?? identity.publishWorkouts,
+        identity.name,
+        identity.profilePicture,
+        identity.publishBodyweight,
+        identity.publishPlan,
+        identity.publishWorkouts,
         selectActiveProgram(stateAfterReduce).sessions,
       );
       if (signal.aborted) {
@@ -286,17 +293,22 @@ export function applyFeedEffects() {
       }
 
       if (result.isError()) {
+        if (result.error.type === ApiErrorType.NotFound) {
+          dispatch(
+            resetFeedAccount({
+              fromUserAction: action.payload.fromUserAction,
+              newIdentity: identity,
+            }),
+          );
+        }
         dispatch(
           feedApiError({
             message: 'Failed to update profile',
             error: result.error,
-            action: {
-              ...action,
-              payload: { ...action.payload, fromUserAction: true },
-            },
+            action,
           }),
         );
-        dispatch(setIdentity(feedIdentityRemote));
+        dispatch(setIdentity(oldFeedIdentity));
         return;
       }
 
