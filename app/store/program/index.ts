@@ -210,7 +210,7 @@ const programSlice = createSlice({
       }>,
     ) {
       state.savedPrograms[action.payload.programId] = {
-        _BRAND: 'PROGRAM_BLUEPRINT_POJO',
+        type: 'ProgramBlueprint',
         name: action.payload.name,
         sessions: [],
         lastEdited: action.payload.time,

@@ -90,7 +90,7 @@ export const RestGenerator = fc.constantFrom(
 
 export const ExerciseBlueprintGenerator = fc
   .record<WeightedExerciseBlueprintPOJO>({
-    _BRAND: fc.constant('WEIGHTED_EXERCISE_BLUEPRINT_POJO'),
+    type: fc.constant('WeightedExerciseBlueprint'),
     name: fc.string(),
     sets: fc.integer({ min: 1, max: 10 }),
     repsPerSet: fc.integer({ min: 1, max: 20 }),
@@ -104,7 +104,7 @@ export const ExerciseBlueprintGenerator = fc
 
 export const SessionBlueprintGenerator = fc
   .record<SessionBlueprintPOJO>({
-    _BRAND: fc.constant('SESSION_BLUEPRINT_POJO'),
+    type: fc.constant('SessionBlueprint'),
     name: fc.string(),
     exercises: fc
       .array(ExerciseBlueprintGenerator, { maxLength: 10 })
@@ -115,7 +115,7 @@ export const SessionBlueprintGenerator = fc
 
 export const ProgramBlueprintGenerator = fc
   .record<ProgramBlueprintPOJO>({
-    _BRAND: fc.constant('PROGRAM_BLUEPRINT_POJO'),
+    type: fc.constant('ProgramBlueprint'),
     name: fc.string(),
     sessions: fc
       .array(SessionBlueprintGenerator, { maxLength: 5 })
@@ -126,7 +126,7 @@ export const ProgramBlueprintGenerator = fc
 
 export const RecordedSetGenerator = fc
   .record<RecordedSetPOJO>({
-    _BRAND: fc.constant('RECORDED_SET_POJO'),
+    type: fc.constant('RecordedSet'),
     repsCompleted: fc.integer({ min: 0, max: 100 }),
     completionDateTime: LocalDateTimeGenerator,
   })
@@ -134,7 +134,7 @@ export const RecordedSetGenerator = fc
 
 export const PotentialSetGenerator = fc
   .record<PotentialSetPOJO>({
-    _BRAND: fc.constant('POTENTIAL_SET_POJO'),
+    type: fc.constant('PotentialSet'),
     set: fc.option(
       RecordedSetGenerator.map((x) => x.toPOJO()),
       {
@@ -147,7 +147,7 @@ export const PotentialSetGenerator = fc
 
 export const RecordedExerciseGenerator = fc
   .record<RecordedWeightedExercisePOJO>({
-    _BRAND: fc.constant('RECORDED_WEIGHTED_EXERCISE_POJO'),
+    type: fc.constant('WeightedRecordedExercise'),
     blueprint: ExerciseBlueprintGenerator.map((x) => x.toPOJO()),
     potentialSets: fc.array(
       PotentialSetGenerator.map((x) => x.toPOJO()),
@@ -160,7 +160,7 @@ export const RecordedExerciseGenerator = fc
 export const SessionGenerator = fc
   .tuple(
     fc.record<Omit<SessionPOJO, 'recordedExercises'>>({
-      _BRAND: fc.constant('SESSION_POJO'),
+      type: fc.constant('Session'),
       id: fc.uuid(),
       blueprint: SessionBlueprintGenerator.map((x) => x.toPOJO()),
       date: LocalDateGenerator,
@@ -211,7 +211,7 @@ export const RsaKeyPairGenerator = fc.record<RsaKeyPair>({
 
 export const FeedUserGenerator = fc
   .record<FeedUserPOJO>({
-    _BRAND: fc.constant('FEED_USER_POJO'),
+    type: fc.constant('FeedUser'),
     id: fc.uuid(),
     publicKey: RsaPublicKeyGenerator,
     name: fc.option(fc.string(), { nil: undefined }),
@@ -235,7 +235,7 @@ export const FeedUserGenerator = fc
 
 export const FeedIdentityGenerator = fc
   .record<FeedIdentityPOJO>({
-    _BRAND: fc.constant('FEED_IDENTITY_POJO'),
+    type: fc.constant('FeedIdentity'),
     id: fc.uuid(),
     lookup: fc.string(),
     aesKey: AesKeyGenerator,
@@ -270,7 +270,7 @@ export const FeedIdentityGenerator = fc
 
 export const FollowRequestGenerator = fc
   .record<FollowRequestPOJO>({
-    _BRAND: fc.constant('FOLLOW_REQUEST_POJO'),
+    type: fc.constant('FollowRequest'),
     userId: fc.uuid(),
     name: fc.option(fc.string(), { nil: undefined }),
   })
@@ -278,7 +278,7 @@ export const FollowRequestGenerator = fc
 
 export const FollowResponseGenerator = fc
   .record<FollowResponsePOJO>({
-    _BRAND: fc.constant('FOLLOW_RESPONSE_POJO'),
+    type: fc.constant('FollowResponse'),
     userId: fc.uuid(),
     accepted: fc.boolean(),
     aesKey: fc.option(AesKeyGenerator, { nil: undefined }),
@@ -296,7 +296,7 @@ export const FollowResponseGenerator = fc
 
 export const SessionFeedItemGenerator = fc
   .record<SessionFeedItemPOJO>({
-    _BRAND: fc.constant('SESSION_FEED_ITEM_POJO'),
+    type: fc.constant('SessionFeedItem'),
     userId: fc.uuid(),
     eventId: fc.uuid(),
     timestamp: InstantGenerator,
@@ -316,7 +316,7 @@ export const SessionFeedItemGenerator = fc
 
 export const RemovedSessionFeedItemGenerator = fc
   .record<RemovedSessionFeedItemPOJO>({
-    _BRAND: fc.constant('REMOVED_SESSION_FEED_ITEM_POJO'),
+    type: fc.constant('REMOVED_SessionFeedItem'),
     userId: fc.uuid(),
     eventId: fc.uuid(),
     timestamp: InstantGenerator,

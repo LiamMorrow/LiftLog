@@ -12,7 +12,7 @@ import Enumerable from 'linq';
 export const benchPress: RecordedWeightedExercise =
   RecordedWeightedExercise.fromPOJO({
     blueprint: {
-      _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+      type: 'WeightedExerciseBlueprint',
       name: 'Bench Press',
       sets: 3,
       repsPerSet: 10,
@@ -26,7 +26,7 @@ export const benchPress: RecordedWeightedExercise =
       .select(
         () =>
           ({
-            _BRAND: 'POTENTIAL_SET_POJO',
+            type: 'PotentialSet',
             weight: new Weight(100, 'kilograms'),
             set: undefined,
           }) satisfies PotentialSetPOJO,
@@ -38,7 +38,7 @@ export const benchPress: RecordedWeightedExercise =
 export const squats: RecordedWeightedExercise =
   RecordedWeightedExercise.fromPOJO({
     blueprint: {
-      _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+      type: 'WeightedExerciseBlueprint',
       name: 'Squats',
       sets: 3,
       repsPerSet: 10,
@@ -52,7 +52,7 @@ export const squats: RecordedWeightedExercise =
       .select(
         () =>
           ({
-            _BRAND: 'POTENTIAL_SET_POJO',
+            type: 'PotentialSet',
             weight: new Weight(150, 'kilograms'),
             set: undefined,
           }) as const,
@@ -64,7 +64,7 @@ export const squats: RecordedWeightedExercise =
 export const overheadPress: RecordedWeightedExercise =
   RecordedWeightedExercise.fromPOJO({
     blueprint: {
-      _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+      type: 'WeightedExerciseBlueprint',
       name: 'Overhead Press',
       sets: 3,
       repsPerSet: 10,
@@ -78,7 +78,7 @@ export const overheadPress: RecordedWeightedExercise =
       .select(
         () =>
           ({
-            _BRAND: 'POTENTIAL_SET_POJO',
+            type: 'PotentialSet',
             weight: new Weight(75, 'kilograms'),
             set: undefined,
           }) as const,

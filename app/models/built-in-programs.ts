@@ -16,7 +16,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
         notes: '',
         exercises: [
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Squat',
             sets: 3,
             repsPerSet: 5,
@@ -27,7 +27,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Bench Press',
             sets: 3,
             repsPerSet: 5,
@@ -38,7 +38,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Deadlift',
             sets: 1,
             repsPerSet: 5,
@@ -55,7 +55,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
         notes: '',
         exercises: [
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Squat',
             sets: 3,
             repsPerSet: 5,
@@ -66,7 +66,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Overhead Press',
             sets: 3,
             repsPerSet: 5,
@@ -77,7 +77,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Deadlift',
             sets: 1,
             repsPerSet: 5,
@@ -101,7 +101,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
         notes: '',
         exercises: [
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Squat',
             sets: 5,
             repsPerSet: 5,
@@ -112,7 +112,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Bench Press',
             sets: 5,
             repsPerSet: 5,
@@ -123,7 +123,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Barbell Row',
             sets: 5,
             repsPerSet: 5,
@@ -140,7 +140,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
         notes: '',
         exercises: [
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Squat',
             sets: 5,
             repsPerSet: 5,
@@ -151,7 +151,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Overhead Press',
             sets: 5,
             repsPerSet: 5,
@@ -162,7 +162,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Deadlift',
             sets: 1,
             repsPerSet: 5,
@@ -186,7 +186,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
         notes: '',
         exercises: [
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Bench Press',
             sets: 4,
             repsPerSet: 8,
@@ -197,7 +197,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Overhead Press',
             sets: 4,
             repsPerSet: 8,
@@ -208,7 +208,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Tricep Extension',
             sets: 4,
             repsPerSet: 8,
@@ -219,7 +219,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Cable Fly',
             sets: 4,
             repsPerSet: 8,
@@ -236,7 +236,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
         notes: '',
         exercises: [
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Deadlift',
             sets: 4,
             repsPerSet: 8,
@@ -247,7 +247,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Barbell Row',
             sets: 4,
             repsPerSet: 8,
@@ -258,7 +258,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Lat Pulldown',
             sets: 4,
             repsPerSet: 8,
@@ -269,7 +269,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Barbell Curl',
             sets: 4,
             repsPerSet: 8,
@@ -286,7 +286,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
         notes: '',
         exercises: [
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Squat',
             sets: 4,
             repsPerSet: 8,
@@ -297,7 +297,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Lunges',
             sets: 4,
             repsPerSet: 8,
@@ -308,7 +308,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Leg Extension',
             sets: 4,
             repsPerSet: 8,
@@ -319,7 +319,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Leg Curl',
             sets: 4,
             repsPerSet: 8,
@@ -343,7 +343,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
         notes: '',
         exercises: [
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Bench Press',
             sets: 3,
             repsPerSet: 5,
@@ -354,7 +354,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Barbell Row',
             sets: 3,
             repsPerSet: 5,
@@ -365,7 +365,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Overhead Press',
             sets: 3,
             repsPerSet: 10,
@@ -376,7 +376,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Lat Pulldown',
             sets: 3,
             repsPerSet: 10,
@@ -387,7 +387,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Barbell Curl',
             sets: 3,
             repsPerSet: 10,
@@ -398,7 +398,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Tricep Extension',
             sets: 3,
             repsPerSet: 10,
@@ -409,7 +409,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Cable Fly',
             sets: 3,
             repsPerSet: 10,
@@ -426,7 +426,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
         notes: '',
         exercises: [
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Squat',
             sets: 3,
             repsPerSet: 5,
@@ -437,7 +437,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Deadlift',
             sets: 3,
             repsPerSet: 5,
@@ -448,7 +448,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Leg Press',
             sets: 3,
             repsPerSet: 10,
@@ -459,7 +459,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Leg Curl',
             sets: 3,
             repsPerSet: 10,
@@ -470,7 +470,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Calf Raise',
             sets: 3,
             repsPerSet: 10,
@@ -487,7 +487,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
         notes: '',
         exercises: [
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Incline Bench Press',
             sets: 3,
             repsPerSet: 10,
@@ -498,7 +498,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Cable Row',
             sets: 3,
             repsPerSet: 10,
@@ -509,7 +509,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Dumbbell Fly',
             sets: 3,
             repsPerSet: 10,
@@ -520,7 +520,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Lat Pulldown',
             sets: 3,
             repsPerSet: 10,
@@ -531,7 +531,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Dumbbell Curl',
             sets: 3,
             repsPerSet: 10,
@@ -542,7 +542,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Skullcrusher',
             sets: 3,
             repsPerSet: 10,
@@ -559,7 +559,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
         notes: '',
         exercises: [
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Front Squat',
             sets: 3,
             repsPerSet: 10,
@@ -570,7 +570,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Romanian Deadlift',
             sets: 3,
             repsPerSet: 10,
@@ -581,7 +581,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Leg Extension',
             sets: 3,
             repsPerSet: 10,
@@ -592,7 +592,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Leg Curl',
             sets: 3,
             repsPerSet: 10,
@@ -603,7 +603,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Calf Raise',
             sets: 3,
             repsPerSet: 10,
@@ -627,7 +627,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
         notes: '',
         exercises: [
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Pushups',
             sets: 3,
             repsPerSet: 10,
@@ -638,7 +638,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Dips',
             sets: 3,
             repsPerSet: 10,
@@ -649,7 +649,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Handstand Pushups',
             sets: 3,
             repsPerSet: 10,
@@ -666,7 +666,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
         notes: '',
         exercises: [
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Pullups',
             sets: 3,
             repsPerSet: 10,
@@ -677,7 +677,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Chinups',
             sets: 3,
             repsPerSet: 10,
@@ -688,7 +688,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Inverted Rows',
             sets: 3,
             repsPerSet: 10,
@@ -705,7 +705,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
         notes: '',
         exercises: [
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Squats',
             sets: 3,
             repsPerSet: 10,
@@ -716,7 +716,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Lunges',
             sets: 3,
             repsPerSet: 10,
@@ -727,7 +727,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Calf Raises',
             sets: 3,
             repsPerSet: 10,
@@ -751,7 +751,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
         notes: '',
         exercises: [
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Pushups',
             sets: 3,
             repsPerSet: 10,
@@ -762,7 +762,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Dips',
             sets: 3,
             repsPerSet: 10,
@@ -773,7 +773,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Handstand Pushups',
             sets: 3,
             repsPerSet: 10,
@@ -784,7 +784,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Planche Pushups',
             sets: 3,
             repsPerSet: 10,
@@ -801,7 +801,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
         notes: '',
         exercises: [
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Pullups',
             sets: 3,
             repsPerSet: 10,
@@ -812,7 +812,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Chinups',
             sets: 3,
             repsPerSet: 10,
@@ -823,7 +823,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Inverted Rows',
             sets: 3,
             repsPerSet: 10,
@@ -834,7 +834,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Muscle Ups',
             sets: 3,
             repsPerSet: 10,
@@ -851,7 +851,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
         notes: '',
         exercises: [
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Squats',
             sets: 3,
             repsPerSet: 10,
@@ -862,7 +862,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Lunges',
             sets: 3,
             repsPerSet: 10,
@@ -873,7 +873,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Calf Raises',
             sets: 3,
             repsPerSet: 10,
@@ -884,7 +884,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             link: '',
           },
           {
-            _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+            type: 'WeightedExerciseBlueprint',
             name: 'Pistol Squats',
             sets: 3,
             repsPerSet: 10,
@@ -907,7 +907,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
         notes: '',
         exercises: [
           {
-            _BRAND: 'CARDIO_EXERCISE_BLUEPRINT_POJO',
+            type: 'CardioExerciseBlueprint',
             name: 'Jogging',
             notes: '',
             link: '',
@@ -921,7 +921,7 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
             },
           },
           {
-            _BRAND: 'CARDIO_EXERCISE_BLUEPRINT_POJO',
+            type: 'CardioExerciseBlueprint',
             name: 'Elliptical',
             notes: '',
             link: '',

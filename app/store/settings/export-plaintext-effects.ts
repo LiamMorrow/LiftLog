@@ -48,7 +48,12 @@ export function addExportPlaintextEffects() {
 async function exportToJson(
   sessions: Enumerable.IEnumerable<Session>,
 ): Promise<Uint8Array> {
-  const exportedSets = sessions.select((x) => x.toPOJO()).toArray();
+  const exportedSets = sessions
+    .select((x) => ({
+      ...x.toPOJO(),
+      blueprint: { ...x.blueprint.toPOJO(), exercises: undefined },
+    }))
+    .toArray();
   return new TextEncoder().encode(JSON.stringify(exportedSets));
 }
 

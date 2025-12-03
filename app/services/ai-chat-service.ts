@@ -164,7 +164,7 @@ function parseAiExercise(
 ): ExerciseBlueprintPOJO {
   if ('repsPerSet' in ex) {
     return {
-      _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+      type: 'WeightedExerciseBlueprint',
       name: ex.name,
       link: ex.link,
       notes: ex.notes,
@@ -181,7 +181,7 @@ function parseAiExercise(
   }
 
   return {
-    _BRAND: 'CARDIO_EXERCISE_BLUEPRINT_POJO',
+    type: 'CardioExerciseBlueprint',
     name: ex.name,
     link: ex.link,
     notes: ex.notes,

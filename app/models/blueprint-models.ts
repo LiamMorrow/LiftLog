@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import { match, P } from 'ts-pattern';
 
 export interface ProgramBlueprintPOJO {
-  _BRAND: 'PROGRAM_BLUEPRINT_POJO';
+  type: 'ProgramBlueprint';
   readonly name: string;
   readonly sessions: SessionBlueprintPOJO[];
   lastEdited: LocalDate;
@@ -34,9 +34,7 @@ export class ProgramBlueprint {
     this.lastEdited = lastEdited!;
   }
 
-  static fromPOJO(
-    pojo: Omit<ProgramBlueprintPOJO, '_BRAND'>,
-  ): ProgramBlueprint {
+  static fromPOJO(pojo: Omit<ProgramBlueprintPOJO, 'type'>): ProgramBlueprint {
     return new ProgramBlueprint(
       pojo.name,
       pojo.sessions.map(SessionBlueprint.fromPOJO),
@@ -64,7 +62,7 @@ export class ProgramBlueprint {
 
   toPOJO(): ProgramBlueprintPOJO {
     return {
-      _BRAND: 'PROGRAM_BLUEPRINT_POJO',
+      type: 'ProgramBlueprint',
       name: this.name,
       sessions: this.sessions.map((session) => session.toPOJO()),
       lastEdited: this.lastEdited,
@@ -83,7 +81,7 @@ export class ProgramBlueprint {
 }
 
 export interface SessionBlueprintPOJO {
-  _BRAND: 'SESSION_BLUEPRINT_POJO';
+  type: 'SessionBlueprint';
   name: string;
   exercises: ExerciseBlueprintPOJO[];
   notes: string;
@@ -105,9 +103,7 @@ export class SessionBlueprint {
     this.notes = notes!;
   }
 
-  static fromPOJO(
-    pojo: Omit<SessionBlueprintPOJO, '_BRAND'>,
-  ): SessionBlueprint {
+  static fromPOJO(pojo: Omit<SessionBlueprintPOJO, 'type'>): SessionBlueprint {
     return new SessionBlueprint(
       pojo.name,
       pojo.exercises.map(fromExerciseBlueprintPOJO),
@@ -135,7 +131,7 @@ export class SessionBlueprint {
 
   toPOJO(): SessionBlueprintPOJO {
     return {
-      _BRAND: 'SESSION_BLUEPRINT_POJO',
+      type: 'SessionBlueprint',
       name: this.name,
       exercises: this.exercises.map((exercise) => exercise.toPOJO()),
       notes: this.notes,
@@ -169,14 +165,14 @@ export function fromExerciseBlueprintPOJO(
   return match(pojo)
     .with(
       P.union(
-        { _BRAND: 'CARDIO_EXERCISE_BLUEPRINT_POJO' },
+        { type: 'CardioExerciseBlueprint' },
         P.instanceOf(CardioExerciseBlueprint),
       ),
       CardioExerciseBlueprint.fromPOJO,
     )
     .with(
       P.union(
-        { _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO' },
+        { type: 'WeightedExerciseBlueprint' },
         P.instanceOf(WeightedExerciseBlueprint),
       ),
       WeightedExerciseBlueprint.fromPOJO,
@@ -205,7 +201,7 @@ export type Distance = {
 export type CardioTarget = TimeCardioTarget | DistanceCardioTarget;
 
 export interface CardioExerciseBlueprintPOJO {
-  _BRAND: 'CARDIO_EXERCISE_BLUEPRINT_POJO';
+  type: 'CardioExerciseBlueprint';
   name: string;
   target: CardioTarget;
   trackDuration: boolean;
@@ -276,7 +272,8 @@ export class CardioExerciseBlueprint {
   }
 
   static fromPOJO(
-    pojo: DeepOmit<CardioExerciseBlueprintPOJO, '_BRAND'>,
+    pojo: DeepOmit<CardioExerciseBlueprintPOJO, 'type'> &
+      Pick<CardioExerciseBlueprintPOJO, 'target'>,
   ): CardioExerciseBlueprint {
     return new CardioExerciseBlueprint(
       pojo.name,
@@ -299,7 +296,7 @@ export class CardioExerciseBlueprint {
     }
     if (
       other instanceof WeightedExerciseBlueprint ||
-      ('_BRAND' in other && other._BRAND === 'WEIGHTED_EXERCISE_BLUEPRINT_POJO')
+      ('type' in other && other.type === 'WeightedExerciseBlueprint')
     ) {
       return false;
     }
@@ -320,7 +317,7 @@ export class CardioExerciseBlueprint {
 
   toPOJO(): CardioExerciseBlueprintPOJO {
     return {
-      _BRAND: 'CARDIO_EXERCISE_BLUEPRINT_POJO',
+      type: 'CardioExerciseBlueprint',
       name: this.name,
       target: this.target,
       trackDuration: this.trackDuration,
@@ -347,7 +344,7 @@ export class CardioExerciseBlueprint {
 }
 
 export interface WeightedExerciseBlueprintPOJO {
-  _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO';
+  type: 'WeightedExerciseBlueprint';
   name: string;
   sets: number;
   repsPerSet: number;
@@ -416,7 +413,7 @@ export class WeightedExerciseBlueprint {
   }
 
   static fromPOJO(
-    pojo: DeepOmit<WeightedExerciseBlueprintPOJO, '_BRAND'>,
+    pojo: DeepOmit<WeightedExerciseBlueprintPOJO, 'type'>,
   ): WeightedExerciseBlueprint {
     return new WeightedExerciseBlueprint(
       pojo.name,
@@ -439,7 +436,7 @@ export class WeightedExerciseBlueprint {
     }
     if (
       other instanceof CardioExerciseBlueprint ||
-      ('_BRAND' in other && other._BRAND === 'CARDIO_EXERCISE_BLUEPRINT_POJO')
+      ('type' in other && other.type === 'CardioExerciseBlueprint')
     ) {
       return false;
     }
@@ -462,7 +459,7 @@ export class WeightedExerciseBlueprint {
 
   toPOJO(): WeightedExerciseBlueprintPOJO {
     return {
-      _BRAND: 'WEIGHTED_EXERCISE_BLUEPRINT_POJO',
+      type: 'WeightedExerciseBlueprint',
       name: this.name,
       sets: this.sets,
       repsPerSet: this.repsPerSet,

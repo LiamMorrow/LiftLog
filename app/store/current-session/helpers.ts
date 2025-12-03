@@ -11,7 +11,7 @@ export function getCycledRepCount(
   return match(recordedSet)
     .returnType<RecordedSetPOJO | undefined>()
     .with(undefined, () => ({
-      _BRAND: 'RECORDED_SET_POJO',
+      type: 'RecordedSet',
       completionDateTime: time,
       repsCompleted: exerciseBlueprint.repsPerSet,
     }))

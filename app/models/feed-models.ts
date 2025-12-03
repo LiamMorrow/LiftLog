@@ -9,7 +9,7 @@ import { RsaPublicKey, AesKey, RsaKeyPair } from '@/models/encryption-models';
 import { Session, SessionPOJO } from '@/models/session-models';
 
 export interface FeedUserPOJO {
-  _BRAND: 'FEED_USER_POJO';
+  type: 'FeedUser';
   id: string;
   publicKey: RsaPublicKey;
   name: string | undefined;
@@ -64,7 +64,7 @@ export class FeedUser {
     this.followSecret = followSecret!;
   }
 
-  static fromPOJO(pojo: Omit<FeedUserPOJO, '_BRAND'>): FeedUser {
+  static fromPOJO(pojo: Omit<FeedUserPOJO, 'type'>): FeedUser {
     return new FeedUser(
       pojo.id,
       pojo.publicKey,
@@ -79,7 +79,7 @@ export class FeedUser {
 
   toPOJO(): FeedUserPOJO {
     return {
-      _BRAND: 'FEED_USER_POJO',
+      type: 'FeedUser',
       id: this.id,
       publicKey: this.publicKey,
       name: this.name,
@@ -129,7 +129,7 @@ export class FeedUser {
 }
 
 export interface FeedItemPOJO {
-  _BRAND: 'SESSION_FEED_ITEM_POJO' | 'REMOVED_SESSION_FEED_ITEM_POJO';
+  type: 'SessionFeedItem' | 'REMOVED_SessionFeedItem';
   userId: string;
   eventId: string;
   timestamp: Instant;
@@ -157,8 +157,8 @@ export abstract class FeedItem {
   abstract toPOJO(): FeedItemPOJO;
 
   static fromPOJO(x: FeedItemPOJO): FeedItem {
-    switch (x._BRAND) {
-      case 'REMOVED_SESSION_FEED_ITEM_POJO':
+    switch (x.type) {
+      case 'REMOVED_SessionFeedItem':
         return new RemovedSessionFeedItem(
           x.userId,
           x.eventId,
@@ -166,7 +166,7 @@ export abstract class FeedItem {
           x.expiry,
           (x as RemovedSessionFeedItemPOJO).sessionId,
         );
-      case 'SESSION_FEED_ITEM_POJO':
+      case 'SessionFeedItem':
         return new SessionFeedItem(
           x.userId,
           x.eventId,
@@ -198,7 +198,7 @@ export class SessionFeedItem extends FeedItem {
 
   toPOJO(): SessionFeedItemPOJO {
     return {
-      _BRAND: 'SESSION_FEED_ITEM_POJO',
+      type: 'SessionFeedItem',
       eventId: this.eventId,
       expiry: this.expiry,
       session: this.session.toPOJO(),
@@ -228,7 +228,7 @@ export class RemovedSessionFeedItem extends FeedItem {
 
   toPOJO(): RemovedSessionFeedItemPOJO {
     return {
-      _BRAND: 'REMOVED_SESSION_FEED_ITEM_POJO',
+      type: 'REMOVED_SessionFeedItem',
       eventId: this.eventId,
       expiry: this.expiry,
       sessionId: this.sessionId,
@@ -239,7 +239,7 @@ export class RemovedSessionFeedItem extends FeedItem {
 }
 
 export interface FeedIdentityPOJO {
-  _BRAND: 'FEED_IDENTITY_POJO';
+  type: 'FeedIdentity';
   id: string;
   lookup: string;
   aesKey: AesKey;
@@ -304,7 +304,7 @@ export class FeedIdentity {
     this.publishWorkouts = publishWorkouts!;
   }
 
-  static fromPOJO(pojo: Omit<FeedIdentityPOJO, '_BRAND'>): FeedIdentity {
+  static fromPOJO(pojo: Omit<FeedIdentityPOJO, 'type'>): FeedIdentity {
     return new FeedIdentity(
       pojo.id,
       pojo.lookup,
@@ -321,7 +321,7 @@ export class FeedIdentity {
 
   toPOJO(): FeedIdentityPOJO {
     return {
-      _BRAND: 'FEED_IDENTITY_POJO',
+      type: 'FeedIdentity',
       id: this.id,
       lookup: this.lookup,
       aesKey: this.aesKey,
@@ -352,7 +352,7 @@ export class FeedIdentity {
 }
 
 export interface FollowRequestPOJO {
-  _BRAND: 'FOLLOW_REQUEST_POJO';
+  type: 'FollowRequest';
   userId: string;
   name: string | undefined;
 }
@@ -371,13 +371,13 @@ export class FollowRequest {
     this.name = name!;
   }
 
-  static fromPOJO(pojo: Omit<FollowRequestPOJO, '_BRAND'>): FollowRequest {
+  static fromPOJO(pojo: Omit<FollowRequestPOJO, 'type'>): FollowRequest {
     return new FollowRequest(pojo.userId, pojo.name);
   }
 
   toPOJO(): FollowRequestPOJO {
     return {
-      _BRAND: 'FOLLOW_REQUEST_POJO',
+      type: 'FollowRequest',
       userId: this.userId,
       name: this.name,
     };
@@ -392,7 +392,7 @@ export class FollowRequest {
 }
 
 export interface FollowResponsePOJO {
-  _BRAND: 'FOLLOW_RESPONSE_POJO';
+  type: 'FollowResponse';
   userId: string;
   accepted: boolean;
   aesKey: AesKey | undefined;
@@ -427,7 +427,7 @@ export class FollowResponse {
     this.followSecret = followSecret!;
   }
 
-  static fromPOJO(pojo: Omit<FollowResponsePOJO, '_BRAND'>): FollowResponse {
+  static fromPOJO(pojo: Omit<FollowResponsePOJO, 'type'>): FollowResponse {
     return new FollowResponse(
       pojo.userId,
       pojo.accepted,
@@ -438,7 +438,7 @@ export class FollowResponse {
 
   toPOJO(): FollowResponsePOJO {
     return {
-      _BRAND: 'FOLLOW_RESPONSE_POJO',
+      type: 'FollowResponse',
       userId: this.userId,
       accepted: this.accepted,
       aesKey: this.aesKey,
@@ -462,7 +462,7 @@ export abstract class SharedItem {
   abstract toPOJO(): SharedItemPOJO;
 
   static fromPOJO(pojo: SharedItemPOJO): SharedItem {
-    if (pojo._BRAND === 'SHARED_PROGRAM_BLUEPRINT_POJO') {
+    if (pojo.type === 'SHARED_ProgramBlueprint') {
       return new SharedProgramBlueprint(
         ProgramBlueprint.fromPOJO(pojo.programBlueprint),
       );
@@ -472,7 +472,7 @@ export abstract class SharedItem {
 }
 
 export interface SharedProgramBlueprintPOJO {
-  _BRAND: 'SHARED_PROGRAM_BLUEPRINT_POJO';
+  type: 'SHARED_ProgramBlueprint';
   programBlueprint: ProgramBlueprintPOJO;
 }
 export class SharedProgramBlueprint extends SharedItem {
@@ -490,7 +490,7 @@ export class SharedProgramBlueprint extends SharedItem {
 
   toPOJO(): SharedProgramBlueprintPOJO {
     return {
-      _BRAND: 'SHARED_PROGRAM_BLUEPRINT_POJO',
+      type: 'SHARED_ProgramBlueprint',
       programBlueprint: this.programBlueprint.toPOJO(),
     };
   }

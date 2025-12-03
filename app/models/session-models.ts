@@ -19,7 +19,7 @@ import Enumerable from 'linq';
 import { match, P } from 'ts-pattern';
 
 export interface SessionPOJO {
-  _BRAND: 'SESSION_POJO';
+  type: 'Session';
   id: string;
   blueprint: SessionBlueprintPOJO;
   recordedExercises: RecordedExercisePOJO[];
@@ -56,13 +56,13 @@ export class Session {
       : undefined;
   }
 
-  static fromPOJO(pojo: Omit<SessionPOJO, '_BRAND'>): Session;
+  static fromPOJO(pojo: Omit<SessionPOJO, 'type'>): Session;
   static fromPOJO(pojo: undefined): undefined;
   static fromPOJO(
-    pojo: Omit<SessionPOJO, '_BRAND'> | undefined,
+    pojo: Omit<SessionPOJO, 'type'> | undefined,
   ): Session | undefined;
   static fromPOJO(
-    pojo: Omit<SessionPOJO, '_BRAND'> | undefined,
+    pojo: Omit<SessionPOJO, 'type'> | undefined,
   ): Session | undefined {
     return (
       pojo &&
@@ -180,7 +180,7 @@ export class Session {
 
   toPOJO(): SessionPOJO {
     return {
-      _BRAND: 'SESSION_POJO',
+      type: 'Session',
       blueprint: this.blueprint.toPOJO(),
       bodyweight: this.bodyweight,
       date: this.date,
@@ -349,14 +349,14 @@ export function fromRecordedExercisePOJO(
   return match(pojo)
     .with(
       P.union(
-        { _BRAND: 'RECORDED_CARDIO_EXERCISE_POJO' },
+        { type: 'CardioRecordedExercise' },
         P.instanceOf(RecordedCardioExercise),
       ),
       RecordedCardioExercise.fromPOJO,
     )
     .with(
       P.union(
-        { _BRAND: 'RECORDED_WEIGHTED_EXERCISE_POJO' },
+        { type: 'WeightedRecordedExercise' },
         P.instanceOf(RecordedWeightedExercise),
       ),
       RecordedWeightedExercise.fromPOJO,
@@ -379,7 +379,7 @@ export function createEmptyRecordedExercise(
 }
 
 export interface RecordedCardioExercisePOJO {
-  _BRAND: 'RECORDED_CARDIO_EXERCISE_POJO';
+  type: 'CardioRecordedExercise';
   blueprint: CardioExerciseBlueprintPOJO;
   completionDateTime: LocalDateTime | undefined;
   duration: Duration | undefined;
@@ -429,10 +429,12 @@ export class RecordedCardioExercise {
   }
 
   static fromPOJO(
-    pojo: DeepOmit<RecordedCardioExercisePOJO, '_BRAND'>,
+    pojo: DeepOmit<RecordedCardioExercisePOJO, 'type'>,
   ): RecordedCardioExercise {
     return new RecordedCardioExercise(
-      CardioExerciseBlueprint.fromPOJO(pojo.blueprint),
+      CardioExerciseBlueprint.fromPOJO(
+        pojo.blueprint as CardioExerciseBlueprintPOJO, // we lost type
+      ),
       pojo.completionDateTime,
       pojo.duration,
       pojo.distance,
@@ -515,7 +517,7 @@ export class RecordedCardioExercise {
   }
 
   with(
-    other: Partial<Omit<RecordedCardioExercisePOJO, '_BRAND'>>,
+    other: Partial<Omit<RecordedCardioExercisePOJO, 'type'>>,
   ): RecordedCardioExercise {
     return new RecordedCardioExercise(
       CardioExerciseBlueprint.fromPOJO(other.blueprint ?? this.blueprint),
@@ -530,7 +532,7 @@ export class RecordedCardioExercise {
 
   toPOJO(): RecordedCardioExercisePOJO {
     return {
-      _BRAND: 'RECORDED_CARDIO_EXERCISE_POJO',
+      type: 'CardioRecordedExercise',
       blueprint: this.blueprint.toPOJO(),
       completionDateTime: this.completionDateTime,
       duration: this.duration,
@@ -543,7 +545,7 @@ export class RecordedCardioExercise {
 }
 
 export interface RecordedWeightedExercisePOJO {
-  _BRAND: 'RECORDED_WEIGHTED_EXERCISE_POJO';
+  type: 'WeightedRecordedExercise';
   blueprint: WeightedExerciseBlueprintPOJO;
   potentialSets: PotentialSetPOJO[];
   notes: string | undefined;
@@ -575,7 +577,7 @@ export class RecordedWeightedExercise {
 
   static fromPOJO(
     fromPOJO:
-      | Omit<RecordedWeightedExercisePOJO, '_BRAND'>
+      | Omit<RecordedWeightedExercisePOJO, 'type'>
       | RecordedWeightedExercise,
   ): RecordedWeightedExercise {
     return new RecordedWeightedExercise(
@@ -647,7 +649,7 @@ export class RecordedWeightedExercise {
 
   toPOJO(): RecordedWeightedExercisePOJO {
     return {
-      _BRAND: 'RECORDED_WEIGHTED_EXERCISE_POJO',
+      type: 'WeightedRecordedExercise',
       blueprint: this.blueprint.toPOJO(),
       potentialSets: this.potentialSets.map((x) => x.toPOJO()),
       notes: this.notes,
@@ -715,7 +717,7 @@ export class RecordedWeightedExercise {
 }
 
 export interface RecordedSetPOJO {
-  _BRAND: 'RECORDED_SET_POJO';
+  type: 'RecordedSet';
   repsCompleted: number;
   completionDateTime: LocalDateTime;
 }
@@ -734,7 +736,7 @@ export class RecordedSet {
     this.completionDateTime = completionDateTime!;
   }
 
-  static fromPOJO(pojo: DeepOmit<RecordedSetPOJO, '_BRAND'>): RecordedSet {
+  static fromPOJO(pojo: DeepOmit<RecordedSetPOJO, 'type'>): RecordedSet {
     return new RecordedSet(pojo.repsCompleted, pojo.completionDateTime);
   }
 
@@ -762,7 +764,7 @@ export class RecordedSet {
 
   toPOJO(): RecordedSetPOJO {
     return {
-      _BRAND: 'RECORDED_SET_POJO',
+      type: 'RecordedSet',
       repsCompleted: this.repsCompleted,
       completionDateTime: this.completionDateTime,
     };
@@ -770,7 +772,7 @@ export class RecordedSet {
 }
 
 export interface PotentialSetPOJO {
-  _BRAND: 'POTENTIAL_SET_POJO';
+  type: 'PotentialSet';
   set: RecordedSetPOJO | undefined;
   weight: Weight;
 }
@@ -785,7 +787,7 @@ export class PotentialSet {
   }
 
   static fromPOJO(
-    pojo: DeepOmit<PotentialSetPOJO, '_BRAND'> | PotentialSet,
+    pojo: DeepOmit<PotentialSetPOJO, 'type'> | PotentialSet,
   ): PotentialSet {
     return new PotentialSet(
       pojo.set ? RecordedSet.fromPOJO(pojo.set) : undefined,
@@ -815,7 +817,7 @@ export class PotentialSet {
 
   toPOJO(): PotentialSetPOJO {
     return {
-      _BRAND: 'POTENTIAL_SET_POJO',
+      type: 'PotentialSet',
       set: this.set?.toPOJO(),
       weight: this.weight,
     };

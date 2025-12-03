@@ -97,7 +97,7 @@ const currentSessionSlice = createSlice({
       // Gather all unique, non-null completion dates from all sets
       const allCompletionDates = session.recordedExercises
         .flatMap((re) =>
-          re._BRAND === 'RECORDED_WEIGHTED_EXERCISE_POJO'
+          re.type === 'WeightedRecordedExercise'
             ? re.potentialSets.map((ps) =>
                 ps.set?.completionDateTime?.toLocalDate(),
               )
@@ -121,7 +121,7 @@ const currentSessionSlice = createSlice({
 
       // Update all sets' completionDateTime
       session.recordedExercises.forEach((re) => {
-        if (re._BRAND === 'RECORDED_WEIGHTED_EXERCISE_POJO') {
+        if (re.type === 'WeightedRecordedExercise') {
           re.potentialSets.forEach((ps) => {
             if (ps.set && ps.set.completionDateTime) {
               const setDate = ps.set.completionDateTime.toLocalDate();
@@ -153,7 +153,7 @@ const currentSessionSlice = createSlice({
       ) => {
         const exerciseBlueprint =
           session.blueprint.exercises[action.exerciseIndex];
-        if (exerciseBlueprint._BRAND !== 'WEIGHTED_EXERCISE_BLUEPRINT_POJO') {
+        if (exerciseBlueprint.type !== 'WeightedExerciseBlueprint') {
           return;
         }
 
@@ -201,8 +201,7 @@ const currentSessionSlice = createSlice({
           action.newBlueprint.toPOJO();
 
         if (
-          existingExercise.blueprint._BRAND !==
-          action.newBlueprint.toPOJO()._BRAND
+          existingExercise.blueprint.type !== action.newBlueprint.toPOJO().type
         ) {
           session.recordedExercises[action.exerciseIndex] =
             createEmptyRecordedExercise(
@@ -211,8 +210,8 @@ const currentSessionSlice = createSlice({
             ).toPOJO();
         } else {
           const weightedExistingExercise =
-            session.recordedExercises[action.exerciseIndex]._BRAND ===
-            'RECORDED_WEIGHTED_EXERCISE_POJO'
+            session.recordedExercises[action.exerciseIndex].type ===
+            'WeightedRecordedExercise'
               ? (session.recordedExercises[
                   action.exerciseIndex
                 ] as RecordedWeightedExercisePOJO)
@@ -267,7 +266,7 @@ const currentSessionSlice = createSlice({
         state,
       ) => {
         const exercise = session.recordedExercises[action.exerciseIndex];
-        if (exercise._BRAND !== 'RECORDED_WEIGHTED_EXERCISE_POJO') {
+        if (exercise.type !== 'WeightedRecordedExercise') {
           return;
         }
         if (!exercise.potentialSets[action.setIndex]) {
@@ -286,7 +285,7 @@ const currentSessionSlice = createSlice({
           action.reps === undefined
             ? undefined
             : {
-                _BRAND: 'RECORDED_SET_POJO',
+                type: 'RecordedSet',
                 repsCompleted: action.reps,
                 completionDateTime: action.time,
               };
@@ -311,7 +310,7 @@ const currentSessionSlice = createSlice({
         },
       ) => {
         const exercise = session.recordedExercises[action.exerciseIndex];
-        if (exercise._BRAND !== 'RECORDED_WEIGHTED_EXERCISE_POJO') {
+        if (exercise.type !== 'WeightedRecordedExercise') {
           return;
         }
         switch (action.applyTo) {
@@ -381,7 +380,7 @@ const currentSessionSlice = createSlice({
         action: { duration: Duration | undefined; exerciseIndex: number },
       ) => {
         const exercise = session.recordedExercises[action.exerciseIndex];
-        if (exercise._BRAND !== 'RECORDED_CARDIO_EXERCISE_POJO') {
+        if (exercise.type !== 'CardioRecordedExercise') {
           return;
         }
         exercise.duration = action.duration;
@@ -393,7 +392,7 @@ const currentSessionSlice = createSlice({
         action: { resistance: BigNumber | undefined; exerciseIndex: number },
       ) => {
         const exercise = session.recordedExercises[action.exerciseIndex];
-        if (exercise._BRAND !== 'RECORDED_CARDIO_EXERCISE_POJO') {
+        if (exercise.type !== 'CardioRecordedExercise') {
           return;
         }
         exercise.resistance = action.resistance;
@@ -406,7 +405,7 @@ const currentSessionSlice = createSlice({
         action: { incline: BigNumber | undefined; exerciseIndex: number },
       ) => {
         const exercise = session.recordedExercises[action.exerciseIndex];
-        if (exercise._BRAND !== 'RECORDED_CARDIO_EXERCISE_POJO') {
+        if (exercise.type !== 'CardioRecordedExercise') {
           return;
         }
         exercise.incline = action.incline;
@@ -419,7 +418,7 @@ const currentSessionSlice = createSlice({
         action: { distance: Distance | undefined; exerciseIndex: number },
       ) => {
         const exercise = session.recordedExercises[action.exerciseIndex];
-        if (exercise._BRAND !== 'RECORDED_CARDIO_EXERCISE_POJO') {
+        if (exercise.type !== 'CardioRecordedExercise') {
           return;
         }
         exercise.distance = action.distance;
@@ -432,7 +431,7 @@ const currentSessionSlice = createSlice({
         action: { time: LocalDateTime | undefined; exerciseIndex: number },
       ) => {
         const exercise = session.recordedExercises[action.exerciseIndex];
-        if (exercise._BRAND !== 'RECORDED_CARDIO_EXERCISE_POJO') {
+        if (exercise.type !== 'CardioRecordedExercise') {
           return;
         }
         exercise.completionDateTime = action.time;

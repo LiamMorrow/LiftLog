@@ -159,9 +159,7 @@ const feedSlice = createSlice({
     selectFeedSessionItems: createSelector(
       (state: FeedState) => state.feed,
       (x) =>
-        x
-          .filter((y) => y._BRAND === 'SESSION_FEED_ITEM_POJO')
-          .map(FeedItem.fromPOJO),
+        x.filter((y) => y.type === 'SessionFeedItem').map(FeedItem.fromPOJO),
     ),
     selectFeedIdentityRemote: createSelector(
       (state: FeedState) => state.identity,
