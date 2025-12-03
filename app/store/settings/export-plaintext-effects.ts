@@ -29,11 +29,27 @@ export function addExportPlaintextEffects() {
               'text/csv',
             ] as const,
         )
+        .with(
+          'JSON',
+          async () =>
+            [
+              'liftlog-export.json',
+              await exportToJson(sessions),
+              'application/json',
+            ] as const,
+        )
         .exhaustive();
 
       await fileExportService.exportBytes(fileName, bytes, contentType);
     },
   );
+}
+
+async function exportToJson(
+  sessions: Enumerable.IEnumerable<Session>,
+): Promise<Uint8Array> {
+  const exportedSets = sessions.select((x) => x.toPOJO()).toArray();
+  return new TextEncoder().encode(JSON.stringify(exportedSets));
 }
 
 async function exportToCsv(

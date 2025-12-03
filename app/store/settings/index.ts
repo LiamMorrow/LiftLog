@@ -122,7 +122,7 @@ const settingsSlice = createSlice({
 export const initializeSettingsStateSlice = createAction(
   'initializeSettingsStateSlice',
 );
-export type PlaintextExportFormat = 'CSV';
+export type PlaintextExportFormat = 'CSV' | 'JSON';
 
 export const importData = createAction('importData');
 export const importDataDao = createAction<{

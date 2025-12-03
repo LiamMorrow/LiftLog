@@ -53,10 +53,13 @@ export default function PlainTextExportPage() {
           icon={'descriptionFill'}
         >
           <Dropdown
-            options={[{ label: 'CSV', value: 'CSV' }]}
+            options={[
+              { label: 'CSV', value: 'CSV' },
+              { label: 'JSON', value: 'JSON' },
+            ]}
             value={format}
             mode="outlined"
-            onSelect={(s) => setFormat(s as PlaintextExportFormat)}
+            onSelect={(s) => s && setFormat(s as PlaintextExportFormat)}
           ></Dropdown>
         </LabelledFormRow>
       </LabelledForm>
