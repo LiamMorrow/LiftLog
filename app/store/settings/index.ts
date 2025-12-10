@@ -22,6 +22,8 @@ interface SettingsState {
   tipToShow: number;
   showFeed: boolean;
   restNotifications: boolean;
+  crashReportsEnabled: boolean;
+  welcomeWizardCompleted: boolean;
   remoteBackupSettings: RemoteBackupSettings;
   lastBackup: RemoteData<LastBackup, string>;
   backupReminder: boolean;
@@ -45,6 +47,8 @@ const initialState: SettingsState = {
   tipToShow: 1,
   showFeed: true,
   restNotifications: true,
+  crashReportsEnabled: true,
+  welcomeWizardCompleted: false,
   proToken: undefined,
   remoteBackupSettings: {
     endpoint: '',
@@ -82,6 +86,12 @@ const settingsSlice = createSlice({
     },
     setRestNotifications(state, action: PayloadAction<boolean>) {
       state.restNotifications = action.payload;
+    },
+    setCrashReportsEnabled(state, action: PayloadAction<boolean>) {
+      state.crashReportsEnabled = action.payload;
+    },
+    setWelcomeWizardCompleted(state, action: PayloadAction<boolean>) {
+      state.welcomeWizardCompleted = action.payload;
     },
     setNotesExpandedByDefault(state, action: PayloadAction<boolean>) {
       state.notesExpandedByDefault = action.payload;
@@ -151,6 +161,8 @@ export const {
   setTipToShow,
   setShowFeed,
   setRestNotifications,
+  setCrashReportsEnabled,
+  setWelcomeWizardCompleted,
   setRemoteBackupSettings,
   setLastBackup,
   setBackupReminder,

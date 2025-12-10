@@ -69,6 +69,32 @@ export class PreferenceService {
     );
   }
 
+  async getCrashReportsEnabled(): Promise<boolean> {
+    const value = await this.keyValueStore.getItem('crashReportsEnabled');
+    return fromBooleanString(value, true);
+  }
+
+  async setCrashReportsEnabled(crashReportsEnabled: boolean): Promise<void> {
+    await this.keyValueStore.setItem(
+      'crashReportsEnabled',
+      toBooleanString(crashReportsEnabled),
+    );
+  }
+
+  async getWelcomeWizardCompleted(): Promise<boolean> {
+    const value = await this.keyValueStore.getItem('welcomeWizardCompleted');
+    return fromBooleanString(value, false);
+  }
+
+  async setWelcomeWizardCompleted(
+    welcomeWizardCompleted: boolean,
+  ): Promise<void> {
+    await this.keyValueStore.setItem(
+      'welcomeWizardCompleted',
+      toBooleanString(welcomeWizardCompleted),
+    );
+  }
+
   async setShowBodyweight(showBodyweight: boolean): Promise<void> {
     await this.keyValueStore.setItem(
       'showBodyweight',
