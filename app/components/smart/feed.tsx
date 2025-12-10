@@ -56,9 +56,10 @@ export default function Feed() {
       data={feedItems}
       keyExtractor={(x) => x.eventId}
       renderItem={({ item }) => <FeedItemRenderer feedItem={item} />}
-      style={{ gap: spacing[2] }}
+      ItemSeparatorComponent={() => (
+        <View style={{ height: spacing[2] }}></View>
+      )}
       contentContainerStyle={{
-        gap: spacing[2],
         padding: spacing.pageHorizontalMargin,
       }}
     />
@@ -86,7 +87,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
   const { t } = useTranslate();
   return (
     <>
-      <Card mode="contained">
+      <Card mode="contained" style={{ marginBottom: spacing[2] }}>
         <Card.Title
           left={({ size }) => <Icon source={'personFill'} size={size} />}
           title={t('Profile')}
