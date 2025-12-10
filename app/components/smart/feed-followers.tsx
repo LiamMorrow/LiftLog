@@ -11,7 +11,7 @@ import {
   fetchInboxItems,
   selectFeedFollowers,
   selectFeedFollowRequests,
-  startRemoveFollower,
+  revokeFollowSecretAndRemoveFollower,
 } from '@/store/feed';
 import { T, useTranslate } from '@tolgee/react';
 import React, { useState } from 'react';
@@ -122,7 +122,12 @@ function FeedFollowRequest(props: { request: FollowRequest }) {
 function FeedFollowersItem(props: { user: FeedUser; userId: string }) {
   const dispatch = useDispatch();
   const unfollow = () => {
-    dispatch(startRemoveFollower({ user: props.user, fromUserAction: true }));
+    dispatch(
+      revokeFollowSecretAndRemoveFollower({
+        userId: props.user.id,
+        fromUserAction: true,
+      }),
+    );
   };
   const { t } = useTranslate();
 

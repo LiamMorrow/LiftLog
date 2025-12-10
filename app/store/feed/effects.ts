@@ -6,6 +6,7 @@ import {
   initializeFeedStateSlice,
   patchFeedState,
   resetFeedAccount,
+  revokeFollowSecrets,
   selectFeedIdentityRemote,
   setIdentity,
   setIsHydrated,
@@ -99,8 +100,10 @@ export function applyFeedEffects() {
             }
           }
         }
+
         dispatch(setIsHydrated(true));
-        // Refreshes the identity, if it no longer exists on the server
+        dispatch(revokeFollowSecrets({ fromUserAction: false }));
+        // Refreshes the identity if it no longer exists on the server
         dispatch(updateFeedIdentity({ fromUserAction: false, updates: {} }));
         dispatch(fetchInboxItems({ fromUserAction: false }));
         const elapsedMilliseconds = performance.now() - sw;

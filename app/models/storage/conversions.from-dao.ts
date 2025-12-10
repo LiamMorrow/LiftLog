@@ -370,6 +370,7 @@ export function fromFeedStateDao(dao: LiftLog.Ui.Models.IFeedStateDaoV1) {
         )) ??
       {},
     unpublishedSessionIds: dao.unpublishedSessionIds?.map(fromUuidDao) ?? [],
+    revokedFollowSecrets: dao.revokedFollowSecrets ?? [],
   } satisfies Partial<FeedState>;
 }
 

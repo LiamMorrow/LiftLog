@@ -378,6 +378,7 @@ export function toFeedStateDao(
       .map(toFeedIdentityDao)
       .unwrapOr(null),
     unpublishedSessionIds: state.unpublishedSessionIds.map(toUuidDao),
+    revokedFollowSecrets: state.revokedFollowSecrets,
   });
 }
 

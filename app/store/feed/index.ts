@@ -28,6 +28,11 @@ export type FeedState = {
   sharedFeedUser: RemoteData<FeedUserPOJO>;
   followRequests: FollowRequestPOJO[];
   followers: Record<string, FeedUserPOJO>;
+  /**
+   * Keep a list of secrets which we need to tell the server to revoke.
+   * Allows us to remove a follower from our list even if revoking the secret fails due to network issues
+   */
+  revokedFollowSecrets: string[];
   unpublishedSessionIds: string[];
   sharedItem: RemoteData<SharedItemPOJO>;
   isFetching: boolean;
@@ -40,6 +45,7 @@ const initialState: FeedState = {
   feed: [],
   followedUsers: {},
   sharedFeedUser: RemoteData.notAsked(),
+  revokedFollowSecrets: [],
   followRequests: [],
   followers: {},
   unpublishedSessionIds: [],
@@ -98,8 +104,8 @@ const feedSlice = createSlice({
     addFollower(state, action: PayloadAction<FeedUser>) {
       state.followers[action.payload.id] = action.payload.toPOJO();
     },
-    removeFollower(state, action: PayloadAction<FeedUser>) {
-      delete state.followers[action.payload.id];
+    removeFollower(state, action: PayloadAction<string>) {
+      delete state.followers[action.payload];
     },
     removeFollowRequest(state, action: PayloadAction<FollowRequest>) {
       state.followRequests = state.followRequests.filter(
@@ -120,6 +126,14 @@ const feedSlice = createSlice({
     removeUnpublishedSessionId(state, action: PayloadAction<string>) {
       state.unpublishedSessionIds = state.unpublishedSessionIds.filter(
         (id) => id !== action.payload,
+      );
+    },
+    addRevokableFollowSecret(state, actions: PayloadAction<string>) {
+      state.revokedFollowSecrets.push(actions.payload);
+    },
+    removeRevokableFollowSecret(state, actions: PayloadAction<string>) {
+      state.revokedFollowSecrets = state.revokedFollowSecrets.filter(
+        (x) => x !== actions.payload,
       );
     },
   },
@@ -189,6 +203,8 @@ export const {
   replaceFeedItems,
   removeUnpublishedSessionId,
   removeFollowedUser,
+  addRevokableFollowSecret,
+  removeRevokableFollowSecret,
 } = feedSlice.actions;
 
 export const {
@@ -262,9 +278,13 @@ export const denyFollowRequest = createAction<
   { request: FollowRequest } & FeedAction
 >('denyFollowRequest');
 
-export const startRemoveFollower = createAction<
-  { user: FeedUser } & FeedAction
+export const revokeFollowSecretAndRemoveFollower = createAction<
+  { userId: string } & FeedAction
 >('startRemoveFollower');
+
+export const revokeFollowSecrets = createAction<FeedAction>(
+  'revokeFollowSecrets',
+);
 
 export const publishUnpublishedSessions = createAction(
   'publishUnpublishedSessions',

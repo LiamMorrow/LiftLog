@@ -3,10 +3,13 @@ import {
   fetchInboxItems,
   feedApiError,
   setFollowRequests,
-  setFollowers,
   processFollowResponses,
+  selectFeedIdentityRemote,
+  selectFeedFollowRequests,
+  removeFollower,
+  revokeFollowSecretAndRemoveFollower,
 } from '@/store/feed';
-import { FeedIdentity, FollowRequest, FeedUser } from '@/models/feed-models';
+import { FollowRequest } from '@/models/feed-models';
 import { GetInboxMessagesRequest } from '@/models/feed-api-models';
 import { fromUuidDao } from '@/models/storage/conversions.from-dao';
 import { AesKey } from '@/models/encryption-models';
@@ -23,13 +26,13 @@ export function addInboxEffects() {
       },
     ) => {
       const state = getState();
-      const identityRemote = state.feed.identity;
+      const identityRemote = selectFeedIdentityRemote(state);
 
       if (!identityRemote.isSuccess()) {
         return;
       }
 
-      const identity = FeedIdentity.fromPOJO(identityRemote.data);
+      const identity = identityRemote.data;
 
       const inboxItemsResponse = await feedApiService.getInboxMessagesAsync({
         userId: identity.id,
@@ -68,9 +71,7 @@ export function addInboxEffects() {
         });
 
       if (newFollowRequests.length > 0) {
-        const currentFollowRequests = getState().feed.followRequests.map(
-          FollowRequest.fromPOJO,
-        );
+        const currentFollowRequests = selectFeedFollowRequests(getState());
         const updatedFollowRequests = [
           ...currentFollowRequests,
           ...newFollowRequests,
@@ -100,35 +101,20 @@ export function addInboxEffects() {
       dispatch(processFollowResponses({ responses: newFollowResponses }));
 
       // Process unfollow notifications
-      const followers = Object.values(getState().feed.followers).map(
-        FeedUser.fromPOJO,
-      );
-      const unfollowNotifications = inboxItems
+      const followersWhoStoppedFollowing = inboxItems
         .filter((x) => x.messagePayload === 'unfollowNotification')
-        .flatMap((x) => {
-          const fromUserId = fromUuidDao(x.fromUserId);
-          const unfollowSecret = x.unfollowNotification?.followSecret;
-
-          return followers.filter(
-            (f) => f.id === fromUserId && f.followSecret === unfollowSecret,
-          );
-        });
+        .map((x) => fromUuidDao(x.fromUserId));
 
       // Remove unfollowed users from followers
-      if (unfollowNotifications.length > 0) {
-        const currentFollowers = Object.fromEntries(
-          Object.entries(getState().feed.followers).map(([key, value]) => [
-            key,
-            FeedUser.fromPOJO(value),
-          ]),
+      followersWhoStoppedFollowing.forEach((userId) => {
+        dispatch(
+          revokeFollowSecretAndRemoveFollower({
+            userId,
+            fromUserAction: false,
+          }),
         );
-
-        unfollowNotifications.forEach((unfollowedUser) => {
-          delete currentFollowers[unfollowedUser.id];
-        });
-
-        dispatch(setFollowers(currentFollowers));
-      }
+        dispatch(removeFollower(userId));
+      });
     },
   );
 }

@@ -8022,6 +8022,7 @@ export const LiftLog = $root.LiftLog = (() => {
                  * @property {Array.<LiftLog.Ui.Models.IInboxMessageDao>|null} [followRequests] FeedStateDaoV1 followRequests
                  * @property {Array.<LiftLog.Ui.Models.IFeedUserDaoV1>|null} [followers] FeedStateDaoV1 followers
                  * @property {Array.<LiftLog.Ui.Models.IUuidDao>|null} [unpublishedSessionIds] FeedStateDaoV1 unpublishedSessionIds
+                 * @property {Array.<string>|null} [revokedFollowSecrets] FeedStateDaoV1 revokedFollowSecrets
                  */
 
                 /**
@@ -8038,6 +8039,7 @@ export const LiftLog = $root.LiftLog = (() => {
                     this.followRequests = [];
                     this.followers = [];
                     this.unpublishedSessionIds = [];
+                    this.revokedFollowSecrets = [];
                     if (properties)
                         for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                             if (properties[keys[i]] != null)
@@ -8091,6 +8093,14 @@ export const LiftLog = $root.LiftLog = (() => {
                  * @instance
                  */
                 FeedStateDaoV1.prototype.unpublishedSessionIds = $util.emptyArray;
+
+                /**
+                 * FeedStateDaoV1 revokedFollowSecrets.
+                 * @member {Array.<string>} revokedFollowSecrets
+                 * @memberof LiftLog.Ui.Models.FeedStateDaoV1
+                 * @instance
+                 */
+                FeedStateDaoV1.prototype.revokedFollowSecrets = $util.emptyArray;
 
                 // OneOf field names bound to virtual getters and setters
                 let $oneOfFields;
@@ -8147,6 +8157,9 @@ export const LiftLog = $root.LiftLog = (() => {
                     if (message.unpublishedSessionIds != null && message.unpublishedSessionIds.length)
                         for (let i = 0; i < message.unpublishedSessionIds.length; ++i)
                             $root.LiftLog.Ui.Models.UuidDao.encode(message.unpublishedSessionIds[i], writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                    if (message.revokedFollowSecrets != null && message.revokedFollowSecrets.length)
+                        for (let i = 0; i < message.revokedFollowSecrets.length; ++i)
+                            writer.uint32(/* id 8, wireType 2 =*/66).string(message.revokedFollowSecrets[i]);
                     return writer;
                 };
 
@@ -8215,6 +8228,12 @@ export const LiftLog = $root.LiftLog = (() => {
                                 if (!(message.unpublishedSessionIds && message.unpublishedSessionIds.length))
                                     message.unpublishedSessionIds = [];
                                 message.unpublishedSessionIds.push($root.LiftLog.Ui.Models.UuidDao.decode(reader, reader.uint32()));
+                                break;
+                            }
+                        case 8: {
+                                if (!(message.revokedFollowSecrets && message.revokedFollowSecrets.length))
+                                    message.revokedFollowSecrets = [];
+                                message.revokedFollowSecrets.push(reader.string());
                                 break;
                             }
                         default:
@@ -8306,6 +8325,13 @@ export const LiftLog = $root.LiftLog = (() => {
                                 return "unpublishedSessionIds." + error;
                         }
                     }
+                    if (message.revokedFollowSecrets != null && message.hasOwnProperty("revokedFollowSecrets")) {
+                        if (!Array.isArray(message.revokedFollowSecrets))
+                            return "revokedFollowSecrets: array expected";
+                        for (let i = 0; i < message.revokedFollowSecrets.length; ++i)
+                            if (!$util.isString(message.revokedFollowSecrets[i]))
+                                return "revokedFollowSecrets: string[] expected";
+                    }
                     return null;
                 };
 
@@ -8376,6 +8402,13 @@ export const LiftLog = $root.LiftLog = (() => {
                             message.unpublishedSessionIds[i] = $root.LiftLog.Ui.Models.UuidDao.fromObject(object.unpublishedSessionIds[i]);
                         }
                     }
+                    if (object.revokedFollowSecrets) {
+                        if (!Array.isArray(object.revokedFollowSecrets))
+                            throw TypeError(".LiftLog.Ui.Models.FeedStateDaoV1.revokedFollowSecrets: array expected");
+                        message.revokedFollowSecrets = [];
+                        for (let i = 0; i < object.revokedFollowSecrets.length; ++i)
+                            message.revokedFollowSecrets[i] = String(object.revokedFollowSecrets[i]);
+                    }
                     return message;
                 };
 
@@ -8398,6 +8431,7 @@ export const LiftLog = $root.LiftLog = (() => {
                         object.followRequests = [];
                         object.followers = [];
                         object.unpublishedSessionIds = [];
+                        object.revokedFollowSecrets = [];
                     }
                     if (message.feedItems && message.feedItems.length) {
                         object.feedItems = [];
@@ -8428,6 +8462,11 @@ export const LiftLog = $root.LiftLog = (() => {
                         object.unpublishedSessionIds = [];
                         for (let j = 0; j < message.unpublishedSessionIds.length; ++j)
                             object.unpublishedSessionIds[j] = $root.LiftLog.Ui.Models.UuidDao.toObject(message.unpublishedSessionIds[j], options);
+                    }
+                    if (message.revokedFollowSecrets && message.revokedFollowSecrets.length) {
+                        object.revokedFollowSecrets = [];
+                        for (let j = 0; j < message.revokedFollowSecrets.length; ++j)
+                            object.revokedFollowSecrets[j] = message.revokedFollowSecrets[j];
                     }
                     return object;
                 };

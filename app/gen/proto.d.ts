@@ -2939,6 +2939,9 @@ export namespace LiftLog {
 
                 /** FeedStateDaoV1 unpublishedSessionIds */
                 unpublishedSessionIds?: (LiftLog.Ui.Models.IUuidDao[]|null);
+
+                /** FeedStateDaoV1 revokedFollowSecrets */
+                revokedFollowSecrets?: (string[]|null);
             }
 
             /** Represents a FeedStateDaoV1. */
@@ -2967,6 +2970,9 @@ export namespace LiftLog {
 
                 /** FeedStateDaoV1 unpublishedSessionIds. */
                 public unpublishedSessionIds: LiftLog.Ui.Models.IUuidDao[];
+
+                /** FeedStateDaoV1 revokedFollowSecrets. */
+                public revokedFollowSecrets: string[];
 
                 /** FeedStateDaoV1 _identity. */
                 public _identity?: "identity";

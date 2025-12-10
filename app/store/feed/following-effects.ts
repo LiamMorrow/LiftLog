@@ -6,7 +6,7 @@ import {
   unfollowFeedUser,
   acceptFollowRequest,
   denyFollowRequest,
-  startRemoveFollower,
+  revokeFollowSecretAndRemoveFollower,
   setSharedFeedUser,
   putFollowedUser,
   feedApiError,
@@ -16,6 +16,11 @@ import {
   replaceFeedFollowedUsers,
   fetchFeedItems,
   removeFollowedUser,
+  selectFeedFollowers,
+  addRevokableFollowSecret,
+  revokeFollowSecrets,
+  selectFeedIdentityRemote,
+  removeRevokableFollowSecret,
 } from '@/store/feed';
 import { LiftLog } from '@/gen/proto';
 import { FeedIdentity, FeedUser } from '@/models/feed-models';
@@ -312,27 +317,46 @@ export function addFollowingEffects() {
   );
 
   addEffect(
-    startRemoveFollower,
-    async (action, { dispatch, getState, extra: { feedFollowService } }) => {
+    revokeFollowSecretAndRemoveFollower,
+    async (action, { dispatch, getState }) => {
       const state = getState();
-      const identityRemote = state.feed.identity;
 
-      if (!identityRemote.isSuccess()) {
+      const userId = action.payload.userId;
+      const follower = selectFeedFollowers(state).find(
+        (x) => x.userId === userId,
+      )?.user;
+
+      if (follower?.followSecret) {
+        dispatch(addRevokableFollowSecret(follower.followSecret));
+      }
+
+      dispatch(removeFollower(userId));
+      dispatch(
+        revokeFollowSecrets({ fromUserAction: action.payload.fromUserAction }),
+      );
+    },
+  );
+
+  addEffect(
+    revokeFollowSecrets,
+    async (action, { dispatch, getState, extra: { feedFollowService } }) => {
+      const revokableSecrets = getState().feed.revokedFollowSecrets;
+      const identity = selectFeedIdentityRemote(getState());
+      if (!revokableSecrets.length || !identity.isSuccess()) {
         return;
       }
 
-      const identity = FeedIdentity.fromPOJO(identityRemote.data);
-      const user = action.payload.user;
-
-      if (user.followSecret) {
+      for (const secret of revokableSecrets) {
         const deleteFollowSecretResponse =
           await feedFollowService.revokeFollowSecretAsync(
-            identity,
-            user.followSecret,
+            identity.data,
+            secret,
           );
 
         if (
           !deleteFollowSecretResponse.isSuccess() &&
+          deleteFollowSecretResponse.error?.type !==
+            ApiErrorType.Unauthorized &&
           deleteFollowSecretResponse.error?.type !== ApiErrorType.NotFound
         ) {
           dispatch(
@@ -344,9 +368,8 @@ export function addFollowingEffects() {
           );
           return;
         }
+        dispatch(removeRevokableFollowSecret(secret));
       }
-
-      dispatch(removeFollower(user));
     },
   );
 }
