@@ -162,7 +162,7 @@
   "No other sessions available": "Нет других доступных сессий",
   "NoDataAvailable": "Нет данных",
   "NoExercisesAdded": "Упражнения не добавлены",
-  "NoExercisesFound": "Упражнения не найдены",
+  "NoExercisesFound": "Упражнения не найдены.",
   "NoFollowingData": "Ваши подписки ещё ничего не опубликовали! Загляните позже.",
   "NoPlanCreated": "План тренировок ещё не создан!",
   "NoSessionsInMonth{Month}": "За {0} записей нет<br>Проведите тренировку или выберите другой месяц.",
