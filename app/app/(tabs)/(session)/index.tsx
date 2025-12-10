@@ -25,11 +25,12 @@ import { T, useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Card, FAB, Text, Tooltip } from 'react-native-paper';
+import { Card, FAB, Portal, Text, Tooltip } from 'react-native-paper';
 import Button from '@/components/presentation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 import { MigrateToWeightUnitsWizard } from '@/components/smart/migrate-to-weight-units';
+import { WelcomeWizard } from '@/components/smart/welcome-wizard';
 
 function PlanManager() {
   const { push } = useRouter();
@@ -90,6 +91,11 @@ function ListUpcomingWorkouts({
   };
   return (
     <View style={{ flex: 1, gap: spacing[2], paddingTop: spacing[4] }}>
+      <Portal>
+        <FullHeightScrollView>
+          <WelcomeWizard />
+        </FullHeightScrollView>
+      </Portal>
       <PlanManager />
       {currentSession && (
         <>
