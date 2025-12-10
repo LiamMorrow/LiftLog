@@ -156,11 +156,7 @@ const feedSlice = createSlice({
     ),
     selectFeedFollowers: createSelector(
       (state: FeedState) => state.followers,
-      (x) =>
-        Object.entries(x).map(([userId, user]) => ({
-          userId,
-          user: FeedUser.fromPOJO(user),
-        })),
+      (x) => Object.values(x).map((user) => FeedUser.fromPOJO(user)),
     ),
     selectFeedFollowing: createSelector(
       (state: FeedState) => state.followedUsers,

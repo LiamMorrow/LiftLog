@@ -10,6 +10,8 @@ import {
   toFeedIdentityDao,
   toFeedUserDao,
   toDurationDao,
+  toFeedItemDao,
+  toTimestampDao,
 } from '@/models/storage/conversions.to-dao';
 import {
   fromDecimalDao,
@@ -21,18 +23,22 @@ import {
   fromFeedUserDao,
   fromSessionHistoryDao,
   fromDurationDao,
+  fromFeedItemDao,
+  fromTimestampDao,
 } from '@/models/storage/conversions.from-dao';
 import BigNumber from 'bignumber.js';
 import fc from 'fast-check';
-import { Duration, LocalDate, LocalTime } from '@js-joda/core';
+import { Duration, Instant, LocalDate, LocalTime } from '@js-joda/core';
 import {
   BigNumberGenerator,
   DurationGenerator,
   FeedIdentityGenerator,
   FeedUserGenerator,
+  InstantGenerator,
   LocalDateGenerator,
   LocalTimeGenerator,
   SessionBlueprintGenerator,
+  SessionFeedItemGenerator,
   SessionGenerator,
 } from '@/models/storage/generators';
 import { google, LiftLog } from '@/gen/proto';
@@ -54,6 +60,8 @@ describe('conversions', () => {
     ${'Session'}          | ${Models.SessionHistoryDao.SessionDaoV2}            | ${SessionGenerator}          | ${toSessionDao}          | ${fromSessionDao}          | ${toPOJOEquals}
     ${'FeedIdentity'}     | ${Models.FeedIdentityDaoV1}                         | ${FeedIdentityGenerator}     | ${toFeedIdentityDao}     | ${fromFeedIdentityDao}     | ${toPOJOEquals}
     ${'FeedUser'}         | ${Models.FeedUserDaoV1}                             | ${FeedUserGenerator}         | ${toFeedUserDao}         | ${fromFeedUserDao}         | ${toPOJOEquals}
+    ${'SessionFeedItem'}  | ${Models.FeedItemDaoV1}                             | ${SessionFeedItemGenerator}  | ${toFeedItemDao}         | ${fromFeedItemDao}         | ${toPOJOEquals}
+    ${'Timestamp'}        | ${google.protobuf.Timestamp}                        | ${InstantGenerator}          | ${toTimestampDao}        | ${fromTimestampDao}        | ${(a: Instant, b: Instant) => a.equals(b)}
   `(
     'should convert back and forth between $name surviving an encoding',
     ({

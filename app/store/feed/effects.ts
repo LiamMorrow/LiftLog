@@ -23,7 +23,6 @@ import { addInboxEffects } from '@/store/feed/inbox-effects';
 import { addFollowingEffects } from '@/store/feed/following-effects';
 import { selectActiveProgram } from '@/store/program';
 import { ApiErrorType, ApiResult } from '@/services/api-error';
-import { FeedIdentity } from '@/models/feed-models';
 import { Platform } from 'react-native';
 
 const StorageKey = 'FeedState';
@@ -265,11 +264,7 @@ export function applyFeedEffects() {
         return;
       }
       dispatch(
-        setIdentity(
-          oldFeedIdentity.map((x) =>
-            FeedIdentity.fromPOJO({ ...x, ...action.payload.updates }),
-          ),
-        ),
+        setIdentity(oldFeedIdentity.map((x) => x.with(action.payload.updates))),
       );
       const feedIdentityRemote = selectFeedIdentityRemote(getState());
       if (!feedIdentityRemote.isSuccess()) {

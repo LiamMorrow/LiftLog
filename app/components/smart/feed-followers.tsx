@@ -22,7 +22,7 @@ import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import { FlashList } from '@shopify/flash-list';
 
-type FeedFollowItem = FollowRequest | { userId: string; user: FeedUser };
+type FeedFollowItem = FollowRequest | FeedUser;
 
 export function FeedFollowers() {
   const followRequests = useAppSelector(
@@ -47,7 +47,7 @@ export function FeedFollowers() {
       refreshing={fetchingFeedItems}
       onScroll={handleScroll}
       data={items}
-      keyExtractor={(x) => x.userId}
+      keyExtractor={(x) => (x as FollowRequest).userId ?? (x as FeedUser).id}
       renderItem={({ item }) => <FeedFollowItem item={item} />}
     />
   );
@@ -58,9 +58,7 @@ function FeedFollowItem(props: { item: FeedFollowItem }) {
     return <FeedFollowRequest request={props.item} />;
   }
 
-  return (
-    <FeedFollowersItem user={props.item.user} userId={props.item.userId} />
-  );
+  return <FeedFollowersItem user={props.item} userId={props.item.id} />;
 }
 
 function FeedFollowRequest(props: { request: FollowRequest }) {

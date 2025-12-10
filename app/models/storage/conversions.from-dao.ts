@@ -392,7 +392,7 @@ export function fromFeedItemDao(
     fromUuidDao(dao.userId),
     fromUuidDao(dao.eventId),
     fromTimestampDao(dao.timestamp),
-    fromTimestampDao(dao.timestamp),
+    fromTimestampDao(dao.expiry),
     fromSessionDao(dao.session),
   );
 }

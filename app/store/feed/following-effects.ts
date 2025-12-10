@@ -322,9 +322,7 @@ export function addFollowingEffects() {
       const state = getState();
 
       const userId = action.payload.userId;
-      const follower = selectFeedFollowers(state).find(
-        (x) => x.userId === userId,
-      )?.user;
+      const follower = selectFeedFollowers(state).find((x) => x.id === userId);
 
       if (follower?.followSecret) {
         dispatch(addRevokableFollowSecret(follower.followSecret));

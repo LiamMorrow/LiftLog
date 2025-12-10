@@ -77,7 +77,7 @@ export function toDecimalDao(
   });
 }
 
-function toTimestampDao(instant: Instant): google.protobuf.Timestamp {
+export function toTimestampDao(instant: Instant): google.protobuf.Timestamp {
   return new google.protobuf.Timestamp({
     seconds: Long.fromNumber(Math.floor(instant.toEpochMilli() / 1000)),
     // TODO we are dropping nanos
