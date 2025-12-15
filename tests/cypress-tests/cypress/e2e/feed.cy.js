@@ -4,6 +4,7 @@
 describe('Feed functionality', () => {
   beforeEach(() => {
     cy.visit('/')
+    cy.completeWelcomeWizard()
   })
 
   it('should enable feed publishing, complete a freeform session, and attempt to share feed URL', () => {

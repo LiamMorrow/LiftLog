@@ -249,6 +249,7 @@ export function WelcomeWizard() {
                 </Button>
                 <Button
                   mode="contained"
+                  testID="welcome-wizard-next"
                   onPress={handleNext}
                   style={styles.button}
                 >

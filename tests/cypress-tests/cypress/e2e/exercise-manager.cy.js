@@ -4,6 +4,7 @@
 describe('Exercise Manager', () => {
     beforeEach(() => {
         cy.visit('/')
+        cy.completeWelcomeWizard()
         cy.navigate("Settings")
         cy.contains("Manage exercises").click()
     });

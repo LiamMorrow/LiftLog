@@ -4,6 +4,7 @@
 describe('Settings', () => {
   beforeEach(() => {
     cy.visit('/')
+    cy.completeWelcomeWizard()
   })
 
   describe('When a user restores data', () => {

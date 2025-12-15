@@ -7,6 +7,7 @@ const benchFromNewPlan = 'bn'
 describe('Creating a plan', () => {
   beforeEach(() => {
     cy.visit('/')
+    cy.completeWelcomeWizard()
   })
 
   describe('When a user edits their current plan', () => {

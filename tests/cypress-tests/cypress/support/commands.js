@@ -41,6 +41,9 @@ Cypress.Commands.add('navigate', (navButtonText) => {
 Cypress.Commands.add('dialog', () => {
     return cy.get('[data-testid=fullscreen-dialog]:visible, [data-testid=modal-surface]:visible')
 });
+Cypress.Commands.add('completeWelcomeWizard', () => {
+    return cy.getByTestId('welcome-wizard-next').click().click().click()
+});
 
 Cypress.Commands.add('recursionLoop', { times: 'optional' }, function (fn, times) {
     if (typeof times === 'undefined') {
