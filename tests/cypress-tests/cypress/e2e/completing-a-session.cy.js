@@ -4,6 +4,7 @@
 describe('Completing a session', () => {
   beforeEach(() => {
     cy.visit('/')
+    cy.completeWelcomeWizard()
   })
 
   describe('When a user adds a freeform workout', () => {
