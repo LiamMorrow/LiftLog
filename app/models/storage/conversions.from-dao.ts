@@ -305,7 +305,7 @@ export function fromExerciseBlueprintDao(
     dao.sets!,
     dao.repsPerSet!,
     fromDecimalDao(dao.weightIncreaseOnSuccess) ?? BigNumber(0),
-    fromRestDao(dao.restBetweenSets!),
+    fromRestDao(dao.restBetweenSets),
     dao.supersetWithNext ?? false,
     dao.notes ?? '',
     dao.link ?? '',
@@ -328,12 +328,12 @@ function fromCardioTargetDao(
 }
 
 export function fromRestDao(
-  dao: LiftLog.Ui.Models.SessionBlueprintDao.IRestDaoV2,
+  dao: LiftLog.Ui.Models.SessionBlueprintDao.IRestDaoV2 | null | undefined,
 ): Rest {
   return {
-    minRest: fromDurationDao(dao.minRest) ?? Duration.ZERO,
-    maxRest: fromDurationDao(dao.maxRest) ?? Duration.ZERO,
-    failureRest: fromDurationDao(dao.failureRest) ?? Duration.ZERO,
+    minRest: fromDurationDao(dao?.minRest) ?? Duration.ZERO,
+    maxRest: fromDurationDao(dao?.maxRest) ?? Duration.ZERO,
+    failureRest: fromDurationDao(dao?.failureRest) ?? Duration.ZERO,
   };
 }
 
