@@ -26,7 +26,9 @@ async function goToScreenshotUrlIos(coords: string, simulatorId: string) {
 }
 
 async function goToScreenshotUrlAndroid(coords: string, emulator: string) {
-  await $`adb shell am start -a android.intent.action.VIEW -d ${getScreenshotUrl(coords)}`;
+  await $`adb shell am start -a android.intent.action.VIEW -d ${getScreenshotUrl(
+    coords
+  )}`;
 }
 
 async function startSimulator(device: string) {
@@ -42,7 +44,8 @@ function startEmulator(device: string) {
 }
 
 async function getIosSimulatorId(device: string) {
-  const deviceStr = await $`xcrun simctl list devices | grep "${device}" | head -n 1`.text();
+  const deviceStr =
+    await $`xcrun simctl list devices | grep "${device}" | head -n 1`.text();
   return deviceStr.split("(")[1].split(")")[0];
 }
 
@@ -72,13 +75,13 @@ const androidDevices = [
   "Pixel_5_API_34",
 ];
 
-await $`dotnet clean ../LiftLog.Maui -f net9.0-android`;
+await $`dotnet clean ../LiftLog.Maui -f net10.0-android`;
 for (const device of androidDevices) {
   await $`mkdir -p ${getDeviceFolder(device)}`;
   const emulator = startEmulator(device).text();
   await $`echo Press enter when emulator loaded`;
   await $`read`;
-  // await $`dotnet build ../LiftLog.Maui -t:Run -c Debug -f net9.0-android -p:TargetFramework=net9.0-android -p:BuildFor=android -p:Device=${device}`;
+  // await $`dotnet build ../LiftLog.Maui -t:Run -c Debug -f net10.0-android -p:TargetFramework=net10.0-android -p:BuildFor=android -p:Device=${device}`;
   await sleep(5000);
 
   for (const coords of screenshotCoords) {
@@ -92,7 +95,7 @@ for (const device of iosDevices) {
   await $`mkdir -p ${getDeviceFolder(device)}`;
   await startSimulator(device);
   const simulatorId = await getIosSimulatorId(device);
-  // $`dotnet build ../LiftLog.Maui -t:Run -f net9.0-ios -p:RuntimeIdentifiers=iossimulator-x64 -c Debug -p:ExtraDefineConstants=DEBUG_IOSSIM -p:_DeviceName=:v2:udid=${simulatorId}`.text();
+  // $`dotnet build ../LiftLog.Maui -t:Run -f net10.0-ios -p:RuntimeIdentifiers=iossimulator-x64 -c Debug -p:ExtraDefineConstants=DEBUG_IOSSIM -p:_DeviceName=:v2:udid=${simulatorId}`.text();
   // await sleep(25000);
   for (const coords of screenshotCoords) {
     goToScreenshotUrlIos(coords, simulatorId);
