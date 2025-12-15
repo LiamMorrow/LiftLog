@@ -385,5 +385,15 @@
   "{name} deleted": "{name} deleted",
   "Profile": "Profile",
   "FeedExplanation": "This is your feed, share it with your friends to let them follow your workouts!",
-  "NotPublishingWorkoutsError": "You are not publishing your workouts!"
+  "NotPublishingWorkoutsError": "You are not publishing your workouts!",
+  "WelcomeToLiftLog": "Welcome to LiftLog!",
+  "WelcomeWizardSubtitle": "Let's get a few things set up",
+  "CrashReports": "Crash Reports",
+  "CrashReportsDescription": "Help us improve LiftLog by sending anonymous crash reports when something goes wrong.",
+  "SendCrashReports": "Send crash reports",
+  "SendCrashReportsSubtitle": "Anonymous data to help fix bugs",
+  "NotificationsAndFeed": "Notifications & Feed",
+  "NotificationsAndFeedSubtitle": "Manage some other miscellaneous settings",
+  "GetStarted": "Get started",
+  "StartSetupWizard": "Start setup wizard"
 }

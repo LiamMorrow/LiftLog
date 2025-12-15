@@ -189,7 +189,7 @@ function ChatBubble(props: {
       <Animated.View
         entering={
           isLastMessage
-            ? zoom.duration(400).springify().damping(18).stiffness(150)
+            ? zoom.springify().damping(18).stiffness(150).duration(400)
             : undefined!
         }
         style={{

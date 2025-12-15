@@ -243,11 +243,14 @@ function fromWeight(
 ): Weight {
   const unit = match(daoUnit)
     .returnType<WeightUnit>()
-    .with(LiftLog.Ui.Models.WeightUnit.NIL, () => 'nil')
-    .with(LiftLog.Ui.Models.WeightUnit.KILOGRAMS, () => 'kilograms')
-    .with(LiftLog.Ui.Models.WeightUnit.POUNDS, () => 'pounds')
     .with(P.nullish, () => 'nil')
-    .run();
+    .with(LiftLog.Ui.Models.WeightUnit.NIL satisfies 0 as 0, () => 'nil')
+    .with(
+      LiftLog.Ui.Models.WeightUnit.KILOGRAMS satisfies 1 as 1,
+      () => 'kilograms',
+    )
+    .with(LiftLog.Ui.Models.WeightUnit.POUNDS satisfies 2 as 2, () => 'pounds')
+    .exhaustive();
 
   return new Weight(value, unit);
 }

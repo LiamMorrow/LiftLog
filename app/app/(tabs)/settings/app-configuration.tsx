@@ -1,13 +1,16 @@
 import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
+import Button from '@/components/presentation/gesture-wrappers/button';
 import ListSwitch from '@/components/presentation/list-switch';
 import ThemeChooser from '@/components/presentation/theme-chooser';
 import { RootState, useAppSelector } from '@/store';
 import {
   setColorSchemeSeed,
+  setCrashReportsEnabled,
   setNotesExpandedByDefault,
   setShowBodyweight,
   setShowFeed,
   setShowTips,
+  setWelcomeWizardCompleted,
 } from '@/store/settings';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
@@ -48,11 +51,23 @@ export default function AppConfiguration() {
           value={settings.showTips}
           onValueChange={(value) => dispatch(setShowTips(value))}
         />
+        <ListSwitch
+          headline={t('SendCrashReports')}
+          supportingText={t('SendCrashReportsSubtitle')}
+          value={settings.crashReportsEnabled}
+          onValueChange={(value) => dispatch(setCrashReportsEnabled(value))}
+        />
 
         <ThemeChooser
           seed={settings.colorSchemeSeed}
           onUpdateTheme={(x) => dispatch(setColorSchemeSeed(x))}
         />
+        <Button
+          onPress={() => dispatch(setWelcomeWizardCompleted(false))}
+          mode="outlined"
+        >
+          {t('StartSetupWizard')}
+        </Button>
       </List.Section>
     </FullHeightScrollView>
   );

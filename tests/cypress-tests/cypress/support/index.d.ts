@@ -16,5 +16,7 @@ declare namespace Cypress {
       fn: (times: number) => boolean,
       times?: number
     ): Chainable<JQuery<E>>;
+
+    completeWelcomeWizard<E>(): Chainable<JQuery<E>>;
   }
 }
