@@ -389,11 +389,16 @@
   "WelcomeToLiftLog": "Welcome to LiftLog!",
   "WelcomeWizardSubtitle": "Let's get a few things set up",
   "CrashReports": "Crash Reports",
-  "CrashReportsDescription": "Help us improve LiftLog by sending anonymous crash reports when something goes wrong.",
+  "CrashReportsDescription": "Help us improve LiftLog by sending anonymous crash reports to Sentry when something goes wrong.",
+  "ViewPrivacyPolicy": "View privacy policy",
   "SendCrashReports": "Send crash reports",
   "SendCrashReportsSubtitle": "Anonymous data to help fix bugs",
   "NotificationsAndFeed": "Notifications & Feed",
   "NotificationsAndFeedSubtitle": "Manage some other miscellaneous settings",
   "GetStarted": "Get started",
-  "StartSetupWizard": "Start setup wizard"
+  "StartSetupWizard": "Start setup wizard",
+  "setup.welcome.open_source.title": "Open Source",
+  "setup.welcome.open_source.body": "LiftLog is crafted with love and is entirely open source! You can view the source code and contribute on Github.",
+  "setup.welcome.open_source.button": "View source code",
+  "setup.welcome.privacy_policy.button": "View privacy policy"
 }

@@ -21,7 +21,7 @@ import { formatDate, getDateOnDay } from '@/utils/format-date';
 import { DayOfWeek } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
 import { useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 import { List, Portal, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
@@ -64,6 +64,9 @@ export function WelcomeWizard() {
   const welcomeWizardCompleted = settings.welcomeWizardCompleted;
   const { colors } = useAppTheme();
   const [currentPage, setCurrentPage] = useState(0);
+  const openUrl = (url: string) => {
+    void Linking.canOpenURL(url).then(() => Linking.openURL(url));
+  };
 
   const languageOptions: SelectButtonOption<string | undefined>[] = useMemo(
     () => [
@@ -105,6 +108,17 @@ export function WelcomeWizard() {
 
       <View style={styles.settingsSection}>
         <Text variant="titleMedium" style={styles.sectionTitle}>
+          {t('setup.welcome.open_source.title')}
+        </Text>
+        <Text variant="bodyMedium" style={styles.sectionDescription}>
+          {t('setup.welcome.open_source.body')}
+        </Text>
+        <Button
+          onPress={() => openUrl('https://github.com/LiamMorrow/LiftLog')}
+        >
+          {t('setup.welcome.open_source.button')}
+        </Button>
+        <Text variant="titleMedium" style={styles.sectionTitle}>
           {t('CrashReports')}
         </Text>
         <Text variant="bodyMedium" style={styles.sectionDescription}>
@@ -116,6 +130,9 @@ export function WelcomeWizard() {
           value={settings.crashReportsEnabled}
           onValueChange={(value) => dispatch(setCrashReportsEnabled(value))}
         />
+        <Button onPress={() => openUrl('https://liftlog.online/privacy.html')}>
+          {t('setup.welcome.privacy_policy.button')}
+        </Button>
       </View>
     </View>
   );
