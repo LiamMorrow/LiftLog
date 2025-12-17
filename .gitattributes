@@ -64,6 +64,4 @@
 *.cs linguist-language=C#
 *.razor linguist-language=C#
 
-*.tsx linguist-language=TypeScript
-
 backend/RevenueCat/** linguist-vendored
