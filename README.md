@@ -29,6 +29,8 @@
 - 🏋️‍♂️ Publish workouts, follow other users, and control your feed privacy
 - ⚡ Fast, modern UI with Expo Router and Redux Toolkit
 
+📍 **[View the Roadmap](./ROADMAP.md)** to see what's planned!
+
 ---
 
 ## 🌍 Translations

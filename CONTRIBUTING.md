@@ -46,7 +46,7 @@ Please be respectful and considerate in all interactions. See [CODE_OF_CONDUCT.m
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the [MIT License](LICENSE).
+By contributing, you agree that your contributions will be licensed under the [AGPL v3 license](LICENSE).
 
 ---
 
