@@ -15,8 +15,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="cuid.net" Version="6.0.1" />
-    <PackageReference Include="FluentValidation" Version="12.1.0" />
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.0" />
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="EFCore.NamingConventions" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.*">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -25,7 +25,7 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Include="OpenAI" Version="2.7.0" />
     <PackageReference Include="OpenAI-DotNet" Version="8.8.7" Aliases="OpenAICommunity" />
-    <PackageReference Include="Google.Apis.AndroidPublisher.v3" Version="1.72.0.3953" />
+    <PackageReference Include="Google.Apis.AndroidPublisher.v3" Version="1.72.0.3975" />
   </ItemGroup>
   <ItemGroup>
     <None Update="AiWorkoutPlan.json">
