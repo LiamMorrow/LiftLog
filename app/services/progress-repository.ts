@@ -21,7 +21,10 @@ export class ProgressRepository {
     return Enumerable.from(sessions)
       .select((x) => Session.fromPOJO(x.value))
       .orderByDescending((x) => x.date, TemporalComparer)
-      .thenByDescending((x) => x.lastExercise?.latestTime, TemporalComparer);
+      .thenByDescending(
+        (x) => x.lastExercise?.latestTime ?? x.date.atStartOfDay(),
+        TemporalComparer,
+      );
   }
 
   getLatestRecordedExercises(): Enumerable.IDictionary<

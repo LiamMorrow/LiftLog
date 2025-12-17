@@ -1,3 +1,4 @@
+import { applySessionBlueprintDiff, PlanDiff } from '@/models/blueprint-diff';
 import {
   ProgramBlueprint,
   ProgramBlueprintPOJO,
@@ -5,7 +6,8 @@ import {
   SessionBlueprintPOJO,
 } from '@/models/blueprint-models';
 import { RemoteData } from '@/models/remote';
-import { Session, SessionPOJO } from '@/models/session-models';
+import { EmptySession, Session, SessionPOJO } from '@/models/session-models';
+import { SafeDraft } from '@/utils/store-helpers';
 
 import { LocalDate } from '@js-joda/core';
 import {
@@ -61,6 +63,28 @@ const programSlice = createSlice({
           ...state.savedPrograms[action.payload.programId],
           sessions: action.payload.sessionBlueprints.map((x) => x.toPOJO()),
         };
+      }
+    },
+
+    applyDiffToPlan(state, action: PayloadAction<PlanDiff>) {
+      if (action.payload.type === 'add') {
+        state.savedPrograms[state.activeProgramId].sessions.push(
+          applySessionBlueprintDiff(
+            EmptySession.blueprint,
+            action.payload.diff,
+          ).toPOJO(),
+        );
+      } else if (action.payload.type === 'diff') {
+        state.savedPrograms[state.activeProgramId].sessions[
+          action.payload.sessionIndex
+        ] = applySessionBlueprintDiff(
+          SessionBlueprint.fromPOJO(
+            state.savedPrograms[state.activeProgramId].sessions[
+              action.payload.sessionIndex
+            ] as SafeDraft<SessionBlueprintPOJO>,
+          ),
+          action.payload.diff,
+        ).toPOJO();
       }
     },
 
@@ -255,6 +279,7 @@ const programSlice = createSlice({
 export const {
   setIsHydrated,
   setUpcomingSessions,
+  applyDiffToPlan,
   addProgramSession,
   createSavedPlan,
   deleteSavedPlan,

@@ -1,7 +1,7 @@
 {
   "ai.planner.subtitle": "Персональная программа тренировок от ИИ",
   "ai.planner.title": "ИИ планировщик",
-  "ai.progressive_overload.label": "Прогрессивная перегрузка",
+  "exercise.progressive_overload.label": "Прогрессивная перегрузка",
   "ai.restart_chat.button": "Перезапустить чат",
   "ai.upgrade_to_pro.button": "Перейти на Pro",
   "ai.upgrade_to_pro.explanation": "Доступ к ИИ-планировщику, создающему персональную программу. <br>Единоразовая оплата:",

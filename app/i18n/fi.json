@@ -1,6 +1,6 @@
 {
   "ai.planner.title": "Tekoälysuunnittelija",
-  "ai.progressive_overload.label": "Nousujohteinen kuormitus",
+  "exercise.progressive_overload.label": "Nousujohteinen kuormitus",
   "ai.restart_chat.button": "Käynnistä keskustelu uudelleen",
   "ai.upgrade_to_pro.button": "Vaihda maksulliseen versioon",
   "backup.api_key.label": "API-avain",

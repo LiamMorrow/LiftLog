@@ -8,7 +8,7 @@ import {
   ExerciseBlueprint,
   Distance,
 } from '@/models/blueprint-models';
-import { LocalDateTimeComparer } from '@/models/comparers';
+import { TemporalComparer } from '@/models/comparers';
 import { Weight, WeightUnit } from '@/models/weight';
 import { DeepOmit } from '@/utils/deep-omit';
 import { indexed } from '@/utils/enumerable';
@@ -230,7 +230,7 @@ export class Session {
     const latestExerciseIndex = Enumerable.from(recordedExercises)
       .select(indexed)
       .where((x) => x.item.isStarted)
-      .orderByDescending(({ item }) => item.latestTime, LocalDateTimeComparer)
+      .orderByDescending(({ item }) => item.latestTime, TemporalComparer)
       .select((x) => x.index)
       .firstOrDefault(-1);
 
@@ -687,17 +687,14 @@ export class RecordedWeightedExercise {
 
   get lastRecordedSet(): PotentialSet | undefined {
     const result = Enumerable.from(this.potentialSets)
-      .orderByDescending(
-        (x) => x.set?.completionDateTime,
-        LocalDateTimeComparer,
-      )
+      .orderByDescending((x) => x.set?.completionDateTime, TemporalComparer)
       .firstOrDefault((x) => x.set !== undefined);
     return result;
   }
 
   get firstRecordedSet(): PotentialSet | undefined {
     const result = Enumerable.from(this.potentialSets)
-      .orderBy((x) => x.set?.completionDateTime, LocalDateTimeComparer)
+      .orderBy((x) => x.set?.completionDateTime, TemporalComparer)
       .firstOrDefault((x) => x.set !== undefined);
     return result;
   }

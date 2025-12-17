@@ -3,7 +3,7 @@ import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { usePreventNavigate } from '@/hooks/usePreventNavigate';
 import { ReactNode, useEffect } from 'react';
 import { View } from 'react-native';
-import { Portal } from 'react-native-paper';
+import { Portal, Text } from 'react-native-paper';
 import Button from '@/components/presentation/gesture-wrappers/button';
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,7 +17,6 @@ import Animated, {
   FadeOutDown,
 } from 'react-native-reanimated';
 import { ScrollProvider, useScroll } from '@/hooks/useScollListener';
-import { SurfaceText } from '@/components/presentation/surface-text';
 
 interface FullScreenDialogProps {
   title: string;
@@ -121,21 +120,22 @@ function Header({
           flexDirection: 'row',
           alignItems: 'center',
           gap: spacing[2],
-          padding: spacing[4],
+          paddingVertical: spacing[4],
+          paddingRight: spacing[2],
         }}
       >
         <IconButton testID="dialog-close" icon={'close'} onPress={onClose} />
-        <SurfaceText
+        <Text
           style={{
             marginRight: 'auto',
             flexShrink: 1, //
           }}
-          font="text-2xl"
+          variant="headlineSmall"
           numberOfLines={1}
           ellipsizeMode="tail"
         >
           {title}
-        </SurfaceText>
+        </Text>
         {action && onAction ? (
           <Button testID="dialog-action" onPress={onAction}>
             {action}

@@ -1,4 +1,3 @@
-import { LocalDateComparer, LocalDateTimeComparer } from '@/models/comparers';
 import {
   RecordedExercise,
   Session,
@@ -18,6 +17,7 @@ import {
 } from '@reduxjs/toolkit';
 import Enumerable from 'linq';
 import { WeightUnit } from '@/models/weight';
+import { TemporalComparer } from '@/models/comparers';
 
 export interface ExerciseDescriptor {
   name: string;
@@ -210,7 +210,7 @@ export const selectLatestOrderedRecordedExercises = createSelector(
         (x) => x.key(),
         (x) =>
           x
-            .orderByDescending((x) => x.latestTime, LocalDateTimeComparer)
+            .orderByDescending((x) => x.latestTime, TemporalComparer)
             .take(maxRecordsPerExercise)
             .toArray(),
       );
@@ -233,10 +233,10 @@ export const selectSessionsInMonth = createSelector(
       .where(
         (x) => x.date.year() === ym.year() && x.date.month().equals(ym.month()),
       )
-      .orderByDescending((x) => x.date, LocalDateComparer)
+      .orderByDescending((x) => x.date, TemporalComparer)
       .thenByDescending(
-        (x) => x.lastExercise?.latestTime,
-        LocalDateTimeComparer,
+        (x) => x.lastExercise?.latestTime ?? x.date.atStartOfDay(),
+        TemporalComparer,
       )
       .toArray(),
 );

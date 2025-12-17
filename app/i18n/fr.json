@@ -1,7 +1,7 @@
 {
   "ai.planner.subtitle": "Utilisez l'IA pour générer un programme complet adapté à vos objectifs",
   "ai.planner.title": "Planificateur IA",
-  "ai.progressive_overload.label": "Surcharge progressive",
+  "exercise.progressive_overload.label": "Surcharge progressive",
   "ai.restart_chat.button": "Redémarrer le chat",
   "ai.upgrade_to_pro.button": "Passer à Pro",
   "ai.upgrade_to_pro.explanation": "Cela débloquera le planificateur IA, qui générera un plan adapté spécifiquement à vous et à vos objectifs. <br>Ceci est un achat unique de :",

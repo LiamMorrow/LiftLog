@@ -40,7 +40,6 @@ import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/exercise-editor';
 import { LocalDateTime, LocalTime } from '@js-joda/core';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import UpdatePlanButton from '@/components/smart/update-plan-button';
 import { UnknownAction } from '@reduxjs/toolkit';
 import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
 import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
@@ -341,13 +340,6 @@ export default function SessionComponent(props: {
     </Card>
   ) : null;
 
-  const updatePlanButton = isReadonly ? null : (
-    <UpdatePlanButton target={props.target} session={session} />
-  );
-  const additionalActionsButtons = (
-    <View style={{ flex: 1 }}>{updatePlanButton}</View>
-  );
-
   const lastExercise = session.lastExercise;
   const lastRecordedSet =
     lastExercise instanceof RecordedWeightedExercise
@@ -402,7 +394,8 @@ export default function SessionComponent(props: {
             alignItems: 'center',
           }}
         >
-          {additionalActionsButtons}
+          {/* Centre the timer */}
+          <View style={{ flex: 1 }}></View>
           {restTimer}
           {saveButton}
         </View>

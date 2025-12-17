@@ -121,6 +121,7 @@ export default function HistoryCalendarCard({
             style={{
               flex: 1,
             }}
+            key={dayOfWeek}
           >
             <SurfaceText
               key={dayOfWeek}
