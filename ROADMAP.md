@@ -18,6 +18,7 @@ Priorities shift based on what feels fun to work on, community interest, and how
 ### Quick Wins
 - [ ] **#400** - Type sets/reps directly instead of +/- buttons *(good first issue)*
 - [ ] **#584** - Option to hide undone exercises from history
+- [ ] **#620** - Resistance level tracking (non-weighted machines)
 
 ---
 
@@ -45,7 +46,6 @@ Priorities shift based on what feels fun to work on, community interest, and how
 - [ ] **#533** - WebDAV backup *(help wanted)*
 
 ### Advanced Exercise Types
-- [ ] **#620** - Resistance level tracking (non-weighted machines)
 - [ ] **#531** - AMRAP (As Many Reps As Possible) sets
 - [ ] **#468** - Set types: Warm-up, Drop Set, Pyramid, To Failure
 - [ ] **#418** - RIR (Reps In Reserve) tracking
