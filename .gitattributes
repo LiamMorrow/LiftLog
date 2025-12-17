@@ -64,7 +64,6 @@
 *.cs linguist-language=C#
 *.razor linguist-language=C#
 
-*.tsx linguise-language=typescript
+*.tsx linguist-language=TypeScript
 
-LiftLog.Ui/wwwroot/tailwind.js linguist-vendored
-backend/RevenueCat linguist-vendored
+backend/RevenueCat/** linguist-vendored
