@@ -72,7 +72,7 @@ export default function Localization() {
     () => [
       {
         value: undefined,
-        label: t('System default'),
+        label: t('settings.system_default.label'),
       },
       ...supportedLanguages.map((x) => ({ value: x.code, label: x.label })),
     ],
@@ -81,18 +81,18 @@ export default function Localization() {
 
   return (
     <FullHeightScrollView>
-      <Stack.Screen options={{ title: t('Localisation') }} />
+      <Stack.Screen options={{ title: t('settings.localisation.title') }} />
       <List.Section>
         <ListSwitch
           testID="setUseImperialUnits"
-          headline={<T keyName="UseImperialUnits" />}
-          supportingText={<T keyName="UseImperialUnitsSubtitle" />}
+          headline={<T keyName="settings.use_imperial_units.label" />}
+          supportingText={<T keyName="settings.use_imperial_units.subtitle" />}
           value={settings.useImperialUnits}
           onValueChange={(value) => dispatch(setUseImperialUnits(value))}
         />
         <List.Item
-          title={t('SetFirstDayOfWeek')}
-          description={t('SetFirstDayOfWeekSubtitle')}
+          title={t('settings.first_day_of_week.label')}
+          description={t('settings.first_day_of_week.subtitle')}
           right={() => (
             <SelectButton
               testID="setFirstDayOfWeek"
@@ -103,8 +103,8 @@ export default function Localization() {
           )}
         />
         <List.Item
-          title={t('Set language')}
-          description={t('Set your preferred language')}
+          title={t('settings.set_language.button')}
+          description={t('settings.set_language.subtitle')}
           right={() => (
             <SelectButton
               testID="setPreferredLanguage"

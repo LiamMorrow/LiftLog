@@ -47,12 +47,12 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
 
   const cancelButton = (
     <Button testID="action-cancel" onPress={onCancel}>
-      {cancelText ?? <T keyName="Cancel" />}
+      {cancelText ?? <T keyName="generic.cancel.button" />}
     </Button>
   );
   const okButton = (
     <Button testID="action-ok" onPress={onOk}>
-      {okText ?? <T keyName="Ok" />}
+      {okText ?? <T keyName="generic.ok.button" />}
     </Button>
   );
 

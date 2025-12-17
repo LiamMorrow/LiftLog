@@ -30,7 +30,7 @@ export default function RecordedExerciseNotesEditor(props: {
         <Dialog visible={open} onDismiss={onDismiss}>
           <Dialog.Title>
             <T
-              keyName="SessionNotesFor{name}"
+              keyName="workout.notes_for.title"
               params={{ name: exerciseName }}
             />
           </Dialog.Title>
@@ -51,7 +51,7 @@ export default function RecordedExerciseNotesEditor(props: {
                 setEditorNotes(notes || '');
               }}
             >
-              <T keyName="Cancel" />
+              <T keyName="generic.cancel.button" />
             </Button>
             <Button
               testID="save-notes"
@@ -60,7 +60,7 @@ export default function RecordedExerciseNotesEditor(props: {
                 onDismiss();
               }}
             >
-              <T keyName="Save" />
+              <T keyName="generic.save.button" />
             </Button>
           </Dialog.Actions>
         </Dialog>

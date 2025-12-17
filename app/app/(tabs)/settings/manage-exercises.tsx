@@ -6,7 +6,7 @@ export default function ExerciseManagerPage() {
   const { t } = useTranslate();
   return (
     <>
-      <Stack.Screen options={{ title: t('Manage Exercises') }} />
+      <Stack.Screen options={{ title: t('exercise.manage.title') }} />
       <ExerciseManager />
     </>
   );

@@ -13,7 +13,7 @@ export default function Layout() {
       <Tabs.Screen
         name="(session)"
         options={{
-          tabBarLabel: t('Workout'),
+          tabBarLabel: t('workout.workout.label'),
           tabBarButtonTestID: 'nav__workout',
           tabBarIcon: ({ color, size, focused }) => {
             return (
@@ -31,7 +31,7 @@ export default function Layout() {
         name="feed"
         redirect={!showFeed}
         options={{
-          tabBarLabel: t('Feed'),
+          tabBarLabel: t('feed.feed.title'),
 
           tabBarButtonTestID: 'nav__feed',
           tabBarBadge: followRequestCount || undefined!,
@@ -50,7 +50,7 @@ export default function Layout() {
       <Tabs.Screen
         name="stats"
         options={{
-          tabBarLabel: t('Stats'),
+          tabBarLabel: t('stats.stats.title'),
           tabBarButtonTestID: 'nav__stats',
           tabBarIcon: ({ color, size, focused }) => {
             return (
@@ -67,7 +67,7 @@ export default function Layout() {
       <Tabs.Screen
         name="history"
         options={{
-          tabBarLabel: t('History'),
+          tabBarLabel: t('generic.history.title'),
           tabBarButtonTestID: 'nav__history',
           tabBarIcon: ({ color, size }) => {
             return <Icon source={'history'} size={size} color={color} />;
@@ -78,7 +78,7 @@ export default function Layout() {
       <Tabs.Screen
         name="settings"
         options={{
-          tabBarLabel: t('Settings'),
+          tabBarLabel: t('settings.settings.title'),
           tabBarButtonTestID: 'nav__settings',
           tabBarIcon: ({ color, size, focused }) => {
             return (

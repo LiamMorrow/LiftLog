@@ -84,9 +84,9 @@ export default function AiPlanner() {
     >
       <Stack.Screen
         options={{
-          title: t('AiPlanner'),
+          title: t('ai.planner.title'),
           headerRight: () => (
-            <Tooltip title={t('Restart chat')}>
+            <Tooltip title={t('ai.restart_chat.button')}>
               <Appbar.Action icon={'replay'} onPress={reset}></Appbar.Action>
             </Tooltip>
           ),
@@ -136,7 +136,7 @@ export default function AiPlanner() {
           }}
           onChangeText={setMessageText}
           multiline
-          placeholder={t('Type your message')}
+          placeholder={t('ai.type_your_message.placeholder')}
           onSubmitEditing={(e) => setMessageText(e.nativeEvent.text + '\n')}
           submitBehavior="submit"
           returnKeyType="default"
@@ -288,7 +288,7 @@ function PlanMessage({
             icon={'assignmentAdd'}
             onPress={() => saveAiPlan(message)}
           >
-            <T keyName="Save new plan" />
+            <T keyName="plan.save_new.button" />
           </Button>
         </Animated.View>
       )}
@@ -320,16 +320,16 @@ function ProPrompt() {
   }
   return (
     <View style={{ gap: spacing[2] }}>
-      <SurfaceText>{t('UpgradeToPro')}</SurfaceText>
+      <SurfaceText>{t('ai.upgrade_to_pro.button')}</SurfaceText>
       <SurfaceText>
-        <LimitedHtml value={t('UpgradeToProDescription')} /> <ProPrice />
+        <LimitedHtml value={t('ai.upgrade_to_pro.explanation')} /> <ProPrice />
       </SurfaceText>
       <Button
         style={{ alignSelf: 'flex-end' }}
         mode="contained"
         onPress={upgrade}
       >
-        {t('Upgrade')}
+        {t('generic.upgrade.button')}
       </Button>
     </View>
   );

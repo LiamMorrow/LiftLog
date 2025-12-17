@@ -17,17 +17,17 @@ export default function AppConfiguration() {
 
   return (
     <FullHeightScrollView>
-      <Stack.Screen options={{ title: t('Notifications') }} />
+      <Stack.Screen options={{ title: t('settings.notifications.title') }} />
       <List.Section>
         <ListSwitch
-          headline={<T keyName="RestNotifications" />}
-          supportingText={<T keyName="RestNotificationsSubtitle" />}
+          headline={<T keyName="rest.notifications.title" />}
+          supportingText={<T keyName="rest.notifications.subtitle" />}
           value={settings.restNotifications}
           onValueChange={(value) => dispatch(setRestNotifications(value))}
         />
         {Platform.OS === 'android' && (
           <List.Item
-            title={t('Request exact notification permission')}
+            title={t('permissions.exact_notification.button')}
             onPress={() => dispatch(requestExactNotificationPermission(true))}
           />
         )}

@@ -28,7 +28,7 @@ export function FeedFollowing() {
       }}
       ListEmptyComponent={
         <EmptyInfo style={{ marginTop: spacing[8] }}>
-          <T keyName="NotFollowingAnyone" />
+          <T keyName="feed.not_following_anyone.message" />
         </EmptyInfo>
       }
       refreshing={fetchingFeedItems}
@@ -52,7 +52,9 @@ function FeedFollowingItem(props: { user: FeedUser; userId: string }) {
   return (
     <List.Item
       title={props.user.name || 'Anonymous user'}
-      description={props.user.aesKey ? undefined : t('AwaitingResponse')}
+      description={
+        props.user.aesKey ? undefined : t('generic.awaiting_response.label')
+      }
       right={() => (
         <Menu
           visible={menuVisible}
@@ -71,7 +73,7 @@ function FeedFollowingItem(props: { user: FeedUser; userId: string }) {
               setMenuVisible(false);
             }}
             leadingIcon={'personRemove'}
-            title={t('Unfollow')}
+            title={t('feed.unfollow.button')}
           />
         </Menu>
       )}

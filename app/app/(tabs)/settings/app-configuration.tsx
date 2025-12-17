@@ -24,36 +24,38 @@ export default function AppConfiguration() {
 
   return (
     <FullHeightScrollView>
-      <Stack.Screen options={{ title: t('AppConfiguration') }} />
+      <Stack.Screen
+        options={{ title: t('settings.app_configuration.title') }}
+      />
       <List.Section>
         <ListSwitch
           testID="setShowBodyweight"
-          headline={<T keyName="ShowBodyweight" />}
-          supportingText={<T keyName="ShowBodyweightSubtitle" />}
+          headline={<T keyName="settings.show_bodyweight.label" />}
+          supportingText={<T keyName="settings.show_bodyweight.subtitle" />}
           value={settings.showBodyweight}
           onValueChange={(value) => dispatch(setShowBodyweight(value))}
         />
         <ListSwitch
-          headline={<T keyName="ShowFeed" />}
-          supportingText={<T keyName="ShowFeedSubtitle" />}
+          headline={<T keyName="feed.show_feed.label" />}
+          supportingText={<T keyName="feed.show_feed.subtitle" />}
           value={settings.showFeed}
           onValueChange={(value) => dispatch(setShowFeed(value))}
         />
 
         <ListSwitch
-          headline={<T keyName="Workout notes expanded by default" />}
+          headline={<T keyName="workout.notes_expanded_by_default.label" />}
           value={settings.notesExpandedByDefault}
           onValueChange={(value) => dispatch(setNotesExpandedByDefault(value))}
         />
         <ListSwitch
-          headline={<T keyName="ShowTips" />}
-          supportingText={<T keyName="ShowTipsSubtitle" />}
+          headline={<T keyName="settings.show_tips.label" />}
+          supportingText={<T keyName="settings.show_tips.subtitle" />}
           value={settings.showTips}
           onValueChange={(value) => dispatch(setShowTips(value))}
         />
         <ListSwitch
-          headline={t('SendCrashReports')}
-          supportingText={t('SendCrashReportsSubtitle')}
+          headline={t('onboarding.send_crash_reports.label')}
+          supportingText={t('onboarding.send_crash_reports.subtitle')}
           value={settings.crashReportsEnabled}
           onValueChange={(value) => dispatch(setCrashReportsEnabled(value))}
         />
@@ -66,7 +68,7 @@ export default function AppConfiguration() {
           onPress={() => dispatch(setWelcomeWizardCompleted(false))}
           mode="outlined"
         >
-          {t('StartSetupWizard')}
+          {t('onboarding.start_setup_wizard.button')}
         </Button>
       </List.Section>
     </FullHeightScrollView>

@@ -55,7 +55,7 @@ export default function FeedSharePage() {
 
   return (
     <FullHeightScrollView>
-      <Stack.Screen options={{ title: t('Feed') }} />
+      <Stack.Screen options={{ title: t('feed.feed.title') }} />
       <Remote
         retry={fetchUser}
         value={sharedProfileRemote}
@@ -64,13 +64,13 @@ export default function FeedSharePage() {
             <Card mode="contained">
               <Card.Title
                 left={({ size }) => <Icon source={'personFill'} size={size} />}
-                title={t('Profile Share Request')}
+                title={t('feed.profile_share_request.title')}
                 titleVariant="headlineSmall"
               />
               <Card.Content style={{ gap: spacing[4] }}>
                 <SurfaceText style={{ textAlign: 'center' }}>
                   <LimitedHtml
-                    value={t('UserWantsToShareProfile', {
+                    value={t('feed.user_wants_to_share_profile.message', {
                       user: sharedProfile.displayName || 'Anonymous user',
                     })}
                   />
@@ -80,7 +80,7 @@ export default function FeedSharePage() {
                   style={{ textAlign: 'center' }}
                   color="onSurfaceVariant"
                 >
-                  {t('AcceptToFollowDescription')}
+                  {t('feed.accept_to_follow.explanation')}
                 </SurfaceText>
               </Card.Content>
 
@@ -95,7 +95,7 @@ export default function FeedSharePage() {
                   onPress={() => back()}
                   style={{ marginRight: spacing[2] }}
                 >
-                  {t('Cancel')}
+                  {t('generic.cancel.button')}
                 </Button>
                 <Button
                   testID="feed-share-accept-button"
@@ -103,7 +103,7 @@ export default function FeedSharePage() {
                   onPress={handleAcceptRequest}
                   icon="check"
                 >
-                  {t('Accept')}
+                  {t('generic.accept.button')}
                 </Button>
               </Card.Actions>
             </Card>

@@ -73,7 +73,7 @@ export default function ExerciseBlueprintSummary({
               }
             >
               <Menu.Item
-                title={t('Copy to')}
+                title={t('exercise.copy_to.button')}
                 leadingIcon={'copyAll'}
                 onPress={() => {
                   setMenuOpen(false);

@@ -120,7 +120,9 @@ export default function WeightDialog(props: WeightDialogProps) {
         style={{ flex: 1, pointerEvents: props.open ? 'box-none' : 'none' }}
       >
         <Dialog visible={props.open} onDismiss={props.onClose}>
-          <Dialog.Title>{props.label ?? <T keyName="Weight" />}</Dialog.Title>
+          <Dialog.Title>
+            {props.label ?? <T keyName="weight.weight.label" />}
+          </Dialog.Title>
           <Dialog.Content>
             <View style={{ gap: spacing[2] }}>
               <View
@@ -165,7 +167,7 @@ export default function WeightDialog(props: WeightDialogProps) {
                 }}
               >
                 {props.allowNegative && (
-                  <Tooltip title={t('Toggle negative')}>
+                  <Tooltip title={t('exercise.toggle_negative.button')}>
                     <IconButton
                       mode="outlined"
                       icon={'plusMinus'}
@@ -200,10 +202,10 @@ export default function WeightDialog(props: WeightDialogProps) {
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={props.onClose} testID="close">
-              <T keyName="Close" />
+              <T keyName="generic.close.button" />
             </Button>
             <Button onPress={onSaveClick} testID="save">
-              <T keyName="Save" />
+              <T keyName="generic.save.button" />
             </Button>
           </Dialog.Actions>
         </Dialog>

@@ -48,7 +48,7 @@ export default function Feed() {
       }}
       ListEmptyComponent={
         <EmptyInfo style={{ marginTop: spacing[8] }}>
-          <T keyName="NoFollowingData" />
+          <T keyName="feed.no_following_data.message" />
         </EmptyInfo>
       }
       refreshing={fetchingFeedItems}
@@ -90,7 +90,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
       <Card mode="contained" style={{ marginBottom: spacing[2] }}>
         <Card.Title
           left={({ size }) => <Icon source={'personFill'} size={size} />}
-          title={t('Profile')}
+          title={t('feed.profile.title')}
           titleVariant="headlineSmall"
         />
         <Card.Content>
@@ -101,7 +101,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
             dataSet={{ shareUrl }}
           />
           <SurfaceText>
-            <T keyName="FeedExplanation" />
+            <T keyName="feed.explanation.body" />
           </SurfaceText>
 
           {identity.publishWorkouts ? undefined : (
@@ -114,7 +114,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
               }}
             >
               <SurfaceText color="error">
-                <T keyName="NotPublishingWorkoutsError" />
+                <T keyName="feed.not_publishing_workouts.error" />
               </SurfaceText>
               <Button
                 style={{ marginLeft: 'auto' }}
@@ -125,7 +125,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
                 }}
                 mode="outlined"
               >
-                <T keyName="Fix" />
+                <T keyName="generic.fix.button" />
               </Button>
             </View>
           )}
@@ -153,7 +153,7 @@ function FeedProfile({ identity }: { identity: FeedIdentity }) {
               );
             }}
           >
-            <T keyName={'Share'} />
+            <T keyName="generic.share.button" />
           </Button>
         </CardActions>
       </Card>
@@ -188,7 +188,11 @@ function FeedProfileEditor({
   };
   const [resetAccountDialogOpen, setResetAccountDialogOpen] = useState(false);
   return (
-    <FullScreenDialog open={open} onClose={onClose} title={t('Manage Feed')}>
+    <FullScreenDialog
+      open={open}
+      onClose={onClose}
+      title={t('feed.manage.title')}
+    >
       <View
         style={{
           gap: spacing[2],
@@ -196,11 +200,14 @@ function FeedProfileEditor({
         }}
       >
         <LabelledForm>
-          <LabelledFormRow icon={'personFill'} label={t('YourName')}>
+          <LabelledFormRow
+            icon={'personFill'}
+            label={t('feed.your_name.label')}
+          >
             <TextInput
-              placeholder={t('Optional')}
+              placeholder={t('generic.optional.label')}
               value={identity.name ?? ''}
-              label={t('Optional')}
+              label={t('generic.optional.label')}
               mode="outlined"
               onChangeText={(name) => updateProfile({ name })}
             />
@@ -210,38 +217,38 @@ function FeedProfileEditor({
           <ListSwitch
             testID="feed-publish-workouts-switch"
             focus={focusPublish}
-            headline={t('PublishWorkout')}
-            supportingText={t('PublishWorkoutSubtitle')}
+            headline={t('feed.publish_workout.label')}
+            supportingText={t('feed.publish_workout.subtitle')}
             value={identity.publishWorkouts}
             onValueChange={(publishWorkouts) =>
               updateProfile({ publishWorkouts })
             }
           />
           <ListSwitch
-            headline={t('PublishBodyweight')}
-            supportingText={t('PublishBodyweightSubtitle')}
+            headline={t('feed.publish_bodyweight.label')}
+            supportingText={t('feed.publish_bodyweight.subtitle')}
             value={identity.publishBodyweight}
             onValueChange={(publishBodyweight) =>
               updateProfile({ publishBodyweight })
             }
           />
           <ListSwitch
-            headline={t('PublishPlan')}
-            supportingText={t('PublishPlanSubtitle')}
+            headline={t('feed.publish_plan.label')}
+            supportingText={t('feed.publish_plan.subtitle')}
             value={identity.publishPlan}
             onValueChange={(publishPlan) => updateProfile({ publishPlan })}
           />
         </List.Section>
         <Button onPress={() => setResetAccountDialogOpen(true)}>
-          {t('ResetAccount')}
+          {t('feed.reset_account.button')}
         </Button>
       </View>
       <ConfirmationDialog
-        headline={t('ResetAccount')}
-        textContent={t('ResetAccountMessage')}
+        headline={t('feed.reset_account.button')}
+        textContent={t('feed.reset_account.confirm.body')}
         open={resetAccountDialogOpen}
         onOk={resetAccount}
-        okText={t('ResetAccount')}
+        okText={t('feed.reset_account.button')}
         onCancel={() => setResetAccountDialogOpen(false)}
       />
     </FullScreenDialog>

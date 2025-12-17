@@ -17,7 +17,7 @@ export function CardioResistanceTracker({
   return (
     <CardioValueSelector
       buttonText={localeFormatBigNumber(resistance)}
-      label={t('Resistance')}
+      label={t('exercise.resistance.label')}
       onButtonPress={() => setDialogValue(resistance)}
       onSave={() => updateResistance(dialogValue)}
       onHold={() => updateResistance(undefined)}

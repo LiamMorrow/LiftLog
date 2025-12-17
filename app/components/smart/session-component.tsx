@@ -176,11 +176,9 @@ export default function SessionComponent(props: {
     session.recordedExercises.length === 0 ? (
       <EmptyInfo style={{ marginVertical: spacing[8] }}>
         <SurfaceText>
-          {t('SessionContainsNoExercises')} {'\n'}
+          {t('workout.contains_no_exercises.message')} {'\n'}
         </SurfaceText>
-        <SurfaceText>
-          {t('Add an exercise by tapping the more button in the top right')}
-        </SurfaceText>
+        <SurfaceText>{t('exercise.add_hint.body')}</SurfaceText>
       </EmptyInfo>
     ) : null;
 
@@ -328,7 +326,7 @@ export default function SessionComponent(props: {
             color: colors.onSurface,
           }}
         >
-          {t('Bodyweight')}
+          {t('exercise.bodyweight.label')}
         </Text>
         <WeightDisplay
           allowNull={true}
@@ -337,7 +335,7 @@ export default function SessionComponent(props: {
             dispatch(updateBodyweight, { bodyweight })
           }
           increment={new BigNumber('0.1')}
-          label={t('Bodyweight')}
+          label={t('exercise.bodyweight.label')}
         />
       </Card.Content>
     </Card>
@@ -386,7 +384,11 @@ export default function SessionComponent(props: {
         variant="surface"
         icon={'inventory'}
         testID="save-session-button"
-        label={props.target === 'workoutSession' ? t('Finish') : t('Save')}
+        label={
+          props.target === 'workoutSession'
+            ? t('generic.finish.button')
+            : t('generic.save.button')
+        }
       ></FAB>
     </View>
   );
@@ -419,7 +421,7 @@ export default function SessionComponent(props: {
           }}
         >
           <Text variant="bodyMedium">
-            <T keyName="Total weight lifted this workout" />
+            <T keyName="workout.total_weight_lifted.label" />
           </Text>
           <WeightFormat
             fontWeight="bold"
@@ -435,7 +437,7 @@ export default function SessionComponent(props: {
           }}
         >
           <Text variant="bodyMedium">
-            <T keyName="Total workout time" />
+            <T keyName="workout.total_time.label" />
           </Text>
           <Text
             variant="bodyMedium"
@@ -460,10 +462,14 @@ export default function SessionComponent(props: {
       <FullScreenDialog
         title={
           exerciseToEditIndex === undefined
-            ? t('AddExercise')
-            : t('EditExercise')
+            ? t('exercise.add.title')
+            : t('exercise.edit.title')
         }
-        action={exerciseToEditIndex === undefined ? t('Add') : t('Update')}
+        action={
+          exerciseToEditIndex === undefined
+            ? t('generic.add.button')
+            : t('generic.update.button')
+        }
         open={exerciseEditorOpen}
         onAction={handleEditExercise}
         onClose={() => setExerciseEditorOpen(false)}

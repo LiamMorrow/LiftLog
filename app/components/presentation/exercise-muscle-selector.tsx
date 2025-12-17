@@ -14,7 +14,7 @@ export default function ExerciseMuscleSelector(props: {
   return (
     <View style={{ gap: spacing[2] }}>
       <Text variant="labelLarge">
-        <T keyName="Muscle" />
+        <T keyName="muscles.muscle.label" />
       </Text>
       <View
         style={{

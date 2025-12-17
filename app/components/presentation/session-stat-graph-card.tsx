@@ -59,7 +59,7 @@ export default function SessionStatGraphCard(props: {
       testID="session-stat-card"
     >
       <SurfaceText font="text-2xl" style={{ textAlign: 'center' }}>
-        {t('Sessions')}
+        {t('workout.sessions.title')}
       </SurfaceText>
       <LineChart
         dataSet={points.map((x, i) => ({

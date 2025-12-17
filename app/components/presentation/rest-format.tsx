@@ -29,17 +29,17 @@ export default function RestFormat({
     <>
       {rest.minRest.compareTo(rest.maxRest) >= 0 ? (
         <LimitedHtml
-          value={t('RestSingular{Time}', {
-            0: formatTimeSpan(rest.minRest),
+          value={t('rest.singular.label', {
+            time: formatTimeSpan(rest.minRest),
           })}
           emStyles={emStyles}
           {...restProps}
         />
       ) : (
         <LimitedHtml
-          value={t('RestBetween{Time1}{Time2}', {
-            0: formatTimeSpan(rest.minRest),
-            1: formatTimeSpan(rest.maxRest),
+          value={t('rest.between.label', {
+            minTime: formatTimeSpan(rest.minRest),
+            maxTime: formatTimeSpan(rest.maxRest),
           })}
           emStyles={emStyles}
           {...restProps}

@@ -209,7 +209,7 @@ export function addRemoteBackupEffects() {
           dispatch(
             showSnackbar({
               text: 'Success!',
-              action: tolgee.t('Save'),
+              action: tolgee.t('generic.save.button'),
               dispatchAction: setRemoteBackupSettings(settings),
             }),
           );

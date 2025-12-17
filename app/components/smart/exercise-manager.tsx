@@ -162,8 +162,8 @@ export default function ExerciseManager() {
     dispatch(deleteExerciseAction(id));
     dispatch(
       showSnackbar({
-        text: t('{name} deleted', { name: exercise.name }),
-        action: t('Undo'),
+        text: t('deletion.item_deleted.message', { name: exercise.name }),
+        action: t('generic.undo.button'),
         dispatchAction: [
           updateExercise({ id, exercise }),
           setFilteredExerciseIdsAction(filteredExerciseIds),
@@ -218,7 +218,7 @@ export default function ExerciseManager() {
         }}
         extended={fabExtended}
         variant="secondary"
-        label={t('Add exercise')}
+        label={t('exercise.add.button')}
         onPress={addExercise}
         icon={'add'}
         testID="exercise-add-fab"
@@ -250,13 +250,13 @@ function ExerciseEditSheet({
       }}
     >
       <TextInput
-        label={t('Exercise name')}
+        label={t('exercise.name.label')}
         value={exercise.name}
         onChangeText={(name) => update({ name })}
         testID="exercise-name-input"
       />
       <TextInput
-        label={t('Instructions')}
+        label={t('generic.instructions.label')}
         value={exercise.instructions}
         onChangeText={(instructions) => update({ instructions })}
         multiline

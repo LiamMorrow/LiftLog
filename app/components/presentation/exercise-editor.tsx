@@ -94,7 +94,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
   return (
     <View style={{ gap: spacing[4] }}>
       <LabelledForm>
-        <LabelledFormRow label={t('Exercise name')} icon="infoFill">
+        <LabelledFormRow label={t('exercise.name.label')} icon="infoFill">
           <TextInput
             testID="exercise-name"
             mode="outlined"
@@ -114,7 +114,10 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
             }
           />
         </LabelledFormRow>
-        <LabelledFormRow label={t('Exercise type')} icon={'fitnessCenterFill'}>
+        <LabelledFormRow
+          label={t('exercise.type.label')}
+          icon={'fitnessCenterFill'}
+        >
           <SegmentedButtons
             value={
               exercise instanceof WeightedExerciseBlueprint
@@ -205,13 +208,13 @@ function CardioExerciseEditor({
         <ListSwitch
           value={exercise.trackDuration || exercise.target.type === 'time'}
           onValueChange={(trackDuration) => updateExercise({ trackDuration })}
-          headline={t('trackTime')}
+          headline={t('exercise.track_time.label')}
           disabled={exercise.target.type === 'time'}
         />
         <ListSwitch
           value={exercise.trackDistance || exercise.target.type === 'distance'}
           onValueChange={(trackDistance) => updateExercise({ trackDistance })}
-          headline={t('trackDistance')}
+          headline={t('exercise.track_distance.label')}
           disabled={exercise.target.type === 'distance'}
         />
         <ListSwitch
@@ -219,12 +222,12 @@ function CardioExerciseEditor({
           onValueChange={(trackResistance) =>
             updateExercise({ trackResistance })
           }
-          headline={t('trackResistance')}
+          headline={t('exercise.track_resistance.label')}
         />
         <ListSwitch
           value={exercise.trackIncline}
           onValueChange={(trackIncline) => updateExercise({ trackIncline })}
-          headline={t('trackIncline')}
+          headline={t('exercise.track_incline.label')}
         />
       </List.Section>
     </>
@@ -241,7 +244,7 @@ function SharedFieldsEditor({
   const { t } = useTranslate();
   return (
     <>
-      <LabelledFormRow label={t('PlanNotes')} icon="notesFill">
+      <LabelledFormRow label={t('plan.notes.label')} icon="notesFill">
         <TextInput
           mode="outlined"
           testID="exercise-notes"
@@ -251,7 +254,10 @@ function SharedFieldsEditor({
           multiline
         />
       </LabelledFormRow>
-      <LabelledFormRow label={t('ExternalLink')} icon="publicFill">
+      <LabelledFormRow
+        label={t('generic.external_link.label')}
+        icon="publicFill"
+      >
         <TextInput
           mode="outlined"
           testID="exercise-link"
@@ -293,20 +299,23 @@ function CardioTargetEditor(props: {
   };
   return (
     <>
-      <LabelledFormRow label={t('Cardio target')} icon={'targetFill'}>
+      <LabelledFormRow
+        label={t('exercise.cardio_target.label')}
+        icon={'targetFill'}
+      >
         <SegmentedButtons
           value={target.type}
           onValueChange={handleTypeChange}
           buttons={[
             {
               value: 'distance',
-              label: t('Distance'),
+              label: t('exercise.distance.label'),
               icon: 'trailLength',
               testID: 'distance-button',
             },
             {
               value: 'time',
-              label: t('Time'),
+              label: t('generic.time.label'),
               icon: 'timer',
               testID: 'time-button',
             },
@@ -423,7 +432,7 @@ function WeightedExerciseEditor({
         >
           <Card.Content>
             <FixedIncrementer
-              label={t('Sets')}
+              label={t('exercise.sets.label')}
               increment={incrementSets}
               decrement={decrementSets}
               value={exercise.sets}
@@ -442,7 +451,7 @@ function WeightedExerciseEditor({
         >
           <Card.Content>
             <FixedIncrementer
-              label={t('Reps')}
+              label={t('exercise.reps.label')}
               increment={incrementReps}
               decrement={decrementReps}
               value={exercise.repsPerSet}
@@ -454,7 +463,10 @@ function WeightedExerciseEditor({
 
       <SharedFieldsEditor exercise={exercise} updateExercise={updateExercise} />
 
-      <LabelledFormRow label={t('ProgressiveOverload')} icon="speedFill">
+      <LabelledFormRow
+        label={t('ai.progressive_overload.label')}
+        icon="speedFill"
+      >
         <EditableIncrementer
           testID="exercise-auto-increase"
           suffix={weightSuffix}
@@ -469,7 +481,7 @@ function WeightedExerciseEditor({
       />
 
       <ListSwitch
-        headline={t('SupersetNextExercise')}
+        headline={t('workout.superset_next_exercise.button')}
         value={exercise.supersetWithNext}
         supportingText=""
         testID="exercise-superset"

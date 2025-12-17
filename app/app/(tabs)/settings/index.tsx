@@ -28,77 +28,77 @@ export default function Settings() {
 
   return (
     <FullHeightScrollView>
-      <Stack.Screen options={{ title: t('Settings') }} />
-      <List.Section title={t('Configuration')}>
+      <Stack.Screen options={{ title: t('settings.settings.title') }} />
+      <List.Section title={t('settings.configuration.title')}>
         <List.Item
           onPress={() => push('/(tabs)/settings/program-list')}
-          title={t('ManagePlans')}
-          description={t('ManagePlansSubtitle')}
+          title={t('plan.manage.title')}
+          description={t('plan.manage.subtitle')}
           left={(props) => <List.Icon icon={'assignment'} {...props} />}
         ></List.Item>
         <List.Item
           onPress={() => push('/(tabs)/settings/manage-exercises')}
-          title={t('Manage exercises')}
-          description={t('Manage your exercise list')}
+          title={t('exercise.manage.button')}
+          description={t('exercise.manage.subtitle')}
           left={(props) => <List.Icon icon={'directionsRun'} {...props} />}
         ></List.Item>
         <List.Item
           testID="appConfiguration"
           onPress={() => push('/(tabs)/settings/app-configuration')}
-          title={t('AppConfiguration')}
-          description={t('AppConfigurationSubtitle')}
+          title={t('settings.app_configuration.title')}
+          description={t('settings.app_configuration.subtitle')}
           left={(props) => <List.Icon icon={'settings'} {...props} />}
         ></List.Item>
         <List.Item
           testID="localization"
           onPress={() => push('/(tabs)/settings/localization')}
-          title={t('Localisation')}
-          description={t('LocalisationSubtitle')}
+          title={t('settings.localisation.title')}
+          description={t('settings.localisation.subtitle')}
           left={(props) => <List.Icon icon={'language'} {...props} />}
         ></List.Item>
 
         <List.Item
           onPress={() => push('/(tabs)/settings/notifications')}
-          title={t('Notifications')}
-          description={t('NotificationsSubtitle')}
+          title={t('settings.notifications.title')}
+          description={t('settings.notifications.subtitle')}
           left={(props) => <List.Icon icon={'notifications'} {...props} />}
         ></List.Item>
 
         <List.Item
           onPress={() => push('/(tabs)/settings/backup-and-restore')}
-          title={t('ExportBackupRestore')}
-          description={t('ExportBackupRestoreSubtitle')}
+          title={t('backup.export_backup_restore.title')}
+          description={t('backup.export_backup_restore.subtitle')}
           left={(props) => (
             <List.Icon icon={'settingsBackupRestore'} {...props} />
           )}
         ></List.Item>
       </List.Section>
 
-      <List.Section title={t('ProFeatures')}>
+      <List.Section title={t('settings.pro_features.title')}>
         <List.Item
           onPress={() => push('/(tabs)/settings/ai/planner')}
-          title={t('AiPlanner')}
-          description={t('AiPlannerSubtitle')}
+          title={t('ai.planner.title')}
+          description={t('ai.planner.subtitle')}
           left={(props) => <List.Icon icon={'bolt'} {...props} />}
         ></List.Item>
       </List.Section>
 
-      <List.Section title={t('Support')}>
+      <List.Section title={t('settings.support.title')}>
         <List.Item
           onPress={() =>
             openUrl(
               'https://github.com/LiamMorrow/LiftLog/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md',
             )
           }
-          title={t('FeatureRequest')}
-          description={t('FeatureRequestSubtitle')}
+          title={t('settings.feature_request.title')}
+          description={t('settings.feature_request.subtitle')}
           left={(props) => <List.Icon icon={'star'} {...props} />}
         ></List.Item>
 
         <List.Item
           onPress={() => openUrl(bugReportUrl)}
-          title={t('BugReport')}
-          description={t('BugReportSubtitle')}
+          title={t('settings.bug_report.title')}
+          description={t('settings.bug_report.subtitle')}
           left={(props) => <List.Icon icon={'bugReport'} {...props} />}
         ></List.Item>
 
@@ -108,14 +108,14 @@ export default function Settings() {
               'https://github.com/LiamMorrow/LiftLog/issues/new?assignees=&labels=translation&projects=&template=translation-suggestion.md',
             )
           }
-          title={t('Translation')}
-          description={t('TranslationSubtitle')}
+          title={t('settings.translation.title')}
+          description={t('settings.translation.subtitle')}
           left={(props) => <List.Icon icon={'translate'} {...props} />}
         ></List.Item>
         <List.Item
           onPress={() => setAppInfoOpen(true)}
-          title={t('AppInfo')}
-          description={t('AppInfoSubtitle')}
+          title={t('settings.app_info.title')}
+          description={t('settings.app_info.subtitle')}
           left={(props) => <List.Icon icon={'info'} {...props} />}
         ></List.Item>
       </List.Section>
@@ -123,7 +123,7 @@ export default function Settings() {
       <Portal>
         <Dialog visible={appInfoOpen} onDismiss={() => setAppInfoOpen(false)}>
           <Dialog.Title>
-            <T keyName="AppInfo" />
+            <T keyName="settings.app_info.title" />
           </Dialog.Title>
           <Dialog.Content>
             <Text>
@@ -142,7 +142,7 @@ export default function Settings() {
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setAppInfoOpen(false)}>
-              <T keyName="Close" />
+              <T keyName="generic.close.button" />
             </Button>
           </Dialog.Actions>
         </Dialog>

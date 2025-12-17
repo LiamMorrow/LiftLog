@@ -22,7 +22,7 @@ export function Loader(props: LoaderProps) {
       </View>
       {props.children ?? (
         <Text style={{ color: colors.onSurface, textAlign: 'center' }}>
-          {props.loadingText ?? <T keyName="GenericLoading" />}
+          {props.loadingText ?? <T keyName="generic.loading.label" />}
         </Text>
       )}
     </View>

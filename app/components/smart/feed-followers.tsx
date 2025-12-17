@@ -41,7 +41,7 @@ export function FeedFollowers() {
       }}
       ListEmptyComponent={
         <EmptyInfo style={{ marginTop: spacing[8] }}>
-          <T keyName="NobodyFollowingYou" />
+          <T keyName="feed.nobody_following_you.message" />
         </EmptyInfo>
       }
       refreshing={fetchingFeedItems}
@@ -89,8 +89,8 @@ function FeedFollowRequest(props: { request: FollowRequest }) {
       title={props.request.name}
       description={
         <LimitedHtml
-          value={t('UserWantsToFollowYou{User}', {
-            0: props.request.name ?? 'Anonymous user',
+          value={t('feed.user_wants_to_follow_you.message', {
+            user: props.request.name ?? 'Anonymous user',
           })}
         />
       }
@@ -108,7 +108,7 @@ function FeedFollowRequest(props: { request: FollowRequest }) {
               icon={'check'}
               onPress={handleAccept}
             >
-              {t('Accept')}
+              {t('generic.accept.button')}
             </Button>
           </View>
         );
@@ -134,10 +134,10 @@ function FeedFollowersItem(props: { user: FeedUser; userId: string }) {
     <>
       <ConfirmationDialog
         open={confirmRemoveVisible}
-        headline={t('RemoveFollower')}
-        textContent={`${t('RemoveFollowerMsgPart1')} ${props.user.name} ${t('RemoveFollowerMsgPart2')}`}
+        headline={t('feed.remove_follower.button')}
+        textContent={`${t('feed.remove_follower.confirm.body_part1')} ${props.user.name} ${t('feed.remove_follower.confirm.body_part2')}`}
         onOk={unfollow}
-        okText={t('Remove')}
+        okText={t('generic.remove.button')}
         onCancel={() => {
           setConfirmRemoveVisible(false);
         }}
@@ -146,8 +146,8 @@ function FeedFollowersItem(props: { user: FeedUser; userId: string }) {
         title={
           <LimitedHtml
             emStyles={{}}
-            value={t('UserIsFollowingYou{User}', {
-              0: props.user.name ?? 'Anonymous User',
+            value={t('feed.user_is_following_you.message', {
+              user: props.user.name ?? 'Anonymous User',
             })}
           />
         }

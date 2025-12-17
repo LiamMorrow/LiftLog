@@ -35,7 +35,7 @@ export default function SharedItemPage() {
     <>
       <Stack.Screen
         options={{
-          title: t('SharedItem'),
+          title: t('feed.shared_item.title'),
         }}
       />
       <Remote

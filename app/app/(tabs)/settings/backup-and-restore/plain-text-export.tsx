@@ -25,7 +25,7 @@ export default function PlainTextExportPage() {
   };
   return (
     <FullHeightScrollView>
-      <Stack.Screen options={{ title: t('PlaintextExport') }} />
+      <Stack.Screen options={{ title: t('backup.plaintext_export.title') }} />
       <Card
         mode="contained"
         style={{ marginHorizontal: spacing[6], marginBottom: spacing[4] }}
@@ -33,7 +33,7 @@ export default function PlainTextExportPage() {
         <Card.Content>
           <View>
             <SurfaceText style={{ textAlign: 'center' }}>
-              <T keyName="PlaintextExportDescription" />
+              <T keyName="backup.plaintext_export.explanation" />
             </SurfaceText>
           </View>
           <Button
@@ -43,13 +43,13 @@ export default function PlainTextExportPage() {
               )
             }
           >
-            <T keyName="ReadDocumentation" />
+            <T keyName="generic.read_documentation.button" />
           </Button>
         </Card.Content>
       </Card>
       <LabelledForm>
         <LabelledFormRow
-          label={t('PlaintextExportFormat')}
+          label={t('backup.plaintext_export.format.label')}
           icon={'descriptionFill'}
         >
           <Dropdown
@@ -72,7 +72,7 @@ export default function PlainTextExportPage() {
         }}
       >
         <Button mode="contained" onPress={exportData}>
-          <T keyName="Export" />
+          <T keyName="generic.export.button" />
         </Button>
       </View>
     </FullHeightScrollView>

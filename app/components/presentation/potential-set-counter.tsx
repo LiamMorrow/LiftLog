@@ -138,7 +138,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
           >
             <View style={{ gap: spacing[2] }}>
               <PaperText variant="labelLarge">
-                <T keyName="Apply weight to" />
+                <T keyName="weight.apply_to.label" />
               </PaperText>
               <View
                 style={{
@@ -152,21 +152,21 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
                   testID="repcount-apply-weight-to-this-set"
                   onPress={() => setApplyTo('thisSet')}
                 >
-                  <T keyName="This set" />
+                  <T keyName="exercise.this_set.label" />
                 </Chip>
                 <Chip
                   selected={applyTo === 'uncompletedSets'}
                   testID="repcount-apply-weight-to-uncompleted-sets"
                   onPress={() => setApplyTo('uncompletedSets')}
                 >
-                  <T keyName="Uncompleted sets" />
+                  <T keyName="exercise.uncompleted_sets.label" />
                 </Chip>
                 <Chip
                   selected={applyTo === 'allSets'}
                   testID="repcount-apply-weight-to-all-sets"
                   onPress={() => setApplyTo('allSets')}
                 >
-                  <T keyName="All sets" />
+                  <T keyName="exercise.all_sets.label" />
                 </Chip>
               </View>
             </View>

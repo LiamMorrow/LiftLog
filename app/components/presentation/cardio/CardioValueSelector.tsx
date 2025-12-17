@@ -42,7 +42,7 @@ export function CardioValueSelector(props: {
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setDialogOpen(false)}>
-              <T keyName="Cancel" />
+              <T keyName="generic.cancel.button" />
             </Button>
             <Button
               onPress={() => {
@@ -50,7 +50,7 @@ export function CardioValueSelector(props: {
                 onSave();
               }}
             >
-              <T keyName="Save" />
+              <T keyName="generic.save.button" />
             </Button>
           </Dialog.Actions>
         </Dialog>

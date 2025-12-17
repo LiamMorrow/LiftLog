@@ -87,7 +87,7 @@ export default function ThemeChooser(props: ThemeChooserProps) {
 
   return (
     <>
-      <List.Item title={t('Theme')} />
+      <List.Item title={t('settings.theme.title')} />
       <View
         style={{
           flexDirection: 'row',
@@ -103,7 +103,7 @@ export default function ThemeChooser(props: ThemeChooserProps) {
             style={{ position: 'relative' }}
             onPress={() => void updateSeed('default')}
           >
-            <T keyName="Default" />
+            <T keyName="generic.default.label" />
           </Button>
         </FocusRing>
         <FlatList

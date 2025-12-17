@@ -53,7 +53,7 @@ export default function RemoteBackupPage() {
     );
     dispatch(
       showSnackbar({
-        text: t('SettingsSaved'),
+        text: t('settings.saved.message'),
         duration: 2000,
       }),
     );
@@ -74,7 +74,7 @@ export default function RemoteBackupPage() {
 
   return (
     <FullHeightScrollView>
-      <Stack.Screen options={{ title: t('AutomaticRemoteBackup') }} />
+      <Stack.Screen options={{ title: t('backup.automatic_remote.title') }} />
       <Card
         mode="contained"
         style={{ marginHorizontal: spacing[6], marginBottom: spacing[4] }}
@@ -83,7 +83,7 @@ export default function RemoteBackupPage() {
           <EmptyInfo>
             <LimitedHtml
               style={{ textAlign: 'center' }}
-              value={t('RemoteBackupDescription')}
+              value={t('backup.remote.explanation')}
             />
           </EmptyInfo>
 
@@ -94,12 +94,12 @@ export default function RemoteBackupPage() {
               )
             }
           >
-            <T keyName="ReadDocumentation" />
+            <T keyName="generic.read_documentation.button" />
           </Button>
         </Card.Content>
       </Card>
       <LabelledForm>
-        <LabelledFormRow label={t('Endpoint')} icon={'publicFill'}>
+        <LabelledFormRow label={t('backup.endpoint.label')} icon={'publicFill'}>
           <TextInput
             mode="outlined"
             placeholder="https://example.com/backup"
@@ -110,7 +110,7 @@ export default function RemoteBackupPage() {
           />
           <HelperText type="error">{endpointError}</HelperText>
         </LabelledFormRow>
-        <LabelledFormRow label={t('ApiKey')} icon={'vpnKeyFill'}>
+        <LabelledFormRow label={t('backup.api_key.label')} icon={'vpnKeyFill'}>
           <TextInput
             mode="outlined"
             value={apiKeyValue}
@@ -120,8 +120,8 @@ export default function RemoteBackupPage() {
           <HelperText type="error">{endpointError}</HelperText>
         </LabelledFormRow>
         <ListSwitch
-          headline={t('BackupFeedAccount')}
-          supportingText={t('BackupFeedAccountSubtitle')}
+          headline={t('feed.backup_account.title')}
+          supportingText={t('feed.backup_account.subtitle')}
           value={includeFeedAccountValue}
           onValueChange={setIncludeFeedAccount}
         />
@@ -135,10 +135,10 @@ export default function RemoteBackupPage() {
         }}
       >
         <Button disabled={!!endpointError} onPress={test}>
-          <T keyName="Test" />
+          <T keyName="generic.test.button" />
         </Button>
         <Button disabled={!!endpointError} onPress={save}>
-          <T keyName="Save" />
+          <T keyName="generic.save.button" />
         </Button>
       </View>
     </FullHeightScrollView>

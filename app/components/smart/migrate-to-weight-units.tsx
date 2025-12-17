@@ -33,8 +33,8 @@ export function MigrateToWeightUnitsWizard() {
       onClose={() => {
         setOpen(false);
       }}
-      title={t('Migrate weights')}
-      action={t('Save')}
+      title={t('weight.migrate.button')}
+      action={t('generic.save.button')}
       onAction={() => {
         dispatch(migrateExerciseWeights());
       }}
@@ -52,8 +52,8 @@ export function MigrateToWeightUnitsWizard() {
           >
             <Icon source={'weight' satisfies AppIconSource} size={48} />
             <Text variant="bodyMedium" style={{ textAlign: 'center' }}>
-              {t('MigrateWeightMessage')}
-              {t('MigrateWeightPrompt')}
+              {t('weight.migrate.explanation')}
+              {t('weight.migrate.prompt')}
             </Text>
             <View
               style={{
@@ -76,7 +76,7 @@ export function MigrateToWeightUnitsWizard() {
                   )
                 }
               >
-                {t('All kilograms')}
+                {t('weight.all_kilograms.button')}
               </Button>
               <Button
                 mode="contained"
@@ -91,7 +91,7 @@ export function MigrateToWeightUnitsWizard() {
                   )
                 }
               >
-                {t('All pounds')}
+                {t('weight.all_pounds.button')}
               </Button>
             </View>
           </View>

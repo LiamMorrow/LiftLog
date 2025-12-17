@@ -152,19 +152,21 @@ function AddTrackerButtonMenu(props: {
   const menuItems = [
     !recordedExercise.distance &&
       (blueprint.trackDistance || blueprint.target.type === 'distance') &&
-      menuItem('Distance', () => updateDistance(distanceTarget)),
+      menuItem('exercise.distance.label', () => updateDistance(distanceTarget)),
 
     !recordedExercise.duration &&
       (blueprint.trackDuration || blueprint.target.type === 'time') &&
-      menuItem('Time', () => updateDuration(Duration.ZERO)),
+      menuItem('generic.time.label', () => updateDuration(Duration.ZERO)),
 
     !recordedExercise.incline &&
       blueprint.trackIncline &&
-      menuItem('Incline', () => updateIncline(BigNumber(0))),
+      menuItem('exercise.incline.label', () => updateIncline(BigNumber(0))),
 
     !recordedExercise.resistance &&
       blueprint.trackResistance &&
-      menuItem('Resistance', () => updateResistance(BigNumber(0))),
+      menuItem('exercise.resistance.label', () =>
+        updateResistance(BigNumber(0)),
+      ),
   ].filter(isNotNullOrUndefinedOrFalse);
   const showAddButton = !!menuItems.length;
   if (!showAddButton) {
@@ -220,7 +222,7 @@ function CardioDistanceTracker({
       buttonText={
         localeFormatBigNumber(distance.value) + getShortUnit(distance.unit)
       }
-      label={t('Distance')}
+      label={t('exercise.distance.label')}
       onButtonPress={() => setDialogValue(distance)}
       onSave={() => updateDistance(dialogValue)}
       onHold={() => updateDistance(undefined)}
@@ -264,7 +266,7 @@ function DistanceCardioTargetHandler(props: { target: DistanceCardioTarget }) {
   return (
     <View style={{ flexDirection: 'row', gap: spacing[2] }}>
       <Text variant="bodyLarge">
-        <T keyName="Target distance" />
+        <T keyName="exercise.target_distance.label" />
       </Text>
       <Text variant="bodyLarge" style={{ color: colors.primary }}>
         {localeFormatBigNumber(props.target.value.value) +
@@ -279,7 +281,7 @@ function TimeCardioTargetHandler(props: { target: TimeCardioTarget }) {
   return (
     <View style={{ flexDirection: 'row', gap: spacing[2] }}>
       <Text variant="bodyLarge">
-        <T keyName="Target time" />
+        <T keyName="exercise.target_time.label" />
       </Text>
       <Text variant="bodyLarge" style={{ color: colors.primary }}>
         {formatDuration(props.target.value)}

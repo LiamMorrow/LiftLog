@@ -49,7 +49,7 @@ export default function ExerciseSection(props: ExerciseSectionProps) {
       }}
     >
       {props.showPreviousButton ? (
-        <Tooltip title={t('Previously completed')}>
+        <Tooltip title={t('workout.previously_completed.label')}>
           <IconButton
             testID="prev-exercise-btn"
             icon={'history'}
@@ -58,7 +58,7 @@ export default function ExerciseSection(props: ExerciseSectionProps) {
         </Tooltip>
       ) : null}
       {!props.isReadonly ? (
-        <Tooltip title={t('Notes')}>
+        <Tooltip title={t('generic.notes.label')}>
           <IconButton
             testID="exercise-notes-btn"
             icon={'notes'}
@@ -85,11 +85,11 @@ export default function ExerciseSection(props: ExerciseSectionProps) {
           }}
           testID="exercise-edit-menu-button"
           leadingIcon={'edit'}
-          title={t('Edit')}
+          title={t('generic.edit.button')}
         />
         <Menu.Item
           testID="exercise-notes-more-btn"
-          title={t('Notes')}
+          title={t('generic.notes.label')}
           leadingIcon={'notes'}
           onPress={() => {
             setNotesDialogOpen(true);
@@ -102,7 +102,7 @@ export default function ExerciseSection(props: ExerciseSectionProps) {
             setMenuVisible(false);
           }}
           leadingIcon={'delete'}
-          title={t('Remove')}
+          title={t('generic.remove.button')}
         />
         {!!props.recordedExercise.blueprint.link && (
           <Menu.Item
@@ -111,7 +111,7 @@ export default function ExerciseSection(props: ExerciseSectionProps) {
               setMenuVisible(false);
             }}
             leadingIcon={'openInBrowser'}
-            title={t('OpenLink')}
+            title={t('generic.open_link.button')}
           />
         )}
       </Menu>
@@ -158,9 +158,9 @@ export default function ExerciseSection(props: ExerciseSectionProps) {
         onUpdateNotes={updateNotesForExercise}
       />
       <ConfirmationDialog
-        headline={t('RemoveExerciseQuestion')}
-        textContent={t('RemoveExerciseMessage')}
-        okText={t('Remove')}
+        headline={t('exercise.remove.confirm.title')}
+        textContent={t('exercise.remove.confirm.body')}
+        okText={t('generic.remove.button')}
         open={removeExerciseDialogOpen}
         onOk={() => {
           setRemoveExerciseDialogOpen(false);

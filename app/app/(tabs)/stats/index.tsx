@@ -63,7 +63,7 @@ export default function StatsPage() {
     <>
       <Stack.Screen
         options={{
-          title: t('Statistics'),
+          title: t('stats.statistics.title'),
         }}
       />
       <FlashList
@@ -110,13 +110,31 @@ function ListHeader({
   const dispatch = useDispatch();
   const { t } = useTranslate();
   const timeOptions: SelectButtonOption<Period>[] = [
-    { label: t('{NumDays}NumDays', { 0: '7' }), value: Period.ofDays(7) },
-    { label: t('{NumDays}NumDays', { 0: '14' }), value: Period.ofDays(14) },
-    { label: t('{NumDays}NumDays', { 0: '30' }), value: Period.ofDays(30) },
-    { label: t('{NumDays}NumDays', { 0: '90' }), value: Period.ofDays(90) },
-    { label: t('{NumDays}NumDays', { 0: '180' }), value: Period.ofDays(180) },
-    { label: t('{NumDays}NumDays', { 0: '365' }), value: Period.ofDays(365) },
-    { label: t('AllTime'), value: Period.ofDays(36500) },
+    {
+      label: t('numbers.num_days.label', { count: '7' }),
+      value: Period.ofDays(7),
+    },
+    {
+      label: t('numbers.num_days.label', { count: '14' }),
+      value: Period.ofDays(14),
+    },
+    {
+      label: t('numbers.num_days.label', { count: '30' }),
+      value: Period.ofDays(30),
+    },
+    {
+      label: t('numbers.num_days.label', { count: '90' }),
+      value: Period.ofDays(90),
+    },
+    {
+      label: t('numbers.num_days.label', { count: '180' }),
+      value: Period.ofDays(180),
+    },
+    {
+      label: t('numbers.num_days.label', { count: '365' }),
+      value: Period.ofDays(365),
+    },
+    { label: t('stats.all_time.label'), value: Period.ofDays(36500) },
   ];
   const sessions: SelectButtonOption<string | undefined>[] = sessionNames
     .map((value) => ({
@@ -125,7 +143,7 @@ function ListHeader({
     }))
     .concat({
       value: undefined,
-      label: t('AllSessions'),
+      label: t('workout.all.title'),
     });
   return (
     <View style={{ gap: spacing[2], marginBottom: spacing[2] }}>
@@ -151,7 +169,7 @@ function ListHeader({
         />
       </View>
       <Searchbar
-        placeholder={t('Search')}
+        placeholder={t('generic.search.button')}
         value={searchText}
         onChangeText={setSearchText}
         style={{ marginHorizontal: spacing.pageHorizontalMargin }}
@@ -183,7 +201,9 @@ function TopLevelStatCard(props: {
   switch (index) {
     case 0:
       return (
-        <SingleValueStatisticCard title={t('Max weight lifted in a workout')}>
+        <SingleValueStatisticCard
+          title={t('stats.max_weight_in_workout.label')}
+        >
           <WeightFormat
             color={'tertiary'}
             fontSize="text-xl"
@@ -198,7 +218,7 @@ function TopLevelStatCard(props: {
       );
     case 1:
       return (
-        <SingleValueStatisticCard title={t('AverageSessionLength')}>
+        <SingleValueStatisticCard title={t('workout.average_length.label')}>
           <SurfaceText
             color="tertiary"
             font="text-xl"
@@ -211,7 +231,7 @@ function TopLevelStatCard(props: {
       );
     case 2:
       return (
-        <SingleValueStatisticCard title={t('MostTimeSpent')}>
+        <SingleValueStatisticCard title={t('stats.most_time_spent.label')}>
           <SurfaceText
             color="tertiary"
             font="text-xl"
@@ -224,7 +244,7 @@ function TopLevelStatCard(props: {
       );
     case 3:
       return (
-        <SingleValueStatisticCard title={t('HeaviestLift')}>
+        <SingleValueStatisticCard title={t('stats.heaviest_lift.label')}>
           <View style={{ justifyContent: 'center', alignItems: 'center' }}>
             <WeightFormat
               color={'tertiary'}

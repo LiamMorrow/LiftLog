@@ -17,7 +17,7 @@ export function CardioInclineTracker({
   return (
     <CardioValueSelector
       buttonText={localeFormatBigNumber(incline)}
-      label={t('Incline')}
+      label={t('exercise.incline.label')}
       onButtonPress={() => setDialogValue(incline)}
       onSave={() => updateIncline(dialogValue)}
       onHold={() => updateIncline(undefined)}

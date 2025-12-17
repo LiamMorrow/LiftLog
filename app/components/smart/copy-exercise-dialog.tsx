@@ -57,7 +57,7 @@ export default function CopyExerciseDialog({
 
       dispatch(
         showSnackbar({
-          text: t('Exercise {exerciseName} copied to {targetSessionName}', {
+          text: t('exercise.copied_to_session.message', {
             exerciseName: exerciseBlueprint.name,
             targetSessionName: targetSession.name,
           }),
@@ -92,19 +92,19 @@ export default function CopyExerciseDialog({
     <Portal>
       <Dialog visible={visible} onDismiss={onDismiss}>
         <Dialog.Title>
-          <T keyName="Copy exercise to session" />
+          <T keyName="exercise.copy_to_session.button" />
         </Dialog.Title>
         <Dialog.Content>
           <View style={{ gap: spacing[2] }}>
             <Text variant="bodyMedium">
               <T
-                keyName="Select a session to copy {exerciseName} to"
+                keyName="exercise.copy_to_session.select_session.label"
                 params={{ exerciseName: exerciseBlueprint.name }}
               />
             </Text>
             {otherSessions.length === 0 ? (
               <Text variant="bodyMedium" style={{ fontStyle: 'italic' }}>
-                <T keyName="No other sessions available" />
+                <T keyName="plan.no_other_sessions_available.message" />
               </Text>
             ) : (
               <View style={{ maxHeight: 200 }}>
@@ -119,7 +119,7 @@ export default function CopyExerciseDialog({
         </Dialog.Content>
         <Dialog.Actions>
           <Button onPress={onDismiss}>
-            <T keyName="Cancel" />
+            <T keyName="generic.cancel.button" />
           </Button>
           <Button
             onPress={handleCopy}
@@ -127,7 +127,7 @@ export default function CopyExerciseDialog({
               selectedSessionIndex === undefined || otherSessions.length === 0
             }
           >
-            <T keyName="Copy" />
+            <T keyName="generic.copy.button" />
           </Button>
         </Dialog.Actions>
       </Dialog>

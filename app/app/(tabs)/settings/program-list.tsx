@@ -26,7 +26,7 @@ export default function ProgramList() {
       savePlan({
         programId,
         programBlueprint: new ProgramBlueprint(
-          t('NewPlanDefaultName'),
+          t('plan.new_default_name.label'),
           [],
           LocalDate.now(),
         ),
@@ -41,7 +41,7 @@ export default function ProgramList() {
           variant="surface"
           size="small"
           icon={'add'}
-          label={t('AddPlan')}
+          label={t('plan.add.button')}
           onPress={addProgram}
         />
       }
@@ -49,7 +49,7 @@ export default function ProgramList() {
   );
   return (
     <FullHeightScrollView floatingChildren={floatingBottomContainer}>
-      <Stack.Screen options={{ title: t('PlansPageTitle') }} />
+      <Stack.Screen options={{ title: t('plan.plans.title') }} />
       <List.Section>
         {ps.map(({ id }) => (
           <ProgramListItem key={id} id={id} isFocused={focusprogramId === id} />

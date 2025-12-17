@@ -53,8 +53,8 @@ export default function UpdatePlanButton({
     );
     dispatch(
       showSnackbar({
-        text: t('Plan updated'),
-        action: t('Undo'),
+        text: t('plan.updated.message'),
+        action: t('generic.undo.button'),
         dispatchAction: setProgramSession({
           programId: programId,
           sessionBlueprint: program.sessions[blueprintIndex],
@@ -89,8 +89,8 @@ export default function UpdatePlanButton({
     );
     dispatch(
       showSnackbar({
-        text: t('Workout added to plan'),
-        action: t('Undo'),
+        text: t('workout.added_to_plan.message'),
+        action: t('generic.undo.button'),
         dispatchAction: [
           removeSessionFromProgram({
             programId: programId,
@@ -104,21 +104,21 @@ export default function UpdatePlanButton({
   };
   const updateProps = sessionWithSameNameInPlan
     ? {
-        okText: t('Update'),
+        okText: t('generic.update.button'),
         onOk: onUpdate,
-        additionalActionText: t('Add'),
+        additionalActionText: t('generic.add.button'),
         onAdditionalAction: onAdd,
       }
     : {
         onOk: onAdd,
-        okText: t('Add'),
+        okText: t('generic.add.button'),
       };
   const onCancel = onClose;
   return (
     <View>
       {!sessionInPlan ? (
         session.recordedExercises.length > 0 ? (
-          <Tooltip title={t('UpdatePlan')}>
+          <Tooltip title={t('plan.update.button')}>
             <IconButton
               style={{ backgroundColor: colors.surface }}
               onPress={() => setOpen(true)}
@@ -128,17 +128,17 @@ export default function UpdatePlanButton({
         ) : null
       ) : undefined}
       <ConfirmationDialog
-        headline={t('UpdatePlan')}
+        headline={t('plan.update.button')}
         open={open}
         onCancel={onCancel}
         {...updateProps}
         textContent={
           <SurfaceText>
-            <T keyName="PlanWillBeUpdated" />{' '}
+            <T keyName="plan.will_be_updated.message" />{' '}
             {sessionWithSameNameInPlan ? (
               <LimitedHtml
-                value={t('UpdateExistingWorkout{Name}', {
-                  0: session.blueprint.name,
+                value={t('workout.update_existing.confirm.body', {
+                  name: session.blueprint.name,
                 })}
               />
             ) : undefined}

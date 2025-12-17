@@ -35,7 +35,7 @@ export default function BodyweightStatGraphCard(props: {
       testID="bodyweight-stat-card"
     >
       <SurfaceText font="text-2xl" style={{ textAlign: 'center' }}>
-        {t('Bodyweight')}
+        {t('exercise.bodyweight.label')}
       </SurfaceText>
       <LineChart
         color={colors.primary}

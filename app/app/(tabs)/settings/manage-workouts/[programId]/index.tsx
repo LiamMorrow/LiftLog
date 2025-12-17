@@ -32,7 +32,7 @@ export default function ManageWorkouts() {
 
   const addWorkout = () => {
     const newSession = EmptySession.blueprint.with({
-      name: `${t('Workout')} ${program.sessions.length + 1}`,
+      name: `${t('workout.workout.label')} ${program.sessions.length + 1}`,
     });
     dispatch(
       addProgramSession({
@@ -49,7 +49,7 @@ export default function ManageWorkouts() {
           variant="surface"
           size="small"
           icon={'add'}
-          label={t('AddWorkout')}
+          label={t('workout.add.button')}
           onPress={addWorkout}
         />
       }
@@ -57,7 +57,7 @@ export default function ManageWorkouts() {
   );
   const emptyInfo = program.sessions.length ? undefined : (
     <EmptyInfo>
-      <LimitedHtml value={t('NoWorkoutsInPlan')} />
+      <LimitedHtml value={t('workout.no_workouts_in_plan.message')} />
     </EmptyInfo>
   );
   return (

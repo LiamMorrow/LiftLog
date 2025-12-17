@@ -84,14 +84,14 @@ function SharedProgramBlueprintContent({
             style={{ alignSelf: 'center' }}
             onPress={handleSave}
           >
-            <T keyName="Save" />
+            <T keyName="generic.save.button" />
           </Button>
         </View>
       </View>
 
       <View style={{ flex: 1, gap: spacing[2] }}>
         <Text variant="titleMedium">
-          <T keyName="AllSessions" />
+          <T keyName="workout.all.title" />
         </Text>
         <CardList
           cardType="contained"
@@ -107,7 +107,7 @@ function SharedProgramBlueprintContent({
           keySelector={(session) => session.id}
           emptyTemplate={
             <SurfaceText>
-              <T keyName="NoWorkoutsInPlan" />
+              <T keyName="workout.no_workouts_in_plan.message" />
             </SurfaceText>
           }
         />

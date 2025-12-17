@@ -49,17 +49,17 @@ export default function RestEditorGroup(props: RestEditorGroupProps) {
         }}
       >
         <DurationEditor
-          label={t('MinRest')}
+          label={t('rest.min.label')}
           duration={rest.minRest}
           onDurationUpdated={updateRest('minRest')}
         />
         <DurationEditor
-          label={t('MaxRest')}
+          label={t('rest.max.label')}
           duration={rest.maxRest}
           onDurationUpdated={updateRest('maxRest')}
         />
         <DurationEditor
-          label={t('FailureRest')}
+          label={t('rest.failure.label')}
           duration={rest.failureRest}
           onDurationUpdated={updateRest('failureRest')}
         />
@@ -70,7 +70,10 @@ export default function RestEditorGroup(props: RestEditorGroupProps) {
       </View>
     );
   return (
-    <LabelledFormRow label={t('Rest')} icon="airlineSeatReclineExtraFill">
+    <LabelledFormRow
+      label={t('rest.rest.label')}
+      icon="airlineSeatReclineExtraFill"
+    >
       <View style={{ width: '100%' }}>
         <SegmentedButtons
           style={{ width: '100%' }}
@@ -79,19 +82,19 @@ export default function RestEditorGroup(props: RestEditorGroupProps) {
           buttons={[
             {
               value: 'short',
-              label: t('RestShort'),
+              label: t('rest.short.label'),
             },
             {
               value: 'medium',
-              label: t('RestMedium'),
+              label: t('rest.medium.label'),
             },
             {
               value: 'long',
-              label: t('RestLong'),
+              label: t('rest.long.label'),
             },
             {
               value: 'custom',
-              label: t('Custom'),
+              label: t('generic.custom.label'),
             },
           ]}
         />

@@ -26,7 +26,7 @@ export default function ExerciseSearchAndFilters({
   return (
     <View style={{ gap: spacing[2] }}>
       <Searchbar
-        placeholder={t('Search')}
+        placeholder={t('generic.search.button')}
         value={searchText}
         onChangeText={setSearchText}
         autoCorrect={false}
@@ -39,7 +39,7 @@ export default function ExerciseSearchAndFilters({
         style={{ marginHorizontal: spacing.pageHorizontalMargin }}
       >
         <Card.Title
-          title={t('Filters')}
+          title={t('generic.filters.title')}
           subtitle={selectedFiltersSubtitle}
           right={() => (
             <IconButton

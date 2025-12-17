@@ -80,8 +80,8 @@ function Actions({
     );
     dispatch(
       showSnackbar({
-        text: t('Workout removed'),
-        action: t('Undo'),
+        text: t('workout.removed.message'),
+        action: t('generic.undo.button'),
         dispatchAction: setProgramSessions({
           programId,
           sessionBlueprints: currentSessions,
@@ -93,8 +93,8 @@ function Actions({
     const currentSessions = plan.sessions;
     dispatch(
       showSnackbar({
-        text: t('Workout duplicated'),
-        action: t('Undo'),
+        text: t('workout.duplicated.message'),
+        action: t('generic.undo.button'),
         dispatchAction: setProgramSessions({
           programId,
           sessionBlueprints: currentSessions,
@@ -105,7 +105,7 @@ function Actions({
       addProgramSession({
         programId,
         sessionBlueprint: sessionBlueprint.with({
-          name: `${t('Workout')} ${plan.sessions.length + 1}`,
+          name: `${t('workout.workout.label')} ${plan.sessions.length + 1}`,
         }),
       }),
     );
@@ -127,10 +127,10 @@ function Actions({
             removeSession();
           }}
           leadingIcon={'delete'}
-          title={t('Remove')}
+          title={t('generic.remove.button')}
         />
         <Menu.Item
-          title={t('Duplicate')}
+          title={t('generic.duplicate.button')}
           leadingIcon={'contentCopy'}
           onPress={() => {
             setMenuOpen(false);
@@ -138,7 +138,7 @@ function Actions({
           }}
         />
         <Menu.Item
-          title={t('Copy to')}
+          title={t('exercise.copy_to.button')}
           leadingIcon={'copyAll'}
           onPress={() => {
             setMenuOpen(false);

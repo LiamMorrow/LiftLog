@@ -49,13 +49,13 @@ export default function FeedIndexPage() {
 
   return (
     <>
-      <Stack.Screen options={{ title: t('Feed') }} />
+      <Stack.Screen options={{ title: t('feed.feed.title') }} />
       <TabsProvider onChangeIndex={setActiveTabIndex}>
         <Tabs
           tabHeaderStyle={{ backgroundColor }}
           style={{ backgroundColor: 'transparent' }}
         >
-          <TabScreen label={t('Feed')}>
+          <TabScreen label={t('feed.feed.title')}>
             <ScrollProvider
               isScrolled={!!tabScrolls[activeTabIndex]}
               setScrolled={(s) => setTabScrolled(s, 0)}
@@ -63,7 +63,7 @@ export default function FeedIndexPage() {
               <Feed />
             </ScrollProvider>
           </TabScreen>
-          <TabScreen label={t('Feed_Following')}>
+          <TabScreen label={t('feed.following.title')}>
             <ScrollProvider
               isScrolled={!!tabScrolls[activeTabIndex]}
               setScrolled={(s) => setTabScrolled(s, 1)}
@@ -72,7 +72,7 @@ export default function FeedIndexPage() {
             </ScrollProvider>
           </TabScreen>
           <TabScreen
-            label={t('Feed_Followers')}
+            label={t('feed.followers.title')}
             badge={followRequestBadgeCount!}
           >
             <ScrollProvider

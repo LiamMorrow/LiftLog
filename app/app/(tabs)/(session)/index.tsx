@@ -47,7 +47,7 @@ function PlanManager() {
         icon={'assignment'}
         onPress={() => push(`/settings/program-list`, { withAnchor: true })}
       >
-        <T keyName="Choose plan" />
+        <T keyName="plan.choose.button" />
       </Button>
       <Button
         mode="contained-tonal"
@@ -59,7 +59,7 @@ function PlanManager() {
           })
         }
       >
-        <T keyName="Edit workouts" />
+        <T keyName="workout.edit_workouts.button" />
       </Button>
     </View>
   );
@@ -96,14 +96,14 @@ function ListUpcomingWorkouts({
       {currentSession && (
         <>
           <Text style={{ marginTop: spacing[2] }} variant="titleSmall">
-            {t('Current workout')}
+            {t('workout.current.title')}
           </Text>
           <Card mode="contained">
             <Card.Content>
               <SessionCardContent session={currentSession} />
             </Card.Content>
             <CardActions style={{ marginTop: spacing[2] }}>
-              <Tooltip title={t('Clear current workout')}>
+              <Tooltip title={t('workout.clear_current.button')}>
                 <IconButton
                   testID="clear-current-workout"
                   icon={'delete'}
@@ -117,7 +117,7 @@ function ListUpcomingWorkouts({
                 testID="resume-workout-button"
                 onPress={() => selectSession(currentSession)}
               >
-                <T keyName={'Resume workout'} />
+                <T keyName="workout.resume.button" />
               </Button>
             </CardActions>
           </Card>
@@ -125,7 +125,7 @@ function ListUpcomingWorkouts({
       )}
       {!!upcoming.length && (
         <Text style={{ marginTop: spacing[2] }} variant="titleSmall">
-          {t('UpcomingWorkouts')}
+          {t('workout.upcoming.title')}
         </Text>
       )}
       <CardList
@@ -165,9 +165,9 @@ function ListUpcomingWorkouts({
                 onPress={() => selectSession(session)}
               >
                 {session.isStarted ? (
-                  <T keyName={'Resume workout'} />
+                  <T keyName="workout.resume.button" />
                 ) : (
-                  <T keyName={'Start workout'} />
+                  <T keyName="workout.start.button" />
                 )}
               </Button>
             </CardActions>
@@ -175,11 +175,9 @@ function ListUpcomingWorkouts({
         }}
       />
       <ConfirmationDialog
-        headline={t('Clear current workout?')}
-        textContent={t(
-          'This will clear the current workout without saving it to your history',
-        )}
-        okText={t('Clear')}
+        headline={t('workout.clear_current.confirm.title')}
+        textContent={t('workout.clear_current.confirm.body')}
+        okText={t('generic.clear.button')}
         onOk={() => {
           clearCurrentSession();
           setConfirmDeleteSessionOpen(false);
@@ -290,7 +288,7 @@ export default function Index() {
           variant="surface"
           size="small"
           icon="fitnessCenter"
-          label={t('Freeform Workout')}
+          label={t('workout.freeform.title')}
           onPress={createFreeformSession}
         />
       }
@@ -325,10 +323,8 @@ export default function Index() {
         onCancel={() => setSelectedSession(undefined)}
         okText="Replace"
         onOk={replaceSessionDialogAction}
-        headline={<T keyName="Replace current workout?" />}
-        textContent={
-          <T keyName="There is already a workout in progress, replace it without saving?" />
-        }
+        headline={<T keyName="workout.replace_current.confirm.title" />}
+        textContent={<T keyName="workout.replace_in_progress.confirm.body" />}
       />
     </FullHeightScrollView>
   );

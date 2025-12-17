@@ -25,7 +25,7 @@ function PreviousExerciseContent(props: {
       {props.previousRecordedExercises.length ? undefined : (
         <View style={{ height: 100 }}>
           <EmptyInfo>
-            <T keyName="NeverDoneThisExerciseBefore" />
+            <T keyName="exercise.never_done_before.message" />
           </EmptyInfo>
         </View>
       )}
@@ -44,8 +44,8 @@ export default function PreviousExerciseViewer(props: {
       <Dialog visible={props.open} onDismiss={props.close}>
         <Dialog.Title>
           <T
-            keyName="PreviousSessionsFor{Exercise}"
-            params={{ Exercise: props.name }}
+            keyName="exercise.previous_sessions_for.title"
+            params={{ exercise: props.name }}
           />
         </Dialog.Title>
         <Dialog.Content>
@@ -55,7 +55,7 @@ export default function PreviousExerciseViewer(props: {
         </Dialog.Content>
         <Dialog.Actions>
           <Button onPress={props.close}>
-            <T keyName="Close" />
+            <T keyName="generic.close.button" />
           </Button>
         </Dialog.Actions>
       </Dialog>

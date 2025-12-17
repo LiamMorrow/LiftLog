@@ -72,7 +72,7 @@ export function WelcomeWizard() {
     () => [
       {
         value: undefined,
-        label: t('System default'),
+        label: t('settings.system_default.label'),
       },
       ...supportedLanguages.map((x) => ({ value: x.code, label: x.label })),
     ],
@@ -99,39 +99,39 @@ export function WelcomeWizard() {
     <View style={styles.pageContent}>
       <View style={styles.headerSection}>
         <Text variant="headlineMedium" style={styles.pageTitle}>
-          {t('WelcomeToLiftLog')}
+          {t('onboarding.welcome.title')}
         </Text>
         <Text variant="bodyLarge" style={styles.pageSubtitle}>
-          {t('WelcomeWizardSubtitle')}
+          {t('onboarding.welcome.subtitle')}
         </Text>
       </View>
 
       <View style={styles.settingsSection}>
         <Text variant="titleMedium" style={styles.sectionTitle}>
-          {t('setup.welcome.open_source.title')}
+          {t('onboarding.open_source.title')}
         </Text>
         <Text variant="bodyMedium" style={styles.sectionDescription}>
-          {t('setup.welcome.open_source.body')}
+          {t('onboarding.open_source.body')}
         </Text>
         <Button
           onPress={() => openUrl('https://github.com/LiamMorrow/LiftLog')}
         >
-          {t('setup.welcome.open_source.button')}
+          {t('onboarding.open_source.button')}
         </Button>
         <Text variant="titleMedium" style={styles.sectionTitle}>
-          {t('CrashReports')}
+          {t('onboarding.crash_reports.title')}
         </Text>
         <Text variant="bodyMedium" style={styles.sectionDescription}>
-          {t('CrashReportsDescription')}
+          {t('onboarding.crash_reports.explanation')}
         </Text>
         <ListSwitch
-          headline={t('SendCrashReports')}
-          supportingText={t('SendCrashReportsSubtitle')}
+          headline={t('onboarding.send_crash_reports.label')}
+          supportingText={t('onboarding.send_crash_reports.subtitle')}
           value={settings.crashReportsEnabled}
           onValueChange={(value) => dispatch(setCrashReportsEnabled(value))}
         />
         <Button onPress={() => openUrl('https://liftlog.online/privacy.html')}>
-          {t('setup.welcome.privacy_policy.button')}
+          {t('onboarding.privacy_policy.button')}
         </Button>
       </View>
     </View>
@@ -141,23 +141,23 @@ export function WelcomeWizard() {
     <View style={styles.pageContent}>
       <View style={styles.headerSection}>
         <Text variant="headlineMedium" style={styles.pageTitle}>
-          {t('Localisation')}
+          {t('settings.localisation.title')}
         </Text>
         <Text variant="bodyLarge" style={styles.pageSubtitle}>
-          {t('LocalisationSubtitle')}
+          {t('settings.localisation.subtitle')}
         </Text>
       </View>
 
       <View style={styles.settingsSection}>
         <ListSwitch
-          headline={t('UseImperialUnits')}
-          supportingText={t('UseImperialUnitsSubtitle')}
+          headline={t('settings.use_imperial_units.label')}
+          supportingText={t('settings.use_imperial_units.subtitle')}
           value={settings.useImperialUnits}
           onValueChange={(value) => dispatch(setUseImperialUnits(value))}
         />
         <List.Item
-          title={t('SetFirstDayOfWeek')}
-          description={t('SetFirstDayOfWeekSubtitle')}
+          title={t('settings.first_day_of_week.label')}
+          description={t('settings.first_day_of_week.subtitle')}
           right={() => (
             <SelectButton
               value={settings.firstDayOfWeek}
@@ -167,8 +167,8 @@ export function WelcomeWizard() {
           )}
         />
         <List.Item
-          title={t('Set language')}
-          description={t('Set your preferred language')}
+          title={t('settings.set_language.button')}
+          description={t('settings.set_language.subtitle')}
           right={() => (
             <SelectButton
               value={settings.preferredLanguage}
@@ -189,20 +189,20 @@ export function WelcomeWizard() {
     <View style={styles.pageContent}>
       <View style={styles.headerSection}>
         <Text variant="headlineMedium" style={styles.pageTitle}>
-          {t('NotificationsAndFeed')}
+          {t('onboarding.notifications_and_feed.title')}
         </Text>
         <Text variant="bodyLarge" style={styles.pageSubtitle}>
-          {t('NotificationsAndFeedSubtitle')}
+          {t('onboarding.notifications_and_feed.subtitle')}
         </Text>
       </View>
 
       <View style={styles.settingsSection}>
         <Text variant="titleMedium" style={styles.sectionTitle}>
-          {t('Notifications')}
+          {t('settings.notifications.title')}
         </Text>
         <ListSwitch
-          headline={t('RestNotifications')}
-          supportingText={t('RestNotificationsSubtitle')}
+          headline={t('rest.notifications.title')}
+          supportingText={t('rest.notifications.subtitle')}
           value={settings.restNotifications}
           onValueChange={(value) => dispatch(setRestNotifications(value))}
         />
@@ -211,11 +211,11 @@ export function WelcomeWizard() {
           variant="titleMedium"
           style={[styles.sectionTitle, styles.topSpacing]}
         >
-          {t('Feed')}
+          {t('feed.feed.title')}
         </Text>
         <ListSwitch
-          headline={t('ShowFeed')}
-          supportingText={t('ShowFeedSubtitle')}
+          headline={t('feed.show_feed.label')}
+          supportingText={t('feed.show_feed.subtitle')}
           value={settings.showFeed}
           onValueChange={(value) => dispatch(setShowFeed(value))}
         />
@@ -262,7 +262,7 @@ export function WelcomeWizard() {
                   disabled={currentPage === 0}
                   style={styles.button}
                 >
-                  {t('Previous')}
+                  {t('generic.previous.button')}
                 </Button>
                 <Button
                   mode="contained"
@@ -270,7 +270,9 @@ export function WelcomeWizard() {
                   onPress={handleNext}
                   style={styles.button}
                 >
-                  {currentPage === totalPages - 1 ? t('GetStarted') : t('Next')}
+                  {currentPage === totalPages - 1
+                    ? t('onboarding.get_started.button')
+                    : t('generic.next.button')}
                 </Button>
               </View>
             </View>

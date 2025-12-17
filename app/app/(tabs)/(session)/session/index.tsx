@@ -52,11 +52,13 @@ export default function Index() {
         saveAndClose={() => save()}
       />
       <ConfirmationDialog
-        okText={t('Finish')}
+        okText={t('generic.finish.button')}
         onOk={() => save(true)}
         onCancel={() => setConfirmOpen(false)}
-        textContent={<LimitedHtml value={t('FinishIncompleteWorkout')} />}
-        headline={t('Finish workout?')}
+        textContent={
+          <LimitedHtml value={t('workout.finish.incomplete.body')} />
+        }
+        headline={t('workout.finish.confirm.title')}
         open={confirmOpen}
       />
     </>

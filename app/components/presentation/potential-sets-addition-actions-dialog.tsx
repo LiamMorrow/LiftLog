@@ -52,11 +52,11 @@ export default function PotentialSetAdditionalActionsDialog({
       >
         <Dialog visible={open} onDismiss={close}>
           <Dialog.Title>
-            <T keyName="SelectReps" />
+            <T keyName="exercise.select_reps.title" />
           </Dialog.Title>
           <Dialog.Content>
             <TextInput
-              label={<T keyName="Reps" />}
+              label={<T keyName="exercise.reps.label" />}
               inputMode="numeric"
               value={repCountText}
               selectTextOnFocus
@@ -92,9 +92,11 @@ export default function PotentialSetAdditionalActionsDialog({
             </View>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={close}>{<T keyName="Cancel" />}</Button>
+            <Button onPress={close}>
+              {<T keyName="generic.cancel.button" />}
+            </Button>
             <Button disabled={!isValid} onPress={save}>
-              {<T keyName="Save" />}
+              {<T keyName="generic.save.button" />}
             </Button>
           </Dialog.Actions>
         </Dialog>

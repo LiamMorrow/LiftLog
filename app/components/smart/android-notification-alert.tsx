@@ -28,13 +28,18 @@ function AndroidNotificationAlertImpl() {
   return (
     <ConfirmationDialog
       open={isOpen}
-      okText={t('GrantPermission', 'Grant')}
+      okText={t('generic.grant_permission.button', 'Grant')}
       onOk={() => dispatch(requestExactNotificationPermission())}
-      cancelText={t('DisableNotifications', 'Disable Notifications')}
+      cancelText={t(
+        'permissions.disable_notifications.button',
+        'Disable Notifications',
+      )}
       onCancel={() => dispatch(setRestNotifications(false))}
       preventCancel={true}
-      headline={<T keyName="EnableNotificationsQuestion" />}
-      textContent={<T keyName="AndroidNotificationPermissionExplanation" />}
+      headline={<T keyName="permissions.enable_notifications.confirm.title" />}
+      textContent={
+        <T keyName="permissions.notifications.android.explanation" />
+      }
     />
   );
 }
