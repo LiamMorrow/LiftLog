@@ -40,10 +40,6 @@ Thank you for your interest in contributing to LiftLog! We welcome all contribut
 
 If you find a bug or have a feature request, please [open an issue](https://github.com/LiamMorrow/LiftLog/issues) and provide as much detail as possible.
 
-## Code of Conduct
-
-Please be respectful and considerate in all interactions. See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details.
-
 ## License
 
 By contributing, you agree that your contributions will be licensed under the [AGPL v3 license](LICENSE).
