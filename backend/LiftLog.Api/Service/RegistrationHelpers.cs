@@ -1,11 +1,9 @@
 namespace LiftLog.Api.Service;
 
-extern alias OpenAICommunity;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
-using OpenAICommunity::OpenAI;
 using Google.Apis.AndroidPublisher.v3;
 using Google.Apis.Auth.OAuth2;
 using LiftLog.Lib.Services;
@@ -18,18 +16,6 @@ public static class RegistrationHelpers
 {
     public static IServiceCollection AddGptAiWorkoutPlanner(this IServiceCollection source)
     {
-        source.AddSingleton(services =>
-        {
-            var configuration = services.GetRequiredService<IConfiguration>();
-            var apiKey =
-                configuration.GetValue<string?>("OpenAiApiKey")
-                ?? throw new Exception("OpenAiApiKey configuration is not set.");
-            var openAiClient = new OpenAIClient(apiKey, OpenAISettings.Default, new HttpClient());
-            return openAiClient;
-        });
-
-        source.AddSingleton<IAiWorkoutPlanner, GptAiWorkoutPlanner>();
-
         source.AddSingleton(services =>
         {
             var configuration = services.GetRequiredService<IConfiguration>();
