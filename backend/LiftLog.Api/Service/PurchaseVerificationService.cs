@@ -18,7 +18,7 @@ public class PurchaseVerificationService(
                         .GetRequiredService<WebAuthPurchaseVerificationService>()
                         .IsValidPurchaseToken(proToken),
                     AppStore.RevenueCat => services
-                        .GetRequiredService<RevenueCatPurchaseVerificationService>()
+                        .GetRequiredService<IRevenueCatPurchaseVerificationService>()
                         .GetUserIdHasProEntitlementAsync(proToken),
                 }
             );

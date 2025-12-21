@@ -1,5 +1,4 @@
 using System.Net;
-using Google.Apis.AndroidPublisher.v3;
 using LiftLog.Api.Service;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Services;

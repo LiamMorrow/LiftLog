@@ -1,6 +1,5 @@
 ﻿using LiftLog.Api.Service;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Newtonsoft.Json;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable

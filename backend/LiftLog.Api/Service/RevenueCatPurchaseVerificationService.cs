@@ -3,7 +3,7 @@ namespace LiftLog.Api.Service;
 public class RevenueCatPurchaseVerificationService(
     RevenueCat.Client.Projects.Item.WithProject_ItemRequestBuilder client,
     string proEntitlementId
-)
+) : IRevenueCatPurchaseVerificationService
 {
     public async Task<bool> GetUserIdHasProEntitlementAsync(string userId)
     {

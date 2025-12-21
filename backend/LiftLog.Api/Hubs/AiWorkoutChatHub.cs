@@ -12,7 +12,7 @@ public interface IChatClient
 }
 
 [Authorize(AuthenticationSchemes = PurchaseTokenAuthenticationSchemeOptions.SchemeName)]
-public class AiWorkoutChatHub(GptChatWorkoutPlanner planner) : Hub<IChatClient>
+public class AiWorkoutChatHub(IGptChatWorkoutPlanner planner) : Hub<IChatClient>
 {
     public async Task SendMessage(string message)
     {

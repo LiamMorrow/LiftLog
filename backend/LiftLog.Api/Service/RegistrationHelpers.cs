@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
-using Google.Apis.AndroidPublisher.v3;
-using Google.Apis.Auth.OAuth2;
 using LiftLog.Lib.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Kiota.Abstractions.Authentication;
@@ -24,7 +22,7 @@ public static class RegistrationHelpers
                 ?? throw new Exception("OpenAiApiKey configuration is not set.");
             return new OpenAI.Chat.ChatClient("gpt-4.1", apiKey);
         });
-        source.AddSingleton<GptChatWorkoutPlanner>();
+        source.AddSingleton<IGptChatWorkoutPlanner, GptChatWorkoutPlanner>();
         return source;
     }
 
@@ -32,7 +30,7 @@ public static class RegistrationHelpers
         this IServiceCollection source
     )
     {
-        source.AddSingleton<RevenueCatPurchaseVerificationService>(services =>
+        source.AddSingleton<IRevenueCatPurchaseVerificationService>(services =>
         {
             var configuration = services.GetRequiredService<IConfiguration>();
             var accessTokenProvider = new AccessTokenProvider(
