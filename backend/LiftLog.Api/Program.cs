@@ -61,8 +61,6 @@ builder.Services.AddScoped<RateLimitService>();
 builder.Services.AddHostedService<CleanupExpiredDataHostedService>();
 
 builder.Services.AddScoped<PurchaseVerificationService>();
-builder.Services.AddGooglePurchaseVerification();
-builder.Services.AddApplePurchaseVerification();
 builder.Services.AddGptAiWorkoutPlanner();
 builder.Services.AddWebAuthPurchaseVerification();
 builder.Services.AddRevenueCatPurchaseVerification();

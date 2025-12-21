@@ -42,53 +42,6 @@ public static class RegistrationHelpers
         return source;
     }
 
-    public static IServiceCollection AddApplePurchaseVerification(this IServiceCollection source)
-    {
-        source.AddHttpClient<AppleAppStorePurchaseVerificationService>();
-        return source;
-    }
-
-    public static IServiceCollection AddGooglePurchaseVerification(this IServiceCollection source)
-    {
-        source.AddSingleton(
-            (service) =>
-            {
-                var configuration = service.GetRequiredService<IConfiguration>();
-                var certificateBase64 =
-                    configuration.GetValue<string>("GooglePlayServiceAccountKeyBase64")
-                    ?? throw new Exception(
-                        "GooglePlayServiceAccountKeyBase64 configuration is not set."
-                    );
-                var serviceAccountEmail =
-                    configuration.GetValue<string>("GooglePlayServiceAccountEmail")
-                    ?? throw new Exception(
-                        "GooglePlayServiceAccountEmail configuration is not set."
-                    );
-                var certificateBytes = Convert.FromBase64String(certificateBase64);
-                var certificate = X509CertificateLoader.LoadPkcs12(
-                    certificateBytes,
-                    "notasecret",
-                    X509KeyStorageFlags.Exportable
-                );
-                ServiceAccountCredential credential = new(
-                    new ServiceAccountCredential.Initializer(serviceAccountEmail)
-                    {
-                        Scopes = [AndroidPublisherService.Scope.Androidpublisher],
-                    }.FromCertificate(certificate)
-                );
-                return new AndroidPublisherService(
-                    new AndroidPublisherService.Initializer
-                    {
-                        ApplicationName = "LiftLog",
-                        HttpClientInitializer = credential,
-                    }
-                );
-            }
-        );
-        source.AddSingleton<GooglePlayPurchaseVerificationService>();
-        return source;
-    }
-
     public static IServiceCollection AddRevenueCatPurchaseVerification(
         this IServiceCollection source
     )

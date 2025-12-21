@@ -14,12 +14,6 @@ public class PurchaseVerificationService(
             return await (
                 appStore switch
                 {
-                    AppStore.Google => services
-                        .GetRequiredService<GooglePlayPurchaseVerificationService>()
-                        .IsValidPurchaseToken(proToken),
-                    AppStore.Apple => services
-                        .GetRequiredService<AppleAppStorePurchaseVerificationService>()
-                        .IsValidPurchaseToken(proToken),
                     AppStore.Web => services
                         .GetRequiredService<WebAuthPurchaseVerificationService>()
                         .IsValidPurchaseToken(proToken),

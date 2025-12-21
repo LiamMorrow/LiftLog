@@ -6,8 +6,6 @@ namespace LiftLog.Lib.Models;
 public enum AppStore
 {
     Web,
-    Google,
-    Apple,
     RevenueCat,
 }
 
