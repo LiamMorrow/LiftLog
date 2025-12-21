@@ -1,5 +1,4 @@
 using System.Net;
-using LiftLog.Api.Service;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Services;
 using Microsoft.AspNetCore.Mvc.Testing;

@@ -1,13 +1,10 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using LiftLog.Api.Models;
 using LiftLog.Api.Utils;
 using LiftLog.Lib.Models;
-using OpenAI;
 using OpenAI.Chat;
 
 namespace LiftLog.Api.Service;

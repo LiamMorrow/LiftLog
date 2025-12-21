@@ -1,6 +1,5 @@
 using FluentValidation;
 using LiftLog.Api.Db;
-using LiftLog.Api.Service;
 using LiftLog.Lib.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

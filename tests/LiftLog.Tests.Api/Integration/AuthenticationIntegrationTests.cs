@@ -1,12 +1,8 @@
-using System.Collections.Immutable;
 using System.Net;
-using System.Net.Http.Headers;
-using FluentAssertions;
 using LiftLog.Api.Models;
 using LiftLog.Api.Service;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace LiftLog.Tests.Api.Integration;
 

@@ -1,5 +1,4 @@
 using LiftLog.Lib.Models;
-using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace LiftLog.Tests.Api.Integration.Helpers;
 
