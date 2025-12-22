@@ -213,7 +213,6 @@ export default function HistoryCalendarCard({
       <Card.Content>
         <View
           style={{
-            flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'stretch',
             flex: 3,
