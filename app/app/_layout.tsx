@@ -17,6 +17,7 @@ LogBox.ignoreLogs([
   /Open debugger to view warnings./,
   /.*useInsertionEffect.*/,
   /.*Failed to fetch inbox.*/,
+  /.*Failed to update profile*/,
 ]);
 
 export default Sentry.wrap(function RootLayout() {

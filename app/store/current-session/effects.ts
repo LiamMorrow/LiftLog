@@ -1,5 +1,9 @@
 import { LiftLog } from '@/gen/proto';
-import { RecordedWeightedExercise, Session } from '@/models/session-models';
+import {
+  EmptySession,
+  RecordedWeightedExercise,
+  Session,
+} from '@/models/session-models';
 import { fromCurrentSessionDao } from '@/models/storage/conversions.from-dao';
 import { toCurrentSessionDao } from '@/models/storage/conversions.to-dao';
 import {
@@ -9,16 +13,19 @@ import {
   initializeCurrentSessionStateSlice,
   notifySetTimer,
   persistCurrentSession,
+  selectCurrentSession,
+  setCurrentPlanDiff,
   setCurrentSession,
   setCurrentSessionFromBlueprint,
   setIsHydrated,
   setLatestSetTimerNotificationId,
 } from '@/store/current-session';
 import { addEffect } from '@/store/store';
-import { fetchUpcomingSessions } from '@/store/program';
+import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
 import { addStoredSession } from '@/store/stored-sessions';
 import { LocalDateTime } from '@js-joda/core';
 import { selectPreferredWeightUnit } from '@/store/settings';
+import { diffSessionBlueprints } from '@/models/blueprint-diff';
 
 const storageKey = 'CurrentSessionStateV1';
 export function applyCurrentSessionEffects() {
@@ -130,9 +137,41 @@ export function applyCurrentSessionEffects() {
 
   addEffect(persistCurrentSession, async (a, { dispatch, getState }) => {
     dispatch(clearSetTimerNotification());
-    const session = getState().currentSession[a.payload];
+    const session = selectCurrentSession(getState(), a.payload);
+    const program = selectActiveProgram(getState());
     if (session) {
-      dispatch(addStoredSession(Session.fromPOJO(session)));
+      dispatch(addStoredSession(session));
+      const sessionInPlan = program.sessions.some((x) =>
+        x.equals(session.blueprint),
+      );
+      if (!sessionInPlan) {
+        const sessionWithSameNameInPlan = program.sessions.find(
+          (x) => x.name === session.blueprint.name,
+        );
+        dispatch(
+          setCurrentPlanDiff(
+            sessionWithSameNameInPlan
+              ? {
+                  type: 'diff',
+                  diff: diffSessionBlueprints(
+                    sessionWithSameNameInPlan,
+                    session.blueprint,
+                  ),
+                  originalSession: sessionWithSameNameInPlan.toPOJO(),
+                  sessionIndex: program.sessions.indexOf(
+                    sessionWithSameNameInPlan,
+                  ),
+                }
+              : {
+                  type: 'add',
+                  diff: diffSessionBlueprints(
+                    EmptySession.blueprint,
+                    session.blueprint,
+                  ),
+                },
+          ),
+        );
+      }
     }
     dispatch(setCurrentSession({ target: a.payload, session: undefined }));
     dispatch(fetchUpcomingSessions());

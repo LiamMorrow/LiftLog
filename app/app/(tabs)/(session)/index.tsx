@@ -31,6 +31,7 @@ import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 import { MigrateToWeightUnitsWizard } from '@/components/smart/migrate-to-weight-units';
 import { WelcomeWizard } from '@/components/smart/welcome-wizard';
+import { SessionDiffSaveDialog } from '@/components/smart/session-diff-save-dialog';
 
 function PlanManager() {
   const { push } = useRouter();
@@ -91,6 +92,7 @@ function ListUpcomingWorkouts({
   };
   return (
     <View style={{ flex: 1, gap: spacing[2], paddingTop: spacing[4] }}>
+      <SessionDiffSaveDialog />
       <WelcomeWizard />
       <PlanManager />
       {currentSession && (

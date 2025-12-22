@@ -464,7 +464,7 @@ function WeightedExerciseEditor({
       <SharedFieldsEditor exercise={exercise} updateExercise={updateExercise} />
 
       <LabelledFormRow
-        label={t('ai.progressive_overload.label')}
+        label={t('exercise.progressive_overload.label')}
         icon="speedFill"
       >
         <EditableIncrementer

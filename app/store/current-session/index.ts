@@ -25,6 +25,7 @@ import BigNumber from 'bignumber.js';
 import { Draft, WritableDraft } from 'immer';
 import Enumerable from 'linq';
 import * as Sentry from '@sentry/react-native';
+import { PlanDiff } from '@/models/blueprint-diff';
 
 interface CurrentSessionState {
   isHydrated: boolean;
@@ -33,6 +34,7 @@ interface CurrentSessionState {
   feedSession: SessionPOJO | undefined;
   latestSetTimerNotificationId: string | undefined;
   workoutSessionLastSetTime: LocalDateTime | undefined;
+  currentPlanDiff: PlanDiff | undefined;
 }
 
 export type SessionTarget = 'workoutSession' | 'historySession' | 'feedSession';
@@ -46,6 +48,7 @@ const initialState: CurrentSessionState = {
   feedSession: undefined,
   latestSetTimerNotificationId: undefined,
   workoutSessionLastSetTime: undefined,
+  currentPlanDiff: undefined,
 };
 
 type TargetedSessionAction<TPayload> = PayloadAction<{
@@ -87,6 +90,10 @@ const currentSessionSlice = createSlice({
   reducers: {
     setIsHydrated(state, action: PayloadAction<boolean>) {
       state.isHydrated = action.payload;
+    },
+
+    setCurrentPlanDiff(state, action: PayloadAction<PlanDiff | undefined>) {
+      state.currentPlanDiff = action.payload;
     },
 
     setActiveSessionDate: targetedSessionAction((session, date: LocalDate) => {
@@ -486,6 +493,7 @@ export const {
   setLatestSetTimerNotificationId,
   setCurrentSession,
   updateNotesForExercise,
+  setCurrentPlanDiff,
   updateBodyweight,
   setWorkoutSessionLastSetTime,
   updateDurationForCardioExercise,

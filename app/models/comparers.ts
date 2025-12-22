@@ -1,5 +1,3 @@
-import { LocalDate, LocalDateTime, LocalTime } from '@js-joda/core';
-
 export const TemporalComparer = <T extends { compareTo: (other: T) => number }>(
   a: T | undefined,
   b: T | undefined,
@@ -15,8 +13,3 @@ export const TemporalComparer = <T extends { compareTo: (other: T) => number }>(
   }
   return a.compareTo(b);
 };
-
-export const LocalTimeComparer = TemporalComparer<LocalTime>;
-
-export const LocalDateTimeComparer = TemporalComparer<LocalDateTime>;
-export const LocalDateComparer = TemporalComparer<LocalDate>;

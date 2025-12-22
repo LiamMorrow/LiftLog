@@ -121,6 +121,7 @@ export default function HistoryCalendarCard({
             style={{
               flex: 1,
             }}
+            key={dayOfWeek}
           >
             <SurfaceText
               key={dayOfWeek}
@@ -212,7 +213,6 @@ export default function HistoryCalendarCard({
       <Card.Content>
         <View
           style={{
-            flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'stretch',
             flex: 3,

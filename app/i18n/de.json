@@ -1,7 +1,6 @@
 {
   "ai.planner.subtitle": "Nutze KI zur Generierung von Plänen, zugeschnitten auf deine Ziele",
   "ai.planner.title": "KI-Planer",
-  "ai.progressive_overload.label": "Progressive Steigerung",
   "ai.restart_chat.button": "Chat neu starten",
   "ai.type_your_message.placeholder": "Nachricht eingeben",
   "ai.upgrade_to_pro.button": "Auf Pro upgraden",
@@ -56,6 +55,7 @@
   "exercise.no_exercises_added.message": "Noch keine Übung hinzugefügt",
   "exercise.no_exercises_found.message": "Keine Übungen gefunden.",
   "exercise.previous_sessions_for.title": "Frühere Trainings für {exercise}",
+  "exercise.progressive_overload.label": "Progressive Steigerung",
   "exercise.remove.confirm.body": "Die Übung wird von der derzeitigen Session entfernt. Zukünftige Session werden dadurch nicht beeinflusst.",
   "exercise.remove.confirm.title": "Übung entfernen?",
   "exercise.remove_from_workout.confirm.body": "Durch wird die Übung <em>{exercise}</em> aus <em>{session}</em> entfernt.",

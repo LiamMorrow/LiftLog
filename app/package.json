@@ -97,6 +97,7 @@
     "@types/react": "~19.1.10",
     "@typescript/native-preview": "^7.0.0-dev.20251121.1",
     "babel-plugin-inline-import": "^3.0.0",
+    "baseline-browser-mapping": "^2.9.11",
     "eslint": "^8.57.0",
     "eslint-config-expo": "~10.0.0",
     "eslint-config-prettier": "^10.0.2",

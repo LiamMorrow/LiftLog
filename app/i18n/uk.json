@@ -1,7 +1,7 @@
 {
   "ai.planner.subtitle": "Використовуйте AI для створення повної програми відповідно до ваших цілей",
   "ai.planner.title": "AI Планувальник",
-  "ai.progressive_overload.label": "Прогресивне навантаження",
+  "exercise.progressive_overload.label": "Прогресивне навантаження",
   "ai.restart_chat.button": "Перезапустити чат",
   "ai.type_your_message.placeholder": "Введіть своє повідомлення",
   "ai.upgrade_to_pro.button": "Оновити до Pro",
