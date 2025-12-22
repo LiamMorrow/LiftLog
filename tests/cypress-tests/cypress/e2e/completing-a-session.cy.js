@@ -48,7 +48,7 @@ describe('Completing a session', () => {
       cy.dialog().findByTestId("dialog-action").click()
 
       cy.getByTestId('add-tracker-button').click()
-      cy.getByTestId('add-tracker-menu-Time').click()
+      cy.getByTestId('add-tracker-menu-time').click()
       cy.getByTestId('cardio-timer-play-pause').click().wait(1100).click()
       cy.getByTestId('timer-editor-seconds').should('have.value', '01')
 
@@ -62,7 +62,7 @@ describe('Completing a session', () => {
       cy.dialog().findByTestId("dialog-action").click()
 
       cy.getByTestId('add-tracker-button').click()
-      cy.getByTestId('add-tracker-menu-Distance').click()
+      cy.getByTestId('add-tracker-menu-distance').click()
     })
   })
 

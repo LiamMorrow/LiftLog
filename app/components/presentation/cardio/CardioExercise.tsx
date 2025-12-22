@@ -137,10 +137,14 @@ function AddTrackerButtonMenu(props: {
     unit: imperialByDefault ? 'mile' : 'kilometre',
   };
 
-  const menuItem = (name: TranslationKey, action: () => void) => (
+  const menuItem = (
+    name: string,
+    labelKey: TranslationKey,
+    action: () => void,
+  ) => (
     <Menu.Item
       key={name}
-      title={t(name)}
+      title={t(labelKey)}
       testID={'add-tracker-menu-' + name}
       onPress={() => {
         setMenuOpen(false);
@@ -152,19 +156,25 @@ function AddTrackerButtonMenu(props: {
   const menuItems = [
     !recordedExercise.distance &&
       (blueprint.trackDistance || blueprint.target.type === 'distance') &&
-      menuItem('exercise.distance.label', () => updateDistance(distanceTarget)),
+      menuItem('distance', 'exercise.distance.label', () =>
+        updateDistance(distanceTarget),
+      ),
 
     !recordedExercise.duration &&
       (blueprint.trackDuration || blueprint.target.type === 'time') &&
-      menuItem('generic.time.label', () => updateDuration(Duration.ZERO)),
+      menuItem('time', 'generic.time.label', () =>
+        updateDuration(Duration.ZERO),
+      ),
 
     !recordedExercise.incline &&
       blueprint.trackIncline &&
-      menuItem('exercise.incline.label', () => updateIncline(BigNumber(0))),
+      menuItem('incline', 'exercise.incline.label', () =>
+        updateIncline(BigNumber(0)),
+      ),
 
     !recordedExercise.resistance &&
       blueprint.trackResistance &&
-      menuItem('exercise.resistance.label', () =>
+      menuItem('resistance', 'exercise.resistance.label', () =>
         updateResistance(BigNumber(0)),
       ),
   ].filter(isNotNullOrUndefinedOrFalse);

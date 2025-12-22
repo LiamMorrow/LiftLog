@@ -214,8 +214,7 @@ export default function HistoryCalendarCard({
           style={{
             flexDirection: 'row',
             justifyContent: 'center',
-            alignItems: 'center',
-            flexWrap: 'wrap',
+            alignItems: 'stretch',
             flex: 3,
           }}
         >
