@@ -1,7 +1,3 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-#src: https://www.andreasnesheim.no/setting-up-ci-for-your-net-maui-ios-app-with-github-actions/
-
 name: Release iOS
 
 on:
@@ -11,57 +7,54 @@ on:
 jobs:
   build:
     runs-on: macos-15
+
     env:
-      KEYCHAIN: job-${{ github.job }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
-      SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN_REACT}}
+      # App Store Connect API auth (required for automatic signing)
+      APPSTORE_CONNECT_API_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+      APPSTORE_CONNECT_API_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+      APPSTORE_CONNECT_API_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+
+      # App config
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN_REACT }}
       EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY: ${{ secrets.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY }}
 
     steps:
-      - uses: actions/checkout@v6
-      - uses: maxim-lobanov/setup-xcode@v1
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: 16.4.0
-      - uses: mlilback/build-number@v1
-        name: Set build number
+
+      - name: Set build number
+        uses: mlilback/build-number@v1
         id: buildNumber
         with:
           base: 100
-          run-id: ${{github.run_number}}
-      - name: Put distribution cert
-        env: # Or as an environment variable
-          APPLE_DISTRIBUTION_CERT_P12_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERT_P12_BASE64 }}
-        run: echo "${APPLE_DISTRIBUTION_CERT_P12_BASE64}" | base64 -d > liftlog.p12
-      - name: Import Code-Signing Certificates
-        uses: Apple-Actions/import-codesign-certs@v5
-        with:
-          p12-filepath: "liftlog.p12"
-          p12-password: ${{ secrets.APPLE_DISTRIBUTION_CERT_PASS }}
-          keychain: ${{ env.KEYCHAIN }}
-      - name: Download Apple Provisioning Profiles
-        id: provision
-        uses: Apple-Actions/download-provisioning-profiles@v4
-        with:
-          bundle-id: "com.limajuice.liftlog"
-          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
-          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
-          api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+          run-id: ${{ github.run_number }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: 24.x
+
       - name: Install JS dependencies
+        working-directory: ./app
         run: npm ci
-        working-directory: ./app
+
       - name: Build JS bundle (optional)
-        run: npx expo export --platform ios || echo "Skip if not needed"
         working-directory: ./app
-      - name: Install CocoaPods dependencies
+        run: npx expo export --platform ios || echo "Skipped"
+
+      - name: Install CocoaPods
+        working-directory: ./app
         run: |
           cd ios
           pod install
+
+      - name: Generate exportOptions.plist (automatic signing)
         working-directory: ./app
-      - name: Generate exportOptions.plist
-        working-directory: app
         run: |
           cat > exportOptions.plist <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
@@ -69,18 +62,11 @@ jobs:
           <plist version="1.0">
           <dict>
             <key>method</key>
-            <string>app-store-connect</string>
+            <string>app-store</string>
             <key>teamID</key>
             <string>${{ secrets.APPLE_TEAM_ID }}</string>
             <key>signingStyle</key>
-            <string>manual</string>
-            <key>provisioningProfiles</key>
-            <dict>
-              <key>com.limajuice.liftlog</key>
-              <string>LiftLog</string>
-            </dict>
-            <key>compileBitcode</key>
-            <true/>
+            <string>automatic</string>
             <key>destination</key>
             <string>export</string>
             <key>stripSwiftSymbols</key>
@@ -90,7 +76,9 @@ jobs:
           </dict>
           </plist>
           EOF
-      - name: Archive iOS app
+
+      - name: Archive iOS app (automatic signing)
+        working-directory: ./app
         run: |
           mkdir -p ios/build
           xcodebuild archive \
@@ -100,18 +88,23 @@ jobs:
             -configuration Release \
             -archivePath "${PWD}/ios/build/App.xcarchive" \
             -allowProvisioningUpdates \
-            DEVELOPMENT_TEAM="${{secrets.APPLE_TEAM_ID}}" \
+            DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}" \
             APP_DISPLAY_VERSION="${{ github.event.release.name }}" \
-            APP_VERSION="${{ steps.buildNumber.outputs.build-number }}" \
-            OTHER_CODE_SIGN_FLAGS="--keychain ${{ env.KEYCHAIN }}"
-        working-directory: ./app
+            APP_VERSION="${{ steps.buildNumber.outputs.build-number }}"
+
       - name: Export IPA
+        working-directory: ./app
         run: |
           xcodebuild -exportArchive \
             -archivePath "${PWD}/ios/build/App.xcarchive" \
             -exportOptionsPlist exportOptions.plist \
-            -exportPath "${PWD}/ios/build/export" \
-            DEVELOPMENT_TEAM=${{secrets.APPLE_TEAM_ID}}
-        working-directory: ./app
-      - name: Upload with altool
-        run: xcrun altool --upload-app -f app/ios/build/export/LiftLog.ipa -t ios -p '${{secrets.APPLE_UPLOAD_PASS}}' -u ${{secrets.APPLE_UPLOAD_USER}}
+            -exportPath "${PWD}/ios/build/export"
+
+      - name: Upload to App Store Connect
+        run: |
+          xcrun altool \
+            --upload-app \
+            -f app/ios/build/export/LiftLog.ipa \
+            -t ios \
+            -u ${{ secrets.APPLE_UPLOAD_USER }} \
+            -p '${{ secrets.APPLE_UPLOAD_PASS }}'
