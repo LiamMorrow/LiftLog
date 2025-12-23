@@ -50,4 +50,4 @@ jobs:
             -scheme LiftLog \
             -sdk iphonesimulator \
             -configuration Debug \
-            -destination 'platform=iOS Simulator,name=iPhone 15'
+            -destination 'platform=iOS Simulator,name=iPhone 17'
