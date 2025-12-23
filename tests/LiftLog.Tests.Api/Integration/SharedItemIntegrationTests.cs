@@ -17,6 +17,15 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
     private static readonly byte[] rsaPublicKey = Enumerable.Repeat((byte)0x05, 16).ToArray();
     private readonly WebApplicationFactory<Program> _factory = factory.WithWebHostBuilder(builder =>
     {
+        builder.ConfigureAppConfiguration(
+            (context, config) =>
+            {
+                // Get the path to the test project's output directory
+                var testProjectPath = Directory.GetCurrentDirectory();
+                var appsettingsPath = Path.Combine(testProjectPath, "appsettings.json");
+                config.AddJsonFile(appsettingsPath, optional: false, reloadOnChange: false);
+            }
+        );
         builder.ConfigureServices(services =>
         {
             // Set TEST_MODE environment variable for rate limiting bypass in some scenarios
