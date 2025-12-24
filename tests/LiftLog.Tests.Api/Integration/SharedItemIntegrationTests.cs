@@ -1,13 +1,17 @@
 using System.Net;
+using System.Net.Http.Json;
 using LiftLog.Lib.Models;
 using LiftLog.Lib.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Visus.Cuid;
 
 namespace LiftLog.Tests.ApiErrorType.Integration;
 
+[ClassDataSource<Microsoft.AspNetCore.Mvc.Testing.WebApplicationFactory<Program>>(
+    Shared = SharedType.PerClass
+)]
 public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
-    : IClassFixture<WebApplicationFactory<Program>>
 {
     const string url = "/shareditem";
     private static readonly AesEncryptedAndRsaSignedData encryptedPayload = new(
@@ -17,6 +21,15 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
     private static readonly byte[] rsaPublicKey = Enumerable.Repeat((byte)0x05, 16).ToArray();
     private readonly WebApplicationFactory<Program> _factory = factory.WithWebHostBuilder(builder =>
     {
+        builder.ConfigureAppConfiguration(
+            (context, config) =>
+            {
+                // Get the path to the test project's output directory
+                var testProjectPath = Directory.GetCurrentDirectory();
+                var appsettingsPath = Path.Combine(testProjectPath, "appsettings.json");
+                config.AddJsonFile(appsettingsPath, optional: false, reloadOnChange: false);
+            }
+        );
         builder.ConfigureServices(services =>
         {
             // Set TEST_MODE environment variable for rate limiting bypass in some scenarios
@@ -24,7 +37,7 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
         });
     });
 
-    [Fact]
+    [Test]
     public async Task Post_SharedItemGivesAnId()
     {
         // Arrange
@@ -50,21 +63,21 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
         response.EnsureSuccessStatusCode(); // Status Code 200-299
         var responseBody = await response.Content.ReadFromJsonAsync<CreateSharedItemResponse>();
 
-        responseBody.Should().NotBeNull();
-        responseBody!.Id.Should().NotBeEmpty();
+        await Assert.That(responseBody).IsNotNull();
+        await Assert.That(responseBody!.Id).IsNotEmpty();
 
         var getSharedItemResponse = await client.GetFromJsonAsync<GetSharedItemResponse>(
             url + "/" + responseBody.Id
         );
 
-        getSharedItemResponse.Should().NotBeNull();
-        getSharedItemResponse!
-            .RsaPublicKey.SpkiPublicKeyBytes.Should()
-            .BeEquivalentTo(rsaPublicKey);
-        getSharedItemResponse.EncryptedPayload.Should().BeEquivalentTo(encryptedPayload);
+        await Assert.That(getSharedItemResponse).IsNotNull();
+        await Assert
+            .That(getSharedItemResponse!.RsaPublicKey.SpkiPublicKeyBytes)
+            .IsEquivalentTo(rsaPublicKey);
+        await Assert.That(getSharedItemResponse.EncryptedPayload).IsEquivalentTo(encryptedPayload);
     }
 
-    [Fact]
+    [Test]
     public async Task Post_SharedItemWithInvalidUserId_ReturnsUnauthorized()
     {
         // Arrange
@@ -81,10 +94,10 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
         var response = await client.PostAsJsonAsync(url, sharedItemCreateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Unauthorized);
     }
 
-    [Fact]
+    [Test]
     public async Task Post_SharedItemWithInvalidPassword_ReturnsUnauthorized()
     {
         // Arrange
@@ -107,10 +120,10 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
         var response = await client.PostAsJsonAsync(url, sharedItemCreateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Unauthorized);
     }
 
-    [Fact]
+    [Test]
     public async Task Get_SharedItemWithNonExistantId_ReturnsNotFound()
     {
         // Arrange
@@ -120,6 +133,6 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
         var response = await client.GetAsync(url + "/" + new Cuid2(12).ToString());
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
     }
 }

@@ -14,4 +14,10 @@ public record CreateSharedItemResponse(string Id);
 public record GetSharedItemResponse(
     RsaPublicKey RsaPublicKey,
     AesEncryptedAndRsaSignedData EncryptedPayload
-);
+)
+{
+    public object Should()
+    {
+        throw new NotImplementedException();
+    }
+}

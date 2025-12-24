@@ -1,7 +1,3 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-#src: https://www.andreasnesheim.no/setting-up-ci-for-your-net-maui-ios-app-with-github-actions/
-
 name: Build iOS
 
 on:
@@ -14,54 +10,44 @@ on:
 jobs:
   build:
     runs-on: macos-15
+
     env:
-      SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN_REACT}}
-      KEYCHAIN: job-${{ github.job }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN_REACT }}
 
     steps:
-      - uses: actions/checkout@v6
-      - uses: maxim-lobanov/setup-xcode@v1
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: 16.4.0
-      - name: Put distribution cert
-        env:
-          APPLE_DISTRIBUTION_CERT_P12_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERT_P12_BASE64 }}
-        run: echo "${APPLE_DISTRIBUTION_CERT_P12_BASE64}" | base64 -d > liftlog.p12
-      - name: Import Code-Signing Certificates
-        uses: Apple-Actions/import-codesign-certs@v5
-        with:
-          p12-filepath: "liftlog.p12"
-          p12-password: ${{ secrets.APPLE_DISTRIBUTION_CERT_PASS }}
-          keychain: ${{ env.KEYCHAIN }}
-      - name: Download Apple Provisioning Profiles
-        id: provision
-        uses: Apple-Actions/download-provisioning-profiles@v4
-        with:
-          bundle-id: "com.limajuice.liftlog"
-          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
-          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
-          api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: 24.x
+
       - name: Install JS dependencies
+        working-directory: ./app
         run: npm ci
-        working-directory: ./app
+
       - name: Build JS bundle (optional)
-        run: npx expo export --platform ios || echo "Skip if not needed"
         working-directory: ./app
-      - name: Install CocoaPods dependencies
+        run: npx expo export --platform ios || echo "Skipped"
+
+      - name: Install CocoaPods
+        working-directory: ./app
         run: |
           cd ios
           pod install
-        working-directory: ./app
-      - name: Archive iOS app
-        run: |
-          xcodebuild -workspace ios/LiftLog.xcworkspace \
-            -scheme LiftLog \
-            -sdk iphoneos \
-            -configuration Release \
-            -archivePath ios/build/App.xcarchive archive
 
+      - name: Build iOS app (simulator, no signing)
         working-directory: ./app
+        run: |
+          xcodebuild \
+            -workspace ios/LiftLog.xcworkspace \
+            -scheme LiftLog \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            -destination 'platform=iOS Simulator,name=iPhone 17'

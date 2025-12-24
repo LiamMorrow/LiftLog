@@ -4,8 +4,8 @@ namespace LiftLog.Tests.Api.Utils;
 
 public class PartialJsonParserTests
 {
-    [Fact]
-    public void TryParsePartialJson_WithCompleteValidJson_ShouldParseSuccessfully()
+    [Test]
+    public async Task TryParsePartialJson_WithCompleteValidJson_ShouldParseSuccessfully()
     {
         // Arrange
         var completeJson = """{"name": "John", "age": 30}""";
@@ -17,38 +17,38 @@ public class PartialJsonParserTests
         );
 
         // Assert
-        result.Should().BeTrue();
-        parsed.Should().NotBeNull();
-        parsed!.Name.Should().Be("John");
-        parsed.Age.Should().Be(30);
+        await Assert.That(result).IsTrue();
+        await Assert.That(parsed).IsNotNull();
+        await Assert.That(parsed!.Name).IsEqualTo("John");
+        await Assert.That(parsed.Age).IsEqualTo(30);
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void TryParsePartialJson_WithEmptyOrWhitespaceInput_ShouldReturnFalse(string input)
+    [Test]
+    [Arguments("")]
+    [Arguments("   ")]
+    public async Task TryParsePartialJson_WithEmptyOrWhitespaceInput_ShouldReturnFalse(string input)
     {
         // Act
         var result = PartialJsonParser.TryParsePartialJson<TestObject>(input, out var parsed);
 
         // Assert
-        result.Should().BeFalse();
-        parsed.Should().BeNull();
+        await Assert.That(result).IsFalse();
+        await Assert.That(parsed).IsNull();
     }
 
-    [Fact]
-    public void TryParsePartialJson_WithNullInput_ShouldReturnFalse()
+    [Test]
+    public async Task TryParsePartialJson_WithNullInput_ShouldReturnFalse()
     {
         // Act
         var result = PartialJsonParser.TryParsePartialJson<TestObject>(null!, out var parsed);
 
         // Assert
-        result.Should().BeFalse();
-        parsed.Should().BeNull();
+        await Assert.That(result).IsFalse();
+        await Assert.That(parsed).IsNull();
     }
 
-    [Fact]
-    public void TryParsePartialJson_WithMissingClosingBrace_ShouldCompleteAndParse()
+    [Test]
+    public async Task TryParsePartialJson_WithMissingClosingBrace_ShouldCompleteAndParse()
     {
         // Arrange
         var incompleteJson = """{"name": "John", "age": 30""";
@@ -60,14 +60,14 @@ public class PartialJsonParserTests
         );
 
         // Assert
-        result.Should().BeTrue();
-        parsed.Should().NotBeNull();
-        parsed!.Name.Should().Be("John");
-        parsed.Age.Should().Be(30);
+        await Assert.That(result).IsTrue();
+        await Assert.That(parsed).IsNotNull();
+        await Assert.That(parsed!.Name).IsEqualTo("John");
+        await Assert.That(parsed.Age).IsEqualTo(30);
     }
 
-    [Fact]
-    public void TryParsePartialJson_WithMissingClosingQuoteAndBrace_ShouldCompleteAndParse()
+    [Test]
+    public async Task TryParsePartialJson_WithMissingClosingQuoteAndBrace_ShouldCompleteAndParse()
     {
         // Arrange
         var incompleteJson = """
@@ -81,15 +81,15 @@ public class PartialJsonParserTests
         );
 
         // Assert
-        result.Should().BeTrue();
-        parsed.Should().NotBeNull();
-        parsed!.Name.Should().Be("John");
-        parsed.Age.Should().Be(30);
-        parsed.City.Should().Be("New York");
+        await Assert.That(result).IsTrue();
+        await Assert.That(parsed).IsNotNull();
+        await Assert.That(parsed!.Name).IsEqualTo("John");
+        await Assert.That(parsed.Age).IsEqualTo(30);
+        await Assert.That(parsed.City).IsEqualTo("New York");
     }
 
-    [Fact]
-    public void TryParsePartialJson_WithNestedObjectsMissingBraces_ShouldCompleteAndParse()
+    [Test]
+    public async Task TryParsePartialJson_WithNestedObjectsMissingBraces_ShouldCompleteAndParse()
     {
         // Arrange
         var incompleteJson = """
@@ -103,16 +103,16 @@ public class PartialJsonParserTests
         );
 
         // Assert
-        result.Should().BeTrue();
-        parsed.Should().NotBeNull();
-        parsed!.Name.Should().Be("John");
-        parsed.Address.Should().NotBeNull();
-        parsed.Address!.Street.Should().Be("123 Main St");
-        parsed.Address.City.Should().Be("Boston");
+        await Assert.That(result).IsTrue();
+        await Assert.That(parsed).IsNotNull();
+        await Assert.That(parsed!.Name).IsEqualTo("John");
+        await Assert.That(parsed.Address).IsNotNull();
+        await Assert.That(parsed.Address!.Street).IsEqualTo("123 Main St");
+        await Assert.That(parsed.Address.City).IsEqualTo("Boston");
     }
 
-    [Fact]
-    public void TryParsePartialJson_WithArrayMissingClosingBracket_ShouldCompleteAndParse()
+    [Test]
+    public async Task TryParsePartialJson_WithArrayMissingClosingBracket_ShouldCompleteAndParse()
     {
         // Arrange
         var incompleteJson = """
@@ -126,17 +126,17 @@ public class PartialJsonParserTests
         );
 
         // Assert
-        result.Should().BeTrue();
-        parsed.Should().NotBeNull();
-        parsed!.Name.Should().Be("John");
-        parsed.Hobbies.Should().NotBeNull();
-        parsed.Hobbies.Should().HaveCount(2);
-        parsed.Hobbies.Should().Contain("reading");
-        parsed.Hobbies.Should().Contain("gaming");
+        await Assert.That(result).IsTrue();
+        await Assert.That(parsed).IsNotNull();
+        await Assert.That(parsed!.Name).IsEqualTo("John");
+        await Assert.That(parsed.Hobbies).IsNotNull();
+        await Assert.That(parsed.Hobbies!.Count).IsEqualTo(2);
+        await Assert.That(parsed.Hobbies).Contains("reading");
+        await Assert.That(parsed.Hobbies).Contains("gaming");
     }
 
-    [Fact]
-    public void TryParsePartialJson_WithNestedArraysAndObjects_ShouldCompleteAndParse()
+    [Test]
+    public async Task TryParsePartialJson_WithNestedArraysAndObjects_ShouldCompleteAndParse()
     {
         // Arrange
         var incompleteJson = """{"items": [{"id": 1, "data": [1, 2, 3""";
@@ -148,18 +148,18 @@ public class PartialJsonParserTests
         );
 
         // Assert
-        result.Should().BeTrue();
-        parsed.Should().NotBeNull();
-        parsed!.Items.Should().NotBeNull();
-        parsed.Items.Should().HaveCount(1);
-        parsed.Items![0].Id.Should().Be(1);
-        parsed.Items[0].Data.Should().NotBeNull();
-        parsed.Items[0].Data.Should().HaveCount(3);
-        parsed.Items[0].Data.Should().Equal(1, 2, 3);
+        await Assert.That(result).IsTrue();
+        await Assert.That(parsed).IsNotNull();
+        await Assert.That(parsed!.Items).IsNotNull();
+        await Assert.That(parsed.Items!.Count).IsEqualTo(1);
+        await Assert.That(parsed.Items![0].Id).IsEqualTo(1);
+        await Assert.That(parsed.Items[0].Data).IsNotNull();
+        await Assert.That(parsed.Items[0].Data!.Count).IsEqualTo(3);
+        await Assert.That(parsed.Items[0].Data).IsEquivalentTo(new[] { 1, 2, 3 });
     }
 
-    [Fact]
-    public void TryParsePartialJson_WithEscapedQuotes_ShouldHandleCorrectly()
+    [Test]
+    public async Task TryParsePartialJson_WithEscapedQuotes_ShouldHandleCorrectly()
     {
         // Arrange
         var incompleteJson = "{\"name\": \"John \\\"The Great\\\"\", \"age\": 30";
@@ -171,14 +171,14 @@ public class PartialJsonParserTests
         );
 
         // Assert
-        result.Should().BeTrue();
-        parsed.Should().NotBeNull();
-        parsed!.Name.Should().Be("John \"The Great\"");
-        parsed.Age.Should().Be(30);
+        await Assert.That(result).IsTrue();
+        await Assert.That(parsed).IsNotNull();
+        await Assert.That(parsed!.Name).IsEqualTo("John \"The Great\"");
+        await Assert.That(parsed.Age).IsEqualTo(30);
     }
 
-    [Fact]
-    public void TryParsePartialJson_WithEscapedBackslashes_ShouldHandleCorrectly()
+    [Test]
+    public async Task TryParsePartialJson_WithEscapedBackslashes_ShouldHandleCorrectly()
     {
         // Arrange
         var incompleteJson = """
@@ -192,24 +192,24 @@ public class PartialJsonParserTests
         );
 
         // Assert
-        result.Should().BeTrue();
-        parsed.Should().NotBeNull();
-        parsed!.Path.Should().Be("C:\\Users\\John");
-        parsed.Name.Should().Be("John");
+        await Assert.That(result).IsTrue();
+        await Assert.That(parsed).IsNotNull();
+        await Assert.That(parsed!.Path).IsEqualTo("C:\\Users\\John");
+        await Assert.That(parsed.Name).IsEqualTo("John");
     }
 
-    [Theory]
-    [InlineData("invalid json")]
-    [InlineData("{{")]
-    [InlineData("]}")]
-    public void TryParsePartialJson_WithMalformedJson_ShouldReturnFalse(string invalidJson)
+    [Test]
+    [Arguments("invalid json")]
+    [Arguments("{{")]
+    [Arguments("]}")]
+    public async Task TryParsePartialJson_WithMalformedJson_ShouldReturnFalse(string invalidJson)
     {
         // Act
         var result = PartialJsonParser.TryParsePartialJson<TestObject>(invalidJson, out var parsed);
 
         // Assert
-        result.Should().BeFalse();
-        parsed.Should().BeNull();
+        await Assert.That(result).IsFalse();
+        await Assert.That(parsed).IsNull();
     }
 }
 
