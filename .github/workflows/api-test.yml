@@ -26,7 +26,7 @@ jobs:
           --health-retries 5
         ports:
           # Maps tcp port 5432 on service container to the host
-          - 5400:5432
+          - 5401:5432
     steps:
       - uses: actions/checkout@v6
       - name: Setup .NET
@@ -40,5 +40,5 @@ jobs:
         run: dotnet build
         working-directory: ./tests/LiftLog.Tests.Api
       - name: Test
-        run: dotnet test --no-restore --verbosity normal
+        run: dotnet run --no-restore --verbosity normal
         working-directory: ./tests/LiftLog.Tests.Api

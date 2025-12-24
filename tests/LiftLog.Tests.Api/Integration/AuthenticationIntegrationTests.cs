@@ -1,12 +1,17 @@
 using System.Net;
 using LiftLog.Api.Models;
 using LiftLog.Api.Service;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Configuration;
 
 namespace LiftLog.Tests.Api.Integration;
 
-public class AuthenticationIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
+[ClassDataSource<Microsoft.AspNetCore.Mvc.Testing.WebApplicationFactory<Program>>(
+    Shared = SharedType.PerClass
+)]
+public class AuthenticationIntegrationTests
 {
     private readonly WebApplicationFactory<Program> _factory;
     private const string TestWebAuthKey = "test-web-auth-key-12345";
@@ -64,7 +69,7 @@ public class AuthenticationIntegrationTests : IClassFixture<WebApplicationFactor
         });
     }
 
-    [Fact]
+    [Test]
     public async Task AiChatHub_WithValidWebAuth_ShouldConnect()
     {
         // Arrange
@@ -93,14 +98,14 @@ public class AuthenticationIntegrationTests : IClassFixture<WebApplicationFactor
         await hubConnection.StartAsync();
 
         // Assert
-        hubConnection.State.Should().Be(HubConnectionState.Connected);
+        await Assert.That(hubConnection.State).IsEqualTo(HubConnectionState.Connected);
 
         // Cleanup
         await hubConnection.StopAsync();
         await hubConnection.DisposeAsync();
     }
 
-    [Fact]
+    [Test]
     public async Task AiChatHub_WithValidRevenueCatAuth_ShouldConnect()
     {
         // Arrange
@@ -120,14 +125,14 @@ public class AuthenticationIntegrationTests : IClassFixture<WebApplicationFactor
         await hubConnection.StartAsync();
 
         // Assert
-        hubConnection.State.Should().Be(HubConnectionState.Connected);
+        await Assert.That(hubConnection.State).IsEqualTo(HubConnectionState.Connected);
 
         // Cleanup
         await hubConnection.StopAsync();
         await hubConnection.DisposeAsync();
     }
 
-    [Fact]
+    [Test]
     public async Task AiChatHub_WithoutAuth_ShouldFailToConnect()
     {
         // Arrange
@@ -147,10 +152,10 @@ public class AuthenticationIntegrationTests : IClassFixture<WebApplicationFactor
         var exception = await Assert.ThrowsAsync<HttpRequestException>(async () =>
             await hubConnection.StartAsync()
         );
-        exception.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        await Assert.That(exception.StatusCode).IsEqualTo(HttpStatusCode.Unauthorized);
     }
 
-    [Fact]
+    [Test]
     public async Task AiChatHub_WithInvalidWebAuthToken_ShouldFailToConnect()
     {
         // Arrange
@@ -170,10 +175,10 @@ public class AuthenticationIntegrationTests : IClassFixture<WebApplicationFactor
         var exception = await Assert.ThrowsAsync<HttpRequestException>(async () =>
             await hubConnection.StartAsync()
         );
-        exception.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        await Assert.That(exception.StatusCode).IsEqualTo(HttpStatusCode.Unauthorized);
     }
 
-    [Fact]
+    [Test]
     public async Task AiChatHub_WithInvalidRevenueCatUserId_ShouldFailToConnect()
     {
         // Arrange
@@ -193,10 +198,10 @@ public class AuthenticationIntegrationTests : IClassFixture<WebApplicationFactor
         var exception = await Assert.ThrowsAsync<HttpRequestException>(async () =>
             await hubConnection.StartAsync()
         );
-        exception.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        await Assert.That(exception.StatusCode).IsEqualTo(HttpStatusCode.Unauthorized);
     }
 
-    [Fact]
+    [Test]
     public async Task AiChatHub_WithInvalidAppStore_ShouldFailToConnect()
     {
         // Arrange
@@ -216,10 +221,10 @@ public class AuthenticationIntegrationTests : IClassFixture<WebApplicationFactor
         var exception = await Assert.ThrowsAsync<HttpRequestException>(async () =>
             await hubConnection.StartAsync()
         );
-        exception.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        await Assert.That(exception.StatusCode).IsEqualTo(HttpStatusCode.Unauthorized);
     }
 
-    [Fact]
+    [Test]
     public async Task AiChatHub_WithMalformedAuthHeader_ShouldFailToConnect()
     {
         // Arrange
@@ -239,10 +244,10 @@ public class AuthenticationIntegrationTests : IClassFixture<WebApplicationFactor
         var exception = await Assert.ThrowsAsync<HttpRequestException>(async () =>
             await hubConnection.StartAsync()
         );
-        exception.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        await Assert.That(exception.StatusCode).IsEqualTo(HttpStatusCode.Unauthorized);
     }
 
-    [Fact(Skip = "Does not pass right now")]
+    [Test, Skip("Does not pass right now")]
     public async Task AiChatHub_CanSendAndReceiveMessages_WithValidAuth()
     {
         // Arrange
@@ -284,9 +289,9 @@ public class AuthenticationIntegrationTests : IClassFixture<WebApplicationFactor
             == messageReceived.Task;
 
         // Assert
-        receivedInTime.Should().BeTrue("Should receive a response within 30 seconds");
-        receivedMessages.Should().NotBeEmpty();
-        receivedMessages.Should().Contain(m => m is AiChatMessageResponse);
+        await Assert.That(receivedInTime).IsTrue();
+        await Assert.That(receivedMessages).IsNotEmpty();
+        await Assert.That(receivedMessages.Any(m => m is AiChatMessageResponse)).IsTrue();
 
         // Cleanup
         await hubConnection.StopAsync();
