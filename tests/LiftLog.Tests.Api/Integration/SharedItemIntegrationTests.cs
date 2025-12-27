@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Visus.Cuid;
 
-namespace LiftLog.Tests.ApiErrorType.Integration;
+namespace LiftLog.Tests.Api.Integration;
 
 [ClassDataSource<Microsoft.AspNetCore.Mvc.Testing.WebApplicationFactory<Program>>(
     Shared = SharedType.PerClass
@@ -19,23 +19,9 @@ public class SharedItemIntegrationTests(WebApplicationFactory<Program> factory)
         new(Enumerable.Repeat((byte)0x04, 16).ToArray())
     );
     private static readonly byte[] rsaPublicKey = Enumerable.Repeat((byte)0x05, 16).ToArray();
-    private readonly WebApplicationFactory<Program> _factory = factory.WithWebHostBuilder(builder =>
-    {
-        builder.ConfigureAppConfiguration(
-            (context, config) =>
-            {
-                // Get the path to the test project's output directory
-                var testProjectPath = Directory.GetCurrentDirectory();
-                var appsettingsPath = Path.Combine(testProjectPath, "appsettings.json");
-                config.AddJsonFile(appsettingsPath, optional: false, reloadOnChange: false);
-            }
-        );
-        builder.ConfigureServices(services =>
-        {
-            // Set TEST_MODE environment variable for rate limiting bypass in some scenarios
-            Environment.SetEnvironmentVariable("TEST_MODE", "True");
-        });
-    });
+    private readonly WebApplicationFactory<Program> _factory = TestFactoryHelper.CreateTestFactory(
+        factory
+    );
 
     [Test]
     public async Task Post_SharedItemGivesAnId()

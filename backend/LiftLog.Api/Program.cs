@@ -101,8 +101,9 @@ app.MapMethods(
     }
 );
 
-using (var scope = app.Services.CreateScope())
+if (!app.Configuration.GetValue<bool>("SkipDatabaseMigrations"))
 {
+    using var scope = app.Services.CreateScope();
     var userDb = scope.ServiceProvider.GetRequiredService<UserDataContext>();
     await userDb.Database.MigrateAsync();
     var rateLimitDb = scope.ServiceProvider.GetRequiredService<RateLimitContext>();

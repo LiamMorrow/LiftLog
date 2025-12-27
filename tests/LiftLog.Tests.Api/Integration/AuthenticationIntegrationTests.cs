@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Memory;
 
 namespace LiftLog.Tests.Api.Integration;
 
@@ -19,19 +20,9 @@ public class AuthenticationIntegrationTests
 
     public AuthenticationIntegrationTests(WebApplicationFactory<Program> factory)
     {
-        _factory = factory.WithWebHostBuilder(builder =>
-        {
-            builder.UseEnvironment("Test");
-            builder.ConfigureAppConfiguration(
-                (context, config) =>
-                {
-                    // Get the path to the test project's output directory
-                    var testProjectPath = Directory.GetCurrentDirectory();
-                    var appsettingsPath = Path.Combine(testProjectPath, "appsettings.json");
-                    config.AddJsonFile(appsettingsPath, optional: false, reloadOnChange: false);
-                }
-            );
-            builder.ConfigureServices(services =>
+        _factory = TestFactoryHelper.CreateTestFactory(
+            factory,
+            services =>
             {
                 var mockChatPlanner = Substitute.For<IGptChatWorkoutPlanner>();
                 mockChatPlanner
@@ -62,11 +53,8 @@ public class AuthenticationIntegrationTests
 
                 // Override the WebAuthPurchaseVerificationService with our test key
                 services.AddScoped(_ => new WebAuthPurchaseVerificationService(TestWebAuthKey));
-
-                // Set TEST_MODE environment variable for rate limiting bypass
-                Environment.SetEnvironmentVariable("TEST_MODE", "True");
-            });
-        });
+            }
+        );
     }
 
     [Test]
