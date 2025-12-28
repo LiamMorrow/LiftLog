@@ -93,7 +93,6 @@ Priorities shift based on what feels fun to work on, community interest, and how
 
 Looking for contributors! These issues are great starting points:
 
-- [**#594**](https://github.com/LiamMorrow/LiftLog/issues/594) - Fix translation language bug
 - [**#400**](https://github.com/LiamMorrow/LiftLog/issues/400) - Add direct input for sets/reps
 - [**#372**](https://github.com/LiamMorrow/LiftLog/issues/372) - Custom AI model dropdown
 - [**#533**](https://github.com/LiamMorrow/LiftLog/issues/533) - WebDAV backup support
