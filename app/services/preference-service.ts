@@ -256,6 +256,20 @@ export class PreferenceService {
     );
   }
 
+  async getKeepScreenAwakeDuringWorkout(): Promise<boolean> {
+    const value = await this.keyValueStore.getItem(
+      'keepScreenAwakeDuringWorkout',
+    );
+    return fromBooleanString(value, true);
+  }
+
+  async setKeepScreenAwakeDuringWorkout(value: boolean): Promise<void> {
+    await this.keyValueStore.setItem(
+      'keepScreenAwakeDuringWorkout',
+      toBooleanString(value),
+    );
+  }
+
   async setColorSchemeSeed(payload: ColorSchemeSeed): Promise<void> {
     await this.keyValueStore.setItem('colorSchemeSeed', payload);
   }

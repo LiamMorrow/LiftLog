@@ -7,6 +7,7 @@ import {
   setCrashReportsEnabled,
   setFirstDayOfWeek,
   setIsHydrated,
+  setKeepScreenAwakeDuringWorkout,
   setLastBackup,
   setNotesExpandedByDefault,
   setPreferredLanguage,
@@ -60,6 +61,7 @@ export function applySettingsEffects() {
         colorSchemeSeed,
         proToken,
         notesExpandedByDefault,
+        keepScreenAwakeDuringWorkout,
       ] = await Promise.all([
         preferenceService.getUseImperialUnits(),
         preferenceService.getShowBodyweight(),
@@ -77,6 +79,7 @@ export function applySettingsEffects() {
         preferenceService.getColorSchemeSeed(),
         preferenceService.getProToken(),
         preferenceService.getNotesExpandedByDefault(),
+        preferenceService.getKeepScreenAwakeDuringWorkout(),
       ]);
       dispatch(setColorSchemeSeed(colorSchemeSeed));
       dispatch(setUseImperialUnits(useImperialUnits));
@@ -103,6 +106,7 @@ export function applySettingsEffects() {
       dispatch(setFirstDayOfWeek(firstDayOfWeek));
       dispatch(setProToken(proToken));
       dispatch(setNotesExpandedByDefault(notesExpandedByDefault));
+      dispatch(setKeepScreenAwakeDuringWorkout(keepScreenAwakeDuringWorkout));
 
       if (Platform.OS === 'ios') {
         Purchases.configure({
@@ -292,6 +296,15 @@ export function applySettingsEffects() {
     async (action, { stateAfterReduce, extra: { preferenceService } }) => {
       if (stateAfterReduce.settings.isHydrated) {
         await preferenceService.setNotesExpandedByDefault(action.payload);
+      }
+    },
+  );
+
+  addEffect(
+    setKeepScreenAwakeDuringWorkout,
+    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+      if (stateAfterReduce.settings.isHydrated) {
+        await preferenceService.setKeepScreenAwakeDuringWorkout(action.payload);
       }
     },
   );

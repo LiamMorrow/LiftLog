@@ -6,6 +6,7 @@ import { RootState, useAppSelector } from '@/store';
 import {
   setColorSchemeSeed,
   setCrashReportsEnabled,
+  setKeepScreenAwakeDuringWorkout,
   setNotesExpandedByDefault,
   setShowBodyweight,
   setShowFeed,
@@ -16,6 +17,7 @@ import { T, useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
 import { List } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
+import { spacing } from '@/hooks/useAppTheme';
 
 export default function AppConfiguration() {
   const { t } = useTranslate();
@@ -44,8 +46,19 @@ export default function AppConfiguration() {
 
         <ListSwitch
           headline={<T keyName="workout.notes_expanded_by_default.label" />}
+          supportingText={
+            <T keyName="workout.notes_expanded_by_default.subtitle" />
+          }
           value={settings.notesExpandedByDefault}
           onValueChange={(value) => dispatch(setNotesExpandedByDefault(value))}
+        />
+        <ListSwitch
+          headline={<T keyName="workout.keep_screen_awake.label" />}
+          supportingText={<T keyName="workout.keep_screen_awake.subtitle" />}
+          value={settings.keepScreenAwakeDuringWorkout}
+          onValueChange={(value) =>
+            dispatch(setKeepScreenAwakeDuringWorkout(value))
+          }
         />
         <ListSwitch
           headline={<T keyName="settings.show_tips.label" />}
@@ -67,6 +80,7 @@ export default function AppConfiguration() {
         <Button
           onPress={() => dispatch(setWelcomeWizardCompleted(false))}
           mode="outlined"
+          style={{ marginHorizontal: spacing.pageHorizontalMargin }}
         >
           {t('onboarding.start_setup_wizard.button')}
         </Button>

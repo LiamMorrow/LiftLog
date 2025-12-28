@@ -49,6 +49,7 @@
     "expo-file-system": "~19.0.14",
     "expo-haptics": "~15.0.7",
     "expo-intent-launcher": "~13.0.7",
+    "expo-keep-awake": "~15.0.8",
     "expo-linear-gradient": "~15.0.7",
     "expo-linking": "~8.0.8",
     "expo-localization": "~17.0.7",

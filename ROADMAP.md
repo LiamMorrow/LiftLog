@@ -13,7 +13,7 @@ Priorities shift based on what feels fun to work on, community interest, and how
 ### Bug Fixes
 
 - [ ] [**#602**](https://github.com/LiamMorrow/LiftLog/issues/602) - Progressive overload at 0 values still adds weight
-- [ ] [**#594**](https://github.com/LiamMorrow/LiftLog/issues/594) - Calendar uses system language instead of app language _(good first issue)_
+- [x] [**#594**](https://github.com/LiamMorrow/LiftLog/issues/594) - Calendar uses system language instead of app language _(good first issue)_
 - [ ] [**#577**](https://github.com/LiamMorrow/LiftLog/issues/577) - Can't delete last letter when renaming a plan
 
 ### Quick Wins
@@ -30,7 +30,7 @@ Priorities shift based on what feels fun to work on, community interest, and how
 
 - [ ] [**#435**](https://github.com/LiamMorrow/LiftLog/issues/435) - Timer on Lock Screen
 - [ ] [**#551**](https://github.com/LiamMorrow/LiftLog/issues/551) - Persistent workout notification with current exercise & rest timer
-- [ ] [**#591**](https://github.com/LiamMorrow/LiftLog/issues/591) - Keep screen on during workout
+- [x] [**#591**](https://github.com/LiamMorrow/LiftLog/issues/591) - Keep screen on during workout
 
 ### Exercise Flexibility
 

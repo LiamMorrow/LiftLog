@@ -30,6 +30,7 @@ interface SettingsState {
   colorSchemeSeed: ColorSchemeSeed;
   preferredLanguage: string | undefined;
   notesExpandedByDefault: boolean;
+  keepScreenAwakeDuringWorkout: boolean;
 }
 
 interface RemoteBackupSettings {
@@ -60,6 +61,7 @@ const initialState: SettingsState = {
   colorSchemeSeed: 'default',
   preferredLanguage: undefined,
   notesExpandedByDefault: false,
+  keepScreenAwakeDuringWorkout: false,
 };
 
 const settingsSlice = createSlice({
@@ -95,6 +97,9 @@ const settingsSlice = createSlice({
     },
     setNotesExpandedByDefault(state, action: PayloadAction<boolean>) {
       state.notesExpandedByDefault = action.payload;
+    },
+    setKeepScreenAwakeDuringWorkout(state, action: PayloadAction<boolean>) {
+      state.keepScreenAwakeDuringWorkout = action.payload;
     },
     setRemoteBackupSettings(
       state,
@@ -171,6 +176,7 @@ export const {
   setProToken,
   setPreferredLanguage,
   setNotesExpandedByDefault,
+  setKeepScreenAwakeDuringWorkout,
 } = settingsSlice.actions;
 
 export const { selectPreferredWeightUnit } = settingsSlice.selectors;

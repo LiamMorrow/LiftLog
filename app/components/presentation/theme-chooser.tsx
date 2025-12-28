@@ -95,7 +95,8 @@ export default function ThemeChooser(props: ThemeChooserProps) {
           gap: spacing[4],
           width: '100%',
           overflow: 'scroll',
-          padding: spacing[2],
+          paddingHorizontal: spacing.pageHorizontalMargin,
+          paddingVertical: spacing[2],
         }}
       >
         <FocusRing isSelected={selectedSeed === 'default'}>

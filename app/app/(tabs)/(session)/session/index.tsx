@@ -11,12 +11,16 @@ import { addUnpublishedSessionId } from '@/store/feed';
 import { setStatsIsDirty } from '@/store/stats';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
+import { useKeepAwake } from 'expo-keep-awake';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 export default function Index() {
   const dispatch = useDispatch();
   const session = useAppSelectorWithArg(selectCurrentSession, 'workoutSession');
+  const keepAwake = useAppSelector(
+    (x) => x.settings.keepScreenAwakeDuringWorkout,
+  );
   const { dismissTo } = useRouter();
   const { t } = useTranslate();
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -38,6 +42,7 @@ export default function Index() {
 
   return (
     <>
+      {keepAwake && <KeepAwake />}
       <Stack.Screen
         options={{
           title: session?.blueprint.name ?? 'Workout',
@@ -63,4 +68,12 @@ export default function Index() {
       />
     </>
   );
+}
+
+/**
+ * Allows us to conditionally keep the screen awake, as we cannot use hooks conditionally
+ */
+function KeepAwake() {
+  useKeepAwake();
+  return <></>;
 }
