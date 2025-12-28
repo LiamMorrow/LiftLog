@@ -16,7 +16,7 @@ import Animated, {
   FadeInDown,
   FadeOutDown,
 } from 'react-native-reanimated';
-import { ScrollProvider, useScroll } from '@/hooks/useScollListener';
+import { ScrollProvider, useScroll } from '@/hooks/useScrollListener';
 
 interface FullScreenDialogProps {
   title: string;

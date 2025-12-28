@@ -11,7 +11,7 @@ import SessionSummaryTitle from '@/components/presentation/session-summary-title
 import SplitCardControl from '@/components/presentation/split-card-control';
 import { SurfaceText } from '@/components/presentation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
-import { useScroll } from '@/hooks/useScollListener';
+import { useScroll } from '@/hooks/useScrollListener';
 import { FeedIdentity, FeedItem, SessionFeedItem } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
 import { shareString } from '@/store/app';

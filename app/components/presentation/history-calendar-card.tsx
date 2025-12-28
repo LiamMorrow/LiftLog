@@ -2,7 +2,7 @@ import { SurfaceText } from '@/components/presentation/surface-text';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Session } from '@/models/session-models';
 import { useAppSelector } from '@/store';
-import { formatDate, getDateOnDay } from '@/utils/format-date';
+import { getDateOnDay } from '@/utils/format-date';
 import { DayOfWeek, LocalDate, Year, YearMonth } from '@js-joda/core';
 import Enumerable from 'linq';
 import { View } from 'react-native';
@@ -11,6 +11,7 @@ import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import TouchableRipple from '@/components/presentation/gesture-wrappers/touchable-ripple';
 import Animated, { ZoomIn } from 'react-native-reanimated';
 import { ReactNode } from 'react';
+import { useFormatDate } from '@/hooks/useFormatDate';
 
 interface HistoryCalendarCardProps {
   currentYearMonth: YearMonth;
@@ -35,6 +36,7 @@ export default function HistoryCalendarCard({
     currentYearMonth.month(),
     1,
   );
+  const formatDate = useFormatDate();
   const dayOfFirstDayOfTheMonth = firstDayOfMonth.dayOfWeek().value();
   const firstDayOfWeek = useAppSelector((x) => x.settings.firstDayOfWeek);
   const numberOfDaysToShowFromPreviousMonth =
@@ -243,6 +245,7 @@ function HistoryCalendarDay(props: {
   const isTodayWithNoSessions =
     props.day.equals(LocalDate.now()) && !hasSessions;
   const { colors } = useAppTheme();
+  const formatDate = useFormatDate();
   return (
     <Animated.View
       entering={ZoomIn.delay(props.delayEntranceAnimMs)}

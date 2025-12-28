@@ -8,12 +8,13 @@ import { SurfaceText } from '@/components/presentation/surface-text';
 import { useTranslate } from '@tolgee/react';
 import { lineGraphProps } from '@/components/presentation/line-graph-props';
 import { Text } from 'react-native-paper';
-import { formatDate } from '@/utils/format-date';
 import { Weight } from '@/models/weight';
+import { useFormatDate } from '@/hooks/useFormatDate';
 
 export default function SessionStatGraphCard(props: {
   sessionStats: OptionalStatisticOverTime<Weight>[];
 }) {
+  const formatDate = useFormatDate();
   const weightUnit = usePreferredWeightUnit();
   const { t } = useTranslate();
   const { colors } = useAppTheme();

@@ -28,7 +28,7 @@ import { selectCompletedDistinctSessionNames } from '@/store/stored-sessions';
 import { Divider, Searchbar } from 'react-native-paper';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import BodyweightStatGraphCard from '@/components/presentation/bodyweight-stat-graph-card';
-import { useScroll } from '@/hooks/useScollListener';
+import { useScroll } from '@/hooks/useScrollListener';
 import { FlashList, FlashListRef } from '@shopify/flash-list';
 import SessionStatGraphCard from '@/components/presentation/session-stat-graph-card';
 import { Weight } from '@/models/weight';

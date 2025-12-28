@@ -1,64 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { DayOfWeek, Duration, LocalDate } from '@js-joda/core';
-import { formatDate, getDateOnDay, parseDuration } from './format-date';
+import { DayOfWeek, Duration } from '@js-joda/core';
+import { getDateOnDay, parseDuration } from './format-date';
 import { formatDuration } from './format-date';
 
 describe('format-date utilities', () => {
-  describe('formatDate', () => {
-    it('should format a date with basic options', () => {
-      const date = LocalDate.of(2025, 7, 16);
-      const opts: Intl.DateTimeFormatOptions = {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      };
-
-      const result = formatDate(date, opts);
-      expect(result).toContain('2025');
-      expect(result).toContain('16');
-    });
-
-    it('should format a date with weekday option', () => {
-      const date = LocalDate.of(2025, 7, 16);
-      const opts: Intl.DateTimeFormatOptions = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      };
-
-      const result = formatDate(date, opts);
-      expect(result).toContain('2025');
-      expect(result).toContain('16');
-    });
-
-    it('should handle different months correctly', () => {
-      const date = LocalDate.of(2025, 1, 1); // January 1st
-      const opts: Intl.DateTimeFormatOptions = {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-      };
-
-      const result = formatDate(date, opts);
-      expect(result).toContain('2025');
-      expect(result).toContain('1');
-    });
-
-    it('should handle leap year dates', () => {
-      const date = LocalDate.of(2024, 2, 29); // Leap year
-      const opts: Intl.DateTimeFormatOptions = {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-      };
-
-      const result = formatDate(date, opts);
-      expect(result).toContain('2024');
-      expect(result).toContain('29');
-    });
-  });
-
   describe('getDateOnDay', () => {
     it('should return Sunday for DayOfWeek.SUNDAY', () => {
       const result = getDateOnDay(DayOfWeek.SUNDAY);

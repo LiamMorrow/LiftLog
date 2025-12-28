@@ -10,63 +10,64 @@ import {
   setPreferredLanguage,
   setUseImperialUnits,
 } from '@/store/settings';
-import { formatDate, getDateOnDay } from '@/utils/format-date';
+import { getDateOnDay } from '@/utils/format-date';
 import { DayOfWeek } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
 import { useMemo } from 'react';
 import { List } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-
-const daysOfWeekOptions: SelectButtonOption<DayOfWeek>[] = [
-  {
-    value: DayOfWeek.SUNDAY,
-    label: formatDate(getDateOnDay(DayOfWeek.SUNDAY), {
-      weekday: 'long',
-    }),
-  },
-  {
-    value: DayOfWeek.MONDAY,
-    label: formatDate(getDateOnDay(DayOfWeek.MONDAY), {
-      weekday: 'long',
-    }),
-  },
-  {
-    value: DayOfWeek.TUESDAY,
-    label: formatDate(getDateOnDay(DayOfWeek.TUESDAY), {
-      weekday: 'long',
-    }),
-  },
-  {
-    value: DayOfWeek.WEDNESDAY,
-    label: formatDate(getDateOnDay(DayOfWeek.WEDNESDAY), {
-      weekday: 'long',
-    }),
-  },
-  {
-    value: DayOfWeek.THURSDAY,
-    label: formatDate(getDateOnDay(DayOfWeek.THURSDAY), {
-      weekday: 'long',
-    }),
-  },
-  {
-    value: DayOfWeek.FRIDAY,
-    label: formatDate(getDateOnDay(DayOfWeek.FRIDAY), {
-      weekday: 'long',
-    }),
-  },
-  {
-    value: DayOfWeek.SATURDAY,
-    label: formatDate(getDateOnDay(DayOfWeek.SATURDAY), {
-      weekday: 'long',
-    }),
-  },
-];
+import { useFormatDate } from '@/hooks/useFormatDate';
 
 export default function Localization() {
+  const formatDate = useFormatDate();
   const { t } = useTranslate();
   const settings = useAppSelector((state: RootState) => state.settings);
   const dispatch = useDispatch();
+  const daysOfWeekOptions: SelectButtonOption<DayOfWeek>[] = [
+    {
+      value: DayOfWeek.SUNDAY,
+      label: formatDate(getDateOnDay(DayOfWeek.SUNDAY), {
+        weekday: 'long',
+      }),
+    },
+    {
+      value: DayOfWeek.MONDAY,
+      label: formatDate(getDateOnDay(DayOfWeek.MONDAY), {
+        weekday: 'long',
+      }),
+    },
+    {
+      value: DayOfWeek.TUESDAY,
+      label: formatDate(getDateOnDay(DayOfWeek.TUESDAY), {
+        weekday: 'long',
+      }),
+    },
+    {
+      value: DayOfWeek.WEDNESDAY,
+      label: formatDate(getDateOnDay(DayOfWeek.WEDNESDAY), {
+        weekday: 'long',
+      }),
+    },
+    {
+      value: DayOfWeek.THURSDAY,
+      label: formatDate(getDateOnDay(DayOfWeek.THURSDAY), {
+        weekday: 'long',
+      }),
+    },
+    {
+      value: DayOfWeek.FRIDAY,
+      label: formatDate(getDateOnDay(DayOfWeek.FRIDAY), {
+        weekday: 'long',
+      }),
+    },
+    {
+      value: DayOfWeek.SATURDAY,
+      label: formatDate(getDateOnDay(DayOfWeek.SATURDAY), {
+        weekday: 'long',
+      }),
+    },
+  ];
 
   const languageOptions: SelectButtonOption<string | undefined>[] = useMemo(
     () => [

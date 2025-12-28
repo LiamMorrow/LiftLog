@@ -1,5 +1,5 @@
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { useScroll } from '@/hooks/useScollListener';
+import { useScroll } from '@/hooks/useScrollListener';
 import { useState } from 'react';
 import { View, StyleProp, ViewStyle, ScrollViewProps } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';

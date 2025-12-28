@@ -2,7 +2,7 @@ import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
 import EmptyInfo from '@/components/presentation/empty-info';
 import LimitedHtml from '@/components/presentation/limited-html';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
-import { useScroll } from '@/hooks/useScollListener';
+import { useScroll } from '@/hooks/useScrollListener';
 import { FeedUser, FollowRequest } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
 import {

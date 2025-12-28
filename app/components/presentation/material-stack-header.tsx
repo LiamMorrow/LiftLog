@@ -1,6 +1,6 @@
 import { Appbar } from 'react-native-paper';
 import { NativeStackHeaderProps } from '@react-navigation/native-stack';
-import { useScroll } from '@/hooks/useScollListener';
+import { useScroll } from '@/hooks/useScrollListener';
 import { useEffect } from 'react';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import Animated, {

@@ -5,13 +5,14 @@ import { View } from 'react-native';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useState } from 'react';
 import { SurfaceText } from '@/components/presentation/surface-text';
-import { formatDate } from '@/utils/format-date';
 import { lineGraphProps } from '@/components/presentation/line-graph-props';
+import { useFormatDate } from '@/hooks/useFormatDate';
 
 export default function ExerciseStatGraphCard(props: {
   exerciseStats: ExerciseStatistics;
   title: string;
 }) {
+  const formatDate = useFormatDate();
   const weightUnit = usePreferredWeightUnit();
   const { colors } = useAppTheme();
   const exercisePoints: lineDataItem[] =

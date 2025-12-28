@@ -5,7 +5,7 @@ import { NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
 import { AnimatedFAB, Icon, List, TextInput } from 'react-native-paper';
 import TouchableRipple from '@/components/presentation/gesture-wrappers/touchable-ripple';
 import { AccordionItem } from '@/components/presentation/accordion-item';
-import { useScroll } from '@/hooks/useScollListener';
+import { useScroll } from '@/hooks/useScrollListener';
 import { FlashList, useRecyclingState } from '@shopify/flash-list';
 import {
   deleteExercise as deleteExerciseAction,

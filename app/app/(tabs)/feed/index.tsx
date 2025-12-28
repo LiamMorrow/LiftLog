@@ -2,7 +2,7 @@ import Feed from '@/components/smart/feed';
 import { FeedFollowers } from '@/components/smart/feed-followers';
 import { FeedFollowing } from '@/components/smart/feed-following';
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { ScrollProvider, useScroll } from '@/hooks/useScollListener';
+import { ScrollProvider, useScroll } from '@/hooks/useScrollListener';
 import { useAppSelector } from '@/store';
 import { selectFollowRequestCount } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';

@@ -17,7 +17,7 @@ import {
   setUseImperialUnits,
   setWelcomeWizardCompleted,
 } from '@/store/settings';
-import { formatDate, getDateOnDay } from '@/utils/format-date';
+import { getDateOnDay } from '@/utils/format-date';
 import { DayOfWeek } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
 import { useMemo, useState } from 'react';
@@ -25,39 +25,41 @@ import { Linking, StyleSheet, View } from 'react-native';
 import { List, Portal, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
-
-const daysOfWeekOptions: SelectButtonOption<DayOfWeek>[] = [
-  {
-    value: DayOfWeek.SUNDAY,
-    label: formatDate(getDateOnDay(DayOfWeek.SUNDAY), { weekday: 'long' }),
-  },
-  {
-    value: DayOfWeek.MONDAY,
-    label: formatDate(getDateOnDay(DayOfWeek.MONDAY), { weekday: 'long' }),
-  },
-  {
-    value: DayOfWeek.TUESDAY,
-    label: formatDate(getDateOnDay(DayOfWeek.TUESDAY), { weekday: 'long' }),
-  },
-  {
-    value: DayOfWeek.WEDNESDAY,
-    label: formatDate(getDateOnDay(DayOfWeek.WEDNESDAY), { weekday: 'long' }),
-  },
-  {
-    value: DayOfWeek.THURSDAY,
-    label: formatDate(getDateOnDay(DayOfWeek.THURSDAY), { weekday: 'long' }),
-  },
-  {
-    value: DayOfWeek.FRIDAY,
-    label: formatDate(getDateOnDay(DayOfWeek.FRIDAY), { weekday: 'long' }),
-  },
-  {
-    value: DayOfWeek.SATURDAY,
-    label: formatDate(getDateOnDay(DayOfWeek.SATURDAY), { weekday: 'long' }),
-  },
-];
+import { useFormatDate } from '@/hooks/useFormatDate';
 
 export function WelcomeWizard() {
+  const formatDate = useFormatDate();
+  const daysOfWeekOptions: SelectButtonOption<DayOfWeek>[] = [
+    {
+      value: DayOfWeek.SUNDAY,
+      label: formatDate(getDateOnDay(DayOfWeek.SUNDAY), { weekday: 'long' }),
+    },
+    {
+      value: DayOfWeek.MONDAY,
+      label: formatDate(getDateOnDay(DayOfWeek.MONDAY), { weekday: 'long' }),
+    },
+    {
+      value: DayOfWeek.TUESDAY,
+      label: formatDate(getDateOnDay(DayOfWeek.TUESDAY), { weekday: 'long' }),
+    },
+    {
+      value: DayOfWeek.WEDNESDAY,
+      label: formatDate(getDateOnDay(DayOfWeek.WEDNESDAY), { weekday: 'long' }),
+    },
+    {
+      value: DayOfWeek.THURSDAY,
+      label: formatDate(getDateOnDay(DayOfWeek.THURSDAY), { weekday: 'long' }),
+    },
+    {
+      value: DayOfWeek.FRIDAY,
+      label: formatDate(getDateOnDay(DayOfWeek.FRIDAY), { weekday: 'long' }),
+    },
+    {
+      value: DayOfWeek.SATURDAY,
+      label: formatDate(getDateOnDay(DayOfWeek.SATURDAY), { weekday: 'long' }),
+    },
+  ];
+
   const { t } = useTranslate();
   const dispatch = useDispatch();
   const settings = useAppSelector((state) => state.settings);

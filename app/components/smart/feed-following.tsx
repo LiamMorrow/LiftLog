@@ -1,6 +1,6 @@
 import EmptyInfo from '@/components/presentation/empty-info';
 import { spacing } from '@/hooks/useAppTheme';
-import { useScroll } from '@/hooks/useScollListener';
+import { useScroll } from '@/hooks/useScrollListener';
 import { FeedUser } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
 import {

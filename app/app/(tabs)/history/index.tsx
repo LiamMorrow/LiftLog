@@ -22,7 +22,6 @@ import {
   selectSessions,
   selectSessionsInMonth,
 } from '@/store/stored-sessions';
-import { formatDate } from '@/utils/format-date';
 import { uuid } from '@/utils/uuid';
 import { LocalDate, YearMonth } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
@@ -31,10 +30,12 @@ import React, { useState } from 'react';
 import { Card, Tooltip } from 'react-native-paper';
 import Button from '@/components/presentation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
+import { useFormatDate } from '@/hooks/useFormatDate';
 
 export default function History() {
   const { t } = useTranslate();
   const dispatch = useDispatch();
+  const formatDate = useFormatDate();
   const [currentYearMonth, setCurrentYearMonth] = useState(YearMonth.now());
   const latesBodyweight = useAppSelector((x) =>
     x.program.upcomingSessions

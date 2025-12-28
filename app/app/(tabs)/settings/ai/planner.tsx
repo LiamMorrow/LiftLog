@@ -31,7 +31,7 @@ import Animated, {
   ZoomInRight,
 } from 'react-native-reanimated';
 import { uuid } from '@/utils/uuid';
-import { useScroll } from '@/hooks/useScollListener';
+import { useScroll } from '@/hooks/useScrollListener';
 import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
 import { AiChatMessageResponse, AiChatPlanResponse } from '@/models/ai-models';
