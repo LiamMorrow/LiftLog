@@ -1,7 +1,6 @@
 {
   "ai.planner.subtitle": "Využijte AI k tomu, abyste si nastavili kompletní tréningový plán přesně podle Vašich potřeb",
   "ai.planner.title": "AI Plánovač",
-  "exercise.progressive_overload.label": "Progresivní zátěž",
   "ai.restart_chat.button": "Restartovat chat",
   "ai.upgrade_to_pro.button": "Upgradovat na verzi Pro",
   "ai.upgrade_to_pro.explanation": "Tato akce odemkne AI plánovač, který Vám umožní generovat plán speciálně podle Vašich cílů a potřeb. <br>Toto je jednorázový nákup za:",
@@ -49,6 +48,7 @@
   "exercise.no_exercises_added.message": "Nejsou přidány žádné cviky",
   "exercise.no_exercises_found.message": "Žádná cvičení nenalezena.",
   "exercise.previous_sessions_for.title": "Předchozí cvičení pro {exercise}",
+  "exercise.progressive_overload.label": "Progresivní zátěž",
   "exercise.remove.confirm.body": "Cvik bude odstraněn z probíhajícího tréningu. Budoucí tréningy tímto nebudou ovlivněny.",
   "exercise.remove.confirm.title": "Odstranit cvik?",
   "exercise.remove_from_workout.confirm.body": "Tímto odstraníte cvik <em>{exercise}</em> z tréningu <em>{session}</em>.",
