@@ -3,6 +3,8 @@ name: Release iOS
 on:
   release:
     types: [created]
+  push:
+    branches: [main]
 
 jobs:
   build:
@@ -53,6 +55,11 @@ jobs:
           cd ios
           pod install
 
+      - name: Create App Store Connect API key file
+        run: |
+          mkdir -p ~/private_keys
+          echo "$APPSTORE_CONNECT_API_KEY" > ~/private_keys/AuthKey_${APPSTORE_CONNECT_API_KEY_ID}.p8
+
       - name: Generate exportOptions.plist (automatic signing)
         working-directory: ./app
         run: |
@@ -88,6 +95,9 @@ jobs:
             -configuration Release \
             -archivePath "${PWD}/ios/build/App.xcarchive" \
             -allowProvisioningUpdates \
+            -authenticationKeyPath ~/private_keys/AuthKey_${APPSTORE_CONNECT_API_KEY_ID}.p8 \
+            -authenticationKeyID ${APPSTORE_CONNECT_API_KEY_ID} \
+            -authenticationKeyIssuerID ${APPSTORE_CONNECT_API_ISSUER_ID} \
             DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}" \
             APP_DISPLAY_VERSION="${{ github.event.release.name }}" \
             APP_VERSION="${{ steps.buildNumber.outputs.build-number }}"
@@ -98,7 +108,11 @@ jobs:
           xcodebuild -exportArchive \
             -archivePath "${PWD}/ios/build/App.xcarchive" \
             -exportOptionsPlist exportOptions.plist \
-            -exportPath "${PWD}/ios/build/export"
+            -exportPath "${PWD}/ios/build/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/private_keys/AuthKey_${APPSTORE_CONNECT_API_KEY_ID}.p8 \
+            -authenticationKeyID ${APPSTORE_CONNECT_API_KEY_ID} \
+            -authenticationKeyIssuerID ${APPSTORE_CONNECT_API_ISSUER_ID}
 
       - name: Upload to App Store Connect
         run: |
