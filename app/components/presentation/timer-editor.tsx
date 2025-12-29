@@ -1,4 +1,10 @@
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
+import {
+  getDurationComponents,
+  updateDurationHours,
+  updateDurationMinutes,
+  updateDurationSeconds,
+} from '@/utils/duration-utils';
 import { Duration } from '@js-joda/core';
 import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -14,54 +20,50 @@ export default function TimerEditor(props: DurationEditorProps) {
   const { colors } = useAppTheme();
   const { duration, onDurationUpdated, readonly } = props;
 
-  const [hours, setHours] = useState(
-    duration.toHours().toString().padStart(2, '0'),
-  );
+  const formatComponent = (value: number) => value.toString().padStart(2, '0');
+  const initialComponents = getDurationComponents(duration);
+
+  const [hours, setHours] = useState(formatComponent(initialComponents.hours));
   const [minutes, setMinutes] = useState(
-    (duration.toMinutes() % 60).toString().padStart(2, '0'),
+    formatComponent(initialComponents.minutes),
   );
   const [seconds, setSeconds] = useState(
-    (duration.seconds() % 60).toString().padStart(2, '0'),
+    formatComponent(initialComponents.seconds),
   );
 
   const updateHours = (text: string) => {
     setHours(text);
-    const hours = Number.parseInt(text);
-    if (!isNaN(hours)) {
-      const seconds = duration.seconds() % 60;
-      const mins = duration.toMinutes() % 60;
-      onDurationUpdated(
-        Duration.ofSeconds(seconds + mins * 60 + hours * 60 * 60),
-      );
+    const newHours = Number.parseInt(text);
+    if (!isNaN(newHours)) {
+      onDurationUpdated(updateDurationHours(duration, newHours));
     }
   };
   const updateMinutes = (text: string) => {
     setMinutes(text);
-    const mins = Number.parseInt(text);
-    if (!isNaN(mins)) {
-      const seconds = duration.seconds() % 60;
-      onDurationUpdated(Duration.ofSeconds(seconds + mins * 60));
+    const newMins = Number.parseInt(text);
+    if (!isNaN(newMins)) {
+      onDurationUpdated(updateDurationMinutes(duration, newMins));
     }
   };
   const updateSeconds = (text: string) => {
     setSeconds(text);
-    const seconds = Number.parseInt(text);
-    if (!isNaN(seconds)) {
-      const mins = duration.toMinutes();
-      onDurationUpdated(Duration.ofSeconds(mins * 60 + seconds));
+    const newSeconds = Number.parseInt(text);
+    if (!isNaN(newSeconds)) {
+      onDurationUpdated(updateDurationSeconds(duration, newSeconds));
     }
   };
 
-  const resetValues = useCallback(() => {
-    setHours(duration.toHours().toString().padStart(2, '0'));
-    setMinutes((duration.toMinutes() % 60).toString().padStart(2, '0'));
-    setSeconds((duration.seconds() % 60).toString().padStart(2, '0'));
-  }, [duration]);
+  const resetValues = useCallback((duration: Duration) => {
+    const components = getDurationComponents(duration);
+    setHours(formatComponent(components.hours));
+    setMinutes(formatComponent(components.minutes));
+    setSeconds(formatComponent(components.seconds));
+  }, []);
   useEffect(() => {
     if (readonly) {
-      resetValues();
+      resetValues(duration);
     }
-  }, [readonly, resetValues]);
+  }, [readonly, resetValues, duration]);
   const fontProps = StyleSheet.create({
     textInput: {
       fontVariant: ['tabular-nums'],
@@ -91,7 +93,7 @@ export default function TimerEditor(props: DurationEditorProps) {
         style={fontProps.textInput}
         value={hours}
         onChangeText={updateHours}
-        onBlur={resetValues}
+        onBlur={() => resetValues(duration)}
       />
       <Text style={[fontProps.textInput, fontProps.separator]}>:</Text>
       <TextInput
@@ -102,7 +104,7 @@ export default function TimerEditor(props: DurationEditorProps) {
         value={minutes}
         readOnly={readonly}
         onChangeText={updateMinutes}
-        onBlur={resetValues}
+        onBlur={() => resetValues(duration)}
       />
       <Text style={[fontProps.textInput, fontProps.separator]}>:</Text>
       <TextInput
@@ -113,7 +115,7 @@ export default function TimerEditor(props: DurationEditorProps) {
         value={seconds}
         readOnly={readonly}
         onChangeText={updateSeconds}
-        onBlur={resetValues}
+        onBlur={() => resetValues(duration)}
       />
     </View>
   );

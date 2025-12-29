@@ -22,38 +22,43 @@ export function CardioTimer({
     LocalDateTime | undefined
   >();
 
-  const getTimerState = useCallback(() => {
-    const now = LocalDateTime.now();
-    const duration = match({
-      recordedDuration: recordedExercise.duration,
-      currentBlockStartTime,
-    })
-      .with(
-        {
-          recordedDuration: P.nonNullable,
-          currentBlockStartTime: P.nonNullable,
-        },
-        ({ recordedDuration, currentBlockStartTime }) =>
-          recordedDuration.plus(Duration.between(currentBlockStartTime, now)),
-      )
-      .with(
-        { recordedDuration: P.nonNullable },
-        ({ recordedDuration }) => recordedDuration,
-      )
-      .with(
-        { currentBlockStartTime: P.nonNullable },
-        ({ currentBlockStartTime }) =>
-          Duration.between(currentBlockStartTime, now),
-      )
-      .with(
-        { currentBlockStartTime: undefined, recordedDuration: undefined },
-        () => Duration.ZERO,
-      )
-      .exhaustive();
+  const getTimerState = useCallback(
+    (providedDuration: Duration | undefined) => {
+      const now = LocalDateTime.now();
+      const duration = match({
+        recordedDuration: providedDuration,
+        currentBlockStartTime,
+      })
+        .with(
+          {
+            recordedDuration: P.nonNullable,
+            currentBlockStartTime: P.nonNullable,
+          },
+          ({ recordedDuration, currentBlockStartTime }) =>
+            recordedDuration.plus(Duration.between(currentBlockStartTime, now)),
+        )
+        .with(
+          { recordedDuration: P.nonNullable },
+          ({ recordedDuration }) => recordedDuration,
+        )
+        .with(
+          { currentBlockStartTime: P.nonNullable },
+          ({ currentBlockStartTime }) =>
+            Duration.between(currentBlockStartTime, now),
+        )
+        .with(
+          { currentBlockStartTime: undefined, recordedDuration: undefined },
+          () => Duration.ZERO,
+        )
+        .exhaustive();
 
-    return duration;
-  }, [currentBlockStartTime, recordedExercise.duration]);
-  const [timerState, setTimerState] = useState<Duration>(getTimerState());
+      return duration;
+    },
+    [currentBlockStartTime],
+  );
+  const [timerState, setTimerState] = useState<Duration>(
+    getTimerState(recordedExercise.duration),
+  );
   const handlePlay = () => {
     const now = LocalDateTime.now();
     setCurrentBlockStartTime(now);
@@ -91,12 +96,12 @@ export function CardioTimer({
   useEffect(() => {
     if (currentBlockStartTime) {
       const timer = setInterval(() => {
-        const state = getTimerState();
+        const state = getTimerState(recordedExercise.duration);
         setTimerState(state);
       }, 200);
       return () => clearInterval(timer);
     }
-  }, [currentBlockStartTime, getTimerState]);
+  }, [currentBlockStartTime, getTimerState, recordedExercise.duration]);
 
   // Periodically persist - This will cyclically update the duration and it is a dependency, so it implicitly retriggers
   useEffect(() => {
@@ -120,7 +125,11 @@ export function CardioTimer({
         <TimerEditor
           readonly={!!currentBlockStartTime}
           duration={timerState}
-          onDurationUpdated={(d) => updateDuration(d)}
+          onDurationUpdated={(d) => {
+            updateDuration(d);
+            const state = getTimerState(d);
+            setTimerState(state);
+          }}
         />
         <IconButton
           icon={currentBlockStartTime ? 'pause' : 'playArrow'}
