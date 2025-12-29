@@ -4,12 +4,14 @@
 name: Release Android
 
 on:
-  release:
-    types: [created]
   workflow_dispatch:
     inputs:
       version_code:
         description: "Version code (e.g., 1.0.0)"
+        required: true
+        type: string
+      release_notes:
+        description: "Release notes to display in the store"
         required: true
         type: string
 
@@ -64,8 +66,14 @@ jobs:
             ANDROID_UPLOAD_STORE_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
             ANDROID_UPLOAD_KEY_ALIAS=liftlog
             ANDROID_UPLOAD_KEY_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
-            DISPLAY_VERSION=${{ inputs.version_code || github.event.release.name }}
+            DISPLAY_VERSION=${{ inputs.version_code }}
             BUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}
+
+      - name: Create release notes directory
+        run: mkdir -p release_notes
+
+      - name: Write release notes
+        run: echo "${{ inputs.release_notes }}" > release_notes/whatsnew-en-AU
 
       - name: Upload Android Release to Play Store
         uses: r0adkll/upload-google-play@v1.1.3

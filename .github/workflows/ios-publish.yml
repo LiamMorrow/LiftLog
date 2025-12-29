@@ -1,12 +1,14 @@
 name: Release iOS
 
 on:
-  release:
-    types: [created]
   workflow_dispatch:
     inputs:
       version_code:
         description: "Version code (e.g., 1.0.0)"
+        required: true
+        type: string
+      release_notes:
+        description: "Release notes to display in the store"
         required: true
         type: string
 
