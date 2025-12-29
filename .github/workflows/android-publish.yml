@@ -6,6 +6,12 @@ name: Release Android
 on:
   release:
     types: [created]
+  workflow_dispatch:
+    inputs:
+      version_code:
+        description: "Version code (e.g., 1.0.0)"
+        required: true
+        type: string
 
 jobs:
   build:
@@ -58,7 +64,7 @@ jobs:
             ANDROID_UPLOAD_STORE_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
             ANDROID_UPLOAD_KEY_ALIAS=liftlog
             ANDROID_UPLOAD_KEY_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
-            DISPLAY_VERSION=${{ github.event.release.name || '3.0.0-beta' }}
+            DISPLAY_VERSION=${{ inputs.version_code || github.event.release.name }}
             BUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}
 
       - name: Upload Android Release to Play Store
@@ -83,7 +89,7 @@ jobs:
             ANDROID_UPLOAD_STORE_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
             ANDROID_UPLOAD_KEY_ALIAS=liftlog
             ANDROID_UPLOAD_KEY_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
-            DISPLAY_VERSION=${{ github.event.release.name  }}
+            DISPLAY_VERSION=${{ inputs.version_code || github.event.release.name }}
             BUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}
       - name: upload binaries to release
         uses: softprops/action-gh-release@v2

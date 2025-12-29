@@ -3,6 +3,12 @@ name: Release iOS
 on:
   release:
     types: [created]
+  workflow_dispatch:
+    inputs:
+      version_code:
+        description: "Version code (e.g., 1.0.0)"
+        required: true
+        type: string
 
 jobs:
   build:
@@ -97,7 +103,7 @@ jobs:
             -authenticationKeyID ${APPSTORE_CONNECT_API_KEY_ID} \
             -authenticationKeyIssuerID ${APPSTORE_CONNECT_API_ISSUER_ID} \
             DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}" \
-            APP_DISPLAY_VERSION="${{ github.event.release.name }}" \
+            APP_DISPLAY_VERSION="${{ inputs.version_code || github.event.release.name }}" \
             APP_VERSION="${{ steps.buildNumber.outputs.build-number }}"
 
       - name: Export IPA
