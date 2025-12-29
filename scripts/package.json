@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@types/semver": "^7.7.0",
-    "openai": "^6.0.0",
+    "openai": "^6.15.0",
     "semver": "^7.7.2"
   }
 }

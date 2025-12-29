@@ -102,7 +102,7 @@ async function main() {
       "\n"
     )}`;
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-5.2",
       messages: [
         {
           role: "system",
@@ -111,7 +111,6 @@ async function main() {
         },
         { role: "user", content: prompt },
       ],
-      max_tokens: 300,
     });
     summary = completion.choices[0]?.message?.content?.trim() || "";
   } catch (err) {
