@@ -196,10 +196,12 @@ public partial class GptChatWorkoutPlanner(
                                 Notes: e.Notes ?? "",
                                 Link: ""
                             ))
-                            .ToImmutableList() ?? [],
+                            .ToImmutableList()
+                            ?? [],
                         Notes: s.Description ?? ""
                     ))
-                    .ToImmutableList() ?? []
+                    .ToImmutableList()
+                    ?? []
             )
         );
     }
