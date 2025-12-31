@@ -273,6 +273,26 @@ const programSlice = createSlice({
       [(state: ProgramState) => state.savedPrograms, (_, id: string) => id],
       (programs, id) => ProgramBlueprint.fromPOJO(programs[id]),
     ),
+    /**
+     * Finds a unique name for a new workout in the current active plan.
+     * Will be Workout {Number} where number is the first non conflicting number after sessions.length
+     */
+    selectNewWorkoutName: createSelector(
+      (state: ProgramState) =>
+        state.savedPrograms[state.activeProgramId]?.sessions || [],
+      (sessions) => {
+        const existingNames = sessions.map((session) => session.name);
+        let counter = sessions.length + 1;
+        let proposedName = `Workout ${counter}`;
+
+        while (existingNames.includes(proposedName)) {
+          counter++;
+          proposedName = `Workout ${counter}`;
+        }
+
+        return proposedName;
+      },
+    ),
   },
 });
 
@@ -295,8 +315,12 @@ export const {
   setSavedPlans,
 } = programSlice.actions;
 
-export const { selectActiveProgram, selectProgram, selectAllPrograms } =
-  programSlice.selectors;
+export const {
+  selectActiveProgram,
+  selectProgram,
+  selectAllPrograms,
+  selectNewWorkoutName,
+} = programSlice.selectors;
 
 export const fetchUpcomingSessions = createAction('fetchUpcomingSessions');
 export const initializeProgramStateSlice = createAction(

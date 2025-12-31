@@ -11,6 +11,7 @@ import {
 } from './blueprint-models';
 import { TranslationKey } from '@tolgee/react';
 import { uuid } from '@/utils/uuid';
+import { EmptySession } from '@/models/session-models';
 
 // ============================================================================
 // Change Types
@@ -216,7 +217,6 @@ export interface ExerciseModification {
 export type PlanDiff =
   | {
       type: 'diff';
-      originalSession: SessionBlueprintPOJO;
       sessionIndex: number;
       diff: SessionBlueprintDiff;
     }
@@ -233,6 +233,8 @@ export const EmptySessionBlueprintDiff: SessionBlueprintDiff = {
   removedExercises: [],
   reorderedExercises: [],
   sessionChanges: [],
+  originalSession: EmptySession.blueprint.toPOJO(),
+  newSession: EmptySession.blueprint.toPOJO(),
 };
 
 /**
@@ -259,6 +261,9 @@ export interface SessionBlueprintDiff {
 
   /** Flat list of all changes for easy iteration */
   allChanges: DiffChange[];
+
+  originalSession: SessionBlueprintPOJO;
+  newSession: SessionBlueprintPOJO;
 }
 
 // ============================================================================
@@ -699,6 +704,8 @@ export function diffSessionBlueprints(
     reorderedExercises,
     modifiedExercises,
     allChanges,
+    originalSession: original.toPOJO(),
+    newSession: modified.toPOJO(),
   };
 }
 
@@ -746,6 +753,8 @@ export function filterDiff(
     reorderedExercises,
     modifiedExercises,
     allChanges,
+    originalSession: diff.originalSession,
+    newSession: diff.newSession,
   };
 }
 

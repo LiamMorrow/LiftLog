@@ -74,6 +74,7 @@ export default function SessionDiffView({
             <DiffChangeRow
               key={change.id}
               change={change}
+              disabled={change.kind === 'sessionName'}
               selected={selectedChangeIds.has(change.id)}
               onToggle={() => toggleChange(change.id)}
             />
@@ -166,6 +167,7 @@ interface DiffChangeRowProps {
   change: DiffChange;
   selected: boolean;
   onToggle: () => void;
+  disabled?: boolean;
   variant?: 'added' | 'removed' | 'modified';
 }
 
@@ -173,6 +175,7 @@ function DiffChangeRow({
   change,
   selected,
   onToggle,
+  disabled,
   variant,
 }: DiffChangeRowProps) {
   const { t } = useTranslate();
@@ -188,11 +191,17 @@ function DiffChangeRow({
 
   return (
     <List.Item
+      disabled={disabled!}
       onPress={onToggle}
       title={t(label.key, label.params)}
       titleStyle={variantColor ? { color: variantColor } : undefined}
       description={t(description.key, description.params)}
-      left={() => <Checkbox status={selected ? 'checked' : 'unchecked'} />}
+      left={() => (
+        <Checkbox
+          disabled={disabled!}
+          status={selected ? 'checked' : 'unchecked'}
+        />
+      )}
     />
   );
 }
