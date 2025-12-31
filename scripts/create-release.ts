@@ -149,11 +149,7 @@ try {
 // Trigger the publish workflows
 console.log("Triggering publish workflows...");
 
-const workflows = [
-  "android-publish.yml",
-  "ios-publish.yml",
-  "web-publish.yml",
-];
+const workflows = ["android-publish.yml", "ios-publish.yml", "web-publish.yml"];
 
 for (const workflow of workflows) {
   try {
