@@ -21,6 +21,7 @@ import Button from '@/components/presentation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import { FlashList } from '@shopify/flash-list';
+import { match, P } from 'ts-pattern';
 
 type FeedFollowItem = FollowRequest | FeedUser;
 
@@ -47,7 +48,11 @@ export function FeedFollowers() {
       refreshing={fetchingFeedItems}
       onScroll={handleScroll}
       data={items}
-      keyExtractor={(x) => (x as FollowRequest).userId ?? (x as FeedUser).id}
+      keyExtractor={(x) =>
+        match(x)
+          .with(P.instanceOf(FollowRequest), (req) => `request-${req.userId}`)
+          .otherwise((req) => req.id)
+      }
       renderItem={({ item }) => <FeedFollowItem item={item} />}
     />
   );

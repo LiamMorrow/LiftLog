@@ -6,8 +6,8 @@ import {
   processFollowResponses,
   selectFeedIdentityRemote,
   selectFeedFollowRequests,
-  removeFollower,
   revokeFollowSecretAndRemoveFollower,
+  selectFeedFollowers,
 } from '@/store/feed';
 import { FollowRequest } from '@/models/feed-models';
 import { GetInboxMessagesRequest } from '@/models/feed-api-models';
@@ -77,6 +77,22 @@ export function addInboxEffects() {
           ...newFollowRequests,
         ];
         dispatch(setFollowRequests(updatedFollowRequests));
+
+        // If someone is requesting to follow again, they have lost their follow secret and we should purge them
+        const currentFollowers = selectFeedFollowers(getState());
+        for (const newRequest of updatedFollowRequests) {
+          const existingFollower = currentFollowers.find(
+            (follower) => follower.id === newRequest.userId,
+          );
+          if (existingFollower) {
+            dispatch(
+              revokeFollowSecretAndRemoveFollower({
+                userId: existingFollower.id,
+                fromUserAction: false,
+              }),
+            );
+          }
+        }
       }
 
       // Process follow responses
@@ -113,7 +129,6 @@ export function addInboxEffects() {
             fromUserAction: false,
           }),
         );
-        dispatch(removeFollower(userId));
       });
     },
   );
