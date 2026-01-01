@@ -1,63 +1,63 @@
 syntax = "proto3";
 package LiftLog.Ui.Models;
 
-import "google/protobuf/wrappers.proto";
 import "google/protobuf/timestamp.proto";
-import "Utils.proto";
-import "SessionHistoryDao/SessionHistoryDaoV2.proto";
-import "SessionBlueprintDao/SessionBlueprintDaoV2.proto";
-import "UserEvent.proto";
+import "google/protobuf/wrappers.proto";
+import "proto/SessionBlueprintDao/SessionBlueprintDaoV2.proto";
+import "proto/SessionHistoryDao/SessionHistoryDaoV2.proto";
+import "proto/UserEvent.proto";
+import "proto/Utils.proto";
 
 message FeedIdentityDaoV1 {
-    LiftLog.Ui.Models.UuidDao id = 1;
-    google.protobuf.StringValue lookup = 12;
-    bytes aes_key = 2;
-    bytes public_key = 9;
-    bytes private_key = 10;
-    string password = 4;
-    optional google.protobuf.StringValue name = 5;
-    optional bytes profile_picture = 6;
-    bool publish_bodyweight = 7;
-    bool publish_plan = 8;
-    bool publish_workouts = 11;
+  LiftLog.Ui.Models.UuidDao            id                 = 1;
+  google.protobuf.StringValue          lookup             = 12;
+  bytes                                aes_key            = 2;
+  bytes                                public_key         = 9;
+  bytes                                private_key        = 10;
+  string                               password           = 4;
+  optional google.protobuf.StringValue name               = 5;
+  optional bytes                       profile_picture    = 6;
+  bool                                 publish_bodyweight = 7;
+  bool                                 publish_plan       = 8;
+  bool                                 publish_workouts   = 11;
 }
 
 message FeedUserDaoV1 {
-    LiftLog.Ui.Models.UuidDao id = 1;
-    google.protobuf.StringValue lookup = 9;
-    bytes public_key = 8;
+  LiftLog.Ui.Models.UuidDao   id         = 1;
+  google.protobuf.StringValue lookup     = 9;
+  bytes                       public_key = 8;
 
-    optional google.protobuf.StringValue name = 2;
-    optional google.protobuf.StringValue nickname = 6;
-    optional CurrentPlanDaoV1 current_plan = 3;
-    optional bytes profile_picture = 4;
+  optional google.protobuf.StringValue name            = 2;
+  optional google.protobuf.StringValue nickname        = 6;
+  optional CurrentPlanDaoV1            current_plan    = 3;
+  optional bytes                       profile_picture = 4;
 
-    // These will be null until the user accepts the follow request
-    optional bytes aes_key = 5;
-    optional google.protobuf.StringValue follow_secret = 7;
+  // These will be null until the user accepts the follow request
+  optional bytes                       aes_key       = 5;
+  optional google.protobuf.StringValue follow_secret = 7;
 }
 
 message CurrentPlanDaoV1 {
-    repeated LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2 sessions = 1;
+  repeated LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2 sessions = 1;
 }
 
 message FeedItemDaoV1 {
-    LiftLog.Ui.Models.UuidDao user_id = 1;
-    LiftLog.Ui.Models.UuidDao event_id = 2;
-    google.protobuf.Timestamp timestamp = 3;
-    google.protobuf.Timestamp expiry = 4;
-    oneof payload {
-        LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2 session = 5;
-    }
+  LiftLog.Ui.Models.UuidDao user_id   = 1;
+  LiftLog.Ui.Models.UuidDao event_id  = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  google.protobuf.Timestamp expiry    = 4;
+  oneof payload {
+    LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2 session = 5;
+  }
 }
 
 message FeedStateDaoV1 {
-    repeated LiftLog.Ui.Models.FeedItemDaoV1 feed_items = 1;
-    repeated LiftLog.Ui.Models.FeedUserDaoV1 followed_users = 2;
-    optional LiftLog.Ui.Models.FeedIdentityDaoV1 identity = 3;
-    repeated LiftLog.Ui.Models.InboxMessageDao follow_requests = 4;
-    repeated LiftLog.Ui.Models.FeedUserDaoV1 followers = 5;
-    repeated LiftLog.Ui.Models.UuidDao unpublished_session_ids = 6;
-    reserved 7; // published rsa key
-    repeated string revoked_follow_secrets = 8;
+  repeated LiftLog.Ui.Models.FeedItemDaoV1     feed_items              = 1;
+  repeated LiftLog.Ui.Models.FeedUserDaoV1     followed_users          = 2;
+  optional LiftLog.Ui.Models.FeedIdentityDaoV1 identity                = 3;
+  repeated LiftLog.Ui.Models.InboxMessageDao   follow_requests         = 4;
+  repeated LiftLog.Ui.Models.FeedUserDaoV1     followers               = 5;
+  repeated LiftLog.Ui.Models.UuidDao           unpublished_session_ids = 6;
+  reserved 7; // published rsa key
+  repeated string revoked_follow_secrets = 8;
 }

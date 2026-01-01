@@ -15,7 +15,7 @@
     "lint": "eslint .",
     "patch-package": "patch-package",
     "postinstall": "npm run patch-package",
-    "protojs": "pbjs -p ../proto  -t static-module ../proto/**/*.proto ../proto/SharedItem.proto -o ./gen/proto.js -w es6 --es6 --force-long",
+    "protojs": "pbjs -p ../ -t static-module ../proto/**/*.proto ../proto/SharedItem.proto -o ./gen/proto.js -w es6 --es6 --force-long",
     "protots": "pbts -o ./gen/proto.d.ts ./gen/proto.js",
     "proto": "npm run protojs && npm run protots",
     "test": "vitest",

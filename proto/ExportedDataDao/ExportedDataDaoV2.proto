@@ -1,16 +1,16 @@
 syntax = "proto3";
 package LiftLog.Ui.Models.ExportedDataDao;
 
-import "SessionHistoryDao/SessionHistoryDaoV2.proto";
-import "SessionBlueprintDao/SessionBlueprintDaoV2.proto";
-import "ProgramBlueprintDao/ProgramBlueprintDaoV1.proto";
-import "FeedStateDao.proto";
 import "google/protobuf/wrappers.proto";
+import "proto/FeedStateDao.proto";
+import "proto/ProgramBlueprintDao/ProgramBlueprintDaoV1.proto";
+import "proto/SessionBlueprintDao/SessionBlueprintDaoV2.proto";
+import "proto/SessionHistoryDao/SessionHistoryDaoV2.proto";
 
 message ExportedDataDaoV2 {
-    repeated LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2 sessions = 1;
-    repeated LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2 program = 2;
-    map<string, LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1> saved_programs = 3;
-    google.protobuf.StringValue active_program_id = 4;
-    LiftLog.Ui.Models.FeedStateDaoV1 feed_state = 5;
+  repeated LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2                sessions          = 1;
+  repeated LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2     program           = 2;
+  map<string, LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1> saved_programs    = 3;
+  google.protobuf.StringValue                                              active_program_id = 4;
+  LiftLog.Ui.Models.FeedStateDaoV1                                         feed_state        = 5;
 }

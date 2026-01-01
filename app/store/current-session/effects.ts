@@ -157,7 +157,6 @@ export function applyCurrentSessionEffects() {
                     sessionWithSameNameInPlan,
                     session.blueprint,
                   ),
-                  originalSession: sessionWithSameNameInPlan.toPOJO(),
                   sessionIndex: program.sessions.indexOf(
                     sessionWithSameNameInPlan,
                   ),
