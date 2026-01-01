@@ -91,6 +91,7 @@ export function applySettingsEffects() {
       dispatch(setCrashReportsEnabled(crashReportsEnabled));
       dispatch(setWelcomeWizardCompleted(welcomeWizardCompleted));
       dispatch(setRemoteBackupSettings(remoteBackupSettings));
+      dispatch(setPreferredLanguage(preferenceService.getPreferredLanguage()));
       dispatch(
         setLastBackup(
           lastSuccessfulRemoteBackupHash

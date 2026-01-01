@@ -42,7 +42,8 @@
             "enforceNavigationBarContrast": false
           }
         }
-      ]
+      ],
+      "@sentry/react-native"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -51,7 +52,9 @@
     "scheme": "liftlog",
     "android": {
       "package": "com.limajuice.liftlog",
-      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"],
+      "permissions": [
+        "com.android.vending.BILLING"
+      ],
       "intentFilters": [
         {
           "action": "VIEW",
@@ -62,7 +65,10 @@
               "host": "app.liftlog.online"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ],
       "adaptiveIcon": {
@@ -73,7 +79,9 @@
     },
     "ios": {
       "bundleIdentifier": "com.limajuice.liftlog",
-      "associatedDomains": ["applinks:app.liftlog.online"],
+      "associatedDomains": [
+        "applinks:app.liftlog.online"
+      ],
       "supportsTablet": true,
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": true,
@@ -102,7 +110,6 @@
     "notification": {
       "icon": "./assets/notification.png"
     },
-
     "jsEngine": "hermes"
   }
 }

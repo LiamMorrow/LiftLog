@@ -1,7 +1,7 @@
 import { CardioTrackerCard } from '@/components/presentation/cardio/CardioTrackerCard';
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import TimerEditor from '@/components/presentation/timer-editor';
-import { useAppTheme, spacing } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing, rounding } from '@/hooks/useAppTheme';
 import { RecordedCardioExercise } from '@/models/session-models';
 import { Duration, OffsetDateTime } from '@js-joda/core';
 import { useState, useCallback, useEffect } from 'react';
@@ -10,17 +10,19 @@ import { match, P } from 'ts-pattern';
 
 export function CardioTimer({
   recordedExercise,
+  currentBlockStartTime,
+  setCurrentBlockStartTime,
   updateDuration,
 }: {
   recordedExercise: RecordedCardioExercise;
+  currentBlockStartTime: OffsetDateTime | undefined;
+
+  setCurrentBlockStartTime: (val: OffsetDateTime | undefined) => void;
   updateDuration: (duration: Duration | undefined) => void;
 }) {
   const playPauseButtonSize = 24;
   const { colors } = useAppTheme();
   const animatedRadius = useAnimatedValue(40);
-  const [currentBlockStartTime, setCurrentBlockStartTime] = useState<
-    OffsetDateTime | undefined
-  >();
 
   const getTimerState = useCallback(
     (providedDuration: Duration | undefined) => {
@@ -78,7 +80,9 @@ export function CardioTimer({
   };
 
   const handlePlayPause = () => {
-    const toValue = currentBlockStartTime ? playPauseButtonSize : 10;
+    const toValue = currentBlockStartTime
+      ? playPauseButtonSize
+      : rounding.roundedRectangleRadius;
     if (currentBlockStartTime) {
       handlePause();
     } else {
@@ -117,7 +121,12 @@ export function CardioTimer({
       }, 5000);
       return () => clearTimeout(interval);
     }
-  }, [currentBlockStartTime, updateDuration, recordedExercise.duration]);
+  }, [
+    currentBlockStartTime,
+    updateDuration,
+    recordedExercise.duration,
+    setCurrentBlockStartTime,
+  ]);
 
   return (
     <CardioTrackerCard onHold={() => updateDuration(undefined)}>

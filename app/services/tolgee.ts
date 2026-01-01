@@ -1,4 +1,7 @@
-import { DetectLanguage } from '@/utils/language-detector';
+import {
+  DetectLanguage,
+  detectLanguageOrPreferred,
+} from '@/utils/language-detector';
 import de from '../i18n/de.json';
 import en from '../i18n/en.json';
 import es from '../i18n/es.json';
@@ -42,6 +45,10 @@ export const getTolgee = (preferenceService: PreferenceService) =>
     .init({
       defaultLanguage: 'en',
       fallbackLanguage: 'en',
+      language: detectLanguageOrPreferred(
+        preferenceService,
+        supportedLanguages.map((x) => x.code),
+      ),
 
       staticData: supportedLanguages.reduce(
         (acc, next) => ({ ...acc, [next.code]: next.translationJson }),

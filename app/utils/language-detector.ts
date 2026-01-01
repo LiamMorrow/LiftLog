@@ -12,15 +12,26 @@ export function detectLanguageFromDateLocale(availableLanguages: string[]) {
   );
 }
 
-const createLanguageDetector = (
+export const detectLanguageOrPreferred = (
+  preferenceService: PreferenceService,
+  availableLanguages: string[],
+) => {
+  const preference = preferenceService.getPreferredLanguage();
+  if (preference) {
+    return preference;
+  }
+  const lang = detectLanguageFromDateLocale(availableLanguages);
+  return lang;
+};
+
+export const createLanguageDetector = (
   preferenceService: PreferenceService,
 ): LanguageDetectorMiddleware => ({
-  getLanguage: async (props) => {
-    const preference = await preferenceService.getPreferredLanguage();
-    if (preference) {
-      return preference;
-    }
-    return detectLanguageFromDateLocale(props.availableLanguages);
+  getLanguage: (props) => {
+    return detectLanguageOrPreferred(
+      preferenceService,
+      props.availableLanguages,
+    );
   },
 });
 

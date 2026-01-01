@@ -4,15 +4,13 @@ import SessionComponent from '@/components/smart/session-component';
 import SessionMoreMenuComponent from '@/components/smart/session-more-menu-component';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import {
-  persistCurrentSession,
+  finishCurrentWorkout,
   selectCurrentSession,
 } from '@/store/current-session';
-import { addUnpublishedSessionId } from '@/store/feed';
-import { setStatsIsDirty } from '@/store/stats';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import { useKeepAwake } from 'expo-keep-awake';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 export default function Index() {
@@ -32,12 +30,15 @@ export default function Index() {
         return;
       }
       setConfirmOpen(false);
-      dispatch(addUnpublishedSessionId(session.id));
     }
-    dispatch(persistCurrentSession('workoutSession'));
-    dispatch(setStatsIsDirty(true));
+    dispatch(finishCurrentWorkout('workoutSession'));
     dismissTo('/');
   };
+  useEffect(() => {
+    if (!session) {
+      dismissTo('/');
+    }
+  }, [session, dismissTo]);
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
 
   return (

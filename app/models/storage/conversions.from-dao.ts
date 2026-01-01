@@ -114,7 +114,7 @@ export function fromDateOnlyDao(
   return LocalDate.of(dao.year!, dao.month!, dao.day!);
 }
 
-function fromDateTimeDao(
+export function fromDateTimeDao(
   dao: LiftLog.Ui.Models.IDateTimeDao | null | undefined,
 ): OffsetDateTime | undefined {
   if (!dao) {
@@ -187,7 +187,7 @@ function fromPotentialSetDao(
 }
 
 // Converts a RecordedExercise DAO to a RecordedExercisePOJO
-function fromRecordedExerciseDao(
+export function fromRecordedExerciseDao(
   sessionDate: LiftLog.Ui.Models.IDateOnlyDao,
   dao:
     | LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2
@@ -214,6 +214,7 @@ function fromRecordedExerciseDao(
       completionDateTime: fromDateTimeDao(dao.completionDateTime),
       incline: fromDecimalDao(dao.incline),
       resistance: fromDecimalDao(dao.resistance),
+      currentBlockStartTime: undefined,
     });
   }
   return RecordedWeightedExercise.fromPOJO({
@@ -253,11 +254,10 @@ export function fromSessionDao(
   });
 }
 
-function fromWeight(
-  value: BigNumber,
+function fromWeightUnitDao(
   daoUnit: LiftLog.Ui.Models.WeightUnit | null | undefined,
-): Weight {
-  const unit = match(daoUnit)
+): WeightUnit {
+  return match(daoUnit)
     .returnType<WeightUnit>()
     .with(P.nullish, () => 'nil')
     .with(LiftLog.Ui.Models.WeightUnit.NIL satisfies 0 as 0, () => 'nil')
@@ -267,8 +267,13 @@ function fromWeight(
     )
     .with(LiftLog.Ui.Models.WeightUnit.POUNDS satisfies 2 as 2, () => 'pounds')
     .exhaustive();
+}
 
-  return new Weight(value, unit);
+function fromWeight(
+  value: BigNumber,
+  daoUnit: LiftLog.Ui.Models.WeightUnit | null | undefined,
+): Weight {
+  return new Weight(value, fromWeightUnitDao(daoUnit));
 }
 
 // Converts a SessionHistory DAO to a Map of Sessions
@@ -464,10 +469,6 @@ export function fromCurrentSessionDao(
   dao: LiftLog.Ui.Models.CurrentSessionStateDao.ICurrentSessionStateDaoV2,
 ) {
   return {
-    latestSetTimerNotificationId:
-      (dao.latestSetTimerNotificationId &&
-        fromUuidDao(dao.latestSetTimerNotificationId)) ??
-      undefined,
     workoutSession: dao.workoutSession && fromSessionDao(dao.workoutSession),
     historySession: dao.historySession && fromSessionDao(dao.historySession),
   };
@@ -490,4 +491,11 @@ function fromFollowRequestDao(
     name: value.followRequest?.name?.value ?? '',
     userId: fromUuidDao(value.fromUserId),
   }).toPOJO();
+}
+
+export function fromWeightDao(value: LiftLog.Ui.Models.Weight): Weight {
+  return new Weight(
+    fromDecimalDao(value.value!),
+    fromWeightUnitDao(value.unit),
+  );
 }

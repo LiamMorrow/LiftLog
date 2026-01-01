@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["WorkoutWorkerModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.workoutworker.WorkoutWorkerModule"]
+  }
+}

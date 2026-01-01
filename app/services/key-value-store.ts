@@ -18,6 +18,13 @@ export class KeyValueStore {
     );
   }
 
+  getItemSync(key: string): string | undefined {
+    return (
+      (global as unknown as Global).window.localStorage.getItem(key) ??
+      undefined
+    );
+  }
+
   async getItemBytes(key: string): Promise<Uint8Array | undefined> {
     let item = (global as unknown as Global).window.localStorage.getItem(key);
     if (item?.startsWith('"') && item.endsWith('"')) {

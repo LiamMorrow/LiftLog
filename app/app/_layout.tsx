@@ -17,7 +17,9 @@ LogBox.ignoreLogs([
   /Open debugger to view warnings./,
   /.*useInsertionEffect.*/,
   /.*Failed to fetch inbox.*/,
+  /.*Failed to create user*/,
   /.*Failed to update profile*/,
+  /.*NO_APPLICABLE_SUB_RESPONSE_CODE.*/, // Revenuecat on emulator without billing
 ]);
 
 if (Platform.OS !== 'web') {

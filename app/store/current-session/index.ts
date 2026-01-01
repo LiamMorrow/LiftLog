@@ -26,13 +26,13 @@ import { Draft, WritableDraft } from 'immer';
 import Enumerable from 'linq';
 import * as Sentry from '@sentry/react-native';
 import { PlanDiff } from '@/models/blueprint-diff';
+import { WorkoutMessage } from '@/models/workout-worker-messages';
 
 interface CurrentSessionState {
   isHydrated: boolean;
   workoutSession: SessionPOJO | undefined;
   historySession: SessionPOJO | undefined;
   feedSession: SessionPOJO | undefined;
-  latestSetTimerNotificationId: string | undefined;
   workoutSessionLastSetTime: OffsetDateTime | undefined;
   currentPlanDiff: PlanDiff | undefined;
 }
@@ -46,7 +46,6 @@ const initialState: CurrentSessionState = {
   workoutSession: undefined,
   historySession: undefined,
   feedSession: undefined,
-  latestSetTimerNotificationId: undefined,
   workoutSessionLastSetTime: undefined,
   currentPlanDiff: undefined,
 };
@@ -342,10 +341,6 @@ const currentSessionSlice = createSlice({
       },
     ),
 
-    setLatestSetTimerNotificationId(state, action: PayloadAction<string>) {
-      state.latestSetTimerNotificationId = action.payload;
-    },
-
     setCurrentSession: (
       state,
       action: PayloadAction<{
@@ -434,6 +429,19 @@ const currentSessionSlice = createSlice({
       },
     ),
 
+    updateCurrentBlockStartTimeForCardioExercise: targetedSessionAction(
+      (
+        session,
+        action: { time: OffsetDateTime | undefined; exerciseIndex: number },
+      ) => {
+        const exercise = session.recordedExercises[action.exerciseIndex];
+        if (exercise.type !== 'CardioRecordedExercise') {
+          return;
+        }
+        exercise.currentBlockStartTime = action.time;
+      },
+    ),
+
     setCompletionTimeForCardioExercise: targetedSessionAction(
       (
         session,
@@ -470,9 +478,6 @@ export const clearSetTimerNotification = createAction(
 );
 
 export const notifySetTimer = createAction('notifySetTimer');
-export const completeSetFromNotification = createAction(
-  'completeSetFromNotification',
-);
 
 export const setCurrentSessionFromBlueprint = createAction<{
   target: SessionTarget;
@@ -483,6 +488,19 @@ export const persistCurrentSession = createAction<SessionTarget>(
   'persistCurrentSession',
 );
 
+export const broadcastWorkoutEvent = createAction<WorkoutMessage>(
+  'broadcastWorkoutEvent',
+);
+
+export const finishCurrentWorkout = createAction<SessionTarget>(
+  'finishCurrentWorkout',
+);
+
+export const currentWorkoutSessionUpdated = createAction<{
+  before: Session | undefined;
+  after: Session | undefined;
+}>('currentWorkoutSessionUpdated');
+
 export const {
   cycleExerciseReps,
   setActiveSessionDate,
@@ -492,7 +510,6 @@ export const {
   addExercise,
   setExerciseReps,
   updateWeightForSet,
-  setLatestSetTimerNotificationId,
   setCurrentSession,
   updateNotesForExercise,
   setCurrentPlanDiff,
@@ -500,6 +517,7 @@ export const {
   setWorkoutSessionLastSetTime,
   updateDurationForCardioExercise,
   updateDistanceForCardioExercise,
+  updateCurrentBlockStartTimeForCardioExercise,
   updateInclineForCardioExercise,
   updateResistanceForCardioExercise,
   setCompletionTimeForCardioExercise,

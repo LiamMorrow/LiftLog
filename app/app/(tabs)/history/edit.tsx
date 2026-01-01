@@ -3,13 +3,12 @@ import SessionMoreMenuComponent from '@/components/smart/session-more-menu-compo
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelector, RootState } from '@/store';
 import {
-  persistCurrentSession,
+  finishCurrentWorkout,
   setActiveSessionDate,
 } from '@/store/current-session';
-import { addUnpublishedSessionId } from '@/store/feed';
-import { setStatsIsDirty } from '@/store/stats';
 import { LocalDate } from '@js-joda/core';
 import { useRouter, Stack } from 'expo-router';
+import { useEffect } from 'react';
 import { View } from 'react-native';
 import { DatePickerInput } from 'react-native-paper-dates';
 import { useDispatch } from 'react-redux';
@@ -22,13 +21,13 @@ export default function HistoryEditPage() {
   const { dismissTo } = useRouter();
 
   const save = () => {
-    dispatch(persistCurrentSession('historySession'));
-    if (session) {
-      dispatch(addUnpublishedSessionId(session.id));
-    }
-    dispatch(setStatsIsDirty(true));
-    dismissTo('/history');
+    dispatch(finishCurrentWorkout('historySession'));
   };
+  useEffect(() => {
+    if (!session) {
+      dismissTo('/history');
+    }
+  }, [session, dismissTo]);
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
   const jsDate =
     session &&

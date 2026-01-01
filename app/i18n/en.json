@@ -222,9 +222,7 @@
   "onboarding.welcome.subtitle": "Let's get a few things set up",
   "onboarding.welcome.title": "Welcome to LiftLog!",
   "permissions.disable_notifications.button": "Disable Notifications",
-  "permissions.enable_notifications.confirm.title": "Enable Notifications?",
   "permissions.exact_notification.button": "Request exact notification permission",
-  "permissions.notifications.android.explanation": "Newer Android devices require an additional permission to ensure that rest notifications are delivered on time. Without this permission, they will arrive late and largely be useless. On the next screen, please grant LiftLog the permission.",
   "plan.add.button": "Add plan",
   "plan.add_to.button": "Add to plan",
   "plan.choose.button": "Choose plan",
@@ -406,5 +404,14 @@
   "workout.upcoming.title": "Upcoming Workouts",
   "workout.update_existing.confirm.body": "Would you like to update the existing workout named <em>{name}</em>, or add a new workout?",
   "workout.workout.label": "Workout",
-  "workout.workout_lowercase.label": "Workout"
+  "workout.workout_lowercase.label": "Workout",
+  "workout_persistent_notification.rest_break.message": "Take a rest break",
+  "workout_persistent_notification.start_soon.message": "Start your next set soon",
+  "workout_persistent_notification.start_now.message": "Start now!",
+  "workout_persistent_notification.current_exercise.message": "$EXERCISE_DESCRIPTOR$",
+  "workout_persistent_notification.in_progress.message": "Workout in progress",
+  "workout_persistent_notification.finished.message": "Workout finished!\nYou lifted $WEIGHT$ in $TIME$",
+  "workout_persistent_notification.finish_workout.action": "Finish workout",
+  "workout_persistent_notification.min_rest_over.message": "Min rest over!",
+  "workout_persistent_notification.max_rest_over.message": "Max rest over!"
 }

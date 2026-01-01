@@ -7,9 +7,10 @@ import {
 import { fromCurrentSessionDao } from '@/models/storage/conversions.from-dao';
 import { toCurrentSessionDao } from '@/models/storage/conversions.to-dao';
 import {
+  broadcastWorkoutEvent,
   clearSetTimerNotification,
-  completeSetFromNotification,
-  cycleExerciseReps,
+  currentWorkoutSessionUpdated,
+  finishCurrentWorkout,
   initializeCurrentSessionStateSlice,
   notifySetTimer,
   persistCurrentSession,
@@ -18,14 +19,18 @@ import {
   setCurrentSession,
   setCurrentSessionFromBlueprint,
   setIsHydrated,
-  setLatestSetTimerNotificationId,
 } from '@/store/current-session';
 import { addEffect } from '@/store/store';
 import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
 import { addStoredSession } from '@/store/stored-sessions';
-import { OffsetDateTime } from '@js-joda/core';
 import { selectPreferredWeightUnit } from '@/store/settings';
 import { diffSessionBlueprints } from '@/models/blueprint-diff';
+import { addUnpublishedSessionId } from '@/store/feed';
+import { setStatsIsDirty } from '@/store/stats';
+import {
+  getCardioTimerInfo,
+  getTimerInfo,
+} from '@/store/current-session/helpers';
 
 const storageKey = 'CurrentSessionStateV1';
 export function applyCurrentSessionEffects() {
@@ -84,13 +89,6 @@ export function applyCurrentSessionEffects() {
               }),
             );
           }
-          if (currentSessionState.latestSetTimerNotificationId) {
-            dispatch(
-              setLatestSetTimerNotificationId(
-                currentSessionState.latestSetTimerNotificationId,
-              ),
-            );
-          }
         }
 
         dispatch(setIsHydrated(true));
@@ -105,12 +103,36 @@ export function applyCurrentSessionEffects() {
     undefined,
     async (
       _,
-      { originalState, stateAfterReduce, extra: { keyValueStore, logger } },
+      {
+        originalState,
+        stateAfterReduce,
+        dispatch,
+        extra: { keyValueStore, logger },
+      },
     ) => {
-      const shouldPersist =
+      const shouldPersistChanges =
         stateAfterReduce.currentSession.isHydrated &&
         stateAfterReduce.currentSession !== originalState.currentSession;
-      if (shouldPersist) {
+
+      const currentWorkoutSessionChanged =
+        originalState.currentSession.workoutSession !==
+          stateAfterReduce.currentSession.workoutSession ||
+        originalState.currentSession.workoutSessionLastSetTime !==
+          stateAfterReduce.currentSession.workoutSessionLastSetTime;
+      if (currentWorkoutSessionChanged) {
+        dispatch(
+          currentWorkoutSessionUpdated({
+            before: Session.fromPOJO(
+              originalState.currentSession.workoutSession,
+            ),
+            after: Session.fromPOJO(
+              stateAfterReduce.currentSession.workoutSession,
+            ),
+          }),
+        );
+      }
+
+      if (shouldPersistChanges) {
         try {
           const currentSessionStateDao = toCurrentSessionDao({
             historySession: Session.fromPOJO(
@@ -119,8 +141,6 @@ export function applyCurrentSessionEffects() {
             workoutSession: Session.fromPOJO(
               stateAfterReduce.currentSession.workoutSession,
             ),
-            latestSetTimerNotificationId:
-              stateAfterReduce.currentSession.latestSetTimerNotificationId,
           });
           const bytes =
             LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2.encode(
@@ -134,6 +154,14 @@ export function applyCurrentSessionEffects() {
       }
     },
   );
+
+  addEffect(finishCurrentWorkout, (a, { dispatch, getState }) => {
+    const session = selectCurrentSession(getState(), a.payload);
+    if (session) dispatch(addUnpublishedSessionId(session.id));
+
+    dispatch(persistCurrentSession(a.payload));
+    dispatch(setStatsIsDirty(true));
+  });
 
   addEffect(persistCurrentSession, async (a, { dispatch, getState }) => {
     dispatch(clearSetTimerNotification());
@@ -177,6 +205,40 @@ export function applyCurrentSessionEffects() {
   });
 
   addEffect(
+    currentWorkoutSessionUpdated,
+    (action, { dispatch, stateAfterReduce }) => {
+      const previousValue = action.payload.before;
+      const currentValue = action.payload.after;
+      if (!previousValue && currentValue) {
+        dispatch(broadcastWorkoutEvent({ type: 'WorkoutStartedEvent' }));
+      }
+      if (currentValue) {
+        dispatch(
+          broadcastWorkoutEvent({
+            type: 'WorkoutUpdatedEvent',
+            workout: currentValue,
+            restTimerInfo: getTimerInfo(
+              currentValue,
+              stateAfterReduce.currentSession.workoutSessionLastSetTime,
+            ),
+            cardioTimerInfo: getCardioTimerInfo(currentValue),
+          }),
+        );
+      }
+      if (previousValue && !currentValue) {
+        dispatch(broadcastWorkoutEvent({ type: 'WorkoutEndedEvent' }));
+      }
+    },
+  );
+
+  addEffect(
+    broadcastWorkoutEvent,
+    (action, { extra: { workoutWorkerService } }) => {
+      workoutWorkerService.broadcast(action.payload);
+    },
+  );
+
+  addEffect(
     clearSetTimerNotification,
     async (_, { extra: { notificationService } }) => {
       await notificationService.clearSetTimerNotification();
@@ -195,47 +257,14 @@ export function applyCurrentSessionEffects() {
         return;
       }
       const session = Session.fromPOJO(sessionPOJO);
+      const lastExercise = session?.lastExercise;
       if (
         session?.nextExercise &&
-        session.lastExercise &&
-        session.lastExercise instanceof RecordedWeightedExercise
+        lastExercise &&
+        lastExercise.latestTime &&
+        lastExercise instanceof RecordedWeightedExercise
       ) {
-        await notificationService.scheduleNextSetNotification(
-          session.lastExercise,
-        );
-      }
-    },
-  );
-
-  addEffect(
-    completeSetFromNotification,
-    async (_, { dispatch, getState, extra: { notificationService } }) => {
-      await notificationService.clearSetTimerNotification();
-      const state = getState();
-      const session = Session.fromPOJO(state.currentSession.workoutSession);
-      if (
-        session?.nextExercise &&
-        session.nextExercise instanceof RecordedWeightedExercise
-      ) {
-        const exerciseIndex = session.recordedExercises.indexOf(
-          session.nextExercise,
-        );
-        const setIndex = session.nextExercise.potentialSets.findIndex(
-          (x) => !x.set,
-        );
-        if (setIndex !== -1) {
-          dispatch(
-            cycleExerciseReps({
-              target: 'workoutSession',
-              payload: {
-                exerciseIndex,
-                setIndex,
-                time: OffsetDateTime.now(),
-              },
-            }),
-          );
-          dispatch(notifySetTimer());
-        }
+        await notificationService.scheduleNextSetNotification(lastExercise);
       }
     },
   );

@@ -200,8 +200,6 @@
   "onboarding.send_crash_reports.subtitle": "Anonyymi data auttaa meitä korjaaman ohjelmistovirheitä",
   "onboarding.welcome.title": "Tervetuloa LiftLogiin!",
   "permissions.disable_notifications.button": "Poistetaanko ilmoitukset käytöstä?",
-  "permissions.enable_notifications.confirm.title": "Otetaanko ilmoitukset käyttöön?",
-  "permissions.notifications.android.explanation": "Uudemmat Android-laitteet vaativat lisäluvan varmistaakseen, että lepoajan ilmoitukset toimitetaan ajallaan. Ilman tätä lupaa ilmoitukset tulevat myöhässä ja ovat käytännössä hyödyttömiä. Anna LiftLogille lupa seuraavassa näkymässä.",
   "plan.add.button": "Lisää suunnitelma",
   "plan.add_to.button": "Lisää suunnitelmaan",
   "plan.choose.button": "Valitse ohjelma",

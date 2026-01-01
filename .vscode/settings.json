@@ -1,9 +1,5 @@
 {
-  "razor.disableBlazorDebugPrompt": true,
-  "azureFunctions.projectLanguage": "C#",
-  "azureFunctions.projectRuntime": "~4",
   "debug.internalConsoleOptions": "neverOpen",
-  "azureFunctions.preDeployTask": "publish (functions)",
   "cSpell.words": ["Fluxor", "kilometre", "Oaep", "Sqids", "Tolgee", "Unfollow"],
   "typescript.preferences.autoImportSpecifierExcludeRegexes": [
     "vitest/dist/chunks.*",
@@ -11,5 +7,10 @@
     "react-native-reanimated/lib/typescript/Animated",
     "react-native/types_generated/index",
     "^@material-symbols-react-native/outlined-400$"
-  ]
+  ],
+  "search.exclude": {
+    "app/gen/*": true,
+    "app/modules/workout-worker/android/src/main/proto/**": true,
+    "backend/RevenueCat/**": true
+  }
 }

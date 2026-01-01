@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package LiftLog.Ui.Models.WorkoutMessage;
+
+import "proto/SessionHistoryDao/SessionHistoryDaoV2.proto";
+import "proto/Utils.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
+message WorkoutMessage {
+  Translations translations = 1;
+  AppConfiguration app_configuration = 2;
+
+  oneof payload {
+    // Events
+
+    // Lifecycle
+    // Emitted when a workout is loaded or started. Should init the worker
+    WorkoutStartedEvent workout_started_event = 3;
+    // Emitted when anything changes in the workout, including when sets are completed
+    WorkoutUpdatedEvent workout_updated_event = 4;
+    // Emitted when a workout is ended, worker should stop any in workout things like timers
+    WorkoutEndedEvent workout_ended_event = 5;
+
+    // Commands
+
+    FinishWorkoutCommand finish_workout_command = 6;
+  }
+}
+
+message WorkoutStartedEvent {
+}
+
+message WorkoutUpdatedEvent {
+  LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2 workout = 1;
+
+  optional LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2 current_exercise = 2;
+
+  optional RestTimerInfo rest_timer_info = 3;
+  optional CardioTimerInfo cardio_timer_info = 4;
+
+  Weight total_weight_lifted = 5;
+  google.protobuf.Duration workout_duration = 6;
+}
+
+message WorkoutEndedEvent {}
+
+
+message FinishWorkoutCommand {
+}
+
+
+message RestTimerInfo {
+  google.protobuf.Timestamp started_at = 1;
+  google.protobuf.Timestamp partially_end_at = 2;
+  google.protobuf.Timestamp end_at = 3;
+}
+
+message CardioTimerInfo {
+  google.protobuf.Duration current_duration = 1;
+  optional google.protobuf.Timestamp current_block_start_time = 2;
+}
+
+
+// These translation keys match what is found in the translation files, with __ replaced with .
+message Translations {
+  string workout_persistent_notification__rest_break__message = 1;
+  string workout_persistent_notification__start_soon__message = 2;
+  string workout_persistent_notification__start_now__message = 3;
+  string workout_persistent_notification__min_rest_over__message = 8;
+  string workout_persistent_notification__max_rest_over__message = 9;
+  string workout_persistent_notification__current_exercise__message = 4;
+
+  string workout_persistent_notification__finished__message = 5;
+
+  // The initial content of the notification "Workout in progress"
+  string workout_persistent_notification__in_progress__message = 6;
+
+  // The text displayed on the action button to finish the workout
+  string workout_persistent_notification__finish_workout__action = 7;
+}
+
+message AppConfiguration {
+  bool notifications_enabled = 1;
+}

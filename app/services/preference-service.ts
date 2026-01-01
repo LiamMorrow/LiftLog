@@ -132,47 +132,6 @@ export class PreferenceService {
     return fromBooleanString(value, true);
   }
 
-  async getHasRequestedNotificationPermission(): Promise<boolean> {
-    const value = await this.keyValueStore.getItem(
-      'hasRequestedNotificationPermission',
-    );
-    return fromBooleanString(value, false);
-  }
-
-  async setHasRequestedNotificationPermission(
-    hasRequested: boolean,
-  ): Promise<void> {
-    await this.keyValueStore.setItem(
-      'hasRequestedNotificationPermission',
-      toBooleanString(hasRequested),
-    );
-  }
-
-  async getAppOpenedCount(): Promise<number> {
-    const value = await this.keyValueStore.getItem('appOpenedCount');
-    const parsed = parseInt(value ?? '', 10);
-    return isNaN(parsed) ? 0 : parsed;
-  }
-
-  async setAppOpenedCount(count: number): Promise<void> {
-    await this.keyValueStore.setItem('appOpenedCount', count.toString());
-  }
-
-  async setAppRatingResult(result: AppRatingResult): Promise<void> {
-    await this.keyValueStore.setItem('appRatingResult', result.toString());
-  }
-
-  async getAppRatingResult(): Promise<AppRatingResult> {
-    const value = await this.keyValueStore.getItem('appRatingResult');
-    if (
-      value &&
-      Object.values(AppRatingResult).includes(value as AppRatingResult)
-    ) {
-      return value as AppRatingResult;
-    }
-    return AppRatingResult.NotRated;
-  }
-
   async getRemoteBackupSettings(): Promise<RemoteBackupSettings> {
     const [endpoint, apiKey, includeFeedAccount] = await Promise.all([
       this.keyValueStore.getItem('remoteBackupSettings.Endpoint'),
@@ -297,8 +256,9 @@ export class PreferenceService {
   }
 
   getPreferredLanguage() {
-    return this.keyValueStore.getItem('preferredLanguage');
+    return this.keyValueStore.getItemSync('preferredLanguage');
   }
+
   setPreferredLanguage(lang: string | undefined) {
     return lang
       ? this.keyValueStore.setItem('preferredLanguage', lang)

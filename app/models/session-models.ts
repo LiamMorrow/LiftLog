@@ -105,6 +105,7 @@ export class Session {
               undefined,
               undefined,
               undefined,
+              undefined,
             ),
         )
         .exhaustive();
@@ -227,6 +228,12 @@ export class Session {
 
   get nextExercise(): RecordedExercise | undefined {
     const recordedExercises = this.recordedExercises;
+    const cardioExerciseWithRunningTimer = recordedExercises.find(
+      (x) => x instanceof RecordedCardioExercise && x.currentBlockStartTime,
+    );
+    if (cardioExerciseWithRunningTimer) {
+      return cardioExerciseWithRunningTimer;
+    }
     const latestExerciseIndex = Enumerable.from(recordedExercises)
       .select(indexed)
       .where((x) => x.item.isStarted)
@@ -386,6 +393,7 @@ export interface RecordedCardioExercisePOJO {
   resistance: BigNumber | undefined;
   incline: BigNumber | undefined;
   notes: string | undefined;
+  currentBlockStartTime: OffsetDateTime | undefined;
 }
 export class RecordedCardioExercise {
   readonly blueprint: CardioExerciseBlueprint;
@@ -395,6 +403,11 @@ export class RecordedCardioExercise {
   readonly resistance: BigNumber | undefined;
   readonly incline: BigNumber | undefined;
   readonly notes: string | undefined;
+
+  /**
+   * Describes the start time of a currently running timer. This is not persisted
+   */
+  readonly currentBlockStartTime: OffsetDateTime | undefined;
 
   /**
    * @deprecated please use full constructor. Here only for serialization
@@ -408,6 +421,7 @@ export class RecordedCardioExercise {
     resistance: BigNumber | undefined,
     incline: BigNumber | undefined,
     notes: string | undefined,
+    currentBlockStartTime: OffsetDateTime | undefined,
   );
   constructor(
     blueprint?: CardioExerciseBlueprint,
@@ -417,6 +431,7 @@ export class RecordedCardioExercise {
     resistance?: BigNumber,
     incline?: BigNumber,
     notes?: string,
+    currentBlockStartTime?: OffsetDateTime,
   ) {
     this.blueprint = blueprint!;
     this.completionDateTime = completionDateTime;
@@ -425,6 +440,7 @@ export class RecordedCardioExercise {
     this.resistance = resistance;
     this.incline = incline;
     this.notes = notes;
+    this.currentBlockStartTime = currentBlockStartTime;
   }
 
   static fromPOJO(
@@ -440,12 +456,14 @@ export class RecordedCardioExercise {
       pojo.resistance,
       pojo.incline,
       pojo.notes,
+      pojo.currentBlockStartTime,
     );
   }
 
   static empty(blueprint: CardioExerciseBlueprint): RecordedCardioExercise {
     return new RecordedCardioExercise(
       blueprint,
+      undefined,
       undefined,
       undefined,
       undefined,
@@ -526,6 +544,7 @@ export class RecordedCardioExercise {
       other.resistance ?? this.resistance,
       other.incline ?? this.incline,
       other.notes ?? this.notes,
+      other.currentBlockStartTime ?? this.currentBlockStartTime,
     );
   }
 
@@ -539,6 +558,7 @@ export class RecordedCardioExercise {
       resistance: this.resistance,
       incline: this.incline,
       notes: this.notes,
+      currentBlockStartTime: this.currentBlockStartTime,
     };
   }
 }

@@ -190,8 +190,6 @@
   "numbers.three.label": "Tres",
   "numbers.two.label": "Dos",
   "permissions.disable_notifications.button": "Desactivar notificaciones",
-  "permissions.enable_notifications.confirm.title": "¿Habilitar notificaciones?",
-  "permissions.notifications.android.explanation": "Los dispositivos Android más nuevos requieren un permiso adicional para garantizar que las notificaciones de descanso se envíen a tiempo. Sin este permiso, llegarán tarde y serán prácticamente inútiles. En la siguiente pantalla, concédele el permiso a LiftLog.",
   "plan.add.button": "Añadir plan",
   "plan.add_to.button": "Agregar al plan",
   "plan.choose.button": "Elegir plan",

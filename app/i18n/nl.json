@@ -190,8 +190,6 @@
   "numbers.three.label": "Drie",
   "numbers.two.label": "Twee",
   "permissions.disable_notifications.button": "Notificaties uitschakelen",
-  "permissions.enable_notifications.confirm.title": "Notificaties activeren?",
-  "permissions.notifications.android.explanation": "Nieuwere Android apparaten hebben extra toegang nodig om de rust notificaties op het juiste moment te tonen. Zonder deze extra toegang zullen de notificaties te laat komen en onbruikbaar zijn. Geef LiftLog toegang op het volgende scherm.",
   "plan.add.button": "Voeg trainingsplan toe",
   "plan.add_to.button": "Voeg toe aan trainingsplan",
   "plan.choose.button": "Kies plan",

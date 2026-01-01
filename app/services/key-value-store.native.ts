@@ -57,6 +57,18 @@ export class KeyValueStore {
     tempFile.move(finalFile);
   }
 
+  getItemSync(key: string): string | undefined {
+    const file = getFile(key);
+    if (file.exists) {
+      return file.textSync();
+    }
+    const oldFile = getOldDirFile(key);
+    if (oldFile?.exists) {
+      return oldFile.textSync();
+    }
+    return undefined;
+  }
+
   async removeItem(key: string): Promise<void> {
     const file = getFile(key);
     if (file.exists) {

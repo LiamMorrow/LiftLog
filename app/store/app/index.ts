@@ -7,13 +7,11 @@ import {
 
 const initialState: AppState = {
   isHydrated: false,
-  canScheduleExactNotifications: false,
   currentSnackbar: undefined,
 };
 
 export type AppState = {
   isHydrated: boolean;
-  canScheduleExactNotifications: boolean;
   currentSnackbar: SnackbarDescriptor | undefined;
 };
 
@@ -25,10 +23,6 @@ const appSlice = createSlice({
       state.isHydrated = action.payload;
     },
 
-    setCanScheduleExactNotifications(state, action: PayloadAction<boolean>) {
-      state.canScheduleExactNotifications = action.payload;
-    },
-
     setCurrentSnackbar(
       state,
       action: PayloadAction<SnackbarDescriptor | undefined>,
@@ -37,14 +31,6 @@ const appSlice = createSlice({
     },
   },
 });
-
-export const requestExactNotificationPermission = createAction<
-  boolean | undefined
->('requestExactNotificationPermission');
-
-export const refreshNotificationPermissionStatus = createAction(
-  'refreshNotificationPermissionStatus',
-);
 
 export const initializeAppStateSlice = createAction('initializeAppStateSlice');
 
@@ -67,10 +53,6 @@ export const showSnackbar = createAction<
   SnackbarDescriptor & { duration?: number }
 >('snackBarWithAction');
 
-export const {
-  setIsHydrated,
-  setCanScheduleExactNotifications,
-  setCurrentSnackbar,
-} = appSlice.actions;
+export const { setIsHydrated, setCurrentSnackbar } = appSlice.actions;
 
 export default appSlice.reducer;

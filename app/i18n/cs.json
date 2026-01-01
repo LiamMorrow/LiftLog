@@ -178,8 +178,6 @@
   "numbers.three.label": "Tři",
   "numbers.two.label": "Dva",
   "permissions.disable_notifications.button": "Zakázat notifikace",
-  "permissions.enable_notifications.confirm.title": "Povolit notifikace?",
-  "permissions.notifications.android.explanation": "Novější zařízení se systémem Android vyžadují dodatečné povolení, aby bylo zajištěno včasné doručení notifikací o odpočinku. Bez tohoto oprávnění budou přicházet pozdě a z velké části budou nepoužitelná. Na další obrazovce udělte LiftLogu toto oprávnění.",
   "plan.add.button": "Přidat plán",
   "plan.add_to.button": "Přidat do plánu",
   "plan.choose.button": "Vybrat plán",

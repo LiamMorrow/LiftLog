@@ -1,0 +1,1 @@
+A symlink of the protobuf files from the root. We put it in ./proto/proto intentionally because our imports expect to be from the root, which contains a proto dir, but the gradle plugin does not let us overwrite proto_path
