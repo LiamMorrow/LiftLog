@@ -382,6 +382,7 @@ my.secrets
 purchaseToken.txt
 
 appsettings.development.json
+backend/LiftLog.Api/appsettings.Development.json
 
 LiftLog.Web/wwwroot/crypto-utils.js
 LiftLog.Ui/wwwroot/app-utils.js
