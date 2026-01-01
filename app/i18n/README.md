@@ -10,11 +10,11 @@ Please follow these rules when **adding or modifying translation keys**.
 
 ### ✅ Rules
 
-* Keys must be **lowercase**
-* Use **dot-separated namespaces**
-* Keys must be **stable identifiers**, not English text
-* Do **not** include spaces, punctuation, or casing rules
-* Keys should describe **where the text is used**, not what it says
+- Keys must be **lowercase**
+- Use **dot-separated namespaces**
+- Keys must be **stable identifiers**, not English text
+- Do **not** include spaces, punctuation, or casing rules
+- Keys should describe **where the text is used**, not what it says
 
 **Allowed characters:** `a–z`, `0–9`, `.`, `_`
 
@@ -23,7 +23,6 @@ Please follow these rules when **adding or modifying translation keys**.
 ```json
 "workout.finish.button": "Finish workout"
 "ai.planner.subtitle": "Use AI to generate an entire program suited to your goals"
-"permissions.notifications.android.explanation": "Newer Android devices require an additional permission…"
 ```
 
 ### ❌ Bad
@@ -96,17 +95,16 @@ Casing and punctuation are defined by **context**, not the key name.
 
 ### Rules
 
-* **Buttons & labels**
+- **Buttons & labels**
+  - Sentence case
+  - No punctuation
 
-  * Sentence case
-  * No punctuation
-* **Titles**
+- **Titles**
+  - Sentence case
+  - Punctuation allowed
 
-  * Sentence case
-  * Punctuation allowed
-* **Body text**
-
-  * Full grammar and punctuation
+- **Body text**
+  - Full grammar and punctuation
 
 ### ✅ Good
 
@@ -137,7 +135,7 @@ Use **named placeholders only**.
 Usage:
 
 ```ts
-t('feed.follow_back', { user: username })
+t('feed.follow_back', { user: username });
 ```
 
 ### ❌ Bad
@@ -172,11 +170,11 @@ Avoid translating numbers unless they are explicitly written-out labels.
 
 ## 7. General guidelines
 
-* Do **not** embed English wording in keys
-* Do **not** delete existing keys without checking usage
-* Prefer **clarity over brevity**
-* Assume translators do **not** see the UI — context matters
-* When in doubt, create a **new, context-specific key**
+- Do **not** embed English wording in keys
+- Do **not** delete existing keys without checking usage
+- Prefer **clarity over brevity**
+- Assume translators do **not** see the UI — context matters
+- When in doubt, create a **new, context-specific key**
 
 ---
 
@@ -184,15 +182,15 @@ Avoid translating numbers unless they are explicitly written-out labels.
 
 **Keys**
 
-* lowercase
-* dot-separated
-* descriptive
-* stable
+- lowercase
+- dot-separated
+- descriptive
+- stable
 
 **Values**
 
-* proper grammar
-* context-appropriate casing
-* punctuation only where appropriate
+- proper grammar
+- context-appropriate casing
+- punctuation only where appropriate
 
 If you’re unsure, **add a new key rather than reusing an existing one**.

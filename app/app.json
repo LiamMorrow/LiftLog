@@ -51,7 +51,7 @@
     "scheme": "liftlog",
     "android": {
       "package": "com.limajuice.liftlog",
-      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"],
+      "permissions": ["com.android.vending.BILLING"],
       "intentFilters": [
         {
           "action": "VIEW",

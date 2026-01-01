@@ -15,6 +15,7 @@ import { ProgressRepository } from '@/services/progress-repository';
 import { SessionService } from '@/services/session-service';
 import { StringSharer } from '@/services/string-sharer';
 import { getTolgee } from '@/services/tolgee';
+import { WorkoutWorker } from '@/services/workout-worker';
 import { RootState } from '@/store';
 import { Store } from '@reduxjs/toolkit';
 
@@ -56,6 +57,12 @@ function resolveServicesInternal(store: Store<RootState>) {
     new HubConnectionFactory(),
     store.getState,
   );
+  const tolgee = getTolgee(preferenceService);
+  const workoutWorkerService = new WorkoutWorker(
+    store.dispatch,
+    store.getState,
+    tolgee,
+  );
 
   return {
     logger,
@@ -73,7 +80,8 @@ function resolveServicesInternal(store: Store<RootState>) {
     filePickerService,
     preferenceService,
     aiChatService,
-    tolgee: getTolgee(preferenceService),
+    workoutWorkerService,
+    tolgee,
   };
 }
 

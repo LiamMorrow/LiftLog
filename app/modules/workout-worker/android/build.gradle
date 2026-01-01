@@ -1,0 +1,69 @@
+
+plugins {
+  id "com.google.protobuf" version "0.9.6"
+}
+
+apply plugin: 'com.android.library'
+
+group = 'expo.modules.workoutworker'
+version = '0.7.6'
+
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+apply from: expoModulesCorePlugin
+apply plugin: 'org.jetbrains.kotlin.android'
+applyKotlinExpoModulesCorePlugin()
+useCoreDependencies()
+useExpoPublishing()
+
+// If you want to use the managed Android SDK versions from expo-modules-core, set this to true.
+// The Android SDK versions will be bumped from time to time in SDK releases and may introduce breaking changes in your module code.
+// Most of the time, you may like to manage the Android SDK versions yourself.
+def useManagedAndroidSdkVersions = false
+if (useManagedAndroidSdkVersions) {
+  useDefaultAndroidSdkVersions()
+} else {
+  buildscript {
+    // Simple helper that allows the root project to override versions declared by this library.
+    ext.safeExtGet = { prop, fallback ->
+      rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+    }
+  }
+  project.android {
+    compileSdkVersion safeExtGet("compileSdkVersion", 36)
+    defaultConfig {
+      minSdkVersion safeExtGet("minSdkVersion", 24)
+      targetSdkVersion safeExtGet("targetSdkVersion", 36)
+    }
+  }
+}
+
+dependencies {
+  // You need to depend on the lite runtime library, not protobuf-java
+  implementation 'com.google.protobuf:protobuf-javalite:4.33.2'
+}
+
+protobuf {
+  protoc {
+    artifact = 'com.google.protobuf:protoc:4.33.2'
+  }
+  generateProtoTasks {
+    all().configureEach { task ->
+      task.builtins {
+        java {
+          option "lite"
+        }
+      }
+    }
+  }
+}
+
+android {
+  namespace "expo.modules.workoutworker"
+  defaultConfig {
+    versionCode 1
+    versionName "0.7.6"
+  }
+  lintOptions {
+    abortOnError false
+  }
+}

@@ -148,7 +148,7 @@ export default function SessionComponent(props: {
       }
       const hasData = !!(
         exercise.distance ||
-        exercise.duration ||
+        (exercise.duration && !exercise.duration.isZero()) ||
         exercise.incline ||
         exercise.resistance
       );
@@ -160,14 +160,6 @@ export default function SessionComponent(props: {
         exerciseIndex,
         time: newCompletionDateTime,
       });
-
-      if (props.target === 'workoutSession') {
-        const newWorkoutTime = hasData
-          ? undefined
-          : session.latestWeightedExercise?.latestTime;
-        storeDispatch(setWorkoutSessionLastSetTime(newWorkoutTime));
-        storeDispatch(notifySetTimer());
-      }
     };
   };
 
@@ -351,12 +343,13 @@ export default function SessionComponent(props: {
     lastExercise instanceof RecordedWeightedExercise
       ? lastExercise?.lastRecordedSet
       : undefined;
+  const nextExercise = session.nextExercise;
   // We only want to show the rest timer - which is primarily for weights
   // When we are currently working out, and the exercises we are on (or were just on) are weighted - rests for cardio aren't implemented
   const showRestTimer =
     props.target === 'workoutSession' &&
-    session.nextExercise &&
-    session.nextExercise instanceof RecordedWeightedExercise &&
+    nextExercise &&
+    nextExercise instanceof RecordedWeightedExercise &&
     lastExercise &&
     lastExercise instanceof RecordedWeightedExercise &&
     lastSetTime;

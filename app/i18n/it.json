@@ -175,8 +175,6 @@
   "numbers.three.label": "Tre",
   "numbers.two.label": "Due",
   "permissions.disable_notifications.button": "Disattiva Notifiche",
-  "permissions.enable_notifications.confirm.title": "Attiva Notifiche?",
-  "permissions.notifications.android.explanation": "I dispositivi Android più recenti richiedono un permesso aggiuntivo per assicurarsi che le notifiche dei timer di recupero siano visualizzate in tempo. Senza questo permesso, arriveranno in ritardo e saranno pressochè inutili. Nella prossima schermata, perfavore dai il consenso a LiftLog.",
   "plan.add.button": "Aggiungi piano",
   "plan.add_to.button": "Aggiungi al piano",
   "plan.choose.button": "Scegli piano",

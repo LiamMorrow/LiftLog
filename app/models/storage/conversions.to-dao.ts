@@ -36,7 +36,7 @@ import {
 import Enumerable from 'linq';
 import { FeedState } from '@/store/feed';
 import { uuidParse } from '@/utils/uuid';
-import { WeightUnit } from '@/models/weight';
+import { Weight, WeightUnit } from '@/models/weight';
 import { match } from 'ts-pattern';
 
 export function toUuidDao(uuid: string): LiftLog.Ui.Models.IUuidDao {
@@ -298,7 +298,7 @@ export function toRecordedExerciseDao(
   });
 }
 
-function toDateTimeDao(
+export function toDateTimeDao(
   model: OffsetDateTime | undefined,
 ): LiftLog.Ui.Models.DateTimeDao | null {
   if (!model) {
@@ -338,17 +338,12 @@ export function toRecordedSetDao(
 export function toCurrentSessionDao(model: {
   workoutSession: Session | undefined;
   historySession: Session | undefined;
-  latestSetTimerNotificationId: string | undefined;
 }): LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2 {
   return new LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2({
     historySession:
       (model.historySession && toSessionDao(model.historySession)) ?? null,
     workoutSession:
       (model.workoutSession && toSessionDao(model.workoutSession)) ?? null,
-    latestSetTimerNotificationId:
-      (model.latestSetTimerNotificationId &&
-        toUuidDao(model.latestSetTimerNotificationId)) ||
-      null,
   });
 }
 
@@ -408,5 +403,12 @@ function toFollowRequestDao(
     followRequest: {
       name: toStringValue(request.name),
     },
+  });
+}
+
+export function toWeightDao(weight: Weight): LiftLog.Ui.Models.Weight {
+  return LiftLog.Ui.Models.Weight.create({
+    unit: toWeightUnitDao(weight.unit),
+    value: toDecimalDao(weight.value),
   });
 }
