@@ -42,6 +42,16 @@ if (Platform.OS === 'android') {
     lockscreenVisibility: AndroidNotificationVisibility.PUBLIC,
     bypassDnd: false,
   });
+  void setNotificationChannelAsync('workout_channel', {
+    name: 'Workout',
+    description:
+      'A persistent notification showing your time throughout the workout',
+    importance: AndroidImportance.HIGH,
+    enableVibrate: true,
+    showBadge: true,
+    lockscreenVisibility: AndroidNotificationVisibility.PUBLIC,
+    bypassDnd: false,
+  });
 }
 export class NotificationService {
   constructor(

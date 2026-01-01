@@ -7,6 +7,7 @@ import {
 import { fromCurrentSessionDao } from '@/models/storage/conversions.from-dao';
 import { toCurrentSessionDao } from '@/models/storage/conversions.to-dao';
 import {
+  broadcastWorkoutEvent,
   clearSetTimerNotification,
   completeSetFromNotification,
   cycleExerciseReps,
@@ -23,9 +24,11 @@ import {
 import { addEffect } from '@/store/store';
 import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
 import { addStoredSession } from '@/store/stored-sessions';
-import { LocalDateTime } from '@js-joda/core';
+import { Duration, LocalDateTime, ZoneId } from '@js-joda/core';
 import { selectPreferredWeightUnit } from '@/store/settings';
 import { diffSessionBlueprints } from '@/models/blueprint-diff';
+import { match, P } from 'ts-pattern';
+import { Platform } from 'react-native';
 
 const storageKey = 'CurrentSessionStateV1';
 export function applyCurrentSessionEffects() {
@@ -107,10 +110,10 @@ export function applyCurrentSessionEffects() {
       _,
       { originalState, stateAfterReduce, extra: { keyValueStore, logger } },
     ) => {
-      const shouldPersist =
+      const stateChanged =
         stateAfterReduce.currentSession.isHydrated &&
         stateAfterReduce.currentSession !== originalState.currentSession;
-      if (shouldPersist) {
+      if (stateChanged) {
         try {
           const currentSessionStateDao = toCurrentSessionDao({
             historySession: Session.fromPOJO(
@@ -177,6 +180,13 @@ export function applyCurrentSessionEffects() {
   });
 
   addEffect(
+    broadcastWorkoutEvent,
+    (action, { extra: { workoutWorkerService } }) => {
+      workoutWorkerService.broadcast(action.payload);
+    },
+  );
+
+  addEffect(
     clearSetTimerNotification,
     async (_, { extra: { notificationService } }) => {
       await notificationService.clearSetTimerNotification();
@@ -185,7 +195,7 @@ export function applyCurrentSessionEffects() {
 
   addEffect(
     notifySetTimer,
-    async (_, { extra: { notificationService }, getState }) => {
+    async (_, { dispatch, extra: { notificationService }, getState }) => {
       await notificationService.clearSetTimerNotification();
       const {
         settings: { restNotifications },
@@ -195,14 +205,56 @@ export function applyCurrentSessionEffects() {
         return;
       }
       const session = Session.fromPOJO(sessionPOJO);
+      const lastExercise = session?.lastExercise;
       if (
         session?.nextExercise &&
-        session.lastExercise &&
-        session.lastExercise instanceof RecordedWeightedExercise
+        lastExercise &&
+        lastExercise.latestTime &&
+        lastExercise instanceof RecordedWeightedExercise
       ) {
-        await notificationService.scheduleNextSetNotification(
-          session.lastExercise,
+        const repsPerSet = lastExercise.blueprint.repsPerSet;
+        const { minRest, maxRest, failureRest } =
+          lastExercise.blueprint.restBetweenSets;
+
+        const rest = match(lastExercise.lastRecordedSet)
+          .with(
+            { set: { repsCompleted: P.when((x) => x >= repsPerSet) } },
+            () => ({ partialRest: minRest, fullRest: maxRest }),
+          )
+          .with(
+            { set: { repsCompleted: P.when((x) => x < repsPerSet) } },
+            () => ({ partialRest: failureRest, fullRest: failureRest }),
+          )
+          .otherwise(() => ({
+            partialRest: Duration.ZERO,
+            fullRest: Duration.ZERO,
+          }));
+
+        if (rest.partialRest.equals(Duration.ZERO)) {
+          return;
+        }
+        const startedAt = lastExercise.latestTime
+          .atZone(ZoneId.systemDefault())
+          .toInstant();
+        const partiallyEndAt = lastExercise.latestTime
+          .plus(rest.partialRest)
+          .atZone(ZoneId.systemDefault())
+          .toInstant();
+        const endAt = lastExercise.latestTime
+          .plus(rest.fullRest)
+          .atZone(ZoneId.systemDefault())
+          .toInstant();
+        dispatch(
+          broadcastWorkoutEvent({
+            type: 'TimerStarted',
+            startedAt,
+            partiallyEndAt,
+            endAt,
+          }),
         );
+        if (Platform.OS !== 'android') {
+          await notificationService.scheduleNextSetNotification(lastExercise);
+        }
       }
     },
   );

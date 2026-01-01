@@ -13,6 +13,7 @@ import { spacing } from '@/hooks/useAppTheme';
 import { Session } from '@/models/session-models';
 import { RootState, useAppSelector, useAppSelectorWithArg } from '@/store';
 import {
+  broadcastWorkoutEvent,
   selectCurrentSession,
   setCurrentSession,
 } from '@/store/current-session';
@@ -259,6 +260,9 @@ export default function Index() {
   const replaceSession = useDebouncedCallback(
     (session: Session) => {
       setSelectedSession(undefined);
+      dispatch(
+        broadcastWorkoutEvent({ type: 'WorkoutStarted', workout: session }),
+      );
       dispatch(
         setCurrentSession({
           target: 'workoutSession',

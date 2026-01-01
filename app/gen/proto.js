@@ -34,35 +34,36 @@ export const LiftLog = $root.LiftLog = (() => {
              */
             const Models = {};
 
-            Models.CurrentSessionStateDao = (function() {
+            Models.WorkoutEvent = (function() {
 
                 /**
-                 * Namespace CurrentSessionStateDao.
+                 * Namespace WorkoutEvent.
                  * @memberof LiftLog.Ui.Models
                  * @namespace
                  */
-                const CurrentSessionStateDao = {};
+                const WorkoutEvent = {};
 
-                CurrentSessionStateDao.CurrentSessionStateDaoV2 = (function() {
+                WorkoutEvent.WorkoutEvent = (function() {
 
                     /**
-                     * Properties of a CurrentSessionStateDaoV2.
-                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao
-                     * @interface ICurrentSessionStateDaoV2
-                     * @property {LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null} [workoutSession] CurrentSessionStateDaoV2 workoutSession
-                     * @property {LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null} [historySession] CurrentSessionStateDaoV2 historySession
-                     * @property {LiftLog.Ui.Models.IUuidDao|null} [latestSetTimerNotificationId] CurrentSessionStateDaoV2 latestSetTimerNotificationId
+                     * Properties of a WorkoutEvent.
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent
+                     * @interface IWorkoutEvent
+                     * @property {LiftLog.Ui.Models.WorkoutEvent.IWorkoutStarted|null} [workoutStarted] WorkoutEvent workoutStarted
+                     * @property {LiftLog.Ui.Models.WorkoutEvent.IWorkoutUpdated|null} [workoutUpdated] WorkoutEvent workoutUpdated
+                     * @property {LiftLog.Ui.Models.WorkoutEvent.IWorkoutEnded|null} [workoutEnded] WorkoutEvent workoutEnded
+                     * @property {LiftLog.Ui.Models.WorkoutEvent.ITimerStarted|null} [timerStarted] WorkoutEvent timerStarted
                      */
 
                     /**
-                     * Constructs a new CurrentSessionStateDaoV2.
-                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao
-                     * @classdesc Represents a CurrentSessionStateDaoV2.
-                     * @implements ICurrentSessionStateDaoV2
+                     * Constructs a new WorkoutEvent.
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent
+                     * @classdesc Represents a WorkoutEvent.
+                     * @implements IWorkoutEvent
                      * @constructor
-                     * @param {LiftLog.Ui.Models.CurrentSessionStateDao.ICurrentSessionStateDaoV2=} [properties] Properties to set
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.IWorkoutEvent=} [properties] Properties to set
                      */
-                    function CurrentSessionStateDaoV2(properties) {
+                    function WorkoutEvent(properties) {
                         if (properties)
                             for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                                 if (properties[keys[i]] != null)
@@ -70,141 +71,133 @@ export const LiftLog = $root.LiftLog = (() => {
                     }
 
                     /**
-                     * CurrentSessionStateDaoV2 workoutSession.
-                     * @member {LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null|undefined} workoutSession
-                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * WorkoutEvent workoutStarted.
+                     * @member {LiftLog.Ui.Models.WorkoutEvent.IWorkoutStarted|null|undefined} workoutStarted
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent
                      * @instance
                      */
-                    CurrentSessionStateDaoV2.prototype.workoutSession = null;
+                    WorkoutEvent.prototype.workoutStarted = null;
 
                     /**
-                     * CurrentSessionStateDaoV2 historySession.
-                     * @member {LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null|undefined} historySession
-                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * WorkoutEvent workoutUpdated.
+                     * @member {LiftLog.Ui.Models.WorkoutEvent.IWorkoutUpdated|null|undefined} workoutUpdated
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent
                      * @instance
                      */
-                    CurrentSessionStateDaoV2.prototype.historySession = null;
+                    WorkoutEvent.prototype.workoutUpdated = null;
 
                     /**
-                     * CurrentSessionStateDaoV2 latestSetTimerNotificationId.
-                     * @member {LiftLog.Ui.Models.IUuidDao|null|undefined} latestSetTimerNotificationId
-                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * WorkoutEvent workoutEnded.
+                     * @member {LiftLog.Ui.Models.WorkoutEvent.IWorkoutEnded|null|undefined} workoutEnded
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent
                      * @instance
                      */
-                    CurrentSessionStateDaoV2.prototype.latestSetTimerNotificationId = null;
+                    WorkoutEvent.prototype.workoutEnded = null;
+
+                    /**
+                     * WorkoutEvent timerStarted.
+                     * @member {LiftLog.Ui.Models.WorkoutEvent.ITimerStarted|null|undefined} timerStarted
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent
+                     * @instance
+                     */
+                    WorkoutEvent.prototype.timerStarted = null;
 
                     // OneOf field names bound to virtual getters and setters
                     let $oneOfFields;
 
                     /**
-                     * CurrentSessionStateDaoV2 _workoutSession.
-                     * @member {"workoutSession"|undefined} _workoutSession
-                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * WorkoutEvent eventPayload.
+                     * @member {"workoutStarted"|"workoutUpdated"|"workoutEnded"|"timerStarted"|undefined} eventPayload
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent
                      * @instance
                      */
-                    Object.defineProperty(CurrentSessionStateDaoV2.prototype, "_workoutSession", {
-                        get: $util.oneOfGetter($oneOfFields = ["workoutSession"]),
+                    Object.defineProperty(WorkoutEvent.prototype, "eventPayload", {
+                        get: $util.oneOfGetter($oneOfFields = ["workoutStarted", "workoutUpdated", "workoutEnded", "timerStarted"]),
                         set: $util.oneOfSetter($oneOfFields)
                     });
 
                     /**
-                     * CurrentSessionStateDaoV2 _historySession.
-                     * @member {"historySession"|undefined} _historySession
-                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
-                     * @instance
-                     */
-                    Object.defineProperty(CurrentSessionStateDaoV2.prototype, "_historySession", {
-                        get: $util.oneOfGetter($oneOfFields = ["historySession"]),
-                        set: $util.oneOfSetter($oneOfFields)
-                    });
-
-                    /**
-                     * CurrentSessionStateDaoV2 _latestSetTimerNotificationId.
-                     * @member {"latestSetTimerNotificationId"|undefined} _latestSetTimerNotificationId
-                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
-                     * @instance
-                     */
-                    Object.defineProperty(CurrentSessionStateDaoV2.prototype, "_latestSetTimerNotificationId", {
-                        get: $util.oneOfGetter($oneOfFields = ["latestSetTimerNotificationId"]),
-                        set: $util.oneOfSetter($oneOfFields)
-                    });
-
-                    /**
-                     * Creates a new CurrentSessionStateDaoV2 instance using the specified properties.
+                     * Creates a new WorkoutEvent instance using the specified properties.
                      * @function create
-                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent
                      * @static
-                     * @param {LiftLog.Ui.Models.CurrentSessionStateDao.ICurrentSessionStateDaoV2=} [properties] Properties to set
-                     * @returns {LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2} CurrentSessionStateDaoV2 instance
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.IWorkoutEvent=} [properties] Properties to set
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent} WorkoutEvent instance
                      */
-                    CurrentSessionStateDaoV2.create = function create(properties) {
-                        return new CurrentSessionStateDaoV2(properties);
+                    WorkoutEvent.create = function create(properties) {
+                        return new WorkoutEvent(properties);
                     };
 
                     /**
-                     * Encodes the specified CurrentSessionStateDaoV2 message. Does not implicitly {@link LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2.verify|verify} messages.
+                     * Encodes the specified WorkoutEvent message. Does not implicitly {@link LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent.verify|verify} messages.
                      * @function encode
-                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent
                      * @static
-                     * @param {LiftLog.Ui.Models.CurrentSessionStateDao.ICurrentSessionStateDaoV2} message CurrentSessionStateDaoV2 message or plain object to encode
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.IWorkoutEvent} message WorkoutEvent message or plain object to encode
                      * @param {$protobuf.Writer} [writer] Writer to encode to
                      * @returns {$protobuf.Writer} Writer
                      */
-                    CurrentSessionStateDaoV2.encode = function encode(message, writer) {
+                    WorkoutEvent.encode = function encode(message, writer) {
                         if (!writer)
                             writer = $Writer.create();
-                        if (message.workoutSession != null && Object.hasOwnProperty.call(message, "workoutSession"))
-                            $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.encode(message.workoutSession, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                        if (message.historySession != null && Object.hasOwnProperty.call(message, "historySession"))
-                            $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.encode(message.historySession, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-                        if (message.latestSetTimerNotificationId != null && Object.hasOwnProperty.call(message, "latestSetTimerNotificationId"))
-                            $root.LiftLog.Ui.Models.UuidDao.encode(message.latestSetTimerNotificationId, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                        if (message.workoutStarted != null && Object.hasOwnProperty.call(message, "workoutStarted"))
+                            $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted.encode(message.workoutStarted, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        if (message.workoutUpdated != null && Object.hasOwnProperty.call(message, "workoutUpdated"))
+                            $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated.encode(message.workoutUpdated, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                        if (message.workoutEnded != null && Object.hasOwnProperty.call(message, "workoutEnded"))
+                            $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded.encode(message.workoutEnded, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                        if (message.timerStarted != null && Object.hasOwnProperty.call(message, "timerStarted"))
+                            $root.LiftLog.Ui.Models.WorkoutEvent.TimerStarted.encode(message.timerStarted, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
                         return writer;
                     };
 
                     /**
-                     * Encodes the specified CurrentSessionStateDaoV2 message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2.verify|verify} messages.
+                     * Encodes the specified WorkoutEvent message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent.verify|verify} messages.
                      * @function encodeDelimited
-                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent
                      * @static
-                     * @param {LiftLog.Ui.Models.CurrentSessionStateDao.ICurrentSessionStateDaoV2} message CurrentSessionStateDaoV2 message or plain object to encode
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.IWorkoutEvent} message WorkoutEvent message or plain object to encode
                      * @param {$protobuf.Writer} [writer] Writer to encode to
                      * @returns {$protobuf.Writer} Writer
                      */
-                    CurrentSessionStateDaoV2.encodeDelimited = function encodeDelimited(message, writer) {
+                    WorkoutEvent.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
 
                     /**
-                     * Decodes a CurrentSessionStateDaoV2 message from the specified reader or buffer.
+                     * Decodes a WorkoutEvent message from the specified reader or buffer.
                      * @function decode
-                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent
                      * @static
                      * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
                      * @param {number} [length] Message length if known beforehand
-                     * @returns {LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2} CurrentSessionStateDaoV2
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent} WorkoutEvent
                      * @throws {Error} If the payload is not a reader or valid buffer
                      * @throws {$protobuf.util.ProtocolError} If required fields are missing
                      */
-                    CurrentSessionStateDaoV2.decode = function decode(reader, length, error) {
+                    WorkoutEvent.decode = function decode(reader, length, error) {
                         if (!(reader instanceof $Reader))
                             reader = $Reader.create(reader);
-                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2();
+                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent();
                         while (reader.pos < end) {
                             let tag = reader.uint32();
                             if (tag === error)
                                 break;
                             switch (tag >>> 3) {
                             case 1: {
-                                    message.workoutSession = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.decode(reader, reader.uint32());
+                                    message.workoutStarted = $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted.decode(reader, reader.uint32());
                                     break;
                                 }
                             case 2: {
-                                    message.historySession = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.decode(reader, reader.uint32());
+                                    message.workoutUpdated = $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated.decode(reader, reader.uint32());
                                     break;
                                 }
                             case 3: {
-                                    message.latestSetTimerNotificationId = $root.LiftLog.Ui.Models.UuidDao.decode(reader, reader.uint32());
+                                    message.workoutEnded = $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 4: {
+                                    message.timerStarted = $root.LiftLog.Ui.Models.WorkoutEvent.TimerStarted.decode(reader, reader.uint32());
                                     break;
                                 }
                             default:
@@ -216,151 +209,1039 @@ export const LiftLog = $root.LiftLog = (() => {
                     };
 
                     /**
-                     * Decodes a CurrentSessionStateDaoV2 message from the specified reader or buffer, length delimited.
+                     * Decodes a WorkoutEvent message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
-                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent
                      * @static
                      * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                     * @returns {LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2} CurrentSessionStateDaoV2
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent} WorkoutEvent
                      * @throws {Error} If the payload is not a reader or valid buffer
                      * @throws {$protobuf.util.ProtocolError} If required fields are missing
                      */
-                    CurrentSessionStateDaoV2.decodeDelimited = function decodeDelimited(reader) {
+                    WorkoutEvent.decodeDelimited = function decodeDelimited(reader) {
                         if (!(reader instanceof $Reader))
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
 
                     /**
-                     * Verifies a CurrentSessionStateDaoV2 message.
+                     * Verifies a WorkoutEvent message.
                      * @function verify
-                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent
                      * @static
                      * @param {Object.<string,*>} message Plain object to verify
                      * @returns {string|null} `null` if valid, otherwise the reason why it is not
                      */
-                    CurrentSessionStateDaoV2.verify = function verify(message) {
+                    WorkoutEvent.verify = function verify(message) {
                         if (typeof message !== "object" || message === null)
                             return "object expected";
                         let properties = {};
-                        if (message.workoutSession != null && message.hasOwnProperty("workoutSession")) {
-                            properties._workoutSession = 1;
+                        if (message.workoutStarted != null && message.hasOwnProperty("workoutStarted")) {
+                            properties.eventPayload = 1;
                             {
-                                let error = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.verify(message.workoutSession);
+                                let error = $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted.verify(message.workoutStarted);
                                 if (error)
-                                    return "workoutSession." + error;
+                                    return "workoutStarted." + error;
                             }
                         }
-                        if (message.historySession != null && message.hasOwnProperty("historySession")) {
-                            properties._historySession = 1;
+                        if (message.workoutUpdated != null && message.hasOwnProperty("workoutUpdated")) {
+                            if (properties.eventPayload === 1)
+                                return "eventPayload: multiple values";
+                            properties.eventPayload = 1;
                             {
-                                let error = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.verify(message.historySession);
+                                let error = $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated.verify(message.workoutUpdated);
                                 if (error)
-                                    return "historySession." + error;
+                                    return "workoutUpdated." + error;
                             }
                         }
-                        if (message.latestSetTimerNotificationId != null && message.hasOwnProperty("latestSetTimerNotificationId")) {
-                            properties._latestSetTimerNotificationId = 1;
+                        if (message.workoutEnded != null && message.hasOwnProperty("workoutEnded")) {
+                            if (properties.eventPayload === 1)
+                                return "eventPayload: multiple values";
+                            properties.eventPayload = 1;
                             {
-                                let error = $root.LiftLog.Ui.Models.UuidDao.verify(message.latestSetTimerNotificationId);
+                                let error = $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded.verify(message.workoutEnded);
                                 if (error)
-                                    return "latestSetTimerNotificationId." + error;
+                                    return "workoutEnded." + error;
+                            }
+                        }
+                        if (message.timerStarted != null && message.hasOwnProperty("timerStarted")) {
+                            if (properties.eventPayload === 1)
+                                return "eventPayload: multiple values";
+                            properties.eventPayload = 1;
+                            {
+                                let error = $root.LiftLog.Ui.Models.WorkoutEvent.TimerStarted.verify(message.timerStarted);
+                                if (error)
+                                    return "timerStarted." + error;
                             }
                         }
                         return null;
                     };
 
                     /**
-                     * Creates a CurrentSessionStateDaoV2 message from a plain object. Also converts values to their respective internal types.
+                     * Creates a WorkoutEvent message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
-                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent
                      * @static
                      * @param {Object.<string,*>} object Plain object
-                     * @returns {LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2} CurrentSessionStateDaoV2
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent} WorkoutEvent
                      */
-                    CurrentSessionStateDaoV2.fromObject = function fromObject(object) {
-                        if (object instanceof $root.LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2)
+                    WorkoutEvent.fromObject = function fromObject(object) {
+                        if (object instanceof $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent)
                             return object;
-                        let message = new $root.LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2();
-                        if (object.workoutSession != null) {
-                            if (typeof object.workoutSession !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2.workoutSession: object expected");
-                            message.workoutSession = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.fromObject(object.workoutSession);
+                        let message = new $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent();
+                        if (object.workoutStarted != null) {
+                            if (typeof object.workoutStarted !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent.workoutStarted: object expected");
+                            message.workoutStarted = $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted.fromObject(object.workoutStarted);
                         }
-                        if (object.historySession != null) {
-                            if (typeof object.historySession !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2.historySession: object expected");
-                            message.historySession = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.fromObject(object.historySession);
+                        if (object.workoutUpdated != null) {
+                            if (typeof object.workoutUpdated !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent.workoutUpdated: object expected");
+                            message.workoutUpdated = $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated.fromObject(object.workoutUpdated);
                         }
-                        if (object.latestSetTimerNotificationId != null) {
-                            if (typeof object.latestSetTimerNotificationId !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2.latestSetTimerNotificationId: object expected");
-                            message.latestSetTimerNotificationId = $root.LiftLog.Ui.Models.UuidDao.fromObject(object.latestSetTimerNotificationId);
+                        if (object.workoutEnded != null) {
+                            if (typeof object.workoutEnded !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent.workoutEnded: object expected");
+                            message.workoutEnded = $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded.fromObject(object.workoutEnded);
+                        }
+                        if (object.timerStarted != null) {
+                            if (typeof object.timerStarted !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent.timerStarted: object expected");
+                            message.timerStarted = $root.LiftLog.Ui.Models.WorkoutEvent.TimerStarted.fromObject(object.timerStarted);
                         }
                         return message;
                     };
 
                     /**
-                     * Creates a plain object from a CurrentSessionStateDaoV2 message. Also converts values to other types if specified.
+                     * Creates a plain object from a WorkoutEvent message. Also converts values to other types if specified.
                      * @function toObject
-                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent
                      * @static
-                     * @param {LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2} message CurrentSessionStateDaoV2
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent} message WorkoutEvent
                      * @param {$protobuf.IConversionOptions} [options] Conversion options
                      * @returns {Object.<string,*>} Plain object
                      */
-                    CurrentSessionStateDaoV2.toObject = function toObject(message, options) {
+                    WorkoutEvent.toObject = function toObject(message, options) {
                         if (!options)
                             options = {};
                         let object = {};
-                        if (message.workoutSession != null && message.hasOwnProperty("workoutSession")) {
-                            object.workoutSession = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.toObject(message.workoutSession, options);
+                        if (message.workoutStarted != null && message.hasOwnProperty("workoutStarted")) {
+                            object.workoutStarted = $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted.toObject(message.workoutStarted, options);
                             if (options.oneofs)
-                                object._workoutSession = "workoutSession";
+                                object.eventPayload = "workoutStarted";
                         }
-                        if (message.historySession != null && message.hasOwnProperty("historySession")) {
-                            object.historySession = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.toObject(message.historySession, options);
+                        if (message.workoutUpdated != null && message.hasOwnProperty("workoutUpdated")) {
+                            object.workoutUpdated = $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated.toObject(message.workoutUpdated, options);
                             if (options.oneofs)
-                                object._historySession = "historySession";
+                                object.eventPayload = "workoutUpdated";
                         }
-                        if (message.latestSetTimerNotificationId != null && message.hasOwnProperty("latestSetTimerNotificationId")) {
-                            object.latestSetTimerNotificationId = $root.LiftLog.Ui.Models.UuidDao.toObject(message.latestSetTimerNotificationId, options);
+                        if (message.workoutEnded != null && message.hasOwnProperty("workoutEnded")) {
+                            object.workoutEnded = $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded.toObject(message.workoutEnded, options);
                             if (options.oneofs)
-                                object._latestSetTimerNotificationId = "latestSetTimerNotificationId";
+                                object.eventPayload = "workoutEnded";
+                        }
+                        if (message.timerStarted != null && message.hasOwnProperty("timerStarted")) {
+                            object.timerStarted = $root.LiftLog.Ui.Models.WorkoutEvent.TimerStarted.toObject(message.timerStarted, options);
+                            if (options.oneofs)
+                                object.eventPayload = "timerStarted";
                         }
                         return object;
                     };
 
                     /**
-                     * Converts this CurrentSessionStateDaoV2 to JSON.
+                     * Converts this WorkoutEvent to JSON.
                      * @function toJSON
-                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent
                      * @instance
                      * @returns {Object.<string,*>} JSON object
                      */
-                    CurrentSessionStateDaoV2.prototype.toJSON = function toJSON() {
+                    WorkoutEvent.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
 
                     /**
-                     * Gets the default type url for CurrentSessionStateDaoV2
+                     * Gets the default type url for WorkoutEvent
                      * @function getTypeUrl
-                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent
                      * @static
                      * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                      * @returns {string} The default type url
                      */
-                    CurrentSessionStateDaoV2.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    WorkoutEvent.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                         if (typeUrlPrefix === undefined) {
                             typeUrlPrefix = "type.googleapis.com";
                         }
-                        return typeUrlPrefix + "/LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2";
+                        return typeUrlPrefix + "/LiftLog.Ui.Models.WorkoutEvent.WorkoutEvent";
                     };
 
-                    return CurrentSessionStateDaoV2;
+                    return WorkoutEvent;
                 })();
 
-                return CurrentSessionStateDao;
+                WorkoutEvent.WorkoutStarted = (function() {
+
+                    /**
+                     * Properties of a WorkoutStarted.
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent
+                     * @interface IWorkoutStarted
+                     * @property {LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null} [workout] WorkoutStarted workout
+                     */
+
+                    /**
+                     * Constructs a new WorkoutStarted.
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent
+                     * @classdesc Represents a WorkoutStarted.
+                     * @implements IWorkoutStarted
+                     * @constructor
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.IWorkoutStarted=} [properties] Properties to set
+                     */
+                    function WorkoutStarted(properties) {
+                        if (properties)
+                            for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * WorkoutStarted workout.
+                     * @member {LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null|undefined} workout
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted
+                     * @instance
+                     */
+                    WorkoutStarted.prototype.workout = null;
+
+                    /**
+                     * Creates a new WorkoutStarted instance using the specified properties.
+                     * @function create
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.IWorkoutStarted=} [properties] Properties to set
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted} WorkoutStarted instance
+                     */
+                    WorkoutStarted.create = function create(properties) {
+                        return new WorkoutStarted(properties);
+                    };
+
+                    /**
+                     * Encodes the specified WorkoutStarted message. Does not implicitly {@link LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted.verify|verify} messages.
+                     * @function encode
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.IWorkoutStarted} message WorkoutStarted message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    WorkoutStarted.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.workout != null && Object.hasOwnProperty.call(message, "workout"))
+                            $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.encode(message.workout, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified WorkoutStarted message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.IWorkoutStarted} message WorkoutStarted message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    WorkoutStarted.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a WorkoutStarted message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted} WorkoutStarted
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    WorkoutStarted.decode = function decode(reader, length, error) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted();
+                        while (reader.pos < end) {
+                            let tag = reader.uint32();
+                            if (tag === error)
+                                break;
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.workout = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a WorkoutStarted message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted} WorkoutStarted
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    WorkoutStarted.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a WorkoutStarted message.
+                     * @function verify
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    WorkoutStarted.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.workout != null && message.hasOwnProperty("workout")) {
+                            let error = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.verify(message.workout);
+                            if (error)
+                                return "workout." + error;
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Creates a WorkoutStarted message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted} WorkoutStarted
+                     */
+                    WorkoutStarted.fromObject = function fromObject(object) {
+                        if (object instanceof $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted)
+                            return object;
+                        let message = new $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted();
+                        if (object.workout != null) {
+                            if (typeof object.workout !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted.workout: object expected");
+                            message.workout = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.fromObject(object.workout);
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a WorkoutStarted message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted} message WorkoutStarted
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    WorkoutStarted.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        let object = {};
+                        if (options.defaults)
+                            object.workout = null;
+                        if (message.workout != null && message.hasOwnProperty("workout"))
+                            object.workout = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.toObject(message.workout, options);
+                        return object;
+                    };
+
+                    /**
+                     * Converts this WorkoutStarted to JSON.
+                     * @function toJSON
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    WorkoutStarted.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    /**
+                     * Gets the default type url for WorkoutStarted
+                     * @function getTypeUrl
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    WorkoutStarted.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/LiftLog.Ui.Models.WorkoutEvent.WorkoutStarted";
+                    };
+
+                    return WorkoutStarted;
+                })();
+
+                WorkoutEvent.WorkoutUpdated = (function() {
+
+                    /**
+                     * Properties of a WorkoutUpdated.
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent
+                     * @interface IWorkoutUpdated
+                     * @property {LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null} [workout] WorkoutUpdated workout
+                     */
+
+                    /**
+                     * Constructs a new WorkoutUpdated.
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent
+                     * @classdesc Represents a WorkoutUpdated.
+                     * @implements IWorkoutUpdated
+                     * @constructor
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.IWorkoutUpdated=} [properties] Properties to set
+                     */
+                    function WorkoutUpdated(properties) {
+                        if (properties)
+                            for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * WorkoutUpdated workout.
+                     * @member {LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null|undefined} workout
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated
+                     * @instance
+                     */
+                    WorkoutUpdated.prototype.workout = null;
+
+                    /**
+                     * Creates a new WorkoutUpdated instance using the specified properties.
+                     * @function create
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.IWorkoutUpdated=} [properties] Properties to set
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated} WorkoutUpdated instance
+                     */
+                    WorkoutUpdated.create = function create(properties) {
+                        return new WorkoutUpdated(properties);
+                    };
+
+                    /**
+                     * Encodes the specified WorkoutUpdated message. Does not implicitly {@link LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated.verify|verify} messages.
+                     * @function encode
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.IWorkoutUpdated} message WorkoutUpdated message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    WorkoutUpdated.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.workout != null && Object.hasOwnProperty.call(message, "workout"))
+                            $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.encode(message.workout, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified WorkoutUpdated message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.IWorkoutUpdated} message WorkoutUpdated message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    WorkoutUpdated.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a WorkoutUpdated message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated} WorkoutUpdated
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    WorkoutUpdated.decode = function decode(reader, length, error) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated();
+                        while (reader.pos < end) {
+                            let tag = reader.uint32();
+                            if (tag === error)
+                                break;
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.workout = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a WorkoutUpdated message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated} WorkoutUpdated
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    WorkoutUpdated.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a WorkoutUpdated message.
+                     * @function verify
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    WorkoutUpdated.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.workout != null && message.hasOwnProperty("workout")) {
+                            let error = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.verify(message.workout);
+                            if (error)
+                                return "workout." + error;
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Creates a WorkoutUpdated message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated} WorkoutUpdated
+                     */
+                    WorkoutUpdated.fromObject = function fromObject(object) {
+                        if (object instanceof $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated)
+                            return object;
+                        let message = new $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated();
+                        if (object.workout != null) {
+                            if (typeof object.workout !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated.workout: object expected");
+                            message.workout = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.fromObject(object.workout);
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a WorkoutUpdated message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated} message WorkoutUpdated
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    WorkoutUpdated.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        let object = {};
+                        if (options.defaults)
+                            object.workout = null;
+                        if (message.workout != null && message.hasOwnProperty("workout"))
+                            object.workout = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.toObject(message.workout, options);
+                        return object;
+                    };
+
+                    /**
+                     * Converts this WorkoutUpdated to JSON.
+                     * @function toJSON
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    WorkoutUpdated.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    /**
+                     * Gets the default type url for WorkoutUpdated
+                     * @function getTypeUrl
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    WorkoutUpdated.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/LiftLog.Ui.Models.WorkoutEvent.WorkoutUpdated";
+                    };
+
+                    return WorkoutUpdated;
+                })();
+
+                WorkoutEvent.WorkoutEnded = (function() {
+
+                    /**
+                     * Properties of a WorkoutEnded.
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent
+                     * @interface IWorkoutEnded
+                     */
+
+                    /**
+                     * Constructs a new WorkoutEnded.
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent
+                     * @classdesc Represents a WorkoutEnded.
+                     * @implements IWorkoutEnded
+                     * @constructor
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.IWorkoutEnded=} [properties] Properties to set
+                     */
+                    function WorkoutEnded(properties) {
+                        if (properties)
+                            for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * Creates a new WorkoutEnded instance using the specified properties.
+                     * @function create
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.IWorkoutEnded=} [properties] Properties to set
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded} WorkoutEnded instance
+                     */
+                    WorkoutEnded.create = function create(properties) {
+                        return new WorkoutEnded(properties);
+                    };
+
+                    /**
+                     * Encodes the specified WorkoutEnded message. Does not implicitly {@link LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded.verify|verify} messages.
+                     * @function encode
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.IWorkoutEnded} message WorkoutEnded message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    WorkoutEnded.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified WorkoutEnded message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.IWorkoutEnded} message WorkoutEnded message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    WorkoutEnded.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a WorkoutEnded message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded} WorkoutEnded
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    WorkoutEnded.decode = function decode(reader, length, error) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded();
+                        while (reader.pos < end) {
+                            let tag = reader.uint32();
+                            if (tag === error)
+                                break;
+                            switch (tag >>> 3) {
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a WorkoutEnded message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded} WorkoutEnded
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    WorkoutEnded.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a WorkoutEnded message.
+                     * @function verify
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    WorkoutEnded.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        return null;
+                    };
+
+                    /**
+                     * Creates a WorkoutEnded message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded} WorkoutEnded
+                     */
+                    WorkoutEnded.fromObject = function fromObject(object) {
+                        if (object instanceof $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded)
+                            return object;
+                        return new $root.LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded();
+                    };
+
+                    /**
+                     * Creates a plain object from a WorkoutEnded message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded} message WorkoutEnded
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    WorkoutEnded.toObject = function toObject() {
+                        return {};
+                    };
+
+                    /**
+                     * Converts this WorkoutEnded to JSON.
+                     * @function toJSON
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    WorkoutEnded.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    /**
+                     * Gets the default type url for WorkoutEnded
+                     * @function getTypeUrl
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    WorkoutEnded.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/LiftLog.Ui.Models.WorkoutEvent.WorkoutEnded";
+                    };
+
+                    return WorkoutEnded;
+                })();
+
+                WorkoutEvent.TimerStarted = (function() {
+
+                    /**
+                     * Properties of a TimerStarted.
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent
+                     * @interface ITimerStarted
+                     * @property {google.protobuf.ITimestamp|null} [startedAt] TimerStarted startedAt
+                     * @property {google.protobuf.ITimestamp|null} [partiallyEndAt] TimerStarted partiallyEndAt
+                     * @property {google.protobuf.ITimestamp|null} [endAt] TimerStarted endAt
+                     */
+
+                    /**
+                     * Constructs a new TimerStarted.
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent
+                     * @classdesc Represents a TimerStarted.
+                     * @implements ITimerStarted
+                     * @constructor
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.ITimerStarted=} [properties] Properties to set
+                     */
+                    function TimerStarted(properties) {
+                        if (properties)
+                            for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * TimerStarted startedAt.
+                     * @member {google.protobuf.ITimestamp|null|undefined} startedAt
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.TimerStarted
+                     * @instance
+                     */
+                    TimerStarted.prototype.startedAt = null;
+
+                    /**
+                     * TimerStarted partiallyEndAt.
+                     * @member {google.protobuf.ITimestamp|null|undefined} partiallyEndAt
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.TimerStarted
+                     * @instance
+                     */
+                    TimerStarted.prototype.partiallyEndAt = null;
+
+                    /**
+                     * TimerStarted endAt.
+                     * @member {google.protobuf.ITimestamp|null|undefined} endAt
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.TimerStarted
+                     * @instance
+                     */
+                    TimerStarted.prototype.endAt = null;
+
+                    /**
+                     * Creates a new TimerStarted instance using the specified properties.
+                     * @function create
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.TimerStarted
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.ITimerStarted=} [properties] Properties to set
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.TimerStarted} TimerStarted instance
+                     */
+                    TimerStarted.create = function create(properties) {
+                        return new TimerStarted(properties);
+                    };
+
+                    /**
+                     * Encodes the specified TimerStarted message. Does not implicitly {@link LiftLog.Ui.Models.WorkoutEvent.TimerStarted.verify|verify} messages.
+                     * @function encode
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.TimerStarted
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.ITimerStarted} message TimerStarted message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    TimerStarted.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.startedAt != null && Object.hasOwnProperty.call(message, "startedAt"))
+                            $root.google.protobuf.Timestamp.encode(message.startedAt, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        if (message.partiallyEndAt != null && Object.hasOwnProperty.call(message, "partiallyEndAt"))
+                            $root.google.protobuf.Timestamp.encode(message.partiallyEndAt, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                        if (message.endAt != null && Object.hasOwnProperty.call(message, "endAt"))
+                            $root.google.protobuf.Timestamp.encode(message.endAt, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified TimerStarted message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.WorkoutEvent.TimerStarted.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.TimerStarted
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.ITimerStarted} message TimerStarted message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    TimerStarted.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a TimerStarted message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.TimerStarted
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.TimerStarted} TimerStarted
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    TimerStarted.decode = function decode(reader, length, error) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.WorkoutEvent.TimerStarted();
+                        while (reader.pos < end) {
+                            let tag = reader.uint32();
+                            if (tag === error)
+                                break;
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.startedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 2: {
+                                    message.partiallyEndAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 3: {
+                                    message.endAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a TimerStarted message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.TimerStarted
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.TimerStarted} TimerStarted
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    TimerStarted.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a TimerStarted message.
+                     * @function verify
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.TimerStarted
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    TimerStarted.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.startedAt != null && message.hasOwnProperty("startedAt")) {
+                            let error = $root.google.protobuf.Timestamp.verify(message.startedAt);
+                            if (error)
+                                return "startedAt." + error;
+                        }
+                        if (message.partiallyEndAt != null && message.hasOwnProperty("partiallyEndAt")) {
+                            let error = $root.google.protobuf.Timestamp.verify(message.partiallyEndAt);
+                            if (error)
+                                return "partiallyEndAt." + error;
+                        }
+                        if (message.endAt != null && message.hasOwnProperty("endAt")) {
+                            let error = $root.google.protobuf.Timestamp.verify(message.endAt);
+                            if (error)
+                                return "endAt." + error;
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Creates a TimerStarted message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.TimerStarted
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {LiftLog.Ui.Models.WorkoutEvent.TimerStarted} TimerStarted
+                     */
+                    TimerStarted.fromObject = function fromObject(object) {
+                        if (object instanceof $root.LiftLog.Ui.Models.WorkoutEvent.TimerStarted)
+                            return object;
+                        let message = new $root.LiftLog.Ui.Models.WorkoutEvent.TimerStarted();
+                        if (object.startedAt != null) {
+                            if (typeof object.startedAt !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.WorkoutEvent.TimerStarted.startedAt: object expected");
+                            message.startedAt = $root.google.protobuf.Timestamp.fromObject(object.startedAt);
+                        }
+                        if (object.partiallyEndAt != null) {
+                            if (typeof object.partiallyEndAt !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.WorkoutEvent.TimerStarted.partiallyEndAt: object expected");
+                            message.partiallyEndAt = $root.google.protobuf.Timestamp.fromObject(object.partiallyEndAt);
+                        }
+                        if (object.endAt != null) {
+                            if (typeof object.endAt !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.WorkoutEvent.TimerStarted.endAt: object expected");
+                            message.endAt = $root.google.protobuf.Timestamp.fromObject(object.endAt);
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a TimerStarted message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.TimerStarted
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutEvent.TimerStarted} message TimerStarted
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    TimerStarted.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        let object = {};
+                        if (options.defaults) {
+                            object.startedAt = null;
+                            object.partiallyEndAt = null;
+                            object.endAt = null;
+                        }
+                        if (message.startedAt != null && message.hasOwnProperty("startedAt"))
+                            object.startedAt = $root.google.protobuf.Timestamp.toObject(message.startedAt, options);
+                        if (message.partiallyEndAt != null && message.hasOwnProperty("partiallyEndAt"))
+                            object.partiallyEndAt = $root.google.protobuf.Timestamp.toObject(message.partiallyEndAt, options);
+                        if (message.endAt != null && message.hasOwnProperty("endAt"))
+                            object.endAt = $root.google.protobuf.Timestamp.toObject(message.endAt, options);
+                        return object;
+                    };
+
+                    /**
+                     * Converts this TimerStarted to JSON.
+                     * @function toJSON
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.TimerStarted
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    TimerStarted.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    /**
+                     * Gets the default type url for TimerStarted
+                     * @function getTypeUrl
+                     * @memberof LiftLog.Ui.Models.WorkoutEvent.TimerStarted
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    TimerStarted.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/LiftLog.Ui.Models.WorkoutEvent.TimerStarted";
+                    };
+
+                    return TimerStarted;
+                })();
+
+                return WorkoutEvent;
             })();
 
             Models.SessionHistoryDao = (function() {
@@ -5380,6 +6261,3537 @@ export const LiftLog = $root.LiftLog = (() => {
                 return Weight;
             })();
 
+            Models.UserEventPayload = (function() {
+
+                /**
+                 * Properties of a UserEventPayload.
+                 * @memberof LiftLog.Ui.Models
+                 * @interface IUserEventPayload
+                 * @property {LiftLog.Ui.Models.ISessionUserEvent|null} [sessionPayload] UserEventPayload sessionPayload
+                 * @property {LiftLog.Ui.Models.IRemovedSessionUserEvent|null} [removedSessionPayload] UserEventPayload removedSessionPayload
+                 */
+
+                /**
+                 * Constructs a new UserEventPayload.
+                 * @memberof LiftLog.Ui.Models
+                 * @classdesc Represents a UserEventPayload.
+                 * @implements IUserEventPayload
+                 * @constructor
+                 * @param {LiftLog.Ui.Models.IUserEventPayload=} [properties] Properties to set
+                 */
+                function UserEventPayload(properties) {
+                    if (properties)
+                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * UserEventPayload sessionPayload.
+                 * @member {LiftLog.Ui.Models.ISessionUserEvent|null|undefined} sessionPayload
+                 * @memberof LiftLog.Ui.Models.UserEventPayload
+                 * @instance
+                 */
+                UserEventPayload.prototype.sessionPayload = null;
+
+                /**
+                 * UserEventPayload removedSessionPayload.
+                 * @member {LiftLog.Ui.Models.IRemovedSessionUserEvent|null|undefined} removedSessionPayload
+                 * @memberof LiftLog.Ui.Models.UserEventPayload
+                 * @instance
+                 */
+                UserEventPayload.prototype.removedSessionPayload = null;
+
+                // OneOf field names bound to virtual getters and setters
+                let $oneOfFields;
+
+                /**
+                 * UserEventPayload eventPayload.
+                 * @member {"sessionPayload"|"removedSessionPayload"|undefined} eventPayload
+                 * @memberof LiftLog.Ui.Models.UserEventPayload
+                 * @instance
+                 */
+                Object.defineProperty(UserEventPayload.prototype, "eventPayload", {
+                    get: $util.oneOfGetter($oneOfFields = ["sessionPayload", "removedSessionPayload"]),
+                    set: $util.oneOfSetter($oneOfFields)
+                });
+
+                /**
+                 * Creates a new UserEventPayload instance using the specified properties.
+                 * @function create
+                 * @memberof LiftLog.Ui.Models.UserEventPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.IUserEventPayload=} [properties] Properties to set
+                 * @returns {LiftLog.Ui.Models.UserEventPayload} UserEventPayload instance
+                 */
+                UserEventPayload.create = function create(properties) {
+                    return new UserEventPayload(properties);
+                };
+
+                /**
+                 * Encodes the specified UserEventPayload message. Does not implicitly {@link LiftLog.Ui.Models.UserEventPayload.verify|verify} messages.
+                 * @function encode
+                 * @memberof LiftLog.Ui.Models.UserEventPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.IUserEventPayload} message UserEventPayload message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                UserEventPayload.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.sessionPayload != null && Object.hasOwnProperty.call(message, "sessionPayload"))
+                        $root.LiftLog.Ui.Models.SessionUserEvent.encode(message.sessionPayload, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    if (message.removedSessionPayload != null && Object.hasOwnProperty.call(message, "removedSessionPayload"))
+                        $root.LiftLog.Ui.Models.RemovedSessionUserEvent.encode(message.removedSessionPayload, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified UserEventPayload message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.UserEventPayload.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof LiftLog.Ui.Models.UserEventPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.IUserEventPayload} message UserEventPayload message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                UserEventPayload.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a UserEventPayload message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof LiftLog.Ui.Models.UserEventPayload
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {LiftLog.Ui.Models.UserEventPayload} UserEventPayload
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                UserEventPayload.decode = function decode(reader, length, error) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.UserEventPayload();
+                    while (reader.pos < end) {
+                        let tag = reader.uint32();
+                        if (tag === error)
+                            break;
+                        switch (tag >>> 3) {
+                        case 1: {
+                                message.sessionPayload = $root.LiftLog.Ui.Models.SessionUserEvent.decode(reader, reader.uint32());
+                                break;
+                            }
+                        case 2: {
+                                message.removedSessionPayload = $root.LiftLog.Ui.Models.RemovedSessionUserEvent.decode(reader, reader.uint32());
+                                break;
+                            }
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a UserEventPayload message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof LiftLog.Ui.Models.UserEventPayload
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {LiftLog.Ui.Models.UserEventPayload} UserEventPayload
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                UserEventPayload.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a UserEventPayload message.
+                 * @function verify
+                 * @memberof LiftLog.Ui.Models.UserEventPayload
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                UserEventPayload.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    let properties = {};
+                    if (message.sessionPayload != null && message.hasOwnProperty("sessionPayload")) {
+                        properties.eventPayload = 1;
+                        {
+                            let error = $root.LiftLog.Ui.Models.SessionUserEvent.verify(message.sessionPayload);
+                            if (error)
+                                return "sessionPayload." + error;
+                        }
+                    }
+                    if (message.removedSessionPayload != null && message.hasOwnProperty("removedSessionPayload")) {
+                        if (properties.eventPayload === 1)
+                            return "eventPayload: multiple values";
+                        properties.eventPayload = 1;
+                        {
+                            let error = $root.LiftLog.Ui.Models.RemovedSessionUserEvent.verify(message.removedSessionPayload);
+                            if (error)
+                                return "removedSessionPayload." + error;
+                        }
+                    }
+                    return null;
+                };
+
+                /**
+                 * Creates a UserEventPayload message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof LiftLog.Ui.Models.UserEventPayload
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {LiftLog.Ui.Models.UserEventPayload} UserEventPayload
+                 */
+                UserEventPayload.fromObject = function fromObject(object) {
+                    if (object instanceof $root.LiftLog.Ui.Models.UserEventPayload)
+                        return object;
+                    let message = new $root.LiftLog.Ui.Models.UserEventPayload();
+                    if (object.sessionPayload != null) {
+                        if (typeof object.sessionPayload !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.UserEventPayload.sessionPayload: object expected");
+                        message.sessionPayload = $root.LiftLog.Ui.Models.SessionUserEvent.fromObject(object.sessionPayload);
+                    }
+                    if (object.removedSessionPayload != null) {
+                        if (typeof object.removedSessionPayload !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.UserEventPayload.removedSessionPayload: object expected");
+                        message.removedSessionPayload = $root.LiftLog.Ui.Models.RemovedSessionUserEvent.fromObject(object.removedSessionPayload);
+                    }
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a UserEventPayload message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof LiftLog.Ui.Models.UserEventPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.UserEventPayload} message UserEventPayload
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                UserEventPayload.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    let object = {};
+                    if (message.sessionPayload != null && message.hasOwnProperty("sessionPayload")) {
+                        object.sessionPayload = $root.LiftLog.Ui.Models.SessionUserEvent.toObject(message.sessionPayload, options);
+                        if (options.oneofs)
+                            object.eventPayload = "sessionPayload";
+                    }
+                    if (message.removedSessionPayload != null && message.hasOwnProperty("removedSessionPayload")) {
+                        object.removedSessionPayload = $root.LiftLog.Ui.Models.RemovedSessionUserEvent.toObject(message.removedSessionPayload, options);
+                        if (options.oneofs)
+                            object.eventPayload = "removedSessionPayload";
+                    }
+                    return object;
+                };
+
+                /**
+                 * Converts this UserEventPayload to JSON.
+                 * @function toJSON
+                 * @memberof LiftLog.Ui.Models.UserEventPayload
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                UserEventPayload.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                /**
+                 * Gets the default type url for UserEventPayload
+                 * @function getTypeUrl
+                 * @memberof LiftLog.Ui.Models.UserEventPayload
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                UserEventPayload.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/LiftLog.Ui.Models.UserEventPayload";
+                };
+
+                return UserEventPayload;
+            })();
+
+            Models.SessionUserEvent = (function() {
+
+                /**
+                 * Properties of a SessionUserEvent.
+                 * @memberof LiftLog.Ui.Models
+                 * @interface ISessionUserEvent
+                 * @property {LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null} [session] SessionUserEvent session
+                 */
+
+                /**
+                 * Constructs a new SessionUserEvent.
+                 * @memberof LiftLog.Ui.Models
+                 * @classdesc Represents a SessionUserEvent.
+                 * @implements ISessionUserEvent
+                 * @constructor
+                 * @param {LiftLog.Ui.Models.ISessionUserEvent=} [properties] Properties to set
+                 */
+                function SessionUserEvent(properties) {
+                    if (properties)
+                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * SessionUserEvent session.
+                 * @member {LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null|undefined} session
+                 * @memberof LiftLog.Ui.Models.SessionUserEvent
+                 * @instance
+                 */
+                SessionUserEvent.prototype.session = null;
+
+                /**
+                 * Creates a new SessionUserEvent instance using the specified properties.
+                 * @function create
+                 * @memberof LiftLog.Ui.Models.SessionUserEvent
+                 * @static
+                 * @param {LiftLog.Ui.Models.ISessionUserEvent=} [properties] Properties to set
+                 * @returns {LiftLog.Ui.Models.SessionUserEvent} SessionUserEvent instance
+                 */
+                SessionUserEvent.create = function create(properties) {
+                    return new SessionUserEvent(properties);
+                };
+
+                /**
+                 * Encodes the specified SessionUserEvent message. Does not implicitly {@link LiftLog.Ui.Models.SessionUserEvent.verify|verify} messages.
+                 * @function encode
+                 * @memberof LiftLog.Ui.Models.SessionUserEvent
+                 * @static
+                 * @param {LiftLog.Ui.Models.ISessionUserEvent} message SessionUserEvent message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                SessionUserEvent.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.session != null && Object.hasOwnProperty.call(message, "session"))
+                        $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.encode(message.session, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified SessionUserEvent message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SessionUserEvent.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof LiftLog.Ui.Models.SessionUserEvent
+                 * @static
+                 * @param {LiftLog.Ui.Models.ISessionUserEvent} message SessionUserEvent message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                SessionUserEvent.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a SessionUserEvent message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof LiftLog.Ui.Models.SessionUserEvent
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {LiftLog.Ui.Models.SessionUserEvent} SessionUserEvent
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                SessionUserEvent.decode = function decode(reader, length, error) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.SessionUserEvent();
+                    while (reader.pos < end) {
+                        let tag = reader.uint32();
+                        if (tag === error)
+                            break;
+                        switch (tag >>> 3) {
+                        case 1: {
+                                message.session = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.decode(reader, reader.uint32());
+                                break;
+                            }
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a SessionUserEvent message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof LiftLog.Ui.Models.SessionUserEvent
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {LiftLog.Ui.Models.SessionUserEvent} SessionUserEvent
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                SessionUserEvent.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a SessionUserEvent message.
+                 * @function verify
+                 * @memberof LiftLog.Ui.Models.SessionUserEvent
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                SessionUserEvent.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.session != null && message.hasOwnProperty("session")) {
+                        let error = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.verify(message.session);
+                        if (error)
+                            return "session." + error;
+                    }
+                    return null;
+                };
+
+                /**
+                 * Creates a SessionUserEvent message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof LiftLog.Ui.Models.SessionUserEvent
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {LiftLog.Ui.Models.SessionUserEvent} SessionUserEvent
+                 */
+                SessionUserEvent.fromObject = function fromObject(object) {
+                    if (object instanceof $root.LiftLog.Ui.Models.SessionUserEvent)
+                        return object;
+                    let message = new $root.LiftLog.Ui.Models.SessionUserEvent();
+                    if (object.session != null) {
+                        if (typeof object.session !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.SessionUserEvent.session: object expected");
+                        message.session = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.fromObject(object.session);
+                    }
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a SessionUserEvent message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof LiftLog.Ui.Models.SessionUserEvent
+                 * @static
+                 * @param {LiftLog.Ui.Models.SessionUserEvent} message SessionUserEvent
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                SessionUserEvent.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    let object = {};
+                    if (options.defaults)
+                        object.session = null;
+                    if (message.session != null && message.hasOwnProperty("session"))
+                        object.session = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.toObject(message.session, options);
+                    return object;
+                };
+
+                /**
+                 * Converts this SessionUserEvent to JSON.
+                 * @function toJSON
+                 * @memberof LiftLog.Ui.Models.SessionUserEvent
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                SessionUserEvent.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                /**
+                 * Gets the default type url for SessionUserEvent
+                 * @function getTypeUrl
+                 * @memberof LiftLog.Ui.Models.SessionUserEvent
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                SessionUserEvent.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/LiftLog.Ui.Models.SessionUserEvent";
+                };
+
+                return SessionUserEvent;
+            })();
+
+            Models.RemovedSessionUserEvent = (function() {
+
+                /**
+                 * Properties of a RemovedSessionUserEvent.
+                 * @memberof LiftLog.Ui.Models
+                 * @interface IRemovedSessionUserEvent
+                 * @property {LiftLog.Ui.Models.IUuidDao|null} [sessionId] RemovedSessionUserEvent sessionId
+                 */
+
+                /**
+                 * Constructs a new RemovedSessionUserEvent.
+                 * @memberof LiftLog.Ui.Models
+                 * @classdesc Represents a RemovedSessionUserEvent.
+                 * @implements IRemovedSessionUserEvent
+                 * @constructor
+                 * @param {LiftLog.Ui.Models.IRemovedSessionUserEvent=} [properties] Properties to set
+                 */
+                function RemovedSessionUserEvent(properties) {
+                    if (properties)
+                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * RemovedSessionUserEvent sessionId.
+                 * @member {LiftLog.Ui.Models.IUuidDao|null|undefined} sessionId
+                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
+                 * @instance
+                 */
+                RemovedSessionUserEvent.prototype.sessionId = null;
+
+                /**
+                 * Creates a new RemovedSessionUserEvent instance using the specified properties.
+                 * @function create
+                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
+                 * @static
+                 * @param {LiftLog.Ui.Models.IRemovedSessionUserEvent=} [properties] Properties to set
+                 * @returns {LiftLog.Ui.Models.RemovedSessionUserEvent} RemovedSessionUserEvent instance
+                 */
+                RemovedSessionUserEvent.create = function create(properties) {
+                    return new RemovedSessionUserEvent(properties);
+                };
+
+                /**
+                 * Encodes the specified RemovedSessionUserEvent message. Does not implicitly {@link LiftLog.Ui.Models.RemovedSessionUserEvent.verify|verify} messages.
+                 * @function encode
+                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
+                 * @static
+                 * @param {LiftLog.Ui.Models.IRemovedSessionUserEvent} message RemovedSessionUserEvent message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                RemovedSessionUserEvent.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.sessionId != null && Object.hasOwnProperty.call(message, "sessionId"))
+                        $root.LiftLog.Ui.Models.UuidDao.encode(message.sessionId, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified RemovedSessionUserEvent message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.RemovedSessionUserEvent.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
+                 * @static
+                 * @param {LiftLog.Ui.Models.IRemovedSessionUserEvent} message RemovedSessionUserEvent message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                RemovedSessionUserEvent.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a RemovedSessionUserEvent message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {LiftLog.Ui.Models.RemovedSessionUserEvent} RemovedSessionUserEvent
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                RemovedSessionUserEvent.decode = function decode(reader, length, error) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.RemovedSessionUserEvent();
+                    while (reader.pos < end) {
+                        let tag = reader.uint32();
+                        if (tag === error)
+                            break;
+                        switch (tag >>> 3) {
+                        case 1: {
+                                message.sessionId = $root.LiftLog.Ui.Models.UuidDao.decode(reader, reader.uint32());
+                                break;
+                            }
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a RemovedSessionUserEvent message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {LiftLog.Ui.Models.RemovedSessionUserEvent} RemovedSessionUserEvent
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                RemovedSessionUserEvent.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a RemovedSessionUserEvent message.
+                 * @function verify
+                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                RemovedSessionUserEvent.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.sessionId != null && message.hasOwnProperty("sessionId")) {
+                        let error = $root.LiftLog.Ui.Models.UuidDao.verify(message.sessionId);
+                        if (error)
+                            return "sessionId." + error;
+                    }
+                    return null;
+                };
+
+                /**
+                 * Creates a RemovedSessionUserEvent message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {LiftLog.Ui.Models.RemovedSessionUserEvent} RemovedSessionUserEvent
+                 */
+                RemovedSessionUserEvent.fromObject = function fromObject(object) {
+                    if (object instanceof $root.LiftLog.Ui.Models.RemovedSessionUserEvent)
+                        return object;
+                    let message = new $root.LiftLog.Ui.Models.RemovedSessionUserEvent();
+                    if (object.sessionId != null) {
+                        if (typeof object.sessionId !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.RemovedSessionUserEvent.sessionId: object expected");
+                        message.sessionId = $root.LiftLog.Ui.Models.UuidDao.fromObject(object.sessionId);
+                    }
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a RemovedSessionUserEvent message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
+                 * @static
+                 * @param {LiftLog.Ui.Models.RemovedSessionUserEvent} message RemovedSessionUserEvent
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                RemovedSessionUserEvent.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    let object = {};
+                    if (options.defaults)
+                        object.sessionId = null;
+                    if (message.sessionId != null && message.hasOwnProperty("sessionId"))
+                        object.sessionId = $root.LiftLog.Ui.Models.UuidDao.toObject(message.sessionId, options);
+                    return object;
+                };
+
+                /**
+                 * Converts this RemovedSessionUserEvent to JSON.
+                 * @function toJSON
+                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                RemovedSessionUserEvent.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                /**
+                 * Gets the default type url for RemovedSessionUserEvent
+                 * @function getTypeUrl
+                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                RemovedSessionUserEvent.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/LiftLog.Ui.Models.RemovedSessionUserEvent";
+                };
+
+                return RemovedSessionUserEvent;
+            })();
+
+            Models.InboxMessageDao = (function() {
+
+                /**
+                 * Properties of an InboxMessageDao.
+                 * @memberof LiftLog.Ui.Models
+                 * @interface IInboxMessageDao
+                 * @property {LiftLog.Ui.Models.IUuidDao|null} [fromUserId] InboxMessageDao fromUserId
+                 * @property {LiftLog.Ui.Models.IFollowRequestDao|null} [followRequest] InboxMessageDao followRequest
+                 * @property {LiftLog.Ui.Models.IFollowResponseDao|null} [followResponse] InboxMessageDao followResponse
+                 * @property {LiftLog.Ui.Models.IUnFollowNotification|null} [unfollowNotification] InboxMessageDao unfollowNotification
+                 * @property {Uint8Array|null} [signature] InboxMessageDao signature
+                 */
+
+                /**
+                 * Constructs a new InboxMessageDao.
+                 * @memberof LiftLog.Ui.Models
+                 * @classdesc Represents an InboxMessageDao.
+                 * @implements IInboxMessageDao
+                 * @constructor
+                 * @param {LiftLog.Ui.Models.IInboxMessageDao=} [properties] Properties to set
+                 */
+                function InboxMessageDao(properties) {
+                    if (properties)
+                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * InboxMessageDao fromUserId.
+                 * @member {LiftLog.Ui.Models.IUuidDao|null|undefined} fromUserId
+                 * @memberof LiftLog.Ui.Models.InboxMessageDao
+                 * @instance
+                 */
+                InboxMessageDao.prototype.fromUserId = null;
+
+                /**
+                 * InboxMessageDao followRequest.
+                 * @member {LiftLog.Ui.Models.IFollowRequestDao|null|undefined} followRequest
+                 * @memberof LiftLog.Ui.Models.InboxMessageDao
+                 * @instance
+                 */
+                InboxMessageDao.prototype.followRequest = null;
+
+                /**
+                 * InboxMessageDao followResponse.
+                 * @member {LiftLog.Ui.Models.IFollowResponseDao|null|undefined} followResponse
+                 * @memberof LiftLog.Ui.Models.InboxMessageDao
+                 * @instance
+                 */
+                InboxMessageDao.prototype.followResponse = null;
+
+                /**
+                 * InboxMessageDao unfollowNotification.
+                 * @member {LiftLog.Ui.Models.IUnFollowNotification|null|undefined} unfollowNotification
+                 * @memberof LiftLog.Ui.Models.InboxMessageDao
+                 * @instance
+                 */
+                InboxMessageDao.prototype.unfollowNotification = null;
+
+                /**
+                 * InboxMessageDao signature.
+                 * @member {Uint8Array} signature
+                 * @memberof LiftLog.Ui.Models.InboxMessageDao
+                 * @instance
+                 */
+                InboxMessageDao.prototype.signature = $util.newBuffer([]);
+
+                // OneOf field names bound to virtual getters and setters
+                let $oneOfFields;
+
+                /**
+                 * InboxMessageDao messagePayload.
+                 * @member {"followRequest"|"followResponse"|"unfollowNotification"|undefined} messagePayload
+                 * @memberof LiftLog.Ui.Models.InboxMessageDao
+                 * @instance
+                 */
+                Object.defineProperty(InboxMessageDao.prototype, "messagePayload", {
+                    get: $util.oneOfGetter($oneOfFields = ["followRequest", "followResponse", "unfollowNotification"]),
+                    set: $util.oneOfSetter($oneOfFields)
+                });
+
+                /**
+                 * Creates a new InboxMessageDao instance using the specified properties.
+                 * @function create
+                 * @memberof LiftLog.Ui.Models.InboxMessageDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IInboxMessageDao=} [properties] Properties to set
+                 * @returns {LiftLog.Ui.Models.InboxMessageDao} InboxMessageDao instance
+                 */
+                InboxMessageDao.create = function create(properties) {
+                    return new InboxMessageDao(properties);
+                };
+
+                /**
+                 * Encodes the specified InboxMessageDao message. Does not implicitly {@link LiftLog.Ui.Models.InboxMessageDao.verify|verify} messages.
+                 * @function encode
+                 * @memberof LiftLog.Ui.Models.InboxMessageDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IInboxMessageDao} message InboxMessageDao message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                InboxMessageDao.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.fromUserId != null && Object.hasOwnProperty.call(message, "fromUserId"))
+                        $root.LiftLog.Ui.Models.UuidDao.encode(message.fromUserId, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    if (message.followRequest != null && Object.hasOwnProperty.call(message, "followRequest"))
+                        $root.LiftLog.Ui.Models.FollowRequestDao.encode(message.followRequest, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    if (message.followResponse != null && Object.hasOwnProperty.call(message, "followResponse"))
+                        $root.LiftLog.Ui.Models.FollowResponseDao.encode(message.followResponse, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                    if (message.unfollowNotification != null && Object.hasOwnProperty.call(message, "unfollowNotification"))
+                        $root.LiftLog.Ui.Models.UnFollowNotification.encode(message.unfollowNotification, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                    if (message.signature != null && Object.hasOwnProperty.call(message, "signature"))
+                        writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.signature);
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified InboxMessageDao message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.InboxMessageDao.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof LiftLog.Ui.Models.InboxMessageDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IInboxMessageDao} message InboxMessageDao message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                InboxMessageDao.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes an InboxMessageDao message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof LiftLog.Ui.Models.InboxMessageDao
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {LiftLog.Ui.Models.InboxMessageDao} InboxMessageDao
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                InboxMessageDao.decode = function decode(reader, length, error) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.InboxMessageDao();
+                    while (reader.pos < end) {
+                        let tag = reader.uint32();
+                        if (tag === error)
+                            break;
+                        switch (tag >>> 3) {
+                        case 1: {
+                                message.fromUserId = $root.LiftLog.Ui.Models.UuidDao.decode(reader, reader.uint32());
+                                break;
+                            }
+                        case 2: {
+                                message.followRequest = $root.LiftLog.Ui.Models.FollowRequestDao.decode(reader, reader.uint32());
+                                break;
+                            }
+                        case 3: {
+                                message.followResponse = $root.LiftLog.Ui.Models.FollowResponseDao.decode(reader, reader.uint32());
+                                break;
+                            }
+                        case 4: {
+                                message.unfollowNotification = $root.LiftLog.Ui.Models.UnFollowNotification.decode(reader, reader.uint32());
+                                break;
+                            }
+                        case 5: {
+                                message.signature = reader.bytes();
+                                break;
+                            }
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes an InboxMessageDao message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof LiftLog.Ui.Models.InboxMessageDao
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {LiftLog.Ui.Models.InboxMessageDao} InboxMessageDao
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                InboxMessageDao.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies an InboxMessageDao message.
+                 * @function verify
+                 * @memberof LiftLog.Ui.Models.InboxMessageDao
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                InboxMessageDao.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    let properties = {};
+                    if (message.fromUserId != null && message.hasOwnProperty("fromUserId")) {
+                        let error = $root.LiftLog.Ui.Models.UuidDao.verify(message.fromUserId);
+                        if (error)
+                            return "fromUserId." + error;
+                    }
+                    if (message.followRequest != null && message.hasOwnProperty("followRequest")) {
+                        properties.messagePayload = 1;
+                        {
+                            let error = $root.LiftLog.Ui.Models.FollowRequestDao.verify(message.followRequest);
+                            if (error)
+                                return "followRequest." + error;
+                        }
+                    }
+                    if (message.followResponse != null && message.hasOwnProperty("followResponse")) {
+                        if (properties.messagePayload === 1)
+                            return "messagePayload: multiple values";
+                        properties.messagePayload = 1;
+                        {
+                            let error = $root.LiftLog.Ui.Models.FollowResponseDao.verify(message.followResponse);
+                            if (error)
+                                return "followResponse." + error;
+                        }
+                    }
+                    if (message.unfollowNotification != null && message.hasOwnProperty("unfollowNotification")) {
+                        if (properties.messagePayload === 1)
+                            return "messagePayload: multiple values";
+                        properties.messagePayload = 1;
+                        {
+                            let error = $root.LiftLog.Ui.Models.UnFollowNotification.verify(message.unfollowNotification);
+                            if (error)
+                                return "unfollowNotification." + error;
+                        }
+                    }
+                    if (message.signature != null && message.hasOwnProperty("signature"))
+                        if (!(message.signature && typeof message.signature.length === "number" || $util.isString(message.signature)))
+                            return "signature: buffer expected";
+                    return null;
+                };
+
+                /**
+                 * Creates an InboxMessageDao message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof LiftLog.Ui.Models.InboxMessageDao
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {LiftLog.Ui.Models.InboxMessageDao} InboxMessageDao
+                 */
+                InboxMessageDao.fromObject = function fromObject(object) {
+                    if (object instanceof $root.LiftLog.Ui.Models.InboxMessageDao)
+                        return object;
+                    let message = new $root.LiftLog.Ui.Models.InboxMessageDao();
+                    if (object.fromUserId != null) {
+                        if (typeof object.fromUserId !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.InboxMessageDao.fromUserId: object expected");
+                        message.fromUserId = $root.LiftLog.Ui.Models.UuidDao.fromObject(object.fromUserId);
+                    }
+                    if (object.followRequest != null) {
+                        if (typeof object.followRequest !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.InboxMessageDao.followRequest: object expected");
+                        message.followRequest = $root.LiftLog.Ui.Models.FollowRequestDao.fromObject(object.followRequest);
+                    }
+                    if (object.followResponse != null) {
+                        if (typeof object.followResponse !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.InboxMessageDao.followResponse: object expected");
+                        message.followResponse = $root.LiftLog.Ui.Models.FollowResponseDao.fromObject(object.followResponse);
+                    }
+                    if (object.unfollowNotification != null) {
+                        if (typeof object.unfollowNotification !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.InboxMessageDao.unfollowNotification: object expected");
+                        message.unfollowNotification = $root.LiftLog.Ui.Models.UnFollowNotification.fromObject(object.unfollowNotification);
+                    }
+                    if (object.signature != null)
+                        if (typeof object.signature === "string")
+                            $util.base64.decode(object.signature, message.signature = $util.newBuffer($util.base64.length(object.signature)), 0);
+                        else if (object.signature.length >= 0)
+                            message.signature = object.signature;
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from an InboxMessageDao message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof LiftLog.Ui.Models.InboxMessageDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.InboxMessageDao} message InboxMessageDao
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                InboxMessageDao.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    let object = {};
+                    if (options.defaults) {
+                        object.fromUserId = null;
+                        if (options.bytes === String)
+                            object.signature = "";
+                        else {
+                            object.signature = [];
+                            if (options.bytes !== Array)
+                                object.signature = $util.newBuffer(object.signature);
+                        }
+                    }
+                    if (message.fromUserId != null && message.hasOwnProperty("fromUserId"))
+                        object.fromUserId = $root.LiftLog.Ui.Models.UuidDao.toObject(message.fromUserId, options);
+                    if (message.followRequest != null && message.hasOwnProperty("followRequest")) {
+                        object.followRequest = $root.LiftLog.Ui.Models.FollowRequestDao.toObject(message.followRequest, options);
+                        if (options.oneofs)
+                            object.messagePayload = "followRequest";
+                    }
+                    if (message.followResponse != null && message.hasOwnProperty("followResponse")) {
+                        object.followResponse = $root.LiftLog.Ui.Models.FollowResponseDao.toObject(message.followResponse, options);
+                        if (options.oneofs)
+                            object.messagePayload = "followResponse";
+                    }
+                    if (message.unfollowNotification != null && message.hasOwnProperty("unfollowNotification")) {
+                        object.unfollowNotification = $root.LiftLog.Ui.Models.UnFollowNotification.toObject(message.unfollowNotification, options);
+                        if (options.oneofs)
+                            object.messagePayload = "unfollowNotification";
+                    }
+                    if (message.signature != null && message.hasOwnProperty("signature"))
+                        object.signature = options.bytes === String ? $util.base64.encode(message.signature, 0, message.signature.length) : options.bytes === Array ? Array.prototype.slice.call(message.signature) : message.signature;
+                    return object;
+                };
+
+                /**
+                 * Converts this InboxMessageDao to JSON.
+                 * @function toJSON
+                 * @memberof LiftLog.Ui.Models.InboxMessageDao
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                InboxMessageDao.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                /**
+                 * Gets the default type url for InboxMessageDao
+                 * @function getTypeUrl
+                 * @memberof LiftLog.Ui.Models.InboxMessageDao
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                InboxMessageDao.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/LiftLog.Ui.Models.InboxMessageDao";
+                };
+
+                return InboxMessageDao;
+            })();
+
+            Models.FollowRequestDao = (function() {
+
+                /**
+                 * Properties of a FollowRequestDao.
+                 * @memberof LiftLog.Ui.Models
+                 * @interface IFollowRequestDao
+                 * @property {google.protobuf.IStringValue|null} [name] FollowRequestDao name
+                 */
+
+                /**
+                 * Constructs a new FollowRequestDao.
+                 * @memberof LiftLog.Ui.Models
+                 * @classdesc Represents a FollowRequestDao.
+                 * @implements IFollowRequestDao
+                 * @constructor
+                 * @param {LiftLog.Ui.Models.IFollowRequestDao=} [properties] Properties to set
+                 */
+                function FollowRequestDao(properties) {
+                    if (properties)
+                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * FollowRequestDao name.
+                 * @member {google.protobuf.IStringValue|null|undefined} name
+                 * @memberof LiftLog.Ui.Models.FollowRequestDao
+                 * @instance
+                 */
+                FollowRequestDao.prototype.name = null;
+
+                // OneOf field names bound to virtual getters and setters
+                let $oneOfFields;
+
+                /**
+                 * FollowRequestDao _name.
+                 * @member {"name"|undefined} _name
+                 * @memberof LiftLog.Ui.Models.FollowRequestDao
+                 * @instance
+                 */
+                Object.defineProperty(FollowRequestDao.prototype, "_name", {
+                    get: $util.oneOfGetter($oneOfFields = ["name"]),
+                    set: $util.oneOfSetter($oneOfFields)
+                });
+
+                /**
+                 * Creates a new FollowRequestDao instance using the specified properties.
+                 * @function create
+                 * @memberof LiftLog.Ui.Models.FollowRequestDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IFollowRequestDao=} [properties] Properties to set
+                 * @returns {LiftLog.Ui.Models.FollowRequestDao} FollowRequestDao instance
+                 */
+                FollowRequestDao.create = function create(properties) {
+                    return new FollowRequestDao(properties);
+                };
+
+                /**
+                 * Encodes the specified FollowRequestDao message. Does not implicitly {@link LiftLog.Ui.Models.FollowRequestDao.verify|verify} messages.
+                 * @function encode
+                 * @memberof LiftLog.Ui.Models.FollowRequestDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IFollowRequestDao} message FollowRequestDao message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                FollowRequestDao.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.name != null && Object.hasOwnProperty.call(message, "name"))
+                        $root.google.protobuf.StringValue.encode(message.name, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified FollowRequestDao message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.FollowRequestDao.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof LiftLog.Ui.Models.FollowRequestDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IFollowRequestDao} message FollowRequestDao message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                FollowRequestDao.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a FollowRequestDao message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof LiftLog.Ui.Models.FollowRequestDao
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {LiftLog.Ui.Models.FollowRequestDao} FollowRequestDao
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                FollowRequestDao.decode = function decode(reader, length, error) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.FollowRequestDao();
+                    while (reader.pos < end) {
+                        let tag = reader.uint32();
+                        if (tag === error)
+                            break;
+                        switch (tag >>> 3) {
+                        case 1: {
+                                message.name = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
+                                break;
+                            }
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a FollowRequestDao message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof LiftLog.Ui.Models.FollowRequestDao
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {LiftLog.Ui.Models.FollowRequestDao} FollowRequestDao
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                FollowRequestDao.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a FollowRequestDao message.
+                 * @function verify
+                 * @memberof LiftLog.Ui.Models.FollowRequestDao
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                FollowRequestDao.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    let properties = {};
+                    if (message.name != null && message.hasOwnProperty("name")) {
+                        properties._name = 1;
+                        {
+                            let error = $root.google.protobuf.StringValue.verify(message.name);
+                            if (error)
+                                return "name." + error;
+                        }
+                    }
+                    return null;
+                };
+
+                /**
+                 * Creates a FollowRequestDao message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof LiftLog.Ui.Models.FollowRequestDao
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {LiftLog.Ui.Models.FollowRequestDao} FollowRequestDao
+                 */
+                FollowRequestDao.fromObject = function fromObject(object) {
+                    if (object instanceof $root.LiftLog.Ui.Models.FollowRequestDao)
+                        return object;
+                    let message = new $root.LiftLog.Ui.Models.FollowRequestDao();
+                    if (object.name != null) {
+                        if (typeof object.name !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.FollowRequestDao.name: object expected");
+                        message.name = $root.google.protobuf.StringValue.fromObject(object.name);
+                    }
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a FollowRequestDao message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof LiftLog.Ui.Models.FollowRequestDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.FollowRequestDao} message FollowRequestDao
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                FollowRequestDao.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    let object = {};
+                    if (message.name != null && message.hasOwnProperty("name")) {
+                        object.name = $root.google.protobuf.StringValue.toObject(message.name, options);
+                        if (options.oneofs)
+                            object._name = "name";
+                    }
+                    return object;
+                };
+
+                /**
+                 * Converts this FollowRequestDao to JSON.
+                 * @function toJSON
+                 * @memberof LiftLog.Ui.Models.FollowRequestDao
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                FollowRequestDao.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                /**
+                 * Gets the default type url for FollowRequestDao
+                 * @function getTypeUrl
+                 * @memberof LiftLog.Ui.Models.FollowRequestDao
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                FollowRequestDao.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/LiftLog.Ui.Models.FollowRequestDao";
+                };
+
+                return FollowRequestDao;
+            })();
+
+            Models.FollowResponseDao = (function() {
+
+                /**
+                 * Properties of a FollowResponseDao.
+                 * @memberof LiftLog.Ui.Models
+                 * @interface IFollowResponseDao
+                 * @property {LiftLog.Ui.Models.IFollowResponseAcceptedDao|null} [accepted] FollowResponseDao accepted
+                 * @property {LiftLog.Ui.Models.IFollowResponseRejectedDao|null} [rejected] FollowResponseDao rejected
+                 */
+
+                /**
+                 * Constructs a new FollowResponseDao.
+                 * @memberof LiftLog.Ui.Models
+                 * @classdesc Represents a FollowResponseDao.
+                 * @implements IFollowResponseDao
+                 * @constructor
+                 * @param {LiftLog.Ui.Models.IFollowResponseDao=} [properties] Properties to set
+                 */
+                function FollowResponseDao(properties) {
+                    if (properties)
+                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * FollowResponseDao accepted.
+                 * @member {LiftLog.Ui.Models.IFollowResponseAcceptedDao|null|undefined} accepted
+                 * @memberof LiftLog.Ui.Models.FollowResponseDao
+                 * @instance
+                 */
+                FollowResponseDao.prototype.accepted = null;
+
+                /**
+                 * FollowResponseDao rejected.
+                 * @member {LiftLog.Ui.Models.IFollowResponseRejectedDao|null|undefined} rejected
+                 * @memberof LiftLog.Ui.Models.FollowResponseDao
+                 * @instance
+                 */
+                FollowResponseDao.prototype.rejected = null;
+
+                // OneOf field names bound to virtual getters and setters
+                let $oneOfFields;
+
+                /**
+                 * FollowResponseDao responsePayload.
+                 * @member {"accepted"|"rejected"|undefined} responsePayload
+                 * @memberof LiftLog.Ui.Models.FollowResponseDao
+                 * @instance
+                 */
+                Object.defineProperty(FollowResponseDao.prototype, "responsePayload", {
+                    get: $util.oneOfGetter($oneOfFields = ["accepted", "rejected"]),
+                    set: $util.oneOfSetter($oneOfFields)
+                });
+
+                /**
+                 * Creates a new FollowResponseDao instance using the specified properties.
+                 * @function create
+                 * @memberof LiftLog.Ui.Models.FollowResponseDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IFollowResponseDao=} [properties] Properties to set
+                 * @returns {LiftLog.Ui.Models.FollowResponseDao} FollowResponseDao instance
+                 */
+                FollowResponseDao.create = function create(properties) {
+                    return new FollowResponseDao(properties);
+                };
+
+                /**
+                 * Encodes the specified FollowResponseDao message. Does not implicitly {@link LiftLog.Ui.Models.FollowResponseDao.verify|verify} messages.
+                 * @function encode
+                 * @memberof LiftLog.Ui.Models.FollowResponseDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IFollowResponseDao} message FollowResponseDao message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                FollowResponseDao.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.accepted != null && Object.hasOwnProperty.call(message, "accepted"))
+                        $root.LiftLog.Ui.Models.FollowResponseAcceptedDao.encode(message.accepted, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    if (message.rejected != null && Object.hasOwnProperty.call(message, "rejected"))
+                        $root.LiftLog.Ui.Models.FollowResponseRejectedDao.encode(message.rejected, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified FollowResponseDao message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.FollowResponseDao.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof LiftLog.Ui.Models.FollowResponseDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IFollowResponseDao} message FollowResponseDao message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                FollowResponseDao.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a FollowResponseDao message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof LiftLog.Ui.Models.FollowResponseDao
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {LiftLog.Ui.Models.FollowResponseDao} FollowResponseDao
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                FollowResponseDao.decode = function decode(reader, length, error) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.FollowResponseDao();
+                    while (reader.pos < end) {
+                        let tag = reader.uint32();
+                        if (tag === error)
+                            break;
+                        switch (tag >>> 3) {
+                        case 1: {
+                                message.accepted = $root.LiftLog.Ui.Models.FollowResponseAcceptedDao.decode(reader, reader.uint32());
+                                break;
+                            }
+                        case 2: {
+                                message.rejected = $root.LiftLog.Ui.Models.FollowResponseRejectedDao.decode(reader, reader.uint32());
+                                break;
+                            }
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a FollowResponseDao message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof LiftLog.Ui.Models.FollowResponseDao
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {LiftLog.Ui.Models.FollowResponseDao} FollowResponseDao
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                FollowResponseDao.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a FollowResponseDao message.
+                 * @function verify
+                 * @memberof LiftLog.Ui.Models.FollowResponseDao
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                FollowResponseDao.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    let properties = {};
+                    if (message.accepted != null && message.hasOwnProperty("accepted")) {
+                        properties.responsePayload = 1;
+                        {
+                            let error = $root.LiftLog.Ui.Models.FollowResponseAcceptedDao.verify(message.accepted);
+                            if (error)
+                                return "accepted." + error;
+                        }
+                    }
+                    if (message.rejected != null && message.hasOwnProperty("rejected")) {
+                        if (properties.responsePayload === 1)
+                            return "responsePayload: multiple values";
+                        properties.responsePayload = 1;
+                        {
+                            let error = $root.LiftLog.Ui.Models.FollowResponseRejectedDao.verify(message.rejected);
+                            if (error)
+                                return "rejected." + error;
+                        }
+                    }
+                    return null;
+                };
+
+                /**
+                 * Creates a FollowResponseDao message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof LiftLog.Ui.Models.FollowResponseDao
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {LiftLog.Ui.Models.FollowResponseDao} FollowResponseDao
+                 */
+                FollowResponseDao.fromObject = function fromObject(object) {
+                    if (object instanceof $root.LiftLog.Ui.Models.FollowResponseDao)
+                        return object;
+                    let message = new $root.LiftLog.Ui.Models.FollowResponseDao();
+                    if (object.accepted != null) {
+                        if (typeof object.accepted !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.FollowResponseDao.accepted: object expected");
+                        message.accepted = $root.LiftLog.Ui.Models.FollowResponseAcceptedDao.fromObject(object.accepted);
+                    }
+                    if (object.rejected != null) {
+                        if (typeof object.rejected !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.FollowResponseDao.rejected: object expected");
+                        message.rejected = $root.LiftLog.Ui.Models.FollowResponseRejectedDao.fromObject(object.rejected);
+                    }
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a FollowResponseDao message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof LiftLog.Ui.Models.FollowResponseDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.FollowResponseDao} message FollowResponseDao
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                FollowResponseDao.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    let object = {};
+                    if (message.accepted != null && message.hasOwnProperty("accepted")) {
+                        object.accepted = $root.LiftLog.Ui.Models.FollowResponseAcceptedDao.toObject(message.accepted, options);
+                        if (options.oneofs)
+                            object.responsePayload = "accepted";
+                    }
+                    if (message.rejected != null && message.hasOwnProperty("rejected")) {
+                        object.rejected = $root.LiftLog.Ui.Models.FollowResponseRejectedDao.toObject(message.rejected, options);
+                        if (options.oneofs)
+                            object.responsePayload = "rejected";
+                    }
+                    return object;
+                };
+
+                /**
+                 * Converts this FollowResponseDao to JSON.
+                 * @function toJSON
+                 * @memberof LiftLog.Ui.Models.FollowResponseDao
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                FollowResponseDao.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                /**
+                 * Gets the default type url for FollowResponseDao
+                 * @function getTypeUrl
+                 * @memberof LiftLog.Ui.Models.FollowResponseDao
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                FollowResponseDao.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/LiftLog.Ui.Models.FollowResponseDao";
+                };
+
+                return FollowResponseDao;
+            })();
+
+            Models.FollowResponseAcceptedDao = (function() {
+
+                /**
+                 * Properties of a FollowResponseAcceptedDao.
+                 * @memberof LiftLog.Ui.Models
+                 * @interface IFollowResponseAcceptedDao
+                 * @property {Uint8Array|null} [aesKey] FollowResponseAcceptedDao aesKey
+                 * @property {string|null} [followSecret] FollowResponseAcceptedDao followSecret
+                 */
+
+                /**
+                 * Constructs a new FollowResponseAcceptedDao.
+                 * @memberof LiftLog.Ui.Models
+                 * @classdesc Represents a FollowResponseAcceptedDao.
+                 * @implements IFollowResponseAcceptedDao
+                 * @constructor
+                 * @param {LiftLog.Ui.Models.IFollowResponseAcceptedDao=} [properties] Properties to set
+                 */
+                function FollowResponseAcceptedDao(properties) {
+                    if (properties)
+                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * FollowResponseAcceptedDao aesKey.
+                 * @member {Uint8Array} aesKey
+                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
+                 * @instance
+                 */
+                FollowResponseAcceptedDao.prototype.aesKey = $util.newBuffer([]);
+
+                /**
+                 * FollowResponseAcceptedDao followSecret.
+                 * @member {string} followSecret
+                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
+                 * @instance
+                 */
+                FollowResponseAcceptedDao.prototype.followSecret = "";
+
+                /**
+                 * Creates a new FollowResponseAcceptedDao instance using the specified properties.
+                 * @function create
+                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IFollowResponseAcceptedDao=} [properties] Properties to set
+                 * @returns {LiftLog.Ui.Models.FollowResponseAcceptedDao} FollowResponseAcceptedDao instance
+                 */
+                FollowResponseAcceptedDao.create = function create(properties) {
+                    return new FollowResponseAcceptedDao(properties);
+                };
+
+                /**
+                 * Encodes the specified FollowResponseAcceptedDao message. Does not implicitly {@link LiftLog.Ui.Models.FollowResponseAcceptedDao.verify|verify} messages.
+                 * @function encode
+                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IFollowResponseAcceptedDao} message FollowResponseAcceptedDao message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                FollowResponseAcceptedDao.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.aesKey != null && Object.hasOwnProperty.call(message, "aesKey"))
+                        writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.aesKey);
+                    if (message.followSecret != null && Object.hasOwnProperty.call(message, "followSecret"))
+                        writer.uint32(/* id 2, wireType 2 =*/18).string(message.followSecret);
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified FollowResponseAcceptedDao message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.FollowResponseAcceptedDao.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IFollowResponseAcceptedDao} message FollowResponseAcceptedDao message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                FollowResponseAcceptedDao.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a FollowResponseAcceptedDao message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {LiftLog.Ui.Models.FollowResponseAcceptedDao} FollowResponseAcceptedDao
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                FollowResponseAcceptedDao.decode = function decode(reader, length, error) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.FollowResponseAcceptedDao();
+                    while (reader.pos < end) {
+                        let tag = reader.uint32();
+                        if (tag === error)
+                            break;
+                        switch (tag >>> 3) {
+                        case 1: {
+                                message.aesKey = reader.bytes();
+                                break;
+                            }
+                        case 2: {
+                                message.followSecret = reader.string();
+                                break;
+                            }
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a FollowResponseAcceptedDao message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {LiftLog.Ui.Models.FollowResponseAcceptedDao} FollowResponseAcceptedDao
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                FollowResponseAcceptedDao.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a FollowResponseAcceptedDao message.
+                 * @function verify
+                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                FollowResponseAcceptedDao.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.aesKey != null && message.hasOwnProperty("aesKey"))
+                        if (!(message.aesKey && typeof message.aesKey.length === "number" || $util.isString(message.aesKey)))
+                            return "aesKey: buffer expected";
+                    if (message.followSecret != null && message.hasOwnProperty("followSecret"))
+                        if (!$util.isString(message.followSecret))
+                            return "followSecret: string expected";
+                    return null;
+                };
+
+                /**
+                 * Creates a FollowResponseAcceptedDao message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {LiftLog.Ui.Models.FollowResponseAcceptedDao} FollowResponseAcceptedDao
+                 */
+                FollowResponseAcceptedDao.fromObject = function fromObject(object) {
+                    if (object instanceof $root.LiftLog.Ui.Models.FollowResponseAcceptedDao)
+                        return object;
+                    let message = new $root.LiftLog.Ui.Models.FollowResponseAcceptedDao();
+                    if (object.aesKey != null)
+                        if (typeof object.aesKey === "string")
+                            $util.base64.decode(object.aesKey, message.aesKey = $util.newBuffer($util.base64.length(object.aesKey)), 0);
+                        else if (object.aesKey.length >= 0)
+                            message.aesKey = object.aesKey;
+                    if (object.followSecret != null)
+                        message.followSecret = String(object.followSecret);
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a FollowResponseAcceptedDao message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.FollowResponseAcceptedDao} message FollowResponseAcceptedDao
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                FollowResponseAcceptedDao.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    let object = {};
+                    if (options.defaults) {
+                        if (options.bytes === String)
+                            object.aesKey = "";
+                        else {
+                            object.aesKey = [];
+                            if (options.bytes !== Array)
+                                object.aesKey = $util.newBuffer(object.aesKey);
+                        }
+                        object.followSecret = "";
+                    }
+                    if (message.aesKey != null && message.hasOwnProperty("aesKey"))
+                        object.aesKey = options.bytes === String ? $util.base64.encode(message.aesKey, 0, message.aesKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.aesKey) : message.aesKey;
+                    if (message.followSecret != null && message.hasOwnProperty("followSecret"))
+                        object.followSecret = message.followSecret;
+                    return object;
+                };
+
+                /**
+                 * Converts this FollowResponseAcceptedDao to JSON.
+                 * @function toJSON
+                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                FollowResponseAcceptedDao.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                /**
+                 * Gets the default type url for FollowResponseAcceptedDao
+                 * @function getTypeUrl
+                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                FollowResponseAcceptedDao.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/LiftLog.Ui.Models.FollowResponseAcceptedDao";
+                };
+
+                return FollowResponseAcceptedDao;
+            })();
+
+            Models.FollowResponseRejectedDao = (function() {
+
+                /**
+                 * Properties of a FollowResponseRejectedDao.
+                 * @memberof LiftLog.Ui.Models
+                 * @interface IFollowResponseRejectedDao
+                 */
+
+                /**
+                 * Constructs a new FollowResponseRejectedDao.
+                 * @memberof LiftLog.Ui.Models
+                 * @classdesc Represents a FollowResponseRejectedDao.
+                 * @implements IFollowResponseRejectedDao
+                 * @constructor
+                 * @param {LiftLog.Ui.Models.IFollowResponseRejectedDao=} [properties] Properties to set
+                 */
+                function FollowResponseRejectedDao(properties) {
+                    if (properties)
+                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * Creates a new FollowResponseRejectedDao instance using the specified properties.
+                 * @function create
+                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IFollowResponseRejectedDao=} [properties] Properties to set
+                 * @returns {LiftLog.Ui.Models.FollowResponseRejectedDao} FollowResponseRejectedDao instance
+                 */
+                FollowResponseRejectedDao.create = function create(properties) {
+                    return new FollowResponseRejectedDao(properties);
+                };
+
+                /**
+                 * Encodes the specified FollowResponseRejectedDao message. Does not implicitly {@link LiftLog.Ui.Models.FollowResponseRejectedDao.verify|verify} messages.
+                 * @function encode
+                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IFollowResponseRejectedDao} message FollowResponseRejectedDao message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                FollowResponseRejectedDao.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified FollowResponseRejectedDao message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.FollowResponseRejectedDao.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IFollowResponseRejectedDao} message FollowResponseRejectedDao message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                FollowResponseRejectedDao.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a FollowResponseRejectedDao message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {LiftLog.Ui.Models.FollowResponseRejectedDao} FollowResponseRejectedDao
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                FollowResponseRejectedDao.decode = function decode(reader, length, error) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.FollowResponseRejectedDao();
+                    while (reader.pos < end) {
+                        let tag = reader.uint32();
+                        if (tag === error)
+                            break;
+                        switch (tag >>> 3) {
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a FollowResponseRejectedDao message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {LiftLog.Ui.Models.FollowResponseRejectedDao} FollowResponseRejectedDao
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                FollowResponseRejectedDao.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a FollowResponseRejectedDao message.
+                 * @function verify
+                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                FollowResponseRejectedDao.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    return null;
+                };
+
+                /**
+                 * Creates a FollowResponseRejectedDao message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {LiftLog.Ui.Models.FollowResponseRejectedDao} FollowResponseRejectedDao
+                 */
+                FollowResponseRejectedDao.fromObject = function fromObject(object) {
+                    if (object instanceof $root.LiftLog.Ui.Models.FollowResponseRejectedDao)
+                        return object;
+                    return new $root.LiftLog.Ui.Models.FollowResponseRejectedDao();
+                };
+
+                /**
+                 * Creates a plain object from a FollowResponseRejectedDao message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.FollowResponseRejectedDao} message FollowResponseRejectedDao
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                FollowResponseRejectedDao.toObject = function toObject() {
+                    return {};
+                };
+
+                /**
+                 * Converts this FollowResponseRejectedDao to JSON.
+                 * @function toJSON
+                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                FollowResponseRejectedDao.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                /**
+                 * Gets the default type url for FollowResponseRejectedDao
+                 * @function getTypeUrl
+                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                FollowResponseRejectedDao.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/LiftLog.Ui.Models.FollowResponseRejectedDao";
+                };
+
+                return FollowResponseRejectedDao;
+            })();
+
+            Models.UnFollowNotification = (function() {
+
+                /**
+                 * Properties of an UnFollowNotification.
+                 * @memberof LiftLog.Ui.Models
+                 * @interface IUnFollowNotification
+                 * @property {string|null} [followSecret] UnFollowNotification followSecret
+                 */
+
+                /**
+                 * Constructs a new UnFollowNotification.
+                 * @memberof LiftLog.Ui.Models
+                 * @classdesc Represents an UnFollowNotification.
+                 * @implements IUnFollowNotification
+                 * @constructor
+                 * @param {LiftLog.Ui.Models.IUnFollowNotification=} [properties] Properties to set
+                 */
+                function UnFollowNotification(properties) {
+                    if (properties)
+                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * UnFollowNotification followSecret.
+                 * @member {string} followSecret
+                 * @memberof LiftLog.Ui.Models.UnFollowNotification
+                 * @instance
+                 */
+                UnFollowNotification.prototype.followSecret = "";
+
+                /**
+                 * Creates a new UnFollowNotification instance using the specified properties.
+                 * @function create
+                 * @memberof LiftLog.Ui.Models.UnFollowNotification
+                 * @static
+                 * @param {LiftLog.Ui.Models.IUnFollowNotification=} [properties] Properties to set
+                 * @returns {LiftLog.Ui.Models.UnFollowNotification} UnFollowNotification instance
+                 */
+                UnFollowNotification.create = function create(properties) {
+                    return new UnFollowNotification(properties);
+                };
+
+                /**
+                 * Encodes the specified UnFollowNotification message. Does not implicitly {@link LiftLog.Ui.Models.UnFollowNotification.verify|verify} messages.
+                 * @function encode
+                 * @memberof LiftLog.Ui.Models.UnFollowNotification
+                 * @static
+                 * @param {LiftLog.Ui.Models.IUnFollowNotification} message UnFollowNotification message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                UnFollowNotification.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.followSecret != null && Object.hasOwnProperty.call(message, "followSecret"))
+                        writer.uint32(/* id 1, wireType 2 =*/10).string(message.followSecret);
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified UnFollowNotification message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.UnFollowNotification.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof LiftLog.Ui.Models.UnFollowNotification
+                 * @static
+                 * @param {LiftLog.Ui.Models.IUnFollowNotification} message UnFollowNotification message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                UnFollowNotification.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes an UnFollowNotification message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof LiftLog.Ui.Models.UnFollowNotification
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {LiftLog.Ui.Models.UnFollowNotification} UnFollowNotification
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                UnFollowNotification.decode = function decode(reader, length, error) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.UnFollowNotification();
+                    while (reader.pos < end) {
+                        let tag = reader.uint32();
+                        if (tag === error)
+                            break;
+                        switch (tag >>> 3) {
+                        case 1: {
+                                message.followSecret = reader.string();
+                                break;
+                            }
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes an UnFollowNotification message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof LiftLog.Ui.Models.UnFollowNotification
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {LiftLog.Ui.Models.UnFollowNotification} UnFollowNotification
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                UnFollowNotification.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies an UnFollowNotification message.
+                 * @function verify
+                 * @memberof LiftLog.Ui.Models.UnFollowNotification
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                UnFollowNotification.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.followSecret != null && message.hasOwnProperty("followSecret"))
+                        if (!$util.isString(message.followSecret))
+                            return "followSecret: string expected";
+                    return null;
+                };
+
+                /**
+                 * Creates an UnFollowNotification message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof LiftLog.Ui.Models.UnFollowNotification
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {LiftLog.Ui.Models.UnFollowNotification} UnFollowNotification
+                 */
+                UnFollowNotification.fromObject = function fromObject(object) {
+                    if (object instanceof $root.LiftLog.Ui.Models.UnFollowNotification)
+                        return object;
+                    let message = new $root.LiftLog.Ui.Models.UnFollowNotification();
+                    if (object.followSecret != null)
+                        message.followSecret = String(object.followSecret);
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from an UnFollowNotification message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof LiftLog.Ui.Models.UnFollowNotification
+                 * @static
+                 * @param {LiftLog.Ui.Models.UnFollowNotification} message UnFollowNotification
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                UnFollowNotification.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    let object = {};
+                    if (options.defaults)
+                        object.followSecret = "";
+                    if (message.followSecret != null && message.hasOwnProperty("followSecret"))
+                        object.followSecret = message.followSecret;
+                    return object;
+                };
+
+                /**
+                 * Converts this UnFollowNotification to JSON.
+                 * @function toJSON
+                 * @memberof LiftLog.Ui.Models.UnFollowNotification
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                UnFollowNotification.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                /**
+                 * Gets the default type url for UnFollowNotification
+                 * @function getTypeUrl
+                 * @memberof LiftLog.Ui.Models.UnFollowNotification
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                UnFollowNotification.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/LiftLog.Ui.Models.UnFollowNotification";
+                };
+
+                return UnFollowNotification;
+            })();
+
+            Models.CurrentSessionStateDao = (function() {
+
+                /**
+                 * Namespace CurrentSessionStateDao.
+                 * @memberof LiftLog.Ui.Models
+                 * @namespace
+                 */
+                const CurrentSessionStateDao = {};
+
+                CurrentSessionStateDao.CurrentSessionStateDaoV2 = (function() {
+
+                    /**
+                     * Properties of a CurrentSessionStateDaoV2.
+                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao
+                     * @interface ICurrentSessionStateDaoV2
+                     * @property {LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null} [workoutSession] CurrentSessionStateDaoV2 workoutSession
+                     * @property {LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null} [historySession] CurrentSessionStateDaoV2 historySession
+                     * @property {LiftLog.Ui.Models.IUuidDao|null} [latestSetTimerNotificationId] CurrentSessionStateDaoV2 latestSetTimerNotificationId
+                     */
+
+                    /**
+                     * Constructs a new CurrentSessionStateDaoV2.
+                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao
+                     * @classdesc Represents a CurrentSessionStateDaoV2.
+                     * @implements ICurrentSessionStateDaoV2
+                     * @constructor
+                     * @param {LiftLog.Ui.Models.CurrentSessionStateDao.ICurrentSessionStateDaoV2=} [properties] Properties to set
+                     */
+                    function CurrentSessionStateDaoV2(properties) {
+                        if (properties)
+                            for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * CurrentSessionStateDaoV2 workoutSession.
+                     * @member {LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null|undefined} workoutSession
+                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @instance
+                     */
+                    CurrentSessionStateDaoV2.prototype.workoutSession = null;
+
+                    /**
+                     * CurrentSessionStateDaoV2 historySession.
+                     * @member {LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null|undefined} historySession
+                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @instance
+                     */
+                    CurrentSessionStateDaoV2.prototype.historySession = null;
+
+                    /**
+                     * CurrentSessionStateDaoV2 latestSetTimerNotificationId.
+                     * @member {LiftLog.Ui.Models.IUuidDao|null|undefined} latestSetTimerNotificationId
+                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @instance
+                     */
+                    CurrentSessionStateDaoV2.prototype.latestSetTimerNotificationId = null;
+
+                    // OneOf field names bound to virtual getters and setters
+                    let $oneOfFields;
+
+                    /**
+                     * CurrentSessionStateDaoV2 _workoutSession.
+                     * @member {"workoutSession"|undefined} _workoutSession
+                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @instance
+                     */
+                    Object.defineProperty(CurrentSessionStateDaoV2.prototype, "_workoutSession", {
+                        get: $util.oneOfGetter($oneOfFields = ["workoutSession"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * CurrentSessionStateDaoV2 _historySession.
+                     * @member {"historySession"|undefined} _historySession
+                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @instance
+                     */
+                    Object.defineProperty(CurrentSessionStateDaoV2.prototype, "_historySession", {
+                        get: $util.oneOfGetter($oneOfFields = ["historySession"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * CurrentSessionStateDaoV2 _latestSetTimerNotificationId.
+                     * @member {"latestSetTimerNotificationId"|undefined} _latestSetTimerNotificationId
+                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @instance
+                     */
+                    Object.defineProperty(CurrentSessionStateDaoV2.prototype, "_latestSetTimerNotificationId", {
+                        get: $util.oneOfGetter($oneOfFields = ["latestSetTimerNotificationId"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * Creates a new CurrentSessionStateDaoV2 instance using the specified properties.
+                     * @function create
+                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @static
+                     * @param {LiftLog.Ui.Models.CurrentSessionStateDao.ICurrentSessionStateDaoV2=} [properties] Properties to set
+                     * @returns {LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2} CurrentSessionStateDaoV2 instance
+                     */
+                    CurrentSessionStateDaoV2.create = function create(properties) {
+                        return new CurrentSessionStateDaoV2(properties);
+                    };
+
+                    /**
+                     * Encodes the specified CurrentSessionStateDaoV2 message. Does not implicitly {@link LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2.verify|verify} messages.
+                     * @function encode
+                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @static
+                     * @param {LiftLog.Ui.Models.CurrentSessionStateDao.ICurrentSessionStateDaoV2} message CurrentSessionStateDaoV2 message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    CurrentSessionStateDaoV2.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.workoutSession != null && Object.hasOwnProperty.call(message, "workoutSession"))
+                            $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.encode(message.workoutSession, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        if (message.historySession != null && Object.hasOwnProperty.call(message, "historySession"))
+                            $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.encode(message.historySession, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                        if (message.latestSetTimerNotificationId != null && Object.hasOwnProperty.call(message, "latestSetTimerNotificationId"))
+                            $root.LiftLog.Ui.Models.UuidDao.encode(message.latestSetTimerNotificationId, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified CurrentSessionStateDaoV2 message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @static
+                     * @param {LiftLog.Ui.Models.CurrentSessionStateDao.ICurrentSessionStateDaoV2} message CurrentSessionStateDaoV2 message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    CurrentSessionStateDaoV2.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a CurrentSessionStateDaoV2 message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2} CurrentSessionStateDaoV2
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    CurrentSessionStateDaoV2.decode = function decode(reader, length, error) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2();
+                        while (reader.pos < end) {
+                            let tag = reader.uint32();
+                            if (tag === error)
+                                break;
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.workoutSession = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 2: {
+                                    message.historySession = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 3: {
+                                    message.latestSetTimerNotificationId = $root.LiftLog.Ui.Models.UuidDao.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a CurrentSessionStateDaoV2 message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2} CurrentSessionStateDaoV2
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    CurrentSessionStateDaoV2.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a CurrentSessionStateDaoV2 message.
+                     * @function verify
+                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    CurrentSessionStateDaoV2.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        let properties = {};
+                        if (message.workoutSession != null && message.hasOwnProperty("workoutSession")) {
+                            properties._workoutSession = 1;
+                            {
+                                let error = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.verify(message.workoutSession);
+                                if (error)
+                                    return "workoutSession." + error;
+                            }
+                        }
+                        if (message.historySession != null && message.hasOwnProperty("historySession")) {
+                            properties._historySession = 1;
+                            {
+                                let error = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.verify(message.historySession);
+                                if (error)
+                                    return "historySession." + error;
+                            }
+                        }
+                        if (message.latestSetTimerNotificationId != null && message.hasOwnProperty("latestSetTimerNotificationId")) {
+                            properties._latestSetTimerNotificationId = 1;
+                            {
+                                let error = $root.LiftLog.Ui.Models.UuidDao.verify(message.latestSetTimerNotificationId);
+                                if (error)
+                                    return "latestSetTimerNotificationId." + error;
+                            }
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Creates a CurrentSessionStateDaoV2 message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2} CurrentSessionStateDaoV2
+                     */
+                    CurrentSessionStateDaoV2.fromObject = function fromObject(object) {
+                        if (object instanceof $root.LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2)
+                            return object;
+                        let message = new $root.LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2();
+                        if (object.workoutSession != null) {
+                            if (typeof object.workoutSession !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2.workoutSession: object expected");
+                            message.workoutSession = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.fromObject(object.workoutSession);
+                        }
+                        if (object.historySession != null) {
+                            if (typeof object.historySession !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2.historySession: object expected");
+                            message.historySession = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.fromObject(object.historySession);
+                        }
+                        if (object.latestSetTimerNotificationId != null) {
+                            if (typeof object.latestSetTimerNotificationId !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2.latestSetTimerNotificationId: object expected");
+                            message.latestSetTimerNotificationId = $root.LiftLog.Ui.Models.UuidDao.fromObject(object.latestSetTimerNotificationId);
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a CurrentSessionStateDaoV2 message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @static
+                     * @param {LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2} message CurrentSessionStateDaoV2
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    CurrentSessionStateDaoV2.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        let object = {};
+                        if (message.workoutSession != null && message.hasOwnProperty("workoutSession")) {
+                            object.workoutSession = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.toObject(message.workoutSession, options);
+                            if (options.oneofs)
+                                object._workoutSession = "workoutSession";
+                        }
+                        if (message.historySession != null && message.hasOwnProperty("historySession")) {
+                            object.historySession = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.toObject(message.historySession, options);
+                            if (options.oneofs)
+                                object._historySession = "historySession";
+                        }
+                        if (message.latestSetTimerNotificationId != null && message.hasOwnProperty("latestSetTimerNotificationId")) {
+                            object.latestSetTimerNotificationId = $root.LiftLog.Ui.Models.UuidDao.toObject(message.latestSetTimerNotificationId, options);
+                            if (options.oneofs)
+                                object._latestSetTimerNotificationId = "latestSetTimerNotificationId";
+                        }
+                        return object;
+                    };
+
+                    /**
+                     * Converts this CurrentSessionStateDaoV2 to JSON.
+                     * @function toJSON
+                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    CurrentSessionStateDaoV2.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    /**
+                     * Gets the default type url for CurrentSessionStateDaoV2
+                     * @function getTypeUrl
+                     * @memberof LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    CurrentSessionStateDaoV2.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2";
+                    };
+
+                    return CurrentSessionStateDaoV2;
+                })();
+
+                return CurrentSessionStateDao;
+            })();
+
+            Models.SharedItemPayload = (function() {
+
+                /**
+                 * Properties of a SharedItemPayload.
+                 * @memberof LiftLog.Ui.Models
+                 * @interface ISharedItemPayload
+                 * @property {LiftLog.Ui.Models.ISharedProgramBlueprintPayload|null} [sharedProgramBlueprint] SharedItemPayload sharedProgramBlueprint
+                 */
+
+                /**
+                 * Constructs a new SharedItemPayload.
+                 * @memberof LiftLog.Ui.Models
+                 * @classdesc Represents a SharedItemPayload.
+                 * @implements ISharedItemPayload
+                 * @constructor
+                 * @param {LiftLog.Ui.Models.ISharedItemPayload=} [properties] Properties to set
+                 */
+                function SharedItemPayload(properties) {
+                    if (properties)
+                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * SharedItemPayload sharedProgramBlueprint.
+                 * @member {LiftLog.Ui.Models.ISharedProgramBlueprintPayload|null|undefined} sharedProgramBlueprint
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @instance
+                 */
+                SharedItemPayload.prototype.sharedProgramBlueprint = null;
+
+                // OneOf field names bound to virtual getters and setters
+                let $oneOfFields;
+
+                /**
+                 * SharedItemPayload payload.
+                 * @member {"sharedProgramBlueprint"|undefined} payload
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @instance
+                 */
+                Object.defineProperty(SharedItemPayload.prototype, "payload", {
+                    get: $util.oneOfGetter($oneOfFields = ["sharedProgramBlueprint"]),
+                    set: $util.oneOfSetter($oneOfFields)
+                });
+
+                /**
+                 * Creates a new SharedItemPayload instance using the specified properties.
+                 * @function create
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.ISharedItemPayload=} [properties] Properties to set
+                 * @returns {LiftLog.Ui.Models.SharedItemPayload} SharedItemPayload instance
+                 */
+                SharedItemPayload.create = function create(properties) {
+                    return new SharedItemPayload(properties);
+                };
+
+                /**
+                 * Encodes the specified SharedItemPayload message. Does not implicitly {@link LiftLog.Ui.Models.SharedItemPayload.verify|verify} messages.
+                 * @function encode
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.ISharedItemPayload} message SharedItemPayload message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                SharedItemPayload.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.sharedProgramBlueprint != null && Object.hasOwnProperty.call(message, "sharedProgramBlueprint"))
+                        $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.encode(message.sharedProgramBlueprint, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified SharedItemPayload message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SharedItemPayload.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.ISharedItemPayload} message SharedItemPayload message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                SharedItemPayload.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a SharedItemPayload message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {LiftLog.Ui.Models.SharedItemPayload} SharedItemPayload
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                SharedItemPayload.decode = function decode(reader, length, error) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.SharedItemPayload();
+                    while (reader.pos < end) {
+                        let tag = reader.uint32();
+                        if (tag === error)
+                            break;
+                        switch (tag >>> 3) {
+                        case 1: {
+                                message.sharedProgramBlueprint = $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.decode(reader, reader.uint32());
+                                break;
+                            }
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a SharedItemPayload message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {LiftLog.Ui.Models.SharedItemPayload} SharedItemPayload
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                SharedItemPayload.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a SharedItemPayload message.
+                 * @function verify
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                SharedItemPayload.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    let properties = {};
+                    if (message.sharedProgramBlueprint != null && message.hasOwnProperty("sharedProgramBlueprint")) {
+                        properties.payload = 1;
+                        {
+                            let error = $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.verify(message.sharedProgramBlueprint);
+                            if (error)
+                                return "sharedProgramBlueprint." + error;
+                        }
+                    }
+                    return null;
+                };
+
+                /**
+                 * Creates a SharedItemPayload message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {LiftLog.Ui.Models.SharedItemPayload} SharedItemPayload
+                 */
+                SharedItemPayload.fromObject = function fromObject(object) {
+                    if (object instanceof $root.LiftLog.Ui.Models.SharedItemPayload)
+                        return object;
+                    let message = new $root.LiftLog.Ui.Models.SharedItemPayload();
+                    if (object.sharedProgramBlueprint != null) {
+                        if (typeof object.sharedProgramBlueprint !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.SharedItemPayload.sharedProgramBlueprint: object expected");
+                        message.sharedProgramBlueprint = $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.fromObject(object.sharedProgramBlueprint);
+                    }
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a SharedItemPayload message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.SharedItemPayload} message SharedItemPayload
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                SharedItemPayload.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    let object = {};
+                    if (message.sharedProgramBlueprint != null && message.hasOwnProperty("sharedProgramBlueprint")) {
+                        object.sharedProgramBlueprint = $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.toObject(message.sharedProgramBlueprint, options);
+                        if (options.oneofs)
+                            object.payload = "sharedProgramBlueprint";
+                    }
+                    return object;
+                };
+
+                /**
+                 * Converts this SharedItemPayload to JSON.
+                 * @function toJSON
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                SharedItemPayload.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                /**
+                 * Gets the default type url for SharedItemPayload
+                 * @function getTypeUrl
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                SharedItemPayload.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/LiftLog.Ui.Models.SharedItemPayload";
+                };
+
+                return SharedItemPayload;
+            })();
+
+            Models.SharedProgramBlueprintPayload = (function() {
+
+                /**
+                 * Properties of a SharedProgramBlueprintPayload.
+                 * @memberof LiftLog.Ui.Models
+                 * @interface ISharedProgramBlueprintPayload
+                 * @property {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1|null} [programBlueprint] SharedProgramBlueprintPayload programBlueprint
+                 */
+
+                /**
+                 * Constructs a new SharedProgramBlueprintPayload.
+                 * @memberof LiftLog.Ui.Models
+                 * @classdesc Represents a SharedProgramBlueprintPayload.
+                 * @implements ISharedProgramBlueprintPayload
+                 * @constructor
+                 * @param {LiftLog.Ui.Models.ISharedProgramBlueprintPayload=} [properties] Properties to set
+                 */
+                function SharedProgramBlueprintPayload(properties) {
+                    if (properties)
+                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * SharedProgramBlueprintPayload programBlueprint.
+                 * @member {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1|null|undefined} programBlueprint
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @instance
+                 */
+                SharedProgramBlueprintPayload.prototype.programBlueprint = null;
+
+                /**
+                 * Creates a new SharedProgramBlueprintPayload instance using the specified properties.
+                 * @function create
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.ISharedProgramBlueprintPayload=} [properties] Properties to set
+                 * @returns {LiftLog.Ui.Models.SharedProgramBlueprintPayload} SharedProgramBlueprintPayload instance
+                 */
+                SharedProgramBlueprintPayload.create = function create(properties) {
+                    return new SharedProgramBlueprintPayload(properties);
+                };
+
+                /**
+                 * Encodes the specified SharedProgramBlueprintPayload message. Does not implicitly {@link LiftLog.Ui.Models.SharedProgramBlueprintPayload.verify|verify} messages.
+                 * @function encode
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.ISharedProgramBlueprintPayload} message SharedProgramBlueprintPayload message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                SharedProgramBlueprintPayload.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.programBlueprint != null && Object.hasOwnProperty.call(message, "programBlueprint"))
+                        $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.encode(message.programBlueprint, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified SharedProgramBlueprintPayload message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SharedProgramBlueprintPayload.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.ISharedProgramBlueprintPayload} message SharedProgramBlueprintPayload message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                SharedProgramBlueprintPayload.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a SharedProgramBlueprintPayload message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {LiftLog.Ui.Models.SharedProgramBlueprintPayload} SharedProgramBlueprintPayload
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                SharedProgramBlueprintPayload.decode = function decode(reader, length, error) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload();
+                    while (reader.pos < end) {
+                        let tag = reader.uint32();
+                        if (tag === error)
+                            break;
+                        switch (tag >>> 3) {
+                        case 1: {
+                                message.programBlueprint = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.decode(reader, reader.uint32());
+                                break;
+                            }
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a SharedProgramBlueprintPayload message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {LiftLog.Ui.Models.SharedProgramBlueprintPayload} SharedProgramBlueprintPayload
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                SharedProgramBlueprintPayload.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a SharedProgramBlueprintPayload message.
+                 * @function verify
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                SharedProgramBlueprintPayload.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.programBlueprint != null && message.hasOwnProperty("programBlueprint")) {
+                        let error = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.verify(message.programBlueprint);
+                        if (error)
+                            return "programBlueprint." + error;
+                    }
+                    return null;
+                };
+
+                /**
+                 * Creates a SharedProgramBlueprintPayload message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {LiftLog.Ui.Models.SharedProgramBlueprintPayload} SharedProgramBlueprintPayload
+                 */
+                SharedProgramBlueprintPayload.fromObject = function fromObject(object) {
+                    if (object instanceof $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload)
+                        return object;
+                    let message = new $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload();
+                    if (object.programBlueprint != null) {
+                        if (typeof object.programBlueprint !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.SharedProgramBlueprintPayload.programBlueprint: object expected");
+                        message.programBlueprint = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.fromObject(object.programBlueprint);
+                    }
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a SharedProgramBlueprintPayload message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.SharedProgramBlueprintPayload} message SharedProgramBlueprintPayload
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                SharedProgramBlueprintPayload.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    let object = {};
+                    if (options.defaults)
+                        object.programBlueprint = null;
+                    if (message.programBlueprint != null && message.hasOwnProperty("programBlueprint"))
+                        object.programBlueprint = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.toObject(message.programBlueprint, options);
+                    return object;
+                };
+
+                /**
+                 * Converts this SharedProgramBlueprintPayload to JSON.
+                 * @function toJSON
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                SharedProgramBlueprintPayload.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                /**
+                 * Gets the default type url for SharedProgramBlueprintPayload
+                 * @function getTypeUrl
+                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                SharedProgramBlueprintPayload.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/LiftLog.Ui.Models.SharedProgramBlueprintPayload";
+                };
+
+                return SharedProgramBlueprintPayload;
+            })();
+
+            Models.ProgramBlueprintDao = (function() {
+
+                /**
+                 * Namespace ProgramBlueprintDao.
+                 * @memberof LiftLog.Ui.Models
+                 * @namespace
+                 */
+                const ProgramBlueprintDao = {};
+
+                ProgramBlueprintDao.ProgramBlueprintDaoContainerV1 = (function() {
+
+                    /**
+                     * Properties of a ProgramBlueprintDaoContainerV1.
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao
+                     * @interface IProgramBlueprintDaoContainerV1
+                     * @property {Object.<string,LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1>|null} [programBlueprints] ProgramBlueprintDaoContainerV1 programBlueprints
+                     * @property {google.protobuf.IStringValue|null} [activeProgramId] ProgramBlueprintDaoContainerV1 activeProgramId
+                     */
+
+                    /**
+                     * Constructs a new ProgramBlueprintDaoContainerV1.
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao
+                     * @classdesc Represents a ProgramBlueprintDaoContainerV1.
+                     * @implements IProgramBlueprintDaoContainerV1
+                     * @constructor
+                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoContainerV1=} [properties] Properties to set
+                     */
+                    function ProgramBlueprintDaoContainerV1(properties) {
+                        this.programBlueprints = {};
+                        if (properties)
+                            for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * ProgramBlueprintDaoContainerV1 programBlueprints.
+                     * @member {Object.<string,LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1>} programBlueprints
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
+                     * @instance
+                     */
+                    ProgramBlueprintDaoContainerV1.prototype.programBlueprints = $util.emptyObject;
+
+                    /**
+                     * ProgramBlueprintDaoContainerV1 activeProgramId.
+                     * @member {google.protobuf.IStringValue|null|undefined} activeProgramId
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
+                     * @instance
+                     */
+                    ProgramBlueprintDaoContainerV1.prototype.activeProgramId = null;
+
+                    // OneOf field names bound to virtual getters and setters
+                    let $oneOfFields;
+
+                    /**
+                     * ProgramBlueprintDaoContainerV1 _activeProgramId.
+                     * @member {"activeProgramId"|undefined} _activeProgramId
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
+                     * @instance
+                     */
+                    Object.defineProperty(ProgramBlueprintDaoContainerV1.prototype, "_activeProgramId", {
+                        get: $util.oneOfGetter($oneOfFields = ["activeProgramId"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * Creates a new ProgramBlueprintDaoContainerV1 instance using the specified properties.
+                     * @function create
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
+                     * @static
+                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoContainerV1=} [properties] Properties to set
+                     * @returns {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1} ProgramBlueprintDaoContainerV1 instance
+                     */
+                    ProgramBlueprintDaoContainerV1.create = function create(properties) {
+                        return new ProgramBlueprintDaoContainerV1(properties);
+                    };
+
+                    /**
+                     * Encodes the specified ProgramBlueprintDaoContainerV1 message. Does not implicitly {@link LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1.verify|verify} messages.
+                     * @function encode
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
+                     * @static
+                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoContainerV1} message ProgramBlueprintDaoContainerV1 message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    ProgramBlueprintDaoContainerV1.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.programBlueprints != null && Object.hasOwnProperty.call(message, "programBlueprints"))
+                            for (let keys = Object.keys(message.programBlueprints), i = 0; i < keys.length; ++i) {
+                                writer.uint32(/* id 1, wireType 2 =*/10).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]);
+                                $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.encode(message.programBlueprints[keys[i]], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim().ldelim();
+                            }
+                        if (message.activeProgramId != null && Object.hasOwnProperty.call(message, "activeProgramId"))
+                            $root.google.protobuf.StringValue.encode(message.activeProgramId, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified ProgramBlueprintDaoContainerV1 message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
+                     * @static
+                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoContainerV1} message ProgramBlueprintDaoContainerV1 message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    ProgramBlueprintDaoContainerV1.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a ProgramBlueprintDaoContainerV1 message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1} ProgramBlueprintDaoContainerV1
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    ProgramBlueprintDaoContainerV1.decode = function decode(reader, length, error) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1(), key, value;
+                        while (reader.pos < end) {
+                            let tag = reader.uint32();
+                            if (tag === error)
+                                break;
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    if (message.programBlueprints === $util.emptyObject)
+                                        message.programBlueprints = {};
+                                    let end2 = reader.uint32() + reader.pos;
+                                    key = "";
+                                    value = null;
+                                    while (reader.pos < end2) {
+                                        let tag2 = reader.uint32();
+                                        switch (tag2 >>> 3) {
+                                        case 1:
+                                            key = reader.string();
+                                            break;
+                                        case 2:
+                                            value = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.decode(reader, reader.uint32());
+                                            break;
+                                        default:
+                                            reader.skipType(tag2 & 7);
+                                            break;
+                                        }
+                                    }
+                                    message.programBlueprints[key] = value;
+                                    break;
+                                }
+                            case 2: {
+                                    message.activeProgramId = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a ProgramBlueprintDaoContainerV1 message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1} ProgramBlueprintDaoContainerV1
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    ProgramBlueprintDaoContainerV1.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a ProgramBlueprintDaoContainerV1 message.
+                     * @function verify
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    ProgramBlueprintDaoContainerV1.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        let properties = {};
+                        if (message.programBlueprints != null && message.hasOwnProperty("programBlueprints")) {
+                            if (!$util.isObject(message.programBlueprints))
+                                return "programBlueprints: object expected";
+                            let key = Object.keys(message.programBlueprints);
+                            for (let i = 0; i < key.length; ++i) {
+                                let error = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.verify(message.programBlueprints[key[i]]);
+                                if (error)
+                                    return "programBlueprints." + error;
+                            }
+                        }
+                        if (message.activeProgramId != null && message.hasOwnProperty("activeProgramId")) {
+                            properties._activeProgramId = 1;
+                            {
+                                let error = $root.google.protobuf.StringValue.verify(message.activeProgramId);
+                                if (error)
+                                    return "activeProgramId." + error;
+                            }
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Creates a ProgramBlueprintDaoContainerV1 message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1} ProgramBlueprintDaoContainerV1
+                     */
+                    ProgramBlueprintDaoContainerV1.fromObject = function fromObject(object) {
+                        if (object instanceof $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1)
+                            return object;
+                        let message = new $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1();
+                        if (object.programBlueprints) {
+                            if (typeof object.programBlueprints !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1.programBlueprints: object expected");
+                            message.programBlueprints = {};
+                            for (let keys = Object.keys(object.programBlueprints), i = 0; i < keys.length; ++i) {
+                                if (typeof object.programBlueprints[keys[i]] !== "object")
+                                    throw TypeError(".LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1.programBlueprints: object expected");
+                                message.programBlueprints[keys[i]] = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.fromObject(object.programBlueprints[keys[i]]);
+                            }
+                        }
+                        if (object.activeProgramId != null) {
+                            if (typeof object.activeProgramId !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1.activeProgramId: object expected");
+                            message.activeProgramId = $root.google.protobuf.StringValue.fromObject(object.activeProgramId);
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a ProgramBlueprintDaoContainerV1 message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
+                     * @static
+                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1} message ProgramBlueprintDaoContainerV1
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    ProgramBlueprintDaoContainerV1.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        let object = {};
+                        if (options.objects || options.defaults)
+                            object.programBlueprints = {};
+                        let keys2;
+                        if (message.programBlueprints && (keys2 = Object.keys(message.programBlueprints)).length) {
+                            object.programBlueprints = {};
+                            for (let j = 0; j < keys2.length; ++j)
+                                object.programBlueprints[keys2[j]] = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.toObject(message.programBlueprints[keys2[j]], options);
+                        }
+                        if (message.activeProgramId != null && message.hasOwnProperty("activeProgramId")) {
+                            object.activeProgramId = $root.google.protobuf.StringValue.toObject(message.activeProgramId, options);
+                            if (options.oneofs)
+                                object._activeProgramId = "activeProgramId";
+                        }
+                        return object;
+                    };
+
+                    /**
+                     * Converts this ProgramBlueprintDaoContainerV1 to JSON.
+                     * @function toJSON
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    ProgramBlueprintDaoContainerV1.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    /**
+                     * Gets the default type url for ProgramBlueprintDaoContainerV1
+                     * @function getTypeUrl
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    ProgramBlueprintDaoContainerV1.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1";
+                    };
+
+                    return ProgramBlueprintDaoContainerV1;
+                })();
+
+                ProgramBlueprintDao.ProgramBlueprintDaoV1 = (function() {
+
+                    /**
+                     * Properties of a ProgramBlueprintDaoV1.
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao
+                     * @interface IProgramBlueprintDaoV1
+                     * @property {string|null} [name] ProgramBlueprintDaoV1 name
+                     * @property {Array.<LiftLog.Ui.Models.SessionBlueprintDao.ISessionBlueprintDaoV2>|null} [sessions] ProgramBlueprintDaoV1 sessions
+                     * @property {LiftLog.Ui.Models.IDateOnlyDao|null} [lastEdited] ProgramBlueprintDaoV1 lastEdited
+                     */
+
+                    /**
+                     * Constructs a new ProgramBlueprintDaoV1.
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao
+                     * @classdesc Represents a ProgramBlueprintDaoV1.
+                     * @implements IProgramBlueprintDaoV1
+                     * @constructor
+                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1=} [properties] Properties to set
+                     */
+                    function ProgramBlueprintDaoV1(properties) {
+                        this.sessions = [];
+                        if (properties)
+                            for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * ProgramBlueprintDaoV1 name.
+                     * @member {string} name
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
+                     * @instance
+                     */
+                    ProgramBlueprintDaoV1.prototype.name = "";
+
+                    /**
+                     * ProgramBlueprintDaoV1 sessions.
+                     * @member {Array.<LiftLog.Ui.Models.SessionBlueprintDao.ISessionBlueprintDaoV2>} sessions
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
+                     * @instance
+                     */
+                    ProgramBlueprintDaoV1.prototype.sessions = $util.emptyArray;
+
+                    /**
+                     * ProgramBlueprintDaoV1 lastEdited.
+                     * @member {LiftLog.Ui.Models.IDateOnlyDao|null|undefined} lastEdited
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
+                     * @instance
+                     */
+                    ProgramBlueprintDaoV1.prototype.lastEdited = null;
+
+                    // OneOf field names bound to virtual getters and setters
+                    let $oneOfFields;
+
+                    /**
+                     * ProgramBlueprintDaoV1 _lastEdited.
+                     * @member {"lastEdited"|undefined} _lastEdited
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
+                     * @instance
+                     */
+                    Object.defineProperty(ProgramBlueprintDaoV1.prototype, "_lastEdited", {
+                        get: $util.oneOfGetter($oneOfFields = ["lastEdited"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * Creates a new ProgramBlueprintDaoV1 instance using the specified properties.
+                     * @function create
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
+                     * @static
+                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1=} [properties] Properties to set
+                     * @returns {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1} ProgramBlueprintDaoV1 instance
+                     */
+                    ProgramBlueprintDaoV1.create = function create(properties) {
+                        return new ProgramBlueprintDaoV1(properties);
+                    };
+
+                    /**
+                     * Encodes the specified ProgramBlueprintDaoV1 message. Does not implicitly {@link LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.verify|verify} messages.
+                     * @function encode
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
+                     * @static
+                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1} message ProgramBlueprintDaoV1 message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    ProgramBlueprintDaoV1.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.name != null && Object.hasOwnProperty.call(message, "name"))
+                            writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                        if (message.sessions != null && message.sessions.length)
+                            for (let i = 0; i < message.sessions.length; ++i)
+                                $root.LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2.encode(message.sessions[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                        if (message.lastEdited != null && Object.hasOwnProperty.call(message, "lastEdited"))
+                            $root.LiftLog.Ui.Models.DateOnlyDao.encode(message.lastEdited, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified ProgramBlueprintDaoV1 message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
+                     * @static
+                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1} message ProgramBlueprintDaoV1 message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    ProgramBlueprintDaoV1.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a ProgramBlueprintDaoV1 message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1} ProgramBlueprintDaoV1
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    ProgramBlueprintDaoV1.decode = function decode(reader, length, error) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1();
+                        while (reader.pos < end) {
+                            let tag = reader.uint32();
+                            if (tag === error)
+                                break;
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.name = reader.string();
+                                    break;
+                                }
+                            case 5: {
+                                    if (!(message.sessions && message.sessions.length))
+                                        message.sessions = [];
+                                    message.sessions.push($root.LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2.decode(reader, reader.uint32()));
+                                    break;
+                                }
+                            case 6: {
+                                    message.lastEdited = $root.LiftLog.Ui.Models.DateOnlyDao.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a ProgramBlueprintDaoV1 message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1} ProgramBlueprintDaoV1
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    ProgramBlueprintDaoV1.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a ProgramBlueprintDaoV1 message.
+                     * @function verify
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    ProgramBlueprintDaoV1.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        let properties = {};
+                        if (message.name != null && message.hasOwnProperty("name"))
+                            if (!$util.isString(message.name))
+                                return "name: string expected";
+                        if (message.sessions != null && message.hasOwnProperty("sessions")) {
+                            if (!Array.isArray(message.sessions))
+                                return "sessions: array expected";
+                            for (let i = 0; i < message.sessions.length; ++i) {
+                                let error = $root.LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2.verify(message.sessions[i]);
+                                if (error)
+                                    return "sessions." + error;
+                            }
+                        }
+                        if (message.lastEdited != null && message.hasOwnProperty("lastEdited")) {
+                            properties._lastEdited = 1;
+                            {
+                                let error = $root.LiftLog.Ui.Models.DateOnlyDao.verify(message.lastEdited);
+                                if (error)
+                                    return "lastEdited." + error;
+                            }
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Creates a ProgramBlueprintDaoV1 message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1} ProgramBlueprintDaoV1
+                     */
+                    ProgramBlueprintDaoV1.fromObject = function fromObject(object) {
+                        if (object instanceof $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1)
+                            return object;
+                        let message = new $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1();
+                        if (object.name != null)
+                            message.name = String(object.name);
+                        if (object.sessions) {
+                            if (!Array.isArray(object.sessions))
+                                throw TypeError(".LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.sessions: array expected");
+                            message.sessions = [];
+                            for (let i = 0; i < object.sessions.length; ++i) {
+                                if (typeof object.sessions[i] !== "object")
+                                    throw TypeError(".LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.sessions: object expected");
+                                message.sessions[i] = $root.LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2.fromObject(object.sessions[i]);
+                            }
+                        }
+                        if (object.lastEdited != null) {
+                            if (typeof object.lastEdited !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.lastEdited: object expected");
+                            message.lastEdited = $root.LiftLog.Ui.Models.DateOnlyDao.fromObject(object.lastEdited);
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a ProgramBlueprintDaoV1 message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
+                     * @static
+                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1} message ProgramBlueprintDaoV1
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    ProgramBlueprintDaoV1.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        let object = {};
+                        if (options.arrays || options.defaults)
+                            object.sessions = [];
+                        if (options.defaults)
+                            object.name = "";
+                        if (message.name != null && message.hasOwnProperty("name"))
+                            object.name = message.name;
+                        if (message.sessions && message.sessions.length) {
+                            object.sessions = [];
+                            for (let j = 0; j < message.sessions.length; ++j)
+                                object.sessions[j] = $root.LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2.toObject(message.sessions[j], options);
+                        }
+                        if (message.lastEdited != null && message.hasOwnProperty("lastEdited")) {
+                            object.lastEdited = $root.LiftLog.Ui.Models.DateOnlyDao.toObject(message.lastEdited, options);
+                            if (options.oneofs)
+                                object._lastEdited = "lastEdited";
+                        }
+                        return object;
+                    };
+
+                    /**
+                     * Converts this ProgramBlueprintDaoV1 to JSON.
+                     * @function toJSON
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    ProgramBlueprintDaoV1.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    /**
+                     * Gets the default type url for ProgramBlueprintDaoV1
+                     * @function getTypeUrl
+                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    ProgramBlueprintDaoV1.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1";
+                    };
+
+                    return ProgramBlueprintDaoV1;
+                })();
+
+                return ProgramBlueprintDao;
+            })();
+
             Models.ExportedDataDao = (function() {
 
                 /**
@@ -7893,3208 +12305,6 @@ export const LiftLog = $root.LiftLog = (() => {
                 };
 
                 return FeedStateDaoV1;
-            })();
-
-            Models.UserEventPayload = (function() {
-
-                /**
-                 * Properties of a UserEventPayload.
-                 * @memberof LiftLog.Ui.Models
-                 * @interface IUserEventPayload
-                 * @property {LiftLog.Ui.Models.ISessionUserEvent|null} [sessionPayload] UserEventPayload sessionPayload
-                 * @property {LiftLog.Ui.Models.IRemovedSessionUserEvent|null} [removedSessionPayload] UserEventPayload removedSessionPayload
-                 */
-
-                /**
-                 * Constructs a new UserEventPayload.
-                 * @memberof LiftLog.Ui.Models
-                 * @classdesc Represents a UserEventPayload.
-                 * @implements IUserEventPayload
-                 * @constructor
-                 * @param {LiftLog.Ui.Models.IUserEventPayload=} [properties] Properties to set
-                 */
-                function UserEventPayload(properties) {
-                    if (properties)
-                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                            if (properties[keys[i]] != null)
-                                this[keys[i]] = properties[keys[i]];
-                }
-
-                /**
-                 * UserEventPayload sessionPayload.
-                 * @member {LiftLog.Ui.Models.ISessionUserEvent|null|undefined} sessionPayload
-                 * @memberof LiftLog.Ui.Models.UserEventPayload
-                 * @instance
-                 */
-                UserEventPayload.prototype.sessionPayload = null;
-
-                /**
-                 * UserEventPayload removedSessionPayload.
-                 * @member {LiftLog.Ui.Models.IRemovedSessionUserEvent|null|undefined} removedSessionPayload
-                 * @memberof LiftLog.Ui.Models.UserEventPayload
-                 * @instance
-                 */
-                UserEventPayload.prototype.removedSessionPayload = null;
-
-                // OneOf field names bound to virtual getters and setters
-                let $oneOfFields;
-
-                /**
-                 * UserEventPayload eventPayload.
-                 * @member {"sessionPayload"|"removedSessionPayload"|undefined} eventPayload
-                 * @memberof LiftLog.Ui.Models.UserEventPayload
-                 * @instance
-                 */
-                Object.defineProperty(UserEventPayload.prototype, "eventPayload", {
-                    get: $util.oneOfGetter($oneOfFields = ["sessionPayload", "removedSessionPayload"]),
-                    set: $util.oneOfSetter($oneOfFields)
-                });
-
-                /**
-                 * Creates a new UserEventPayload instance using the specified properties.
-                 * @function create
-                 * @memberof LiftLog.Ui.Models.UserEventPayload
-                 * @static
-                 * @param {LiftLog.Ui.Models.IUserEventPayload=} [properties] Properties to set
-                 * @returns {LiftLog.Ui.Models.UserEventPayload} UserEventPayload instance
-                 */
-                UserEventPayload.create = function create(properties) {
-                    return new UserEventPayload(properties);
-                };
-
-                /**
-                 * Encodes the specified UserEventPayload message. Does not implicitly {@link LiftLog.Ui.Models.UserEventPayload.verify|verify} messages.
-                 * @function encode
-                 * @memberof LiftLog.Ui.Models.UserEventPayload
-                 * @static
-                 * @param {LiftLog.Ui.Models.IUserEventPayload} message UserEventPayload message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                UserEventPayload.encode = function encode(message, writer) {
-                    if (!writer)
-                        writer = $Writer.create();
-                    if (message.sessionPayload != null && Object.hasOwnProperty.call(message, "sessionPayload"))
-                        $root.LiftLog.Ui.Models.SessionUserEvent.encode(message.sessionPayload, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                    if (message.removedSessionPayload != null && Object.hasOwnProperty.call(message, "removedSessionPayload"))
-                        $root.LiftLog.Ui.Models.RemovedSessionUserEvent.encode(message.removedSessionPayload, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-                    return writer;
-                };
-
-                /**
-                 * Encodes the specified UserEventPayload message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.UserEventPayload.verify|verify} messages.
-                 * @function encodeDelimited
-                 * @memberof LiftLog.Ui.Models.UserEventPayload
-                 * @static
-                 * @param {LiftLog.Ui.Models.IUserEventPayload} message UserEventPayload message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                UserEventPayload.encodeDelimited = function encodeDelimited(message, writer) {
-                    return this.encode(message, writer).ldelim();
-                };
-
-                /**
-                 * Decodes a UserEventPayload message from the specified reader or buffer.
-                 * @function decode
-                 * @memberof LiftLog.Ui.Models.UserEventPayload
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @param {number} [length] Message length if known beforehand
-                 * @returns {LiftLog.Ui.Models.UserEventPayload} UserEventPayload
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                UserEventPayload.decode = function decode(reader, length, error) {
-                    if (!(reader instanceof $Reader))
-                        reader = $Reader.create(reader);
-                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.UserEventPayload();
-                    while (reader.pos < end) {
-                        let tag = reader.uint32();
-                        if (tag === error)
-                            break;
-                        switch (tag >>> 3) {
-                        case 1: {
-                                message.sessionPayload = $root.LiftLog.Ui.Models.SessionUserEvent.decode(reader, reader.uint32());
-                                break;
-                            }
-                        case 2: {
-                                message.removedSessionPayload = $root.LiftLog.Ui.Models.RemovedSessionUserEvent.decode(reader, reader.uint32());
-                                break;
-                            }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
-                        }
-                    }
-                    return message;
-                };
-
-                /**
-                 * Decodes a UserEventPayload message from the specified reader or buffer, length delimited.
-                 * @function decodeDelimited
-                 * @memberof LiftLog.Ui.Models.UserEventPayload
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @returns {LiftLog.Ui.Models.UserEventPayload} UserEventPayload
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                UserEventPayload.decodeDelimited = function decodeDelimited(reader) {
-                    if (!(reader instanceof $Reader))
-                        reader = new $Reader(reader);
-                    return this.decode(reader, reader.uint32());
-                };
-
-                /**
-                 * Verifies a UserEventPayload message.
-                 * @function verify
-                 * @memberof LiftLog.Ui.Models.UserEventPayload
-                 * @static
-                 * @param {Object.<string,*>} message Plain object to verify
-                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                 */
-                UserEventPayload.verify = function verify(message) {
-                    if (typeof message !== "object" || message === null)
-                        return "object expected";
-                    let properties = {};
-                    if (message.sessionPayload != null && message.hasOwnProperty("sessionPayload")) {
-                        properties.eventPayload = 1;
-                        {
-                            let error = $root.LiftLog.Ui.Models.SessionUserEvent.verify(message.sessionPayload);
-                            if (error)
-                                return "sessionPayload." + error;
-                        }
-                    }
-                    if (message.removedSessionPayload != null && message.hasOwnProperty("removedSessionPayload")) {
-                        if (properties.eventPayload === 1)
-                            return "eventPayload: multiple values";
-                        properties.eventPayload = 1;
-                        {
-                            let error = $root.LiftLog.Ui.Models.RemovedSessionUserEvent.verify(message.removedSessionPayload);
-                            if (error)
-                                return "removedSessionPayload." + error;
-                        }
-                    }
-                    return null;
-                };
-
-                /**
-                 * Creates a UserEventPayload message from a plain object. Also converts values to their respective internal types.
-                 * @function fromObject
-                 * @memberof LiftLog.Ui.Models.UserEventPayload
-                 * @static
-                 * @param {Object.<string,*>} object Plain object
-                 * @returns {LiftLog.Ui.Models.UserEventPayload} UserEventPayload
-                 */
-                UserEventPayload.fromObject = function fromObject(object) {
-                    if (object instanceof $root.LiftLog.Ui.Models.UserEventPayload)
-                        return object;
-                    let message = new $root.LiftLog.Ui.Models.UserEventPayload();
-                    if (object.sessionPayload != null) {
-                        if (typeof object.sessionPayload !== "object")
-                            throw TypeError(".LiftLog.Ui.Models.UserEventPayload.sessionPayload: object expected");
-                        message.sessionPayload = $root.LiftLog.Ui.Models.SessionUserEvent.fromObject(object.sessionPayload);
-                    }
-                    if (object.removedSessionPayload != null) {
-                        if (typeof object.removedSessionPayload !== "object")
-                            throw TypeError(".LiftLog.Ui.Models.UserEventPayload.removedSessionPayload: object expected");
-                        message.removedSessionPayload = $root.LiftLog.Ui.Models.RemovedSessionUserEvent.fromObject(object.removedSessionPayload);
-                    }
-                    return message;
-                };
-
-                /**
-                 * Creates a plain object from a UserEventPayload message. Also converts values to other types if specified.
-                 * @function toObject
-                 * @memberof LiftLog.Ui.Models.UserEventPayload
-                 * @static
-                 * @param {LiftLog.Ui.Models.UserEventPayload} message UserEventPayload
-                 * @param {$protobuf.IConversionOptions} [options] Conversion options
-                 * @returns {Object.<string,*>} Plain object
-                 */
-                UserEventPayload.toObject = function toObject(message, options) {
-                    if (!options)
-                        options = {};
-                    let object = {};
-                    if (message.sessionPayload != null && message.hasOwnProperty("sessionPayload")) {
-                        object.sessionPayload = $root.LiftLog.Ui.Models.SessionUserEvent.toObject(message.sessionPayload, options);
-                        if (options.oneofs)
-                            object.eventPayload = "sessionPayload";
-                    }
-                    if (message.removedSessionPayload != null && message.hasOwnProperty("removedSessionPayload")) {
-                        object.removedSessionPayload = $root.LiftLog.Ui.Models.RemovedSessionUserEvent.toObject(message.removedSessionPayload, options);
-                        if (options.oneofs)
-                            object.eventPayload = "removedSessionPayload";
-                    }
-                    return object;
-                };
-
-                /**
-                 * Converts this UserEventPayload to JSON.
-                 * @function toJSON
-                 * @memberof LiftLog.Ui.Models.UserEventPayload
-                 * @instance
-                 * @returns {Object.<string,*>} JSON object
-                 */
-                UserEventPayload.prototype.toJSON = function toJSON() {
-                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                };
-
-                /**
-                 * Gets the default type url for UserEventPayload
-                 * @function getTypeUrl
-                 * @memberof LiftLog.Ui.Models.UserEventPayload
-                 * @static
-                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                 * @returns {string} The default type url
-                 */
-                UserEventPayload.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-                    if (typeUrlPrefix === undefined) {
-                        typeUrlPrefix = "type.googleapis.com";
-                    }
-                    return typeUrlPrefix + "/LiftLog.Ui.Models.UserEventPayload";
-                };
-
-                return UserEventPayload;
-            })();
-
-            Models.SessionUserEvent = (function() {
-
-                /**
-                 * Properties of a SessionUserEvent.
-                 * @memberof LiftLog.Ui.Models
-                 * @interface ISessionUserEvent
-                 * @property {LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null} [session] SessionUserEvent session
-                 */
-
-                /**
-                 * Constructs a new SessionUserEvent.
-                 * @memberof LiftLog.Ui.Models
-                 * @classdesc Represents a SessionUserEvent.
-                 * @implements ISessionUserEvent
-                 * @constructor
-                 * @param {LiftLog.Ui.Models.ISessionUserEvent=} [properties] Properties to set
-                 */
-                function SessionUserEvent(properties) {
-                    if (properties)
-                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                            if (properties[keys[i]] != null)
-                                this[keys[i]] = properties[keys[i]];
-                }
-
-                /**
-                 * SessionUserEvent session.
-                 * @member {LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null|undefined} session
-                 * @memberof LiftLog.Ui.Models.SessionUserEvent
-                 * @instance
-                 */
-                SessionUserEvent.prototype.session = null;
-
-                /**
-                 * Creates a new SessionUserEvent instance using the specified properties.
-                 * @function create
-                 * @memberof LiftLog.Ui.Models.SessionUserEvent
-                 * @static
-                 * @param {LiftLog.Ui.Models.ISessionUserEvent=} [properties] Properties to set
-                 * @returns {LiftLog.Ui.Models.SessionUserEvent} SessionUserEvent instance
-                 */
-                SessionUserEvent.create = function create(properties) {
-                    return new SessionUserEvent(properties);
-                };
-
-                /**
-                 * Encodes the specified SessionUserEvent message. Does not implicitly {@link LiftLog.Ui.Models.SessionUserEvent.verify|verify} messages.
-                 * @function encode
-                 * @memberof LiftLog.Ui.Models.SessionUserEvent
-                 * @static
-                 * @param {LiftLog.Ui.Models.ISessionUserEvent} message SessionUserEvent message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                SessionUserEvent.encode = function encode(message, writer) {
-                    if (!writer)
-                        writer = $Writer.create();
-                    if (message.session != null && Object.hasOwnProperty.call(message, "session"))
-                        $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.encode(message.session, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                    return writer;
-                };
-
-                /**
-                 * Encodes the specified SessionUserEvent message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SessionUserEvent.verify|verify} messages.
-                 * @function encodeDelimited
-                 * @memberof LiftLog.Ui.Models.SessionUserEvent
-                 * @static
-                 * @param {LiftLog.Ui.Models.ISessionUserEvent} message SessionUserEvent message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                SessionUserEvent.encodeDelimited = function encodeDelimited(message, writer) {
-                    return this.encode(message, writer).ldelim();
-                };
-
-                /**
-                 * Decodes a SessionUserEvent message from the specified reader or buffer.
-                 * @function decode
-                 * @memberof LiftLog.Ui.Models.SessionUserEvent
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @param {number} [length] Message length if known beforehand
-                 * @returns {LiftLog.Ui.Models.SessionUserEvent} SessionUserEvent
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                SessionUserEvent.decode = function decode(reader, length, error) {
-                    if (!(reader instanceof $Reader))
-                        reader = $Reader.create(reader);
-                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.SessionUserEvent();
-                    while (reader.pos < end) {
-                        let tag = reader.uint32();
-                        if (tag === error)
-                            break;
-                        switch (tag >>> 3) {
-                        case 1: {
-                                message.session = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.decode(reader, reader.uint32());
-                                break;
-                            }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
-                        }
-                    }
-                    return message;
-                };
-
-                /**
-                 * Decodes a SessionUserEvent message from the specified reader or buffer, length delimited.
-                 * @function decodeDelimited
-                 * @memberof LiftLog.Ui.Models.SessionUserEvent
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @returns {LiftLog.Ui.Models.SessionUserEvent} SessionUserEvent
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                SessionUserEvent.decodeDelimited = function decodeDelimited(reader) {
-                    if (!(reader instanceof $Reader))
-                        reader = new $Reader(reader);
-                    return this.decode(reader, reader.uint32());
-                };
-
-                /**
-                 * Verifies a SessionUserEvent message.
-                 * @function verify
-                 * @memberof LiftLog.Ui.Models.SessionUserEvent
-                 * @static
-                 * @param {Object.<string,*>} message Plain object to verify
-                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                 */
-                SessionUserEvent.verify = function verify(message) {
-                    if (typeof message !== "object" || message === null)
-                        return "object expected";
-                    if (message.session != null && message.hasOwnProperty("session")) {
-                        let error = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.verify(message.session);
-                        if (error)
-                            return "session." + error;
-                    }
-                    return null;
-                };
-
-                /**
-                 * Creates a SessionUserEvent message from a plain object. Also converts values to their respective internal types.
-                 * @function fromObject
-                 * @memberof LiftLog.Ui.Models.SessionUserEvent
-                 * @static
-                 * @param {Object.<string,*>} object Plain object
-                 * @returns {LiftLog.Ui.Models.SessionUserEvent} SessionUserEvent
-                 */
-                SessionUserEvent.fromObject = function fromObject(object) {
-                    if (object instanceof $root.LiftLog.Ui.Models.SessionUserEvent)
-                        return object;
-                    let message = new $root.LiftLog.Ui.Models.SessionUserEvent();
-                    if (object.session != null) {
-                        if (typeof object.session !== "object")
-                            throw TypeError(".LiftLog.Ui.Models.SessionUserEvent.session: object expected");
-                        message.session = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.fromObject(object.session);
-                    }
-                    return message;
-                };
-
-                /**
-                 * Creates a plain object from a SessionUserEvent message. Also converts values to other types if specified.
-                 * @function toObject
-                 * @memberof LiftLog.Ui.Models.SessionUserEvent
-                 * @static
-                 * @param {LiftLog.Ui.Models.SessionUserEvent} message SessionUserEvent
-                 * @param {$protobuf.IConversionOptions} [options] Conversion options
-                 * @returns {Object.<string,*>} Plain object
-                 */
-                SessionUserEvent.toObject = function toObject(message, options) {
-                    if (!options)
-                        options = {};
-                    let object = {};
-                    if (options.defaults)
-                        object.session = null;
-                    if (message.session != null && message.hasOwnProperty("session"))
-                        object.session = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.toObject(message.session, options);
-                    return object;
-                };
-
-                /**
-                 * Converts this SessionUserEvent to JSON.
-                 * @function toJSON
-                 * @memberof LiftLog.Ui.Models.SessionUserEvent
-                 * @instance
-                 * @returns {Object.<string,*>} JSON object
-                 */
-                SessionUserEvent.prototype.toJSON = function toJSON() {
-                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                };
-
-                /**
-                 * Gets the default type url for SessionUserEvent
-                 * @function getTypeUrl
-                 * @memberof LiftLog.Ui.Models.SessionUserEvent
-                 * @static
-                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                 * @returns {string} The default type url
-                 */
-                SessionUserEvent.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-                    if (typeUrlPrefix === undefined) {
-                        typeUrlPrefix = "type.googleapis.com";
-                    }
-                    return typeUrlPrefix + "/LiftLog.Ui.Models.SessionUserEvent";
-                };
-
-                return SessionUserEvent;
-            })();
-
-            Models.RemovedSessionUserEvent = (function() {
-
-                /**
-                 * Properties of a RemovedSessionUserEvent.
-                 * @memberof LiftLog.Ui.Models
-                 * @interface IRemovedSessionUserEvent
-                 * @property {LiftLog.Ui.Models.IUuidDao|null} [sessionId] RemovedSessionUserEvent sessionId
-                 */
-
-                /**
-                 * Constructs a new RemovedSessionUserEvent.
-                 * @memberof LiftLog.Ui.Models
-                 * @classdesc Represents a RemovedSessionUserEvent.
-                 * @implements IRemovedSessionUserEvent
-                 * @constructor
-                 * @param {LiftLog.Ui.Models.IRemovedSessionUserEvent=} [properties] Properties to set
-                 */
-                function RemovedSessionUserEvent(properties) {
-                    if (properties)
-                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                            if (properties[keys[i]] != null)
-                                this[keys[i]] = properties[keys[i]];
-                }
-
-                /**
-                 * RemovedSessionUserEvent sessionId.
-                 * @member {LiftLog.Ui.Models.IUuidDao|null|undefined} sessionId
-                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
-                 * @instance
-                 */
-                RemovedSessionUserEvent.prototype.sessionId = null;
-
-                /**
-                 * Creates a new RemovedSessionUserEvent instance using the specified properties.
-                 * @function create
-                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
-                 * @static
-                 * @param {LiftLog.Ui.Models.IRemovedSessionUserEvent=} [properties] Properties to set
-                 * @returns {LiftLog.Ui.Models.RemovedSessionUserEvent} RemovedSessionUserEvent instance
-                 */
-                RemovedSessionUserEvent.create = function create(properties) {
-                    return new RemovedSessionUserEvent(properties);
-                };
-
-                /**
-                 * Encodes the specified RemovedSessionUserEvent message. Does not implicitly {@link LiftLog.Ui.Models.RemovedSessionUserEvent.verify|verify} messages.
-                 * @function encode
-                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
-                 * @static
-                 * @param {LiftLog.Ui.Models.IRemovedSessionUserEvent} message RemovedSessionUserEvent message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                RemovedSessionUserEvent.encode = function encode(message, writer) {
-                    if (!writer)
-                        writer = $Writer.create();
-                    if (message.sessionId != null && Object.hasOwnProperty.call(message, "sessionId"))
-                        $root.LiftLog.Ui.Models.UuidDao.encode(message.sessionId, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                    return writer;
-                };
-
-                /**
-                 * Encodes the specified RemovedSessionUserEvent message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.RemovedSessionUserEvent.verify|verify} messages.
-                 * @function encodeDelimited
-                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
-                 * @static
-                 * @param {LiftLog.Ui.Models.IRemovedSessionUserEvent} message RemovedSessionUserEvent message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                RemovedSessionUserEvent.encodeDelimited = function encodeDelimited(message, writer) {
-                    return this.encode(message, writer).ldelim();
-                };
-
-                /**
-                 * Decodes a RemovedSessionUserEvent message from the specified reader or buffer.
-                 * @function decode
-                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @param {number} [length] Message length if known beforehand
-                 * @returns {LiftLog.Ui.Models.RemovedSessionUserEvent} RemovedSessionUserEvent
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                RemovedSessionUserEvent.decode = function decode(reader, length, error) {
-                    if (!(reader instanceof $Reader))
-                        reader = $Reader.create(reader);
-                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.RemovedSessionUserEvent();
-                    while (reader.pos < end) {
-                        let tag = reader.uint32();
-                        if (tag === error)
-                            break;
-                        switch (tag >>> 3) {
-                        case 1: {
-                                message.sessionId = $root.LiftLog.Ui.Models.UuidDao.decode(reader, reader.uint32());
-                                break;
-                            }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
-                        }
-                    }
-                    return message;
-                };
-
-                /**
-                 * Decodes a RemovedSessionUserEvent message from the specified reader or buffer, length delimited.
-                 * @function decodeDelimited
-                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @returns {LiftLog.Ui.Models.RemovedSessionUserEvent} RemovedSessionUserEvent
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                RemovedSessionUserEvent.decodeDelimited = function decodeDelimited(reader) {
-                    if (!(reader instanceof $Reader))
-                        reader = new $Reader(reader);
-                    return this.decode(reader, reader.uint32());
-                };
-
-                /**
-                 * Verifies a RemovedSessionUserEvent message.
-                 * @function verify
-                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
-                 * @static
-                 * @param {Object.<string,*>} message Plain object to verify
-                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                 */
-                RemovedSessionUserEvent.verify = function verify(message) {
-                    if (typeof message !== "object" || message === null)
-                        return "object expected";
-                    if (message.sessionId != null && message.hasOwnProperty("sessionId")) {
-                        let error = $root.LiftLog.Ui.Models.UuidDao.verify(message.sessionId);
-                        if (error)
-                            return "sessionId." + error;
-                    }
-                    return null;
-                };
-
-                /**
-                 * Creates a RemovedSessionUserEvent message from a plain object. Also converts values to their respective internal types.
-                 * @function fromObject
-                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
-                 * @static
-                 * @param {Object.<string,*>} object Plain object
-                 * @returns {LiftLog.Ui.Models.RemovedSessionUserEvent} RemovedSessionUserEvent
-                 */
-                RemovedSessionUserEvent.fromObject = function fromObject(object) {
-                    if (object instanceof $root.LiftLog.Ui.Models.RemovedSessionUserEvent)
-                        return object;
-                    let message = new $root.LiftLog.Ui.Models.RemovedSessionUserEvent();
-                    if (object.sessionId != null) {
-                        if (typeof object.sessionId !== "object")
-                            throw TypeError(".LiftLog.Ui.Models.RemovedSessionUserEvent.sessionId: object expected");
-                        message.sessionId = $root.LiftLog.Ui.Models.UuidDao.fromObject(object.sessionId);
-                    }
-                    return message;
-                };
-
-                /**
-                 * Creates a plain object from a RemovedSessionUserEvent message. Also converts values to other types if specified.
-                 * @function toObject
-                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
-                 * @static
-                 * @param {LiftLog.Ui.Models.RemovedSessionUserEvent} message RemovedSessionUserEvent
-                 * @param {$protobuf.IConversionOptions} [options] Conversion options
-                 * @returns {Object.<string,*>} Plain object
-                 */
-                RemovedSessionUserEvent.toObject = function toObject(message, options) {
-                    if (!options)
-                        options = {};
-                    let object = {};
-                    if (options.defaults)
-                        object.sessionId = null;
-                    if (message.sessionId != null && message.hasOwnProperty("sessionId"))
-                        object.sessionId = $root.LiftLog.Ui.Models.UuidDao.toObject(message.sessionId, options);
-                    return object;
-                };
-
-                /**
-                 * Converts this RemovedSessionUserEvent to JSON.
-                 * @function toJSON
-                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
-                 * @instance
-                 * @returns {Object.<string,*>} JSON object
-                 */
-                RemovedSessionUserEvent.prototype.toJSON = function toJSON() {
-                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                };
-
-                /**
-                 * Gets the default type url for RemovedSessionUserEvent
-                 * @function getTypeUrl
-                 * @memberof LiftLog.Ui.Models.RemovedSessionUserEvent
-                 * @static
-                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                 * @returns {string} The default type url
-                 */
-                RemovedSessionUserEvent.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-                    if (typeUrlPrefix === undefined) {
-                        typeUrlPrefix = "type.googleapis.com";
-                    }
-                    return typeUrlPrefix + "/LiftLog.Ui.Models.RemovedSessionUserEvent";
-                };
-
-                return RemovedSessionUserEvent;
-            })();
-
-            Models.InboxMessageDao = (function() {
-
-                /**
-                 * Properties of an InboxMessageDao.
-                 * @memberof LiftLog.Ui.Models
-                 * @interface IInboxMessageDao
-                 * @property {LiftLog.Ui.Models.IUuidDao|null} [fromUserId] InboxMessageDao fromUserId
-                 * @property {LiftLog.Ui.Models.IFollowRequestDao|null} [followRequest] InboxMessageDao followRequest
-                 * @property {LiftLog.Ui.Models.IFollowResponseDao|null} [followResponse] InboxMessageDao followResponse
-                 * @property {LiftLog.Ui.Models.IUnFollowNotification|null} [unfollowNotification] InboxMessageDao unfollowNotification
-                 * @property {Uint8Array|null} [signature] InboxMessageDao signature
-                 */
-
-                /**
-                 * Constructs a new InboxMessageDao.
-                 * @memberof LiftLog.Ui.Models
-                 * @classdesc Represents an InboxMessageDao.
-                 * @implements IInboxMessageDao
-                 * @constructor
-                 * @param {LiftLog.Ui.Models.IInboxMessageDao=} [properties] Properties to set
-                 */
-                function InboxMessageDao(properties) {
-                    if (properties)
-                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                            if (properties[keys[i]] != null)
-                                this[keys[i]] = properties[keys[i]];
-                }
-
-                /**
-                 * InboxMessageDao fromUserId.
-                 * @member {LiftLog.Ui.Models.IUuidDao|null|undefined} fromUserId
-                 * @memberof LiftLog.Ui.Models.InboxMessageDao
-                 * @instance
-                 */
-                InboxMessageDao.prototype.fromUserId = null;
-
-                /**
-                 * InboxMessageDao followRequest.
-                 * @member {LiftLog.Ui.Models.IFollowRequestDao|null|undefined} followRequest
-                 * @memberof LiftLog.Ui.Models.InboxMessageDao
-                 * @instance
-                 */
-                InboxMessageDao.prototype.followRequest = null;
-
-                /**
-                 * InboxMessageDao followResponse.
-                 * @member {LiftLog.Ui.Models.IFollowResponseDao|null|undefined} followResponse
-                 * @memberof LiftLog.Ui.Models.InboxMessageDao
-                 * @instance
-                 */
-                InboxMessageDao.prototype.followResponse = null;
-
-                /**
-                 * InboxMessageDao unfollowNotification.
-                 * @member {LiftLog.Ui.Models.IUnFollowNotification|null|undefined} unfollowNotification
-                 * @memberof LiftLog.Ui.Models.InboxMessageDao
-                 * @instance
-                 */
-                InboxMessageDao.prototype.unfollowNotification = null;
-
-                /**
-                 * InboxMessageDao signature.
-                 * @member {Uint8Array} signature
-                 * @memberof LiftLog.Ui.Models.InboxMessageDao
-                 * @instance
-                 */
-                InboxMessageDao.prototype.signature = $util.newBuffer([]);
-
-                // OneOf field names bound to virtual getters and setters
-                let $oneOfFields;
-
-                /**
-                 * InboxMessageDao messagePayload.
-                 * @member {"followRequest"|"followResponse"|"unfollowNotification"|undefined} messagePayload
-                 * @memberof LiftLog.Ui.Models.InboxMessageDao
-                 * @instance
-                 */
-                Object.defineProperty(InboxMessageDao.prototype, "messagePayload", {
-                    get: $util.oneOfGetter($oneOfFields = ["followRequest", "followResponse", "unfollowNotification"]),
-                    set: $util.oneOfSetter($oneOfFields)
-                });
-
-                /**
-                 * Creates a new InboxMessageDao instance using the specified properties.
-                 * @function create
-                 * @memberof LiftLog.Ui.Models.InboxMessageDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.IInboxMessageDao=} [properties] Properties to set
-                 * @returns {LiftLog.Ui.Models.InboxMessageDao} InboxMessageDao instance
-                 */
-                InboxMessageDao.create = function create(properties) {
-                    return new InboxMessageDao(properties);
-                };
-
-                /**
-                 * Encodes the specified InboxMessageDao message. Does not implicitly {@link LiftLog.Ui.Models.InboxMessageDao.verify|verify} messages.
-                 * @function encode
-                 * @memberof LiftLog.Ui.Models.InboxMessageDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.IInboxMessageDao} message InboxMessageDao message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                InboxMessageDao.encode = function encode(message, writer) {
-                    if (!writer)
-                        writer = $Writer.create();
-                    if (message.fromUserId != null && Object.hasOwnProperty.call(message, "fromUserId"))
-                        $root.LiftLog.Ui.Models.UuidDao.encode(message.fromUserId, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                    if (message.followRequest != null && Object.hasOwnProperty.call(message, "followRequest"))
-                        $root.LiftLog.Ui.Models.FollowRequestDao.encode(message.followRequest, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-                    if (message.followResponse != null && Object.hasOwnProperty.call(message, "followResponse"))
-                        $root.LiftLog.Ui.Models.FollowResponseDao.encode(message.followResponse, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
-                    if (message.unfollowNotification != null && Object.hasOwnProperty.call(message, "unfollowNotification"))
-                        $root.LiftLog.Ui.Models.UnFollowNotification.encode(message.unfollowNotification, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-                    if (message.signature != null && Object.hasOwnProperty.call(message, "signature"))
-                        writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.signature);
-                    return writer;
-                };
-
-                /**
-                 * Encodes the specified InboxMessageDao message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.InboxMessageDao.verify|verify} messages.
-                 * @function encodeDelimited
-                 * @memberof LiftLog.Ui.Models.InboxMessageDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.IInboxMessageDao} message InboxMessageDao message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                InboxMessageDao.encodeDelimited = function encodeDelimited(message, writer) {
-                    return this.encode(message, writer).ldelim();
-                };
-
-                /**
-                 * Decodes an InboxMessageDao message from the specified reader or buffer.
-                 * @function decode
-                 * @memberof LiftLog.Ui.Models.InboxMessageDao
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @param {number} [length] Message length if known beforehand
-                 * @returns {LiftLog.Ui.Models.InboxMessageDao} InboxMessageDao
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                InboxMessageDao.decode = function decode(reader, length, error) {
-                    if (!(reader instanceof $Reader))
-                        reader = $Reader.create(reader);
-                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.InboxMessageDao();
-                    while (reader.pos < end) {
-                        let tag = reader.uint32();
-                        if (tag === error)
-                            break;
-                        switch (tag >>> 3) {
-                        case 1: {
-                                message.fromUserId = $root.LiftLog.Ui.Models.UuidDao.decode(reader, reader.uint32());
-                                break;
-                            }
-                        case 2: {
-                                message.followRequest = $root.LiftLog.Ui.Models.FollowRequestDao.decode(reader, reader.uint32());
-                                break;
-                            }
-                        case 3: {
-                                message.followResponse = $root.LiftLog.Ui.Models.FollowResponseDao.decode(reader, reader.uint32());
-                                break;
-                            }
-                        case 4: {
-                                message.unfollowNotification = $root.LiftLog.Ui.Models.UnFollowNotification.decode(reader, reader.uint32());
-                                break;
-                            }
-                        case 5: {
-                                message.signature = reader.bytes();
-                                break;
-                            }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
-                        }
-                    }
-                    return message;
-                };
-
-                /**
-                 * Decodes an InboxMessageDao message from the specified reader or buffer, length delimited.
-                 * @function decodeDelimited
-                 * @memberof LiftLog.Ui.Models.InboxMessageDao
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @returns {LiftLog.Ui.Models.InboxMessageDao} InboxMessageDao
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                InboxMessageDao.decodeDelimited = function decodeDelimited(reader) {
-                    if (!(reader instanceof $Reader))
-                        reader = new $Reader(reader);
-                    return this.decode(reader, reader.uint32());
-                };
-
-                /**
-                 * Verifies an InboxMessageDao message.
-                 * @function verify
-                 * @memberof LiftLog.Ui.Models.InboxMessageDao
-                 * @static
-                 * @param {Object.<string,*>} message Plain object to verify
-                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                 */
-                InboxMessageDao.verify = function verify(message) {
-                    if (typeof message !== "object" || message === null)
-                        return "object expected";
-                    let properties = {};
-                    if (message.fromUserId != null && message.hasOwnProperty("fromUserId")) {
-                        let error = $root.LiftLog.Ui.Models.UuidDao.verify(message.fromUserId);
-                        if (error)
-                            return "fromUserId." + error;
-                    }
-                    if (message.followRequest != null && message.hasOwnProperty("followRequest")) {
-                        properties.messagePayload = 1;
-                        {
-                            let error = $root.LiftLog.Ui.Models.FollowRequestDao.verify(message.followRequest);
-                            if (error)
-                                return "followRequest." + error;
-                        }
-                    }
-                    if (message.followResponse != null && message.hasOwnProperty("followResponse")) {
-                        if (properties.messagePayload === 1)
-                            return "messagePayload: multiple values";
-                        properties.messagePayload = 1;
-                        {
-                            let error = $root.LiftLog.Ui.Models.FollowResponseDao.verify(message.followResponse);
-                            if (error)
-                                return "followResponse." + error;
-                        }
-                    }
-                    if (message.unfollowNotification != null && message.hasOwnProperty("unfollowNotification")) {
-                        if (properties.messagePayload === 1)
-                            return "messagePayload: multiple values";
-                        properties.messagePayload = 1;
-                        {
-                            let error = $root.LiftLog.Ui.Models.UnFollowNotification.verify(message.unfollowNotification);
-                            if (error)
-                                return "unfollowNotification." + error;
-                        }
-                    }
-                    if (message.signature != null && message.hasOwnProperty("signature"))
-                        if (!(message.signature && typeof message.signature.length === "number" || $util.isString(message.signature)))
-                            return "signature: buffer expected";
-                    return null;
-                };
-
-                /**
-                 * Creates an InboxMessageDao message from a plain object. Also converts values to their respective internal types.
-                 * @function fromObject
-                 * @memberof LiftLog.Ui.Models.InboxMessageDao
-                 * @static
-                 * @param {Object.<string,*>} object Plain object
-                 * @returns {LiftLog.Ui.Models.InboxMessageDao} InboxMessageDao
-                 */
-                InboxMessageDao.fromObject = function fromObject(object) {
-                    if (object instanceof $root.LiftLog.Ui.Models.InboxMessageDao)
-                        return object;
-                    let message = new $root.LiftLog.Ui.Models.InboxMessageDao();
-                    if (object.fromUserId != null) {
-                        if (typeof object.fromUserId !== "object")
-                            throw TypeError(".LiftLog.Ui.Models.InboxMessageDao.fromUserId: object expected");
-                        message.fromUserId = $root.LiftLog.Ui.Models.UuidDao.fromObject(object.fromUserId);
-                    }
-                    if (object.followRequest != null) {
-                        if (typeof object.followRequest !== "object")
-                            throw TypeError(".LiftLog.Ui.Models.InboxMessageDao.followRequest: object expected");
-                        message.followRequest = $root.LiftLog.Ui.Models.FollowRequestDao.fromObject(object.followRequest);
-                    }
-                    if (object.followResponse != null) {
-                        if (typeof object.followResponse !== "object")
-                            throw TypeError(".LiftLog.Ui.Models.InboxMessageDao.followResponse: object expected");
-                        message.followResponse = $root.LiftLog.Ui.Models.FollowResponseDao.fromObject(object.followResponse);
-                    }
-                    if (object.unfollowNotification != null) {
-                        if (typeof object.unfollowNotification !== "object")
-                            throw TypeError(".LiftLog.Ui.Models.InboxMessageDao.unfollowNotification: object expected");
-                        message.unfollowNotification = $root.LiftLog.Ui.Models.UnFollowNotification.fromObject(object.unfollowNotification);
-                    }
-                    if (object.signature != null)
-                        if (typeof object.signature === "string")
-                            $util.base64.decode(object.signature, message.signature = $util.newBuffer($util.base64.length(object.signature)), 0);
-                        else if (object.signature.length >= 0)
-                            message.signature = object.signature;
-                    return message;
-                };
-
-                /**
-                 * Creates a plain object from an InboxMessageDao message. Also converts values to other types if specified.
-                 * @function toObject
-                 * @memberof LiftLog.Ui.Models.InboxMessageDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.InboxMessageDao} message InboxMessageDao
-                 * @param {$protobuf.IConversionOptions} [options] Conversion options
-                 * @returns {Object.<string,*>} Plain object
-                 */
-                InboxMessageDao.toObject = function toObject(message, options) {
-                    if (!options)
-                        options = {};
-                    let object = {};
-                    if (options.defaults) {
-                        object.fromUserId = null;
-                        if (options.bytes === String)
-                            object.signature = "";
-                        else {
-                            object.signature = [];
-                            if (options.bytes !== Array)
-                                object.signature = $util.newBuffer(object.signature);
-                        }
-                    }
-                    if (message.fromUserId != null && message.hasOwnProperty("fromUserId"))
-                        object.fromUserId = $root.LiftLog.Ui.Models.UuidDao.toObject(message.fromUserId, options);
-                    if (message.followRequest != null && message.hasOwnProperty("followRequest")) {
-                        object.followRequest = $root.LiftLog.Ui.Models.FollowRequestDao.toObject(message.followRequest, options);
-                        if (options.oneofs)
-                            object.messagePayload = "followRequest";
-                    }
-                    if (message.followResponse != null && message.hasOwnProperty("followResponse")) {
-                        object.followResponse = $root.LiftLog.Ui.Models.FollowResponseDao.toObject(message.followResponse, options);
-                        if (options.oneofs)
-                            object.messagePayload = "followResponse";
-                    }
-                    if (message.unfollowNotification != null && message.hasOwnProperty("unfollowNotification")) {
-                        object.unfollowNotification = $root.LiftLog.Ui.Models.UnFollowNotification.toObject(message.unfollowNotification, options);
-                        if (options.oneofs)
-                            object.messagePayload = "unfollowNotification";
-                    }
-                    if (message.signature != null && message.hasOwnProperty("signature"))
-                        object.signature = options.bytes === String ? $util.base64.encode(message.signature, 0, message.signature.length) : options.bytes === Array ? Array.prototype.slice.call(message.signature) : message.signature;
-                    return object;
-                };
-
-                /**
-                 * Converts this InboxMessageDao to JSON.
-                 * @function toJSON
-                 * @memberof LiftLog.Ui.Models.InboxMessageDao
-                 * @instance
-                 * @returns {Object.<string,*>} JSON object
-                 */
-                InboxMessageDao.prototype.toJSON = function toJSON() {
-                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                };
-
-                /**
-                 * Gets the default type url for InboxMessageDao
-                 * @function getTypeUrl
-                 * @memberof LiftLog.Ui.Models.InboxMessageDao
-                 * @static
-                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                 * @returns {string} The default type url
-                 */
-                InboxMessageDao.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-                    if (typeUrlPrefix === undefined) {
-                        typeUrlPrefix = "type.googleapis.com";
-                    }
-                    return typeUrlPrefix + "/LiftLog.Ui.Models.InboxMessageDao";
-                };
-
-                return InboxMessageDao;
-            })();
-
-            Models.FollowRequestDao = (function() {
-
-                /**
-                 * Properties of a FollowRequestDao.
-                 * @memberof LiftLog.Ui.Models
-                 * @interface IFollowRequestDao
-                 * @property {google.protobuf.IStringValue|null} [name] FollowRequestDao name
-                 */
-
-                /**
-                 * Constructs a new FollowRequestDao.
-                 * @memberof LiftLog.Ui.Models
-                 * @classdesc Represents a FollowRequestDao.
-                 * @implements IFollowRequestDao
-                 * @constructor
-                 * @param {LiftLog.Ui.Models.IFollowRequestDao=} [properties] Properties to set
-                 */
-                function FollowRequestDao(properties) {
-                    if (properties)
-                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                            if (properties[keys[i]] != null)
-                                this[keys[i]] = properties[keys[i]];
-                }
-
-                /**
-                 * FollowRequestDao name.
-                 * @member {google.protobuf.IStringValue|null|undefined} name
-                 * @memberof LiftLog.Ui.Models.FollowRequestDao
-                 * @instance
-                 */
-                FollowRequestDao.prototype.name = null;
-
-                // OneOf field names bound to virtual getters and setters
-                let $oneOfFields;
-
-                /**
-                 * FollowRequestDao _name.
-                 * @member {"name"|undefined} _name
-                 * @memberof LiftLog.Ui.Models.FollowRequestDao
-                 * @instance
-                 */
-                Object.defineProperty(FollowRequestDao.prototype, "_name", {
-                    get: $util.oneOfGetter($oneOfFields = ["name"]),
-                    set: $util.oneOfSetter($oneOfFields)
-                });
-
-                /**
-                 * Creates a new FollowRequestDao instance using the specified properties.
-                 * @function create
-                 * @memberof LiftLog.Ui.Models.FollowRequestDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.IFollowRequestDao=} [properties] Properties to set
-                 * @returns {LiftLog.Ui.Models.FollowRequestDao} FollowRequestDao instance
-                 */
-                FollowRequestDao.create = function create(properties) {
-                    return new FollowRequestDao(properties);
-                };
-
-                /**
-                 * Encodes the specified FollowRequestDao message. Does not implicitly {@link LiftLog.Ui.Models.FollowRequestDao.verify|verify} messages.
-                 * @function encode
-                 * @memberof LiftLog.Ui.Models.FollowRequestDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.IFollowRequestDao} message FollowRequestDao message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                FollowRequestDao.encode = function encode(message, writer) {
-                    if (!writer)
-                        writer = $Writer.create();
-                    if (message.name != null && Object.hasOwnProperty.call(message, "name"))
-                        $root.google.protobuf.StringValue.encode(message.name, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                    return writer;
-                };
-
-                /**
-                 * Encodes the specified FollowRequestDao message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.FollowRequestDao.verify|verify} messages.
-                 * @function encodeDelimited
-                 * @memberof LiftLog.Ui.Models.FollowRequestDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.IFollowRequestDao} message FollowRequestDao message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                FollowRequestDao.encodeDelimited = function encodeDelimited(message, writer) {
-                    return this.encode(message, writer).ldelim();
-                };
-
-                /**
-                 * Decodes a FollowRequestDao message from the specified reader or buffer.
-                 * @function decode
-                 * @memberof LiftLog.Ui.Models.FollowRequestDao
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @param {number} [length] Message length if known beforehand
-                 * @returns {LiftLog.Ui.Models.FollowRequestDao} FollowRequestDao
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                FollowRequestDao.decode = function decode(reader, length, error) {
-                    if (!(reader instanceof $Reader))
-                        reader = $Reader.create(reader);
-                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.FollowRequestDao();
-                    while (reader.pos < end) {
-                        let tag = reader.uint32();
-                        if (tag === error)
-                            break;
-                        switch (tag >>> 3) {
-                        case 1: {
-                                message.name = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
-                                break;
-                            }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
-                        }
-                    }
-                    return message;
-                };
-
-                /**
-                 * Decodes a FollowRequestDao message from the specified reader or buffer, length delimited.
-                 * @function decodeDelimited
-                 * @memberof LiftLog.Ui.Models.FollowRequestDao
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @returns {LiftLog.Ui.Models.FollowRequestDao} FollowRequestDao
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                FollowRequestDao.decodeDelimited = function decodeDelimited(reader) {
-                    if (!(reader instanceof $Reader))
-                        reader = new $Reader(reader);
-                    return this.decode(reader, reader.uint32());
-                };
-
-                /**
-                 * Verifies a FollowRequestDao message.
-                 * @function verify
-                 * @memberof LiftLog.Ui.Models.FollowRequestDao
-                 * @static
-                 * @param {Object.<string,*>} message Plain object to verify
-                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                 */
-                FollowRequestDao.verify = function verify(message) {
-                    if (typeof message !== "object" || message === null)
-                        return "object expected";
-                    let properties = {};
-                    if (message.name != null && message.hasOwnProperty("name")) {
-                        properties._name = 1;
-                        {
-                            let error = $root.google.protobuf.StringValue.verify(message.name);
-                            if (error)
-                                return "name." + error;
-                        }
-                    }
-                    return null;
-                };
-
-                /**
-                 * Creates a FollowRequestDao message from a plain object. Also converts values to their respective internal types.
-                 * @function fromObject
-                 * @memberof LiftLog.Ui.Models.FollowRequestDao
-                 * @static
-                 * @param {Object.<string,*>} object Plain object
-                 * @returns {LiftLog.Ui.Models.FollowRequestDao} FollowRequestDao
-                 */
-                FollowRequestDao.fromObject = function fromObject(object) {
-                    if (object instanceof $root.LiftLog.Ui.Models.FollowRequestDao)
-                        return object;
-                    let message = new $root.LiftLog.Ui.Models.FollowRequestDao();
-                    if (object.name != null) {
-                        if (typeof object.name !== "object")
-                            throw TypeError(".LiftLog.Ui.Models.FollowRequestDao.name: object expected");
-                        message.name = $root.google.protobuf.StringValue.fromObject(object.name);
-                    }
-                    return message;
-                };
-
-                /**
-                 * Creates a plain object from a FollowRequestDao message. Also converts values to other types if specified.
-                 * @function toObject
-                 * @memberof LiftLog.Ui.Models.FollowRequestDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.FollowRequestDao} message FollowRequestDao
-                 * @param {$protobuf.IConversionOptions} [options] Conversion options
-                 * @returns {Object.<string,*>} Plain object
-                 */
-                FollowRequestDao.toObject = function toObject(message, options) {
-                    if (!options)
-                        options = {};
-                    let object = {};
-                    if (message.name != null && message.hasOwnProperty("name")) {
-                        object.name = $root.google.protobuf.StringValue.toObject(message.name, options);
-                        if (options.oneofs)
-                            object._name = "name";
-                    }
-                    return object;
-                };
-
-                /**
-                 * Converts this FollowRequestDao to JSON.
-                 * @function toJSON
-                 * @memberof LiftLog.Ui.Models.FollowRequestDao
-                 * @instance
-                 * @returns {Object.<string,*>} JSON object
-                 */
-                FollowRequestDao.prototype.toJSON = function toJSON() {
-                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                };
-
-                /**
-                 * Gets the default type url for FollowRequestDao
-                 * @function getTypeUrl
-                 * @memberof LiftLog.Ui.Models.FollowRequestDao
-                 * @static
-                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                 * @returns {string} The default type url
-                 */
-                FollowRequestDao.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-                    if (typeUrlPrefix === undefined) {
-                        typeUrlPrefix = "type.googleapis.com";
-                    }
-                    return typeUrlPrefix + "/LiftLog.Ui.Models.FollowRequestDao";
-                };
-
-                return FollowRequestDao;
-            })();
-
-            Models.FollowResponseDao = (function() {
-
-                /**
-                 * Properties of a FollowResponseDao.
-                 * @memberof LiftLog.Ui.Models
-                 * @interface IFollowResponseDao
-                 * @property {LiftLog.Ui.Models.IFollowResponseAcceptedDao|null} [accepted] FollowResponseDao accepted
-                 * @property {LiftLog.Ui.Models.IFollowResponseRejectedDao|null} [rejected] FollowResponseDao rejected
-                 */
-
-                /**
-                 * Constructs a new FollowResponseDao.
-                 * @memberof LiftLog.Ui.Models
-                 * @classdesc Represents a FollowResponseDao.
-                 * @implements IFollowResponseDao
-                 * @constructor
-                 * @param {LiftLog.Ui.Models.IFollowResponseDao=} [properties] Properties to set
-                 */
-                function FollowResponseDao(properties) {
-                    if (properties)
-                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                            if (properties[keys[i]] != null)
-                                this[keys[i]] = properties[keys[i]];
-                }
-
-                /**
-                 * FollowResponseDao accepted.
-                 * @member {LiftLog.Ui.Models.IFollowResponseAcceptedDao|null|undefined} accepted
-                 * @memberof LiftLog.Ui.Models.FollowResponseDao
-                 * @instance
-                 */
-                FollowResponseDao.prototype.accepted = null;
-
-                /**
-                 * FollowResponseDao rejected.
-                 * @member {LiftLog.Ui.Models.IFollowResponseRejectedDao|null|undefined} rejected
-                 * @memberof LiftLog.Ui.Models.FollowResponseDao
-                 * @instance
-                 */
-                FollowResponseDao.prototype.rejected = null;
-
-                // OneOf field names bound to virtual getters and setters
-                let $oneOfFields;
-
-                /**
-                 * FollowResponseDao responsePayload.
-                 * @member {"accepted"|"rejected"|undefined} responsePayload
-                 * @memberof LiftLog.Ui.Models.FollowResponseDao
-                 * @instance
-                 */
-                Object.defineProperty(FollowResponseDao.prototype, "responsePayload", {
-                    get: $util.oneOfGetter($oneOfFields = ["accepted", "rejected"]),
-                    set: $util.oneOfSetter($oneOfFields)
-                });
-
-                /**
-                 * Creates a new FollowResponseDao instance using the specified properties.
-                 * @function create
-                 * @memberof LiftLog.Ui.Models.FollowResponseDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.IFollowResponseDao=} [properties] Properties to set
-                 * @returns {LiftLog.Ui.Models.FollowResponseDao} FollowResponseDao instance
-                 */
-                FollowResponseDao.create = function create(properties) {
-                    return new FollowResponseDao(properties);
-                };
-
-                /**
-                 * Encodes the specified FollowResponseDao message. Does not implicitly {@link LiftLog.Ui.Models.FollowResponseDao.verify|verify} messages.
-                 * @function encode
-                 * @memberof LiftLog.Ui.Models.FollowResponseDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.IFollowResponseDao} message FollowResponseDao message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                FollowResponseDao.encode = function encode(message, writer) {
-                    if (!writer)
-                        writer = $Writer.create();
-                    if (message.accepted != null && Object.hasOwnProperty.call(message, "accepted"))
-                        $root.LiftLog.Ui.Models.FollowResponseAcceptedDao.encode(message.accepted, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                    if (message.rejected != null && Object.hasOwnProperty.call(message, "rejected"))
-                        $root.LiftLog.Ui.Models.FollowResponseRejectedDao.encode(message.rejected, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-                    return writer;
-                };
-
-                /**
-                 * Encodes the specified FollowResponseDao message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.FollowResponseDao.verify|verify} messages.
-                 * @function encodeDelimited
-                 * @memberof LiftLog.Ui.Models.FollowResponseDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.IFollowResponseDao} message FollowResponseDao message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                FollowResponseDao.encodeDelimited = function encodeDelimited(message, writer) {
-                    return this.encode(message, writer).ldelim();
-                };
-
-                /**
-                 * Decodes a FollowResponseDao message from the specified reader or buffer.
-                 * @function decode
-                 * @memberof LiftLog.Ui.Models.FollowResponseDao
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @param {number} [length] Message length if known beforehand
-                 * @returns {LiftLog.Ui.Models.FollowResponseDao} FollowResponseDao
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                FollowResponseDao.decode = function decode(reader, length, error) {
-                    if (!(reader instanceof $Reader))
-                        reader = $Reader.create(reader);
-                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.FollowResponseDao();
-                    while (reader.pos < end) {
-                        let tag = reader.uint32();
-                        if (tag === error)
-                            break;
-                        switch (tag >>> 3) {
-                        case 1: {
-                                message.accepted = $root.LiftLog.Ui.Models.FollowResponseAcceptedDao.decode(reader, reader.uint32());
-                                break;
-                            }
-                        case 2: {
-                                message.rejected = $root.LiftLog.Ui.Models.FollowResponseRejectedDao.decode(reader, reader.uint32());
-                                break;
-                            }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
-                        }
-                    }
-                    return message;
-                };
-
-                /**
-                 * Decodes a FollowResponseDao message from the specified reader or buffer, length delimited.
-                 * @function decodeDelimited
-                 * @memberof LiftLog.Ui.Models.FollowResponseDao
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @returns {LiftLog.Ui.Models.FollowResponseDao} FollowResponseDao
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                FollowResponseDao.decodeDelimited = function decodeDelimited(reader) {
-                    if (!(reader instanceof $Reader))
-                        reader = new $Reader(reader);
-                    return this.decode(reader, reader.uint32());
-                };
-
-                /**
-                 * Verifies a FollowResponseDao message.
-                 * @function verify
-                 * @memberof LiftLog.Ui.Models.FollowResponseDao
-                 * @static
-                 * @param {Object.<string,*>} message Plain object to verify
-                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                 */
-                FollowResponseDao.verify = function verify(message) {
-                    if (typeof message !== "object" || message === null)
-                        return "object expected";
-                    let properties = {};
-                    if (message.accepted != null && message.hasOwnProperty("accepted")) {
-                        properties.responsePayload = 1;
-                        {
-                            let error = $root.LiftLog.Ui.Models.FollowResponseAcceptedDao.verify(message.accepted);
-                            if (error)
-                                return "accepted." + error;
-                        }
-                    }
-                    if (message.rejected != null && message.hasOwnProperty("rejected")) {
-                        if (properties.responsePayload === 1)
-                            return "responsePayload: multiple values";
-                        properties.responsePayload = 1;
-                        {
-                            let error = $root.LiftLog.Ui.Models.FollowResponseRejectedDao.verify(message.rejected);
-                            if (error)
-                                return "rejected." + error;
-                        }
-                    }
-                    return null;
-                };
-
-                /**
-                 * Creates a FollowResponseDao message from a plain object. Also converts values to their respective internal types.
-                 * @function fromObject
-                 * @memberof LiftLog.Ui.Models.FollowResponseDao
-                 * @static
-                 * @param {Object.<string,*>} object Plain object
-                 * @returns {LiftLog.Ui.Models.FollowResponseDao} FollowResponseDao
-                 */
-                FollowResponseDao.fromObject = function fromObject(object) {
-                    if (object instanceof $root.LiftLog.Ui.Models.FollowResponseDao)
-                        return object;
-                    let message = new $root.LiftLog.Ui.Models.FollowResponseDao();
-                    if (object.accepted != null) {
-                        if (typeof object.accepted !== "object")
-                            throw TypeError(".LiftLog.Ui.Models.FollowResponseDao.accepted: object expected");
-                        message.accepted = $root.LiftLog.Ui.Models.FollowResponseAcceptedDao.fromObject(object.accepted);
-                    }
-                    if (object.rejected != null) {
-                        if (typeof object.rejected !== "object")
-                            throw TypeError(".LiftLog.Ui.Models.FollowResponseDao.rejected: object expected");
-                        message.rejected = $root.LiftLog.Ui.Models.FollowResponseRejectedDao.fromObject(object.rejected);
-                    }
-                    return message;
-                };
-
-                /**
-                 * Creates a plain object from a FollowResponseDao message. Also converts values to other types if specified.
-                 * @function toObject
-                 * @memberof LiftLog.Ui.Models.FollowResponseDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.FollowResponseDao} message FollowResponseDao
-                 * @param {$protobuf.IConversionOptions} [options] Conversion options
-                 * @returns {Object.<string,*>} Plain object
-                 */
-                FollowResponseDao.toObject = function toObject(message, options) {
-                    if (!options)
-                        options = {};
-                    let object = {};
-                    if (message.accepted != null && message.hasOwnProperty("accepted")) {
-                        object.accepted = $root.LiftLog.Ui.Models.FollowResponseAcceptedDao.toObject(message.accepted, options);
-                        if (options.oneofs)
-                            object.responsePayload = "accepted";
-                    }
-                    if (message.rejected != null && message.hasOwnProperty("rejected")) {
-                        object.rejected = $root.LiftLog.Ui.Models.FollowResponseRejectedDao.toObject(message.rejected, options);
-                        if (options.oneofs)
-                            object.responsePayload = "rejected";
-                    }
-                    return object;
-                };
-
-                /**
-                 * Converts this FollowResponseDao to JSON.
-                 * @function toJSON
-                 * @memberof LiftLog.Ui.Models.FollowResponseDao
-                 * @instance
-                 * @returns {Object.<string,*>} JSON object
-                 */
-                FollowResponseDao.prototype.toJSON = function toJSON() {
-                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                };
-
-                /**
-                 * Gets the default type url for FollowResponseDao
-                 * @function getTypeUrl
-                 * @memberof LiftLog.Ui.Models.FollowResponseDao
-                 * @static
-                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                 * @returns {string} The default type url
-                 */
-                FollowResponseDao.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-                    if (typeUrlPrefix === undefined) {
-                        typeUrlPrefix = "type.googleapis.com";
-                    }
-                    return typeUrlPrefix + "/LiftLog.Ui.Models.FollowResponseDao";
-                };
-
-                return FollowResponseDao;
-            })();
-
-            Models.FollowResponseAcceptedDao = (function() {
-
-                /**
-                 * Properties of a FollowResponseAcceptedDao.
-                 * @memberof LiftLog.Ui.Models
-                 * @interface IFollowResponseAcceptedDao
-                 * @property {Uint8Array|null} [aesKey] FollowResponseAcceptedDao aesKey
-                 * @property {string|null} [followSecret] FollowResponseAcceptedDao followSecret
-                 */
-
-                /**
-                 * Constructs a new FollowResponseAcceptedDao.
-                 * @memberof LiftLog.Ui.Models
-                 * @classdesc Represents a FollowResponseAcceptedDao.
-                 * @implements IFollowResponseAcceptedDao
-                 * @constructor
-                 * @param {LiftLog.Ui.Models.IFollowResponseAcceptedDao=} [properties] Properties to set
-                 */
-                function FollowResponseAcceptedDao(properties) {
-                    if (properties)
-                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                            if (properties[keys[i]] != null)
-                                this[keys[i]] = properties[keys[i]];
-                }
-
-                /**
-                 * FollowResponseAcceptedDao aesKey.
-                 * @member {Uint8Array} aesKey
-                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
-                 * @instance
-                 */
-                FollowResponseAcceptedDao.prototype.aesKey = $util.newBuffer([]);
-
-                /**
-                 * FollowResponseAcceptedDao followSecret.
-                 * @member {string} followSecret
-                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
-                 * @instance
-                 */
-                FollowResponseAcceptedDao.prototype.followSecret = "";
-
-                /**
-                 * Creates a new FollowResponseAcceptedDao instance using the specified properties.
-                 * @function create
-                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.IFollowResponseAcceptedDao=} [properties] Properties to set
-                 * @returns {LiftLog.Ui.Models.FollowResponseAcceptedDao} FollowResponseAcceptedDao instance
-                 */
-                FollowResponseAcceptedDao.create = function create(properties) {
-                    return new FollowResponseAcceptedDao(properties);
-                };
-
-                /**
-                 * Encodes the specified FollowResponseAcceptedDao message. Does not implicitly {@link LiftLog.Ui.Models.FollowResponseAcceptedDao.verify|verify} messages.
-                 * @function encode
-                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.IFollowResponseAcceptedDao} message FollowResponseAcceptedDao message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                FollowResponseAcceptedDao.encode = function encode(message, writer) {
-                    if (!writer)
-                        writer = $Writer.create();
-                    if (message.aesKey != null && Object.hasOwnProperty.call(message, "aesKey"))
-                        writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.aesKey);
-                    if (message.followSecret != null && Object.hasOwnProperty.call(message, "followSecret"))
-                        writer.uint32(/* id 2, wireType 2 =*/18).string(message.followSecret);
-                    return writer;
-                };
-
-                /**
-                 * Encodes the specified FollowResponseAcceptedDao message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.FollowResponseAcceptedDao.verify|verify} messages.
-                 * @function encodeDelimited
-                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.IFollowResponseAcceptedDao} message FollowResponseAcceptedDao message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                FollowResponseAcceptedDao.encodeDelimited = function encodeDelimited(message, writer) {
-                    return this.encode(message, writer).ldelim();
-                };
-
-                /**
-                 * Decodes a FollowResponseAcceptedDao message from the specified reader or buffer.
-                 * @function decode
-                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @param {number} [length] Message length if known beforehand
-                 * @returns {LiftLog.Ui.Models.FollowResponseAcceptedDao} FollowResponseAcceptedDao
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                FollowResponseAcceptedDao.decode = function decode(reader, length, error) {
-                    if (!(reader instanceof $Reader))
-                        reader = $Reader.create(reader);
-                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.FollowResponseAcceptedDao();
-                    while (reader.pos < end) {
-                        let tag = reader.uint32();
-                        if (tag === error)
-                            break;
-                        switch (tag >>> 3) {
-                        case 1: {
-                                message.aesKey = reader.bytes();
-                                break;
-                            }
-                        case 2: {
-                                message.followSecret = reader.string();
-                                break;
-                            }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
-                        }
-                    }
-                    return message;
-                };
-
-                /**
-                 * Decodes a FollowResponseAcceptedDao message from the specified reader or buffer, length delimited.
-                 * @function decodeDelimited
-                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @returns {LiftLog.Ui.Models.FollowResponseAcceptedDao} FollowResponseAcceptedDao
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                FollowResponseAcceptedDao.decodeDelimited = function decodeDelimited(reader) {
-                    if (!(reader instanceof $Reader))
-                        reader = new $Reader(reader);
-                    return this.decode(reader, reader.uint32());
-                };
-
-                /**
-                 * Verifies a FollowResponseAcceptedDao message.
-                 * @function verify
-                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
-                 * @static
-                 * @param {Object.<string,*>} message Plain object to verify
-                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                 */
-                FollowResponseAcceptedDao.verify = function verify(message) {
-                    if (typeof message !== "object" || message === null)
-                        return "object expected";
-                    if (message.aesKey != null && message.hasOwnProperty("aesKey"))
-                        if (!(message.aesKey && typeof message.aesKey.length === "number" || $util.isString(message.aesKey)))
-                            return "aesKey: buffer expected";
-                    if (message.followSecret != null && message.hasOwnProperty("followSecret"))
-                        if (!$util.isString(message.followSecret))
-                            return "followSecret: string expected";
-                    return null;
-                };
-
-                /**
-                 * Creates a FollowResponseAcceptedDao message from a plain object. Also converts values to their respective internal types.
-                 * @function fromObject
-                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
-                 * @static
-                 * @param {Object.<string,*>} object Plain object
-                 * @returns {LiftLog.Ui.Models.FollowResponseAcceptedDao} FollowResponseAcceptedDao
-                 */
-                FollowResponseAcceptedDao.fromObject = function fromObject(object) {
-                    if (object instanceof $root.LiftLog.Ui.Models.FollowResponseAcceptedDao)
-                        return object;
-                    let message = new $root.LiftLog.Ui.Models.FollowResponseAcceptedDao();
-                    if (object.aesKey != null)
-                        if (typeof object.aesKey === "string")
-                            $util.base64.decode(object.aesKey, message.aesKey = $util.newBuffer($util.base64.length(object.aesKey)), 0);
-                        else if (object.aesKey.length >= 0)
-                            message.aesKey = object.aesKey;
-                    if (object.followSecret != null)
-                        message.followSecret = String(object.followSecret);
-                    return message;
-                };
-
-                /**
-                 * Creates a plain object from a FollowResponseAcceptedDao message. Also converts values to other types if specified.
-                 * @function toObject
-                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.FollowResponseAcceptedDao} message FollowResponseAcceptedDao
-                 * @param {$protobuf.IConversionOptions} [options] Conversion options
-                 * @returns {Object.<string,*>} Plain object
-                 */
-                FollowResponseAcceptedDao.toObject = function toObject(message, options) {
-                    if (!options)
-                        options = {};
-                    let object = {};
-                    if (options.defaults) {
-                        if (options.bytes === String)
-                            object.aesKey = "";
-                        else {
-                            object.aesKey = [];
-                            if (options.bytes !== Array)
-                                object.aesKey = $util.newBuffer(object.aesKey);
-                        }
-                        object.followSecret = "";
-                    }
-                    if (message.aesKey != null && message.hasOwnProperty("aesKey"))
-                        object.aesKey = options.bytes === String ? $util.base64.encode(message.aesKey, 0, message.aesKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.aesKey) : message.aesKey;
-                    if (message.followSecret != null && message.hasOwnProperty("followSecret"))
-                        object.followSecret = message.followSecret;
-                    return object;
-                };
-
-                /**
-                 * Converts this FollowResponseAcceptedDao to JSON.
-                 * @function toJSON
-                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
-                 * @instance
-                 * @returns {Object.<string,*>} JSON object
-                 */
-                FollowResponseAcceptedDao.prototype.toJSON = function toJSON() {
-                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                };
-
-                /**
-                 * Gets the default type url for FollowResponseAcceptedDao
-                 * @function getTypeUrl
-                 * @memberof LiftLog.Ui.Models.FollowResponseAcceptedDao
-                 * @static
-                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                 * @returns {string} The default type url
-                 */
-                FollowResponseAcceptedDao.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-                    if (typeUrlPrefix === undefined) {
-                        typeUrlPrefix = "type.googleapis.com";
-                    }
-                    return typeUrlPrefix + "/LiftLog.Ui.Models.FollowResponseAcceptedDao";
-                };
-
-                return FollowResponseAcceptedDao;
-            })();
-
-            Models.FollowResponseRejectedDao = (function() {
-
-                /**
-                 * Properties of a FollowResponseRejectedDao.
-                 * @memberof LiftLog.Ui.Models
-                 * @interface IFollowResponseRejectedDao
-                 */
-
-                /**
-                 * Constructs a new FollowResponseRejectedDao.
-                 * @memberof LiftLog.Ui.Models
-                 * @classdesc Represents a FollowResponseRejectedDao.
-                 * @implements IFollowResponseRejectedDao
-                 * @constructor
-                 * @param {LiftLog.Ui.Models.IFollowResponseRejectedDao=} [properties] Properties to set
-                 */
-                function FollowResponseRejectedDao(properties) {
-                    if (properties)
-                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                            if (properties[keys[i]] != null)
-                                this[keys[i]] = properties[keys[i]];
-                }
-
-                /**
-                 * Creates a new FollowResponseRejectedDao instance using the specified properties.
-                 * @function create
-                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.IFollowResponseRejectedDao=} [properties] Properties to set
-                 * @returns {LiftLog.Ui.Models.FollowResponseRejectedDao} FollowResponseRejectedDao instance
-                 */
-                FollowResponseRejectedDao.create = function create(properties) {
-                    return new FollowResponseRejectedDao(properties);
-                };
-
-                /**
-                 * Encodes the specified FollowResponseRejectedDao message. Does not implicitly {@link LiftLog.Ui.Models.FollowResponseRejectedDao.verify|verify} messages.
-                 * @function encode
-                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.IFollowResponseRejectedDao} message FollowResponseRejectedDao message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                FollowResponseRejectedDao.encode = function encode(message, writer) {
-                    if (!writer)
-                        writer = $Writer.create();
-                    return writer;
-                };
-
-                /**
-                 * Encodes the specified FollowResponseRejectedDao message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.FollowResponseRejectedDao.verify|verify} messages.
-                 * @function encodeDelimited
-                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.IFollowResponseRejectedDao} message FollowResponseRejectedDao message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                FollowResponseRejectedDao.encodeDelimited = function encodeDelimited(message, writer) {
-                    return this.encode(message, writer).ldelim();
-                };
-
-                /**
-                 * Decodes a FollowResponseRejectedDao message from the specified reader or buffer.
-                 * @function decode
-                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @param {number} [length] Message length if known beforehand
-                 * @returns {LiftLog.Ui.Models.FollowResponseRejectedDao} FollowResponseRejectedDao
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                FollowResponseRejectedDao.decode = function decode(reader, length, error) {
-                    if (!(reader instanceof $Reader))
-                        reader = $Reader.create(reader);
-                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.FollowResponseRejectedDao();
-                    while (reader.pos < end) {
-                        let tag = reader.uint32();
-                        if (tag === error)
-                            break;
-                        switch (tag >>> 3) {
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
-                        }
-                    }
-                    return message;
-                };
-
-                /**
-                 * Decodes a FollowResponseRejectedDao message from the specified reader or buffer, length delimited.
-                 * @function decodeDelimited
-                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @returns {LiftLog.Ui.Models.FollowResponseRejectedDao} FollowResponseRejectedDao
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                FollowResponseRejectedDao.decodeDelimited = function decodeDelimited(reader) {
-                    if (!(reader instanceof $Reader))
-                        reader = new $Reader(reader);
-                    return this.decode(reader, reader.uint32());
-                };
-
-                /**
-                 * Verifies a FollowResponseRejectedDao message.
-                 * @function verify
-                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
-                 * @static
-                 * @param {Object.<string,*>} message Plain object to verify
-                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                 */
-                FollowResponseRejectedDao.verify = function verify(message) {
-                    if (typeof message !== "object" || message === null)
-                        return "object expected";
-                    return null;
-                };
-
-                /**
-                 * Creates a FollowResponseRejectedDao message from a plain object. Also converts values to their respective internal types.
-                 * @function fromObject
-                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
-                 * @static
-                 * @param {Object.<string,*>} object Plain object
-                 * @returns {LiftLog.Ui.Models.FollowResponseRejectedDao} FollowResponseRejectedDao
-                 */
-                FollowResponseRejectedDao.fromObject = function fromObject(object) {
-                    if (object instanceof $root.LiftLog.Ui.Models.FollowResponseRejectedDao)
-                        return object;
-                    return new $root.LiftLog.Ui.Models.FollowResponseRejectedDao();
-                };
-
-                /**
-                 * Creates a plain object from a FollowResponseRejectedDao message. Also converts values to other types if specified.
-                 * @function toObject
-                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
-                 * @static
-                 * @param {LiftLog.Ui.Models.FollowResponseRejectedDao} message FollowResponseRejectedDao
-                 * @param {$protobuf.IConversionOptions} [options] Conversion options
-                 * @returns {Object.<string,*>} Plain object
-                 */
-                FollowResponseRejectedDao.toObject = function toObject() {
-                    return {};
-                };
-
-                /**
-                 * Converts this FollowResponseRejectedDao to JSON.
-                 * @function toJSON
-                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
-                 * @instance
-                 * @returns {Object.<string,*>} JSON object
-                 */
-                FollowResponseRejectedDao.prototype.toJSON = function toJSON() {
-                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                };
-
-                /**
-                 * Gets the default type url for FollowResponseRejectedDao
-                 * @function getTypeUrl
-                 * @memberof LiftLog.Ui.Models.FollowResponseRejectedDao
-                 * @static
-                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                 * @returns {string} The default type url
-                 */
-                FollowResponseRejectedDao.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-                    if (typeUrlPrefix === undefined) {
-                        typeUrlPrefix = "type.googleapis.com";
-                    }
-                    return typeUrlPrefix + "/LiftLog.Ui.Models.FollowResponseRejectedDao";
-                };
-
-                return FollowResponseRejectedDao;
-            })();
-
-            Models.UnFollowNotification = (function() {
-
-                /**
-                 * Properties of an UnFollowNotification.
-                 * @memberof LiftLog.Ui.Models
-                 * @interface IUnFollowNotification
-                 * @property {string|null} [followSecret] UnFollowNotification followSecret
-                 */
-
-                /**
-                 * Constructs a new UnFollowNotification.
-                 * @memberof LiftLog.Ui.Models
-                 * @classdesc Represents an UnFollowNotification.
-                 * @implements IUnFollowNotification
-                 * @constructor
-                 * @param {LiftLog.Ui.Models.IUnFollowNotification=} [properties] Properties to set
-                 */
-                function UnFollowNotification(properties) {
-                    if (properties)
-                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                            if (properties[keys[i]] != null)
-                                this[keys[i]] = properties[keys[i]];
-                }
-
-                /**
-                 * UnFollowNotification followSecret.
-                 * @member {string} followSecret
-                 * @memberof LiftLog.Ui.Models.UnFollowNotification
-                 * @instance
-                 */
-                UnFollowNotification.prototype.followSecret = "";
-
-                /**
-                 * Creates a new UnFollowNotification instance using the specified properties.
-                 * @function create
-                 * @memberof LiftLog.Ui.Models.UnFollowNotification
-                 * @static
-                 * @param {LiftLog.Ui.Models.IUnFollowNotification=} [properties] Properties to set
-                 * @returns {LiftLog.Ui.Models.UnFollowNotification} UnFollowNotification instance
-                 */
-                UnFollowNotification.create = function create(properties) {
-                    return new UnFollowNotification(properties);
-                };
-
-                /**
-                 * Encodes the specified UnFollowNotification message. Does not implicitly {@link LiftLog.Ui.Models.UnFollowNotification.verify|verify} messages.
-                 * @function encode
-                 * @memberof LiftLog.Ui.Models.UnFollowNotification
-                 * @static
-                 * @param {LiftLog.Ui.Models.IUnFollowNotification} message UnFollowNotification message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                UnFollowNotification.encode = function encode(message, writer) {
-                    if (!writer)
-                        writer = $Writer.create();
-                    if (message.followSecret != null && Object.hasOwnProperty.call(message, "followSecret"))
-                        writer.uint32(/* id 1, wireType 2 =*/10).string(message.followSecret);
-                    return writer;
-                };
-
-                /**
-                 * Encodes the specified UnFollowNotification message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.UnFollowNotification.verify|verify} messages.
-                 * @function encodeDelimited
-                 * @memberof LiftLog.Ui.Models.UnFollowNotification
-                 * @static
-                 * @param {LiftLog.Ui.Models.IUnFollowNotification} message UnFollowNotification message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                UnFollowNotification.encodeDelimited = function encodeDelimited(message, writer) {
-                    return this.encode(message, writer).ldelim();
-                };
-
-                /**
-                 * Decodes an UnFollowNotification message from the specified reader or buffer.
-                 * @function decode
-                 * @memberof LiftLog.Ui.Models.UnFollowNotification
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @param {number} [length] Message length if known beforehand
-                 * @returns {LiftLog.Ui.Models.UnFollowNotification} UnFollowNotification
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                UnFollowNotification.decode = function decode(reader, length, error) {
-                    if (!(reader instanceof $Reader))
-                        reader = $Reader.create(reader);
-                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.UnFollowNotification();
-                    while (reader.pos < end) {
-                        let tag = reader.uint32();
-                        if (tag === error)
-                            break;
-                        switch (tag >>> 3) {
-                        case 1: {
-                                message.followSecret = reader.string();
-                                break;
-                            }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
-                        }
-                    }
-                    return message;
-                };
-
-                /**
-                 * Decodes an UnFollowNotification message from the specified reader or buffer, length delimited.
-                 * @function decodeDelimited
-                 * @memberof LiftLog.Ui.Models.UnFollowNotification
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @returns {LiftLog.Ui.Models.UnFollowNotification} UnFollowNotification
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                UnFollowNotification.decodeDelimited = function decodeDelimited(reader) {
-                    if (!(reader instanceof $Reader))
-                        reader = new $Reader(reader);
-                    return this.decode(reader, reader.uint32());
-                };
-
-                /**
-                 * Verifies an UnFollowNotification message.
-                 * @function verify
-                 * @memberof LiftLog.Ui.Models.UnFollowNotification
-                 * @static
-                 * @param {Object.<string,*>} message Plain object to verify
-                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                 */
-                UnFollowNotification.verify = function verify(message) {
-                    if (typeof message !== "object" || message === null)
-                        return "object expected";
-                    if (message.followSecret != null && message.hasOwnProperty("followSecret"))
-                        if (!$util.isString(message.followSecret))
-                            return "followSecret: string expected";
-                    return null;
-                };
-
-                /**
-                 * Creates an UnFollowNotification message from a plain object. Also converts values to their respective internal types.
-                 * @function fromObject
-                 * @memberof LiftLog.Ui.Models.UnFollowNotification
-                 * @static
-                 * @param {Object.<string,*>} object Plain object
-                 * @returns {LiftLog.Ui.Models.UnFollowNotification} UnFollowNotification
-                 */
-                UnFollowNotification.fromObject = function fromObject(object) {
-                    if (object instanceof $root.LiftLog.Ui.Models.UnFollowNotification)
-                        return object;
-                    let message = new $root.LiftLog.Ui.Models.UnFollowNotification();
-                    if (object.followSecret != null)
-                        message.followSecret = String(object.followSecret);
-                    return message;
-                };
-
-                /**
-                 * Creates a plain object from an UnFollowNotification message. Also converts values to other types if specified.
-                 * @function toObject
-                 * @memberof LiftLog.Ui.Models.UnFollowNotification
-                 * @static
-                 * @param {LiftLog.Ui.Models.UnFollowNotification} message UnFollowNotification
-                 * @param {$protobuf.IConversionOptions} [options] Conversion options
-                 * @returns {Object.<string,*>} Plain object
-                 */
-                UnFollowNotification.toObject = function toObject(message, options) {
-                    if (!options)
-                        options = {};
-                    let object = {};
-                    if (options.defaults)
-                        object.followSecret = "";
-                    if (message.followSecret != null && message.hasOwnProperty("followSecret"))
-                        object.followSecret = message.followSecret;
-                    return object;
-                };
-
-                /**
-                 * Converts this UnFollowNotification to JSON.
-                 * @function toJSON
-                 * @memberof LiftLog.Ui.Models.UnFollowNotification
-                 * @instance
-                 * @returns {Object.<string,*>} JSON object
-                 */
-                UnFollowNotification.prototype.toJSON = function toJSON() {
-                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                };
-
-                /**
-                 * Gets the default type url for UnFollowNotification
-                 * @function getTypeUrl
-                 * @memberof LiftLog.Ui.Models.UnFollowNotification
-                 * @static
-                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                 * @returns {string} The default type url
-                 */
-                UnFollowNotification.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-                    if (typeUrlPrefix === undefined) {
-                        typeUrlPrefix = "type.googleapis.com";
-                    }
-                    return typeUrlPrefix + "/LiftLog.Ui.Models.UnFollowNotification";
-                };
-
-                return UnFollowNotification;
-            })();
-
-            Models.ProgramBlueprintDao = (function() {
-
-                /**
-                 * Namespace ProgramBlueprintDao.
-                 * @memberof LiftLog.Ui.Models
-                 * @namespace
-                 */
-                const ProgramBlueprintDao = {};
-
-                ProgramBlueprintDao.ProgramBlueprintDaoContainerV1 = (function() {
-
-                    /**
-                     * Properties of a ProgramBlueprintDaoContainerV1.
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao
-                     * @interface IProgramBlueprintDaoContainerV1
-                     * @property {Object.<string,LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1>|null} [programBlueprints] ProgramBlueprintDaoContainerV1 programBlueprints
-                     * @property {google.protobuf.IStringValue|null} [activeProgramId] ProgramBlueprintDaoContainerV1 activeProgramId
-                     */
-
-                    /**
-                     * Constructs a new ProgramBlueprintDaoContainerV1.
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao
-                     * @classdesc Represents a ProgramBlueprintDaoContainerV1.
-                     * @implements IProgramBlueprintDaoContainerV1
-                     * @constructor
-                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoContainerV1=} [properties] Properties to set
-                     */
-                    function ProgramBlueprintDaoContainerV1(properties) {
-                        this.programBlueprints = {};
-                        if (properties)
-                            for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    /**
-                     * ProgramBlueprintDaoContainerV1 programBlueprints.
-                     * @member {Object.<string,LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1>} programBlueprints
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
-                     * @instance
-                     */
-                    ProgramBlueprintDaoContainerV1.prototype.programBlueprints = $util.emptyObject;
-
-                    /**
-                     * ProgramBlueprintDaoContainerV1 activeProgramId.
-                     * @member {google.protobuf.IStringValue|null|undefined} activeProgramId
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
-                     * @instance
-                     */
-                    ProgramBlueprintDaoContainerV1.prototype.activeProgramId = null;
-
-                    // OneOf field names bound to virtual getters and setters
-                    let $oneOfFields;
-
-                    /**
-                     * ProgramBlueprintDaoContainerV1 _activeProgramId.
-                     * @member {"activeProgramId"|undefined} _activeProgramId
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
-                     * @instance
-                     */
-                    Object.defineProperty(ProgramBlueprintDaoContainerV1.prototype, "_activeProgramId", {
-                        get: $util.oneOfGetter($oneOfFields = ["activeProgramId"]),
-                        set: $util.oneOfSetter($oneOfFields)
-                    });
-
-                    /**
-                     * Creates a new ProgramBlueprintDaoContainerV1 instance using the specified properties.
-                     * @function create
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
-                     * @static
-                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoContainerV1=} [properties] Properties to set
-                     * @returns {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1} ProgramBlueprintDaoContainerV1 instance
-                     */
-                    ProgramBlueprintDaoContainerV1.create = function create(properties) {
-                        return new ProgramBlueprintDaoContainerV1(properties);
-                    };
-
-                    /**
-                     * Encodes the specified ProgramBlueprintDaoContainerV1 message. Does not implicitly {@link LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1.verify|verify} messages.
-                     * @function encode
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
-                     * @static
-                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoContainerV1} message ProgramBlueprintDaoContainerV1 message or plain object to encode
-                     * @param {$protobuf.Writer} [writer] Writer to encode to
-                     * @returns {$protobuf.Writer} Writer
-                     */
-                    ProgramBlueprintDaoContainerV1.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.programBlueprints != null && Object.hasOwnProperty.call(message, "programBlueprints"))
-                            for (let keys = Object.keys(message.programBlueprints), i = 0; i < keys.length; ++i) {
-                                writer.uint32(/* id 1, wireType 2 =*/10).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]);
-                                $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.encode(message.programBlueprints[keys[i]], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim().ldelim();
-                            }
-                        if (message.activeProgramId != null && Object.hasOwnProperty.call(message, "activeProgramId"))
-                            $root.google.protobuf.StringValue.encode(message.activeProgramId, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-                        return writer;
-                    };
-
-                    /**
-                     * Encodes the specified ProgramBlueprintDaoContainerV1 message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1.verify|verify} messages.
-                     * @function encodeDelimited
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
-                     * @static
-                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoContainerV1} message ProgramBlueprintDaoContainerV1 message or plain object to encode
-                     * @param {$protobuf.Writer} [writer] Writer to encode to
-                     * @returns {$protobuf.Writer} Writer
-                     */
-                    ProgramBlueprintDaoContainerV1.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    /**
-                     * Decodes a ProgramBlueprintDaoContainerV1 message from the specified reader or buffer.
-                     * @function decode
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
-                     * @static
-                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                     * @param {number} [length] Message length if known beforehand
-                     * @returns {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1} ProgramBlueprintDaoContainerV1
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    ProgramBlueprintDaoContainerV1.decode = function decode(reader, length, error) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1(), key, value;
-                        while (reader.pos < end) {
-                            let tag = reader.uint32();
-                            if (tag === error)
-                                break;
-                            switch (tag >>> 3) {
-                            case 1: {
-                                    if (message.programBlueprints === $util.emptyObject)
-                                        message.programBlueprints = {};
-                                    let end2 = reader.uint32() + reader.pos;
-                                    key = "";
-                                    value = null;
-                                    while (reader.pos < end2) {
-                                        let tag2 = reader.uint32();
-                                        switch (tag2 >>> 3) {
-                                        case 1:
-                                            key = reader.string();
-                                            break;
-                                        case 2:
-                                            value = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.decode(reader, reader.uint32());
-                                            break;
-                                        default:
-                                            reader.skipType(tag2 & 7);
-                                            break;
-                                        }
-                                    }
-                                    message.programBlueprints[key] = value;
-                                    break;
-                                }
-                            case 2: {
-                                    message.activeProgramId = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
-                                    break;
-                                }
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    /**
-                     * Decodes a ProgramBlueprintDaoContainerV1 message from the specified reader or buffer, length delimited.
-                     * @function decodeDelimited
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
-                     * @static
-                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                     * @returns {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1} ProgramBlueprintDaoContainerV1
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    ProgramBlueprintDaoContainerV1.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    /**
-                     * Verifies a ProgramBlueprintDaoContainerV1 message.
-                     * @function verify
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
-                     * @static
-                     * @param {Object.<string,*>} message Plain object to verify
-                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                     */
-                    ProgramBlueprintDaoContainerV1.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        let properties = {};
-                        if (message.programBlueprints != null && message.hasOwnProperty("programBlueprints")) {
-                            if (!$util.isObject(message.programBlueprints))
-                                return "programBlueprints: object expected";
-                            let key = Object.keys(message.programBlueprints);
-                            for (let i = 0; i < key.length; ++i) {
-                                let error = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.verify(message.programBlueprints[key[i]]);
-                                if (error)
-                                    return "programBlueprints." + error;
-                            }
-                        }
-                        if (message.activeProgramId != null && message.hasOwnProperty("activeProgramId")) {
-                            properties._activeProgramId = 1;
-                            {
-                                let error = $root.google.protobuf.StringValue.verify(message.activeProgramId);
-                                if (error)
-                                    return "activeProgramId." + error;
-                            }
-                        }
-                        return null;
-                    };
-
-                    /**
-                     * Creates a ProgramBlueprintDaoContainerV1 message from a plain object. Also converts values to their respective internal types.
-                     * @function fromObject
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
-                     * @static
-                     * @param {Object.<string,*>} object Plain object
-                     * @returns {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1} ProgramBlueprintDaoContainerV1
-                     */
-                    ProgramBlueprintDaoContainerV1.fromObject = function fromObject(object) {
-                        if (object instanceof $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1)
-                            return object;
-                        let message = new $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1();
-                        if (object.programBlueprints) {
-                            if (typeof object.programBlueprints !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1.programBlueprints: object expected");
-                            message.programBlueprints = {};
-                            for (let keys = Object.keys(object.programBlueprints), i = 0; i < keys.length; ++i) {
-                                if (typeof object.programBlueprints[keys[i]] !== "object")
-                                    throw TypeError(".LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1.programBlueprints: object expected");
-                                message.programBlueprints[keys[i]] = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.fromObject(object.programBlueprints[keys[i]]);
-                            }
-                        }
-                        if (object.activeProgramId != null) {
-                            if (typeof object.activeProgramId !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1.activeProgramId: object expected");
-                            message.activeProgramId = $root.google.protobuf.StringValue.fromObject(object.activeProgramId);
-                        }
-                        return message;
-                    };
-
-                    /**
-                     * Creates a plain object from a ProgramBlueprintDaoContainerV1 message. Also converts values to other types if specified.
-                     * @function toObject
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
-                     * @static
-                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1} message ProgramBlueprintDaoContainerV1
-                     * @param {$protobuf.IConversionOptions} [options] Conversion options
-                     * @returns {Object.<string,*>} Plain object
-                     */
-                    ProgramBlueprintDaoContainerV1.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        let object = {};
-                        if (options.objects || options.defaults)
-                            object.programBlueprints = {};
-                        let keys2;
-                        if (message.programBlueprints && (keys2 = Object.keys(message.programBlueprints)).length) {
-                            object.programBlueprints = {};
-                            for (let j = 0; j < keys2.length; ++j)
-                                object.programBlueprints[keys2[j]] = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.toObject(message.programBlueprints[keys2[j]], options);
-                        }
-                        if (message.activeProgramId != null && message.hasOwnProperty("activeProgramId")) {
-                            object.activeProgramId = $root.google.protobuf.StringValue.toObject(message.activeProgramId, options);
-                            if (options.oneofs)
-                                object._activeProgramId = "activeProgramId";
-                        }
-                        return object;
-                    };
-
-                    /**
-                     * Converts this ProgramBlueprintDaoContainerV1 to JSON.
-                     * @function toJSON
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
-                     * @instance
-                     * @returns {Object.<string,*>} JSON object
-                     */
-                    ProgramBlueprintDaoContainerV1.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    /**
-                     * Gets the default type url for ProgramBlueprintDaoContainerV1
-                     * @function getTypeUrl
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1
-                     * @static
-                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                     * @returns {string} The default type url
-                     */
-                    ProgramBlueprintDaoContainerV1.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-                        if (typeUrlPrefix === undefined) {
-                            typeUrlPrefix = "type.googleapis.com";
-                        }
-                        return typeUrlPrefix + "/LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1";
-                    };
-
-                    return ProgramBlueprintDaoContainerV1;
-                })();
-
-                ProgramBlueprintDao.ProgramBlueprintDaoV1 = (function() {
-
-                    /**
-                     * Properties of a ProgramBlueprintDaoV1.
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao
-                     * @interface IProgramBlueprintDaoV1
-                     * @property {string|null} [name] ProgramBlueprintDaoV1 name
-                     * @property {Array.<LiftLog.Ui.Models.SessionBlueprintDao.ISessionBlueprintDaoV2>|null} [sessions] ProgramBlueprintDaoV1 sessions
-                     * @property {LiftLog.Ui.Models.IDateOnlyDao|null} [lastEdited] ProgramBlueprintDaoV1 lastEdited
-                     */
-
-                    /**
-                     * Constructs a new ProgramBlueprintDaoV1.
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao
-                     * @classdesc Represents a ProgramBlueprintDaoV1.
-                     * @implements IProgramBlueprintDaoV1
-                     * @constructor
-                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1=} [properties] Properties to set
-                     */
-                    function ProgramBlueprintDaoV1(properties) {
-                        this.sessions = [];
-                        if (properties)
-                            for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    /**
-                     * ProgramBlueprintDaoV1 name.
-                     * @member {string} name
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
-                     * @instance
-                     */
-                    ProgramBlueprintDaoV1.prototype.name = "";
-
-                    /**
-                     * ProgramBlueprintDaoV1 sessions.
-                     * @member {Array.<LiftLog.Ui.Models.SessionBlueprintDao.ISessionBlueprintDaoV2>} sessions
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
-                     * @instance
-                     */
-                    ProgramBlueprintDaoV1.prototype.sessions = $util.emptyArray;
-
-                    /**
-                     * ProgramBlueprintDaoV1 lastEdited.
-                     * @member {LiftLog.Ui.Models.IDateOnlyDao|null|undefined} lastEdited
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
-                     * @instance
-                     */
-                    ProgramBlueprintDaoV1.prototype.lastEdited = null;
-
-                    // OneOf field names bound to virtual getters and setters
-                    let $oneOfFields;
-
-                    /**
-                     * ProgramBlueprintDaoV1 _lastEdited.
-                     * @member {"lastEdited"|undefined} _lastEdited
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
-                     * @instance
-                     */
-                    Object.defineProperty(ProgramBlueprintDaoV1.prototype, "_lastEdited", {
-                        get: $util.oneOfGetter($oneOfFields = ["lastEdited"]),
-                        set: $util.oneOfSetter($oneOfFields)
-                    });
-
-                    /**
-                     * Creates a new ProgramBlueprintDaoV1 instance using the specified properties.
-                     * @function create
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
-                     * @static
-                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1=} [properties] Properties to set
-                     * @returns {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1} ProgramBlueprintDaoV1 instance
-                     */
-                    ProgramBlueprintDaoV1.create = function create(properties) {
-                        return new ProgramBlueprintDaoV1(properties);
-                    };
-
-                    /**
-                     * Encodes the specified ProgramBlueprintDaoV1 message. Does not implicitly {@link LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.verify|verify} messages.
-                     * @function encode
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
-                     * @static
-                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1} message ProgramBlueprintDaoV1 message or plain object to encode
-                     * @param {$protobuf.Writer} [writer] Writer to encode to
-                     * @returns {$protobuf.Writer} Writer
-                     */
-                    ProgramBlueprintDaoV1.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.name != null && Object.hasOwnProperty.call(message, "name"))
-                            writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
-                        if (message.sessions != null && message.sessions.length)
-                            for (let i = 0; i < message.sessions.length; ++i)
-                                $root.LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2.encode(message.sessions[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
-                        if (message.lastEdited != null && Object.hasOwnProperty.call(message, "lastEdited"))
-                            $root.LiftLog.Ui.Models.DateOnlyDao.encode(message.lastEdited, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
-                        return writer;
-                    };
-
-                    /**
-                     * Encodes the specified ProgramBlueprintDaoV1 message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.verify|verify} messages.
-                     * @function encodeDelimited
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
-                     * @static
-                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1} message ProgramBlueprintDaoV1 message or plain object to encode
-                     * @param {$protobuf.Writer} [writer] Writer to encode to
-                     * @returns {$protobuf.Writer} Writer
-                     */
-                    ProgramBlueprintDaoV1.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    /**
-                     * Decodes a ProgramBlueprintDaoV1 message from the specified reader or buffer.
-                     * @function decode
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
-                     * @static
-                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                     * @param {number} [length] Message length if known beforehand
-                     * @returns {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1} ProgramBlueprintDaoV1
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    ProgramBlueprintDaoV1.decode = function decode(reader, length, error) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1();
-                        while (reader.pos < end) {
-                            let tag = reader.uint32();
-                            if (tag === error)
-                                break;
-                            switch (tag >>> 3) {
-                            case 1: {
-                                    message.name = reader.string();
-                                    break;
-                                }
-                            case 5: {
-                                    if (!(message.sessions && message.sessions.length))
-                                        message.sessions = [];
-                                    message.sessions.push($root.LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2.decode(reader, reader.uint32()));
-                                    break;
-                                }
-                            case 6: {
-                                    message.lastEdited = $root.LiftLog.Ui.Models.DateOnlyDao.decode(reader, reader.uint32());
-                                    break;
-                                }
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    /**
-                     * Decodes a ProgramBlueprintDaoV1 message from the specified reader or buffer, length delimited.
-                     * @function decodeDelimited
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
-                     * @static
-                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                     * @returns {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1} ProgramBlueprintDaoV1
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    ProgramBlueprintDaoV1.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    /**
-                     * Verifies a ProgramBlueprintDaoV1 message.
-                     * @function verify
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
-                     * @static
-                     * @param {Object.<string,*>} message Plain object to verify
-                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                     */
-                    ProgramBlueprintDaoV1.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        let properties = {};
-                        if (message.name != null && message.hasOwnProperty("name"))
-                            if (!$util.isString(message.name))
-                                return "name: string expected";
-                        if (message.sessions != null && message.hasOwnProperty("sessions")) {
-                            if (!Array.isArray(message.sessions))
-                                return "sessions: array expected";
-                            for (let i = 0; i < message.sessions.length; ++i) {
-                                let error = $root.LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2.verify(message.sessions[i]);
-                                if (error)
-                                    return "sessions." + error;
-                            }
-                        }
-                        if (message.lastEdited != null && message.hasOwnProperty("lastEdited")) {
-                            properties._lastEdited = 1;
-                            {
-                                let error = $root.LiftLog.Ui.Models.DateOnlyDao.verify(message.lastEdited);
-                                if (error)
-                                    return "lastEdited." + error;
-                            }
-                        }
-                        return null;
-                    };
-
-                    /**
-                     * Creates a ProgramBlueprintDaoV1 message from a plain object. Also converts values to their respective internal types.
-                     * @function fromObject
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
-                     * @static
-                     * @param {Object.<string,*>} object Plain object
-                     * @returns {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1} ProgramBlueprintDaoV1
-                     */
-                    ProgramBlueprintDaoV1.fromObject = function fromObject(object) {
-                        if (object instanceof $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1)
-                            return object;
-                        let message = new $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1();
-                        if (object.name != null)
-                            message.name = String(object.name);
-                        if (object.sessions) {
-                            if (!Array.isArray(object.sessions))
-                                throw TypeError(".LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.sessions: array expected");
-                            message.sessions = [];
-                            for (let i = 0; i < object.sessions.length; ++i) {
-                                if (typeof object.sessions[i] !== "object")
-                                    throw TypeError(".LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.sessions: object expected");
-                                message.sessions[i] = $root.LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2.fromObject(object.sessions[i]);
-                            }
-                        }
-                        if (object.lastEdited != null) {
-                            if (typeof object.lastEdited !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.lastEdited: object expected");
-                            message.lastEdited = $root.LiftLog.Ui.Models.DateOnlyDao.fromObject(object.lastEdited);
-                        }
-                        return message;
-                    };
-
-                    /**
-                     * Creates a plain object from a ProgramBlueprintDaoV1 message. Also converts values to other types if specified.
-                     * @function toObject
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
-                     * @static
-                     * @param {LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1} message ProgramBlueprintDaoV1
-                     * @param {$protobuf.IConversionOptions} [options] Conversion options
-                     * @returns {Object.<string,*>} Plain object
-                     */
-                    ProgramBlueprintDaoV1.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        let object = {};
-                        if (options.arrays || options.defaults)
-                            object.sessions = [];
-                        if (options.defaults)
-                            object.name = "";
-                        if (message.name != null && message.hasOwnProperty("name"))
-                            object.name = message.name;
-                        if (message.sessions && message.sessions.length) {
-                            object.sessions = [];
-                            for (let j = 0; j < message.sessions.length; ++j)
-                                object.sessions[j] = $root.LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2.toObject(message.sessions[j], options);
-                        }
-                        if (message.lastEdited != null && message.hasOwnProperty("lastEdited")) {
-                            object.lastEdited = $root.LiftLog.Ui.Models.DateOnlyDao.toObject(message.lastEdited, options);
-                            if (options.oneofs)
-                                object._lastEdited = "lastEdited";
-                        }
-                        return object;
-                    };
-
-                    /**
-                     * Converts this ProgramBlueprintDaoV1 to JSON.
-                     * @function toJSON
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
-                     * @instance
-                     * @returns {Object.<string,*>} JSON object
-                     */
-                    ProgramBlueprintDaoV1.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    /**
-                     * Gets the default type url for ProgramBlueprintDaoV1
-                     * @function getTypeUrl
-                     * @memberof LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1
-                     * @static
-                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                     * @returns {string} The default type url
-                     */
-                    ProgramBlueprintDaoV1.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-                        if (typeUrlPrefix === undefined) {
-                            typeUrlPrefix = "type.googleapis.com";
-                        }
-                        return typeUrlPrefix + "/LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1";
-                    };
-
-                    return ProgramBlueprintDaoV1;
-                })();
-
-                return ProgramBlueprintDao;
-            })();
-
-            Models.SharedItemPayload = (function() {
-
-                /**
-                 * Properties of a SharedItemPayload.
-                 * @memberof LiftLog.Ui.Models
-                 * @interface ISharedItemPayload
-                 * @property {LiftLog.Ui.Models.ISharedProgramBlueprintPayload|null} [sharedProgramBlueprint] SharedItemPayload sharedProgramBlueprint
-                 */
-
-                /**
-                 * Constructs a new SharedItemPayload.
-                 * @memberof LiftLog.Ui.Models
-                 * @classdesc Represents a SharedItemPayload.
-                 * @implements ISharedItemPayload
-                 * @constructor
-                 * @param {LiftLog.Ui.Models.ISharedItemPayload=} [properties] Properties to set
-                 */
-                function SharedItemPayload(properties) {
-                    if (properties)
-                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                            if (properties[keys[i]] != null)
-                                this[keys[i]] = properties[keys[i]];
-                }
-
-                /**
-                 * SharedItemPayload sharedProgramBlueprint.
-                 * @member {LiftLog.Ui.Models.ISharedProgramBlueprintPayload|null|undefined} sharedProgramBlueprint
-                 * @memberof LiftLog.Ui.Models.SharedItemPayload
-                 * @instance
-                 */
-                SharedItemPayload.prototype.sharedProgramBlueprint = null;
-
-                // OneOf field names bound to virtual getters and setters
-                let $oneOfFields;
-
-                /**
-                 * SharedItemPayload payload.
-                 * @member {"sharedProgramBlueprint"|undefined} payload
-                 * @memberof LiftLog.Ui.Models.SharedItemPayload
-                 * @instance
-                 */
-                Object.defineProperty(SharedItemPayload.prototype, "payload", {
-                    get: $util.oneOfGetter($oneOfFields = ["sharedProgramBlueprint"]),
-                    set: $util.oneOfSetter($oneOfFields)
-                });
-
-                /**
-                 * Creates a new SharedItemPayload instance using the specified properties.
-                 * @function create
-                 * @memberof LiftLog.Ui.Models.SharedItemPayload
-                 * @static
-                 * @param {LiftLog.Ui.Models.ISharedItemPayload=} [properties] Properties to set
-                 * @returns {LiftLog.Ui.Models.SharedItemPayload} SharedItemPayload instance
-                 */
-                SharedItemPayload.create = function create(properties) {
-                    return new SharedItemPayload(properties);
-                };
-
-                /**
-                 * Encodes the specified SharedItemPayload message. Does not implicitly {@link LiftLog.Ui.Models.SharedItemPayload.verify|verify} messages.
-                 * @function encode
-                 * @memberof LiftLog.Ui.Models.SharedItemPayload
-                 * @static
-                 * @param {LiftLog.Ui.Models.ISharedItemPayload} message SharedItemPayload message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                SharedItemPayload.encode = function encode(message, writer) {
-                    if (!writer)
-                        writer = $Writer.create();
-                    if (message.sharedProgramBlueprint != null && Object.hasOwnProperty.call(message, "sharedProgramBlueprint"))
-                        $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.encode(message.sharedProgramBlueprint, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                    return writer;
-                };
-
-                /**
-                 * Encodes the specified SharedItemPayload message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SharedItemPayload.verify|verify} messages.
-                 * @function encodeDelimited
-                 * @memberof LiftLog.Ui.Models.SharedItemPayload
-                 * @static
-                 * @param {LiftLog.Ui.Models.ISharedItemPayload} message SharedItemPayload message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                SharedItemPayload.encodeDelimited = function encodeDelimited(message, writer) {
-                    return this.encode(message, writer).ldelim();
-                };
-
-                /**
-                 * Decodes a SharedItemPayload message from the specified reader or buffer.
-                 * @function decode
-                 * @memberof LiftLog.Ui.Models.SharedItemPayload
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @param {number} [length] Message length if known beforehand
-                 * @returns {LiftLog.Ui.Models.SharedItemPayload} SharedItemPayload
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                SharedItemPayload.decode = function decode(reader, length, error) {
-                    if (!(reader instanceof $Reader))
-                        reader = $Reader.create(reader);
-                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.SharedItemPayload();
-                    while (reader.pos < end) {
-                        let tag = reader.uint32();
-                        if (tag === error)
-                            break;
-                        switch (tag >>> 3) {
-                        case 1: {
-                                message.sharedProgramBlueprint = $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.decode(reader, reader.uint32());
-                                break;
-                            }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
-                        }
-                    }
-                    return message;
-                };
-
-                /**
-                 * Decodes a SharedItemPayload message from the specified reader or buffer, length delimited.
-                 * @function decodeDelimited
-                 * @memberof LiftLog.Ui.Models.SharedItemPayload
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @returns {LiftLog.Ui.Models.SharedItemPayload} SharedItemPayload
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                SharedItemPayload.decodeDelimited = function decodeDelimited(reader) {
-                    if (!(reader instanceof $Reader))
-                        reader = new $Reader(reader);
-                    return this.decode(reader, reader.uint32());
-                };
-
-                /**
-                 * Verifies a SharedItemPayload message.
-                 * @function verify
-                 * @memberof LiftLog.Ui.Models.SharedItemPayload
-                 * @static
-                 * @param {Object.<string,*>} message Plain object to verify
-                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                 */
-                SharedItemPayload.verify = function verify(message) {
-                    if (typeof message !== "object" || message === null)
-                        return "object expected";
-                    let properties = {};
-                    if (message.sharedProgramBlueprint != null && message.hasOwnProperty("sharedProgramBlueprint")) {
-                        properties.payload = 1;
-                        {
-                            let error = $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.verify(message.sharedProgramBlueprint);
-                            if (error)
-                                return "sharedProgramBlueprint." + error;
-                        }
-                    }
-                    return null;
-                };
-
-                /**
-                 * Creates a SharedItemPayload message from a plain object. Also converts values to their respective internal types.
-                 * @function fromObject
-                 * @memberof LiftLog.Ui.Models.SharedItemPayload
-                 * @static
-                 * @param {Object.<string,*>} object Plain object
-                 * @returns {LiftLog.Ui.Models.SharedItemPayload} SharedItemPayload
-                 */
-                SharedItemPayload.fromObject = function fromObject(object) {
-                    if (object instanceof $root.LiftLog.Ui.Models.SharedItemPayload)
-                        return object;
-                    let message = new $root.LiftLog.Ui.Models.SharedItemPayload();
-                    if (object.sharedProgramBlueprint != null) {
-                        if (typeof object.sharedProgramBlueprint !== "object")
-                            throw TypeError(".LiftLog.Ui.Models.SharedItemPayload.sharedProgramBlueprint: object expected");
-                        message.sharedProgramBlueprint = $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.fromObject(object.sharedProgramBlueprint);
-                    }
-                    return message;
-                };
-
-                /**
-                 * Creates a plain object from a SharedItemPayload message. Also converts values to other types if specified.
-                 * @function toObject
-                 * @memberof LiftLog.Ui.Models.SharedItemPayload
-                 * @static
-                 * @param {LiftLog.Ui.Models.SharedItemPayload} message SharedItemPayload
-                 * @param {$protobuf.IConversionOptions} [options] Conversion options
-                 * @returns {Object.<string,*>} Plain object
-                 */
-                SharedItemPayload.toObject = function toObject(message, options) {
-                    if (!options)
-                        options = {};
-                    let object = {};
-                    if (message.sharedProgramBlueprint != null && message.hasOwnProperty("sharedProgramBlueprint")) {
-                        object.sharedProgramBlueprint = $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.toObject(message.sharedProgramBlueprint, options);
-                        if (options.oneofs)
-                            object.payload = "sharedProgramBlueprint";
-                    }
-                    return object;
-                };
-
-                /**
-                 * Converts this SharedItemPayload to JSON.
-                 * @function toJSON
-                 * @memberof LiftLog.Ui.Models.SharedItemPayload
-                 * @instance
-                 * @returns {Object.<string,*>} JSON object
-                 */
-                SharedItemPayload.prototype.toJSON = function toJSON() {
-                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                };
-
-                /**
-                 * Gets the default type url for SharedItemPayload
-                 * @function getTypeUrl
-                 * @memberof LiftLog.Ui.Models.SharedItemPayload
-                 * @static
-                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                 * @returns {string} The default type url
-                 */
-                SharedItemPayload.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-                    if (typeUrlPrefix === undefined) {
-                        typeUrlPrefix = "type.googleapis.com";
-                    }
-                    return typeUrlPrefix + "/LiftLog.Ui.Models.SharedItemPayload";
-                };
-
-                return SharedItemPayload;
-            })();
-
-            Models.SharedProgramBlueprintPayload = (function() {
-
-                /**
-                 * Properties of a SharedProgramBlueprintPayload.
-                 * @memberof LiftLog.Ui.Models
-                 * @interface ISharedProgramBlueprintPayload
-                 * @property {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1|null} [programBlueprint] SharedProgramBlueprintPayload programBlueprint
-                 */
-
-                /**
-                 * Constructs a new SharedProgramBlueprintPayload.
-                 * @memberof LiftLog.Ui.Models
-                 * @classdesc Represents a SharedProgramBlueprintPayload.
-                 * @implements ISharedProgramBlueprintPayload
-                 * @constructor
-                 * @param {LiftLog.Ui.Models.ISharedProgramBlueprintPayload=} [properties] Properties to set
-                 */
-                function SharedProgramBlueprintPayload(properties) {
-                    if (properties)
-                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                            if (properties[keys[i]] != null)
-                                this[keys[i]] = properties[keys[i]];
-                }
-
-                /**
-                 * SharedProgramBlueprintPayload programBlueprint.
-                 * @member {LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1|null|undefined} programBlueprint
-                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
-                 * @instance
-                 */
-                SharedProgramBlueprintPayload.prototype.programBlueprint = null;
-
-                /**
-                 * Creates a new SharedProgramBlueprintPayload instance using the specified properties.
-                 * @function create
-                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
-                 * @static
-                 * @param {LiftLog.Ui.Models.ISharedProgramBlueprintPayload=} [properties] Properties to set
-                 * @returns {LiftLog.Ui.Models.SharedProgramBlueprintPayload} SharedProgramBlueprintPayload instance
-                 */
-                SharedProgramBlueprintPayload.create = function create(properties) {
-                    return new SharedProgramBlueprintPayload(properties);
-                };
-
-                /**
-                 * Encodes the specified SharedProgramBlueprintPayload message. Does not implicitly {@link LiftLog.Ui.Models.SharedProgramBlueprintPayload.verify|verify} messages.
-                 * @function encode
-                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
-                 * @static
-                 * @param {LiftLog.Ui.Models.ISharedProgramBlueprintPayload} message SharedProgramBlueprintPayload message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                SharedProgramBlueprintPayload.encode = function encode(message, writer) {
-                    if (!writer)
-                        writer = $Writer.create();
-                    if (message.programBlueprint != null && Object.hasOwnProperty.call(message, "programBlueprint"))
-                        $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.encode(message.programBlueprint, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                    return writer;
-                };
-
-                /**
-                 * Encodes the specified SharedProgramBlueprintPayload message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SharedProgramBlueprintPayload.verify|verify} messages.
-                 * @function encodeDelimited
-                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
-                 * @static
-                 * @param {LiftLog.Ui.Models.ISharedProgramBlueprintPayload} message SharedProgramBlueprintPayload message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                SharedProgramBlueprintPayload.encodeDelimited = function encodeDelimited(message, writer) {
-                    return this.encode(message, writer).ldelim();
-                };
-
-                /**
-                 * Decodes a SharedProgramBlueprintPayload message from the specified reader or buffer.
-                 * @function decode
-                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @param {number} [length] Message length if known beforehand
-                 * @returns {LiftLog.Ui.Models.SharedProgramBlueprintPayload} SharedProgramBlueprintPayload
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                SharedProgramBlueprintPayload.decode = function decode(reader, length, error) {
-                    if (!(reader instanceof $Reader))
-                        reader = $Reader.create(reader);
-                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload();
-                    while (reader.pos < end) {
-                        let tag = reader.uint32();
-                        if (tag === error)
-                            break;
-                        switch (tag >>> 3) {
-                        case 1: {
-                                message.programBlueprint = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.decode(reader, reader.uint32());
-                                break;
-                            }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
-                        }
-                    }
-                    return message;
-                };
-
-                /**
-                 * Decodes a SharedProgramBlueprintPayload message from the specified reader or buffer, length delimited.
-                 * @function decodeDelimited
-                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @returns {LiftLog.Ui.Models.SharedProgramBlueprintPayload} SharedProgramBlueprintPayload
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                SharedProgramBlueprintPayload.decodeDelimited = function decodeDelimited(reader) {
-                    if (!(reader instanceof $Reader))
-                        reader = new $Reader(reader);
-                    return this.decode(reader, reader.uint32());
-                };
-
-                /**
-                 * Verifies a SharedProgramBlueprintPayload message.
-                 * @function verify
-                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
-                 * @static
-                 * @param {Object.<string,*>} message Plain object to verify
-                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                 */
-                SharedProgramBlueprintPayload.verify = function verify(message) {
-                    if (typeof message !== "object" || message === null)
-                        return "object expected";
-                    if (message.programBlueprint != null && message.hasOwnProperty("programBlueprint")) {
-                        let error = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.verify(message.programBlueprint);
-                        if (error)
-                            return "programBlueprint." + error;
-                    }
-                    return null;
-                };
-
-                /**
-                 * Creates a SharedProgramBlueprintPayload message from a plain object. Also converts values to their respective internal types.
-                 * @function fromObject
-                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
-                 * @static
-                 * @param {Object.<string,*>} object Plain object
-                 * @returns {LiftLog.Ui.Models.SharedProgramBlueprintPayload} SharedProgramBlueprintPayload
-                 */
-                SharedProgramBlueprintPayload.fromObject = function fromObject(object) {
-                    if (object instanceof $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload)
-                        return object;
-                    let message = new $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload();
-                    if (object.programBlueprint != null) {
-                        if (typeof object.programBlueprint !== "object")
-                            throw TypeError(".LiftLog.Ui.Models.SharedProgramBlueprintPayload.programBlueprint: object expected");
-                        message.programBlueprint = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.fromObject(object.programBlueprint);
-                    }
-                    return message;
-                };
-
-                /**
-                 * Creates a plain object from a SharedProgramBlueprintPayload message. Also converts values to other types if specified.
-                 * @function toObject
-                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
-                 * @static
-                 * @param {LiftLog.Ui.Models.SharedProgramBlueprintPayload} message SharedProgramBlueprintPayload
-                 * @param {$protobuf.IConversionOptions} [options] Conversion options
-                 * @returns {Object.<string,*>} Plain object
-                 */
-                SharedProgramBlueprintPayload.toObject = function toObject(message, options) {
-                    if (!options)
-                        options = {};
-                    let object = {};
-                    if (options.defaults)
-                        object.programBlueprint = null;
-                    if (message.programBlueprint != null && message.hasOwnProperty("programBlueprint"))
-                        object.programBlueprint = $root.LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1.toObject(message.programBlueprint, options);
-                    return object;
-                };
-
-                /**
-                 * Converts this SharedProgramBlueprintPayload to JSON.
-                 * @function toJSON
-                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
-                 * @instance
-                 * @returns {Object.<string,*>} JSON object
-                 */
-                SharedProgramBlueprintPayload.prototype.toJSON = function toJSON() {
-                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                };
-
-                /**
-                 * Gets the default type url for SharedProgramBlueprintPayload
-                 * @function getTypeUrl
-                 * @memberof LiftLog.Ui.Models.SharedProgramBlueprintPayload
-                 * @static
-                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                 * @returns {string} The default type url
-                 */
-                SharedProgramBlueprintPayload.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-                    if (typeUrlPrefix === undefined) {
-                        typeUrlPrefix = "type.googleapis.com";
-                    }
-                    return typeUrlPrefix + "/LiftLog.Ui.Models.SharedProgramBlueprintPayload";
-                };
-
-                return SharedProgramBlueprintPayload;
             })();
 
             return Models;
