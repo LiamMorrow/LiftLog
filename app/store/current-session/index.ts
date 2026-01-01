@@ -26,6 +26,7 @@ import { Draft, WritableDraft } from 'immer';
 import Enumerable from 'linq';
 import * as Sentry from '@sentry/react-native';
 import { PlanDiff } from '@/models/blueprint-diff';
+import { WorkoutEvent } from '@/models/workout-worker-models';
 
 interface CurrentSessionState {
   isHydrated: boolean;
@@ -479,6 +480,10 @@ export const setCurrentSessionFromBlueprint = createAction<{
 
 export const persistCurrentSession = createAction<SessionTarget>(
   'persistCurrentSession',
+);
+
+export const broadcastWorkoutEvent = createAction<WorkoutEvent>(
+  'broadcastWorkoutEvent',
 );
 
 export const {

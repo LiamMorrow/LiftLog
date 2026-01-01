@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package LiftLog.Ui.Models.WorkoutEvent;
+
+import "proto/SessionHistoryDao/SessionHistoryDaoV2.proto";
+import "google/protobuf/timestamp.proto";
+
+message WorkoutEvent {
+  oneof event_payload {
+    // Lifecycle
+
+    // Emitted when a workout is loaded or started. Should init the worker
+    WorkoutStarted workout_started = 1;
+    // Emitted when anything changes in the workout, including when sets are completed
+    WorkoutUpdated workout_updated = 2;
+    // Emitted when a workout is ended, worker should stop any in workout things like timers
+    WorkoutEnded workout_ended = 3;
+
+    // Interactions
+
+    TimerStarted timer_started = 4;
+  }
+}
+
+message WorkoutStarted {
+  LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2 workout = 1;
+}
+
+message WorkoutUpdated {
+  LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2 workout = 1;
+}
+
+message WorkoutEnded {}
+
+message TimerStarted {
+  google.protobuf.Timestamp started_at = 1;
+  google.protobuf.Timestamp partially_end_at = 2;
+  google.protobuf.Timestamp end_at = 3;
+}

@@ -26,8 +26,12 @@ import { List, Portal, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 import { useFormatDate } from '@/hooks/useFormatDate';
+import { requestPermissionsAsync } from 'expo-notifications';
 
 export function WelcomeWizard() {
+  const notificationsEnabled = useAppSelector(
+    (x) => x.settings.restNotifications,
+  );
   const formatDate = useFormatDate();
   const daysOfWeekOptions: SelectButtonOption<DayOfWeek>[] = [
     {
@@ -83,11 +87,14 @@ export function WelcomeWizard() {
 
   const totalPages = 3;
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentPage < totalPages - 1) {
       setCurrentPage(currentPage + 1);
     } else {
       dispatch(setWelcomeWizardCompleted(true));
+      if (notificationsEnabled) {
+        await requestPermissionsAsync();
+      }
     }
   };
 
@@ -269,7 +276,7 @@ export function WelcomeWizard() {
                 <Button
                   mode="contained"
                   testID="welcome-wizard-next"
-                  onPress={handleNext}
+                  onPress={() => void handleNext()}
                   style={styles.button}
                 >
                   {currentPage === totalPages - 1
