@@ -197,14 +197,14 @@ export function addFeedItemEffects() {
               a instanceof SessionFeedItem
                 ? a.session.date
                     .atStartOfDay()
-                    .atZone(ZoneId.SYSTEM)
+                    .atZone(ZoneId.systemDefault())
                     .toInstant()
                 : a.timestamp;
             const bTime =
               b instanceof SessionFeedItem
                 ? b.session.date
                     .atStartOfDay()
-                    .atZone(ZoneId.SYSTEM)
+                    .atZone(ZoneId.systemDefault())
                     .toInstant()
                 : b.timestamp;
 

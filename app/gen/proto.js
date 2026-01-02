@@ -1948,6 +1948,7 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @property {number|null} [repsCompleted] RecordedSetDaoV2 repsCompleted
                      * @property {LiftLog.Ui.Models.ITimeOnlyDao|null} [completionTime] RecordedSetDaoV2 completionTime
                      * @property {LiftLog.Ui.Models.IDateOnlyDao|null} [completionDate] RecordedSetDaoV2 completionDate
+                     * @property {LiftLog.Ui.Models.IZoneOffsetDao|null} [completionOffset] RecordedSetDaoV2 completionOffset
                      */
 
                     /**
@@ -1989,6 +1990,14 @@ export const LiftLog = $root.LiftLog = (() => {
                      */
                     RecordedSetDaoV2.prototype.completionDate = null;
 
+                    /**
+                     * RecordedSetDaoV2 completionOffset.
+                     * @member {LiftLog.Ui.Models.IZoneOffsetDao|null|undefined} completionOffset
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedSetDaoV2
+                     * @instance
+                     */
+                    RecordedSetDaoV2.prototype.completionOffset = null;
+
                     // OneOf field names bound to virtual getters and setters
                     let $oneOfFields;
 
@@ -2000,6 +2009,17 @@ export const LiftLog = $root.LiftLog = (() => {
                      */
                     Object.defineProperty(RecordedSetDaoV2.prototype, "_completionDate", {
                         get: $util.oneOfGetter($oneOfFields = ["completionDate"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * RecordedSetDaoV2 _completionOffset.
+                     * @member {"completionOffset"|undefined} _completionOffset
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedSetDaoV2
+                     * @instance
+                     */
+                    Object.defineProperty(RecordedSetDaoV2.prototype, "_completionOffset", {
+                        get: $util.oneOfGetter($oneOfFields = ["completionOffset"]),
                         set: $util.oneOfSetter($oneOfFields)
                     });
 
@@ -2033,6 +2053,8 @@ export const LiftLog = $root.LiftLog = (() => {
                             $root.LiftLog.Ui.Models.TimeOnlyDao.encode(message.completionTime, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
                         if (message.completionDate != null && Object.hasOwnProperty.call(message, "completionDate"))
                             $root.LiftLog.Ui.Models.DateOnlyDao.encode(message.completionDate, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                        if (message.completionOffset != null && Object.hasOwnProperty.call(message, "completionOffset"))
+                            $root.LiftLog.Ui.Models.ZoneOffsetDao.encode(message.completionOffset, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
                         return writer;
                     };
 
@@ -2079,6 +2101,10 @@ export const LiftLog = $root.LiftLog = (() => {
                                 }
                             case 3: {
                                     message.completionDate = $root.LiftLog.Ui.Models.DateOnlyDao.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 4: {
+                                    message.completionOffset = $root.LiftLog.Ui.Models.ZoneOffsetDao.decode(reader, reader.uint32());
                                     break;
                                 }
                             default:
@@ -2133,6 +2159,14 @@ export const LiftLog = $root.LiftLog = (() => {
                                     return "completionDate." + error;
                             }
                         }
+                        if (message.completionOffset != null && message.hasOwnProperty("completionOffset")) {
+                            properties._completionOffset = 1;
+                            {
+                                let error = $root.LiftLog.Ui.Models.ZoneOffsetDao.verify(message.completionOffset);
+                                if (error)
+                                    return "completionOffset." + error;
+                            }
+                        }
                         return null;
                     };
 
@@ -2159,6 +2193,11 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (typeof object.completionDate !== "object")
                                 throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedSetDaoV2.completionDate: object expected");
                             message.completionDate = $root.LiftLog.Ui.Models.DateOnlyDao.fromObject(object.completionDate);
+                        }
+                        if (object.completionOffset != null) {
+                            if (typeof object.completionOffset !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedSetDaoV2.completionOffset: object expected");
+                            message.completionOffset = $root.LiftLog.Ui.Models.ZoneOffsetDao.fromObject(object.completionOffset);
                         }
                         return message;
                     };
@@ -2188,6 +2227,11 @@ export const LiftLog = $root.LiftLog = (() => {
                             object.completionDate = $root.LiftLog.Ui.Models.DateOnlyDao.toObject(message.completionDate, options);
                             if (options.oneofs)
                                 object._completionDate = "completionDate";
+                        }
+                        if (message.completionOffset != null && message.hasOwnProperty("completionOffset")) {
+                            object.completionOffset = $root.LiftLog.Ui.Models.ZoneOffsetDao.toObject(message.completionOffset, options);
+                            if (options.oneofs)
+                                object._completionOffset = "completionOffset";
                         }
                         return object;
                     };
@@ -4875,6 +4919,7 @@ export const LiftLog = $root.LiftLog = (() => {
                  * @interface IDateTimeDao
                  * @property {LiftLog.Ui.Models.IDateOnlyDao|null} [date] DateTimeDao date
                  * @property {LiftLog.Ui.Models.ITimeOnlyDao|null} [time] DateTimeDao time
+                 * @property {LiftLog.Ui.Models.IZoneOffsetDao|null} [offset] DateTimeDao offset
                  */
 
                 /**
@@ -4909,6 +4954,28 @@ export const LiftLog = $root.LiftLog = (() => {
                 DateTimeDao.prototype.time = null;
 
                 /**
+                 * DateTimeDao offset.
+                 * @member {LiftLog.Ui.Models.IZoneOffsetDao|null|undefined} offset
+                 * @memberof LiftLog.Ui.Models.DateTimeDao
+                 * @instance
+                 */
+                DateTimeDao.prototype.offset = null;
+
+                // OneOf field names bound to virtual getters and setters
+                let $oneOfFields;
+
+                /**
+                 * DateTimeDao _offset.
+                 * @member {"offset"|undefined} _offset
+                 * @memberof LiftLog.Ui.Models.DateTimeDao
+                 * @instance
+                 */
+                Object.defineProperty(DateTimeDao.prototype, "_offset", {
+                    get: $util.oneOfGetter($oneOfFields = ["offset"]),
+                    set: $util.oneOfSetter($oneOfFields)
+                });
+
+                /**
                  * Creates a new DateTimeDao instance using the specified properties.
                  * @function create
                  * @memberof LiftLog.Ui.Models.DateTimeDao
@@ -4936,6 +5003,8 @@ export const LiftLog = $root.LiftLog = (() => {
                         $root.LiftLog.Ui.Models.DateOnlyDao.encode(message.date, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
                     if (message.time != null && Object.hasOwnProperty.call(message, "time"))
                         $root.LiftLog.Ui.Models.TimeOnlyDao.encode(message.time, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    if (message.offset != null && Object.hasOwnProperty.call(message, "offset"))
+                        $root.LiftLog.Ui.Models.ZoneOffsetDao.encode(message.offset, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
                     return writer;
                 };
 
@@ -4980,6 +5049,10 @@ export const LiftLog = $root.LiftLog = (() => {
                                 message.time = $root.LiftLog.Ui.Models.TimeOnlyDao.decode(reader, reader.uint32());
                                 break;
                             }
+                        case 3: {
+                                message.offset = $root.LiftLog.Ui.Models.ZoneOffsetDao.decode(reader, reader.uint32());
+                                break;
+                            }
                         default:
                             reader.skipType(tag & 7);
                             break;
@@ -5015,6 +5088,7 @@ export const LiftLog = $root.LiftLog = (() => {
                 DateTimeDao.verify = function verify(message) {
                     if (typeof message !== "object" || message === null)
                         return "object expected";
+                    let properties = {};
                     if (message.date != null && message.hasOwnProperty("date")) {
                         let error = $root.LiftLog.Ui.Models.DateOnlyDao.verify(message.date);
                         if (error)
@@ -5024,6 +5098,14 @@ export const LiftLog = $root.LiftLog = (() => {
                         let error = $root.LiftLog.Ui.Models.TimeOnlyDao.verify(message.time);
                         if (error)
                             return "time." + error;
+                    }
+                    if (message.offset != null && message.hasOwnProperty("offset")) {
+                        properties._offset = 1;
+                        {
+                            let error = $root.LiftLog.Ui.Models.ZoneOffsetDao.verify(message.offset);
+                            if (error)
+                                return "offset." + error;
+                        }
                     }
                     return null;
                 };
@@ -5050,6 +5132,11 @@ export const LiftLog = $root.LiftLog = (() => {
                             throw TypeError(".LiftLog.Ui.Models.DateTimeDao.time: object expected");
                         message.time = $root.LiftLog.Ui.Models.TimeOnlyDao.fromObject(object.time);
                     }
+                    if (object.offset != null) {
+                        if (typeof object.offset !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.DateTimeDao.offset: object expected");
+                        message.offset = $root.LiftLog.Ui.Models.ZoneOffsetDao.fromObject(object.offset);
+                    }
                     return message;
                 };
 
@@ -5074,6 +5161,11 @@ export const LiftLog = $root.LiftLog = (() => {
                         object.date = $root.LiftLog.Ui.Models.DateOnlyDao.toObject(message.date, options);
                     if (message.time != null && message.hasOwnProperty("time"))
                         object.time = $root.LiftLog.Ui.Models.TimeOnlyDao.toObject(message.time, options);
+                    if (message.offset != null && message.hasOwnProperty("offset")) {
+                        object.offset = $root.LiftLog.Ui.Models.ZoneOffsetDao.toObject(message.offset, options);
+                        if (options.oneofs)
+                            object._offset = "offset";
+                    }
                     return object;
                 };
 
@@ -5104,6 +5196,211 @@ export const LiftLog = $root.LiftLog = (() => {
                 };
 
                 return DateTimeDao;
+            })();
+
+            Models.ZoneOffsetDao = (function() {
+
+                /**
+                 * Properties of a ZoneOffsetDao.
+                 * @memberof LiftLog.Ui.Models
+                 * @interface IZoneOffsetDao
+                 * @property {number|null} [totalSeconds] ZoneOffsetDao totalSeconds
+                 */
+
+                /**
+                 * Constructs a new ZoneOffsetDao.
+                 * @memberof LiftLog.Ui.Models
+                 * @classdesc Represents a ZoneOffsetDao.
+                 * @implements IZoneOffsetDao
+                 * @constructor
+                 * @param {LiftLog.Ui.Models.IZoneOffsetDao=} [properties] Properties to set
+                 */
+                function ZoneOffsetDao(properties) {
+                    if (properties)
+                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * ZoneOffsetDao totalSeconds.
+                 * @member {number} totalSeconds
+                 * @memberof LiftLog.Ui.Models.ZoneOffsetDao
+                 * @instance
+                 */
+                ZoneOffsetDao.prototype.totalSeconds = 0;
+
+                /**
+                 * Creates a new ZoneOffsetDao instance using the specified properties.
+                 * @function create
+                 * @memberof LiftLog.Ui.Models.ZoneOffsetDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IZoneOffsetDao=} [properties] Properties to set
+                 * @returns {LiftLog.Ui.Models.ZoneOffsetDao} ZoneOffsetDao instance
+                 */
+                ZoneOffsetDao.create = function create(properties) {
+                    return new ZoneOffsetDao(properties);
+                };
+
+                /**
+                 * Encodes the specified ZoneOffsetDao message. Does not implicitly {@link LiftLog.Ui.Models.ZoneOffsetDao.verify|verify} messages.
+                 * @function encode
+                 * @memberof LiftLog.Ui.Models.ZoneOffsetDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IZoneOffsetDao} message ZoneOffsetDao message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                ZoneOffsetDao.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.totalSeconds != null && Object.hasOwnProperty.call(message, "totalSeconds"))
+                        writer.uint32(/* id 1, wireType 0 =*/8).int32(message.totalSeconds);
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified ZoneOffsetDao message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.ZoneOffsetDao.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof LiftLog.Ui.Models.ZoneOffsetDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.IZoneOffsetDao} message ZoneOffsetDao message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                ZoneOffsetDao.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a ZoneOffsetDao message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof LiftLog.Ui.Models.ZoneOffsetDao
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {LiftLog.Ui.Models.ZoneOffsetDao} ZoneOffsetDao
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                ZoneOffsetDao.decode = function decode(reader, length, error) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.ZoneOffsetDao();
+                    while (reader.pos < end) {
+                        let tag = reader.uint32();
+                        if (tag === error)
+                            break;
+                        switch (tag >>> 3) {
+                        case 1: {
+                                message.totalSeconds = reader.int32();
+                                break;
+                            }
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a ZoneOffsetDao message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof LiftLog.Ui.Models.ZoneOffsetDao
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {LiftLog.Ui.Models.ZoneOffsetDao} ZoneOffsetDao
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                ZoneOffsetDao.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a ZoneOffsetDao message.
+                 * @function verify
+                 * @memberof LiftLog.Ui.Models.ZoneOffsetDao
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                ZoneOffsetDao.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.totalSeconds != null && message.hasOwnProperty("totalSeconds"))
+                        if (!$util.isInteger(message.totalSeconds))
+                            return "totalSeconds: integer expected";
+                    return null;
+                };
+
+                /**
+                 * Creates a ZoneOffsetDao message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof LiftLog.Ui.Models.ZoneOffsetDao
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {LiftLog.Ui.Models.ZoneOffsetDao} ZoneOffsetDao
+                 */
+                ZoneOffsetDao.fromObject = function fromObject(object) {
+                    if (object instanceof $root.LiftLog.Ui.Models.ZoneOffsetDao)
+                        return object;
+                    let message = new $root.LiftLog.Ui.Models.ZoneOffsetDao();
+                    if (object.totalSeconds != null)
+                        message.totalSeconds = object.totalSeconds | 0;
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a ZoneOffsetDao message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof LiftLog.Ui.Models.ZoneOffsetDao
+                 * @static
+                 * @param {LiftLog.Ui.Models.ZoneOffsetDao} message ZoneOffsetDao
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                ZoneOffsetDao.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    let object = {};
+                    if (options.defaults)
+                        object.totalSeconds = 0;
+                    if (message.totalSeconds != null && message.hasOwnProperty("totalSeconds"))
+                        object.totalSeconds = message.totalSeconds;
+                    return object;
+                };
+
+                /**
+                 * Converts this ZoneOffsetDao to JSON.
+                 * @function toJSON
+                 * @memberof LiftLog.Ui.Models.ZoneOffsetDao
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                ZoneOffsetDao.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                /**
+                 * Gets the default type url for ZoneOffsetDao
+                 * @function getTypeUrl
+                 * @memberof LiftLog.Ui.Models.ZoneOffsetDao
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                ZoneOffsetDao.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/LiftLog.Ui.Models.ZoneOffsetDao";
+                };
+
+                return ZoneOffsetDao;
             })();
 
             /**

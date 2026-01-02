@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ColorChoice, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Rest } from '@/models/blueprint-models';
-import { Duration, LocalDateTime } from '@js-joda/core';
+import { Duration, OffsetDateTime } from '@js-joda/core';
 import Svg, { Path } from 'react-native-svg';
 import Animated, {
   useSharedValue,
@@ -18,7 +18,7 @@ import Holdable from '@/components/presentation/holdable';
 
 interface RestTimerProps {
   rest: Rest;
-  startTime: LocalDateTime;
+  startTime: OffsetDateTime;
   failed: boolean;
   style?: ViewStyle;
   resetTimer: () => void;
@@ -40,7 +40,7 @@ export default function RestTimer({
 
   // Callback to get all timer-related values
   const getTimerState = useCallback(() => {
-    const now = LocalDateTime.now();
+    const now = OffsetDateTime.now();
     const diffMs = Duration.between(startTime, now);
     const timeSinceStart = formatTimeSpan(diffMs);
     const firstProgressBarProgress = failed

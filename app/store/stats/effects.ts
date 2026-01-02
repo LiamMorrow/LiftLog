@@ -8,7 +8,7 @@ import {
   TimeSpentExercise,
   TimeTrackedStatistic,
 } from './index';
-import { Duration, LocalDate, LocalDateTime } from '@js-joda/core';
+import { Duration, LocalDate, OffsetDateTime, ZoneId } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { fetchOverallStats, setOverallStats, setStatsIsLoading } from './index';
 import { addEffect } from '@/store/store';
@@ -50,7 +50,10 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
   const bodyWeightStatistics = Enumerable.from(sessions)
     .where((s) => !!s.bodyweight)
     .select((session) => ({
-      dateTime: session.date.atTime(12, 0), // Use noon for LocalDate
+      dateTime: session.date
+        .atTime(12, 0)
+        .atZone(ZoneId.systemDefault())
+        .toOffsetDateTime(), // Use noon for LocalDate
       value: session.bodyweight!,
     }))
     .orderBy((x) => x.dateTime.toString())
@@ -80,7 +83,10 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
       .select((date) => {
         const session = group.find((s) => s.date.equals(date));
         return {
-          dateTime: date.atTime(12, 0),
+          dateTime: date
+            .atTime(12, 0)
+            .atZone(ZoneId.systemDefault())
+            .toOffsetDateTime(),
           value: session ? session.totalWeightLifted : undefined,
         } satisfies TimeTrackedStatistic<Weight | undefined>;
       })
@@ -218,7 +224,7 @@ function computeStats(sessions: Session[]): GranularStatisticView | undefined {
   });
 
   // --- Average time between sets ---
-  const allSetTimes: LocalDateTime[] = [];
+  const allSetTimes: OffsetDateTime[] = [];
   for (const session of sessionsWithExercises) {
     for (const ex of session.recordedExercises) {
       if (ex instanceof RecordedWeightedExercise) {

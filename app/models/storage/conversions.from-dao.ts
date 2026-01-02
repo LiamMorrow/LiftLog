@@ -34,8 +34,9 @@ import {
   Duration,
   Instant,
   LocalDate,
-  LocalDateTime,
   LocalTime,
+  OffsetDateTime,
+  ZoneOffset,
 } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { UuidConversionError } from '@/models/storage/uuid-conversion-error';
@@ -115,11 +116,18 @@ export function fromDateOnlyDao(
 
 function fromDateTimeDao(
   dao: LiftLog.Ui.Models.IDateTimeDao | null | undefined,
-): LocalDateTime | undefined {
+): OffsetDateTime | undefined {
   if (!dao) {
     return undefined;
   }
-  return fromDateOnlyDao(dao.date).atTime(fromTimeOnlyDao(dao.time));
+  const localDateTime = fromDateOnlyDao(dao.date).atTime(
+    fromTimeOnlyDao(dao.time),
+  );
+  return localDateTime.atOffset(
+    dao.offset
+      ? ZoneOffset.ofTotalSeconds(dao.offset.totalSeconds!)
+      : ZoneOffset.systemDefault().rules().offsetOfLocalDateTime(localDateTime),
+  );
 }
 
 export function fromTimestampDao(
@@ -139,11 +147,19 @@ export function fromRecordedSetDao(
   recordedSetDao: LiftLog.Ui.Models.SessionHistoryDao.IRecordedSetDaoV2,
 ): RecordedSet {
   const dateCompleted = recordedSetDao.completionDate ?? sessionDate;
+  const completionLocalDateTime = fromDateOnlyDao(dateCompleted).atTime(
+    fromTimeOnlyDao(recordedSetDao.completionTime),
+  );
+  const completionDateTime = completionLocalDateTime.atOffset(
+    recordedSetDao.completionOffset
+      ? ZoneOffset.ofTotalSeconds(recordedSetDao.completionOffset.totalSeconds!)
+      : ZoneOffset.systemDefault()
+          .rules()
+          .offsetOfLocalDateTime(completionLocalDateTime),
+  );
 
   return RecordedSet.fromPOJO({
-    completionDateTime: fromDateOnlyDao(dateCompleted).atTime(
-      fromTimeOnlyDao(recordedSetDao.completionTime),
-    ),
+    completionDateTime,
     repsCompleted: recordedSetDao.repsCompleted!,
   });
 }

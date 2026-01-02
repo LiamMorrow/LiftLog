@@ -38,7 +38,7 @@ import FullHeightScrollView from '@/components/presentation/full-height-scroll-v
 import { ExerciseBlueprint } from '@/models/blueprint-models';
 import FullScreenDialog from '@/components/presentation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/exercise-editor';
-import { LocalDateTime, LocalTime } from '@js-joda/core';
+import { LocalTime, OffsetDateTime, ZoneId } from '@js-joda/core';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { UnknownAction } from '@reduxjs/toolkit';
 import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
@@ -72,7 +72,7 @@ export default function SessionComponent(props: {
     10,
   );
   const resetTimer = () => {
-    storeDispatch(setWorkoutSessionLastSetTime(LocalDateTime.now()));
+    storeDispatch(setWorkoutSessionLastSetTime(OffsetDateTime.now()));
     storeDispatch(notifySetTimer());
   };
 
@@ -153,7 +153,7 @@ export default function SessionComponent(props: {
         exercise.resistance
       );
       const newCompletionDateTime = hasData
-        ? (exercise.completionDateTime ?? LocalDateTime.now())
+        ? (exercise.completionDateTime ?? OffsetDateTime.now())
         : undefined;
 
       dispatch(setCompletionTimeForCardioExercise, {
@@ -194,9 +194,12 @@ export default function SessionComponent(props: {
               setIndex,
               time:
                 props.target === 'workoutSession'
-                  ? LocalDateTime.now()
+                  ? OffsetDateTime.now()
                   : (session.lastExercise?.latestTime ??
-                    session.date.atTime(LocalTime.now())),
+                    session.date
+                      .atTime(LocalTime.now())
+                      .atZone(ZoneId.systemDefault())
+                      .toOffsetDateTime()),
             });
             if (props.target === 'workoutSession')
               storeDispatch(notifySetTimer());
@@ -207,9 +210,12 @@ export default function SessionComponent(props: {
               setIndex,
               time:
                 props.target === 'workoutSession'
-                  ? LocalDateTime.now()
+                  ? OffsetDateTime.now()
                   : (session.lastExercise?.latestTime ??
-                    session.date.atTime(LocalTime.now())),
+                    session.date
+                      .atTime(LocalTime.now())
+                      .atZone(ZoneId.systemDefault())
+                      .toOffsetDateTime()),
             });
             if (props.target === 'workoutSession')
               storeDispatch(notifySetTimer());

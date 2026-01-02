@@ -4,6 +4,7 @@ import { Session } from '@/models/session-models';
 import Enumerable from 'linq';
 import { RootState } from '@/store';
 import { KeyedExerciseBlueprint } from '@/models/blueprint-models';
+import { ZoneId } from '@js-joda/core';
 
 export class ProgressRepository {
   constructor(private getState: () => RootState) {}
@@ -22,7 +23,12 @@ export class ProgressRepository {
       .select((x) => Session.fromPOJO(x.value))
       .orderByDescending((x) => x.date, TemporalComparer)
       .thenByDescending(
-        (x) => x.lastExercise?.latestTime ?? x.date.atStartOfDay(),
+        (x) =>
+          x.lastExercise?.latestTime ??
+          x.date
+            .atStartOfDay()
+            .atZone(ZoneId.systemDefault())
+            .toOffsetDateTime(),
         TemporalComparer,
       );
   }

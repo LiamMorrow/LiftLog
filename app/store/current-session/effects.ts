@@ -23,7 +23,7 @@ import {
 import { addEffect } from '@/store/store';
 import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
 import { addStoredSession } from '@/store/stored-sessions';
-import { LocalDateTime } from '@js-joda/core';
+import { OffsetDateTime } from '@js-joda/core';
 import { selectPreferredWeightUnit } from '@/store/settings';
 import { diffSessionBlueprints } from '@/models/blueprint-diff';
 
@@ -230,7 +230,7 @@ export function applyCurrentSessionEffects() {
               payload: {
                 exerciseIndex,
                 setIndex,
-                time: LocalDateTime.now(),
+                time: OffsetDateTime.now(),
               },
             }),
           );

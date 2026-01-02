@@ -14,7 +14,7 @@ import {
 } from '@/models/session-models';
 import { getCycledRepCount } from '@/store/current-session/helpers';
 import { SafeDraft, toSafeDraft } from '@/utils/store-helpers';
-import { Duration, LocalDate, LocalDateTime } from '@js-joda/core';
+import { Duration, LocalDate, OffsetDateTime } from '@js-joda/core';
 import {
   createAction,
   createSelector,
@@ -33,7 +33,7 @@ interface CurrentSessionState {
   historySession: SessionPOJO | undefined;
   feedSession: SessionPOJO | undefined;
   latestSetTimerNotificationId: string | undefined;
-  workoutSessionLastSetTime: LocalDateTime | undefined;
+  workoutSessionLastSetTime: OffsetDateTime | undefined;
   currentPlanDiff: PlanDiff | undefined;
 }
 
@@ -134,14 +134,16 @@ const currentSessionSlice = createSlice({
               const setDate = ps.set.completionDateTime.toLocalDate();
               ps.set.completionDateTime = ps.set.completionDateTime
                 .toLocalTime()
-                .atDate(getAdjustedDate(setDate));
+                .atDate(getAdjustedDate(setDate))
+                .atOffset(ps.set.completionDateTime.offset());
             }
           });
         } else {
           if (re.completionDateTime) {
             re.completionDateTime = re.completionDateTime
               .toLocalTime()
-              .atDate(getAdjustedDate(re.completionDateTime.toLocalDate()));
+              .atDate(getAdjustedDate(re.completionDateTime.toLocalDate()))
+              .atOffset(re.completionDateTime.offset());
           }
         }
       });
@@ -153,7 +155,7 @@ const currentSessionSlice = createSlice({
         action: {
           exerciseIndex: number;
           setIndex: number;
-          time: LocalDateTime;
+          time: OffsetDateTime;
         },
         target,
         state,
@@ -267,7 +269,7 @@ const currentSessionSlice = createSlice({
           exerciseIndex: number;
           setIndex: number;
           reps: number | undefined;
-          time: LocalDateTime;
+          time: OffsetDateTime;
         },
         target,
         state,
@@ -376,7 +378,7 @@ const currentSessionSlice = createSlice({
 
     setWorkoutSessionLastSetTime(
       state,
-      action: PayloadAction<LocalDateTime | undefined>,
+      action: PayloadAction<OffsetDateTime | undefined>,
     ) {
       state.workoutSessionLastSetTime = action.payload;
     },
@@ -435,7 +437,7 @@ const currentSessionSlice = createSlice({
     setCompletionTimeForCardioExercise: targetedSessionAction(
       (
         session,
-        action: { time: LocalDateTime | undefined; exerciseIndex: number },
+        action: { time: OffsetDateTime | undefined; exerciseIndex: number },
       ) => {
         const exercise = session.recordedExercises[action.exerciseIndex];
         if (exercise.type !== 'CardioRecordedExercise') {

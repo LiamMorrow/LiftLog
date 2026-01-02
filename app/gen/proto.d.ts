@@ -662,6 +662,9 @@ export namespace LiftLog {
 
                     /** RecordedSetDaoV2 completionDate */
                     completionDate?: (LiftLog.Ui.Models.IDateOnlyDao|null);
+
+                    /** RecordedSetDaoV2 completionOffset */
+                    completionOffset?: (LiftLog.Ui.Models.IZoneOffsetDao|null);
                 }
 
                 /** Represents a RecordedSetDaoV2. */
@@ -682,8 +685,14 @@ export namespace LiftLog {
                     /** RecordedSetDaoV2 completionDate. */
                     public completionDate?: (LiftLog.Ui.Models.IDateOnlyDao|null);
 
+                    /** RecordedSetDaoV2 completionOffset. */
+                    public completionOffset?: (LiftLog.Ui.Models.IZoneOffsetDao|null);
+
                     /** RecordedSetDaoV2 _completionDate. */
                     public _completionDate?: "completionDate";
+
+                    /** RecordedSetDaoV2 _completionOffset. */
+                    public _completionOffset?: "completionOffset";
 
                     /**
                      * Creates a new RecordedSetDaoV2 instance using the specified properties.
@@ -1820,6 +1829,9 @@ export namespace LiftLog {
 
                 /** DateTimeDao time */
                 time?: (LiftLog.Ui.Models.ITimeOnlyDao|null);
+
+                /** DateTimeDao offset */
+                offset?: (LiftLog.Ui.Models.IZoneOffsetDao|null);
             }
 
             /** Represents a DateTimeDao. */
@@ -1836,6 +1848,12 @@ export namespace LiftLog {
 
                 /** DateTimeDao time. */
                 public time?: (LiftLog.Ui.Models.ITimeOnlyDao|null);
+
+                /** DateTimeDao offset. */
+                public offset?: (LiftLog.Ui.Models.IZoneOffsetDao|null);
+
+                /** DateTimeDao _offset. */
+                public _offset?: "offset";
 
                 /**
                  * Creates a new DateTimeDao instance using the specified properties.
@@ -1909,6 +1927,103 @@ export namespace LiftLog {
 
                 /**
                  * Gets the default type url for DateTimeDao
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a ZoneOffsetDao. */
+            interface IZoneOffsetDao {
+
+                /** ZoneOffsetDao totalSeconds */
+                totalSeconds?: (number|null);
+            }
+
+            /** Represents a ZoneOffsetDao. */
+            class ZoneOffsetDao implements IZoneOffsetDao {
+
+                /**
+                 * Constructs a new ZoneOffsetDao.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: LiftLog.Ui.Models.IZoneOffsetDao);
+
+                /** ZoneOffsetDao totalSeconds. */
+                public totalSeconds: number;
+
+                /**
+                 * Creates a new ZoneOffsetDao instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns ZoneOffsetDao instance
+                 */
+                public static create(properties?: LiftLog.Ui.Models.IZoneOffsetDao): LiftLog.Ui.Models.ZoneOffsetDao;
+
+                /**
+                 * Encodes the specified ZoneOffsetDao message. Does not implicitly {@link LiftLog.Ui.Models.ZoneOffsetDao.verify|verify} messages.
+                 * @param message ZoneOffsetDao message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: LiftLog.Ui.Models.IZoneOffsetDao, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified ZoneOffsetDao message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.ZoneOffsetDao.verify|verify} messages.
+                 * @param message ZoneOffsetDao message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: LiftLog.Ui.Models.IZoneOffsetDao, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a ZoneOffsetDao message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns ZoneOffsetDao
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): LiftLog.Ui.Models.ZoneOffsetDao;
+
+                /**
+                 * Decodes a ZoneOffsetDao message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns ZoneOffsetDao
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): LiftLog.Ui.Models.ZoneOffsetDao;
+
+                /**
+                 * Verifies a ZoneOffsetDao message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a ZoneOffsetDao message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns ZoneOffsetDao
+                 */
+                public static fromObject(object: { [k: string]: any }): LiftLog.Ui.Models.ZoneOffsetDao;
+
+                /**
+                 * Creates a plain object from a ZoneOffsetDao message. Also converts values to other types if specified.
+                 * @param message ZoneOffsetDao
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: LiftLog.Ui.Models.ZoneOffsetDao, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this ZoneOffsetDao to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for ZoneOffsetDao
                  * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                  * @returns The default type url
                  */

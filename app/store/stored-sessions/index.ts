@@ -8,7 +8,7 @@ import {
   NormalizedNameKey,
   ExerciseBlueprint,
 } from '@/models/blueprint-models';
-import { LocalDate, YearMonth } from '@js-joda/core';
+import { LocalDate, YearMonth, ZoneId } from '@js-joda/core';
 import {
   createAction,
   createSelector,
@@ -235,7 +235,12 @@ export const selectSessionsInMonth = createSelector(
       )
       .orderByDescending((x) => x.date, TemporalComparer)
       .thenByDescending(
-        (x) => x.lastExercise?.latestTime ?? x.date.atStartOfDay(),
+        (x) =>
+          x.lastExercise?.latestTime ??
+          x.date
+            .atStartOfDay()
+            .atZone(ZoneId.systemDefault())
+            .toOffsetDateTime(),
         TemporalComparer,
       )
       .toArray(),
