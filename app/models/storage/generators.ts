@@ -36,7 +36,7 @@ import {
 import {
   Duration,
   LocalDate,
-  LocalDateTime,
+  OffsetDateTime,
   LocalTime,
   ZoneOffset,
 } from '@js-joda/core';
@@ -75,11 +75,17 @@ export const LocalTimeGenerator = fc
   )
   .map(([hour, minute, second]) => LocalTime.of(hour, minute, second));
 
-export const LocalDateTimeGenerator = fc
-  .tuple(LocalDateGenerator, LocalTimeGenerator)
-  .map(([date, time]) => LocalDateTime.of(date, time));
-export const InstantGenerator = LocalDateTimeGenerator.map((dt) =>
-  dt.atOffset(ZoneOffset.UTC).toInstant(),
+export const ZoneOffsetGenerator = fc.oneof(
+  fc.constant(ZoneOffset.UTC),
+  fc.constant(ZoneOffset.ofHours(10)),
+  fc.constant(ZoneOffset.ofHours(-6)),
+);
+
+export const OffsetDateTimeGenerator = fc
+  .tuple(LocalDateGenerator, LocalTimeGenerator, ZoneOffsetGenerator)
+  .map(([date, time, zone]) => OffsetDateTime.of(date.atTime(time), zone));
+export const InstantGenerator = OffsetDateTimeGenerator.map((dt) =>
+  dt.toInstant(),
 );
 
 export const RestGenerator = fc.constantFrom(
@@ -128,7 +134,7 @@ export const RecordedSetGenerator = fc
   .record<RecordedSetPOJO>({
     type: fc.constant('RecordedSet'),
     repsCompleted: fc.integer({ min: 0, max: 100 }),
-    completionDateTime: LocalDateTimeGenerator,
+    completionDateTime: OffsetDateTimeGenerator,
   })
   .map(RecordedSet.fromPOJO);
 

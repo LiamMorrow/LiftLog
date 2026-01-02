@@ -1,5 +1,5 @@
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Duration, LocalDateTime, Period } from '@js-joda/core';
+import { Duration, OffsetDateTime, Period } from '@js-joda/core';
 import { Weight } from '@/models/weight';
 
 interface StatsState {
@@ -12,13 +12,13 @@ interface StatsState {
 }
 
 export interface TimeTrackedStatistic<T> {
-  dateTime: LocalDateTime;
+  dateTime: OffsetDateTime;
   value: T;
 }
 
 // We use this to ensure that when showing multiple series with disparate data, we can ensure that the x axis points are properly aligned
 export interface OptionalTimeTrackedStatistic<T> {
-  dateTime: LocalDateTime;
+  dateTime: OffsetDateTime;
   value: T | undefined;
 }
 

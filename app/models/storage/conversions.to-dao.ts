@@ -3,8 +3,8 @@ import {
   Duration,
   Instant,
   LocalDate,
-  LocalDateTime,
   LocalTime,
+  OffsetDateTime,
 } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Long from 'long';
@@ -299,7 +299,7 @@ export function toRecordedExerciseDao(
 }
 
 function toDateTimeDao(
-  model: LocalDateTime | undefined,
+  model: OffsetDateTime | undefined,
 ): LiftLog.Ui.Models.DateTimeDao | null {
   if (!model) {
     return null;
@@ -307,6 +307,7 @@ function toDateTimeDao(
   return new LiftLog.Ui.Models.DateTimeDao({
     date: toDateOnlyDao(model.toLocalDate()),
     time: toTimeOnlyDao(model.toLocalTime()),
+    offset: { totalSeconds: model.offset().totalSeconds() },
   });
 }
 

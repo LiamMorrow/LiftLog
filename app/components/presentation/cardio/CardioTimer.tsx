@@ -3,7 +3,7 @@ import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import TimerEditor from '@/components/presentation/timer-editor';
 import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { RecordedCardioExercise } from '@/models/session-models';
-import { LocalDateTime, Duration } from '@js-joda/core';
+import { Duration, OffsetDateTime } from '@js-joda/core';
 import { useState, useCallback, useEffect } from 'react';
 import { useAnimatedValue, Animated, View } from 'react-native';
 import { match, P } from 'ts-pattern';
@@ -19,12 +19,12 @@ export function CardioTimer({
   const { colors } = useAppTheme();
   const animatedRadius = useAnimatedValue(40);
   const [currentBlockStartTime, setCurrentBlockStartTime] = useState<
-    LocalDateTime | undefined
+    OffsetDateTime | undefined
   >();
 
   const getTimerState = useCallback(
     (providedDuration: Duration | undefined) => {
-      const now = LocalDateTime.now();
+      const now = OffsetDateTime.now();
       const duration = match({
         recordedDuration: providedDuration,
         currentBlockStartTime,
@@ -60,14 +60,14 @@ export function CardioTimer({
     getTimerState(recordedExercise.duration),
   );
   const handlePlay = () => {
-    const now = LocalDateTime.now();
+    const now = OffsetDateTime.now();
     setCurrentBlockStartTime(now);
   };
   const handlePause = () => {
     if (!currentBlockStartTime) {
       return;
     }
-    const now = LocalDateTime.now();
+    const now = OffsetDateTime.now();
     setCurrentBlockStartTime(undefined);
 
     updateDuration(
@@ -107,7 +107,7 @@ export function CardioTimer({
   useEffect(() => {
     if (currentBlockStartTime) {
       const interval = setTimeout(() => {
-        const now = LocalDateTime.now();
+        const now = OffsetDateTime.now();
         setCurrentBlockStartTime(now);
         updateDuration(
           Duration.between(currentBlockStartTime, now).plus(

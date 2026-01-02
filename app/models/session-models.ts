@@ -13,7 +13,7 @@ import { Weight, WeightUnit } from '@/models/weight';
 import { DeepOmit } from '@/utils/deep-omit';
 import { indexed } from '@/utils/enumerable';
 import { uuid } from '@/utils/uuid';
-import { Duration, LocalDate, LocalDateTime, ZoneOffset } from '@js-joda/core';
+import { Duration, LocalDate, OffsetDateTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
 import { match, P } from 'ts-pattern';
@@ -296,8 +296,7 @@ export class Session {
     for (const recordedExercise of recordedExercises) {
       if (!recordedExercise.isComplete) {
         const latestTime = recordedExercise.latestTime;
-        const epochSecond =
-          latestTime?.toEpochSecond(ZoneOffset.UTC) ?? Number.MIN_VALUE;
+        const epochSecond = latestTime?.toEpochSecond() ?? Number.MIN_VALUE;
 
         if (epochSecond > maxEpochSecond || !result) {
           maxEpochSecond = epochSecond;
@@ -312,7 +311,7 @@ export class Session {
     return Enumerable.from(this.recordedExercises)
       .where((x) => x.isStarted)
       .defaultIfEmpty(undefined)
-      .maxBy((x) => x.latestTime?.toInstant(ZoneOffset.UTC).toEpochMilli());
+      .maxBy((x) => x.latestTime?.toInstant().toEpochMilli());
   }
 
   get latestWeightedExercise(): RecordedWeightedExercise | undefined {
@@ -320,14 +319,14 @@ export class Session {
       .where((x) => x.isStarted)
       .where((x) => x instanceof RecordedWeightedExercise)
       .defaultIfEmpty(undefined)
-      .maxBy((x) => x.latestTime?.toInstant(ZoneOffset.UTC).toEpochMilli());
+      .maxBy((x) => x.latestTime?.toInstant().toEpochMilli());
   }
 
   get firstExercise(): RecordedExercise | undefined {
     return Enumerable.from(this.recordedExercises)
       .where((x) => x.isStarted)
       .defaultIfEmpty(undefined)
-      .minBy((x) => x.latestTime?.toInstant(ZoneOffset.UTC).toEpochMilli());
+      .minBy((x) => x.latestTime?.toInstant().toEpochMilli());
   }
 
   get isFreeform(): boolean {
@@ -381,7 +380,7 @@ export function createEmptyRecordedExercise(
 export interface RecordedCardioExercisePOJO {
   type: 'CardioRecordedExercise';
   blueprint: CardioExerciseBlueprintPOJO;
-  completionDateTime: LocalDateTime | undefined;
+  completionDateTime: OffsetDateTime | undefined;
   duration: Duration | undefined;
   distance: Distance | undefined;
   resistance: BigNumber | undefined;
@@ -390,7 +389,7 @@ export interface RecordedCardioExercisePOJO {
 }
 export class RecordedCardioExercise {
   readonly blueprint: CardioExerciseBlueprint;
-  readonly completionDateTime: LocalDateTime | undefined;
+  readonly completionDateTime: OffsetDateTime | undefined;
   readonly duration: Duration | undefined;
   readonly distance: Distance | undefined;
   readonly resistance: BigNumber | undefined;
@@ -403,7 +402,7 @@ export class RecordedCardioExercise {
   constructor();
   constructor(
     blueprint: CardioExerciseBlueprint,
-    completionDateTime: LocalDateTime | undefined,
+    completionDateTime: OffsetDateTime | undefined,
     duration: Duration | undefined,
     distance: Distance | undefined,
     resistance: BigNumber | undefined,
@@ -412,7 +411,7 @@ export class RecordedCardioExercise {
   );
   constructor(
     blueprint?: CardioExerciseBlueprint,
-    completionDateTime?: LocalDateTime,
+    completionDateTime?: OffsetDateTime,
     duration?: Duration,
     distance?: Distance,
     resistance?: BigNumber,
@@ -464,11 +463,11 @@ export class RecordedCardioExercise {
     return !!this.completionDateTime;
   }
 
-  get latestTime(): LocalDateTime | undefined {
+  get latestTime(): OffsetDateTime | undefined {
     return this.completionDateTime;
   }
 
-  get earliestTime(): LocalDateTime | undefined {
+  get earliestTime(): OffsetDateTime | undefined {
     return this.completionDateTime;
   }
 
@@ -677,11 +676,11 @@ export class RecordedWeightedExercise {
       : undefined;
   }
 
-  get latestTime(): LocalDateTime | undefined {
+  get latestTime(): OffsetDateTime | undefined {
     return this.lastRecordedSet?.set?.completionDateTime;
   }
 
-  get earliestTime(): LocalDateTime | undefined {
+  get earliestTime(): OffsetDateTime | undefined {
     return this.firstRecordedSet?.set?.completionDateTime;
   }
 
@@ -716,19 +715,19 @@ export class RecordedWeightedExercise {
 export interface RecordedSetPOJO {
   type: 'RecordedSet';
   repsCompleted: number;
-  completionDateTime: LocalDateTime;
+  completionDateTime: OffsetDateTime;
 }
 
 export class RecordedSet {
   readonly repsCompleted: number;
-  readonly completionDateTime: LocalDateTime;
+  readonly completionDateTime: OffsetDateTime;
 
   /**
    * @deprecated please use full constructor. Here only for serialization
    */
   constructor();
-  constructor(repsCompleted: number, completionDateTime: LocalDateTime);
-  constructor(repsCompleted?: number, completionDateTime?: LocalDateTime) {
+  constructor(repsCompleted: number, completionDateTime: OffsetDateTime);
+  constructor(repsCompleted?: number, completionDateTime?: OffsetDateTime) {
     this.repsCompleted = repsCompleted!;
     this.completionDateTime = completionDateTime!;
   }

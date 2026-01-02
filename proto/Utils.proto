@@ -33,6 +33,13 @@ message TimeOnlyDao {
 message DateTimeDao {
     DateOnlyDao date = 1;
     TimeOnlyDao time = 2;
+
+    // We did not always store offset. If hydrating to a OffsetDateTime we will use the System offset
+    optional ZoneOffsetDao offset  = 3;
+}
+
+message ZoneOffsetDao {
+    int32 total_seconds = 1;
 }
 
 

@@ -5,7 +5,7 @@ import {
   RecordedSet,
   PotentialSet,
 } from '@/models/session-models';
-import { LocalDate, LocalDateTime } from '@js-joda/core';
+import { LocalDate, OffsetDateTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { v4 as uuid } from 'uuid';
 import {
@@ -51,7 +51,7 @@ function createSession(
         const set = shouldFillSet
           ? new RecordedSet(
               exerciseBlueprint.repsPerSet,
-              LocalDateTime.now().plusSeconds(
+              OffsetDateTime.now().plusSeconds(
                 exerciseIndex * 60 + setIndex * 10,
               ),
             )
@@ -92,7 +92,7 @@ function cycleExerciseReps(
   potentialSets[setIndex] = potentialSets[setIndex].with({
     set: new RecordedSet(
       targetExercise.blueprint.repsPerSet,
-      LocalDateTime.now(),
+      OffsetDateTime.now(),
     ),
   });
 
