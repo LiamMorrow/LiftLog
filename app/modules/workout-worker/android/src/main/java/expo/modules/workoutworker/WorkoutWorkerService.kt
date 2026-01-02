@@ -7,9 +7,11 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE
 import androidx.core.app.ServiceCompat
 import expo.modules.workoutworker.handlers.TimerStartedHandler
 import expo.modules.workoutworker.handlers.WorkoutEventHandler
@@ -72,8 +74,10 @@ class WorkoutWorkerService : Service() {
 
         val notification = buildNotification().setContentText("Workout in progress").build()
 
+        val type = ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+
         ServiceCompat.startForeground(
-            this, NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+            this, NOTIFICATION_ID, notification, type
         )
 
         return START_STICKY
@@ -93,6 +97,7 @@ class WorkoutWorkerService : Service() {
 
     fun buildNotification(): NotificationCompat.Builder {
         return NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle("LiftLog")
+            .setForegroundServiceBehavior(FOREGROUND_SERVICE_IMMEDIATE)
             .setSmallIcon(android.R.drawable.ic_media_ff).setOngoing(true).setSilent(true)
     }
 

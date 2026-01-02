@@ -8,7 +8,6 @@ import { Remote } from '@/components/presentation/remote';
 import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
 import SplitCardControl from '@/components/presentation/split-card-control';
-import AndroidNotificationAlert from '@/components/smart/android-notification-alert';
 import { spacing } from '@/hooks/useAppTheme';
 import { Session } from '@/models/session-models';
 import { RootState, useAppSelector, useAppSelectorWithArg } from '@/store';
@@ -311,7 +310,6 @@ export default function Index() {
           title: 'LiftLog',
         }}
       />
-      <AndroidNotificationAlert />
       <MigrateToWeightUnitsWizard />
       <Remote
         value={upcomingSessions}

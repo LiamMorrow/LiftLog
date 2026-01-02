@@ -10,5 +10,6 @@
   ],
   "search.exclude": {
     "app/gen/*": true
-  }
+  },
+  "terminal.integrated.allowChords": false
 }

@@ -28,7 +28,6 @@ import { Duration, LocalDateTime, ZoneId } from '@js-joda/core';
 import { selectPreferredWeightUnit } from '@/store/settings';
 import { diffSessionBlueprints } from '@/models/blueprint-diff';
 import { match, P } from 'ts-pattern';
-import { Platform } from 'react-native';
 
 const storageKey = 'CurrentSessionStateV1';
 export function applyCurrentSessionEffects() {
@@ -176,6 +175,9 @@ export function applyCurrentSessionEffects() {
       }
     }
     dispatch(setCurrentSession({ target: a.payload, session: undefined }));
+    if (a.payload === 'workoutSession') {
+      dispatch(broadcastWorkoutEvent({ type: 'WorkoutEnded' }));
+    }
     dispatch(fetchUpcomingSessions());
   });
 
@@ -252,9 +254,8 @@ export function applyCurrentSessionEffects() {
             endAt,
           }),
         );
-        if (Platform.OS !== 'android') {
-          await notificationService.scheduleNextSetNotification(lastExercise);
-        }
+
+        await notificationService.scheduleNextSetNotification(lastExercise);
       }
     },
   );

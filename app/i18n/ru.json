@@ -180,8 +180,6 @@
   "numbers.three.label": "Три",
   "numbers.two.label": "Два",
   "permissions.disable_notifications.button": "Отключить уведомления",
-  "permissions.enable_notifications.confirm.title": "Включить уведомления?",
-  "permissions.notifications.android.explanation": "Новые устройства Android требуют дополнительного разрешения для своевременных уведомлений об окончании отдыха. Без него уведомления будут приходить с задержкой. На следующем экране предоставьте LiftLog необходимое разрешение.",
   "plan.add.button": "Добавить план",
   "plan.add_to.button": "Добавить в план",
   "plan.choose.button": "Выбрать план",
