@@ -17,10 +17,10 @@ import {
   CreateSharedItemResponse,
   GetSharedItemResponse,
 } from '@/models/feed-api-models';
+import { apiBaseUrl } from '@/services/api-consts';
 import { ApiErrorType, ApiResult, ResponseError } from '@/services/api-error';
 import type { FetchResponse } from 'expo/build/winter/fetch/FetchResponse';
 import { fetch } from 'expo/fetch';
-import { Platform } from 'react-native';
 
 type Base64Response<T> = T extends Uint8Array
   ? string
@@ -36,14 +36,7 @@ export class FeedApiService {
   private readonly baseUrl: string;
 
   constructor() {
-    if (__DEV__) {
-      this.baseUrl =
-        Platform.OS === 'android'
-          ? 'http://10.0.2.2:5264/'
-          : 'http://127.0.0.1:5264/';
-    } else {
-      this.baseUrl = 'https://api.liftlog.online/';
-    }
+    this.baseUrl = apiBaseUrl;
   }
 
   async getUserEventsAsync(

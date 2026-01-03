@@ -32,9 +32,6 @@ export class PreferenceService {
 
   async getProToken(): Promise<string | undefined> {
     const token = await this.keyValueStore.getItem('proToken');
-    // if (__DEV__) {
-    //   return 'test';
-    // }
     return token;
   }
 

@@ -89,6 +89,8 @@ LiftLog is organized into several projects:
 
 ### Backend ([LiftLog.Api/](./backend/LiftLog.Api/))
 
+For documentation on running the backend for local development, see [the README](./backend/README.md)
+
 - **Dotnet WebAPI** for feeds, AI plans, and secure data
 - **End-to-end encrypted feeds** (AES)
 - **OpenAI integration** for workout plans
