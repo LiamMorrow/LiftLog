@@ -64,12 +64,7 @@ npm run web       # For web
 
 ### Run the Backend API
 
-```bash
-cd LiftLog.Api
-dotnet run
-```
-
-See [`backend/LiftLog.Api/README.md`](./backend/LiftLog.Api/README.md) for backend details.
+See [`backend/README.md`](./backend/README.md) for more information on running the backend.
 
 ---
 
@@ -87,7 +82,7 @@ LiftLog is organized into several projects:
 - **Translations**: `i18n/` (Tolgee)
 - **Navigation**: Expo Router
 
-### Backend ([LiftLog.Api/](./backend/LiftLog.Api/))
+### Backend ([LiftLog.Api/](./backend/))
 
 For documentation on running the backend for local development, see [the README](./backend/README.md)
 
