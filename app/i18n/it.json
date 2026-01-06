@@ -1,6 +1,5 @@
 {
   "ai.planner.subtitle": "Usa l'IA per generare piani di allenamento in base ai tuoi obiettivi",
-  "exercise.progressive_overload.label": "Sovraccarico Progressivo",
   "ai.restart_chat.button": "Riavvia chat",
   "ai.upgrade_to_pro.button": "Aggiorna alla versione Pro",
   "ai.upgrade_to_pro.explanation": "Questo sblocchera l'AI planner, che genererà un piano di allenamento personalizzato per te e i tuoi obiettivi. <br> Consiste in un singolo acquisto di: ",
@@ -47,6 +46,7 @@
   "exercise.no_exercises_added.message": "Nessun esercizio aggiunto",
   "exercise.no_exercises_found.message": "Nessun esercizio trovato.",
   "exercise.previous_sessions_for.title": "Esercizi precedenti per {exercise}",
+  "exercise.progressive_overload.label": "Sovraccarico Progressivo",
   "exercise.remove.confirm.body": "L'esercizio sarà rimosso dalla sessione corrente, questo non avrà effetto sulle sessioni future.",
   "exercise.remove.confirm.title": "Vuoi rimuovere l'esercizio?",
   "exercise.remove_from_workout.confirm.body": "Questo rimuoverà l'esercizio <em>{exercise}</em> da <em>{session}</em>.",
