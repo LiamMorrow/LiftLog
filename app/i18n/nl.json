@@ -1,7 +1,6 @@
 {
   "ai.planner.subtitle": "Gebruik AI om een geheel programma op te stellen dat aansluit bij uw doelen",
   "ai.planner.title": "AI Planner",
-  "exercise.progressive_overload.label": "Gewichts progressie",
   "ai.restart_chat.button": "Chat opnieuw starten",
   "ai.type_your_message.placeholder": "Schrijf je bericht",
   "ai.upgrade_to_pro.button": "Upgrade naar Pro",
@@ -52,6 +51,7 @@
   "exercise.no_exercises_added.message": "Nog geen oefeningen toegevoegd",
   "exercise.no_exercises_found.message": "Geen oefeningen gevonden.",
   "exercise.previous_sessions_for.title": "Vorige trainingen voor {exercise}",
+  "exercise.progressive_overload.label": "Gewichts progressie",
   "exercise.remove.confirm.body": "De oefening wordt verwijderd uit de huidige training, toekomstige trainingen in het schema worden niet beïnvloed.",
   "exercise.remove.confirm.title": "Oefening verwijderen?",
   "exercise.remove_from_workout.confirm.body": "De oefening <em>{exercise}</em> zal verwijderd worden uit <em>{session}</em>.",
