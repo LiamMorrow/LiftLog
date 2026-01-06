@@ -1,7 +1,6 @@
 {
   "ai.planner.subtitle": "Use a IA para gerar um programa completo adequado aos seus objetivos",
   "ai.planner.title": "Planejador IA",
-  "exercise.progressive_overload.label": "Progressão de sobrecarga",
   "ai.restart_chat.button": "Reiniciar chat",
   "ai.type_your_message.placeholder": "Digite sua mensagem",
   "ai.upgrade_to_pro.button": "Upgrade para Pro",
@@ -56,6 +55,7 @@
   "exercise.no_exercises_added.message": "Ainda não há exercícios adicionados",
   "exercise.no_exercises_found.message": "Nenhum exercício encontrado.",
   "exercise.previous_sessions_for.title": "Treinos anteriores de {exercise}",
+  "exercise.progressive_overload.label": "Progressão de sobrecarga",
   "exercise.remove.confirm.body": "O exercício será removido do treino atual, mas os treinos futuros no plano não serão afetados.",
   "exercise.remove.confirm.title": "Remover exercício?",
   "exercise.remove_from_workout.confirm.body": "Isso removerá o exercício <em>{exercise}</em> de <em>{session}</em>.",
