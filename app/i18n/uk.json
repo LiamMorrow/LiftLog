@@ -1,7 +1,6 @@
 {
   "ai.planner.subtitle": "Використовуйте AI для створення повної програми відповідно до ваших цілей",
   "ai.planner.title": "AI Планувальник",
-  "exercise.progressive_overload.label": "Прогресивне навантаження",
   "ai.restart_chat.button": "Перезапустити чат",
   "ai.type_your_message.placeholder": "Введіть своє повідомлення",
   "ai.upgrade_to_pro.button": "Оновити до Pro",
@@ -52,6 +51,7 @@
   "exercise.no_exercises_added.message": "Вправ ще не додано",
   "exercise.no_exercises_found.message": "Вправ не знайдено.",
   "exercise.previous_sessions_for.title": "Попередні тренування для {exercise}",
+  "exercise.progressive_overload.label": "Прогресивне навантаження",
   "exercise.remove.confirm.body": "Вправа буде видалена з поточного тренування, майбутні тренування у плані не постраждають.",
   "exercise.remove.confirm.title": "Видалити вправу?",
   "exercise.remove_from_workout.confirm.body": "Це видалить вправу <em>{exercise}</em> з <em>{session}</em>.",
