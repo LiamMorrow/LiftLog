@@ -329,6 +329,9 @@ export function toRecordedSetDao(
     repsCompleted: model.repsCompleted,
     completionDate: toDateOnlyDao(model.completionDateTime.toLocalDate()),
     completionTime: toTimeOnlyDao(model.completionDateTime.toLocalTime()),
+    completionOffset: {
+      totalSeconds: model.completionDateTime.offset().totalSeconds(),
+    },
   });
 }
 
