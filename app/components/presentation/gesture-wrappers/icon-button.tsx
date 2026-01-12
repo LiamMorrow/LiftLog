@@ -2,6 +2,7 @@
 import { GesturePressableProps } from '@/components/presentation/gesture-wrappers/pressable-props';
 import { AppIconSource } from '@/components/presentation/ms-icon-source';
 import { isNotNullOrUndefined } from '@/utils/null';
+import { I18nManager } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import {
   IconButton as NativeIconButton,
@@ -16,8 +17,10 @@ export default function IconButton({
   onPress,
   onLongPress,
   disabled,
+  mirrored,
+  style,
   ...rest
-}: GesturePressableProps<ICProps>) {
+}: GesturePressableProps<ICProps> & { mirrored?: boolean }) {
   const tap = Gesture.Tap()
     .runOnJS(true)
     .onStart(() => !disabled && onPress?.());
@@ -35,6 +38,14 @@ export default function IconButton({
         disabled={disabled!}
         onPress={onPress ? () => {} : undefined!}
         onLongPress={onLongPress || onPress ? () => {} : undefined!}
+        style={[
+          style,
+          mirrored
+            ? I18nManager.isRTL
+              ? { transform: [{ scaleX: -1 }] }
+              : {}
+            : {},
+        ]}
         {...rest}
       />
     </GestureDetector>

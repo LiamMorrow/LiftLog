@@ -5,7 +5,7 @@ import { useAppSelector } from '@/store';
 import { getDateOnDay } from '@/utils/format-date';
 import { DayOfWeek, LocalDate, Year, YearMonth } from '@js-joda/core';
 import Enumerable from 'linq';
-import { View } from 'react-native';
+import { I18nManager, View } from 'react-native';
 import { Card } from 'react-native-paper';
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import TouchableRipple from '@/components/presentation/gesture-wrappers/touchable-ripple';
@@ -76,7 +76,7 @@ export default function HistoryCalendarCard({
   };
 
   const navButtons = (
-    <View style={{ flexDirection: 'row' }}>
+    <ForceLTRRow>
       <View style={{ flex: 1, marginVertical: spacing[2] }}>
         <IconButton
           testID="calendar-nav-previous-month"
@@ -111,11 +111,11 @@ export default function HistoryCalendarCard({
           disabled={disableNextMonth}
         />
       </View>
-    </View>
+    </ForceLTRRow>
   );
 
   const dayHeaders = (
-    <View style={{ flexDirection: 'row' }}>
+    <ForceLTRRow>
       {Array.from({ length: 7 }, (_, offset) => {
         const dayOfWeek = (offset + firstDayOfWeek.ordinal()) % 7;
         return (
@@ -139,7 +139,7 @@ export default function HistoryCalendarCard({
           </View>
         );
       })}
-    </View>
+    </ForceLTRRow>
   );
   let dateEnterDelay = 0;
   const daysFromPreviousMonth = Array.from(
@@ -223,9 +223,7 @@ export default function HistoryCalendarCard({
           {navButtons}
           {dayHeaders}
           {daysInSections.map((days, i) => (
-            <View key={i} style={{ flexDirection: 'row' }}>
-              {days}
-            </View>
+            <ForceLTRRow key={i}>{days}</ForceLTRRow>
           ))}
         </View>
       </Card.Content>
@@ -289,5 +287,18 @@ function HistoryCalendarDay(props: {
         </View>
       </TouchableRipple>
     </Animated.View>
+  );
+}
+
+/**
+ * Our app automatically swaps layout directions for RTL, however, we don't want to do this for our calendar
+ * @returns
+ */
+function ForceLTRRow(props: { children: ReactNode }) {
+  const rtl = I18nManager.isRTL;
+  return (
+    <View style={{ flexDirection: rtl ? 'row-reverse' : 'row' }}>
+      {props.children}
+    </View>
   );
 }

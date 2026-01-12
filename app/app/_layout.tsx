@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 import { AppThemeProvider } from '@/hooks/useAppTheme';
-import { LogBox, Platform, useColorScheme } from 'react-native';
+import { I18nManager, LogBox, Platform, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import { store } from '@/store';
@@ -19,6 +19,7 @@ LogBox.ignoreLogs([
   /.*Failed to fetch inbox.*/,
   /.*Failed to update profile*/,
 ]);
+I18nManager.swapLeftAndRightInRTL(true);
 
 export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();

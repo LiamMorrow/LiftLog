@@ -26,7 +26,7 @@ import { addExportPlaintextEffects } from '@/store/settings/export-plaintext-eff
 import { addImportBackupEffects } from '@/store/settings/import-backup-effects';
 import { addRemoteBackupEffects } from '@/store/settings/remote-backup-effects';
 import Purchases from 'react-native-purchases';
-import { Platform } from 'react-native';
+import { I18nManager, Platform } from 'react-native';
 import { captureException } from '@sentry/react-native';
 import { detectLanguageFromDateLocale } from '@/utils/language-detector';
 import { supportedLanguages } from '@/services/tolgee';
@@ -173,11 +173,15 @@ export function applySettingsEffects() {
     ) => {
       if (stateAfterReduce.settings.isHydrated) {
         await preferenceService.setPreferredLanguage(action.payload);
-        await tolgee.changeLanguage(
-          action.payload ??
-            detectLanguageFromDateLocale(supportedLanguages.map((x) => x.code)),
-        );
       }
+      const languageCode =
+        action.payload ??
+        detectLanguageFromDateLocale(supportedLanguages.map((x) => x.code));
+      const languageSettings = supportedLanguages.find(
+        (x) => x.code === languageCode,
+      );
+      await tolgee.changeLanguage(languageCode);
+      I18nManager.forceRTL(!!languageSettings?.isRTL);
     },
   );
 

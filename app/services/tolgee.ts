@@ -10,10 +10,14 @@ import ru from '../i18n/ru.json';
 import sr from '../i18n/sr.json';
 import uk from '../i18n/uk.json';
 import pt from '../i18n/pt.json';
+import ar from '../i18n/ar.json';
+import sv from '../i18n/sv.json';
 import { DevTools, FormatSimple, Tolgee } from '@tolgee/react';
 import { PreferenceService } from '@/services/preference-service';
 
 export const supportedLanguages = [
+  { translationJson: ar, code: 'ar', label: 'العربية', isRTL: true },
+  { translationJson: sv, code: 'sv', label: 'Svenska' },
   { translationJson: de, code: 'de', label: 'Deutsch' },
   { translationJson: en, code: 'en', label: 'English' },
   { translationJson: es, code: 'es', label: 'Español' },
@@ -39,17 +43,8 @@ export const getTolgee = (preferenceService: PreferenceService) =>
       // // for development
       // apiUrl: process.env.EXPO_PUBLIC_TOLGEE_API_URL!,
       // apiKey: process.env.EXPO_PUBLIC_TOLGEE_API_KEY!,
-      staticData: {
-        de,
-        en,
-        es,
-        fi,
-        fr,
-        it,
-        nl,
-        ru,
-        sr,
-        uk,
-        pt,
-      },
+      staticData: supportedLanguages.reduce(
+        (acc, next) => ({ ...acc, [next.code]: next.translationJson }),
+        {},
+      ),
     });

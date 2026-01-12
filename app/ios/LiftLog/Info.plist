@@ -16,17 +16,19 @@
     <string>6.0</string>
     <key>CFBundleLocalizations</key>
     <array>
-      <string>it</string>
-      <string>de</string>
-      <string>sr</string>
-      <string>fr</string>
-      <string>nl</string>
-      <string>fi</string>
-      <string>es</string>
-      <string>ru</string>
+      <string>ar</string>
       <string>cs</string>
-      <string>uk</string>
+      <string>de</string>
+      <string>es</string>
+      <string>fi</string>
+      <string>fr</string>
+      <string>it</string>
+      <string>nl</string>
       <string>pt</string>
+      <string>ru</string>
+      <string>sr</string>
+      <string>sv</string>
+      <string>uk</string>
     </array>
     <key>CFBundleName</key>
     <string>$(PRODUCT_NAME)</string>

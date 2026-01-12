@@ -3,7 +3,7 @@ import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 
 import { T, useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
-import { Platform, View } from 'react-native';
+import { I18nManager, Platform, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useDispatch } from 'react-redux';
@@ -156,6 +156,7 @@ export default function AiPlanner() {
           mode="contained"
           icon={'send'}
           size={35}
+          mirrored={I18nManager.isRTL}
           onPress={() => sendMessage(messageText)}
         />
       </View>
