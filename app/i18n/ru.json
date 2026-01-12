@@ -1,7 +1,6 @@
 {
   "ai.planner.subtitle": "Персональная программа тренировок от ИИ",
   "ai.planner.title": "ИИ планировщик",
-  "exercise.progressive_overload.label": "Прогрессивная перегрузка",
   "ai.restart_chat.button": "Перезапустить чат",
   "ai.upgrade_to_pro.button": "Перейти на Pro",
   "ai.upgrade_to_pro.explanation": "Доступ к ИИ-планировщику, создающему персональную программу. <br>Единоразовая оплата:",
@@ -50,6 +49,7 @@
   "exercise.no_exercises_added.message": "Упражнения не добавлены",
   "exercise.no_exercises_found.message": "Упражнения не найдены.",
   "exercise.previous_sessions_for.title": "Предыдущие тренировки для {exercise}",
+  "exercise.progressive_overload.label": "Прогрессивная перегрузка",
   "exercise.remove.confirm.body": "Упражнение будет удалено из текущей тренировки. Будущие тренировки не изменятся.",
   "exercise.remove.confirm.title": "Удалить упражнение?",
   "exercise.remove_from_workout.confirm.body": "Упражнение <em>{exercise}</em> будет удалено из <em>{session}</em>.",

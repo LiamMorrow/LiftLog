@@ -1,7 +1,6 @@
 {
   "ai.planner.subtitle": "Utilisez l'IA pour générer un programme complet adapté à vos objectifs",
   "ai.planner.title": "Planificateur IA",
-  "exercise.progressive_overload.label": "Surcharge progressive",
   "ai.restart_chat.button": "Redémarrer le chat",
   "ai.upgrade_to_pro.button": "Passer à Pro",
   "ai.upgrade_to_pro.explanation": "Cela débloquera le planificateur IA, qui générera un plan adapté spécifiquement à vous et à vos objectifs. <br>Ceci est un achat unique de :",
@@ -46,6 +45,7 @@
   "exercise.no_exercises_added.message": "Aucun exercice ajouté pour l'instant",
   "exercise.no_exercises_found.message": "Aucun exercice trouvé.",
   "exercise.previous_sessions_for.title": "Séances précédentes pour {exercise}",
+  "exercise.progressive_overload.label": "Surcharge progressive",
   "exercise.remove.confirm.body": "L'exercice sera supprimé de la séance actuelle, les séances futures ne seront pas affectées.",
   "exercise.remove.confirm.title": "Supprimer l'exercice ?",
   "exercise.remove_from_workout.confirm.body": "Cela supprimera l'exercice <em>{exercise}</em> de <em>{session}</em>.",

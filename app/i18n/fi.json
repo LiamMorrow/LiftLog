@@ -1,6 +1,5 @@
 {
   "ai.planner.title": "Tekoälysuunnittelija",
-  "exercise.progressive_overload.label": "Nousujohteinen kuormitus",
   "ai.restart_chat.button": "Käynnistä keskustelu uudelleen",
   "ai.upgrade_to_pro.button": "Vaihda maksulliseen versioon",
   "backup.api_key.label": "API-avain",
@@ -41,6 +40,7 @@
   "exercise.no_exercises_added.message": "Ei vielä lisättyjä liikkeitä",
   "exercise.no_exercises_found.message": "Liikkeitä ei löytynyt.",
   "exercise.previous_sessions_for.title": "Edelliset harjoitukset {exercise} varten",
+  "exercise.progressive_overload.label": "Nousujohteinen kuormitus",
   "exercise.remove.confirm.body": "Harjoitus poistetaan nykyisestä treenistä, tulevat treenit suunnitelmassa eivät muutu.",
   "exercise.remove.confirm.title": "Poistetaanko liike?",
   "exercise.remove_from_workout.confirm.body": "Tämä poistaa liikkeen <em>{exercise}</em> harjoituksesta <em>{session}</em>.",

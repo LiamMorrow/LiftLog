@@ -1,7 +1,6 @@
 {
   "ai.planner.subtitle": "Koristite veštačku inteligenciju da generišete ceo program prilagođen vašim ciljevima",
   "ai.planner.title": "Planer uz pomoć veštačke intelegencije",
-  "exercise.progressive_overload.label": "Progresivno opterećenje",
   "ai.restart_chat.button": "Ponovi ćaskanje",
   "ai.type_your_message.placeholder": "Unesi svoju poruku",
   "ai.upgrade_to_pro.button": "Nadogradi na pro",
@@ -56,6 +55,7 @@
   "exercise.no_exercises_added.message": "Nijedno vežbanje još uvek nije dodato",
   "exercise.no_exercises_found.message": "Nema pronađenih vežbi.",
   "exercise.previous_sessions_for.title": "Prethodne vežbe za {exercise}",
+  "exercise.progressive_overload.label": "Progresivno opterećenje",
   "exercise.remove.confirm.body": "Vežbanje će biti uklonjeno iz trenutne sesije, buduće sesije neće biti pogođene.",
   "exercise.remove.confirm.title": "Ukloni vežbanje?",
   "exercise.remove_from_workout.confirm.body": "Ovo će ukloniti vežbanje <em>{exercise}</em> iz <em>{session}</em>.",
