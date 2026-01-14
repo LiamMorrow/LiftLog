@@ -15,6 +15,10 @@ on:
         description: "Release notes to display in the store"
         required: true
         type: string
+      commit_sha:
+        description: "Commit SHA to checkout (optional, defaults to the branch head)"
+        required: false
+        type: string
 
 jobs:
   build:
@@ -33,6 +37,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.commit_sha || github.ref }}
       - name: Setup Node
         uses: actions/setup-node@v6
         with:

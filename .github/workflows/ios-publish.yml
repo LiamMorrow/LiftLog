@@ -11,6 +11,10 @@ on:
         description: "Release notes to display in the store"
         required: true
         type: string
+      commit_sha:
+        description: "Commit SHA to checkout (optional, defaults to the branch head)"
+        required: false
+        type: string
 
 jobs:
   build:
@@ -29,6 +33,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.commit_sha || github.ref }}
 
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
