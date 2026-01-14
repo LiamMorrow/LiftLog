@@ -20,6 +20,11 @@ import {
   hexFromArgb,
 } from '@material/material-color-utilities';
 
+export const rounding = {
+  roundedRectangleRadius: 10,
+  roundedRectangleFocusRingRadius: 15,
+};
+
 export const spacing = {
   pageHorizontalMargin: 16, // spacing[4]
   0: 0,

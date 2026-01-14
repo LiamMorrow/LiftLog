@@ -5,7 +5,7 @@ import { Text as PaperText, Chip } from 'react-native-paper';
 import { Text, View } from 'react-native';
 import WeightFormat from '@/components/presentation/weight-format';
 import WeightDialog from '@/components/presentation/weight-dialog';
-import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
+import { useAppTheme, spacing, font, rounding } from '@/hooks/useAppTheme';
 import FocusRing from '@/components/presentation/focus-ring';
 import { WeightAppliesTo } from '@/store/current-session';
 import { T } from '@tolgee/react';
@@ -37,7 +37,10 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
 
   return (
     <Holdable onLongPress={() => setIsRepsDialogOpen(true)}>
-      <FocusRing isSelected={props.toStartNext} radius={15}>
+      <FocusRing
+        isSelected={props.toStartNext}
+        radius={rounding.roundedRectangleFocusRingRadius}
+      >
         <View
           style={[
             {
@@ -49,8 +52,8 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
           <View
             style={[
               {
-                borderTopLeftRadius: 10,
-                borderTopRightRadius: 10,
+                borderTopLeftRadius: rounding.roundedRectangleRadius,
+                borderTopRightRadius: rounding.roundedRectangleRadius,
                 overflow: 'hidden',
               },
             ]}
@@ -99,8 +102,8 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
               borderTopWidth: 1,
               borderColor: colors.outline,
               backgroundColor: colors.surfaceContainerHigh,
-              borderBottomLeftRadius: 10,
-              borderBottomRightRadius: 10,
+              borderBottomLeftRadius: rounding.roundedRectangleRadius,
+              borderBottomRightRadius: rounding.roundedRectangleRadius,
               overflow: 'hidden',
               padding: spacing[2],
               width: '100%',

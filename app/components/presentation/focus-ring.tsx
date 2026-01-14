@@ -16,13 +16,16 @@ export default function FocusRing({
   children,
   radius,
   style,
+  padding,
   ...rest
 }: {
   isSelected: boolean;
   children: ReactNode;
   radius?: number;
+  padding?: number;
 } & ViewProps) {
   const { colors } = useAppTheme();
+  padding ??= 5;
   const growAnim = useSharedValue(isSelected ? 1 : 0);
 
   useEffect(() => {
@@ -34,7 +37,7 @@ export default function FocusRing({
   }, [isSelected, growAnim]);
 
   const animatedStyle = useAnimatedStyle(() => {
-    const pos = interpolate(growAnim.value, [0, 0.25, 1], [0, -8, -5]);
+    const pos = interpolate(growAnim.value, [0, 0.25, 1], [0, -8, -padding]);
     return {
       borderColor: colors.outline,
       position: 'absolute',
