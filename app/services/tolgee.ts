@@ -40,9 +40,7 @@ export const getTolgee = (preferenceService: PreferenceService) =>
     .init({
       defaultLanguage: 'en',
       fallbackLanguage: 'en',
-      // // for development
-      // apiUrl: process.env.EXPO_PUBLIC_TOLGEE_API_URL!,
-      // apiKey: process.env.EXPO_PUBLIC_TOLGEE_API_KEY!,
+
       staticData: supportedLanguages.reduce(
         (acc, next) => ({ ...acc, [next.code]: next.translationJson }),
         {},

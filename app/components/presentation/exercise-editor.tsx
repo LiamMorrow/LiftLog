@@ -18,7 +18,7 @@ import {
   TimeCardioTarget,
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
-import { RootState, useAppSelector, useAppSelectorWithArg } from '@/store';
+import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import {
   ExerciseDescriptor,
   selectExerciseById,
@@ -392,10 +392,6 @@ function WeightedExerciseEditor({
   updateExercise: (ex: Partial<ExerciseBlueprint>) => void;
 }) {
   const { t } = useTranslate();
-  const useImperialUnits = useAppSelector(
-    (s: RootState) => s.settings.useImperialUnits,
-  );
-  const weightSuffix = useImperialUnits ? 'lb' : 'kg';
 
   const incrementSets = () => updateExercise({ sets: exercise.sets + 1 });
 
@@ -469,7 +465,6 @@ function WeightedExerciseEditor({
       >
         <EditableIncrementer
           testID="exercise-auto-increase"
-          suffix={weightSuffix}
           value={exercise.weightIncreaseOnSuccess}
           onChange={setExerciseWeightIncrease}
         />
