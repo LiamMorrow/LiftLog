@@ -19,7 +19,10 @@ LogBox.ignoreLogs([
   /.*Failed to fetch inbox.*/,
   /.*Failed to update profile*/,
 ]);
-I18nManager.swapLeftAndRightInRTL(true);
+
+if (Platform.OS !== 'web') {
+  I18nManager.swapLeftAndRightInRTL?.(true);
+}
 
 export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
