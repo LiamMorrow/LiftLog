@@ -81,6 +81,12 @@ jobs:
       - name: Write release notes
         run: echo "${{ inputs.release_notes }}" > release_notes/whatsnew-en-AU
 
+      - name: Upload AAB to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-aab
+          path: app/android/app/build/outputs/bundle/release/app-release.aab
+
       - name: Upload Android Release to Play Store
         uses: r0adkll/upload-google-play@v1.1.3
         with:
