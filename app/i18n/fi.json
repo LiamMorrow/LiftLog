@@ -192,7 +192,7 @@
   "numbers.two.label": "Kaksi",
   "onboarding.crash_reports.explanation": "Auta meitä kehittämään LiftLogia lähettämällä anonyymejä kaatumisraportteja Sentryyn kun jotain menee pieleen.",
   "onboarding.crash_reports.title": "Kaatumisraportit",
-  "onboarding.get_started.button": "Aloita",
+  "onboarding.get_started.button": "Aloita käyttö",
   "onboarding.notifications_and_feed.subtitle": "Hallitse muita asetuksia",
   "onboarding.open_source.body": "LiftLog on rakkaudella kehitetty ja täysin avointa lähdekoodia! Voit tarkastella lähdekoodia ja osallistua kehitykseen Githubissa.",
   "onboarding.open_source.button": "Tarkastele lähdekoodia",
