@@ -39,7 +39,7 @@ LiftLog uses [Weblate](https://translate.liftlog.online/) for internationalizati
 
 [![Translation status](https://translate.liftlog.online/widget/liftlog/multi-auto.svg)](https://translate.liftlog.online/engage/liftlog/)
 
-Want to help translate? [Open an issue or PR](https://github.com/LiamMorrow/LiftLog/issues).
+Want to help translate? [Create an account on Weblate!](https://translate.liftlog.online/)
 
 ---
 
