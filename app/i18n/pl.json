@@ -174,8 +174,6 @@
   "onboarding.welcome.subtitle": "Przygotujmy kilka rzeczy",
   "onboarding.welcome.title": "Witaj w LiftLog!",
   "permissions.disable_notifications.button": "Wyłącz powiadomienia",
-  "permissions.enable_notifications.confirm.title": "Włączyć powiadomienia?",
-  "permissions.notifications.android.explanation": "Nowsze urządzenia z systemem Android wymagają dodatkowego uprawnienia, aby powiadomienia o odpoczynku były dostarczane na czas. Bez tego uprawnienia będą one docierać z opóźnieniem i w większości przypadków okażą się bezużyteczne. Na następnym ekranie przyznaj aplikacji LiftLog to uprawnienie.",
   "plan.add.button": "Dodaj plan",
   "plan.add_to.button": "Dodaj do planu",
   "plan.choose.button": "Wybierz plan",

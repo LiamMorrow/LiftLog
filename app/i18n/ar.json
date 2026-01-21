@@ -207,7 +207,6 @@
   "onboarding.welcome.subtitle": "لنقم بإعداد بعض الأمور",
   "onboarding.welcome.title": "مرحبًا بك في LiftLog!",
   "permissions.disable_notifications.button": "تعطيل الإشعارات",
-  "permissions.enable_notifications.confirm.title": "تفعيل الإشعارات؟",
   "plan.diff.exercise_type.label": "نوع التمرين",
   "plan.diff.generic_disabled.body": "معطّل",
   "plan.diff.generic_enabled.body": "مفعّل",
