@@ -29,6 +29,7 @@
       <string>sr</string>
       <string>sv</string>
       <string>uk</string>
+      <string>pl</string>
     </array>
     <key>CFBundleName</key>
     <string>$(PRODUCT_NAME)</string>
