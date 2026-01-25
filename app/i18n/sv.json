@@ -404,5 +404,14 @@
   "workout.upcoming.title": "Kommande pass",
   "workout.update_existing.confirm.body": "Vill du uppdatera det existerande träningspasset, <em>{name}</em>, eller lägga till ett nytt?",
   "workout.workout.label": "Träningspass",
-  "workout.workout_lowercase.label": "Träningspass"
+  "workout.workout_lowercase.label": "Träningspass",
+  "workout_persistent_notification.current_exercise.message": "$EXERCISE_DESCRIPTOR$",
+  "workout_persistent_notification.finish_workout.action": "Slutför pass",
+  "workout_persistent_notification.finished.message": "Pass slutfört!\nDu lyfte $WEIGHT$ på $TIME$",
+  "workout_persistent_notification.in_progress.message": "Träningspass pågår",
+  "workout_persistent_notification.max_rest_over.message": "Längsta vila slut!",
+  "workout_persistent_notification.min_rest_over.message": "Kortaste vila slut!",
+  "workout_persistent_notification.rest_break.message": "Ta en vilopaus",
+  "workout_persistent_notification.start_now.message": "Starta nu!",
+  "workout_persistent_notification.start_soon.message": "Starta nästa set snart"
 }
