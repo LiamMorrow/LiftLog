@@ -18,7 +18,7 @@ public static class RegistrationHelpers
             var apiKey =
                 configuration.GetValue<string?>("OpenAiApiKey")
                 ?? throw new Exception("OpenAiApiKey configuration is not set.");
-            return new OpenAI.Chat.ChatClient("gpt-4.1", apiKey);
+            return new OpenAI.Chat.ChatClient("gpt-5.2", apiKey);
         });
         source.AddSingleton<IGptChatWorkoutPlanner, GptChatWorkoutPlanner>();
         return source;
