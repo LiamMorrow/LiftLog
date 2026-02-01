@@ -7,6 +7,8 @@ import {
   CardioExerciseBlueprint,
   ExerciseBlueprint,
   Distance,
+  CardioExerciseSetBlueprint,
+  CardioExerciseSetBlueprintPOJO,
 } from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
 import { Weight, WeightUnit } from '@/models/weight';
@@ -94,19 +96,8 @@ export class Session {
               undefined,
             ),
         )
-        .with(
-          P.instanceOf(CardioExerciseBlueprint),
-          (ce) =>
-            new RecordedCardioExercise(
-              ce,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-            ),
+        .with(P.instanceOf(CardioExerciseBlueprint), (ce) =>
+          RecordedCardioExercise.empty(ce),
         )
         .exhaustive();
     }
@@ -229,7 +220,9 @@ export class Session {
   get nextExercise(): RecordedExercise | undefined {
     const recordedExercises = this.recordedExercises;
     const cardioExerciseWithRunningTimer = recordedExercises.find(
-      (x) => x instanceof RecordedCardioExercise && x.currentBlockStartTime,
+      (x) =>
+        x instanceof RecordedCardioExercise &&
+        x.sets.some((s) => s.currentBlockStartTime),
     );
     if (cardioExerciseWithRunningTimer) {
       return cardioExerciseWithRunningTimer;
@@ -355,14 +348,14 @@ export function fromRecordedExercisePOJO(
   return match(pojo)
     .with(
       P.union(
-        { type: 'CardioRecordedExercise' },
+        { type: 'RecordedCardioExercise' },
         P.instanceOf(RecordedCardioExercise),
       ),
       RecordedCardioExercise.fromPOJO,
     )
     .with(
       P.union(
-        { type: 'WeightedRecordedExercise' },
+        { type: 'RecordedWeightedExercise' },
         P.instanceOf(RecordedWeightedExercise),
       ),
       RecordedWeightedExercise.fromPOJO,
@@ -384,84 +377,34 @@ export function createEmptyRecordedExercise(
     .exhaustive();
 }
 
-export interface RecordedCardioExercisePOJO {
-  type: 'CardioRecordedExercise';
-  blueprint: CardioExerciseBlueprintPOJO;
-  completionDateTime: OffsetDateTime | undefined;
-  duration: Duration | undefined;
-  distance: Distance | undefined;
-  resistance: BigNumber | undefined;
-  incline: BigNumber | undefined;
-  notes: string | undefined;
-  currentBlockStartTime: OffsetDateTime | undefined;
-}
-export class RecordedCardioExercise {
-  readonly blueprint: CardioExerciseBlueprint;
+export interface RecordedCardioExerciseSetPOJO {
+  readonly type: 'RecordedCardioExerciseSet';
+  readonly blueprint: CardioExerciseSetBlueprintPOJO;
   readonly completionDateTime: OffsetDateTime | undefined;
   readonly duration: Duration | undefined;
   readonly distance: Distance | undefined;
   readonly resistance: BigNumber | undefined;
   readonly incline: BigNumber | undefined;
-  readonly notes: string | undefined;
-
-  /**
-   * Describes the start time of a currently running timer. This is not persisted
-   */
   readonly currentBlockStartTime: OffsetDateTime | undefined;
+}
 
-  /**
-   * @deprecated please use full constructor. Here only for serialization
-   */
-  constructor();
+export class RecordedCardioExerciseSet {
   constructor(
-    blueprint: CardioExerciseBlueprint,
-    completionDateTime: OffsetDateTime | undefined,
-    duration: Duration | undefined,
-    distance: Distance | undefined,
-    resistance: BigNumber | undefined,
-    incline: BigNumber | undefined,
-    notes: string | undefined,
-    currentBlockStartTime: OffsetDateTime | undefined,
-  );
-  constructor(
-    blueprint?: CardioExerciseBlueprint,
-    completionDateTime?: OffsetDateTime,
-    duration?: Duration,
-    distance?: Distance,
-    resistance?: BigNumber,
-    incline?: BigNumber,
-    notes?: string,
-    currentBlockStartTime?: OffsetDateTime,
-  ) {
-    this.blueprint = blueprint!;
-    this.completionDateTime = completionDateTime;
-    this.duration = duration;
-    this.distance = distance;
-    this.resistance = resistance;
-    this.incline = incline;
-    this.notes = notes;
-    this.currentBlockStartTime = currentBlockStartTime;
-  }
-
-  static fromPOJO(
-    pojo: DeepOmit<RecordedCardioExercisePOJO, 'type'>,
-  ): RecordedCardioExercise {
-    return new RecordedCardioExercise(
-      CardioExerciseBlueprint.fromPOJO(
-        pojo.blueprint as CardioExerciseBlueprintPOJO, // we lost type
-      ),
-      pojo.completionDateTime,
-      pojo.duration,
-      pojo.distance,
-      pojo.resistance,
-      pojo.incline,
-      pojo.notes,
-      pojo.currentBlockStartTime,
-    );
-  }
-
-  static empty(blueprint: CardioExerciseBlueprint): RecordedCardioExercise {
-    return new RecordedCardioExercise(
+    readonly blueprint: CardioExerciseSetBlueprint,
+    readonly completionDateTime: OffsetDateTime | undefined,
+    readonly duration: Duration | undefined,
+    readonly distance: Distance | undefined,
+    readonly resistance: BigNumber | undefined,
+    readonly incline: BigNumber | undefined,
+    /**
+     * Describes the start time of a currently running timer. This is not persisted
+     */
+    readonly currentBlockStartTime: OffsetDateTime | undefined,
+  ) {}
+  static empty(
+    blueprint: CardioExerciseSetBlueprint,
+  ): RecordedCardioExerciseSet {
+    return new RecordedCardioExerciseSet(
       blueprint,
       undefined,
       undefined,
@@ -469,49 +412,37 @@ export class RecordedCardioExercise {
       undefined,
       undefined,
       undefined,
-      undefined,
     );
   }
 
-  get isComplete(): boolean {
-    return !!this.completionDateTime;
+  static fromPOJO(
+    pojo: RecordedCardioExerciseSetPOJO | RecordedCardioExerciseSet,
+  ): RecordedCardioExerciseSet {
+    return new RecordedCardioExerciseSet(
+      CardioExerciseSetBlueprint.fromPOJO(pojo.blueprint),
+      pojo.completionDateTime,
+      pojo.duration,
+      pojo.distance,
+      pojo.resistance,
+      pojo.incline,
+      pojo.currentBlockStartTime,
+    );
+  }
+  toPOJO(): RecordedCardioExerciseSetPOJO {
+    return {
+      type: 'RecordedCardioExerciseSet',
+      blueprint: this.blueprint.toPOJO(),
+      completionDateTime: this.completionDateTime,
+      duration: this.duration,
+      distance: this.distance,
+      resistance: this.resistance,
+      incline: this.incline,
+      currentBlockStartTime: this.currentBlockStartTime,
+    };
   }
 
-  get isStarted() {
-    return !!this.completionDateTime;
-  }
-
-  get latestTime(): OffsetDateTime | undefined {
-    return this.completionDateTime;
-  }
-
-  get earliestTime(): OffsetDateTime | undefined {
-    return this.completionDateTime;
-  }
-
-  withNothingCompleted(): RecordedCardioExercise {
-    return this.with({
-      notes: undefined,
-      distance: undefined,
-      duration: undefined,
-      completionDateTime: undefined,
-      incline: undefined,
-      resistance: undefined,
-    });
-  }
-
-  equals(other: RecordedExercise | undefined): boolean {
-    if (!other) {
-      return false;
-    }
-    if (other === this) {
-      return true;
-    }
-    if (other instanceof RecordedWeightedExercise) {
-      return false;
-    }
+  equals(other: RecordedCardioExerciseSet): unknown {
     return (
-      this.blueprint.equals(other.blueprint) &&
       ((this.completionDateTime &&
         other.completionDateTime &&
         this.completionDateTime.equals(other.completionDateTime)) ||
@@ -528,43 +459,115 @@ export class RecordedCardioExercise {
       ((this.incline &&
         other.incline &&
         this.incline.isEqualTo(other.incline)) ||
-        this.incline === other.incline) &&
+        this.incline === other.incline)
+    );
+  }
+}
+
+export interface RecordedCardioExercisePOJO {
+  type: 'RecordedCardioExercise';
+  blueprint: CardioExerciseBlueprintPOJO;
+  sets: RecordedCardioExerciseSetPOJO[];
+  notes: string | undefined;
+}
+export class RecordedCardioExercise {
+  constructor(
+    readonly blueprint: CardioExerciseBlueprint,
+    readonly sets: RecordedCardioExerciseSet[],
+    readonly notes: string | undefined,
+  ) {}
+
+  static fromPOJO(
+    pojo: RecordedCardioExercisePOJO | RecordedCardioExercise,
+  ): RecordedCardioExercise {
+    return new RecordedCardioExercise(
+      CardioExerciseBlueprint.fromPOJO(pojo.blueprint),
+      pojo.sets.map((x) => RecordedCardioExerciseSet.fromPOJO(x)),
+      pojo.notes,
+    );
+  }
+
+  static empty(blueprint: CardioExerciseBlueprint): RecordedCardioExercise {
+    return new RecordedCardioExercise(
+      blueprint,
+      blueprint.sets.map((x) => RecordedCardioExerciseSet.empty(x)),
+      undefined,
+    );
+  }
+
+  get isComplete(): boolean {
+    return this.sets.every((x) => !!x.completionDateTime);
+  }
+
+  get isStarted() {
+    return this.sets.some((x) => !!x.completionDateTime);
+  }
+
+  get latestTime(): OffsetDateTime | undefined {
+    return this.sets
+      .map((x) => x.completionDateTime)
+      .filter((x) => x)
+      .sort(TemporalComparer)
+      .at(-1);
+  }
+
+  get earliestTime(): OffsetDateTime | undefined {
+    return this.sets
+      .map((x) => x.completionDateTime)
+      .filter((x) => x)
+      .sort(TemporalComparer)
+      .at(0);
+  }
+
+  withNothingCompleted(): RecordedCardioExercise {
+    return this.with({
+      notes: undefined,
+      sets: this.blueprint.sets.map((s) => RecordedCardioExerciseSet.empty(s)),
+    });
+  }
+
+  equals(other: RecordedExercise | undefined): boolean {
+    if (!other) {
+      return false;
+    }
+    if (other === this) {
+      return true;
+    }
+    if (other instanceof RecordedWeightedExercise) {
+      return false;
+    }
+    return (
+      this.blueprint.equals(other.blueprint) &&
+      this.sets.every((set, index) => set.equals(other.sets[index])) &&
       this.notes === other.notes
     );
   }
 
   with(
-    other: Partial<Omit<RecordedCardioExercisePOJO, 'type'>>,
+    other:
+      | Partial<RecordedCardioExercisePOJO>
+      | Partial<RecordedCardioExercise>,
   ): RecordedCardioExercise {
     return new RecordedCardioExercise(
       CardioExerciseBlueprint.fromPOJO(other.blueprint ?? this.blueprint),
-      other.completionDateTime ?? this.completionDateTime,
-      other.duration ?? this.duration,
-      other.distance ?? this.distance,
-      other.resistance ?? this.resistance,
-      other.incline ?? this.incline,
+      other.sets?.map((x) => RecordedCardioExerciseSet.fromPOJO(x)) ??
+        this.sets,
       other.notes ?? this.notes,
-      other.currentBlockStartTime ?? this.currentBlockStartTime,
     );
   }
 
   toPOJO(): RecordedCardioExercisePOJO {
     return {
-      type: 'CardioRecordedExercise',
+      type: 'RecordedCardioExercise',
       blueprint: this.blueprint.toPOJO(),
-      completionDateTime: this.completionDateTime,
-      duration: this.duration,
-      distance: this.distance,
-      resistance: this.resistance,
-      incline: this.incline,
+      sets: this.sets.map((x) => x.toPOJO()),
       notes: this.notes,
-      currentBlockStartTime: this.currentBlockStartTime,
     };
   }
 }
 
 export interface RecordedWeightedExercisePOJO {
-  type: 'WeightedRecordedExercise';
+  type: 'RecordedWeightedExercise';
   blueprint: WeightedExerciseBlueprintPOJO;
   potentialSets: PotentialSetPOJO[];
   notes: string | undefined;
@@ -668,7 +671,7 @@ export class RecordedWeightedExercise {
 
   toPOJO(): RecordedWeightedExercisePOJO {
     return {
-      type: 'WeightedRecordedExercise',
+      type: 'RecordedWeightedExercise',
       blueprint: this.blueprint.toPOJO(),
       potentialSets: this.potentialSets.map((x) => x.toPOJO()),
       notes: this.notes,

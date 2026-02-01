@@ -200,88 +200,122 @@ export type Distance = {
 
 export type CardioTarget = TimeCardioTarget | DistanceCardioTarget;
 
-export interface CardioExerciseBlueprintPOJO {
-  type: 'CardioExerciseBlueprint';
-  name: string;
-  target: CardioTarget;
-  trackDuration: boolean;
-  trackDistance: boolean;
-  trackResistance: boolean;
-  trackIncline: boolean;
-  notes: string;
-  link: string;
-}
-export class CardioExerciseBlueprint {
-  readonly name: string;
+export interface CardioExerciseSetBlueprintPOJO {
+  type: 'CardioExerciseSetBlueprint';
+
   readonly target: CardioTarget;
-  readonly notes: string;
-  readonly link: string;
   readonly trackDuration: boolean;
   readonly trackDistance: boolean;
   readonly trackResistance: boolean;
   readonly trackIncline: boolean;
+}
 
-  /**
-   * @deprecated please use full constructor. Here only for serialization
-   */
-  constructor();
+export class CardioExerciseSetBlueprint {
   constructor(
-    name: string,
-    target: CardioTarget,
-    trackDuration: boolean,
-    trackDistance: boolean,
-    trackResistance: boolean,
-    trackIncline: boolean,
-    notes: string,
-    link: string,
-  );
+    readonly target: CardioTarget,
+    readonly trackDuration: boolean,
+    readonly trackDistance: boolean,
+    readonly trackResistance: boolean,
+    readonly trackIncline: boolean,
+  ) {}
+  static empty() {
+    return new CardioExerciseSetBlueprint(
+      {
+        type: 'time',
+        value: Duration.ofMinutes(30),
+      },
+      false,
+      true,
+      false,
+      false,
+    );
+  }
+
+  static fromPOJO(
+    pojo: DeepOmit<CardioExerciseSetBlueprintPOJO, 'type'> &
+      Pick<CardioExerciseSetBlueprintPOJO, 'target'>,
+  ): CardioExerciseSetBlueprint {
+    return new CardioExerciseSetBlueprint(
+      pojo.target,
+      pojo.trackDuration,
+      pojo.trackDistance,
+      pojo.trackResistance,
+      pojo.trackIncline,
+    );
+  }
+
+  toPOJO(): CardioExerciseSetBlueprintPOJO {
+    return {
+      type: 'CardioExerciseSetBlueprint',
+      target: this.target,
+      trackDistance: this.trackDistance,
+      trackDuration: this.trackDuration,
+      trackIncline: this.trackIncline,
+      trackResistance: this.trackResistance,
+    };
+  }
+
+  equals(
+    other: CardioExerciseSetBlueprint | CardioExerciseSetBlueprintPOJO,
+  ): boolean {
+    return (
+      this.trackDistance === other.trackDistance &&
+      this.trackDuration === other.trackDuration &&
+      this.trackIncline === other.trackIncline &&
+      this.trackResistance === other.trackResistance &&
+      cardioTargetEquals(this.target, other.target)
+    );
+  }
+
+  with(
+    other:
+      | Partial<CardioExerciseSetBlueprint>
+      | Partial<CardioExerciseSetBlueprintPOJO>,
+  ): CardioExerciseSetBlueprint {
+    return new CardioExerciseSetBlueprint(
+      other.target ?? this.target,
+      other.trackDuration ?? this.trackDuration,
+      other.trackDistance ?? this.trackDistance,
+      other.trackResistance ?? this.trackResistance,
+      other.trackIncline ?? this.trackIncline,
+    );
+  }
+}
+
+export interface CardioExerciseBlueprintPOJO {
+  type: 'CardioExerciseBlueprint';
+  name: string;
+  sets: CardioExerciseSetBlueprintPOJO[];
+  notes: string;
+  link: string;
+}
+export class CardioExerciseBlueprint {
   constructor(
-    name?: string,
-    target?: CardioTarget,
-    trackDuration?: boolean,
-    trackDistance?: boolean,
-    trackResistance?: boolean,
-    trackIncline?: boolean,
-    notes?: string,
-    link?: string,
+    readonly name: string,
+    readonly sets: CardioExerciseSetBlueprint[],
+    readonly notes: string,
+    readonly link: string,
   ) {
-    this.name = name!;
-    this.target = target!;
-    this.trackDuration = trackDuration!;
-    this.trackDistance = trackDistance!;
-    this.trackResistance = trackResistance!;
-    this.trackIncline = trackIncline!;
-    this.notes = notes!;
-    this.link = link!;
+    if (!sets.length) {
+      throw new Error('Must have at least one set in cardio exercise');
+    }
   }
 
   static empty() {
     return new CardioExerciseBlueprint(
       '',
-      {
-        type: 'time',
-        value: Duration.ofMinutes(30),
-      },
-      true,
-      false,
-      false,
-      false,
+      [CardioExerciseSetBlueprint.empty()],
       '',
       '',
     );
   }
 
   static fromPOJO(
-    pojo: DeepOmit<CardioExerciseBlueprintPOJO, 'type'> &
-      Pick<CardioExerciseBlueprintPOJO, 'target'>,
+    pojo: CardioExerciseBlueprintPOJO | CardioExerciseBlueprint,
   ): CardioExerciseBlueprint {
     return new CardioExerciseBlueprint(
       pojo.name,
-      pojo.target,
-      pojo.trackDuration,
-      pojo.trackDistance,
-      pojo.trackResistance,
-      pojo.trackIncline,
+      pojo.sets.map((x) => CardioExerciseSetBlueprint.fromPOJO(x)),
       pojo.notes,
       pojo.link,
     );
@@ -302,14 +336,7 @@ export class CardioExerciseBlueprint {
     }
     return (
       this.name === other.name &&
-      this.target.type === other.target.type &&
-      ((this.target.type === 'distance' &&
-        other.target.type === 'distance' &&
-        this.target.value.value.eq(other.target.value.value) &&
-        this.target.value.unit === other.target.value.unit) ||
-        (this.target.type === 'time' &&
-          other.target.type === 'time' &&
-          this.target.value.equals(other.target.value))) &&
+      this.sets.every((set, index) => set.equals(other.sets[index])) &&
       this.notes === other.notes &&
       this.link === other.link
     );
@@ -319,11 +346,7 @@ export class CardioExerciseBlueprint {
     return {
       type: 'CardioExerciseBlueprint',
       name: this.name,
-      target: this.target,
-      trackDuration: this.trackDuration,
-      trackDistance: this.trackDistance,
-      trackResistance: this.trackResistance,
-      trackIncline: this.trackIncline,
+      sets: this.sets.map((x) => x.toPOJO()),
       notes: this.notes,
       link: this.link,
     };
@@ -332,11 +355,8 @@ export class CardioExerciseBlueprint {
   with(other: Partial<CardioExerciseBlueprintPOJO>): CardioExerciseBlueprint {
     return new CardioExerciseBlueprint(
       other.name ?? this.name,
-      other.target ?? this.target,
-      other.trackDuration ?? this.trackDuration,
-      other.trackDistance ?? this.trackDistance,
-      other.trackResistance ?? this.trackResistance,
-      other.trackIncline ?? this.trackIncline,
+      other.sets?.map((x) => CardioExerciseSetBlueprint.fromPOJO(x)) ??
+        this.sets,
       other.notes ?? this.notes,
       other.link ?? this.link,
     );
@@ -501,7 +521,10 @@ export class KeyedExerciseBlueprint {
           P.instanceOf(WeightedExerciseBlueprint),
           (ex) => `${ex.sets}_${ex.repsPerSet}`,
         )
-        .with(P.instanceOf(CardioExerciseBlueprint), (t) => t.target.type)
+        .with(
+          P.instanceOf(CardioExerciseBlueprint),
+          (t) => t.sets[0]?.target.type ?? 'distance',
+        )
         .exhaustive(),
     );
   }
@@ -575,3 +598,14 @@ export const EmptyExerciseBlueprint = new WeightedExerciseBlueprint(
   '',
   '',
 );
+
+export function cardioTargetEquals(a: CardioTarget, b: CardioTarget): boolean {
+  if (a.type !== b.type) return false;
+  if (a.type === 'time' && b.type === 'time') {
+    return a.value.equals(b.value);
+  }
+  if (a.type === 'distance' && b.type === 'distance') {
+    return a.value.value.eq(b.value.value) && a.value.unit === b.value.unit;
+  }
+  return false;
+}

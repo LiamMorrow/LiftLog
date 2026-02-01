@@ -3,6 +3,7 @@ import { match } from 'ts-pattern';
 import {
   CardioExerciseBlueprint,
   CardioTarget,
+  cardioTargetEquals,
   ExerciseBlueprint,
   Rest,
   SessionBlueprint,
@@ -363,17 +364,6 @@ function restEquals(a: Rest, b: Rest): boolean {
     a.maxRest.equals(b.maxRest) &&
     a.failureRest.equals(b.failureRest)
   );
-}
-
-function cardioTargetEquals(a: CardioTarget, b: CardioTarget): boolean {
-  if (a.type !== b.type) return false;
-  if (a.type === 'time' && b.type === 'time') {
-    return a.value.equals(b.value);
-  }
-  if (a.type === 'distance' && b.type === 'distance') {
-    return a.value.value.eq(b.value.value) && a.value.unit === b.value.unit;
-  }
-  return false;
 }
 
 function diffWeightedExercises(
