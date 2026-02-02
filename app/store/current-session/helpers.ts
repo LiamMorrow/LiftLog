@@ -36,12 +36,15 @@ export function getCardioTimerInfo(
 ): CardioTimerInfo | undefined {
   const exerciseWithRunningTimer: RecordedCardioExercise =
     session.recordedExercises.find(
-      (x) => x instanceof RecordedCardioExercise && x.currentBlockStartTime,
+      (x) =>
+        x instanceof RecordedCardioExercise &&
+        x.sets.find((s) => s.currentBlockStartTime),
     ) as RecordedCardioExercise;
   return exerciseWithRunningTimer
     ? {
-        currentBlockStartTime:
-          exerciseWithRunningTimer.currentBlockStartTime?.toInstant(),
+        currentBlockStartTime: exerciseWithRunningTimer.sets
+          .find((s) => s.currentBlockStartTime)
+          ?.currentBlockStartTime?.toInstant(),
         currentDuration: exerciseWithRunningTimer.duration ?? Duration.ZERO,
       }
     : undefined;

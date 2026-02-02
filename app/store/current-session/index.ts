@@ -103,11 +103,11 @@ const currentSessionSlice = createSlice({
       // Gather all unique, non-null completion dates from all sets
       const allCompletionDates = session.recordedExercises
         .flatMap((re) =>
-          re.type === 'WeightedRecordedExercise'
+          re.type === 'RecordedWeightedExercise'
             ? re.potentialSets.map((ps) =>
                 ps.set?.completionDateTime?.toLocalDate(),
               )
-            : [re.completionDateTime?.toLocalDate()],
+            : re.sets.map((s) => s.completionDateTime?.toLocalDate()),
         )
         .filter((d): d is LocalDate => d !== undefined);
 
@@ -127,7 +127,7 @@ const currentSessionSlice = createSlice({
 
       // Update all sets' completionDateTime
       session.recordedExercises.forEach((re) => {
-        if (re.type === 'WeightedRecordedExercise') {
+        if (re.type === 'RecordedWeightedExercise') {
           re.potentialSets.forEach((ps) => {
             if (ps.set && ps.set.completionDateTime) {
               const setDate = ps.set.completionDateTime.toLocalDate();
@@ -138,12 +138,15 @@ const currentSessionSlice = createSlice({
             }
           });
         } else {
-          if (re.completionDateTime) {
-            re.completionDateTime = re.completionDateTime
-              .toLocalTime()
-              .atDate(getAdjustedDate(re.completionDateTime.toLocalDate()))
-              .atOffset(re.completionDateTime.offset());
-          }
+          re.sets.forEach((set) => {
+            if (set && set.completionDateTime) {
+              const setDate = set.completionDateTime.toLocalDate();
+              set.completionDateTime = set.completionDateTime
+                .toLocalTime()
+                .atDate(getAdjustedDate(setDate))
+                .atOffset(set.completionDateTime.offset());
+            }
+          });
         }
       });
     }),
@@ -219,7 +222,7 @@ const currentSessionSlice = createSlice({
         } else {
           const weightedExistingExercise =
             session.recordedExercises[action.exerciseIndex].type ===
-            'WeightedRecordedExercise'
+            'RecordedWeightedExercise'
               ? (session.recordedExercises[
                   action.exerciseIndex
                 ] as RecordedWeightedExercisePOJO)
@@ -274,7 +277,7 @@ const currentSessionSlice = createSlice({
         state,
       ) => {
         const exercise = session.recordedExercises[action.exerciseIndex];
-        if (exercise.type !== 'WeightedRecordedExercise') {
+        if (exercise.type !== 'RecordedWeightedExercise') {
           return;
         }
         if (!exercise.potentialSets[action.setIndex]) {
@@ -318,7 +321,7 @@ const currentSessionSlice = createSlice({
         },
       ) => {
         const exercise = session.recordedExercises[action.exerciseIndex];
-        if (exercise.type !== 'WeightedRecordedExercise') {
+        if (exercise.type !== 'RecordedWeightedExercise') {
           return;
         }
         switch (action.applyTo) {
@@ -381,77 +384,101 @@ const currentSessionSlice = createSlice({
     updateDurationForCardioExercise: targetedSessionAction(
       (
         session,
-        action: { duration: Duration | undefined; exerciseIndex: number },
+        action: {
+          duration: Duration | undefined;
+          exerciseIndex: number;
+          setIndex: number;
+        },
       ) => {
         const exercise = session.recordedExercises[action.exerciseIndex];
-        if (exercise.type !== 'CardioRecordedExercise') {
+        if (exercise.type !== 'RecordedCardioExercise') {
           return;
         }
-        exercise.duration = action.duration;
+        exercise.sets[action.setIndex].duration = action.duration;
       },
     ),
     updateResistanceForCardioExercise: targetedSessionAction(
       (
         session,
-        action: { resistance: BigNumber | undefined; exerciseIndex: number },
+        action: {
+          resistance: BigNumber | undefined;
+          exerciseIndex: number;
+          setIndex: number;
+        },
       ) => {
         const exercise = session.recordedExercises[action.exerciseIndex];
-        if (exercise.type !== 'CardioRecordedExercise') {
+        if (exercise.type !== 'RecordedCardioExercise') {
           return;
         }
-        exercise.resistance = action.resistance;
+        exercise.sets[action.setIndex].resistance = action.resistance;
       },
     ),
 
     updateInclineForCardioExercise: targetedSessionAction(
       (
         session,
-        action: { incline: BigNumber | undefined; exerciseIndex: number },
+        action: {
+          incline: BigNumber | undefined;
+          exerciseIndex: number;
+          setIndex: number;
+        },
       ) => {
         const exercise = session.recordedExercises[action.exerciseIndex];
-        if (exercise.type !== 'CardioRecordedExercise') {
+        if (exercise.type !== 'RecordedCardioExercise') {
           return;
         }
-        exercise.incline = action.incline;
+        exercise.sets[action.setIndex].incline = action.incline;
       },
     ),
 
     updateDistanceForCardioExercise: targetedSessionAction(
       (
         session,
-        action: { distance: Distance | undefined; exerciseIndex: number },
+        action: {
+          distance: Distance | undefined;
+          exerciseIndex: number;
+          setIndex: number;
+        },
       ) => {
         const exercise = session.recordedExercises[action.exerciseIndex];
-        if (exercise.type !== 'CardioRecordedExercise') {
+        if (exercise.type !== 'RecordedCardioExercise') {
           return;
         }
-        exercise.distance = action.distance;
+        exercise.sets[action.setIndex].distance = action.distance;
       },
     ),
 
     updateCurrentBlockStartTimeForCardioExercise: targetedSessionAction(
       (
         session,
-        action: { time: OffsetDateTime | undefined; exerciseIndex: number },
+        action: {
+          time: OffsetDateTime | undefined;
+          exerciseIndex: number;
+          setIndex: number;
+        },
       ) => {
         const exercise = session.recordedExercises[action.exerciseIndex];
-        if (exercise.type !== 'CardioRecordedExercise') {
+        if (exercise.type !== 'RecordedCardioExercise') {
           return;
         }
-        exercise.currentBlockStartTime = action.time;
+        exercise.sets[action.setIndex].currentBlockStartTime = action.time;
       },
     ),
 
     setCompletionTimeForCardioExercise: targetedSessionAction(
       (
         session,
-        action: { time: OffsetDateTime | undefined; exerciseIndex: number },
+        action: {
+          time: OffsetDateTime | undefined;
+          exerciseIndex: number;
+          setIndex: number;
+        },
       ) => {
         const exercise = session.recordedExercises[action.exerciseIndex];
-        if (exercise.type !== 'CardioRecordedExercise') {
+        if (exercise.type !== 'RecordedCardioExercise') {
           return;
         }
-        exercise.completionDateTime = action.time;
+        exercise.sets[action.setIndex].completionDateTime = action.time;
       },
     ),
   },

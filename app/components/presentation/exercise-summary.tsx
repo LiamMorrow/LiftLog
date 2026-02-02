@@ -89,35 +89,33 @@ function FilledChips(props: {
       </Chip>
     ));
   }
-  return [
-    props.exercise.duration && (
-      <Chip key="duration">
-        <SurfaceText>{formatTimeSpan(props.exercise.duration)}</SurfaceText>
-      </Chip>
-    ),
+  return props.exercise.sets
+    .flatMap((set, i) => [
+      set.duration && (
+        <Chip key={'duration' + i}>
+          <SurfaceText>{formatTimeSpan(set.duration)}</SurfaceText>
+        </Chip>
+      ),
 
-    props.exercise.distance && (
-      <Chip key="distance">
-        <SurfaceText>{formatDistance(props.exercise.distance)}</SurfaceText>
-      </Chip>
-    ),
+      set.distance && (
+        <Chip key={'distance' + i}>
+          <SurfaceText>{formatDistance(set.distance)}</SurfaceText>
+        </Chip>
+      ),
 
-    props.exercise.incline && (
-      <Chip key="incline">
-        <SurfaceText>
-          {localeFormatBigNumber(props.exercise.incline)} incl
-        </SurfaceText>
-      </Chip>
-    ),
+      set.incline && (
+        <Chip key={'incline' + i}>
+          <SurfaceText>{localeFormatBigNumber(set.incline)} incl</SurfaceText>
+        </Chip>
+      ),
 
-    props.exercise.resistance && (
-      <Chip key="resistance">
-        <SurfaceText>
-          {localeFormatBigNumber(props.exercise.resistance)} res
-        </SurfaceText>
-      </Chip>
-    ),
-  ].filter(isNotNullOrUndefined);
+      set.resistance && (
+        <Chip key={'resistance' + i}>
+          <SurfaceText>{localeFormatBigNumber(set.resistance)} res</SurfaceText>
+        </Chip>
+      ),
+    ])
+    .filter(isNotNullOrUndefined);
 }
 
 function PlannedChips(props: {
@@ -141,13 +139,11 @@ function PlannedChips(props: {
       </Chip>
     ));
   }
-  return (
-    <Chip>
-      <SurfaceText>
-        {formatCardioTarget(props.exercise.blueprint.target)}
-      </SurfaceText>
+  return props.exercise.sets.map((set, index) => (
+    <Chip key={index}>
+      <SurfaceText>{formatCardioTarget(set.blueprint.target)}</SurfaceText>
     </Chip>
-  );
+  ));
 }
 
 export default function ExerciseSummary({

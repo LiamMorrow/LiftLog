@@ -710,6 +710,7 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @property {google.protobuf.IStringValue|null} [distanceUnit] RecordedExerciseDaoV2 distanceUnit
                      * @property {LiftLog.Ui.Models.IDecimalValue|null} [resistance] RecordedExerciseDaoV2 resistance
                      * @property {LiftLog.Ui.Models.IDecimalValue|null} [incline] RecordedExerciseDaoV2 incline
+                     * @property {Array.<LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao>|null} [cardioSets] RecordedExerciseDaoV2 cardioSets
                      */
 
                     /**
@@ -722,6 +723,7 @@ export const LiftLog = $root.LiftLog = (() => {
                      */
                     function RecordedExerciseDaoV2(properties) {
                         this.potentialSets = [];
+                        this.cardioSets = [];
                         if (properties)
                             for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                                 if (properties[keys[i]] != null)
@@ -807,6 +809,14 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @instance
                      */
                     RecordedExerciseDaoV2.prototype.incline = null;
+
+                    /**
+                     * RecordedExerciseDaoV2 cardioSets.
+                     * @member {Array.<LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao>} cardioSets
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
+                     * @instance
+                     */
+                    RecordedExerciseDaoV2.prototype.cardioSets = $util.emptyArray;
 
                     // OneOf field names bound to virtual getters and setters
                     let $oneOfFields;
@@ -931,6 +941,9 @@ export const LiftLog = $root.LiftLog = (() => {
                             $root.LiftLog.Ui.Models.DecimalValue.encode(message.resistance, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
                         if (message.incline != null && Object.hasOwnProperty.call(message, "incline"))
                             $root.LiftLog.Ui.Models.DecimalValue.encode(message.incline, writer.uint32(/* id 12, wireType 2 =*/98).fork()).ldelim();
+                        if (message.cardioSets != null && message.cardioSets.length)
+                            for (let i = 0; i < message.cardioSets.length; ++i)
+                                $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.encode(message.cardioSets[i], writer.uint32(/* id 13, wireType 2 =*/106).fork()).ldelim();
                         if (message.distanceUnit != null && Object.hasOwnProperty.call(message, "distanceUnit"))
                             $root.google.protobuf.StringValue.encode(message.distanceUnit, writer.uint32(/* id 14, wireType 2 =*/114).fork()).ldelim();
                         return writer;
@@ -1009,6 +1022,12 @@ export const LiftLog = $root.LiftLog = (() => {
                                 }
                             case 12: {
                                     message.incline = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 13: {
+                                    if (!(message.cardioSets && message.cardioSets.length))
+                                        message.cardioSets = [];
+                                    message.cardioSets.push($root.LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.decode(reader, reader.uint32()));
                                     break;
                                 }
                             default:
@@ -1125,6 +1144,15 @@ export const LiftLog = $root.LiftLog = (() => {
                                     return "incline." + error;
                             }
                         }
+                        if (message.cardioSets != null && message.hasOwnProperty("cardioSets")) {
+                            if (!Array.isArray(message.cardioSets))
+                                return "cardioSets: array expected";
+                            for (let i = 0; i < message.cardioSets.length; ++i) {
+                                let error = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.verify(message.cardioSets[i]);
+                                if (error)
+                                    return "cardioSets." + error;
+                            }
+                        }
                         return null;
                     };
 
@@ -1206,6 +1234,16 @@ export const LiftLog = $root.LiftLog = (() => {
                                 throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.incline: object expected");
                             message.incline = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.incline);
                         }
+                        if (object.cardioSets) {
+                            if (!Array.isArray(object.cardioSets))
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.cardioSets: array expected");
+                            message.cardioSets = [];
+                            for (let i = 0; i < object.cardioSets.length; ++i) {
+                                if (typeof object.cardioSets[i] !== "object")
+                                    throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.cardioSets: object expected");
+                                message.cardioSets[i] = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.fromObject(object.cardioSets[i]);
+                            }
+                        }
                         return message;
                     };
 
@@ -1222,8 +1260,10 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (!options)
                             options = {};
                         let object = {};
-                        if (options.arrays || options.defaults)
+                        if (options.arrays || options.defaults) {
                             object.potentialSets = [];
+                            object.cardioSets = [];
+                        }
                         if (options.defaults) {
                             object.exerciseBlueprint = null;
                             object.type = options.enums === String ? "WEIGHTED" : 0;
@@ -1267,6 +1307,11 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (options.oneofs)
                                 object._incline = "incline";
                         }
+                        if (message.cardioSets && message.cardioSets.length) {
+                            object.cardioSets = [];
+                            for (let j = 0; j < message.cardioSets.length; ++j)
+                                object.cardioSets[j] = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.toObject(message.cardioSets[j], options);
+                        }
                         if (message.distanceUnit != null && message.hasOwnProperty("distanceUnit")) {
                             object.distanceUnit = $root.google.protobuf.StringValue.toObject(message.distanceUnit, options);
                             if (options.oneofs)
@@ -1302,6 +1347,484 @@ export const LiftLog = $root.LiftLog = (() => {
                     };
 
                     return RecordedExerciseDaoV2;
+                })();
+
+                SessionHistoryDao.RecordedCardioExerciseSetDao = (function() {
+
+                    /**
+                     * Properties of a RecordedCardioExerciseSetDao.
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao
+                     * @interface IRecordedCardioExerciseSetDao
+                     * @property {LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao|null} [blueprint] RecordedCardioExerciseSetDao blueprint
+                     * @property {LiftLog.Ui.Models.IDateTimeDao|null} [completionDateTime] RecordedCardioExerciseSetDao completionDateTime
+                     * @property {google.protobuf.IDuration|null} [duration] RecordedCardioExerciseSetDao duration
+                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [distanceValue] RecordedCardioExerciseSetDao distanceValue
+                     * @property {google.protobuf.IStringValue|null} [distanceUnit] RecordedCardioExerciseSetDao distanceUnit
+                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [resistance] RecordedCardioExerciseSetDao resistance
+                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [incline] RecordedCardioExerciseSetDao incline
+                     */
+
+                    /**
+                     * Constructs a new RecordedCardioExerciseSetDao.
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao
+                     * @classdesc Represents a RecordedCardioExerciseSetDao.
+                     * @implements IRecordedCardioExerciseSetDao
+                     * @constructor
+                     * @param {LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao=} [properties] Properties to set
+                     */
+                    function RecordedCardioExerciseSetDao(properties) {
+                        if (properties)
+                            for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * RecordedCardioExerciseSetDao blueprint.
+                     * @member {LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao|null|undefined} blueprint
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @instance
+                     */
+                    RecordedCardioExerciseSetDao.prototype.blueprint = null;
+
+                    /**
+                     * RecordedCardioExerciseSetDao completionDateTime.
+                     * @member {LiftLog.Ui.Models.IDateTimeDao|null|undefined} completionDateTime
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @instance
+                     */
+                    RecordedCardioExerciseSetDao.prototype.completionDateTime = null;
+
+                    /**
+                     * RecordedCardioExerciseSetDao duration.
+                     * @member {google.protobuf.IDuration|null|undefined} duration
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @instance
+                     */
+                    RecordedCardioExerciseSetDao.prototype.duration = null;
+
+                    /**
+                     * RecordedCardioExerciseSetDao distanceValue.
+                     * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} distanceValue
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @instance
+                     */
+                    RecordedCardioExerciseSetDao.prototype.distanceValue = null;
+
+                    /**
+                     * RecordedCardioExerciseSetDao distanceUnit.
+                     * @member {google.protobuf.IStringValue|null|undefined} distanceUnit
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @instance
+                     */
+                    RecordedCardioExerciseSetDao.prototype.distanceUnit = null;
+
+                    /**
+                     * RecordedCardioExerciseSetDao resistance.
+                     * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} resistance
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @instance
+                     */
+                    RecordedCardioExerciseSetDao.prototype.resistance = null;
+
+                    /**
+                     * RecordedCardioExerciseSetDao incline.
+                     * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} incline
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @instance
+                     */
+                    RecordedCardioExerciseSetDao.prototype.incline = null;
+
+                    // OneOf field names bound to virtual getters and setters
+                    let $oneOfFields;
+
+                    /**
+                     * RecordedCardioExerciseSetDao _completionDateTime.
+                     * @member {"completionDateTime"|undefined} _completionDateTime
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @instance
+                     */
+                    Object.defineProperty(RecordedCardioExerciseSetDao.prototype, "_completionDateTime", {
+                        get: $util.oneOfGetter($oneOfFields = ["completionDateTime"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * RecordedCardioExerciseSetDao _duration.
+                     * @member {"duration"|undefined} _duration
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @instance
+                     */
+                    Object.defineProperty(RecordedCardioExerciseSetDao.prototype, "_duration", {
+                        get: $util.oneOfGetter($oneOfFields = ["duration"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * RecordedCardioExerciseSetDao _distanceValue.
+                     * @member {"distanceValue"|undefined} _distanceValue
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @instance
+                     */
+                    Object.defineProperty(RecordedCardioExerciseSetDao.prototype, "_distanceValue", {
+                        get: $util.oneOfGetter($oneOfFields = ["distanceValue"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * RecordedCardioExerciseSetDao _distanceUnit.
+                     * @member {"distanceUnit"|undefined} _distanceUnit
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @instance
+                     */
+                    Object.defineProperty(RecordedCardioExerciseSetDao.prototype, "_distanceUnit", {
+                        get: $util.oneOfGetter($oneOfFields = ["distanceUnit"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * RecordedCardioExerciseSetDao _resistance.
+                     * @member {"resistance"|undefined} _resistance
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @instance
+                     */
+                    Object.defineProperty(RecordedCardioExerciseSetDao.prototype, "_resistance", {
+                        get: $util.oneOfGetter($oneOfFields = ["resistance"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * RecordedCardioExerciseSetDao _incline.
+                     * @member {"incline"|undefined} _incline
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @instance
+                     */
+                    Object.defineProperty(RecordedCardioExerciseSetDao.prototype, "_incline", {
+                        get: $util.oneOfGetter($oneOfFields = ["incline"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * Creates a new RecordedCardioExerciseSetDao instance using the specified properties.
+                     * @function create
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @static
+                     * @param {LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao=} [properties] Properties to set
+                     * @returns {LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao} RecordedCardioExerciseSetDao instance
+                     */
+                    RecordedCardioExerciseSetDao.create = function create(properties) {
+                        return new RecordedCardioExerciseSetDao(properties);
+                    };
+
+                    /**
+                     * Encodes the specified RecordedCardioExerciseSetDao message. Does not implicitly {@link LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.verify|verify} messages.
+                     * @function encode
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @static
+                     * @param {LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao} message RecordedCardioExerciseSetDao message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    RecordedCardioExerciseSetDao.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.blueprint != null && Object.hasOwnProperty.call(message, "blueprint"))
+                            $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao.encode(message.blueprint, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        if (message.completionDateTime != null && Object.hasOwnProperty.call(message, "completionDateTime"))
+                            $root.LiftLog.Ui.Models.DateTimeDao.encode(message.completionDateTime, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                        if (message.duration != null && Object.hasOwnProperty.call(message, "duration"))
+                            $root.google.protobuf.Duration.encode(message.duration, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                        if (message.distanceValue != null && Object.hasOwnProperty.call(message, "distanceValue"))
+                            $root.LiftLog.Ui.Models.DecimalValue.encode(message.distanceValue, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                        if (message.distanceUnit != null && Object.hasOwnProperty.call(message, "distanceUnit"))
+                            $root.google.protobuf.StringValue.encode(message.distanceUnit, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                        if (message.resistance != null && Object.hasOwnProperty.call(message, "resistance"))
+                            $root.LiftLog.Ui.Models.DecimalValue.encode(message.resistance, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                        if (message.incline != null && Object.hasOwnProperty.call(message, "incline"))
+                            $root.LiftLog.Ui.Models.DecimalValue.encode(message.incline, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified RecordedCardioExerciseSetDao message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @static
+                     * @param {LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao} message RecordedCardioExerciseSetDao message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    RecordedCardioExerciseSetDao.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a RecordedCardioExerciseSetDao message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao} RecordedCardioExerciseSetDao
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    RecordedCardioExerciseSetDao.decode = function decode(reader, length, error) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao();
+                        while (reader.pos < end) {
+                            let tag = reader.uint32();
+                            if (tag === error)
+                                break;
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.blueprint = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 2: {
+                                    message.completionDateTime = $root.LiftLog.Ui.Models.DateTimeDao.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 3: {
+                                    message.duration = $root.google.protobuf.Duration.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 4: {
+                                    message.distanceValue = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 5: {
+                                    message.distanceUnit = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 6: {
+                                    message.resistance = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 7: {
+                                    message.incline = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a RecordedCardioExerciseSetDao message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao} RecordedCardioExerciseSetDao
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    RecordedCardioExerciseSetDao.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a RecordedCardioExerciseSetDao message.
+                     * @function verify
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    RecordedCardioExerciseSetDao.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        let properties = {};
+                        if (message.blueprint != null && message.hasOwnProperty("blueprint")) {
+                            let error = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao.verify(message.blueprint);
+                            if (error)
+                                return "blueprint." + error;
+                        }
+                        if (message.completionDateTime != null && message.hasOwnProperty("completionDateTime")) {
+                            properties._completionDateTime = 1;
+                            {
+                                let error = $root.LiftLog.Ui.Models.DateTimeDao.verify(message.completionDateTime);
+                                if (error)
+                                    return "completionDateTime." + error;
+                            }
+                        }
+                        if (message.duration != null && message.hasOwnProperty("duration")) {
+                            properties._duration = 1;
+                            {
+                                let error = $root.google.protobuf.Duration.verify(message.duration);
+                                if (error)
+                                    return "duration." + error;
+                            }
+                        }
+                        if (message.distanceValue != null && message.hasOwnProperty("distanceValue")) {
+                            properties._distanceValue = 1;
+                            {
+                                let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.distanceValue);
+                                if (error)
+                                    return "distanceValue." + error;
+                            }
+                        }
+                        if (message.distanceUnit != null && message.hasOwnProperty("distanceUnit")) {
+                            properties._distanceUnit = 1;
+                            {
+                                let error = $root.google.protobuf.StringValue.verify(message.distanceUnit);
+                                if (error)
+                                    return "distanceUnit." + error;
+                            }
+                        }
+                        if (message.resistance != null && message.hasOwnProperty("resistance")) {
+                            properties._resistance = 1;
+                            {
+                                let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.resistance);
+                                if (error)
+                                    return "resistance." + error;
+                            }
+                        }
+                        if (message.incline != null && message.hasOwnProperty("incline")) {
+                            properties._incline = 1;
+                            {
+                                let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.incline);
+                                if (error)
+                                    return "incline." + error;
+                            }
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Creates a RecordedCardioExerciseSetDao message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao} RecordedCardioExerciseSetDao
+                     */
+                    RecordedCardioExerciseSetDao.fromObject = function fromObject(object) {
+                        if (object instanceof $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao)
+                            return object;
+                        let message = new $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao();
+                        if (object.blueprint != null) {
+                            if (typeof object.blueprint !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.blueprint: object expected");
+                            message.blueprint = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao.fromObject(object.blueprint);
+                        }
+                        if (object.completionDateTime != null) {
+                            if (typeof object.completionDateTime !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.completionDateTime: object expected");
+                            message.completionDateTime = $root.LiftLog.Ui.Models.DateTimeDao.fromObject(object.completionDateTime);
+                        }
+                        if (object.duration != null) {
+                            if (typeof object.duration !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.duration: object expected");
+                            message.duration = $root.google.protobuf.Duration.fromObject(object.duration);
+                        }
+                        if (object.distanceValue != null) {
+                            if (typeof object.distanceValue !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.distanceValue: object expected");
+                            message.distanceValue = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.distanceValue);
+                        }
+                        if (object.distanceUnit != null) {
+                            if (typeof object.distanceUnit !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.distanceUnit: object expected");
+                            message.distanceUnit = $root.google.protobuf.StringValue.fromObject(object.distanceUnit);
+                        }
+                        if (object.resistance != null) {
+                            if (typeof object.resistance !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.resistance: object expected");
+                            message.resistance = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.resistance);
+                        }
+                        if (object.incline != null) {
+                            if (typeof object.incline !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.incline: object expected");
+                            message.incline = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.incline);
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a RecordedCardioExerciseSetDao message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @static
+                     * @param {LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao} message RecordedCardioExerciseSetDao
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    RecordedCardioExerciseSetDao.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        let object = {};
+                        if (options.defaults)
+                            object.blueprint = null;
+                        if (message.blueprint != null && message.hasOwnProperty("blueprint"))
+                            object.blueprint = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao.toObject(message.blueprint, options);
+                        if (message.completionDateTime != null && message.hasOwnProperty("completionDateTime")) {
+                            object.completionDateTime = $root.LiftLog.Ui.Models.DateTimeDao.toObject(message.completionDateTime, options);
+                            if (options.oneofs)
+                                object._completionDateTime = "completionDateTime";
+                        }
+                        if (message.duration != null && message.hasOwnProperty("duration")) {
+                            object.duration = $root.google.protobuf.Duration.toObject(message.duration, options);
+                            if (options.oneofs)
+                                object._duration = "duration";
+                        }
+                        if (message.distanceValue != null && message.hasOwnProperty("distanceValue")) {
+                            object.distanceValue = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.distanceValue, options);
+                            if (options.oneofs)
+                                object._distanceValue = "distanceValue";
+                        }
+                        if (message.distanceUnit != null && message.hasOwnProperty("distanceUnit")) {
+                            object.distanceUnit = $root.google.protobuf.StringValue.toObject(message.distanceUnit, options);
+                            if (options.oneofs)
+                                object._distanceUnit = "distanceUnit";
+                        }
+                        if (message.resistance != null && message.hasOwnProperty("resistance")) {
+                            object.resistance = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.resistance, options);
+                            if (options.oneofs)
+                                object._resistance = "resistance";
+                        }
+                        if (message.incline != null && message.hasOwnProperty("incline")) {
+                            object.incline = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.incline, options);
+                            if (options.oneofs)
+                                object._incline = "incline";
+                        }
+                        return object;
+                    };
+
+                    /**
+                     * Converts this RecordedCardioExerciseSetDao to JSON.
+                     * @function toJSON
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    RecordedCardioExerciseSetDao.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    /**
+                     * Gets the default type url for RecordedCardioExerciseSetDao
+                     * @function getTypeUrl
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    RecordedCardioExerciseSetDao.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao";
+                    };
+
+                    return RecordedCardioExerciseSetDao;
                 })();
 
                 SessionHistoryDao.PotentialSetDaoV2 = (function() {
@@ -2786,6 +3309,7 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @property {boolean|null} [trackDistance] ExerciseBlueprintDaoV2 trackDistance
                      * @property {boolean|null} [trackResistance] ExerciseBlueprintDaoV2 trackResistance
                      * @property {boolean|null} [trackIncline] ExerciseBlueprintDaoV2 trackIncline
+                     * @property {Array.<LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao>|null} [cardioSets] ExerciseBlueprintDaoV2 cardioSets
                      */
 
                     /**
@@ -2797,6 +3321,7 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @param {LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2=} [properties] Properties to set
                      */
                     function ExerciseBlueprintDaoV2(properties) {
+                        this.cardioSets = [];
                         if (properties)
                             for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                                 if (properties[keys[i]] != null)
@@ -2916,6 +3441,14 @@ export const LiftLog = $root.LiftLog = (() => {
                     ExerciseBlueprintDaoV2.prototype.trackIncline = false;
 
                     /**
+                     * ExerciseBlueprintDaoV2 cardioSets.
+                     * @member {Array.<LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao>} cardioSets
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
+                     * @instance
+                     */
+                    ExerciseBlueprintDaoV2.prototype.cardioSets = $util.emptyArray;
+
+                    /**
                      * Creates a new ExerciseBlueprintDaoV2 instance using the specified properties.
                      * @function create
                      * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
@@ -2967,6 +3500,9 @@ export const LiftLog = $root.LiftLog = (() => {
                             writer.uint32(/* id 14, wireType 0 =*/112).bool(message.trackResistance);
                         if (message.trackIncline != null && Object.hasOwnProperty.call(message, "trackIncline"))
                             writer.uint32(/* id 15, wireType 0 =*/120).bool(message.trackIncline);
+                        if (message.cardioSets != null && message.cardioSets.length)
+                            for (let i = 0; i < message.cardioSets.length; ++i)
+                                $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao.encode(message.cardioSets[i], writer.uint32(/* id 16, wireType 2 =*/130).fork()).ldelim();
                         return writer;
                     };
 
@@ -3059,6 +3595,12 @@ export const LiftLog = $root.LiftLog = (() => {
                                     message.trackIncline = reader.bool();
                                     break;
                                 }
+                            case 16: {
+                                    if (!(message.cardioSets && message.cardioSets.length))
+                                        message.cardioSets = [];
+                                    message.cardioSets.push($root.LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao.decode(reader, reader.uint32()));
+                                    break;
+                                }
                             default:
                                 reader.skipType(tag & 7);
                                 break;
@@ -3147,6 +3689,15 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (message.trackIncline != null && message.hasOwnProperty("trackIncline"))
                             if (typeof message.trackIncline !== "boolean")
                                 return "trackIncline: boolean expected";
+                        if (message.cardioSets != null && message.hasOwnProperty("cardioSets")) {
+                            if (!Array.isArray(message.cardioSets))
+                                return "cardioSets: array expected";
+                            for (let i = 0; i < message.cardioSets.length; ++i) {
+                                let error = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao.verify(message.cardioSets[i]);
+                                if (error)
+                                    return "cardioSets." + error;
+                            }
+                        }
                         return null;
                     };
 
@@ -3213,6 +3764,16 @@ export const LiftLog = $root.LiftLog = (() => {
                             message.trackResistance = Boolean(object.trackResistance);
                         if (object.trackIncline != null)
                             message.trackIncline = Boolean(object.trackIncline);
+                        if (object.cardioSets) {
+                            if (!Array.isArray(object.cardioSets))
+                                throw TypeError(".LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.cardioSets: array expected");
+                            message.cardioSets = [];
+                            for (let i = 0; i < object.cardioSets.length; ++i) {
+                                if (typeof object.cardioSets[i] !== "object")
+                                    throw TypeError(".LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.cardioSets: object expected");
+                                message.cardioSets[i] = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao.fromObject(object.cardioSets[i]);
+                            }
+                        }
                         return message;
                     };
 
@@ -3229,6 +3790,8 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (!options)
                             options = {};
                         let object = {};
+                        if (options.arrays || options.defaults)
+                            object.cardioSets = [];
                         if (options.defaults) {
                             object.name = "";
                             object.sets = 0;
@@ -3273,6 +3836,11 @@ export const LiftLog = $root.LiftLog = (() => {
                             object.trackResistance = message.trackResistance;
                         if (message.trackIncline != null && message.hasOwnProperty("trackIncline"))
                             object.trackIncline = message.trackIncline;
+                        if (message.cardioSets && message.cardioSets.length) {
+                            object.cardioSets = [];
+                            for (let j = 0; j < message.cardioSets.length; ++j)
+                                object.cardioSets[j] = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao.toObject(message.cardioSets[j], options);
+                        }
                         return object;
                     };
 
@@ -3303,6 +3871,309 @@ export const LiftLog = $root.LiftLog = (() => {
                     };
 
                     return ExerciseBlueprintDaoV2;
+                })();
+
+                SessionBlueprintDao.CardioExerciseSetBlueprintDao = (function() {
+
+                    /**
+                     * Properties of a CardioExerciseSetBlueprintDao.
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao
+                     * @interface ICardioExerciseSetBlueprintDao
+                     * @property {LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null} [cardioTarget] CardioExerciseSetBlueprintDao cardioTarget
+                     * @property {boolean|null} [trackDuration] CardioExerciseSetBlueprintDao trackDuration
+                     * @property {boolean|null} [trackDistance] CardioExerciseSetBlueprintDao trackDistance
+                     * @property {boolean|null} [trackResistance] CardioExerciseSetBlueprintDao trackResistance
+                     * @property {boolean|null} [trackIncline] CardioExerciseSetBlueprintDao trackIncline
+                     */
+
+                    /**
+                     * Constructs a new CardioExerciseSetBlueprintDao.
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao
+                     * @classdesc Represents a CardioExerciseSetBlueprintDao.
+                     * @implements ICardioExerciseSetBlueprintDao
+                     * @constructor
+                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao=} [properties] Properties to set
+                     */
+                    function CardioExerciseSetBlueprintDao(properties) {
+                        if (properties)
+                            for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * CardioExerciseSetBlueprintDao cardioTarget.
+                     * @member {LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null|undefined} cardioTarget
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao
+                     * @instance
+                     */
+                    CardioExerciseSetBlueprintDao.prototype.cardioTarget = null;
+
+                    /**
+                     * CardioExerciseSetBlueprintDao trackDuration.
+                     * @member {boolean} trackDuration
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao
+                     * @instance
+                     */
+                    CardioExerciseSetBlueprintDao.prototype.trackDuration = false;
+
+                    /**
+                     * CardioExerciseSetBlueprintDao trackDistance.
+                     * @member {boolean} trackDistance
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao
+                     * @instance
+                     */
+                    CardioExerciseSetBlueprintDao.prototype.trackDistance = false;
+
+                    /**
+                     * CardioExerciseSetBlueprintDao trackResistance.
+                     * @member {boolean} trackResistance
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao
+                     * @instance
+                     */
+                    CardioExerciseSetBlueprintDao.prototype.trackResistance = false;
+
+                    /**
+                     * CardioExerciseSetBlueprintDao trackIncline.
+                     * @member {boolean} trackIncline
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao
+                     * @instance
+                     */
+                    CardioExerciseSetBlueprintDao.prototype.trackIncline = false;
+
+                    /**
+                     * Creates a new CardioExerciseSetBlueprintDao instance using the specified properties.
+                     * @function create
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao
+                     * @static
+                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao=} [properties] Properties to set
+                     * @returns {LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao} CardioExerciseSetBlueprintDao instance
+                     */
+                    CardioExerciseSetBlueprintDao.create = function create(properties) {
+                        return new CardioExerciseSetBlueprintDao(properties);
+                    };
+
+                    /**
+                     * Encodes the specified CardioExerciseSetBlueprintDao message. Does not implicitly {@link LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao.verify|verify} messages.
+                     * @function encode
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao
+                     * @static
+                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao} message CardioExerciseSetBlueprintDao message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    CardioExerciseSetBlueprintDao.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.cardioTarget != null && Object.hasOwnProperty.call(message, "cardioTarget"))
+                            $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.encode(message.cardioTarget, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        if (message.trackDuration != null && Object.hasOwnProperty.call(message, "trackDuration"))
+                            writer.uint32(/* id 2, wireType 0 =*/16).bool(message.trackDuration);
+                        if (message.trackDistance != null && Object.hasOwnProperty.call(message, "trackDistance"))
+                            writer.uint32(/* id 3, wireType 0 =*/24).bool(message.trackDistance);
+                        if (message.trackResistance != null && Object.hasOwnProperty.call(message, "trackResistance"))
+                            writer.uint32(/* id 4, wireType 0 =*/32).bool(message.trackResistance);
+                        if (message.trackIncline != null && Object.hasOwnProperty.call(message, "trackIncline"))
+                            writer.uint32(/* id 5, wireType 0 =*/40).bool(message.trackIncline);
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified CardioExerciseSetBlueprintDao message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao
+                     * @static
+                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao} message CardioExerciseSetBlueprintDao message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    CardioExerciseSetBlueprintDao.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a CardioExerciseSetBlueprintDao message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao} CardioExerciseSetBlueprintDao
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    CardioExerciseSetBlueprintDao.decode = function decode(reader, length, error) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao();
+                        while (reader.pos < end) {
+                            let tag = reader.uint32();
+                            if (tag === error)
+                                break;
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.cardioTarget = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 2: {
+                                    message.trackDuration = reader.bool();
+                                    break;
+                                }
+                            case 3: {
+                                    message.trackDistance = reader.bool();
+                                    break;
+                                }
+                            case 4: {
+                                    message.trackResistance = reader.bool();
+                                    break;
+                                }
+                            case 5: {
+                                    message.trackIncline = reader.bool();
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a CardioExerciseSetBlueprintDao message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao} CardioExerciseSetBlueprintDao
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    CardioExerciseSetBlueprintDao.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a CardioExerciseSetBlueprintDao message.
+                     * @function verify
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    CardioExerciseSetBlueprintDao.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.cardioTarget != null && message.hasOwnProperty("cardioTarget")) {
+                            let error = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.verify(message.cardioTarget);
+                            if (error)
+                                return "cardioTarget." + error;
+                        }
+                        if (message.trackDuration != null && message.hasOwnProperty("trackDuration"))
+                            if (typeof message.trackDuration !== "boolean")
+                                return "trackDuration: boolean expected";
+                        if (message.trackDistance != null && message.hasOwnProperty("trackDistance"))
+                            if (typeof message.trackDistance !== "boolean")
+                                return "trackDistance: boolean expected";
+                        if (message.trackResistance != null && message.hasOwnProperty("trackResistance"))
+                            if (typeof message.trackResistance !== "boolean")
+                                return "trackResistance: boolean expected";
+                        if (message.trackIncline != null && message.hasOwnProperty("trackIncline"))
+                            if (typeof message.trackIncline !== "boolean")
+                                return "trackIncline: boolean expected";
+                        return null;
+                    };
+
+                    /**
+                     * Creates a CardioExerciseSetBlueprintDao message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao} CardioExerciseSetBlueprintDao
+                     */
+                    CardioExerciseSetBlueprintDao.fromObject = function fromObject(object) {
+                        if (object instanceof $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao)
+                            return object;
+                        let message = new $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao();
+                        if (object.cardioTarget != null) {
+                            if (typeof object.cardioTarget !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao.cardioTarget: object expected");
+                            message.cardioTarget = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.fromObject(object.cardioTarget);
+                        }
+                        if (object.trackDuration != null)
+                            message.trackDuration = Boolean(object.trackDuration);
+                        if (object.trackDistance != null)
+                            message.trackDistance = Boolean(object.trackDistance);
+                        if (object.trackResistance != null)
+                            message.trackResistance = Boolean(object.trackResistance);
+                        if (object.trackIncline != null)
+                            message.trackIncline = Boolean(object.trackIncline);
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a CardioExerciseSetBlueprintDao message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao
+                     * @static
+                     * @param {LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao} message CardioExerciseSetBlueprintDao
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    CardioExerciseSetBlueprintDao.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        let object = {};
+                        if (options.defaults) {
+                            object.cardioTarget = null;
+                            object.trackDuration = false;
+                            object.trackDistance = false;
+                            object.trackResistance = false;
+                            object.trackIncline = false;
+                        }
+                        if (message.cardioTarget != null && message.hasOwnProperty("cardioTarget"))
+                            object.cardioTarget = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.toObject(message.cardioTarget, options);
+                        if (message.trackDuration != null && message.hasOwnProperty("trackDuration"))
+                            object.trackDuration = message.trackDuration;
+                        if (message.trackDistance != null && message.hasOwnProperty("trackDistance"))
+                            object.trackDistance = message.trackDistance;
+                        if (message.trackResistance != null && message.hasOwnProperty("trackResistance"))
+                            object.trackResistance = message.trackResistance;
+                        if (message.trackIncline != null && message.hasOwnProperty("trackIncline"))
+                            object.trackIncline = message.trackIncline;
+                        return object;
+                    };
+
+                    /**
+                     * Converts this CardioExerciseSetBlueprintDao to JSON.
+                     * @function toJSON
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    CardioExerciseSetBlueprintDao.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    /**
+                     * Gets the default type url for CardioExerciseSetBlueprintDao
+                     * @function getTypeUrl
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    CardioExerciseSetBlueprintDao.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao";
+                    };
+
+                    return CardioExerciseSetBlueprintDao;
                 })();
 
                 SessionBlueprintDao.RestDaoV2 = (function() {

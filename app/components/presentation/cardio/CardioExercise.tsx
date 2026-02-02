@@ -1,4 +1,7 @@
-import { RecordedCardioExercise } from '@/models/session-models';
+import {
+  RecordedCardioExercise,
+  RecordedCardioExerciseSet,
+} from '@/models/session-models';
 import ExerciseSection from '@/components/presentation/exercise-section';
 import {
   CardioTarget,
@@ -32,6 +35,9 @@ import { DecimalEditor } from '@/components/presentation/DecimalEditor';
 import { CardioValueSelector } from '@/components/presentation/cardio/CardioValueSelector';
 import FocusRing from '@/components/presentation/focus-ring';
 
+type CardioExerciseSetCallback<T> = (value: T) => void;
+type CardioExerciseCallback<T> = (value: T, setIndex: number) => void;
+
 interface CardioExerciseProps {
   recordedExercise: RecordedCardioExercise;
   previousRecordedExercises: RecordedCardioExercise[];
@@ -39,11 +45,11 @@ interface CardioExerciseProps {
   isReadonly: boolean;
   showPreviousButton: boolean;
 
-  setCurrentBlockStartTime: (val: OffsetDateTime | undefined) => void;
-  updateDuration: (duration: Duration | undefined) => void;
-  updateDistance: (distance: Distance | undefined) => void;
-  updateIncline: (incline: BigNumber | undefined) => void;
-  updateResistance: (resistance: BigNumber | undefined) => void;
+  setCurrentBlockStartTime: CardioExerciseCallback<OffsetDateTime | undefined>;
+  updateDuration: CardioExerciseCallback<Duration | undefined>;
+  updateDistance: CardioExerciseCallback<Distance | undefined>;
+  updateIncline: CardioExerciseCallback<BigNumber | undefined>;
+  updateResistance: CardioExerciseCallback<BigNumber | undefined>;
   updateNotesForExercise: (notes: string) => void;
   onOpenLink: () => void;
   onEditExercise: () => void;
@@ -51,32 +57,13 @@ interface CardioExerciseProps {
 }
 
 export function CardioExercise(props: CardioExerciseProps) {
-  const timer = props.recordedExercise.duration && (
-    <CardioTimer
-      currentBlockStartTime={props.recordedExercise.currentBlockStartTime}
-      setCurrentBlockStartTime={props.setCurrentBlockStartTime}
-      recordedExercise={props.recordedExercise}
-      updateDuration={props.updateDuration}
-    />
-  );
-  const distanceTracker = props.recordedExercise.distance && (
-    <CardioDistanceTracker
-      distance={props.recordedExercise.distance}
-      updateDistance={props.updateDistance}
-    />
-  );
-  const inclineTracker = props.recordedExercise.incline && (
-    <CardioInclineTracker
-      incline={props.recordedExercise.incline}
-      updateIncline={props.updateIncline}
-    />
-  );
-  const resistanceTracker = props.recordedExercise.resistance && (
-    <CardioResistanceTracker
-      resistance={props.recordedExercise.resistance}
-      updateResistance={props.updateResistance}
-    />
-  );
+  const setCallback =
+    <T,>(
+      cb: CardioExerciseCallback<T>,
+      setIndex: number,
+    ): CardioExerciseSetCallback<T> =>
+    (val) =>
+      cb(val, setIndex);
   return (
     <ExerciseSection
       recordedExercise={props.recordedExercise}
@@ -89,36 +76,97 @@ export function CardioExercise(props: CardioExerciseProps) {
       onEditExercise={props.onEditExercise}
       onRemoveExercise={props.onRemoveExercise}
     >
-      <View style={{ gap: spacing[4] }}>
-        <CardioTargetHandler target={props.recordedExercise.blueprint.target} />
-        <Reanimated.View
-          style={{
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            alignItems: 'center',
-            gap: spacing[2],
-          }}
-        >
-          {timer}
-          {distanceTracker}
-          {inclineTracker}
-          {resistanceTracker}
-          <AddTrackerButtonMenu
-            recordedExercise={props.recordedExercise}
-            toStartNext={props.toStartNext}
-            updateDistance={props.updateDistance}
-            updateDuration={props.updateDuration}
-            updateIncline={props.updateIncline}
-            updateResistance={props.updateResistance}
+      <View>
+        {props.recordedExercise.sets.map((set, setIndex) => (
+          <CardioExerciseSet
+            set={set}
+            key={setIndex}
+            toStartNext={props.toStartNext} // TODO - this should check the current set?
+            setCurrentBlockStartTime={setCallback(
+              props.setCurrentBlockStartTime,
+              setIndex,
+            )}
+            updateDuration={setCallback(props.updateDuration, setIndex)}
+            updateDistance={setCallback(props.updateDistance, setIndex)}
+            updateIncline={setCallback(props.updateIncline, setIndex)}
+            updateResistance={setCallback(props.updateResistance, setIndex)}
           />
-        </Reanimated.View>
+        ))}
       </View>
     </ExerciseSection>
   );
 }
 
+interface CardioExerciseSetProps {
+  set: RecordedCardioExerciseSet;
+  toStartNext: boolean;
+
+  setCurrentBlockStartTime: CardioExerciseSetCallback<
+    OffsetDateTime | undefined
+  >;
+  updateDuration: CardioExerciseSetCallback<Duration | undefined>;
+  updateDistance: CardioExerciseSetCallback<Distance | undefined>;
+  updateIncline: CardioExerciseSetCallback<BigNumber | undefined>;
+  updateResistance: CardioExerciseSetCallback<BigNumber | undefined>;
+}
+
+function CardioExerciseSet(props: CardioExerciseSetProps) {
+  const timer = props.set.duration && (
+    <CardioTimer
+      currentBlockStartTime={props.set.currentBlockStartTime}
+      setCurrentBlockStartTime={props.setCurrentBlockStartTime}
+      set={props.set}
+      updateDuration={props.updateDuration}
+    />
+  );
+  const distanceTracker = props.set.distance && (
+    <CardioDistanceTracker
+      distance={props.set.distance}
+      updateDistance={props.updateDistance}
+    />
+  );
+  const inclineTracker = props.set.incline && (
+    <CardioInclineTracker
+      incline={props.set.incline}
+      updateIncline={props.updateIncline}
+    />
+  );
+  const resistanceTracker = props.set.resistance && (
+    <CardioResistanceTracker
+      resistance={props.set.resistance}
+      updateResistance={props.updateResistance}
+    />
+  );
+  return (
+    <View style={{ gap: spacing[4] }}>
+      <CardioTargetHandler target={props.set.blueprint.target} />
+      <Reanimated.View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          gap: spacing[2],
+        }}
+      >
+        {timer}
+        {distanceTracker}
+        {inclineTracker}
+        {resistanceTracker}
+        <AddTrackerButtonMenu
+          set={props.set}
+          toStartNext={props.toStartNext}
+          updateDistance={props.updateDistance}
+          updateDuration={props.updateDuration}
+          updateIncline={props.updateIncline}
+          updateResistance={props.updateResistance}
+        />
+      </Reanimated.View>
+    </View>
+  );
+}
+
 function AddTrackerButtonMenu(props: {
-  recordedExercise: RecordedCardioExercise;
+  set: RecordedCardioExerciseSet;
   toStartNext: boolean;
 
   updateDuration: (duration: Duration | undefined) => void;
@@ -129,13 +177,13 @@ function AddTrackerButtonMenu(props: {
   const { t } = useTranslate();
   const imperialByDefault = useAppSelector((x) => x.settings.useImperialUnits);
   const {
-    recordedExercise,
+    set,
     updateDistance,
     updateDuration,
     updateIncline,
     updateResistance,
   } = props;
-  const { blueprint } = recordedExercise;
+  const { blueprint } = set;
   const [menuOpen, setMenuOpen] = useState(false);
 
   const distanceTarget = (blueprint.target.type === 'distance' &&
@@ -161,25 +209,25 @@ function AddTrackerButtonMenu(props: {
   );
 
   const menuItems = [
-    !recordedExercise.distance &&
+    !set.distance &&
       (blueprint.trackDistance || blueprint.target.type === 'distance') &&
       menuItem('distance', 'exercise.distance.label', () =>
         updateDistance(distanceTarget),
       ),
 
-    !recordedExercise.duration &&
+    !set.duration &&
       (blueprint.trackDuration || blueprint.target.type === 'time') &&
       menuItem('time', 'generic.time.label', () =>
         updateDuration(Duration.ZERO),
       ),
 
-    !recordedExercise.incline &&
+    !set.incline &&
       blueprint.trackIncline &&
       menuItem('incline', 'exercise.incline.label', () =>
         updateIncline(BigNumber(0)),
       ),
 
-    !recordedExercise.resistance &&
+    !set.resistance &&
       blueprint.trackResistance &&
       menuItem('resistance', 'exercise.resistance.label', () =>
         updateResistance(BigNumber(0)),

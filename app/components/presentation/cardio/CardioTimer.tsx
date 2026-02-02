@@ -2,19 +2,19 @@ import { CardioTrackerCard } from '@/components/presentation/cardio/CardioTracke
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import TimerEditor from '@/components/presentation/timer-editor';
 import { useAppTheme, spacing, rounding } from '@/hooks/useAppTheme';
-import { RecordedCardioExercise } from '@/models/session-models';
+import { RecordedCardioExerciseSet } from '@/models/session-models';
 import { Duration, OffsetDateTime } from '@js-joda/core';
 import { useState, useCallback, useEffect } from 'react';
 import { useAnimatedValue, Animated, View } from 'react-native';
 import { match, P } from 'ts-pattern';
 
 export function CardioTimer({
-  recordedExercise,
+  set,
   currentBlockStartTime,
   setCurrentBlockStartTime,
   updateDuration,
 }: {
-  recordedExercise: RecordedCardioExercise;
+  set: RecordedCardioExerciseSet;
   currentBlockStartTime: OffsetDateTime | undefined;
 
   setCurrentBlockStartTime: (val: OffsetDateTime | undefined) => void;
@@ -59,7 +59,7 @@ export function CardioTimer({
     [currentBlockStartTime],
   );
   const [timerState, setTimerState] = useState<Duration>(
-    getTimerState(recordedExercise.duration),
+    getTimerState(set.duration),
   );
   const handlePlay = () => {
     const now = OffsetDateTime.now();
@@ -74,7 +74,7 @@ export function CardioTimer({
 
     updateDuration(
       Duration.between(currentBlockStartTime, now).plus(
-        recordedExercise.duration ?? Duration.ZERO,
+        set.duration ?? Duration.ZERO,
       ),
     );
   };
@@ -100,12 +100,12 @@ export function CardioTimer({
   useEffect(() => {
     if (currentBlockStartTime) {
       const timer = setInterval(() => {
-        const state = getTimerState(recordedExercise.duration);
+        const state = getTimerState(set.duration);
         setTimerState(state);
       }, 200);
       return () => clearInterval(timer);
     }
-  }, [currentBlockStartTime, getTimerState, recordedExercise.duration]);
+  }, [currentBlockStartTime, getTimerState, set.duration]);
 
   // Periodically persist - This will cyclically update the duration and it is a dependency, so it implicitly retriggers
   useEffect(() => {
@@ -115,7 +115,7 @@ export function CardioTimer({
         setCurrentBlockStartTime(now);
         updateDuration(
           Duration.between(currentBlockStartTime, now).plus(
-            recordedExercise.duration ?? Duration.ZERO,
+            set.duration ?? Duration.ZERO,
           ),
         );
       }, 5000);
@@ -124,7 +124,7 @@ export function CardioTimer({
   }, [
     currentBlockStartTime,
     updateDuration,
-    recordedExercise.duration,
+    set.duration,
     setCurrentBlockStartTime,
   ]);
 

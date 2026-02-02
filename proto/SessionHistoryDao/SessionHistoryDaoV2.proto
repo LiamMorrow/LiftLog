@@ -11,20 +11,20 @@ message SessionHistoryDaoV2 {
 }
 
 message SessionDaoV2 {
-  LiftLog.Ui.Models.UuidDao               id                 = 1;
-  string                                  session_name       = 2;
-  repeated RecordedExerciseDaoV2          recorded_exercises = 3;
-  LiftLog.Ui.Models.DateOnlyDao           date               = 4;
-  optional LiftLog.Ui.Models.DecimalValue bodyweight_value   = 5;
-  LiftLog.Ui.Models.WeightUnit            bodyweight_unit    = 7;
-  string                                  blueprint_notes    = 6;
+  LiftLog.Ui.Models.UuidDao id = 1;
+  string session_name = 2;
+  repeated RecordedExerciseDaoV2 recorded_exercises = 3;
+  LiftLog.Ui.Models.DateOnlyDao date = 4;
+  optional LiftLog.Ui.Models.DecimalValue bodyweight_value = 5;
+  LiftLog.Ui.Models.WeightUnit bodyweight_unit = 7;
+  string blueprint_notes = 6;
 }
 
 message RecordedExerciseDaoV2 {
   // Common
   LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2 exercise_blueprint = 1;
-  LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType           type               = 6;
-  optional google.protobuf.StringValue                         notes              = 4;
+  LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType type = 6;
+  optional google.protobuf.StringValue notes = 4;
 
   // Weighted
   reserved 2; // was weight
@@ -32,24 +32,35 @@ message RecordedExerciseDaoV2 {
   reserved 5; // Per set weight
 
   // Cardio
-  optional LiftLog.Ui.Models.DateTimeDao  completion_date_time = 8;
-  optional google.protobuf.Duration       duration             = 9;
-  optional LiftLog.Ui.Models.DecimalValue distance_value       = 10;
-  optional google.protobuf.StringValue    distance_unit        = 14;
-  optional LiftLog.Ui.Models.DecimalValue resistance           = 11;
-  optional LiftLog.Ui.Models.DecimalValue incline              = 12;
+  optional LiftLog.Ui.Models.DateTimeDao completion_date_time = 8;
+  optional google.protobuf.Duration duration = 9;
+  optional LiftLog.Ui.Models.DecimalValue distance_value = 10;
+  optional google.protobuf.StringValue distance_unit = 14;
+  optional LiftLog.Ui.Models.DecimalValue resistance = 11;
+  optional LiftLog.Ui.Models.DecimalValue incline = 12;
+  repeated RecordedCardioExerciseSetDao cardio_sets = 13;
+}
+
+message RecordedCardioExerciseSetDao {
+  LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao blueprint = 1;
+  optional LiftLog.Ui.Models.DateTimeDao completion_date_time = 2;
+  optional google.protobuf.Duration duration = 3;
+  optional LiftLog.Ui.Models.DecimalValue distance_value = 4;
+  optional google.protobuf.StringValue distance_unit = 5;
+  optional LiftLog.Ui.Models.DecimalValue resistance = 6;
+  optional LiftLog.Ui.Models.DecimalValue incline = 7;
 }
 
 message PotentialSetDaoV2 {
-  optional RecordedSetDaoV2      recorded_set = 1;
+  optional RecordedSetDaoV2 recorded_set = 1;
   LiftLog.Ui.Models.DecimalValue weight_value = 2;
-  LiftLog.Ui.Models.WeightUnit   weight_unit  = 3;
+  LiftLog.Ui.Models.WeightUnit weight_unit = 3;
 }
 
 message RecordedSetDaoV2 {
-  int32 reps_completed  = 1;
+  int32 reps_completed = 1;
 
-  LiftLog.Ui.Models.TimeOnlyDao            completion_time = 2;
-  optional LiftLog.Ui.Models.DateOnlyDao   completion_date = 3;
+  LiftLog.Ui.Models.TimeOnlyDao completion_time = 2;
+  optional LiftLog.Ui.Models.DateOnlyDao completion_date = 3;
   optional LiftLog.Ui.Models.ZoneOffsetDao completion_offset = 4;
 }

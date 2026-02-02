@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js';
 import { describe, expect, it } from 'vitest';
 import {
   CardioExerciseBlueprint,
+  CardioExerciseSetBlueprint,
   Rest,
   SessionBlueprint,
   WeightedExerciseBlueprint,
@@ -30,17 +31,25 @@ describe('diffSessionBlueprints', () => {
       '',
     );
 
-  const createCardioExercise = (name: string): CardioExerciseBlueprint =>
-    new CardioExerciseBlueprint(
-      name,
-      { type: 'time', value: Duration.ofMinutes(30) },
-      true,
-      false,
-      false,
-      false,
-      '',
-      '',
+  const createCardioSet = (
+    durationMinutes = 30,
+    trackDuration = true,
+    trackDistance = false,
+    trackResistance = false,
+    trackIncline = false,
+  ): CardioExerciseSetBlueprint =>
+    new CardioExerciseSetBlueprint(
+      { type: 'time', value: Duration.ofMinutes(durationMinutes) },
+      trackDuration,
+      trackDistance,
+      trackResistance,
+      trackIncline,
     );
+
+  const createCardioExercise = (
+    name: string,
+    sets: CardioExerciseSetBlueprint[] = [createCardioSet()],
+  ): CardioExerciseBlueprint => new CardioExerciseBlueprint(name, sets, '', '');
 
   describe('session-level changes', () => {
     it('should detect session name change', () => {
@@ -367,6 +376,183 @@ describe('diffSessionBlueprints', () => {
       });
     });
   });
+
+  describe('cardio multi-set changes', () => {
+    it('should detect added cardio set', () => {
+      const original = new SessionBlueprint(
+        'Workout',
+        [createCardioExercise('Running', [createCardioSet(30)])],
+        '',
+      );
+      const modified = new SessionBlueprint(
+        'Workout',
+        [
+          createCardioExercise('Running', [
+            createCardioSet(30),
+            createCardioSet(20),
+          ]),
+        ],
+        '',
+      );
+
+      const diff = diffSessionBlueprints(original, modified);
+
+      expect(diff.hasChanges).toBe(true);
+      expect(diff.modifiedExercises).toHaveLength(1);
+      const addedSetChange = diff.modifiedExercises[0].changes.find(
+        (c) => c.kind === 'cardioSet' && c.type === 'added',
+      );
+      expect(addedSetChange).toMatchObject({
+        kind: 'cardioSet',
+        type: 'added',
+        setIndex: 1,
+      });
+    });
+
+    it('should detect removed cardio set', () => {
+      const original = new SessionBlueprint(
+        'Workout',
+        [
+          createCardioExercise('Running', [
+            createCardioSet(30),
+            createCardioSet(20),
+          ]),
+        ],
+        '',
+      );
+      const modified = new SessionBlueprint(
+        'Workout',
+        [createCardioExercise('Running', [createCardioSet(30)])],
+        '',
+      );
+
+      const diff = diffSessionBlueprints(original, modified);
+
+      const removedSetChange = diff.modifiedExercises[0].changes.find(
+        (c) => c.kind === 'cardioSet' && c.type === 'removed',
+      );
+      expect(removedSetChange).toMatchObject({
+        kind: 'cardioSet',
+        type: 'removed',
+        setIndex: 1,
+      });
+    });
+
+    it('should detect target change in a cardio set', () => {
+      const original = new SessionBlueprint(
+        'Workout',
+        [createCardioExercise('Running', [createCardioSet(30)])],
+        '',
+      );
+      const modified = new SessionBlueprint(
+        'Workout',
+        [createCardioExercise('Running', [createCardioSet(45)])],
+        '',
+      );
+
+      const diff = diffSessionBlueprints(original, modified);
+
+      expect(diff.hasChanges).toBe(true);
+      const targetChange = diff.modifiedExercises[0].changes.find(
+        (c) => c.kind === 'exerciseTarget',
+      );
+      expect(targetChange).toMatchObject({
+        kind: 'exerciseTarget',
+        setIndex: 0,
+      });
+    });
+
+    it('should detect tracking field change in a cardio set', () => {
+      const original = new SessionBlueprint(
+        'Workout',
+        [
+          createCardioExercise('Running', [
+            createCardioSet(30, true, false, false, false),
+          ]),
+        ],
+        '',
+      );
+      const modified = new SessionBlueprint(
+        'Workout',
+        [
+          createCardioExercise('Running', [
+            createCardioSet(30, true, true, false, false),
+          ]),
+        ],
+        '',
+      );
+
+      const diff = diffSessionBlueprints(original, modified);
+
+      expect(diff.hasChanges).toBe(true);
+      const trackingChange = diff.modifiedExercises[0].changes.find(
+        (c) => c.kind === 'exerciseTracking',
+      );
+      expect(trackingChange).toMatchObject({
+        kind: 'exerciseTracking',
+        field: 'trackDistance',
+        setIndex: 0,
+        oldValue: false,
+        newValue: true,
+      });
+    });
+
+    it('should detect changes in multiple cardio sets', () => {
+      const original = new SessionBlueprint(
+        'Workout',
+        [
+          createCardioExercise('Running', [
+            createCardioSet(30),
+            createCardioSet(20),
+          ]),
+        ],
+        '',
+      );
+      const modified = new SessionBlueprint(
+        'Workout',
+        [
+          createCardioExercise('Running', [
+            createCardioSet(45), // Changed from 30
+            createCardioSet(25), // Changed from 20
+          ]),
+        ],
+        '',
+      );
+
+      const diff = diffSessionBlueprints(original, modified);
+
+      expect(diff.hasChanges).toBe(true);
+      const targetChanges = diff.modifiedExercises[0].changes.filter(
+        (c) => c.kind === 'exerciseTarget',
+      );
+      expect(targetChanges).toHaveLength(2);
+      expect(targetChanges[0]).toMatchObject({ setIndex: 0 });
+      expect(targetChanges[1]).toMatchObject({ setIndex: 1 });
+    });
+
+    it('should detect no changes for identical cardio exercises', () => {
+      const sets = [createCardioSet(30), createCardioSet(20)];
+      const original = new SessionBlueprint(
+        'Workout',
+        [createCardioExercise('Running', sets)],
+        '',
+      );
+      const modified = new SessionBlueprint(
+        'Workout',
+        [
+          createCardioExercise('Running', [
+            createCardioSet(30),
+            createCardioSet(20),
+          ]),
+        ],
+        '',
+      );
+
+      const diff = diffSessionBlueprints(original, modified);
+
+      expect(diff.hasChanges).toBe(false);
+    });
+  });
 });
 
 describe('applySessionBlueprintDiff', () => {
@@ -476,6 +662,89 @@ describe('applySessionBlueprintDiff', () => {
     const exercise = result.exercises[0] as WeightedExerciseBlueprint;
     expect(exercise.sets).toBe(5);
     expect(exercise.repsPerSet).toBe(8);
+  });
+
+  const createCardioSet = (
+    durationMinutes = 30,
+    trackDuration = true,
+    trackDistance = false,
+  ): CardioExerciseSetBlueprint =>
+    new CardioExerciseSetBlueprint(
+      { type: 'time', value: Duration.ofMinutes(durationMinutes) },
+      trackDuration,
+      trackDistance,
+      false,
+      false,
+    );
+
+  const createCardioExercise = (
+    name: string,
+    sets: CardioExerciseSetBlueprint[] = [createCardioSet()],
+  ): CardioExerciseBlueprint => new CardioExerciseBlueprint(name, sets, '', '');
+
+  it('should apply cardio set addition', () => {
+    const original = new SessionBlueprint(
+      'Workout',
+      [createCardioExercise('Running', [createCardioSet(30)])],
+      '',
+    );
+    const modified = new SessionBlueprint(
+      'Workout',
+      [
+        createCardioExercise('Running', [
+          createCardioSet(30),
+          createCardioSet(20),
+        ]),
+      ],
+      '',
+    );
+
+    const diff = diffSessionBlueprints(original, modified);
+    const result = applySessionBlueprintDiff(original, diff);
+
+    const exercise = result.exercises[0] as CardioExerciseBlueprint;
+    expect(exercise.sets).toHaveLength(2);
+  });
+
+  it('should apply cardio set target change', () => {
+    const original = new SessionBlueprint(
+      'Workout',
+      [createCardioExercise('Running', [createCardioSet(30)])],
+      '',
+    );
+    const modified = new SessionBlueprint(
+      'Workout',
+      [createCardioExercise('Running', [createCardioSet(45)])],
+      '',
+    );
+
+    const diff = diffSessionBlueprints(original, modified);
+    const result = applySessionBlueprintDiff(original, diff);
+
+    const exercise = result.exercises[0] as CardioExerciseBlueprint;
+    expect(exercise.sets[0].target).toMatchObject({
+      type: 'time',
+      value: Duration.ofMinutes(45),
+    });
+  });
+
+  it('should apply cardio set tracking change', () => {
+    const original = new SessionBlueprint(
+      'Workout',
+      [createCardioExercise('Running', [createCardioSet(30, true, false)])],
+      '',
+    );
+    const modified = new SessionBlueprint(
+      'Workout',
+      [createCardioExercise('Running', [createCardioSet(30, true, true)])],
+      '',
+    );
+
+    const diff = diffSessionBlueprints(original, modified);
+    const result = applySessionBlueprintDiff(original, diff);
+
+    const exercise = result.exercises[0] as CardioExerciseBlueprint;
+    expect(exercise.sets[0].trackDistance).toBe(true);
   });
 });
 

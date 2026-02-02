@@ -16,41 +16,50 @@ message SessionBlueprintDaoV2 {
 
 enum ExerciseType {
   WEIGHTED = 0;
-  CARDIO   = 1;
+  CARDIO = 1;
 }
 
 message CardioTarget {
-  string                         type           = 1;
-  google.protobuf.Duration       time_value     = 2;
+  string type = 1;
+  google.protobuf.Duration time_value = 2;
   LiftLog.Ui.Models.DecimalValue distance_value = 3;
-  optional string                distance_unit  = 4;
+  optional string distance_unit = 4;
 }
 
 message ExerciseBlueprintDaoV2 {
   // Common
-  string       name  = 1;
-  string       notes = 8;
-  string       link  = 9;
-  ExerciseType type  = 10;
+  string name = 1;
+  string notes = 8;
+  string link = 9;
+  ExerciseType type = 10;
 
   // Weighted
-  int32 sets         = 2;
+  int32 sets = 2;
   int32 reps_per_set = 3;
   reserved 4; // was initial weight
   LiftLog.Ui.Models.DecimalValue weight_increase_on_success = 5;
-  RestDaoV2                      rest_between_sets          = 6;
-  bool                           superset_with_next         = 7;
+  RestDaoV2 rest_between_sets = 6;
+  bool superset_with_next = 7;
 
   // Cardio
-  CardioTarget cardio_target    = 11;
-  bool         track_duration   = 12;
-  bool         track_distance   = 13;
-  bool         track_resistance = 14;
-  bool         track_incline    = 15;
+  CardioTarget cardio_target = 11;
+  bool track_duration = 12;
+  bool track_distance = 13;
+  bool track_resistance = 14;
+  bool track_incline = 15;
+  repeated CardioExerciseSetBlueprintDao cardio_sets = 16;
+}
+
+message CardioExerciseSetBlueprintDao {
+  CardioTarget cardio_target = 1;
+  bool track_duration = 2;
+  bool track_distance = 3;
+  bool track_resistance = 4;
+  bool track_incline = 5;
 }
 
 message RestDaoV2 {
-  google.protobuf.Duration min_rest     = 1;
-  google.protobuf.Duration max_rest     = 2;
+  google.protobuf.Duration min_rest = 1;
+  google.protobuf.Duration max_rest = 2;
   google.protobuf.Duration failure_rest = 3;
 }

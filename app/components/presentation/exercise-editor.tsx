@@ -11,12 +11,15 @@ import SelectButton from '@/components/presentation/select-button';
 import { spacing } from '@/hooks/useAppTheme';
 import {
   CardioExerciseBlueprint,
+  CardioExerciseBlueprintPOJO,
+  CardioExerciseSetBlueprint,
   CardioTarget,
   DistanceCardioTarget,
   DistanceUnits,
   ExerciseBlueprint,
   TimeCardioTarget,
   WeightedExerciseBlueprint,
+  WeightedExerciseBlueprintPOJO,
 } from '@/models/blueprint-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import {
@@ -65,8 +68,14 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
   useEffect(() => {
     setExercise(propsExercise);
   }, [propsExercise]);
-  const updateExercise = (ex: Partial<ExerciseBlueprint>) => {
-    const update = exercise.with(ex);
+  const updateExercise = (
+    ex: Partial<WeightedExerciseBlueprint | CardioExerciseBlueprint>,
+  ) => {
+    const update = exercise.with(
+      ex as unknown as Partial<
+        WeightedExerciseBlueprintPOJO & CardioExerciseBlueprintPOJO
+      >,
+    );
     setExercise(update);
     updatePropsExercise(update);
   };
@@ -74,9 +83,15 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
   const handleTypeChange = (type: string) => {
     let newExercise = exercise;
     if (type === 'weighted') {
-      newExercise = WeightedExerciseBlueprint.empty().with(exercise);
+      newExercise = WeightedExerciseBlueprint.empty().with({
+        ...exercise,
+        sets: undefined!, // Will not overwrite empty
+      });
     } else {
-      newExercise = CardioExerciseBlueprint.empty().with(exercise);
+      newExercise = CardioExerciseBlueprint.empty().with({
+        ...exercise,
+        sets: undefined!, // Will not overwrite empty
+      });
     }
     setExercise(newExercise);
     updatePropsExercise(newExercise);
@@ -193,44 +208,75 @@ function CardioExerciseEditor({
   updateExercise,
 }: {
   exercise: CardioExerciseBlueprint;
-  updateExercise: (ex: Partial<ExerciseBlueprint>) => void;
+  updateExercise: (
+    ex: Partial<CardioExerciseBlueprint | WeightedExerciseBlueprint>,
+  ) => void;
 }) {
-  const { t } = useTranslate();
   return (
     <>
-      <CardioTargetEditor
-        target={exercise.target}
-        onValueChange={(target) => updateExercise({ target })}
-      />
       <SharedFieldsEditor exercise={exercise} updateExercise={updateExercise} />
+      {exercise.sets.map((set, setIndex) => (
+        <CardioSetEditor
+          set={set}
+          key={setIndex}
+          updateSet={(newSet) =>
+            updateExercise({
+              sets: exercise.sets.map((oldSet, i) =>
+                setIndex === i ? newSet : oldSet,
+              ),
+            })
+          }
+        />
+      ))}
+    </>
+  );
+}
 
+function CardioSetEditor(props: {
+  set: CardioExerciseSetBlueprint;
+  updateSet: (val: CardioExerciseSetBlueprint) => void;
+}) {
+  const { t } = useTranslate();
+  const { set, updateSet } = props;
+  return (
+    <View>
+      <CardioTargetEditor
+        target={set.target}
+        onValueChange={(target) => updateSet(set.with({ target }))}
+      />
       <List.Section>
         <ListSwitch
-          value={exercise.trackDuration || exercise.target.type === 'time'}
-          onValueChange={(trackDuration) => updateExercise({ trackDuration })}
+          value={set.trackDuration || set.target.type === 'time'}
+          onValueChange={(trackDuration) =>
+            updateSet(set.with({ trackDuration }))
+          }
           headline={t('exercise.track_time.label')}
-          disabled={exercise.target.type === 'time'}
+          disabled={set.target.type === 'time'}
         />
         <ListSwitch
-          value={exercise.trackDistance || exercise.target.type === 'distance'}
-          onValueChange={(trackDistance) => updateExercise({ trackDistance })}
+          value={set.trackDistance || set.target.type === 'distance'}
+          onValueChange={(trackDistance) =>
+            updateSet(set.with({ trackDistance }))
+          }
           headline={t('exercise.track_distance.label')}
-          disabled={exercise.target.type === 'distance'}
+          disabled={set.target.type === 'distance'}
         />
         <ListSwitch
-          value={exercise.trackResistance}
+          value={set.trackResistance}
           onValueChange={(trackResistance) =>
-            updateExercise({ trackResistance })
+            updateSet(set.with({ trackResistance }))
           }
           headline={t('exercise.track_resistance.label')}
         />
         <ListSwitch
-          value={exercise.trackIncline}
-          onValueChange={(trackIncline) => updateExercise({ trackIncline })}
+          value={set.trackIncline}
+          onValueChange={(trackIncline) =>
+            updateSet(set.with({ trackIncline }))
+          }
           headline={t('exercise.track_incline.label')}
         />
       </List.Section>
-    </>
+    </View>
   );
 }
 
@@ -239,7 +285,9 @@ function SharedFieldsEditor({
   updateExercise,
 }: {
   exercise: ExerciseBlueprint;
-  updateExercise: (ex: Partial<ExerciseBlueprint>) => void;
+  updateExercise: (
+    ex: Partial<CardioExerciseBlueprint | WeightedExerciseBlueprint>,
+  ) => void;
 }) {
   const { t } = useTranslate();
   return (

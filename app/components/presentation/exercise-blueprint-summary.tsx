@@ -103,13 +103,15 @@ function CardioExerciseBlueprintSummary({
 }) {
   return (
     <View style={{ gap: spacing[1], alignItems: 'flex-start' }}>
-      <SurfaceText>
-        <SurfaceText color="primary">{blueprint.target.type}</SurfaceText>
-        {': '}
-        <SurfaceText color="primary">
-          {formatCardioTarget(blueprint.target)}
+      {blueprint.sets.map((set, i) => (
+        <SurfaceText key={i}>
+          <SurfaceText color="primary">{set.target.type}</SurfaceText>
+          {': '}
+          <SurfaceText color="primary">
+            {formatCardioTarget(set.target)}
+          </SurfaceText>
         </SurfaceText>
-      </SurfaceText>
+      ))}
     </View>
   );
 }

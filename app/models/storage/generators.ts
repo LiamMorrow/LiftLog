@@ -153,7 +153,7 @@ export const PotentialSetGenerator = fc
 
 export const RecordedExerciseGenerator = fc
   .record<RecordedWeightedExercisePOJO>({
-    type: fc.constant('WeightedRecordedExercise'),
+    type: fc.constant('RecordedWeightedExercise'),
     blueprint: ExerciseBlueprintGenerator.map((x) => x.toPOJO()),
     potentialSets: fc.array(
       PotentialSetGenerator.map((x) => x.toPOJO()),

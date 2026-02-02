@@ -138,27 +138,32 @@ export default function SessionComponent(props: {
 
   const updateCompletionTimeAndClearTimer = <T,>(
     exerciseIndex: number,
-    cb: (arg: T) => void,
+    cb: (newValue: T, setIndex: number) => void,
   ) => {
-    return (arg: T) => {
-      cb(arg);
+    return (newValue: T, setIndex: number) => {
+      cb(newValue, setIndex);
       const exercise = selectCurrentSession(store.getState(), props.target)
         ?.recordedExercises[exerciseIndex];
       if (!(exercise instanceof RecordedCardioExercise)) {
         return;
       }
+      const set = exercise.sets[setIndex];
+      if (!set) {
+        return;
+      }
       const hasData = !!(
-        exercise.distance ||
-        (exercise.duration && !exercise.duration.isZero()) ||
-        exercise.incline ||
-        exercise.resistance
+        set.distance ||
+        (set.duration && !set.duration.isZero()) ||
+        set.incline ||
+        set.resistance
       );
       const newCompletionDateTime = hasData
-        ? (exercise.completionDateTime ?? OffsetDateTime.now())
+        ? (set.completionDateTime ?? OffsetDateTime.now())
         : undefined;
 
       dispatch(setCompletionTimeForCardioExercise, {
         exerciseIndex,
+        setIndex,
         time: newCompletionDateTime,
       });
     };
@@ -250,35 +255,46 @@ export default function SessionComponent(props: {
         <CardioExercise
           recordedExercise={item}
           toStartNext={session.nextExercise === item}
-          updateDistance={updateCompletionTimeAndClearTimer(index, (distance) =>
-            dispatch(updateDistanceForCardioExercise, {
-              distance,
-              exerciseIndex: index,
-            }),
+          updateDistance={updateCompletionTimeAndClearTimer(
+            index,
+            (distance, setIndex) =>
+              dispatch(updateDistanceForCardioExercise, {
+                distance,
+                setIndex,
+                exerciseIndex: index,
+              }),
           )}
-          setCurrentBlockStartTime={(time) =>
+          setCurrentBlockStartTime={(time, setIndex) =>
             dispatch(updateCurrentBlockStartTimeForCardioExercise, {
               time,
+              setIndex,
               exerciseIndex: index,
             })
           }
-          updateDuration={updateCompletionTimeAndClearTimer(index, (duration) =>
-            dispatch(updateDurationForCardioExercise, {
-              duration,
-              exerciseIndex: index,
-            }),
+          updateDuration={updateCompletionTimeAndClearTimer(
+            index,
+            (duration, setIndex) =>
+              dispatch(updateDurationForCardioExercise, {
+                duration,
+                setIndex,
+                exerciseIndex: index,
+              }),
           )}
-          updateIncline={updateCompletionTimeAndClearTimer(index, (incline) =>
-            dispatch(updateInclineForCardioExercise, {
-              incline,
-              exerciseIndex: index,
-            }),
+          updateIncline={updateCompletionTimeAndClearTimer(
+            index,
+            (incline, setIndex) =>
+              dispatch(updateInclineForCardioExercise, {
+                incline,
+                setIndex,
+                exerciseIndex: index,
+              }),
           )}
           updateResistance={updateCompletionTimeAndClearTimer(
             index,
-            (resistance) =>
+            (resistance, setIndex) =>
               dispatch(updateResistanceForCardioExercise, {
                 resistance,
+                setIndex,
                 exerciseIndex: index,
               }),
           )}

@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js';
 import { match } from 'ts-pattern';
 import {
   CardioExerciseBlueprint,
+  CardioExerciseSetBlueprint,
   CardioTarget,
   cardioTargetEquals,
   ExerciseBlueprint,
@@ -161,6 +162,7 @@ export interface ExerciseTargetChange extends BaseChange {
   type: 'modified';
   exerciseName: string;
   exerciseIndex: number;
+  setIndex: number;
   oldValue: CardioTarget;
   newValue: CardioTarget;
 }
@@ -170,10 +172,47 @@ export interface ExerciseTrackingChange extends BaseChange {
   type: 'modified';
   exerciseName: string;
   exerciseIndex: number;
+  setIndex: number;
   field: 'trackDuration' | 'trackDistance' | 'trackResistance' | 'trackIncline';
   oldValue: boolean;
   newValue: boolean;
 }
+
+/** A cardio set was added */
+export interface CardioSetAddedChange extends BaseChange {
+  kind: 'cardioSet';
+  type: 'added';
+  exerciseName: string;
+  exerciseIndex: number;
+  setIndex: number;
+  set: CardioExerciseSetBlueprint;
+}
+
+/** A cardio set was removed */
+export interface CardioSetRemovedChange extends BaseChange {
+  kind: 'cardioSet';
+  type: 'removed';
+  exerciseName: string;
+  exerciseIndex: number;
+  setIndex: number;
+  set: CardioExerciseSetBlueprint;
+}
+
+/** A cardio set was modified */
+export interface CardioSetModifiedChange extends BaseChange {
+  kind: 'cardioSetModified';
+  type: 'modified';
+  exerciseName: string;
+  exerciseIndex: number;
+  setIndex: number;
+  oldSet: CardioExerciseSetBlueprint;
+  newSet: CardioExerciseSetBlueprint;
+}
+
+export type CardioSetChange =
+  | CardioSetAddedChange
+  | CardioSetRemovedChange
+  | CardioSetModifiedChange;
 
 /** Exercise type changed (weighted <-> cardio) */
 export interface ExerciseTypeChange extends BaseChange {
@@ -195,7 +234,8 @@ export type ExerciseFieldChange =
   | ExerciseLinkChange
   | ExerciseTargetChange
   | ExerciseTrackingChange
-  | ExerciseTypeChange;
+  | ExerciseTypeChange
+  | CardioSetChange;
 
 // ============================================================================
 // Aggregated Types
@@ -473,6 +513,57 @@ function diffWeightedExercises(
   return changes;
 }
 
+/**
+ * Compare two cardio sets and return field-level changes
+ */
+function diffCardioSets(
+  oldSet: CardioExerciseSetBlueprint,
+  newSet: CardioExerciseSetBlueprint,
+  exerciseName: string,
+  exerciseIndex: number,
+  setIndex: number,
+): ExerciseFieldChange[] {
+  const changes: ExerciseFieldChange[] = [];
+
+  if (!cardioTargetEquals(oldSet.target, newSet.target)) {
+    changes.push({
+      id: generateChangeId(),
+      kind: 'exerciseTarget',
+      type: 'modified',
+      exerciseName,
+      exerciseIndex,
+      setIndex,
+      oldValue: oldSet.target,
+      newValue: newSet.target,
+    });
+  }
+
+  const trackingFields = [
+    'trackDuration',
+    'trackDistance',
+    'trackResistance',
+    'trackIncline',
+  ] as const;
+
+  for (const field of trackingFields) {
+    if (oldSet[field] !== newSet[field]) {
+      changes.push({
+        id: generateChangeId(),
+        kind: 'exerciseTracking',
+        type: 'modified',
+        exerciseName,
+        exerciseIndex,
+        setIndex,
+        field,
+        oldValue: oldSet[field],
+        newValue: newSet[field],
+      });
+    }
+  }
+
+  return changes;
+}
+
 function diffCardioExercises(
   oldEx: CardioExerciseBlueprint,
   newEx: CardioExerciseBlueprint,
@@ -492,38 +583,69 @@ function diffCardioExercises(
     });
   }
 
-  if (!cardioTargetEquals(oldEx.target, newEx.target)) {
+  // Diff the sets
+  const oldSets = oldEx.sets;
+  const newSets = newEx.sets;
+
+  // Compare common sets (by position)
+  const minLength = Math.min(oldSets.length, newSets.length);
+  for (let i = 0; i < minLength; i++) {
+    const oldSet = oldSets[i];
+    const newSet = newSets[i];
+
+    // Check if the set has any differences
+    if (!oldSet.equals(newSet)) {
+      // Add detailed field-level changes for this set
+      const setChanges = diffCardioSets(
+        oldSet,
+        newSet,
+        exerciseName,
+        exerciseIndex,
+        i,
+      );
+      changes.push(...setChanges);
+
+      // If there are no detailed field changes but sets aren't equal,
+      // this shouldn't happen, but just in case, record a generic set modification
+      if (setChanges.length === 0) {
+        changes.push({
+          id: generateChangeId(),
+          kind: 'cardioSetModified',
+          type: 'modified',
+          exerciseName,
+          exerciseIndex,
+          setIndex: i,
+          oldSet,
+          newSet,
+        });
+      }
+    }
+  }
+
+  // Handle added sets
+  for (let i = minLength; i < newSets.length; i++) {
     changes.push({
       id: generateChangeId(),
-      kind: 'exerciseTarget',
-      type: 'modified',
+      kind: 'cardioSet',
+      type: 'added',
       exerciseName,
       exerciseIndex,
-      oldValue: oldEx.target,
-      newValue: newEx.target,
+      setIndex: i,
+      set: newSets[i],
     });
   }
 
-  const trackingFields = [
-    'trackDuration',
-    'trackDistance',
-    'trackResistance',
-    'trackIncline',
-  ] as const;
-
-  for (const field of trackingFields) {
-    if (oldEx[field] !== newEx[field]) {
-      changes.push({
-        id: generateChangeId(),
-        kind: 'exerciseTracking',
-        type: 'modified',
-        exerciseName,
-        exerciseIndex,
-        field,
-        oldValue: oldEx[field],
-        newValue: newEx[field],
-      });
-    }
+  // Handle removed sets
+  for (let i = minLength; i < oldSets.length; i++) {
+    changes.push({
+      id: generateChangeId(),
+      kind: 'cardioSet',
+      type: 'removed',
+      exerciseName,
+      exerciseIndex,
+      setIndex: i,
+      set: oldSets[i],
+    });
   }
 
   if (oldEx.notes !== newEx.notes) {
@@ -849,16 +971,51 @@ export function applySessionBlueprintDiff(
         .with({ kind: 'exerciseLink' }, (c) =>
           exercise.with({ link: c.newValue }),
         )
-        .with({ kind: 'exerciseTarget' }, (c) =>
-          exercise instanceof CardioExerciseBlueprint
-            ? exercise.with({ target: c.newValue })
-            : exercise,
-        )
-        .with({ kind: 'exerciseTracking' }, (c) =>
-          exercise instanceof CardioExerciseBlueprint
-            ? exercise.with({ [c.field]: c.newValue })
-            : exercise,
-        )
+        .with({ kind: 'exerciseTarget' }, (c) => {
+          if (!(exercise instanceof CardioExerciseBlueprint)) return exercise;
+          const newSets = [...exercise.sets];
+          if (c.setIndex < newSets.length) {
+            newSets[c.setIndex] = newSets[c.setIndex].with({
+              target: c.newValue,
+            });
+          }
+          return exercise.with({ sets: newSets.map((s) => s.toPOJO()) });
+        })
+        .with({ kind: 'exerciseTracking' }, (c) => {
+          if (!(exercise instanceof CardioExerciseBlueprint)) return exercise;
+          const newSets = [...exercise.sets];
+          if (c.setIndex < newSets.length) {
+            newSets[c.setIndex] = newSets[c.setIndex].with({
+              [c.field]: c.newValue,
+            });
+          }
+          return exercise.with({ sets: newSets.map((s) => s.toPOJO()) });
+        })
+        .with({ kind: 'cardioSet', type: 'added' }, (c) => {
+          if (!(exercise instanceof CardioExerciseBlueprint)) return exercise;
+          const newSets = [...exercise.sets];
+          // Insert at the specified index, clamping to valid range
+          const insertIdx = Math.min(c.setIndex, newSets.length);
+          newSets.splice(insertIdx, 0, c.set);
+          return exercise.with({ sets: newSets.map((s) => s.toPOJO()) });
+        })
+        .with({ kind: 'cardioSet', type: 'removed' }, (c) => {
+          if (!(exercise instanceof CardioExerciseBlueprint)) return exercise;
+          const newSets = [...exercise.sets];
+          // Only remove if we have more than 1 set (cardio must have at least 1)
+          if (newSets.length > 1 && c.setIndex < newSets.length) {
+            newSets.splice(c.setIndex, 1);
+          }
+          return exercise.with({ sets: newSets.map((s) => s.toPOJO()) });
+        })
+        .with({ kind: 'cardioSetModified' }, (c) => {
+          if (!(exercise instanceof CardioExerciseBlueprint)) return exercise;
+          const newSets = [...exercise.sets];
+          if (c.setIndex < newSets.length) {
+            newSets[c.setIndex] = c.newSet;
+          }
+          return exercise.with({ sets: newSets.map((s) => s.toPOJO()) });
+        })
         .with({ kind: 'exerciseType' }, (c) => c.newExercise)
         .exhaustive();
     }
@@ -1021,6 +1178,18 @@ export function getChangeDescription(change: DiffChange): TranslatableString {
             : 'cardio',
       },
     }))
+    .with({ kind: 'cardioSet', type: 'added' }, (c) => ({
+      key: 'plan.diff.cardio_set_added.body',
+      params: { setNumber: c.setIndex + 1 },
+    }))
+    .with({ kind: 'cardioSet', type: 'removed' }, (c) => ({
+      key: 'plan.diff.cardio_set_removed.body',
+      params: { setNumber: c.setIndex + 1 },
+    }))
+    .with({ kind: 'cardioSetModified' }, (c) => ({
+      key: 'plan.diff.cardio_set_modified.body',
+      params: { setNumber: c.setIndex + 1 },
+    }))
     .exhaustive();
 }
 
@@ -1081,6 +1250,18 @@ export function getChangeLabelKey(change: DiffChange): TranslatableString {
     }))
     .with({ kind: 'exerciseType' }, () => ({
       key: 'plan.diff.exercise_type.label',
+    }))
+    .with({ kind: 'cardioSet', type: 'added' }, (c) => ({
+      key: 'plan.diff.cardio_set_added.label',
+      params: { setNumber: c.setIndex + 1 },
+    }))
+    .with({ kind: 'cardioSet', type: 'removed' }, (c) => ({
+      key: 'plan.diff.cardio_set_removed.label',
+      params: { setNumber: c.setIndex + 1 },
+    }))
+    .with({ kind: 'cardioSetModified' }, (c) => ({
+      key: 'plan.diff.cardio_set_modified.label',
+      params: { setNumber: c.setIndex + 1 },
     }))
     .exhaustive();
 }

@@ -416,7 +416,9 @@ export class RecordedCardioExerciseSet {
   }
 
   static fromPOJO(
-    pojo: RecordedCardioExerciseSetPOJO | RecordedCardioExerciseSet,
+    pojo:
+      | Omit<RecordedCardioExerciseSetPOJO, 'type'>
+      | RecordedCardioExerciseSet,
   ): RecordedCardioExerciseSet {
     return new RecordedCardioExerciseSet(
       CardioExerciseSetBlueprint.fromPOJO(pojo.blueprint),
@@ -439,6 +441,18 @@ export class RecordedCardioExerciseSet {
       incline: this.incline,
       currentBlockStartTime: this.currentBlockStartTime,
     };
+  }
+
+  with(other: Partial<RecordedCardioExerciseSet>): RecordedCardioExerciseSet {
+    return new RecordedCardioExerciseSet(
+      other.blueprint ?? this.blueprint,
+      other.completionDateTime ?? this.completionDateTime,
+      other.duration ?? this.duration,
+      other.distance ?? this.distance,
+      other.resistance ?? this.resistance,
+      other.incline ?? this.incline,
+      other.currentBlockStartTime ?? this.currentBlockStartTime,
+    );
   }
 
   equals(other: RecordedCardioExerciseSet): unknown {
@@ -475,10 +489,14 @@ export class RecordedCardioExercise {
     readonly blueprint: CardioExerciseBlueprint,
     readonly sets: RecordedCardioExerciseSet[],
     readonly notes: string | undefined,
-  ) {}
+  ) {
+    if (!sets.length) {
+      throw new Error('Cardio exercise must have at least one set');
+    }
+  }
 
   static fromPOJO(
-    pojo: RecordedCardioExercisePOJO | RecordedCardioExercise,
+    pojo: Omit<RecordedCardioExercisePOJO, 'type'> | RecordedCardioExercise,
   ): RecordedCardioExercise {
     return new RecordedCardioExercise(
       CardioExerciseBlueprint.fromPOJO(pojo.blueprint),
@@ -492,6 +510,13 @@ export class RecordedCardioExercise {
       blueprint,
       blueprint.sets.map((x) => RecordedCardioExerciseSet.empty(x)),
       undefined,
+    );
+  }
+
+  get duration(): Duration | undefined {
+    return this.sets.reduce(
+      (accum, set) => accum.plus(set.duration ?? Duration.ZERO),
+      Duration.ZERO,
     );
   }
 

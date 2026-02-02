@@ -10,6 +10,7 @@ import {
   WeightedExerciseBlueprintPOJO,
   CardioExerciseBlueprintPOJO,
   DistanceUnit,
+  CardioExerciseSetBlueprint,
 } from '@/models/blueprint-models';
 import {
   PotentialSet,
@@ -18,6 +19,7 @@ import {
   Session,
   RecordedExercise,
   RecordedCardioExercise,
+  RecordedCardioExerciseSet,
 } from '@/models/session-models';
 import Long from 'long';
 import {
@@ -203,18 +205,10 @@ export function fromRecordedExerciseDao(
       blueprint: fromExerciseBlueprintDao(
         dao.exerciseBlueprint,
       ).toPOJO() as CardioExerciseBlueprintPOJO,
-      distance:
-        dao.distanceValue && dao.distanceUnit
-          ? {
-              value: fromDecimalDao(dao.distanceValue),
-              unit: dao.distanceUnit.value as DistanceUnit,
-            }
-          : undefined,
-      duration: fromDurationDao(dao.duration),
-      completionDateTime: fromDateTimeDao(dao.completionDateTime),
-      incline: fromDecimalDao(dao.incline),
-      resistance: fromDecimalDao(dao.resistance),
-      currentBlockStartTime: undefined,
+      sets: [
+        getFirstCardioSet(dao).toPOJO(),
+        ...dao.cardioSets!.map((x) => fromCardioSetDao(x).toPOJO()),
+      ],
     });
   }
   return RecordedWeightedExercise.fromPOJO({
@@ -225,6 +219,46 @@ export function fromRecordedExerciseDao(
     potentialSets: dao.potentialSets!.map((x) =>
       fromPotentialSetDao(sessionDate, x).toPOJO(),
     ),
+  });
+}
+
+function fromCardioSetDao(
+  dao: LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao,
+): RecordedCardioExerciseSet {
+  return RecordedCardioExerciseSet.fromPOJO({
+    blueprint: fromCardioExerciseSetBlueprint(dao.blueprint!).toPOJO(),
+    distance:
+      dao.distanceValue && dao.distanceUnit
+        ? {
+            value: fromDecimalDao(dao.distanceValue),
+            unit: dao.distanceUnit.value as DistanceUnit,
+          }
+        : undefined,
+    duration: fromDurationDao(dao.duration),
+    completionDateTime: fromDateTimeDao(dao.completionDateTime),
+    incline: fromDecimalDao(dao.incline),
+    resistance: fromDecimalDao(dao.resistance),
+    currentBlockStartTime: undefined,
+  });
+}
+
+function getFirstCardioSet(
+  dao: LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2,
+): RecordedCardioExerciseSet {
+  return RecordedCardioExerciseSet.fromPOJO({
+    blueprint: getFirstCardioBlueprintSet(dao.exerciseBlueprint!).toPOJO(),
+    distance:
+      dao.distanceValue && dao.distanceUnit
+        ? {
+            value: fromDecimalDao(dao.distanceValue),
+            unit: dao.distanceUnit.value as DistanceUnit,
+          }
+        : undefined,
+    duration: fromDurationDao(dao.duration),
+    completionDateTime: fromDateTimeDao(dao.completionDateTime),
+    incline: fromDecimalDao(dao.incline),
+    resistance: fromDecimalDao(dao.resistance),
+    currentBlockStartTime: undefined,
   });
 }
 
@@ -312,11 +346,10 @@ export function fromExerciseBlueprintDao(
   if (dao.type === LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO) {
     return new CardioExerciseBlueprint(
       dao.name!,
-      fromCardioTargetDao(dao.cardioTarget!),
-      dao.trackDuration ?? false,
-      dao.trackDistance ?? false,
-      dao.trackResistance ?? false,
-      dao.trackIncline ?? false,
+      [
+        getFirstCardioBlueprintSet(dao),
+        ...dao.cardioSets!.map(fromCardioExerciseSetBlueprint),
+      ],
       dao.notes ?? '',
       dao.link ?? '',
     );
@@ -331,6 +364,30 @@ export function fromExerciseBlueprintDao(
     dao.notes ?? '',
     dao.link ?? '',
   );
+}
+
+function fromCardioExerciseSetBlueprint(
+  dao: LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao,
+): CardioExerciseSetBlueprint {
+  return CardioExerciseSetBlueprint.fromPOJO({
+    target: fromCardioTargetDao(dao.cardioTarget!),
+    trackDuration: dao.trackDuration ?? false,
+    trackDistance: dao.trackDistance ?? false,
+    trackResistance: dao.trackResistance ?? false,
+    trackIncline: dao.trackIncline ?? false,
+  });
+}
+
+function getFirstCardioBlueprintSet(
+  dao: LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2,
+): CardioExerciseSetBlueprint {
+  return CardioExerciseSetBlueprint.fromPOJO({
+    target: fromCardioTargetDao(dao.cardioTarget!),
+    trackDuration: dao.trackDuration ?? false,
+    trackDistance: dao.trackDistance ?? false,
+    trackResistance: dao.trackResistance ?? false,
+    trackIncline: dao.trackIncline ?? false,
+  });
 }
 
 function fromCardioTargetDao(

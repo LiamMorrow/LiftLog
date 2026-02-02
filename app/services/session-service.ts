@@ -8,6 +8,7 @@ import { Weight, WeightUnit } from '@/models/weight';
 import {
   PotentialSet,
   RecordedCardioExercise,
+  RecordedCardioExerciseSet,
   RecordedExercise,
   RecordedWeightedExercise,
   Session,
@@ -112,8 +113,12 @@ export class SessionService {
             ? lastExercise
             : undefined;
         return RecordedCardioExercise.empty(e).with({
-          incline: cardioLastExercise?.incline,
-          resistance: cardioLastExercise?.resistance,
+          sets: e.sets.map((s, i) =>
+            RecordedCardioExerciseSet.empty(s).with({
+              incline: cardioLastExercise?.sets[i]?.incline,
+              resistance: cardioLastExercise?.sets[i]?.resistance,
+            }),
+          ),
         });
       }
       const weightedLastExercise =

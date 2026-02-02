@@ -277,6 +277,9 @@ export namespace LiftLog {
 
                     /** RecordedExerciseDaoV2 incline */
                     incline?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** RecordedExerciseDaoV2 cardioSets */
+                    cardioSets?: (LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao[]|null);
                 }
 
                 /** Represents a RecordedExerciseDaoV2. */
@@ -317,6 +320,9 @@ export namespace LiftLog {
 
                     /** RecordedExerciseDaoV2 incline. */
                     public incline?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** RecordedExerciseDaoV2 cardioSets. */
+                    public cardioSets: LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao[];
 
                     /** RecordedExerciseDaoV2 _notes. */
                     public _notes?: "notes";
@@ -411,6 +417,157 @@ export namespace LiftLog {
 
                     /**
                      * Gets the default type url for RecordedExerciseDaoV2
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a RecordedCardioExerciseSetDao. */
+                interface IRecordedCardioExerciseSetDao {
+
+                    /** RecordedCardioExerciseSetDao blueprint */
+                    blueprint?: (LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao|null);
+
+                    /** RecordedCardioExerciseSetDao completionDateTime */
+                    completionDateTime?: (LiftLog.Ui.Models.IDateTimeDao|null);
+
+                    /** RecordedCardioExerciseSetDao duration */
+                    duration?: (google.protobuf.IDuration|null);
+
+                    /** RecordedCardioExerciseSetDao distanceValue */
+                    distanceValue?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** RecordedCardioExerciseSetDao distanceUnit */
+                    distanceUnit?: (google.protobuf.IStringValue|null);
+
+                    /** RecordedCardioExerciseSetDao resistance */
+                    resistance?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** RecordedCardioExerciseSetDao incline */
+                    incline?: (LiftLog.Ui.Models.IDecimalValue|null);
+                }
+
+                /** Represents a RecordedCardioExerciseSetDao. */
+                class RecordedCardioExerciseSetDao implements IRecordedCardioExerciseSetDao {
+
+                    /**
+                     * Constructs a new RecordedCardioExerciseSetDao.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao);
+
+                    /** RecordedCardioExerciseSetDao blueprint. */
+                    public blueprint?: (LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao|null);
+
+                    /** RecordedCardioExerciseSetDao completionDateTime. */
+                    public completionDateTime?: (LiftLog.Ui.Models.IDateTimeDao|null);
+
+                    /** RecordedCardioExerciseSetDao duration. */
+                    public duration?: (google.protobuf.IDuration|null);
+
+                    /** RecordedCardioExerciseSetDao distanceValue. */
+                    public distanceValue?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** RecordedCardioExerciseSetDao distanceUnit. */
+                    public distanceUnit?: (google.protobuf.IStringValue|null);
+
+                    /** RecordedCardioExerciseSetDao resistance. */
+                    public resistance?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** RecordedCardioExerciseSetDao incline. */
+                    public incline?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** RecordedCardioExerciseSetDao _completionDateTime. */
+                    public _completionDateTime?: "completionDateTime";
+
+                    /** RecordedCardioExerciseSetDao _duration. */
+                    public _duration?: "duration";
+
+                    /** RecordedCardioExerciseSetDao _distanceValue. */
+                    public _distanceValue?: "distanceValue";
+
+                    /** RecordedCardioExerciseSetDao _distanceUnit. */
+                    public _distanceUnit?: "distanceUnit";
+
+                    /** RecordedCardioExerciseSetDao _resistance. */
+                    public _resistance?: "resistance";
+
+                    /** RecordedCardioExerciseSetDao _incline. */
+                    public _incline?: "incline";
+
+                    /**
+                     * Creates a new RecordedCardioExerciseSetDao instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns RecordedCardioExerciseSetDao instance
+                     */
+                    public static create(properties?: LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao): LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao;
+
+                    /**
+                     * Encodes the specified RecordedCardioExerciseSetDao message. Does not implicitly {@link LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.verify|verify} messages.
+                     * @param message RecordedCardioExerciseSetDao message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified RecordedCardioExerciseSetDao message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.verify|verify} messages.
+                     * @param message RecordedCardioExerciseSetDao message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a RecordedCardioExerciseSetDao message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns RecordedCardioExerciseSetDao
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao;
+
+                    /**
+                     * Decodes a RecordedCardioExerciseSetDao message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns RecordedCardioExerciseSetDao
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao;
+
+                    /**
+                     * Verifies a RecordedCardioExerciseSetDao message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a RecordedCardioExerciseSetDao message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns RecordedCardioExerciseSetDao
+                     */
+                    public static fromObject(object: { [k: string]: any }): LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao;
+
+                    /**
+                     * Creates a plain object from a RecordedCardioExerciseSetDao message. Also converts values to other types if specified.
+                     * @param message RecordedCardioExerciseSetDao
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this RecordedCardioExerciseSetDao to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for RecordedCardioExerciseSetDao
                      * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                      * @returns The default type url
                      */
@@ -1028,6 +1185,9 @@ export namespace LiftLog {
 
                     /** ExerciseBlueprintDaoV2 trackIncline */
                     trackIncline?: (boolean|null);
+
+                    /** ExerciseBlueprintDaoV2 cardioSets */
+                    cardioSets?: (LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao[]|null);
                 }
 
                 /** Represents an ExerciseBlueprintDaoV2. */
@@ -1080,6 +1240,9 @@ export namespace LiftLog {
 
                     /** ExerciseBlueprintDaoV2 trackIncline. */
                     public trackIncline: boolean;
+
+                    /** ExerciseBlueprintDaoV2 cardioSets. */
+                    public cardioSets: LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao[];
 
                     /**
                      * Creates a new ExerciseBlueprintDaoV2 instance using the specified properties.
@@ -1153,6 +1316,127 @@ export namespace LiftLog {
 
                     /**
                      * Gets the default type url for ExerciseBlueprintDaoV2
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a CardioExerciseSetBlueprintDao. */
+                interface ICardioExerciseSetBlueprintDao {
+
+                    /** CardioExerciseSetBlueprintDao cardioTarget */
+                    cardioTarget?: (LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null);
+
+                    /** CardioExerciseSetBlueprintDao trackDuration */
+                    trackDuration?: (boolean|null);
+
+                    /** CardioExerciseSetBlueprintDao trackDistance */
+                    trackDistance?: (boolean|null);
+
+                    /** CardioExerciseSetBlueprintDao trackResistance */
+                    trackResistance?: (boolean|null);
+
+                    /** CardioExerciseSetBlueprintDao trackIncline */
+                    trackIncline?: (boolean|null);
+                }
+
+                /** Represents a CardioExerciseSetBlueprintDao. */
+                class CardioExerciseSetBlueprintDao implements ICardioExerciseSetBlueprintDao {
+
+                    /**
+                     * Constructs a new CardioExerciseSetBlueprintDao.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao);
+
+                    /** CardioExerciseSetBlueprintDao cardioTarget. */
+                    public cardioTarget?: (LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null);
+
+                    /** CardioExerciseSetBlueprintDao trackDuration. */
+                    public trackDuration: boolean;
+
+                    /** CardioExerciseSetBlueprintDao trackDistance. */
+                    public trackDistance: boolean;
+
+                    /** CardioExerciseSetBlueprintDao trackResistance. */
+                    public trackResistance: boolean;
+
+                    /** CardioExerciseSetBlueprintDao trackIncline. */
+                    public trackIncline: boolean;
+
+                    /**
+                     * Creates a new CardioExerciseSetBlueprintDao instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns CardioExerciseSetBlueprintDao instance
+                     */
+                    public static create(properties?: LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao): LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao;
+
+                    /**
+                     * Encodes the specified CardioExerciseSetBlueprintDao message. Does not implicitly {@link LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao.verify|verify} messages.
+                     * @param message CardioExerciseSetBlueprintDao message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified CardioExerciseSetBlueprintDao message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao.verify|verify} messages.
+                     * @param message CardioExerciseSetBlueprintDao message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a CardioExerciseSetBlueprintDao message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns CardioExerciseSetBlueprintDao
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao;
+
+                    /**
+                     * Decodes a CardioExerciseSetBlueprintDao message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns CardioExerciseSetBlueprintDao
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao;
+
+                    /**
+                     * Verifies a CardioExerciseSetBlueprintDao message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a CardioExerciseSetBlueprintDao message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns CardioExerciseSetBlueprintDao
+                     */
+                    public static fromObject(object: { [k: string]: any }): LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao;
+
+                    /**
+                     * Creates a plain object from a CardioExerciseSetBlueprintDao message. Also converts values to other types if specified.
+                     * @param message CardioExerciseSetBlueprintDao
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this CardioExerciseSetBlueprintDao to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for CardioExerciseSetBlueprintDao
                      * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                      * @returns The default type url
                      */

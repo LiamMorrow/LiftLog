@@ -15,6 +15,7 @@ import {
   SessionBlueprint,
   ExerciseBlueprint,
   CardioTarget,
+  CardioExerciseSetBlueprint,
 } from '@/models/blueprint-models';
 import {
   FeedIdentity,
@@ -32,6 +33,7 @@ import {
   RecordedSet,
   Session,
   RecordedExercise,
+  RecordedCardioExerciseSet,
 } from '@/models/session-models';
 import Enumerable from 'linq';
 import { FeedState } from '@/store/feed';
@@ -131,15 +133,31 @@ export function toExerciseBlueprintDao(
           restBetweenSets: toRestDao(model.restBetweenSets),
           supersetWithNext: model.supersetWithNext,
         }
-      : {
-          type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO,
-          cardioTarget: toCardioTargetDao(model.target),
-          trackDuration: model.trackDuration,
-          trackDistance: model.trackDistance,
-          trackResistance: model.trackResistance,
-          trackIncline: model.trackIncline,
-        }),
+      : (() => {
+          const sets = model.sets.map(toCardioSetBlueprintDao);
+          const firstSet = sets.shift()!;
+          return {
+            type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO,
+            cardioTarget: firstSet.cardioTarget!,
+            trackDuration: firstSet.trackDuration!,
+            trackDistance: firstSet.trackDistance!,
+            trackResistance: firstSet.trackResistance!,
+            trackIncline: firstSet.trackIncline!,
+            cardioSets: sets,
+          };
+        })()),
   });
+}
+function toCardioSetBlueprintDao(
+  set: CardioExerciseSetBlueprint,
+): LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao {
+  return {
+    cardioTarget: toCardioTargetDao(set.target),
+    trackDuration: set.trackDuration,
+    trackDistance: set.trackDistance,
+    trackResistance: set.trackResistance,
+    trackIncline: set.trackIncline,
+  };
 }
 
 function toCardioTargetDao(
@@ -284,18 +302,34 @@ export function toRecordedExerciseDao(
           type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.WEIGHTED,
           potentialSets: model.potentialSets.map(toPotentialSetDao),
         }
-      : {
-          type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO,
-          completionDateTime: toDateTimeDao(model.completionDateTime),
-          duration: toDurationDao(model.duration),
-          distanceValue: model.distance
-            ? toDecimalDao(model.distance.value)
-            : null,
-          distanceUnit: model.distance ? { value: model.distance.unit } : null,
-          resistance: model.resistance ? toDecimalDao(model.resistance) : null,
-          incline: model.incline ? toDecimalDao(model.incline) : null,
-        }),
+      : (() => {
+          const sets = model.sets.map(toRecordedCardioSetDao);
+          const firstSet = sets.shift()!;
+          return {
+            type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO,
+            completionDateTime: firstSet.completionDateTime!,
+            duration: firstSet.duration!,
+            distanceValue: firstSet.distanceValue!,
+            distanceUnit: firstSet.distanceUnit!,
+            resistance: firstSet.resistance!,
+            incline: firstSet.incline!,
+            cardioSets: sets,
+          };
+        })()),
   });
+}
+function toRecordedCardioSetDao(
+  set: RecordedCardioExerciseSet,
+): LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao {
+  return {
+    blueprint: toCardioSetBlueprintDao(set.blueprint),
+    completionDateTime: toDateTimeDao(set.completionDateTime),
+    distanceUnit: toStringValue(set.distance?.unit),
+    distanceValue: set.distance ? toDecimalDao(set.distance.value) : null,
+    duration: toDurationDao(set.duration),
+    incline: set.incline ? toDecimalDao(set.incline) : null,
+    resistance: set.resistance ? toDecimalDao(set.resistance) : null,
+  };
 }
 
 export function toDateTimeDao(

@@ -185,20 +185,23 @@ function parseAiExercise(
     name: ex.name,
     link: ex.link,
     notes: ex.notes,
-    target: match(ex.target)
-      .returnType<CardioTarget>()
-      .with({ type: 'distance' }, (t) => ({
-        type: 'distance',
-        value: { value: BigNumber(t.value.value), unit: t.value.unit },
-      }))
-      .with({ type: 'time' }, (t) => ({
-        type: 'time',
-        value: parseDuration(t.value),
-      }))
-      .exhaustive(),
-    trackDistance: ex.trackDistance,
-    trackIncline: ex.trackIncline,
-    trackResistance: ex.trackResistance,
-    trackDuration: ex.trackDuration,
+    sets: ex.sets.map((set) => ({
+      type: 'CardioExerciseSetBlueprint' as const,
+      target: match(set.target)
+        .returnType<CardioTarget>()
+        .with({ type: 'distance' }, (t) => ({
+          type: 'distance' as const,
+          value: { value: BigNumber(t.value.value), unit: t.value.unit },
+        }))
+        .with({ type: 'time' }, (t) => ({
+          type: 'time' as const,
+          value: parseDuration(t.value),
+        }))
+        .exhaustive(),
+      trackDistance: set.trackDistance,
+      trackIncline: set.trackIncline,
+      trackResistance: set.trackResistance,
+      trackDuration: set.trackDuration,
+    })),
   };
 }
