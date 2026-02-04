@@ -704,12 +704,12 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @property {LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType|null} [type] RecordedExerciseDaoV2 type
                      * @property {google.protobuf.IStringValue|null} [notes] RecordedExerciseDaoV2 notes
                      * @property {Array.<LiftLog.Ui.Models.SessionHistoryDao.IPotentialSetDaoV2>|null} [potentialSets] RecordedExerciseDaoV2 potentialSets
-                     * @property {LiftLog.Ui.Models.IDateTimeDao|null} [completionDateTime] RecordedExerciseDaoV2 completionDateTime
-                     * @property {google.protobuf.IDuration|null} [duration] RecordedExerciseDaoV2 duration
-                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [distanceValue] RecordedExerciseDaoV2 distanceValue
-                     * @property {google.protobuf.IStringValue|null} [distanceUnit] RecordedExerciseDaoV2 distanceUnit
-                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [resistance] RecordedExerciseDaoV2 resistance
-                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [incline] RecordedExerciseDaoV2 incline
+                     * @property {LiftLog.Ui.Models.IDateTimeDao|null} [deprecatedCompletionDateTime] RecordedExerciseDaoV2 deprecatedCompletionDateTime
+                     * @property {google.protobuf.IDuration|null} [deprecatedDuration] RecordedExerciseDaoV2 deprecatedDuration
+                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [deprecatedDistanceValue] RecordedExerciseDaoV2 deprecatedDistanceValue
+                     * @property {google.protobuf.IStringValue|null} [deprecatedDistanceUnit] RecordedExerciseDaoV2 deprecatedDistanceUnit
+                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [deprecatedResistance] RecordedExerciseDaoV2 deprecatedResistance
+                     * @property {LiftLog.Ui.Models.IDecimalValue|null} [deprecatedIncline] RecordedExerciseDaoV2 deprecatedIncline
                      * @property {Array.<LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao>|null} [cardioSets] RecordedExerciseDaoV2 cardioSets
                      */
 
@@ -763,52 +763,52 @@ export const LiftLog = $root.LiftLog = (() => {
                     RecordedExerciseDaoV2.prototype.potentialSets = $util.emptyArray;
 
                     /**
-                     * RecordedExerciseDaoV2 completionDateTime.
-                     * @member {LiftLog.Ui.Models.IDateTimeDao|null|undefined} completionDateTime
+                     * RecordedExerciseDaoV2 deprecatedCompletionDateTime.
+                     * @member {LiftLog.Ui.Models.IDateTimeDao|null|undefined} deprecatedCompletionDateTime
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
                      * @instance
                      */
-                    RecordedExerciseDaoV2.prototype.completionDateTime = null;
+                    RecordedExerciseDaoV2.prototype.deprecatedCompletionDateTime = null;
 
                     /**
-                     * RecordedExerciseDaoV2 duration.
-                     * @member {google.protobuf.IDuration|null|undefined} duration
+                     * RecordedExerciseDaoV2 deprecatedDuration.
+                     * @member {google.protobuf.IDuration|null|undefined} deprecatedDuration
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
                      * @instance
                      */
-                    RecordedExerciseDaoV2.prototype.duration = null;
+                    RecordedExerciseDaoV2.prototype.deprecatedDuration = null;
 
                     /**
-                     * RecordedExerciseDaoV2 distanceValue.
-                     * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} distanceValue
+                     * RecordedExerciseDaoV2 deprecatedDistanceValue.
+                     * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} deprecatedDistanceValue
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
                      * @instance
                      */
-                    RecordedExerciseDaoV2.prototype.distanceValue = null;
+                    RecordedExerciseDaoV2.prototype.deprecatedDistanceValue = null;
 
                     /**
-                     * RecordedExerciseDaoV2 distanceUnit.
-                     * @member {google.protobuf.IStringValue|null|undefined} distanceUnit
+                     * RecordedExerciseDaoV2 deprecatedDistanceUnit.
+                     * @member {google.protobuf.IStringValue|null|undefined} deprecatedDistanceUnit
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
                      * @instance
                      */
-                    RecordedExerciseDaoV2.prototype.distanceUnit = null;
+                    RecordedExerciseDaoV2.prototype.deprecatedDistanceUnit = null;
 
                     /**
-                     * RecordedExerciseDaoV2 resistance.
-                     * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} resistance
+                     * RecordedExerciseDaoV2 deprecatedResistance.
+                     * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} deprecatedResistance
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
                      * @instance
                      */
-                    RecordedExerciseDaoV2.prototype.resistance = null;
+                    RecordedExerciseDaoV2.prototype.deprecatedResistance = null;
 
                     /**
-                     * RecordedExerciseDaoV2 incline.
-                     * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} incline
+                     * RecordedExerciseDaoV2 deprecatedIncline.
+                     * @member {LiftLog.Ui.Models.IDecimalValue|null|undefined} deprecatedIncline
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
                      * @instance
                      */
-                    RecordedExerciseDaoV2.prototype.incline = null;
+                    RecordedExerciseDaoV2.prototype.deprecatedIncline = null;
 
                     /**
                      * RecordedExerciseDaoV2 cardioSets.
@@ -833,68 +833,68 @@ export const LiftLog = $root.LiftLog = (() => {
                     });
 
                     /**
-                     * RecordedExerciseDaoV2 _completionDateTime.
-                     * @member {"completionDateTime"|undefined} _completionDateTime
+                     * RecordedExerciseDaoV2 _deprecatedCompletionDateTime.
+                     * @member {"deprecatedCompletionDateTime"|undefined} _deprecatedCompletionDateTime
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
                      * @instance
                      */
-                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_completionDateTime", {
-                        get: $util.oneOfGetter($oneOfFields = ["completionDateTime"]),
+                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_deprecatedCompletionDateTime", {
+                        get: $util.oneOfGetter($oneOfFields = ["deprecatedCompletionDateTime"]),
                         set: $util.oneOfSetter($oneOfFields)
                     });
 
                     /**
-                     * RecordedExerciseDaoV2 _duration.
-                     * @member {"duration"|undefined} _duration
+                     * RecordedExerciseDaoV2 _deprecatedDuration.
+                     * @member {"deprecatedDuration"|undefined} _deprecatedDuration
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
                      * @instance
                      */
-                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_duration", {
-                        get: $util.oneOfGetter($oneOfFields = ["duration"]),
+                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_deprecatedDuration", {
+                        get: $util.oneOfGetter($oneOfFields = ["deprecatedDuration"]),
                         set: $util.oneOfSetter($oneOfFields)
                     });
 
                     /**
-                     * RecordedExerciseDaoV2 _distanceValue.
-                     * @member {"distanceValue"|undefined} _distanceValue
+                     * RecordedExerciseDaoV2 _deprecatedDistanceValue.
+                     * @member {"deprecatedDistanceValue"|undefined} _deprecatedDistanceValue
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
                      * @instance
                      */
-                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_distanceValue", {
-                        get: $util.oneOfGetter($oneOfFields = ["distanceValue"]),
+                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_deprecatedDistanceValue", {
+                        get: $util.oneOfGetter($oneOfFields = ["deprecatedDistanceValue"]),
                         set: $util.oneOfSetter($oneOfFields)
                     });
 
                     /**
-                     * RecordedExerciseDaoV2 _distanceUnit.
-                     * @member {"distanceUnit"|undefined} _distanceUnit
+                     * RecordedExerciseDaoV2 _deprecatedDistanceUnit.
+                     * @member {"deprecatedDistanceUnit"|undefined} _deprecatedDistanceUnit
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
                      * @instance
                      */
-                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_distanceUnit", {
-                        get: $util.oneOfGetter($oneOfFields = ["distanceUnit"]),
+                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_deprecatedDistanceUnit", {
+                        get: $util.oneOfGetter($oneOfFields = ["deprecatedDistanceUnit"]),
                         set: $util.oneOfSetter($oneOfFields)
                     });
 
                     /**
-                     * RecordedExerciseDaoV2 _resistance.
-                     * @member {"resistance"|undefined} _resistance
+                     * RecordedExerciseDaoV2 _deprecatedResistance.
+                     * @member {"deprecatedResistance"|undefined} _deprecatedResistance
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
                      * @instance
                      */
-                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_resistance", {
-                        get: $util.oneOfGetter($oneOfFields = ["resistance"]),
+                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_deprecatedResistance", {
+                        get: $util.oneOfGetter($oneOfFields = ["deprecatedResistance"]),
                         set: $util.oneOfSetter($oneOfFields)
                     });
 
                     /**
-                     * RecordedExerciseDaoV2 _incline.
-                     * @member {"incline"|undefined} _incline
+                     * RecordedExerciseDaoV2 _deprecatedIncline.
+                     * @member {"deprecatedIncline"|undefined} _deprecatedIncline
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2
                      * @instance
                      */
-                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_incline", {
-                        get: $util.oneOfGetter($oneOfFields = ["incline"]),
+                    Object.defineProperty(RecordedExerciseDaoV2.prototype, "_deprecatedIncline", {
+                        get: $util.oneOfGetter($oneOfFields = ["deprecatedIncline"]),
                         set: $util.oneOfSetter($oneOfFields)
                     });
 
@@ -931,21 +931,21 @@ export const LiftLog = $root.LiftLog = (() => {
                             $root.google.protobuf.StringValue.encode(message.notes, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
                         if (message.type != null && Object.hasOwnProperty.call(message, "type"))
                             writer.uint32(/* id 6, wireType 0 =*/48).int32(message.type);
-                        if (message.completionDateTime != null && Object.hasOwnProperty.call(message, "completionDateTime"))
-                            $root.LiftLog.Ui.Models.DateTimeDao.encode(message.completionDateTime, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
-                        if (message.duration != null && Object.hasOwnProperty.call(message, "duration"))
-                            $root.google.protobuf.Duration.encode(message.duration, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
-                        if (message.distanceValue != null && Object.hasOwnProperty.call(message, "distanceValue"))
-                            $root.LiftLog.Ui.Models.DecimalValue.encode(message.distanceValue, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
-                        if (message.resistance != null && Object.hasOwnProperty.call(message, "resistance"))
-                            $root.LiftLog.Ui.Models.DecimalValue.encode(message.resistance, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
-                        if (message.incline != null && Object.hasOwnProperty.call(message, "incline"))
-                            $root.LiftLog.Ui.Models.DecimalValue.encode(message.incline, writer.uint32(/* id 12, wireType 2 =*/98).fork()).ldelim();
+                        if (message.deprecatedCompletionDateTime != null && Object.hasOwnProperty.call(message, "deprecatedCompletionDateTime"))
+                            $root.LiftLog.Ui.Models.DateTimeDao.encode(message.deprecatedCompletionDateTime, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
+                        if (message.deprecatedDuration != null && Object.hasOwnProperty.call(message, "deprecatedDuration"))
+                            $root.google.protobuf.Duration.encode(message.deprecatedDuration, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
+                        if (message.deprecatedDistanceValue != null && Object.hasOwnProperty.call(message, "deprecatedDistanceValue"))
+                            $root.LiftLog.Ui.Models.DecimalValue.encode(message.deprecatedDistanceValue, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
+                        if (message.deprecatedResistance != null && Object.hasOwnProperty.call(message, "deprecatedResistance"))
+                            $root.LiftLog.Ui.Models.DecimalValue.encode(message.deprecatedResistance, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
+                        if (message.deprecatedIncline != null && Object.hasOwnProperty.call(message, "deprecatedIncline"))
+                            $root.LiftLog.Ui.Models.DecimalValue.encode(message.deprecatedIncline, writer.uint32(/* id 12, wireType 2 =*/98).fork()).ldelim();
                         if (message.cardioSets != null && message.cardioSets.length)
                             for (let i = 0; i < message.cardioSets.length; ++i)
                                 $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.encode(message.cardioSets[i], writer.uint32(/* id 13, wireType 2 =*/106).fork()).ldelim();
-                        if (message.distanceUnit != null && Object.hasOwnProperty.call(message, "distanceUnit"))
-                            $root.google.protobuf.StringValue.encode(message.distanceUnit, writer.uint32(/* id 14, wireType 2 =*/114).fork()).ldelim();
+                        if (message.deprecatedDistanceUnit != null && Object.hasOwnProperty.call(message, "deprecatedDistanceUnit"))
+                            $root.google.protobuf.StringValue.encode(message.deprecatedDistanceUnit, writer.uint32(/* id 14, wireType 2 =*/114).fork()).ldelim();
                         return writer;
                     };
 
@@ -1001,27 +1001,27 @@ export const LiftLog = $root.LiftLog = (() => {
                                     break;
                                 }
                             case 8: {
-                                    message.completionDateTime = $root.LiftLog.Ui.Models.DateTimeDao.decode(reader, reader.uint32());
+                                    message.deprecatedCompletionDateTime = $root.LiftLog.Ui.Models.DateTimeDao.decode(reader, reader.uint32());
                                     break;
                                 }
                             case 9: {
-                                    message.duration = $root.google.protobuf.Duration.decode(reader, reader.uint32());
+                                    message.deprecatedDuration = $root.google.protobuf.Duration.decode(reader, reader.uint32());
                                     break;
                                 }
                             case 10: {
-                                    message.distanceValue = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                    message.deprecatedDistanceValue = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
                                     break;
                                 }
                             case 14: {
-                                    message.distanceUnit = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
+                                    message.deprecatedDistanceUnit = $root.google.protobuf.StringValue.decode(reader, reader.uint32());
                                     break;
                                 }
                             case 11: {
-                                    message.resistance = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                    message.deprecatedResistance = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
                                     break;
                                 }
                             case 12: {
-                                    message.incline = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                    message.deprecatedIncline = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
                                     break;
                                 }
                             case 13: {
@@ -1096,52 +1096,52 @@ export const LiftLog = $root.LiftLog = (() => {
                                     return "potentialSets." + error;
                             }
                         }
-                        if (message.completionDateTime != null && message.hasOwnProperty("completionDateTime")) {
-                            properties._completionDateTime = 1;
+                        if (message.deprecatedCompletionDateTime != null && message.hasOwnProperty("deprecatedCompletionDateTime")) {
+                            properties._deprecatedCompletionDateTime = 1;
                             {
-                                let error = $root.LiftLog.Ui.Models.DateTimeDao.verify(message.completionDateTime);
+                                let error = $root.LiftLog.Ui.Models.DateTimeDao.verify(message.deprecatedCompletionDateTime);
                                 if (error)
-                                    return "completionDateTime." + error;
+                                    return "deprecatedCompletionDateTime." + error;
                             }
                         }
-                        if (message.duration != null && message.hasOwnProperty("duration")) {
-                            properties._duration = 1;
+                        if (message.deprecatedDuration != null && message.hasOwnProperty("deprecatedDuration")) {
+                            properties._deprecatedDuration = 1;
                             {
-                                let error = $root.google.protobuf.Duration.verify(message.duration);
+                                let error = $root.google.protobuf.Duration.verify(message.deprecatedDuration);
                                 if (error)
-                                    return "duration." + error;
+                                    return "deprecatedDuration." + error;
                             }
                         }
-                        if (message.distanceValue != null && message.hasOwnProperty("distanceValue")) {
-                            properties._distanceValue = 1;
+                        if (message.deprecatedDistanceValue != null && message.hasOwnProperty("deprecatedDistanceValue")) {
+                            properties._deprecatedDistanceValue = 1;
                             {
-                                let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.distanceValue);
+                                let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.deprecatedDistanceValue);
                                 if (error)
-                                    return "distanceValue." + error;
+                                    return "deprecatedDistanceValue." + error;
                             }
                         }
-                        if (message.distanceUnit != null && message.hasOwnProperty("distanceUnit")) {
-                            properties._distanceUnit = 1;
+                        if (message.deprecatedDistanceUnit != null && message.hasOwnProperty("deprecatedDistanceUnit")) {
+                            properties._deprecatedDistanceUnit = 1;
                             {
-                                let error = $root.google.protobuf.StringValue.verify(message.distanceUnit);
+                                let error = $root.google.protobuf.StringValue.verify(message.deprecatedDistanceUnit);
                                 if (error)
-                                    return "distanceUnit." + error;
+                                    return "deprecatedDistanceUnit." + error;
                             }
                         }
-                        if (message.resistance != null && message.hasOwnProperty("resistance")) {
-                            properties._resistance = 1;
+                        if (message.deprecatedResistance != null && message.hasOwnProperty("deprecatedResistance")) {
+                            properties._deprecatedResistance = 1;
                             {
-                                let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.resistance);
+                                let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.deprecatedResistance);
                                 if (error)
-                                    return "resistance." + error;
+                                    return "deprecatedResistance." + error;
                             }
                         }
-                        if (message.incline != null && message.hasOwnProperty("incline")) {
-                            properties._incline = 1;
+                        if (message.deprecatedIncline != null && message.hasOwnProperty("deprecatedIncline")) {
+                            properties._deprecatedIncline = 1;
                             {
-                                let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.incline);
+                                let error = $root.LiftLog.Ui.Models.DecimalValue.verify(message.deprecatedIncline);
                                 if (error)
-                                    return "incline." + error;
+                                    return "deprecatedIncline." + error;
                             }
                         }
                         if (message.cardioSets != null && message.hasOwnProperty("cardioSets")) {
@@ -1204,35 +1204,35 @@ export const LiftLog = $root.LiftLog = (() => {
                                 message.potentialSets[i] = $root.LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2.fromObject(object.potentialSets[i]);
                             }
                         }
-                        if (object.completionDateTime != null) {
-                            if (typeof object.completionDateTime !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.completionDateTime: object expected");
-                            message.completionDateTime = $root.LiftLog.Ui.Models.DateTimeDao.fromObject(object.completionDateTime);
+                        if (object.deprecatedCompletionDateTime != null) {
+                            if (typeof object.deprecatedCompletionDateTime !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.deprecatedCompletionDateTime: object expected");
+                            message.deprecatedCompletionDateTime = $root.LiftLog.Ui.Models.DateTimeDao.fromObject(object.deprecatedCompletionDateTime);
                         }
-                        if (object.duration != null) {
-                            if (typeof object.duration !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.duration: object expected");
-                            message.duration = $root.google.protobuf.Duration.fromObject(object.duration);
+                        if (object.deprecatedDuration != null) {
+                            if (typeof object.deprecatedDuration !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.deprecatedDuration: object expected");
+                            message.deprecatedDuration = $root.google.protobuf.Duration.fromObject(object.deprecatedDuration);
                         }
-                        if (object.distanceValue != null) {
-                            if (typeof object.distanceValue !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.distanceValue: object expected");
-                            message.distanceValue = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.distanceValue);
+                        if (object.deprecatedDistanceValue != null) {
+                            if (typeof object.deprecatedDistanceValue !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.deprecatedDistanceValue: object expected");
+                            message.deprecatedDistanceValue = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.deprecatedDistanceValue);
                         }
-                        if (object.distanceUnit != null) {
-                            if (typeof object.distanceUnit !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.distanceUnit: object expected");
-                            message.distanceUnit = $root.google.protobuf.StringValue.fromObject(object.distanceUnit);
+                        if (object.deprecatedDistanceUnit != null) {
+                            if (typeof object.deprecatedDistanceUnit !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.deprecatedDistanceUnit: object expected");
+                            message.deprecatedDistanceUnit = $root.google.protobuf.StringValue.fromObject(object.deprecatedDistanceUnit);
                         }
-                        if (object.resistance != null) {
-                            if (typeof object.resistance !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.resistance: object expected");
-                            message.resistance = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.resistance);
+                        if (object.deprecatedResistance != null) {
+                            if (typeof object.deprecatedResistance !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.deprecatedResistance: object expected");
+                            message.deprecatedResistance = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.deprecatedResistance);
                         }
-                        if (object.incline != null) {
-                            if (typeof object.incline !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.incline: object expected");
-                            message.incline = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.incline);
+                        if (object.deprecatedIncline != null) {
+                            if (typeof object.deprecatedIncline !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.deprecatedIncline: object expected");
+                            message.deprecatedIncline = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.deprecatedIncline);
                         }
                         if (object.cardioSets) {
                             if (!Array.isArray(object.cardioSets))
@@ -1282,40 +1282,40 @@ export const LiftLog = $root.LiftLog = (() => {
                         }
                         if (message.type != null && message.hasOwnProperty("type"))
                             object.type = options.enums === String ? $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType[message.type] === undefined ? message.type : $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType[message.type] : message.type;
-                        if (message.completionDateTime != null && message.hasOwnProperty("completionDateTime")) {
-                            object.completionDateTime = $root.LiftLog.Ui.Models.DateTimeDao.toObject(message.completionDateTime, options);
+                        if (message.deprecatedCompletionDateTime != null && message.hasOwnProperty("deprecatedCompletionDateTime")) {
+                            object.deprecatedCompletionDateTime = $root.LiftLog.Ui.Models.DateTimeDao.toObject(message.deprecatedCompletionDateTime, options);
                             if (options.oneofs)
-                                object._completionDateTime = "completionDateTime";
+                                object._deprecatedCompletionDateTime = "deprecatedCompletionDateTime";
                         }
-                        if (message.duration != null && message.hasOwnProperty("duration")) {
-                            object.duration = $root.google.protobuf.Duration.toObject(message.duration, options);
+                        if (message.deprecatedDuration != null && message.hasOwnProperty("deprecatedDuration")) {
+                            object.deprecatedDuration = $root.google.protobuf.Duration.toObject(message.deprecatedDuration, options);
                             if (options.oneofs)
-                                object._duration = "duration";
+                                object._deprecatedDuration = "deprecatedDuration";
                         }
-                        if (message.distanceValue != null && message.hasOwnProperty("distanceValue")) {
-                            object.distanceValue = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.distanceValue, options);
+                        if (message.deprecatedDistanceValue != null && message.hasOwnProperty("deprecatedDistanceValue")) {
+                            object.deprecatedDistanceValue = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.deprecatedDistanceValue, options);
                             if (options.oneofs)
-                                object._distanceValue = "distanceValue";
+                                object._deprecatedDistanceValue = "deprecatedDistanceValue";
                         }
-                        if (message.resistance != null && message.hasOwnProperty("resistance")) {
-                            object.resistance = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.resistance, options);
+                        if (message.deprecatedResistance != null && message.hasOwnProperty("deprecatedResistance")) {
+                            object.deprecatedResistance = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.deprecatedResistance, options);
                             if (options.oneofs)
-                                object._resistance = "resistance";
+                                object._deprecatedResistance = "deprecatedResistance";
                         }
-                        if (message.incline != null && message.hasOwnProperty("incline")) {
-                            object.incline = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.incline, options);
+                        if (message.deprecatedIncline != null && message.hasOwnProperty("deprecatedIncline")) {
+                            object.deprecatedIncline = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.deprecatedIncline, options);
                             if (options.oneofs)
-                                object._incline = "incline";
+                                object._deprecatedIncline = "deprecatedIncline";
                         }
                         if (message.cardioSets && message.cardioSets.length) {
                             object.cardioSets = [];
                             for (let j = 0; j < message.cardioSets.length; ++j)
                                 object.cardioSets[j] = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.toObject(message.cardioSets[j], options);
                         }
-                        if (message.distanceUnit != null && message.hasOwnProperty("distanceUnit")) {
-                            object.distanceUnit = $root.google.protobuf.StringValue.toObject(message.distanceUnit, options);
+                        if (message.deprecatedDistanceUnit != null && message.hasOwnProperty("deprecatedDistanceUnit")) {
+                            object.deprecatedDistanceUnit = $root.google.protobuf.StringValue.toObject(message.deprecatedDistanceUnit, options);
                             if (options.oneofs)
-                                object._distanceUnit = "distanceUnit";
+                                object._deprecatedDistanceUnit = "deprecatedDistanceUnit";
                         }
                         return object;
                     };
@@ -3304,11 +3304,11 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @property {LiftLog.Ui.Models.IDecimalValue|null} [weightIncreaseOnSuccess] ExerciseBlueprintDaoV2 weightIncreaseOnSuccess
                      * @property {LiftLog.Ui.Models.SessionBlueprintDao.IRestDaoV2|null} [restBetweenSets] ExerciseBlueprintDaoV2 restBetweenSets
                      * @property {boolean|null} [supersetWithNext] ExerciseBlueprintDaoV2 supersetWithNext
-                     * @property {LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null} [cardioTarget] ExerciseBlueprintDaoV2 cardioTarget
-                     * @property {boolean|null} [trackDuration] ExerciseBlueprintDaoV2 trackDuration
-                     * @property {boolean|null} [trackDistance] ExerciseBlueprintDaoV2 trackDistance
-                     * @property {boolean|null} [trackResistance] ExerciseBlueprintDaoV2 trackResistance
-                     * @property {boolean|null} [trackIncline] ExerciseBlueprintDaoV2 trackIncline
+                     * @property {LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null} [deprecatedCardioTarget] ExerciseBlueprintDaoV2 deprecatedCardioTarget
+                     * @property {boolean|null} [deprecatedTrackDuration] ExerciseBlueprintDaoV2 deprecatedTrackDuration
+                     * @property {boolean|null} [deprecatedTrackDistance] ExerciseBlueprintDaoV2 deprecatedTrackDistance
+                     * @property {boolean|null} [deprecatedTrackResistance] ExerciseBlueprintDaoV2 deprecatedTrackResistance
+                     * @property {boolean|null} [deprecatedTrackIncline] ExerciseBlueprintDaoV2 deprecatedTrackIncline
                      * @property {Array.<LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao>|null} [cardioSets] ExerciseBlueprintDaoV2 cardioSets
                      */
 
@@ -3401,44 +3401,44 @@ export const LiftLog = $root.LiftLog = (() => {
                     ExerciseBlueprintDaoV2.prototype.supersetWithNext = false;
 
                     /**
-                     * ExerciseBlueprintDaoV2 cardioTarget.
-                     * @member {LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null|undefined} cardioTarget
+                     * ExerciseBlueprintDaoV2 deprecatedCardioTarget.
+                     * @member {LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null|undefined} deprecatedCardioTarget
                      * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
                      * @instance
                      */
-                    ExerciseBlueprintDaoV2.prototype.cardioTarget = null;
+                    ExerciseBlueprintDaoV2.prototype.deprecatedCardioTarget = null;
 
                     /**
-                     * ExerciseBlueprintDaoV2 trackDuration.
-                     * @member {boolean} trackDuration
+                     * ExerciseBlueprintDaoV2 deprecatedTrackDuration.
+                     * @member {boolean} deprecatedTrackDuration
                      * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
                      * @instance
                      */
-                    ExerciseBlueprintDaoV2.prototype.trackDuration = false;
+                    ExerciseBlueprintDaoV2.prototype.deprecatedTrackDuration = false;
 
                     /**
-                     * ExerciseBlueprintDaoV2 trackDistance.
-                     * @member {boolean} trackDistance
+                     * ExerciseBlueprintDaoV2 deprecatedTrackDistance.
+                     * @member {boolean} deprecatedTrackDistance
                      * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
                      * @instance
                      */
-                    ExerciseBlueprintDaoV2.prototype.trackDistance = false;
+                    ExerciseBlueprintDaoV2.prototype.deprecatedTrackDistance = false;
 
                     /**
-                     * ExerciseBlueprintDaoV2 trackResistance.
-                     * @member {boolean} trackResistance
+                     * ExerciseBlueprintDaoV2 deprecatedTrackResistance.
+                     * @member {boolean} deprecatedTrackResistance
                      * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
                      * @instance
                      */
-                    ExerciseBlueprintDaoV2.prototype.trackResistance = false;
+                    ExerciseBlueprintDaoV2.prototype.deprecatedTrackResistance = false;
 
                     /**
-                     * ExerciseBlueprintDaoV2 trackIncline.
-                     * @member {boolean} trackIncline
+                     * ExerciseBlueprintDaoV2 deprecatedTrackIncline.
+                     * @member {boolean} deprecatedTrackIncline
                      * @memberof LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2
                      * @instance
                      */
-                    ExerciseBlueprintDaoV2.prototype.trackIncline = false;
+                    ExerciseBlueprintDaoV2.prototype.deprecatedTrackIncline = false;
 
                     /**
                      * ExerciseBlueprintDaoV2 cardioSets.
@@ -3490,16 +3490,16 @@ export const LiftLog = $root.LiftLog = (() => {
                             writer.uint32(/* id 9, wireType 2 =*/74).string(message.link);
                         if (message.type != null && Object.hasOwnProperty.call(message, "type"))
                             writer.uint32(/* id 10, wireType 0 =*/80).int32(message.type);
-                        if (message.cardioTarget != null && Object.hasOwnProperty.call(message, "cardioTarget"))
-                            $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.encode(message.cardioTarget, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
-                        if (message.trackDuration != null && Object.hasOwnProperty.call(message, "trackDuration"))
-                            writer.uint32(/* id 12, wireType 0 =*/96).bool(message.trackDuration);
-                        if (message.trackDistance != null && Object.hasOwnProperty.call(message, "trackDistance"))
-                            writer.uint32(/* id 13, wireType 0 =*/104).bool(message.trackDistance);
-                        if (message.trackResistance != null && Object.hasOwnProperty.call(message, "trackResistance"))
-                            writer.uint32(/* id 14, wireType 0 =*/112).bool(message.trackResistance);
-                        if (message.trackIncline != null && Object.hasOwnProperty.call(message, "trackIncline"))
-                            writer.uint32(/* id 15, wireType 0 =*/120).bool(message.trackIncline);
+                        if (message.deprecatedCardioTarget != null && Object.hasOwnProperty.call(message, "deprecatedCardioTarget"))
+                            $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.encode(message.deprecatedCardioTarget, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
+                        if (message.deprecatedTrackDuration != null && Object.hasOwnProperty.call(message, "deprecatedTrackDuration"))
+                            writer.uint32(/* id 12, wireType 0 =*/96).bool(message.deprecatedTrackDuration);
+                        if (message.deprecatedTrackDistance != null && Object.hasOwnProperty.call(message, "deprecatedTrackDistance"))
+                            writer.uint32(/* id 13, wireType 0 =*/104).bool(message.deprecatedTrackDistance);
+                        if (message.deprecatedTrackResistance != null && Object.hasOwnProperty.call(message, "deprecatedTrackResistance"))
+                            writer.uint32(/* id 14, wireType 0 =*/112).bool(message.deprecatedTrackResistance);
+                        if (message.deprecatedTrackIncline != null && Object.hasOwnProperty.call(message, "deprecatedTrackIncline"))
+                            writer.uint32(/* id 15, wireType 0 =*/120).bool(message.deprecatedTrackIncline);
                         if (message.cardioSets != null && message.cardioSets.length)
                             for (let i = 0; i < message.cardioSets.length; ++i)
                                 $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao.encode(message.cardioSets[i], writer.uint32(/* id 16, wireType 2 =*/130).fork()).ldelim();
@@ -3576,23 +3576,23 @@ export const LiftLog = $root.LiftLog = (() => {
                                     break;
                                 }
                             case 11: {
-                                    message.cardioTarget = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.decode(reader, reader.uint32());
+                                    message.deprecatedCardioTarget = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.decode(reader, reader.uint32());
                                     break;
                                 }
                             case 12: {
-                                    message.trackDuration = reader.bool();
+                                    message.deprecatedTrackDuration = reader.bool();
                                     break;
                                 }
                             case 13: {
-                                    message.trackDistance = reader.bool();
+                                    message.deprecatedTrackDistance = reader.bool();
                                     break;
                                 }
                             case 14: {
-                                    message.trackResistance = reader.bool();
+                                    message.deprecatedTrackResistance = reader.bool();
                                     break;
                                 }
                             case 15: {
-                                    message.trackIncline = reader.bool();
+                                    message.deprecatedTrackIncline = reader.bool();
                                     break;
                                 }
                             case 16: {
@@ -3672,23 +3672,23 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (message.supersetWithNext != null && message.hasOwnProperty("supersetWithNext"))
                             if (typeof message.supersetWithNext !== "boolean")
                                 return "supersetWithNext: boolean expected";
-                        if (message.cardioTarget != null && message.hasOwnProperty("cardioTarget")) {
-                            let error = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.verify(message.cardioTarget);
+                        if (message.deprecatedCardioTarget != null && message.hasOwnProperty("deprecatedCardioTarget")) {
+                            let error = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.verify(message.deprecatedCardioTarget);
                             if (error)
-                                return "cardioTarget." + error;
+                                return "deprecatedCardioTarget." + error;
                         }
-                        if (message.trackDuration != null && message.hasOwnProperty("trackDuration"))
-                            if (typeof message.trackDuration !== "boolean")
-                                return "trackDuration: boolean expected";
-                        if (message.trackDistance != null && message.hasOwnProperty("trackDistance"))
-                            if (typeof message.trackDistance !== "boolean")
-                                return "trackDistance: boolean expected";
-                        if (message.trackResistance != null && message.hasOwnProperty("trackResistance"))
-                            if (typeof message.trackResistance !== "boolean")
-                                return "trackResistance: boolean expected";
-                        if (message.trackIncline != null && message.hasOwnProperty("trackIncline"))
-                            if (typeof message.trackIncline !== "boolean")
-                                return "trackIncline: boolean expected";
+                        if (message.deprecatedTrackDuration != null && message.hasOwnProperty("deprecatedTrackDuration"))
+                            if (typeof message.deprecatedTrackDuration !== "boolean")
+                                return "deprecatedTrackDuration: boolean expected";
+                        if (message.deprecatedTrackDistance != null && message.hasOwnProperty("deprecatedTrackDistance"))
+                            if (typeof message.deprecatedTrackDistance !== "boolean")
+                                return "deprecatedTrackDistance: boolean expected";
+                        if (message.deprecatedTrackResistance != null && message.hasOwnProperty("deprecatedTrackResistance"))
+                            if (typeof message.deprecatedTrackResistance !== "boolean")
+                                return "deprecatedTrackResistance: boolean expected";
+                        if (message.deprecatedTrackIncline != null && message.hasOwnProperty("deprecatedTrackIncline"))
+                            if (typeof message.deprecatedTrackIncline !== "boolean")
+                                return "deprecatedTrackIncline: boolean expected";
                         if (message.cardioSets != null && message.hasOwnProperty("cardioSets")) {
                             if (!Array.isArray(message.cardioSets))
                                 return "cardioSets: array expected";
@@ -3751,19 +3751,19 @@ export const LiftLog = $root.LiftLog = (() => {
                         }
                         if (object.supersetWithNext != null)
                             message.supersetWithNext = Boolean(object.supersetWithNext);
-                        if (object.cardioTarget != null) {
-                            if (typeof object.cardioTarget !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.cardioTarget: object expected");
-                            message.cardioTarget = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.fromObject(object.cardioTarget);
+                        if (object.deprecatedCardioTarget != null) {
+                            if (typeof object.deprecatedCardioTarget !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.deprecatedCardioTarget: object expected");
+                            message.deprecatedCardioTarget = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.fromObject(object.deprecatedCardioTarget);
                         }
-                        if (object.trackDuration != null)
-                            message.trackDuration = Boolean(object.trackDuration);
-                        if (object.trackDistance != null)
-                            message.trackDistance = Boolean(object.trackDistance);
-                        if (object.trackResistance != null)
-                            message.trackResistance = Boolean(object.trackResistance);
-                        if (object.trackIncline != null)
-                            message.trackIncline = Boolean(object.trackIncline);
+                        if (object.deprecatedTrackDuration != null)
+                            message.deprecatedTrackDuration = Boolean(object.deprecatedTrackDuration);
+                        if (object.deprecatedTrackDistance != null)
+                            message.deprecatedTrackDistance = Boolean(object.deprecatedTrackDistance);
+                        if (object.deprecatedTrackResistance != null)
+                            message.deprecatedTrackResistance = Boolean(object.deprecatedTrackResistance);
+                        if (object.deprecatedTrackIncline != null)
+                            message.deprecatedTrackIncline = Boolean(object.deprecatedTrackIncline);
                         if (object.cardioSets) {
                             if (!Array.isArray(object.cardioSets))
                                 throw TypeError(".LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2.cardioSets: array expected");
@@ -3802,11 +3802,11 @@ export const LiftLog = $root.LiftLog = (() => {
                             object.notes = "";
                             object.link = "";
                             object.type = options.enums === String ? "WEIGHTED" : 0;
-                            object.cardioTarget = null;
-                            object.trackDuration = false;
-                            object.trackDistance = false;
-                            object.trackResistance = false;
-                            object.trackIncline = false;
+                            object.deprecatedCardioTarget = null;
+                            object.deprecatedTrackDuration = false;
+                            object.deprecatedTrackDistance = false;
+                            object.deprecatedTrackResistance = false;
+                            object.deprecatedTrackIncline = false;
                         }
                         if (message.name != null && message.hasOwnProperty("name"))
                             object.name = message.name;
@@ -3826,16 +3826,16 @@ export const LiftLog = $root.LiftLog = (() => {
                             object.link = message.link;
                         if (message.type != null && message.hasOwnProperty("type"))
                             object.type = options.enums === String ? $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType[message.type] === undefined ? message.type : $root.LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType[message.type] : message.type;
-                        if (message.cardioTarget != null && message.hasOwnProperty("cardioTarget"))
-                            object.cardioTarget = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.toObject(message.cardioTarget, options);
-                        if (message.trackDuration != null && message.hasOwnProperty("trackDuration"))
-                            object.trackDuration = message.trackDuration;
-                        if (message.trackDistance != null && message.hasOwnProperty("trackDistance"))
-                            object.trackDistance = message.trackDistance;
-                        if (message.trackResistance != null && message.hasOwnProperty("trackResistance"))
-                            object.trackResistance = message.trackResistance;
-                        if (message.trackIncline != null && message.hasOwnProperty("trackIncline"))
-                            object.trackIncline = message.trackIncline;
+                        if (message.deprecatedCardioTarget != null && message.hasOwnProperty("deprecatedCardioTarget"))
+                            object.deprecatedCardioTarget = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.toObject(message.deprecatedCardioTarget, options);
+                        if (message.deprecatedTrackDuration != null && message.hasOwnProperty("deprecatedTrackDuration"))
+                            object.deprecatedTrackDuration = message.deprecatedTrackDuration;
+                        if (message.deprecatedTrackDistance != null && message.hasOwnProperty("deprecatedTrackDistance"))
+                            object.deprecatedTrackDistance = message.deprecatedTrackDistance;
+                        if (message.deprecatedTrackResistance != null && message.hasOwnProperty("deprecatedTrackResistance"))
+                            object.deprecatedTrackResistance = message.deprecatedTrackResistance;
+                        if (message.deprecatedTrackIncline != null && message.hasOwnProperty("deprecatedTrackIncline"))
+                            object.deprecatedTrackIncline = message.deprecatedTrackIncline;
                         if (message.cardioSets && message.cardioSets.length) {
                             object.cardioSets = [];
                             for (let j = 0; j < message.cardioSets.length; ++j)
@@ -13831,6 +13831,8 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @interface ICardioTimerInfo
                      * @property {google.protobuf.IDuration|null} [currentDuration] CardioTimerInfo currentDuration
                      * @property {google.protobuf.ITimestamp|null} [currentBlockStartTime] CardioTimerInfo currentBlockStartTime
+                     * @property {number|null} [exerciseIndex] CardioTimerInfo exerciseIndex
+                     * @property {number|null} [setIndex] CardioTimerInfo setIndex
                      */
 
                     /**
@@ -13863,6 +13865,22 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @instance
                      */
                     CardioTimerInfo.prototype.currentBlockStartTime = null;
+
+                    /**
+                     * CardioTimerInfo exerciseIndex.
+                     * @member {number} exerciseIndex
+                     * @memberof LiftLog.Ui.Models.WorkoutMessage.CardioTimerInfo
+                     * @instance
+                     */
+                    CardioTimerInfo.prototype.exerciseIndex = 0;
+
+                    /**
+                     * CardioTimerInfo setIndex.
+                     * @member {number} setIndex
+                     * @memberof LiftLog.Ui.Models.WorkoutMessage.CardioTimerInfo
+                     * @instance
+                     */
+                    CardioTimerInfo.prototype.setIndex = 0;
 
                     // OneOf field names bound to virtual getters and setters
                     let $oneOfFields;
@@ -13906,6 +13924,10 @@ export const LiftLog = $root.LiftLog = (() => {
                             $root.google.protobuf.Duration.encode(message.currentDuration, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
                         if (message.currentBlockStartTime != null && Object.hasOwnProperty.call(message, "currentBlockStartTime"))
                             $root.google.protobuf.Timestamp.encode(message.currentBlockStartTime, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                        if (message.exerciseIndex != null && Object.hasOwnProperty.call(message, "exerciseIndex"))
+                            writer.uint32(/* id 3, wireType 0 =*/24).int32(message.exerciseIndex);
+                        if (message.setIndex != null && Object.hasOwnProperty.call(message, "setIndex"))
+                            writer.uint32(/* id 4, wireType 0 =*/32).int32(message.setIndex);
                         return writer;
                     };
 
@@ -13948,6 +13970,14 @@ export const LiftLog = $root.LiftLog = (() => {
                                 }
                             case 2: {
                                     message.currentBlockStartTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 3: {
+                                    message.exerciseIndex = reader.int32();
+                                    break;
+                                }
+                            case 4: {
+                                    message.setIndex = reader.int32();
                                     break;
                                 }
                             default:
@@ -13999,6 +14029,12 @@ export const LiftLog = $root.LiftLog = (() => {
                                     return "currentBlockStartTime." + error;
                             }
                         }
+                        if (message.exerciseIndex != null && message.hasOwnProperty("exerciseIndex"))
+                            if (!$util.isInteger(message.exerciseIndex))
+                                return "exerciseIndex: integer expected";
+                        if (message.setIndex != null && message.hasOwnProperty("setIndex"))
+                            if (!$util.isInteger(message.setIndex))
+                                return "setIndex: integer expected";
                         return null;
                     };
 
@@ -14024,6 +14060,10 @@ export const LiftLog = $root.LiftLog = (() => {
                                 throw TypeError(".LiftLog.Ui.Models.WorkoutMessage.CardioTimerInfo.currentBlockStartTime: object expected");
                             message.currentBlockStartTime = $root.google.protobuf.Timestamp.fromObject(object.currentBlockStartTime);
                         }
+                        if (object.exerciseIndex != null)
+                            message.exerciseIndex = object.exerciseIndex | 0;
+                        if (object.setIndex != null)
+                            message.setIndex = object.setIndex | 0;
                         return message;
                     };
 
@@ -14040,8 +14080,11 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (!options)
                             options = {};
                         let object = {};
-                        if (options.defaults)
+                        if (options.defaults) {
                             object.currentDuration = null;
+                            object.exerciseIndex = 0;
+                            object.setIndex = 0;
+                        }
                         if (message.currentDuration != null && message.hasOwnProperty("currentDuration"))
                             object.currentDuration = $root.google.protobuf.Duration.toObject(message.currentDuration, options);
                         if (message.currentBlockStartTime != null && message.hasOwnProperty("currentBlockStartTime")) {
@@ -14049,6 +14092,10 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (options.oneofs)
                                 object._currentBlockStartTime = "currentBlockStartTime";
                         }
+                        if (message.exerciseIndex != null && message.hasOwnProperty("exerciseIndex"))
+                            object.exerciseIndex = message.exerciseIndex;
+                        if (message.setIndex != null && message.hasOwnProperty("setIndex"))
+                            object.setIndex = message.setIndex;
                         return object;
                     };
 

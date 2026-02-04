@@ -104,6 +104,8 @@ import { msAirlineSeatReclineExtraFill } from '@material-symbols-react-native/ou
 import { msPauseCircle } from '@material-symbols-react-native/outlined-400/msPauseCircle';
 import { msPause } from '@material-symbols-react-native/outlined-400/msPause';
 import { JSX } from 'react';
+import { msAddCircle } from '@material-symbols-react-native/outlined-400/msAddCircle';
+import { msDoNotDisturbOn } from '@material-symbols-react-native/outlined-400/msDoNotDisturbOn';
 
 // Importing these icons using the below methods causes android app to crash
 // import { msAdd, msArrowDownward } from '@material-symbols-react-native/outlined-400';
@@ -115,6 +117,7 @@ const CustomIcons = {
 
 const MaterialSymbols = {
   add: msAdd,
+  addCircle: msAddCircle,
   arrowDownward: msArrowDownward,
   arrowUpward: msArrowUpward,
   assignment: msAssignment,
@@ -148,6 +151,7 @@ const MaterialSymbols = {
   send: msSend,
   bolt: msBolt,
   remove: msRemove,
+  doNotDisturbOn: msDoNotDisturbOn,
   save: msSave,
   forum: msForum,
   forumFill: msForumFill,

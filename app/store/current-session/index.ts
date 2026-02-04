@@ -3,9 +3,12 @@ import {
   SessionBlueprint,
   ExerciseBlueprint,
   Distance,
+  CardioExerciseBlueprint,
 } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
 import {
+  RecordedCardioExercisePOJO,
+  RecordedCardioExerciseSet,
   RecordedWeightedExercise,
   RecordedWeightedExercisePOJO,
   Session,
@@ -242,6 +245,28 @@ const currentSessionSlice = createSlice({
                   },
               )
               .toArray();
+          }
+
+          const cardioExistingExercise =
+            session.recordedExercises[action.exerciseIndex].type ===
+            'RecordedCardioExercise'
+              ? (session.recordedExercises[
+                  action.exerciseIndex
+                ] as RecordedCardioExercisePOJO)
+              : undefined;
+
+          if (cardioExistingExercise) {
+            cardioExistingExercise.sets = (
+              action.newBlueprint as CardioExerciseBlueprint
+            ).sets.map((set, i) =>
+              RecordedCardioExerciseSet.empty(set)
+                .with({
+                  // Basically allows us to use values from set, even if there are more sets now and it would be undefined
+                  ...cardioExistingExercise.sets[i],
+                  blueprint: set,
+                })
+                .toPOJO(),
+            );
           }
 
           session.recordedExercises[action.exerciseIndex].blueprint =

@@ -41,12 +41,12 @@ message ExerciseBlueprintDaoV2 {
   RestDaoV2 rest_between_sets = 6;
   bool superset_with_next = 7;
 
-  // Cardio
-  CardioTarget cardio_target = 11;
-  bool track_duration = 12;
-  bool track_distance = 13;
-  bool track_resistance = 14;
-  bool track_incline = 15;
+  // Cardio -- deprecated fields should be stored in the first set on save. If there are ANY sets in the sets, then we ignore these fields
+  CardioTarget deprecated_cardio_target = 11;
+  bool deprecated_track_duration = 12;
+  bool deprecated_track_distance = 13;
+  bool deprecated_track_resistance = 14;
+  bool deprecated_track_incline = 15;
   repeated CardioExerciseSetBlueprintDao cardio_sets = 16;
 }
 

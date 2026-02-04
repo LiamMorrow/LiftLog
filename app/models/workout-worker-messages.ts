@@ -42,6 +42,8 @@ export interface WorkoutUpdatedEvent {
 export interface CardioTimerInfo {
   currentDuration: Duration;
   currentBlockStartTime: Instant | undefined;
+  exerciseIndex: number;
+  setIndex: number;
 }
 
 export interface RestTimerInfo {
@@ -94,6 +96,8 @@ export function toWorkoutMessageDao(
                 currentBlockStartTime: e.cardioTimerInfo.currentBlockStartTime
                   ? toTimestampDao(e.cardioTimerInfo.currentBlockStartTime)
                   : null,
+                exerciseIndex: e.cardioTimerInfo.exerciseIndex,
+                setIndex: e.cardioTimerInfo.setIndex,
               }
             : null,
           totalWeightLifted: toWeightDao(e.workout.totalWeightLifted),
@@ -155,6 +159,9 @@ export function fromWorkoutMessageDao(
             currentDuration: fromDurationDao(
               event.workoutUpdatedEvent.cardioTimerInfo.currentBlockStartTime,
             )!,
+            exerciseIndex:
+              event.workoutUpdatedEvent.cardioTimerInfo.exerciseIndex!,
+            setIndex: event.workoutUpdatedEvent.cardioTimerInfo.setIndex!,
           }
         : undefined,
     }))

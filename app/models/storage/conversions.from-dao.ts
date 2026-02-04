@@ -200,15 +200,16 @@ export function fromRecordedExerciseDao(
     throw new Error('Recorded exercise DAO cannot be null');
   }
   if (dao.type === LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO) {
+    const sets = dao.cardioSets!.map((x) => fromCardioSetDao(x).toPOJO());
     return RecordedCardioExercise.fromPOJO({
       notes: dao.notes?.value ?? undefined,
       blueprint: fromExerciseBlueprintDao(
         dao.exerciseBlueprint,
       ).toPOJO() as CardioExerciseBlueprintPOJO,
-      sets: [
-        getFirstCardioSet(dao).toPOJO(),
-        ...dao.cardioSets!.map((x) => fromCardioSetDao(x).toPOJO()),
-      ],
+      sets:
+        sets.length === 0
+          ? [getRecordedCardioSetFromDeprecatedFields(dao).toPOJO()]
+          : sets,
     });
   }
   return RecordedWeightedExercise.fromPOJO({
@@ -242,22 +243,24 @@ function fromCardioSetDao(
   });
 }
 
-function getFirstCardioSet(
+function getRecordedCardioSetFromDeprecatedFields(
   dao: LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2,
 ): RecordedCardioExerciseSet {
   return RecordedCardioExerciseSet.fromPOJO({
-    blueprint: getFirstCardioBlueprintSet(dao.exerciseBlueprint!).toPOJO(),
+    blueprint: getCardioBlueprintSetFromDeprecatedFields(
+      dao.exerciseBlueprint!,
+    ).toPOJO(),
     distance:
-      dao.distanceValue && dao.distanceUnit
+      dao.deprecatedDistanceValue && dao.deprecatedDistanceUnit
         ? {
-            value: fromDecimalDao(dao.distanceValue),
-            unit: dao.distanceUnit.value as DistanceUnit,
+            value: fromDecimalDao(dao.deprecatedDistanceValue),
+            unit: dao.deprecatedDistanceUnit.value as DistanceUnit,
           }
         : undefined,
-    duration: fromDurationDao(dao.duration),
-    completionDateTime: fromDateTimeDao(dao.completionDateTime),
-    incline: fromDecimalDao(dao.incline),
-    resistance: fromDecimalDao(dao.resistance),
+    duration: fromDurationDao(dao.deprecatedDuration),
+    completionDateTime: fromDateTimeDao(dao.deprecatedCompletionDateTime),
+    incline: fromDecimalDao(dao.deprecatedIncline),
+    resistance: fromDecimalDao(dao.deprecatedResistance),
     currentBlockStartTime: undefined,
   });
 }
@@ -344,12 +347,12 @@ export function fromExerciseBlueprintDao(
     throw new Error('ExerciseBlueprint dao should not be null');
   }
   if (dao.type === LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO) {
+    const sets = dao.cardioSets!.map(fromCardioExerciseSetBlueprint);
     return new CardioExerciseBlueprint(
       dao.name!,
-      [
-        getFirstCardioBlueprintSet(dao),
-        ...dao.cardioSets!.map(fromCardioExerciseSetBlueprint),
-      ],
+      sets.length === 0
+        ? [getCardioBlueprintSetFromDeprecatedFields(dao)]
+        : sets,
       dao.notes ?? '',
       dao.link ?? '',
     );
@@ -370,7 +373,7 @@ function fromCardioExerciseSetBlueprint(
   dao: LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao,
 ): CardioExerciseSetBlueprint {
   return CardioExerciseSetBlueprint.fromPOJO({
-    target: fromCardioTargetDao(dao.cardioTarget!),
+    target: fromCardioTargetDao(dao.cardioTarget),
     trackDuration: dao.trackDuration ?? false,
     trackDistance: dao.trackDistance ?? false,
     trackResistance: dao.trackResistance ?? false,
@@ -378,21 +381,24 @@ function fromCardioExerciseSetBlueprint(
   });
 }
 
-function getFirstCardioBlueprintSet(
+function getCardioBlueprintSetFromDeprecatedFields(
   dao: LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2,
 ): CardioExerciseSetBlueprint {
   return CardioExerciseSetBlueprint.fromPOJO({
-    target: fromCardioTargetDao(dao.cardioTarget!),
-    trackDuration: dao.trackDuration ?? false,
-    trackDistance: dao.trackDistance ?? false,
-    trackResistance: dao.trackResistance ?? false,
-    trackIncline: dao.trackIncline ?? false,
+    target: fromCardioTargetDao(dao.deprecatedCardioTarget),
+    trackDuration: dao.deprecatedTrackDuration ?? false,
+    trackDistance: dao.deprecatedTrackDistance ?? false,
+    trackResistance: dao.deprecatedTrackResistance ?? false,
+    trackIncline: dao.deprecatedTrackIncline ?? false,
   });
 }
 
 function fromCardioTargetDao(
-  dao: LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget,
+  dao: LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget | null | undefined,
 ): CardioTarget {
+  if (!dao) {
+    throw new Error('Expected a non null cardio target');
+  }
   return {
     type: dao.type as 'distance' | 'time',
     value:

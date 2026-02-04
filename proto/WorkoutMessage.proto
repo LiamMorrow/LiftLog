@@ -59,6 +59,8 @@ message RestTimerInfo {
 message CardioTimerInfo {
   google.protobuf.Duration current_duration = 1;
   optional google.protobuf.Timestamp current_block_start_time = 2;
+  int32 exercise_index = 3;
+  int32 set_index = 4;
 }
 
 

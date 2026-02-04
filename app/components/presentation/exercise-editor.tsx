@@ -3,12 +3,13 @@ import DurationEditor from '@/components/presentation/duration-editor';
 import EditableIncrementer from '@/components/presentation/editable-incrementer';
 import ExerciseFilterer from '@/components/presentation/exercise-filterer';
 import FixedIncrementer from '@/components/presentation/fixed-incrementer';
+import Button from '@/components/presentation/gesture-wrappers/button';
 import LabelledForm from '@/components/presentation/labelled-form';
 import LabelledFormRow from '@/components/presentation/labelled-form-row';
 import ListSwitch from '@/components/presentation/list-switch';
 import RestEditorGroup from '@/components/presentation/rest-editor-group';
 import SelectButton from '@/components/presentation/select-button';
-import { spacing } from '@/hooks/useAppTheme';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import {
   CardioExerciseBlueprint,
   CardioExerciseBlueprintPOJO,
@@ -30,11 +31,17 @@ import {
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { Duration } from '@js-joda/core';
 import { FlashList } from '@shopify/flash-list';
-import { useTranslate } from '@tolgee/react';
+import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Keyboard, View } from 'react-native';
-import { Card, List, SegmentedButtons, TextInput } from 'react-native-paper';
+import {
+  Card,
+  Divider,
+  List,
+  SegmentedButtons,
+  TextInput,
+} from 'react-native-paper';
 import { match, P } from 'ts-pattern';
 
 interface ExerciseEditorProps {
@@ -109,26 +116,6 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
   return (
     <View style={{ gap: spacing[4] }}>
       <LabelledForm>
-        <LabelledFormRow label={t('exercise.name.label')} icon="infoFill">
-          <TextInput
-            testID="exercise-name"
-            mode="outlined"
-            style={{ marginBottom: spacing[2] }}
-            value={exercise.name}
-            onChangeText={(name) => updateExercise({ name })}
-            selectTextOnFocus={true}
-            right={
-              <TextInput.Icon
-                icon="search"
-                onPress={() => {
-                  setBottomSheetShown(true);
-                  Keyboard.dismiss();
-                  bottomSheetRef.current?.expand();
-                }}
-              />
-            }
-          />
-        </LabelledFormRow>
         <LabelledFormRow
           label={t('exercise.type.label')}
           icon={'fitnessCenterFill'}
@@ -154,6 +141,26 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
               },
             ]}
             onValueChange={handleTypeChange}
+          />
+        </LabelledFormRow>
+        <LabelledFormRow label={t('exercise.name.label')} icon="infoFill">
+          <TextInput
+            testID="exercise-name"
+            mode="outlined"
+            style={{ marginBottom: spacing[2] }}
+            value={exercise.name}
+            onChangeText={(name) => updateExercise({ name })}
+            selectTextOnFocus={true}
+            right={
+              <TextInput.Icon
+                icon="search"
+                onPress={() => {
+                  setBottomSheetShown(true);
+                  Keyboard.dismiss();
+                  bottomSheetRef.current?.expand();
+                }}
+              />
+            }
           />
         </LabelledFormRow>
         {exerciseEditor}
@@ -212,6 +219,7 @@ function CardioExerciseEditor({
     ex: Partial<CardioExerciseBlueprint | WeightedExerciseBlueprint>,
   ) => void;
 }) {
+  const { colors } = useAppTheme();
   return (
     <>
       <SharedFieldsEditor exercise={exercise} updateExercise={updateExercise} />
@@ -228,6 +236,38 @@ function CardioExerciseEditor({
           }
         />
       ))}
+
+      <List.Section>
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+          <Button
+            icon={'doNotDisturbOn'}
+            disabled={exercise.sets.length === 1}
+            textColor={colors.error}
+            onPress={() =>
+              updateExercise({
+                sets: exercise.sets.filter(
+                  (_, i) => i !== exercise.sets.length - 1,
+                ),
+              })
+            }
+          >
+            <T keyName="exercise.cardio_set.remove.button" />
+          </Button>
+          <Button
+            icon={'addCircle'}
+            onPress={() =>
+              updateExercise({
+                sets: [
+                  ...exercise.sets,
+                  exercise.sets[exercise.sets.length - 1],
+                ],
+              })
+            }
+          >
+            <T keyName="exercise.cardio_set.add.button" />
+          </Button>
+        </View>
+      </List.Section>
     </>
   );
 }
@@ -239,7 +279,7 @@ function CardioSetEditor(props: {
   const { t } = useTranslate();
   const { set, updateSet } = props;
   return (
-    <View>
+    <>
       <CardioTargetEditor
         target={set.target}
         onValueChange={(target) => updateSet(set.with({ target }))}
@@ -276,7 +316,8 @@ function CardioSetEditor(props: {
           headline={t('exercise.track_incline.label')}
         />
       </List.Section>
-    </View>
+      <Divider />
+    </>
   );
 }
 

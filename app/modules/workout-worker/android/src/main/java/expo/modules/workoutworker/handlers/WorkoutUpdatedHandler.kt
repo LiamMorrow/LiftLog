@@ -78,14 +78,20 @@ class WorkoutUpdatedHandler(
         val workoutUpdatedEvent = event.workoutUpdatedEvent
 
         val restTimerInfo = workoutUpdatedEvent.restTimerInfo
+        fun getProgress(): Long {
+            val timeStartSecs = restTimerInfo.startedAt.seconds
+            val now = Clock.System.now().epochSeconds
+            return now - timeStartSecs
+        }
+
         val currentExerciseMessage = getCurrentExerciseMessage(event)
-        var previousProgress = 0L;
+        var previousProgress = getProgress()
         timer.updateCallback {
             val timeStartSecs = restTimerInfo.startedAt.seconds
             val timePartiallyEndSecs = restTimerInfo.partiallyEndAt.seconds
             val timeEndSecs = restTimerInfo.endAt.seconds
+            val progress = getProgress()
             val now = Clock.System.now().epochSeconds
-            val progress = now - timeStartSecs
             val partialProgressMax = timePartiallyEndSecs - timeStartSecs
             val fullProgressMax = timeEndSecs - timeStartSecs
 
@@ -205,7 +211,13 @@ class WorkoutUpdatedHandler(
         }
 
         fun getCardioTarget(): String {
-            val cardioTarget = currentExercise.cardioTarget
+            val exerciseIndex = event.workoutUpdatedEvent.cardioTimerInfo.exerciseIndex
+            val setIndex = event.workoutUpdatedEvent.cardioTimerInfo.setIndex
+            val set =
+                event.workoutUpdatedEvent.workout.recordedExercisesList.get(exerciseIndex).cardioSetsList.get(
+                    setIndex
+                )
+            val cardioTarget = set.blueprint.cardioTarget
             return when {
                 cardioTarget.hasTimeValue() -> formatDuration(
                     cardioTarget.timeValue.seconds.toDuration(

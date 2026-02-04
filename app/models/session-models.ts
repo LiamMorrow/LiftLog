@@ -430,6 +430,21 @@ export class RecordedCardioExerciseSet {
       pojo.currentBlockStartTime,
     );
   }
+
+  get isCompletelyFilled(): boolean {
+    return (
+      (this.blueprint.trackDuration || this.blueprint.target.type === 'time'
+        ? !!this.duration
+        : true) &&
+      (this.blueprint.trackDistance || this.blueprint.target.type === 'distance'
+        ? !!this.distance
+        : true) &&
+      (this.blueprint.trackResistance ? !!this.resistance : true) &&
+      (this.blueprint.trackIncline ? !!this.incline : true) &&
+      !this.currentBlockStartTime
+    );
+  }
+
   toPOJO(): RecordedCardioExerciseSetPOJO {
     return {
       type: 'RecordedCardioExerciseSet',

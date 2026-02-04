@@ -19,6 +19,7 @@ import {
 import { match, P } from 'ts-pattern';
 import { assertUnreachable } from '@/utils/assert-unreachable';
 import { formatDistance } from '@/utils/distance';
+import LimitedHtml from '@/components/presentation/limited-html';
 
 interface ExerciseBlueprintSummaryProps {
   blueprint: ExerciseBlueprint;
@@ -101,16 +102,23 @@ function CardioExerciseBlueprintSummary({
 }: {
   blueprint: CardioExerciseBlueprint;
 }) {
+  const { t } = useTranslate();
+
   return (
     <View style={{ gap: spacing[1], alignItems: 'flex-start' }}>
       {blueprint.sets.map((set, i) => (
-        <SurfaceText key={i}>
-          <SurfaceText color="primary">{set.target.type}</SurfaceText>
-          {': '}
-          <SurfaceText color="primary">
-            {formatCardioTarget(set.target)}
-          </SurfaceText>
-        </SurfaceText>
+        <LimitedHtml
+          key={i}
+          value={t('exercise.description.cardio_set.body', {
+            setNumber: i + 1,
+            timeOrDistance: t(
+              set.target.type === 'time'
+                ? 'generic.time.label'
+                : 'exercise.distance.label',
+            ),
+            timeOrDistanceValue: formatCardioTarget(set.target),
+          })}
+        />
       ))}
     </View>
   );

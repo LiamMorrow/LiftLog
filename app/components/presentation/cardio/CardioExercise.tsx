@@ -76,12 +76,16 @@ export function CardioExercise(props: CardioExerciseProps) {
       onEditExercise={props.onEditExercise}
       onRemoveExercise={props.onRemoveExercise}
     >
-      <View>
+      <View style={{ gap: spacing[4] }}>
         {props.recordedExercise.sets.map((set, setIndex) => (
           <CardioExerciseSet
             set={set}
             key={setIndex}
-            toStartNext={props.toStartNext} // TODO - this should check the current set?
+            toStartNext={
+              props.toStartNext &&
+              (props.recordedExercise.sets[setIndex - 1]?.isCompletelyFilled ??
+                true)
+            }
             setCurrentBlockStartTime={setCallback(
               props.setCurrentBlockStartTime,
               setIndex,

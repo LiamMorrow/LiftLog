@@ -260,23 +260,23 @@ export namespace LiftLog {
                     /** RecordedExerciseDaoV2 potentialSets */
                     potentialSets?: (LiftLog.Ui.Models.SessionHistoryDao.IPotentialSetDaoV2[]|null);
 
-                    /** RecordedExerciseDaoV2 completionDateTime */
-                    completionDateTime?: (LiftLog.Ui.Models.IDateTimeDao|null);
+                    /** RecordedExerciseDaoV2 deprecatedCompletionDateTime */
+                    deprecatedCompletionDateTime?: (LiftLog.Ui.Models.IDateTimeDao|null);
 
-                    /** RecordedExerciseDaoV2 duration */
-                    duration?: (google.protobuf.IDuration|null);
+                    /** RecordedExerciseDaoV2 deprecatedDuration */
+                    deprecatedDuration?: (google.protobuf.IDuration|null);
 
-                    /** RecordedExerciseDaoV2 distanceValue */
-                    distanceValue?: (LiftLog.Ui.Models.IDecimalValue|null);
+                    /** RecordedExerciseDaoV2 deprecatedDistanceValue */
+                    deprecatedDistanceValue?: (LiftLog.Ui.Models.IDecimalValue|null);
 
-                    /** RecordedExerciseDaoV2 distanceUnit */
-                    distanceUnit?: (google.protobuf.IStringValue|null);
+                    /** RecordedExerciseDaoV2 deprecatedDistanceUnit */
+                    deprecatedDistanceUnit?: (google.protobuf.IStringValue|null);
 
-                    /** RecordedExerciseDaoV2 resistance */
-                    resistance?: (LiftLog.Ui.Models.IDecimalValue|null);
+                    /** RecordedExerciseDaoV2 deprecatedResistance */
+                    deprecatedResistance?: (LiftLog.Ui.Models.IDecimalValue|null);
 
-                    /** RecordedExerciseDaoV2 incline */
-                    incline?: (LiftLog.Ui.Models.IDecimalValue|null);
+                    /** RecordedExerciseDaoV2 deprecatedIncline */
+                    deprecatedIncline?: (LiftLog.Ui.Models.IDecimalValue|null);
 
                     /** RecordedExerciseDaoV2 cardioSets */
                     cardioSets?: (LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao[]|null);
@@ -303,23 +303,23 @@ export namespace LiftLog {
                     /** RecordedExerciseDaoV2 potentialSets. */
                     public potentialSets: LiftLog.Ui.Models.SessionHistoryDao.IPotentialSetDaoV2[];
 
-                    /** RecordedExerciseDaoV2 completionDateTime. */
-                    public completionDateTime?: (LiftLog.Ui.Models.IDateTimeDao|null);
+                    /** RecordedExerciseDaoV2 deprecatedCompletionDateTime. */
+                    public deprecatedCompletionDateTime?: (LiftLog.Ui.Models.IDateTimeDao|null);
 
-                    /** RecordedExerciseDaoV2 duration. */
-                    public duration?: (google.protobuf.IDuration|null);
+                    /** RecordedExerciseDaoV2 deprecatedDuration. */
+                    public deprecatedDuration?: (google.protobuf.IDuration|null);
 
-                    /** RecordedExerciseDaoV2 distanceValue. */
-                    public distanceValue?: (LiftLog.Ui.Models.IDecimalValue|null);
+                    /** RecordedExerciseDaoV2 deprecatedDistanceValue. */
+                    public deprecatedDistanceValue?: (LiftLog.Ui.Models.IDecimalValue|null);
 
-                    /** RecordedExerciseDaoV2 distanceUnit. */
-                    public distanceUnit?: (google.protobuf.IStringValue|null);
+                    /** RecordedExerciseDaoV2 deprecatedDistanceUnit. */
+                    public deprecatedDistanceUnit?: (google.protobuf.IStringValue|null);
 
-                    /** RecordedExerciseDaoV2 resistance. */
-                    public resistance?: (LiftLog.Ui.Models.IDecimalValue|null);
+                    /** RecordedExerciseDaoV2 deprecatedResistance. */
+                    public deprecatedResistance?: (LiftLog.Ui.Models.IDecimalValue|null);
 
-                    /** RecordedExerciseDaoV2 incline. */
-                    public incline?: (LiftLog.Ui.Models.IDecimalValue|null);
+                    /** RecordedExerciseDaoV2 deprecatedIncline. */
+                    public deprecatedIncline?: (LiftLog.Ui.Models.IDecimalValue|null);
 
                     /** RecordedExerciseDaoV2 cardioSets. */
                     public cardioSets: LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao[];
@@ -327,23 +327,23 @@ export namespace LiftLog {
                     /** RecordedExerciseDaoV2 _notes. */
                     public _notes?: "notes";
 
-                    /** RecordedExerciseDaoV2 _completionDateTime. */
-                    public _completionDateTime?: "completionDateTime";
+                    /** RecordedExerciseDaoV2 _deprecatedCompletionDateTime. */
+                    public _deprecatedCompletionDateTime?: "deprecatedCompletionDateTime";
 
-                    /** RecordedExerciseDaoV2 _duration. */
-                    public _duration?: "duration";
+                    /** RecordedExerciseDaoV2 _deprecatedDuration. */
+                    public _deprecatedDuration?: "deprecatedDuration";
 
-                    /** RecordedExerciseDaoV2 _distanceValue. */
-                    public _distanceValue?: "distanceValue";
+                    /** RecordedExerciseDaoV2 _deprecatedDistanceValue. */
+                    public _deprecatedDistanceValue?: "deprecatedDistanceValue";
 
-                    /** RecordedExerciseDaoV2 _distanceUnit. */
-                    public _distanceUnit?: "distanceUnit";
+                    /** RecordedExerciseDaoV2 _deprecatedDistanceUnit. */
+                    public _deprecatedDistanceUnit?: "deprecatedDistanceUnit";
 
-                    /** RecordedExerciseDaoV2 _resistance. */
-                    public _resistance?: "resistance";
+                    /** RecordedExerciseDaoV2 _deprecatedResistance. */
+                    public _deprecatedResistance?: "deprecatedResistance";
 
-                    /** RecordedExerciseDaoV2 _incline. */
-                    public _incline?: "incline";
+                    /** RecordedExerciseDaoV2 _deprecatedIncline. */
+                    public _deprecatedIncline?: "deprecatedIncline";
 
                     /**
                      * Creates a new RecordedExerciseDaoV2 instance using the specified properties.
@@ -1171,20 +1171,20 @@ export namespace LiftLog {
                     /** ExerciseBlueprintDaoV2 supersetWithNext */
                     supersetWithNext?: (boolean|null);
 
-                    /** ExerciseBlueprintDaoV2 cardioTarget */
-                    cardioTarget?: (LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null);
+                    /** ExerciseBlueprintDaoV2 deprecatedCardioTarget */
+                    deprecatedCardioTarget?: (LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null);
 
-                    /** ExerciseBlueprintDaoV2 trackDuration */
-                    trackDuration?: (boolean|null);
+                    /** ExerciseBlueprintDaoV2 deprecatedTrackDuration */
+                    deprecatedTrackDuration?: (boolean|null);
 
-                    /** ExerciseBlueprintDaoV2 trackDistance */
-                    trackDistance?: (boolean|null);
+                    /** ExerciseBlueprintDaoV2 deprecatedTrackDistance */
+                    deprecatedTrackDistance?: (boolean|null);
 
-                    /** ExerciseBlueprintDaoV2 trackResistance */
-                    trackResistance?: (boolean|null);
+                    /** ExerciseBlueprintDaoV2 deprecatedTrackResistance */
+                    deprecatedTrackResistance?: (boolean|null);
 
-                    /** ExerciseBlueprintDaoV2 trackIncline */
-                    trackIncline?: (boolean|null);
+                    /** ExerciseBlueprintDaoV2 deprecatedTrackIncline */
+                    deprecatedTrackIncline?: (boolean|null);
 
                     /** ExerciseBlueprintDaoV2 cardioSets */
                     cardioSets?: (LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao[]|null);
@@ -1226,20 +1226,20 @@ export namespace LiftLog {
                     /** ExerciseBlueprintDaoV2 supersetWithNext. */
                     public supersetWithNext: boolean;
 
-                    /** ExerciseBlueprintDaoV2 cardioTarget. */
-                    public cardioTarget?: (LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null);
+                    /** ExerciseBlueprintDaoV2 deprecatedCardioTarget. */
+                    public deprecatedCardioTarget?: (LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget|null);
 
-                    /** ExerciseBlueprintDaoV2 trackDuration. */
-                    public trackDuration: boolean;
+                    /** ExerciseBlueprintDaoV2 deprecatedTrackDuration. */
+                    public deprecatedTrackDuration: boolean;
 
-                    /** ExerciseBlueprintDaoV2 trackDistance. */
-                    public trackDistance: boolean;
+                    /** ExerciseBlueprintDaoV2 deprecatedTrackDistance. */
+                    public deprecatedTrackDistance: boolean;
 
-                    /** ExerciseBlueprintDaoV2 trackResistance. */
-                    public trackResistance: boolean;
+                    /** ExerciseBlueprintDaoV2 deprecatedTrackResistance. */
+                    public deprecatedTrackResistance: boolean;
 
-                    /** ExerciseBlueprintDaoV2 trackIncline. */
-                    public trackIncline: boolean;
+                    /** ExerciseBlueprintDaoV2 deprecatedTrackIncline. */
+                    public deprecatedTrackIncline: boolean;
 
                     /** ExerciseBlueprintDaoV2 cardioSets. */
                     public cardioSets: LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao[];
@@ -5222,6 +5222,12 @@ export namespace LiftLog {
 
                     /** CardioTimerInfo currentBlockStartTime */
                     currentBlockStartTime?: (google.protobuf.ITimestamp|null);
+
+                    /** CardioTimerInfo exerciseIndex */
+                    exerciseIndex?: (number|null);
+
+                    /** CardioTimerInfo setIndex */
+                    setIndex?: (number|null);
                 }
 
                 /** Represents a CardioTimerInfo. */
@@ -5238,6 +5244,12 @@ export namespace LiftLog {
 
                     /** CardioTimerInfo currentBlockStartTime. */
                     public currentBlockStartTime?: (google.protobuf.ITimestamp|null);
+
+                    /** CardioTimerInfo exerciseIndex. */
+                    public exerciseIndex: number;
+
+                    /** CardioTimerInfo setIndex. */
+                    public setIndex: number;
 
                     /** CardioTimerInfo _currentBlockStartTime. */
                     public _currentBlockStartTime?: "currentBlockStartTime";

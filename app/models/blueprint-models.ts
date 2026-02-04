@@ -256,8 +256,14 @@ export class CardioExerciseSetBlueprint {
   }
 
   equals(
-    other: CardioExerciseSetBlueprint | CardioExerciseSetBlueprintPOJO,
+    other:
+      | CardioExerciseSetBlueprint
+      | CardioExerciseSetBlueprintPOJO
+      | undefined,
   ): boolean {
+    if (!other) {
+      return false;
+    }
     return (
       this.trackDistance === other.trackDistance &&
       this.trackDuration === other.trackDuration &&
@@ -336,6 +342,7 @@ export class CardioExerciseBlueprint {
     }
     return (
       this.name === other.name &&
+      this.sets.length === other.sets.length &&
       this.sets.every((set, index) => set.equals(other.sets[index])) &&
       this.notes === other.notes &&
       this.link === other.link

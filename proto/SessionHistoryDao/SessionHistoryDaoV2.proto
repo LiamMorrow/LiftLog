@@ -31,13 +31,13 @@ message RecordedExerciseDaoV2 {
   repeated PotentialSetDaoV2 potential_sets = 3;
   reserved 5; // Per set weight
 
-  // Cardio
-  optional LiftLog.Ui.Models.DateTimeDao completion_date_time = 8;
-  optional google.protobuf.Duration duration = 9;
-  optional LiftLog.Ui.Models.DecimalValue distance_value = 10;
-  optional google.protobuf.StringValue distance_unit = 14;
-  optional LiftLog.Ui.Models.DecimalValue resistance = 11;
-  optional LiftLog.Ui.Models.DecimalValue incline = 12;
+  // Cardio -- deprecated fields should be stored in the first set on save. If there are ANY sets in the sets, then we ignore these fields
+  optional LiftLog.Ui.Models.DateTimeDao deprecated_completion_date_time = 8;
+  optional google.protobuf.Duration deprecated_duration = 9;
+  optional LiftLog.Ui.Models.DecimalValue deprecated_distance_value = 10;
+  optional google.protobuf.StringValue deprecated_distance_unit = 14;
+  optional LiftLog.Ui.Models.DecimalValue deprecated_resistance = 11;
+  optional LiftLog.Ui.Models.DecimalValue deprecated_incline = 12;
   repeated RecordedCardioExerciseSetDao cardio_sets = 13;
 }
 

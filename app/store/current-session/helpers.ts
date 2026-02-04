@@ -34,20 +34,36 @@ export function getCycledRepCount(
 export function getCardioTimerInfo(
   session: Session,
 ): CardioTimerInfo | undefined {
-  const exerciseWithRunningTimer: RecordedCardioExercise =
-    session.recordedExercises.find(
-      (x) =>
-        x instanceof RecordedCardioExercise &&
-        x.sets.find((s) => s.currentBlockStartTime),
-    ) as RecordedCardioExercise;
-  return exerciseWithRunningTimer
-    ? {
-        currentBlockStartTime: exerciseWithRunningTimer.sets
-          .find((s) => s.currentBlockStartTime)
-          ?.currentBlockStartTime?.toInstant(),
-        currentDuration: exerciseWithRunningTimer.duration ?? Duration.ZERO,
-      }
-    : undefined;
+  const exerciseIndex = session.recordedExercises.findIndex(
+    (x) =>
+      x instanceof RecordedCardioExercise &&
+      x.sets.some((s) => s.currentBlockStartTime),
+  );
+
+  if (exerciseIndex === -1) {
+    return undefined;
+  }
+
+  const exerciseWithRunningTimer = session.recordedExercises[
+    exerciseIndex
+  ] as RecordedCardioExercise;
+  const setIndex = exerciseWithRunningTimer.sets.findIndex(
+    (s) => s.currentBlockStartTime,
+  );
+
+  if (setIndex === -1) {
+    return undefined;
+  }
+
+  return {
+    currentBlockStartTime:
+      exerciseWithRunningTimer.sets[
+        setIndex
+      ].currentBlockStartTime?.toInstant(),
+    currentDuration: exerciseWithRunningTimer.duration ?? Duration.ZERO,
+    exerciseIndex,
+    setIndex,
+  };
 }
 
 export function getTimerInfo(

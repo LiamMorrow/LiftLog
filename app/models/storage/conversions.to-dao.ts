@@ -135,14 +135,13 @@ export function toExerciseBlueprintDao(
         }
       : (() => {
           const sets = model.sets.map(toCardioSetBlueprintDao);
-          const firstSet = sets.shift()!;
           return {
             type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO,
-            cardioTarget: firstSet.cardioTarget!,
-            trackDuration: firstSet.trackDuration!,
-            trackDistance: firstSet.trackDistance!,
-            trackResistance: firstSet.trackResistance!,
-            trackIncline: firstSet.trackIncline!,
+            deprecatedCardioTarget: null,
+            deprecatedTrackDuration: null,
+            deprecatedTrackDistance: null,
+            deprecatedTrackResistance: null,
+            deprecatedTrackIncline: null,
             cardioSets: sets,
           };
         })()),
@@ -302,20 +301,10 @@ export function toRecordedExerciseDao(
           type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.WEIGHTED,
           potentialSets: model.potentialSets.map(toPotentialSetDao),
         }
-      : (() => {
-          const sets = model.sets.map(toRecordedCardioSetDao);
-          const firstSet = sets.shift()!;
-          return {
-            type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO,
-            completionDateTime: firstSet.completionDateTime!,
-            duration: firstSet.duration!,
-            distanceValue: firstSet.distanceValue!,
-            distanceUnit: firstSet.distanceUnit!,
-            resistance: firstSet.resistance!,
-            incline: firstSet.incline!,
-            cardioSets: sets,
-          };
-        })()),
+      : {
+          type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO,
+          cardioSets: model.sets.map(toRecordedCardioSetDao),
+        }),
   });
 }
 function toRecordedCardioSetDao(
