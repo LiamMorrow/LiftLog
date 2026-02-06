@@ -213,6 +213,8 @@
   "plan.add_to.button": "Adicionar ao plano",
   "plan.choose.button": "Escolher plano",
   "plan.deleted.message": "Plano apagado",
+  "plan.diff.dialog.title": "Atualizar plano",
+  "plan.diff.section.added.title": "Adicionar exercício",
   "plan.manage.subtitle": "Monte seus planos de treino",
   "plan.manage.title": "Gerenciar planos",
   "plan.name.label": "Nome do plano",
