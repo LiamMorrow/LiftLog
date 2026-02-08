@@ -137,12 +137,13 @@ export function toExerciseBlueprintDao(
           const sets = model.sets.map(toCardioSetBlueprintDao);
           return {
             type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO,
+            cardioSets: sets,
+
             deprecatedCardioTarget: null,
             deprecatedTrackDuration: null,
             deprecatedTrackDistance: null,
             deprecatedTrackResistance: null,
             deprecatedTrackIncline: null,
-            cardioSets: sets,
           };
         })()),
   });
@@ -156,6 +157,8 @@ function toCardioSetBlueprintDao(
     trackDistance: set.trackDistance,
     trackResistance: set.trackResistance,
     trackIncline: set.trackIncline,
+    trackWeight: set.trackWeight,
+    trackSteps: set.trackSteps,
   };
 }
 
@@ -318,6 +321,8 @@ function toRecordedCardioSetDao(
     duration: toDurationDao(set.duration),
     incline: set.incline ? toDecimalDao(set.incline) : null,
     resistance: set.resistance ? toDecimalDao(set.resistance) : null,
+    weight: set.weight ? toWeightDao(set.weight) : null,
+    steps: set.steps !== undefined ? { value: set.steps } : null,
   };
 }
 

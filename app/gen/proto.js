@@ -1362,6 +1362,8 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @property {google.protobuf.IStringValue|null} [distanceUnit] RecordedCardioExerciseSetDao distanceUnit
                      * @property {LiftLog.Ui.Models.IDecimalValue|null} [resistance] RecordedCardioExerciseSetDao resistance
                      * @property {LiftLog.Ui.Models.IDecimalValue|null} [incline] RecordedCardioExerciseSetDao incline
+                     * @property {LiftLog.Ui.Models.IWeight|null} [weight] RecordedCardioExerciseSetDao weight
+                     * @property {google.protobuf.IInt32Value|null} [steps] RecordedCardioExerciseSetDao steps
                      */
 
                     /**
@@ -1435,6 +1437,22 @@ export const LiftLog = $root.LiftLog = (() => {
                      */
                     RecordedCardioExerciseSetDao.prototype.incline = null;
 
+                    /**
+                     * RecordedCardioExerciseSetDao weight.
+                     * @member {LiftLog.Ui.Models.IWeight|null|undefined} weight
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @instance
+                     */
+                    RecordedCardioExerciseSetDao.prototype.weight = null;
+
+                    /**
+                     * RecordedCardioExerciseSetDao steps.
+                     * @member {google.protobuf.IInt32Value|null|undefined} steps
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @instance
+                     */
+                    RecordedCardioExerciseSetDao.prototype.steps = null;
+
                     // OneOf field names bound to virtual getters and setters
                     let $oneOfFields;
 
@@ -1505,6 +1523,28 @@ export const LiftLog = $root.LiftLog = (() => {
                     });
 
                     /**
+                     * RecordedCardioExerciseSetDao _weight.
+                     * @member {"weight"|undefined} _weight
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @instance
+                     */
+                    Object.defineProperty(RecordedCardioExerciseSetDao.prototype, "_weight", {
+                        get: $util.oneOfGetter($oneOfFields = ["weight"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
+                     * RecordedCardioExerciseSetDao _steps.
+                     * @member {"steps"|undefined} _steps
+                     * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
+                     * @instance
+                     */
+                    Object.defineProperty(RecordedCardioExerciseSetDao.prototype, "_steps", {
+                        get: $util.oneOfGetter($oneOfFields = ["steps"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    /**
                      * Creates a new RecordedCardioExerciseSetDao instance using the specified properties.
                      * @function create
                      * @memberof LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao
@@ -1542,6 +1582,10 @@ export const LiftLog = $root.LiftLog = (() => {
                             $root.LiftLog.Ui.Models.DecimalValue.encode(message.resistance, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
                         if (message.incline != null && Object.hasOwnProperty.call(message, "incline"))
                             $root.LiftLog.Ui.Models.DecimalValue.encode(message.incline, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                        if (message.weight != null && Object.hasOwnProperty.call(message, "weight"))
+                            $root.LiftLog.Ui.Models.Weight.encode(message.weight, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
+                        if (message.steps != null && Object.hasOwnProperty.call(message, "steps"))
+                            $root.google.protobuf.Int32Value.encode(message.steps, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
                         return writer;
                     };
 
@@ -1604,6 +1648,14 @@ export const LiftLog = $root.LiftLog = (() => {
                                 }
                             case 7: {
                                     message.incline = $root.LiftLog.Ui.Models.DecimalValue.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 8: {
+                                    message.weight = $root.LiftLog.Ui.Models.Weight.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 9: {
+                                    message.steps = $root.google.protobuf.Int32Value.decode(reader, reader.uint32());
                                     break;
                                 }
                             default:
@@ -1695,6 +1747,22 @@ export const LiftLog = $root.LiftLog = (() => {
                                     return "incline." + error;
                             }
                         }
+                        if (message.weight != null && message.hasOwnProperty("weight")) {
+                            properties._weight = 1;
+                            {
+                                let error = $root.LiftLog.Ui.Models.Weight.verify(message.weight);
+                                if (error)
+                                    return "weight." + error;
+                            }
+                        }
+                        if (message.steps != null && message.hasOwnProperty("steps")) {
+                            properties._steps = 1;
+                            {
+                                let error = $root.google.protobuf.Int32Value.verify(message.steps);
+                                if (error)
+                                    return "steps." + error;
+                            }
+                        }
                         return null;
                     };
 
@@ -1745,6 +1813,16 @@ export const LiftLog = $root.LiftLog = (() => {
                                 throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.incline: object expected");
                             message.incline = $root.LiftLog.Ui.Models.DecimalValue.fromObject(object.incline);
                         }
+                        if (object.weight != null) {
+                            if (typeof object.weight !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.weight: object expected");
+                            message.weight = $root.LiftLog.Ui.Models.Weight.fromObject(object.weight);
+                        }
+                        if (object.steps != null) {
+                            if (typeof object.steps !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.SessionHistoryDao.RecordedCardioExerciseSetDao.steps: object expected");
+                            message.steps = $root.google.protobuf.Int32Value.fromObject(object.steps);
+                        }
                         return message;
                     };
 
@@ -1794,6 +1872,16 @@ export const LiftLog = $root.LiftLog = (() => {
                             object.incline = $root.LiftLog.Ui.Models.DecimalValue.toObject(message.incline, options);
                             if (options.oneofs)
                                 object._incline = "incline";
+                        }
+                        if (message.weight != null && message.hasOwnProperty("weight")) {
+                            object.weight = $root.LiftLog.Ui.Models.Weight.toObject(message.weight, options);
+                            if (options.oneofs)
+                                object._weight = "weight";
+                        }
+                        if (message.steps != null && message.hasOwnProperty("steps")) {
+                            object.steps = $root.google.protobuf.Int32Value.toObject(message.steps, options);
+                            if (options.oneofs)
+                                object._steps = "steps";
                         }
                         return object;
                     };
@@ -3884,6 +3972,8 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @property {boolean|null} [trackDistance] CardioExerciseSetBlueprintDao trackDistance
                      * @property {boolean|null} [trackResistance] CardioExerciseSetBlueprintDao trackResistance
                      * @property {boolean|null} [trackIncline] CardioExerciseSetBlueprintDao trackIncline
+                     * @property {boolean|null} [trackWeight] CardioExerciseSetBlueprintDao trackWeight
+                     * @property {boolean|null} [trackSteps] CardioExerciseSetBlueprintDao trackSteps
                      */
 
                     /**
@@ -3942,6 +4032,22 @@ export const LiftLog = $root.LiftLog = (() => {
                     CardioExerciseSetBlueprintDao.prototype.trackIncline = false;
 
                     /**
+                     * CardioExerciseSetBlueprintDao trackWeight.
+                     * @member {boolean} trackWeight
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao
+                     * @instance
+                     */
+                    CardioExerciseSetBlueprintDao.prototype.trackWeight = false;
+
+                    /**
+                     * CardioExerciseSetBlueprintDao trackSteps.
+                     * @member {boolean} trackSteps
+                     * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao
+                     * @instance
+                     */
+                    CardioExerciseSetBlueprintDao.prototype.trackSteps = false;
+
+                    /**
                      * Creates a new CardioExerciseSetBlueprintDao instance using the specified properties.
                      * @function create
                      * @memberof LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao
@@ -3975,6 +4081,10 @@ export const LiftLog = $root.LiftLog = (() => {
                             writer.uint32(/* id 4, wireType 0 =*/32).bool(message.trackResistance);
                         if (message.trackIncline != null && Object.hasOwnProperty.call(message, "trackIncline"))
                             writer.uint32(/* id 5, wireType 0 =*/40).bool(message.trackIncline);
+                        if (message.trackWeight != null && Object.hasOwnProperty.call(message, "trackWeight"))
+                            writer.uint32(/* id 6, wireType 0 =*/48).bool(message.trackWeight);
+                        if (message.trackSteps != null && Object.hasOwnProperty.call(message, "trackSteps"))
+                            writer.uint32(/* id 7, wireType 0 =*/56).bool(message.trackSteps);
                         return writer;
                     };
 
@@ -4031,6 +4141,14 @@ export const LiftLog = $root.LiftLog = (() => {
                                     message.trackIncline = reader.bool();
                                     break;
                                 }
+                            case 6: {
+                                    message.trackWeight = reader.bool();
+                                    break;
+                                }
+                            case 7: {
+                                    message.trackSteps = reader.bool();
+                                    break;
+                                }
                             default:
                                 reader.skipType(tag & 7);
                                 break;
@@ -4083,6 +4201,12 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (message.trackIncline != null && message.hasOwnProperty("trackIncline"))
                             if (typeof message.trackIncline !== "boolean")
                                 return "trackIncline: boolean expected";
+                        if (message.trackWeight != null && message.hasOwnProperty("trackWeight"))
+                            if (typeof message.trackWeight !== "boolean")
+                                return "trackWeight: boolean expected";
+                        if (message.trackSteps != null && message.hasOwnProperty("trackSteps"))
+                            if (typeof message.trackSteps !== "boolean")
+                                return "trackSteps: boolean expected";
                         return null;
                     };
 
@@ -4111,6 +4235,10 @@ export const LiftLog = $root.LiftLog = (() => {
                             message.trackResistance = Boolean(object.trackResistance);
                         if (object.trackIncline != null)
                             message.trackIncline = Boolean(object.trackIncline);
+                        if (object.trackWeight != null)
+                            message.trackWeight = Boolean(object.trackWeight);
+                        if (object.trackSteps != null)
+                            message.trackSteps = Boolean(object.trackSteps);
                         return message;
                     };
 
@@ -4133,6 +4261,8 @@ export const LiftLog = $root.LiftLog = (() => {
                             object.trackDistance = false;
                             object.trackResistance = false;
                             object.trackIncline = false;
+                            object.trackWeight = false;
+                            object.trackSteps = false;
                         }
                         if (message.cardioTarget != null && message.hasOwnProperty("cardioTarget"))
                             object.cardioTarget = $root.LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget.toObject(message.cardioTarget, options);
@@ -4144,6 +4274,10 @@ export const LiftLog = $root.LiftLog = (() => {
                             object.trackResistance = message.trackResistance;
                         if (message.trackIncline != null && message.hasOwnProperty("trackIncline"))
                             object.trackIncline = message.trackIncline;
+                        if (message.trackWeight != null && message.hasOwnProperty("trackWeight"))
+                            object.trackWeight = message.trackWeight;
+                        if (message.trackSteps != null && message.hasOwnProperty("trackSteps"))
+                            object.trackSteps = message.trackSteps;
                         return object;
                     };
 

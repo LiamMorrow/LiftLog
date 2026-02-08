@@ -239,6 +239,8 @@ function fromCardioSetDao(
     completionDateTime: fromDateTimeDao(dao.completionDateTime),
     incline: fromDecimalDao(dao.incline),
     resistance: fromDecimalDao(dao.resistance),
+    weight: dao.weight ? fromWeightDao(dao.weight) : undefined,
+    steps: dao.steps?.value ?? undefined,
     currentBlockStartTime: undefined,
   });
 }
@@ -261,6 +263,8 @@ function getRecordedCardioSetFromDeprecatedFields(
     completionDateTime: fromDateTimeDao(dao.deprecatedCompletionDateTime),
     incline: fromDecimalDao(dao.deprecatedIncline),
     resistance: fromDecimalDao(dao.deprecatedResistance),
+    weight: undefined,
+    steps: undefined,
     currentBlockStartTime: undefined,
   });
 }
@@ -378,6 +382,8 @@ function fromCardioExerciseSetBlueprint(
     trackDistance: dao.trackDistance ?? false,
     trackResistance: dao.trackResistance ?? false,
     trackIncline: dao.trackIncline ?? false,
+    trackWeight: dao.trackWeight ?? false,
+    trackSteps: dao.trackSteps ?? false,
   });
 }
 
@@ -390,6 +396,8 @@ function getCardioBlueprintSetFromDeprecatedFields(
     trackDistance: dao.deprecatedTrackDistance ?? false,
     trackResistance: dao.deprecatedTrackResistance ?? false,
     trackIncline: dao.deprecatedTrackIncline ?? false,
+    trackWeight: false,
+    trackSteps: false,
   });
 }
 
@@ -400,14 +408,14 @@ function fromCardioTargetDao(
     throw new Error('Expected a non null cardio target');
   }
   return {
-    type: dao.type as 'distance' | 'time',
-    value:
-      dao.type === 'distance'
-        ? {
-            value: fromDecimalDao(dao.distanceValue) ?? BigNumber(0),
-            unit: dao.distanceUnit ?? 'metre',
-          }
-        : fromDurationDao(dao.timeValue)!,
+    type: dao.type as CardioTarget['type'],
+    value: match(dao.type as CardioTarget['type'])
+      .with('distance', () => ({
+        value: fromDecimalDao(dao.distanceValue) ?? BigNumber(0),
+        unit: dao.distanceUnit ?? 'metre',
+      }))
+      .with('time', () => fromDurationDao(dao.timeValue))
+      .exhaustive(),
   } as CardioTarget;
 }
 
@@ -556,7 +564,7 @@ function fromFollowRequestDao(
   }).toPOJO();
 }
 
-export function fromWeightDao(value: LiftLog.Ui.Models.Weight): Weight {
+export function fromWeightDao(value: LiftLog.Ui.Models.IWeight): Weight {
   return new Weight(
     fromDecimalDao(value.value!),
     fromWeightUnitDao(value.unit),

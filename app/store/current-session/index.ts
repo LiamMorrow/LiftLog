@@ -438,6 +438,38 @@ const currentSessionSlice = createSlice({
         exercise.sets[action.setIndex].resistance = action.resistance;
       },
     ),
+    updateWeightForCardioExercise: targetedSessionAction(
+      (
+        session,
+        action: {
+          weight: Weight | undefined;
+          exerciseIndex: number;
+          setIndex: number;
+        },
+      ) => {
+        const exercise = session.recordedExercises[action.exerciseIndex];
+        if (exercise.type !== 'RecordedCardioExercise') {
+          return;
+        }
+        exercise.sets[action.setIndex].weight = action.weight;
+      },
+    ),
+    updateStepsForCardioExercise: targetedSessionAction(
+      (
+        session,
+        action: {
+          steps: number | undefined;
+          exerciseIndex: number;
+          setIndex: number;
+        },
+      ) => {
+        const exercise = session.recordedExercises[action.exerciseIndex];
+        if (exercise.type !== 'RecordedCardioExercise') {
+          return;
+        }
+        exercise.sets[action.setIndex].steps = action.steps;
+      },
+    ),
 
     updateInclineForCardioExercise: targetedSessionAction(
       (
@@ -572,6 +604,8 @@ export const {
   updateCurrentBlockStartTimeForCardioExercise,
   updateInclineForCardioExercise,
   updateResistanceForCardioExercise,
+  updateWeightForCardioExercise,
+  updateStepsForCardioExercise,
   setCompletionTimeForCardioExercise,
 } = currentSessionSlice.actions;
 

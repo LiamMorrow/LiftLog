@@ -141,7 +141,7 @@ export class Session {
     return (
       this.id === other.id &&
       this.date.equals(other.date) &&
-      WeightEqual(this.bodyweight, other.bodyweight) &&
+      weightEqual(this.bodyweight, other.bodyweight) &&
       this.blueprint.equals(other.blueprint) &&
       this.recordedExercises.length === other.recordedExercises.length &&
       this.recordedExercises.every((exercise, index) =>
@@ -385,6 +385,9 @@ export interface RecordedCardioExerciseSetPOJO {
   readonly distance: Distance | undefined;
   readonly resistance: BigNumber | undefined;
   readonly incline: BigNumber | undefined;
+  readonly weight: Weight | undefined;
+  readonly steps: number | undefined;
+
   readonly currentBlockStartTime: OffsetDateTime | undefined;
 }
 
@@ -396,6 +399,8 @@ export class RecordedCardioExerciseSet {
     readonly distance: Distance | undefined,
     readonly resistance: BigNumber | undefined,
     readonly incline: BigNumber | undefined,
+    readonly weight: Weight | undefined,
+    readonly steps: number | undefined,
     /**
      * Describes the start time of a currently running timer. This is not persisted
      */
@@ -406,6 +411,8 @@ export class RecordedCardioExerciseSet {
   ): RecordedCardioExerciseSet {
     return new RecordedCardioExerciseSet(
       blueprint,
+      undefined,
+      undefined,
       undefined,
       undefined,
       undefined,
@@ -427,6 +434,8 @@ export class RecordedCardioExerciseSet {
       pojo.distance,
       pojo.resistance,
       pojo.incline,
+      pojo.weight,
+      pojo.steps,
       pojo.currentBlockStartTime,
     );
   }
@@ -439,7 +448,9 @@ export class RecordedCardioExerciseSet {
       (this.blueprint.trackDistance || this.blueprint.target.type === 'distance'
         ? !!this.distance
         : true) &&
+      (this.blueprint.trackSteps ? this.steps !== undefined : true) &&
       (this.blueprint.trackResistance ? !!this.resistance : true) &&
+      (this.blueprint.trackWeight ? !!this.weight : true) &&
       (this.blueprint.trackIncline ? !!this.incline : true) &&
       !this.currentBlockStartTime
     );
@@ -454,6 +465,8 @@ export class RecordedCardioExerciseSet {
       distance: this.distance,
       resistance: this.resistance,
       incline: this.incline,
+      weight: this.weight,
+      steps: this.steps,
       currentBlockStartTime: this.currentBlockStartTime,
     };
   }
@@ -466,6 +479,8 @@ export class RecordedCardioExerciseSet {
       other.distance ?? this.distance,
       other.resistance ?? this.resistance,
       other.incline ?? this.incline,
+      other.weight ?? this.weight,
+      other.steps ?? this.steps,
       other.currentBlockStartTime ?? this.currentBlockStartTime,
     );
   }
@@ -488,7 +503,9 @@ export class RecordedCardioExerciseSet {
       ((this.incline &&
         other.incline &&
         this.incline.isEqualTo(other.incline)) ||
-        this.incline === other.incline)
+        this.incline === other.incline) &&
+      weightEqual(this.weight, other.weight) &&
+      this.steps === other.steps
     );
   }
 }
@@ -883,7 +900,7 @@ export class PotentialSet {
   }
 }
 
-function WeightEqual(a: Weight | undefined, b: Weight | undefined) {
+function weightEqual(a: Weight | undefined, b: Weight | undefined) {
   if (a === undefined || b === undefined) {
     return a === b;
   }

@@ -173,7 +173,7 @@ export interface ExerciseTrackingChange extends BaseChange {
   exerciseName: string;
   exerciseIndex: number;
   setIndex: number;
-  field: 'trackDuration' | 'trackDistance' | 'trackResistance' | 'trackIncline';
+  field: Extract<keyof CardioExerciseSetBlueprint, `track${string}`>;
   oldValue: boolean;
   newValue: boolean;
 }
@@ -543,6 +543,8 @@ function diffCardioSets(
     'trackDistance',
     'trackResistance',
     'trackIncline',
+    'trackWeight',
+    'trackSteps',
   ] as const;
 
   for (const field of trackingFields) {

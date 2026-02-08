@@ -918,6 +918,8 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
                 trackDistance: true,
                 trackResistance: false,
                 trackIncline: false,
+                trackWeight: false,
+                trackSteps: false,
                 target: {
                   type: 'distance',
                   value: { unit: 'metre', value: BigNumber(1200) },
@@ -937,6 +939,8 @@ export const BuiltInPrograms: Record<string, ProgramBlueprint> = {
                 trackDistance: true,
                 trackResistance: false,
                 trackIncline: false,
+                trackWeight: false,
+                trackSteps: false,
                 target: {
                   type: 'time',
                   value: Duration.ofMinutes(30),

@@ -202,6 +202,8 @@ function parseAiExercise(
       trackIncline: set.trackIncline,
       trackResistance: set.trackResistance,
       trackDuration: set.trackDuration,
+      trackWeight: set.trackWeight,
+      trackSteps: set.trackSteps,
     })),
   };
 }

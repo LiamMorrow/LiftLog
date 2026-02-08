@@ -198,7 +198,21 @@ export type Distance = {
   unit: DistanceUnit;
 };
 
-export type CardioTarget = TimeCardioTarget | DistanceCardioTarget;
+export type CardioTarget =
+  | TimeCardioTarget
+  | DistanceCardioTarget
+
+export function matchCardioTarget<T>(
+  value: CardioTarget,
+  matcher: {
+    [k in CardioTarget['type']]: (val: Extract<CardioTarget, { type: k }>) => T;
+  },
+) {
+  return match(value)
+    .with({ type: 'time' }, matcher.time)
+    .with({ type: 'distance' }, matcher.distance)
+    .exhaustive();
+}
 
 export interface CardioExerciseSetBlueprintPOJO {
   type: 'CardioExerciseSetBlueprint';
@@ -208,6 +222,8 @@ export interface CardioExerciseSetBlueprintPOJO {
   readonly trackDistance: boolean;
   readonly trackResistance: boolean;
   readonly trackIncline: boolean;
+  readonly trackWeight: boolean;
+  readonly trackSteps: boolean;
 }
 
 export class CardioExerciseSetBlueprint {
@@ -217,6 +233,8 @@ export class CardioExerciseSetBlueprint {
     readonly trackDistance: boolean,
     readonly trackResistance: boolean,
     readonly trackIncline: boolean,
+    readonly trackWeight: boolean,
+    readonly trackSteps: boolean,
   ) {}
   static empty() {
     return new CardioExerciseSetBlueprint(
@@ -226,6 +244,8 @@ export class CardioExerciseSetBlueprint {
       },
       false,
       true,
+      false,
+      false,
       false,
       false,
     );
@@ -241,6 +261,8 @@ export class CardioExerciseSetBlueprint {
       pojo.trackDistance,
       pojo.trackResistance,
       pojo.trackIncline,
+      pojo.trackWeight,
+      pojo.trackSteps,
     );
   }
 
@@ -252,6 +274,8 @@ export class CardioExerciseSetBlueprint {
       trackDuration: this.trackDuration,
       trackIncline: this.trackIncline,
       trackResistance: this.trackResistance,
+      trackWeight: this.trackWeight,
+      trackSteps: this.trackSteps,
     };
   }
 
@@ -284,6 +308,8 @@ export class CardioExerciseSetBlueprint {
       other.trackDistance ?? this.trackDistance,
       other.trackResistance ?? this.trackResistance,
       other.trackIncline ?? this.trackIncline,
+      other.trackWeight ?? this.trackWeight,
+      other.trackSteps ?? this.trackSteps,
     );
   }
 }

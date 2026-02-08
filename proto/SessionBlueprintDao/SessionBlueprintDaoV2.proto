@@ -56,6 +56,8 @@ message CardioExerciseSetBlueprintDao {
   bool track_distance = 3;
   bool track_resistance = 4;
   bool track_incline = 5;
+  bool track_weight = 6;
+  bool track_steps = 7;
 }
 
 message RestDaoV2 {

@@ -134,6 +134,8 @@ const CardioExerciseSetBlueprintGenerator =
     trackDistance: fc.boolean(),
     trackResistance: fc.boolean(),
     trackIncline: fc.boolean(),
+    trackWeight: fc.boolean(),
+    trackSteps: fc.boolean(),
   });
 
 export const CardioExerciseBlueprintGenerator = fc
@@ -210,6 +212,8 @@ const RecordedCardioSetGenerator = fc.record<RecordedCardioExerciseSetPOJO>({
   distance: optional(DistanceGenerator),
   resistance: optional(BigNumberGenerator),
   completionDateTime: optional(OffsetDateTimeGenerator),
+  weight: optional(WeightGenerator),
+  steps: optional(fc.integer()),
   currentBlockStartTime: fc.constant(undefined),
 });
 

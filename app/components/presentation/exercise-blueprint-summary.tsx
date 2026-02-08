@@ -14,10 +14,10 @@ import {
   CardioExerciseBlueprint,
   CardioTarget,
   ExerciseBlueprint,
+  matchCardioTarget,
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
 import { match, P } from 'ts-pattern';
-import { assertUnreachable } from '@/utils/assert-unreachable';
 import { formatDistance } from '@/utils/distance';
 import LimitedHtml from '@/components/presentation/limited-html';
 
@@ -111,12 +111,11 @@ function CardioExerciseBlueprintSummary({
           key={i}
           value={t('exercise.description.cardio_set.body', {
             setNumber: i + 1,
-            timeOrDistance: t(
-              set.target.type === 'time'
-                ? 'generic.time.label'
-                : 'exercise.distance.label',
-            ),
-            timeOrDistanceValue: formatCardioTarget(set.target),
+            targetType: matchCardioTarget(set.target, {
+              time: () => t('generic.time.label'),
+              distance: () => t('exercise.distance.label'),
+            }),
+            targetValue: formatCardioTarget(set.target),
           })}
         />
       ))}
@@ -125,12 +124,10 @@ function CardioExerciseBlueprintSummary({
 }
 
 export function formatCardioTarget(target: CardioTarget): string {
-  if (target.type === 'distance') {
-    return formatDistance(target.value);
-  } else if (target.type === 'time') {
-    return formatTimeSpan(target.value);
-  }
-  assertUnreachable(target);
+  return matchCardioTarget(target, {
+    distance: (t) => formatDistance(t.value),
+    time: (t) => formatTimeSpan(t.value),
+  });
 }
 
 function WeightedExerciseBlueprintSummary({

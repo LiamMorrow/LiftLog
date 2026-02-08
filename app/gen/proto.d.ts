@@ -446,6 +446,12 @@ export namespace LiftLog {
 
                     /** RecordedCardioExerciseSetDao incline */
                     incline?: (LiftLog.Ui.Models.IDecimalValue|null);
+
+                    /** RecordedCardioExerciseSetDao weight */
+                    weight?: (LiftLog.Ui.Models.IWeight|null);
+
+                    /** RecordedCardioExerciseSetDao steps */
+                    steps?: (google.protobuf.IInt32Value|null);
                 }
 
                 /** Represents a RecordedCardioExerciseSetDao. */
@@ -478,6 +484,12 @@ export namespace LiftLog {
                     /** RecordedCardioExerciseSetDao incline. */
                     public incline?: (LiftLog.Ui.Models.IDecimalValue|null);
 
+                    /** RecordedCardioExerciseSetDao weight. */
+                    public weight?: (LiftLog.Ui.Models.IWeight|null);
+
+                    /** RecordedCardioExerciseSetDao steps. */
+                    public steps?: (google.protobuf.IInt32Value|null);
+
                     /** RecordedCardioExerciseSetDao _completionDateTime. */
                     public _completionDateTime?: "completionDateTime";
 
@@ -495,6 +507,12 @@ export namespace LiftLog {
 
                     /** RecordedCardioExerciseSetDao _incline. */
                     public _incline?: "incline";
+
+                    /** RecordedCardioExerciseSetDao _weight. */
+                    public _weight?: "weight";
+
+                    /** RecordedCardioExerciseSetDao _steps. */
+                    public _steps?: "steps";
 
                     /**
                      * Creates a new RecordedCardioExerciseSetDao instance using the specified properties.
@@ -1339,6 +1357,12 @@ export namespace LiftLog {
 
                     /** CardioExerciseSetBlueprintDao trackIncline */
                     trackIncline?: (boolean|null);
+
+                    /** CardioExerciseSetBlueprintDao trackWeight */
+                    trackWeight?: (boolean|null);
+
+                    /** CardioExerciseSetBlueprintDao trackSteps */
+                    trackSteps?: (boolean|null);
                 }
 
                 /** Represents a CardioExerciseSetBlueprintDao. */
@@ -1364,6 +1388,12 @@ export namespace LiftLog {
 
                     /** CardioExerciseSetBlueprintDao trackIncline. */
                     public trackIncline: boolean;
+
+                    /** CardioExerciseSetBlueprintDao trackWeight. */
+                    public trackWeight: boolean;
+
+                    /** CardioExerciseSetBlueprintDao trackSteps. */
+                    public trackSteps: boolean;
 
                     /**
                      * Creates a new CardioExerciseSetBlueprintDao instance using the specified properties.

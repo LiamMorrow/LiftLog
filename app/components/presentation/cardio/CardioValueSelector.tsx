@@ -3,7 +3,8 @@ import Button from '@/components/presentation/gesture-wrappers/button';
 import { useAppTheme, font } from '@/hooks/useAppTheme';
 import { T } from '@tolgee/react';
 import { ReactNode, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ViewStyle } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { Portal, Dialog, Text } from 'react-native-paper';
 
 export function CardioValueSelector(props: {
@@ -13,6 +14,7 @@ export function CardioValueSelector(props: {
   onSave: () => void;
   onButtonPress: () => void;
   onHold: () => void;
+  style?: ViewStyle;
 }) {
   const { buttonText, children, label, onButtonPress, onHold, onSave } = props;
   const { colors } = useAppTheme();
@@ -33,27 +35,35 @@ export function CardioValueSelector(props: {
         {label}
       </Text>
       <Portal>
-        <Dialog visible={dialogOpen} onDismiss={() => setDialogOpen(false)}>
-          <Dialog.Title>{label}</Dialog.Title>
-          <Dialog.Content
-            style={{ flexDirection: 'row', alignItems: 'center' }}
-          >
-            {children}
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setDialogOpen(false)}>
-              <T keyName="generic.cancel.button" />
-            </Button>
-            <Button
-              onPress={() => {
-                setDialogOpen(false);
-                onSave();
-              }}
+        <KeyboardAvoidingView
+          behavior={'height'}
+          style={{ flex: 1, pointerEvents: dialogOpen ? 'box-none' : 'none' }}
+        >
+          <Dialog visible={dialogOpen} onDismiss={() => setDialogOpen(false)}>
+            <Dialog.Title>{label}</Dialog.Title>
+            <Dialog.Content
+              style={[
+                { flexDirection: 'row', alignItems: 'center' },
+                props.style,
+              ]}
             >
-              <T keyName="generic.save.button" />
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
+              {children}
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={() => setDialogOpen(false)}>
+                <T keyName="generic.cancel.button" />
+              </Button>
+              <Button
+                onPress={() => {
+                  setDialogOpen(false);
+                  onSave();
+                }}
+              >
+                <T keyName="generic.save.button" />
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </KeyboardAvoidingView>
       </Portal>
     </CardioTrackerCard>
   );

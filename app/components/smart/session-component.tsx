@@ -16,6 +16,8 @@ import {
   updateInclineForCardioExercise,
   updateNotesForExercise,
   updateResistanceForCardioExercise,
+  updateStepsForCardioExercise,
+  updateWeightForCardioExercise,
   updateWeightForSet,
 } from '@/store/current-session';
 import { Card, FAB, Icon, Text } from 'react-native-paper';
@@ -294,6 +296,24 @@ export default function SessionComponent(props: {
             (resistance, setIndex) =>
               dispatch(updateResistanceForCardioExercise, {
                 resistance,
+                setIndex,
+                exerciseIndex: index,
+              }),
+          )}
+          updateWeight={updateCompletionTimeAndClearTimer(
+            index,
+            (weight, setIndex) =>
+              dispatch(updateWeightForCardioExercise, {
+                weight,
+                setIndex,
+                exerciseIndex: index,
+              }),
+          )}
+          updateSteps={updateCompletionTimeAndClearTimer(
+            index,
+            (steps, setIndex) =>
+              dispatch(updateStepsForCardioExercise, {
+                steps,
                 setIndex,
                 exerciseIndex: index,
               }),

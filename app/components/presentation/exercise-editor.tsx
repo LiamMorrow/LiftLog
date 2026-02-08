@@ -4,6 +4,7 @@ import EditableIncrementer from '@/components/presentation/editable-incrementer'
 import ExerciseFilterer from '@/components/presentation/exercise-filterer';
 import FixedIncrementer from '@/components/presentation/fixed-incrementer';
 import Button from '@/components/presentation/gesture-wrappers/button';
+import { IntegerEditor } from '@/components/presentation/IntegerEditor';
 import LabelledForm from '@/components/presentation/labelled-form';
 import LabelledFormRow from '@/components/presentation/labelled-form-row';
 import ListSwitch from '@/components/presentation/list-switch';
@@ -18,6 +19,7 @@ import {
   DistanceCardioTarget,
   DistanceUnits,
   ExerciseBlueprint,
+  matchCardioTarget,
   TimeCardioTarget,
   WeightedExerciseBlueprint,
   WeightedExerciseBlueprintPOJO,
@@ -28,6 +30,7 @@ import {
   selectExerciseById,
   selectExerciseIds,
 } from '@/store/stored-sessions';
+import { assertUnreachable } from '@/utils/assert-unreachable';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { Duration } from '@js-joda/core';
 import { FlashList } from '@shopify/flash-list';
@@ -315,6 +318,16 @@ function CardioSetEditor(props: {
           }
           headline={t('exercise.track_incline.label')}
         />
+        <ListSwitch
+          value={set.trackWeight}
+          onValueChange={(trackWeight) => updateSet(set.with({ trackWeight }))}
+          headline={t('exercise.track_weight.label')}
+        />
+        <ListSwitch
+          value={set.trackSteps}
+          onValueChange={(trackSteps) => updateSet(set.with({ trackSteps }))}
+          headline={t('exercise.track_steps.label')}
+        />
       </List.Section>
       <Divider />
     </>
@@ -367,23 +380,29 @@ function CardioTargetEditor(props: {
   const useImperialUnits = useAppSelector((x) => x.settings.useImperialUnits);
   const { target, onValueChange } = props;
   const { t } = useTranslate();
-  const handleTypeChange = (type: string) => {
+  const handleTypeChange = (type: CardioTarget['type']) => {
     if (type === target.type) {
       return;
     }
-    if (type === 'distance') {
-      onValueChange({
-        type: 'distance',
-        value: {
-          unit: useImperialUnits ? 'mile' : 'metre',
-          value: BigNumber(useImperialUnits ? 2.5 : 5000),
-        },
-      });
-    } else {
-      onValueChange({
-        type: 'time',
-        value: Duration.ofMinutes(30),
-      });
+    switch (type) {
+      case 'distance':
+        onValueChange({
+          type: 'distance',
+          value: {
+            unit: useImperialUnits ? 'mile' : 'metre',
+            value: BigNumber(useImperialUnits ? 2.5 : 5000),
+          },
+        });
+        return;
+      case 'time':
+        onValueChange({
+          type: 'time',
+          value: Duration.ofMinutes(30),
+        });
+        return;
+
+      default:
+        assertUnreachable(type);
     }
   };
   return (
@@ -412,14 +431,14 @@ function CardioTargetEditor(props: {
         />
       </LabelledFormRow>
 
-      {match(target)
-        .with({ type: 'distance' }, (t) => (
+      {matchCardioTarget(target, {
+        distance: (t) => (
           <DistanceTargetEditor target={t} onValueChange={onValueChange} />
-        ))
-        .with({ type: 'time' }, (t) => (
+        ),
+        time: (t) => (
           <TimeTargetEditor target={t} onValueChange={onValueChange} />
-        ))
-        .exhaustive()}
+        ),
+      })}
     </>
   );
 }

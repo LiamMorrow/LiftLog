@@ -49,6 +49,8 @@ message RecordedCardioExerciseSetDao {
   optional google.protobuf.StringValue distance_unit = 5;
   optional LiftLog.Ui.Models.DecimalValue resistance = 6;
   optional LiftLog.Ui.Models.DecimalValue incline = 7;
+  optional LiftLog.Ui.Models.Weight weight = 8;
+  optional google.protobuf.Int32Value steps = 9;
 }
 
 message PotentialSetDaoV2 {
