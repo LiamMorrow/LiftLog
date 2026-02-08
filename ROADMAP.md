@@ -12,7 +12,7 @@ Priorities shift based on what feels fun to work on, community interest, and how
 
 ### Bug Fixes
 
-- [ ] [**#602**](https://github.com/LiamMorrow/LiftLog/issues/602) - Progressive overload at 0 values still adds weight
+- [x] [**#602**](https://github.com/LiamMorrow/LiftLog/issues/602) - Progressive overload at 0 values still adds weight
 - [x] [**#594**](https://github.com/LiamMorrow/LiftLog/issues/594) - Calendar uses system language instead of app language _(good first issue)_
 - [ ] [**#577**](https://github.com/LiamMorrow/LiftLog/issues/577) - Can't delete last letter when renaming a plan
 
@@ -28,14 +28,14 @@ Priorities shift based on what feels fun to work on, community interest, and how
 
 ### Timer & Notification Improvements
 
-- [ ] [**#435**](https://github.com/LiamMorrow/LiftLog/issues/435) - Timer on Lock Screen
-- [ ] [**#551**](https://github.com/LiamMorrow/LiftLog/issues/551) - Persistent workout notification with current exercise & rest timer
+- [x] [**#435**](https://github.com/LiamMorrow/LiftLog/issues/435) - Timer on Lock Screen
+- [x] [**#551**](https://github.com/LiamMorrow/LiftLog/issues/551) - Persistent workout notification with current exercise & rest timer
 - [x] [**#591**](https://github.com/LiamMorrow/LiftLog/issues/591) - Keep screen on during workout
 
 ### Exercise Flexibility
 
 - [ ] [**#347**](https://github.com/LiamMorrow/LiftLog/issues/347) - Different reps per set
-- [ ] [**#608**](https://github.com/LiamMorrow/LiftLog/issues/608) - Multiple sets for timed exercises + weight support
+- [x] [**#608**](https://github.com/LiamMorrow/LiftLog/issues/608) - Multiple sets for timed exercises + weight support
 - [ ] [**#592**](https://github.com/LiamMorrow/LiftLog/issues/592) - Body weight toggle for exercises (link to session body weight)
 
 ---
