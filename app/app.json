@@ -52,9 +52,7 @@
     "scheme": "liftlog",
     "android": {
       "package": "com.limajuice.liftlog",
-      "permissions": [
-        "com.android.vending.BILLING"
-      ],
+      "permissions": ["com.android.vending.BILLING"],
       "intentFilters": [
         {
           "action": "VIEW",
@@ -65,10 +63,7 @@
               "host": "app.liftlog.online"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
       "adaptiveIcon": {
@@ -79,11 +74,10 @@
     },
     "ios": {
       "bundleIdentifier": "com.limajuice.liftlog",
-      "associatedDomains": [
-        "applinks:app.liftlog.online"
-      ],
+      "associatedDomains": ["applinks:app.liftlog.online"],
       "supportsTablet": true,
       "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "LiftLog needs access to your photo library to allow you to select an image for exercises.",
         "UIViewControllerBasedStatusBarAppearance": true,
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleLocalizations": [

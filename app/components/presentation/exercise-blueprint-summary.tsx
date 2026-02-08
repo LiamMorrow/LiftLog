@@ -5,8 +5,8 @@ import RestFormat, {
 import { SurfaceText } from '@/components/presentation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useState } from 'react';
-import { View } from 'react-native';
-import { Menu } from 'react-native-paper';
+import { Image, View } from 'react-native';
+import { Card, Menu } from 'react-native-paper';
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import TouchableRipple from '@/components/presentation/gesture-wrappers/touchable-ripple';
 import { useTranslate } from '@tolgee/react';
@@ -84,6 +84,24 @@ export default function ExerciseBlueprintSummary({
             </Menu>
           </View>
         </View>
+
+        {blueprint.imageUri && (
+          <Card
+            mode="elevated"
+            style={{
+              marginTop: spacing[2],
+              marginBottom: spacing[2],
+              overflow: 'hidden',
+            }}
+            elevation={1}
+          >
+            <Image
+              source={{ uri: blueprint.imageUri }}
+              style={{ width: '100%', height: 150 }}
+              resizeMode="contain"
+            />
+          </Card>
+        )}
         {match(blueprint)
           .with(P.instanceOf(WeightedExerciseBlueprint), (b) => (
             <WeightedExerciseBlueprintSummary blueprint={b} />

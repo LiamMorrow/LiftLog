@@ -106,6 +106,7 @@ import { msPause } from '@material-symbols-react-native/outlined-400/msPause';
 import { JSX } from 'react';
 import { msAddCircle } from '@material-symbols-react-native/outlined-400/msAddCircle';
 import { msDoNotDisturbOn } from '@material-symbols-react-native/outlined-400/msDoNotDisturbOn';
+import { msPhoto } from '@material-symbols-react-native/outlined-400/msPhoto';
 
 // Importing these icons using the below methods causes android app to crash
 // import { msAdd, msArrowDownward } from '@material-symbols-react-native/outlined-400';
@@ -131,6 +132,7 @@ const MaterialSymbols = {
   delete: msDelete,
   edit: msEdit,
   error: msError,
+  photo: msPhoto,
   history: msHistory,
   info: msInfo,
   minus: msRemove,

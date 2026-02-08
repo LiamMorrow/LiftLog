@@ -294,6 +294,7 @@ export interface CardioExerciseBlueprintPOJO {
   sets: CardioExerciseSetBlueprintPOJO[];
   notes: string;
   link: string;
+  readonly imageUri: string;
 }
 export class CardioExerciseBlueprint {
   constructor(
@@ -301,6 +302,7 @@ export class CardioExerciseBlueprint {
     readonly sets: CardioExerciseSetBlueprint[],
     readonly notes: string,
     readonly link: string,
+    readonly imageUri: string,
   ) {
     if (!sets.length) {
       throw new Error('Must have at least one set in cardio exercise');
@@ -311,6 +313,7 @@ export class CardioExerciseBlueprint {
     return new CardioExerciseBlueprint(
       '',
       [CardioExerciseSetBlueprint.empty()],
+      '',
       '',
       '',
     );
@@ -324,6 +327,7 @@ export class CardioExerciseBlueprint {
       pojo.sets.map((x) => CardioExerciseSetBlueprint.fromPOJO(x)),
       pojo.notes,
       pojo.link,
+      pojo.imageUri,
     );
   }
 
@@ -345,7 +349,8 @@ export class CardioExerciseBlueprint {
       this.sets.length === other.sets.length &&
       this.sets.every((set, index) => set.equals(other.sets[index])) &&
       this.notes === other.notes &&
-      this.link === other.link
+      this.link === other.link &&
+      this.imageUri === other.imageUri
     );
   }
 
@@ -356,6 +361,7 @@ export class CardioExerciseBlueprint {
       sets: this.sets.map((x) => x.toPOJO()),
       notes: this.notes,
       link: this.link,
+      imageUri: this.imageUri,
     };
   }
 
@@ -366,6 +372,7 @@ export class CardioExerciseBlueprint {
         this.sets,
       other.notes ?? this.notes,
       other.link ?? this.link,
+      other.imageUri ?? this.imageUri,
     );
   }
 }
@@ -380,51 +387,21 @@ export interface WeightedExerciseBlueprintPOJO {
   supersetWithNext: boolean;
   notes: string;
   link: string;
+  readonly imageUri: string;
 }
 
 export class WeightedExerciseBlueprint {
-  readonly name: string;
-  readonly sets: number;
-  readonly repsPerSet: number;
-  readonly weightIncreaseOnSuccess: BigNumber;
-  readonly restBetweenSets: Rest;
-  readonly supersetWithNext: boolean;
-  readonly notes: string;
-  readonly link: string;
-
-  /**
-   * @deprecated please use full constructor. Here only for serialization
-   */
-  constructor();
   constructor(
-    name: string,
-    sets: number,
-    repsPerSet: number,
-    weightIncreaseOnSuccess: BigNumber,
-    restBetweenSets: Rest,
-    supersetWithNext: boolean,
-    notes: string,
-    link: string,
-  );
-  constructor(
-    name?: string,
-    sets?: number,
-    repsPerSet?: number,
-    weightIncreaseOnSuccess?: BigNumber,
-    restBetweenSets?: Rest,
-    supersetWithNext?: boolean,
-    notes?: string,
-    link?: string,
-  ) {
-    this.name = name!;
-    this.sets = sets!;
-    this.repsPerSet = repsPerSet!;
-    this.weightIncreaseOnSuccess = weightIncreaseOnSuccess!;
-    this.restBetweenSets = restBetweenSets!;
-    this.supersetWithNext = supersetWithNext!;
-    this.notes = notes!;
-    this.link = link!;
-  }
+    readonly name: string,
+    readonly sets: number,
+    readonly repsPerSet: number,
+    readonly weightIncreaseOnSuccess: BigNumber,
+    readonly restBetweenSets: Rest,
+    readonly supersetWithNext: boolean,
+    readonly notes: string,
+    readonly link: string,
+    readonly imageUri: string,
+  ) {}
 
   static empty() {
     return new WeightedExerciseBlueprint(
@@ -434,6 +411,7 @@ export class WeightedExerciseBlueprint {
       BigNumber(0),
       Rest.medium,
       false,
+      '',
       '',
       '',
     );
@@ -451,6 +429,7 @@ export class WeightedExerciseBlueprint {
       pojo.supersetWithNext,
       pojo.notes,
       pojo.link,
+      pojo.imageUri,
     );
   }
 
@@ -480,7 +459,8 @@ export class WeightedExerciseBlueprint {
       ) &&
       this.supersetWithNext === other.supersetWithNext &&
       this.notes === other.notes &&
-      this.link === other.link
+      this.link === other.link &&
+      this.imageUri === other.imageUri
     );
   }
 
@@ -495,6 +475,7 @@ export class WeightedExerciseBlueprint {
       supersetWithNext: this.supersetWithNext,
       notes: this.notes,
       link: this.link,
+      imageUri: this.imageUri,
     };
   }
 
@@ -510,6 +491,7 @@ export class WeightedExerciseBlueprint {
       other.supersetWithNext ?? this.supersetWithNext,
       other.notes ?? this.notes,
       other.link ?? this.link,
+      other.imageUri ?? this.imageUri,
     );
   }
 }
@@ -602,6 +584,7 @@ export const EmptyExerciseBlueprint = new WeightedExerciseBlueprint(
   BigNumber(0),
   Rest.medium,
   false,
+  '',
   '',
   '',
 );

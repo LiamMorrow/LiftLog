@@ -4,6 +4,7 @@ import EditableIncrementer from '@/components/presentation/editable-incrementer'
 import ExerciseFilterer from '@/components/presentation/exercise-filterer';
 import FixedIncrementer from '@/components/presentation/fixed-incrementer';
 import Button from '@/components/presentation/gesture-wrappers/button';
+import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import LabelledForm from '@/components/presentation/labelled-form';
 import LabelledFormRow from '@/components/presentation/labelled-form-row';
 import ListSwitch from '@/components/presentation/list-switch';
@@ -23,6 +24,7 @@ import {
   WeightedExerciseBlueprintPOJO,
 } from '@/models/blueprint-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
+import ImagePicker from 'expo-image-picker';
 import {
   ExerciseDescriptor,
   selectExerciseById,
@@ -34,7 +36,7 @@ import { FlashList } from '@shopify/flash-list';
 import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Keyboard, View } from 'react-native';
+import { Image, Keyboard, View } from 'react-native';
 import {
   Card,
   Divider,
@@ -42,7 +44,9 @@ import {
   SegmentedButtons,
   TextInput,
 } from 'react-native-paper';
+import { useDispatch } from 'react-redux';
 import { match, P } from 'ts-pattern';
+import { showSnackbar } from '@/store/app';
 
 interface ExerciseEditorProps {
   exercise: ExerciseBlueprint;
@@ -56,7 +60,11 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
   const exerciseIds = useAppSelector(selectExerciseIds);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const selectExerciseFromSearch = (ex: ExerciseDescriptor) => {
-    updateExercise({ name: ex.name, notes: ex.instructions });
+    updateExercise({
+      name: ex.name,
+      notes: ex.instructions,
+      ...(ex.imageUri !== undefined && { imageUri: ex.imageUri }),
+    });
     bottomSheetRef.current?.close();
   };
 
@@ -331,6 +339,35 @@ function SharedFieldsEditor({
   ) => void;
 }) {
   const { t } = useTranslate();
+  const dispatch = useDispatch();
+  const pickImage = async () => {
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permissionResult.granted) {
+      dispatch(
+        showSnackbar({
+          text: 'Permission to access media library is required!',
+        }),
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      updateExercise({ imageUri: result.assets[0].uri });
+    }
+  };
+
+  const removeImage = () => {
+    updateExercise(exercise.with({ imageUri: '' }));
+  };
+
   return (
     <>
       <LabelledFormRow label={t('plan.notes.label')} icon="notesFill">
@@ -356,6 +393,38 @@ function SharedFieldsEditor({
           onChangeText={(link) => updateExercise({ link })}
         />
       </LabelledFormRow>
+      <View style={{ gap: spacing[2] }}>
+        {exercise.imageUri ? (
+          <>
+            <Card mode="elevated" style={{ overflow: 'hidden' }} elevation={2}>
+              <Image
+                source={{ uri: exercise.imageUri }}
+                style={{ width: '100%', height: 220 }}
+                resizeMode="contain"
+              />
+            </Card>
+            <View style={{ flexDirection: 'row', gap: spacing[2] }}>
+              <Button
+                mode="outlined"
+                onPress={() => void pickImage()}
+                icon="photo"
+                style={{ flex: 1 }}
+              >
+                Change Image
+              </Button>
+              <IconButton icon="delete" mode="outlined" onPress={removeImage} />
+            </View>
+          </>
+        ) : (
+          <Button
+            mode="contained"
+            onPress={() => void pickImage()}
+            icon="photo"
+          >
+            Add Exercise Image
+          </Button>
+        )}
+      </View>
     </>
   );
 }
