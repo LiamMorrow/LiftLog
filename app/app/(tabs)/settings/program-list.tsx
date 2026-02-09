@@ -1,5 +1,5 @@
-import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
-import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
+import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
+import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import ProgramListItem from '@/components/smart/program-list-item';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { useAppSelector } from '@/store';

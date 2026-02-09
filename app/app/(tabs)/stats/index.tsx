@@ -1,6 +1,6 @@
-import { Loader } from '@/components/presentation/loader';
-import SingleValueStatisticCard from '@/components/presentation/single-value-statistic-card';
-import { SurfaceText } from '@/components/presentation/surface-text';
+import { Loader } from '@/components/presentation/foundation/loader';
+import SingleValueStatisticCard from '@/components/presentation/stats/single-value-statistic-card';
+import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import {
   ExerciseStatistics,
@@ -17,20 +17,20 @@ import { Stack, useFocusEffect } from 'expo-router';
 import { View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { FlatGrid } from 'react-native-super-grid';
-import WeightFormat from '@/components/presentation/weight-format';
-import ExerciseStatGraphCard from '@/components/presentation/exercise-stat-graph-card';
+import WeightFormat from '@/components/presentation/foundation/weight-format';
+import ExerciseStatGraphCard from '@/components/presentation/stats/exercise-stat-graph-card';
 import { spacing } from '@/hooks/useAppTheme';
 import SelectButton, {
   SelectButtonOption,
-} from '@/components/presentation/select-button';
+} from '@/components/presentation/foundation/select-button';
 import { LocalDate, Period } from '@js-joda/core';
 import { selectCompletedDistinctSessionNames } from '@/store/stored-sessions';
 import { Divider, Searchbar } from 'react-native-paper';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import BodyweightStatGraphCard from '@/components/presentation/bodyweight-stat-graph-card';
+import BodyweightStatGraphCard from '@/components/presentation/stats/bodyweight-stat-graph-card';
 import { useScroll } from '@/hooks/useScrollListener';
 import { FlashList, FlashListRef } from '@shopify/flash-list';
-import SessionStatGraphCard from '@/components/presentation/session-stat-graph-card';
+import SessionStatGraphCard from '@/components/presentation/stats/session-stat-graph-card';
 import { Weight } from '@/models/weight';
 
 export default function StatsPage() {

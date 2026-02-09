@@ -1,4 +1,4 @@
-import EmptyInfo from '@/components/presentation/empty-info';
+import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { spacing } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
 import { FeedUser } from '@/models/feed-models';
@@ -12,7 +12,7 @@ import { T, useTranslate } from '@tolgee/react';
 import React, { useState } from 'react';
 import { List, Menu } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
+import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import { FlashList } from '@shopify/flash-list';
 
 export function FeedFollowing() {

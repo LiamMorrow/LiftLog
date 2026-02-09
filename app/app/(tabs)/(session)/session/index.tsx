@@ -1,5 +1,5 @@
-import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
-import LimitedHtml from '@/components/presentation/limited-html';
+import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
+import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import SessionComponent from '@/components/smart/session-component';
 import SessionMoreMenuComponent from '@/components/smart/session-more-menu-component';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';

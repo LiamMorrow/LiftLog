@@ -1,7 +1,7 @@
-import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
-import Button from '@/components/presentation/gesture-wrappers/button';
-import ListSwitch from '@/components/presentation/list-switch';
-import ThemeChooser from '@/components/presentation/theme-chooser';
+import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
+import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import ListSwitch from '@/components/presentation/foundation/list-switch';
+import ThemeChooser from '@/components/presentation/foundation/editors/theme-chooser';
 import { RootState, useAppSelector } from '@/store';
 import {
   setColorSchemeSeed,

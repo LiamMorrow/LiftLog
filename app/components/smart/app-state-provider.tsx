@@ -1,4 +1,4 @@
-import { Loader } from '@/components/presentation/loader';
+import { Loader } from '@/components/presentation/foundation/loader';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
 import { ReactNode } from 'react';

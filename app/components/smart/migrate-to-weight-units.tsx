@@ -1,7 +1,7 @@
-import FullScreenDialog from '@/components/presentation/full-screen-dialog';
-import Button from '@/components/presentation/gesture-wrappers/button';
-import { AppIconSource } from '@/components/presentation/ms-icon-source';
-import SelectButton from '@/components/presentation/select-button';
+import FullScreenDialog from '@/components/presentation/foundation/full-screen-dialog';
+import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
+import SelectButton from '@/components/presentation/foundation/select-button';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
 import {

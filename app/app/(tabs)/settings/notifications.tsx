@@ -1,5 +1,5 @@
-import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
-import ListSwitch from '@/components/presentation/list-switch';
+import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
+import ListSwitch from '@/components/presentation/foundation/list-switch';
 import { RootState, useAppSelector, useAppSelectorWithArg } from '@/store';
 import {
   broadcastWorkoutEvent,

@@ -198,9 +198,7 @@ export type Distance = {
   unit: DistanceUnit;
 };
 
-export type CardioTarget =
-  | TimeCardioTarget
-  | DistanceCardioTarget
+export type CardioTarget = TimeCardioTarget | DistanceCardioTarget;
 
 export function matchCardioTarget<T>(
   value: CardioTarget,

@@ -1,6 +1,6 @@
-import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
-import EmptyInfo from '@/components/presentation/empty-info';
-import LimitedHtml from '@/components/presentation/limited-html';
+import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
+import EmptyInfo from '@/components/presentation/foundation/empty-info';
+import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
 import { FeedUser, FollowRequest } from '@/models/feed-models';
@@ -17,9 +17,9 @@ import { T, useTranslate } from '@tolgee/react';
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { List } from 'react-native-paper';
-import Button from '@/components/presentation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
-import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
+import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import { FlashList } from '@shopify/flash-list';
 import { match, P } from 'ts-pattern';
 

@@ -1,14 +1,14 @@
-import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
-import EmptyInfo from '@/components/presentation/empty-info';
-import ExerciseBlueprintSummary from '@/components/presentation/exercise-blueprint-summary';
-import { ExerciseEditor } from '@/components/presentation/exercise-editor';
-import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
-import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
-import FullScreenDialog from '@/components/presentation/full-screen-dialog';
-import ItemList from '@/components/presentation/item-list';
-import LabelledForm from '@/components/presentation/labelled-form';
-import LabelledFormRow from '@/components/presentation/labelled-form-row';
-import LimitedHtml from '@/components/presentation/limited-html';
+import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
+import EmptyInfo from '@/components/presentation/foundation/empty-info';
+import ExerciseBlueprintSummary from '@/components/presentation/workout-editor/exercise-blueprint-summary';
+import { ExerciseEditor } from '@/components/presentation/workout-editor/exercise-editor';
+import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
+import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
+import FullScreenDialog from '@/components/presentation/foundation/full-screen-dialog';
+import ItemList from '@/components/presentation/foundation/item-list';
+import LabelledForm from '@/components/presentation/foundation/labelled-form';
+import LabelledFormRow from '@/components/presentation/foundation/labelled-form-row';
+import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import CopyExerciseDialog from '@/components/smart/copy-exercise-dialog';
 import { spacing } from '@/hooks/useAppTheme';
 import {

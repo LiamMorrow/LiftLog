@@ -1,9 +1,9 @@
-import Button from '@/components/presentation/gesture-wrappers/button';
-import ListSwitch from '@/components/presentation/list-switch';
+import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import ListSwitch from '@/components/presentation/foundation/list-switch';
 import SelectButton, {
   SelectButtonOption,
-} from '@/components/presentation/select-button';
-import ThemeChooser from '@/components/presentation/theme-chooser';
+} from '@/components/presentation/foundation/select-button';
+import ThemeChooser from '@/components/presentation/foundation/editors/theme-chooser';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { supportedLanguages } from '@/services/tolgee';
 import { useAppSelector } from '@/store';

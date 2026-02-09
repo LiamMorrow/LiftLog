@@ -12,7 +12,7 @@ import {
   DefaultTheme,
   Theme,
 } from '@react-navigation/native';
-import { MsIconSrc } from '@/components/presentation/ms-icon-source';
+import { MsIconSrc } from '@/components/presentation/foundation/ms-icon-source';
 import {
   argbFromHex,
   Blend,

@@ -1,7 +1,7 @@
-import FullScreenDialog from '@/components/presentation/full-screen-dialog';
-import LimitedHtml from '@/components/presentation/limited-html';
-import ListSwitch from '@/components/presentation/list-switch';
-import SessionDiffView from '@/components/presentation/session-diff-view';
+import FullScreenDialog from '@/components/presentation/foundation/full-screen-dialog';
+import LimitedHtml from '@/components/presentation/foundation/limited-html';
+import ListSwitch from '@/components/presentation/foundation/list-switch';
+import SessionDiffView from '@/components/presentation/summary/session-diff-view';
 import { spacing } from '@/hooks/useAppTheme';
 import {
   diffSessionBlueprints,

@@ -1,4 +1,4 @@
-import { MaterialBottomTabs as Tabs } from '@/components/presentation/material-bottom-tabs';
+import { MaterialBottomTabs as Tabs } from '@/components/layout/material-bottom-tabs';
 import { useAppSelector } from '@/store';
 import { selectFollowRequestCount } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';

@@ -23,34 +23,34 @@ import {
 import { Card, FAB, Icon, Text } from 'react-native-paper';
 import { useDispatch, useStore } from 'react-redux';
 import { Linking, View } from 'react-native';
-import EmptyInfo from '@/components/presentation/empty-info';
+import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
-import ItemList from '@/components/presentation/item-list';
+import ItemList from '@/components/presentation/foundation/item-list';
 import {
   RecordedCardioExercise,
   RecordedExercise,
   RecordedWeightedExercise,
 } from '@/models/session-models';
-import WeightedExercise from '@/components/presentation/weighted-exercise';
-import WeightDisplay from '@/components/presentation/weight-display';
+import WeightedExercise from '@/components/presentation/workout/weighted/weighted-exercise';
+import WeightDisplay from '@/components/presentation/foundation/editors/weight-display';
 import BigNumber from 'bignumber.js';
-import RestTimer from '@/components/presentation/rest-timer';
+import RestTimer from '@/components/presentation/workout/rest-timer';
 import { useState } from 'react';
-import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
+import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import { ExerciseBlueprint } from '@/models/blueprint-models';
-import FullScreenDialog from '@/components/presentation/full-screen-dialog';
-import { ExerciseEditor } from '@/components/presentation/exercise-editor';
+import FullScreenDialog from '@/components/presentation/foundation/full-screen-dialog';
+import { ExerciseEditor } from '@/components/presentation/workout-editor/exercise-editor';
 import { LocalTime, OffsetDateTime, ZoneId } from '@js-joda/core';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { UnknownAction } from '@reduxjs/toolkit';
 import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
-import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
-import { SurfaceText } from '@/components/presentation/surface-text';
-import WeightFormat from '@/components/presentation/weight-format';
+import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
+import { SurfaceText } from '@/components/presentation/foundation/surface-text';
+import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { formatDuration } from '@/utils/format-date';
 import { match, P } from 'ts-pattern';
-import { CardioExercise } from '@/components/presentation/cardio/CardioExercise';
+import { CardioExercise } from '@/components/presentation/workout/cardio/CardioExercise';
 
 export default function SessionComponent(props: {
   target: SessionTarget;

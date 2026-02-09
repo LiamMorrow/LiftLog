@@ -1,4 +1,4 @@
-import { SurfaceText } from '@/components/presentation/surface-text';
+import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 
 import { T, useTranslate } from '@tolgee/react';
@@ -7,8 +7,8 @@ import { I18nManager, Platform, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useDispatch } from 'react-redux';
-import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
-import Button from '@/components/presentation/gesture-wrappers/button';
+import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import {
   Appbar,
   TextInput,
@@ -32,14 +32,14 @@ import Animated, {
 } from 'react-native-reanimated';
 import { uuid } from '@/utils/uuid';
 import { useScroll } from '@/hooks/useScrollListener';
-import SessionSummary from '@/components/presentation/session-summary';
-import SessionSummaryTitle from '@/components/presentation/session-summary-title';
+import SessionSummary from '@/components/presentation/summary/session-summary';
+import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
 import { AiChatMessageResponse, AiChatPlanResponse } from '@/models/ai-models';
 import { savePlan } from '@/store/program';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { LocalDate } from '@js-joda/core';
 import { match } from 'ts-pattern';
-import LimitedHtml from '@/components/presentation/limited-html';
+import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import { useMountEffect } from '@/hooks/useMountEffect';
 
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';

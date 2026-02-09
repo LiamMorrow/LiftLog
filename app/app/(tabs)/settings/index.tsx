@@ -1,4 +1,4 @@
-import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
+import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
@@ -6,7 +6,7 @@ import { Link, Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Linking, Platform } from 'react-native';
 import { Text, Dialog, Icon, List, Portal } from 'react-native-paper';
-import Button from '@/components/presentation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import * as Application from 'expo-application';
 
 export default function Settings() {

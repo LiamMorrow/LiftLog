@@ -1,9 +1,9 @@
-import EmptyInfo from '@/components/presentation/empty-info';
-import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
-import LabelledForm from '@/components/presentation/labelled-form';
-import LabelledFormRow from '@/components/presentation/labelled-form-row';
-import LimitedHtml from '@/components/presentation/limited-html';
-import ListSwitch from '@/components/presentation/list-switch';
+import EmptyInfo from '@/components/presentation/foundation/empty-info';
+import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
+import LabelledForm from '@/components/presentation/foundation/labelled-form';
+import LabelledFormRow from '@/components/presentation/foundation/labelled-form-row';
+import LimitedHtml from '@/components/presentation/foundation/limited-html';
+import ListSwitch from '@/components/presentation/foundation/list-switch';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
 import { showSnackbar } from '@/store/app';
@@ -13,7 +13,7 @@ import { Stack } from 'expo-router';
 import { useState } from 'react';
 import { Linking, View } from 'react-native';
 import { Card, HelperText, TextInput } from 'react-native-paper';
-import Button from '@/components/presentation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 
 export default function RemoteBackupPage() {

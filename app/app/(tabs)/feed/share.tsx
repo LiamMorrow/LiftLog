@@ -1,7 +1,7 @@
-import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
-import LimitedHtml from '@/components/presentation/limited-html';
-import { Remote } from '@/components/presentation/remote';
-import { SurfaceText } from '@/components/presentation/surface-text';
+import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
+import LimitedHtml from '@/components/presentation/foundation/limited-html';
+import { Remote } from '@/components/presentation/foundation/remote';
+import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { RemoteData } from '@/models/remote';
 import { useAppSelector } from '@/store';
@@ -16,7 +16,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
 import { Card, Icon } from 'react-native-paper';
-import Button from '@/components/presentation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 
 export default function FeedSharePage() {

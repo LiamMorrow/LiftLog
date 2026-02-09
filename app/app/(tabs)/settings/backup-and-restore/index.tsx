@@ -1,7 +1,7 @@
-import ConfirmationDialog from '@/components/presentation/confirmation-dialog';
-import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
-import LimitedHtml from '@/components/presentation/limited-html';
-import ListSwitch from '@/components/presentation/list-switch';
+import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
+import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
+import LimitedHtml from '@/components/presentation/foundation/limited-html';
+import ListSwitch from '@/components/presentation/foundation/list-switch';
 import { LiftLog } from '@/gen/proto';
 import { useActionEffect } from '@/hooks/useActionEffect';
 import { useAppTheme } from '@/hooks/useAppTheme';

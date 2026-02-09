@@ -1,8 +1,8 @@
-import CardList from '@/components/presentation/card-list';
-import EmptyInfo from '@/components/presentation/empty-info';
-import FloatingBottomContainer from '@/components/presentation/floating-bottom-container';
-import FullHeightScrollView from '@/components/presentation/full-height-scroll-view';
-import LimitedHtml from '@/components/presentation/limited-html';
+import CardList from '@/components/presentation/foundation/card-list';
+import EmptyInfo from '@/components/presentation/foundation/empty-info';
+import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
+import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
+import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import ManageWorkoutCardContent from '@/components/smart/manage-workout-card-content';
 import { spacing } from '@/hooks/useAppTheme';
 import { SessionBlueprint } from '@/models/blueprint-models';

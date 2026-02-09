@@ -9,7 +9,7 @@ import { View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { Dialog, List, Portal, RadioButton, Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import Button from '@/components/presentation/gesture-wrappers/button';
+import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 
 type CopyWorkoutDialogProps = {
   visible: boolean;

@@ -1,7 +1,7 @@
-import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
-import SessionSummary from '@/components/presentation/session-summary';
-import SessionSummaryTitle from '@/components/presentation/session-summary-title';
-import SplitCardControl from '@/components/presentation/split-card-control';
+import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import SessionSummary from '@/components/presentation/summary/session-summary';
+import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
+import SplitCardControl from '@/components/presentation/foundation/split-card-control';
 import CopyWorkoutDialog from '@/components/smart/copy-workout-dialog';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 import { SessionBlueprint } from '@/models/blueprint-models';

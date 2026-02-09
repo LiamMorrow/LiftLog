@@ -3,8 +3,8 @@ import { useTranslate } from '@tolgee/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
 import { AnimatedFAB, Icon, List, TextInput } from 'react-native-paper';
-import TouchableRipple from '@/components/presentation/gesture-wrappers/touchable-ripple';
-import { AccordionItem } from '@/components/presentation/accordion-item';
+import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
+import { AccordionItem } from '@/components/presentation/foundation/accordion-item';
 import { useScroll } from '@/hooks/useScrollListener';
 import { FlashList, useRecyclingState } from '@shopify/flash-list';
 import {
@@ -21,8 +21,8 @@ import { uuid } from '@/utils/uuid';
 import { SwipeRow } from 'react-native-swipe-list-view';
 import { showSnackbar } from '@/store/app';
 import { useMountEffect } from '@/hooks/useMountEffect';
-import ExerciseMuscleSelector from '@/components/presentation/exercise-muscle-selector';
-import ExerciseFilterer from '@/components/presentation/exercise-filterer';
+import ExerciseMuscleSelector from '@/components/presentation/workout-editor/exercise-muscle-selector';
+import ExerciseFilterer from '@/components/presentation/workout-editor/exercise-filterer';
 
 function ExerciseListItem({
   exerciseId,

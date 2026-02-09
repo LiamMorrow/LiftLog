@@ -1,4 +1,4 @@
-import { Remote } from '@/components/presentation/remote';
+import { Remote } from '@/components/presentation/foundation/remote';
 import SharedItem from '@/components/smart/shared-item';
 import { RemoteData } from '@/models/remote';
 import { useAppSelector } from '@/store';

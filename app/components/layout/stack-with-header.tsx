@@ -1,4 +1,4 @@
-import MaterialStackHeader from '@/components/presentation/material-stack-header';
+import MaterialStackHeader from '@/components/layout/material-stack-header';
 import { ScrollProvider } from '@/hooks/useScrollListener';
 import { Stack } from 'expo-router';
 
