@@ -15,16 +15,18 @@ export default function SessionSummary({
 }: SessionSummaryProps) {
   return (
     <View style={{ gap: spacing[2], flex: 1 }} testID="session-summary">
-      {session.recordedExercises.map((ex, index) => (
-        <ExerciseSummary
-          key={index}
-          exercise={ex}
-          isFilled={!!isFilled}
-          showName={true}
-          showWeight={!!showWeight}
-          showDate={false}
-        />
-      ))}
+      {session.recordedExercises
+        .filter((x) => x.isStarted || !isFilled)
+        .map((ex, index) => (
+          <ExerciseSummary
+            key={index}
+            exercise={ex}
+            isFilled={!!isFilled}
+            showName={true}
+            showWeight={!!showWeight}
+            showDate={false}
+          />
+        ))}
     </View>
   );
 }

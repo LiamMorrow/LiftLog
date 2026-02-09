@@ -19,7 +19,7 @@ Priorities shift based on what feels fun to work on, community interest, and how
 ### Quick Wins
 
 - [ ] [**#400**](https://github.com/LiamMorrow/LiftLog/issues/400) - Type sets/reps directly instead of +/- buttons _(good first issue)_
-- [ ] [**#584**](https://github.com/LiamMorrow/LiftLog/issues/584) - Option to hide undone exercises from history
+- [x] [**#584**](https://github.com/LiamMorrow/LiftLog/issues/584) - Option to hide undone exercises from history
 - [ ] [**#620**](https://github.com/LiamMorrow/LiftLog/issues/620) - Resistance level tracking (non-weighted machines)
 
 ---
