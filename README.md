@@ -21,12 +21,13 @@
 
 ### Key Features
 
+- 🗿 Intuitive UI which lets you log your progression, without getting in your way
 - 📱 Runs on Android, iOS, and web
-- 🧠 AI planner tailors gym plans to your goals and body
 - 🔒 End-to-end encrypted social feeds (opt-in, privacy-first)
 - 🎨 Material Design 3 via React Native Paper
 - 🌐 Internationalization with Tolgee/Weblate (10+ languages)
 - 🏋️‍♂️ Publish workouts, follow other users, and control your feed privacy
+- 🧠 AI planner tailors gym plans to your goals and body
 - ⚡ Fast, modern UI with Expo Router and Redux Toolkit
 
 📍 **[View the Roadmap](./ROADMAP.md)** to see what's planned!
