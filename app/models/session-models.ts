@@ -545,6 +545,10 @@ export class RecordedCardioExercise {
     );
   }
 
+  get currentSetIndex() {
+    return this.sets.findIndex((x) => !x.isCompletelyFilled);
+  }
+
   get duration(): Duration | undefined {
     return this.sets.reduce(
       (accum, set) => accum.plus(set.duration ?? Duration.ZERO),
@@ -744,6 +748,10 @@ export class RecordedWeightedExercise {
         undefined as Weight | undefined,
       ) ?? new Weight(0, 'kilograms')
     );
+  }
+
+  get currentSetIndex() {
+    return this.potentialSets.findIndex((x) => !x.set);
   }
 
   get isStarted() {

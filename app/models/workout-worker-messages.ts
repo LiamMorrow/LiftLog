@@ -78,8 +78,11 @@ export function toWorkoutMessageDao(
         'workoutUpdatedEvent',
         DaoType.WorkoutUpdatedEvent.create({
           workout: toSessionDao(e.workout),
-          currentExercise: e.workout.nextExercise
-            ? toRecordedExerciseDao(e.workout.nextExercise)
+          currentExerciseDetails: e.workout.nextExercise
+            ? {
+                exercise: toRecordedExerciseDao(e.workout.nextExercise),
+                setIndex: e.workout.nextExercise.currentSetIndex,
+              }
             : null,
           restTimerInfo: e.restTimerInfo
             ? {

@@ -34,7 +34,7 @@ message WorkoutStartedEvent {
 message WorkoutUpdatedEvent {
   LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2 workout = 1;
 
-  optional LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2 current_exercise = 2;
+  optional CurrentExerciseDetails current_exercise_details = 2;
 
   optional RestTimerInfo rest_timer_info = 3;
   optional CardioTimerInfo cardio_timer_info = 4;
@@ -47,6 +47,11 @@ message WorkoutEndedEvent {}
 
 
 message FinishWorkoutCommand {
+}
+
+message CurrentExerciseDetails {
+  LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2 exercise = 1;
+  int32 set_index = 2;
 }
 
 

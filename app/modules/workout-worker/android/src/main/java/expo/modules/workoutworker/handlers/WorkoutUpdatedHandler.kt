@@ -3,6 +3,7 @@ package expo.modules.workoutworker.handlers
 
 import LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2OuterClass.ExerciseType.CARDIO
 import LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2OuterClass.ExerciseType.WEIGHTED
+import LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2OuterClass
 import LiftLog.Ui.Models.Utils
 import LiftLog.Ui.Models.Utils.WeightUnit.KILOGRAMS
 import LiftLog.Ui.Models.Utils.WeightUnit.POUNDS
@@ -40,7 +41,7 @@ class WorkoutUpdatedHandler(
         when {
             workoutUpdatedEvent.hasRestTimerInfo() -> showRestTimerNotification(event)
             workoutUpdatedEvent.hasCardioTimerInfo() -> showCardioTimerNotification(event)
-            workoutUpdatedEvent.hasCurrentExercise() -> showCurrentExerciseNotification(event)
+            workoutUpdatedEvent.hasCurrentExerciseDetails() -> showCurrentExerciseNotification(event)
             else -> showFinishedNotification(event)
         }
     }
@@ -197,11 +198,12 @@ class WorkoutUpdatedHandler(
 
     private fun getCurrentExerciseMessage(event: WorkoutMessageOuterClass.WorkoutMessage): String {
 
-        val currentExercise = event.workoutUpdatedEvent.currentExercise.exerciseBlueprint
+        val currentExercise =
+            event.workoutUpdatedEvent.currentExerciseDetails.exercise.exerciseBlueprint
         val messageTemplate = event.translations.workoutPersistentNotificationCurrentExerciseMessage
 
         val nextSet =
-            event.workoutUpdatedEvent.currentExercise.potentialSetsList.firstOrNull { !it.hasRecordedSet() }
+            event.workoutUpdatedEvent.currentExerciseDetails.exercise.potentialSetsList.firstOrNull { !it.hasRecordedSet() }
 
         val nextSetWeight: Utils.Weight? = when {
             nextSet != null -> Utils.Weight.newBuilder().setUnit(nextSet.weightUnit)
@@ -211,12 +213,18 @@ class WorkoutUpdatedHandler(
         }
 
         fun getCardioTarget(): String {
-            val exerciseIndex = event.workoutUpdatedEvent.cardioTimerInfo.exerciseIndex
-            val setIndex = event.workoutUpdatedEvent.cardioTimerInfo.setIndex
-            val set =
-                event.workoutUpdatedEvent.workout.recordedExercisesList.get(exerciseIndex).cardioSetsList.get(
-                    setIndex
-                )
+            var set: SessionHistoryDaoV2OuterClass.RecordedCardioExerciseSetDao
+            if (event.workoutUpdatedEvent.hasCardioTimerInfo()) {
+                val exerciseIndex = event.workoutUpdatedEvent.cardioTimerInfo.exerciseIndex
+                val setIndex = event.workoutUpdatedEvent.cardioTimerInfo.setIndex
+                val exercise =
+                    event.workoutUpdatedEvent.workout.recordedExercisesList.get(exerciseIndex)
+                set = exercise.cardioSetsList.get(setIndex)
+            } else {
+                val currentExercise = event.workoutUpdatedEvent.currentExerciseDetails
+                val setIndex = currentExercise.setIndex
+                set = currentExercise.exercise.cardioSetsList.get(setIndex)
+            }
             val cardioTarget = set.blueprint.cardioTarget
             return when {
                 cardioTarget.hasTimeValue() -> formatDuration(
@@ -230,7 +238,7 @@ class WorkoutUpdatedHandler(
         }
 
         return when {
-            !event.workoutUpdatedEvent.hasCurrentExercise() -> ""
+            !event.workoutUpdatedEvent.hasCurrentExerciseDetails() -> ""
             currentExercise.type == WEIGHTED -> messageTemplate.replace(
                 "\$EXERCISE_DESCRIPTOR$", "${currentExercise.name} - ${currentExercise.repsPerSet}${
                     if (nextSetWeight != null) "x${formatWeight(nextSetWeight)}" else ""

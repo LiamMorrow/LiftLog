@@ -12940,7 +12940,7 @@ export const LiftLog = $root.LiftLog = (() => {
                      * @memberof LiftLog.Ui.Models.WorkoutMessage
                      * @interface IWorkoutUpdatedEvent
                      * @property {LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null} [workout] WorkoutUpdatedEvent workout
-                     * @property {LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2|null} [currentExercise] WorkoutUpdatedEvent currentExercise
+                     * @property {LiftLog.Ui.Models.WorkoutMessage.ICurrentExerciseDetails|null} [currentExerciseDetails] WorkoutUpdatedEvent currentExerciseDetails
                      * @property {LiftLog.Ui.Models.WorkoutMessage.IRestTimerInfo|null} [restTimerInfo] WorkoutUpdatedEvent restTimerInfo
                      * @property {LiftLog.Ui.Models.WorkoutMessage.ICardioTimerInfo|null} [cardioTimerInfo] WorkoutUpdatedEvent cardioTimerInfo
                      * @property {LiftLog.Ui.Models.IWeight|null} [totalWeightLifted] WorkoutUpdatedEvent totalWeightLifted
@@ -12971,12 +12971,12 @@ export const LiftLog = $root.LiftLog = (() => {
                     WorkoutUpdatedEvent.prototype.workout = null;
 
                     /**
-                     * WorkoutUpdatedEvent currentExercise.
-                     * @member {LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2|null|undefined} currentExercise
+                     * WorkoutUpdatedEvent currentExerciseDetails.
+                     * @member {LiftLog.Ui.Models.WorkoutMessage.ICurrentExerciseDetails|null|undefined} currentExerciseDetails
                      * @memberof LiftLog.Ui.Models.WorkoutMessage.WorkoutUpdatedEvent
                      * @instance
                      */
-                    WorkoutUpdatedEvent.prototype.currentExercise = null;
+                    WorkoutUpdatedEvent.prototype.currentExerciseDetails = null;
 
                     /**
                      * WorkoutUpdatedEvent restTimerInfo.
@@ -13014,13 +13014,13 @@ export const LiftLog = $root.LiftLog = (() => {
                     let $oneOfFields;
 
                     /**
-                     * WorkoutUpdatedEvent _currentExercise.
-                     * @member {"currentExercise"|undefined} _currentExercise
+                     * WorkoutUpdatedEvent _currentExerciseDetails.
+                     * @member {"currentExerciseDetails"|undefined} _currentExerciseDetails
                      * @memberof LiftLog.Ui.Models.WorkoutMessage.WorkoutUpdatedEvent
                      * @instance
                      */
-                    Object.defineProperty(WorkoutUpdatedEvent.prototype, "_currentExercise", {
-                        get: $util.oneOfGetter($oneOfFields = ["currentExercise"]),
+                    Object.defineProperty(WorkoutUpdatedEvent.prototype, "_currentExerciseDetails", {
+                        get: $util.oneOfGetter($oneOfFields = ["currentExerciseDetails"]),
                         set: $util.oneOfSetter($oneOfFields)
                     });
 
@@ -13072,8 +13072,8 @@ export const LiftLog = $root.LiftLog = (() => {
                             writer = $Writer.create();
                         if (message.workout != null && Object.hasOwnProperty.call(message, "workout"))
                             $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.encode(message.workout, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                        if (message.currentExercise != null && Object.hasOwnProperty.call(message, "currentExercise"))
-                            $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.encode(message.currentExercise, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                        if (message.currentExerciseDetails != null && Object.hasOwnProperty.call(message, "currentExerciseDetails"))
+                            $root.LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails.encode(message.currentExerciseDetails, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
                         if (message.restTimerInfo != null && Object.hasOwnProperty.call(message, "restTimerInfo"))
                             $root.LiftLog.Ui.Models.WorkoutMessage.RestTimerInfo.encode(message.restTimerInfo, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
                         if (message.cardioTimerInfo != null && Object.hasOwnProperty.call(message, "cardioTimerInfo"))
@@ -13123,7 +13123,7 @@ export const LiftLog = $root.LiftLog = (() => {
                                     break;
                                 }
                             case 2: {
-                                    message.currentExercise = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.decode(reader, reader.uint32());
+                                    message.currentExerciseDetails = $root.LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails.decode(reader, reader.uint32());
                                     break;
                                 }
                             case 3: {
@@ -13183,12 +13183,12 @@ export const LiftLog = $root.LiftLog = (() => {
                             if (error)
                                 return "workout." + error;
                         }
-                        if (message.currentExercise != null && message.hasOwnProperty("currentExercise")) {
-                            properties._currentExercise = 1;
+                        if (message.currentExerciseDetails != null && message.hasOwnProperty("currentExerciseDetails")) {
+                            properties._currentExerciseDetails = 1;
                             {
-                                let error = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.verify(message.currentExercise);
+                                let error = $root.LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails.verify(message.currentExerciseDetails);
                                 if (error)
-                                    return "currentExercise." + error;
+                                    return "currentExerciseDetails." + error;
                             }
                         }
                         if (message.restTimerInfo != null && message.hasOwnProperty("restTimerInfo")) {
@@ -13237,10 +13237,10 @@ export const LiftLog = $root.LiftLog = (() => {
                                 throw TypeError(".LiftLog.Ui.Models.WorkoutMessage.WorkoutUpdatedEvent.workout: object expected");
                             message.workout = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.fromObject(object.workout);
                         }
-                        if (object.currentExercise != null) {
-                            if (typeof object.currentExercise !== "object")
-                                throw TypeError(".LiftLog.Ui.Models.WorkoutMessage.WorkoutUpdatedEvent.currentExercise: object expected");
-                            message.currentExercise = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.fromObject(object.currentExercise);
+                        if (object.currentExerciseDetails != null) {
+                            if (typeof object.currentExerciseDetails !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.WorkoutMessage.WorkoutUpdatedEvent.currentExerciseDetails: object expected");
+                            message.currentExerciseDetails = $root.LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails.fromObject(object.currentExerciseDetails);
                         }
                         if (object.restTimerInfo != null) {
                             if (typeof object.restTimerInfo !== "object")
@@ -13285,10 +13285,10 @@ export const LiftLog = $root.LiftLog = (() => {
                         }
                         if (message.workout != null && message.hasOwnProperty("workout"))
                             object.workout = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.toObject(message.workout, options);
-                        if (message.currentExercise != null && message.hasOwnProperty("currentExercise")) {
-                            object.currentExercise = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.toObject(message.currentExercise, options);
+                        if (message.currentExerciseDetails != null && message.hasOwnProperty("currentExerciseDetails")) {
+                            object.currentExerciseDetails = $root.LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails.toObject(message.currentExerciseDetails, options);
                             if (options.oneofs)
-                                object._currentExercise = "currentExercise";
+                                object._currentExerciseDetails = "currentExerciseDetails";
                         }
                         if (message.restTimerInfo != null && message.hasOwnProperty("restTimerInfo")) {
                             object.restTimerInfo = $root.LiftLog.Ui.Models.WorkoutMessage.RestTimerInfo.toObject(message.restTimerInfo, options);
@@ -13688,6 +13688,240 @@ export const LiftLog = $root.LiftLog = (() => {
                     };
 
                     return FinishWorkoutCommand;
+                })();
+
+                WorkoutMessage.CurrentExerciseDetails = (function() {
+
+                    /**
+                     * Properties of a CurrentExerciseDetails.
+                     * @memberof LiftLog.Ui.Models.WorkoutMessage
+                     * @interface ICurrentExerciseDetails
+                     * @property {LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2|null} [exercise] CurrentExerciseDetails exercise
+                     * @property {number|null} [setIndex] CurrentExerciseDetails setIndex
+                     */
+
+                    /**
+                     * Constructs a new CurrentExerciseDetails.
+                     * @memberof LiftLog.Ui.Models.WorkoutMessage
+                     * @classdesc Represents a CurrentExerciseDetails.
+                     * @implements ICurrentExerciseDetails
+                     * @constructor
+                     * @param {LiftLog.Ui.Models.WorkoutMessage.ICurrentExerciseDetails=} [properties] Properties to set
+                     */
+                    function CurrentExerciseDetails(properties) {
+                        if (properties)
+                            for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * CurrentExerciseDetails exercise.
+                     * @member {LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2|null|undefined} exercise
+                     * @memberof LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails
+                     * @instance
+                     */
+                    CurrentExerciseDetails.prototype.exercise = null;
+
+                    /**
+                     * CurrentExerciseDetails setIndex.
+                     * @member {number} setIndex
+                     * @memberof LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails
+                     * @instance
+                     */
+                    CurrentExerciseDetails.prototype.setIndex = 0;
+
+                    /**
+                     * Creates a new CurrentExerciseDetails instance using the specified properties.
+                     * @function create
+                     * @memberof LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutMessage.ICurrentExerciseDetails=} [properties] Properties to set
+                     * @returns {LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails} CurrentExerciseDetails instance
+                     */
+                    CurrentExerciseDetails.create = function create(properties) {
+                        return new CurrentExerciseDetails(properties);
+                    };
+
+                    /**
+                     * Encodes the specified CurrentExerciseDetails message. Does not implicitly {@link LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails.verify|verify} messages.
+                     * @function encode
+                     * @memberof LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutMessage.ICurrentExerciseDetails} message CurrentExerciseDetails message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    CurrentExerciseDetails.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.exercise != null && Object.hasOwnProperty.call(message, "exercise"))
+                            $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.encode(message.exercise, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        if (message.setIndex != null && Object.hasOwnProperty.call(message, "setIndex"))
+                            writer.uint32(/* id 2, wireType 0 =*/16).int32(message.setIndex);
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified CurrentExerciseDetails message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutMessage.ICurrentExerciseDetails} message CurrentExerciseDetails message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    CurrentExerciseDetails.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a CurrentExerciseDetails message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails} CurrentExerciseDetails
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    CurrentExerciseDetails.decode = function decode(reader, length, error) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails();
+                        while (reader.pos < end) {
+                            let tag = reader.uint32();
+                            if (tag === error)
+                                break;
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.exercise = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 2: {
+                                    message.setIndex = reader.int32();
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a CurrentExerciseDetails message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails} CurrentExerciseDetails
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    CurrentExerciseDetails.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a CurrentExerciseDetails message.
+                     * @function verify
+                     * @memberof LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    CurrentExerciseDetails.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.exercise != null && message.hasOwnProperty("exercise")) {
+                            let error = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.verify(message.exercise);
+                            if (error)
+                                return "exercise." + error;
+                        }
+                        if (message.setIndex != null && message.hasOwnProperty("setIndex"))
+                            if (!$util.isInteger(message.setIndex))
+                                return "setIndex: integer expected";
+                        return null;
+                    };
+
+                    /**
+                     * Creates a CurrentExerciseDetails message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails} CurrentExerciseDetails
+                     */
+                    CurrentExerciseDetails.fromObject = function fromObject(object) {
+                        if (object instanceof $root.LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails)
+                            return object;
+                        let message = new $root.LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails();
+                        if (object.exercise != null) {
+                            if (typeof object.exercise !== "object")
+                                throw TypeError(".LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails.exercise: object expected");
+                            message.exercise = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.fromObject(object.exercise);
+                        }
+                        if (object.setIndex != null)
+                            message.setIndex = object.setIndex | 0;
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a CurrentExerciseDetails message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails
+                     * @static
+                     * @param {LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails} message CurrentExerciseDetails
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    CurrentExerciseDetails.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        let object = {};
+                        if (options.defaults) {
+                            object.exercise = null;
+                            object.setIndex = 0;
+                        }
+                        if (message.exercise != null && message.hasOwnProperty("exercise"))
+                            object.exercise = $root.LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2.toObject(message.exercise, options);
+                        if (message.setIndex != null && message.hasOwnProperty("setIndex"))
+                            object.setIndex = message.setIndex;
+                        return object;
+                    };
+
+                    /**
+                     * Converts this CurrentExerciseDetails to JSON.
+                     * @function toJSON
+                     * @memberof LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    CurrentExerciseDetails.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    /**
+                     * Gets the default type url for CurrentExerciseDetails
+                     * @function getTypeUrl
+                     * @memberof LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    CurrentExerciseDetails.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails";
+                    };
+
+                    return CurrentExerciseDetails;
                 })();
 
                 WorkoutMessage.RestTimerInfo = (function() {

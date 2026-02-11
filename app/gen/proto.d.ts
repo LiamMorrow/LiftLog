@@ -4823,8 +4823,8 @@ export namespace LiftLog {
                     /** WorkoutUpdatedEvent workout */
                     workout?: (LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null);
 
-                    /** WorkoutUpdatedEvent currentExercise */
-                    currentExercise?: (LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2|null);
+                    /** WorkoutUpdatedEvent currentExerciseDetails */
+                    currentExerciseDetails?: (LiftLog.Ui.Models.WorkoutMessage.ICurrentExerciseDetails|null);
 
                     /** WorkoutUpdatedEvent restTimerInfo */
                     restTimerInfo?: (LiftLog.Ui.Models.WorkoutMessage.IRestTimerInfo|null);
@@ -4851,8 +4851,8 @@ export namespace LiftLog {
                     /** WorkoutUpdatedEvent workout. */
                     public workout?: (LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null);
 
-                    /** WorkoutUpdatedEvent currentExercise. */
-                    public currentExercise?: (LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2|null);
+                    /** WorkoutUpdatedEvent currentExerciseDetails. */
+                    public currentExerciseDetails?: (LiftLog.Ui.Models.WorkoutMessage.ICurrentExerciseDetails|null);
 
                     /** WorkoutUpdatedEvent restTimerInfo. */
                     public restTimerInfo?: (LiftLog.Ui.Models.WorkoutMessage.IRestTimerInfo|null);
@@ -4866,8 +4866,8 @@ export namespace LiftLog {
                     /** WorkoutUpdatedEvent workoutDuration. */
                     public workoutDuration?: (google.protobuf.IDuration|null);
 
-                    /** WorkoutUpdatedEvent _currentExercise. */
-                    public _currentExercise?: "currentExercise";
+                    /** WorkoutUpdatedEvent _currentExerciseDetails. */
+                    public _currentExerciseDetails?: "currentExerciseDetails";
 
                     /** WorkoutUpdatedEvent _restTimerInfo. */
                     public _restTimerInfo?: "restTimerInfo";
@@ -5129,6 +5129,109 @@ export namespace LiftLog {
 
                     /**
                      * Gets the default type url for FinishWorkoutCommand
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a CurrentExerciseDetails. */
+                interface ICurrentExerciseDetails {
+
+                    /** CurrentExerciseDetails exercise */
+                    exercise?: (LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2|null);
+
+                    /** CurrentExerciseDetails setIndex */
+                    setIndex?: (number|null);
+                }
+
+                /** Represents a CurrentExerciseDetails. */
+                class CurrentExerciseDetails implements ICurrentExerciseDetails {
+
+                    /**
+                     * Constructs a new CurrentExerciseDetails.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: LiftLog.Ui.Models.WorkoutMessage.ICurrentExerciseDetails);
+
+                    /** CurrentExerciseDetails exercise. */
+                    public exercise?: (LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2|null);
+
+                    /** CurrentExerciseDetails setIndex. */
+                    public setIndex: number;
+
+                    /**
+                     * Creates a new CurrentExerciseDetails instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns CurrentExerciseDetails instance
+                     */
+                    public static create(properties?: LiftLog.Ui.Models.WorkoutMessage.ICurrentExerciseDetails): LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails;
+
+                    /**
+                     * Encodes the specified CurrentExerciseDetails message. Does not implicitly {@link LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails.verify|verify} messages.
+                     * @param message CurrentExerciseDetails message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: LiftLog.Ui.Models.WorkoutMessage.ICurrentExerciseDetails, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified CurrentExerciseDetails message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails.verify|verify} messages.
+                     * @param message CurrentExerciseDetails message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: LiftLog.Ui.Models.WorkoutMessage.ICurrentExerciseDetails, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a CurrentExerciseDetails message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns CurrentExerciseDetails
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails;
+
+                    /**
+                     * Decodes a CurrentExerciseDetails message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns CurrentExerciseDetails
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails;
+
+                    /**
+                     * Verifies a CurrentExerciseDetails message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a CurrentExerciseDetails message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns CurrentExerciseDetails
+                     */
+                    public static fromObject(object: { [k: string]: any }): LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails;
+
+                    /**
+                     * Creates a plain object from a CurrentExerciseDetails message. Also converts values to other types if specified.
+                     * @param message CurrentExerciseDetails
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: LiftLog.Ui.Models.WorkoutMessage.CurrentExerciseDetails, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this CurrentExerciseDetails to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for CurrentExerciseDetails
                      * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                      * @returns The default type url
                      */
