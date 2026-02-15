@@ -330,7 +330,7 @@
   "settings.translation.title": "Sugerir um tradução",
   "settings.use_imperial_units.label": "Use unidades imperiais",
   "settings.use_imperial_units.subtitle": "Use libras em vez de quilogramas",
-  "stats.all_time.label": "Todo o período",
+  "time_select.all_time.label": "Todo o período",
   "stats.average_time_between_sets.label": "Tempo médio entre séries",
   "stats.heaviest_lift.label": "Maior carga",
   "stats.max_weight_in_workout.label": "Carga máxima levantada em um treino",

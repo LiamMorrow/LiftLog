@@ -253,7 +253,7 @@
   "settings.translation.title": "Sugerir una traducción",
   "settings.use_imperial_units.label": "Usar unidades imperiales",
   "settings.use_imperial_units.subtitle": "Usar libras en favor de kilogramos",
-  "stats.all_time.label": "Todo el tiempo",
+  "time_select.all_time.label": "Todo el tiempo",
   "stats.average_time_between_sets.label": "Tiempo promedio entre series",
   "stats.heaviest_lift.label": "Levantamiento mas pesado",
   "stats.most_time_spent.label": "Mayor parte del tiempo dedicado",

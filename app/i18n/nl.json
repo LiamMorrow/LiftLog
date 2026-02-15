@@ -256,7 +256,7 @@
   "settings.translation.title": "Vertaling voorstellen",
   "settings.use_imperial_units.label": "Gebruik imperiale eenheden",
   "settings.use_imperial_units.subtitle": "Gebruik pounds (NL: ponden) in plaats van kilogram",
-  "stats.all_time.label": "Altijd",
+  "time_select.all_time.label": "Altijd",
   "stats.average_time_between_sets.label": "Gemiddelde tijd tussen sets",
   "stats.heaviest_lift.label": "Zwaarste lift",
   "stats.max_weight_in_workout.label": "Max gewicht getild tijdens een training",

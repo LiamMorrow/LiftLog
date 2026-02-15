@@ -1,261 +1,126 @@
-import { Loader } from '@/components/presentation/foundation/loader';
+import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
+import Icon from '@/components/presentation/foundation/gesture-wrappers/icon';
+import { Remote } from '@/components/presentation/foundation/remote';
+import { ExerciseListSummary } from '@/components/presentation/stats/exercise-list-summary';
 import SingleValueStatisticCard from '@/components/presentation/stats/single-value-statistic-card';
-import { SurfaceText } from '@/components/presentation/foundation/surface-text';
-import { useAppSelector, useAppSelectorWithArg } from '@/store';
+import { SingleValueStatisticsGrid } from '@/components/presentation/stats/single-value-statistics-grid';
+import { TimePeriodSelector } from '@/components/presentation/stats/time-period-selector';
+import { TitledSection } from '@/components/presentation/stats/titled-section';
+import { spacing } from '@/hooks/useAppTheme';
+import { Weight } from '@/models/weight';
+import { useAppSelector } from '@/store';
 import {
   fetchOverallStats,
   GranularStatisticView,
   selectOverallView,
-  setOverallViewSession,
   setOverallViewTime,
-  setStatsIsDirty,
 } from '@/store/stats';
-import { LegendList } from '@legendapp/list';
 import { formatDuration } from '@/utils/format-date';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect } from 'expo-router';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { FlatGrid } from 'react-native-super-grid';
-import WeightFormat from '@/components/presentation/foundation/weight-format';
-import ExerciseStatGraphCard from '@/components/presentation/stats/exercise-stat-graph-card';
-import { spacing } from '@/hooks/useAppTheme';
-import SelectButton, {
-  SelectButtonOption,
-} from '@/components/presentation/foundation/select-button';
-import { LocalDate, Period } from '@js-joda/core';
-import { selectCompletedDistinctSessionNames } from '@/store/stored-sessions';
-import { Divider, Searchbar } from 'react-native-paper';
-import { useMemo, useState } from 'react';
-import BodyweightStatGraphCard from '@/components/presentation/stats/bodyweight-stat-graph-card';
-import { useScroll } from '@/hooks/useScrollListener';
-import SessionStatGraphCard from '@/components/presentation/stats/session-stat-graph-card';
-import { Weight } from '@/models/weight';
+import { match } from 'ts-pattern';
 
 export default function StatsPage() {
   const { t } = useTranslate();
+  const timePeriod = useAppSelector((x) => x.stats.overallViewTime);
   const dispatch = useDispatch();
   useFocusEffect(() => {
     dispatch(fetchOverallStats());
   });
   const stats = useAppSelector(selectOverallView);
-  const [searchText, setSearchText] = useState<string>('');
-  const { handleScroll } = useScroll();
-  const data = useMemo(
-    () =>
-      stats?.exerciseStats.filter((x) =>
-        x.exerciseName
-          .toLocaleLowerCase()
-          .includes(searchText.toLocaleLowerCase()),
-      ) ?? [],
-    [stats?.exerciseStats, searchText],
-  );
-  if (!stats) {
-    return <Loader />;
-  }
-
   return (
-    <>
+    <FullHeightScrollView contentContainerStyle={{ gap: spacing[2] }}>
       <Stack.Screen
         options={{
           title: t('stats.statistics.title'),
         }}
       />
-      <LegendList
-        onScroll={handleScroll}
-        ListHeaderComponent={
-          <ListHeader
-            searchText={searchText}
-            setSearchText={setSearchText}
-            stats={stats}
-          />
-        }
-        data={data}
-        ItemSeparatorComponent={() => (
-          <Divider style={{ marginVertical: spacing[4] }} />
-        )}
-        keyExtractor={(item) => item.exerciseName}
-        renderItem={({ item }) => (
-          <ExerciseStatGraphCard
-            exerciseStats={item}
-            title={item.exerciseName}
-          />
-        )}
+      <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+        <TimePeriodSelector
+          timePeriod={timePeriod}
+          setTimePeriod={(value) => dispatch(setOverallViewTime(value))}
+        />
+      </View>
+      <Remote
+        value={stats}
+        success={(stats) => <LoadedStats stats={stats} />}
       />
-    </>
+    </FullHeightScrollView>
   );
 }
 
-function ListHeader({
-  stats,
-  searchText,
-  setSearchText,
-}: {
-  stats: GranularStatisticView;
-  searchText: string;
-  setSearchText: (value: string) => void;
-}) {
-  const time = useAppSelector((x) => x.stats.overallViewTime);
-  const sessionName = useAppSelector((x) => x.stats.overallViewSessionName);
-  const sessionNames = useAppSelectorWithArg(
-    selectCompletedDistinctSessionNames,
-    LocalDate.now().minus(time),
-  );
-  const dispatch = useDispatch();
-  const { t } = useTranslate();
-  const timeOptions: SelectButtonOption<Period>[] = [
-    {
-      label: t('numbers.num_days.label', { count: '7' }),
-      value: Period.ofDays(7),
-    },
-    {
-      label: t('numbers.num_days.label', { count: '14' }),
-      value: Period.ofDays(14),
-    },
-    {
-      label: t('numbers.num_days.label', { count: '30' }),
-      value: Period.ofDays(30),
-    },
-    {
-      label: t('numbers.num_days.label', { count: '90' }),
-      value: Period.ofDays(90),
-    },
-    {
-      label: t('numbers.num_days.label', { count: '180' }),
-      value: Period.ofDays(180),
-    },
-    {
-      label: t('numbers.num_days.label', { count: '365' }),
-      value: Period.ofDays(365),
-    },
-    { label: t('stats.all_time.label'), value: Period.ofDays(36500) },
-  ];
-  const sessions: SelectButtonOption<string | undefined>[] = sessionNames
-    .map((value) => ({
-      label: value,
-      value: value as string | undefined,
-    }))
-    .concat({
-      value: undefined,
-      label: t('workout.all.title'),
-    });
+function LoadedStats({ stats }: { stats: GranularStatisticView }) {
   return (
-    <View style={{ gap: spacing[2], marginBottom: spacing[2] }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <SelectButton
-          value={sessionName}
-          options={sessions}
-          onChange={(name) => {
-            dispatch(setOverallViewSession(name));
-            dispatch(setStatsIsDirty(true));
-            dispatch(fetchOverallStats());
-          }}
-        />
-        <SelectButton
-          testID="stats-time-selector"
-          value={time}
-          options={timeOptions}
-          onChange={(x) => {
-            dispatch(setOverallViewTime(x));
-            dispatch(setStatsIsDirty(true));
-            dispatch(fetchOverallStats());
-          }}
-        />
-      </View>
-      <Searchbar
-        placeholder={t('generic.search.button')}
-        value={searchText}
-        onChangeText={setSearchText}
-        style={{ marginHorizontal: spacing.pageHorizontalMargin }}
-      />
-      {searchText ? undefined : (
-        <>
-          <FlatGrid
-            scrollEnabled={false}
-            data={[0, 1, 2, 3]}
-            maxItemsPerRow={2}
-            renderItem={({ item }) => (
-              <TopLevelStatCard index={item} stats={stats} />
-            )}
-          ></FlatGrid>
-          <SessionStatGraphCard sessionStats={stats.sessionStats} />
-          <BodyweightStatGraphCard bodyweightStats={stats.bodyweightStats} />
-        </>
-      )}
+    <View>
+      <OverallStatsGrid stats={stats} />
+      <ExerciseListSummary stats={stats} />
     </View>
   );
 }
 
-function TopLevelStatCard(props: {
-  index: number;
-  stats: GranularStatisticView;
-}) {
+function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
   const { t } = useTranslate();
-  const { stats, index } = props;
-  switch (index) {
-    case 0:
-      return (
+  return (
+    <TitledSection title={t('stats.overview.title')}>
+      <SingleValueStatisticsGrid>
         <SingleValueStatisticCard
           title={t('stats.max_weight_in_workout.label')}
-        >
-          <WeightFormat
-            color={'tertiary'}
-            fontSize="text-xl"
-            fontWeight={'bold'}
-            weight={
-              stats.maxWeightLiftedInAWorkout !== undefined
-                ? stats.maxWeightLiftedInAWorkout
-                : Weight.NIL
-            }
-          />
-        </SingleValueStatisticCard>
-      );
-    case 1:
-      return (
-        <SingleValueStatisticCard title={t('workout.average_length.label')}>
-          <SurfaceText
-            color="tertiary"
-            font="text-xl"
-            weight={'bold'}
-            style={{ textAlign: 'center' }}
-          >
-            {formatDuration(stats.averageSessionLength, 'mins')}
-          </SurfaceText>
-        </SingleValueStatisticCard>
-      );
-    case 2:
-      return (
-        <SingleValueStatisticCard title={t('stats.most_time_spent.label')}>
-          <SurfaceText
-            color="tertiary"
-            font="text-xl"
-            weight={'bold'}
-            style={{ textAlign: 'center' }}
-          >
-            {stats.exerciseMostTimeSpent?.exerciseName ?? '-'}
-          </SurfaceText>
-        </SingleValueStatisticCard>
-      );
-    case 3:
-      return (
-        <SingleValueStatisticCard title={t('stats.heaviest_lift.label')}>
-          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-            <WeightFormat
-              color={'tertiary'}
-              fontSize="text-xl"
-              fontWeight={'bold'}
-              weight={stats.heaviestLift?.weight ?? Weight.NIL}
-            />
-            <SurfaceText
-              color="tertiary"
-              font="text-xl"
-              weight={'bold'}
-              style={{ textAlign: 'center' }}
-            >
-              {stats.heaviestLift?.exerciseName ?? '-'}
-            </SurfaceText>
-          </View>
-        </SingleValueStatisticCard>
-      );
+          value={stats.maxWeightLiftedInAWorkout?.shortLocaleFormat(0) ?? '-'}
+          icon={'weight'}
+        />
+        <SingleValueStatisticCard
+          title={t('workout.average_length.label')}
+          icon={'avgTime'}
+          value={formatDuration(stats.averageSessionLength, 'mins')}
+        />
+        <SingleValueStatisticCard
+          title={t('stats.bodyweight_change.label')}
+          icon={'monitorWeight'}
+          value={<BodyweightStatValue stats={stats} />}
+        />
+        <SingleValueStatisticCard
+          title={t('stats.heaviest_lift.label')}
+          icon={'fitnessCenter'}
+          value={
+            stats.heaviestLift
+              ? stats.heaviestLift.exerciseName +
+                ' - ' +
+                stats.heaviestLift.weight.shortLocaleFormat(0)
+              : '-'
+          }
+        />
+      </SingleValueStatisticsGrid>
+    </TitledSection>
+  );
+}
+
+function BodyweightStatValue({
+  stats: { bodyweightStats },
+}: {
+  stats: GranularStatisticView;
+}) {
+  const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
+  if (!showBodyweight) {
+    return <Text>-</Text>;
   }
+  const currentValue = bodyweightStats.currentValue;
+  const earliestValue = bodyweightStats.statistics[0]?.value ?? Weight.NIL;
+  const change = currentValue.minus(earliestValue);
+  const changeDirection = match({
+    zero: change.value.isZero(),
+    positive: change.value.isPositive(),
+  })
+    .with({ zero: true }, () => <Icon source={'plusMinus'} size={12} />)
+    .with({ positive: true }, () => <Icon source={'plus'} size={12} />)
+    .with({ positive: false }, () => <Icon source={'minus'} size={12} />)
+    .exhaustive();
+
+  return (
+    <Text>
+      {currentValue.shortLocaleFormat(0)} ({changeDirection}
+      {change.abs().shortLocaleFormat(2)})
+    </Text>
+  );
 }

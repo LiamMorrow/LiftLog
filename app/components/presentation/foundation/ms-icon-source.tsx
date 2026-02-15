@@ -106,6 +106,9 @@ import { msPause } from '@material-symbols-react-native/outlined-400/msPause';
 import { JSX } from 'react';
 import { msAddCircle } from '@material-symbols-react-native/outlined-400/msAddCircle';
 import { msDoNotDisturbOn } from '@material-symbols-react-native/outlined-400/msDoNotDisturbOn';
+import { msAvgTime } from '@material-symbols-react-native/outlined-400/msAvgTime';
+import { msAnchor } from '@material-symbols-react-native/outlined-400/msAnchor';
+import { msFunction } from '@material-symbols-react-native/outlined-400/msFunction';
 
 // Importing these icons using the below methods causes android app to crash
 // import { msAdd, msArrowDownward } from '@material-symbols-react-native/outlined-400';
@@ -198,6 +201,7 @@ const MaterialSymbols = {
   cloudUpload: msCloudUpload,
   translate: msTranslate,
   weight: msWeight,
+  avgTime: msAvgTime,
   fitnessCenter: msFitnessCenter,
   fitnessCenterFill: msFitnessCenterFill,
   inventory: msInventory,
@@ -229,6 +233,9 @@ const MaterialSymbols = {
   targetFill: msTargetFill,
   pauseCircle: msPauseCircle,
   airlineSeatReclineExtraFill: msAirlineSeatReclineExtraFill,
+
+  function: msFunction,
+  anchor: msAnchor,
 
   pause: msPause,
 };

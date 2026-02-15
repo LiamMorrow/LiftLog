@@ -289,7 +289,7 @@
   "settings.translation.title": "Übersetzung vorschlagen",
   "settings.use_imperial_units.label": "Nutze imperiale Einheiten",
   "settings.use_imperial_units.subtitle": "Nutze Pfund anstatt Kilogramm",
-  "stats.all_time.label": "Gesamte Zeit",
+  "time_select.all_time.label": "Gesamte Zeit",
   "stats.average_time_between_sets.label": "Durchschnittliche Zeit zwischen den Sätzen",
   "stats.heaviest_lift.label": "Übung mit dem höchsten Gewicht",
   "stats.max_weight_in_workout.label": "Schwerstes gestemmtes Gewicht in einem Workout",

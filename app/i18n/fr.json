@@ -237,7 +237,7 @@
   "settings.translation.title": "Suggérer une traduction",
   "settings.use_imperial_units.label": "Utiliser les unités impériales",
   "settings.use_imperial_units.subtitle": "Utiliser les livres plutôt que les kilogrammes",
-  "stats.all_time.label": "Tout le temps",
+  "time_select.all_time.label": "Tout le temps",
   "stats.average_time_between_sets.label": "Temps moyen entre les séries",
   "stats.heaviest_lift.label": "Charge la plus lourde",
   "stats.most_time_spent.label": "Plus de temps passé",

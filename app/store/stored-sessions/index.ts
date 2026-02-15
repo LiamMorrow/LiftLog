@@ -150,14 +150,14 @@ const storedSessionsSlice = createSlice({
 export const selectSessionsBy = createSelector(
   [
     storedSessionsSlice.selectors.selectSessions,
-    (_, date: LocalDate) => date,
-    (_, __, sessionName: string | undefined) => sessionName,
+    (_, minDate: LocalDate) => minDate,
+    (_, __, maxDate: LocalDate) => maxDate,
   ],
-  (sessions, date, sessionName) =>
+  (sessions, minDate, maxDate) =>
     Object.values(sessions).filter(
       (x) =>
-        (x.date.isAfter(date) || x.date.isEqual(date)) &&
-        (!sessionName || x.blueprint.name === sessionName),
+        (x.date.isAfter(minDate) || x.date.isEqual(minDate)) &&
+        (x.date.isBefore(maxDate) || x.date.isEqual(maxDate)),
     ),
 );
 

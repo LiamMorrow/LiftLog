@@ -279,7 +279,7 @@
   "settings.translation.title": "Ehdota käännöstä",
   "settings.use_imperial_units.label": "Käytä Yhdysvaltalaisia mittayksiköitä",
   "settings.use_imperial_units.subtitle": "Käytä paunoja kilogrammojen sijaan",
-  "stats.all_time.label": "Koko ajalta",
+  "time_select.all_time.label": "Koko ajalta",
   "stats.average_time_between_sets.label": "Keskimääräinen aika sarjojen välillä",
   "stats.heaviest_lift.label": "Painavin nosto",
   "stats.most_time_spent.label": "Aikaa käytetty eniten",

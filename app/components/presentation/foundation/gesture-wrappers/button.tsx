@@ -3,17 +3,20 @@ import { GesturePressableProps } from '@/components/presentation/foundation/gest
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { isNotNullOrUndefined } from '@/utils/null';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { Button as NativeButton, ButtonProps } from 'react-native-paper';
+import {
+  Button as NativeButton,
+  ButtonProps as PaperButtonProps,
+} from 'react-native-paper';
 
-type BProps = {
+export type ButtonProps = {
   icon?: AppIconSource;
-} & Omit<ButtonProps, 'icon'>;
+} & Omit<PaperButtonProps, 'icon'>;
 export default function Button({
   onPress,
   onLongPress,
   disabled,
   ...rest
-}: GesturePressableProps<BProps>) {
+}: GesturePressableProps<ButtonProps>) {
   const tap = Gesture.Tap()
     .runOnJS(true)
     .onStart(() => !disabled && onPress?.());

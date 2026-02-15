@@ -226,7 +226,7 @@
   "settings.translation.title": "Zaproponuj tłumaczenie",
   "settings.use_imperial_units.label": "Używaj jednostek imperialnych",
   "settings.use_imperial_units.subtitle": "Używaj funtów zamiast kilogramów",
-  "stats.all_time.label": "Wszystkie dane",
+  "time_select.all_time.label": "Wszystkie dane",
   "stats.average_time_between_sets.label": "Średni czas między seriami",
   "stats.heaviest_lift.label": "Największy ciężar",
   "stats.max_weight_in_workout.label": "Maksymalny ciężar podniesiony podczas treningu",
