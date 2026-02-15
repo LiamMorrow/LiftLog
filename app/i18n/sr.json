@@ -273,7 +273,7 @@
   "settings.translation.title": "Predloži prevod",
   "settings.use_imperial_units.label": "Koristi imperijalne jedinice",
   "settings.use_imperial_units.subtitle": "Koristi funte umesto kilograma",
-  "stats.all_time.label": "Svo vreme",
+  "time_select.all_time.label": "Svo vreme",
   "stats.average_time_between_sets.label": "Prosečno vreme između sesija",
   "stats.heaviest_lift.label": "Najveća dizana težina",
   "stats.max_weight_in_workout.label": "Maksimalna težina podignuta tokom treninga",

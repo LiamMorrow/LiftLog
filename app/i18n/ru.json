@@ -259,7 +259,7 @@
   "settings.translation.title": "Предложить перевод",
   "settings.use_imperial_units.label": "Использовать имперские единицы",
   "settings.use_imperial_units.subtitle": "Фунты вместо килограммов",
-  "stats.all_time.label": "За всё время",
+  "time_select.all_time.label": "За всё время",
   "stats.average_time_between_sets.label": "Среднее время между подходами",
   "stats.heaviest_lift.label": "Рекордный вес",
   "stats.most_time_spent.label": "Максимум времени",

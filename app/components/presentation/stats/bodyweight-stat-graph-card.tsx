@@ -1,4 +1,4 @@
-import { StatisticOverTime } from '@/store/stats';
+import { WeightedStatisticOverTime } from '@/store/stats';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 import { LineChart, lineDataItem } from 'react-native-gifted-charts';
 import { View } from 'react-native';
@@ -10,7 +10,7 @@ import { useAppSelector } from '@/store';
 import { lineGraphProps } from '@/components/presentation/stats/line-graph-props';
 
 export default function BodyweightStatGraphCard(props: {
-  bodyweightStats: StatisticOverTime;
+  bodyweightStats: WeightedStatisticOverTime;
 }) {
   const weightUnit = usePreferredWeightUnit();
   const { t } = useTranslate();

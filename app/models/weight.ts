@@ -31,6 +31,10 @@ export class Weight {
     return new Weight(this.value.plus(val), this.unit);
   }
 
+  abs(): Weight {
+    return new Weight(this.value.abs(), this.unit);
+  }
+
   /**
    * Subtracts two weights, or a weight and a number, keeping the current unit
    */

@@ -577,6 +577,10 @@ export class NormalizedName {
     return NormalizedName.normalizeName(this.name);
   }
 
+  equals(other: NormalizedName) {
+    return other.toString() === this.toString();
+  }
+
   private static normalizeName(name?: string): string {
     if (!name) {
       return '';

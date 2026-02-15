@@ -242,7 +242,7 @@
   "settings.translation.title": "Navrhněte překlad",
   "settings.use_imperial_units.label": "Použít imperiální jednotky",
   "settings.use_imperial_units.subtitle": "Použít libry namísto kilogramů",
-  "stats.all_time.label": "Historicky",
+  "time_select.all_time.label": "Historicky",
   "stats.average_time_between_sets.label": "Průměrný čas mezi sety",
   "stats.heaviest_lift.label": "Nejtěžší váha",
   "stats.most_time_spent.label": "Nejvíce času ",

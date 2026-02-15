@@ -330,7 +330,7 @@
   "settings.translation.title": "Föreslå en översättning",
   "settings.use_imperial_units.label": "Använd brittiska måttenheter",
   "settings.use_imperial_units.subtitle": "Används pounds iställer för kilogram",
-  "stats.all_time.label": "All tid",
+  "time_select.all_time.label": "All tid",
   "stats.average_time_between_sets.label": "Medeltid mellan set",
   "stats.heaviest_lift.label": "Tyngsta lyft",
   "stats.max_weight_in_workout.label": "Maxvikt lyft under ett pass",

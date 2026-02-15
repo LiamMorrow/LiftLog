@@ -18,7 +18,7 @@ export default function AppBottomSheet({
     <Portal>
       <BottomSheet
         ref={sheetRef}
-        snapPoints={snapPoints ?? ['40%', '70%', '80%']}
+        snapPoints={snapPoints ?? ['40%', '80%']}
         backgroundStyle={[
           { backgroundColor: colors.surfaceContainerHighest },
           backgroundStyle,

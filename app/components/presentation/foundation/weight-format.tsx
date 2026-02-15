@@ -14,10 +14,13 @@ interface WeightFormatProps {
   fontSize?: FontChoice;
   color?: ColorChoice;
   fontWeight?: TextStyle['fontWeight'];
+  decimalPlaces?: number;
 }
 export default function WeightFormat(props: WeightFormatProps) {
   const weightDisplay =
-    localeFormatBigNumber(props.weight?.value.decimalPlaces(4)) || '-';
+    localeFormatBigNumber(
+      props.weight?.value.decimalPlaces(props.decimalPlaces ?? 4),
+    ) || '-';
   const { colors } = useAppTheme();
   return (
     <Text

@@ -257,7 +257,7 @@
   "settings.translation.title": "Запропонувати переклад",
   "settings.use_imperial_units.label": "Використовувати імперські одиниці",
   "settings.use_imperial_units.subtitle": "Використовувати фунти замість кілограмів",
-  "stats.all_time.label": "За весь час",
+  "time_select.all_time.label": "За весь час",
   "stats.average_time_between_sets.label": "Середній час між підходами",
   "stats.heaviest_lift.label": "Найважчий підйом",
   "stats.max_weight_in_workout.label": "Максимальна піднята вага за тренування",

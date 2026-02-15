@@ -1,13 +1,20 @@
-import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Duration, OffsetDateTime, Period } from '@js-joda/core';
+import {
+  createAction,
+  createSelector,
+  createSlice,
+  PayloadAction,
+} from '@reduxjs/toolkit';
+import { Duration, LocalDate, OffsetDateTime } from '@js-joda/core';
 import { Weight } from '@/models/weight';
+import { LocalDateRange } from '@/models/time-models';
+import { RemoteData } from '@/models/remote';
+import { NormalizedName } from '@/models/blueprint-models';
 
 interface StatsState {
   isDirty: boolean;
-  isLoading: boolean;
   overallViewSessionName: string | undefined;
-  overallViewTime: Period;
-  overallView: GranularStatisticView | undefined;
+  overallViewTime: LocalDateRange;
+  overallView: RemoteData<GranularStatisticView>;
   pinnedExerciseStatistics: PinnedExerciseStatistic[];
 }
 
@@ -22,13 +29,20 @@ export interface OptionalTimeTrackedStatistic<T> {
   value: T | undefined;
 }
 
-export interface ExerciseStatistics {
+export interface RepsBreakdownStatistics {
+  breakdown: Record<
+    number,
+    {
+      numberOfSets: number;
+    }
+  >;
+}
+
+export interface WeightedExerciseStatistics {
   exerciseName: string;
-  statistics: StatisticOverTime;
-  oneRepMaxStatistics: StatisticOverTime;
-  totalLifted: Weight;
-  max: Weight;
-  current: Weight;
+  maxLiftedPerSessionStatistics: WeightedStatisticOverTime;
+  totalVolumeStatistics: WeightedStatisticOverTime;
+  repsStatistics: RepsBreakdownStatistics;
   oneRepMax: Weight;
 }
 
@@ -36,9 +50,10 @@ export interface PinnedExerciseStatistic {
   exerciseName: string;
 }
 
-export interface StatisticOverTime {
-  title: string;
+export interface WeightedStatisticOverTime {
   statistics: TimeTrackedStatistic<Weight>[];
+  currentValue: Weight;
+  totalValue: Weight;
   maxValue: Weight;
   minValue: Weight;
 }
@@ -50,11 +65,6 @@ export interface OptionalStatisticOverTime<T> {
   minValue: T;
 }
 
-export interface TimeSpentExercise {
-  exerciseName: string;
-  timeSpent: Duration;
-}
-
 export interface HeaviestLift {
   exerciseName: string;
   weight: Weight;
@@ -64,18 +74,17 @@ export interface GranularStatisticView {
   maxWeightLiftedInAWorkout: Weight | undefined;
   averageSessionLength: Duration;
   heaviestLift: HeaviestLift | undefined;
-  exerciseMostTimeSpent: TimeSpentExercise | undefined;
-  exerciseStats: ExerciseStatistics[];
+  weightedExerciseStats: WeightedExerciseStatistics[];
   sessionStats: OptionalStatisticOverTime<Weight>[];
-  bodyweightStats: StatisticOverTime;
+  bodyweightStats: WeightedStatisticOverTime;
 }
 
+const today = LocalDate.now();
 const initialState: StatsState = {
   isDirty: true,
-  isLoading: false,
   overallViewSessionName: undefined,
-  overallViewTime: Period.ofDays(90),
-  overallView: undefined,
+  overallViewTime: { from: today.minusDays(90), to: today },
+  overallView: RemoteData.notAsked(),
   pinnedExerciseStatistics: [],
 };
 
@@ -85,17 +94,14 @@ const statsSlice = createSlice({
   reducers: {
     setOverallStats(
       state,
-      action: PayloadAction<GranularStatisticView | undefined>,
+      action: PayloadAction<RemoteData<GranularStatisticView>>,
     ) {
       state.overallView = action.payload;
-    },
-    setStatsIsLoading(state, action: PayloadAction<boolean>) {
-      state.isLoading = action.payload;
     },
     setStatsIsDirty(state, action: PayloadAction<boolean>) {
       state.isDirty = action.payload;
     },
-    setOverallViewTime(state, action: PayloadAction<Period>) {
+    setOverallViewTime(state, action: PayloadAction<LocalDateRange>) {
       state.overallViewTime = action.payload;
     },
     setOverallViewSession(state, action: PayloadAction<string | undefined>) {
@@ -109,23 +115,34 @@ const statsSlice = createSlice({
     },
   },
   selectors: {
-    selectIsLoading: (state: StatsState) => state.isLoading,
     selectOverallView: (state: StatsState) => state.overallView,
     selectPinnedExerciseStats: (state: StatsState) =>
       state.pinnedExerciseStatistics,
   },
 });
+
 export const {
   setOverallStats,
-  setStatsIsLoading,
   setStatsIsDirty,
   setOverallViewTime,
   setOverallViewSession,
   setPinnedExerciseStats,
 } = statsSlice.actions;
 
-export const { selectIsLoading, selectOverallView, selectPinnedExerciseStats } =
+export const { selectOverallView, selectPinnedExerciseStats } =
   statsSlice.selectors;
+export const selectExerciseView = createSelector(
+  selectOverallView,
+  (_, exercise: string) => exercise,
+  (state: RemoteData<GranularStatisticView>, exerciseName: string) =>
+    state.map((x) =>
+      x.weightedExerciseStats.find((ex) =>
+        new NormalizedName(ex.exerciseName).equals(
+          new NormalizedName(exerciseName),
+        ),
+      ),
+    ),
+);
 
 export const fetchOverallStats = createAction('fetchOverallStats');
 

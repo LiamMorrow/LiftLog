@@ -236,7 +236,7 @@
   "settings.translation.title": "Suggerisci una traduzione",
   "settings.use_imperial_units.label": "Usa unità imperiali",
   "settings.use_imperial_units.subtitle": "Usa le libbre al posto dei chilogrammi",
-  "stats.all_time.label": "Sempre",
+  "time_select.all_time.label": "Sempre",
   "stats.average_time_between_sets.label": "Media tempo tra le serie",
   "stats.heaviest_lift.label": "Ripetizione più pesante",
   "stats.most_time_spent.label": "Maggior tempo trascorso",
