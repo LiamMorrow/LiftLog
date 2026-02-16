@@ -380,7 +380,7 @@
   "workout.manage.title": "Gerenciar treinos",
   "workout.manage.title_named": "Gerenciar {workoutName}",
   "workout.name.label": "Nome do treino",
-  "workout.no_sessions_in_month.message": "Nada registrado no {month} <br>Complete um treino ou mude para outro mês para visualizar suas sessões.",
+  "workout.no_sessions_in_month.message": "Nada registrado em {month} <br>Complete um treino ou mude para outro mês para visualizar suas sessões.",
   "workout.no_workouts_in_plan.message": "Nenhum treino no plano <br>Adicione um treino para começar.",
   "workout.notes.label": "Observações do treino",
   "workout.notes.title": "Observações do treino",
