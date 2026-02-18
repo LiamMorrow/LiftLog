@@ -1,4 +1,4 @@
-import { CardioValueSelector } from '@/components/presentation/workout/cardio/CardioValueSelector';
+import { CardioValueSelector } from '@/components/presentation/workout/cardio/cardio-value-selector';
 import BigNumber from 'bignumber.js';
 import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';

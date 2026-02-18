@@ -1,4 +1,4 @@
-import { CardioTrackerCard } from '@/components/presentation/workout/cardio/CardioTrackerCard';
+import { CardioTrackerCard } from '@/components/presentation/workout/cardio/cardio-tracker-card';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import TimerEditor from '@/components/presentation/foundation/editors/timer-editor';
 import { useAppTheme, spacing, rounding } from '@/hooks/useAppTheme';

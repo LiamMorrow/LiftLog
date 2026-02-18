@@ -1,4 +1,4 @@
-import { CardioTrackerCard } from '@/components/presentation/workout/cardio/CardioTrackerCard';
+import { CardioTrackerCard } from '@/components/presentation/workout/cardio/cardio-tracker-card';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useAppTheme, font } from '@/hooks/useAppTheme';
 import { T } from '@tolgee/react';

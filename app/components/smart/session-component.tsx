@@ -50,7 +50,7 @@ import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { formatDuration } from '@/utils/format-date';
 import { match, P } from 'ts-pattern';
-import { CardioExercise } from '@/components/presentation/workout/cardio/CardioExercise';
+import { CardioExercise } from '@/components/presentation/workout/cardio/cardio-exercise';
 
 export default function SessionComponent(props: {
   target: SessionTarget;

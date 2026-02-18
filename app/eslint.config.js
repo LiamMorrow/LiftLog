@@ -7,6 +7,7 @@ const unusedImports = require('eslint-plugin-unused-imports');
 const typescriptEslint = require('@typescript-eslint/eslint-plugin');
 const tsParser = require('@typescript-eslint/parser');
 const js = require('@eslint/js');
+const checkFile = require('eslint-plugin-check-file');
 
 const { FlatCompat } = require('@eslint/eslintrc');
 
@@ -18,6 +19,23 @@ const compat = new FlatCompat({
 });
 
 module.exports = defineConfig([
+  {
+    plugins: {
+      'check-file': checkFile,
+    },
+    files: ['components/**/*.ts', 'components/**/*.tsx'],
+    rules: {
+      'check-file/filename-naming-convention': [
+        'error',
+        {
+          '**/*.{tsx,ts}': 'KEBAB_CASE',
+        },
+        {
+          ignoreMiddleExtensions: true,
+        },
+      ],
+    },
+  },
   {
     extends: compat.extends(
       'expo',

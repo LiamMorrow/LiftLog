@@ -1,5 +1,5 @@
-import { CardioValueSelector } from '@/components/presentation/workout/cardio/CardioValueSelector';
-import { DecimalEditor } from '@/components/presentation/foundation/editors/DecimalEditor';
+import { CardioValueSelector } from '@/components/presentation/workout/cardio/cardio-value-selector';
+import { DecimalEditor } from '@/components/presentation/foundation/editors/decimal-editor';
 import BigNumber from 'bignumber.js';
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
 import { useTranslate } from '@tolgee/react';

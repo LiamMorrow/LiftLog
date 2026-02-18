@@ -1,7 +1,7 @@
 import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
-import { CardioValueSelector } from '@/components/presentation/workout/cardio/CardioValueSelector';
-import { IntegerEditor } from '@/components/presentation/foundation/editors/IntegerEditor';
+import { CardioValueSelector } from '@/components/presentation/workout/cardio/cardio-value-selector';
+import { IntegerEditor } from '@/components/presentation/foundation/editors/integer-editor';
 
 export function CardioStepsTracker({
   steps,
