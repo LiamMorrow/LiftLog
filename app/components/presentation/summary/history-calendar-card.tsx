@@ -151,7 +151,6 @@ export default function HistoryCalendarCard({
         <HistoryCalendarDay
           key={date.toString() + dateEnterDelay}
           sessions={sessionsByDate.get(date.toString())}
-          // eslint-disable-next-line react-compiler/react-compiler
           delayEntranceAnimMs={(dateEnterDelay += 5)}
           day={date}
           onPress={() => handleDayPress(date)}
