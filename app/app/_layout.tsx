@@ -11,6 +11,13 @@ import '@/utils/date-locale';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import * as Sentry from '@sentry/react-native';
 import ServicesProvider from '@/components/smart/services-provider';
+import { useFonts } from 'expo-font';
+import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
+import { VT323_400Regular } from '@expo-google-fonts/vt323';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
+
+void SplashScreen.preventAutoHideAsync();
 
 LogBox.ignoreLogs([
   /.*is not a valid icon name.*/,
@@ -19,10 +26,27 @@ LogBox.ignoreLogs([
   /.*Failed to fetch inbox.*/,
   /.*Failed to update profile*/,
 ]);
-I18nManager.swapLeftAndRightInRTL(true);
+
+if (Platform.OS === 'android') {
+  I18nManager.swapLeftAndRightInRTL(true);
+}
 
 export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
+  const [fontsLoaded] = useFonts({
+    PressStart2P_400Regular,
+    VT323_400Regular,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      void SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <GestureHandlerRootView>
