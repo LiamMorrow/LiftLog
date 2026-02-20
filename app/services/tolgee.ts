@@ -16,7 +16,7 @@ import pt from '../i18n/pt.json';
 import ar from '../i18n/ar.json';
 import sv from '../i18n/sv.json';
 import pl from '../i18n/pl.json';
-import { DevTools, FormatSimple, Tolgee } from '@tolgee/react';
+import { FormatSimple, Tolgee } from '@tolgee/react';
 import { PreferenceService } from '@/services/preference-service';
 
 export const supportedLanguages = [
@@ -38,8 +38,6 @@ export const supportedLanguages = [
 
 export const getTolgee = (preferenceService: PreferenceService) =>
   Tolgee()
-    // DevTools will work only for web view
-    .use(DevTools())
     .use(FormatSimple())
     .use(DetectLanguage(preferenceService))
     .init({
