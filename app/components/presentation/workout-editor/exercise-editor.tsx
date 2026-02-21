@@ -504,20 +504,11 @@ function WeightedExerciseEditor({
 }) {
   const { t } = useTranslate();
 
-  const incrementSets = () => updateExercise({ sets: exercise.sets + 1 });
+  const setSets = (value: number) =>
+    updateExercise({ sets: Math.max(value, 1) });
 
-  const decrementSets = () =>
-    updateExercise({ sets: Math.max(exercise.sets - 1, 0) });
-
-  const setSets = (value: number) => updateExercise({ sets: value });
-
-  const incrementReps = () =>
-    updateExercise({ repsPerSet: exercise.repsPerSet + 1 });
-
-  const decrementReps = () =>
-    updateExercise({ repsPerSet: Math.max(exercise.repsPerSet - 1, 0) });
-
-  const setReps = (value: number) => updateExercise({ repsPerSet: value });
+  const setReps = (value: number) =>
+    updateExercise({ repsPerSet: Math.max(value, 1) });
 
   const setExerciseWeightIncrease = (weightIncreaseOnSuccess: BigNumber) =>
     updateExercise({ weightIncreaseOnSuccess });
@@ -544,8 +535,6 @@ function WeightedExerciseEditor({
           <Card.Content>
             <FixedIncrementer
               label={t('exercise.sets.label')}
-              increment={incrementSets}
-              decrement={decrementSets}
               onValueChange={setSets}
               value={exercise.sets}
               testID="exercise-sets"
@@ -564,8 +553,6 @@ function WeightedExerciseEditor({
           <Card.Content>
             <FixedIncrementer
               label={t('exercise.reps.label')}
-              increment={incrementReps}
-              decrement={decrementReps}
               onValueChange={setReps}
               value={exercise.repsPerSet}
               testID="exercise-reps"
