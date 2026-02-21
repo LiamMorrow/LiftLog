@@ -6,9 +6,7 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 interface FixedIncrementerProps<T> {
   value: T;
   label: string;
-  increment: () => void;
-  decrement: () => void;
-  onValueChange?: (value: number) => void;
+  onValueChange: (value: number) => void;
   testID?: string;
 }
 
@@ -21,7 +19,6 @@ export default function FixedIncrementer<T extends { toString(): string }>(
   const inputRef = useRef<TextInput>(null);
 
   const handlePress = () => {
-    if (!props.onValueChange) return;
     setEditText(props.value?.toString() ?? '');
     setIsEditing(true);
     setTimeout(() => inputRef.current?.focus(), 50);
@@ -30,7 +27,7 @@ export default function FixedIncrementer<T extends { toString(): string }>(
   const handleSubmit = () => {
     setIsEditing(false);
     const parsed = parseInt(editText, 10);
-    if (!isNaN(parsed) && parsed >= 0 && props.onValueChange) {
+    if (!isNaN(parsed)) {
       props.onValueChange(parsed);
     }
   };
@@ -60,7 +57,7 @@ export default function FixedIncrementer<T extends { toString(): string }>(
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <IconButton
             icon={'remove'}
-            onPress={props.decrement}
+            onPress={() => props.onValueChange(Number(props.value) - 1)}
             testID="fixed-decrement"
           />
           {isEditing ? (
@@ -102,7 +99,7 @@ export default function FixedIncrementer<T extends { toString(): string }>(
           )}
           <IconButton
             icon={'add'}
-            onPress={props.increment}
+            onPress={() => props.onValueChange(Number(props.value) + 1)}
             testID="fixed-increment"
           />
         </View>
