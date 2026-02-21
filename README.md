@@ -119,9 +119,10 @@ Contributions, issues, and feature requests are welcome! See [CONTRIBUTING.md](.
 
 ## 📚 Documentation
 
-- [Feed Process](./docs/FeedProcess.md)
-- [Remote Backup](./docs/RemoteBackup.md)
-- [Plaintext Export](./docs/PlaintextExport.md)
+- [Feed Process](./docs/FeedProcess.md) - Documents how the feed and sharing works, especially around e2e encryption.
+- [Remote Backup](./docs/RemoteBackup.md) - Documents how to connect LiftLog to a remote backup server.
+- [Plaintext Export](./docs/PlaintextExport.md) - Documents how to export your data as plaintext.
+- [Workout Worker](./docs/WorkoutWorker.md) - Documents the WorkoutWorker, an event based bridge between native and JS which powers the Android persistent notifications.
 
 ## 💬 Support & Community
 
