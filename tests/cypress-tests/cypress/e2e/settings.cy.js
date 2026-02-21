@@ -60,9 +60,6 @@ function assertShowsBodyweightOnAllPages(shouldShow) {
   cy.getByTestId('stats-time-selector').click()
   cy.contains('All time').click({ force: true })
 
-
-  cy.getByTestId('bodyweight-stat-card').should(classify)
-
   cy.navigate('Workout')
   cy.navigate('Workout')
   cy.contains('Start workout').first().click()

@@ -23,6 +23,7 @@ import { useMountEffect } from '@/hooks/useMountEffect';
 import ExerciseMuscleSelector from '@/components/presentation/workout-editor/exercise-muscle-selector';
 import ExerciseFilterer from '@/components/presentation/workout-editor/exercise-filterer';
 import { LegendList } from '@legendapp/list';
+import { getState } from '@/store/store';
 
 function ExerciseListItem({
   exerciseId,
@@ -42,6 +43,9 @@ function ExerciseListItem({
   useEffect(() => {
     rowRef.current?.closeRowWithoutAnimation();
   }, [exerciseId]);
+  if (!exercise) {
+    return <View></View>;
+  }
 
   return (
     // @ts-expect-error -- Swipe row seems to have trouble with typescript, it works
@@ -147,7 +151,7 @@ export default function ExerciseManager() {
   };
 
   const deleteExercise = (id: string) => {
-    const exercise = exercises[id];
+    const exercise = getState().storedSessions.savedExercises[id];
     if (!exercise) {
       return;
     }

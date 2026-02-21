@@ -179,7 +179,6 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
         {bottomSheetShown && (
           <LegendList
             data={exerciseListItems}
-            // @ts-expect-error -- It does work - see:https://github.com/gorhom/react-native-bottom-sheet/issues/1120#issuecomment-1582872948
             renderScrollComponent={BottomSheetScrollView}
             getItemType={(_, index) => (index === 0 ? 'filters' : 'exercise')}
             keyExtractor={(item, index) => (index === 0 ? 'filters' : item)}
@@ -292,6 +291,7 @@ function CardioSetEditor(props: {
       <List.Section>
         <ListSwitch
           value={set.trackDuration || set.target.type === 'time'}
+          testID="track-time-switch"
           onValueChange={(trackDuration) =>
             updateSet(set.with({ trackDuration }))
           }
@@ -300,6 +300,7 @@ function CardioSetEditor(props: {
         />
         <ListSwitch
           value={set.trackDistance || set.target.type === 'distance'}
+          testID="track-distance-switch"
           onValueChange={(trackDistance) =>
             updateSet(set.with({ trackDistance }))
           }
