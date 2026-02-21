@@ -3,7 +3,6 @@ import SingleValueStatisticCard from '@/components/presentation/stats/single-val
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import {
-  ExerciseStatistics,
   fetchOverallStats,
   GranularStatisticView,
   selectOverallView,
@@ -11,6 +10,7 @@ import {
   setOverallViewTime,
   setStatsIsDirty,
 } from '@/store/stats';
+import { LegendList } from '@legendapp/list';
 import { formatDuration } from '@/utils/format-date';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect } from 'expo-router';
@@ -26,10 +26,9 @@ import SelectButton, {
 import { LocalDate, Period } from '@js-joda/core';
 import { selectCompletedDistinctSessionNames } from '@/store/stored-sessions';
 import { Divider, Searchbar } from 'react-native-paper';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import BodyweightStatGraphCard from '@/components/presentation/stats/bodyweight-stat-graph-card';
 import { useScroll } from '@/hooks/useScrollListener';
-import { FlashList, FlashListRef } from '@shopify/flash-list';
 import SessionStatGraphCard from '@/components/presentation/stats/session-stat-graph-card';
 import { Weight } from '@/models/weight';
 
@@ -42,19 +41,15 @@ export default function StatsPage() {
   const stats = useAppSelector(selectOverallView);
   const [searchText, setSearchText] = useState<string>('');
   const { handleScroll } = useScroll();
-  const scrollRef = useRef<FlashListRef<ExerciseStatistics>>(null);
   const data = useMemo(
     () =>
       stats?.exerciseStats.filter((x) =>
         x.exerciseName
           .toLocaleLowerCase()
           .includes(searchText.toLocaleLowerCase()),
-      ),
+      ) ?? [],
     [stats?.exerciseStats, searchText],
   );
-  useEffect(() => {
-    scrollRef.current?.scrollToTop();
-  }, [data]);
   if (!stats) {
     return <Loader />;
   }
@@ -66,8 +61,7 @@ export default function StatsPage() {
           title: t('stats.statistics.title'),
         }}
       />
-      <FlashList
-        ref={scrollRef}
+      <LegendList
         onScroll={handleScroll}
         ListHeaderComponent={
           <ListHeader

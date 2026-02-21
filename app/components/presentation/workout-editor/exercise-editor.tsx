@@ -30,9 +30,10 @@ import {
   selectExerciseIds,
 } from '@/store/stored-sessions';
 import { assertUnreachable } from '@/utils/assert-unreachable';
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import BottomSheet, {
+  useBottomSheetScrollableCreator,
+} from '@gorhom/bottom-sheet';
 import { Duration } from '@js-joda/core';
-import { FlashList } from '@shopify/flash-list';
 import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -45,6 +46,7 @@ import {
   TextInput,
 } from 'react-native-paper';
 import { match, P } from 'ts-pattern';
+import { LegendList } from '@legendapp/list';
 
 interface ExerciseEditorProps {
   exercise: ExerciseBlueprint;
@@ -57,6 +59,7 @@ const distanceUnitOptions = DistanceUnits.map((value) => ({
 export function ExerciseEditor(props: ExerciseEditorProps) {
   const exerciseIds = useAppSelector(selectExerciseIds);
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const BottomSheetScrollView = useBottomSheetScrollableCreator();
   const selectExerciseFromSearch = (ex: ExerciseDescriptor) => {
     updateExercise({ name: ex.name, notes: ex.instructions });
     bottomSheetRef.current?.close();
@@ -174,7 +177,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
         enableDynamicSizing={false}
       >
         {bottomSheetShown && (
-          <FlashList
+          <LegendList
             data={exerciseListItems}
             // @ts-expect-error -- It does work - see:https://github.com/gorhom/react-native-bottom-sheet/issues/1120#issuecomment-1582872948
             renderScrollComponent={BottomSheetScrollView}

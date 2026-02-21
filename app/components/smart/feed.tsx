@@ -31,7 +31,7 @@ import { Card, Icon, List, TextInput } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
-import { FlashList } from '@shopify/flash-list';
+import { LegendList } from '@legendapp/list';
 
 export default function Feed() {
   const feedItems = useAppSelector(selectFeedSessionItems);
@@ -39,7 +39,7 @@ export default function Feed() {
   const fetchingFeedItems = useAppSelector((x) => x.feed.isFetching);
   const dispatch = useDispatch();
   return (
-    <FlashList
+    <LegendList
       testID="feed-list"
       ListHeaderComponent={<FeedProfileHeader />}
       onRefresh={() => {

@@ -20,8 +20,8 @@ import { List } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
-import { FlashList } from '@shopify/flash-list';
 import { match, P } from 'ts-pattern';
+import { LegendList } from '@legendapp/list';
 
 type FeedFollowItem = FollowRequest | FeedUser;
 
@@ -35,7 +35,7 @@ export function FeedFollowers() {
   const fetchingFeedItems = useAppSelector((x) => x.feed.isFetching);
   const dispatch = useDispatch();
   return (
-    <FlashList
+    <LegendList
       style={{ flex: 1 }}
       onRefresh={() => {
         dispatch(fetchInboxItems({ fromUserAction: true }));

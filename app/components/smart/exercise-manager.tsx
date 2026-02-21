@@ -6,7 +6,6 @@ import { AnimatedFAB, Icon, List, TextInput } from 'react-native-paper';
 import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
 import { AccordionItem } from '@/components/presentation/foundation/accordion-item';
 import { useScroll } from '@/hooks/useScrollListener';
-import { FlashList, useRecyclingState } from '@shopify/flash-list';
 import {
   deleteExercise as deleteExerciseAction,
   ExerciseDescriptor,
@@ -23,6 +22,7 @@ import { showSnackbar } from '@/store/app';
 import { useMountEffect } from '@/hooks/useMountEffect';
 import ExerciseMuscleSelector from '@/components/presentation/workout-editor/exercise-muscle-selector';
 import ExerciseFilterer from '@/components/presentation/workout-editor/exercise-filterer';
+import { LegendList } from '@legendapp/list';
 
 function ExerciseListItem({
   exerciseId,
@@ -35,14 +35,8 @@ function ExerciseListItem({
 }) {
   const { colors } = useAppTheme();
   const exercise = useAppSelectorWithArg(selectExerciseById, exerciseId);
-  const [expanded, setExpanded] = useRecyclingState(expand, [
-    exerciseId,
-    expand,
-  ]);
-  const [listExpanded, setListExpanded] = useRecyclingState(expand, [
-    exerciseId,
-    expand,
-  ]);
+  const [expanded, setExpanded] = useState(expand);
+  const [listExpanded, setListExpanded] = useState(expand);
 
   const rowRef = useRef<SwipeRow<unknown>>(null);
   useEffect(() => {
@@ -188,7 +182,7 @@ export default function ExerciseManager() {
   };
   return (
     <View style={{ flex: 1 }}>
-      <FlashList
+      <LegendList
         onScroll={onScroll}
         style={{ flex: 1 }}
         data={flatListItems}

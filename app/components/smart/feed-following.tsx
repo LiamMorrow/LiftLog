@@ -13,7 +13,7 @@ import React, { useState } from 'react';
 import { List, Menu } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
-import { FlashList } from '@shopify/flash-list';
+import { LegendList } from '@legendapp/list';
 
 export function FeedFollowing() {
   const following = useAppSelector(selectFeedFollowing);
@@ -21,7 +21,7 @@ export function FeedFollowing() {
   const fetchingFeedItems = useAppSelector((x) => x.feed.isFetching);
   const dispatch = useDispatch();
   return (
-    <FlashList
+    <LegendList
       style={{ flex: 1 }}
       onRefresh={() => {
         dispatch(fetchInboxItems({ fromUserAction: true }));

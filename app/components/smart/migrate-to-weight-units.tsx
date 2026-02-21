@@ -9,7 +9,7 @@ import {
   setExercisesRequiringWeightMigration,
   updateExerciseRequiringWeightMigration,
 } from '@/store/stored-sessions';
-import { FlashList } from '@shopify/flash-list';
+import { LegendList } from '@legendapp/list';
 import { useTranslate } from '@tolgee/react';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
@@ -39,7 +39,7 @@ export function MigrateToWeightUnitsWizard() {
         dispatch(migrateExerciseWeights());
       }}
     >
-      <FlashList
+      <LegendList
         style={{ flex: 1, marginHorizontal: -spacing.pageHorizontalMargin }}
         ListHeaderComponent={
           <View
