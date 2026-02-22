@@ -14,7 +14,7 @@ export default function FixedIncrementer(props: FixedIncrementerProps) {
   const { colors } = useAppTheme();
 
   return (
-    <View>
+    <View testID={props.testID}>
       <Text
         style={{
           color: colors.onSurface,

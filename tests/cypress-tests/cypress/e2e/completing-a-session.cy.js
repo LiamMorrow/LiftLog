@@ -207,7 +207,8 @@ describe('Completing a session', () => {
         cy.getByTestId('exercise-edit-menu-button').first().click()
 
         // Update the number of reps to 6
-        cy.dialog().findByTestId('exercise-reps').should('contain.text', '5').findByTestId('fixed-increment').click()
+        cy.dialog().findByTestId('exercise-reps').findByTestId('fixed-value-input').should('contain.value', '5')
+        cy.dialog().findByTestId('exercise-reps').findByTestId('fixed-increment').click()
         cy.dialog().findByTestId('dialog-action').click()
 
         // Complete all sets
