@@ -32,7 +32,6 @@ public class PurchaseTokenAuthenticationHandler
         // Check for Authorization header
         if (!Request.Headers.ContainsKey("Authorization"))
         {
-            _logger.LogWarning("Missing Authorization header");
             return AuthenticateResult.Fail("Missing Authorization header");
         }
 
