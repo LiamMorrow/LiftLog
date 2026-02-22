@@ -1,8 +1,9 @@
-name: Test UI
+name: Test Cypress
 
 on:
   push:
     paths:
+      - tests/**
       - backend/**
       - .github/**
       - app/**

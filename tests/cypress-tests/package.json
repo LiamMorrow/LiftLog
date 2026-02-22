@@ -4,7 +4,7 @@
   "description": "A collection of cypress tests for testing LiftLog.Web",
   "main": "index.js",
   "scripts": {
-    "cypress-ci": "cypress run --browser=chrome",
+    "cypress-ci": "cypress run --browser=electron",
     "cypress-open": "cypress open",
     "local-api": "dotnet run --project ../../backend/LiftLog.Api",
     "local-api-with-deps": "docker compose -f ../../backend/LiftLog.Api/docker-compose.yml up -d && npm run local-api",
