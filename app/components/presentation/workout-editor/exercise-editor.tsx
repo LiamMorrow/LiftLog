@@ -524,15 +524,7 @@ function WeightedExerciseEditor({
           marginBlockEnd: spacing[2],
         }}
       >
-        <Card
-          style={{
-            flexGrow: 1,
-            flex: 1,
-            paddingVertical: spacing[2],
-            justifyContent: 'center',
-          }}
-          mode="contained"
-        >
+        <Card style={{ flex: 1 }} mode="contained">
           <Card.Content>
             <FixedIncrementer
               label={t('exercise.sets.label')}
@@ -542,15 +534,7 @@ function WeightedExerciseEditor({
             />
           </Card.Content>
         </Card>
-        <Card
-          style={{
-            flexGrow: 1,
-            flex: 1,
-            paddingVertical: spacing[2],
-            justifyContent: 'center',
-          }}
-          mode="contained"
-        >
+        <Card style={{ flex: 1 }} mode="contained">
           <Card.Content>
             <FixedIncrementer
               label={t('exercise.reps.label')}

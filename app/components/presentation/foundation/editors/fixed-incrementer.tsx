@@ -24,33 +24,35 @@ export default function FixedIncrementer(props: FixedIncrementerProps) {
       >
         {props.label}
       </Text>
+
+      <IntegerEditor
+        style={{
+          color: colors.primary,
+          ...font['text-2xl'],
+          fontWeight: 'bold',
+          textAlign: 'center',
+          flex: 1,
+        }}
+        onChange={props.onValueChange}
+        value={props.value}
+        testID="fixed-value-input"
+      />
+
       <View
         style={{
           flexDirection: 'row',
+          justifyContent: 'space-between',
           alignItems: 'center',
-          alignSelf: 'center',
         }}
       >
         <IconButton
           icon={'remove'}
-          onPress={() => props.onValueChange(Number(props.value) - 1)}
+          onPress={() => props.onValueChange(props.value - 1)}
           testID="fixed-decrement"
-        />
-        <IntegerEditor
-          style={{
-            color: colors.primary,
-            ...font['text-3xl'],
-            fontWeight: 'bold',
-            textAlign: 'center',
-            minWidth: 40,
-          }}
-          onChange={props.onValueChange}
-          value={props.value}
-          testID="fixed-value-input"
         />
         <IconButton
           icon={'add'}
-          onPress={() => props.onValueChange(Number(props.value) + 1)}
+          onPress={() => props.onValueChange(props.value + 1)}
           testID="fixed-increment"
         />
       </View>
