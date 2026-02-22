@@ -521,13 +521,14 @@ function WeightedExerciseEditor({
           alignItems: 'center',
           width: '100%',
           gap: spacing[4],
+          marginBlockEnd: spacing[2],
         }}
       >
         <Card
           style={{
             flexGrow: 1,
             flex: 1,
-            paddingVertical: spacing[5],
+            paddingVertical: spacing[2],
             justifyContent: 'center',
           }}
           mode="contained"
@@ -545,7 +546,7 @@ function WeightedExerciseEditor({
           style={{
             flexGrow: 1,
             flex: 1,
-            paddingVertical: spacing[5],
+            paddingVertical: spacing[2],
             justifyContent: 'center',
           }}
           mode="contained"

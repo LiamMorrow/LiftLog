@@ -44,6 +44,8 @@ export function IntegerEditor(props: IntegerEditorProps) {
       onChangeText={handleTextChange}
       selectTextOnFocus
       style={[props.style]}
+      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+      textColor={props.style?.color! as string}
       onBlur={() => {
         if (text === '') {
           setText('0');
