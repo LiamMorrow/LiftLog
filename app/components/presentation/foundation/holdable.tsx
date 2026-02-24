@@ -17,6 +17,7 @@ export type HoldableProps = {
   children: ReactNode;
   onLongPress: () => void;
   duration?: number;
+  disabled?: boolean;
   style?: ViewStyle;
 } & Pick<AnimatedProps<Animated.View>, 'layout' | 'entering' | 'exiting'>;
 export default function Holdable({
@@ -25,6 +26,7 @@ export default function Holdable({
   duration = 500,
   style,
   layout,
+  disabled,
   entering,
   exiting,
 }: HoldableProps) {
@@ -51,12 +53,14 @@ export default function Holdable({
     });
     if (!triggered) cancelHaptic();
   };
-  const gesture = Gesture.LongPress()
-    .minDuration(duration)
-    .runOnJS(true)
-    .onBegin(enterHold)
-    .onFinalize((_, triggered) => exitHold(triggered))
-    .onStart(handleLongPress);
+  const gesture = disabled
+    ? Gesture.Manual()
+    : Gesture.LongPress()
+        .minDuration(duration)
+        .runOnJS(true)
+        .onBegin(enterHold)
+        .onFinalize((_, triggered) => exitHold(triggered))
+        .onStart(handleLongPress);
 
   const scaleStyle = useAnimatedStyle(() => ({
     transform: [{ scale: holdingScale.value }],

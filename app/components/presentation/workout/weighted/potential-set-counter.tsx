@@ -36,7 +36,10 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
   const [applyTo, setApplyTo] = useState<WeightAppliesTo>('uncompletedSets');
 
   return (
-    <Holdable onLongPress={() => setIsRepsDialogOpen(true)}>
+    <Holdable
+      disabled={props.isReadonly}
+      onLongPress={() => setIsRepsDialogOpen(true)}
+    >
       <FocusRing
         isSelected={props.toStartNext}
         radius={rounding.roundedRectangleFocusRingRadius}
