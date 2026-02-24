@@ -10,7 +10,7 @@ import {
   SharedProgramBlueprint,
   SharedSession,
 } from '@/models/feed-models';
-import { savePlan } from '@/store/program';
+import { addProgramSession, savePlan } from '@/store/program';
 import { showSnackbar } from '@/store/app';
 import { T } from '@tolgee/react';
 import { Animated, View } from 'react-native';
@@ -130,6 +130,8 @@ function SharedSessionContent({ sharedItem }: { sharedItem: SharedSession }) {
   const dispatch = useDispatch();
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
   const headerColor = useScrollHeaderColor();
+  const activeProgramId = useAppSelector((x) => x.program.activeProgramId);
+  const { push } = useRouter();
 
   useMountEffect(() => {
     dispatch(setCurrentSession({ target: 'sharedSession', session }));
@@ -146,7 +148,15 @@ function SharedSessionContent({ sharedItem }: { sharedItem: SharedSession }) {
       >
         <Button
           icon={'assignment'}
-          onPress={() => {}}
+          onPress={() => {
+            dispatch(
+              addProgramSession({
+                programId: activeProgramId,
+                sessionBlueprint: session.blueprint,
+              }),
+            );
+            push(`/settings/manage-workouts/${activeProgramId}`);
+          }}
           mode="outlined"
           style={{ flex: 1 }}
         >
@@ -154,7 +164,14 @@ function SharedSessionContent({ sharedItem }: { sharedItem: SharedSession }) {
         </Button>
         <Button
           icon={'playCircle'}
-          onPress={() => {}}
+          onPress={() => {
+            dispatch(
+              setCurrentSession({
+                target: 'workoutSession',
+                session: session.with({ id: uuid() }),
+              }),
+            );
+          }}
           mode="contained"
           style={{ flex: 1 }}
         >
