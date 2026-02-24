@@ -81,7 +81,6 @@ import { msPersonFill } from '@material-symbols-react-native/outlined-400/msPers
 import { MsIcon } from 'material-symbols-react-native';
 import { IconProps } from 'react-native-paper/lib/typescript/components/MaterialCommunityIcon';
 import { Platform } from 'react-native';
-import { match } from 'ts-pattern';
 import { msReplay } from '@material-symbols-react-native/outlined-400/msReplay';
 import { msAssignmentAdd } from '@material-symbols-react-native/outlined-400/msAssignmentAdd';
 import { msCopyAll } from '@material-symbols-react-native/outlined-400/msCopyAll';
@@ -174,13 +173,14 @@ const MaterialSymbols = {
   stop: msStop,
   replay: msReplay,
   vpnKeyFill: msVpnKeyFill,
-  share: match(Platform.OS)
-    .with('ios', () => msIosShare)
-    .with('macos', () => msIosShare)
-    .with('android', () => msShare)
-    .with('web', () => msShare)
-    .with('windows', () => msShareWindows)
-    .exhaustive(),
+  share: Platform.select({
+    ios: msIosShare,
+    android: msShare,
+    web: msShare,
+    macos: msIosShare,
+    native: msShare,
+    windows: msShareWindows,
+  }),
   text: msTextAd,
   reload: msRefresh,
   check: msCheck,

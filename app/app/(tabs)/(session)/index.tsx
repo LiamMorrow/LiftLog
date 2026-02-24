@@ -15,7 +15,7 @@ import {
   selectCurrentSession,
   setCurrentSession,
 } from '@/store/current-session';
-import { publishUnpublishedSessions } from '@/store/feed';
+import { encryptAndShare, publishUnpublishedSessions } from '@/store/feed';
 import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
 import { setEditingSession } from '@/store/session-editor';
 import { executeRemoteBackup } from '@/store/settings';
@@ -31,6 +31,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { MigrateToWeightUnitsWizard } from '@/components/smart/migrate-to-weight-units';
 import { WelcomeWizard } from '@/components/smart/welcome-wizard';
 import { SessionDiffSaveDialog } from '@/components/smart/session-diff-save-dialog';
+import { SharedSession } from '@/models/feed-models';
 
 function PlanManager() {
   const { push } = useRouter();
@@ -150,8 +151,16 @@ function ListUpcomingWorkouts({
               { withAnchor: true },
             );
           };
+          const handleSharePress = () => {
+            dispatch(encryptAndShare(new SharedSession(session)));
+          };
           return (
             <CardActions style={{ marginTop: spacing[2] }}>
+              <IconButton
+                icon={'share'}
+                mode="contained"
+                onPress={handleSharePress}
+              />
               {sessionPlanIndex !== -1 ? (
                 <IconButton
                   icon={'edit'}

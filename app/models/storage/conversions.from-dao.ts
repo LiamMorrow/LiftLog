@@ -31,6 +31,7 @@ import {
   SessionFeedItem,
   SharedItem,
   SharedProgramBlueprint,
+  SharedSession,
 } from '@/models/feed-models';
 import {
   Duration,
@@ -548,12 +549,22 @@ export function fromCurrentSessionDao(
 export function fromSharedItemDao(
   dao: LiftLog.Ui.Models.SharedItemPayload,
 ): SharedItem | null {
-  if (dao.sharedProgramBlueprint?.programBlueprint) {
-    return new SharedProgramBlueprint(
-      fromProgramBlueprintDao(dao.sharedProgramBlueprint.programBlueprint),
-    );
+  console.log(dao);
+  switch (dao.payload) {
+    case 'sharedProgramBlueprint':
+      return new SharedProgramBlueprint(
+        fromProgramBlueprintDao(dao.sharedProgramBlueprint!.programBlueprint!),
+      );
+    case 'sharedSession':
+      return new SharedSession(fromSessionDao(dao.sharedSession?.session));
+    case undefined:
+      return null;
+    default: {
+      // We don't want it throwing for older clients
+      expectNever(dao.payload);
+      return null;
+    }
   }
-  return null;
 }
 function fromFollowRequestDao(
   value: LiftLog.Ui.Models.IInboxMessageDao,
@@ -569,4 +580,8 @@ export function fromWeightDao(value: LiftLog.Ui.Models.IWeight): Weight {
     fromDecimalDao(value.value!),
     fromWeightUnitDao(value.unit),
   );
+}
+
+function expectNever(never: never) {
+  // Do nothing, this is a compile time check
 }

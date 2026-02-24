@@ -7,6 +7,12 @@ import {
 } from './blueprint-models';
 import { RsaPublicKey, AesKey, RsaKeyPair } from '@/models/encryption-models';
 import { Session, SessionPOJO } from '@/models/session-models';
+import { assertUnreachable } from '@/utils/assert-unreachable';
+import { LiftLog } from '@/gen/proto';
+import {
+  toProgramBlueprintDao,
+  toSessionDao,
+} from '@/models/storage/conversions.to-dao';
 
 export interface FeedUserPOJO {
   type: 'FeedUser';
@@ -456,7 +462,7 @@ export class FollowResponse {
   }
 }
 
-export type SharedItemPOJO = SharedProgramBlueprintPOJO;
+export type SharedItemPOJO = SharedProgramBlueprintPOJO | SharedSessionPOJO;
 
 export abstract class SharedItem {
   abstract toPOJO(): SharedItemPOJO;
@@ -467,8 +473,13 @@ export abstract class SharedItem {
         ProgramBlueprint.fromPOJO(pojo.programBlueprint),
       );
     }
-    throw new Error('Unknown type');
+    if (pojo.type === 'SHARED_Session') {
+      return new SharedSession(Session.fromPOJO(pojo.session));
+    }
+    assertUnreachable(pojo);
   }
+
+  abstract toDao(): LiftLog.Ui.Models.SharedItemPayload;
 }
 
 export interface SharedProgramBlueprintPOJO {
@@ -501,5 +512,45 @@ export class SharedProgramBlueprint extends SharedItem {
     return new SharedProgramBlueprint(
       other.programBlueprint ?? this.programBlueprint,
     );
+  }
+
+  toDao(): LiftLog.Ui.Models.SharedItemPayload {
+    return new LiftLog.Ui.Models.SharedItemPayload({
+      sharedProgramBlueprint: {
+        programBlueprint: toProgramBlueprintDao(this.programBlueprint),
+      },
+    });
+  }
+}
+
+export interface SharedSessionPOJO {
+  type: 'SHARED_Session';
+  session: SessionPOJO;
+}
+export class SharedSession extends SharedItem {
+  readonly session: Session;
+
+  constructor(session: Session) {
+    super();
+    this.session = session!;
+  }
+
+  toPOJO(): SharedSessionPOJO {
+    return {
+      type: 'SHARED_Session',
+      session: this.session.toPOJO(),
+    };
+  }
+
+  with(other: Partial<{ session: Session }>): SharedSession {
+    return new SharedSession(other.session ?? this.session);
+  }
+
+  toDao(): LiftLog.Ui.Models.SharedItemPayload {
+    return new LiftLog.Ui.Models.SharedItemPayload({
+      sharedSession: {
+        session: toSessionDao(this.session),
+      },
+    });
   }
 }
