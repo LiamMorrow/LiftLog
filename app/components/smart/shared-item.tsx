@@ -13,7 +13,7 @@ import {
 import { savePlan } from '@/store/program';
 import { showSnackbar } from '@/store/app';
 import { T } from '@tolgee/react';
-import { View } from 'react-native';
+import { Animated, View } from 'react-native';
 import { Card, Text } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
@@ -25,6 +25,7 @@ import { useMountEffect } from '@/hooks/useMountEffect';
 import { setCurrentSession } from '@/store/current-session';
 import SessionComponent from '@/components/smart/session-component';
 import { useAppSelector } from '@/store';
+import { useScrollHeaderColor } from '@/hooks/useScrollListener';
 
 interface SharedItemProps {
   sharedItem: SharedItem;
@@ -128,12 +129,43 @@ function SharedSessionContent({ sharedItem }: { sharedItem: SharedSession }) {
   const session = sharedItem.session;
   const dispatch = useDispatch();
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
+  const headerColor = useScrollHeaderColor();
 
   useMountEffect(() => {
     dispatch(setCurrentSession({ target: 'sharedSession', session }));
   });
   return (
-    <SessionComponent target="sharedSession" showBodyweight={showBodyweight} />
+    <View style={{ flex: 1 }}>
+      <Animated.View
+        style={{
+          flexDirection: 'row',
+          gap: spacing[2],
+          padding: spacing.pageHorizontalMargin,
+          backgroundColor: headerColor,
+        }}
+      >
+        <Button
+          icon={'assignment'}
+          onPress={() => {}}
+          mode="outlined"
+          style={{ flex: 1 }}
+        >
+          <T keyName="feed.shared_session.save_to_plan.button" />
+        </Button>
+        <Button
+          icon={'playCircle'}
+          onPress={() => {}}
+          mode="contained"
+          style={{ flex: 1 }}
+        >
+          <T keyName="feed.shared_session.start_workout.button" />
+        </Button>
+      </Animated.View>
+      <SessionComponent
+        target="sharedSession"
+        showBodyweight={showBodyweight}
+      />
+    </View>
   );
 }
 

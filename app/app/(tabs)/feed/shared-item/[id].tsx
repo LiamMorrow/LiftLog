@@ -1,11 +1,12 @@
 import { Remote } from '@/components/presentation/foundation/remote';
 import SharedItem from '@/components/smart/shared-item';
+import { useMountEffect } from '@/hooks/useMountEffect';
 import { RemoteData } from '@/models/remote';
 import { useAppSelector } from '@/store';
 import { fetchSharedItem, selectSharedItem, setSharedItem } from '@/store/feed';
 import { fromUrlSafeHexString } from '@/utils/to-url-safe-hex-string';
 import { useTranslate } from '@tolgee/react';
-import { Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { useDispatch } from 'react-redux';
 
 export default function SharedItemPage() {
@@ -28,7 +29,7 @@ export default function SharedItemPage() {
       );
     }
   };
-  useFocusEffect(() => {
+  useMountEffect(() => {
     fetch();
   });
   return (

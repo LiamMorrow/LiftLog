@@ -80,6 +80,8 @@
   "exercise.track_steps.label": "Track Steps",
   "exercise.type.label": "Exercise type",
   "exercise.uncompleted_sets.label": "Uncompleted sets",
+  "feed.shared_session.save_to_plan.button": "Save to plan",
+  "feed.shared_session.start_workout.button": "Start workout",
   "feed.accept_to_follow.explanation": "Accept to follow their workouts and see their progress.",
   "feed.anonymous_user.label": "Anonymous User",
   "feed.backup_account.confirm.body": "Include your feed account and followed users in this backup?<br><em>Caution: This would allow anyone with this backup to post feed content with your account</em>",
