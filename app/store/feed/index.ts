@@ -235,7 +235,10 @@ export const fetchFeedItems = createAction<FeedAction>('fetchFeedItems');
 
 export const fetchInboxItems = createAction<FeedAction>('fetchInboxItems');
 
-export const encryptAndShare = createAction<SharedItem>('encryptAndShare');
+export const encryptAndShare = createAction<{
+  item: SharedItem;
+  title: string;
+}>('encryptAndShare');
 
 export const fetchSharedItem = createAction<{ id: string; key: AesKey }>(
   'fetchSharedItem',

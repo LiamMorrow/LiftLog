@@ -79,7 +79,8 @@ export default function SessionComponent(props: {
     storeDispatch(notifySetTimer());
   };
 
-  const isReadonly = props.target === 'feedSession';
+  const isReadonly =
+    props.target === 'feedSession' || props.target === 'sharedSession';
 
   const [exerciseToEditIndex, setExerciseToEditIndex] = useState<
     number | undefined

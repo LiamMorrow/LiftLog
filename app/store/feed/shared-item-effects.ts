@@ -2,7 +2,6 @@ import { LiftLog } from '@/gen/proto';
 import { AesKey } from '@/models/encryption-models';
 import { RemoteData } from '@/models/remote';
 import { fromSharedItemDao } from '@/models/storage/conversions.from-dao';
-import { toSharedItemDao } from '@/models/storage/conversions.to-dao';
 import { ApiErrorType } from '@/services/api-error';
 import {
   encryptAndShare,
@@ -47,7 +46,7 @@ export function addSharedItemEffects() {
       }
 
       const aesKey = await encryptionService.generateAesKey();
-      const payload = toSharedItemDao(action.payload);
+      const payload = action.payload.item.toDao();
       const payloadBytes =
         LiftLog.Ui.Models.SharedItemPayload.encode(payload).finish();
 
@@ -81,7 +80,7 @@ export function addSharedItemEffects() {
 
       await stringSharer.share(
         getShareUrl(result.data.id, aesKey),
-        'Share your plan!',
+        action.payload.title,
       );
     },
   );

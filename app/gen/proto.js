@@ -8803,6 +8803,7 @@ export const LiftLog = $root.LiftLog = (() => {
                  * @memberof LiftLog.Ui.Models
                  * @interface ISharedItemPayload
                  * @property {LiftLog.Ui.Models.ISharedProgramBlueprintPayload|null} [sharedProgramBlueprint] SharedItemPayload sharedProgramBlueprint
+                 * @property {LiftLog.Ui.Models.ISharedSessionPayload|null} [sharedSession] SharedItemPayload sharedSession
                  */
 
                 /**
@@ -8828,17 +8829,25 @@ export const LiftLog = $root.LiftLog = (() => {
                  */
                 SharedItemPayload.prototype.sharedProgramBlueprint = null;
 
+                /**
+                 * SharedItemPayload sharedSession.
+                 * @member {LiftLog.Ui.Models.ISharedSessionPayload|null|undefined} sharedSession
+                 * @memberof LiftLog.Ui.Models.SharedItemPayload
+                 * @instance
+                 */
+                SharedItemPayload.prototype.sharedSession = null;
+
                 // OneOf field names bound to virtual getters and setters
                 let $oneOfFields;
 
                 /**
                  * SharedItemPayload payload.
-                 * @member {"sharedProgramBlueprint"|undefined} payload
+                 * @member {"sharedProgramBlueprint"|"sharedSession"|undefined} payload
                  * @memberof LiftLog.Ui.Models.SharedItemPayload
                  * @instance
                  */
                 Object.defineProperty(SharedItemPayload.prototype, "payload", {
-                    get: $util.oneOfGetter($oneOfFields = ["sharedProgramBlueprint"]),
+                    get: $util.oneOfGetter($oneOfFields = ["sharedProgramBlueprint", "sharedSession"]),
                     set: $util.oneOfSetter($oneOfFields)
                 });
 
@@ -8868,6 +8877,8 @@ export const LiftLog = $root.LiftLog = (() => {
                         writer = $Writer.create();
                     if (message.sharedProgramBlueprint != null && Object.hasOwnProperty.call(message, "sharedProgramBlueprint"))
                         $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.encode(message.sharedProgramBlueprint, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    if (message.sharedSession != null && Object.hasOwnProperty.call(message, "sharedSession"))
+                        $root.LiftLog.Ui.Models.SharedSessionPayload.encode(message.sharedSession, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
                     return writer;
                 };
 
@@ -8906,6 +8917,10 @@ export const LiftLog = $root.LiftLog = (() => {
                         switch (tag >>> 3) {
                         case 1: {
                                 message.sharedProgramBlueprint = $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.decode(reader, reader.uint32());
+                                break;
+                            }
+                        case 2: {
+                                message.sharedSession = $root.LiftLog.Ui.Models.SharedSessionPayload.decode(reader, reader.uint32());
                                 break;
                             }
                         default:
@@ -8952,6 +8967,16 @@ export const LiftLog = $root.LiftLog = (() => {
                                 return "sharedProgramBlueprint." + error;
                         }
                     }
+                    if (message.sharedSession != null && message.hasOwnProperty("sharedSession")) {
+                        if (properties.payload === 1)
+                            return "payload: multiple values";
+                        properties.payload = 1;
+                        {
+                            let error = $root.LiftLog.Ui.Models.SharedSessionPayload.verify(message.sharedSession);
+                            if (error)
+                                return "sharedSession." + error;
+                        }
+                    }
                     return null;
                 };
 
@@ -8971,6 +8996,11 @@ export const LiftLog = $root.LiftLog = (() => {
                         if (typeof object.sharedProgramBlueprint !== "object")
                             throw TypeError(".LiftLog.Ui.Models.SharedItemPayload.sharedProgramBlueprint: object expected");
                         message.sharedProgramBlueprint = $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.fromObject(object.sharedProgramBlueprint);
+                    }
+                    if (object.sharedSession != null) {
+                        if (typeof object.sharedSession !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.SharedItemPayload.sharedSession: object expected");
+                        message.sharedSession = $root.LiftLog.Ui.Models.SharedSessionPayload.fromObject(object.sharedSession);
                     }
                     return message;
                 };
@@ -8992,6 +9022,11 @@ export const LiftLog = $root.LiftLog = (() => {
                         object.sharedProgramBlueprint = $root.LiftLog.Ui.Models.SharedProgramBlueprintPayload.toObject(message.sharedProgramBlueprint, options);
                         if (options.oneofs)
                             object.payload = "sharedProgramBlueprint";
+                    }
+                    if (message.sharedSession != null && message.hasOwnProperty("sharedSession")) {
+                        object.sharedSession = $root.LiftLog.Ui.Models.SharedSessionPayload.toObject(message.sharedSession, options);
+                        if (options.oneofs)
+                            object.payload = "sharedSession";
                     }
                     return object;
                 };
@@ -9233,6 +9268,216 @@ export const LiftLog = $root.LiftLog = (() => {
                 };
 
                 return SharedProgramBlueprintPayload;
+            })();
+
+            Models.SharedSessionPayload = (function() {
+
+                /**
+                 * Properties of a SharedSessionPayload.
+                 * @memberof LiftLog.Ui.Models
+                 * @interface ISharedSessionPayload
+                 * @property {LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null} [session] SharedSessionPayload session
+                 */
+
+                /**
+                 * Constructs a new SharedSessionPayload.
+                 * @memberof LiftLog.Ui.Models
+                 * @classdesc Represents a SharedSessionPayload.
+                 * @implements ISharedSessionPayload
+                 * @constructor
+                 * @param {LiftLog.Ui.Models.ISharedSessionPayload=} [properties] Properties to set
+                 */
+                function SharedSessionPayload(properties) {
+                    if (properties)
+                        for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * SharedSessionPayload session.
+                 * @member {LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2|null|undefined} session
+                 * @memberof LiftLog.Ui.Models.SharedSessionPayload
+                 * @instance
+                 */
+                SharedSessionPayload.prototype.session = null;
+
+                /**
+                 * Creates a new SharedSessionPayload instance using the specified properties.
+                 * @function create
+                 * @memberof LiftLog.Ui.Models.SharedSessionPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.ISharedSessionPayload=} [properties] Properties to set
+                 * @returns {LiftLog.Ui.Models.SharedSessionPayload} SharedSessionPayload instance
+                 */
+                SharedSessionPayload.create = function create(properties) {
+                    return new SharedSessionPayload(properties);
+                };
+
+                /**
+                 * Encodes the specified SharedSessionPayload message. Does not implicitly {@link LiftLog.Ui.Models.SharedSessionPayload.verify|verify} messages.
+                 * @function encode
+                 * @memberof LiftLog.Ui.Models.SharedSessionPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.ISharedSessionPayload} message SharedSessionPayload message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                SharedSessionPayload.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.session != null && Object.hasOwnProperty.call(message, "session"))
+                        $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.encode(message.session, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified SharedSessionPayload message, length delimited. Does not implicitly {@link LiftLog.Ui.Models.SharedSessionPayload.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof LiftLog.Ui.Models.SharedSessionPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.ISharedSessionPayload} message SharedSessionPayload message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                SharedSessionPayload.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a SharedSessionPayload message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof LiftLog.Ui.Models.SharedSessionPayload
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {LiftLog.Ui.Models.SharedSessionPayload} SharedSessionPayload
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                SharedSessionPayload.decode = function decode(reader, length, error) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.LiftLog.Ui.Models.SharedSessionPayload();
+                    while (reader.pos < end) {
+                        let tag = reader.uint32();
+                        if (tag === error)
+                            break;
+                        switch (tag >>> 3) {
+                        case 1: {
+                                message.session = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.decode(reader, reader.uint32());
+                                break;
+                            }
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a SharedSessionPayload message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof LiftLog.Ui.Models.SharedSessionPayload
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {LiftLog.Ui.Models.SharedSessionPayload} SharedSessionPayload
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                SharedSessionPayload.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a SharedSessionPayload message.
+                 * @function verify
+                 * @memberof LiftLog.Ui.Models.SharedSessionPayload
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                SharedSessionPayload.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.session != null && message.hasOwnProperty("session")) {
+                        let error = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.verify(message.session);
+                        if (error)
+                            return "session." + error;
+                    }
+                    return null;
+                };
+
+                /**
+                 * Creates a SharedSessionPayload message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof LiftLog.Ui.Models.SharedSessionPayload
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {LiftLog.Ui.Models.SharedSessionPayload} SharedSessionPayload
+                 */
+                SharedSessionPayload.fromObject = function fromObject(object) {
+                    if (object instanceof $root.LiftLog.Ui.Models.SharedSessionPayload)
+                        return object;
+                    let message = new $root.LiftLog.Ui.Models.SharedSessionPayload();
+                    if (object.session != null) {
+                        if (typeof object.session !== "object")
+                            throw TypeError(".LiftLog.Ui.Models.SharedSessionPayload.session: object expected");
+                        message.session = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.fromObject(object.session);
+                    }
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a SharedSessionPayload message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof LiftLog.Ui.Models.SharedSessionPayload
+                 * @static
+                 * @param {LiftLog.Ui.Models.SharedSessionPayload} message SharedSessionPayload
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                SharedSessionPayload.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    let object = {};
+                    if (options.defaults)
+                        object.session = null;
+                    if (message.session != null && message.hasOwnProperty("session"))
+                        object.session = $root.LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2.toObject(message.session, options);
+                    return object;
+                };
+
+                /**
+                 * Converts this SharedSessionPayload to JSON.
+                 * @function toJSON
+                 * @memberof LiftLog.Ui.Models.SharedSessionPayload
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                SharedSessionPayload.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                /**
+                 * Gets the default type url for SharedSessionPayload
+                 * @function getTypeUrl
+                 * @memberof LiftLog.Ui.Models.SharedSessionPayload
+                 * @static
+                 * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns {string} The default type url
+                 */
+                SharedSessionPayload.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                    if (typeUrlPrefix === undefined) {
+                        typeUrlPrefix = "type.googleapis.com";
+                    }
+                    return typeUrlPrefix + "/LiftLog.Ui.Models.SharedSessionPayload";
+                };
+
+                return SharedSessionPayload;
             })();
 
             Models.ProgramBlueprintDao = (function() {

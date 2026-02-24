@@ -23,8 +23,6 @@ import {
   FeedUser,
   FollowRequest,
   SessionFeedItem,
-  SharedItem,
-  SharedProgramBlueprint,
 } from '@/models/feed-models';
 import {
   SessionPOJO,
@@ -406,20 +404,6 @@ export function toFeedStateDao(
       .unwrapOr(null),
     unpublishedSessionIds: state.unpublishedSessionIds.map(toUuidDao),
     revokedFollowSecrets: state.revokedFollowSecrets,
-  });
-}
-
-export function toSharedItemDao(
-  item: SharedItem,
-): LiftLog.Ui.Models.SharedItemPayload {
-  const sharedProgramBlueprint =
-    item instanceof SharedProgramBlueprint
-      ? new LiftLog.Ui.Models.SharedProgramBlueprintPayload({
-          programBlueprint: toProgramBlueprintDao(item.programBlueprint),
-        })
-      : null;
-  return new LiftLog.Ui.Models.SharedItemPayload({
-    sharedProgramBlueprint,
   });
 }
 

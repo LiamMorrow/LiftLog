@@ -16,7 +16,7 @@ import {
   selectCurrentSession,
   setCurrentSession,
 } from '@/store/current-session';
-import { addUnpublishedSessionId } from '@/store/feed';
+import { addUnpublishedSessionId, encryptAndShare } from '@/store/feed';
 import {
   deleteStoredSession,
   selectSessions,
@@ -31,6 +31,7 @@ import { Card, Tooltip } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
 import { useFormatDate } from '@/hooks/useFormatDate';
+import { SharedSession } from '@/models/feed-models';
 
 export default function History() {
   const { t } = useTranslate();
@@ -100,6 +101,14 @@ export default function History() {
       push('/(tabs)/(session)/session', { withAnchor: true });
     }
   };
+  const handleSharePress = (session: Session) => {
+    dispatch(
+      encryptAndShare({
+        item: new SharedSession(session),
+        title: t('workout.shared_item.title'),
+      }),
+    );
+  };
   return (
     <>
       <Stack.Screen
@@ -141,6 +150,13 @@ export default function History() {
           )}
           renderItemActions={(session) => (
             <CardActions style={{ marginTop: spacing[2] }}>
+              <Tooltip title={t('workout.share_workout.button')}>
+                <IconButton
+                  icon={'share'}
+                  mode="contained"
+                  onPress={() => handleSharePress(session)}
+                />
+              </Tooltip>
               <Tooltip title={t('workout.start_this.button')}>
                 <IconButton
                   mode="contained"
