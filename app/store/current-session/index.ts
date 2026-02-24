@@ -36,11 +36,16 @@ interface CurrentSessionState {
   workoutSession: SessionPOJO | undefined;
   historySession: SessionPOJO | undefined;
   feedSession: SessionPOJO | undefined;
+  sharedSession: SessionPOJO | undefined;
   workoutSessionLastSetTime: OffsetDateTime | undefined;
   currentPlanDiff: PlanDiff | undefined;
 }
 
-export type SessionTarget = 'workoutSession' | 'historySession' | 'feedSession';
+export type SessionTarget =
+  | 'workoutSession'
+  | 'historySession'
+  | 'feedSession'
+  | 'sharedSession';
 
 export type WeightAppliesTo = 'thisSet' | 'uncompletedSets' | 'allSets';
 
@@ -49,6 +54,7 @@ const initialState: CurrentSessionState = {
   workoutSession: undefined,
   historySession: undefined,
   feedSession: undefined,
+  sharedSession: undefined,
   workoutSessionLastSetTime: undefined,
   currentPlanDiff: undefined,
 };

@@ -1,5 +1,18 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
-import { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { useAppTheme } from '@/hooks/useAppTheme';
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from 'react';
+import {
+  Animated,
+  ColorValue,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  useAnimatedValue,
+} from 'react-native';
 
 type ScrollContextValues = {
   isScrolled: boolean;
@@ -71,4 +84,26 @@ export const useScroll = (invertedScroll?: boolean): ScrollContextValues => {
     ...ctx,
     handleScroll,
   };
+};
+
+export const useScrollHeaderColor = (): ColorValue => {
+  const { isScrolled } = useScroll();
+  const { colors } = useAppTheme();
+  const scrollColor = useAnimatedValue(0);
+
+  useEffect(() => {
+    Animated.timing(scrollColor, {
+      toValue: isScrolled ? 1 : 0,
+      duration: 200,
+      useNativeDriver: false, // color interpolation can't use native driver
+    }).start();
+  }, [isScrolled, scrollColor]);
+
+  // Interpolate background color
+  const backgroundColor = scrollColor.interpolate({
+    inputRange: [0, 1],
+    outputRange: [colors.surface, colors.surfaceContainer],
+  }) as unknown as ColorValue;
+
+  return backgroundColor;
 };

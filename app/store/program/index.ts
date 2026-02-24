@@ -216,12 +216,14 @@ const programSlice = createSlice({
     ) {
       const program = state.savedPrograms[action.payload.programId];
       if (program) {
-        program.sessions = program.sessions.filter(
-          (session) =>
-            !action.payload.sessionBlueprint.equals(
-              session as SessionBlueprintPOJO,
-            ),
+        const index = program.sessions.findIndex((session) =>
+          action.payload.sessionBlueprint.equals(
+            session as SessionBlueprintPOJO,
+          ),
         );
+        if (index >= 0) {
+          program.sessions.splice(index, 1);
+        }
       }
     },
 

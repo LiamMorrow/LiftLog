@@ -91,7 +91,12 @@ function ItemMenu({ id }: ItemProps) {
         title={t('generic.share.button')}
         onPress={() => {
           setMenuVisible(false);
-          dispatch(encryptAndShare(new SharedProgramBlueprint(thisProgram)));
+          dispatch(
+            encryptAndShare({
+              title: t('plan.shared_item.title'),
+              item: new SharedProgramBlueprint(thisProgram),
+            }),
+          );
         }}
       />
     </Menu>

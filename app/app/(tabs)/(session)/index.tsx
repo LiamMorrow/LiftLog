@@ -15,7 +15,7 @@ import {
   selectCurrentSession,
   setCurrentSession,
 } from '@/store/current-session';
-import { publishUnpublishedSessions } from '@/store/feed';
+import { encryptAndShare, publishUnpublishedSessions } from '@/store/feed';
 import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
 import { setEditingSession } from '@/store/session-editor';
 import { executeRemoteBackup } from '@/store/settings';
@@ -27,10 +27,11 @@ import { View } from 'react-native';
 import { Card, FAB, Text, Tooltip } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { useDispatch } from 'react-redux';
-import { useDebouncedCallback } from 'use-debounce';
 import { MigrateToWeightUnitsWizard } from '@/components/smart/migrate-to-weight-units';
 import { WelcomeWizard } from '@/components/smart/welcome-wizard';
 import { SessionDiffSaveDialog } from '@/components/smart/session-diff-save-dialog';
+import { SharedSession } from '@/models/feed-models';
+import { CurrentWorkoutReplacer } from '@/components/smart/current-workout-replacer';
 
 function PlanManager() {
   const { push } = useRouter();
@@ -89,6 +90,14 @@ function ListUpcomingWorkouts({
     );
     dispatch(fetchUpcomingSessions());
   };
+  const handleSharePress = (session: Session) => {
+    dispatch(
+      encryptAndShare({
+        item: new SharedSession(session),
+        title: t('workout.shared_item.title'),
+      }),
+    );
+  };
   return (
     <View style={{ flex: 1, gap: spacing[2], paddingTop: spacing[4] }}>
       <SessionDiffSaveDialog />
@@ -104,6 +113,13 @@ function ListUpcomingWorkouts({
               <SessionCardContent session={currentSession} />
             </Card.Content>
             <CardActions style={{ marginTop: spacing[2] }}>
+              <Tooltip title={t('workout.share_workout.button')}>
+                <IconButton
+                  icon={'share'}
+                  mode="contained"
+                  onPress={() => handleSharePress(currentSession)}
+                />
+              </Tooltip>
               <Tooltip title={t('workout.clear_current.button')}>
                 <IconButton
                   testID="clear-current-workout"
@@ -152,6 +168,11 @@ function ListUpcomingWorkouts({
           };
           return (
             <CardActions style={{ marginTop: spacing[2] }}>
+              <IconButton
+                icon={'share'}
+                mode="contained"
+                onPress={() => handleSharePress(session)}
+              />
               {sessionPlanIndex !== -1 ? (
                 <IconButton
                   icon={'edit'}
@@ -205,42 +226,13 @@ function SessionCardContent({ session }: { session: Session }) {
 
 export default function Index() {
   const upcomingSessions = useAppSelector((s) => s.program.upcomingSessions);
-  // const program = useAppSelector(selectActiveProgram);
   const dispatch = useDispatch();
   const { t } = useTranslate();
-  const { push } = useRouter();
-  const currentSession = useAppSelectorWithArg(
-    selectCurrentSession,
-    'workoutSession',
-  );
   const currentBodyweight = upcomingSessions
     .map((x) => x.at(0)?.bodyweight)
     .unwrapOr(undefined);
 
-  // const rootNavigationState = useRootNavigationState();
-
-  // const navigatorReady = rootNavigationState?.key != null;
-  // const [hasRedirected, setHasRedirected] = useState(false);
-  // const [hasMounted, setHasMounted] = useState(false);
   const [selectedSession, setSelectedSession] = useState<Session | undefined>();
-
-  // useMountEffect(() => {
-  //   setHasMounted(true);
-  // });
-  // useEffect(() => {
-  //   if (!navigatorReady || !hasMounted) return;
-  //   // On app open from cold if we have a current session loaded, show it automatically.
-  //   if (currentSession?.isStarted && !hasRedirected) {
-  //     push('/(tabs)/(session)/session');
-  //   }
-  //   setHasRedirected(true);
-  // }, [
-  //   navigatorReady,
-  //   hasRedirected,
-  //   currentSession?.isStarted,
-  //   push,
-  //   hasMounted,
-  // ]);
 
   useFocusEffect(() => {
     dispatch(fetchUpcomingSessions());
@@ -248,38 +240,12 @@ export default function Index() {
     dispatch(executeRemoteBackup({}));
   });
 
-  const selectSession = (session: Session) => {
-    if (!currentSession || currentSession.equals(session)) {
-      replaceSession(session);
-    } else {
-      setSelectedSession(session);
-    }
-  };
-  const replaceSession = useDebouncedCallback(
-    (session: Session) => {
-      setSelectedSession(undefined);
-      dispatch(
-        setCurrentSession({
-          target: 'workoutSession',
-          session,
-        }),
-      );
-      push('/session');
-    },
-    500,
-    { leading: true, trailing: false },
-  );
-  const replaceSessionDialogAction = () => {
-    if (!selectedSession) return;
-    replaceSession(selectedSession);
-  };
-
   const createFreeformSession = () => {
     const newSession = Session.freeformSession(
       LocalDate.now(),
       currentBodyweight,
     );
-    selectSession(newSession);
+    setSelectedSession(newSession);
   };
 
   const floatingBottomContainer = (
@@ -312,19 +278,15 @@ export default function Index() {
         success={(upcoming) => {
           return (
             <ListUpcomingWorkouts
-              selectSession={selectSession}
+              selectSession={setSelectedSession}
               upcoming={upcoming.map((x) => Session.fromPOJO(x))}
             />
           );
         }}
       />
-      <ConfirmationDialog
-        open={!!selectedSession}
-        onCancel={() => setSelectedSession(undefined)}
-        okText="Replace"
-        onOk={replaceSessionDialogAction}
-        headline={<T keyName="workout.replace_current.confirm.title" />}
-        textContent={<T keyName="workout.replace_in_progress.confirm.body" />}
+      <CurrentWorkoutReplacer
+        session={selectedSession}
+        clearSession={() => setSelectedSession(undefined)}
       />
     </FullHeightScrollView>
   );
