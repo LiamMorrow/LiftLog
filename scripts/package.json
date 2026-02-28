@@ -14,8 +14,8 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
     "@types/semver": "^7.7.0",
-    "openai": "^6.15.0",
     "semver": "^7.7.2"
   }
 }

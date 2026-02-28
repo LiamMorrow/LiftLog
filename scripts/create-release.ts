@@ -23,7 +23,7 @@ if (!["patch", "minor", "major"].includes(bumpType)) {
 import { tmpdir } from "os";
 import { join } from "path";
 import { writeFileSync, readFileSync, unlinkSync } from "fs";
-import { OpenAI } from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 
 function extractNotes(releaseBody: string): string | null {
   const startMarker = "# Release Summary";
@@ -48,7 +48,7 @@ function extractNotes(releaseBody: string): string | null {
 
 async function generateStoreNotes(releaseNotes: string): Promise<string> {
   try {
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
     const prompt = `Convert the following GitHub release notes into a concise "What's New" section for an app store (Google Play / Apple App Store).
 
 Requirements:
@@ -62,20 +62,18 @@ Requirements:
 Release notes:
 ${releaseNotes}`;
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-5.2",
+    const message = await anthropic.messages.create({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1024,
+      system: "You are a helpful assistant that writes concise, user-friendly app store release notes.",
       messages: [
-        {
-          role: "system",
-          content:
-            "You are a helpful assistant that writes concise, user-friendly app store release notes.",
-        },
         { role: "user", content: prompt },
       ],
     });
-    return completion.choices[0]?.message?.content?.trim() || releaseNotes;
+    const content = message.content[0];
+    return (content.type === "text" ? content.text.trim() : null) || releaseNotes;
   } catch (err) {
-    console.error("Failed to generate store notes with OpenAI:", err);
+    console.error("Failed to generate store notes with Anthropic:", err);
     return releaseNotes;
   }
 }

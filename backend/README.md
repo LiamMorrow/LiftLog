@@ -43,7 +43,7 @@ Here is an example configuration that works with the Docker Compose setup:
     "UserDataContext": "Host=localhost;Port=5400;Database=liftlog;Username=postgres;Password=password",
     "RateLimitContext": "Host=localhost;Port=5400;Database=liftlog;Username=postgres;Password=password"
   },
-  "OpenAiApiKey": "sk-test-key",
+  "AnthropicApiKey": "sk-test-key",
   "WebAuthApiKey": "test-web-auth-key-12345",
 
   // Optional

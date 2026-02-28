@@ -38,6 +38,7 @@ public static class TestFactoryHelper
                         optional: true,
                         reloadOnChange: false
                     );
+                    config.AddEnvironmentVariables();
                 }
             );
             builder.ConfigureServices(services =>

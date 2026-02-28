@@ -89,7 +89,7 @@ For documentation on running the backend for local development, see [the README]
 
 - **Dotnet WebAPI** for feeds, AI plans, and secure data
 - **End-to-end encrypted feeds** (AES)
-- **OpenAI integration** for workout plans
+- **Claude integration** for workout plans
 
 ### RevenueCat ([RevenueCat/](./backend/RevenueCat/))
 
