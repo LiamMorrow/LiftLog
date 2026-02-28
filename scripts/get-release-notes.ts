@@ -2,7 +2,7 @@
 // Usage: tsx create-release.ts minor|patch|major
 import { $ } from "zx";
 import semver, { type ReleaseType } from "semver";
-import { OpenAI } from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 async function commitsInMerge(mergeHash: string, mainline: number = 1) {
   // Get the parent commits
   const parentsRaw = await $`git rev-list --parents -n 1 ${mergeHash}`;
@@ -26,7 +26,7 @@ async function main() {
   const prereleaseFlag = process.argv.includes("--prerelease");
   if (!["major", "minor", "patch"].includes(bumpType)) {
     console.error(
-      "Usage: ./get-release-notes.ts major|minor|patch [--prerelease]"
+      "Usage: ./get-release-notes.ts major|minor|patch [--prerelease]",
     );
     process.exit(1);
   }
@@ -80,7 +80,7 @@ async function main() {
 
   // Non-merge commits that are NOT descendants of any merge commit
   const nonMergeCommits = allCommits.filter(
-    (sha) => !mergeCommits.includes(sha) && !mergeDescendants.has(sha)
+    (sha) => !mergeCommits.includes(sha) && !mergeDescendants.has(sha),
   );
 
   // Collect all commit messages for summary
@@ -94,25 +94,22 @@ async function main() {
     allMessages.push(msg);
   }
 
-  // Generate summary using OpenAI
+  // Generate summary using Anthropic
   let summary = "";
   try {
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
     const prompt = `Summarize the following release notes for a GitHub release. Focus on user-facing changes and improvements. AVOID listing reasons for changes unless you are explicitly quoting a commit message. NEVER say stuff like "ensuring a smoother user experience." or "improving efficiency." or things like that. The change is the change, the reasons are either implicit from the commit, or you DEFINITELY DO NOT need to infer them to say what they improve."\n\n${allMessages.join(
-      "\n"
+      "\n",
     )}`;
-    const completion = await openai.chat.completions.create({
-      model: "gpt-5.2",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a helpful assistant that writes concise, release note summaries.",
-        },
-        { role: "user", content: prompt },
-      ],
+    const message = await anthropic.messages.create({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1024,
+      system:
+        "You are a helpful assistant that writes concise, release note summaries.",
+      messages: [{ role: "user", content: prompt }],
     });
-    summary = completion.choices[0]?.message?.content?.trim() || "";
+    const content = message.content[0];
+    summary = (content.type === "text" ? content.text.trim() : null) || "";
   } catch (err) {
     summary = "(Could not generate summary)";
   }

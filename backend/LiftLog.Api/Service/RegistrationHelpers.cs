@@ -3,6 +3,8 @@ namespace LiftLog.Api.Service;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Anthropic;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Kiota.Abstractions.Authentication;
 using Microsoft.Kiota.Http.HttpClientLibrary;
@@ -10,17 +12,32 @@ using RevenueCat.Client;
 
 public static class RegistrationHelpers
 {
-    public static IServiceCollection AddGptAiWorkoutPlanner(this IServiceCollection source)
+    /// <summary>
+    /// Registers the AI Workout Planner using Microsoft.Extensions.AI abstractions
+    /// backed by Anthropic's Claude model. This is provider-agnostic and can be
+    /// easily swapped to use other AI providers.
+    /// </summary>
+    public static IServiceCollection AddAnthropicWorkoutPlanner(this IServiceCollection source)
     {
-        source.AddSingleton(services =>
+        // Register the Anthropic client as IChatClient
+        source.AddSingleton<IChatClient>(services =>
         {
             var configuration = services.GetRequiredService<IConfiguration>();
             var apiKey =
-                configuration.GetValue<string?>("OpenAiApiKey")
-                ?? throw new Exception("OpenAiApiKey configuration is not set.");
-            return new OpenAI.Chat.ChatClient("gpt-5.2", apiKey);
+                configuration.GetValue<string?>("AnthropicApiKey")
+                ?? throw new Exception("AnthropicApiKey configuration is not set.");
+
+            var anthropicClient = new AnthropicClient { ApiKey = apiKey };
+
+            // Use claude-sonnet-4-20250514 as a good balance of capability and cost
+            // Can be configured via configuration if needed
+            var modelId =
+                configuration.GetValue<string?>("AnthropicModelId") ?? "claude-sonnet-4-20250514";
+
+            return anthropicClient.AsIChatClient(modelId);
         });
-        source.AddSingleton<IAiChatWorkoutPlanner, GptChatWorkoutPlanner>();
+
+        source.AddSingleton<IAiChatWorkoutPlanner, GenericAiChatWorkoutPlanner>();
         return source;
     }
 

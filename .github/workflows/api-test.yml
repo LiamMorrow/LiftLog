@@ -42,3 +42,5 @@ jobs:
       - name: Test
         run: dotnet run --no-restore --verbosity normal
         working-directory: ./tests/LiftLog.Tests.Api
+        env:
+          AnthropicApiKey: ${{ secrets.ANTHROPIC_API_KEY }}
