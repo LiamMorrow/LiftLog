@@ -1,3 +1,4 @@
+import { LiftLog } from '@/gen/proto';
 import {
   WeightedExerciseBlueprint,
   WeightedExerciseBlueprintPOJO,
@@ -11,7 +12,7 @@ import {
   CardioExerciseSetBlueprintPOJO,
 } from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
-import { Weight, WeightUnit } from '@/models/weight';
+import { toWeightUnitDao, Weight, WeightUnit } from '@/models/weight';
 import { DeepOmit } from '@/utils/deep-omit';
 import { indexed } from '@/utils/enumerable';
 import { uuid } from '@/utils/uuid';
@@ -19,6 +20,15 @@ import { Duration, LocalDate, OffsetDateTime } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import Enumerable from 'linq';
 import { match, P } from 'ts-pattern';
+import {
+  toDateOnlyDao,
+  toDateTimeDao,
+  toDecimalDao,
+  toDurationDao,
+  toStringValue,
+  toTimeOnlyDao,
+  toUuidDao,
+} from './storage/conversions.to-dao';
 
 export interface SessionPOJO {
   type: 'Session';
@@ -179,6 +189,22 @@ export class Session {
       id: this.id,
       recordedExercises: this.recordedExercises.map((x) => x.toPOJO()),
     };
+  }
+
+  toDao(): LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2 {
+    return new LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2({
+      id: toUuidDao(this.id),
+      sessionName: this.blueprint.name,
+      blueprintNotes: this.blueprint.notes,
+      recordedExercises: this.recordedExercises.map((x) => x.toDao()),
+      date: toDateOnlyDao(this.date),
+      bodyweightValue: this.bodyweight
+        ? toDecimalDao(this.bodyweight.value)
+        : null,
+      bodyweightUnit: this.bodyweight
+        ? toWeightUnitDao(this.bodyweight.unit)
+        : LiftLog.Ui.Models.WeightUnit.NIL,
+    });
   }
 
   static freeformSession(
@@ -471,6 +497,20 @@ export class RecordedCardioExerciseSet {
     };
   }
 
+  toDao(): LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao {
+    return {
+      blueprint: this.blueprint.toDao(),
+      completionDateTime: toDateTimeDao(this.completionDateTime),
+      distanceUnit: toStringValue(this.distance?.unit),
+      distanceValue: this.distance ? toDecimalDao(this.distance.value) : null,
+      duration: toDurationDao(this.duration),
+      incline: this.incline ? toDecimalDao(this.incline) : null,
+      resistance: this.resistance ? toDecimalDao(this.resistance) : null,
+      weight: this.weight ? this.weight.toDao() : null,
+      steps: this.steps !== undefined ? { value: this.steps } : null,
+    };
+  }
+
   with(other: Partial<RecordedCardioExerciseSet>): RecordedCardioExerciseSet {
     return new RecordedCardioExerciseSet(
       other.blueprint ?? this.blueprint,
@@ -625,6 +665,15 @@ export class RecordedCardioExercise {
       notes: this.notes,
     };
   }
+
+  toDao(): LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2 {
+    return new LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2({
+      exerciseBlueprint: this.blueprint.toDao(),
+      notes: toStringValue(this.notes),
+      type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO,
+      cardioSets: this.sets.map((x) => x.toDao()),
+    });
+  }
 }
 
 export interface RecordedWeightedExercisePOJO {
@@ -737,6 +786,15 @@ export class RecordedWeightedExercise {
       potentialSets: this.potentialSets.map((x) => x.toPOJO()),
       notes: this.notes,
     };
+  }
+
+  toDao(): LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2 {
+    return new LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2({
+      exerciseBlueprint: this.blueprint.toDao(),
+      notes: toStringValue(this.notes),
+      type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.WEIGHTED,
+      potentialSets: this.potentialSets.map((x) => x.toDao()),
+    });
   }
 
   get maxWeight(): Weight {
@@ -853,6 +911,17 @@ export class RecordedSet {
       completionDateTime: this.completionDateTime,
     };
   }
+
+  toDao(): LiftLog.Ui.Models.SessionHistoryDao.RecordedSetDaoV2 {
+    return new LiftLog.Ui.Models.SessionHistoryDao.RecordedSetDaoV2({
+      repsCompleted: this.repsCompleted,
+      completionDate: toDateOnlyDao(this.completionDateTime.toLocalDate()),
+      completionTime: toTimeOnlyDao(this.completionDateTime.toLocalTime()),
+      completionOffset: {
+        totalSeconds: this.completionDateTime.offset().totalSeconds(),
+      },
+    });
+  }
 }
 
 export interface PotentialSetPOJO {
@@ -906,6 +975,14 @@ export class PotentialSet {
       weight: this.weight,
     };
   }
+
+  toDao(): LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2 {
+    return new LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2({
+      recordedSet: this.set?.toDao() ?? null,
+      weightValue: toDecimalDao(this.weight.value),
+      weightUnit: toWeightUnitDao(this.weight.unit),
+    });
+  }
 }
 
 function weightEqual(a: Weight | undefined, b: Weight | undefined) {
@@ -935,4 +1012,15 @@ function distanceEqual(a: Distance | undefined, b: Distance | undefined) {
       ([a, b]) => a.unit === b.unit && b.value.isEqualTo(b.value),
     )
     .otherwise(() => false);
+}
+
+export function toSessionHistoryDao(
+  model: Record<string, SessionPOJO>,
+): LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2 {
+  return new LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2({
+    completedSessions: Enumerable.from(model)
+      .select((x) => Session.fromPOJO(x.value))
+      .select((x) => x.toDao())
+      .toArray(),
+  });
 }

@@ -5,12 +5,7 @@ import {
   toDecimalDao,
   toDateOnlyDao,
   toTimeOnlyDao,
-  toSessionBlueprintDao,
-  toSessionDao,
-  toFeedIdentityDao,
-  toFeedUserDao,
   toDurationDao,
-  toFeedItemDao,
   toTimestampDao,
 } from '@/models/storage/conversions.to-dao';
 import {
@@ -49,19 +44,25 @@ import { Weight } from '@/models/weight';
 
 const Models = LiftLog.Ui.Models;
 
+interface ToDao {
+  toDao(): unknown;
+}
+
+const modelToDao = (x: ToDao) => x.toDao();
+
 describe('conversions', () => {
   it.each`
-    name                  | protoType                                           | initialValueGenerator        | convertToDao             | convertFromDao             | assertEquals
-    ${'Decimal'}          | ${Models.DecimalValue}                              | ${BigNumberGenerator}        | ${toDecimalDao}          | ${fromDecimalDao}          | ${(a: BigNumber, b: BigNumber) => expect(a.isEqualTo(b)).toBeTruthy()}
-    ${'DateOnly'}         | ${Models.DateOnlyDao}                               | ${LocalDateGenerator}        | ${toDateOnlyDao}         | ${fromDateOnlyDao}         | ${(a: LocalDate, b: LocalDate) => expect(a.equals(b)).toBeTruthy()}
-    ${'Duration'}         | ${google.protobuf.Duration}                         | ${DurationGenerator}         | ${toDurationDao}         | ${fromDurationDao}         | ${(a: Duration, b: Duration) => expect(a.equals(b)).toBeTruthy()}
-    ${'TimeOnly'}         | ${Models.TimeOnlyDao}                               | ${LocalTimeGenerator}        | ${toTimeOnlyDao}         | ${fromTimeOnlyDao}         | ${(a: LocalTime, b: LocalTime) => expect(a.equals(b)).toBeTruthy()}
-    ${'SessionBlueprint'} | ${Models.SessionBlueprintDao.SessionBlueprintDaoV2} | ${SessionBlueprintGenerator} | ${toSessionBlueprintDao} | ${fromSessionBlueprintDao} | ${toPOJOEquals}
-    ${'Session'}          | ${Models.SessionHistoryDao.SessionDaoV2}            | ${SessionGenerator}          | ${toSessionDao}          | ${fromSessionDao}          | ${toPOJOEquals}
-    ${'FeedIdentity'}     | ${Models.FeedIdentityDaoV1}                         | ${FeedIdentityGenerator}     | ${toFeedIdentityDao}     | ${fromFeedIdentityDao}     | ${toPOJOEquals}
-    ${'FeedUser'}         | ${Models.FeedUserDaoV1}                             | ${FeedUserGenerator}         | ${toFeedUserDao}         | ${fromFeedUserDao}         | ${toPOJOEquals}
-    ${'SessionFeedItem'}  | ${Models.FeedItemDaoV1}                             | ${SessionFeedItemGenerator}  | ${toFeedItemDao}         | ${fromFeedItemDao}         | ${toPOJOEquals}
-    ${'Timestamp'}        | ${google.protobuf.Timestamp}                        | ${InstantGenerator}          | ${toTimestampDao}        | ${fromTimestampDao}        | ${(a: Instant, b: Instant) => a.equals(b)}
+    name                  | protoType                                           | initialValueGenerator        | convertToDao      | convertFromDao             | assertEquals
+    ${'Decimal'}          | ${Models.DecimalValue}                              | ${BigNumberGenerator}        | ${toDecimalDao}   | ${fromDecimalDao}          | ${(a: BigNumber, b: BigNumber) => expect(a.isEqualTo(b)).toBeTruthy()}
+    ${'DateOnly'}         | ${Models.DateOnlyDao}                               | ${LocalDateGenerator}        | ${toDateOnlyDao}  | ${fromDateOnlyDao}         | ${(a: LocalDate, b: LocalDate) => expect(a.equals(b)).toBeTruthy()}
+    ${'Duration'}         | ${google.protobuf.Duration}                         | ${DurationGenerator}         | ${toDurationDao}  | ${fromDurationDao}         | ${(a: Duration, b: Duration) => expect(a.equals(b)).toBeTruthy()}
+    ${'TimeOnly'}         | ${Models.TimeOnlyDao}                               | ${LocalTimeGenerator}        | ${toTimeOnlyDao}  | ${fromTimeOnlyDao}         | ${(a: LocalTime, b: LocalTime) => expect(a.equals(b)).toBeTruthy()}
+    ${'SessionBlueprint'} | ${Models.SessionBlueprintDao.SessionBlueprintDaoV2} | ${SessionBlueprintGenerator} | ${modelToDao}     | ${fromSessionBlueprintDao} | ${toPOJOEquals}
+    ${'Session'}          | ${Models.SessionHistoryDao.SessionDaoV2}            | ${SessionGenerator}          | ${modelToDao}     | ${fromSessionDao}          | ${toPOJOEquals}
+    ${'FeedIdentity'}     | ${Models.FeedIdentityDaoV1}                         | ${FeedIdentityGenerator}     | ${modelToDao}     | ${fromFeedIdentityDao}     | ${toPOJOEquals}
+    ${'FeedUser'}         | ${Models.FeedUserDaoV1}                             | ${FeedUserGenerator}         | ${modelToDao}     | ${fromFeedUserDao}         | ${toPOJOEquals}
+    ${'SessionFeedItem'}  | ${Models.FeedItemDaoV1}                             | ${SessionFeedItemGenerator}  | ${modelToDao}     | ${fromFeedItemDao}         | ${toPOJOEquals}
+    ${'Timestamp'}        | ${google.protobuf.Timestamp}                        | ${InstantGenerator}          | ${toTimestampDao} | ${fromTimestampDao}        | ${(a: Instant, b: Instant) => a.equals(b)}
   `(
     'should convert back and forth between $name surviving an encoding',
     ({
