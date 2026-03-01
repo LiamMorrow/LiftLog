@@ -29,10 +29,10 @@ public static class RegistrationHelpers
 
             var anthropicClient = new AnthropicClient { ApiKey = apiKey };
 
-            // Use claude-sonnet-4-20250514 as a good balance of capability and cost
+            // Use claude-sonnet-4-6 as a good balance of capability and cost
             // Can be configured via configuration if needed
             var modelId =
-                configuration.GetValue<string?>("AnthropicModelId") ?? "claude-sonnet-4-20250514";
+                configuration.GetValue<string?>("AnthropicModelId") ?? "claude-sonnet-4-6";
 
             return anthropicClient.AsIChatClient(modelId);
         });

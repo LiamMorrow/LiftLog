@@ -8,7 +8,7 @@ const localHash = (await $`git rev-parse ${branch}`).stdout.trim();
 const remoteHash = (await $`git rev-parse origin/${branch}`).stdout.trim();
 if (localHash !== remoteHash) {
   console.error(
-    "Error: You have unpushed commits. Please push your changes before creating a release."
+    "Error: You have unpushed commits. Please push your changes before creating a release.",
   );
   process.exit(1);
 }
@@ -63,15 +63,16 @@ Release notes:
 ${releaseNotes}`;
 
     const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-6",
       max_tokens: 1024,
-      system: "You are a helpful assistant that writes concise, user-friendly app store release notes.",
-      messages: [
-        { role: "user", content: prompt },
-      ],
+      system:
+        "You are a helpful assistant that writes concise, user-friendly app store release notes.",
+      messages: [{ role: "user", content: prompt }],
     });
     const content = message.content[0];
-    return (content.type === "text" ? content.text.trim() : null) || releaseNotes;
+    return (
+      (content.type === "text" ? content.text.trim() : null) || releaseNotes
+    );
   } catch (err) {
     console.error("Failed to generate store notes with Anthropic:", err);
     return releaseNotes;
@@ -85,12 +86,12 @@ const notes = await $`./get-release-notes.ts ${bumpType} ${
 
 // Extract the next version from the notes output
 const versionMatch = notes.stdout.match(
-  /\*\*Release version:\*\* v([\d\.\w\-\.]+)/
+  /\*\*Release version:\*\* v([\d\.\w\-\.]+)/,
 );
 const version = versionMatch ? versionMatch[1] : null;
 if (!version) {
   console.error(
-    "Could not find next release version in get-release-notes output."
+    "Could not find next release version in get-release-notes output.",
   );
   process.exit(1);
 }
@@ -125,7 +126,7 @@ const releaseAnswer = await question(
   `Create release ${version} and trigger publish workflows? [Y/n]`,
   {
     choices: ["y", "n", "Y", "N", ""],
-  }
+  },
 );
 if (["n", "no"].includes(releaseAnswer.toLocaleLowerCase())) {
   process.exit(1);
@@ -161,6 +162,6 @@ for (const workflow of workflows) {
 const releaseUrl = `https://github.com/LiamMorrow/LiftLog/releases/tag/${version}`;
 
 console.log(
-  `Release v${version} created.${prereleaseFlag ? " (prerelease)" : ""}`
+  `Release v${version} created.${prereleaseFlag ? " (prerelease)" : ""}`,
 );
 console.log(`View release: ${releaseUrl}`);

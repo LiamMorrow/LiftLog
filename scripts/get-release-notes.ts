@@ -102,7 +102,7 @@ async function main() {
       "\n",
     )}`;
     const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-6",
       max_tokens: 1024,
       system:
         "You are a helpful assistant that writes concise, release note summaries.",
