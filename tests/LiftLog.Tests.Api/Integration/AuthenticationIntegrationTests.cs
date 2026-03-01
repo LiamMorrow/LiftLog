@@ -24,7 +24,7 @@ public class AuthenticationIntegrationTests
             factory,
             services =>
             {
-                var mockChatPlanner = Substitute.For<IGptChatWorkoutPlanner>();
+                var mockChatPlanner = Substitute.For<IAiChatWorkoutPlanner>();
                 mockChatPlanner
                     .Introduce(
                         Arg.Any<string>(),
@@ -235,7 +235,7 @@ public class AuthenticationIntegrationTests
         await Assert.That(exception.StatusCode).IsEqualTo(HttpStatusCode.Unauthorized);
     }
 
-    [Test, Skip("Does not pass right now")]
+    [Test]
     public async Task AiChatHub_CanSendAndReceiveMessages_WithValidAuth()
     {
         // Arrange

@@ -23,5 +23,6 @@ public class CleanupExpiredDataHostedService(IServiceProvider services) : Backgr
             }
         }
         catch (TaskCanceledException) { }
+        catch (OperationCanceledException) { }
     }
 }

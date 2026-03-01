@@ -28,7 +28,16 @@ public static class TestFactoryHelper
                     // Get the path to the test project's output directory
                     var testProjectPath = Directory.GetCurrentDirectory();
                     var appsettingsPath = Path.Combine(testProjectPath, "appsettings.json");
+                    var appsettingsDevelopmentPath = Path.Combine(
+                        testProjectPath,
+                        "appsettings.Development.json"
+                    );
                     config.AddJsonFile(appsettingsPath, optional: false, reloadOnChange: false);
+                    config.AddJsonFile(
+                        appsettingsDevelopmentPath,
+                        optional: true,
+                        reloadOnChange: false
+                    );
                 }
             );
             builder.ConfigureServices(services =>

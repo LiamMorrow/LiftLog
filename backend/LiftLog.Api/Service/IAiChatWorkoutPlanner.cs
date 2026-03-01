@@ -2,7 +2,7 @@ using LiftLog.Api.Models;
 
 namespace LiftLog.Api.Service;
 
-public interface IGptChatWorkoutPlanner
+public interface IAiChatWorkoutPlanner
 {
     Task Introduce(string connectionId, string locale, Func<AiChatResponse, Task> callback);
     Task SendMessageAsync(

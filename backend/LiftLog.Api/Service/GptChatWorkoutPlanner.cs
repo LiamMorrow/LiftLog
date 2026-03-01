@@ -12,7 +12,7 @@ namespace LiftLog.Api.Service;
 public partial class GptChatWorkoutPlanner(
     ChatClient _openAiClient,
     ILogger<GptChatWorkoutPlanner> _logger
-) : IGptChatWorkoutPlanner
+) : IAiChatWorkoutPlanner
 {
     private static readonly BinaryData aiWorkoutPlanJsonSchema = BinaryData.FromBytes(
         File.ReadAllBytes("./AiWorkoutPlanOrMessage.json")
