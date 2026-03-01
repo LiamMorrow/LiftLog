@@ -3,10 +3,7 @@ import { BuiltInPrograms } from '@/models/built-in-programs';
 import { RemoteData } from '@/models/remote';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { fromProgramBlueprintDao } from '@/models/storage/conversions.from-dao';
-import {
-  toProgramBlueprintDao,
-  toStringValue,
-} from '@/models/storage/conversions.to-dao';
+import { toStringValue } from '@/models/storage/conversions.to-dao';
 import { addEffect, RootState } from '@/store/store';
 import {
   fetchUpcomingSessions,
@@ -211,7 +208,7 @@ async function persistPrograms(
           Object.entries(stateAfterReduce.program.savedPrograms).map(
             ([key, program]) => [
               key,
-              toProgramBlueprintDao(ProgramBlueprint.fromPOJO(program)),
+              ProgramBlueprint.fromPOJO(program).toDao(),
             ],
           ),
         ),
