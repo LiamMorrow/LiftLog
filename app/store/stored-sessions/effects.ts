@@ -19,11 +19,14 @@ import {
 import { LiftLog } from '@/gen/proto';
 import { match } from 'ts-pattern';
 import { fromSessionDao } from '@/models/storage/conversions.from-dao';
-import { toSessionHistoryDao } from '@/models/storage/conversions.to-dao';
 import { fetchUpcomingSessions } from '@/store/program';
 import { KeyValueStore } from '@/services/key-value-store';
 import Enumerable from 'linq';
-import { RecordedWeightedExercise, Session } from '@/models/session-models';
+import {
+  RecordedWeightedExercise,
+  Session,
+  toSessionHistoryDao,
+} from '@/models/session-models';
 import { Weight } from '@/models/weight';
 import { setCurrentSession } from '@/store/current-session';
 

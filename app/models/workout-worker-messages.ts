@@ -7,10 +7,7 @@ import {
 } from '@/models/storage/conversions.from-dao';
 import {
   toDurationDao,
-  toRecordedExerciseDao,
-  toSessionDao,
   toTimestampDao,
-  toWeightDao,
 } from '@/models/storage/conversions.to-dao';
 import { Duration, Instant } from '@js-joda/core';
 import { match } from 'ts-pattern';
@@ -77,10 +74,10 @@ export function toWorkoutMessageDao(
       createMessage(
         'workoutUpdatedEvent',
         DaoType.WorkoutUpdatedEvent.create({
-          workout: toSessionDao(e.workout),
+          workout: e.workout.toDao(),
           currentExerciseDetails: e.workout.nextExercise
             ? {
-                exercise: toRecordedExerciseDao(e.workout.nextExercise),
+                exercise: e.workout.nextExercise.toDao(),
                 setIndex: e.workout.nextExercise.currentSetIndex,
               }
             : null,
@@ -103,7 +100,7 @@ export function toWorkoutMessageDao(
                 setIndex: e.cardioTimerInfo.setIndex,
               }
             : null,
-          totalWeightLifted: toWeightDao(e.workout.totalWeightLifted),
+          totalWeightLifted: e.workout.totalWeightLifted.toDao(),
           workoutDuration: toDurationDao(e.workout.duration ?? Duration.ZERO),
         }),
       ),

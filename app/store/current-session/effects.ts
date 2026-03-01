@@ -5,7 +5,6 @@ import {
   Session,
 } from '@/models/session-models';
 import { fromCurrentSessionDao } from '@/models/storage/conversions.from-dao';
-import { toCurrentSessionDao } from '@/models/storage/conversions.to-dao';
 import {
   broadcastWorkoutEvent,
   clearSetTimerNotification,
@@ -278,4 +277,16 @@ export function applyCurrentSessionEffects() {
       dispatch(setCurrentSession({ session, target: action.payload.target }));
     },
   );
+}
+
+function toCurrentSessionDao(model: {
+  workoutSession: Session | undefined;
+  historySession: Session | undefined;
+}): LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2 {
+  return new LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2({
+    historySession:
+      (model.historySession && model.historySession.toDao()) ?? null,
+    workoutSession:
+      (model.workoutSession && model.workoutSession.toDao()) ?? null,
+  });
 }

@@ -27,7 +27,7 @@ import {
   UserEventResponse,
 } from '@/models/feed-api-models';
 import { AesEncryptedAndRsaSignedData } from '@/models/encryption-models';
-import { toSessionDao, toUuidDao } from '@/models/storage/conversions.to-dao';
+import { toUuidDao } from '@/models/storage/conversions.to-dao';
 import {
   fromSessionDao,
   fromSessionBlueprintDao,
@@ -278,11 +278,10 @@ async function publishSessionAsync(
 ) {
   const sessionPayload = LiftLog.Ui.Models.UserEventPayload.create({
     sessionPayload: {
-      session: toSessionDao(
-        identity.publishBodyweight
-          ? session
-          : session.with({ bodyweight: undefined }),
-      ),
+      session: (identity.publishBodyweight
+        ? session
+        : session.with({ bodyweight: undefined })
+      ).toDao(),
     },
   });
 

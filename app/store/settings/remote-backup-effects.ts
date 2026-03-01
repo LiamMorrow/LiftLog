@@ -1,9 +1,4 @@
 import { google, LiftLog } from '@/gen/proto';
-import {
-  toFeedStateDao,
-  toProgramBlueprintDao,
-  toSessionDao,
-} from '@/models/storage/conversions.to-dao';
 import { RemoteData } from '@/models/remote';
 import { addEffect } from '@/store/store';
 import { selectAllPrograms } from '@/store/program';
@@ -19,6 +14,7 @@ import { toUrlSafeHexString } from '@/utils/to-url-safe-hex-string';
 import { Instant } from '@js-joda/core';
 import 'compression-streams-polyfill';
 import { TaskAbortError } from '@reduxjs/toolkit';
+import { toFeedStateDao } from '../feed/effects';
 
 // Helper function to yield control back to the event loop
 const yieldToEventLoop = () =>
@@ -82,7 +78,7 @@ export function addRemoteBackupEffects() {
         // Process sessions in chunks to avoid blocking
         const processedSessions = await processInChunks(
           sessions.toArray(),
-          toSessionDao,
+          (x) => x.toDao(),
           50,
           throwIfCancelled,
         );
@@ -94,7 +90,7 @@ export function addRemoteBackupEffects() {
         const savedProgramEntries = Object.entries(savedPrograms);
         const processedPrograms = await processInChunks(
           savedProgramEntries,
-          ([id, { program }]) => [id, toProgramBlueprintDao(program)] as const,
+          ([id, { program }]) => [id, program.toDao()] as const,
           20, // Process 20 programs at a time
           throwIfCancelled,
         );

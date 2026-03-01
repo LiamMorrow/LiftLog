@@ -10,9 +10,10 @@ import { Session, SessionPOJO } from '@/models/session-models';
 import { assertUnreachable } from '@/utils/assert-unreachable';
 import { LiftLog } from '@/gen/proto';
 import {
-  toProgramBlueprintDao,
-  toSessionDao,
-} from '@/models/storage/conversions.to-dao';
+  toStringValue,
+  toTimestampDao,
+  toUuidDao,
+} from './storage/conversions.to-dao';
 
 export interface FeedUserPOJO {
   type: 'FeedUser';
@@ -27,48 +28,16 @@ export interface FeedUserPOJO {
 }
 
 export class FeedUser {
-  readonly id: string;
-  readonly publicKey: RsaPublicKey;
-  readonly name: string | undefined;
-  readonly nickname: string | undefined;
-  readonly currentPlan: SessionBlueprint[];
-  readonly profilePicture: Uint8Array | undefined;
-  readonly aesKey: AesKey | undefined;
-  readonly followSecret: string | undefined;
-
-  /**
-   * @deprecated please use full constructor. Here only for serialization
-   */
-  constructor();
   constructor(
-    id: string,
-    publicKey: RsaPublicKey,
-    name: string | undefined,
-    nickname: string | undefined,
-    currentPlan: SessionBlueprint[],
-    profilePicture: Uint8Array | undefined,
-    aesKey: AesKey | undefined,
-    followSecret: string | undefined,
-  );
-  constructor(
-    id?: string,
-    publicKey?: RsaPublicKey,
-    name?: string,
-    nickname?: string,
-    currentPlan?: SessionBlueprint[],
-    profilePicture?: Uint8Array,
-    aesKey?: AesKey,
-    followSecret?: string,
-  ) {
-    this.id = id!;
-    this.publicKey = publicKey!;
-    this.name = name!;
-    this.nickname = nickname!;
-    this.currentPlan = currentPlan!;
-    this.profilePicture = profilePicture!;
-    this.aesKey = aesKey!;
-    this.followSecret = followSecret!;
-  }
+    readonly id: string,
+    readonly publicKey: RsaPublicKey,
+    readonly name: string | undefined,
+    readonly nickname: string | undefined,
+    readonly currentPlan: SessionBlueprint[],
+    readonly profilePicture: Uint8Array | undefined,
+    readonly aesKey: AesKey | undefined,
+    readonly followSecret: string | undefined,
+  ) {}
 
   static fromPOJO(pojo: Omit<FeedUserPOJO, 'type'>): FeedUser {
     return new FeedUser(
@@ -95,6 +64,19 @@ export class FeedUser {
       aesKey: this.aesKey,
       followSecret: this.followSecret,
     };
+  }
+
+  toDao(): LiftLog.Ui.Models.FeedUserDaoV1 {
+    return new LiftLog.Ui.Models.FeedUserDaoV1({
+      id: toUuidDao(this.id),
+      name: toStringValue(this.name),
+      nickname: toStringValue(this.nickname),
+      aesKey: this.aesKey?.value ?? null,
+      publicKey: this.publicKey.spkiPublicKeyBytes,
+      currentPlan: this.currentPlan ? toCurrentPlanDao(this.currentPlan) : null,
+      profilePicture: this.profilePicture ?? null,
+      followSecret: toStringValue(this.followSecret),
+    });
   }
 
   with(other: Partial<FeedUserPOJO>): FeedUser {
@@ -162,6 +144,8 @@ export abstract class FeedItem {
 
   abstract toPOJO(): FeedItemPOJO;
 
+  abstract toDao(): LiftLog.Ui.Models.FeedItemDaoV1;
+
   static fromPOJO(x: FeedItemPOJO): FeedItem {
     switch (x.type) {
       case 'REMOVED_SessionFeedItem':
@@ -212,6 +196,16 @@ export class SessionFeedItem extends FeedItem {
       userId: this.userId,
     };
   }
+
+  toDao(): LiftLog.Ui.Models.FeedItemDaoV1 {
+    return new LiftLog.Ui.Models.FeedItemDaoV1({
+      eventId: toUuidDao(this.eventId),
+      expiry: toTimestampDao(this.expiry),
+      timestamp: toTimestampDao(this.timestamp),
+      userId: toUuidDao(this.userId),
+      session: this.session.toDao(),
+    });
+  }
 }
 
 export interface RemovedSessionFeedItemPOJO extends FeedItemPOJO {
@@ -242,6 +236,15 @@ export class RemovedSessionFeedItem extends FeedItem {
       userId: this.userId,
     };
   }
+
+  toDao(): LiftLog.Ui.Models.FeedItemDaoV1 {
+    return new LiftLog.Ui.Models.FeedItemDaoV1({
+      eventId: toUuidDao(this.eventId),
+      expiry: toTimestampDao(this.expiry),
+      timestamp: toTimestampDao(this.timestamp),
+      userId: toUuidDao(this.userId),
+    });
+  }
 }
 
 export interface FeedIdentityPOJO {
@@ -259,56 +262,18 @@ export interface FeedIdentityPOJO {
 }
 
 export class FeedIdentity {
-  readonly id: string;
-  readonly lookup: string;
-  readonly aesKey: AesKey;
-  readonly rsaKeyPair: RsaKeyPair;
-  readonly password: string;
-  readonly name: string | undefined;
-  readonly profilePicture: Uint8Array | undefined;
-  readonly publishBodyweight: boolean;
-  readonly publishPlan: boolean;
-  readonly publishWorkouts: boolean;
-
-  /**
-   * @deprecated please use full constructor. Here only for serialization
-   */
-  constructor();
   constructor(
-    id: string,
-    lookup: string,
-    aesKey: AesKey,
-    rsaKeyPair: RsaKeyPair,
-    password: string,
-    name: string | undefined,
-    profilePicture: Uint8Array | undefined,
-    publishBodyweight: boolean,
-    publishPlan: boolean,
-    publishWorkouts: boolean,
-  );
-  constructor(
-    id?: string,
-    lookup?: string,
-    aesKey?: AesKey,
-    rsaKeyPair?: RsaKeyPair,
-    password?: string,
-    name?: string,
-    profilePicture?: Uint8Array,
-    publishBodyweight?: boolean,
-    publishPlan?: boolean,
-    publishWorkouts?: boolean,
-  ) {
-    this.id = id!;
-    this.lookup = lookup!;
-    this.aesKey = aesKey!;
-    this.rsaKeyPair = rsaKeyPair!;
-    this.password = password!;
-    this.name = name!;
-    this.profilePicture = profilePicture!;
-    this.publishBodyweight = publishBodyweight!;
-    this.publishPlan = publishPlan!;
-    this.publishWorkouts = publishWorkouts!;
-  }
+    readonly id: string,
+    readonly lookup: string,
+    readonly aesKey: AesKey,
+    readonly rsaKeyPair: RsaKeyPair,
+    readonly password: string,
+    readonly name: string | undefined,
+    readonly profilePicture: Uint8Array | undefined,
+    readonly publishBodyweight: boolean,
+    readonly publishPlan: boolean,
+    readonly publishWorkouts: boolean,
+  ) {}
 
   static fromPOJO(pojo: Omit<FeedIdentityPOJO, 'type'>): FeedIdentity {
     return new FeedIdentity(
@@ -341,6 +306,22 @@ export class FeedIdentity {
     };
   }
 
+  toDao(): LiftLog.Ui.Models.FeedIdentityDaoV1 {
+    return new LiftLog.Ui.Models.FeedIdentityDaoV1({
+      id: toUuidDao(this.id),
+      lookup: { value: this.lookup },
+      aesKey: this.aesKey.value,
+      publicKey: this.rsaKeyPair.publicKey.spkiPublicKeyBytes,
+      privateKey: this.rsaKeyPair.privateKey.pkcs8PrivateKeyBytes,
+      password: this.password,
+      name: toStringValue(this.name),
+      profilePicture: this.profilePicture ?? null,
+      publishBodyweight: this.publishBodyweight,
+      publishPlan: this.publishPlan,
+      publishWorkouts: this.publishWorkouts,
+    });
+  }
+
   with(other: Partial<FeedIdentityPOJO>): FeedIdentity {
     return new FeedIdentity(
       other.id ?? this.id,
@@ -364,15 +345,10 @@ export interface FollowRequestPOJO {
 }
 
 export class FollowRequest {
-  readonly userId: string;
-  readonly name: string | undefined;
-
-  /**
-   * @deprecated please use full constructor. Here only for serialization
-   */
-  constructor();
-  constructor(userId: string, name: string | undefined);
-  constructor(userId?: string, name?: string) {
+  constructor(
+    readonly userId: string,
+    readonly name: string | undefined,
+  ) {
     this.userId = userId!;
     this.name = name!;
   }
@@ -387,6 +363,15 @@ export class FollowRequest {
       userId: this.userId,
       name: this.name,
     };
+  }
+
+  toDao(): LiftLog.Ui.Models.InboxMessageDao {
+    return new LiftLog.Ui.Models.InboxMessageDao({
+      fromUserId: toUuidDao(this.userId),
+      followRequest: {
+        name: toStringValue(this.name),
+      },
+    });
   }
 
   with(other: Partial<FollowRequestPOJO>): FollowRequest {
@@ -406,32 +391,12 @@ export interface FollowResponsePOJO {
 }
 
 export class FollowResponse {
-  readonly userId: string;
-  readonly accepted: boolean;
-  readonly aesKey: AesKey | undefined;
-  readonly followSecret: string | undefined;
-
-  /**
-   * @deprecated please use full constructor. Here only for serialization
-   */
-  constructor();
   constructor(
-    userId: string,
-    accepted: boolean,
-    aesKey: AesKey | undefined,
-    followSecret: string | undefined,
-  );
-  constructor(
-    userId?: string,
-    accepted?: boolean,
-    aesKey?: AesKey,
-    followSecret?: string,
-  ) {
-    this.userId = userId!;
-    this.accepted = accepted!;
-    this.aesKey = aesKey!;
-    this.followSecret = followSecret!;
-  }
+    readonly userId: string,
+    readonly accepted: boolean,
+    readonly aesKey: AesKey | undefined,
+    readonly followSecret: string | undefined,
+  ) {}
 
   static fromPOJO(pojo: Omit<FollowResponsePOJO, 'type'>): FollowResponse {
     return new FollowResponse(
@@ -489,12 +454,7 @@ export interface SharedProgramBlueprintPOJO {
 export class SharedProgramBlueprint extends SharedItem {
   readonly programBlueprint: ProgramBlueprint;
 
-  /**
-   * @deprecated please use full constructor. Here only for serialization
-   */
-  constructor();
-  constructor(programBlueprint: ProgramBlueprint);
-  constructor(programBlueprint?: ProgramBlueprint) {
+  constructor(programBlueprint: ProgramBlueprint) {
     super();
     this.programBlueprint = programBlueprint!;
   }
@@ -517,7 +477,7 @@ export class SharedProgramBlueprint extends SharedItem {
   toDao(): LiftLog.Ui.Models.SharedItemPayload {
     return new LiftLog.Ui.Models.SharedItemPayload({
       sharedProgramBlueprint: {
-        programBlueprint: toProgramBlueprintDao(this.programBlueprint),
+        programBlueprint: this.programBlueprint.toDao(),
       },
     });
   }
@@ -549,8 +509,16 @@ export class SharedSession extends SharedItem {
   toDao(): LiftLog.Ui.Models.SharedItemPayload {
     return new LiftLog.Ui.Models.SharedItemPayload({
       sharedSession: {
-        session: toSessionDao(this.session),
+        session: this.session.toDao(),
       },
     });
   }
+}
+
+export function toCurrentPlanDao(
+  sessions: SessionBlueprint[],
+): LiftLog.Ui.Models.CurrentPlanDaoV1 {
+  return new LiftLog.Ui.Models.CurrentPlanDaoV1({
+    sessions: sessions.map((x) => x.toDao()),
+  });
 }
