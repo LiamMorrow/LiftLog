@@ -28,11 +28,7 @@ import {
 } from '@/models/feed-api-models';
 import { AesEncryptedAndRsaSignedData } from '@/models/encryption-models';
 import { toUuidDao } from '@/models/storage/conversions.to-dao';
-import {
-  fromSessionDao,
-  fromSessionBlueprintDao,
-  fromUuidDao,
-} from '@/models/storage/conversions.from-dao';
+import { fromUuidDao } from '@/models/storage/conversions.from-dao';
 import { EncryptionService } from '@/services/encryption-service';
 import { FeedApiService } from '@/services/feed-api';
 import { selectSession } from '@/store/stored-sessions';
@@ -382,7 +378,7 @@ async function getDecryptedUserAsync(
 
       const currentPlanDao =
         LiftLog.Ui.Models.CurrentPlanDaoV1.decode(decryptedPlanBytes);
-      currentPlan = currentPlanDao.sessions.map(fromSessionBlueprintDao);
+      currentPlan = currentPlanDao.sessions.map(SessionBlueprint.fromDao);
     }
 
     // Decrypt profile picture if present
@@ -451,7 +447,7 @@ async function toFeedItemAsync(
           userEvent.eventId,
           timestamp,
           expiry,
-          fromSessionDao(payload.sessionPayload!.session),
+          Session.fromDao(payload.sessionPayload!.session),
         );
 
       case 'removedSessionPayload':

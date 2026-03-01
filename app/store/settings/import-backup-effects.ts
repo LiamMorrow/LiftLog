@@ -1,9 +1,4 @@
 import { LiftLog } from '@/gen/proto';
-import {
-  fromProgramBlueprintDao,
-  fromSessionBlueprintDao,
-  fromSessionDao,
-} from '@/models/storage/conversions.from-dao';
 import { Logger } from '@/services/logger';
 import { showSnackbar } from '@/store/app';
 import { addEffect } from '@/store/store';
@@ -22,6 +17,8 @@ import { streamToUint8Array } from '@/utils/stream';
 import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
 import { sleep } from '@/utils/sleep';
+import { Session } from '@/models/session-models';
+import { ProgramBlueprint, SessionBlueprint } from '@/models/blueprint-models';
 
 export function addImportBackupEffects() {
   addEffect(
@@ -56,11 +53,11 @@ export function addImportBackupEffects() {
   addEffect(
     importDataDao,
     async ({ payload: { dao } }, { dispatch, extra: { tolgee } }) => {
-      const sessions = dao.sessions.map(fromSessionDao);
+      const sessions = dao.sessions.map(Session.fromDao);
       dispatch(upsertStoredSessions(sessions));
       const programs = Object.fromEntries(
         Object.entries(dao.savedPrograms).map(
-          ([id, program]) => [id, fromProgramBlueprintDao(program)] as const,
+          ([id, program]) => [id, ProgramBlueprint.fromDao(program)] as const,
         ),
       );
       dispatch(upsertSavedPlans(programs));
@@ -78,7 +75,7 @@ export function addImportBackupEffects() {
         dispatch(
           setProgramSessions({
             programId: newId,
-            sessionBlueprints: dao.program.map(fromSessionBlueprintDao),
+            sessionBlueprints: dao.program.map(SessionBlueprint.fromDao),
           }),
         );
         dispatch(setActivePlan({ programId: newId }));

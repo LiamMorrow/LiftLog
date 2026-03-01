@@ -1,7 +1,7 @@
 import { LiftLog } from '@/gen/proto';
 import { AesKey } from '@/models/encryption-models';
+import { SharedItem } from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
-import { fromSharedItemDao } from '@/models/storage/conversions.from-dao';
 import { ApiErrorType } from '@/services/api-error';
 import {
   encryptAndShare,
@@ -105,7 +105,7 @@ export function addSharedItemEffects() {
         );
       const sharedItemDao =
         LiftLog.Ui.Models.SharedItemPayload.decode(decryptedBytes);
-      const sharedItem = fromSharedItemDao(sharedItemDao);
+      const sharedItem = SharedItem.fromDao(sharedItemDao);
 
       if (!sharedItem) {
         dispatch(

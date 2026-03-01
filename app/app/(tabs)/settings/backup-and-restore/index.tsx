@@ -5,9 +5,8 @@ import ListSwitch from '@/components/presentation/foundation/list-switch';
 import { LiftLog } from '@/gen/proto';
 import { useActionEffect } from '@/hooks/useActionEffect';
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { fromFeedStateDao } from '@/models/storage/conversions.from-dao';
 import { useAppSelector } from '@/store';
-import { patchFeedState } from '@/store/feed';
+import { fromFeedStateDao, patchFeedState } from '@/store/feed';
 import {
   beginFeedImport,
   exportData,

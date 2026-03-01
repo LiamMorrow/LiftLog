@@ -297,4 +297,6 @@ export const updateFeedIdentity = createAction<
   { updates: Partial<FeedIdentity> } & FeedAction
 >('updateFeedIdentity');
 
+export * from './conversions';
+
 export default feedSlice.reducer;

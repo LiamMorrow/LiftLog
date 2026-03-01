@@ -4,7 +4,7 @@ import { selectAllPrograms } from '@/store/program';
 import { exportData } from '@/store/settings';
 import { streamToUint8Array } from '@/utils/stream';
 import 'compression-streams-polyfill';
-import { toFeedStateDao } from '../feed/effects';
+import { toFeedStateDao } from '../feed';
 
 export function addExportBackupEffects() {
   addEffect(

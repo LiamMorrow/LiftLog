@@ -6,7 +6,6 @@ import {
   SessionBlueprintPOJO,
 } from './blueprint-models';
 import { RsaPublicKey, AesKey, RsaKeyPair } from '@/models/encryption-models';
-import { Session, SessionPOJO } from '@/models/session-models';
 import { assertUnreachable } from '@/utils/assert-unreachable';
 import { LiftLog } from '@/gen/proto';
 import {
@@ -14,6 +13,8 @@ import {
   toTimestampDao,
   toUuidDao,
 } from './storage/conversions.to-dao';
+import { fromTimestampDao, fromUuidDao } from './storage/conversions.from-dao';
+import { Session, SessionPOJO } from './session-models';
 
 export interface FeedUserPOJO {
   type: 'FeedUser';
@@ -77,6 +78,19 @@ export class FeedUser {
       profilePicture: this.profilePicture ?? null,
       followSecret: toStringValue(this.followSecret),
     });
+  }
+
+  static fromDao(dao: LiftLog.Ui.Models.IFeedUserDaoV1): FeedUser {
+    return new FeedUser(
+      fromUuidDao(dao.id),
+      { spkiPublicKeyBytes: Uint8Array.from(dao.publicKey!) },
+      dao.name?.value ?? undefined,
+      dao.nickname?.value ?? undefined,
+      dao.currentPlan ? fromCurrentPlanDao(dao.currentPlan) : [],
+      (dao.profilePicture && Uint8Array.from(dao.profilePicture)) ?? undefined,
+      dao.aesKey?.length ? { value: Uint8Array.from(dao.aesKey) } : undefined,
+      dao.followSecret?.value ?? undefined,
+    );
   }
 
   with(other: Partial<FeedUserPOJO>): FeedUser {
@@ -145,6 +159,16 @@ export abstract class FeedItem {
   abstract toPOJO(): FeedItemPOJO;
 
   abstract toDao(): LiftLog.Ui.Models.FeedItemDaoV1;
+
+  static fromDao(dao: LiftLog.Ui.Models.IFeedItemDaoV1): FeedItem {
+    return new SessionFeedItem(
+      fromUuidDao(dao.userId),
+      fromUuidDao(dao.eventId),
+      fromTimestampDao(dao.timestamp),
+      fromTimestampDao(dao.expiry),
+      Session.fromDao(dao.session),
+    );
+  }
 
   static fromPOJO(x: FeedItemPOJO): FeedItem {
     switch (x.type) {
@@ -322,6 +346,24 @@ export class FeedIdentity {
     });
   }
 
+  static fromDao(dao: LiftLog.Ui.Models.IFeedIdentityDaoV1): FeedIdentity {
+    return new FeedIdentity(
+      fromUuidDao(dao.id),
+      dao.lookup?.value ?? '',
+      { value: Uint8Array.from(dao.aesKey!) },
+      {
+        publicKey: { spkiPublicKeyBytes: Uint8Array.from(dao.publicKey!) },
+        privateKey: { pkcs8PrivateKeyBytes: Uint8Array.from(dao.privateKey!) },
+      },
+      dao.password!,
+      dao.name?.value ?? undefined,
+      (dao.profilePicture && Uint8Array.from(dao.profilePicture)) ?? undefined,
+      dao.publishBodyweight ?? false,
+      dao.publishPlan ?? false,
+      dao.publishWorkouts ?? false,
+    );
+  }
+
   with(other: Partial<FeedIdentityPOJO>): FeedIdentity {
     return new FeedIdentity(
       other.id ?? this.id,
@@ -371,6 +413,13 @@ export class FollowRequest {
       followRequest: {
         name: toStringValue(this.name),
       },
+    });
+  }
+
+  static fromDao(value: LiftLog.Ui.Models.IInboxMessageDao): FollowRequest {
+    return FollowRequest.fromPOJO({
+      name: value.followRequest?.name?.value ?? '',
+      userId: fromUuidDao(value.fromUserId),
     });
   }
 
@@ -445,6 +494,35 @@ export abstract class SharedItem {
   }
 
   abstract toDao(): LiftLog.Ui.Models.SharedItemPayload;
+
+  static fromDao(dao: LiftLog.Ui.Models.SharedItemPayload): SharedItem | null {
+    switch (dao.payload) {
+      case 'sharedProgramBlueprint': {
+        const programBlueprintDao =
+          dao.sharedProgramBlueprint?.programBlueprint;
+        if (!programBlueprintDao) {
+          return null;
+        }
+        return new SharedProgramBlueprint(
+          ProgramBlueprint.fromDao(programBlueprintDao),
+        );
+      }
+      case 'sharedSession': {
+        const sessionDao = dao.sharedSession?.session;
+        if (!sessionDao) {
+          return null;
+        }
+        return new SharedSession(Session.fromDao(sessionDao));
+      }
+      case undefined:
+        return null;
+      default: {
+        // We don't want it throwing for older clients
+        expectNever(dao.payload);
+        return null;
+      }
+    }
+  }
 }
 
 export interface SharedProgramBlueprintPOJO {
@@ -521,4 +599,14 @@ export function toCurrentPlanDao(
   return new LiftLog.Ui.Models.CurrentPlanDaoV1({
     sessions: sessions.map((x) => x.toDao()),
   });
+}
+
+export function fromCurrentPlanDao(
+  dao: LiftLog.Ui.Models.ICurrentPlanDaoV1,
+): SessionBlueprint[] {
+  return dao.sessions!.map((x) => SessionBlueprint.fromDao(x));
+}
+
+function expectNever(never: never) {
+  // Do nothing, this is a compile time check
 }
