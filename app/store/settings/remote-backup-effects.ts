@@ -14,7 +14,7 @@ import { toUrlSafeHexString } from '@/utils/to-url-safe-hex-string';
 import { Instant } from '@js-joda/core';
 import 'compression-streams-polyfill';
 import { TaskAbortError } from '@reduxjs/toolkit';
-import { toFeedStateDao } from '../feed/effects';
+import { toFeedStateDao } from '../feed';
 
 // Helper function to yield control back to the event loop
 const yieldToEventLoop = () =>

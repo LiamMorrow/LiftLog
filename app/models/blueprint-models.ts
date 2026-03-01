@@ -8,6 +8,11 @@ import {
   toDecimalDao,
   toDurationDao,
 } from './storage/conversions.to-dao';
+import {
+  fromDateOnlyDao,
+  fromDecimalDao,
+  fromDurationDao,
+} from './storage/conversions.from-dao';
 
 export interface ProgramBlueprintPOJO {
   type: 'ProgramBlueprint';
@@ -71,6 +76,16 @@ export class ProgramBlueprint {
       sessions: this.sessions.map((x) => x.toDao()),
       lastEdited: toDateOnlyDao(this.lastEdited),
     });
+  }
+
+  static fromDao(
+    dao: LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1,
+  ): ProgramBlueprint {
+    return new ProgramBlueprint(
+      dao.name!,
+      dao.sessions!.map((x) => SessionBlueprint.fromDao(x)),
+      dao.lastEdited ? fromDateOnlyDao(dao.lastEdited) : LocalDate.now(),
+    );
   }
 
   with(other: Partial<ProgramBlueprintPOJO>): ProgramBlueprint {
@@ -143,6 +158,16 @@ export class SessionBlueprint {
       exerciseBlueprints: this.exercises.map((x) => x.toDao()),
       notes: this.notes,
     });
+  }
+
+  static fromDao(
+    dao: LiftLog.Ui.Models.SessionBlueprintDao.ISessionBlueprintDaoV2,
+  ): SessionBlueprint {
+    return new SessionBlueprint(
+      dao.name!,
+      dao.exerciseBlueprints!.map((x) => fromExerciseBlueprintDao(x)),
+      dao.notes ?? '',
+    );
   }
 
   with(
@@ -282,6 +307,20 @@ export class CardioExerciseSetBlueprint {
       trackWeight: this.trackWeight,
       trackSteps: this.trackSteps,
     };
+  }
+
+  static fromDao(
+    dao: LiftLog.Ui.Models.SessionBlueprintDao.ICardioExerciseSetBlueprintDao,
+  ): CardioExerciseSetBlueprint {
+    return CardioExerciseSetBlueprint.fromPOJO({
+      target: fromCardioTargetDao(dao.cardioTarget),
+      trackDuration: dao.trackDuration ?? false,
+      trackDistance: dao.trackDistance ?? false,
+      trackResistance: dao.trackResistance ?? false,
+      trackIncline: dao.trackIncline ?? false,
+      trackWeight: dao.trackWeight ?? false,
+      trackSteps: dao.trackSteps ?? false,
+    });
   }
 
   toDao(): LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao {
@@ -432,6 +471,22 @@ export class CardioExerciseBlueprint {
     });
   }
 
+  static fromDao(
+    dao: LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2,
+  ): CardioExerciseBlueprint {
+    const sets = dao.cardioSets!.map((x) =>
+      CardioExerciseSetBlueprint.fromDao(x),
+    );
+    return new CardioExerciseBlueprint(
+      dao.name!,
+      sets.length === 0
+        ? [getCardioBlueprintSetFromDeprecatedFields(dao)]
+        : sets,
+      dao.notes ?? '',
+      dao.link ?? '',
+    );
+  }
+
   with(other: Partial<CardioExerciseBlueprintPOJO>): CardioExerciseBlueprint {
     return new CardioExerciseBlueprint(
       other.name ?? this.name,
@@ -571,6 +626,21 @@ export class WeightedExerciseBlueprint {
     });
   }
 
+  static fromDao(
+    dao: LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2,
+  ): WeightedExerciseBlueprint {
+    return new WeightedExerciseBlueprint(
+      dao.name!,
+      dao.sets!,
+      dao.repsPerSet!,
+      fromDecimalDao(dao.weightIncreaseOnSuccess) ?? BigNumber(0),
+      fromRestDao(dao.restBetweenSets),
+      dao.supersetWithNext ?? false,
+      dao.notes ?? '',
+      dao.link ?? '',
+    );
+  }
+
   with(
     other: Partial<WeightedExerciseBlueprintPOJO>,
   ): WeightedExerciseBlueprint {
@@ -702,4 +772,61 @@ function toRestDao(
     maxRest: toDurationDao(model.maxRest),
     failureRest: toDurationDao(model.failureRest),
   });
+}
+
+export function fromRestDao(
+  dao: LiftLog.Ui.Models.SessionBlueprintDao.IRestDaoV2 | null | undefined,
+): Rest {
+  return {
+    minRest: fromDurationDao(dao?.minRest) ?? Duration.ZERO,
+    maxRest: fromDurationDao(dao?.maxRest) ?? Duration.ZERO,
+    failureRest: fromDurationDao(dao?.failureRest) ?? Duration.ZERO,
+  };
+}
+
+export function fromExerciseBlueprintDao(
+  dao:
+    | LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2
+    | null
+    | undefined,
+): ExerciseBlueprint {
+  if (!dao) {
+    throw new Error('ExerciseBlueprint dao should not be null');
+  }
+  if (dao.type === LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO) {
+    return CardioExerciseBlueprint.fromDao(dao);
+  }
+  return WeightedExerciseBlueprint.fromDao(dao);
+}
+
+function getCardioBlueprintSetFromDeprecatedFields(
+  dao: LiftLog.Ui.Models.SessionBlueprintDao.IExerciseBlueprintDaoV2,
+): CardioExerciseSetBlueprint {
+  return CardioExerciseSetBlueprint.fromPOJO({
+    target: fromCardioTargetDao(dao.deprecatedCardioTarget),
+    trackDuration: dao.deprecatedTrackDuration ?? false,
+    trackDistance: dao.deprecatedTrackDistance ?? false,
+    trackResistance: dao.deprecatedTrackResistance ?? false,
+    trackIncline: dao.deprecatedTrackIncline ?? false,
+    trackWeight: false,
+    trackSteps: false,
+  });
+}
+
+function fromCardioTargetDao(
+  dao: LiftLog.Ui.Models.SessionBlueprintDao.ICardioTarget | null | undefined,
+): CardioTarget {
+  if (!dao) {
+    throw new Error('Expected a non null cardio target');
+  }
+  return {
+    type: dao.type as CardioTarget['type'],
+    value: match(dao.type as CardioTarget['type'])
+      .with('distance', () => ({
+        value: fromDecimalDao(dao.distanceValue) ?? BigNumber(0),
+        unit: dao.distanceUnit ?? 'metre',
+      }))
+      .with('time', () => fromDurationDao(dao.timeValue))
+      .exhaustive(),
+  } as CardioTarget;
 }

@@ -2,7 +2,6 @@ import { LiftLog } from '@/gen/proto';
 import { Session } from '@/models/session-models';
 import {
   fromDurationDao,
-  fromSessionDao,
   fromTimestampDao,
 } from '@/models/storage/conversions.from-dao';
 import {
@@ -133,7 +132,7 @@ export function fromWorkoutMessageDao(
     }))
     .with('workoutUpdatedEvent', () => ({
       type: 'WorkoutUpdatedEvent',
-      workout: fromSessionDao(event.workoutUpdatedEvent!.workout),
+      workout: Session.fromDao(event.workoutUpdatedEvent!.workout),
       restTimerInfo: event.workoutUpdatedEvent?.restTimerInfo
         ? {
             startedAt: fromTimestampDao(

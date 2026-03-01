@@ -2,7 +2,6 @@ import { LiftLog } from '@/gen/proto';
 import { BuiltInPrograms } from '@/models/built-in-programs';
 import { RemoteData } from '@/models/remote';
 import { ProgramBlueprint } from '@/models/blueprint-models';
-import { fromProgramBlueprintDao } from '@/models/storage/conversions.from-dao';
 import { toStringValue } from '@/models/storage/conversions.to-dao';
 import { addEffect, RootState } from '@/store/store';
 import {
@@ -57,7 +56,7 @@ export function applyProgramEffects() {
           );
         const converted = Object.fromEntries(
           Object.entries(decoded.programBlueprints).map(
-            ([key, pojo]) => [key, fromProgramBlueprintDao(pojo)] as const,
+            ([key, pojo]) => [key, ProgramBlueprint.fromDao(pojo)] as const,
           ),
         );
 

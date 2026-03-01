@@ -18,7 +18,6 @@ import {
 } from './index';
 import { LiftLog } from '@/gen/proto';
 import { match } from 'ts-pattern';
-import { fromSessionDao } from '@/models/storage/conversions.from-dao';
 import { fetchUpcomingSessions } from '@/store/program';
 import { KeyValueStore } from '@/services/key-value-store';
 import Enumerable from 'linq';
@@ -76,7 +75,7 @@ export function applyStoredSessionsEffects() {
 
       const completedSessionsList =
         storedData?.completedSessions.map((x) => {
-          const s = fromSessionDao(x);
+          const s = Session.fromDao(x);
           return s.with({
             bodyweight: coalesceWeightUnit(s.bodyweight),
           });

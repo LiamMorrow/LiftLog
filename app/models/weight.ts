@@ -3,6 +3,7 @@ import { localeFormatBigNumber } from '@/utils/locale-bignumber';
 import BigNumber from 'bignumber.js';
 import { match, P } from 'ts-pattern';
 import { toDecimalDao } from './storage/conversions.to-dao';
+import { fromDecimalDao } from './storage/conversions.from-dao';
 
 // nil is special in that it basically tries to coalesce into whatever else is given
 export type WeightUnit = 'kilograms' | 'pounds' | 'nil';
@@ -24,6 +25,13 @@ export class Weight {
       unit: toWeightUnitDao(this.unit),
       value: toDecimalDao(this.value),
     });
+  }
+
+  static fromDao(value: LiftLog.Ui.Models.IWeight): Weight {
+    return new Weight(
+      fromDecimalDao(value.value!),
+      fromWeightUnitDao(value.unit),
+    );
   }
 
   with(other: Partial<Weight>): Weight {
@@ -140,5 +148,20 @@ export function toWeightUnitDao(
     .with('kilograms', () => LiftLog.Ui.Models.WeightUnit.KILOGRAMS)
     .with('pounds', () => LiftLog.Ui.Models.WeightUnit.POUNDS)
     .with('nil', () => LiftLog.Ui.Models.WeightUnit.NIL)
+    .exhaustive();
+}
+
+export function fromWeightUnitDao(
+  daoUnit: LiftLog.Ui.Models.WeightUnit | null | undefined,
+): WeightUnit {
+  return match(daoUnit)
+    .returnType<WeightUnit>()
+    .with(P.nullish, () => 'nil')
+    .with(LiftLog.Ui.Models.WeightUnit.NIL satisfies 0 as 0, () => 'nil')
+    .with(
+      LiftLog.Ui.Models.WeightUnit.KILOGRAMS satisfies 1 as 1,
+      () => 'kilograms',
+    )
+    .with(LiftLog.Ui.Models.WeightUnit.POUNDS satisfies 2 as 2, () => 'pounds')
     .exhaustive();
 }

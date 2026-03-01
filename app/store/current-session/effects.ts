@@ -4,7 +4,6 @@ import {
   RecordedWeightedExercise,
   Session,
 } from '@/models/session-models';
-import { fromCurrentSessionDao } from '@/models/storage/conversions.from-dao';
 import {
   broadcastWorkoutEvent,
   clearSetTimerNotification,
@@ -289,4 +288,13 @@ function toCurrentSessionDao(model: {
     workoutSession:
       (model.workoutSession && model.workoutSession.toDao()) ?? null,
   });
+}
+
+export function fromCurrentSessionDao(
+  dao: LiftLog.Ui.Models.CurrentSessionStateDao.ICurrentSessionStateDaoV2,
+) {
+  return {
+    workoutSession: dao.workoutSession && Session.fromDao(dao.workoutSession),
+    historySession: dao.historySession && Session.fromDao(dao.historySession),
+  };
 }
