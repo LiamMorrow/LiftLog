@@ -39,7 +39,7 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: 16.4.0
+          xcode-version: latest-stable
 
       - name: Set build number
         uses: mlilback/build-number@v1
