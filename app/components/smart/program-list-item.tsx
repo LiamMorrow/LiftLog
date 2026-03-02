@@ -118,7 +118,7 @@ export default function ProgramListItem({
   const [focusStyle, setFocusStyle] = useState({});
   useEffect(() => {
     let times = 0;
-    let timeout: number = 0;
+    let timeout: NodeJS.Timeout;
     const handleTimes = () => {
       times++;
       setFocusStyle(

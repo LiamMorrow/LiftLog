@@ -200,7 +200,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
       ...colorPair('lime', 'ffcddc39', schemedTheme.primary, isDark),
       ...colorPair('amber', 'ffffc107', schemedTheme.primary, isDark),
     } satisfies AppThemeColors,
-    colorScheme: colorScheme ?? 'light',
+    colorScheme: colorScheme === 'unspecified' ? 'light' : colorScheme,
   };
 
   const baseNavigationThem = isDark ? DarkTheme : DefaultTheme;
