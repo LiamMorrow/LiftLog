@@ -4,7 +4,6 @@
     "slug": "liftlog",
     "version": "1.0.0",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "web": {
       "bundler": "metro",
       "output": "single"
@@ -43,7 +42,15 @@
           }
         }
       ],
-      "@sentry/react-native"
+      "@sentry/react-native",
+      "expo-sharing",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification.png"
+        }
+      ]
+
     ],
     "experiments": {
       "typedRoutes": true,
@@ -106,9 +113,6 @@
       "appleTeamId": "",
       "version": "$(APP_DISPLAY_VERSION)",
       "buildNumber": "$(APP_VERSION)"
-    },
-    "notification": {
-      "icon": "./assets/notification.png"
     },
     "jsEngine": "hermes"
   }
