@@ -82,7 +82,7 @@ jobs:
         run: echo "${{ inputs.release_notes }}" > release_notes/whatsnew-en-AU
 
       - name: Upload AAB to artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: app-release-aab
           path: app/android/app/build/outputs/bundle/release/app-release.aab

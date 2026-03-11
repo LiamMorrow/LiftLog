@@ -52,7 +52,7 @@ jobs:
           wait-on: "http://localhost:8081, http://localhost:5264/health"
           working-directory: ./tests/cypress-tests
       - name: Upload screenshots
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: cypress-screenshots
