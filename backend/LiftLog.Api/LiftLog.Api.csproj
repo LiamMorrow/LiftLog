@@ -15,7 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Anthropic" Version="12.8.0" />
-    <PackageReference Include="cuid.net" Version="6.0.1" />
+    <PackageReference Include="cuid.net" Version="7.0.0" />
     <PackageReference Include="FluentValidation" Version="12.1.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="EFCore.NamingConventions" Version="10.0.1" />
