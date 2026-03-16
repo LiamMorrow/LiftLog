@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable */
 const { defineConfig, globalIgnores } = require('eslint/config');
 
 const prettier = require('eslint-plugin-prettier');
