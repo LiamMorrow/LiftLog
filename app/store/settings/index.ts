@@ -31,6 +31,7 @@ interface SettingsState {
   preferredLanguage: string | undefined;
   notesExpandedByDefault: boolean;
   keepScreenAwakeDuringWorkout: boolean;
+  exportToHealthAggregator: boolean;
 }
 
 interface RemoteBackupSettings {
@@ -62,6 +63,7 @@ const initialState: SettingsState = {
   preferredLanguage: undefined,
   notesExpandedByDefault: false,
   keepScreenAwakeDuringWorkout: false,
+  exportToHealthAggregator: false,
 };
 
 const settingsSlice = createSlice({
@@ -128,6 +130,9 @@ const settingsSlice = createSlice({
     setPreferredLanguage(state, action: PayloadAction<string | undefined>) {
       state.preferredLanguage = action.payload;
     },
+    setExportToHealthAggregator(state, action: PayloadAction<boolean>) {
+      state.exportToHealthAggregator = action.payload;
+    },
   },
   selectors: {
     selectPreferredWeightUnit: (state): WeightUnit =>
@@ -177,6 +182,7 @@ export const {
   setPreferredLanguage,
   setNotesExpandedByDefault,
   setKeepScreenAwakeDuringWorkout,
+  setExportToHealthAggregator,
 } = settingsSlice.actions;
 
 export const { selectPreferredWeightUnit } = settingsSlice.selectors;

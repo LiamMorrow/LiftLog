@@ -155,7 +155,9 @@ export function applyCurrentSessionEffects() {
 
   addEffect(finishCurrentWorkout, (a, { dispatch, getState }) => {
     const session = selectCurrentSession(getState(), a.payload);
-    if (session) dispatch(addUnpublishedSessionId(session.id));
+    if (session) {
+      dispatch(addUnpublishedSessionId(session.id));
+    }
 
     dispatch(persistCurrentSession(a.payload));
     dispatch(setStatsIsDirty(true));

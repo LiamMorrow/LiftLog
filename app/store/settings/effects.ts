@@ -5,6 +5,7 @@ import {
   setBackupReminder,
   setColorSchemeSeed,
   setCrashReportsEnabled,
+  setExportToHealthAggregator,
   setFirstDayOfWeek,
   setIsHydrated,
   setKeepScreenAwakeDuringWorkout,
@@ -62,6 +63,7 @@ export function applySettingsEffects() {
         proToken,
         notesExpandedByDefault,
         keepScreenAwakeDuringWorkout,
+        exportToHealthAggregator,
       ] = await Promise.all([
         preferenceService.getUseImperialUnits(),
         preferenceService.getShowBodyweight(),
@@ -80,6 +82,7 @@ export function applySettingsEffects() {
         preferenceService.getProToken(),
         preferenceService.getNotesExpandedByDefault(),
         preferenceService.getKeepScreenAwakeDuringWorkout(),
+        preferenceService.getExportToHealthAggregator(),
       ]);
       dispatch(setColorSchemeSeed(colorSchemeSeed));
       dispatch(setUseImperialUnits(useImperialUnits));
@@ -108,6 +111,7 @@ export function applySettingsEffects() {
       dispatch(setProToken(proToken));
       dispatch(setNotesExpandedByDefault(notesExpandedByDefault));
       dispatch(setKeepScreenAwakeDuringWorkout(keepScreenAwakeDuringWorkout));
+      dispatch(setExportToHealthAggregator(exportToHealthAggregator));
 
       if (Platform.OS === 'ios') {
         Purchases.configure({
@@ -230,6 +234,29 @@ export function applySettingsEffects() {
         });
       } else {
         await Sentry.close();
+      }
+    },
+  );
+
+  addEffect(
+    setExportToHealthAggregator,
+    async (
+      action,
+      {
+        stateAfterReduce,
+        dispatch,
+        extra: { preferenceService, healthExportService },
+      },
+    ) => {
+      if (action.payload && !healthExportService.canExport()) {
+        dispatch(setExportToHealthAggregator(false));
+        return;
+      }
+      if (stateAfterReduce.settings.isHydrated) {
+        if (action.payload) {
+          await healthExportService.requestPermission();
+        }
+        await preferenceService.setExportToHealthAggregator(action.payload);
       }
     },
   );

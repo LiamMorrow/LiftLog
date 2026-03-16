@@ -24,6 +24,7 @@
           "launchMode": "most-recent"
         }
       ],
+      "expo-health-connect",
       [
         "@sentry/react-native/expo",
         {
@@ -44,13 +45,13 @@
       ],
       "@sentry/react-native",
       "expo-sharing",
+      "./plugins/override-health-connect-min-version.js",
       [
         "expo-notifications",
         {
           "icon": "./assets/notification.png"
         }
       ]
-
     ],
     "experiments": {
       "typedRoutes": true,
@@ -60,7 +61,10 @@
     "android": {
       "package": "com.limajuice.liftlog",
       "permissions": [
-        "com.android.vending.BILLING"
+        "com.android.vending.BILLING",
+        "android.permission.health.WRITE_WEIGHT",
+        "android.permission.health.WRITE_EXERCISE",
+        "android.permission.health.WRITE_EXERCISE_ROUTE"
       ],
       "intentFilters": [
         {
@@ -72,10 +76,7 @@
               "host": "app.liftlog.online"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
       "adaptiveIcon": {
@@ -86,9 +87,7 @@
     },
     "ios": {
       "bundleIdentifier": "com.limajuice.liftlog",
-      "associatedDomains": [
-        "applinks:app.liftlog.online"
-      ],
+      "associatedDomains": ["applinks:app.liftlog.online"],
       "supportsTablet": true,
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": true,

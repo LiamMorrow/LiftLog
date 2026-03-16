@@ -18,6 +18,8 @@ import { getTolgee } from '@/services/tolgee';
 import { WorkoutWorker } from '@/services/workout-worker';
 import { RootState } from '@/store';
 import { Store } from '@reduxjs/toolkit';
+import { HealthExportService } from './health-export-service';
+import { HealthExportService as HES } from './health-export-service-shared';
 
 export type Services = Awaited<ReturnType<typeof resolveServicesInternal>>;
 
@@ -63,6 +65,7 @@ function resolveServicesInternal(store: Store<RootState>) {
     store.getState,
     tolgee,
   );
+  const healthExportService: HES = new HealthExportService();
 
   return {
     logger,
@@ -75,6 +78,7 @@ function resolveServicesInternal(store: Store<RootState>) {
     feedInboxDecryptionService,
     feedApiService,
     feedIdentityService,
+    healthExportService,
     stringSharer,
     fileExportService,
     filePickerService,
