@@ -217,6 +217,45 @@ export function applyStoredSessionsEffects() {
   });
 
   addEffect(
+    addStoredSession,
+    async (a, { getState, extra: { healthExportService, logger } }) => {
+      const workout = a.payload;
+      if (
+        !getState().settings.exportToHealthAggregator ||
+        !healthExportService.canExport()
+      ) {
+        return;
+      }
+      try {
+        await healthExportService.exportWorkout(workout);
+      } catch (e) {
+        logger.error('Failed to sync to health aggregator', e);
+      }
+    },
+  );
+
+  addEffect(
+    deleteStoredSession,
+    async (
+      action,
+      { stateAfterReduce, extra: { healthExportService, logger } },
+    ) => {
+      const workoutId = action.payload;
+      if (
+        !stateAfterReduce.settings.exportToHealthAggregator ||
+        !healthExportService.canExport()
+      ) {
+        return;
+      }
+      try {
+        await healthExportService.deleteWorkout(workoutId);
+      } catch (e) {
+        logger.error('Failed to delete workout from HealthConnect', e);
+      }
+    },
+  );
+
+  addEffect(
     [deleteStoredSession, addStoredSession, upsertStoredSessions],
     async (
       _,

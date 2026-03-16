@@ -27,6 +27,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { requestPermissionsAsync } from 'expo-notifications';
+import { HealthExportSwitch } from './health-export-switch';
 
 export function WelcomeWizard() {
   const notificationsEnabled = useAppSelector(
@@ -228,6 +229,7 @@ export function WelcomeWizard() {
           value={settings.showFeed}
           onValueChange={(value) => dispatch(setShowFeed(value))}
         />
+        <HealthExportSwitch />
       </View>
     </View>
   );

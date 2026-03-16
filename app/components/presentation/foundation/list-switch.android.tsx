@@ -1,6 +1,6 @@
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { ReactNode, useEffect, useState } from 'react';
-import { List, Switch } from 'react-native-paper';
+import { List, ListItemProps, Switch } from 'react-native-paper';
 
 interface ListSwitchProps {
   headline: ReactNode;
@@ -9,6 +9,7 @@ interface ListSwitchProps {
   focus?: boolean;
   onValueChange: (value: boolean) => void;
   testID?: string;
+  left?: ListItemProps['left'];
   disabled?: boolean;
 }
 // Workaround - mount the switch after initial render. See: https://github.com/react-navigation/react-navigation/issues/8658#issuecomment-898486182
@@ -36,6 +37,7 @@ export default function ListSwitch(props: ListSwitchProps) {
         backgroundColor: props.focus ? colors.tertiary + '33' : undefined!,
       }}
       disabled={props.disabled!}
+      left={props.left!}
       right={() =>
         delayRender && (
           <Switch

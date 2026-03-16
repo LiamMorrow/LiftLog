@@ -12,7 +12,6 @@ const checkFile = require('eslint-plugin-check-file');
 const { FlatCompat } = require('@eslint/eslintrc');
 
 const compat = new FlatCompat({
-  // eslint-disable-next-line no-undef
   baseDirectory: __dirname,
   recommendedConfig: js.configs.recommended,
   allConfig: js.configs.all,
@@ -105,17 +104,18 @@ module.exports = defineConfig([
         projectService: {
           allowDefaultProject: ['eslint.config.js'],
         },
-        // eslint-disable-next-line no-undef
         tsconfigRootDir: __dirname,
       },
     },
   },
   globalIgnores([
+    'plugins',
     '**/gen',
     '**/vitest.config.ts',
     '**/metro.config.js',
     '**/babel.config.js',
     '**/.eslintrc.js',
+    '**/.eslint.config.js',
     '**/.env.local',
     '**/.expo',
     '**/expo-env.d.ts',

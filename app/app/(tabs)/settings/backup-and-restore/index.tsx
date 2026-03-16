@@ -19,6 +19,7 @@ import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { List } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
+import { HealthExportSwitch } from '@/components/smart/health-export-switch';
 
 export default function BackupAndRestorePage() {
   const { t } = useTranslate();
@@ -38,7 +39,7 @@ export default function BackupAndRestorePage() {
           description={t('backup.backup_data.subtitle')}
           left={(props) => <List.Icon icon={'backup'} {...props} />}
           onPress={() => setFeedExportDialogOpen(true)}
-        ></List.Item>
+        />
         <List.Item
           title={t('backup.restore_data.title')}
           description={t('backup.restore_data.subtitle')}
@@ -47,7 +48,7 @@ export default function BackupAndRestorePage() {
             dispatch(importData());
             dispatch(setStatsIsDirty(true));
           }}
-        ></List.Item>
+        />
         <List.Item
           title={t('backup.automatic_remote.title')}
           description={t('backup.automatic_remote.subtitle')}
@@ -55,7 +56,7 @@ export default function BackupAndRestorePage() {
           onPress={() =>
             push('/(tabs)/settings/backup-and-restore/remote-backup')
           }
-        ></List.Item>
+        />
         <List.Item
           title={t('backup.plaintext_export.title')}
           description={t('backup.plaintext_export.subtitle')}
@@ -63,7 +64,8 @@ export default function BackupAndRestorePage() {
           onPress={() =>
             push('/(tabs)/settings/backup-and-restore/plain-text-export')
           }
-        ></List.Item>
+        />
+        <HealthExportSwitch />
         <ListSwitch
           headline={<T keyName="backup.reminders.title" />}
           supportingText={<T keyName="backup.reminders.subtitle" />}
