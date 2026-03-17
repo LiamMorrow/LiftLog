@@ -82,6 +82,8 @@
   "exercise.uncompleted_sets.label": "Uncompleted sets",
   "export.health_connect.title": "Publish to Health Connect",
   "export.health_connect.subtitle": "Exports future workouts and bodyweight into Health Connect",
+  "export.healthkit.title": "Publish to Apple Fitness",
+  "export.healthkit.subtitle": "Exports future workouts and bodyweight into the Apple Fitness app",
   "feed.shared_session.save_to_plan.button": "Save to plan",
   "feed.shared_session.start_workout.button": "Start workout",
   "feed.accept_to_follow.explanation": "Accept to follow their workouts and see their progress.",

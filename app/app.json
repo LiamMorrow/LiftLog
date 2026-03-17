@@ -26,6 +26,14 @@
       ],
       "expo-health-connect",
       [
+        "@kingstinct/react-native-healthkit",
+        {
+          "NSHealthShareUsageDescription": false,
+          "NSHealthUpdateUsageDescription": "LiftLog would like to share your workout and/or body weight with Apple Health.",
+          "background": false
+        }
+      ],
+      [
         "@sentry/react-native/expo",
         {
           "url": "https://sentry.io/",
