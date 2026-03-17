@@ -30,5 +30,16 @@ export function HealthExportSwitch() {
         value={exportToHealthAggregator}
       />
     ),
+    ios: (
+      <ListSwitch
+        headline={t('export.healthkit.title')}
+        supportingText={t('export.healthkit.subtitle')}
+        left={(props) => <List.Icon icon={'heartCheck'} {...props} />}
+        onValueChange={(val) => {
+          dispatch(setExportToHealthAggregator(val));
+        }}
+        value={exportToHealthAggregator}
+      />
+    ),
   });
 }
