@@ -28,6 +28,7 @@ export function CurrentWorkoutReplacer({
     'workoutSession',
   );
   const hasCurrentSession = !!currentSession;
+  const activeSessionSameAsSelected = session?.equals(currentSession);
   const dispatch = useDispatch();
   const replaceSession = useDebouncedCallback(
     (session: Session) => {
@@ -48,10 +49,10 @@ export function CurrentWorkoutReplacer({
     replaceSession(session);
   };
   useEffect(() => {
-    if (session && !hasCurrentSession) {
+    if (session && (!hasCurrentSession || activeSessionSameAsSelected)) {
       replaceSession(session);
     }
-  }, [session, hasCurrentSession, replaceSession]);
+  }, [session, hasCurrentSession, replaceSession, activeSessionSameAsSelected]);
   return (
     <ConfirmationDialog
       open={hasActiveSession && !!session}
