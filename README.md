@@ -22,6 +22,7 @@
 ### Key Features
 
 - 🗿 Intuitive UI which lets you log your progression, without getting in your way
+- Entirely device local workouts, no waiting for sign in or downloads
 - 📱 Runs on Android, iOS, and web
 - 🔒 End-to-end encrypted social feeds (opt-in, privacy-first)
 - 🎨 Material Design 3 via React Native Paper
