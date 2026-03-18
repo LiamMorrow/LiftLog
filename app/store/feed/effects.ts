@@ -283,7 +283,9 @@ export function applyFeedEffects() {
         identity.publishBodyweight,
         identity.publishPlan,
         identity.publishWorkouts,
-        selectActiveProgram(stateAfterReduce).sessions,
+        stateAfterReduce.program.isHydrated
+          ? selectActiveProgram(stateAfterReduce).sessions
+          : [],
       );
       if (signal.aborted) {
         return;
