@@ -5,6 +5,7 @@ import { exportData } from '@/store/settings';
 import { streamToUint8Array } from '@/utils/stream';
 import 'compression-streams-polyfill';
 import { toFeedStateDao } from '../feed';
+import { DateTimeFormatter, LocalDateTime } from '@js-joda/core';
 
 export function addExportBackupEffects() {
   addEffect(
@@ -42,9 +43,15 @@ export function addExportBackupEffects() {
 
       await writePromise;
       await writer.close();
+      const now = LocalDateTime.now()
+        .withNano(0)
+        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        .replaceAll(':', '')
+        .replaceAll('T', '_')
+        .replaceAll('-', '');
 
       await fileExportService.exportBytes(
-        'export.liftlogbackup.gz',
+        `export.liftlogbackup.${now}.gz`,
         await gzippedPromise,
         'application/octet-stream',
       );

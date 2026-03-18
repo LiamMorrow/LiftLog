@@ -10,6 +10,7 @@ import { match } from 'ts-pattern';
 import BigNumber from 'bignumber.js';
 import { jsonToCSV } from 'react-native-csv';
 import { shortFormatWeightUnit } from '@/models/weight';
+import { DateTimeFormatter, LocalDateTime } from '@js-joda/core';
 
 export function addExportPlaintextEffects() {
   addEffect(
@@ -19,12 +20,18 @@ export function addExportPlaintextEffects() {
       { getState, extra: { progressRepository, fileExportService } },
     ) => {
       const sessions = progressRepository.getOrderedSessions();
+      const now = LocalDateTime.now()
+        .withNano(0)
+        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        .replaceAll(':', '')
+        .replaceAll('T', '_')
+        .replaceAll('-', '');
       const [fileName, bytes, contentType] = await match(format)
         .with(
           'CSV',
           async () =>
             [
-              'liftlog-export.csv',
+              `liftlog-export.${now}.csv`,
               await exportToCsv(sessions),
               'text/csv',
             ] as const,
@@ -33,7 +40,7 @@ export function addExportPlaintextEffects() {
           'JSON',
           async () =>
             [
-              'liftlog-export.json',
+              `liftlog-export.${now}.json`,
               await exportToJson(sessions),
               'application/json',
             ] as const,
