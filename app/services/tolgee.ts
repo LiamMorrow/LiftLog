@@ -8,6 +8,7 @@ import es from '../i18n/es.json';
 import fi from '../i18n/fi.json';
 import fr from '../i18n/fr.json';
 import it from '../i18n/it.json';
+import hu from '../i18n/hu.json';
 import nl from '../i18n/nl.json';
 import ru from '../i18n/ru.json';
 import sr from '../i18n/sr.json';
@@ -29,6 +30,7 @@ export const supportedLanguages = [
   { translationJson: fr, code: 'fr', label: 'Français' },
   { translationJson: it, code: 'it', label: 'Italiano' },
   { translationJson: nl, code: 'nl', label: 'Nederlands' },
+  { translationJson: hu, code: 'hu', label: 'Magyar' },
   { translationJson: ru, code: 'ru', label: 'Русский' },
   { translationJson: sr, code: 'sr', label: 'Srpski' },
   { translationJson: uk, code: 'uk', label: 'Українська' },
