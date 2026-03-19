@@ -8,6 +8,7 @@ import { AppStateProvider } from '@/components/smart/app-state-provider';
 import SnackbarProvider from '@/components/smart/snackbar-provider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import '@/utils/date-locale';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import * as Sentry from '@sentry/react-native';
 import ServicesProvider from '@/components/smart/services-provider';
 
@@ -30,30 +31,32 @@ export default Sentry.wrap(function RootLayout() {
 
   return (
     <GestureHandlerRootView>
-      <Provider store={store}>
-        <SafeAreaProvider>
-          <ServicesProvider>
-            <AppThemeProvider>
-              <AppStateProvider>
-                <SnackbarProvider>
-                  <Stack
-                    screenOptions={{
-                      headerShown: false,
-                      statusBarStyle:
-                        Platform.OS === 'android'
-                          ? colorScheme === 'dark'
-                            ? 'light'
-                            : 'dark'
-                          : undefined,
-                      gestureEnabled: false,
-                    }}
-                  />
-                </SnackbarProvider>
-              </AppStateProvider>
-            </AppThemeProvider>
-          </ServicesProvider>
-        </SafeAreaProvider>
-      </Provider>
+      <KeyboardProvider>
+        <Provider store={store}>
+          <SafeAreaProvider>
+            <ServicesProvider>
+              <AppThemeProvider>
+                <AppStateProvider>
+                  <SnackbarProvider>
+                    <Stack
+                      screenOptions={{
+                        headerShown: false,
+                        statusBarStyle:
+                          Platform.OS === 'android'
+                            ? colorScheme === 'dark'
+                              ? 'light'
+                              : 'dark'
+                            : undefined,
+                        gestureEnabled: false,
+                      }}
+                    />
+                  </SnackbarProvider>
+                </AppStateProvider>
+              </AppThemeProvider>
+            </ServicesProvider>
+          </SafeAreaProvider>
+        </Provider>
+      </KeyboardProvider>
     </GestureHandlerRootView>
   );
 });

@@ -5,6 +5,7 @@ import { T, useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
 import { I18nManager, Platform, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
@@ -77,7 +78,10 @@ export default function AiPlanner() {
   const reset = () => dispatch(restartChat());
 
   return (
-    <View style={{ flex: 1 }}>
+    <KeyboardAvoidingView
+      behavior={'translate-with-padding'}
+      style={{ flex: 1 }}
+    >
       <Stack.Screen
         options={{
           title: t('ai.planner.title'),
@@ -156,7 +160,7 @@ export default function AiPlanner() {
           onPress={() => sendMessage(messageText)}
         />
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

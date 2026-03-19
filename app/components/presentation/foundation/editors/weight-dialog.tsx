@@ -7,6 +7,7 @@ import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { ReactNode, useEffect, useState } from 'react';
 import { Keyboard, View } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import {
@@ -114,97 +115,104 @@ export default function WeightDialog(props: WeightDialogProps) {
 
   return (
     <Portal>
-      <Dialog visible={props.open} onDismiss={props.onClose}>
-        <Dialog.Title>
-          {props.label ?? <T keyName="weight.weight.label" />}
-        </Dialog.Title>
-        <Dialog.Content>
-          <View style={{ gap: spacing[2] }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                gap: spacing[2],
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <TextInput
-                testID="weight-input"
-                selectTextOnFocus
-                mode="outlined"
-                inputMode="decimal"
-                keyboardType="decimal-pad"
-                submitBehavior="blurAndSubmit"
-                returnKeyType="done"
-                autoFocus
-                value={text}
-                onChangeText={handleTextChange}
+      <KeyboardAvoidingView
+        behavior={'height'}
+        style={{ flex: 1, pointerEvents: props.open ? 'box-none' : 'none' }}
+      >
+        <Dialog visible={props.open} onDismiss={props.onClose}>
+          <Dialog.Title>
+            {props.label ?? <T keyName="weight.weight.label" />}
+          </Dialog.Title>
+          <Dialog.Content>
+            <View style={{ gap: spacing[2] }}>
+              <View
                 style={{
-                  backgroundColor: theme.colors.elevation.level3,
-                  flex: 1,
+                  flexDirection: 'row',
+                  gap: spacing[2],
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}
-              />
+              >
+                <TextInput
+                  testID="weight-input"
+                  selectTextOnFocus
+                  mode="outlined"
+                  inputMode="decimal"
+                  keyboardType="decimal-pad"
+                  submitBehavior="blurAndSubmit"
+                  returnKeyType="done"
+                  autoFocus
+                  value={text}
+                  onChangeText={handleTextChange}
+                  style={{
+                    backgroundColor: theme.colors.elevation.level3,
+                    flex: 1,
+                  }}
+                />
 
-              <SelectButton
-                testID="weight-dialog-unit-selector"
-                options={[
-                  { label: 'kg', value: 'kilograms' },
-                  { label: 'lbs', value: 'pounds' },
-                  { label: 'Unit', value: 'nil', disabledAndHidden: true },
-                ]}
-                value={editorWeightUnit}
-                onMenuOpen={() => Keyboard.dismiss()}
-                onChange={(unit) => setEditorWeightUnit(unit)}
-              />
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                gap: spacing[2],
-                alignItems: 'center',
-              }}
-            >
-              {props.allowNegative && (
-                <Tooltip title={t('exercise.toggle_negative.button')}>
-                  <IconButton
-                    mode="outlined"
-                    icon={'plusMinus'}
-                    onPress={() => {
-                      setEditorWeightValue(editorWeightValue?.multipliedBy(-1));
-                      setText(
-                        localeFormatBigNumber(
+                <SelectButton
+                  testID="weight-dialog-unit-selector"
+                  options={[
+                    { label: 'kg', value: 'kilograms' },
+                    { label: 'lbs', value: 'pounds' },
+                    { label: 'Unit', value: 'nil', disabledAndHidden: true },
+                  ]}
+                  value={editorWeightUnit}
+                  onMenuOpen={() => Keyboard.dismiss()}
+                  onChange={(unit) => setEditorWeightUnit(unit)}
+                />
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  gap: spacing[2],
+                  alignItems: 'center',
+                }}
+              >
+                {props.allowNegative && (
+                  <Tooltip title={t('exercise.toggle_negative.button')}>
+                    <IconButton
+                      mode="outlined"
+                      icon={'plusMinus'}
+                      onPress={() => {
+                        setEditorWeightValue(
                           editorWeightValue?.multipliedBy(-1),
-                        ),
-                      );
-                    }}
-                  />
-                </Tooltip>
-              )}
-              <IconButton
-                icon={'minus'}
-                mode="outlined"
-                testID="decrement-weight"
-                onPress={decrementWeight}
-              />
-              <IconButton
-                icon={'plus'}
-                mode="outlined"
-                testID="increment-weight"
-                onPress={incrementWeight}
-              />
+                        );
+                        setText(
+                          localeFormatBigNumber(
+                            editorWeightValue?.multipliedBy(-1),
+                          ),
+                        );
+                      }}
+                    />
+                  </Tooltip>
+                )}
+                <IconButton
+                  icon={'minus'}
+                  mode="outlined"
+                  testID="decrement-weight"
+                  onPress={decrementWeight}
+                />
+                <IconButton
+                  icon={'plus'}
+                  mode="outlined"
+                  testID="increment-weight"
+                  onPress={incrementWeight}
+                />
+              </View>
+              {props.children}
             </View>
-            {props.children}
-          </View>
-        </Dialog.Content>
-        <Dialog.Actions>
-          <Button onPress={props.onClose} testID="close">
-            <T keyName="generic.close.button" />
-          </Button>
-          <Button onPress={onSaveClick} testID="save">
-            <T keyName="generic.save.button" />
-          </Button>
-        </Dialog.Actions>
-      </Dialog>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={props.onClose} testID="close">
+              <T keyName="generic.close.button" />
+            </Button>
+            <Button onPress={onSaveClick} testID="save">
+              <T keyName="generic.save.button" />
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </KeyboardAvoidingView>
     </Portal>
   );
 }

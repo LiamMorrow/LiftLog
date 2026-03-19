@@ -67,8 +67,8 @@
     },
     "scheme": "liftlog",
     "android": {
-      "softwareKeyboardLayoutMode": "pan",
       "package": "com.limajuice.liftlog",
+      "softwareKeyboardLayoutMode": "pan",
       "permissions": [
         "com.android.vending.BILLING",
         "android.permission.health.WRITE_WEIGHT",

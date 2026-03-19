@@ -129,13 +129,13 @@ android {
             if (project.hasProperty('ANDROID_UPLOAD_STORE_FILE')) {
                 signingConfig signingConfigs.release
             } else {
-            signingConfig signingConfigs.debug
-            def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'
-            shrinkResources enableShrinkResources.toBoolean()
-            minifyEnabled enableMinifyInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            def enablePngCrunchInRelease = findProperty('android.enablePngCrunchInReleaseBuilds') ?: 'true'
-            crunchPngs enablePngCrunchInRelease.toBoolean()
+                signingConfig signingConfigs.debug
+                def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'
+                shrinkResources enableShrinkResources.toBoolean()
+                minifyEnabled enableMinifyInReleaseBuilds
+                proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+                def enablePngCrunchInRelease = findProperty('android.enablePngCrunchInReleaseBuilds') ?: 'true'
+                crunchPngs enablePngCrunchInRelease.toBoolean()
             }
         }
     }

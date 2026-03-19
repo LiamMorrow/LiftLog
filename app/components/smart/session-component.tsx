@@ -489,7 +489,10 @@ export default function SessionComponent(props: {
   );
 
   return (
-    <FullHeightScrollView floatingChildren={floatingBottomContainer}>
+    <FullHeightScrollView
+      ignoreKeyboard
+      floatingChildren={floatingBottomContainer}
+    >
       {notesComponent}
       {emptyInfo}
       <ItemList items={session.recordedExercises} renderItem={renderItem} />
