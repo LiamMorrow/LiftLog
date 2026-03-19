@@ -6,7 +6,7 @@ import {
 import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { ReactNode, useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
@@ -42,6 +42,10 @@ type WeightDialogProps = {
 );
 
 export default function WeightDialog(props: WeightDialogProps) {
+  const onClose = () => {
+    Keyboard.dismiss();
+    props.onClose();
+  };
   const theme = useTheme();
   const { t } = useTranslate();
   const preferredWeightUnit = usePreferredWeightUnit();
@@ -98,8 +102,9 @@ export default function WeightDialog(props: WeightDialogProps) {
   };
 
   const onSaveClick = () => {
+    Keyboard.dismiss();
     if (editorWeightValue === undefined && !props.allowNull) {
-      props.onClose();
+      onClose();
       return;
     }
     if (!props.allowNegative && editorWeightValue?.isLessThan(0)) {
@@ -110,7 +115,7 @@ export default function WeightDialog(props: WeightDialogProps) {
     } else {
       props.updateWeight(new Weight(editorWeightValue, editorWeightUnit));
     }
-    props.onClose();
+    onClose();
   };
 
   return (
@@ -119,7 +124,7 @@ export default function WeightDialog(props: WeightDialogProps) {
         behavior={'height'}
         style={{ flex: 1, pointerEvents: props.open ? 'box-none' : 'none' }}
       >
-        <Dialog visible={props.open} onDismiss={props.onClose}>
+        <Dialog visible={props.open} onDismiss={onClose}>
           <Dialog.Title>
             {props.label ?? <T keyName="weight.weight.label" />}
           </Dialog.Title>
@@ -201,7 +206,7 @@ export default function WeightDialog(props: WeightDialogProps) {
             </View>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={props.onClose} testID="close">
+            <Button onPress={onClose} testID="close">
               <T keyName="generic.close.button" />
             </Button>
             <Button onPress={onSaveClick} testID="save">

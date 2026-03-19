@@ -2,7 +2,7 @@ import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { usePreventNavigate } from '@/hooks/usePreventNavigate';
 import { ReactNode, useEffect } from 'react';
-import { View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import { Portal, Text } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
@@ -29,7 +29,24 @@ interface FullScreenDialogProps {
 }
 
 export default function FullScreenDialog(props: FullScreenDialogProps) {
-  const { action, open, onAction, onClose, title, children } = props;
+  const {
+    action,
+    open,
+    onAction: propsOnAction,
+    onClose: propsOnClose,
+    title,
+    children,
+  } = props;
+  const onClose = () => {
+    propsOnClose();
+    Keyboard.dismiss();
+  };
+  const onAction = propsOnAction
+    ? () => {
+        propsOnAction();
+        Keyboard.dismiss();
+      }
+    : undefined;
 
   const { bottom } = useSafeAreaInsets();
   const { colors } = useAppTheme();
