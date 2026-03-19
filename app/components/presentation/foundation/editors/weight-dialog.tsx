@@ -6,7 +6,7 @@ import {
 import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { ReactNode, useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import {
@@ -151,6 +151,7 @@ export default function WeightDialog(props: WeightDialogProps) {
                   { label: 'Unit', value: 'nil', disabledAndHidden: true },
                 ]}
                 value={editorWeightUnit}
+                onMenuOpen={() => Keyboard.dismiss()}
                 onChange={(unit) => setEditorWeightUnit(unit)}
               />
             </View>

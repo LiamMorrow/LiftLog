@@ -21,6 +21,7 @@ interface SelectButtonProps<T> {
   options: SelectButtonOption<T>[];
   renderLabel?: (value: T) => string;
   onChange: (value: T) => void;
+  onMenuOpen?: () => void;
   testID?: string;
   buttonProps?: Partial<Pick<ButtonProps, 'mode'>>;
 }
@@ -32,6 +33,7 @@ export default function SelectButton<
   onChange,
   renderLabel,
   testID,
+  onMenuOpen,
   buttonProps,
 }: SelectButtonProps<T>) {
   const valueLabel = options.find((x) => isEqual(x.value, value))?.label;
@@ -46,7 +48,10 @@ export default function SelectButton<
         <Button
           testID={testID!}
           icon={open ? 'arrowDropUp' : 'arrowDropDown'}
-          onPress={() => setOpen(true)}
+          onPress={() => {
+            setOpen(true);
+            onMenuOpen?.();
+          }}
           contentStyle={{ flexDirection: 'row-reverse' }}
           {...buttonProps}
         >
