@@ -87,6 +87,8 @@ export default function DurationEditor(props: DurationEditorProps) {
               mode="outlined"
               inputMode="numeric"
               readOnly={readonly}
+              submitBehavior="blurAndSubmit"
+              returnKeyType="done"
               style={{ width: spacing[24], textAlign: 'center' }}
               value={hours}
               onChangeText={updateHours}
@@ -108,6 +110,8 @@ export default function DurationEditor(props: DurationEditorProps) {
         <TextInput
           mode="outlined"
           inputMode="numeric"
+          submitBehavior="blurAndSubmit"
+          returnKeyType="done"
           style={{ width: spacing[24], textAlign: 'center' }}
           value={minutes}
           readOnly={readonly}
@@ -128,6 +132,8 @@ export default function DurationEditor(props: DurationEditorProps) {
         <TextInput
           mode="outlined"
           inputMode="numeric"
+          submitBehavior="blurAndSubmit"
+          returnKeyType="done"
           style={{ width: spacing[24], textAlign: 'center' }}
           value={seconds}
           readOnly={readonly}

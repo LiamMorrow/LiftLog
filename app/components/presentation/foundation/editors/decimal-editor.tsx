@@ -47,6 +47,8 @@ export function DecimalEditor(props: DecimalEditorProps) {
       inputMode={'decimal'}
       keyboardType={'decimal-pad'}
       onChangeText={handleTextChange}
+      submitBehavior="blurAndSubmit"
+      returnKeyType="done"
       selectTextOnFocus
       style={[props.style]}
       onBlur={() => {

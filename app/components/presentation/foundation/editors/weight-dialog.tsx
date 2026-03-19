@@ -134,6 +134,8 @@ export default function WeightDialog(props: WeightDialogProps) {
                 mode="outlined"
                 inputMode="decimal"
                 keyboardType="decimal-pad"
+                submitBehavior="blurAndSubmit"
+                returnKeyType="done"
                 autoFocus
                 value={text}
                 onChangeText={handleTextChange}
