@@ -6,7 +6,7 @@ import {
 import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { ReactNode, useEffect, useState } from 'react';
-import { Keyboard, View } from 'react-native';
+import { View } from 'react-native';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import {
@@ -41,10 +41,6 @@ type WeightDialogProps = {
 );
 
 export default function WeightDialog(props: WeightDialogProps) {
-  const onClose = () => {
-    Keyboard.dismiss();
-    props.onClose();
-  };
   const theme = useTheme();
   const { t } = useTranslate();
   const preferredWeightUnit = usePreferredWeightUnit();
@@ -101,9 +97,8 @@ export default function WeightDialog(props: WeightDialogProps) {
   };
 
   const onSaveClick = () => {
-    Keyboard.dismiss();
     if (editorWeightValue === undefined && !props.allowNull) {
-      onClose();
+      props.onClose();
       return;
     }
     if (!props.allowNegative && editorWeightValue?.isLessThan(0)) {
@@ -114,12 +109,12 @@ export default function WeightDialog(props: WeightDialogProps) {
     } else {
       props.updateWeight(new Weight(editorWeightValue, editorWeightUnit));
     }
-    onClose();
+    props.onClose();
   };
 
   return (
     <Portal>
-      <Dialog visible={props.open} onDismiss={onClose}>
+      <Dialog visible={props.open} onDismiss={props.onClose}>
         <Dialog.Title>
           {props.label ?? <T keyName="weight.weight.label" />}
         </Dialog.Title>
@@ -199,7 +194,7 @@ export default function WeightDialog(props: WeightDialogProps) {
           </View>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={onClose} testID="close">
+          <Button onPress={props.onClose} testID="close">
             <T keyName="generic.close.button" />
           </Button>
           <Button onPress={onSaveClick} testID="save">

@@ -2,7 +2,7 @@ import ItemTitle from '@/components/presentation/foundation/item-title';
 import { spacing } from '@/hooks/useAppTheme';
 import { RecordedExercise } from '@/models/session-models';
 import { ReactNode, useState } from 'react';
-import { Keyboard, View } from 'react-native';
+import { View } from 'react-native';
 import { Menu, Tooltip } from 'react-native-paper';
 import { useTranslate } from '@tolgee/react';
 import PreviousExerciseViewer from '@/components/presentation/workout/weighted/previous-exercise-viewer';
@@ -37,10 +37,6 @@ export default function ExerciseSection(props: ExerciseSectionProps) {
     useState(false);
   const showPrevious = () => {
     setPreviousDialogOpen(true);
-  };
-  const closeNotesDialog = () => {
-    setNotesDialogOpen(false);
-    Keyboard.dismiss();
   };
 
   const interactiveButtons = props.isReadonly ? (
@@ -156,7 +152,7 @@ export default function ExerciseSection(props: ExerciseSectionProps) {
 
       <RecordedExerciseNotesEditor
         exerciseName={recordedExercise.blueprint.name}
-        onDismiss={closeNotesDialog}
+        onDismiss={() => setNotesDialogOpen(false)}
         open={notesDialogOpen}
         notes={recordedExercise.notes}
         onUpdateNotes={updateNotesForExercise}
