@@ -55,7 +55,7 @@ export function CurrentWorkoutReplacer({
   }, [session, hasCurrentSession, replaceSession, activeSessionSameAsSelected]);
   return (
     <ConfirmationDialog
-      open={hasActiveSession && !!session}
+      open={hasActiveSession && !!session && !activeSessionSameAsSelected}
       onCancel={clearSession}
       okText={t('generic.replace.button')}
       onOk={replaceSessionDialogAction}
