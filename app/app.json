@@ -67,6 +67,7 @@
     },
     "scheme": "liftlog",
     "android": {
+      "softwareKeyboardLayoutMode": "pan",
       "package": "com.limajuice.liftlog",
       "permissions": [
         "com.android.vending.BILLING",

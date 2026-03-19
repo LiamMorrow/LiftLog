@@ -4,7 +4,6 @@ import { useAppTheme, font } from '@/hooks/useAppTheme';
 import { T } from '@tolgee/react';
 import { ReactNode, useState } from 'react';
 import { StyleSheet, ViewStyle } from 'react-native';
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { Portal, Dialog, Text } from 'react-native-paper';
 
 export function CardioValueSelector(props: {
@@ -35,35 +34,30 @@ export function CardioValueSelector(props: {
         {label}
       </Text>
       <Portal>
-        <KeyboardAvoidingView
-          behavior={'height'}
-          style={{ flex: 1, pointerEvents: dialogOpen ? 'box-none' : 'none' }}
-        >
-          <Dialog visible={dialogOpen} onDismiss={() => setDialogOpen(false)}>
-            <Dialog.Title>{label}</Dialog.Title>
-            <Dialog.Content
-              style={[
-                { flexDirection: 'row', alignItems: 'center' },
-                props.style,
-              ]}
+        <Dialog visible={dialogOpen} onDismiss={() => setDialogOpen(false)}>
+          <Dialog.Title>{label}</Dialog.Title>
+          <Dialog.Content
+            style={[
+              { flexDirection: 'row', alignItems: 'center' },
+              props.style,
+            ]}
+          >
+            {children}
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setDialogOpen(false)}>
+              <T keyName="generic.cancel.button" />
+            </Button>
+            <Button
+              onPress={() => {
+                setDialogOpen(false);
+                onSave();
+              }}
             >
-              {children}
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={() => setDialogOpen(false)}>
-                <T keyName="generic.cancel.button" />
-              </Button>
-              <Button
-                onPress={() => {
-                  setDialogOpen(false);
-                  onSave();
-                }}
-              >
-                <T keyName="generic.save.button" />
-              </Button>
-            </Dialog.Actions>
-          </Dialog>
-        </KeyboardAvoidingView>
+              <T keyName="generic.save.button" />
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
       </Portal>
     </CardioTrackerCard>
   );

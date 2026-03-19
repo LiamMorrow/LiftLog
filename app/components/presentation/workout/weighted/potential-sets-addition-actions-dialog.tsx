@@ -3,7 +3,6 @@ import { PotentialSet } from '@/models/session-models';
 import { T } from '@tolgee/react';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import { Dialog, Portal, Text, TextInput } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
@@ -46,61 +45,56 @@ export default function PotentialSetAdditionalActionsDialog({
   };
   return (
     <Portal>
-      <KeyboardAvoidingView
-        behavior={'height'}
-        style={{ flex: 1, pointerEvents: open ? 'box-none' : 'none' }}
-      >
-        <Dialog visible={open} onDismiss={close}>
-          <Dialog.Title>
-            <T keyName="exercise.select_reps.title" />
-          </Dialog.Title>
-          <Dialog.Content>
-            <TextInput
-              label={<T keyName="exercise.reps.label" />}
-              inputMode="numeric"
-              value={repCountText}
-              selectTextOnFocus
-              error={!isValid}
-              onChangeText={setRepCountText}
-              autoFocus
-            />
+      <Dialog visible={open} onDismiss={close}>
+        <Dialog.Title>
+          <T keyName="exercise.select_reps.title" />
+        </Dialog.Title>
+        <Dialog.Content>
+          <TextInput
+            label={<T keyName="exercise.reps.label" />}
+            inputMode="numeric"
+            value={repCountText}
+            selectTextOnFocus
+            error={!isValid}
+            onChangeText={setRepCountText}
+            autoFocus
+          />
 
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-              {Array.from({ length: repTarget + 3 }).map((_, i) => (
-                <IconButton
-                  key={i}
-                  mode="outlined"
-                  icon={() => <Text>{i}</Text>}
-                  onPress={() => {
-                    setRepCountText(i.toString());
-                    updateRepCount(i);
-                    close();
-                  }}
-                />
-              ))}
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+            {Array.from({ length: repTarget + 3 }).map((_, i) => (
               <IconButton
-                mode="contained"
-                iconColor={colors.error}
-                containerColor={colors.errorContainer}
-                icon={'close'}
+                key={i}
+                mode="outlined"
+                icon={() => <Text>{i}</Text>}
                 onPress={() => {
-                  setRepCountText('');
-                  updateRepCount(undefined);
+                  setRepCountText(i.toString());
+                  updateRepCount(i);
                   close();
                 }}
               />
-            </View>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={close}>
-              {<T keyName="generic.cancel.button" />}
-            </Button>
-            <Button disabled={!isValid} onPress={save}>
-              {<T keyName="generic.save.button" />}
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </KeyboardAvoidingView>
+            ))}
+            <IconButton
+              mode="contained"
+              iconColor={colors.error}
+              containerColor={colors.errorContainer}
+              icon={'close'}
+              onPress={() => {
+                setRepCountText('');
+                updateRepCount(undefined);
+                close();
+              }}
+            />
+          </View>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button onPress={close}>
+            {<T keyName="generic.cancel.button" />}
+          </Button>
+          <Button disabled={!isValid} onPress={save}>
+            {<T keyName="generic.save.button" />}
+          </Button>
+        </Dialog.Actions>
+      </Dialog>
     </Portal>
   );
 }
