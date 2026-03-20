@@ -73,7 +73,7 @@ export default function RemoteBackupPage() {
   };
 
   return (
-    <FullHeightScrollView>
+    <FullHeightScrollView avoidKeyboard>
       <Stack.Screen options={{ title: t('backup.automatic_remote.title') }} />
       <Card
         mode="contained"

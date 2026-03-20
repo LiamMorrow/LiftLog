@@ -24,6 +24,7 @@ interface FullScreenDialogProps {
   open: boolean;
   children: ReactNode;
   noScroll?: boolean;
+  avoidKeyboard?: boolean;
   onAction?: () => void;
   onClose: () => void;
 }
@@ -71,6 +72,7 @@ export default function FullScreenDialog(props: FullScreenDialogProps) {
               </View>
             ) : (
               <FullHeightScrollView
+                avoidKeyboard={props.avoidKeyboard!}
                 scrollStyle={{
                   padding: spacing.pageHorizontalMargin,
                 }}

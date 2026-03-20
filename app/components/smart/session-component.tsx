@@ -489,16 +489,14 @@ export default function SessionComponent(props: {
   );
 
   return (
-    <FullHeightScrollView
-      ignoreKeyboard
-      floatingChildren={floatingBottomContainer}
-    >
+    <FullHeightScrollView floatingChildren={floatingBottomContainer}>
       {notesComponent}
       {emptyInfo}
       <ItemList items={session.recordedExercises} renderItem={renderItem} />
       {bodyWeight}
       {totalWeightLifted}
       <FullScreenDialog
+        avoidKeyboard
         title={
           exerciseToEditIndex === undefined
             ? t('exercise.add.title')

@@ -189,6 +189,7 @@ function FeedProfileEditor({
   const [resetAccountDialogOpen, setResetAccountDialogOpen] = useState(false);
   return (
     <FullScreenDialog
+      avoidKeyboard
       open={open}
       onClose={onClose}
       title={t('feed.manage.title')}

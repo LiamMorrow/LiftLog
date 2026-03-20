@@ -10,12 +10,12 @@ export default function FullHeightScrollView({
   children,
   floatingChildren,
   scrollStyle,
-  ignoreKeyboard,
+  avoidKeyboard,
   contentContainerStyle,
 }: {
   children: React.ReactNode;
   floatingChildren?: React.ReactNode;
-  ignoreKeyboard?: boolean;
+  avoidKeyboard?: boolean;
   scrollStyle?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
 }) {
@@ -32,7 +32,7 @@ export default function FullHeightScrollView({
         },
       ]}
     >
-      {ignoreKeyboard ? (
+      {!avoidKeyboard ? (
         <ScrollView
           onScroll={handleScroll}
           style={[scrollStyle]}

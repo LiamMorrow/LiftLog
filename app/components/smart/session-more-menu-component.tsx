@@ -90,6 +90,7 @@ export default function SessionMoreMenuComponent(props: {
         action={t('generic.add.button')}
         open={exerciseEditorOpen}
         onAction={handleAddExercise}
+        avoidKeyboard
         onClose={() => setExerciseEditorOpen(false)}
       >
         {editingExerciseBlueprint ? (

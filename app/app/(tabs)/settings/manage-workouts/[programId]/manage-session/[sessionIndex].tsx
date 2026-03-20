@@ -205,6 +205,7 @@ function SessionEditor({
         </LabelledFormRow>
       </LabelledForm>
       <FullScreenDialog
+        avoidKeyboard
         open={!!selectedExercise && isEditOpen}
         onClose={() => setIsEditOpen(false)}
         title={
