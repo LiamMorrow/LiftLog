@@ -89,6 +89,8 @@
   "feed.backup_account.confirm.body": "Szeretnéd, hogy a biztonsági másolat tartalmazza a hírfolyam-fiókodat és a követett felhasználókat?<br><em>Figyelem: Ezzel a biztonsági másolattal bárki közzétehetne hírfolyam-tartalmakat a fiókodból.</em>",
   "feed.backup_account.subtitle": "A biztonsági mentésekbe vegye fel a hírcsatorna-fiók adatait",
   "feed.backup_account.title": "Biztonsági mentése a hírcsatorna-fióknak",
+  "feed.dont_import.button": "Ne importálja a hírcsatornát",
+  "feed.feed.title": "Hírcsatorna",
   "feed.shared_session.save_to_plan.button": "Mentés az edzéstervbe",
   "feed.shared_session.start_workout.button": "Edzés megkezdése",
   "stats.bodyweight_change.label": "Testsúly"
