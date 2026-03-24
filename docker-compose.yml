@@ -1,0 +1,40 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: "http://+:8080"
+      ASPNETCORE_HTTPS_PORTS: ""
+      ConnectionStrings__UserDataContext: "Host=db;Port=5432;Database=${POSTGRES_DB:-liftlog};Username=${POSTGRES_USER:-liftlog};Password=${POSTGRES_PASSWORD}"
+      ConnectionStrings__RateLimitContext: "Host=db;Port=5432;Database=${POSTGRES_DB:-liftlog};Username=${POSTGRES_USER:-liftlog};Password=${POSTGRES_PASSWORD}"
+      AnthropicApiKey: "${ANTHROPIC_API_KEY:-sk-placeholder}"
+      WebAuthApiKey: "${WEB_AUTH_API_KEY:?Please set WEB_AUTH_API_KEY}"
+    volumes:
+      - backend:/app/data
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-liftlog}
+      POSTGRES_USER: ${POSTGRES_USER:-liftlog}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Please set POSTGRES_PASSWORD}
+    volumes:
+      - db:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-liftlog} -d ${POSTGRES_DB:-liftlog}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  backend:
+  db:
