@@ -20,12 +20,16 @@ import {
   Session,
 } from '@/models/session-models';
 import Enumerable from 'linq';
-import { Weight } from '@/models/weight';
+import { Weight, WeightUnit } from '@/models/weight';
 import { sleep } from '@/utils/sleep';
 import { RemoteData } from '@/models/remote';
 import BigNumber from 'bignumber.js';
+import { selectPreferredWeightUnit } from '../settings';
 
-function computeStats(sessions: Session[]): GranularStatisticView {
+function computeStats(
+  sessions: Session[],
+  preferredUnit: WeightUnit,
+): GranularStatisticView {
   if (!sessions.length)
     return {
       averageSessionLength: Duration.ZERO,
@@ -269,7 +273,7 @@ function computeStats(sessions: Session[]): GranularStatisticView {
         })
         .select((x) => x.maxValue)
         .toArray(),
-    ),
+    ).convertTo(preferredUnit),
     averageSessionLength,
     heaviestLift,
     weightedExerciseStats: exerciseStats,
@@ -299,6 +303,7 @@ export function applyStatsEffects() {
           state.stats.overallViewTime.from,
           state.stats.overallViewTime.to,
         ),
+        selectPreferredWeightUnit(state),
       );
       dispatch(setOverallStats(RemoteData.success(stats)));
       dispatch(setStatsIsDirty(false));
