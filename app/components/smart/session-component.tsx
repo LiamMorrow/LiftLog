@@ -51,6 +51,8 @@ import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { formatDuration } from '@/utils/format-date';
 import { match, P } from 'ts-pattern';
 import { CardioExercise } from '@/components/presentation/workout/cardio/cardio-exercise';
+import { DelayRender } from '../presentation/foundation/delay-render';
+import { Loader } from '../presentation/foundation/loader';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
@@ -490,36 +492,38 @@ export default function SessionComponent(props: {
 
   return (
     <FullHeightScrollView floatingChildren={floatingBottomContainer}>
-      {notesComponent}
-      {emptyInfo}
-      <ItemList items={session.recordedExercises} renderItem={renderItem} />
-      {bodyWeight}
-      {totalWeightLifted}
-      <FullScreenDialog
-        avoidKeyboard
-        title={
-          exerciseToEditIndex === undefined
-            ? t('exercise.add.title')
-            : t('exercise.edit.title')
-        }
-        action={
-          exerciseToEditIndex === undefined
-            ? t('generic.add.button')
-            : t('generic.update.button')
-        }
-        open={exerciseEditorOpen}
-        onAction={handleEditExercise}
-        onClose={() => setExerciseEditorOpen(false)}
-      >
-        {editingExerciseBlueprint ? (
-          <ExerciseEditor
-            exercise={editingExerciseBlueprint}
-            updateExercise={(ex) => {
-              setEditingExerciseBlueprint(ex);
-            }}
-          />
-        ) : null}
-      </FullScreenDialog>
+      <DelayRender placeHolder={<Loader />}>
+        {notesComponent}
+        {emptyInfo}
+        <ItemList items={session.recordedExercises} renderItem={renderItem} />
+        {bodyWeight}
+        {totalWeightLifted}
+        <FullScreenDialog
+          avoidKeyboard
+          title={
+            exerciseToEditIndex === undefined
+              ? t('exercise.add.title')
+              : t('exercise.edit.title')
+          }
+          action={
+            exerciseToEditIndex === undefined
+              ? t('generic.add.button')
+              : t('generic.update.button')
+          }
+          open={exerciseEditorOpen}
+          onAction={handleEditExercise}
+          onClose={() => setExerciseEditorOpen(false)}
+        >
+          {editingExerciseBlueprint ? (
+            <ExerciseEditor
+              exercise={editingExerciseBlueprint}
+              updateExercise={(ex) => {
+                setEditingExerciseBlueprint(ex);
+              }}
+            />
+          ) : null}
+        </FullScreenDialog>
+      </DelayRender>
     </FullHeightScrollView>
   );
 }
