@@ -17,7 +17,6 @@ import { ProgressRepository } from '@/services/progress-repository';
 import type { RootState } from '@/store';
 import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
-import Enumerable from 'linq';
 import { match } from 'ts-pattern';
 
 export class SessionService {
@@ -26,9 +25,9 @@ export class SessionService {
     private getState: () => RootState,
   ) {}
 
-  // TODO this is super inefficient, it should probably be done ahead of time or with a dirty mark.
   async *getUpcomingSessions(
     sessionBlueprints: SessionBlueprint[],
+    latestExercises: Record<string, RecordedExercise | undefined>, // KeyedExerciseBlueprint -> Exercise
   ): AsyncIterableIterator<Session> {
     const currentState = this.getState();
     const currentSession = Session.fromPOJO(
@@ -40,9 +39,6 @@ export class SessionService {
     }
     await yieldToEventLoop();
 
-    const latestRecordedExercises =
-      this.progressRepository.getLatestRecordedExercises();
-    await yieldToEventLoop();
     let latestSession =
       currentSession ??
       this.progressRepository
@@ -53,7 +49,7 @@ export class SessionService {
     if (!latestSession) {
       latestSession = this.createNewSession(
         sessionBlueprints[0],
-        latestRecordedExercises,
+        latestExercises,
       );
       yield latestSession;
     }
@@ -62,24 +58,25 @@ export class SessionService {
       latestSession = this.getNextSession(
         latestSession,
         sessionBlueprints,
-        latestRecordedExercises,
+        latestExercises,
       );
       yield latestSession;
     }
   }
 
-  public hydrateSessionFromBlueprint(blueprint: SessionBlueprint): Session {
-    const latestRecordedExercises =
-      this.progressRepository.getLatestRecordedExercises();
-    return this.createNewSession(blueprint, latestRecordedExercises);
+  public hydrateSessionFromBlueprint(
+    blueprint: SessionBlueprint,
+    latestExercises: Record<string, RecordedExercise | undefined>, // KeyedExerciseBlueprint -> Exercise
+  ): Session {
+    return this.createNewSession(blueprint, latestExercises);
   }
 
   private getNextSession(
     previousSession: Session,
     sessionBlueprints: SessionBlueprint[],
-    latestRecordedExercises: Enumerable.IDictionary<
+    latestRecordedExercises: Record<
       string, //KeyedExerciseBlueprint,
-      RecordedExercise
+      RecordedExercise | undefined
     >,
   ): Session {
     const lastBlueprint = previousSession.blueprint;
@@ -96,17 +93,18 @@ export class SessionService {
 
   private createNewSession(
     sessionBlueprint: SessionBlueprint,
-    latestRecordedExercises: Enumerable.IDictionary<
+    latestRecordedExercises: Record<
       string, //KeyedExerciseBlueprint,
-      RecordedExercise
+      RecordedExercise | undefined
     >,
   ): Session {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const $this = this;
     function getNextExercise(e: ExerciseBlueprint): RecordedExercise {
-      const lastExercise = latestRecordedExercises.get(
-        KeyedExerciseBlueprint.fromExerciseBlueprint(e).toString(),
-      );
+      const lastExercise =
+        latestRecordedExercises[
+          KeyedExerciseBlueprint.fromExerciseBlueprint(e).toString()
+        ];
       if (e instanceof CardioExerciseBlueprint) {
         const cardioLastExercise =
           lastExercise instanceof RecordedCardioExercise

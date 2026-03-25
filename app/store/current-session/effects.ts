@@ -20,7 +20,10 @@ import {
 } from '@/store/current-session';
 import { addEffect } from '@/store/store';
 import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
-import { addStoredSession } from '@/store/stored-sessions';
+import {
+  addStoredSession,
+  selectLatestExercises,
+} from '@/store/stored-sessions';
 import { selectPreferredWeightUnit } from '@/store/settings';
 import { diffSessionBlueprints } from '@/models/blueprint-diff';
 import { addUnpublishedSessionId } from '@/store/feed';
@@ -271,9 +274,13 @@ export function applyCurrentSessionEffects() {
 
   addEffect(
     setCurrentSessionFromBlueprint,
-    async (action, { dispatch, extra: { sessionService } }) => {
+    async (
+      action,
+      { stateAfterReduce, dispatch, extra: { sessionService } },
+    ) => {
       const session = sessionService.hydrateSessionFromBlueprint(
         action.payload.blueprint,
+        selectLatestExercises(stateAfterReduce),
       );
       dispatch(setCurrentSession({ session, target: action.payload.target }));
     },

@@ -19,6 +19,7 @@ import { LocalDate } from '@js-joda/core';
 import { AsyncStream } from 'data-async-iterators';
 import { KeyValueStore } from '@/services/key-value-store';
 import { Logger } from '@/services/logger';
+import { selectLatestExercises } from '../stored-sessions';
 
 const storageKey = 'SavedPrograms';
 const builtInProgramsStorageKey = 'hasSavedDefaultPlans2';
@@ -176,7 +177,10 @@ export function applyProgramEffects() {
       await yieldToEventLoop();
 
       const sessions = await AsyncStream.from(
-        sessionService.getUpcomingSessions(sessionBlueprints),
+        sessionService.getUpcomingSessions(
+          sessionBlueprints,
+          selectLatestExercises(state),
+        ),
       )
         .takeWhile(() => !signal.aborted)
         .take(numberOfUpcomingSessions)
