@@ -1,0 +1,34 @@
+# syntax=docker/dockerfile:1
+
+# ─── Build Stage ────────────────────────────────────────────────────────────
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+COPY backend/ ./backend/
+
+WORKDIR /src/backend/LiftLog.Api
+RUN dotnet restore LiftLog.Api.csproj
+
+RUN dotnet publish LiftLog.Api.csproj \
+    -c Release \
+    -o /app/publish \
+    --no-restore
+
+# ─── Runtime Stage ──────────────────────────────────────────────────────────
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+WORKDIR /app
+
+# .NET runtime images (8+) already include a non-root 'app' user
+COPY --from=build /app/publish .
+
+RUN mkdir -p /app/data && chown -R app:app /app/data
+
+USER app
+
+EXPOSE 8080
+
+ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_HTTPS_PORTS=""
+ENV ASPNETCORE_ENVIRONMENT=Production
+
+ENTRYPOINT ["dotnet", "LiftLog.Api.dll"]
