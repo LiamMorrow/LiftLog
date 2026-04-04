@@ -71,6 +71,8 @@ export interface HeaviestLift {
 }
 
 export interface GranularStatisticView {
+  workoutsPerWeek: number;
+  setsPerWeek: number;
   maxWeightLiftedInAWorkout: Weight | undefined;
   averageSessionLength: Duration;
   heaviestLift: HeaviestLift | undefined;
