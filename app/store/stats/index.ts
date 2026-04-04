@@ -40,6 +40,7 @@ export interface RepsBreakdownStatistics {
 
 export interface WeightedExerciseStatistics {
   exerciseName: string;
+  setsPerWeek: number;
   maxLiftedPerSessionStatistics: WeightedStatisticOverTime;
   totalVolumeStatistics: WeightedStatisticOverTime;
   repsStatistics: RepsBreakdownStatistics;

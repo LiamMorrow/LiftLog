@@ -113,6 +113,11 @@ function OverallStatsGrid({ stats }: { stats: WeightedExerciseStatistics }) {
     <TitledSection title={t('stats.exercise.overview.title')}>
       <SingleValueStatisticsGrid>
         <SingleValueStatisticCard
+          title={t('stats.exercise.sets_per_week.label')}
+          icon={'function'}
+          value={formatWeeklyRate(stats.setsPerWeek)}
+        />
+        <SingleValueStatisticCard
           title={t('stats.exercise.current_weight.label')}
           icon={'weight'}
           value={stats.maxLiftedPerSessionStatistics.currentValue.shortLocaleFormat()}
@@ -135,4 +140,10 @@ function OverallStatsGrid({ stats }: { stats: WeightedExerciseStatistics }) {
       </SingleValueStatisticsGrid>
     </TitledSection>
   );
+}
+
+function formatWeeklyRate(value: number) {
+  return Math.abs(value - Math.round(value)) < 0.05
+    ? Math.round(value).toString()
+    : value.toFixed(1);
 }
