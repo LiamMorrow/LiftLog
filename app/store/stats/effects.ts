@@ -223,6 +223,11 @@ function computeStats(
       unsortedStatsToWeightedStatisticOverTime(ex.statistics);
     return {
       exerciseName: ex.exerciseName,
+      setsPerWeek:
+        Object.values(ex.repsStatistics.breakdown).reduce(
+          (accum, entry) => accum + entry.numberOfSets,
+          0,
+        ) / totalWeeks,
       maxLiftedPerSessionStatistics,
       oneRepMax: ex.currentOneRepMax,
       totalVolumeStatistics: unsortedStatsToWeightedStatisticOverTime(

@@ -366,6 +366,7 @@
   "stats.exercise.reps_breakdown.title": "Breakdown of Reps",
   "stats.exercise.max_weight.label": "Max weight",
   "stats.exercise.total_lifted.label": "Total lifted",
+  "stats.exercise.sets_per_week.label": "Avg sets per week",
   "stats.exercise.estimated_1rm.label": "Est. 1RM",
   "stats.try_changing_filters.message": "Try changing the filters at the top",
   "validation.date_format_must_be.message": "Date format must be {inputFormat}",
