@@ -71,8 +71,9 @@ const storedSessionsSlice = createSlice({
       action: PayloadAction<Record<string, SessionPOJO>>,
     ) {
       state.sessions = action.payload;
-      Object.values(action.payload).forEach((session) => {
-        updateLatestExercises(state, Session.fromPOJO(session));
+      state.latestExercises = {};
+      Object.values(action.payload).forEach((sessionPOJO) => {
+        updateLatestExercises(state, Session.fromPOJO(sessionPOJO));
       });
     },
 
