@@ -348,6 +348,8 @@
   "stats.heaviest_lift.label": "Heaviest lift",
   "stats.max_weight_in_workout.label": "Max volume",
   "stats.bodyweight_change.label": "Bodyweight",
+  "stats.workouts_per_week.label": "Workouts per week",
+  "stats.sets_per_week.label": "Sets per week",
   "stats.see_more.button": "See more",
   "stats.no_data.message": "There is no data within the selected period.",
   "stats.select_period.label": "Select period",

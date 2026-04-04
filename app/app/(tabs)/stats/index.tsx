@@ -66,6 +66,16 @@ function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
     <TitledSection title={t('stats.overview.title')}>
       <SingleValueStatisticsGrid>
         <SingleValueStatisticCard
+          title={t('stats.workouts_per_week.label')}
+          value={formatWeeklyRate(stats.workoutsPerWeek)}
+          icon={'assignment'}
+        />
+        <SingleValueStatisticCard
+          title={t('stats.sets_per_week.label')}
+          value={formatWeeklyRate(stats.setsPerWeek)}
+          icon={'function'}
+        />
+        <SingleValueStatisticCard
           title={t('stats.max_weight_in_workout.label')}
           value={stats.maxWeightLiftedInAWorkout?.shortLocaleFormat(0) ?? '-'}
           icon={'weight'}
@@ -94,6 +104,14 @@ function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
       </SingleValueStatisticsGrid>
     </TitledSection>
   );
+}
+
+function formatWeeklyRate(value: number) {
+  const rounded =
+    Math.abs(value - Math.round(value)) < 0.05
+      ? Math.round(value).toString()
+      : value.toFixed(1);
+  return rounded;
 }
 
 function BodyweightStatValue({

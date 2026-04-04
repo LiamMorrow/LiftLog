@@ -25,13 +25,17 @@ import { sleep } from '@/utils/sleep';
 import { RemoteData } from '@/models/remote';
 import BigNumber from 'bignumber.js';
 import { selectPreferredWeightUnit } from '../settings';
+import { LocalDateRange } from '@/models/time-models';
 
 function computeStats(
   sessions: Session[],
   preferredUnit: WeightUnit,
+  timeRange: LocalDateRange,
 ): GranularStatisticView {
   if (!sessions.length)
     return {
+      workoutsPerWeek: 0,
+      setsPerWeek: 0,
       averageSessionLength: Duration.ZERO,
       maxWeightLiftedInAWorkout: undefined,
       bodyweightStats: {
@@ -54,6 +58,29 @@ function computeStats(
     .select((c) => c.date)
     .distinct((x) => x.toString())
     .toArray();
+  const workoutCount = sessionsWithExercises.length;
+  const totalSets = sessionsWithExercises.reduce(
+    (sessionTotal, session) =>
+      sessionTotal +
+      session.recordedExercises.reduce((exerciseTotal, exercise) => {
+        if (exercise instanceof RecordedWeightedExercise) {
+          return (
+            exerciseTotal +
+            exercise.potentialSets.filter((set) => set.set !== undefined).length
+          );
+        }
+        return (
+          exerciseTotal +
+          exercise.sets.filter((set) => set.completionDateTime !== undefined)
+            .length
+        );
+      }, 0),
+    0,
+  );
+  const totalDays = timeRange.to.toEpochDay() - timeRange.from.toEpochDay() + 1;
+  const totalWeeks = Math.max(totalDays / 7, 1 / 7);
+  const workoutsPerWeek = workoutCount / totalWeeks;
+  const setsPerWeek = totalSets / totalWeeks;
 
   const bodyWeightStatistics = Enumerable.from(sessions)
     .where((s) => !!s.bodyweight)
@@ -263,6 +290,8 @@ function computeStats(
   }
 
   return {
+    workoutsPerWeek,
+    setsPerWeek,
     maxWeightLiftedInAWorkout: Weight.max(
       ...Enumerable.from(sessionStats)
         .defaultIfEmpty({
@@ -304,6 +333,7 @@ export function applyStatsEffects() {
           state.stats.overallViewTime.to,
         ),
         selectPreferredWeightUnit(state),
+        state.stats.overallViewTime,
       );
       dispatch(setOverallStats(RemoteData.success(stats)));
       dispatch(setStatsIsDirty(false));
