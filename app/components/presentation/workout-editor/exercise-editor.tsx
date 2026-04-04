@@ -1,7 +1,5 @@
-import AppBottomSheet from '@/components/presentation/foundation/app-bottom-sheet';
 import DurationEditor from '@/components/presentation/foundation/editors/duration-editor';
 import EditableIncrementer from '@/components/presentation/foundation/editors/editable-incrementer';
-import ExerciseFilterer from '@/components/presentation/workout-editor/exercise-filterer';
 import FixedIncrementer from '@/components/presentation/foundation/editors/fixed-incrementer';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import LabelledForm from '@/components/presentation/foundation/labelled-form';
@@ -23,58 +21,163 @@ import {
   WeightedExerciseBlueprint,
   WeightedExerciseBlueprintPOJO,
 } from '@/models/blueprint-models';
-import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import {
-  ExerciseDescriptor,
-  selectExerciseById,
-  selectExerciseIds,
-} from '@/store/stored-sessions';
+import { useAppSelector } from '@/store';
+import { ExerciseDescriptor } from '@/store/stored-sessions';
 import { assertUnreachable } from '@/utils/assert-unreachable';
-import BottomSheet, {
-  useBottomSheetScrollableCreator,
-} from '@gorhom/bottom-sheet';
 import { Duration } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Keyboard, View } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { View } from 'react-native';
 import {
   Card,
   Divider,
   List,
   SegmentedButtons,
+  Text,
   TextInput,
 } from 'react-native-paper';
 import { match, P } from 'ts-pattern';
-import { LegendList } from '@legendapp/list';
 
 interface ExerciseEditorProps {
   exercise: ExerciseBlueprint;
   updateExercise: (ex: ExerciseBlueprint) => void;
 }
+interface ExerciseSuggestion extends ExerciseDescriptor {
+  source: 'user' | 'base';
+}
+
+const builtInExercisesJson = require('../../../assets/exercises.json') as {
+  exercises: { name: string }[];
+};
+const builtInExerciseIds = new Set(
+  builtInExercisesJson.exercises.map((exercise) => exercise.name),
+);
+
 const distanceUnitOptions = DistanceUnits.map((value) => ({
   value,
   label: value + 's',
 }));
 export function ExerciseEditor(props: ExerciseEditorProps) {
-  const exerciseIds = useAppSelector(selectExerciseIds);
-  const bottomSheetRef = useRef<BottomSheet>(null);
-  const BottomSheetScrollView = useBottomSheetScrollableCreator();
+  const suggestedExercises = useAppSelector((state) => {
+    const allExercises = new Map<string, ExerciseSuggestion>();
+    const addExerciseDescriptor = (
+      exercise: ExerciseDescriptor,
+      source: ExerciseSuggestion['source'],
+    ) => {
+      const id = exercise.name.trim().toLocaleLowerCase();
+      if (!id) {
+        return;
+      }
+      const existing = allExercises.get(id);
+      if (existing && (existing.source === 'user' || source === 'base')) {
+        return;
+      }
+      allExercises.set(id, { ...exercise, source });
+    };
+    const addBlueprintExercise = (exercise: ExerciseBlueprint) => {
+      addExerciseDescriptor(
+        {
+          name: exercise.name,
+          force: null,
+          level: 'beginner',
+          mechanic: null,
+          equipment: null,
+          muscles: [],
+          instructions: exercise.notes,
+          category:
+            exercise instanceof CardioExerciseBlueprint ? 'cardio' : 'strength',
+        },
+        'user',
+      );
+    };
+
+    Object.entries(state.storedSessions.savedExercises).forEach(
+      ([exerciseId, exercise]) => {
+        addExerciseDescriptor(
+          exercise,
+          builtInExerciseIds.has(exerciseId) && exercise.name === exerciseId
+            ? 'base'
+            : 'user',
+        );
+      },
+    );
+
+    Object.values(state.program.savedPrograms).forEach((program) => {
+      program.sessions.forEach((session) => {
+        session.exercises.forEach((exercise) => {
+          addBlueprintExercise(
+            exercise.type === 'CardioExerciseBlueprint'
+              ? CardioExerciseBlueprint.fromPOJO(exercise)
+              : WeightedExerciseBlueprint.fromPOJO(exercise),
+          );
+        });
+      });
+    });
+
+    state.sessionEditor.sessionBlueprint?.exercises.forEach((exercise) => {
+      addBlueprintExercise(
+        exercise.type === 'CardioExerciseBlueprint'
+          ? CardioExerciseBlueprint.fromPOJO(exercise)
+          : WeightedExerciseBlueprint.fromPOJO(exercise),
+      );
+    });
+
+    [
+      state.currentSession.workoutSession,
+      state.currentSession.historySession,
+      state.currentSession.feedSession,
+      state.currentSession.sharedSession,
+    ].forEach((session) => {
+      session?.blueprint.exercises.forEach((exercise) => {
+        addBlueprintExercise(
+          exercise.type === 'CardioExerciseBlueprint'
+            ? CardioExerciseBlueprint.fromPOJO(exercise)
+            : WeightedExerciseBlueprint.fromPOJO(exercise),
+        );
+      });
+    });
+
+    return Array.from(allExercises.values()).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
+  });
   const selectExerciseFromSearch = (ex: ExerciseDescriptor) => {
     updateExercise({ name: ex.name, notes: ex.instructions });
-    bottomSheetRef.current?.close();
   };
-
-  const [bottomSheetShown, setBottomSheetShown] = useState(false);
-  const [filteredExerciseIds, setFilteredExerciseIds] = useState(exerciseIds);
-  const exerciseListItems = useMemo(
-    () => ['filter', ...filteredExerciseIds],
-    [filteredExerciseIds],
-  );
   const { t } = useTranslate();
   const { exercise: propsExercise, updateExercise: updatePropsExercise } =
     props;
   const [exercise, setExercise] = useState(propsExercise);
+  const matchingExercises = useMemo(() => {
+    const searchText = exercise.name.trim();
+    if (!searchText) {
+      return [];
+    }
+    const searchRegex = new RegExp(escapeRegExp(searchText), 'i');
+    const prefixRegex = new RegExp('^' + escapeRegExp(searchText), 'i');
+    const exactRegex = new RegExp('^' + escapeRegExp(searchText) + '$', 'i');
+
+    return suggestedExercises
+      .filter((item) => searchRegex.test(item.name))
+      .sort((a, b) => {
+        const exactDiff =
+          Number(exactRegex.test(b.name)) - Number(exactRegex.test(a.name));
+        if (exactDiff !== 0) {
+          return exactDiff;
+        }
+        const prefixDiff =
+          Number(prefixRegex.test(b.name)) - Number(prefixRegex.test(a.name));
+        if (prefixDiff !== 0) {
+          return prefixDiff;
+        }
+        if (a.source !== b.source) {
+          return a.source === 'user' ? -1 : 1;
+        }
+        return a.name.localeCompare(b.name);
+      })
+      .slice(0, 8);
+  }, [exercise.name, suggestedExercises]);
 
   // Bit of a hack to let us update exercise immediately without going through the whole props loop
   useEffect(() => {
@@ -149,69 +252,74 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
           />
         </LabelledFormRow>
         <LabelledFormRow label={t('exercise.name.label')} icon="infoFill">
-          <TextInput
-            testID="exercise-name"
-            mode="outlined"
-            style={{ marginBottom: spacing[2] }}
-            value={exercise.name}
-            onChangeText={(name) => updateExercise({ name })}
-            selectTextOnFocus={true}
-            right={
-              <TextInput.Icon
-                icon="search"
-                onPress={() => {
-                  setBottomSheetShown(true);
-                  Keyboard.dismiss();
-                  bottomSheetRef.current?.expand();
-                }}
-              />
-            }
-          />
+          <View style={{ gap: spacing[2] }}>
+            <TextInput
+              testID="exercise-name"
+              mode="outlined"
+              value={exercise.name}
+              onChangeText={(name) => updateExercise({ name })}
+              selectTextOnFocus={true}
+            />
+            {!!matchingExercises.length && (
+              <Card mode="contained">
+                {matchingExercises.map((item, index) => (
+                  <View key={`${item.source}-${item.name}`}>
+                    {!!index && <Divider />}
+                    <ExerciseSearchListItem
+                      exercise={item}
+                      onPress={selectExerciseFromSearch}
+                    />
+                  </View>
+                ))}
+              </Card>
+            )}
+          </View>
         </LabelledFormRow>
         {exerciseEditor}
       </LabelledForm>
-      <AppBottomSheet
-        index={-1}
-        sheetRef={bottomSheetRef}
-        enablePanDownToClose
-        enableDynamicSizing={false}
-      >
-        {bottomSheetShown && (
-          <LegendList
-            data={exerciseListItems}
-            renderScrollComponent={BottomSheetScrollView}
-            getItemType={(_, index) => (index === 0 ? 'filters' : 'exercise')}
-            keyExtractor={(item, index) => (index === 0 ? 'filters' : item)}
-            renderItem={(i) => {
-              if (i.index === 0) {
-                return (
-                  <ExerciseFilterer
-                    onFilteredExerciseIdsChange={setFilteredExerciseIds}
-                  />
-                );
-              }
-              return (
-                <ExerciseSearchListItem
-                  exerciseId={i.item}
-                  onPress={selectExerciseFromSearch}
-                />
-              );
-            }}
-          />
-        )}
-      </AppBottomSheet>
     </View>
   );
 }
 
 function ExerciseSearchListItem(props: {
-  exerciseId: string;
+  exercise: ExerciseSuggestion;
   onPress: (exercise: ExerciseDescriptor) => void;
 }) {
-  const exercise = useAppSelectorWithArg(selectExerciseById, props.exerciseId);
+  const { t } = useTranslate();
   return (
-    <List.Item title={exercise.name} onPress={() => props.onPress(exercise)} />
+    <List.Item
+      title={props.exercise.name}
+      description={
+        props.exercise.source === 'user'
+          ? t('exercise.source.user.label')
+          : t('exercise.source.base.label')
+      }
+      left={(iconProps) => (
+        <List.Icon
+          {...iconProps}
+          icon={props.exercise.source === 'user' ? 'person' : 'inventory'}
+        />
+      )}
+      right={() => (
+        <Text
+          variant="labelSmall"
+          style={{
+            alignSelf: 'center',
+            marginRight: spacing.pageHorizontalMargin,
+          }}
+        >
+          {props.exercise.source === 'user'
+            ? t('exercise.source.user.badge')
+            : t('exercise.source.base.badge')}
+        </Text>
+      )}
+      onPress={() => props.onPress(props.exercise)}
+    />
   );
+}
+
+function escapeRegExp(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function CardioExerciseEditor({
