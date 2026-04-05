@@ -71,6 +71,9 @@ const storedSessionsSlice = createSlice({
       action: PayloadAction<Record<string, SessionPOJO>>,
     ) {
       state.sessions = action.payload;
+      Object.values(action.payload).forEach((session) => {
+        updateLatestExercises(state, Session.fromPOJO(session));
+      });
     },
 
     upsertStoredSessions(state, action: PayloadAction<Session[]>) {
