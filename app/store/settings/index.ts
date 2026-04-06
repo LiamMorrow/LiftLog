@@ -17,6 +17,7 @@ interface SettingsState {
   isHydrated: boolean;
   proToken: string | undefined;
   useImperialUnits: boolean;
+  useAmoledTheme: boolean;
   showBodyweight: boolean;
   showTips: boolean;
   tipToShow: number;
@@ -44,6 +45,7 @@ const initialState: SettingsState = {
   isHydrated: false,
   firstDayOfWeek: DayOfWeek.SUNDAY,
   useImperialUnits: false,
+  useAmoledTheme: false,
   showBodyweight: true,
   showTips: true,
   tipToShow: 1,
@@ -75,6 +77,9 @@ const settingsSlice = createSlice({
     },
     setUseImperialUnits(state, action: PayloadAction<boolean>) {
       state.useImperialUnits = action.payload;
+    },
+    setUseAmoledTheme(state, action: PayloadAction<boolean>) {
+      state.useAmoledTheme = action.payload;
     },
     setShowBodyweight(state, action: PayloadAction<boolean>) {
       state.showBodyweight = action.payload;
@@ -166,6 +171,7 @@ export const remoteBackupSucceeded = createAction('remoteBackupSucceeded');
 export const {
   setIsHydrated,
   setUseImperialUnits,
+  setUseAmoledTheme,
   setShowBodyweight,
   setShowTips,
   setTipToShow,

@@ -54,6 +54,18 @@ export class PreferenceService {
     );
   }
 
+  async getUseAmoledTheme(): Promise<boolean> {
+    const value = await this.keyValueStore.getItem('useAmoledTheme');
+    return fromBooleanString(value, false);
+  }
+
+  async setUseAmoledTheme(useAmoledTheme: boolean): Promise<void> {
+    await this.keyValueStore.setItem(
+      'useAmoledTheme',
+      toBooleanString(useAmoledTheme),
+    );
+  }
+
   async getRestNotifications(): Promise<boolean> {
     const value = await this.keyValueStore.getItem('restNotifications');
     return fromBooleanString(value, true);

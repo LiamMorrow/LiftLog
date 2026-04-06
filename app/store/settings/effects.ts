@@ -15,6 +15,7 @@ import {
   setProToken,
   setRemoteBackupSettings,
   setRestNotifications,
+  setUseAmoledTheme,
   setShowBodyweight,
   setShowFeed,
   setShowTips,
@@ -60,6 +61,7 @@ export function applySettingsEffects() {
         backupReminder,
         firstDayOfWeek,
         colorSchemeSeed,
+        useAmoledTheme,
         proToken,
         notesExpandedByDefault,
         keepScreenAwakeDuringWorkout,
@@ -79,12 +81,14 @@ export function applySettingsEffects() {
         preferenceService.getBackupReminder(),
         preferenceService.getFirstDayOfWeek(),
         preferenceService.getColorSchemeSeed(),
+        preferenceService.getUseAmoledTheme(),
         preferenceService.getProToken(),
         preferenceService.getNotesExpandedByDefault(),
         preferenceService.getKeepScreenAwakeDuringWorkout(),
         preferenceService.getExportToHealthAggregator(),
       ]);
       dispatch(setColorSchemeSeed(colorSchemeSeed));
+      dispatch(setUseAmoledTheme(useAmoledTheme));
       dispatch(setUseImperialUnits(useImperialUnits));
       dispatch(setShowBodyweight(showBodyweight));
       dispatch(setShowTips(showTips));
@@ -317,6 +321,15 @@ export function applySettingsEffects() {
     async (action, { stateAfterReduce, extra: { preferenceService } }) => {
       if (stateAfterReduce.settings.isHydrated) {
         await preferenceService.setColorSchemeSeed(action.payload);
+      }
+    },
+  );
+
+  addEffect(
+    setUseAmoledTheme,
+    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+      if (stateAfterReduce.settings.isHydrated) {
+        await preferenceService.setUseAmoledTheme(action.payload);
       }
     },
   );

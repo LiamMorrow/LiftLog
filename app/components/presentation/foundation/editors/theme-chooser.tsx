@@ -2,6 +2,7 @@ import FocusRing, {
   ANIMATION_DURATION,
 } from '@/components/presentation/foundation/focus-ring';
 import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
+import ListSwitch from '@/components/presentation/foundation/list-switch';
 import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { ColorSchemeSeed } from '@/store/settings';
 import { sleep } from '@/utils/sleep';
@@ -15,7 +16,9 @@ import Button from '@/components/presentation/foundation/gesture-wrappers/button
 
 interface ThemeChooserProps {
   seed: ColorSchemeSeed;
+  amoled: boolean;
   onUpdateTheme: (seed: ColorSchemeSeed) => void;
+  onUpdateAmoled: (enabled: boolean) => void;
 }
 
 function ColorBall(props: {
@@ -88,6 +91,12 @@ export default function ThemeChooser(props: ThemeChooserProps) {
   return (
     <>
       <List.Item title={t('settings.theme.title')} />
+      <ListSwitch
+        headline={t('settings.theme.amoled.label')}
+        supportingText={t('settings.theme.amoled.subtitle')}
+        value={props.amoled}
+        onValueChange={props.onUpdateAmoled}
+      />
       <View
         style={{
           flexDirection: 'row',
