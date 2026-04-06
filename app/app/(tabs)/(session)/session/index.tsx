@@ -19,11 +19,15 @@ export default function Index() {
   const keepAwake = useAppSelector(
     (x) => x.settings.keepScreenAwakeDuringWorkout,
   );
-  const { dismissTo } = useRouter();
+  const { dismissTo, push } = useRouter();
   const { t } = useTranslate();
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [postWorkoutSessionId, setPostWorkoutSessionId] = useState<
+    string | undefined
+  >(undefined);
 
   const save = (force = false) => {
+    const finishedSessionId = session?.id;
     if (session) {
       if (!force && !session.isComplete) {
         setConfirmOpen(true);
@@ -31,14 +35,21 @@ export default function Index() {
       }
       setConfirmOpen(false);
     }
+    setPostWorkoutSessionId(finishedSessionId);
     dispatch(finishCurrentWorkout('workoutSession'));
+    if (finishedSessionId) {
+      push(
+        `/session/post-workout?sessionId=${encodeURIComponent(finishedSessionId)}&source=finished`,
+      );
+      return;
+    }
     dismissTo('/');
   };
   useEffect(() => {
-    if (!session) {
+    if (!session && !postWorkoutSessionId) {
       dismissTo('/');
     }
-  }, [session, dismissTo]);
+  }, [session, dismissTo, postWorkoutSessionId]);
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
 
   return (
@@ -55,6 +66,14 @@ export default function Index() {
       <SessionComponent
         target="workoutSession"
         showBodyweight={showBodyweight}
+        openPostWorkoutSummary={() => {
+          if (!session?.id) {
+            return;
+          }
+          push(
+            `/session/post-workout?sessionId=${encodeURIComponent(session.id)}&source=live`,
+          );
+        }}
         saveAndClose={() => save()}
       />
       <ConfirmationDialog
