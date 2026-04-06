@@ -1,13 +1,22 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import { SingleValueStatisticsGrid } from '@/components/presentation/stats/single-value-statistics-grid';
+import SingleValueStatisticCard from '@/components/presentation/stats/single-value-statistic-card';
+import { TitledSection } from '@/components/presentation/stats/titled-section';
+import { WeightBarChart } from '@/components/presentation/stats/weight-bar-chart';
+import { WeightLineChart } from '@/components/presentation/stats/weight-line-chart';
+import { NormalizedName } from '@/models/blueprint-models';
 import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { spacing } from '@/hooks/useAppTheme';
-import { useFormatDate } from '@/hooks/useFormatDate';
 import { calculatePersonalBests, PersonalBest } from '@/models/personal-bests';
+import { RecordedWeightedExercise, Session } from '@/models/session-models';
 import { Weight } from '@/models/weight';
+import { useFormatDate } from '@/hooks/useFormatDate';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { selectCurrentSession } from '@/store/current-session';
 import { selectSession, selectSessions } from '@/store/stored-sessions';
+import { TimeTrackedStatistic, WeightedStatisticOverTime } from '@/store/stats';
+import { ZoneId } from '@js-joda/core';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { View } from 'react-native';
@@ -72,6 +81,29 @@ export default function ProgressScreen() {
   }
 
   const personalBestSummary = calculatePersonalBests(session, allSessions);
+  const workoutVolumeTrend = buildWorkoutVolumeTrend(session, allSessions);
+  const exerciseNamesWithPbs = Array.from(
+    new Set(
+      personalBestSummary.personalBests
+        .map((x) => x.exerciseName)
+        .filter((x): x is string => !!x),
+    ),
+  );
+  const exerciseTrends = exerciseNamesWithPbs
+    .map((exerciseName) => ({
+      exerciseName,
+      maxWeightTrend: buildExerciseWeightTrend(
+        session,
+        allSessions,
+        exerciseName,
+      ),
+      volumeTrend: buildExerciseVolumeTrend(session, allSessions, exerciseName),
+    }))
+    .filter(
+      (x) =>
+        x.maxWeightTrend.statistics.length > 0 ||
+        x.volumeTrend.statistics.length > 0,
+    );
 
   return (
     <>
@@ -106,6 +138,26 @@ export default function ProgressScreen() {
           </Card.Content>
         </Card>
 
+        <TitledSection title="Overview">
+          <SingleValueStatisticsGrid>
+            <SingleValueStatisticCard
+              title="PBs hit"
+              icon="analytics"
+              value={personalBestSummary.personalBests.length.toString()}
+            />
+            <SingleValueStatisticCard
+              title="Workout volume"
+              icon="fitnessCenter"
+              value={<WeightFormat weight={session.totalWeightLifted} />}
+            />
+            <SingleValueStatisticCard
+              title="Exercises with PBs"
+              icon="analytics"
+              value={exerciseTrends.length.toString()}
+            />
+          </SingleValueStatisticsGrid>
+        </TitledSection>
+
         {personalBestSummary.personalBests.length ? (
           personalBestSummary.personalBests.map((personalBest, index) => (
             <PersonalBestCard
@@ -123,6 +175,45 @@ export default function ProgressScreen() {
             </Card.Content>
           </Card>
         )}
+
+        {workoutVolumeTrend.statistics.length > 0 ? (
+          <TitledSection title="Workout volume trend">
+            <Card mode="contained">
+              <Card.Content style={{ paddingVertical: spacing[8] }}>
+                <WeightBarChart statistics={workoutVolumeTrend} />
+              </Card.Content>
+            </Card>
+          </TitledSection>
+        ) : null}
+
+        {exerciseTrends.map((exerciseTrend) => (
+          <View key={exerciseTrend.exerciseName} style={{ gap: spacing[4] }}>
+            {exerciseTrend.maxWeightTrend.statistics.length > 0 ? (
+              <TitledSection
+                title={`${exerciseTrend.exerciseName} weight trend`}
+              >
+                <Card mode="contained">
+                  <Card.Content style={{ paddingVertical: spacing[8] }}>
+                    <WeightLineChart
+                      statistics={exerciseTrend.maxWeightTrend}
+                    />
+                  </Card.Content>
+                </Card>
+              </TitledSection>
+            ) : null}
+            {exerciseTrend.volumeTrend.statistics.length > 0 ? (
+              <TitledSection
+                title={`${exerciseTrend.exerciseName} volume trend`}
+              >
+                <Card mode="contained">
+                  <Card.Content style={{ paddingVertical: spacing[8] }}>
+                    <WeightBarChart statistics={exerciseTrend.volumeTrend} />
+                  </Card.Content>
+                </Card>
+              </TitledSection>
+            ) : null}
+          </View>
+        ))}
 
         <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
           <Button
@@ -175,4 +266,166 @@ function getPreviousBestValue(personalBest: PersonalBest) {
     return `${personalBest.previousValue} reps`;
   }
   return personalBest.previousValue?.shortLocaleFormat() ?? '-';
+}
+
+function getChronologicalPoint(session: Session) {
+  return (
+    session.lastExercise?.latestTime ??
+    session.date
+      .atStartOfDay()
+      .atZone(ZoneId.systemDefault())
+      .toOffsetDateTime()
+  );
+}
+
+function getSessionsUpTo(session: Session, allSessions: Session[]) {
+  return [...allSessions]
+    .filter((candidate) => {
+      const candidatePoint = getChronologicalPoint(candidate);
+      const sessionPoint = getChronologicalPoint(session);
+      return (
+        candidate.date.isBefore(session.date) ||
+        (candidate.date.isEqual(session.date) &&
+          candidatePoint.compareTo(sessionPoint) <= 0)
+      );
+    })
+    .sort((a, b) =>
+      getChronologicalPoint(a).compareTo(getChronologicalPoint(b)),
+    );
+}
+
+function buildWorkoutVolumeTrend(
+  session: Session,
+  allSessions: Session[],
+): WeightedStatisticOverTime {
+  return buildWeightedStatistic(
+    getSessionsUpTo(session, allSessions).map((candidate) => ({
+      dateTime: getChronologicalPoint(candidate),
+      value: candidate.totalWeightLifted,
+    })),
+  );
+}
+
+function buildExerciseWeightTrend(
+  session: Session,
+  allSessions: Session[],
+  exerciseName: string,
+): WeightedStatisticOverTime {
+  return buildWeightedStatistic(
+    getSessionsUpTo(session, allSessions)
+      .map((candidate) => {
+        const matchingExercises = candidate.recordedExercises.filter(
+          (exercise): exercise is RecordedWeightedExercise =>
+            exercise instanceof RecordedWeightedExercise &&
+            new NormalizedName(exercise.blueprint.name).equals(
+              new NormalizedName(exerciseName),
+            ) &&
+            exercise.isStarted,
+        );
+        const maxWeight = matchingExercises
+          .flatMap((exercise) => exercise.potentialSets)
+          .filter((set) => set.set)
+          .map((set) => set.weight)
+          .reduce(
+            (currentMax, weight) =>
+              !currentMax || weight.isGreaterThan(currentMax)
+                ? weight
+                : currentMax,
+            undefined as Weight | undefined,
+          );
+
+        return maxWeight
+          ? {
+              dateTime: getChronologicalPoint(candidate),
+              value: maxWeight,
+            }
+          : undefined;
+      })
+      .filter(
+        (stat): stat is TimeTrackedStatistic<Weight> => stat !== undefined,
+      ),
+  );
+}
+
+function buildExerciseVolumeTrend(
+  session: Session,
+  allSessions: Session[],
+  exerciseName: string,
+): WeightedStatisticOverTime {
+  return buildWeightedStatistic(
+    getSessionsUpTo(session, allSessions)
+      .map((candidate) => {
+        const volume = candidate.recordedExercises
+          .filter(
+            (exercise): exercise is RecordedWeightedExercise =>
+              exercise instanceof RecordedWeightedExercise &&
+              new NormalizedName(exercise.blueprint.name).equals(
+                new NormalizedName(exerciseName),
+              ) &&
+              exercise.isStarted,
+          )
+          .reduce(
+            (exerciseTotal, exercise) =>
+              exerciseTotal.plus(
+                exercise.potentialSets
+                  .filter((set) => set.set)
+                  .reduce(
+                    (setTotal, set) =>
+                      setTotal.plus(
+                        set.weight.multipliedBy(set.set!.repsCompleted),
+                      ),
+                    Weight.NIL,
+                  ),
+              ),
+            Weight.NIL,
+          );
+
+        return volume.equals(Weight.NIL)
+          ? undefined
+          : {
+              dateTime: getChronologicalPoint(candidate),
+              value: volume,
+            };
+      })
+      .filter(
+        (stat): stat is TimeTrackedStatistic<Weight> => stat !== undefined,
+      ),
+  );
+}
+
+function buildWeightedStatistic(
+  statistics: TimeTrackedStatistic<Weight>[],
+): WeightedStatisticOverTime {
+  if (!statistics.length) {
+    return {
+      statistics: [],
+      currentValue: Weight.NIL,
+      totalValue: Weight.NIL,
+      maxValue: Weight.NIL,
+      minValue: Weight.NIL,
+    };
+  }
+
+  return statistics.reduce<WeightedStatisticOverTime>(
+    (accum, statistic, index) => ({
+      statistics: [...accum.statistics, statistic],
+      currentValue: statistic.value,
+      totalValue: accum.totalValue.plus(statistic.value),
+      maxValue:
+        index === 0 || statistic.value.isGreaterThan(accum.maxValue)
+          ? statistic.value
+          : accum.maxValue,
+      minValue:
+        index === 0 || accum.minValue.isGreaterThan(statistic.value)
+          ? statistic.value
+          : accum.minValue,
+    }),
+    {
+      statistics: [],
+      currentValue: Weight.NIL,
+      totalValue: Weight.NIL,
+      maxValue: Weight.NIL,
+      minValue: Weight.NIL,
+    },
+  );
 }
