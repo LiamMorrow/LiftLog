@@ -297,6 +297,65 @@ export const selectRecentlyCompletedExercises = createSelector(
       ] ?? [],
 );
 
+export const selectPreviousSessionOfSameType = createSelector(
+  [selectSessions, (_, session: Session | undefined) => session],
+  (sessions, session) => {
+    if (!session) {
+      return undefined;
+    }
+
+    return Enumerable.from(sessions)
+      .where((storedSession) => storedSession.id !== session.id)
+      .where(
+        (storedSession) =>
+          storedSession.blueprint.name === session.blueprint.name,
+      )
+      .orderByDescending(
+        (storedSession) => storedSession.date,
+        TemporalComparer,
+      )
+      .thenByDescending(
+        (storedSession) =>
+          storedSession.lastExercise?.latestTime ??
+          storedSession.date
+            .atStartOfDay()
+            .atZone(ZoneId.systemDefault())
+            .toOffsetDateTime(),
+        TemporalComparer,
+      )
+      .firstOrDefault(undefined);
+  },
+);
+
+export const selectPreviousComparableSession = createSelector(
+  [selectSessions, (_, session: Session | undefined) => session],
+  (sessions, session) => {
+    if (!session) {
+      return undefined;
+    }
+
+    const sessionReferenceTime = getSessionReferenceTime(session);
+    const previousSessions = Enumerable.from(sessions)
+      .where((storedSession) => storedSession.id !== session.id)
+      .where(
+        (storedSession) =>
+          getSessionReferenceTime(storedSession).toEpochSecond() <
+          sessionReferenceTime.toEpochSecond(),
+      )
+      .orderByDescending(
+        (storedSession) => getSessionReferenceTime(storedSession),
+        TemporalComparer,
+      );
+
+    return (
+      previousSessions.firstOrDefault(
+        (storedSession) =>
+          storedSession.blueprint.name === session.blueprint.name,
+      ) ?? previousSessions.firstOrDefault(undefined)
+    );
+  },
+);
+
 export const selectSessionsInMonth = createSelector(
   [selectSessions, (_, ym: YearMonth) => ym],
   (sessions, ym) =>
@@ -331,3 +390,13 @@ export const selectExerciseIds = createSelector(
 );
 
 export const storedSessionsReducer = storedSessionsSlice.reducer;
+
+function getSessionReferenceTime(session: Session): OffsetDateTime {
+  return (
+    session.lastExercise?.latestTime ??
+    session.date
+      .atStartOfDay()
+      .atZone(ZoneId.systemDefault())
+      .toOffsetDateTime()
+  );
+}

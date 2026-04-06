@@ -271,6 +271,7 @@
   "workout.copy_to_plan.button": "Copier l'entraînement dans le plan",
   "workout.copy_to_plan.select_plan.label": "Sélectionner un plan pour copier {workoutName} dans :",
   "workout.current.title": "Entraînement en cours",
+  "workout.current_short.label": "Courant",
   "workout.current_sessions.title": "Séances actuelles",
   "workout.delete.confirm.body": "La séance nommée <em>{sessionName}</em>, du {date} sera supprimée de l'historique. Cette action ne peut pas être annulée.",
   "workout.delete.confirm.title": "Supprimer la séance ?",

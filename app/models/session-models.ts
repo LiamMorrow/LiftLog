@@ -906,6 +906,14 @@ export class RecordedWeightedExercise {
     );
   }
 
+  get totalWeightLifted(): Weight {
+    return this.potentialSets.reduce(
+      (accum, set) =>
+        accum.plus(set.weight.multipliedBy(set.set?.repsCompleted ?? 0)),
+      Weight.NIL,
+    );
+  }
+
   get currentSetIndex() {
     return this.potentialSets.findIndex((x) => !x.set);
   }

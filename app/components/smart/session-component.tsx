@@ -27,10 +27,12 @@ import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
 import ItemList from '@/components/presentation/foundation/item-list';
+import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
 import {
   RecordedCardioExercise,
   RecordedExercise,
   RecordedWeightedExercise,
+  Session,
 } from '@/models/session-models';
 import WeightedExercise from '@/components/presentation/workout/weighted/weighted-exercise';
 import WeightDisplay from '@/components/presentation/foundation/editors/weight-display';
@@ -44,15 +46,21 @@ import { ExerciseEditor } from '@/components/presentation/workout-editor/exercis
 import { LocalTime, OffsetDateTime, ZoneId } from '@js-joda/core';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { UnknownAction } from '@reduxjs/toolkit';
-import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
+import {
+  selectPreviousComparableSession,
+  selectRecentlyCompletedExercises,
+} from '@/store/stored-sessions';
 import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { formatDuration } from '@/utils/format-date';
+import { localeFormatBigNumber } from '@/utils/locale-bignumber';
 import { match, P } from 'ts-pattern';
 import { CardioExercise } from '@/components/presentation/workout/cardio/cardio-exercise';
 import { DelayRender } from '../presentation/foundation/delay-render';
 import { Loader } from '../presentation/foundation/loader';
+import { NormalizedName } from '@/models/blueprint-models';
+import { Weight } from '@/models/weight';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
@@ -76,6 +84,10 @@ export default function SessionComponent(props: {
     selectRecentlyCompletedExercises,
     10,
   );
+  const previousComparableSession = useAppSelectorWithArg(
+    selectPreviousComparableSession,
+    session,
+  );
   const resetTimer = () => {
     storeDispatch(setWorkoutSessionLastSetTime(OffsetDateTime.now()));
     storeDispatch(notifySetTimer());
@@ -91,6 +103,7 @@ export default function SessionComponent(props: {
     ExerciseBlueprint | undefined
   >(undefined);
   const [exerciseEditorOpen, setExerciseEditorOpen] = useState(false);
+  const [isExerciseBreakdownOpen, setExerciseBreakdownOpen] = useState(false);
   const openUrl = (url: string) => {
     void Linking.canOpenURL(url).then(() => Linking.openURL(url));
   };
@@ -122,7 +135,15 @@ export default function SessionComponent(props: {
   const progress = totalSets === 0 ? 0 : completedSets / totalSets;
   const progressPillHeight = spacing[14];
   const progressPillWidth = progressPillHeight * 2.2;
-
+  const weightedExerciseComparisons = getWeightedExerciseComparisons(
+    session,
+    previousComparableSession,
+  );
+  const showCurrentTotalTime =
+    !!session.duration && session.duration.toMinutes() >= 5;
+  const showPreviousTotalTime =
+    !!previousComparableSession?.duration &&
+    previousComparableSession.duration.toMinutes() >= 5;
   const notesComponent = session.blueprint.notes ? (
     <Card
       mode="contained"
@@ -355,12 +376,11 @@ export default function SessionComponent(props: {
   };
 
   const bodyWeight = props.showBodyweight ? (
-    <Card
+    <View
       style={{ marginHorizontal: spacing.pageHorizontalMargin }}
-      mode="contained"
       testID="bodyweight-card"
     >
-      <Card.Content
+      <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -385,8 +405,8 @@ export default function SessionComponent(props: {
           increment={new BigNumber('0.1')}
           label={t('exercise.bodyweight.label')}
         />
-      </Card.Content>
-    </Card>
+      </View>
+    </View>
   ) : null;
 
   const lastExercise = session.lastExercise;
@@ -492,45 +512,281 @@ export default function SessionComponent(props: {
   );
 
   const totalWeightLifted = (
-    <Card mode="contained" style={{ margin: spacing.pageHorizontalMargin }}>
-      <Card.Content>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <Text variant="bodyMedium">
-            <T keyName="workout.total_weight_lifted.label" />
-          </Text>
-          <WeightFormat
-            fontWeight="bold"
-            color="primary"
-            weight={session.totalWeightLifted}
-          />
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <Text variant="bodyMedium">
-            <T keyName="workout.total_time.label" />
-          </Text>
-          <Text
-            variant="bodyMedium"
-            style={{ color: colors.primary, fontWeight: 'bold' }}
+    <View
+      style={{
+        marginHorizontal: spacing.pageHorizontalMargin,
+        marginVertical: spacing[2],
+      }}
+    >
+      <TouchableRipple
+        borderless
+        onPress={
+          props.target === 'workoutSession' &&
+          weightedExerciseComparisons.length
+            ? () => setExerciseBreakdownOpen((current) => !current)
+            : undefined
+        }
+      >
+        <View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              borderBottomWidth:
+                showCurrentTotalTime || showPreviousTotalTime ? 1 : 0,
+              borderBottomColor: colors.outlineVariant,
+            }}
           >
-            {(session.duration &&
-              formatDuration(session.duration, 'hours-mins')) ||
-              '-'}
-          </Text>
+            <View
+              style={{
+                flex: 1.46,
+                paddingHorizontal: spacing[2],
+                paddingVertical: spacing[2],
+              }}
+            />
+            <Text
+              variant="bodyMedium"
+              style={{
+                flex: 0.56,
+                paddingHorizontal: spacing[2],
+                paddingVertical: spacing[2],
+                textAlign: 'right',
+                color: colors.onSurfaceVariant,
+              }}
+            >
+              {t('generic.previous.button')}
+            </Text>
+            <Text
+              variant="bodyMedium"
+              style={{
+                flex: 0.56,
+                paddingHorizontal: spacing[2],
+                paddingVertical: spacing[2],
+                textAlign: 'right',
+                color: colors.onSurfaceVariant,
+              }}
+            >
+              {t('workout.current_short.label')}
+            </Text>
+            <View
+              style={{
+                flex: 0.34,
+                paddingHorizontal: spacing[2],
+                paddingVertical: spacing[2],
+              }}
+            />
+          </View>
+          {showCurrentTotalTime || showPreviousTotalTime ? (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                borderBottomWidth: 1,
+                borderBottomColor: colors.outlineVariant,
+              }}
+            >
+              <Text
+                variant="bodyMedium"
+                style={{
+                  flex: 1.46,
+                  paddingHorizontal: spacing[2],
+                  paddingVertical: spacing[2],
+                }}
+              >
+                <T keyName="workout.total_time.label" />
+              </Text>
+              <Text
+                variant="bodyMedium"
+                style={{
+                  flex: 0.56,
+                  paddingHorizontal: spacing[2],
+                  paddingVertical: spacing[2],
+                  textAlign: 'right',
+                  color: colors.primary,
+                  fontWeight: 'normal',
+                }}
+              >
+                {(showPreviousTotalTime &&
+                  previousComparableSession?.duration &&
+                  formatDuration(
+                    previousComparableSession.duration,
+                    'hours-mins',
+                  )) ||
+                  '-'}
+              </Text>
+              <Text
+                variant="bodyMedium"
+                style={{
+                  flex: 0.56,
+                  paddingHorizontal: spacing[2],
+                  paddingVertical: spacing[2],
+                  textAlign: 'right',
+                  color: colors.primary,
+                  fontWeight: 'bold',
+                }}
+              >
+                {(showCurrentTotalTime &&
+                  session.duration &&
+                  formatDuration(session.duration, 'hours-mins')) ||
+                  '-'}
+              </Text>
+              <View
+                style={{
+                  flex: 0.34,
+                  paddingHorizontal: spacing[2],
+                  paddingVertical: spacing[2],
+                }}
+              />
+            </View>
+          ) : null}
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
+          >
+            <Text
+              variant="bodyMedium"
+              style={{
+                flex: 1.46,
+                paddingHorizontal: spacing[2],
+                paddingVertical: spacing[2],
+              }}
+            >
+              {t('stats.exercise.total_lifted.label')}
+            </Text>
+            <View
+              style={{
+                flex: 0.56,
+                alignItems: 'flex-end',
+                paddingHorizontal: spacing[2],
+                paddingVertical: spacing[2],
+              }}
+            >
+              {previousComparableSession ? (
+                <WeightFormat
+                  decimalPlaces={0}
+                  fontWeight="normal"
+                  color="primary"
+                  weight={previousComparableSession.totalWeightLifted}
+                />
+              ) : (
+                <Text variant="bodyMedium">-</Text>
+              )}
+            </View>
+            <View
+              style={{
+                flex: 0.56,
+                alignItems: 'flex-end',
+                paddingHorizontal: spacing[2],
+                paddingVertical: spacing[2],
+              }}
+            >
+              <WeightFormat
+                decimalPlaces={0}
+                fontWeight="bold"
+                color="primary"
+                weight={session.totalWeightLifted}
+              />
+            </View>
+            <View
+              style={{
+                flex: 0.34,
+                alignItems: 'flex-end',
+                paddingHorizontal: spacing[2],
+                paddingVertical: spacing[2],
+              }}
+            >
+              <ComparisonBadge
+                current={session.totalWeightLifted}
+                previous={previousComparableSession?.totalWeightLifted}
+              />
+            </View>
+          </View>
         </View>
-      </Card.Content>
-    </Card>
+      </TouchableRipple>
+      {props.target === 'workoutSession' &&
+      isExerciseBreakdownOpen &&
+      weightedExerciseComparisons.length ? (
+        <View
+          style={{
+            borderTopWidth: 1,
+            borderTopColor: colors.outlineVariant,
+          }}
+        >
+          {weightedExerciseComparisons.map((comparison, index) => (
+            <View
+              key={comparison.key}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                borderBottomWidth:
+                  index === weightedExerciseComparisons.length - 1 ? 0 : 1,
+                borderBottomColor: colors.outlineVariant,
+              }}
+            >
+              <Text
+                variant="bodyMedium"
+                style={{
+                  flex: 1.46,
+                  paddingHorizontal: spacing[2],
+                  paddingVertical: spacing[2],
+                }}
+              >
+                {comparison.name}
+              </Text>
+              <View
+                style={{
+                  flex: 0.56,
+                  alignItems: 'flex-end',
+                  paddingHorizontal: spacing[2],
+                  paddingVertical: spacing[2],
+                }}
+              >
+                {comparison.previous ? (
+                  <WeightFormat
+                    decimalPlaces={0}
+                    fontWeight="normal"
+                    color="primary"
+                    weight={comparison.previous}
+                  />
+                ) : (
+                  <Text variant="bodyMedium">-</Text>
+                )}
+              </View>
+              <View
+                style={{
+                  flex: 0.56,
+                  alignItems: 'flex-end',
+                  paddingHorizontal: spacing[2],
+                  paddingVertical: spacing[2],
+                }}
+              >
+                <WeightFormat
+                  decimalPlaces={0}
+                  fontWeight="bold"
+                  color="primary"
+                  weight={comparison.current}
+                />
+              </View>
+              <View
+                style={{
+                  flex: 0.34,
+                  alignItems: 'flex-end',
+                  paddingHorizontal: spacing[2],
+                  paddingVertical: spacing[2],
+                }}
+              >
+                <ComparisonBadge
+                  current={comparison.current}
+                  previous={comparison.previous}
+                />
+              </View>
+            </View>
+          ))}
+        </View>
+      ) : null}
+    </View>
   );
 
   return (
@@ -571,7 +827,9 @@ export default function SessionComponent(props: {
   );
 }
 
-function getSessionProgress(session: NonNullable<ReturnType<typeof selectCurrentSession>>) {
+function getSessionProgress(
+  session: NonNullable<ReturnType<typeof selectCurrentSession>>,
+) {
   return session.recordedExercises.reduce(
     (accum, exercise) => {
       if (exercise instanceof RecordedWeightedExercise) {
@@ -588,5 +846,92 @@ function getSessionProgress(session: NonNullable<ReturnType<typeof selectCurrent
       return accum;
     },
     { completedSets: 0, totalSets: 0 },
+  );
+}
+
+function getWeightedExerciseComparisons(
+  session: Session,
+  previousSession: Session | undefined,
+) {
+  const currentExerciseTotals = getWeightedExerciseTotals(session);
+  const previousExerciseTotals = previousSession
+    ? getWeightedExerciseTotals(previousSession)
+    : new Map<string, { name: string; weight: Weight }>();
+
+  return Array.from(currentExerciseTotals.entries()).map(([key, value]) => ({
+    key,
+    name: value.name,
+    current: value.weight,
+    previous: previousExerciseTotals.get(key)?.weight,
+  }));
+}
+
+function getWeightedExerciseTotals(session: Session) {
+  const totals = new Map<string, { name: string; weight: Weight }>();
+
+  for (const exercise of session.recordedExercises) {
+    if (!(exercise instanceof RecordedWeightedExercise)) {
+      continue;
+    }
+
+    const key = NormalizedName.fromExerciseBlueprint(
+      exercise.blueprint,
+    ).toString();
+    const existing = totals.get(key);
+    totals.set(key, {
+      name: existing?.name ?? exercise.blueprint.name,
+      weight: (existing?.weight ?? Weight.NIL).plus(exercise.totalWeightLifted),
+    });
+  }
+
+  return totals;
+}
+
+function getIncreasePercentage(
+  current: Weight,
+  previous: Weight | undefined,
+): BigNumber | undefined {
+  if (!previous || previous.value.lte(0) || !current.isGreaterThan(previous)) {
+    return undefined;
+  }
+
+  return current
+    .minus(previous)
+    .value.multipliedBy(100)
+    .dividedBy(previous.value);
+}
+
+function ComparisonBadge(props: {
+  current: Weight;
+  previous: Weight | undefined;
+}) {
+  const { colors } = useAppTheme();
+  const increasePercentage = getIncreasePercentage(
+    props.current,
+    props.previous,
+  );
+
+  return (
+    increasePercentage ? (
+      <View
+        style={{
+          borderRadius: spacing[4],
+          backgroundColor: colors.secondaryContainer,
+          paddingHorizontal: spacing[2],
+          paddingVertical: spacing[0.5],
+        }}
+      >
+        <Text
+          variant="labelSmall"
+          style={{
+            color: colors.onSecondaryContainer,
+            fontWeight: '600',
+            fontVariant: ['tabular-nums'],
+          }}
+        >
+          +{localeFormatBigNumber(increasePercentage, 0)}%
+        </Text>
+      </View>
+    ) : null
   );
 }

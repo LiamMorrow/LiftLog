@@ -410,6 +410,7 @@
   "workout.copy_to_plan.button": "Copy workout to plan",
   "workout.copy_to_plan.select_plan.label": "Select a plan to copy {workoutName} to:",
   "workout.current.title": "Current workout",
+  "workout.current_short.label": "Current",
   "workout.current_sessions.title": "Current sessions",
   "workout.delete.confirm.body": "The workout named <em>{sessionName}</em>, on {date} will be deleted from history. This cannot be undone.",
   "workout.delete.confirm.title": "Delete Workout?",
