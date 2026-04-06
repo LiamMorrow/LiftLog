@@ -6,6 +6,7 @@ import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import {
   finishCurrentWorkout,
   selectCurrentSession,
+  setCurrentSession,
 } from '@/store/current-session';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
@@ -16,46 +17,38 @@ import { useDispatch } from 'react-redux';
 export default function Index() {
   const dispatch = useDispatch();
   const session = useAppSelectorWithArg(selectCurrentSession, 'workoutSession');
-  const showPostWorkoutSummary = useAppSelector(
-    (x) => x.settings.showPostWorkoutSummary,
-  );
   const keepAwake = useAppSelector(
     (x) => x.settings.keepScreenAwakeDuringWorkout,
   );
-  const { dismissTo, push } = useRouter();
+  const { dismissTo, push, replace } = useRouter();
   const { t } = useTranslate();
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [postWorkoutSessionId, setPostWorkoutSessionId] = useState<
-    string | undefined
-  >(undefined);
 
   const save = (force = false) => {
-    const finishedSessionId = session?.id;
     if (session) {
       if (!force && !session.isComplete) {
         setConfirmOpen(true);
         return;
       }
       setConfirmOpen(false);
-    }
-    if (showPostWorkoutSummary) {
-      setPostWorkoutSessionId(finishedSessionId);
-      if (finishedSessionId) {
-        push(
-          `/session/post-workout?sessionId=${encodeURIComponent(finishedSessionId)}&source=finished`,
-        );
-        return;
-      }
-    } else {
+      dispatch(setCurrentSession({ target: 'historySession', session }));
       dispatch(finishCurrentWorkout('workoutSession'));
-      dismissTo('/');
+      replace({
+        pathname: '/history/progress',
+        params: {
+          sessionId: session.id,
+          source: 'finish',
+        },
+      });
+      return;
     }
+    dismissTo('/');
   };
   useEffect(() => {
-    if (!session && !postWorkoutSessionId) {
+    if (!session) {
       dismissTo('/');
     }
-  }, [session, dismissTo, postWorkoutSessionId]);
+  }, [session, dismissTo]);
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
 
   return (
@@ -77,7 +70,7 @@ export default function Index() {
             return;
           }
           push(
-            `/session/post-workout?sessionId=${encodeURIComponent(session.id)}&source=live`,
+            `/session/post-workout?sessionId=${encodeURIComponent(session.id)}&source=live` as never,
           );
         }}
         saveAndClose={() => save()}
