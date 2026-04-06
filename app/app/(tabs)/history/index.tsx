@@ -55,8 +55,17 @@ export default function History() {
   );
   const openWorkoutStats = (session: Session) => {
     push(
-      `/history/post-workout?sessionId=${encodeURIComponent(session.id)}&source=history`,
+      `/history/post-workout?sessionId=${encodeURIComponent(session.id)}&source=history` as never,
     );
+  };
+  const openProgress = (session: Session) => {
+    dispatch(setCurrentSession({ target: 'historySession', session }));
+    push({
+      pathname: '/history/progress',
+      params: {
+        sessionId: session.id,
+      },
+    });
   };
   const onSelectSession = (session: Session) => {
     dispatch(setCurrentSession({ target: 'historySession', session }));
@@ -183,6 +192,14 @@ export default function History() {
                   onPress={() => deleteWorkout(session)}
                 />
               </Tooltip>
+              <Button
+                onPress={() => openProgress(session)}
+                icon="analytics"
+                mode="contained"
+                testID="history-view-progress"
+              >
+                Progress
+              </Button>
               <Button
                 onPress={() => onSelectSession(session)}
                 icon="edit"

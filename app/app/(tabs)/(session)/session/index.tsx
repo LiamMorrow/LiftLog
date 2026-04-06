@@ -6,6 +6,7 @@ import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import {
   finishCurrentWorkout,
   selectCurrentSession,
+  setCurrentSession,
 } from '@/store/current-session';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
@@ -19,7 +20,7 @@ export default function Index() {
   const keepAwake = useAppSelector(
     (x) => x.settings.keepScreenAwakeDuringWorkout,
   );
-  const { dismissTo, push } = useRouter();
+  const { dismissTo, push, replace } = useRouter();
   const { t } = useTranslate();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [postWorkoutSessionId, setPostWorkoutSessionId] = useState<
@@ -34,13 +35,15 @@ export default function Index() {
         return;
       }
       setConfirmOpen(false);
-    }
-    setPostWorkoutSessionId(finishedSessionId);
-    dispatch(finishCurrentWorkout('workoutSession'));
-    if (finishedSessionId) {
-      push(
-        `/session/post-workout?sessionId=${encodeURIComponent(finishedSessionId)}&source=finished`,
-      );
+      dispatch(setCurrentSession({ target: 'historySession', session }));
+      dispatch(finishCurrentWorkout('workoutSession'));
+      replace({
+        pathname: '/history/progress',
+        params: {
+          sessionId: session.id,
+          source: 'finish',
+        },
+      });
       return;
     }
     dismissTo('/');
@@ -71,7 +74,7 @@ export default function Index() {
             return;
           }
           push(
-            `/session/post-workout?sessionId=${encodeURIComponent(session.id)}&source=live`,
+            `/session/post-workout?sessionId=${encodeURIComponent(session.id)}&source=live` as never,
           );
         }}
         saveAndClose={() => save()}
