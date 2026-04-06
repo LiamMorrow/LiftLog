@@ -84,6 +84,7 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
                       ? colors.onPrimary
                       : colors.onSecondaryContainer,
                   ...font['text-xl'],
+                  letterSpacing: 1.5,
                 }}
               >
                 <Text style={{ fontWeight: 'bold' }}>
