@@ -20,7 +20,7 @@ export function localeFormatBigNumber(
     return '';
   }
   const format = {
-    groupSeparator: ' ',
+    groupSeparator: localeUsesComma() ? ' ' : ',',
     groupSize: 3,
     decimalSeparator: localeUsesComma() ? ',' : '.',
   };

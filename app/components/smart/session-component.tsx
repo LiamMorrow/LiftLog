@@ -25,7 +25,7 @@ import { useDispatch, useStore } from 'react-redux';
 import { Linking, View } from 'react-native';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
-import { T, useTranslate } from '@tolgee/react';
+import { useTranslate } from '@tolgee/react';
 import ItemList from '@/components/presentation/foundation/item-list';
 import {
   RecordedCardioExercise,
@@ -44,19 +44,22 @@ import { ExerciseEditor } from '@/components/presentation/workout-editor/exercis
 import { LocalTime, OffsetDateTime, ZoneId } from '@js-joda/core';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { UnknownAction } from '@reduxjs/toolkit';
-import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
+import {
+  selectPreviousComparableSession,
+  selectRecentlyCompletedExercises,
+} from '@/store/stored-sessions';
 import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
-import WeightFormat from '@/components/presentation/foundation/weight-format';
-import { formatDuration } from '@/utils/format-date';
 import { match, P } from 'ts-pattern';
 import { CardioExercise } from '@/components/presentation/workout/cardio/cardio-exercise';
 import { DelayRender } from '../presentation/foundation/delay-render';
 import { Loader } from '../presentation/foundation/loader';
+import SessionComparisonTable from '@/components/presentation/workout/session-comparison-table';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
   showBodyweight: boolean;
+  openPostWorkoutSummary?: () => void;
   saveAndClose?: () => void;
 }) {
   const { colors } = useAppTheme();
@@ -75,6 +78,10 @@ export default function SessionComponent(props: {
   const recentlyCompletedExercises = useAppSelectorWithArg(
     selectRecentlyCompletedExercises,
     10,
+  );
+  const previousComparableSession = useAppSelectorWithArg(
+    selectPreviousComparableSession,
+    session,
   );
   const resetTimer = () => {
     storeDispatch(setWorkoutSessionLastSetTime(OffsetDateTime.now()));
@@ -350,38 +357,34 @@ export default function SessionComponent(props: {
   };
 
   const bodyWeight = props.showBodyweight ? (
-    <Card
-      style={{ marginHorizontal: spacing.pageHorizontalMargin }}
-      mode="contained"
+    <View
+      style={{
+        marginHorizontal: spacing.pageHorizontalMargin,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}
       testID="bodyweight-card"
     >
-      <Card.Content
+      <Text
         style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
+          ...font['text-xl'],
+          fontWeight: 'bold',
+          color: colors.onSurface,
         }}
       >
-        <Text
-          style={{
-            ...font['text-xl'],
-            fontWeight: 'bold',
-            color: colors.onSurface,
-          }}
-        >
-          {t('exercise.bodyweight.label')}
-        </Text>
-        <WeightDisplay
-          allowNull={true}
-          weight={session.bodyweight}
-          updateWeight={(bodyweight) =>
-            dispatch(updateBodyweight, { bodyweight })
-          }
-          increment={new BigNumber('0.1')}
-          label={t('exercise.bodyweight.label')}
-        />
-      </Card.Content>
-    </Card>
+        {t('exercise.bodyweight.label')}
+      </Text>
+      <WeightDisplay
+        allowNull={true}
+        weight={session.bodyweight}
+        updateWeight={(bodyweight) =>
+          dispatch(updateBodyweight, { bodyweight })
+        }
+        increment={new BigNumber('0.1')}
+        label={t('exercise.bodyweight.label')}
+      />
+    </View>
   ) : null;
 
   const lastExercise = session.lastExercise;
@@ -439,7 +442,6 @@ export default function SessionComponent(props: {
             alignItems: 'center',
           }}
         >
-          {/* Centre the timer */}
           <View style={{ flex: 1 }}></View>
           {restTimer}
           {saveButton}
@@ -449,45 +451,23 @@ export default function SessionComponent(props: {
   );
 
   const totalWeightLifted = (
-    <Card mode="contained" style={{ margin: spacing.pageHorizontalMargin }}>
-      <Card.Content>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <Text variant="bodyMedium">
-            <T keyName="workout.total_weight_lifted.label" />
-          </Text>
-          <WeightFormat
-            fontWeight="bold"
-            color="primary"
-            weight={session.totalWeightLifted}
-          />
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <Text variant="bodyMedium">
-            <T keyName="workout.total_time.label" />
-          </Text>
-          <Text
-            variant="bodyMedium"
-            style={{ color: colors.primary, fontWeight: 'bold' }}
-          >
-            {(session.duration &&
-              formatDuration(session.duration, 'hours-mins')) ||
-              '-'}
-          </Text>
-        </View>
-      </Card.Content>
-    </Card>
+    <View
+      style={{
+        marginHorizontal: spacing.pageHorizontalMargin,
+        marginVertical: spacing[2],
+      }}
+    >
+      <SessionComparisonTable
+        mode={props.target === 'workoutSession' ? 'compact' : 'full'}
+        onPress={
+          props.target === 'workoutSession'
+            ? props.openPostWorkoutSummary
+            : undefined
+        }
+        previousSession={previousComparableSession}
+        session={session}
+      />
+    </View>
   );
 
   return (
