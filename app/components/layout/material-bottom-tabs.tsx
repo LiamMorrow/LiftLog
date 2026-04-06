@@ -4,6 +4,11 @@ import { PropsWithChildren } from 'react';
 import { BottomNavigationProps, Badge } from 'react-native-paper';
 import { Platform, Pressable, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import {
+  argbFromHex,
+  Hct,
+  hexFromArgb,
+} from '@material/material-color-utilities';
 import { useAppSelector } from '@/store';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 
@@ -27,7 +32,17 @@ export function MaterialBottomTabs({
 }: MaterialBottomTabsProps) {
   const showFeed = useAppSelector((x) => x.settings.showFeed);
   const { dismissTo } = useRouter();
-  const { colors } = useAppTheme();
+  const { colors, colorScheme } = useAppTheme();
+  const dockBackgroundColor = deriveDockBackgroundColor(
+    colors.primaryContainer,
+    colors.surfaceContainerHighest,
+    colorScheme === 'dark',
+  );
+  const dockBorderColor = deriveDockBorderColor(
+    colors.primaryContainer,
+    colors.outlineVariant,
+    colorScheme === 'dark',
+  );
   return (
     <Tabs
       screenOptions={{
@@ -39,11 +54,16 @@ export function MaterialBottomTabs({
           (x) => showFeed || !x.name.includes('feed'),
         );
 
-        const wrapperHeight = insets.bottom + 92;
+        const wrapperHeight = insets.bottom + 112;
         return (
           <View
             style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              bottom: 0,
               height: wrapperHeight,
+              zIndex: 30,
             }}
             pointerEvents="box-none"
           >
@@ -51,10 +71,11 @@ export function MaterialBottomTabs({
               pointerEvents="none"
               colors={[
                 `${colors.scrim}00`,
-                `${colors.scrim}12`,
-                `${colors.scrim}38`,
+                `${colors.scrim}18`,
+                `${colors.scrim}44`,
+                `${colors.scrim}72`,
               ]}
-              locations={[0, 0.45, 1]}
+              locations={[0, 0.38, 0.78, 1]}
               style={{
                 position: 'absolute',
                 left: 0,
@@ -75,9 +96,9 @@ export function MaterialBottomTabs({
                 gap: spacing[1],
                 padding: spacing[1],
                 borderRadius: 32,
-                backgroundColor: colors.surfaceContainerHighest,
+                backgroundColor: dockBackgroundColor,
                 borderWidth: 1,
-                borderColor: `${colors.outlineVariant}66`,
+                borderColor: dockBorderColor,
                 shadowColor: colors.scrim,
                 shadowOpacity: 0.28,
                 shadowRadius: 24,
@@ -238,3 +259,49 @@ export function MaterialBottomTabs({
 }
 
 MaterialBottomTabs.Screen = Tabs.Screen;
+
+function deriveDockBackgroundColor(
+  accentColor: string,
+  fallbackColor: string,
+  isDark: boolean,
+): string {
+  try {
+    const accent = Hct.fromInt(argbFromHex(accentColor));
+    const fallback = Hct.fromInt(argbFromHex(fallbackColor));
+
+    // Keep the dock in the same hue family as the active pill,
+    // but lower the chroma and tone so it reads as the backdrop.
+    const derived = Hct.from(
+      accent.hue,
+      Math.max(6, accent.chroma * (isDark ? 0.42 : 0.22)),
+      isDark ? Math.max(18, accent.tone - 8) : Math.min(96, accent.tone + 10),
+    );
+
+    // Clamp toward the theme surface so the dock still feels native
+    // across custom seeds and extreme accent colors.
+    derived.chroma = Math.min(derived.chroma, fallback.chroma + 8);
+
+    return hexFromArgb(derived.toInt());
+  } catch {
+    return fallbackColor;
+  }
+}
+
+function deriveDockBorderColor(
+  accentColor: string,
+  fallbackColor: string,
+  isDark: boolean,
+): string {
+  try {
+    const accent = Hct.fromInt(argbFromHex(accentColor));
+    const derived = Hct.from(
+      accent.hue,
+      Math.max(8, accent.chroma * 0.32),
+      isDark ? Math.min(32, accent.tone + 2) : Math.max(78, accent.tone - 6),
+    );
+
+    return `${hexFromArgb(derived.toInt())}88`;
+  } catch {
+    return `${fallbackColor}66`;
+  }
+}
