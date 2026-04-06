@@ -118,6 +118,11 @@ export default function SessionComponent(props: {
     return <Text>Loading</Text>;
   }
 
+  const { completedSets, totalSets } = getSessionProgress(session);
+  const progress = totalSets === 0 ? 0 : completedSets / totalSets;
+  const progressPillHeight = spacing[14];
+  const progressPillWidth = progressPillHeight * 2.2;
+
   const notesComponent = session.blueprint.notes ? (
     <Card
       mode="contained"
@@ -430,6 +435,44 @@ export default function SessionComponent(props: {
     </View>
   );
 
+  const progressIndicator =
+    props.target === 'workoutSession' && totalSets > 0 ? (
+      <View
+        style={{
+          width: progressPillWidth,
+          height: progressPillHeight,
+          overflow: 'hidden',
+          borderRadius: progressPillHeight,
+          backgroundColor: colors.inverseSurface,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            bottom: 0,
+            width: `${progress * 100}%`,
+            backgroundColor: colors.primary,
+          }}
+        />
+        <SurfaceText
+          style={{
+            fontVariant: ['tabular-nums'],
+          }}
+          font="text-2xl"
+          weight="bold"
+          color="inverseOnSurface"
+        >
+          {completedSets}/{totalSets}
+        </SurfaceText>
+      </View>
+    ) : (
+      <View style={{ flex: 1 }} />
+    );
+
   const floatingBottomContainer = isReadonly ? null : (
     <FloatingBottomContainer
       additionalContent={
@@ -437,10 +480,10 @@ export default function SessionComponent(props: {
           style={{
             flexDirection: 'row',
             alignItems: 'center',
+            gap: spacing[2],
           }}
         >
-          {/* Centre the timer */}
-          <View style={{ flex: 1 }}></View>
+          {progressIndicator}
           {restTimer}
           {saveButton}
         </View>
@@ -525,5 +568,25 @@ export default function SessionComponent(props: {
         </FullScreenDialog>
       </DelayRender>
     </FullHeightScrollView>
+  );
+}
+
+function getSessionProgress(session: NonNullable<ReturnType<typeof selectCurrentSession>>) {
+  return session.recordedExercises.reduce(
+    (accum, exercise) => {
+      if (exercise instanceof RecordedWeightedExercise) {
+        accum.totalSets += exercise.potentialSets.length;
+        accum.completedSets += exercise.potentialSets.filter(
+          (set) => set.set !== undefined,
+        ).length;
+      } else if (exercise instanceof RecordedCardioExercise) {
+        accum.totalSets += exercise.sets.length;
+        accum.completedSets += exercise.sets.filter(
+          (set) => set.isCompletelyFilled,
+        ).length;
+      }
+      return accum;
+    },
+    { completedSets: 0, totalSets: 0 },
   );
 }
