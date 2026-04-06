@@ -36,8 +36,9 @@ import { readFileSync } from 'fs';
 import { gunzipSync } from 'zlib';
 import { Weight } from '@/models/weight';
 import { SessionBlueprint } from '../blueprint-models';
-import { fromSessionHistoryDao, Session } from '../session-models';
+import { Session } from '../session-models';
 import { FeedIdentity, FeedUser, SessionFeedItem } from '../feed-models';
+import { MigratorV0ToV1 } from './versions/v1/migrator';
 
 const Models = LiftLog.Ui.Models;
 
@@ -47,19 +48,27 @@ interface ToDao {
 
 const modelToDao = (x: ToDao) => x.toDao();
 
+const sessionBlueprintFromDao = (
+  dao: LiftLog.Ui.Models.SessionBlueprintDao.ISessionBlueprintDaoV2,
+): SessionBlueprint =>
+  SessionBlueprint.fromJSON(MigratorV0ToV1.migrateSessionBlueprint(dao));
+const sessionFromDao = (
+  dao: LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2,
+): Session => Session.fromJSON(MigratorV0ToV1.migrateSession(dao));
+
 describe('conversions', () => {
   it.each`
-    name                  | protoType                                           | initialValueGenerator        | convertToDao      | convertFromDao              | assertEquals
-    ${'Decimal'}          | ${Models.DecimalValue}                              | ${BigNumberGenerator}        | ${toDecimalDao}   | ${fromDecimalDao}           | ${(a: BigNumber, b: BigNumber) => expect(a.isEqualTo(b)).toBeTruthy()}
-    ${'DateOnly'}         | ${Models.DateOnlyDao}                               | ${LocalDateGenerator}        | ${toDateOnlyDao}  | ${fromDateOnlyDao}          | ${(a: LocalDate, b: LocalDate) => expect(a.equals(b)).toBeTruthy()}
-    ${'Duration'}         | ${google.protobuf.Duration}                         | ${DurationGenerator}         | ${toDurationDao}  | ${fromDurationDao}          | ${(a: Duration, b: Duration) => expect(a.equals(b)).toBeTruthy()}
-    ${'TimeOnly'}         | ${Models.TimeOnlyDao}                               | ${LocalTimeGenerator}        | ${toTimeOnlyDao}  | ${fromTimeOnlyDao}          | ${(a: LocalTime, b: LocalTime) => expect(a.equals(b)).toBeTruthy()}
-    ${'SessionBlueprint'} | ${Models.SessionBlueprintDao.SessionBlueprintDaoV2} | ${SessionBlueprintGenerator} | ${modelToDao}     | ${SessionBlueprint.fromDao} | ${toPOJOEquals}
-    ${'Session'}          | ${Models.SessionHistoryDao.SessionDaoV2}            | ${SessionGenerator}          | ${modelToDao}     | ${Session.fromDao}          | ${toPOJOEquals}
-    ${'FeedIdentity'}     | ${Models.FeedIdentityDaoV1}                         | ${FeedIdentityGenerator}     | ${modelToDao}     | ${FeedIdentity.fromDao}     | ${toPOJOEquals}
-    ${'FeedUser'}         | ${Models.FeedUserDaoV1}                             | ${FeedUserGenerator}         | ${modelToDao}     | ${FeedUser.fromDao}         | ${toPOJOEquals}
-    ${'SessionFeedItem'}  | ${Models.FeedItemDaoV1}                             | ${SessionFeedItemGenerator}  | ${modelToDao}     | ${SessionFeedItem.fromDao}  | ${toPOJOEquals}
-    ${'Timestamp'}        | ${google.protobuf.Timestamp}                        | ${InstantGenerator}          | ${toTimestampDao} | ${fromTimestampDao}         | ${(a: Instant, b: Instant) => a.equals(b)}
+    name                  | protoType                                           | initialValueGenerator        | convertToDao      | convertFromDao             | assertEquals
+    ${'Decimal'}          | ${Models.DecimalValue}                              | ${BigNumberGenerator}        | ${toDecimalDao}   | ${fromDecimalDao}          | ${(a: BigNumber, b: BigNumber) => expect(a.isEqualTo(b)).toBeTruthy()}
+    ${'DateOnly'}         | ${Models.DateOnlyDao}                               | ${LocalDateGenerator}        | ${toDateOnlyDao}  | ${fromDateOnlyDao}         | ${(a: LocalDate, b: LocalDate) => expect(a.equals(b)).toBeTruthy()}
+    ${'Duration'}         | ${google.protobuf.Duration}                         | ${DurationGenerator}         | ${toDurationDao}  | ${fromDurationDao}         | ${(a: Duration, b: Duration) => expect(a.equals(b)).toBeTruthy()}
+    ${'TimeOnly'}         | ${Models.TimeOnlyDao}                               | ${LocalTimeGenerator}        | ${toTimeOnlyDao}  | ${fromTimeOnlyDao}         | ${(a: LocalTime, b: LocalTime) => expect(a.equals(b)).toBeTruthy()}
+    ${'SessionBlueprint'} | ${Models.SessionBlueprintDao.SessionBlueprintDaoV2} | ${SessionBlueprintGenerator} | ${modelToDao}     | ${sessionBlueprintFromDao} | ${toPOJOEquals}
+    ${'Session'}          | ${Models.SessionHistoryDao.SessionDaoV2}            | ${SessionGenerator}          | ${modelToDao}     | ${sessionFromDao}          | ${toPOJOEquals}
+    ${'FeedIdentity'}     | ${Models.FeedIdentityDaoV1}                         | ${FeedIdentityGenerator}     | ${modelToDao}     | ${FeedIdentity.fromDao}    | ${toPOJOEquals}
+    ${'FeedUser'}         | ${Models.FeedUserDaoV1}                             | ${FeedUserGenerator}         | ${modelToDao}     | ${FeedUser.fromDao}        | ${toPOJOEquals}
+    ${'SessionFeedItem'}  | ${Models.FeedItemDaoV1}                             | ${SessionFeedItemGenerator}  | ${modelToDao}     | ${SessionFeedItem.fromDao} | ${toPOJOEquals}
+    ${'Timestamp'}        | ${google.protobuf.Timestamp}                        | ${InstantGenerator}          | ${toTimestampDao} | ${fromTimestampDao}        | ${(a: Instant, b: Instant) => a.equals(b)}
   `(
     'should convert back and forth between $name surviving an encoding',
     ({
@@ -104,7 +113,7 @@ describe('conversions', () => {
       .map((x) => x.bodyweight)
       .reduce((a, b) => (a && b ? a.plus(b) : a ? a : b));
 
-    expect(sessions.size).toBe(85);
+    expect(sessions.length).toBe(85);
     // Just some general checksums
     expect(totalWeightLifted).toEqual(new Weight(705959.136, 'nil'));
     expect(bodyweightSum).toEqual(new Weight(3065.3, 'nil'));
@@ -117,4 +126,12 @@ interface ToPOJO {
 
 function toPOJOEquals(a: ToPOJO, b: ToPOJO) {
   expect(b.toPOJO()).toEqual(a.toPOJO());
+}
+
+function fromSessionHistoryDao(
+  sessionHistoryModel: LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2,
+): Session[] {
+  return sessionHistoryModel.completedSessions.map((item) =>
+    Session.fromJSON(MigratorV0ToV1.migrateSession(item)),
+  );
 }

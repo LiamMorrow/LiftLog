@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js';
 import { match, P } from 'ts-pattern';
 import { toDecimalDao } from './storage/conversions.to-dao';
 import { fromDecimalDao } from './storage/conversions.from-dao';
+import { fromBigNumberJSON, WeightJSON } from './storage/versions/latest';
 
 // nil is special in that it basically tries to coalesce into whatever else is given
 export type WeightUnit = 'kilograms' | 'pounds' | 'nil';
@@ -32,6 +33,10 @@ export class Weight {
       fromDecimalDao(value.value!),
       fromWeightUnitDao(value.unit),
     );
+  }
+
+  static fromJSON(value: WeightJSON): Weight {
+    return new Weight(fromBigNumberJSON(value.value), value.unit);
   }
 
   with(other: Partial<Weight>): Weight {

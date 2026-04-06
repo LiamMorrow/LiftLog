@@ -28,6 +28,7 @@ import {
 } from '@/models/session-models';
 import { Weight } from '@/models/weight';
 import { setCurrentSession } from '@/store/current-session';
+import { MigratorV0ToV1 } from '@/models/storage/versions/v1/migrator';
 
 const storageKey = 'Progress';
 const exerciseListStorageKey = 'ExerciseList';
@@ -81,7 +82,7 @@ export function applyStoredSessionsEffects() {
 
         const completedSessionsList =
           storedData?.completedSessions.map((x) => {
-            const s = Session.fromDao(x);
+            const s = Session.fromJSON(MigratorV0ToV1.migrateSession(x));
             return s.with({
               bodyweight: coalesceWeightUnit(s.bodyweight),
             });

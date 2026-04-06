@@ -1,7 +1,6 @@
 import { google, LiftLog } from '@/gen/proto';
 import { uuidStringify } from '@/utils/uuid';
 import Long from 'long';
-import { UuidConversionError } from './uuid-conversion-error';
 import {
   Duration,
   Instant,
@@ -36,7 +35,7 @@ export function fromUuidDao(
   try {
     return uuidStringify(Uint8Array.from(reorderedForGuid));
   } catch (e) {
-    throw new UuidConversionError(dao.value, { cause: e });
+    throw new Error('dao.value', { cause: e });
   }
 }
 

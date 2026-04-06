@@ -10,6 +10,7 @@ import {
 } from '@/models/storage/conversions.to-dao';
 import { Duration, Instant } from '@js-joda/core';
 import { match } from 'ts-pattern';
+import { MigratorV0ToV1 } from './storage/versions/v1/migrator';
 
 const DaoType = LiftLog.Ui.Models.WorkoutMessage;
 type DaoType = typeof LiftLog.Ui.Models.WorkoutMessage;
@@ -132,7 +133,9 @@ export function fromWorkoutMessageDao(
     }))
     .with('workoutUpdatedEvent', () => ({
       type: 'WorkoutUpdatedEvent',
-      workout: Session.fromDao(event.workoutUpdatedEvent!.workout),
+      workout: Session.fromJSON(
+        MigratorV0ToV1.migrateSession(event.workoutUpdatedEvent!.workout!),
+      ),
       restTimerInfo: event.workoutUpdatedEvent?.restTimerInfo
         ? {
             startedAt: fromTimestampDao(

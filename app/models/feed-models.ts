@@ -15,6 +15,7 @@ import {
 } from './storage/conversions.to-dao';
 import { fromTimestampDao, fromUuidDao } from './storage/conversions.from-dao';
 import { Session, SessionPOJO } from './session-models';
+import { MigratorV0ToV1 } from './storage/versions/v1/migrator';
 
 export interface FeedUserPOJO {
   type: 'FeedUser';
@@ -166,7 +167,7 @@ export abstract class FeedItem {
       fromUuidDao(dao.eventId),
       fromTimestampDao(dao.timestamp),
       fromTimestampDao(dao.expiry),
-      Session.fromDao(dao.session),
+      Session.fromJSON(MigratorV0ToV1.migrateSession(dao.session!)),
     );
   }
 
@@ -504,7 +505,9 @@ export abstract class SharedItem {
           return null;
         }
         return new SharedProgramBlueprint(
-          ProgramBlueprint.fromDao(programBlueprintDao),
+          ProgramBlueprint.fromJSON(
+            MigratorV0ToV1.migrateProgramBlueprint(programBlueprintDao),
+          ),
         );
       }
       case 'sharedSession': {
@@ -512,7 +515,9 @@ export abstract class SharedItem {
         if (!sessionDao) {
           return null;
         }
-        return new SharedSession(Session.fromDao(sessionDao));
+        return new SharedSession(
+          Session.fromJSON(MigratorV0ToV1.migrateSession(sessionDao)),
+        );
       }
       case undefined:
         return null;
@@ -604,7 +609,9 @@ export function toCurrentPlanDao(
 export function fromCurrentPlanDao(
   dao: LiftLog.Ui.Models.ICurrentPlanDaoV1,
 ): SessionBlueprint[] {
-  return dao.sessions!.map((x) => SessionBlueprint.fromDao(x));
+  return dao.sessions!.map((x) =>
+    SessionBlueprint.fromJSON(MigratorV0ToV1.migrateSessionBlueprint(x)),
+  );
 }
 
 function expectNever(never: never) {

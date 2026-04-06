@@ -20,6 +20,7 @@ import { AsyncStream } from 'data-async-iterators';
 import { KeyValueStore } from '@/services/key-value-store';
 import { Logger } from '@/services/logger';
 import { selectLatestExercises } from '../stored-sessions';
+import { MigratorV0ToV1 } from '@/models/storage/versions/v1/migrator';
 
 const storageKey = 'SavedPrograms';
 const builtInProgramsStorageKey = 'hasSavedDefaultPlans2';
@@ -57,7 +58,13 @@ export function applyProgramEffects() {
           );
         const converted = Object.fromEntries(
           Object.entries(decoded.programBlueprints).map(
-            ([key, pojo]) => [key, ProgramBlueprint.fromDao(pojo)] as const,
+            ([key, pojo]) =>
+              [
+                key,
+                ProgramBlueprint.fromJSON(
+                  MigratorV0ToV1.migrateProgramBlueprint(pojo),
+                ),
+              ] as const,
           ),
         );
 

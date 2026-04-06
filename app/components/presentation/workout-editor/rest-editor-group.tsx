@@ -10,7 +10,7 @@ import { SegmentedButtons } from 'react-native-paper';
 import { match } from 'ts-pattern';
 import LabelledFormRow from '@/components/presentation/foundation/labelled-form-row';
 
-type ButtonValues = keyof typeof Rest | 'custom';
+type ButtonValues = 'short' | 'medium' | 'long' | 'custom';
 
 interface RestEditorGroupProps {
   rest: Rest;
