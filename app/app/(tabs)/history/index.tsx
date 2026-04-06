@@ -53,6 +53,11 @@ export default function History() {
     selectCurrentSession,
     'workoutSession',
   );
+  const openWorkoutStats = (session: Session) => {
+    push(
+      `/history/post-workout?sessionId=${encodeURIComponent(session.id)}&source=history`,
+    );
+  };
   const onSelectSession = (session: Session) => {
     dispatch(setCurrentSession({ target: 'historySession', session }));
     push('/history/edit');
@@ -150,6 +155,13 @@ export default function History() {
           )}
           renderItemActions={(session) => (
             <CardActions style={{ marginTop: spacing[2] }}>
+              <Tooltip title={t('workout.post_workout.title')}>
+                <IconButton
+                  icon={'analytics'}
+                  mode="contained"
+                  onPress={() => openWorkoutStats(session)}
+                />
+              </Tooltip>
               <Tooltip title={t('workout.share_workout.button')}>
                 <IconButton
                   icon={'share'}

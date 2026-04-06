@@ -292,6 +292,7 @@
   "workout.notes_expanded_by_default.label": "Notes d'entraînement développées par défaut",
   "workout.notes_for.title": "Notes de la séance pour {name}",
   "workout.previously_completed.label": "Terminé précédemment",
+  "workout.post_workout.title": "Statistiques de l'entraînement",
   "workout.removed.message": "Entraînement supprimé",
   "workout.replace_current.confirm.title": "Remplacer l'entraînement actuel ?",
   "workout.replace_current_session.button": "Remplacer la séance actuelle",
