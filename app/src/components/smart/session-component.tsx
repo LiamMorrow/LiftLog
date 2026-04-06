@@ -8,7 +8,7 @@ import { useDispatch, useStore } from 'react-redux';
 import { View } from 'react-native';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
-import { T, useTranslate } from '@tolgee/react';
+import { useTranslate } from '@tolgee/react';
 import ItemList from '@/components/presentation/foundation/item-list';
 import {
   RecordedCardioExercise,
@@ -27,15 +27,18 @@ import FullScreenDialog from '@/components/presentation/foundation/full-screen-d
 import { ExerciseEditor } from '@/components/presentation/workout-editor/exercise-editor';
 import { LocalTime, OffsetDateTime, ZoneId } from '@js-joda/core';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
+import { UnknownAction } from '@reduxjs/toolkit';
+import {
+  selectPreviousComparableSession,
+  selectRecentlyCompletedExercises,
+} from '@/store/stored-sessions';
 import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { match, P } from 'ts-pattern';
 import { CardioExercise } from '@/components/presentation/workout/cardio/cardio-exercise';
 import { DelayRender } from '../presentation/foundation/delay-render';
 import { Loader } from '../presentation/foundation/loader';
-import WeightFormat from '../presentation/foundation/weight-format';
-import { formatDuration } from '@/utils/format-date';
+import SessionComparisonTable from '@/components/presentation/workout/session-comparison-table';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
@@ -48,7 +51,15 @@ export default function SessionComponent(props: {
   const { t } = useTranslate();
   const { getState } = useStore();
   const session = useAppSelectorWithArg(selectCurrentSession, props.target);
-  const dispatch = useDispatch();
+  const previousComparableSession = useAppSelectorWithArg(
+    selectPreviousComparableSession,
+    session,
+  );
+  const storeDispatch = useDispatch();
+  const dispatch = <T,>(
+    reducer: (a: { payload: T; target: SessionTarget }) => UnknownAction,
+    payload: T,
+  ) => storeDispatch(reducer({ payload, target: props.target }));
   const recentlyCompletedExercises = useAppSelectorWithArg(
     selectRecentlyCompletedExercises,
     10,
@@ -114,7 +125,6 @@ export default function SessionComponent(props: {
   const progress = totalSets === 0 ? 0 : completedSets / totalSets;
   const progressPillHeight = spacing[14];
   const progressPillWidth = progressPillHeight * 2.2;
-
   const notesComponent = session.blueprint.notes ? (
     <Card
       mode="contained"
@@ -334,53 +344,16 @@ export default function SessionComponent(props: {
   );
 
   const workoutSummary = (
-    <Card
-      mode="contained"
-      onPress={
-        props.target === 'workoutSession'
-          ? props.openPostWorkoutSummary
-          : undefined
-      }
-      style={{ margin: spacing.pageHorizontalMargin }}
-    >
-      <Card.Content>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <Text variant="bodyMedium">
-            <T keyName="workout.total_weight_lifted.label" />
-          </Text>
-          <WeightFormat
-            fontWeight="bold"
-            color="primary"
-            weight={session.totalWeightLifted}
-          />
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <Text variant="bodyMedium">
-            <T keyName="workout.total_time.label" />
-          </Text>
-          <Text
-            variant="bodyMedium"
-            style={{ color: colors.primary, fontWeight: 'bold' }}
-          >
-            {(session.duration &&
-              formatDuration(session.duration, 'hours-mins')) ||
-              '-'}
-          </Text>
-        </View>
-      </Card.Content>
-    </Card>
+      <SessionComparisonTable
+        mode={props.target === 'workoutSession' ? 'compact' : 'full'}
+        onPress={
+          props.target === 'workoutSession'
+            ? props.openPostWorkoutSummary
+            : undefined
+        }
+        previousSession={previousComparableSession}
+        session={session}
+      />
   );
 
   return (
