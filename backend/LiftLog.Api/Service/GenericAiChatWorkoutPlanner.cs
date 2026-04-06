@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using LiftLog.Api.Models;
 using LiftLog.Lib.Models;
@@ -283,12 +284,28 @@ public partial class GenericAiChatWorkoutPlanner(
     );
 
     /// <summary>
-    /// Represents an exercise for the AI tool parameter.
+    /// Base type for all exercises. Use WeightedExercise or CardioExercise.
     /// </summary>
-    public record WorkoutExercise(
+    [JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
+    [JsonDerivedType(typeof(WeightedExercise), "weighted")]
+    [JsonDerivedType(typeof(CardioExercise), "cardio")]
+    public abstract record WorkoutExercise(
         [property: Description("The name of the exercise")] string Name,
+        [property: Description("Optional brief notes on how to perform the exercise")]
+            string? Notes,
+        [property: Description("Optional URL link for the exercise (e.g., a demonstration video)")]
+            string? Link
+    );
+
+    /// <summary>
+    /// A weighted (barbell, dumbbell, machine, etc.) exercise.
+    /// </summary>
+    public record WeightedExercise(
+        string Name,
+        string? Notes,
+        string? Link,
         [property: Description("The number of sets to perform")] int Sets,
-        [property: Description("The number of reps per set (or seconds if timed)")] int RepsPerSet,
+        [property: Description("The number of reps per set")] int RepsPerSet,
         [property: Description(
             "Weight increase on success (in user's preferred units, typically 2.5 for kg or 5 for lbs)"
         )]
@@ -303,6 +320,62 @@ public partial class GenericAiChatWorkoutPlanner(
             "Rest time in seconds after failing to complete all reps (must be >= MaxRestSeconds)"
         )]
             int FailureRestSeconds,
-        [property: Description("Optional brief notes on how to perform the exercise")] string? Notes
+        [property: Description(
+            "Whether this exercise is supersetted with the next exercise in the session"
+        )]
+            bool SupersetWithNext
+    ) : WorkoutExercise(Name, Notes, Link);
+
+    /// <summary>
+    /// A cardio exercise. Each set can have an independent target (time or distance).
+    /// </summary>
+    public record CardioExercise(
+        string Name,
+        string? Notes,
+        string? Link,
+        [property: Description(
+            "The sets in this cardio exercise. Most cardio will have a single set."
+        )]
+            CardioExerciseSet[] Sets
+    ) : WorkoutExercise(Name, Notes, Link);
+
+    /// <summary>
+    /// A single set within a cardio exercise.
+    /// </summary>
+    public record CardioExerciseSet(
+        [property: Description("The target for this set")] CardioTarget Target,
+        [property: Description("Whether to track duration during this set")] bool TrackDuration,
+        [property: Description("Whether to track distance during this set")] bool TrackDistance,
+        [property: Description("Whether to track resistance (e.g., bike resistance level)")]
+            bool TrackResistance,
+        [property: Description("Whether to track incline (e.g., treadmill incline)")]
+            bool TrackIncline,
+        [property: Description("Whether to track weight (e.g., weighted vest)")] bool TrackWeight,
+        [property: Description("Whether to track steps")] bool TrackSteps
     );
+
+    /// <summary>
+    /// Target for a cardio set. Use TimeCardioTarget or DistanceCardioTarget.
+    /// </summary>
+    [JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
+    [JsonDerivedType(typeof(TimeCardioTarget), "time")]
+    [JsonDerivedType(typeof(DistanceCardioTarget), "distance")]
+    public abstract record CardioTarget;
+
+    /// <summary>
+    /// A time-based cardio target (e.g., run for 30 minutes).
+    /// </summary>
+    public record TimeCardioTarget(
+        [property: Description("Target duration in seconds (e.g., 1800 for 30 minutes)")]
+            int DurationSeconds
+    ) : CardioTarget;
+
+    /// <summary>
+    /// A distance-based cardio target (e.g., run 5 kilometres).
+    /// </summary>
+    public record DistanceCardioTarget(
+        [property: Description("Target distance value")] decimal Distance,
+        [property: Description("Unit of distance: 'metre', 'kilometre', 'mile', or 'yard'")]
+            string Unit
+    ) : CardioTarget;
 }
