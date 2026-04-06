@@ -77,7 +77,7 @@ export default function HistoryCalendarCard({
 
   const navButtons = (
     <ForceLTRRow>
-      <View style={{ flex: 1, marginVertical: spacing[2] }}>
+      <View style={{ flex: 1, marginBottom: spacing[2] }}>
         <IconButton
           testID="calendar-nav-previous-month"
           icon={'chevronLeft'}
@@ -87,7 +87,7 @@ export default function HistoryCalendarCard({
       <View
         style={{
           flex: 5,
-          marginVertical: spacing[2],
+          marginBottom: spacing[2],
           justifyContent: 'center',
           alignItems: 'center',
         }}
@@ -103,7 +103,7 @@ export default function HistoryCalendarCard({
         </SurfaceText>
       </View>
 
-      <View style={{ flex: 1, marginVertical: spacing[2] }}>
+      <View style={{ flex: 1, marginBottom: spacing[2] }}>
         <IconButton
           testID="calendar-nav-next-month"
           icon={'chevronRight'}
@@ -211,7 +211,7 @@ export default function HistoryCalendarCard({
 
   return (
     <Card mode="contained">
-      <Card.Content>
+      <Card.Content style={{ paddingTop: 0 }}>
         <View
           style={{
             justifyContent: 'center',
