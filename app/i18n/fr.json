@@ -236,6 +236,7 @@
   "stats.workouts_per_week.label": "Séances par semaine",
   "stats.sets_per_week.label": "Séries par semaine",
   "stats.exercise.sets_per_week.label": "Moy. séries par semaine",
+  "stats.exercise.usual_rep_range.label": "Plage de répétitions habituelle",
   "stats.overview.title": "Aperçu",
   "stats.select_period.label": "Sélectionner la période",
   "stats.statistics.title": "Statistiques",
