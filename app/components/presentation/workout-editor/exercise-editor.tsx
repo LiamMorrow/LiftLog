@@ -143,12 +143,14 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
     );
   });
   const selectExerciseFromSearch = (ex: ExerciseDescriptor) => {
+    setShowMatchingExercises(false);
     updateExercise({ name: ex.name, notes: ex.instructions });
   };
   const { t } = useTranslate();
   const { exercise: propsExercise, updateExercise: updatePropsExercise } =
     props;
   const [exercise, setExercise] = useState(propsExercise);
+  const [showMatchingExercises, setShowMatchingExercises] = useState(true);
   const matchingExercises = useMemo(() => {
     const searchText = exercise.name.trim();
     if (!searchText) {
@@ -257,10 +259,13 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
               testID="exercise-name"
               mode="outlined"
               value={exercise.name}
-              onChangeText={(name) => updateExercise({ name })}
+              onChangeText={(name) => {
+                setShowMatchingExercises(true);
+                updateExercise({ name });
+              }}
               selectTextOnFocus={true}
             />
-            {!!matchingExercises.length && (
+            {showMatchingExercises && !!matchingExercises.length && (
               <Card mode="contained">
                 {matchingExercises.map((item, index) => (
                   <View key={`${item.source}-${item.name}`}>
