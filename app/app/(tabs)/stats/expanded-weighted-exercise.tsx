@@ -109,6 +109,7 @@ function StatCardWithTitle(props: { title: string; children: ReactNode }) {
 
 function OverallStatsGrid({ stats }: { stats: WeightedExerciseStatistics }) {
   const { t } = useTranslate();
+  const usualRepRange = getUsualRepRange(stats);
   return (
     <TitledSection title={t('stats.exercise.overview.title')}>
       <SingleValueStatisticsGrid>
@@ -137,6 +138,11 @@ function OverallStatsGrid({ stats }: { stats: WeightedExerciseStatistics }) {
           icon={'function'}
           value={stats.oneRepMax.shortLocaleFormat(0)}
         />
+        <SingleValueStatisticCard
+          title={t('stats.exercise.usual_rep_range.label')}
+          icon={'barChart'}
+          value={usualRepRange}
+        />
       </SingleValueStatisticsGrid>
     </TitledSection>
   );
@@ -146,4 +152,43 @@ function formatWeeklyRate(value: number) {
   return Math.abs(value - Math.round(value)) < 0.05
     ? Math.round(value).toString()
     : value.toFixed(1);
+}
+
+function getUsualRepRange(stats: WeightedExerciseStatistics) {
+  const breakdown = Object.entries(stats.repsStatistics.breakdown)
+    .map(([reps, { numberOfSets }]) => ({
+      reps: Number(reps),
+      numberOfSets,
+    }))
+    .sort((a, b) => a.reps - b.reps);
+
+  const totalSets = breakdown.reduce(
+    (sum, entry) => sum + entry.numberOfSets,
+    0,
+  );
+  if (!totalSets) {
+    return '-';
+  }
+
+  const lowerBound = getPercentileRepCount(breakdown, totalSets, 0.1);
+  const upperBound = getPercentileRepCount(breakdown, totalSets, 0.9);
+  return `${lowerBound}-${upperBound}`;
+}
+
+function getPercentileRepCount(
+  breakdown: { reps: number; numberOfSets: number }[],
+  totalSets: number,
+  percentile: number,
+) {
+  const target = Math.ceil(totalSets * percentile);
+  let cumulativeSets = 0;
+
+  for (const entry of breakdown) {
+    cumulativeSets += entry.numberOfSets;
+    if (cumulativeSets >= target) {
+      return entry.reps.toString();
+    }
+  }
+
+  return breakdown.at(-1)?.reps.toString() ?? '-';
 }
