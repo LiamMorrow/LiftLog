@@ -3,7 +3,8 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "create-release": "./create-release.ts patch"
+    "create-release": "./create-release.ts patch",
+    "create-fake-ppl-backup": "./create-fake-ppl-backup.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
