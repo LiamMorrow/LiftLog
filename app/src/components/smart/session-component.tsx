@@ -223,17 +223,23 @@ export default function SessionComponent(props: {
       .exhaustive();
   };
 
-  const bodyweight = props.showBodyweight ? (
+  const bodyWeight = props.showBodyweight ? (
     <Card
-      style={{ marginHorizontal: spacing.pageHorizontalMargin }}
       mode="contained"
+      style={{ marginHorizontal: spacing.pageHorizontalMargin }}
       testID="bodyweight-card"
     >
       <Card.Content
         style={{
+          backgroundColor: colors.surfaceContainer,
+          borderColor: colors.outlineVariant,
+          borderWidth: 1,
+          borderRadius: 12,
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
+          gap: spacing[3],
+          paddingVertical: spacing[3],
         }}
       >
         <Text
@@ -241,6 +247,7 @@ export default function SessionComponent(props: {
             ...font['text-xl'],
             fontWeight: 'bold',
             color: colors.onSurface,
+            flex: 1,
           }}
         >
           {t('exercise.bodyweight.label')}
@@ -344,25 +351,25 @@ export default function SessionComponent(props: {
   );
 
   const workoutSummary = (
-      <SessionComparisonTable
-        mode={props.target === 'workoutSession' ? 'compact' : 'full'}
-        onPress={
-          props.target === 'workoutSession'
-            ? props.openPostWorkoutSummary
-            : undefined
-        }
-        previousSession={previousComparableSession}
-        session={session}
-      />
+    <SessionComparisonTable
+      mode={props.target === 'workoutSession' ? 'compact' : 'full'}
+      onPress={
+        props.target === 'workoutSession'
+          ? props.openPostWorkoutSummary
+          : undefined
+      }
+      previousSession={previousComparableSession}
+      session={session}
+    />
   );
 
   return (
     <FullHeightScrollView floatingChildren={floatingBottomContainer}>
       <DelayRender placeHolder={<Loader />}>
+        {bodyWeight}
         {notesComponent}
         {emptyInfo}
         <ItemList items={session.recordedExercises} renderItem={renderItem} />
-        {bodyweight}
         {workoutSummary}
         <FullScreenDialog
           avoidKeyboard
