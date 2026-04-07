@@ -76,6 +76,9 @@ function LoadedStatsFilled({ stats }: { stats: WeightedExerciseStatistics }) {
       <StatCardWithTitle title={t('stats.exercise.weight_progress.title')}>
         <WeightLineChart statistics={stats.maxLiftedPerSessionStatistics} />
       </StatCardWithTitle>
+      <StatCardWithTitle title={t('stats.exercise.1rm_progress.title')}>
+        <WeightLineChart statistics={stats.max1RMPerSessionStatistics} />
+      </StatCardWithTitle>
       <StatCardWithTitle title={t('stats.exercise.volume_per_workout.title')}>
         <WeightBarChart statistics={stats.totalVolumeStatistics} />
       </StatCardWithTitle>
