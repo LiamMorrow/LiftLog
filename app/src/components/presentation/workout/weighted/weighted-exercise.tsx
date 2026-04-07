@@ -1,10 +1,12 @@
 import PotentialSetCounter from '@/components/presentation/workout/weighted/potential-set-counter';
 import { spacing } from '@/hooks/useAppTheme';
 import { RecordedWeightedExercise } from '@/models/session-models';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import ExerciseSection from '@/components/presentation/workout/exercise-section';
 import { OffsetDateTime } from '@js-joda/core';
+import { Weight } from '@/models/weight';
+import { Text } from 'react-native-paper';
 
 interface WeightedExerciseProps {
   recordedExercise: RecordedWeightedExercise;
@@ -23,11 +25,32 @@ interface WeightedExerciseProps {
 export default function WeightedExercise(props: WeightedExerciseProps) {
   const { updateExercise, timeProvider, resetSetTimer } = props;
   const { recordedExercise } = props;
-  useState(false);
+  const [collapsed, setCollapsed] = useState(recordedExercise.isComplete);
+  const wasComplete = useRef(recordedExercise.isComplete);
 
   const setToStartNext = recordedExercise.potentialSets.findIndex(
     (x) => !x.set,
   );
+  const completedSets = recordedExercise.potentialSets.filter((set) => set.set);
+  const completedSetsSummary = completedSets
+    .map(
+      (set) =>
+        `${set.set!.repsCompleted}@${set.weight.shortLocaleFormat()}`,
+    )
+    .join('  ');
+  const compactSummary =
+    completedSetsSummary ||
+    `${completedSets.length}/${recordedExercise.potentialSets.length}`;
+
+  useEffect(() => {
+    if (recordedExercise.isComplete && !wasComplete.current) {
+      setCollapsed(true);
+    }
+    if (!recordedExercise.isComplete && wasComplete.current) {
+      setCollapsed(false);
+    }
+    wasComplete.current = recordedExercise.isComplete;
+  }, [recordedExercise.isComplete]);
 
   return (
     <ExerciseSection
@@ -39,6 +62,17 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
       updateExercise={props.updateExercise}
       onEditExercise={props.onEditExercise}
       onRemoveExercise={props.onRemoveExercise}
+      compact={collapsed}
+      compactSummary={
+        <Text
+          numberOfLines={1}
+          variant="bodyLarge"
+          style={{ opacity: 0.85, fontWeight: '500' }}
+        >
+          {compactSummary}
+        </Text>
+      }
+      onToggleCompact={() => setCollapsed((value) => !value)}
     >
       <View style={{ flexDirection: 'row', gap: spacing[2], flexWrap: 'wrap' }}>
         {recordedExercise.potentialSets.map((set, index) => (
