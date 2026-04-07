@@ -361,15 +361,22 @@ export default function SessionComponent(props: {
   };
 
   const bodyWeight = props.showBodyweight ? (
-    <View
+    <Card
+      mode="contained"
       style={{ marginHorizontal: spacing.pageHorizontalMargin }}
       testID="bodyweight-card"
     >
-      <View
+      <Card.Content
         style={{
+          backgroundColor: colors.surfaceContainer,
+          borderColor: colors.outlineVariant,
+          borderWidth: 1,
+          borderRadius: 12,
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
+          gap: spacing[3],
+          paddingVertical: spacing[3],
         }}
       >
         <Text
@@ -377,6 +384,7 @@ export default function SessionComponent(props: {
             ...font['text-xl'],
             fontWeight: 'bold',
             color: colors.onSurface,
+            flex: 1,
           }}
         >
           {t('exercise.bodyweight.label')}
@@ -390,8 +398,8 @@ export default function SessionComponent(props: {
           increment={new BigNumber('0.1')}
           label={t('exercise.bodyweight.label')}
         />
-      </View>
-    </View>
+      </Card.Content>
+    </Card>
   ) : null;
 
   const lastExercise = session.lastExercise;
@@ -519,10 +527,10 @@ export default function SessionComponent(props: {
   return (
     <FullHeightScrollView floatingChildren={floatingBottomContainer}>
       <DelayRender placeHolder={<Loader />}>
+        {bodyWeight}
         {notesComponent}
         {emptyInfo}
         <ItemList items={session.recordedExercises} renderItem={renderItem} />
-        {bodyWeight}
         {totalWeightLifted}
         <FullScreenDialog
           avoidKeyboard
