@@ -42,18 +42,6 @@ export default function SessionComparisonTable(
   );
   const content = (
     <View>
-      {props.mode === 'compact' ? (
-        <Text
-          variant="titleMedium"
-          style={{
-            paddingHorizontal: spacing[2],
-            paddingTop: spacing[2],
-            paddingBottom: spacing[1],
-          }}
-        >
-          {t('workout.summary.title')}
-        </Text>
-      ) : null}
       {props.mode === 'full' ? (
         <View
           style={{
