@@ -43,7 +43,6 @@ export interface ExerciseSeries {
 
 export interface WeightedExerciseStatistics {
   exerciseName: string;
-  setsPerWeek: number;
   /** Which axis this exercise is tracked on, and therefore how its chart is labelled. */
   primary: StatAxis;
   series: ExerciseSeries;

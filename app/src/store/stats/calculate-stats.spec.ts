@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { getWeightedExerciseSetsPerWeek } from '@/utils/weighted-exercise-stats';
 import { Session, RecordedWeightedExercise } from '@/models/session-models';
 import { Weight } from '@/models/weight';
 import { SessionBlueprint, WeightedExerciseBlueprint } from '@/models/blueprint-models';
@@ -110,7 +111,8 @@ describe('calculateStats', () => {
       const s1 = makeSession(LocalDate.of(2024, 1, 3), 'Squat', 100);
       const s2 = makeSession(LocalDate.of(2024, 1, 10), 'Squat', 105);
 
-      const result = calculateStats([s1, s2], 'kilograms', makeRange(from, to));
+      const range = makeRange(from, to);
+      const result = calculateStats([s1, s2], 'kilograms', range);
 
       expect(result.workoutsPerWeek).toBeCloseTo(1, 5); // 2 sessions / 2 weeks
       expect(result.setsPerWeek).toBeCloseTo(3, 5); // 6 sets / 2 weeks
@@ -315,10 +317,11 @@ describe('calculateStats', () => {
       const s1 = makeSession(LocalDate.of(2024, 1, 3), 'Squat', 100, 8, 3);
       const s2 = makeSession(LocalDate.of(2024, 1, 10), 'Squat', 100, 8, 3);
 
-      const result = calculateStats([s1, s2], 'kilograms', makeRange(from, to));
+      const range = makeRange(from, to);
+      const result = calculateStats([s1, s2], 'kilograms', range);
       const squat = result.weightedExerciseStats[0]!;
 
-      expect(squat.setsPerWeek).toBeCloseTo(3, 5);
+      expect(getWeightedExerciseSetsPerWeek(squat, range)).toBeCloseTo(3, 5);
     });
 
     it('tracks maxValue correctly across sessions with different weights', () => {

@@ -212,9 +212,6 @@ export function calculateStats(
       const max1RMPerSessionStatistics = toStatisticOverTime(ex.max1RMStatistics, loadOps);
       return {
         exerciseName: ex.exerciseName,
-        setsPerWeek:
-          Object.values(ex.repsStatistics.breakdown).reduce((accum, entry) => accum + entry.numberOfSets, 0) /
-          totalWeeks,
         primary: ex.primary,
         series: {
           load: maxLiftedPerSessionStatistics,
