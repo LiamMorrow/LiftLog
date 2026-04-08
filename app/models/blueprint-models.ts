@@ -22,6 +22,8 @@ import {
   fromBigNumberJSON,
   fromDurationJSON,
   fromLocalDateJSON,
+  toBigNumberJSON,
+  toDurationJSON,
 } from './storage/versions/latest';
 
 export interface ProgramBlueprintPOJO {
@@ -164,6 +166,14 @@ export class SessionBlueprint {
       type: 'SessionBlueprint',
       name: this.name,
       exercises: this.exercises.map((exercise) => exercise.toPOJO()),
+      notes: this.notes,
+    };
+  }
+
+  toJSON(): SessionBlueprintJSON {
+    return {
+      name: this.name,
+      exercises: this.exercises.map((exercise) => exercise.toJSON()),
       notes: this.notes,
     };
   }
@@ -340,6 +350,17 @@ export class CardioExerciseSetBlueprint {
       trackSteps: this.trackSteps,
     };
   }
+  toJSON(): CardioExerciseSetBlueprintJSON {
+    return {
+      target: toCardioTargetJSON(this.target),
+      trackDistance: this.trackDistance,
+      trackDuration: this.trackDuration,
+      trackIncline: this.trackIncline,
+      trackResistance: this.trackResistance,
+      trackWeight: this.trackWeight,
+      trackSteps: this.trackSteps,
+    };
+  }
 
   toDao(): LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao {
     return new LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao(
@@ -476,6 +497,16 @@ export class CardioExerciseBlueprint {
       type: 'CardioExerciseBlueprint',
       name: this.name,
       sets: this.sets.map((x) => x.toPOJO()),
+      notes: this.notes,
+      link: this.link,
+    };
+  }
+
+  toJSON(): CardioExerciseBlueprintJSON {
+    return {
+      type: 'CardioExerciseBlueprint',
+      name: this.name,
+      sets: this.sets.map((x) => x.toJSON()),
       notes: this.notes,
       link: this.link,
     };
@@ -637,6 +668,20 @@ export class WeightedExerciseBlueprint {
     };
   }
 
+  toJSON(): WeightedExerciseBlueprintJSON {
+    return {
+      type: 'WeightedExerciseBlueprint',
+      name: this.name,
+      sets: this.sets,
+      repsPerSet: this.repsPerSet,
+      weightIncreaseOnSuccess: toBigNumberJSON(this.weightIncreaseOnSuccess),
+      restBetweenSets: Rest.toJSON(this.restBetweenSets),
+      supersetWithNext: this.supersetWithNext,
+      notes: this.notes,
+      link: this.link,
+    };
+  }
+
   toDao(): LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2 {
     return new LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2({
       name: this.name,
@@ -760,6 +805,14 @@ export const Rest = {
     };
   },
 
+  toJSON(value: Rest): RestJSON {
+    return {
+      minRest: toDurationJSON(value.minRest),
+      maxRest: toDurationJSON(value.maxRest),
+      failureRest: toDurationJSON(value.failureRest),
+    };
+  },
+
   toDao(model: Rest): LiftLog.Ui.Models.SessionBlueprintDao.RestDaoV2 {
     return new LiftLog.Ui.Models.SessionBlueprintDao.RestDaoV2({
       minRest: toDurationDao(model.minRest),
@@ -803,10 +856,30 @@ function fromCardioTargetJSON(json: CardioTargetJSON): CardioTarget {
     }))
     .exhaustive();
 }
+function toCardioTargetJSON(value: CardioTarget): CardioTargetJSON {
+  return match(value)
+    .returnType<CardioTargetJSON>()
+    .with({ type: 'distance' }, (j) => ({
+      type: 'distance',
+      value: toDistanceJSON(j.value),
+    }))
+    .with({ type: 'time' }, (j) => ({
+      type: 'time',
+      value: toDurationJSON(j.value),
+    }))
+    .exhaustive();
+}
 
 export function fromDistanceJSON(json: DistanceJSON): Distance {
   return {
     value: fromBigNumberJSON(json.value),
     unit: json.unit,
+  };
+}
+
+export function toDistanceJSON(value: Distance): DistanceJSON {
+  return {
+    value: toBigNumberJSON(value.value),
+    unit: value.unit,
   };
 }

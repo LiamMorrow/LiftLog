@@ -4,7 +4,11 @@ import BigNumber from 'bignumber.js';
 import { match, P } from 'ts-pattern';
 import { toDecimalDao } from './storage/conversions.to-dao';
 import { fromDecimalDao } from './storage/conversions.from-dao';
-import { fromBigNumberJSON, WeightJSON } from './storage/versions/latest';
+import {
+  fromBigNumberJSON,
+  toBigNumberJSON,
+  WeightJSON,
+} from './storage/versions/latest';
 
 // nil is special in that it basically tries to coalesce into whatever else is given
 export type WeightUnit = 'kilograms' | 'pounds' | 'nil';
@@ -26,6 +30,13 @@ export class Weight {
       unit: toWeightUnitDao(this.unit),
       value: toDecimalDao(this.value),
     });
+  }
+
+  toJSON(): WeightJSON {
+    return {
+      unit: this.unit,
+      value: toBigNumberJSON(this.value),
+    };
   }
 
   static fromDao(value: LiftLog.Ui.Models.IWeight): Weight {

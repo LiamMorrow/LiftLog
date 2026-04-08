@@ -7,12 +7,24 @@ import {
 } from '@/store/app';
 import { addEffect } from '@/store/store';
 import { sleep } from '@/utils/sleep';
+import { initializeSettingsStateSlice } from '../settings';
+import { initializeProgramStateSlice } from '../program';
+import { initializeFeedStateSlice } from '../feed';
+import { initializeAiPlannerStateSlice } from '../ai-planner';
 
 export function applyAppEffects() {
   addEffect(
     initializeAppStateSlice,
-    async (_, { cancelActiveListeners, dispatch }) => {
+    async (
+      _,
+      { cancelActiveListeners, dispatch, extra: { databaseMigrationService } },
+    ) => {
       cancelActiveListeners();
+      await databaseMigrationService.migrate();
+      dispatch(initializeSettingsStateSlice());
+      dispatch(initializeProgramStateSlice());
+      dispatch(initializeFeedStateSlice());
+      dispatch(initializeAiPlannerStateSlice());
 
       dispatch(setIsHydrated(true));
     },

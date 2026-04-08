@@ -7,15 +7,11 @@ import { applyCurrentSessionEffects } from '@/store/current-session/effects';
 import { applyAppEffects } from '@/store/app/effects';
 import { initializeAppStateSlice } from '@/store/app';
 import { useMemo } from 'react';
-import { initializeProgramStateSlice } from '@/store/program';
 import { applySettingsEffects } from '@/store/settings/effects';
-import { initializeSettingsStateSlice } from '@/store/settings';
 import { applyStoredSessionsEffects } from '@/store/stored-sessions/effects';
 import { applyFeedEffects } from '@/store/feed/effects';
-import { initializeFeedStateSlice } from '@/store/feed';
 import { applyStatsEffects } from '@/store/stats/effects';
 import { applyAiPlannerEffects } from '@/store/ai-planner/effects';
-import { initializeAiPlannerStateSlice } from '@/store/ai-planner';
 import { clearAllListeners } from '@reduxjs/toolkit';
 
 export { store, RootState, AppDispatch };
@@ -30,11 +26,7 @@ applyFeedEffects();
 applyStatsEffects();
 applyAiPlannerEffects();
 
-store.dispatch(initializeSettingsStateSlice());
 store.dispatch(initializeAppStateSlice());
-store.dispatch(initializeProgramStateSlice());
-store.dispatch(initializeFeedStateSlice());
-store.dispatch(initializeAiPlannerStateSlice());
 
 export const useAppSelector = untypedUseSelector.withTypes<RootState>();
 

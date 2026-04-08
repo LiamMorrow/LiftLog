@@ -11,6 +11,7 @@ import {
   CardioExerciseSetBlueprint,
   CardioExerciseSetBlueprintPOJO,
   fromDistanceJSON,
+  toDistanceJSON,
 } from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
 import { toWeightUnitDao, Weight, WeightUnit } from '@/models/weight';
@@ -42,6 +43,10 @@ import {
   RecordedSetJSON,
   RecordedWeightedExerciseJSON,
   SessionJSON,
+  toBigNumberJSON,
+  toDurationJSON,
+  toLocalDateJSON,
+  toOffsetDateTimeJSON,
 } from './storage/versions/latest';
 
 export interface SessionPOJO {
@@ -212,6 +217,15 @@ export class Session {
       date: this.date,
       id: this.id,
       recordedExercises: this.recordedExercises.map((x) => x.toPOJO()),
+    };
+  }
+  toJSON(): SessionJSON {
+    return {
+      blueprint: this.blueprint.toJSON(),
+      bodyweight: this.bodyweight?.toJSON(),
+      date: toLocalDateJSON(this.date),
+      id: this.id,
+      recordedExercises: this.recordedExercises.map((x) => x.toJSON()),
     };
   }
 
@@ -551,6 +565,25 @@ export class RecordedCardioExerciseSet {
       currentBlockStartTime: this.currentBlockStartTime,
     };
   }
+  toJSON(): RecordedCardioExerciseSetJSON {
+    return {
+      blueprint: this.blueprint.toJSON(),
+      completionDateTime: this.completionDateTime
+        ? toOffsetDateTimeJSON(this.completionDateTime)
+        : undefined,
+      duration: this.duration ? toDurationJSON(this.duration) : undefined,
+      distance:
+        this.distance !== undefined ? toDistanceJSON(this.distance) : undefined,
+      resistance:
+        this.resistance !== undefined
+          ? toBigNumberJSON(this.resistance)
+          : undefined,
+      incline:
+        this.incline !== undefined ? toBigNumberJSON(this.incline) : undefined,
+      weight: this.weight?.toJSON(),
+      steps: this.steps,
+    };
+  }
 
   toDao(): LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao {
     return {
@@ -728,6 +761,15 @@ export class RecordedCardioExercise {
     };
   }
 
+  toJSON(): RecordedCardioExerciseJSON {
+    return {
+      type: 'RecordedCardioExercise',
+      blueprint: this.blueprint.toJSON(),
+      sets: this.sets.map((x) => x.toJSON()),
+      notes: this.notes,
+    };
+  }
+
   toDao(): LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2 {
     return new LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2({
       exerciseBlueprint: this.blueprint.toDao(),
@@ -856,6 +898,15 @@ export class RecordedWeightedExercise {
       type: 'RecordedWeightedExercise',
       blueprint: this.blueprint.toPOJO(),
       potentialSets: this.potentialSets.map((x) => x.toPOJO()),
+      notes: this.notes,
+    };
+  }
+
+  toJSON(): RecordedWeightedExerciseJSON {
+    return {
+      type: 'RecordedWeightedExercise',
+      blueprint: this.blueprint.toJSON(),
+      potentialSets: this.potentialSets.map((x) => x.toJSON()),
       notes: this.notes,
     };
   }
@@ -991,6 +1042,13 @@ export class RecordedSet {
     };
   }
 
+  toJSON(): RecordedSetJSON {
+    return {
+      repsCompleted: this.repsCompleted,
+      completionDateTime: toOffsetDateTimeJSON(this.completionDateTime),
+    };
+  }
+
   toDao(): LiftLog.Ui.Models.SessionHistoryDao.RecordedSetDaoV2 {
     return new LiftLog.Ui.Models.SessionHistoryDao.RecordedSetDaoV2({
       repsCompleted: this.repsCompleted,
@@ -1058,6 +1116,12 @@ export class PotentialSet {
       type: 'PotentialSet',
       set: this.set?.toPOJO(),
       weight: this.weight,
+    };
+  }
+  toJSON(): PotentialSetJSON {
+    return {
+      set: this.set?.toJSON(),
+      weight: this.weight.toJSON(),
     };
   }
 

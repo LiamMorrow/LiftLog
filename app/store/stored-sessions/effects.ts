@@ -16,21 +16,19 @@ import {
   upsertStoredSessions,
   WeightMigrateableExercise,
 } from './index';
-import { LiftLog } from '@/gen/proto';
-import { match } from 'ts-pattern';
 import { fetchUpcomingSessions } from '@/store/program';
 import { KeyValueStore } from '@/services/key-value-store';
 import Enumerable from 'linq';
 import {
   RecordedWeightedExercise,
   Session,
-  toSessionHistoryDao,
+  SessionPOJO,
 } from '@/models/session-models';
-import { Weight } from '@/models/weight';
 import { setCurrentSession } from '@/store/current-session';
-import { MigratorV0ToV1 } from '@/models/storage/versions/v1/migrator';
+import { sessionsSchema } from '@/db/schema';
+import { eq, sql } from 'drizzle-orm';
+import { LatestVersion } from '@/models/storage/versions/latest';
 
-const storageKey = 'Progress';
 const exerciseListStorageKey = 'ExerciseList';
 // We keep track of added builting exerciseIds (which are the exercise name for builtins)
 // Then we make sure builtins don't get re-added if they are deleted
@@ -46,7 +44,7 @@ export function applyStoredSessionsEffects() {
         cancelActiveListeners,
         getState,
         dispatch,
-        extra: { keyValueStore, logger },
+        extra: { keyValueStore, db, logger },
       },
     ) => {
       cancelActiveListeners();
@@ -54,41 +52,14 @@ export function applyStoredSessionsEffects() {
         throw new Error('Settings must be hydrated before stored sessions');
       }
       await logger.time('initializeStoredSessions', async () => {
-        let version = await keyValueStore.getItem(`${storageKey}-Version`);
-        if (!version) {
-          version = '2';
-          await keyValueStore.setItem(`${storageKey}-Version`, '2');
-        }
-
-        const storedData = await match(version)
-          .with('2', async () =>
-            LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2.decode(
-              (await keyValueStore.getItemBytes(storageKey)) ??
-                Uint8Array.from([]),
-            ),
-          )
-          .otherwise((x) => {
-            throw new Error(`Unsupported version ${x}`);
-          });
-        const preferredUnit = getState().settings.useImperialUnits
-          ? 'pounds'
-          : 'kilograms';
-
-        // Convert old bodyweights with nil to be the set weight
-        const coalesceWeightUnit = (weight: undefined | Weight) =>
-          weight?.with({
-            unit: weight.unit === 'nil' ? preferredUnit : weight.unit,
-          });
-
-        const completedSessionsList =
-          storedData?.completedSessions.map((x) => {
-            const s = Session.fromJSON(MigratorV0ToV1.migrateSession(x));
-            return s.with({
-              bodyweight: coalesceWeightUnit(s.bodyweight),
-            });
-          }) ?? [];
-        const completedSessions = Object.fromEntries(
-          completedSessionsList.map((x) => [x.id, x.toPOJO()]),
+        const completedSessions = (
+          await db.select().from(sessionsSchema)
+        ).reduce(
+          (accum, row) => {
+            accum[row.id] = Session.fromJSON(row.payload).toPOJO();
+            return accum;
+          },
+          {} as Record<string, SessionPOJO>,
         );
         dispatch(setStoredSessions(completedSessions));
       });
@@ -246,7 +217,7 @@ export function applyStoredSessionsEffects() {
     deleteStoredSession,
     async (
       action,
-      { stateAfterReduce, extra: { healthExportService, logger } },
+      { stateAfterReduce, extra: { healthExportService, logger, db } },
     ) => {
       const workoutId = action.payload;
       if (
@@ -260,25 +231,58 @@ export function applyStoredSessionsEffects() {
       } catch (e) {
         logger.error('Failed to delete workout from HealthConnect', e);
       }
+      await logger.time('deleteStoredSession', async () => {
+        await db
+          .delete(sessionsSchema)
+          .where(eq(sessionsSchema.id, action.payload));
+      });
     },
   );
 
   addEffect(
-    [deleteStoredSession, addStoredSession, upsertStoredSessions],
-    async (
-      _,
-      { cancelActiveListeners, getState, extra: { keyValueStore, logger } },
-    ) => {
+    addStoredSession,
+    async (action, { cancelActiveListeners, extra: { db, logger } }) => {
       cancelActiveListeners();
-      await logger.time('persistStoredSessions', async () => {
-        const s =
-          LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2.encode(
-            toSessionHistoryDao(getState().storedSessions.sessions),
-          );
-        await Promise.all([
-          keyValueStore.setItem(`${storageKey}-Version`, '2'),
-          keyValueStore.setItem(storageKey, s.finish()),
-        ]);
+      await logger.time('addStoredSession', async () => {
+        const payload = action.payload.toJSON();
+        await db
+          .insert(sessionsSchema)
+          .values({
+            id: action.payload.id,
+            modelVersion: LatestVersion,
+            payload,
+          })
+          .onConflictDoUpdate({
+            target: sessionsSchema.id,
+            set: {
+              payload: sql.raw(`excluded.${sessionsSchema.payload.name}`),
+              modelVersion: LatestVersion,
+            },
+          });
+      });
+    },
+  );
+
+  addEffect(
+    upsertStoredSessions,
+    async (action, { cancelActiveListeners, extra: { db, logger } }) => {
+      cancelActiveListeners();
+      await logger.time('upsertStoredSessions', async () => {
+        const toUpsert = action.payload.map((x) => ({
+          id: x.id,
+          modelVersion: LatestVersion,
+          payload: x.toJSON(),
+        }));
+        await db
+          .insert(sessionsSchema)
+          .values(toUpsert)
+          .onConflictDoUpdate({
+            target: sessionsSchema.id,
+            set: {
+              payload: sql.raw(`excluded.${sessionsSchema.payload.name}`),
+              modelVersion: LatestVersion,
+            },
+          });
       });
     },
   );
