@@ -60,10 +60,11 @@ export interface PersonalBestCategorySummary {
 }
 
 export interface PersonalBestListEntry {
+  entryKey: string;
   exerciseKey: string;
   exerciseName: string;
   kind: PersonalBestEntryKind;
-  mainCategory: PersonalBestCategorySummary;
+  category: PersonalBestCategorySummary;
   categories: PersonalBestCategorySummary[];
   availableFilters: PersonalBestFilter[];
   improvementDisplay?: string;
@@ -133,12 +134,8 @@ export function buildPersonalBestOverview(
     }
   }
 
-  const rawEntries = Array.from(accumulators.values()).map((accumulator) =>
-    accumulatorToListEntry(accumulator, preferredUnit, now),
-  );
-  const entries = rawEntries.filter(
-    (entry): entry is NonNullable<(typeof rawEntries)[number]> =>
-      entry !== undefined,
+  const entries = Array.from(accumulators.values()).flatMap((accumulator) =>
+    accumulatorToListEntries(accumulator, preferredUnit, now),
   );
 
   const weightedEntries = entries.filter((entry) => entry.kind === 'weighted');
@@ -173,6 +170,47 @@ export function filterAndSortPersonalBestEntries(
     .filter((entry) => entryMatchesFilter(entry, filter))
     .slice()
     .sort((a, b) => compareEntries(a, b, sort));
+}
+
+export function getSessionPersonalBestEntries(
+  sessions: Session[],
+  session: Session,
+  preferredUnit: WeightUnit,
+) {
+  const sessionsWithTarget = sessions.some((item) => item.id === session.id)
+    ? sessions
+    : [...sessions, session];
+  const allEntries = buildPersonalBestOverview(
+    sessionsWithTarget,
+    preferredUnit,
+  ).entries;
+  const previousEntries = buildPersonalBestOverview(
+    sessionsWithTarget.filter((item) => item.id !== session.id),
+    preferredUnit,
+  ).entries;
+  const previousEntriesByKey = new Map(
+    previousEntries.map((entry) => [entry.entryKey, entry]),
+  );
+
+  return allEntries
+    .filter((entry) => {
+      if (!entry.category.current.achievedOn.equals(session.date)) {
+        return false;
+      }
+
+      const previousEntry = previousEntriesByKey.get(entry.entryKey);
+      if (!previousEntry) {
+        return true;
+      }
+
+      return (
+        comparePersonalBestValues(
+          entry.category.current.value,
+          previousEntry.category.current.value,
+        ) > 0
+      );
+    })
+    .sort((left, right) => compareEntries(left, right, 'most-recent'));
 }
 
 export function formatPersonalBestValue(
@@ -360,7 +398,7 @@ function recordPersonalBest(
   }
 }
 
-function accumulatorToListEntry(
+function accumulatorToListEntries(
   accumulator: Accumulator,
   preferredUnit: WeightUnit,
   now: LocalDate,
@@ -376,54 +414,32 @@ function accumulatorToListEntry(
     }));
 
   if (!categories.length) {
-    return undefined;
+    return [];
   }
 
-  const mainCategory = chooseMainCategory(accumulator.kind, categories);
   const availableFilters = buildAvailableFilters(accumulator.kind, categories);
-  const heaviestComparable = getComparableWeight(
-    mainCategory.current.value,
-  ).convertTo(preferredUnit);
-  const improvementDisplay = formatImprovement(mainCategory, preferredUnit);
-  const improvementScore = getImprovementScore(mainCategory, preferredUnit);
-  const mostRecentDate = categories
-    .map((category) => category.current.achievedOn)
-    .sort((a, b) => b.compareTo(a))
-    .at(0)!;
-  const isRecent = categories.some((category) => category.isRecent);
+  return categories.map((category) => {
+    const heaviestComparable = getComparableWeight(
+      category.current.value,
+    ).convertTo(preferredUnit);
+    const improvementDisplay = formatImprovement(category, preferredUnit);
+    const improvementScore = getImprovementScore(category, preferredUnit);
 
-  return {
-    exerciseKey: accumulator.exerciseKey,
-    exerciseName: accumulator.exerciseName,
-    kind: accumulator.kind,
-    mainCategory,
-    categories,
-    availableFilters,
-    improvementScore,
-    heaviestComparable,
-    mostRecentDate,
-    isRecent,
-    ...(improvementDisplay ? { improvementDisplay } : {}),
-  };
-}
-
-function chooseMainCategory(
-  kind: PersonalBestEntryKind,
-  categories: PersonalBestCategorySummary[],
-) {
-  if (kind === 'cardio') {
-    return (
-      categories.find((category) => category.id === 'longest-distance') ??
-      categories.find((category) => category.id === 'longest-duration') ??
-      categories[0]
-    );
-  }
-
-  return (
-    categories.find((category) => category.id === 'estimated-1rm') ??
-    categories.find((category) => category.id === 'max-weight') ??
-    categories[0]
-  );
+    return {
+      entryKey: `${accumulator.exerciseKey}:${category.id}`,
+      exerciseKey: accumulator.exerciseKey,
+      exerciseName: accumulator.exerciseName,
+      kind: accumulator.kind,
+      category,
+      categories,
+      availableFilters,
+      improvementScore,
+      heaviestComparable,
+      mostRecentDate: category.current.achievedOn,
+      isRecent: category.isRecent,
+      ...(improvementDisplay ? { improvementDisplay } : {}),
+    };
+  });
 }
 
 function buildAvailableFilters(

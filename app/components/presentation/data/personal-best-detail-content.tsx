@@ -1,4 +1,8 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
+import {
+  PersonalBestCategoryBadge,
+  PersonalBestTrendChart,
+} from '@/components/presentation/data/personal-best-visuals';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import { SegmentedList } from '@/components/presentation/foundation/segmented-list';
@@ -22,12 +26,16 @@ import { Card, Text } from 'react-native-paper';
 export function PersonalBestDetailContent() {
   const { t } = useTranslate();
   const { colors } = useAppTheme();
-  const { exerciseKey } = useLocalSearchParams<{ exerciseKey: string }>();
+  const { exerciseKey, categoryId } = useLocalSearchParams<{
+    exerciseKey: string;
+    categoryId: PersonalBestCategorySummary['id'];
+  }>();
   const { dismissTo, push } = useRouter();
   const sessions = useAppSelector(selectSessions);
   const preferredUnit = useAppSelector(selectPreferredWeightUnit);
   const entry = buildPersonalBestOverview(sessions, preferredUnit).entries.find(
-    (item) => item.exerciseKey === exerciseKey,
+    (item) =>
+      item.exerciseKey === exerciseKey && item.category.id === categoryId,
   );
 
   if (!entry) {
@@ -41,21 +49,28 @@ export function PersonalBestDetailContent() {
     );
   }
 
-  const timeline = [...entry.mainCategory.history].reverse();
+  const timeline = [...entry.category.history].reverse();
 
   return (
     <FullHeightScrollView
       contentContainerStyle={{ gap: spacing[4], padding: spacing[4] }}
     >
       <Stack.Screen options={{ title: entry.exerciseName }} />
-      <View style={{ gap: spacing[2] }}>
-        <Text style={[font['text-3xl'], { fontWeight: '800' }]}>
-          {formatPersonalBestValue(entry.mainCategory.current.value)}
-        </Text>
-        <Text variant="bodyLarge" style={{ color: colors.onSurfaceVariant }}>
-          {t(getPersonalBestCategoryLabelKey(entry.mainCategory.id) as never)}
-        </Text>
+      <View style={{ flexDirection: 'row', gap: spacing[3] }}>
+        <PersonalBestCategoryBadge categoryId={entry.category.id} size={56} />
+        <View style={{ flex: 1, gap: spacing[1] }}>
+          <Text style={[font['text-3xl'], { fontWeight: '800' }]}>
+            {formatPersonalBestValue(entry.category.current.value)}
+          </Text>
+          <Text variant="bodyLarge" style={{ color: colors.onSurfaceVariant }}>
+            {t(getPersonalBestCategoryLabelKey(entry.category.id) as never)}
+          </Text>
+        </View>
       </View>
+      <PersonalBestTrendChart
+        category={entry.category}
+        preferredUnit={preferredUnit}
+      />
       <TitledSection title={t('progress.pbs.detail.categories')}>
         <SegmentedList
           items={entry.categories}
@@ -111,30 +126,43 @@ function CategorySummaryCard({
         style={{
           alignItems: 'flex-start',
           flexDirection: 'row',
-          justifyContent: 'space-between',
           gap: spacing[2],
         }}
       >
-        <View style={{ flex: 1, gap: spacing[0.5] }}>
-          <Text variant="titleSmall">
-            {t(getPersonalBestCategoryLabelKey(category.id) as never)}
-          </Text>
-          <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
-            {formatDate(category.current.achievedOn, {
-              day: 'numeric',
-              month: 'short',
-              year: 'numeric',
-            })}
+        <PersonalBestCategoryBadge categoryId={category.id} size={36} />
+        <View
+          style={{
+            alignItems: 'flex-start',
+            flex: 1,
+            flexDirection: 'row',
+            gap: spacing[2],
+            justifyContent: 'space-between',
+          }}
+        >
+          <View style={{ flex: 1, gap: spacing[0.5] }}>
+            <Text variant="titleSmall">
+              {t(getPersonalBestCategoryLabelKey(category.id) as never)}
+            </Text>
+            <Text
+              variant="bodySmall"
+              style={{ color: colors.onSurfaceVariant }}
+            >
+              {formatDate(category.current.achievedOn, {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+              })}
+            </Text>
+          </View>
+          <Text
+            style={[
+              font['text-lg'],
+              { fontWeight: '800', color: colors.primary },
+            ]}
+          >
+            {formatPersonalBestValue(category.current.value)}
           </Text>
         </View>
-        <Text
-          style={[
-            font['text-lg'],
-            { fontWeight: '800', color: colors.primary },
-          ]}
-        >
-          {formatPersonalBestValue(category.current.value)}
-        </Text>
       </View>
       <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
         {category.previous
