@@ -34,6 +34,7 @@ export default function WeightFormat(props: WeightFormatProps) {
       }}
     >
       {weightDisplay}
+      {' '}
       <Text style={{ fontSize: 12 }}>
         {shortFormatWeightUnit(props.weight?.unit)}
       </Text>

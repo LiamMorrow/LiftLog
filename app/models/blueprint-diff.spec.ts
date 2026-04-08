@@ -199,6 +199,52 @@ describe('diffSessionBlueprints', () => {
         newIndex: 0,
       });
     });
+
+    it('should not treat a removal as a reorder for remaining exercises', () => {
+      const original = new SessionBlueprint(
+        'Workout',
+        [
+          createWeightedExercise('Squat'),
+          createWeightedExercise('Bench Press'),
+          createWeightedExercise('Deadlift'),
+        ],
+        '',
+      );
+      const modified = new SessionBlueprint(
+        'Workout',
+        [createWeightedExercise('Squat'), createWeightedExercise('Deadlift')],
+        '',
+      );
+
+      const diff = diffSessionBlueprints(original, modified);
+
+      expect(diff.removedExercises).toHaveLength(1);
+      expect(diff.removedExercises[0].exercise.name).toBe('Bench Press');
+      expect(diff.reorderedExercises).toHaveLength(0);
+    });
+
+    it('should not treat an insertion as a reorder for existing exercises', () => {
+      const original = new SessionBlueprint(
+        'Workout',
+        [createWeightedExercise('Squat'), createWeightedExercise('Deadlift')],
+        '',
+      );
+      const modified = new SessionBlueprint(
+        'Workout',
+        [
+          createWeightedExercise('Squat'),
+          createWeightedExercise('Bench Press'),
+          createWeightedExercise('Deadlift'),
+        ],
+        '',
+      );
+
+      const diff = diffSessionBlueprints(original, modified);
+
+      expect(diff.addedExercises).toHaveLength(1);
+      expect(diff.addedExercises[0].exercise.name).toBe('Bench Press');
+      expect(diff.reorderedExercises).toHaveLength(0);
+    });
   });
 
   describe('exercise field changes', () => {

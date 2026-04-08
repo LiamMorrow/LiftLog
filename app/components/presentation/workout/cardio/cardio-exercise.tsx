@@ -63,6 +63,10 @@ interface CardioExerciseProps {
 }
 
 export function CardioExercise(props: CardioExerciseProps) {
+  const [collapsed, setCollapsed] = useState(false);
+  const completedSetCount = props.recordedExercise.sets.filter(
+    (set) => set.isCompletelyFilled,
+  ).length;
   const setCallback =
     <T,>(
       cb: CardioExerciseCallback<T>,
@@ -81,6 +85,17 @@ export function CardioExercise(props: CardioExerciseProps) {
       onOpenLink={props.onOpenLink}
       onEditExercise={props.onEditExercise}
       onRemoveExercise={props.onRemoveExercise}
+      compact={collapsed}
+      compactSummary={
+        <Text
+          numberOfLines={1}
+          variant="bodyLarge"
+          style={{ opacity: 0.85, fontWeight: '500' }}
+        >
+          {completedSetCount}/{props.recordedExercise.sets.length}
+        </Text>
+      }
+      onToggleCompact={() => setCollapsed((value) => !value)}
     >
       <View style={{ gap: spacing[4] }}>
         {props.recordedExercise.sets.map((set, setIndex) => (

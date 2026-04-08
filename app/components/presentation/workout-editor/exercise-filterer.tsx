@@ -1,14 +1,16 @@
 import ExerciseSearchAndFilters from '@/components/presentation/workout-editor/exercise-search-and-filters';
 import { useAppSelector } from '@/store';
-import { selectExercises } from '@/store/stored-sessions';
+import { ExerciseDescriptor, selectExercises } from '@/store/stored-sessions';
 import Enumerable from 'linq';
 import { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
 export default function ExerciseFilterer(props: {
   onFilteredExerciseIdsChange: (ids: string[]) => void;
+  exercises?: Record<string, ExerciseDescriptor>;
 }) {
-  const exercises = useAppSelector(selectExercises);
+  const storedExercises = useAppSelector(selectExercises);
+  const exercises = props.exercises ?? storedExercises;
   const { onFilteredExerciseIdsChange } = props;
   const [muscleFilters, setMuscleFilters] = useState([] as string[]);
   const [searchText, setSearchText] = useState('');

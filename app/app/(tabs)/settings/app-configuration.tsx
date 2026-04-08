@@ -8,6 +8,7 @@ import {
   setCrashReportsEnabled,
   setKeepScreenAwakeDuringWorkout,
   setNotesExpandedByDefault,
+  setUseAmoledTheme,
   setShowBodyweight,
   setShowFeed,
   setShowTips,
@@ -75,7 +76,9 @@ export default function AppConfiguration() {
 
         <ThemeChooser
           seed={settings.colorSchemeSeed}
+          amoled={settings.useAmoledTheme}
           onUpdateTheme={(x) => dispatch(setColorSchemeSeed(x))}
+          onUpdateAmoled={(x) => dispatch(setUseAmoledTheme(x))}
         />
         <Button
           onPress={() => dispatch(setWelcomeWizardCompleted(false))}

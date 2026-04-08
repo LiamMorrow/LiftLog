@@ -13,6 +13,7 @@ import {
   setFirstDayOfWeek,
   setPreferredLanguage,
   setRestNotifications,
+  setUseAmoledTheme,
   setShowFeed,
   setUseImperialUnits,
   setWelcomeWizardCompleted,
@@ -189,7 +190,9 @@ export function WelcomeWizard() {
         />
         <ThemeChooser
           seed={settings.colorSchemeSeed}
+          amoled={settings.useAmoledTheme}
           onUpdateTheme={(x) => dispatch(setColorSchemeSeed(x))}
+          onUpdateAmoled={(x) => dispatch(setUseAmoledTheme(x))}
         />
       </View>
     </View>

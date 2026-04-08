@@ -161,6 +161,9 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   const colorSchemeSeed = useAppSelector(
     (state) => state.settings.colorSchemeSeed,
   );
+  const useAmoledTheme = useAppSelector(
+    (state) => state.settings.useAmoledTheme,
+  );
 
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -178,11 +181,16 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
     // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [colorSchemeSeed]);
-  const schemedTheme = colorScheme === 'dark' ? theme.dark : theme.light;
+  const schemedTheme =
+    colorScheme === 'dark'
+      ? useAmoledTheme
+        ? createAmoledTheme(theme.dark)
+        : theme.dark
+      : theme.light;
 
   const paperTheme = isDark
-    ? { ...MD3DarkTheme, colors: theme.dark }
-    : { ...MD3LightTheme, colors: theme.light };
+    ? { ...MD3DarkTheme, colors: schemedTheme }
+    : { ...MD3LightTheme, colors: schemedTheme };
   const appTheme = {
     colors: {
       ...schemedTheme,
@@ -269,4 +277,28 @@ function colorPair<T extends string>(
     [name]: hexFromArgb(baseHct.toInt()),
     [onName]: hexFromArgb(onColor.toInt()),
   } as ColorPair<T>;
+}
+
+function createAmoledTheme(theme: Material3Scheme): Material3Scheme {
+  return {
+    ...theme,
+    background: '#000000',
+    surface: '#000000',
+    surfaceDim: '#000000',
+    surfaceBright: '#121212',
+    surfaceContainerLowest: '#000000',
+    surfaceContainerLow: '#000000',
+    surfaceContainer: '#000000',
+    surfaceContainerHigh: '#080808',
+    surfaceContainerHighest: '#121212',
+    elevation: {
+      ...theme.elevation,
+      level0: '#000000',
+      level1: '#000000',
+      level2: '#050505',
+      level3: '#080808',
+      level4: '#101010',
+      level5: '#141414',
+    },
+  };
 }
