@@ -1,3 +1,4 @@
+import { PersonalBestCategoryBadge } from '@/components/presentation/data/personal-best-visuals';
 import { NormalizedName } from '@/models/blueprint-models';
 import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { useAppTheme, spacing } from '@/hooks/useAppTheme';
@@ -5,13 +6,20 @@ import { RecordedWeightedExercise, Session } from '@/models/session-models';
 import { Weight } from '@/models/weight';
 import { formatDuration } from '@/utils/format-date';
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
+import {
+  formatPersonalBestValue,
+  getPersonalBestCategoryLabelKey,
+  PersonalBestListEntry,
+} from '@/utils/personal-bests';
 import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Card, Text } from 'react-native-paper';
 
 interface SessionComparisonTableProps {
   mode: 'compact' | 'full';
+  onPress?: (() => void) | undefined;
+  personalBestEntries?: PersonalBestListEntry[] | undefined;
   previousSession?: Session | undefined;
   session: Session;
 }
@@ -355,10 +363,88 @@ export function SessionComparisonTable(props: SessionComparisonTableProps) {
           ))}
         </View>
       ) : null}
+      {props.mode === 'full' && props.personalBestEntries?.length ? (
+        <View
+          style={{
+            borderTopWidth: 1,
+            borderTopColor: colors.outlineVariant,
+            gap: spacing[2],
+            paddingHorizontal: spacing[2],
+            paddingVertical: spacing[3],
+          }}
+        >
+          <Text variant="titleMedium">
+            {t('workout.summary.personal_bests.title')}
+          </Text>
+          <View style={{ gap: spacing[2] }}>
+            {props.personalBestEntries.map((entry) => (
+              <PersonalBestWorkoutCard key={entry.entryKey} entry={entry} />
+            ))}
+          </View>
+        </View>
+      ) : null}
     </View>
   );
 
   return content;
+}
+
+function PersonalBestWorkoutCard({ entry }: { entry: PersonalBestListEntry }) {
+  const { colors } = useAppTheme();
+  const { t } = useTranslate();
+
+  return (
+    <Card mode="contained" style={{ backgroundColor: colors.surfaceContainer }}>
+      <Card.Content>
+        <View style={{ gap: spacing[2] }}>
+          <View
+            style={{
+              alignItems: 'flex-start',
+              flexDirection: 'row',
+              gap: spacing[2],
+            }}
+          >
+            <PersonalBestCategoryBadge
+              categoryId={entry.category.id}
+              size={36}
+            />
+            <View
+              style={{
+                alignItems: 'flex-start',
+                flex: 1,
+                flexDirection: 'row',
+                gap: spacing[2],
+                justifyContent: 'space-between',
+              }}
+            >
+              <View style={{ flex: 1, gap: spacing[0.5] }}>
+                <Text variant="titleSmall">{entry.exerciseName}</Text>
+                <Text
+                  variant="bodySmall"
+                  style={{ color: colors.onSurfaceVariant }}
+                >
+                  {t(
+                    getPersonalBestCategoryLabelKey(entry.category.id) as never,
+                  )}
+                </Text>
+              </View>
+              <Text
+                variant="titleMedium"
+                style={{ color: colors.primary, fontWeight: '800' }}
+              >
+                {formatPersonalBestValue(entry.category.current.value)}
+              </Text>
+            </View>
+          </View>
+          <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
+            {entry.improvementDisplay
+              ? `${t('progress.pbs.improved.label')} ${entry.improvementDisplay}`
+              : t('progress.pbs.best.label')}
+          </Text>
+        </View>
+      </Card.Content>
+    </Card>
+  );
 }
 
 function getWeightedExerciseComparisons(
