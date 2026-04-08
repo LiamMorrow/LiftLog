@@ -91,10 +91,10 @@ export function addImportBackupEffects() {
             ),
           }),
         );
-        dispatch(setActivePlan({ programId: newId }));
+        dispatch(setActivePlan({ activePlanId: newId }));
       } else {
         if (dao.activeProgramId.value in programs) {
-          dispatch(setActivePlan({ programId: dao.activeProgramId.value }));
+          dispatch(setActivePlan({ activePlanId: dao.activeProgramId.value }));
         }
       }
       dispatch(

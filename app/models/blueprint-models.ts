@@ -24,6 +24,7 @@ import {
   fromLocalDateJSON,
   toBigNumberJSON,
   toDurationJSON,
+  toLocalDateJSON,
 } from './storage/versions/latest';
 
 export interface ProgramBlueprintPOJO {
@@ -87,6 +88,14 @@ export class ProgramBlueprint {
       name: this.name,
       sessions: this.sessions.map((session) => session.toPOJO()),
       lastEdited: this.lastEdited,
+    };
+  }
+
+  toJSON(): ProgramBlueprintJSON {
+    return {
+      name: this.name,
+      sessions: this.sessions.map((session) => session.toJSON()),
+      lastEdited: toLocalDateJSON(this.lastEdited),
     };
   }
 

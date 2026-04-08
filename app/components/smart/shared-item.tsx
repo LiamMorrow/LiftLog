@@ -132,7 +132,7 @@ function SharedSessionContent({ sharedItem }: { sharedItem: SharedSession }) {
   const dispatch = useDispatch();
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
   const headerColor = useScrollHeaderColor();
-  const activeProgramId = useAppSelector((x) => x.program.activeProgramId);
+  const activeProgramId = useAppSelector((x) => x.program.activePlanId);
   const { push } = useRouter();
   const [sessionToReplace, setSessionToReplace] = useState<Session | undefined>(
     undefined,

@@ -1,5 +1,5 @@
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
-import { sessionsSchema } from '@/db/schema';
+import { programsSchema, sessionsSchema } from '@/db/schema';
 import { LatestVersion } from '@/models/storage/versions/latest';
 import { eq, lt } from 'drizzle-orm';
 import { MigratorVAnyToLatest } from '@/models/storage/versions/migrator';
@@ -21,6 +21,27 @@ export async function updateSessionsToLatestVersion(db: ExpoSQLiteDatabase) {
           ),
         })
         .where(eq(sessionsSchema.id, session.id));
+    }
+  });
+}
+
+export async function updateProgramsToLatestVersion(db: ExpoSQLiteDatabase) {
+  await db.transaction(async (tx) => {
+    const programsRequiringMigration = await tx
+      .select()
+      .from(programsSchema)
+      .where(lt(programsSchema.modelVersion, LatestVersion));
+    for (const program of programsRequiringMigration) {
+      await db
+        .update(programsSchema)
+        .set({
+          modelVersion: LatestVersion,
+          payload: MigratorVAnyToLatest.migrateProgram(
+            program.modelVersion,
+            program.payload,
+          ),
+        })
+        .where(eq(programsSchema.id, program.id));
     }
   });
 }

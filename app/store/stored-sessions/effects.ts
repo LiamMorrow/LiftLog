@@ -19,15 +19,12 @@ import {
 import { fetchUpcomingSessions } from '@/store/program';
 import { KeyValueStore } from '@/services/key-value-store';
 import Enumerable from 'linq';
-import {
-  RecordedWeightedExercise,
-  Session,
-  SessionPOJO,
-} from '@/models/session-models';
+import { RecordedWeightedExercise, Session } from '@/models/session-models';
 import { setCurrentSession } from '@/store/current-session';
 import { sessionsSchema } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import { LatestVersion } from '@/models/storage/versions/latest';
+import { toRecord } from '@/utils/reduce';
 
 const exerciseListStorageKey = 'ExerciseList';
 // We keep track of added builting exerciseIds (which are the exercise name for builtins)
@@ -55,11 +52,11 @@ export function applyStoredSessionsEffects() {
         const completedSessions = (
           await db.select().from(sessionsSchema)
         ).reduce(
-          (accum, row) => {
-            accum[row.id] = Session.fromJSON(row.payload).toPOJO();
-            return accum;
-          },
-          {} as Record<string, SessionPOJO>,
+          toRecord(
+            (x) => x.id,
+            (row) => Session.fromJSON(row.payload).toPOJO(),
+          ),
+          {},
         );
         dispatch(setStoredSessions(completedSessions));
       });

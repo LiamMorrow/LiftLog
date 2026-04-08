@@ -25,10 +25,17 @@ export class Logger {
     const start = performance.now();
     const result = action();
     if (typeof result === 'undefined') {
-      this.info(type + ' completed in ' + (performance.now() - start));
+      this.info(
+        type + ' completed in ' + (performance.now() - start).toFixed(2) + 'ms',
+      );
     } else {
       return result.then(() =>
-        this.info(type + ' completed in ' + (performance.now() - start)),
+        this.info(
+          type +
+            ' completed in ' +
+            (performance.now() - start).toFixed(2) +
+            'ms',
+        ),
       );
     }
   }

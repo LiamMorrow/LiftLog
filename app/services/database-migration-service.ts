@@ -8,7 +8,14 @@ import {
 } from './data-migrations/import-sessions';
 import { KeyValueStore } from './key-value-store';
 import { PreferenceService } from './preference-service';
-import { updateSessionsToLatestVersion } from './data-migrations/update-to-latest';
+import {
+  updateProgramsToLatestVersion,
+  updateSessionsToLatestVersion,
+} from './data-migrations/update-to-latest';
+import {
+  importPrograms,
+  importProgramsDataMigration,
+} from './data-migrations/import-programs';
 
 export class DatabaseMigrationService {
   // DO NOT Add a dependency to getState here, it gets messy quick
@@ -28,9 +35,13 @@ export class DatabaseMigrationService {
     if (!dataMigrationsRun.includes(importSessionsDataMigration)) {
       await importSessions(this.db, this.keyValueStore, this.preferenceService);
     }
+    if (!dataMigrationsRun.includes(importProgramsDataMigration)) {
+      await importPrograms(this.db, this.keyValueStore);
+    }
 
-    // We always want to update all sessions to the latest version
+    // We always want to update all entities to the latest version
     await updateSessionsToLatestVersion(this.db);
+    await updateProgramsToLatestVersion(this.db);
 
     console.info('Migrated DB in ' + (performance.now() - now) + 'ms');
   }

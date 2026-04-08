@@ -98,7 +98,7 @@ export function addRemoteBackupEffects() {
         const savedProgramsDao = Object.fromEntries(processedPrograms);
 
         throwIfCancelled();
-        const activeProgramId = getState().program.activeProgramId;
+        const activeProgramId = getState().program.activePlanId;
         const feedStateDao = includeFeedAccount
           ? toFeedStateDao(getState().feed)
           : null;
