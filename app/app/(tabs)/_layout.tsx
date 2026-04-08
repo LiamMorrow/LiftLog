@@ -48,10 +48,10 @@ export default function Layout() {
       />
 
       <Tabs.Screen
-        name="stats"
+        name="progress"
         options={{
-          tabBarLabel: t('stats.stats.title'),
-          tabBarButtonTestID: 'nav__stats',
+          tabBarLabel: t('progress.title'),
+          tabBarButtonTestID: 'nav__progress',
           tabBarIcon: ({ color, size, focused }) => {
             return (
               <Icon
@@ -63,17 +63,8 @@ export default function Layout() {
           },
         }}
       />
-
-      <Tabs.Screen
-        name="history"
-        options={{
-          tabBarLabel: t('generic.history.title'),
-          tabBarButtonTestID: 'nav__history',
-          tabBarIcon: ({ color, size }) => {
-            return <Icon source={'history'} size={size} color={color} />;
-          },
-        }}
-      />
+      <Tabs.Screen name="stats" options={{ href: null }} />
+      <Tabs.Screen name="history" options={{ href: null }} />
 
       <Tabs.Screen
         name="settings"

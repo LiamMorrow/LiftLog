@@ -28,7 +28,7 @@ export function ExerciseListSummary(props: { stats: GranularStatisticView }) {
   const onItemPress = (item: WeightedExerciseStatistics) => {
     bottomSheetRef.current?.close();
     push(
-      `/(tabs)/stats/expanded-weighted-exercise?exerciseName=${encodeURIComponent(item.exerciseName)}`,
+      `/(tabs)/progress/expanded-weighted-exercise?exerciseName=${encodeURIComponent(item.exerciseName)}`,
     );
   };
   return (
