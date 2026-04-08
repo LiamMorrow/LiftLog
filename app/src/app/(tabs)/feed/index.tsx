@@ -3,6 +3,7 @@ import { FeedFollowers } from '@/components/smart/feed-followers';
 import { FeedFollowing } from '@/components/smart/feed-following';
 import { FeedMenu } from '@/components/smart/feed-menu';
 import { ScrollProvider, useScroll, useScrollHeaderColor } from '@/hooks/useScrollListener';
+import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
 import { selectFollowRequestCount } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
@@ -42,6 +43,7 @@ export default function FeedIndexPage() {
           tabHeaderStyle={{
             backgroundColor: headerColor,
             paddingTop: topInsetHeight,
+            marginBottom: spacing[1],
           }}
           style={{
             backgroundColor: 'transparent',
