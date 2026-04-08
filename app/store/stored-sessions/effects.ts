@@ -41,49 +41,56 @@ export function applyStoredSessionsEffects() {
     initializeStoredSessionsStateSlice,
     async (
       _,
-      { cancelActiveListeners, getState, dispatch, extra: { keyValueStore } },
+      {
+        cancelActiveListeners,
+        getState,
+        dispatch,
+        extra: { keyValueStore, logger },
+      },
     ) => {
       cancelActiveListeners();
       if (!getState().settings.isHydrated) {
         throw new Error('Settings must be hydrated before stored sessions');
       }
-      let version = await keyValueStore.getItem(`${storageKey}-Version`);
-      if (!version) {
-        version = '2';
-        await keyValueStore.setItem(`${storageKey}-Version`, '2');
-      }
+      await logger.time('initializeStoredSessions', async () => {
+        let version = await keyValueStore.getItem(`${storageKey}-Version`);
+        if (!version) {
+          version = '2';
+          await keyValueStore.setItem(`${storageKey}-Version`, '2');
+        }
 
-      const storedData = await match(version)
-        .with('2', async () =>
-          LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2.decode(
-            (await keyValueStore.getItemBytes(storageKey)) ??
-              Uint8Array.from([]),
-          ),
-        )
-        .otherwise((x) => {
-          throw new Error(`Unsupported version ${x}`);
-        });
-      const preferredUnit = getState().settings.useImperialUnits
-        ? 'pounds'
-        : 'kilograms';
-
-      // Convert old bodyweights with nil to be the set weight
-      const coalesceWeightUnit = (weight: undefined | Weight) =>
-        weight?.with({
-          unit: weight.unit === 'nil' ? preferredUnit : weight.unit,
-        });
-
-      const completedSessionsList =
-        storedData?.completedSessions.map((x) => {
-          const s = Session.fromDao(x);
-          return s.with({
-            bodyweight: coalesceWeightUnit(s.bodyweight),
+        const storedData = await match(version)
+          .with('2', async () =>
+            LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2.decode(
+              (await keyValueStore.getItemBytes(storageKey)) ??
+                Uint8Array.from([]),
+            ),
+          )
+          .otherwise((x) => {
+            throw new Error(`Unsupported version ${x}`);
           });
-        }) ?? [];
-      const completedSessions = Object.fromEntries(
-        completedSessionsList.map((x) => [x.id, x.toPOJO()]),
-      );
-      dispatch(setStoredSessions(completedSessions));
+        const preferredUnit = getState().settings.useImperialUnits
+          ? 'pounds'
+          : 'kilograms';
+
+        // Convert old bodyweights with nil to be the set weight
+        const coalesceWeightUnit = (weight: undefined | Weight) =>
+          weight?.with({
+            unit: weight.unit === 'nil' ? preferredUnit : weight.unit,
+          });
+
+        const completedSessionsList =
+          storedData?.completedSessions.map((x) => {
+            const s = Session.fromDao(x);
+            return s.with({
+              bodyweight: coalesceWeightUnit(s.bodyweight),
+            });
+          }) ?? [];
+        const completedSessions = Object.fromEntries(
+          completedSessionsList.map((x) => [x.id, x.toPOJO()]),
+        );
+        dispatch(setStoredSessions(completedSessions));
+      });
 
       const { exercises } = await import('../../assets/exercises.json');
       const alreadyAddedBuiltIns = JSON.parse(
@@ -259,16 +266,19 @@ export function applyStoredSessionsEffects() {
     [deleteStoredSession, addStoredSession, upsertStoredSessions],
     async (
       _,
-      { cancelActiveListeners, getState, extra: { keyValueStore } },
+      { cancelActiveListeners, getState, extra: { keyValueStore, logger } },
     ) => {
       cancelActiveListeners();
-      const s = LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2.encode(
-        toSessionHistoryDao(getState().storedSessions.sessions),
-      );
-      await Promise.all([
-        keyValueStore.setItem(`${storageKey}-Version`, '2'),
-        keyValueStore.setItem(storageKey, s.finish()),
-      ]);
+      await logger.time('persistStoredSessions', async () => {
+        const s =
+          LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2.encode(
+            toSessionHistoryDao(getState().storedSessions.sessions),
+          );
+        await Promise.all([
+          keyValueStore.setItem(`${storageKey}-Version`, '2'),
+          keyValueStore.setItem(storageKey, s.finish()),
+        ]);
+      });
     },
   );
 
