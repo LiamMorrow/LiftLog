@@ -4,8 +4,10 @@ import CheckIcon from '@expo/material-symbols/check.xml';
 import { SessionComparisonTable } from '@/components/presentation/workout/session-comparison-table';
 import { ReactionSummary } from '@/components/smart/reaction-summary';
 import { spacing } from '@/hooks/useAppTheme';
-import { useAppSelectorWithArg } from '@/store';
-import { selectPreviousComparableSession, selectSession } from '@/store/stored-sessions';
+import { useAppSelector, useAppSelectorWithArg } from '@/store';
+import { selectPreviousComparableSession, selectSession, selectSessions } from '@/store/stored-sessions';
+import { selectPreferredWeightUnit } from '@/store/settings';
+import { getSessionPersonalBestEntries } from '@/utils/personal-bests';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect } from 'react';
@@ -21,6 +23,8 @@ export default function PostWorkoutPage() {
   const showFinishButton = openedAfterFinishingWorkout;
   const showBackButton = !openedAfterFinishingWorkout;
   const previousComparableSession = useAppSelectorWithArg(selectPreviousComparableSession, session);
+  const sessions = useAppSelector(selectSessions);
+  const preferredUnit = useAppSelector(selectPreferredWeightUnit);
   const { dismissTo } = useRouter();
   const { t } = useTranslate();
 
@@ -33,6 +37,8 @@ export default function PostWorkoutPage() {
   if (!sessionId || !session) {
     return null;
   }
+
+  const personalBestEntries = getSessionPersonalBestEntries(sessions, session, preferredUnit);
 
   const floatingBottomContainer = showFinishButton ? (
     <PageActions
@@ -61,7 +67,12 @@ export default function PostWorkoutPage() {
         }}
       />
       <View style={{ marginVertical: spacing[4], gap: spacing[4] }}>
-        <SessionComparisonTable mode="full" previousSession={previousComparableSession} session={session} />
+        <SessionComparisonTable
+          mode="full"
+          personalBestEntries={personalBestEntries}
+          previousSession={previousComparableSession}
+          session={session}
+        />
         <ReactionSummary eventId={session.id} animateOnMount />
       </View>
     </FullHeightScrollView>
