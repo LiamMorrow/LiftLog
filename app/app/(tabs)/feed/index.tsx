@@ -6,6 +6,7 @@ import {
   useScroll,
   useScrollHeaderColor,
 } from '@/hooks/useScrollListener';
+import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
 import { selectFollowRequestCount } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
@@ -38,7 +39,10 @@ export default function FeedIndexPage() {
       <Stack.Screen options={{ title: t('feed.feed.title') }} />
       <TabsProvider onChangeIndex={setActiveTabIndex}>
         <Tabs
-          tabHeaderStyle={{ backgroundColor: headerColor }}
+          tabHeaderStyle={{
+            backgroundColor: headerColor,
+            marginBottom: spacing[1],
+          }}
           style={{ backgroundColor: 'transparent' }}
         >
           <TabScreen label={t('feed.feed.title')}>
