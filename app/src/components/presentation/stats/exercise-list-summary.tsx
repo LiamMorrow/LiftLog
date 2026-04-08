@@ -12,7 +12,7 @@ export function ExerciseListSummary(props: { stats: GranularStatisticView }) {
   const { t } = useTranslate();
   const topWeightedExercises = Enumerable.from(props.stats.weightedExerciseStats).take(5).toArray();
   const onItemPress = (item: WeightedExerciseStatistics) => {
-    push(`/stats/expanded-weighted-exercise?exerciseName=${encodeURIComponent(item.exerciseName)}`);
+    push(`/(tabs)/progress/expanded-weighted-exercise?exerciseName=${encodeURIComponent(item.exerciseName)}`);
   };
   return (
     <TitledSection

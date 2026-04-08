@@ -1,7 +1,7 @@
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
 import { useState } from 'react';
-import { View, StyleProp, ViewStyle, Platform } from 'react-native';
+import { View, StyleProp, ViewStyle, Platform, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { Edges, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,6 +14,7 @@ export default function FullHeightScrollView({
   avoidKeyboard,
   contentContainerStyle,
   safeAreaEdges = { left: 'additive', right: 'additive', top: 'off', bottom: 'off' },
+  onScroll,
 }: {
   children: React.ReactNode;
   floatingChildren?: React.ReactNode;
@@ -22,12 +23,17 @@ export default function FullHeightScrollView({
   scrollStyle?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
   safeAreaEdges?: Edges;
+  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 }) {
   const { colors } = useAppTheme();
   const { handleScroll } = useScroll();
   const [floatingBottomSize, setFloatingBottomSize] = useState(0);
   const insets = useSafeAreaInsets();
   const bottomInsetHeight = floatingBottomSize;
+  const handleCombinedScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    handleScroll(event);
+    onScroll?.(event);
+  };
 
   return (
     <SafeAreaView
@@ -42,7 +48,7 @@ export default function FullHeightScrollView({
       {!avoidKeyboard ? (
         <ScrollView
           ref={scrollRef}
-          onScroll={handleScroll}
+          onScroll={handleCombinedScroll}
           style={[scrollStyle]}
           contentContainerStyle={[contentContainerStyle]}
         >
@@ -54,7 +60,7 @@ export default function FullHeightScrollView({
           // @ts-expect-error -- Scrollview keeps flitting between compat and not
           ScrollViewComponent={ScrollView}
           ref={scrollRef as never}
-          onScroll={handleScroll}
+          onScroll={handleCombinedScroll}
           style={[scrollStyle]}
           contentContainerStyle={[contentContainerStyle]}
         >

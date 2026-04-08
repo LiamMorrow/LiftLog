@@ -35,14 +35,21 @@ export default function TabsLayout() {
         <NativeTabs.Trigger.Label>{t('feed.feed.title')}</NativeTabs.Trigger.Label>
         {followRequestCount && <NativeTabs.Trigger.Badge>{followRequestCount.toString()}</NativeTabs.Trigger.Badge>}
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="stats">
+      <NativeTabs.Trigger name="progress">
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'chart.line.uptrend.xyaxis', selected: 'chart.line.uptrend.xyaxis' }}
+          md={{ default: 'analytics', selected: 'analytics' }}
+        />
+        <NativeTabs.Trigger.Label>{t('progress.title')}</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="stats" hidden>
         <NativeTabs.Trigger.Icon
           sf={{ default: 'chart.bar', selected: 'chart.bar.fill' }}
           md={{ default: 'bar_chart', selected: 'bar_chart' }}
         />
         <NativeTabs.Trigger.Label>{t('stats.stats.title')}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="history">
+      <NativeTabs.Trigger name="history" hidden>
         <NativeTabs.Trigger.Icon sf="calendar" md={{ default: 'calendar_month', selected: 'calendar_month' }} />
         <NativeTabs.Trigger.Label>{t('generic.history.title')}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
