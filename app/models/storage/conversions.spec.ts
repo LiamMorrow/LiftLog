@@ -2,30 +2,20 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
-  toDecimalDao,
-  toDateOnlyDao,
-  toTimeOnlyDao,
   toDurationDao,
   toTimestampDao,
 } from '@/models/storage/conversions.to-dao';
 import {
-  fromDecimalDao,
-  fromDateOnlyDao,
-  fromTimeOnlyDao,
   fromDurationDao,
   fromTimestampDao,
 } from '@/models/storage/conversions.from-dao';
-import BigNumber from 'bignumber.js';
 import fc from 'fast-check';
-import { Duration, Instant, LocalDate, LocalTime } from '@js-joda/core';
+import { Duration, Instant } from '@js-joda/core';
 import {
-  BigNumberGenerator,
   DurationGenerator,
   FeedIdentityGenerator,
   FeedUserGenerator,
   InstantGenerator,
-  LocalDateGenerator,
-  LocalTimeGenerator,
   SessionBlueprintGenerator,
   SessionFeedItemGenerator,
   SessionGenerator,
@@ -38,7 +28,7 @@ import { Weight } from '@/models/weight';
 import { SessionBlueprint } from '../blueprint-models';
 import { Session } from '../session-models';
 import { FeedIdentity, FeedUser, SessionFeedItem } from '../feed-models';
-import { MigratorV0ToV1 } from './versions/v1/migrator';
+import { ProtobufToJsonV1Migrator } from './versions/v1/protobuf-migrator';
 
 const Models = LiftLog.Ui.Models;
 
@@ -51,18 +41,17 @@ const modelToDao = (x: ToDao) => x.toDao();
 const sessionBlueprintFromDao = (
   dao: LiftLog.Ui.Models.SessionBlueprintDao.ISessionBlueprintDaoV2,
 ): SessionBlueprint =>
-  SessionBlueprint.fromJSON(MigratorV0ToV1.migrateSessionBlueprint(dao));
+  SessionBlueprint.fromJSON(
+    ProtobufToJsonV1Migrator.migrateSessionBlueprint(dao),
+  );
 const sessionFromDao = (
   dao: LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2,
-): Session => Session.fromJSON(MigratorV0ToV1.migrateSession(dao));
+): Session => Session.fromJSON(ProtobufToJsonV1Migrator.migrateSession(dao));
 
 describe('conversions', () => {
   it.each`
     name                  | protoType                                           | initialValueGenerator        | convertToDao      | convertFromDao             | assertEquals
-    ${'Decimal'}          | ${Models.DecimalValue}                              | ${BigNumberGenerator}        | ${toDecimalDao}   | ${fromDecimalDao}          | ${(a: BigNumber, b: BigNumber) => expect(a.isEqualTo(b)).toBeTruthy()}
-    ${'DateOnly'}         | ${Models.DateOnlyDao}                               | ${LocalDateGenerator}        | ${toDateOnlyDao}  | ${fromDateOnlyDao}         | ${(a: LocalDate, b: LocalDate) => expect(a.equals(b)).toBeTruthy()}
     ${'Duration'}         | ${google.protobuf.Duration}                         | ${DurationGenerator}         | ${toDurationDao}  | ${fromDurationDao}         | ${(a: Duration, b: Duration) => expect(a.equals(b)).toBeTruthy()}
-    ${'TimeOnly'}         | ${Models.TimeOnlyDao}                               | ${LocalTimeGenerator}        | ${toTimeOnlyDao}  | ${fromTimeOnlyDao}         | ${(a: LocalTime, b: LocalTime) => expect(a.equals(b)).toBeTruthy()}
     ${'SessionBlueprint'} | ${Models.SessionBlueprintDao.SessionBlueprintDaoV2} | ${SessionBlueprintGenerator} | ${modelToDao}     | ${sessionBlueprintFromDao} | ${toPOJOEquals}
     ${'Session'}          | ${Models.SessionHistoryDao.SessionDaoV2}            | ${SessionGenerator}          | ${modelToDao}     | ${sessionFromDao}          | ${toPOJOEquals}
     ${'FeedIdentity'}     | ${Models.FeedIdentityDaoV1}                         | ${FeedIdentityGenerator}     | ${modelToDao}     | ${FeedIdentity.fromDao}    | ${toPOJOEquals}
@@ -132,6 +121,6 @@ function fromSessionHistoryDao(
   sessionHistoryModel: LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2,
 ): Session[] {
   return sessionHistoryModel.completedSessions.map((item) =>
-    Session.fromJSON(MigratorV0ToV1.migrateSession(item)),
+    Session.fromJSON(ProtobufToJsonV1Migrator.migrateSession(item)),
   );
 }

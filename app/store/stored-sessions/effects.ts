@@ -1,10 +1,9 @@
-import { addDebouncedEffect, addEffect } from '@/store/store';
+import { addEffect } from '@/store/store';
 import {
   addStoredSession,
   checkIfWeightMigrationRequired,
   deleteExercise,
   deleteStoredSession,
-  ExerciseDescriptor,
   initializeStoredSessionsStateSlice,
   migrateExerciseWeights,
   selectSessions,
@@ -17,20 +16,22 @@ import {
   WeightMigrateableExercise,
 } from './index';
 import { fetchUpcomingSessions } from '@/store/program';
-import { KeyValueStore } from '@/services/key-value-store';
 import Enumerable from 'linq';
 import { RecordedWeightedExercise, Session } from '@/models/session-models';
 import { setCurrentSession } from '@/store/current-session';
-import { sessionsSchema } from '@/db/schema';
+import { exercisesSchema, sessionsSchema } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import { LatestVersion } from '@/models/storage/versions/latest';
 import { toRecord } from '@/utils/reduce';
+import {
+  ExerciseDescriptor,
+  fromExerciseDescriptorJSON,
+  toExerciseDescriptorJSON,
+} from '@/models/exercise-models';
 
-const exerciseListStorageKey = 'ExerciseList';
 // We keep track of added builting exerciseIds (which are the exercise name for builtins)
 // Then we make sure builtins don't get re-added if they are deleted
 const addedBuiltInExerciseIdsStorageKey = 'AddedBuiltInExerciseIdList';
-
 export function applyStoredSessionsEffects() {
   // Dispatched AFTER settings, so we can safely access settings
   addEffect(
@@ -61,13 +62,21 @@ export function applyStoredSessionsEffects() {
         dispatch(setStoredSessions(completedSessions));
       });
 
-      const { exercises } = await import('../../assets/exercises.json');
-      const alreadyAddedBuiltIns = JSON.parse(
+      const { exercises: builtInExerciseList } =
+        await import('../../assets/exercises.json');
+      const builtinExercisesAddedInThePast = JSON.parse(
         (await keyValueStore.getItem(addedBuiltInExerciseIdsStorageKey)) ??
           '[]',
       ) as string[];
-      const builtInExercisesNotAlreadyAdded = exercises
-        .filter((x) => !alreadyAddedBuiltIns.includes(x.name))
+      const savedExercises = (await db.select().from(exercisesSchema)).reduce(
+        toRecord(
+          (x) => x.id,
+          (x) => fromExerciseDescriptorJSON(x.payload),
+        ),
+        {},
+      );
+      const builtInExercisesNotAlreadyAdded = builtInExerciseList
+        .filter((x) => !builtinExercisesAddedInThePast.includes(x.name))
         .reduce(
           (a, b) => {
             a[b.name] = {
@@ -84,26 +93,19 @@ export function applyStoredSessionsEffects() {
           },
           {} as Record<string, ExerciseDescriptor>,
         );
-      const savedExercises = JSON.parse(
-        (await keyValueStore.getItem(exerciseListStorageKey)) ?? '{}',
-      ) as Record<string, ExerciseDescriptor>;
 
       const currentExercises = Object.entries({
         ...builtInExercisesNotAlreadyAdded,
         ...savedExercises,
       }).sort((a, b) => a[1].name.localeCompare(b[1].name));
 
+      Object.entries(builtInExercisesNotAlreadyAdded).forEach(([id, ex]) => {
+        dispatch(updateExercise({ id, exercise: ex }));
+      });
+
       dispatch(setExercises(Object.fromEntries(currentExercises)));
 
-      // We added some, so we should persist it
-      if (Object.keys(builtInExercisesNotAlreadyAdded).length) {
-        await persistExercises(
-          getState().storedSessions.savedExercises,
-          keyValueStore,
-        );
-      }
-
-      const newBuiltIns = alreadyAddedBuiltIns.concat(
+      const newBuiltIns: string[] = builtinExercisesAddedInThePast.concat(
         Object.keys(builtInExercisesNotAlreadyAdded),
       );
       await keyValueStore.setItem(
@@ -284,25 +286,45 @@ export function applyStoredSessionsEffects() {
     },
   );
 
-  addDebouncedEffect(
-    [updateExercise, deleteExercise, setExercises],
-    async (_, { stateAfterReduce, extra: { keyValueStore } }) => {
+  addEffect(deleteExercise, async (action, { extra: { db } }) => {
+    await db
+      .delete(exercisesSchema)
+      .where(eq(exercisesSchema.id, action.payload));
+  });
+
+  addEffect(updateExercise, async (action, { extra: { db } }) => {
+    await db
+      .insert(exercisesSchema)
+      .values({
+        id: action.payload.id,
+        modelVersion: LatestVersion,
+        payload: toExerciseDescriptorJSON(action.payload.exercise),
+      })
+      .onConflictDoUpdate({
+        target: exercisesSchema.id,
+        set: {
+          payload: sql.raw(`excluded.${exercisesSchema.payload.name}`),
+          modelVersion: LatestVersion,
+        },
+      });
+  });
+
+  addEffect(
+    setExercises,
+    async (action, { stateAfterReduce, extra: { db } }) => {
       if (!stateAfterReduce.storedSessions.isHydrated) {
         return;
       }
-
-      const data = stateAfterReduce.storedSessions.savedExercises;
-      await persistExercises(data, keyValueStore);
+      await db.transaction(async (tx) => {
+        await tx.delete(exercisesSchema);
+        await tx.insert(exercisesSchema).values(
+          Object.entries(action.payload).map(([id, exercise]) => ({
+            id,
+            modelVersion: LatestVersion,
+            payload: toExerciseDescriptorJSON(exercise),
+          })),
+        );
+      });
     },
   );
-
-  async function persistExercises(
-    exercises: Record<string, ExerciseDescriptor>,
-    keyValueStore: KeyValueStore,
-  ) {
-    await keyValueStore.setItem(
-      exerciseListStorageKey,
-      JSON.stringify(exercises),
-    );
-  }
 }

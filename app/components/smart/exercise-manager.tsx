@@ -8,7 +8,6 @@ import { AccordionItem } from '@/components/presentation/foundation/accordion-it
 import { useScroll } from '@/hooks/useScrollListener';
 import {
   deleteExercise as deleteExerciseAction,
-  ExerciseDescriptor,
   selectExerciseById,
   selectExercises,
   setFilteredExerciseIds as setFilteredExerciseIdsAction,
@@ -24,6 +23,7 @@ import ExerciseMuscleSelector from '@/components/presentation/workout-editor/exe
 import ExerciseFilterer from '@/components/presentation/workout-editor/exercise-filterer';
 import { LegendList } from '@legendapp/list';
 import { getState } from '@/store/store';
+import { ExerciseDescriptor } from '@/models/exercise-models';
 
 function ExerciseListItem({
   exerciseId,

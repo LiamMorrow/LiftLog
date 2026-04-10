@@ -1,10 +1,11 @@
 import { LiftLog } from '@/gen/proto';
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { KeyValueStore } from '../key-value-store';
-import { MigratorV0ToLatest } from '@/models/storage/versions/migrator';
+import { MigratorVAnyToLatest } from '@/models/storage/versions/migrator';
 import { dataMigrationsSchema, sessionsSchema } from '@/db/schema';
 import { LatestVersion, WeightJSON } from '@/models/storage/versions/latest';
 import { PreferenceService } from '../preference-service';
+import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
 
 export const importSessionsDataMigration = 'IMPORT_SESSIONS';
 
@@ -31,7 +32,10 @@ export async function importSessions(
       : undefined;
   const completedSessionsList: (typeof sessionsSchema.$inferInsert)[] =
     storedData?.completedSessions.map((x) => {
-      const session = MigratorV0ToLatest.migrateSession(x);
+      const session = MigratorVAnyToLatest.migrateSession(
+        1,
+        ProtobufToJsonV1Migrator.migrateSession(x),
+      );
       return {
         payload: {
           ...session,

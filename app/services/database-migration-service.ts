@@ -9,6 +9,7 @@ import {
 import { KeyValueStore } from './key-value-store';
 import { PreferenceService } from './preference-service';
 import {
+  updateExercisesToLatestVersion,
   updateProgramsToLatestVersion,
   updateSessionsToLatestVersion,
 } from './data-migrations/update-to-latest';
@@ -16,6 +17,10 @@ import {
   importPrograms,
   importProgramsDataMigration,
 } from './data-migrations/import-programs';
+import {
+  importExercises,
+  importExercisesDataMigration,
+} from './data-migrations/import-exercises';
 
 export class DatabaseMigrationService {
   // DO NOT Add a dependency to getState here, it gets messy quick
@@ -38,10 +43,14 @@ export class DatabaseMigrationService {
     if (!dataMigrationsRun.includes(importProgramsDataMigration)) {
       await importPrograms(this.db, this.keyValueStore);
     }
+    if (!dataMigrationsRun.includes(importExercisesDataMigration)) {
+      await importExercises(this.db, this.keyValueStore);
+    }
 
     // We always want to update all entities to the latest version
     await updateSessionsToLatestVersion(this.db);
     await updateProgramsToLatestVersion(this.db);
+    await updateExercisesToLatestVersion(this.db);
 
     console.info('Migrated DB in ' + (performance.now() - now) + 'ms');
   }

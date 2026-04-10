@@ -24,11 +24,7 @@ import {
   WeightedExerciseBlueprintPOJO,
 } from '@/models/blueprint-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import {
-  ExerciseDescriptor,
-  selectExerciseById,
-  selectExerciseIds,
-} from '@/store/stored-sessions';
+import { selectExerciseById, selectExerciseIds } from '@/store/stored-sessions';
 import { assertUnreachable } from '@/utils/assert-unreachable';
 import BottomSheet, {
   useBottomSheetScrollableCreator,
@@ -47,6 +43,7 @@ import {
 } from 'react-native-paper';
 import { match, P } from 'ts-pattern';
 import { LegendList } from '@legendapp/list';
+import { ExerciseDescriptor } from '@/models/exercise-models';
 
 interface ExerciseEditorProps {
   exercise: ExerciseBlueprint;

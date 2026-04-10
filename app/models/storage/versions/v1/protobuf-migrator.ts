@@ -40,7 +40,7 @@ import {
 } from './session';
 import { WeightJSON, WeightUnitJSON } from './weight';
 
-export class MigratorV0ToV1 {
+export class ProtobufToJsonV1Migrator {
   static migrateProgramBlueprint(
     value: LiftLog.Ui.Models.ProgramBlueprintDao.IProgramBlueprintDaoV1,
   ): ProgramBlueprintJSON {

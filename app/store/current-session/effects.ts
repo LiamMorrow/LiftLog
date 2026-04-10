@@ -32,7 +32,7 @@ import {
   getCardioTimerInfo,
   getTimerInfo,
 } from '@/store/current-session/helpers';
-import { MigratorV0ToV1 } from '@/models/storage/versions/v1/migrator';
+import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
 
 const storageKey = 'CurrentSessionStateV1';
 export function applyCurrentSessionEffects() {
@@ -306,9 +306,13 @@ export function fromCurrentSessionDao(
   return {
     workoutSession:
       dao.workoutSession &&
-      Session.fromJSON(MigratorV0ToV1.migrateSession(dao.workoutSession)),
+      Session.fromJSON(
+        ProtobufToJsonV1Migrator.migrateSession(dao.workoutSession),
+      ),
     historySession:
       dao.historySession &&
-      Session.fromJSON(MigratorV0ToV1.migrateSession(dao.historySession)),
+      Session.fromJSON(
+        ProtobufToJsonV1Migrator.migrateSession(dao.historySession),
+      ),
   };
 }

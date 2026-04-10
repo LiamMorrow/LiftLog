@@ -2,8 +2,9 @@ import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { KeyValueStore } from '../key-value-store';
 import { dataMigrationsSchema, programsSchema } from '@/db/schema';
 import { LiftLog } from '@/gen/proto';
+import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
+import { MigratorVAnyToLatest } from '@/models/storage/versions/migrator';
 import { LatestVersion } from '@/models/storage/versions/latest';
-import { MigratorV0ToLatest } from '@/models/storage/versions/migrator';
 
 export const importProgramsDataMigration = 'IMPORT_PROGRAMS';
 
@@ -26,7 +27,10 @@ export async function importPrograms(
     ([id, pojo]) =>
       ({
         id,
-        payload: MigratorV0ToLatest.migrateProgramBlueprint(pojo),
+        payload: MigratorVAnyToLatest.migrateProgram(
+          1,
+          ProtobufToJsonV1Migrator.migrateProgramBlueprint(pojo),
+        ),
         modelVersion: LatestVersion,
         active: id === decoded.activeProgramId?.value,
       }) satisfies typeof programsSchema.$inferInsert,

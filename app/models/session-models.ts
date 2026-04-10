@@ -525,10 +525,10 @@ export class RecordedCardioExerciseSet {
         : undefined,
       json.duration ? fromDurationJSON(json.duration) : undefined,
       json.distance ? fromDistanceJSON(json.distance) : undefined,
-      json.resistance != undefined
+      json.resistance !== undefined
         ? fromBigNumberJSON(json.resistance)
         : undefined,
-      json.incline != undefined ? fromBigNumberJSON(json.incline) : undefined,
+      json.incline !== undefined ? fromBigNumberJSON(json.incline) : undefined,
       json.weight ? Weight.fromJSON(json.weight) : undefined,
       json.steps,
       undefined,

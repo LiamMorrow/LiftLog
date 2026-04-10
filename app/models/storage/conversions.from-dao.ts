@@ -1,15 +1,7 @@
 import { google, LiftLog } from '@/gen/proto';
 import { uuidStringify } from '@/utils/uuid';
 import Long from 'long';
-import {
-  Duration,
-  Instant,
-  LocalDate,
-  LocalTime,
-  OffsetDateTime,
-  ZoneOffset,
-} from '@js-joda/core';
-import BigNumber from 'bignumber.js';
+import { Duration, Instant } from '@js-joda/core';
 
 export function fromUuidDao(
   dao: LiftLog.Ui.Models.IUuidDao | null | undefined,
@@ -37,61 +29,6 @@ export function fromUuidDao(
   } catch (e) {
     throw new Error('dao.value', { cause: e });
   }
-}
-
-const nanoFactor = BigNumber('1000000000');
-
-// Converts a DecimalValue DAO to a BigNumber
-export function fromDecimalDao(dao: LiftLog.Ui.Models.IDecimalValue): BigNumber;
-export function fromDecimalDao(
-  dao: LiftLog.Ui.Models.IDecimalValue | null | undefined,
-): BigNumber | undefined;
-export function fromDecimalDao(
-  dao: LiftLog.Ui.Models.IDecimalValue | null | undefined,
-): BigNumber | undefined {
-  if (dao?.nanos == null || dao?.units == null) {
-    return undefined;
-  }
-  return BigNumber(dao.units.toString()).plus(
-    BigNumber(dao.nanos).div(nanoFactor),
-  );
-}
-
-export function fromTimeOnlyDao(
-  dao: LiftLog.Ui.Models.ITimeOnlyDao | null | undefined,
-): LocalTime {
-  if (!dao) {
-    throw new Error('TimeOnlyDao cannot be null');
-  }
-  const milli = dao.millisecond;
-  const micro = dao.microsecond;
-  const nano = (micro ?? 0) * 1000 + (milli ?? 0) * 1000000;
-  return LocalTime.of(dao.hour!, dao.minute!, dao.second!, nano);
-}
-
-export function fromDateOnlyDao(
-  dao: LiftLog.Ui.Models.IDateOnlyDao | null | undefined,
-): LocalDate {
-  if (!dao) {
-    throw new Error('DateOnlyDao cannot be null');
-  }
-  return LocalDate.of(dao.year!, dao.month!, dao.day!);
-}
-
-export function fromDateTimeDao(
-  dao: LiftLog.Ui.Models.IDateTimeDao | null | undefined,
-): OffsetDateTime | undefined {
-  if (!dao) {
-    return undefined;
-  }
-  const localDateTime = fromDateOnlyDao(dao.date).atTime(
-    fromTimeOnlyDao(dao.time),
-  );
-  return localDateTime.atOffset(
-    dao.offset
-      ? ZoneOffset.ofTotalSeconds(dao.offset.totalSeconds!)
-      : ZoneOffset.systemDefault().rules().offsetOfLocalDateTime(localDateTime),
-  );
 }
 
 export function fromTimestampDao(

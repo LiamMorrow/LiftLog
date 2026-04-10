@@ -24,17 +24,7 @@ import {
 import Enumerable from 'linq';
 import { WeightUnit } from '@/models/weight';
 import { TemporalComparer } from '@/models/comparers';
-
-export interface ExerciseDescriptor {
-  name: string;
-  force: string | null;
-  level: string;
-  mechanic: string | null;
-  equipment: string | null;
-  muscles: string[];
-  instructions: string;
-  category: string;
-}
+import { ExerciseDescriptor } from '@/models/exercise-models';
 
 export interface WeightMigrateableExercise {
   name: string;

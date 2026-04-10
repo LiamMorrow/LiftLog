@@ -19,7 +19,7 @@ import { LocalDate } from '@js-joda/core';
 import { sleep } from '@/utils/sleep';
 import { Session } from '@/models/session-models';
 import { ProgramBlueprint, SessionBlueprint } from '@/models/blueprint-models';
-import { MigratorV0ToV1 } from '@/models/storage/versions/v1/migrator';
+import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
 
 export function addImportBackupEffects() {
   addEffect(
@@ -55,7 +55,7 @@ export function addImportBackupEffects() {
     importDataDao,
     async ({ payload: { dao } }, { dispatch, extra: { tolgee } }) => {
       const sessions = dao.sessions.map((s) =>
-        Session.fromJSON(MigratorV0ToV1.migrateSession(s)),
+        Session.fromJSON(ProtobufToJsonV1Migrator.migrateSession(s)),
       );
       dispatch(upsertStoredSessions(sessions));
       const programs = Object.fromEntries(
@@ -64,7 +64,7 @@ export function addImportBackupEffects() {
             [
               id,
               ProgramBlueprint.fromJSON(
-                MigratorV0ToV1.migrateProgramBlueprint(program),
+                ProtobufToJsonV1Migrator.migrateProgramBlueprint(program),
               ),
             ] as const,
         ),
@@ -86,7 +86,7 @@ export function addImportBackupEffects() {
             programId: newId,
             sessionBlueprints: dao.program.map((s) =>
               SessionBlueprint.fromJSON(
-                MigratorV0ToV1.migrateSessionBlueprint(s),
+                ProtobufToJsonV1Migrator.migrateSessionBlueprint(s),
               ),
             ),
           }),

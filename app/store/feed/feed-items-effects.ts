@@ -33,7 +33,7 @@ import { EncryptionService } from '@/services/encryption-service';
 import { FeedApiService } from '@/services/feed-api';
 import { selectSession } from '@/store/stored-sessions';
 import { SessionBlueprint } from '@/models/blueprint-models';
-import { MigratorV0ToV1 } from '@/models/storage/versions/v1/migrator';
+import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
 
 const MIN_TIMESTAMP = Instant.parse('2000-01-01T00:00:00Z');
 
@@ -380,7 +380,9 @@ async function getDecryptedUserAsync(
       const currentPlanDao =
         LiftLog.Ui.Models.CurrentPlanDaoV1.decode(decryptedPlanBytes);
       currentPlan = currentPlanDao.sessions.map((s) =>
-        SessionBlueprint.fromJSON(MigratorV0ToV1.migrateSessionBlueprint(s)),
+        SessionBlueprint.fromJSON(
+          ProtobufToJsonV1Migrator.migrateSessionBlueprint(s),
+        ),
       );
     }
 
@@ -451,7 +453,9 @@ async function toFeedItemAsync(
           timestamp,
           expiry,
           Session.fromJSON(
-            MigratorV0ToV1.migrateSession(payload.sessionPayload!.session!),
+            ProtobufToJsonV1Migrator.migrateSession(
+              payload.sessionPayload!.session!,
+            ),
           ),
         );
 
