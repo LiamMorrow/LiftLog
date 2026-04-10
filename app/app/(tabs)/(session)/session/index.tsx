@@ -16,6 +16,9 @@ import { useDispatch } from 'react-redux';
 export default function Index() {
   const dispatch = useDispatch();
   const session = useAppSelectorWithArg(selectCurrentSession, 'workoutSession');
+  const showPostWorkoutSummary = useAppSelector(
+    (x) => x.settings.showPostWorkoutSummary,
+  );
   const keepAwake = useAppSelector(
     (x) => x.settings.keepScreenAwakeDuringWorkout,
   );
@@ -35,15 +38,18 @@ export default function Index() {
       }
       setConfirmOpen(false);
     }
-    setPostWorkoutSessionId(finishedSessionId);
-    dispatch(finishCurrentWorkout('workoutSession'));
-    if (finishedSessionId) {
-      push(
-        `/session/post-workout?sessionId=${encodeURIComponent(finishedSessionId)}&source=finished`,
-      );
-      return;
+    if (showPostWorkoutSummary) {
+      setPostWorkoutSessionId(finishedSessionId);
+      if (finishedSessionId) {
+        push(
+          `/session/post-workout?sessionId=${encodeURIComponent(finishedSessionId)}&source=finished`,
+        );
+        return;
+      }
+    } else {
+      dispatch(finishCurrentWorkout('workoutSession'));
+      dismissTo('/');
     }
-    dismissTo('/');
   };
   useEffect(() => {
     if (!session && !postWorkoutSessionId) {

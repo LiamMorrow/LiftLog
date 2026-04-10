@@ -155,13 +155,6 @@ export default function History() {
           )}
           renderItemActions={(session) => (
             <CardActions style={{ marginTop: spacing[2] }}>
-              <Tooltip title={t('workout.post_workout.title')}>
-                <IconButton
-                  icon={'analytics'}
-                  mode="contained"
-                  onPress={() => openWorkoutStats(session)}
-                />
-              </Tooltip>
               <Tooltip title={t('workout.share_workout.button')}>
                 <IconButton
                   icon={'share'}

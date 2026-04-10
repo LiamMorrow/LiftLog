@@ -1,6 +1,6 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
-import SessionComparisonTable from '@/components/presentation/workout/session-comparison-table';
+import { SessionComparisonTable } from '@/components/presentation/workout/session-comparison-table';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelectorWithArg } from '@/store';
 import { selectCurrentSession } from '@/store/current-session';
@@ -26,7 +26,9 @@ export default function PostWorkoutPage() {
   );
   const session =
     storedSession ??
-    (currentWorkoutSession?.id === sessionId ? currentWorkoutSession : undefined);
+    (currentWorkoutSession?.id === sessionId
+      ? currentWorkoutSession
+      : undefined);
   const openedAfterFinishingWorkout = source === 'finished';
   const showFinishButton = openedAfterFinishingWorkout;
   const showBackButton = !openedAfterFinishingWorkout;
@@ -70,7 +72,7 @@ export default function PostWorkoutPage() {
           title: t('workout.post_workout.title'),
           gestureEnabled: showBackButton,
           headerBackVisible: showBackButton,
-          headerLeft: showFinishButton ? () => null : undefined,
+          headerLeft: showFinishButton ? () => null : undefined!,
         }}
       />
       <View style={{ marginVertical: spacing[4] }}>
