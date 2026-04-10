@@ -5,10 +5,10 @@ module.exports = function (api) {
     plugins: [
       '@babel/plugin-proposal-export-namespace-from',
       [
-        "babel-plugin-inline-import",
+        'inline-import',
         {
-          "extensions": [".svg"]
-        }
+          extensions: ['.svg', '.sql'],
+        },
       ],
       'react-native-worklets/plugin',
     ],

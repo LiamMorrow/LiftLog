@@ -20,7 +20,7 @@ import Enumerable from 'linq';
 
 interface ProgramState {
   readonly isHydrated: boolean;
-  readonly activeProgramId: string;
+  readonly activePlanId: string;
   readonly upcomingSessions: RemoteData<readonly SessionPOJO[]>;
   readonly savedPrograms: {
     readonly [programId: string]: ProgramBlueprintPOJO;
@@ -29,7 +29,7 @@ interface ProgramState {
 
 const initialState: ProgramState = {
   isHydrated: false,
-  activeProgramId: '00000000-0000-0000-0000-000000000000',
+  activePlanId: '00000000-0000-0000-0000-000000000000',
   upcomingSessions: RemoteData.notAsked(),
   savedPrograms: {},
 };
@@ -68,18 +68,18 @@ const programSlice = createSlice({
 
     applyDiffToPlan(state, action: PayloadAction<PlanDiff>) {
       if (action.payload.type === 'add') {
-        state.savedPrograms[state.activeProgramId].sessions.push(
+        state.savedPrograms[state.activePlanId].sessions.push(
           applySessionBlueprintDiff(
             EmptySession.blueprint,
             action.payload.diff,
           ).toPOJO(),
         );
       } else if (action.payload.type === 'diff') {
-        state.savedPrograms[state.activeProgramId].sessions[
+        state.savedPrograms[state.activePlanId].sessions[
           action.payload.sessionIndex
         ] = applySessionBlueprintDiff(
           SessionBlueprint.fromPOJO(
-            state.savedPrograms[state.activeProgramId].sessions[
+            state.savedPrograms[state.activePlanId].sessions[
               action.payload.sessionIndex
             ] as SafeDraft<SessionBlueprintPOJO>,
           ),
@@ -203,8 +203,8 @@ const programSlice = createSlice({
       }
     },
 
-    setActivePlan(state, action: PayloadAction<{ programId: string }>) {
-      state.activeProgramId = action.payload.programId;
+    setActivePlan(state, action: PayloadAction<{ activePlanId: string }>) {
+      state.activePlanId = action.payload.activePlanId;
     },
 
     removeSessionFromProgram(
@@ -256,7 +256,7 @@ const programSlice = createSlice({
   },
   selectors: {
     selectActiveProgram: createSelector(
-      (state: ProgramState) => state.savedPrograms[state.activeProgramId],
+      (state: ProgramState) => state.savedPrograms[state.activePlanId],
       ProgramBlueprint.fromPOJO,
     ),
 
@@ -281,7 +281,7 @@ const programSlice = createSlice({
      */
     selectNewWorkoutName: createSelector(
       (state: ProgramState) =>
-        state.savedPrograms[state.activeProgramId]?.sessions || [],
+        state.savedPrograms[state.activePlanId]?.sessions || [],
       (sessions) => {
         const existingNames = sessions.map((session) => session.name);
         let counter = sessions.length + 1;

@@ -19,6 +19,7 @@ import { LocalDate } from '@js-joda/core';
 import { sleep } from '@/utils/sleep';
 import { Session } from '@/models/session-models';
 import { ProgramBlueprint, SessionBlueprint } from '@/models/blueprint-models';
+import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
 
 export function addImportBackupEffects() {
   addEffect(
@@ -53,11 +54,19 @@ export function addImportBackupEffects() {
   addEffect(
     importDataDao,
     async ({ payload: { dao } }, { dispatch, extra: { tolgee } }) => {
-      const sessions = dao.sessions.map(Session.fromDao);
+      const sessions = dao.sessions.map((s) =>
+        Session.fromJSON(ProtobufToJsonV1Migrator.migrateSession(s)),
+      );
       dispatch(upsertStoredSessions(sessions));
       const programs = Object.fromEntries(
         Object.entries(dao.savedPrograms).map(
-          ([id, program]) => [id, ProgramBlueprint.fromDao(program)] as const,
+          ([id, program]) =>
+            [
+              id,
+              ProgramBlueprint.fromJSON(
+                ProtobufToJsonV1Migrator.migrateProgramBlueprint(program),
+              ),
+            ] as const,
         ),
       );
       dispatch(upsertSavedPlans(programs));
@@ -75,13 +84,17 @@ export function addImportBackupEffects() {
         dispatch(
           setProgramSessions({
             programId: newId,
-            sessionBlueprints: dao.program.map(SessionBlueprint.fromDao),
+            sessionBlueprints: dao.program.map((s) =>
+              SessionBlueprint.fromJSON(
+                ProtobufToJsonV1Migrator.migrateSessionBlueprint(s),
+              ),
+            ),
           }),
         );
-        dispatch(setActivePlan({ programId: newId }));
+        dispatch(setActivePlan({ activePlanId: newId }));
       } else {
         if (dao.activeProgramId.value in programs) {
-          dispatch(setActivePlan({ programId: dao.activeProgramId.value }));
+          dispatch(setActivePlan({ activePlanId: dao.activeProgramId.value }));
         }
       }
       dispatch(

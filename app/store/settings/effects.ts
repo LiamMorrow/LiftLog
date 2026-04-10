@@ -17,6 +17,7 @@ import {
   setRestNotifications,
   setShowBodyweight,
   setShowFeed,
+  setShowPostWorkoutSummary,
   setShowTips,
   setTipToShow,
   setUseImperialUnits,
@@ -64,6 +65,7 @@ export function applySettingsEffects() {
         notesExpandedByDefault,
         keepScreenAwakeDuringWorkout,
         exportToHealthAggregator,
+        showPostWorkoutSummary,
       ] = await Promise.all([
         preferenceService.getUseImperialUnits(),
         preferenceService.getShowBodyweight(),
@@ -83,6 +85,7 @@ export function applySettingsEffects() {
         preferenceService.getNotesExpandedByDefault(),
         preferenceService.getKeepScreenAwakeDuringWorkout(),
         preferenceService.getExportToHealthAggregator(),
+        preferenceService.getShowPostWorkoutSummary(),
       ]);
       dispatch(setColorSchemeSeed(colorSchemeSeed));
       dispatch(setUseImperialUnits(useImperialUnits));
@@ -112,6 +115,7 @@ export function applySettingsEffects() {
       dispatch(setNotesExpandedByDefault(notesExpandedByDefault));
       dispatch(setKeepScreenAwakeDuringWorkout(keepScreenAwakeDuringWorkout));
       dispatch(setExportToHealthAggregator(exportToHealthAggregator));
+      dispatch(setShowPostWorkoutSummary(showPostWorkoutSummary));
 
       if (Platform.OS === 'ios') {
         Purchases.configure({

@@ -32,6 +32,7 @@ import {
   getCardioTimerInfo,
   getTimerInfo,
 } from '@/store/current-session/helpers';
+import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
 
 const storageKey = 'CurrentSessionStateV1';
 export function applyCurrentSessionEffects() {
@@ -303,7 +304,15 @@ export function fromCurrentSessionDao(
   dao: LiftLog.Ui.Models.CurrentSessionStateDao.ICurrentSessionStateDaoV2,
 ) {
   return {
-    workoutSession: dao.workoutSession && Session.fromDao(dao.workoutSession),
-    historySession: dao.historySession && Session.fromDao(dao.historySession),
+    workoutSession:
+      dao.workoutSession &&
+      Session.fromJSON(
+        ProtobufToJsonV1Migrator.migrateSession(dao.workoutSession),
+      ),
+    historySession:
+      dao.historySession &&
+      Session.fromJSON(
+        ProtobufToJsonV1Migrator.migrateSession(dao.historySession),
+      ),
   };
 }

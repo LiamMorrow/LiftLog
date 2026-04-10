@@ -33,6 +33,7 @@ import { EncryptionService } from '@/services/encryption-service';
 import { FeedApiService } from '@/services/feed-api';
 import { selectSession } from '@/store/stored-sessions';
 import { SessionBlueprint } from '@/models/blueprint-models';
+import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
 
 const MIN_TIMESTAMP = Instant.parse('2000-01-01T00:00:00Z');
 
@@ -378,7 +379,11 @@ async function getDecryptedUserAsync(
 
       const currentPlanDao =
         LiftLog.Ui.Models.CurrentPlanDaoV1.decode(decryptedPlanBytes);
-      currentPlan = currentPlanDao.sessions.map(SessionBlueprint.fromDao);
+      currentPlan = currentPlanDao.sessions.map((s) =>
+        SessionBlueprint.fromJSON(
+          ProtobufToJsonV1Migrator.migrateSessionBlueprint(s),
+        ),
+      );
     }
 
     // Decrypt profile picture if present
@@ -447,7 +452,11 @@ async function toFeedItemAsync(
           userEvent.eventId,
           timestamp,
           expiry,
-          Session.fromDao(payload.sessionPayload!.session),
+          Session.fromJSON(
+            ProtobufToJsonV1Migrator.migrateSession(
+              payload.sessionPayload!.session!,
+            ),
+          ),
         );
 
       case 'removedSessionPayload':

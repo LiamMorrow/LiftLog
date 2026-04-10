@@ -1,8 +1,6 @@
-import { LiftLog } from '@/gen/proto';
 import { BuiltInPrograms } from '@/models/built-in-programs';
 import { RemoteData } from '@/models/remote';
 import { ProgramBlueprint } from '@/models/blueprint-models';
-import { toStringValue } from '@/models/storage/conversions.to-dao';
 import { addEffect, RootState } from '@/store/store';
 import {
   fetchUpcomingSessions,
@@ -15,13 +13,18 @@ import {
   setUpcomingSessions,
 } from '@/store/program';
 import { uuid } from '@/utils/uuid';
-import { LocalDate } from '@js-joda/core';
 import { AsyncStream } from 'data-async-iterators';
-import { KeyValueStore } from '@/services/key-value-store';
 import { Logger } from '@/services/logger';
 import { selectLatestExercises } from '../stored-sessions';
+import { programsSchema } from '@/db/schema';
+import {
+  LatestVersion,
+  toLocalDateJSON,
+} from '@/models/storage/versions/latest';
+import { LocalDate } from '@js-joda/core';
+import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
+import { toRecord } from '@/utils/reduce';
 
-const storageKey = 'SavedPrograms';
 const builtInProgramsStorageKey = 'hasSavedDefaultPlans2';
 export function applyProgramEffects() {
   addEffect(
@@ -32,69 +35,29 @@ export function applyProgramEffects() {
         getState,
         cancelActiveListeners,
         dispatch,
-        extra: { keyValueStore, logger },
+        extra: { keyValueStore, logger, db },
       },
     ) => {
       const start = performance.now();
       cancelActiveListeners();
-      // eslint-disable-next-line prefer-const
-      let [version, programBytes] = await Promise.all([
-        keyValueStore.getItem(`${storageKey}-Version`),
-        keyValueStore.getItemBytes(storageKey),
-      ]);
-      let hasSetActivePlan = false;
-      if (!version) {
-        version = '1';
-        await keyValueStore.setItem(`${storageKey}-Version`, '1');
-      }
-      if (version !== '1') {
-        throw new Error('Unexpected version ' + version);
-      }
-      if (programBytes) {
-        const decoded =
-          LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1.decode(
-            programBytes,
-          );
-        const converted = Object.fromEntries(
-          Object.entries(decoded.programBlueprints).map(
-            ([key, pojo]) => [key, ProgramBlueprint.fromDao(pojo)] as const,
-          ),
-        );
 
-        dispatch(setSavedPlans(converted));
-        if (decoded.activeProgramId?.value) {
-          if (!(decoded.activeProgramId.value in decoded.programBlueprints)) {
-            if (Object.entries(decoded.programBlueprints).length) {
-              dispatch(
-                setActivePlan({ programId: decoded.activeProgramId.value }),
-              );
-              hasSetActivePlan = true;
+      let activePlanId: string | undefined;
+      const dbPrograms = await db.select().from(programsSchema);
+      const programs = (
+        dbPrograms.length ? dbPrograms : [getEmptyInitialProgram()]
+      ).reduce(
+        toRecord(
+          (x) => x.id,
+          (row) => {
+            if (row.active) {
+              activePlanId = row.id;
             }
-          } else {
-            dispatch(
-              setActivePlan({ programId: decoded.activeProgramId.value }),
-            );
-            hasSetActivePlan = true;
-          }
-        }
-        if (
-          !decoded.activeProgramId?.value ||
-          !Object.entries(decoded.programBlueprints).length
-        ) {
-          const activeProgramId = uuid();
-          dispatch(setActivePlan({ programId: activeProgramId }));
-          hasSetActivePlan = true;
-          dispatch(
-            setSavedPlans({
-              [activeProgramId]: ProgramBlueprint.fromPOJO({
-                name: 'My plan',
-                lastEdited: LocalDate.now(),
-                sessions: [],
-              }),
-            }),
-          );
-        }
-      }
+            return ProgramBlueprint.fromJSON(row.payload);
+          },
+        ),
+        {},
+      );
+      dispatch(setSavedPlans(programs));
 
       if (!(await keyValueStore.getItem(builtInProgramsStorageKey))) {
         for (const [id, program] of Object.entries(BuiltInPrograms)) {
@@ -103,21 +66,14 @@ export function applyProgramEffects() {
           }
           dispatch(savePlan({ programId: id, programBlueprint: program }));
         }
-        await persistPrograms(getState(), keyValueStore, logger);
+        await persistPrograms(getState(), db, logger);
         await keyValueStore.setItem(builtInProgramsStorageKey, 'true');
       }
-      if (
-        !hasSetActivePlan ||
-        !Object.keys(getState().program.savedPrograms).includes(
-          getState().program.activeProgramId,
-        )
-      ) {
-        dispatch(
-          setActivePlan({
-            programId: Object.keys(getState().program.savedPrograms)[0],
-          }),
-        );
+      if (!activePlanId || !getState().program.savedPrograms[activePlanId]) {
+        activePlanId = Object.keys(getState().program.savedPrograms)[0];
       }
+
+      dispatch(setActivePlan({ activePlanId }));
 
       dispatch(setIsHydrated(true));
       const end = performance.now();
@@ -130,19 +86,16 @@ export function applyProgramEffects() {
   // Persist after changes
   addEffect(
     undefined,
-    async (
-      _,
-      { originalState, stateAfterReduce, extra: { keyValueStore, logger } },
-    ) => {
+    async (_, { originalState, stateAfterReduce, extra: { db, logger } }) => {
       const start = performance.now();
       const shouldPersist =
         stateAfterReduce.program.isHydrated &&
-        (stateAfterReduce.program.activeProgramId !==
-          originalState.program.activeProgramId ||
+        (stateAfterReduce.program.activePlanId !==
+          originalState.program.activePlanId ||
           stateAfterReduce.program.savedPrograms !==
             originalState.program.savedPrograms);
       if (shouldPersist) {
-        await persistPrograms(stateAfterReduce, keyValueStore, logger);
+        await persistPrograms(stateAfterReduce, db, logger);
         const end = performance.now();
         logger.info(
           `Persist program state effect took ${(end - start).toFixed(2)} ms`,
@@ -198,31 +151,37 @@ const yieldToEventLoop = () => new Promise((resolve) => setTimeout(resolve, 5));
 
 async function persistPrograms(
   stateAfterReduce: RootState,
-  keyValueStore: KeyValueStore,
+  db: ExpoSQLiteDatabase,
   logger: Logger,
 ) {
   try {
-    const currentSessionStateDao =
-      new LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1({
-        activeProgramId: toStringValue(
-          stateAfterReduce.program.activeProgramId,
+    await db.transaction(async (tx) => {
+      await tx.delete(programsSchema);
+      await tx.insert(programsSchema).values(
+        Object.entries(stateAfterReduce.program.savedPrograms).map(
+          ([key, program]) => ({
+            id: key,
+            modelVersion: LatestVersion,
+            active: key === stateAfterReduce.program.activePlanId,
+            payload: ProgramBlueprint.fromPOJO(program).toJSON(),
+          }),
         ),
-        programBlueprints: Object.fromEntries(
-          Object.entries(stateAfterReduce.program.savedPrograms).map(
-            ([key, program]) => [
-              key,
-              ProgramBlueprint.fromPOJO(program).toDao(),
-            ],
-          ),
-        ),
-      });
-    const bytes =
-      LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoContainerV1.encode(
-        currentSessionStateDao,
-      ).finish();
-    await keyValueStore.setItem(`${storageKey}-Version`, '1');
-    await keyValueStore.setItem(storageKey, bytes);
+      );
+    });
   } catch (e) {
     logger.error('Failed to persist program state', e);
   }
+}
+
+function getEmptyInitialProgram(): typeof programsSchema.$inferSelect {
+  return {
+    id: uuid(),
+    modelVersion: LatestVersion,
+    active: true,
+    payload: {
+      lastEdited: toLocalDateJSON(LocalDate.now()),
+      name: 'My Plan',
+      sessions: [],
+    },
+  };
 }

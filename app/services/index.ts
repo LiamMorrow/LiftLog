@@ -20,9 +20,14 @@ import { RootState } from '@/store';
 import { Store } from '@reduxjs/toolkit';
 import { HealthExportService } from './health-export-service';
 import { HealthExportService as HES } from './health-export-service-shared';
+import { drizzle } from 'drizzle-orm/expo-sqlite';
+import { openDatabaseSync } from 'expo-sqlite';
+import { DatabaseMigrationService } from './database-migration-service';
 
 export type Services = Awaited<ReturnType<typeof resolveServicesInternal>>;
 
+const expo = openDatabaseSync('db.db');
+const db = drizzle(expo);
 let resolvedServices: Services | undefined;
 
 function resolveServicesInternal(store: Store<RootState>) {
@@ -66,6 +71,11 @@ function resolveServicesInternal(store: Store<RootState>) {
     tolgee,
   );
   const healthExportService: HES = new HealthExportService();
+  const databaseMigrationService = new DatabaseMigrationService(
+    db,
+    keyValueStore,
+    preferenceService,
+  );
 
   return {
     logger,
@@ -86,6 +96,8 @@ function resolveServicesInternal(store: Store<RootState>) {
     aiChatService,
     workoutWorkerService,
     tolgee,
+    db,
+    databaseMigrationService,
   };
 }
 
@@ -93,4 +105,4 @@ function resolveServices(store: Store<RootState>) {
   return (resolvedServices ??= resolveServicesInternal(store));
 }
 
-export { resolveServices };
+export { resolveServices, db };

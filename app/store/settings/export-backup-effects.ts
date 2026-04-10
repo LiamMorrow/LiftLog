@@ -19,7 +19,7 @@ export function addExportBackupEffects() {
       const savedProgramsDao = Object.fromEntries(
         savedPrograms.map(({ id, program }) => [id, program.toDao()]),
       );
-      const activeProgramId = getState().program.activeProgramId;
+      const activeProgramId = getState().program.activePlanId;
       const feedStateDao = includeFeed ? toFeedStateDao(getState().feed) : null;
 
       const dao = new LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2({

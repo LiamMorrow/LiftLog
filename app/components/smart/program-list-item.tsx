@@ -30,7 +30,7 @@ interface ItemProps {
 
 function ItemMenu({ id }: ItemProps) {
   const thisProgram = useAppSelectorWithArg(selectProgram, id);
-  const isActive = useAppSelector((x) => x.program.activeProgramId) === id;
+  const isActive = useAppSelector((x) => x.program.activePlanId) === id;
   const [menuVisible, setMenuVisible] = useState(false);
   const dispatch = useDispatch();
   const { push } = useRouter();
@@ -108,9 +108,7 @@ export default function ProgramListItem({
   isFocused,
 }: ProgramListItemProps) {
   const program = useAppSelectorWithArg(selectProgram, id);
-  const activeProgramId = useAppSelector(
-    (state) => state.program.activeProgramId,
-  );
+  const activeProgramId = useAppSelector((state) => state.program.activePlanId);
   const dispatch = useDispatch();
   const { t } = useTranslate();
   const { push } = useRouter();
@@ -157,7 +155,7 @@ export default function ProgramListItem({
           <RadioButton
             value={id}
             status={activeProgramId === id ? 'checked' : 'unchecked'}
-            onPress={() => dispatch(setActivePlan({ programId: id }))}
+            onPress={() => dispatch(setActivePlan({ activePlanId: id }))}
           />
           <ItemMenu id={id} />
         </View>
@@ -166,7 +164,7 @@ export default function ProgramListItem({
         if (activeProgramId === id) {
           push(`/settings/manage-workouts/${id}`);
         }
-        dispatch(setActivePlan({ programId: id }));
+        dispatch(setActivePlan({ activePlanId: id }));
       }}
       style={{}}
     ></List.Item>

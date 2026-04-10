@@ -1,10 +1,9 @@
-import { addDebouncedEffect, addEffect } from '@/store/store';
+import { addEffect } from '@/store/store';
 import {
   addStoredSession,
   checkIfWeightMigrationRequired,
   deleteExercise,
   deleteStoredSession,
-  ExerciseDescriptor,
   initializeStoredSessionsStateSlice,
   migrateExerciseWeights,
   selectSessions,
@@ -16,82 +15,68 @@ import {
   upsertStoredSessions,
   WeightMigrateableExercise,
 } from './index';
-import { LiftLog } from '@/gen/proto';
-import { match } from 'ts-pattern';
 import { fetchUpcomingSessions } from '@/store/program';
-import { KeyValueStore } from '@/services/key-value-store';
 import Enumerable from 'linq';
-import {
-  RecordedWeightedExercise,
-  Session,
-  toSessionHistoryDao,
-} from '@/models/session-models';
-import { Weight } from '@/models/weight';
+import { RecordedWeightedExercise, Session } from '@/models/session-models';
 import { setCurrentSession } from '@/store/current-session';
+import { exercisesSchema, sessionsSchema } from '@/db/schema';
+import { eq, sql } from 'drizzle-orm';
+import { LatestVersion } from '@/models/storage/versions/latest';
+import { toRecord } from '@/utils/reduce';
+import {
+  ExerciseDescriptor,
+  fromExerciseDescriptorJSON,
+  toExerciseDescriptorJSON,
+} from '@/models/exercise-models';
 
-const storageKey = 'Progress';
-const exerciseListStorageKey = 'ExerciseList';
 // We keep track of added builting exerciseIds (which are the exercise name for builtins)
 // Then we make sure builtins don't get re-added if they are deleted
 const addedBuiltInExerciseIdsStorageKey = 'AddedBuiltInExerciseIdList';
-
 export function applyStoredSessionsEffects() {
   // Dispatched AFTER settings, so we can safely access settings
   addEffect(
     initializeStoredSessionsStateSlice,
     async (
       _,
-      { cancelActiveListeners, getState, dispatch, extra: { keyValueStore } },
+      {
+        cancelActiveListeners,
+        getState,
+        dispatch,
+        extra: { keyValueStore, db, logger },
+      },
     ) => {
       cancelActiveListeners();
       if (!getState().settings.isHydrated) {
         throw new Error('Settings must be hydrated before stored sessions');
       }
-      let version = await keyValueStore.getItem(`${storageKey}-Version`);
-      if (!version) {
-        version = '2';
-        await keyValueStore.setItem(`${storageKey}-Version`, '2');
-      }
-
-      const storedData = await match(version)
-        .with('2', async () =>
-          LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2.decode(
-            (await keyValueStore.getItemBytes(storageKey)) ??
-              Uint8Array.from([]),
+      await logger.time('initializeStoredSessions', async () => {
+        const completedSessions = (
+          await db.select().from(sessionsSchema)
+        ).reduce(
+          toRecord(
+            (x) => x.id,
+            (row) => Session.fromJSON(row.payload).toPOJO(),
           ),
-        )
-        .otherwise((x) => {
-          throw new Error(`Unsupported version ${x}`);
-        });
-      const preferredUnit = getState().settings.useImperialUnits
-        ? 'pounds'
-        : 'kilograms';
+          {},
+        );
+        dispatch(setStoredSessions(completedSessions));
+      });
 
-      // Convert old bodyweights with nil to be the set weight
-      const coalesceWeightUnit = (weight: undefined | Weight) =>
-        weight?.with({
-          unit: weight.unit === 'nil' ? preferredUnit : weight.unit,
-        });
-
-      const completedSessionsList =
-        storedData?.completedSessions.map((x) => {
-          const s = Session.fromDao(x);
-          return s.with({
-            bodyweight: coalesceWeightUnit(s.bodyweight),
-          });
-        }) ?? [];
-      const completedSessions = Object.fromEntries(
-        completedSessionsList.map((x) => [x.id, x.toPOJO()]),
-      );
-      dispatch(setStoredSessions(completedSessions));
-
-      const { exercises } = await import('../../assets/exercises.json');
-      const alreadyAddedBuiltIns = JSON.parse(
+      const { exercises: builtInExerciseList } =
+        await import('../../assets/exercises.json');
+      const builtinExercisesAddedInThePast = JSON.parse(
         (await keyValueStore.getItem(addedBuiltInExerciseIdsStorageKey)) ??
           '[]',
       ) as string[];
-      const builtInExercisesNotAlreadyAdded = exercises
-        .filter((x) => !alreadyAddedBuiltIns.includes(x.name))
+      const savedExercises = (await db.select().from(exercisesSchema)).reduce(
+        toRecord(
+          (x) => x.id,
+          (x) => fromExerciseDescriptorJSON(x.payload),
+        ),
+        {},
+      );
+      const builtInExercisesNotAlreadyAdded = builtInExerciseList
+        .filter((x) => !builtinExercisesAddedInThePast.includes(x.name))
         .reduce(
           (a, b) => {
             a[b.name] = {
@@ -108,26 +93,19 @@ export function applyStoredSessionsEffects() {
           },
           {} as Record<string, ExerciseDescriptor>,
         );
-      const savedExercises = JSON.parse(
-        (await keyValueStore.getItem(exerciseListStorageKey)) ?? '{}',
-      ) as Record<string, ExerciseDescriptor>;
 
       const currentExercises = Object.entries({
         ...builtInExercisesNotAlreadyAdded,
         ...savedExercises,
       }).sort((a, b) => a[1].name.localeCompare(b[1].name));
 
+      Object.entries(builtInExercisesNotAlreadyAdded).forEach(([id, ex]) => {
+        dispatch(updateExercise({ id, exercise: ex }));
+      });
+
       dispatch(setExercises(Object.fromEntries(currentExercises)));
 
-      // We added some, so we should persist it
-      if (Object.keys(builtInExercisesNotAlreadyAdded).length) {
-        await persistExercises(
-          getState().storedSessions.savedExercises,
-          keyValueStore,
-        );
-      }
-
-      const newBuiltIns = alreadyAddedBuiltIns.concat(
+      const newBuiltIns: string[] = builtinExercisesAddedInThePast.concat(
         Object.keys(builtInExercisesNotAlreadyAdded),
       );
       await keyValueStore.setItem(
@@ -238,7 +216,7 @@ export function applyStoredSessionsEffects() {
     deleteStoredSession,
     async (
       action,
-      { stateAfterReduce, extra: { healthExportService, logger } },
+      { stateAfterReduce, extra: { healthExportService, logger, db } },
     ) => {
       const workoutId = action.payload;
       if (
@@ -252,45 +230,101 @@ export function applyStoredSessionsEffects() {
       } catch (e) {
         logger.error('Failed to delete workout from HealthConnect', e);
       }
+      await logger.time('deleteStoredSession', async () => {
+        await db
+          .delete(sessionsSchema)
+          .where(eq(sessionsSchema.id, action.payload));
+      });
     },
   );
 
   addEffect(
-    [deleteStoredSession, addStoredSession, upsertStoredSessions],
-    async (
-      _,
-      { cancelActiveListeners, getState, extra: { keyValueStore } },
-    ) => {
+    addStoredSession,
+    async (action, { cancelActiveListeners, extra: { db, logger } }) => {
       cancelActiveListeners();
-      const s = LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2.encode(
-        toSessionHistoryDao(getState().storedSessions.sessions),
-      );
-      await Promise.all([
-        keyValueStore.setItem(`${storageKey}-Version`, '2'),
-        keyValueStore.setItem(storageKey, s.finish()),
-      ]);
+      await logger.time('addStoredSession', async () => {
+        const payload = action.payload.toJSON();
+        await db
+          .insert(sessionsSchema)
+          .values({
+            id: action.payload.id,
+            modelVersion: LatestVersion,
+            payload,
+          })
+          .onConflictDoUpdate({
+            target: sessionsSchema.id,
+            set: {
+              payload: sql.raw(`excluded.${sessionsSchema.payload.name}`),
+              modelVersion: LatestVersion,
+            },
+          });
+      });
     },
   );
 
-  addDebouncedEffect(
-    [updateExercise, deleteExercise, setExercises],
-    async (_, { stateAfterReduce, extra: { keyValueStore } }) => {
+  addEffect(
+    upsertStoredSessions,
+    async (action, { cancelActiveListeners, extra: { db, logger } }) => {
+      cancelActiveListeners();
+      await logger.time('upsertStoredSessions', async () => {
+        const toUpsert = action.payload.map((x) => ({
+          id: x.id,
+          modelVersion: LatestVersion,
+          payload: x.toJSON(),
+        }));
+        await db
+          .insert(sessionsSchema)
+          .values(toUpsert)
+          .onConflictDoUpdate({
+            target: sessionsSchema.id,
+            set: {
+              payload: sql.raw(`excluded.${sessionsSchema.payload.name}`),
+              modelVersion: LatestVersion,
+            },
+          });
+      });
+    },
+  );
+
+  addEffect(deleteExercise, async (action, { extra: { db } }) => {
+    await db
+      .delete(exercisesSchema)
+      .where(eq(exercisesSchema.id, action.payload));
+  });
+
+  addEffect(updateExercise, async (action, { extra: { db } }) => {
+    await db
+      .insert(exercisesSchema)
+      .values({
+        id: action.payload.id,
+        modelVersion: LatestVersion,
+        payload: toExerciseDescriptorJSON(action.payload.exercise),
+      })
+      .onConflictDoUpdate({
+        target: exercisesSchema.id,
+        set: {
+          payload: sql.raw(`excluded.${exercisesSchema.payload.name}`),
+          modelVersion: LatestVersion,
+        },
+      });
+  });
+
+  addEffect(
+    setExercises,
+    async (action, { stateAfterReduce, extra: { db } }) => {
       if (!stateAfterReduce.storedSessions.isHydrated) {
         return;
       }
-
-      const data = stateAfterReduce.storedSessions.savedExercises;
-      await persistExercises(data, keyValueStore);
+      await db.transaction(async (tx) => {
+        await tx.delete(exercisesSchema);
+        await tx.insert(exercisesSchema).values(
+          Object.entries(action.payload).map(([id, exercise]) => ({
+            id,
+            modelVersion: LatestVersion,
+            payload: toExerciseDescriptorJSON(exercise),
+          })),
+        );
+      });
     },
   );
-
-  async function persistExercises(
-    exercises: Record<string, ExerciseDescriptor>,
-    keyValueStore: KeyValueStore,
-  ) {
-    await keyValueStore.setItem(
-      exerciseListStorageKey,
-      JSON.stringify(exercises),
-    );
-  }
 }

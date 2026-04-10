@@ -434,6 +434,8 @@
   "workout.shared_item.title": "Share your workout!",
   "workout.start.button": "Start workout",
   "workout.start_this.button": "Start this workout",
+  "workout.show_post_workout_summary.label": "Show post workout summary",
+  "workout.show_post_workout_summary.subtitle": "Displays a summary of your workout when you complete one",
   "workout.superset_next_exercise.button": "Superset next exercise",
   "workout.total_time.label": "Total workout time",
   "workout.total_weight_lifted.label": "Total weight lifted this workout",

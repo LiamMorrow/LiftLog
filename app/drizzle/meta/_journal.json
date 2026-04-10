@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1775622384434,
+      "tag": "0000_purple_betty_ross",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1775636461143,
+      "tag": "0001_light_cloak",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1775769957219,
+      "tag": "0002_rainy_grey_gargoyle",
+      "breakpoints": true
+    }
+  ]
+}
