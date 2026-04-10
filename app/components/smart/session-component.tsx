@@ -25,7 +25,7 @@ import { useDispatch, useStore } from 'react-redux';
 import { Linking, View } from 'react-native';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
-import { useTranslate } from '@tolgee/react';
+import { T, useTranslate } from '@tolgee/react';
 import ItemList from '@/components/presentation/foundation/item-list';
 import {
   RecordedCardioExercise,
@@ -44,17 +44,15 @@ import { ExerciseEditor } from '@/components/presentation/workout-editor/exercis
 import { LocalTime, OffsetDateTime, ZoneId } from '@js-joda/core';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { UnknownAction } from '@reduxjs/toolkit';
-import {
-  selectPreviousComparableSession,
-  selectRecentlyCompletedExercises,
-} from '@/store/stored-sessions';
+import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
 import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { match, P } from 'ts-pattern';
 import { CardioExercise } from '@/components/presentation/workout/cardio/cardio-exercise';
 import { DelayRender } from '../presentation/foundation/delay-render';
 import { Loader } from '../presentation/foundation/loader';
-import SessionComparisonTable from '@/components/presentation/workout/session-comparison-table';
+import WeightFormat from '../presentation/foundation/weight-format';
+import { formatDuration } from '@/utils/format-date';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
@@ -78,10 +76,6 @@ export default function SessionComponent(props: {
   const recentlyCompletedExercises = useAppSelectorWithArg(
     selectRecentlyCompletedExercises,
     10,
-  );
-  const previousComparableSession = useAppSelectorWithArg(
-    selectPreviousComparableSession,
-    session,
   );
   const resetTimer = () => {
     storeDispatch(setWorkoutSessionLastSetTime(OffsetDateTime.now()));
@@ -356,35 +350,39 @@ export default function SessionComponent(props: {
       .exhaustive();
   };
 
-  const bodyWeight = props.showBodyweight ? (
-    <View
-      style={{
-        marginHorizontal: spacing.pageHorizontalMargin,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}
+  const bodyweight = props.showBodyweight ? (
+    <Card
+      style={{ marginHorizontal: spacing.pageHorizontalMargin }}
+      mode="contained"
       testID="bodyweight-card"
     >
-      <Text
+      <Card.Content
         style={{
-          ...font['text-xl'],
-          fontWeight: 'bold',
-          color: colors.onSurface,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}
       >
-        {t('exercise.bodyweight.label')}
-      </Text>
-      <WeightDisplay
-        allowNull={true}
-        weight={session.bodyweight}
-        updateWeight={(bodyweight) =>
-          dispatch(updateBodyweight, { bodyweight })
-        }
-        increment={new BigNumber('0.1')}
-        label={t('exercise.bodyweight.label')}
-      />
-    </View>
+        <Text
+          style={{
+            ...font['text-xl'],
+            fontWeight: 'bold',
+            color: colors.onSurface,
+          }}
+        >
+          {t('exercise.bodyweight.label')}
+        </Text>
+        <WeightDisplay
+          allowNull={true}
+          weight={session.bodyweight}
+          updateWeight={(bodyweight) =>
+            dispatch(updateBodyweight, { bodyweight })
+          }
+          increment={new BigNumber('0.1')}
+          label={t('exercise.bodyweight.label')}
+        />
+      </Card.Content>
+    </Card>
   ) : null;
 
   const lastExercise = session.lastExercise;
@@ -450,24 +448,54 @@ export default function SessionComponent(props: {
     />
   );
 
-  const totalWeightLifted = (
-    <View
-      style={{
-        marginHorizontal: spacing.pageHorizontalMargin,
-        marginVertical: spacing[2],
-      }}
+  const workoutSummary = (
+    <Card
+      mode="contained"
+      onPress={
+        props.target === 'workoutSession'
+          ? props.openPostWorkoutSummary
+          : undefined
+      }
+      style={{ margin: spacing.pageHorizontalMargin }}
     >
-      <SessionComparisonTable
-        mode={props.target === 'workoutSession' ? 'compact' : 'full'}
-        onPress={
-          props.target === 'workoutSession'
-            ? props.openPostWorkoutSummary
-            : undefined
-        }
-        previousSession={previousComparableSession}
-        session={session}
-      />
-    </View>
+      <Card.Content>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Text variant="bodyMedium">
+            <T keyName="workout.total_weight_lifted.label" />
+          </Text>
+          <WeightFormat
+            fontWeight="bold"
+            color="primary"
+            weight={session.totalWeightLifted}
+          />
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Text variant="bodyMedium">
+            <T keyName="workout.total_time.label" />
+          </Text>
+          <Text
+            variant="bodyMedium"
+            style={{ color: colors.primary, fontWeight: 'bold' }}
+          >
+            {(session.duration &&
+              formatDuration(session.duration, 'hours-mins')) ||
+              '-'}
+          </Text>
+        </View>
+      </Card.Content>
+    </Card>
   );
 
   return (
@@ -476,8 +504,8 @@ export default function SessionComponent(props: {
         {notesComponent}
         {emptyInfo}
         <ItemList items={session.recordedExercises} renderItem={renderItem} />
-        {bodyWeight}
-        {totalWeightLifted}
+        {bodyweight}
+        {workoutSummary}
         <FullScreenDialog
           avoidKeyboard
           title={
