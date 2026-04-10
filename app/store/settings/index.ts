@@ -23,6 +23,7 @@ interface SettingsState {
   showFeed: boolean;
   restNotifications: boolean;
   crashReportsEnabled: boolean;
+  showPostWorkoutSummary: boolean;
   welcomeWizardCompleted: boolean;
   remoteBackupSettings: RemoteBackupSettings;
   lastBackup: RemoteData<LastBackup, string>;
@@ -50,6 +51,7 @@ const initialState: SettingsState = {
   showFeed: true,
   restNotifications: true,
   crashReportsEnabled: true,
+  showPostWorkoutSummary: false,
   welcomeWizardCompleted: false,
   proToken: undefined,
   remoteBackupSettings: {
@@ -102,6 +104,9 @@ const settingsSlice = createSlice({
     },
     setKeepScreenAwakeDuringWorkout(state, action: PayloadAction<boolean>) {
       state.keepScreenAwakeDuringWorkout = action.payload;
+    },
+    setShowPostWorkoutSummary(state, action: PayloadAction<boolean>) {
+      state.showPostWorkoutSummary = action.payload;
     },
     setRemoteBackupSettings(
       state,
@@ -183,6 +188,7 @@ export const {
   setNotesExpandedByDefault,
   setKeepScreenAwakeDuringWorkout,
   setExportToHealthAggregator,
+  setShowPostWorkoutSummary,
 } = settingsSlice.actions;
 
 export const { selectPreferredWeightUnit } = settingsSlice.selectors;

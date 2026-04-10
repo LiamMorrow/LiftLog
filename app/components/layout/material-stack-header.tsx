@@ -15,6 +15,16 @@ export default function MaterialStackHeader(props: NativeStackHeaderProps) {
   const { isScrolled } = useScroll();
   const scrollColor = useSharedValue(0);
   const { colors } = useAppTheme();
+  const customHeaderLeft = props.options.headerLeft?.({
+    canGoBack: !!props.back,
+    tintColor: colors.onSurface,
+    label: props.back?.title,
+    href: undefined,
+  });
+  const showDefaultBackAction =
+    !!props.back &&
+    props.options.headerBackVisible !== false &&
+    customHeaderLeft === undefined;
 
   useEffect(() => {
     scrollColor.value = withTiming(isScrolled ? 1 : 0, {
@@ -33,12 +43,17 @@ export default function MaterialStackHeader(props: NativeStackHeaderProps) {
   return (
     <Animated.View style={backgroundStyle}>
       <Appbar.Header
-        mode={props.back && Platform.OS !== 'ios' ? 'small' : 'center-aligned'}
+        mode={
+          showDefaultBackAction && Platform.OS !== 'ios'
+            ? 'small'
+            : 'center-aligned'
+        }
         style={{
           backgroundColor: 'transparent',
         }}
       >
-        {props.back ? (
+        {customHeaderLeft}
+        {showDefaultBackAction ? (
           <Appbar.BackAction onPress={() => props.navigation.goBack()} />
         ) : null}
         <Appbar.Content title={props.options.title} />

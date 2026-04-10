@@ -19,10 +19,17 @@ export function localeFormatBigNumber(
   if (!num) {
     return '';
   }
+  const format = {
+    groupSeparator: localeUsesComma() ? ' ' : ',',
+    groupSize: 3,
+    decimalSeparator: localeUsesComma() ? ',' : '.',
+  };
   if (localeUsesComma()) {
     return decimalPlaces !== undefined
-      ? num.toFormat(decimalPlaces, { decimalSeparator: ',' })
-      : num.toFormat({ decimalSeparator: ',' });
+      ? num.toFormat(decimalPlaces, format)
+      : num.toFormat(format);
   }
-  return num.toFormat(decimalPlaces);
+  return decimalPlaces !== undefined
+    ? num.toFormat(decimalPlaces, format)
+    : num.toFormat(format);
 }

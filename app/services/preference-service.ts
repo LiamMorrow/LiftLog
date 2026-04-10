@@ -238,6 +238,18 @@ export class PreferenceService {
     );
   }
 
+  async getShowPostWorkoutSummary(): Promise<boolean> {
+    const value = await this.keyValueStore.getItem('showPostWorkoutSummary');
+    return fromBooleanString(value, false);
+  }
+
+  async setShowPostWorkoutSummary(value: boolean): Promise<void> {
+    await this.keyValueStore.setItem(
+      'showPostWorkoutSummary',
+      toBooleanString(value),
+    );
+  }
+
   async setColorSchemeSeed(payload: ColorSchemeSeed): Promise<void> {
     await this.keyValueStore.setItem('colorSchemeSeed', payload);
   }

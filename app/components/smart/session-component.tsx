@@ -47,16 +47,17 @@ import { UnknownAction } from '@reduxjs/toolkit';
 import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
 import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
-import WeightFormat from '@/components/presentation/foundation/weight-format';
-import { formatDuration } from '@/utils/format-date';
 import { match, P } from 'ts-pattern';
 import { CardioExercise } from '@/components/presentation/workout/cardio/cardio-exercise';
 import { DelayRender } from '../presentation/foundation/delay-render';
 import { Loader } from '../presentation/foundation/loader';
+import WeightFormat from '../presentation/foundation/weight-format';
+import { formatDuration } from '@/utils/format-date';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
   showBodyweight: boolean;
+  openPostWorkoutSummary?: () => void;
   saveAndClose?: () => void;
 }) {
   const { colors } = useAppTheme();
@@ -349,7 +350,7 @@ export default function SessionComponent(props: {
       .exhaustive();
   };
 
-  const bodyWeight = props.showBodyweight ? (
+  const bodyweight = props.showBodyweight ? (
     <Card
       style={{ marginHorizontal: spacing.pageHorizontalMargin }}
       mode="contained"
@@ -439,7 +440,6 @@ export default function SessionComponent(props: {
             alignItems: 'center',
           }}
         >
-          {/* Centre the timer */}
           <View style={{ flex: 1 }}></View>
           {restTimer}
           {saveButton}
@@ -448,8 +448,16 @@ export default function SessionComponent(props: {
     />
   );
 
-  const totalWeightLifted = (
-    <Card mode="contained" style={{ margin: spacing.pageHorizontalMargin }}>
+  const workoutSummary = (
+    <Card
+      mode="contained"
+      onPress={
+        props.target === 'workoutSession'
+          ? props.openPostWorkoutSummary
+          : undefined
+      }
+      style={{ margin: spacing.pageHorizontalMargin }}
+    >
       <Card.Content>
         <View
           style={{
@@ -496,8 +504,8 @@ export default function SessionComponent(props: {
         {notesComponent}
         {emptyInfo}
         <ItemList items={session.recordedExercises} renderItem={renderItem} />
-        {bodyWeight}
-        {totalWeightLifted}
+        {bodyweight}
+        {workoutSummary}
         <FullScreenDialog
           avoidKeyboard
           title={

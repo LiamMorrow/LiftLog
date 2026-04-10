@@ -10,6 +10,7 @@ import {
   setNotesExpandedByDefault,
   setShowBodyweight,
   setShowFeed,
+  setShowPostWorkoutSummary,
   setShowTips,
   setWelcomeWizardCompleted,
 } from '@/store/settings';
@@ -42,6 +43,14 @@ export default function AppConfiguration() {
           supportingText={<T keyName="feed.show_feed.subtitle" />}
           value={settings.showFeed}
           onValueChange={(value) => dispatch(setShowFeed(value))}
+        />
+        <ListSwitch
+          headline={<T keyName="workout.show_post_workout_summary.label" />}
+          supportingText={
+            <T keyName="workout.show_post_workout_summary.subtitle" />
+          }
+          value={settings.showPostWorkoutSummary}
+          onValueChange={(value) => dispatch(setShowPostWorkoutSummary(value))}
         />
 
         <ListSwitch
