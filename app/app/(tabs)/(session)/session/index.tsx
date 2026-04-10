@@ -38,7 +38,6 @@ export default function Index() {
       }
       setConfirmOpen(false);
     }
-    dispatch(finishCurrentWorkout('workoutSession'));
     if (showPostWorkoutSummary) {
       setPostWorkoutSessionId(finishedSessionId);
       if (finishedSessionId) {
@@ -47,8 +46,10 @@ export default function Index() {
         );
         return;
       }
+    } else {
+      dispatch(finishCurrentWorkout('workoutSession'));
+      dismissTo('/');
     }
-    dismissTo('/');
   };
   useEffect(() => {
     if (!session && !postWorkoutSessionId) {

@@ -3,7 +3,10 @@ import FloatingBottomContainer from '@/components/presentation/foundation/floati
 import { SessionComparisonTable } from '@/components/presentation/workout/session-comparison-table';
 import { spacing } from '@/hooks/useAppTheme';
 import { useAppSelectorWithArg } from '@/store';
-import { selectCurrentSession } from '@/store/current-session';
+import {
+  finishCurrentWorkout,
+  selectCurrentSession,
+} from '@/store/current-session';
 import {
   selectPreviousComparableSession,
   selectSession,
@@ -13,6 +16,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { View } from 'react-native';
 import { FAB } from 'react-native-paper';
+import { useDispatch } from 'react-redux';
 
 export default function PostWorkoutPage() {
   const { sessionId, source } = useLocalSearchParams<{
@@ -37,6 +41,7 @@ export default function PostWorkoutPage() {
     session,
   );
   const { dismissTo } = useRouter();
+  const dispatch = useDispatch();
   const { t } = useTranslate();
 
   useEffect(() => {
@@ -53,7 +58,10 @@ export default function PostWorkoutPage() {
     <FloatingBottomContainer
       fab={
         <FAB
-          onPress={() => dismissTo('/(tabs)/(session)')}
+          onPress={() => {
+            dispatch(finishCurrentWorkout('workoutSession'));
+            dismissTo('/');
+          }}
           icon={'check'}
           label={t('generic.finish.button')}
         />
