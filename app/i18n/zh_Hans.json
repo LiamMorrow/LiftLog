@@ -1,1 +1,18 @@
-{}
+{
+    "ai.planner.subtitle": "使用AI生成一份可达成您目标的完整的训练计划",
+    "ai.planner.title": "AI 训练规划",
+    "exercise.progressive_overload.label": "渐进超负荷",
+    "ai.restart_chat.button": "重置会话",
+    "ai.type_your_message.placeholder": "请输入对话内容",
+    "ai.upgrade_to_pro.button": "升级Pro版",
+    "ai.upgrade_to_pro.explanation": "解锁AI训练规划，量身定制适合您的训练计划。<br>购买终身可享：",
+    "backup.api_key.label": "API Key",
+    "backup.automatic_remote.subtitle": "备份至远程服务器，适用于进阶用户",
+    "backup.automatic_remote.title": "自动远程备份",
+    "backup.backup_data.subtitle": "导出数据到文件，用于备份或数据迁移",
+    "backup.backup_data.title": "备份数据",
+    "backup.endpoint.label": "远程端口",
+    "backup.export_backup_restore.subtitle": "创建数据备份，用以同步到其他设备",
+    "backup.export_backup_restore.title": "导出/备份/数据恢复",
+    "backup.failed_to_remote.message": "备份至远程服务器失败"
+}
