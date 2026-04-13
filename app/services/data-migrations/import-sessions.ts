@@ -47,7 +47,8 @@ export async function importSessions(
     }) ?? [];
 
   await db.transaction(async (tx) => {
-    await tx.insert(sessionsSchema).values(completedSessionsList);
+    if (completedSessionsList.length)
+      await tx.insert(sessionsSchema).values(completedSessionsList);
     await tx
       .insert(dataMigrationsSchema)
       .values({ id: importSessionsDataMigration });
