@@ -27,9 +27,7 @@ export async function importExercises(
   );
 
   await db.transaction(async (tx) => {
-    if (converted.length) {
-      await tx.insert(exercisesSchema).values(converted);
-    }
+    if (converted.length) await tx.insert(exercisesSchema).values(converted);
     await tx
       .insert(dataMigrationsSchema)
       .values({ id: importExercisesDataMigration });

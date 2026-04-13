@@ -111,6 +111,7 @@ module.exports = defineConfig([
   globalIgnores([
     'plugins',
     '**/gen',
+    'scripts/**',
     '**/vitest.config.ts',
     '**/metro.config.js',
     '**/babel.config.js',

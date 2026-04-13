@@ -37,9 +37,7 @@ export async function importPrograms(
   );
 
   await db.transaction(async (tx) => {
-    if (converted.length) {
-      await tx.insert(programsSchema).values(converted);
-    }
+    if (converted.length) await tx.insert(programsSchema).values(converted);
     await tx
       .insert(dataMigrationsSchema)
       .values({ id: importProgramsDataMigration });
