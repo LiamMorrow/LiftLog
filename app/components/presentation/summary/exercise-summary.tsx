@@ -3,6 +3,7 @@ import { formatTimeSpan } from '@/components/presentation/foundation/rest-format
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { useFormatDate } from '@/hooks/useFormatDate';
 import { Weight } from '@/models/weight';
 import {
   RecordedExercise,
@@ -11,7 +12,6 @@ import {
 import { formatDistance } from '@/utils/distance';
 import { localeFormatBigNumber } from '@/utils/locale-bignumber';
 import { isNotNullOrUndefined } from '@/utils/null';
-import { DateTimeFormatter } from '@js-joda/core';
 import Enumerable from 'linq';
 import { ReactNode } from 'react';
 import { View } from 'react-native';
@@ -153,6 +153,7 @@ export default function ExerciseSummary({
   showWeight,
   isFilled,
 }: ExerciseSummaryProps) {
+  const formatDate = useFormatDate();
   return (
     <View
       style={{
@@ -170,7 +171,12 @@ export default function ExerciseSummary({
       ) : undefined}
       {showDate ? (
         <SurfaceText>
-          {exercise.latestTime?.format(DateTimeFormatter.ISO_DATE)}
+          {exercise.latestTime &&
+            formatDate(exercise.latestTime.toLocalDate(), {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+            })}
         </SurfaceText>
       ) : undefined}
       <ChipScroller>
