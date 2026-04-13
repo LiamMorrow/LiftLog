@@ -1,7 +1,7 @@
 import { BuiltInPrograms } from '@/models/built-in-programs';
 import { RemoteData } from '@/models/remote';
 import { ProgramBlueprint } from '@/models/blueprint-models';
-import { addEffect, RootState } from '@/store/store';
+import { AddEffectFn, RootState } from '@/store/store';
 import {
   fetchUpcomingSessions,
   initializeProgramStateSlice,
@@ -22,11 +22,11 @@ import {
   toLocalDateJSON,
 } from '@/models/storage/versions/latest';
 import { LocalDate } from '@js-joda/core';
-import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { toRecord } from '@/utils/reduce';
+import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 
 const builtInProgramsStorageKey = 'hasSavedDefaultPlans2';
-export function applyProgramEffects() {
+export function applyProgramEffects(addEffect: AddEffectFn) {
   addEffect(
     initializeProgramStateSlice,
     async (

@@ -10,10 +10,10 @@ import {
 } from '@/store/ai-planner';
 import { setIsHydrated } from '@/store/ai-planner';
 
-import { addEffect } from '@/store/store';
+import { AddEffectFn } from '@/store/store';
 import { uuid } from '@/utils/uuid';
 
-export function applyAiPlannerEffects() {
+export function applyAiPlannerEffects(addEffect: AddEffectFn) {
   addEffect(initializeAiPlannerStateSlice, async (_, { dispatch }) => {
     dispatch(setIsHydrated(true));
   });

@@ -5,14 +5,14 @@ import {
   shareString,
   showSnackbar,
 } from '@/store/app';
-import { addEffect } from '@/store/store';
+import { AddEffectFn } from '@/store/store';
 import { sleep } from '@/utils/sleep';
 import { initializeSettingsStateSlice } from '../settings';
 import { initializeProgramStateSlice } from '../program';
 import { initializeFeedStateSlice } from '../feed';
 import { initializeAiPlannerStateSlice } from '../ai-planner';
 
-export function applyAppEffects() {
+export function applyAppEffects(addEffect: AddEffectFn) {
   addEffect(
     initializeAppStateSlice,
     async (

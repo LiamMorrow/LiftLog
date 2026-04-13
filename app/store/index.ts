@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-restricted-imports
 import { useSelector as untypedUseSelector } from 'react-redux';
 
-import store, { type RootState, type AppDispatch } from '@/store/store';
+import { type RootState, type AppDispatch, createStore } from '@/store/store';
 import { applyProgramEffects } from '@/store/program/effects';
 import { applyCurrentSessionEffects } from '@/store/current-session/effects';
 import { applyAppEffects } from '@/store/app/effects';
@@ -13,20 +13,25 @@ import { applyFeedEffects } from '@/store/feed/effects';
 import { applyStatsEffects } from '@/store/stats/effects';
 import { applyAiPlannerEffects } from '@/store/ai-planner/effects';
 import { clearAllListeners } from '@reduxjs/toolkit';
+import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 
-export { store, RootState, AppDispatch };
+export { RootState, AppDispatch };
 
-store.dispatch(clearAllListeners());
-applyProgramEffects();
-applyCurrentSessionEffects();
-applyAppEffects();
-applySettingsEffects();
-applyStoredSessionsEffects();
-applyFeedEffects();
-applyStatsEffects();
-applyAiPlannerEffects();
+export function resolveStore(db: ExpoSQLiteDatabase) {
+  const { store, addEffect } = createStore(db);
+  store.dispatch(clearAllListeners());
+  applyProgramEffects(addEffect);
+  applyCurrentSessionEffects(addEffect);
+  applyAppEffects(addEffect);
+  applySettingsEffects(addEffect);
+  applyStoredSessionsEffects(addEffect);
+  applyFeedEffects(addEffect);
+  applyStatsEffects(addEffect);
+  applyAiPlannerEffects(addEffect);
 
-store.dispatch(initializeAppStateSlice());
+  store.dispatch(initializeAppStateSlice());
+  return store;
+}
 
 export const useAppSelector = untypedUseSelector.withTypes<RootState>();
 

@@ -2,8 +2,6 @@ import { Stack } from 'expo-router';
 import { AppThemeProvider } from '@/hooks/useAppTheme';
 import { I18nManager, LogBox, Platform, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Provider } from 'react-redux';
-import { store } from '@/store';
 import { AppStateProvider } from '@/components/smart/app-state-provider';
 import SnackbarProvider from '@/components/smart/snackbar-provider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -32,30 +30,28 @@ export default Sentry.wrap(function RootLayout() {
   return (
     <GestureHandlerRootView>
       <KeyboardProvider>
-        <Provider store={store}>
-          <SafeAreaProvider>
-            <ServicesProvider>
-              <AppThemeProvider>
-                <AppStateProvider>
-                  <SnackbarProvider>
-                    <Stack
-                      screenOptions={{
-                        headerShown: false,
-                        statusBarStyle:
-                          Platform.OS === 'android'
-                            ? colorScheme === 'dark'
-                              ? 'light'
-                              : 'dark'
-                            : undefined,
-                        gestureEnabled: false,
-                      }}
-                    />
-                  </SnackbarProvider>
-                </AppStateProvider>
-              </AppThemeProvider>
-            </ServicesProvider>
-          </SafeAreaProvider>
-        </Provider>
+        <SafeAreaProvider>
+          <ServicesProvider>
+            <AppThemeProvider>
+              <AppStateProvider>
+                <SnackbarProvider>
+                  <Stack
+                    screenOptions={{
+                      headerShown: false,
+                      statusBarStyle:
+                        Platform.OS === 'android'
+                          ? colorScheme === 'dark'
+                            ? 'light'
+                            : 'dark'
+                          : undefined,
+                      gestureEnabled: false,
+                    }}
+                  />
+                </SnackbarProvider>
+              </AppStateProvider>
+            </AppThemeProvider>
+          </ServicesProvider>
+        </SafeAreaProvider>
       </KeyboardProvider>
     </GestureHandlerRootView>
   );

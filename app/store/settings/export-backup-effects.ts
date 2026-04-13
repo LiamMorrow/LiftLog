@@ -1,5 +1,5 @@
 import { google, LiftLog } from '@/gen/proto';
-import { addEffect } from '@/store/store';
+import { AddEffectFn } from '@/store/store';
 import { selectAllPrograms } from '@/store/program';
 import { exportData } from '@/store/settings';
 import { streamToUint8Array } from '@/utils/stream';
@@ -7,7 +7,7 @@ import 'compression-streams-polyfill';
 import { toFeedStateDao } from '../feed';
 import { DateTimeFormatter, LocalDateTime } from '@js-joda/core';
 
-export function addExportBackupEffects() {
+export function addExportBackupEffects(addEffect: AddEffectFn) {
   addEffect(
     exportData,
     async (

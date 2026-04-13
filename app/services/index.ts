@@ -20,17 +20,17 @@ import { RootState } from '@/store';
 import { Store } from '@reduxjs/toolkit';
 import { HealthExportService } from './health-export-service';
 import { HealthExportService as HES } from './health-export-service-shared';
-import { drizzle } from 'drizzle-orm/expo-sqlite';
-import { openDatabaseSync } from 'expo-sqlite';
 import { DatabaseMigrationService } from './database-migration-service';
+import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 
 export type Services = Awaited<ReturnType<typeof resolveServicesInternal>>;
 
-const expo = openDatabaseSync('db.db');
-const db = drizzle(expo);
 let resolvedServices: Services | undefined;
 
-function resolveServicesInternal(store: Store<RootState>) {
+function resolveServicesInternal(
+  store: Store<RootState>,
+  db: ExpoSQLiteDatabase,
+) {
   if (!store) {
     throw new Error('Tried to resolve services without store');
   }
@@ -101,8 +101,8 @@ function resolveServicesInternal(store: Store<RootState>) {
   };
 }
 
-function resolveServices(store: Store<RootState>) {
-  return (resolvedServices ??= resolveServicesInternal(store));
+function resolveServices(store: Store<RootState>, db: ExpoSQLiteDatabase) {
+  return (resolvedServices ??= resolveServicesInternal(store, db));
 }
 
-export { resolveServices, db };
+export { resolveServices };

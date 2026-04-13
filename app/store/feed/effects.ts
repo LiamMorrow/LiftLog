@@ -1,4 +1,4 @@
-import { addEffect, getState } from '@/store/store';
+import { AddEffectFn } from '@/store/store';
 import {
   createFeedIdentity,
   feedApiError,
@@ -25,7 +25,7 @@ import { Platform } from 'react-native';
 import { fromFeedStateDao, toFeedStateDao } from './conversions';
 
 const StorageKey = 'FeedState';
-export function applyFeedEffects() {
+export function applyFeedEffects(addEffect: AddEffectFn) {
   addEffect(
     initializeFeedStateSlice,
     async (
@@ -252,6 +252,7 @@ export function applyFeedEffects() {
       {
         stateAfterReduce,
         dispatch,
+        getState,
         extra: { feedIdentityService },
         cancelActiveListeners,
         signal,
@@ -315,8 +316,8 @@ export function applyFeedEffects() {
     },
   );
 
-  addSharedItemEffects();
-  addFeedItemEffects();
-  addInboxEffects();
-  addFollowingEffects();
+  addSharedItemEffects(addEffect);
+  addFeedItemEffects(addEffect);
+  addInboxEffects(addEffect);
+  addFollowingEffects(addEffect);
 }

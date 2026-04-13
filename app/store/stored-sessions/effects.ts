@@ -1,4 +1,4 @@
-import { addEffect } from '@/store/store';
+import { AddEffectFn } from '@/store/store';
 import {
   addStoredSession,
   checkIfWeightMigrationRequired,
@@ -32,7 +32,7 @@ import {
 // We keep track of added builting exerciseIds (which are the exercise name for builtins)
 // Then we make sure builtins don't get re-added if they are deleted
 const addedBuiltInExerciseIdsStorageKey = 'AddedBuiltInExerciseIdList';
-export function applyStoredSessionsEffects() {
+export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
   // Dispatched AFTER settings, so we can safely access settings
   addEffect(
     initializeStoredSessionsStateSlice,

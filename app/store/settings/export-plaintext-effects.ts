@@ -3,7 +3,7 @@ import {
   RecordedExercise,
   Session,
 } from '@/models/session-models';
-import { addEffect } from '@/store/store';
+import { AddEffectFn } from '@/store/store';
 import { exportPlainText } from '@/store/settings';
 import Enumerable from 'linq';
 import { match } from 'ts-pattern';
@@ -12,7 +12,7 @@ import { jsonToCSV } from 'react-native-csv';
 import { shortFormatWeightUnit } from '@/models/weight';
 import { DateTimeFormatter, LocalDateTime } from '@js-joda/core';
 
-export function addExportPlaintextEffects() {
+export function addExportPlaintextEffects(addEffect: AddEffectFn) {
   addEffect(
     exportPlainText,
     async (

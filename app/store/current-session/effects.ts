@@ -18,7 +18,7 @@ import {
   setCurrentSessionFromBlueprint,
   setIsHydrated,
 } from '@/store/current-session';
-import { addEffect } from '@/store/store';
+import { AddEffectFn } from '@/store/store';
 import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
 import {
   addStoredSession,
@@ -35,7 +35,7 @@ import {
 import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
 
 const storageKey = 'CurrentSessionStateV1';
-export function applyCurrentSessionEffects() {
+export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
   addEffect(
     initializeCurrentSessionStateSlice,
     async (_, { dispatch, getState, extra: { keyValueStore, logger } }) => {

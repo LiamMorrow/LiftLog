@@ -8,7 +8,7 @@ import {
   fetchFeedItems,
   setIsFetching,
 } from '@/store/feed';
-import { addEffect } from '@/store/store';
+import { AddEffectFn } from '@/store/store';
 import { LiftLog } from '@/gen/proto';
 import {
   FeedIdentity,
@@ -37,7 +37,7 @@ import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-
 
 const MIN_TIMESTAMP = Instant.parse('2000-01-01T00:00:00Z');
 
-export function addFeedItemEffects() {
+export function addFeedItemEffects(addEffect: AddEffectFn) {
   addEffect(
     fetchFeedItems,
     async (

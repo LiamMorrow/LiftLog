@@ -17,7 +17,7 @@ import {
   SessionBlueprint,
   ExerciseBlueprint,
 } from '@/models/blueprint-models';
-import { useAppSelector } from '@/store';
+import { RootState, useAppSelector } from '@/store';
 import { setProgramSession } from '@/store/program';
 import {
   addExercise,
@@ -29,13 +29,12 @@ import {
   setEditingSessionNotes,
   updateSessionExercise,
 } from '@/store/session-editor';
-import { getState } from '@/store/store';
 import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
 import { Redirect, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Card, FAB, TextInput } from 'react-native-paper';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useStore } from 'react-redux';
 
 export default function ManageWorkouts() {
   const { sessionIndex: sessionIndexStr, programId } = useLocalSearchParams<{
@@ -66,6 +65,7 @@ function SessionEditor({
   sessionIndex: number;
 }) {
   const dispatch = useDispatch();
+  const { getState } = useStore<RootState>();
   const [selectedExercise, setSelectedExercise] = useState<
     ExerciseBlueprint | undefined
   >(undefined);

@@ -1,4 +1,4 @@
-import { addEffect } from '@/store/store';
+import { AddEffectFn } from '@/store/store';
 import {
   fetchAndSetSharedFeedUser,
   requestFollowUser,
@@ -31,7 +31,7 @@ import { toUuidDao } from '@/models/storage/conversions.to-dao';
 import { FeedInboxDecryptionService } from '@/services/feed-inbox-decryption-service';
 import { ApiErrorType } from '@/services/api-error';
 
-export function addFollowingEffects() {
+export function addFollowingEffects(addEffect: AddEffectFn) {
   addEffect(
     fetchAndSetSharedFeedUser,
     async (action, { dispatch, extra: { feedApiService } }) => {

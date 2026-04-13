@@ -1,5 +1,5 @@
 import { RemoteData } from '@/models/remote';
-import { addEffect } from '@/store/store';
+import { AddEffectFn } from '@/store/store';
 import {
   initializeSettingsStateSlice,
   setBackupReminder,
@@ -36,7 +36,7 @@ import { initializeStoredSessionsStateSlice } from '@/store/stored-sessions';
 import { initializeCurrentSessionStateSlice } from '@/store/current-session';
 import * as Sentry from '@sentry/react-native';
 
-export function applySettingsEffects() {
+export function applySettingsEffects(addEffect: AddEffectFn) {
   addEffect(
     initializeSettingsStateSlice,
     async (
@@ -343,8 +343,8 @@ export function applySettingsEffects() {
     },
   );
 
-  addExportPlaintextEffects();
-  addExportBackupEffects();
-  addImportBackupEffects();
-  addRemoteBackupEffects();
+  addExportPlaintextEffects(addEffect);
+  addExportBackupEffects(addEffect);
+  addImportBackupEffects(addEffect);
+  addRemoteBackupEffects(addEffect);
 }

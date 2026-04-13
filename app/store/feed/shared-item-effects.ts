@@ -9,10 +9,10 @@ import {
   fetchSharedItem,
   setSharedItem,
 } from '@/store/feed';
-import { addEffect } from '@/store/store';
+import { AddEffectFn } from '@/store/store';
 import { toUrlSafeHexString } from '@/utils/to-url-safe-hex-string';
 
-export function addSharedItemEffects() {
+export function addSharedItemEffects(addEffect: AddEffectFn) {
   addEffect(
     encryptAndShare,
     async (

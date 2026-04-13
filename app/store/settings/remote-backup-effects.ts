@@ -1,6 +1,6 @@
 import { google, LiftLog } from '@/gen/proto';
 import { RemoteData } from '@/models/remote';
-import { addEffect } from '@/store/store';
+import { AddEffectFn } from '@/store/store';
 import { selectAllPrograms } from '@/store/program';
 import {
   executeRemoteBackup,
@@ -45,7 +45,7 @@ async function processInChunks<T, R>(
   return results;
 }
 
-export function addRemoteBackupEffects() {
+export function addRemoteBackupEffects(addEffect: AddEffectFn) {
   addEffect(
     executeRemoteBackup,
     async (

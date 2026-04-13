@@ -1,4 +1,4 @@
-import { addEffect } from '@/store/store';
+import { AddEffectFn } from '@/store/store';
 import {
   fetchInboxItems,
   feedApiError,
@@ -14,7 +14,7 @@ import { GetInboxMessagesRequest } from '@/models/feed-api-models';
 import { fromUuidDao } from '@/models/storage/conversions.from-dao';
 import { AesKey } from '@/models/encryption-models';
 
-export function addInboxEffects() {
+export function addInboxEffects(addEffect: AddEffectFn) {
   addEffect(
     fetchInboxItems,
     async (

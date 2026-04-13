@@ -1,7 +1,7 @@
 import { LiftLog } from '@/gen/proto';
 import { Logger } from '@/services/logger';
 import { showSnackbar } from '@/store/app';
-import { addEffect } from '@/store/store';
+import { AddEffectFn } from '@/store/store';
 import {
   createSavedPlan,
   setActivePlan,
@@ -21,7 +21,7 @@ import { Session } from '@/models/session-models';
 import { ProgramBlueprint, SessionBlueprint } from '@/models/blueprint-models';
 import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
 
-export function addImportBackupEffects() {
+export function addImportBackupEffects(addEffect: AddEffectFn) {
   addEffect(
     importData,
     async (_, { dispatch, extra: { filePickerService, logger, tolgee } }) => {
