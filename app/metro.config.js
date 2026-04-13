@@ -8,5 +8,6 @@ const config = getSentryExpoConfig(__dirname, {
 });
 
 config.resolver.sourceExts.push('sql');
+config.resolver.assetExts.push('wasm');
 
 module.exports = wrapWithReanimatedMetroConfig(config);

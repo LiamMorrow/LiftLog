@@ -25,6 +25,7 @@ export function MaterialBottomTabs({
 }: MaterialBottomTabsProps) {
   const showFeed = useAppSelector((x) => x.settings.showFeed);
   const { dismissTo } = useRouter();
+
   return (
     <Tabs
       screenOptions={{
@@ -32,16 +33,20 @@ export function MaterialBottomTabs({
         animation: Platform.OS === 'web' ? 'none' : 'shift',
       }}
       tabBar={({ navigation, state, descriptors, insets }) => {
+        const hiddenRouteNames = new Set(['stats', 'history']);
         const routes = state.routes.filter(
-          (x) => showFeed || !x.name.includes('feed'),
+          (route) =>
+            (showFeed || !route.name.includes('feed')) &&
+            !hiddenRouteNames.has(route.name),
         );
+
         return (
           <BottomNavigation.Bar
             testID="nav"
             {...props}
             navigationState={{
               ...state,
-              routes: routes,
+              routes,
             }}
             safeAreaInsets={insets}
             labeled
@@ -57,13 +62,10 @@ export function MaterialBottomTabs({
                 return;
               }
 
-              // Emulates the behaviour of popping to the top of the stack
-              // when tapping the tab of a stack you're already on
-              // on web
               const shouldPopToTop =
                 Platform.OS === 'web' &&
                 state.index ===
-                  state.routes.findIndex((r) => r.key === route.key);
+                  state.routes.findIndex((candidate) => candidate.key === route.key);
 
               if (shouldPopToTop) {
                 navigation.navigate(route.name, route.params);
@@ -74,7 +76,7 @@ export function MaterialBottomTabs({
                 // @ts-expect-error
                 navigation.dispatch({
                   ...CommonActions.navigate(route.name, route.params),
-                  target: state.key, // target the tab navigator
+                  target: state.key,
                 });
               }
             }}
