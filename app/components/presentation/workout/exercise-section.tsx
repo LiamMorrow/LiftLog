@@ -1,6 +1,9 @@
 import ItemTitle from '@/components/presentation/foundation/item-title';
 import { spacing } from '@/hooks/useAppTheme';
-import { RecordedExercise } from '@/models/session-models';
+import {
+  RecordedExercise,
+  RecordedWeightedExercise,
+} from '@/models/session-models';
 import { ReactNode, useState } from 'react';
 import { View } from 'react-native';
 import { Menu, Tooltip } from 'react-native-paper';
@@ -10,6 +13,7 @@ import ConfirmationDialog from '@/components/presentation/foundation/confirmatio
 import ExerciseNotesDisplay from '@/components/presentation/workout/exercise-notes-display';
 import RecordedExerciseNotesEditor from '@/components/presentation/workout/recorded-exercise-notes-editor';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import { useRouter } from 'expo-router';
 
 interface ExerciseSectionProps {
   recordedExercise: RecordedExercise;
@@ -29,12 +33,14 @@ interface ExerciseSectionProps {
 export default function ExerciseSection(props: ExerciseSectionProps) {
   const { updateNotesForExercise, onRemoveExercise } = props;
   const { t } = useTranslate();
+  const { push } = useRouter();
   const { recordedExercise } = props;
   const [menuVisible, setMenuVisible] = useState(false);
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [previousDialogOpen, setPreviousDialogOpen] = useState(false);
   const [removeExerciseDialogOpen, setRemoveExerciseDialogOpen] =
     useState(false);
+  const showStats = recordedExercise instanceof RecordedWeightedExercise;
   const showPrevious = () => {
     setPreviousDialogOpen(true);
   };
@@ -96,6 +102,19 @@ export default function ExerciseSection(props: ExerciseSectionProps) {
             setMenuVisible(false);
           }}
         />
+        {showStats ? (
+          <Menu.Item
+            onPress={() => {
+              push(
+                `/(tabs)/stats/expanded-weighted-exercise?exerciseName=${encodeURIComponent(recordedExercise.blueprint.name)}`,
+              );
+              setMenuVisible(false);
+            }}
+            testID="exercise-stats-menu-button"
+            leadingIcon={'analytics'}
+            title={t('stats.stats.title')}
+          />
+        ) : null}
         <Menu.Item
           onPress={() => {
             setRemoveExerciseDialogOpen(true);
