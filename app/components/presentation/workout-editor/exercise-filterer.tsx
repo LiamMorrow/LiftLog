@@ -1,4 +1,5 @@
 import ExerciseSearchAndFilters from '@/components/presentation/workout-editor/exercise-search-and-filters';
+import { fuzzyMatchScore } from '@/components/presentation/workout-editor/exercise-fuzzy-match';
 import { useAppSelector } from '@/store';
 import { ExerciseDescriptor, selectExercises } from '@/store/stored-sessions';
 import Enumerable from 'linq';
@@ -16,19 +17,25 @@ export default function ExerciseFilterer(props: {
   const [searchText, setSearchText] = useState('');
 
   const search = useDebouncedCallback(() => {
-    const searchRegex = new RegExp(escapeRegExp(searchText), 'i');
-    const matchRegex = new RegExp('^' + escapeRegExp(searchText) + '$', 'i');
+    const trimmedSearchText = searchText.trim();
     const newFilteredExercises = Enumerable.from(Object.entries(exercises))
+      .select((x) => ({
+        entry: x,
+        score: trimmedSearchText
+          ? fuzzyMatchScore(trimmedSearchText, x[1].name)
+          : 0,
+      }))
       .where(
         (x) =>
           (!muscleFilters.length ||
-            x[1].muscles.some((exerciseMuscle) =>
+            x.entry[1].muscles.some((exerciseMuscle) =>
               muscleFilters.includes(exerciseMuscle),
             )) &&
-          (!searchText || searchRegex.test(x[1].name)),
+          (!trimmedSearchText || x.score !== null),
       )
-      .orderByDescending((x) => matchRegex.test(x[1].name))
-      .select((x) => x[0])
+      .orderByDescending((x) => x.score ?? 0)
+      .thenBy((x) => x.entry[1].name)
+      .select((x) => x.entry[0])
       .toArray();
     onFilteredExerciseIdsChange(newFilteredExercises);
   }, 100);
@@ -47,7 +54,4 @@ export default function ExerciseFilterer(props: {
       }}
     />
   );
-}
-function escapeRegExp(string: string) {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

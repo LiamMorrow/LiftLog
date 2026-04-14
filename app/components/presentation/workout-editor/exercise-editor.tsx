@@ -5,6 +5,7 @@ import Button from '@/components/presentation/foundation/gesture-wrappers/button
 import LabelledForm from '@/components/presentation/foundation/labelled-form';
 import LabelledFormRow from '@/components/presentation/foundation/labelled-form-row';
 import ListSwitch from '@/components/presentation/foundation/list-switch';
+import { fuzzyMatchScore } from '@/components/presentation/workout-editor/exercise-fuzzy-match';
 import RestEditorGroup from '@/components/presentation/workout-editor/rest-editor-group';
 import SelectButton from '@/components/presentation/foundation/select-button';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
@@ -156,28 +157,27 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
     if (!searchText) {
       return [];
     }
-    const searchRegex = new RegExp(escapeRegExp(searchText), 'i');
-    const prefixRegex = new RegExp('^' + escapeRegExp(searchText), 'i');
-    const exactRegex = new RegExp('^' + escapeRegExp(searchText) + '$', 'i');
 
     return suggestedExercises
-      .filter((item) => searchRegex.test(item.name))
+      .map((item) => ({
+        item,
+        score: fuzzyMatchScore(searchText, item.name),
+      }))
+      .filter(
+        (entry): entry is { item: ExerciseSuggestion; score: number } =>
+          entry.score !== null,
+      )
       .sort((a, b) => {
-        const exactDiff =
-          Number(exactRegex.test(b.name)) - Number(exactRegex.test(a.name));
-        if (exactDiff !== 0) {
-          return exactDiff;
+        const scoreDiff = b.score - a.score;
+        if (scoreDiff !== 0) {
+          return scoreDiff;
         }
-        const prefixDiff =
-          Number(prefixRegex.test(b.name)) - Number(prefixRegex.test(a.name));
-        if (prefixDiff !== 0) {
-          return prefixDiff;
+        if (a.item.source !== b.item.source) {
+          return a.item.source === 'user' ? -1 : 1;
         }
-        if (a.source !== b.source) {
-          return a.source === 'user' ? -1 : 1;
-        }
-        return a.name.localeCompare(b.name);
+        return a.item.name.localeCompare(b.item.name);
       })
+      .map((entry) => entry.item)
       .slice(0, 8);
   }, [exercise.name, suggestedExercises]);
 
@@ -267,6 +267,13 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
             />
             {showMatchingExercises && !!matchingExercises.length && (
               <Card mode="contained">
+                <View key="new">
+                  <NewExerciseListItem
+                    name={exercise.name}
+                    onPress={() => setShowMatchingExercises(false)}
+                  />
+                  <Divider />
+                </View>
                 {matchingExercises.map((item, index) => (
                   <View key={`${item.source}-${item.name}`}>
                     {!!index && <Divider />}
@@ -283,6 +290,17 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
         {exerciseEditor}
       </LabelledForm>
     </View>
+  );
+}
+
+function NewExerciseListItem(props: { name: string; onPress: () => void }) {
+  return (
+    <List.Item
+      title={props.name}
+      description="Create a new exercise"
+      left={(iconProps) => <List.Icon {...iconProps} icon="add" />}
+      onPress={props.onPress}
+    />
   );
 }
 
@@ -321,10 +339,6 @@ function ExerciseSearchListItem(props: {
       onPress={() => props.onPress(props.exercise)}
     />
   );
-}
-
-function escapeRegExp(string: string) {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function CardioExerciseEditor({
