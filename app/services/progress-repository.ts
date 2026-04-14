@@ -3,7 +3,7 @@ import { TemporalComparer } from '@/models/comparers';
 import { Session } from '@/models/session-models';
 import Enumerable from 'linq';
 import { RootState } from '@/store';
-import { ZoneId } from '@js-joda/core';
+import { getSessionReferenceTime } from '@/store/stored-sessions';
 
 export class ProgressRepository {
   constructor(private getState: () => RootState) {}
@@ -20,15 +20,6 @@ export class ProgressRepository {
 
     return Enumerable.from(sessions)
       .select((x) => Session.fromPOJO(x.value))
-      .orderByDescending((x) => x.date, TemporalComparer)
-      .thenByDescending(
-        (x) =>
-          x.lastExercise?.latestTime ??
-          x.date
-            .atStartOfDay()
-            .atZone(ZoneId.systemDefault())
-            .toOffsetDateTime(),
-        TemporalComparer,
-      );
+      .orderByDescending((x) => getSessionReferenceTime(x), TemporalComparer);
   }
 }
