@@ -37,7 +37,6 @@ const filterOptions: SelectButtonOption<PersonalBestSort>[] = [
   { value: 'most-recent', label: 'Most recent' },
   { value: 'heaviest', label: 'Heaviest' },
   { value: 'biggest-improvement', label: 'Biggest improvement' },
-  { value: 'alphabetical', label: 'Alphabetical' },
 ];
 
 export function PersonalBestsContent(props: {
