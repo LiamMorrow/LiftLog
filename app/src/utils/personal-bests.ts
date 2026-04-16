@@ -25,8 +25,7 @@ export type PersonalBestFilter =
 export type PersonalBestSort =
   | 'most-recent'
   | 'heaviest'
-  | 'biggest-improvement'
-  | 'alphabetical';
+  | 'biggest-improvement';
 
 export type PersonalBestEntryKind = 'weighted' | 'cardio';
 
@@ -718,8 +717,6 @@ function compareEntries(
   sort: PersonalBestSort,
 ) {
   switch (sort) {
-    case 'alphabetical':
-      return left.exerciseName.localeCompare(right.exerciseName);
     case 'biggest-improvement':
       return (
         right.improvementScore - left.improvementScore ||
