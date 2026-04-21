@@ -37,7 +37,7 @@ public static class RegistrationHelpers
             return anthropicClient.AsIChatClient(modelId);
         });
 
-        source.AddSingleton<IAiChatWorkoutPlanner, GenericAiChatWorkoutPlanner>();
+        source.AddSingleton<IAiChatDirectory, AiChatDirectory>();
         return source;
     }
 

@@ -12,36 +12,36 @@ public interface IChatClient
 }
 
 [Authorize(AuthenticationSchemes = PurchaseTokenAuthenticationSchemeOptions.SchemeName)]
-public class AiWorkoutChatHub(IAiChatWorkoutPlanner planner) : Hub<IChatClient>
+public class AiWorkoutChatHub(IAiChatDirectory chatDirectory) : Hub<IChatClient>
 {
     public async Task SendMessage(string message)
     {
-        await planner.SendMessageAsync(
-            Context.ConnectionId,
-            message,
-            Clients.Caller.ReceiveMessage
-        );
+        var planner = chatDirectory.GetChat(Context.ConnectionId);
+        await planner.SendMessageAsync(message, Clients.Caller.ReceiveMessage);
     }
 
     public async Task Introduce(string locale)
     {
-        await planner.Introduce(Context.ConnectionId, locale, Clients.Caller.ReceiveMessage);
+        var planner = chatDirectory.GetChat(Context.ConnectionId);
+        await planner.Introduce(locale, Clients.Caller.ReceiveMessage);
     }
 
     public async Task RestartChat()
     {
-        await planner.ClearConversationAsync(Context.ConnectionId);
+        var planner = chatDirectory.GetChat(Context.ConnectionId);
+        await planner.ClearConversationAsync();
     }
 
     public Task StopInProgress()
     {
-        planner.StopInProgress(Context.ConnectionId);
+        var planner = chatDirectory.GetChat(Context.ConnectionId);
+        planner.StopInProgress();
         return Task.CompletedTask;
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        await planner.ClearConversationAsync(Context.ConnectionId);
+        await chatDirectory.CloseChatAsync(Context.ConnectionId);
         await base.OnDisconnectedAsync(exception);
     }
 }

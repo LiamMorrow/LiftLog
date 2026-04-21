@@ -258,7 +258,7 @@ public class AiWorkoutPlannerIntegrationTests
         );
 
         // Assert - Should receive multiple streamed updates
-        await Assert.That(receivedMessages.OfType<AiChatPlanResponse>().Any()).IsEqualTo(true);
+        await Assert.That(receivedMessages.OfType<AiChatPlanResponse>().Any()).IsTrue();
         await Assert.That(receivedMessages.Count).IsGreaterThan(0);
     }
 }

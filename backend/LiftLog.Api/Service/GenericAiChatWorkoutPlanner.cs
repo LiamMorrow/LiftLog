@@ -30,23 +30,19 @@ public partial class GenericAiChatWorkoutPlanner(
         The user will typically ask you to introduce yourself, you may do so.
         """;
 
+    private static readonly ChatMessage systemChatMessage = new ChatMessage(
+        ChatRole.System,
+        SystemMessage
+    );
+
     // Store conversations per connection ID
-    private readonly ConcurrentDictionary<string, List<ChatMessage>> _chatSessions = new();
+    private List<ChatMessage> messages = [systemChatMessage];
 
     // Checked during an inflight chat, if present, will stop generating
-    private readonly ConcurrentDictionary<string, CancellationTokenSource> _chatStopTokens = new();
+    private CancellationTokenSource? chatStopToken = null;
 
     // Store the latest plan response per connection (used for tool call results)
-    private readonly ConcurrentDictionary<string, AiChatPlanResponse?> _pendingPlanResponses =
-        new();
-
-    private List<ChatMessage> GetOrCreateChatSession(string connectionId)
-    {
-        return _chatSessions.GetOrAdd(
-            connectionId,
-            _ => [new ChatMessage(ChatRole.System, SystemMessage)]
-        );
-    }
+    private AiChatPlanResponse? pendingPlanResponse = null;
 
     /// <summary>
     /// Tool function that creates a workout plan. This is called by the AI via function calling.
@@ -90,17 +86,12 @@ public partial class GenericAiChatWorkoutPlanner(
         return new AiChatPlanResponse(plan);
     }
 
-    public async Task Introduce(
-        string connectionId,
-        string locale,
-        Func<AiChatResponse, Task> callback
-    )
+    public async Task Introduce(string locale, Func<AiChatResponse, Task> callback)
     {
         if (!LocaleRegex().IsMatch(locale))
         {
             locale = "en-AU";
         }
-        var messages = GetOrCreateChatSession(connectionId);
         messages.Add(
             new ChatMessage(
                 ChatRole.User,
@@ -108,31 +99,22 @@ public partial class GenericAiChatWorkoutPlanner(
             )
         );
 
-        await GetResponseToCurrentMessagesAsync(connectionId, callback);
+        await GetResponseToCurrentMessagesAsync(callback);
     }
 
-    public async Task SendMessageAsync(
-        string connectionId,
-        string userMessage,
-        Func<AiChatResponse, Task> callback
-    )
+    public async Task SendMessageAsync(string userMessage, Func<AiChatResponse, Task> callback)
     {
-        var messages = GetOrCreateChatSession(connectionId);
         messages.Add(new ChatMessage(ChatRole.User, userMessage));
-        await GetResponseToCurrentMessagesAsync(connectionId, callback);
+        await GetResponseToCurrentMessagesAsync(callback);
     }
 
-    private async Task GetResponseToCurrentMessagesAsync(
-        string connectionId,
-        Func<AiChatResponse, Task> callback
-    )
+    private async Task GetResponseToCurrentMessagesAsync(Func<AiChatResponse, Task> callback)
     {
         try
         {
-            var messages = GetOrCreateChatSession(connectionId);
             var cancellationToken = new CancellationTokenSource();
-            _chatStopTokens[connectionId] = cancellationToken;
-            _pendingPlanResponses[connectionId] = null;
+            chatStopToken = cancellationToken;
+            pendingPlanResponse = null;
 
             // Create the workout plan tool
             var workoutPlanTool = AIFunctionFactory.Create(
@@ -166,12 +148,7 @@ public partial class GenericAiChatWorkoutPlanner(
                     if (content is FunctionCallContent functionCall)
                     {
                         // The AI is requesting to call a tool
-                        await ProcessFunctionCallAsync(
-                            connectionId,
-                            functionCall,
-                            callback,
-                            workoutPlanTool
-                        );
+                        await ProcessFunctionCallAsync(functionCall, callback, workoutPlanTool);
                     }
                 }
             }
@@ -187,22 +164,18 @@ public partial class GenericAiChatWorkoutPlanner(
 
             // If there was a pending plan response from a tool call, the function result was already added
             // Check if we need to continue the conversation after a tool call
-            if (
-                _pendingPlanResponses.TryGetValue(connectionId, out var planResponse)
-                && planResponse != null
-            )
+            if (pendingPlanResponse != null)
             {
                 // Plan was sent via callback during tool processing
-                _pendingPlanResponses.TryRemove(connectionId, out _);
+                pendingPlanResponse = null;
             }
 
             // Keep conversation history manageable (last 20 messages)
             if (messages.Count > 21) // System message + 20 conversation messages
             {
-                var systemMessage = messages[0];
                 var recentMessages = messages[2..];
                 messages.Clear();
-                messages.Add(systemMessage);
+                messages.Add(systemChatMessage);
                 messages.AddRange(recentMessages);
             }
         }
@@ -212,17 +185,12 @@ public partial class GenericAiChatWorkoutPlanner(
         }
         catch (Exception e)
         {
-            _logger.LogError(
-                e,
-                "Error in chat conversation for connection {ConnectionId}",
-                connectionId
-            );
+            _logger.LogError(e, "Error in chat conversation");
             throw;
         }
     }
 
     private async Task ProcessFunctionCallAsync(
-        string connectionId,
         FunctionCallContent functionCall,
         Func<AiChatResponse, Task> callback,
         AIFunction workoutPlanTool
@@ -243,11 +211,10 @@ public partial class GenericAiChatWorkoutPlanner(
 
                 if (deserialized != null)
                 {
-                    _pendingPlanResponses[connectionId] = deserialized;
+                    pendingPlanResponse = deserialized;
                     await callback(deserialized);
 
                     // Add the function call result to the conversation
-                    var messages = GetOrCreateChatSession(connectionId);
                     messages.Add(
                         new ChatMessage(
                             ChatRole.Tool,
@@ -263,29 +230,22 @@ public partial class GenericAiChatWorkoutPlanner(
             }
             catch (Exception ex)
             {
-                _logger.LogError(
-                    ex,
-                    "Error invoking workout plan tool for connection {ConnectionId}",
-                    connectionId
-                );
+                _logger.LogError(ex, "Error invoking workout plan tool");
             }
         }
     }
 
-    public Task ClearConversationAsync(string connectionId)
+    public Task ClearConversationAsync()
     {
-        _chatSessions.TryRemove(connectionId, out _);
-        _chatStopTokens.TryRemove(connectionId, out _);
-        _pendingPlanResponses.TryRemove(connectionId, out _);
+        messages = [new ChatMessage(ChatRole.System, SystemMessage)];
+        chatStopToken = null;
+        pendingPlanResponse = null;
         return Task.CompletedTask;
     }
 
-    public void StopInProgress(string connectionId)
+    public void StopInProgress()
     {
-        if (_chatStopTokens.TryGetValue(connectionId, out var token))
-        {
-            token.Cancel();
-        }
+        chatStopToken?.Cancel();
     }
 
     [GeneratedRegex("^[a-zA-Z]{2}-[a-zA-Z]{2}$")]

@@ -15,6 +15,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Anthropic" Version="12.9.0" />
+    <PackageReference Include="AutomaticInterface" Version="5.2.6">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="cuid.net" Version="7.0.0" />
     <PackageReference Include="FluentValidation" Version="12.1.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />

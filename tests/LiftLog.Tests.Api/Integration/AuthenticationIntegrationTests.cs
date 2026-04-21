@@ -26,19 +26,15 @@ public class AuthenticationIntegrationTests
             {
                 var mockChatPlanner = Substitute.For<IAiChatWorkoutPlanner>();
                 mockChatPlanner
-                    .Introduce(
-                        Arg.Any<string>(),
-                        Arg.Any<string>(),
-                        Arg.Any<Func<AiChatResponse, Task>>()
-                    )
+                    .Introduce(Arg.Any<string>(), Arg.Any<Func<AiChatResponse, Task>>())
                     .Returns(async callInfo =>
                     {
-                        var callback = callInfo.ArgAt<Func<AiChatResponse, Task>>(2);
+                        var callback = callInfo.ArgAt<Func<AiChatResponse, Task>>(1);
                         await callback(
                             new AiChatMessageResponse("Hello! I'm your AI workout planner.")
                         );
                     });
-                services.AddSingleton(mockChatPlanner);
+                services.AddSingleton<IAiChatDirectory>(new MockAiChatDirectory(mockChatPlanner));
 
                 // Mock RevenueCat service
                 var mockRevenueCatService =
