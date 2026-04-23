@@ -15,6 +15,7 @@ import { fetchOverallStats, setOverallStats } from './index';
 import { addEffect } from '@/store/store';
 import { selectSessionsBy } from '@/store/stored-sessions';
 import {
+  PotentialSet,
   RecordedCardioExercise,
   RecordedWeightedExercise,
   Session,
@@ -136,13 +137,24 @@ function computeStats(
   // --- Exercise stats grouped by normalized exercise name ---
   interface ExerciseStatAcc {
     exerciseName: string;
-    statistics: TimeTrackedStatistic<Weight>[];
+    maxWeightStatistics: TimeTrackedStatistic<Weight>[];
+    max1RMStatistics: TimeTrackedStatistic<Weight>[];
     totalVolumeStatistics: TimeTrackedStatistic<Weight>[];
     repsStatistics: RepsBreakdownStatistics;
     currentOneRepMax: Weight;
     latestTime: OffsetDateTime;
   }
   const exerciseStatsMap = new Map<string, ExerciseStatAcc>();
+
+  function calculateOneRepMax(ps: PotentialSet): Weight {
+    // One rep max formula (Epley): 1RM = weight * (1 + reps/30)
+    const reps = ps.set!.repsCompleted;
+    const weight = ps.weight;
+    const oneRepMax = weight.multipliedBy(
+      new BigNumber(1).plus(new BigNumber(reps).div(30)),
+    );
+    return oneRepMax;
+  }
 
   for (const session of sessionsWithExercises) {
     for (const ex of session.recordedExercises) {
@@ -152,7 +164,8 @@ function computeStats(
       if (!exerciseStatsMap.has(key)) {
         exerciseStatsMap.set(key, {
           exerciseName: blueprint.name,
-          statistics: [],
+          maxWeightStatistics: [],
+          max1RMStatistics: [],
           repsStatistics: { breakdown: {} },
           totalVolumeStatistics: [],
           currentOneRepMax: Weight.NIL,
@@ -175,6 +188,19 @@ function computeStats(
         continue;
       }
 
+      // Max 1RM for this exercise in this session
+      const max1RM = ex.potentialSets
+        .filter((ps) => ps.set)
+        .filter((ps) => ps.set!.repsCompleted)
+        .map(calculateOneRepMax)
+        .reduce(
+          (a, b) => (a === null ? b : a.isGreaterThan(b) ? a : b),
+          null as null | Weight,
+        );
+      if (!max1RM) {
+        continue;
+      }
+
       for (const set of ex.potentialSets) {
         if (!set.set) {
           continue;
@@ -191,17 +217,15 @@ function computeStats(
       const lastSet = ex.lastRecordedSet!;
       if (exerciseStats.latestTime.isBefore(lastSet.set!.completionDateTime)) {
         exerciseStats.latestTime = lastSet.set!.completionDateTime;
-        // One rep max formula (Epley): 1RM = weight * (1 + reps/30)
-        const reps = lastSet.set!.repsCompleted;
-        const weight = lastSet.weight;
-        const oneRepMax = weight.multipliedBy(
-          new BigNumber(1).plus(new BigNumber(reps).div(30)),
-        );
-        exerciseStats.currentOneRepMax = oneRepMax;
+        exerciseStats.currentOneRepMax = calculateOneRepMax(lastSet);
       }
-      exerciseStats.statistics.push({
+      exerciseStats.maxWeightStatistics.push({
         dateTime: lastSet.set!.completionDateTime,
         value: maxWeight,
+      });
+      exerciseStats.max1RMStatistics.push({
+        dateTime: lastSet.set!.completionDateTime,
+        value: max1RM,
       });
       exerciseStats.totalVolumeStatistics.push({
         dateTime: lastSet.set!.completionDateTime,
@@ -220,7 +244,10 @@ function computeStats(
     exerciseStatsMap.values(),
   ).map((ex) => {
     const maxLiftedPerSessionStatistics =
-      unsortedStatsToWeightedStatisticOverTime(ex.statistics);
+      unsortedStatsToWeightedStatisticOverTime(ex.maxWeightStatistics);
+    const max1RMPerSessionStatistics = unsortedStatsToWeightedStatisticOverTime(
+      ex.max1RMStatistics,
+    );
     return {
       exerciseName: ex.exerciseName,
       setsPerWeek:
@@ -229,6 +256,7 @@ function computeStats(
           0,
         ) / totalWeeks,
       maxLiftedPerSessionStatistics,
+      max1RMPerSessionStatistics,
       oneRepMax: ex.currentOneRepMax,
       totalVolumeStatistics: unsortedStatsToWeightedStatisticOverTime(
         ex.totalVolumeStatistics,

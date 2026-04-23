@@ -38,3 +38,6 @@ yarn-error.*
 app-example
 
 .env.local
+
+# Opinionated dev files
+shell.nix
