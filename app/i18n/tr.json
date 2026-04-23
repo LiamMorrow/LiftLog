@@ -58,5 +58,8 @@
     "exercise.description.cardio_set.body": "<em>{setNumber}</em> - {targetType}: <em>{targetValue}</em> ayarla",
     "exercise.never_done_before.message": "Egzersizi daha önce hiç yapmadın",
     "exercise.no_exercises_added.message": "Henüz egzersiz eklenmedi",
-    "exercise.no_exercises_found.message": "Egzersiz bulunamadı."
+    "exercise.no_exercises_found.message": "Egzersiz bulunamadı.",
+    "exercise.previous_sessions_for.title": "{exercise} için önceki çalışmalar",
+    "exercise.remove.confirm.body": "Egzersiz bu çalışma planından çıkarılacak, diğer çalışma planları etkilenmeyecek.",
+    "exercise.remove.confirm.title": "Egzersizi sil?"
 }
