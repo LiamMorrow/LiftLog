@@ -353,16 +353,7 @@ export const selectSessionsInMonth = createSelector(
       .where(
         (x) => x.date.year() === ym.year() && x.date.month().equals(ym.month()),
       )
-      .orderByDescending((x) => x.date, TemporalComparer)
-      .thenByDescending(
-        (x) =>
-          x.lastExercise?.latestTime ??
-          x.date
-            .atStartOfDay()
-            .atZone(ZoneId.systemDefault())
-            .toOffsetDateTime(),
-        TemporalComparer,
-      )
+      .orderByDescending((x) => getSessionReferenceTime(x), TemporalComparer)
       .toArray(),
 );
 
@@ -381,7 +372,7 @@ export const selectExerciseIds = createSelector(
 
 export const storedSessionsReducer = storedSessionsSlice.reducer;
 
-function getSessionReferenceTime(session: Session): OffsetDateTime {
+export function getSessionReferenceTime(session: Session): OffsetDateTime {
   return (
     session.lastExercise?.latestTime ??
     session.date
