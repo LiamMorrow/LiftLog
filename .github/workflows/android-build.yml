@@ -30,7 +30,7 @@ jobs:
           distribution: "temurin"
           java-version: "17"
       - name: Setup Android SDK Tools
-        uses: android-actions/setup-android@v3.2.2
+        uses: android-actions/setup-android@v4.0.1
       - name: Install
         run: npm ci
         working-directory: ./app
