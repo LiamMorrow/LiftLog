@@ -39,14 +39,14 @@
         "bootstrap": "5.3.8"
     },
     "devDependencies": {
-        "autoprefixer": "10.4.27",
+        "autoprefixer": "10.5.0",
         "browser-sync": "3.0.4",
         "chokidar": "5.0.0",
         "concurrently": "9.2.1",
-        "postcss": "8.5.8",
-        "prettier": "3.8.1",
+        "postcss": "8.5.9",
+        "prettier": "3.8.2",
         "pug": "3.0.4",
-        "sass": "1.98.0",
+        "sass": "1.99.0",
         "shelljs": "0.10.0",
         "upath": "2.0.1"
     }
