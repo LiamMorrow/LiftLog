@@ -14,7 +14,7 @@
     <ProjectReference Include="..\RevenueCat\RevenueCat.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Anthropic" Version="12.9.0" />
+    <PackageReference Include="Anthropic" Version="12.13.0" />
     <PackageReference Include="AutomaticInterface" Version="5.2.6">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
