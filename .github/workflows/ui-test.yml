@@ -44,7 +44,7 @@ jobs:
         run: npm ci
         working-directory: ./tests/cypress-tests
       - name: Test
-        uses: cypress-io/github-action@v6
+        uses: cypress-io/github-action@v7.1.9
         env:
           ELECTRON_ENABLE_LOGGING: 1
         with:
