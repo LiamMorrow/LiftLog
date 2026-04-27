@@ -55,7 +55,7 @@ jobs:
         run: npx sentry-expo-upload-sourcemaps dist
         working-directory: ./app
       - name: Upload pages
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: ./app/dist
 
