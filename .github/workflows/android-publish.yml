@@ -88,7 +88,7 @@ jobs:
           path: app/android/app/build/outputs/bundle/release/app-release.aab
 
       - name: Upload Android Release to Play Store
-        uses: r0adkll/upload-google-play@v1.1.3
+        uses: r0adkll/upload-google-play@v1.1.4
         with:
           packageName: com.limajuice.liftlog
           releaseFiles: app/android/app/build/outputs/bundle/release/app-release.aab
