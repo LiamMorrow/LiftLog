@@ -64,7 +64,7 @@
     "expo-status-bar": "~55.0.4",
     "linq": "^4.0.3",
     "material-symbols-react-native": "^1.0.3",
-    "protobufjs": "^7.5.0",
+    "protobufjs": "^7.5.5",
     "react": "19.2.0",
     "react-compiler-runtime": "^1.0.0",
     "react-dom": "19.2.0",
@@ -95,7 +95,7 @@
     "react-redux": "^9.2.0",
     "ts-pattern": "^5.6.2",
     "use-debounce": "^10.1.0",
-    "uuid": "^11.1.0"
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
