@@ -10,12 +10,13 @@ import { WeightLineChart } from '@/components/presentation/stats/weight-line-cha
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import {
+  fetchOverallStats,
   selectExerciseView,
   setOverallViewTime,
   WeightedExerciseStatistics,
 } from '@/store/stats';
 import { T, useTranslate } from '@tolgee/react';
-import { Stack } from 'expo-router';
+import { Stack, useFocusEffect } from 'expo-router';
 import { useLocalSearchParams, useRouter } from 'expo-router/build/hooks';
 import { ReactNode, useEffect } from 'react';
 import { View } from 'react-native';
@@ -27,6 +28,9 @@ export default function ExpandedExercisePage() {
   const timePeriod = useAppSelector((x) => x.stats.overallViewTime);
   const { exerciseName } = useLocalSearchParams<{ exerciseName: string }>();
   const { dismissTo } = useRouter();
+  useFocusEffect(() => {
+    dispatch(fetchOverallStats());
+  });
   useEffect(() => {
     if (!exerciseName) {
       dismissTo('/stats');

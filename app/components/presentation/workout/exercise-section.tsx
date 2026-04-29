@@ -107,6 +107,7 @@ export default function ExerciseSection(props: ExerciseSectionProps) {
             onPress={() => {
               push(
                 `/(tabs)/stats/expanded-weighted-exercise?exerciseName=${encodeURIComponent(recordedExercise.blueprint.name)}`,
+                { withAnchor: true },
               );
               setMenuVisible(false);
             }}
