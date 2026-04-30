@@ -103,6 +103,19 @@ import { msExerciseFill } from '@material-symbols-react-native/outlined-400/msEx
 import { msAirlineSeatReclineExtraFill } from '@material-symbols-react-native/outlined-400/msAirlineSeatReclineExtraFill';
 import { msPauseCircle } from '@material-symbols-react-native/outlined-400/msPauseCircle';
 import { msPause } from '@material-symbols-react-native/outlined-400/msPause';
+import { msShield } from '@material-symbols-react-native/outlined-400/msShield';
+import { msShieldFill } from '@material-symbols-react-native/outlined-400/msShieldFill';
+import { msMenuBook } from '@material-symbols-react-native/outlined-400/msMenuBook';
+import { msMenuBookFill } from '@material-symbols-react-native/outlined-400/msMenuBookFill';
+import { msGroups } from '@material-symbols-react-native/outlined-400/msGroups';
+import { msGroupsFill } from '@material-symbols-react-native/outlined-400/msGroupsFill';
+import { msLocalFireDepartment } from '@material-symbols-react-native/outlined-400/msLocalFireDepartment';
+import { msCheckCircle } from '@material-symbols-react-native/outlined-400/msCheckCircle';
+import { msLock } from '@material-symbols-react-native/outlined-400/msLock';
+import { msMilitaryTech } from '@material-symbols-react-native/outlined-400/msMilitaryTech';
+import { msWorkspacePremium } from '@material-symbols-react-native/outlined-400/msWorkspacePremium';
+import { msTrendingUp } from '@material-symbols-react-native/outlined-400/msTrendingUp';
+import { msDiamond } from '@material-symbols-react-native/outlined-400/msDiamond';
 import { JSX } from 'react';
 
 // Importing these icons using the below methods causes android app to crash
@@ -227,6 +240,19 @@ const MaterialSymbols = {
   airlineSeatReclineExtraFill: msAirlineSeatReclineExtraFill,
 
   pause: msPause,
+  shield: msShield,
+  shieldFill: msShieldFill,
+  menuBook: msMenuBook,
+  menuBookFill: msMenuBookFill,
+  groups: msGroups,
+  groupsFill: msGroupsFill,
+  localFireDepartment: msLocalFireDepartment,
+  checkCircle: msCheckCircle,
+  lock: msLock,
+  militaryTech: msMilitaryTech,
+  workspacePremium: msWorkspacePremium,
+  trendingUp: msTrendingUp,
+  diamond: msDiamond,
 };
 
 export type AppIconSource =

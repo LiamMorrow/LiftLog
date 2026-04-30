@@ -6,6 +6,7 @@ import FullHeightScrollView from '@/components/presentation/full-height-scroll-v
 import IconButton from '@/components/presentation/gesture-wrappers/icon-button';
 import HistoryCalendarCard from '@/components/presentation/history-calendar-card';
 import LimitedHtml from '@/components/presentation/limited-html';
+import QuestLogItem from '@/components/presentation/rpg/QuestLogItem';
 import SessionSummary from '@/components/presentation/session-summary';
 import SessionSummaryTitle from '@/components/presentation/session-summary-title';
 import SplitCardControl from '@/components/presentation/split-card-control';
@@ -104,7 +105,7 @@ export default function History() {
     <>
       <Stack.Screen
         options={{
-          title: t('generic.history.title'),
+          title: 'Quest Log',
         }}
       />
       <FullHeightScrollView
@@ -129,14 +130,16 @@ export default function History() {
           cardType="contained"
           renderItemContent={(session) => (
             <Card.Content>
-              <SplitCardControl
-                titleContent={
-                  <SessionSummaryTitle isFilled session={session} />
-                }
-                mainContent={
-                  <SessionSummary isFilled showWeight session={session} />
-                }
-              />
+              <QuestLogItem session={session}>
+                <SplitCardControl
+                  titleContent={
+                    <SessionSummaryTitle isFilled session={session} />
+                  }
+                  mainContent={
+                    <SessionSummary isFilled showWeight session={session} />
+                  }
+                />
+              </QuestLogItem>
             </Card.Content>
           )}
           renderItemActions={(session) => (

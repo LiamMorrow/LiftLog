@@ -16,6 +16,8 @@ import { initializeFeedStateSlice } from '@/store/feed';
 import { applyStatsEffects } from '@/store/stats/effects';
 import { applyAiPlannerEffects } from '@/store/ai-planner/effects';
 import { initializeAiPlannerStateSlice } from '@/store/ai-planner';
+import { applyRpgEffects } from '@/store/rpg/effects';
+import { initializeRpgStateSlice } from '@/store/rpg';
 import { clearAllListeners } from '@reduxjs/toolkit';
 
 export { store, RootState, AppDispatch };
@@ -29,12 +31,14 @@ applyStoredSessionsEffects();
 applyFeedEffects();
 applyStatsEffects();
 applyAiPlannerEffects();
+applyRpgEffects();
 
 store.dispatch(initializeSettingsStateSlice());
 store.dispatch(initializeAppStateSlice());
 store.dispatch(initializeProgramStateSlice());
 store.dispatch(initializeFeedStateSlice());
 store.dispatch(initializeAiPlannerStateSlice());
+store.dispatch(initializeRpgStateSlice());
 
 export const useAppSelector = untypedUseSelector.withTypes<RootState>();
 

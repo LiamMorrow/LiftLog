@@ -17,6 +17,7 @@ import { sessionEditorReducer } from './session-editor';
 import { statsReducer } from '@/store/stats';
 import { resolveServices, Services } from '@/services';
 import { aiPlannerReducer } from '@/store/ai-planner';
+import { rpgReducer } from '@/store/rpg';
 import * as Sentry from '@sentry/react-native';
 import debounce from 'debounce';
 
@@ -42,6 +43,7 @@ const store = configureStore({
     sessionEditor: sessionEditorReducer,
     storedSessions: storedSessionsReducer,
     stats: statsReducer,
+    rpg: rpgReducer,
   }),
 });
 

@@ -11,19 +11,47 @@ export default function Layout() {
   return (
     <Tabs>
       <Tabs.Screen
+        name="dashboard"
+        options={{
+          tabBarLabel: 'Dashboard',
+          tabBarButtonTestID: 'nav__dashboard',
+          tabBarIcon: ({ color, size, focused }) => (
+            <Icon
+              source={focused ? 'shieldFill' : 'shield'}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
         name="(session)"
         options={{
-          tabBarLabel: t('workout.workout.label'),
+          tabBarLabel: 'Treinar',
           tabBarButtonTestID: 'nav__workout',
-          tabBarIcon: ({ color, size, focused }) => {
-            return (
-              <Icon
-                source={focused ? `fitnessCenterFill` : 'fitnessCenter'}
-                size={size}
-                color={color}
-              />
-            );
-          },
+          tabBarIcon: ({ color, size, focused }) => (
+            <Icon
+              source={focused ? 'fitnessCenterFill' : 'fitnessCenter'}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="history"
+        options={{
+          tabBarLabel: 'Quest Log',
+          tabBarButtonTestID: 'nav__history',
+          tabBarIcon: ({ color, size, focused }) => (
+            <Icon
+              source={focused ? 'menuBookFill' : 'menuBook'}
+              size={size}
+              color={color}
+            />
+          ),
         }}
       />
 
@@ -31,19 +59,16 @@ export default function Layout() {
         name="feed"
         redirect={!showFeed}
         options={{
-          tabBarLabel: t('feed.feed.title'),
-
+          tabBarLabel: 'Guilda',
           tabBarButtonTestID: 'nav__feed',
           tabBarBadge: followRequestCount || undefined!,
-          tabBarIcon: ({ color, size, focused }) => {
-            return (
-              <Icon
-                source={focused ? `forumFill` : 'forum'}
-                size={size}
-                color={color}
-              />
-            );
-          },
+          tabBarIcon: ({ color, size, focused }) => (
+            <Icon
+              source={focused ? 'groupsFill' : 'groups'}
+              size={size}
+              color={color}
+            />
+          ),
         }}
       />
 
@@ -52,43 +77,28 @@ export default function Layout() {
         options={{
           tabBarLabel: t('stats.stats.title'),
           tabBarButtonTestID: 'nav__stats',
-          tabBarIcon: ({ color, size, focused }) => {
-            return (
-              <Icon
-                source={focused ? `analyticsFill` : 'analytics'}
-                size={size}
-                color={color}
-              />
-            );
-          },
-        }}
-      />
-
-      <Tabs.Screen
-        name="history"
-        options={{
-          tabBarLabel: t('generic.history.title'),
-          tabBarButtonTestID: 'nav__history',
-          tabBarIcon: ({ color, size }) => {
-            return <Icon source={'history'} size={size} color={color} />;
-          },
+          tabBarIcon: ({ color, size, focused }) => (
+            <Icon
+              source={focused ? 'analyticsFill' : 'analytics'}
+              size={size}
+              color={color}
+            />
+          ),
         }}
       />
 
       <Tabs.Screen
         name="settings"
         options={{
-          tabBarLabel: t('settings.settings.title'),
+          tabBarLabel: 'Herói',
           tabBarButtonTestID: 'nav__settings',
-          tabBarIcon: ({ color, size, focused }) => {
-            return (
-              <Icon
-                source={focused ? `settingsFill` : 'settings'}
-                size={size}
-                color={color}
-              />
-            );
-          },
+          tabBarIcon: ({ color, size, focused }) => (
+            <Icon
+              source={focused ? 'personFill' : 'person'}
+              size={size}
+              color={color}
+            />
+          ),
         }}
       />
     </Tabs>
