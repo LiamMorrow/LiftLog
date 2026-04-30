@@ -5,7 +5,12 @@ import {
 } from '@pchmn/expo-material3-theme';
 import React, { createContext, ReactNode, useContext, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
-import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
+import {
+  MD3DarkTheme,
+  MD3LightTheme,
+  PaperProvider,
+  configureFonts,
+} from 'react-native-paper';
 import {
   DarkTheme,
   ThemeProvider as NavigationThemeProvider,
@@ -97,6 +102,118 @@ export const font = {
   },
 } as const;
 
+const fontConfig = {
+  displayLarge: {
+    fontFamily: 'PressStart2P_400Regular',
+    fontSize: 57,
+    lineHeight: 64,
+    letterSpacing: 0,
+    fontWeight: '400' as const,
+  },
+  displayMedium: {
+    fontFamily: 'PressStart2P_400Regular',
+    fontSize: 45,
+    lineHeight: 52,
+    letterSpacing: 0,
+    fontWeight: '400' as const,
+  },
+  displaySmall: {
+    fontFamily: 'PressStart2P_400Regular',
+    fontSize: 36,
+    lineHeight: 44,
+    letterSpacing: 0,
+    fontWeight: '400' as const,
+  },
+
+  headlineLarge: {
+    fontFamily: 'PressStart2P_400Regular',
+    fontSize: 32,
+    lineHeight: 40,
+    letterSpacing: 0,
+    fontWeight: '400' as const,
+  },
+  headlineMedium: {
+    fontFamily: 'PressStart2P_400Regular',
+    fontSize: 28,
+    lineHeight: 36,
+    letterSpacing: 0,
+    fontWeight: '400' as const,
+  },
+  headlineSmall: {
+    fontFamily: 'PressStart2P_400Regular',
+    fontSize: 24,
+    lineHeight: 32,
+    letterSpacing: 0,
+    fontWeight: '400' as const,
+  },
+
+  titleLarge: {
+    fontFamily: 'PressStart2P_400Regular',
+    fontSize: 22,
+    lineHeight: 28,
+    letterSpacing: 0,
+    fontWeight: '400' as const,
+  },
+  titleMedium: {
+    fontFamily: 'PressStart2P_400Regular',
+    fontSize: 16,
+    lineHeight: 24,
+    letterSpacing: 0.15,
+    fontWeight: '400' as const,
+  },
+  titleSmall: {
+    fontFamily: 'PressStart2P_400Regular',
+    fontSize: 14,
+    lineHeight: 20,
+    letterSpacing: 0.1,
+    fontWeight: '400' as const,
+  },
+
+  labelLarge: {
+    fontFamily: 'VT323_400Regular',
+    fontSize: 14,
+    lineHeight: 20,
+    letterSpacing: 0.1,
+    fontWeight: '400' as const,
+  },
+  labelMedium: {
+    fontFamily: 'VT323_400Regular',
+    fontSize: 12,
+    lineHeight: 16,
+    letterSpacing: 0.5,
+    fontWeight: '400' as const,
+  },
+  labelSmall: {
+    fontFamily: 'VT323_400Regular',
+    fontSize: 11,
+    lineHeight: 16,
+    letterSpacing: 0.5,
+    fontWeight: '400' as const,
+  },
+
+  bodyLarge: {
+    fontFamily: 'VT323_400Regular',
+    fontSize: 16,
+    lineHeight: 24,
+    letterSpacing: 0.15,
+    fontWeight: '400' as const,
+  },
+  bodyMedium: {
+    fontFamily: 'VT323_400Regular',
+    fontSize: 14,
+    lineHeight: 20,
+    letterSpacing: 0.25,
+    fontWeight: '400' as const,
+  },
+  bodySmall: {
+    fontFamily: 'VT323_400Regular',
+    fontSize: 12,
+    lineHeight: 16,
+    letterSpacing: 0.4,
+    fontWeight: '400' as const,
+  },
+};
+
 export type FontChoice = keyof typeof font;
 
 type ColorPair<T extends string> = { [k in T | `on${Capitalize<T>}`]: string };
@@ -180,9 +297,11 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   }, [colorSchemeSeed]);
   const schemedTheme = colorScheme === 'dark' ? theme.dark : theme.light;
 
+  const fonts = configureFonts({ config: fontConfig });
+
   const paperTheme = isDark
-    ? { ...MD3DarkTheme, colors: theme.dark }
-    : { ...MD3LightTheme, colors: theme.light };
+    ? { ...MD3DarkTheme, colors: theme.dark, fonts }
+    : { ...MD3LightTheme, colors: theme.light, fonts };
   const appTheme = {
     colors: {
       ...schemedTheme,
