@@ -25,7 +25,7 @@ import {
   updateExercise,
 } from '@/store/stored-sessions';
 import { RootState, useAppSelector, useAppSelectorWithArg } from '@/store';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useStore } from 'react-redux';
 import { uuid } from '@/utils/uuid';
 import { SwipeRow } from 'react-native-swipe-list-view';
 import { showSnackbar } from '@/store/app';
@@ -33,7 +33,6 @@ import { useMountEffect } from '@/hooks/useMountEffect';
 import ExerciseMuscleSelector from '@/components/presentation/workout-editor/exercise-muscle-selector';
 import ExerciseFilterer from '@/components/presentation/workout-editor/exercise-filterer';
 import { LegendList } from '@legendapp/list';
-import { getState } from '@/store/store';
 import { ExerciseDescriptor } from '@/models/exercise-models';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import {
@@ -299,6 +298,7 @@ function ExerciseListItem({
 export default function ExerciseManager() {
   const dispatch = useDispatch();
   const { t } = useTranslate();
+  const { getState } = useStore<RootState>();
   const exercises = useAppSelector(selectExercises);
   const filteredExerciseIds = useAppSelector(
     (s) => s.storedSessions.filteredExerciseIds,
@@ -416,6 +416,7 @@ function ExerciseEditSheet({
 }) {
   const { t } = useTranslate();
   const dispatch = useDispatch();
+  const { getState } = useStore<RootState>();
   const { colors } = useAppTheme();
   const [bulkRenameOpen, setBulkRenameOpen] = useState(false);
   const [renameConfirmOpen, setRenameConfirmOpen] = useState(false);
