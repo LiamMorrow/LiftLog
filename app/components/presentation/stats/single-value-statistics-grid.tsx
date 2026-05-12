@@ -1,14 +1,15 @@
 import { spacing } from '@/hooks/useAppTheme';
-import { ReactNode } from 'react';
+import { Children, ReactNode } from 'react';
 import { View } from 'react-native';
 import { FlatGrid } from 'react-native-super-grid';
 
-export function SingleValueStatisticsGrid(props: { children: ReactNode[] }) {
+export function SingleValueStatisticsGrid(props: { children: ReactNode }) {
   const gridSpacing = spacing[2];
+  const items = Children.toArray(props.children);
   return (
     <FlatGrid
       scrollEnabled={false}
-      data={props.children}
+      data={items}
       spacing={gridSpacing}
       maxItemsPerRow={2}
       style={{ marginHorizontal: -gridSpacing }}

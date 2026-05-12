@@ -17,7 +17,15 @@
     "backgroundColor": "#fcfdf6",
     "primaryColor": "#046F03",
     "plugins": [
-      "expo-router",
+      [
+        "expo-router",
+        {
+          "headers": {
+            "Cross-Origin-Embedder-Policy": "credentialless",
+            "Cross-Origin-Opener-Policy": "same-origin"
+          }
+        }
+      ],
       [
         "expo-dev-client",
         {

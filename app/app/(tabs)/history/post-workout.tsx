@@ -2,12 +2,15 @@ import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
 import { SessionComparisonTable } from '@/components/presentation/workout/session-comparison-table';
 import { spacing } from '@/hooks/useAppTheme';
-import { useAppSelectorWithArg } from '@/store';
+import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import { selectCurrentSession } from '@/store/current-session';
+import { selectPreferredWeightUnit } from '@/store/settings';
 import {
   selectPreviousComparableSession,
+  selectSessions,
   selectSession,
 } from '@/store/stored-sessions';
+import { getSessionPersonalBestEntries } from '@/utils/personal-bests';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect } from 'react';
@@ -32,6 +35,8 @@ export default function PostWorkoutPage() {
   const openedAfterFinishingWorkout = source === 'finished';
   const showFinishButton = openedAfterFinishingWorkout;
   const showBackButton = !openedAfterFinishingWorkout;
+  const sessions = useAppSelector(selectSessions);
+  const preferredUnit = useAppSelector(selectPreferredWeightUnit);
   const previousComparableSession = useAppSelectorWithArg(
     selectPreviousComparableSession,
     session,
@@ -48,6 +53,12 @@ export default function PostWorkoutPage() {
   if (!sessionId || !session) {
     return null;
   }
+
+  const personalBestEntries = getSessionPersonalBestEntries(
+    sessions,
+    session,
+    preferredUnit,
+  );
 
   const floatingBottomContainer = showFinishButton ? (
     <FloatingBottomContainer
@@ -78,6 +89,7 @@ export default function PostWorkoutPage() {
       <View style={{ marginVertical: spacing[4] }}>
         <SessionComparisonTable
           mode="full"
+          personalBestEntries={personalBestEntries}
           previousSession={previousComparableSession}
           session={session}
         />

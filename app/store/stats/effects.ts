@@ -247,11 +247,6 @@ function computeStats(
     );
     return {
       exerciseName: ex.exerciseName,
-      setsPerWeek:
-        Object.values(ex.repsStatistics.breakdown).reduce(
-          (accum, entry) => accum + entry.numberOfSets,
-          0,
-        ) / totalWeeks,
       maxLiftedPerSessionStatistics,
       max1RMPerSessionStatistics,
       totalVolumeStatistics: unsortedStatsToWeightedStatisticOverTime(
