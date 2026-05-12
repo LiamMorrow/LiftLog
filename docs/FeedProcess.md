@@ -49,7 +49,7 @@ https://app.liftlog.online/feed/share?id=aDf00f&name=Liam
 The structure of the url being:
 `https://app.liftlog.online/feed/share?id=USER_ID&name=Name`
 
-When a user (the follower) clicks this link, it will open directly in the LiftLog app, or in the web app. The app parses out the 2 parameters and displays a message asking if they would like to request to subscribe to the feed. The public key of the client will be fetched with the specified UserID. Note the follower must also have an identity setup prior to making the request. If they accept they create an `InboxMessage` (of type `FollowRequest`) payload consisting of:
+When a user (the follower) clicks this link, it will open directly in the LiftLog app. The app parses out the 2 parameters and displays a message asking if they would like to request to subscribe to the feed. The public key of the client will be fetched with the specified UserID. Note the follower must also have an identity setup prior to making the request. If they accept they create an `InboxMessage` (of type `FollowRequest`) payload consisting of:
 
 - An optional name
 - The follower's user ID
@@ -131,7 +131,7 @@ sequenceDiagram
 ### Inbox Message Encryption
 
 Inbox messages are aimed to be small messages which can be encoded and sent to a user with their RSA Public key.
-Since RSA has a rather small max paylaod length, these messages are split into chunks, then each chunk is encrypted. These chunks are then sent to the server. When a user requests their inbox messages, they are returned, then immediately deleted from the server. The user can use their private key to decrypt the chunks, then stitch them back together to form the original payload.
+Since RSA has a rather small max payload length, these messages are split into chunks, then each chunk is encrypted. These chunks are then sent to the server. When a user requests their inbox messages, they are returned, then immediately deleted from the server. The user can use their private key to decrypt the chunks, then stitch them back together to form the original payload.
 
 ### Payload Encryption
 

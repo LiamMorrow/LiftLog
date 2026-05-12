@@ -1,7 +1,7 @@
 # Plaintext Export
 
-LiftLog supports exporting your data as plaintext. Currently it supports CSV files.
-These exports must NOT be used as a backup mechanism, as LiftLog cannot read these CSVs.
+LiftLog supports exporting your data as plaintext. Currently it supports CSV and JSON files.
+These exports must NOT be used as a backup mechanism, as LiftLog cannot read these plaintext exports.
 
 To create an export, simply navigate to `Settings -> Export, Backup, and Restore -> Plaintext Export`.
 Here, you can export a CSV or JSON file which contains your workout data. Sets which have not been completed are not included in the export.
