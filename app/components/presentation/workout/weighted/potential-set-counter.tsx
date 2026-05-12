@@ -19,6 +19,7 @@ interface PotentialSetCounterProps {
   showWeight: boolean;
   weightIncrement: BigNumber;
   maxReps: number;
+  previousRepCount: number | undefined;
   toStartNext: boolean;
   isReadonly: boolean;
 
@@ -32,6 +33,8 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
   const [isWeightDialogOpen, setIsWeightDialogOpen] = useState(false);
   const [isRepsDialogOpen, setIsRepsDialogOpen] = useState(false);
   const repCountValue = props.set?.set?.repsCompleted;
+  const placeholderRepCount = props.previousRepCount ?? 0;
+
   useEffect(() => {
     if (!isRepsDialogOpen) {
       Keyboard.dismiss();
@@ -90,9 +93,17 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
                   ...font['text-xl'],
                 }}
               >
-                <Text style={{ fontWeight: 'bold' }}>
-                  {repCountValue ?? '-'}
-                </Text>
+                {repCountValue !== undefined ? (
+                  <Text style={{ fontWeight: 'bold' }}>{repCountValue}</Text>
+                ) : (
+                  <Text
+                    style={{
+                      color: colors.onSecondaryContainer + '99',
+                    }}
+                  >
+                    {placeholderRepCount}
+                  </Text>
+                )}
                 <Text
                   style={{
                     ...font['text-sm'],

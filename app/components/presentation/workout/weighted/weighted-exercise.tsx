@@ -59,6 +59,10 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             isReadonly={props.isReadonly}
             key={index}
             maxReps={recordedExercise.blueprint.repsPerSet}
+            previousRepCount={
+              props.previousRecordedExercises.at(0)?.potentialSets[index]?.set
+                ?.repsCompleted
+            }
             onTap={() => cycleRepCountForSet(index)}
             onUpdateReps={(reps) => updateRepCountForSet(index, reps)}
             onUpdateWeight={(w, applyTo) =>
