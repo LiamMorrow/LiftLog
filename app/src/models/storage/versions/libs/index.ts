@@ -4,6 +4,7 @@
 import {
   DateTimeFormatter,
   Duration,
+  Instant,
   LocalDate,
   OffsetDateTime,
 } from '@js-joda/core';
@@ -43,6 +44,33 @@ export function toOffsetDateTimeJSON(
 }
 
 /**
+ * @format instant
+ */
+export type InstantJSON = Branded<string, 'Instant'>; // ISO formatted JS Joda Instant
+export function fromInstantJson(json: InstantJSON): Instant;
+export function fromInstantJson(
+  json: InstantJSON | undefined,
+): Instant | undefined;
+export function fromInstantJson(
+  json: InstantJSON | undefined,
+): Instant | undefined {
+  if (!json) {
+    return undefined;
+  }
+  return Instant.parse(json);
+}
+
+export function toInstantJson(value: Instant): InstantJSON;
+export function toInstantJson(
+  value: Instant | undefined,
+): InstantJSON | undefined;
+export function toInstantJson(
+  value: Instant | undefined,
+): InstantJSON | undefined {
+  return value?.toJSON() as InstantJSON;
+}
+
+/**
  * @format duration
  */
 export type DurationJSON = Branded<string, 'Duration'>; // ISO formatted JS Joda Duration
@@ -55,7 +83,7 @@ export function toDurationJSON(value: Duration): DurationJSON {
 }
 
 /**
- * @format number
+ * @format decimal
  * @example "1.23"
  */
 export type BigNumberJSON = Branded<string, 'BigNumber'>; // BigNumberJs decimal string format

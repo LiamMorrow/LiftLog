@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "blueprint": {
+      "$ref": "./CardioExerciseSetBlueprint.json"
+    },
+    "completionDateTime": {
+      "$ref": "./OffsetDateTime.json"
+    },
+    "duration": {
+      "$ref": "./Duration.json"
+    },
+    "distance": {
+      "$ref": "./Distance.json"
+    },
+    "resistance": {
+      "$ref": "./BigNumber.json"
+    },
+    "incline": {
+      "$ref": "./BigNumber.json"
+    },
+    "weight": {
+      "$ref": "./Weight.json"
+    },
+    "steps": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "blueprint"
+  ]
+}

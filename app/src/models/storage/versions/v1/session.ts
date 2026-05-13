@@ -21,6 +21,9 @@ export interface SessionJSON {
   bodyweight: WeightJSON | undefined;
 }
 
+/**
+ * @discriminator type
+ */
 export type RecordedExerciseJSON =
   | RecordedCardioExerciseJSON
   | RecordedWeightedExerciseJSON;
@@ -33,6 +36,9 @@ export interface RecordedCardioExerciseSetJSON {
   resistance?: BigNumberJSON | undefined;
   incline?: BigNumberJSON | undefined;
   weight?: WeightJSON | undefined;
+  /**
+   * @asType integer
+   */
   steps?: number | undefined;
 }
 
@@ -51,6 +57,9 @@ export interface RecordedWeightedExerciseJSON {
 }
 
 export interface RecordedSetJSON {
+  /**
+   * @asType integer
+   */
   repsCompleted: number;
   completionDateTime: OffsetDateTimeJSON;
 }

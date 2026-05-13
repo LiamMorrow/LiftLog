@@ -1,29 +1,25 @@
-import { LiftLog } from '@/gen/proto';
-import { Session } from '@/models/session-models';
 import {
-  fromDurationDao,
-  fromTimestampDao,
-} from '@/models/storage/conversions.from-dao';
-import {
-  toDurationDao,
-  toTimestampDao,
-} from '@/models/storage/conversions.to-dao';
-import { Duration, Instant } from '@js-joda/core';
-import { match } from 'ts-pattern';
-import { ProtobufToJsonV1Migrator } from './storage/versions/v1/protobuf-migrator';
-
-const DaoType = LiftLog.Ui.Models.WorkoutMessage;
-type DaoType = typeof LiftLog.Ui.Models.WorkoutMessage;
+  DurationJSON,
+  InstantJSON,
+  RecordedExerciseJSON,
+  SessionJSON,
+  WeightJSON,
+} from '@/models/storage/versions/latest';
 
 /**
- * A reflection of the WorkoutMessage Protobuf types.
- * Note that they do NOT need to match 1:1, some events have derived data which we have pre calculated in JS transmitted over the wire
+ * @discriminator type
  */
-export type WorkoutMessage =
+export type WorkoutMessagePayload =
   | WorkoutStartedEvent
   | WorkoutUpdatedEvent
   | WorkoutEndedEvent
   | FinishWorkoutCommand;
+
+export type WorkoutMessage = {
+  translations: Translations;
+  appConfiguration: AppConfiguration;
+  payload: WorkoutMessagePayload;
+};
 
 export interface WorkoutStartedEvent {
   type: 'WorkoutStartedEvent';
@@ -31,22 +27,40 @@ export interface WorkoutStartedEvent {
 
 export interface WorkoutUpdatedEvent {
   type: 'WorkoutUpdatedEvent';
-  workout: Session;
+  workout: SessionJSON;
   restTimerInfo: RestTimerInfo | undefined;
   cardioTimerInfo: CardioTimerInfo | undefined;
+
+  currentExerciseDetails: CurrentExerciseDetails | undefined;
+  totalWeightLifted: WeightJSON;
+  workoutDuration: DurationJSON;
+}
+
+export interface CurrentExerciseDetails {
+  exercise: RecordedExerciseJSON;
+  /**
+   * @asType integer
+   */
+  setIndex: number;
 }
 
 export interface CardioTimerInfo {
-  currentDuration: Duration;
-  currentBlockStartTime: Instant | undefined;
+  currentDuration: DurationJSON;
+  currentBlockStartTime: InstantJSON | undefined;
+  /**
+   * @asType integer
+   */
   exerciseIndex: number;
+  /**
+   * @asType integer
+   */
   setIndex: number;
 }
 
 export interface RestTimerInfo {
-  startedAt: Instant;
-  partiallyEndAt: Instant;
-  endAt: Instant;
+  startedAt: InstantJSON;
+  partiallyEndAt: InstantJSON;
+  endAt: InstantJSON;
 }
 
 export interface WorkoutEndedEvent {
@@ -57,138 +71,23 @@ export interface FinishWorkoutCommand {
   type: 'FinishWorkoutCommand';
 }
 
-export function toWorkoutMessageDao(
-  message: WorkoutMessage,
-  appConfiguration: LiftLog.Ui.Models.WorkoutMessage.AppConfiguration,
-  translations: LiftLog.Ui.Models.WorkoutMessage.Translations,
-): LiftLog.Ui.Models.WorkoutMessage.WorkoutMessage {
-  const messageWithoutTranslation = match(message)
-    .returnType<WorkoutMessageWithoutTranslation>()
-    .with({ type: 'WorkoutStartedEvent' }, () =>
-      createMessage(
-        'workoutStartedEvent',
-        DaoType.WorkoutStartedEvent.create({}),
-      ),
-    )
-    .with({ type: 'WorkoutUpdatedEvent' }, (e) =>
-      createMessage(
-        'workoutUpdatedEvent',
-        DaoType.WorkoutUpdatedEvent.create({
-          workout: e.workout.toDao(),
-          currentExerciseDetails: e.workout.nextExercise
-            ? {
-                exercise: e.workout.nextExercise.toDao(),
-                setIndex: e.workout.nextExercise.currentSetIndex,
-              }
-            : null,
-          restTimerInfo: e.restTimerInfo
-            ? {
-                startedAt: toTimestampDao(e.restTimerInfo.startedAt),
-                partiallyEndAt: toTimestampDao(e.restTimerInfo.partiallyEndAt),
-                endAt: toTimestampDao(e.restTimerInfo.endAt),
-              }
-            : null,
-          cardioTimerInfo: e.cardioTimerInfo
-            ? {
-                currentDuration: toDurationDao(
-                  e.cardioTimerInfo.currentDuration,
-                ),
-                currentBlockStartTime: e.cardioTimerInfo.currentBlockStartTime
-                  ? toTimestampDao(e.cardioTimerInfo.currentBlockStartTime)
-                  : null,
-                exerciseIndex: e.cardioTimerInfo.exerciseIndex,
-                setIndex: e.cardioTimerInfo.setIndex,
-              }
-            : null,
-          totalWeightLifted: e.workout.totalWeightLifted.toDao(),
-          workoutDuration: toDurationDao(e.workout.duration ?? Duration.ZERO),
-        }),
-      ),
-    )
-    .with({ type: 'WorkoutEndedEvent' }, () =>
-      createMessage('workoutEndedEvent', DaoType.WorkoutEndedEvent.create({})),
-    )
-    .with({ type: 'FinishWorkoutCommand' }, () =>
-      createMessage(
-        'finishWorkoutCommand',
-        DaoType.FinishWorkoutCommand.create({}),
-      ),
-    )
-    .exhaustive();
+export interface Translations {
+  workoutPersistentNotificationRestBreakMessage: string;
+  workoutPersistentNotificationStartSoonMessage: string;
+  workoutPersistentNotificationStartNowMessage: string;
+  workoutPersistentNotificationMinRestOverMessage: string;
+  workoutPersistentNotificationMaxRestOverMessage: string;
+  workoutPersistentNotificationCurrentExerciseMessage: string;
 
-  return DaoType.WorkoutMessage.create({
-    ...messageWithoutTranslation,
-    translations,
-    appConfiguration,
-  });
+  workoutPersistentNotificationFinishedMessage: string;
+
+  // The initial content of the notification "Workout in progress"
+  workoutPersistentNotificationInProgressMessage: string;
+
+  // The text displayed on the action button to finish the workout
+  workoutPersistentNotificationFinishWorkoutAction: string;
 }
 
-export function fromWorkoutMessageDao(
-  event: LiftLog.Ui.Models.WorkoutMessage.WorkoutMessage,
-): WorkoutMessage {
-  return match(event.payload)
-    .returnType<WorkoutMessage>()
-    .with('workoutStartedEvent', () => ({
-      type: 'WorkoutStartedEvent',
-    }))
-    .with('workoutUpdatedEvent', () => ({
-      type: 'WorkoutUpdatedEvent',
-      workout: Session.fromJSON(
-        ProtobufToJsonV1Migrator.migrateSession(
-          event.workoutUpdatedEvent!.workout!,
-        ),
-      ),
-      restTimerInfo: event.workoutUpdatedEvent?.restTimerInfo
-        ? {
-            startedAt: fromTimestampDao(
-              event.workoutUpdatedEvent.restTimerInfo.startedAt,
-            ),
-            partiallyEndAt: fromTimestampDao(
-              event.workoutUpdatedEvent.restTimerInfo.partiallyEndAt,
-            ),
-            endAt: fromTimestampDao(
-              event.workoutUpdatedEvent.restTimerInfo.endAt,
-            ),
-          }
-        : undefined,
-      cardioTimerInfo: event.workoutUpdatedEvent?.cardioTimerInfo
-        ? {
-            currentBlockStartTime: event.workoutUpdatedEvent.cardioTimerInfo
-              .currentBlockStartTime
-              ? fromTimestampDao(
-                  event.workoutUpdatedEvent.cardioTimerInfo
-                    .currentBlockStartTime,
-                )
-              : undefined,
-            currentDuration: fromDurationDao(
-              event.workoutUpdatedEvent.cardioTimerInfo.currentBlockStartTime,
-            )!,
-            exerciseIndex:
-              event.workoutUpdatedEvent.cardioTimerInfo.exerciseIndex!,
-            setIndex: event.workoutUpdatedEvent.cardioTimerInfo.setIndex!,
-          }
-        : undefined,
-    }))
-    .with('workoutEndedEvent', () => ({
-      type: 'WorkoutEndedEvent',
-    }))
-    .with('finishWorkoutCommand', () => ({ type: 'FinishWorkoutCommand' }))
-    .with(undefined, () => {
-      throw new Error('Malformed WorkoutEvent, undefined');
-    })
-    .exhaustive();
-}
-
-type WorkoutMessageWithoutTranslation = Omit<
-  LiftLog.Ui.Models.WorkoutMessage.IWorkoutMessage,
-  'translations'
->;
-
-function createMessage<
-  T extends keyof LiftLog.Ui.Models.WorkoutMessage.IWorkoutMessage,
->(
-  type: T,
-  value: LiftLog.Ui.Models.WorkoutMessage.IWorkoutMessage[T],
-): WorkoutMessageWithoutTranslation {
-  return { [type]: value };
+export interface AppConfiguration {
+  notificationsEnabled: boolean;
 }

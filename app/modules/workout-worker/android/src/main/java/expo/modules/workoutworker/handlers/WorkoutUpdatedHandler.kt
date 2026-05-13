@@ -1,22 +1,24 @@
 package expo.modules.workoutworker.handlers
 
 
-import LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2OuterClass.ExerciseType.CARDIO
-import LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2OuterClass.ExerciseType.WEIGHTED
-import LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2OuterClass
-import LiftLog.Ui.Models.Utils
-import LiftLog.Ui.Models.Utils.WeightUnit.KILOGRAMS
-import LiftLog.Ui.Models.Utils.WeightUnit.POUNDS
-import LiftLog.Ui.Models.WorkoutMessage.WorkoutMessageOuterClass
 import android.annotation.SuppressLint
 import android.app.Notification
 import android.util.Log
+import com.limajuice.liftlog.DistanceCardioTarget
+import com.limajuice.liftlog.RecordedCardioExercise
+import com.limajuice.liftlog.RecordedCardioExerciseSet
+import com.limajuice.liftlog.RecordedWeightedExercise
+import com.limajuice.liftlog.TimeCardioTarget
+import com.limajuice.liftlog.Translations
+import com.limajuice.liftlog.Weight
+import com.limajuice.liftlog.WeightUnit
+import com.limajuice.liftlog.WorkoutMessage
+import com.limajuice.liftlog.WorkoutUpdatedEvent
 import expo.modules.workoutworker.utils.RepeatingTimerAction
 import expo.modules.workoutworker.utils.WorkoutNotificationManager
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
 import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.DurationUnit.SECONDS
@@ -27,43 +29,44 @@ import kotlin.time.toDuration
 class WorkoutUpdatedHandler(
     private val notificationManager: WorkoutNotificationManager
 ) : WorkoutMessageHandler {
-    override fun canHandle(event: WorkoutMessageOuterClass.WorkoutMessage): Boolean {
-        return event.hasWorkoutUpdatedEvent() && event.appConfiguration.notificationsEnabled
+    override fun canHandle(event: WorkoutMessage): Boolean {
+        return event.payload is WorkoutUpdatedEvent && event.appConfiguration.notificationsEnabled
     }
 
     val timer = RepeatingTimerAction(MainScope(), {})
 
     override suspend fun handle(
-        event: WorkoutMessageOuterClass.WorkoutMessage,
-        dispatch: (type: String, event: WorkoutMessageOuterClass.WorkoutMessage) -> Unit
+        event: WorkoutMessage,
+        dispatch: (type: String, event: WorkoutMessage) -> Unit
     ) {
         try {
-            val workoutUpdatedEvent = event.workoutUpdatedEvent
+            val workoutUpdatedEvent = event.payload as WorkoutUpdatedEvent
 
             when {
-                workoutUpdatedEvent.hasRestTimerInfo() -> showRestTimerNotification(event)
-                workoutUpdatedEvent.hasCardioTimerInfo() -> showCardioTimerNotification(event)
-                workoutUpdatedEvent.hasCurrentExerciseDetails() -> showCurrentExerciseNotification(
-                    event
+                workoutUpdatedEvent.restTimerInfo != null -> showRestTimerNotification(event.translations, workoutUpdatedEvent)
+                workoutUpdatedEvent.cardioTimerInfo != null -> showCardioTimerNotification(event.translations, workoutUpdatedEvent)
+                workoutUpdatedEvent.currentExerciseDetails != null -> showCurrentExerciseNotification(
+                    event.translations,
+                    workoutUpdatedEvent
                 )
 
-                else -> showFinishedNotification(event)
+                else -> showFinishedNotification(event.translations, workoutUpdatedEvent)
             }
         } catch (e: Exception) {
-            Log.e("WorkoutUpdatedHandler", "Failed to handle workout updated event", e);
+            Log.e("WorkoutUpdatedHandler", "Failed to handle workout updated event", e)
         }
     }
 
-    private fun showFinishedNotification(event: WorkoutMessageOuterClass.WorkoutMessage) {
+    private fun showFinishedNotification(translations: Translations, event: WorkoutUpdatedEvent) {
         // We should not be in a timer anymore
         timer.stop()
 
         val messageTemplate: String =
-            event.translations.workoutPersistentNotificationFinishedMessage
+            translations.workoutPersistentNotificationFinishedMessage
         val message = messageTemplate.replace(
-            "\$WEIGHT$", formatWeight(event.workoutUpdatedEvent.totalWeightLifted)
+            "\$WEIGHT$", formatWeight(event.totalWeightLifted)
         ).replace(
-            "\$TIME$", formatDuration(fromDurationDao(event.workoutUpdatedEvent.workoutDuration))
+            "\$TIME$", formatDuration(event.workoutDuration)
         )
 
         val notifBuilder = notificationManager.createWorkoutNotificationBuilder()
@@ -71,34 +74,34 @@ class WorkoutUpdatedHandler(
         notificationManager.notifyPersistent(notifBuilder.build())
     }
 
-    private fun showCurrentExerciseNotification(event: WorkoutMessageOuterClass.WorkoutMessage) {
+    private fun showCurrentExerciseNotification(translations: Translations, event: WorkoutUpdatedEvent) {
         // We should not be in a timer anymore
         timer.stop()
 
         val notifBuilder = notificationManager.createWorkoutNotificationBuilder()
-            .setContentText("${getCurrentExerciseMessage(event)}\n${event.translations.workoutPersistentNotificationStartNowMessage}")
+            .setContentText("${getCurrentExerciseMessage(translations, event)}\n${translations.workoutPersistentNotificationStartNowMessage}")
         notificationManager.notifyPersistent(notifBuilder.build())
     }
 
     @OptIn(ExperimentalTime::class)
     private fun showRestTimerNotification(
-        event: WorkoutMessageOuterClass.WorkoutMessage,
+        translations: Translations,
+        workoutUpdatedEvent: WorkoutUpdatedEvent,
     ) {
-        val workoutUpdatedEvent = event.workoutUpdatedEvent
 
-        val restTimerInfo = workoutUpdatedEvent.restTimerInfo
+        val restTimerInfo = workoutUpdatedEvent.restTimerInfo ?:return
         fun getProgress(): Long {
-            val timeStartSecs = restTimerInfo.startedAt.seconds
+            val timeStartSecs = restTimerInfo.startedAt.epochSeconds
             val now = Clock.System.now().epochSeconds
             return now - timeStartSecs
         }
 
-        val currentExerciseMessage = getCurrentExerciseMessage(event)
+        val currentExerciseMessage = getCurrentExerciseMessage(translations, workoutUpdatedEvent)
         var previousProgress = getProgress()
         timer.updateCallback {
-            val timeStartSecs = restTimerInfo.startedAt.seconds
-            val timePartiallyEndSecs = restTimerInfo.partiallyEndAt.seconds
-            val timeEndSecs = restTimerInfo.endAt.seconds
+            val timeStartSecs = restTimerInfo.startedAt.epochSeconds
+            val timePartiallyEndSecs = restTimerInfo.partiallyEndAt.epochSeconds
+            val timeEndSecs = restTimerInfo.endAt.epochSeconds
             val progress = getProgress()
             val now = Clock.System.now().epochSeconds
             val partialProgressMax = timePartiallyEndSecs - timeStartSecs
@@ -112,11 +115,11 @@ class WorkoutUpdatedHandler(
 
             val restNotif: Notification? = when {
                 partialProgressMax in (previousProgress + 1)..progress && partialProgressMax != 0L -> notificationManager.createRestNotificationBuilder()
-                    .setContentTitle(event.translations.workoutPersistentNotificationMinRestOverMessage)
+                    .setContentTitle(translations.workoutPersistentNotificationMinRestOverMessage)
                     .build()
 
                 fullProgressMax in (previousProgress + 1)..progress && fullProgressMax != 0L -> notificationManager.createRestNotificationBuilder()
-                    .setContentTitle(event.translations.workoutPersistentNotificationMaxRestOverMessage)
+                    .setContentTitle(translations.workoutPersistentNotificationMaxRestOverMessage)
                     .build()
 
                 else -> null
@@ -133,9 +136,9 @@ class WorkoutUpdatedHandler(
             previousProgress = progress
 
             val message = when {
-                now < timePartiallyEndSecs -> event.translations.workoutPersistentNotificationRestBreakMessage
-                now in timePartiallyEndSecs..timeEndSecs -> event.translations.workoutPersistentNotificationStartSoonMessage
-                else -> event.translations.workoutPersistentNotificationStartNowMessage
+                now < timePartiallyEndSecs -> translations.workoutPersistentNotificationRestBreakMessage
+                now in timePartiallyEndSecs..timeEndSecs -> translations.workoutPersistentNotificationStartSoonMessage
+                else -> translations.workoutPersistentNotificationStartNowMessage
             }
             val contentText = when {
                 currentExerciseMessage == "" -> message
@@ -166,16 +169,18 @@ class WorkoutUpdatedHandler(
 
     @OptIn(ExperimentalTime::class)
     private fun showCardioTimerNotification(
-        event: WorkoutMessageOuterClass.WorkoutMessage,
+        translations: Translations,
+        workoutUpdatedEvent: WorkoutUpdatedEvent,
     ) {
-        val workoutUpdatedEvent = event.workoutUpdatedEvent
-
-        val cardioTimerInfo = workoutUpdatedEvent.cardioTimerInfo
-        val currentExerciseMessage = getCurrentExerciseMessage(event)
+        val cardioTimerInfo = workoutUpdatedEvent.cardioTimerInfo?:return
+        val currentExerciseMessage = getCurrentExerciseMessage(translations, workoutUpdatedEvent)
+        if(cardioTimerInfo.currentBlockStartTime == null){
+            return
+        }
         timer.updateCallback {
-            val currentDuration = fromDurationDao(cardioTimerInfo.currentDuration)
+            val currentDuration = cardioTimerInfo.currentDuration
             val timeStartSecs =
-                cardioTimerInfo.currentBlockStartTime.seconds - currentDuration.toInt(SECONDS)
+                cardioTimerInfo.currentBlockStartTime.epochSeconds - currentDuration.toInt(SECONDS)
             val now = Clock.System.now().epochSeconds
             val timeMessage = formatDuration((now - timeStartSecs).toDuration(SECONDS))
             val notifBuilder =
@@ -186,11 +191,6 @@ class WorkoutUpdatedHandler(
             notificationManager.notifyPersistent(notifBuilder.build())
         }
         timer.start()
-    }
-
-    private fun fromDurationDao(duration: com.google.protobuf.Duration): Duration {
-        // TODO dropping nanos, not a problem for our uses though
-        return duration.seconds.toDuration(SECONDS)
     }
 
     @SuppressLint("DefaultLocale")
@@ -204,73 +204,61 @@ class WorkoutUpdatedHandler(
         }
     }
 
-    private fun getCurrentExerciseMessage(event: WorkoutMessageOuterClass.WorkoutMessage): String {
+    private fun getCurrentExerciseMessage(translations: Translations, event: WorkoutUpdatedEvent): String {
 
         val currentExercise =
-            event.workoutUpdatedEvent.currentExerciseDetails.exercise.exerciseBlueprint
-        val messageTemplate = event.translations.workoutPersistentNotificationCurrentExerciseMessage
+            event.currentExerciseDetails?.exercise
+        val messageTemplate = translations.workoutPersistentNotificationCurrentExerciseMessage
 
         val nextSet =
-            event.workoutUpdatedEvent.currentExerciseDetails.exercise.potentialSetsList.firstOrNull { !it.hasRecordedSet() }
-
-        val nextSetWeight: Utils.Weight? = when {
-            nextSet != null -> Utils.Weight.newBuilder().setUnit(nextSet.weightUnit)
-                .setValue(nextSet.weightValue).build()
-
-            else -> null
-        }
+            (event.currentExerciseDetails?.exercise as? RecordedWeightedExercise?)?.potentialSets?.firstOrNull { it.set == null }
 
         fun getCardioTarget(): String {
-            var set: SessionHistoryDaoV2OuterClass.RecordedCardioExerciseSetDao
-            if (event.workoutUpdatedEvent.hasCardioTimerInfo()) {
-                val exerciseIndex = event.workoutUpdatedEvent.cardioTimerInfo.exerciseIndex
-                val setIndex = event.workoutUpdatedEvent.cardioTimerInfo.setIndex
+            var set: RecordedCardioExerciseSet
+            if (event.cardioTimerInfo != null) {
+                val exerciseIndex = event.cardioTimerInfo.exerciseIndex
+                val setIndex = event.cardioTimerInfo.setIndex
                 val exercise =
-                    event.workoutUpdatedEvent.workout.recordedExercisesList.get(exerciseIndex)
-                set = exercise.cardioSetsList.get(setIndex)
+                    event.workout.recordedExercises[exerciseIndex.toInt()] as? RecordedCardioExercise?
+                        ?: return ""
+                set = exercise.sets[setIndex.toInt()]
             } else {
-                val currentExercise = event.workoutUpdatedEvent.currentExerciseDetails
+                val currentExercise = event.currentExerciseDetails?:return ""
                 val setIndex = currentExercise.setIndex
-                set = currentExercise.exercise.cardioSetsList.get(setIndex)
+                val exercise =
+                    currentExercise.exercise as? RecordedCardioExercise?
+                        ?: return ""
+                set = exercise.sets[setIndex.toInt()]
             }
-            val cardioTarget = set.blueprint.cardioTarget
-            return when {
-                cardioTarget.hasTimeValue() -> formatDuration(
-                    cardioTarget.timeValue.seconds.toDuration(
-                        SECONDS
-                    )
-                )
+            return when (val cardioTarget = set.blueprint.target) {
+                is TimeCardioTarget -> formatDuration(cardioTarget.value)
 
-                else -> "${toBigDecimal(cardioTarget.distanceValue)} ${cardioTarget.distanceUnit}"
+                is DistanceCardioTarget -> "${cardioTarget.value.value} ${cardioTarget.value.unit}"
+                else -> ""
             }
         }
 
         return when {
-            !event.workoutUpdatedEvent.hasCurrentExerciseDetails() -> ""
-            currentExercise.type == WEIGHTED -> messageTemplate.replace(
-                "\$EXERCISE_DESCRIPTOR$", "${currentExercise.name} - ${currentExercise.repsPerSet}${
-                    if (nextSetWeight != null) "x${formatWeight(nextSetWeight)}" else ""
+            event.currentExerciseDetails == null -> ""
+            currentExercise is RecordedWeightedExercise -> messageTemplate.replace(
+                "\$EXERCISE_DESCRIPTOR$", "${currentExercise.blueprint.name} - ${currentExercise.blueprint.repsPerSet}${
+                    if (nextSet?.weight != null) "x${formatWeight(nextSet.weight)}" else ""
                 }"
             )
 
-            currentExercise.type == CARDIO -> messageTemplate.replace(
-                "\$EXERCISE_DESCRIPTOR$", "${currentExercise.name} - ${getCardioTarget()}"
+            currentExercise is RecordedCardioExercise-> messageTemplate.replace(
+                "\$EXERCISE_DESCRIPTOR$", "${currentExercise.blueprint.name} - ${getCardioTarget()}"
             )
 
             else -> ""
         }
     }
 
-    private fun toBigDecimal(value: Utils.DecimalValue): BigDecimal {
-        val nanoFactor = BigDecimal("1000000000")
-        return BigDecimal(value.units).plus(BigDecimal(value.nanos.toLong()).divide(nanoFactor))
-    }
-
-    private fun formatWeight(weight: Utils.Weight): String {
-        val weightValue = toBigDecimal(weight.value)
+    private fun formatWeight(weight: Weight): String {
+        val weightValue = weight.value
         val shortUnit = when (weight.unit) {
-            KILOGRAMS -> "kg"
-            POUNDS -> "lbs"
+            WeightUnit.kilograms -> "kg"
+            WeightUnit.pounds -> "lbs"
             else -> "units"
         }
         return "$weightValue$shortUnit"

@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "exercises": {
+      "type": "array",
+      "items": {
+        "$ref": "./ExerciseBlueprint.json"
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "exercises",
+    "notes"
+  ]
+}

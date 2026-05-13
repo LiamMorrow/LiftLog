@@ -1,6 +1,5 @@
 package expo.modules.workoutworker
 
-import LiftLog.Ui.Models.WorkoutMessage.WorkoutMessageOuterClass
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
@@ -9,6 +8,7 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.ServiceCompat
+import com.limajuice.liftlog.WorkoutMessage
 import expo.modules.workoutworker.handlers.WorkoutEndedHandler
 import expo.modules.workoutworker.handlers.WorkoutMessageHandler
 import expo.modules.workoutworker.handlers.WorkoutStartedHandler
@@ -32,14 +32,14 @@ class WorkoutWorkerService : Service() {
 
     private lateinit var notificationManager: WorkoutNotificationManager
 
-    private var eventDispatch: ((type: String, event: WorkoutMessageOuterClass.WorkoutMessage) -> Unit) =
-        { _: String, _: WorkoutMessageOuterClass.WorkoutMessage -> }
+    private var eventDispatch: ((type: String, event: WorkoutMessage) -> Unit) =
+        { _: String, _: WorkoutMessage -> }
 
     private val scope = CoroutineScope(
         SupervisorJob() + Dispatchers.Default
     )
 
-    private val events = MutableSharedFlow<WorkoutMessageOuterClass.WorkoutMessage>(
+    private val events = MutableSharedFlow<WorkoutMessage>(
         extraBufferCapacity = 64
     )
 
@@ -84,22 +84,22 @@ class WorkoutWorkerService : Service() {
 
     override fun onBind(intent: Intent?): IBinder = binder
 
-    fun setEventDispatch(dispatch: (type: String, event: WorkoutMessageOuterClass.WorkoutMessage) -> Unit) {
+    fun setEventDispatch(dispatch: (type: String, event: WorkoutMessage) -> Unit) {
         eventDispatch = dispatch
     }
 
-    fun enqueue(event: WorkoutMessageOuterClass.WorkoutMessage) {
+    fun enqueue(event: WorkoutMessage) {
         events.tryEmit(event)
     }
 
-    private suspend fun dispatchToHandlers(event: WorkoutMessageOuterClass.WorkoutMessage) {
+    private suspend fun dispatchToHandlers(event: WorkoutMessage) {
         for (handler in handlers) {
             if (handler.canHandle(event)) {
                 handler.handle(event, eventDispatch)
                 return
             }
         }
-        Log.d("WorkoutWorker", "No handler found for event: ${event.payloadCase}")
+        Log.d("WorkoutWorker", "No handler found for event: ${event.payload}")
     }
 
     override fun onDestroy() {

@@ -1,12 +1,13 @@
 package expo.modules.workoutworker
 
 
-import LiftLog.Ui.Models.WorkoutMessage.WorkoutMessageOuterClass
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import com.limajuice.liftlog.WorkoutMessage
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
+import expo.modules.workoutworker.utils.Json
 
 /**
  * Listens for intents broadcasted, largely from the notification taps
@@ -40,10 +41,10 @@ class WorkoutWorkerLifecycleListener : ReactActivityLifecycleListener {
         val hasMessage = bun.containsKey(WorkoutConstants.BUNDLE_EXTRA_MESSAGE_KEY)
         Log.d("WorkoutWorkerLifecycleListener", "Got intent. Has message:$hasMessage")
         if (hasMessage) {
-            val decoded = WorkoutMessageOuterClass.WorkoutMessage.parseFrom(
-                bun.getByteArray(
+            val decoded = Json.decodeFromString<WorkoutMessage>(
+                bun.getString(
                     WorkoutConstants.BUNDLE_EXTRA_MESSAGE_KEY
-                )
+                ) ?: return
             )
             WorkoutWorkerModule.broadcastMessage(decoded)
         }

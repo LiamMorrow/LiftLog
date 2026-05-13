@@ -6,7 +6,12 @@ import {
   Session,
 } from '@/models/session-models';
 import {
+  toDurationJSON,
+  toInstantJson,
+} from '@/models/storage/versions/latest';
+import {
   CardioTimerInfo,
+  CurrentExerciseDetails,
   RestTimerInfo,
 } from '@/models/workout-worker-messages';
 import { Duration, OffsetDateTime } from '@js-joda/core';
@@ -56,14 +61,28 @@ export function getCardioTimerInfo(
   }
 
   return {
-    currentBlockStartTime:
+    currentBlockStartTime: toInstantJson(
       exerciseWithRunningTimer.sets[
         setIndex
       ].currentBlockStartTime?.toInstant(),
-    currentDuration: exerciseWithRunningTimer.duration ?? Duration.ZERO,
+    ),
+    currentDuration: toDurationJSON(
+      exerciseWithRunningTimer.duration ?? Duration.ZERO,
+    ),
     exerciseIndex,
     setIndex,
   };
+}
+
+export function getCurrentExerciseDetails(
+  session: Session,
+): CurrentExerciseDetails | undefined {
+  return session.nextExercise
+    ? {
+        exercise: session.nextExercise.toJSON(),
+        setIndex: session.nextExercise.currentSetIndex,
+      }
+    : undefined;
 }
 
 export function getTimerInfo(
@@ -104,8 +123,10 @@ export function getTimerInfo(
     return;
   }
   return {
-    startedAt: lastSetTime.toInstant(),
-    partiallyEndAt: lastSetTime.plus(rest.partialRest).toInstant(),
-    endAt: lastSetTime.plus(rest.fullRest).toInstant(),
+    startedAt: toInstantJson(lastSetTime.toInstant()),
+    partiallyEndAt: toInstantJson(
+      lastSetTime.plus(rest.partialRest).toInstant(),
+    ),
+    endAt: toInstantJson(lastSetTime.plus(rest.fullRest).toInstant()),
   };
 }

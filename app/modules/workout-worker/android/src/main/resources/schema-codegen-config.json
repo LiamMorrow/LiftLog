@@ -1,0 +1,17 @@
+{
+  "customClasses": {
+    "format": {
+      "date-time": "java.lang.String",
+      "date": "java.lang.String",
+      "decimal": "java.math.BigDecimal",
+      "instant": "kotlin.time.Instant",
+      "duration": "kotlin.time.Duration"
+    }
+  },
+  "annotations": {
+    "classes": {
+    },
+    "fields": {
+    }
+  }
+}

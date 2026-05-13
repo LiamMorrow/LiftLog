@@ -1,6 +1,6 @@
-// The result of calling encode on a WorkoutEvent protobuf object
+// The result of calling JSON.stringify on a WorkoutEvent object
 export type SerializedWorkoutEventPayload = {
-  bytes: Uint8Array;
+  jsonString: string;
 };
 
 export type WorkoutWorkerModuleEvents = {

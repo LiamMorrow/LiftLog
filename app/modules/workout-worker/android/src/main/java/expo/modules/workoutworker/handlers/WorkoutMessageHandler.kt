@@ -1,6 +1,6 @@
 package expo.modules.workoutworker.handlers
 
-import LiftLog.Ui.Models.WorkoutMessage.WorkoutMessageOuterClass
+import com.limajuice.liftlog.WorkoutMessage
 
 /**
  * Interface for handling specific workout event types.
@@ -10,14 +10,14 @@ interface WorkoutMessageHandler {
     /**
      * Returns true if this handler can process the given event.
      */
-    fun canHandle(event: WorkoutMessageOuterClass.WorkoutMessage): Boolean
+    fun canHandle(event: WorkoutMessage): Boolean
 
     /**
      * Handle the event. Only called if [canHandle] returned true.
      */
     suspend fun handle(
-        event: WorkoutMessageOuterClass.WorkoutMessage,
-        dispatch: (type: String, event: WorkoutMessageOuterClass.WorkoutMessage) -> Unit
+        event: WorkoutMessage,
+        dispatch: (type: String, event: WorkoutMessage) -> Unit
     )
 
     fun onDestroy() {}

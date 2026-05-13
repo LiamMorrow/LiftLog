@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "startedAt": {
+      "$ref": "./Instant.json"
+    },
+    "partiallyEndAt": {
+      "$ref": "./Instant.json"
+    },
+    "endAt": {
+      "$ref": "./Instant.json"
+    }
+  },
+  "required": [
+    "startedAt",
+    "partiallyEndAt",
+    "endAt"
+  ]
+}

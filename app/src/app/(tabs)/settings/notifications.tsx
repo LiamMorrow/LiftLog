@@ -1,5 +1,6 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import ListSwitch from '@/components/presentation/foundation/list-switch';
+import { toDurationJSON } from '@/models/storage/versions/latest';
 import { RootState, useAppSelector, useAppSelectorWithArg } from '@/store';
 import {
   broadcastWorkoutEvent,
@@ -7,9 +8,11 @@ import {
 } from '@/store/current-session';
 import {
   getCardioTimerInfo,
+  getCurrentExerciseDetails,
   getTimerInfo,
 } from '@/store/current-session/helpers';
 import { setRestNotifications } from '@/store/settings';
+import { Duration } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
 import { List } from 'react-native-paper';
@@ -46,9 +49,15 @@ export default function AppConfiguration() {
               dispatch(
                 broadcastWorkoutEvent({
                   type: 'WorkoutUpdatedEvent',
-                  workout: currentWorkout,
+                  workout: currentWorkout.toJSON(),
                   restTimerInfo: getTimerInfo(currentWorkout, lastSetTime),
                   cardioTimerInfo: getCardioTimerInfo(currentWorkout),
+                  currentExerciseDetails:
+                    getCurrentExerciseDetails(currentWorkout),
+                  totalWeightLifted: currentWorkout.totalWeightLifted.toJSON(),
+                  workoutDuration: toDurationJSON(
+                    currentWorkout.duration ?? Duration.ZERO,
+                  ),
                 }),
               );
             }

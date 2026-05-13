@@ -1,6 +1,5 @@
 package expo.modules.workoutworker
 
-import LiftLog.Ui.Models.WorkoutMessage.WorkoutMessageOuterClass
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -9,18 +8,22 @@ import android.os.IBinder
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import com.limajuice.liftlog.WorkoutEndedEvent
+import com.limajuice.liftlog.WorkoutMessage
+import com.limajuice.liftlog.WorkoutStartedEvent
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.workoutworker.utils.Json
 import java.lang.ref.WeakReference
 
 class WorkoutWorkerModule : Module() {
 
     companion object {
         // A global list of all observers for when the module is instantiated multiple times
-        private var workoutMessageReceivedObservers: MutableSet<((WorkoutMessageOuterClass.WorkoutMessage) -> Unit)> =
+        private var workoutMessageReceivedObservers: MutableSet<((WorkoutMessage) -> Unit)> =
             mutableSetOf()
 
-        fun broadcastMessage(message: WorkoutMessageOuterClass.WorkoutMessage) {
+        fun broadcastMessage(message: WorkoutMessage) {
             workoutMessageReceivedObservers.forEach {
                 it(message)
             }
@@ -28,10 +31,10 @@ class WorkoutWorkerModule : Module() {
     }
 
     private var service: WorkoutWorkerService? = null
-    private var pendingEvent: WorkoutMessageOuterClass.WorkoutMessage? = null
+    private var pendingEvent: WorkoutMessage? = null
 
     // The observer for this instance of the module, used only for removing it when app stops listening
-    private var workoutMessageReceivedObserver: ((WorkoutMessageOuterClass.WorkoutMessage) -> Unit)? =
+    private var workoutMessageReceivedObserver: ((WorkoutMessage) -> Unit)? =
         null
 
     private val connection = object : ServiceConnection {
@@ -42,8 +45,8 @@ class WorkoutWorkerModule : Module() {
 
             // Set up the event dispatch callback
             service?.setEventDispatch { type, event ->
-                val eventBytes = event.toByteArray()
-                sendEvent("on", bundleOf("bytes" to eventBytes, "type" to type))
+                val jsonString = Json.encodeToString(event)
+                sendEvent("on", bundleOf("jsonString" to jsonString, "type" to type))
             }
 
             // Send any event that was waiting for the service to be ready
@@ -69,10 +72,10 @@ class WorkoutWorkerModule : Module() {
             // Other parts of the kotlin api (such as intent listeners) can then broadcast
             // by calling broadcastMessage on the companion object
             val weakModule = WeakReference(this@WorkoutWorkerModule)
-            val observer: (WorkoutMessageOuterClass.WorkoutMessage) -> Unit = { message ->
+            val observer: (WorkoutMessage) -> Unit = { message ->
                 weakModule.get()?.sendEvent(
                     "on",
-                    bundleOf("bytes" to message.toByteArray())
+                    bundleOf("jsonString" to Json.encodeToString( message))
                 )
             }
             workoutMessageReceivedObservers.add(observer)
@@ -87,17 +90,17 @@ class WorkoutWorkerModule : Module() {
             unbindIfNeeded()
         }
 
-        Function("broadcast") { bytes: ByteArray ->
+        Function("broadcast") { jsonString: String ->
             sendEvent(
-                "on", bundleOf("bytes" to bytes)
+                "on", bundleOf("jsonString" to jsonString)
             )
 
-            val event = WorkoutMessageOuterClass.WorkoutMessage.parseFrom(bytes)
+            val event =  Json.decodeFromString<WorkoutMessage>(jsonString)
             val context = appContext.reactContext ?: return@Function
             Log.d("WorkoutWorker", "Got workout event")
 
             when {
-                event.hasWorkoutStartedEvent() -> {
+                event.payload is WorkoutStartedEvent -> {
                     if (event.appConfiguration.notificationsEnabled) {
                         // Start and bind to the service
                         val intent = Intent(context, WorkoutWorkerService::class.java)
@@ -109,7 +112,7 @@ class WorkoutWorkerModule : Module() {
                     }
                 }
 
-                event.hasWorkoutEndedEvent() -> {
+                event.payload is WorkoutEndedEvent -> {
                     // Forward the event, unbind, then stop the service
                     service?.enqueue(event)
                     unbindIfNeeded()

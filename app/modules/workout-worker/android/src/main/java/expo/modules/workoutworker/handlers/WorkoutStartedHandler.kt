@@ -1,7 +1,8 @@
 package expo.modules.workoutworker.handlers
 
 
-import LiftLog.Ui.Models.WorkoutMessage.WorkoutMessageOuterClass
+import com.limajuice.liftlog.WorkoutMessage
+import com.limajuice.liftlog.WorkoutStartedEvent
 import expo.modules.workoutworker.utils.WorkoutNotificationManager
 import kotlin.time.ExperimentalTime
 
@@ -9,14 +10,14 @@ import kotlin.time.ExperimentalTime
 class WorkoutStartedHandler(
     private val notificationManager: WorkoutNotificationManager
 ) : WorkoutMessageHandler {
-    override fun canHandle(event: WorkoutMessageOuterClass.WorkoutMessage): Boolean {
-        return event.hasWorkoutStartedEvent() && event.appConfiguration.notificationsEnabled
+    override fun canHandle(event: WorkoutMessage): Boolean {
+        return event.payload is WorkoutStartedEvent && event.appConfiguration.notificationsEnabled
     }
 
     @OptIn(ExperimentalTime::class)
     override suspend fun handle(
-        event: WorkoutMessageOuterClass.WorkoutMessage,
-        dispatch: (type: String, event: WorkoutMessageOuterClass.WorkoutMessage) -> Unit
+        event: WorkoutMessage,
+        dispatch: (type: String, event: WorkoutMessage) -> Unit
     ) {
 
         val notifBuilder = notificationManager.createWorkoutNotificationBuilder()
