@@ -30,9 +30,12 @@ import { addUnpublishedSessionId } from '@/store/feed';
 import { setStatsIsDirty } from '@/store/stats';
 import {
   getCardioTimerInfo,
+  getCurrentExerciseDetails,
   getTimerInfo,
 } from '@/store/current-session/helpers';
 import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
+import { toDurationJSON } from '@/models/storage/versions/latest';
+import { Duration } from '@js-joda/core';
 
 const storageKey = 'CurrentSessionStateV1';
 export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
@@ -220,12 +223,17 @@ export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
         dispatch(
           broadcastWorkoutEvent({
             type: 'WorkoutUpdatedEvent',
-            workout: currentValue,
+            workout: currentValue.toJSON(),
             restTimerInfo: getTimerInfo(
               currentValue,
               stateAfterReduce.currentSession.workoutSessionLastSetTime,
             ),
             cardioTimerInfo: getCardioTimerInfo(currentValue),
+            currentExerciseDetails: getCurrentExerciseDetails(currentValue),
+            totalWeightLifted: currentValue.totalWeightLifted.toJSON(),
+            workoutDuration: toDurationJSON(
+              currentValue.duration ?? Duration.ZERO,
+            ),
           }),
         );
       }

@@ -1,8 +1,6 @@
-import { LiftLog } from '@/gen/proto';
-
 import {
-  fromWorkoutMessageDao,
-  toWorkoutMessageDao,
+  AppConfiguration,
+  Translations,
   WorkoutMessage,
 } from '@/models/workout-worker-messages';
 import WorkoutWorkerModule from '~/modules/workout-worker/src/WorkoutWorkerModule';
@@ -13,8 +11,8 @@ import { TolgeeInstance, TranslationKey } from '@tolgee/react';
 
 export class WorkoutWorker {
   private readonly listeners = new Map<
-    WorkoutMessage['type'],
-    ((e: WorkoutMessage) => void)[]
+    WorkoutMessage['payload']['type'],
+    ((e: WorkoutMessage['payload']) => void)[]
   >();
 
   constructor(
@@ -23,78 +21,74 @@ export class WorkoutWorker {
     private tolgee: TolgeeInstance,
   ) {
     WorkoutWorkerModule.addListener('on', (encodedEvent) => {
-      const decoded = LiftLog.Ui.Models.WorkoutMessage.WorkoutMessage.decode(
-        encodedEvent.bytes,
-      );
-      const event = fromWorkoutMessageDao(decoded);
-      const listeners = this.listeners.get(event.type);
-      listeners?.forEach((handler) => handler(event));
+      const decoded = JSON.parse(encodedEvent.jsonString) as WorkoutMessage;
+      const listeners = this.listeners.get(decoded.payload.type);
+      listeners?.forEach((handler) => handler(decoded.payload));
     });
 
     this.on('FinishWorkoutCommand', () => this.handleFinishWorkout());
   }
 
-  broadcast(event: WorkoutMessage) {
+  broadcast(event: WorkoutMessage['payload']) {
     WorkoutWorkerModule.broadcast(
-      LiftLog.Ui.Models.WorkoutMessage.WorkoutMessage.encode(
-        toWorkoutMessageDao(
-          event,
-          this.getAppConfigurationMessage(),
-          this.getTranslationMessage(),
-        ),
-      ).finish(),
+      JSON.stringify({
+        payload: event,
+        appConfiguration: this.getAppConfigurationMessage(),
+        translations: this.getTranslationMessage(),
+      } satisfies WorkoutMessage),
     );
   }
-  getAppConfigurationMessage(): LiftLog.Ui.Models.WorkoutMessage.AppConfiguration {
-    return LiftLog.Ui.Models.WorkoutMessage.AppConfiguration.create({
+
+  private getAppConfigurationMessage(): AppConfiguration {
+    return {
       notificationsEnabled: this.getState().settings.restNotifications,
-    } satisfies Required<LiftLog.Ui.Models.WorkoutMessage.IAppConfiguration>);
+    };
   }
 
   private handleFinishWorkout() {
     this.dispatch(finishCurrentWorkout('workoutSession'));
   }
 
-  private on<T extends WorkoutMessage>(
+  private on<T extends WorkoutMessage['payload']>(
     type: T['type'],
     eventHandler: (e: T) => void,
   ) {
     const listener = this.listeners.get(type) ?? [];
 
-    listener.push(eventHandler as (e: WorkoutMessage) => void);
+    listener.push(eventHandler as (e: WorkoutMessage['payload']) => void);
 
     this.listeners.set(type, listener);
   }
 
-  private getTranslationMessage(): LiftLog.Ui.Models.WorkoutMessage.Translations {
-    return LiftLog.Ui.Models.WorkoutMessage.Translations.create({
-      workoutPersistentNotification_FinishWorkout_Action: this.tolgee.t(
+  private getTranslationMessage(): Translations {
+    return {
+      workoutPersistentNotificationFinishWorkoutAction: this.tolgee.t(
         'workout_persistent_notification.finish_workout.action' satisfies TranslationKey,
       ),
-      workoutPersistentNotification_InProgress_Message: this.tolgee.t(
+      workoutPersistentNotificationInProgressMessage: this.tolgee.t(
         'workout_persistent_notification.in_progress.message' satisfies TranslationKey,
       ),
-      workoutPersistentNotification_RestBreak_Message: this.tolgee.t(
+      workoutPersistentNotificationRestBreakMessage: this.tolgee.t(
         'workout_persistent_notification.rest_break.message' satisfies TranslationKey,
       ),
-      workoutPersistentNotification_StartNow_Message: this.tolgee.t(
+      workoutPersistentNotificationStartNowMessage: this.tolgee.t(
         'workout_persistent_notification.start_now.message' satisfies TranslationKey,
       ),
-      workoutPersistentNotification_StartSoon_Message: this.tolgee.t(
+      workoutPersistentNotificationStartSoonMessage: this.tolgee.t(
         'workout_persistent_notification.start_soon.message' satisfies TranslationKey,
       ),
-      workoutPersistentNotification_Finished_Message: this.tolgee.t(
+      workoutPersistentNotificationFinishedMessage: this.tolgee.t(
         'workout_persistent_notification.finished.message' satisfies TranslationKey,
       ),
-      workoutPersistentNotification_CurrentExercise_Message: this.tolgee.t(
+      workoutPersistentNotificationCurrentExerciseMessage: this.tolgee.t(
         'workout_persistent_notification.current_exercise.message' satisfies TranslationKey,
       ),
-      workoutPersistentNotification_MinRestOver_Message: this.tolgee.t(
+      workoutPersistentNotificationMinRestOverMessage: this.tolgee.t(
         'workout_persistent_notification.min_rest_over.message' satisfies TranslationKey,
       ),
-      workoutPersistentNotification_MaxRestOver_Message: this.tolgee.t(
+      workoutPersistentNotificationMaxRestOverMessage: this.tolgee.t(
         'workout_persistent_notification.max_rest_over.message' satisfies TranslationKey,
       ),
-    } satisfies Required<LiftLog.Ui.Models.WorkoutMessage.ITranslations>);
+    };
   }
 }

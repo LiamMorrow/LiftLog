@@ -4,31 +4,111 @@ const tsj = require('ts-json-schema-generator');
 const fs = require('fs');
 const { join } = require('node:path');
 
-const storageVersionsDir = join(__dirname, '../src/models/storage/versions');
-
+const modelsDir = join(__dirname, '../src/models');
+const storageVersionsDir = join(modelsDir, 'storage/versions');
+const docsSchemasPath = join(__dirname, '../../docs/schemas/');
+// Create schemas for storage
 for (const currentVersionVal of fs
   .readdirSync(storageVersionsDir)
   .filter((f) => /^v\d+/.test(f))) {
+  const outputPath = join(docsSchemasPath, currentVersionVal, 'schema.json');
+
+  createSchema(
+    join(storageVersionsDir, currentVersionVal, 'index.ts'),
+    outputPath,
+  );
+}
+
+// Create schema for workout-worker — one file per definition
+createSplitSchemas(
+  join(modelsDir, 'workout-worker-messages.ts'),
+  join(docsSchemasPath, 'workout-worker'),
+);
+
+function createSchema(inputFile, outputPath) {
+  const schema = buildSchema(inputFile);
+
+  fs.mkdirSync(require('path').dirname(outputPath), { recursive: true });
+  fs.writeFileSync(outputPath, JSON.stringify(schema, null, 2));
+  console.log(`Wrote schema to ${outputPath}`);
+}
+
+/**
+ * Write one JSON Schema file per top-level definition.
+ * Each file is named `<DefinitionName>.json` and lives in `outputDir`.
+ * Cross-definition $refs are rewritten from `#/definitions/Foo` to `./Foo.json`.
+ */
+function createSplitSchemas(inputFile, outputDir) {
+  const schema = buildSchema(inputFile);
+  const { definitions } = schema;
+
+  if (!definitions || Object.keys(definitions).length === 0) {
+    console.warn(`No definitions found in schema for ${inputFile}`);
+    return;
+  }
+
+  const definitionNames = new Set(Object.keys(definitions));
+
+  /**
+   * Rewrite $ref values:
+   *   #/definitions/Foo  ->  ./Foo.json
+   * Any ref that doesn't point at a known definition is left untouched.
+   */
+  function rewriteRefs(node) {
+    if (Array.isArray(node)) {
+      return node.map(rewriteRefs);
+    }
+    if (node && typeof node === 'object') {
+      const out = {};
+      for (const [k, v] of Object.entries(node)) {
+        if (k === '$ref' && typeof v === 'string') {
+          const defName = v.replace('#/definitions/', '');
+          out.$ref = definitionNames.has(defName) ? `./${defName}.json` : v;
+        } else {
+          out[k] = rewriteRefs(v);
+        }
+      }
+      return out;
+    }
+    return node;
+  }
+
+  if (fs.existsSync(outputDir)) {
+    fs.rmSync(outputDir, { recursive: true });
+  }
+  fs.mkdirSync(outputDir, { recursive: true });
+
+  for (const [name, def] of Object.entries(definitions)) {
+    // Build a self-contained schema for this definition.
+    // We keep $schema and any top-level metadata, drop `definitions` (replaced
+    // by file-level refs), and set the definition body as the root.
+    const { definitions: _dropped, ...topLevel } = schema;
+    const fileSchema = {
+      ...rewriteRefs(topLevel),
+      ...rewriteRefs(def),
+    };
+
+    const outputPath = join(outputDir, `${name}.json`);
+    fs.writeFileSync(outputPath, JSON.stringify(fileSchema, null, 2));
+    console.log(`Wrote schema to ${outputPath}`);
+  }
+}
+
+/**
+ * Shared logic: compile TypeScript -> JSON Schema, then apply the
+ * FooJSON / Branded<...> rename + collapse transforms.
+ */
+function buildSchema(inputFile) {
   /** @type {import('ts-json-schema-generator/dist/src/Config').Config} */
   const config = {
-    path: join(storageVersionsDir, currentVersionVal, 'index.ts'),
+    path: inputFile,
     tsconfig: join(__dirname, '../tsconfig.json'),
     type: '*',
     additionalProperties: true,
+    discriminatorType: 'open-api',
   };
 
-  const outputPath = join(
-    __dirname,
-    '../../docs/schemas/',
-    currentVersionVal,
-    'schema.json',
-  );
-
-  // ---- Generate ----
-
   const schema = tsj.createGenerator(config).createSchema(config.type);
-
-  // ---- Transform ----
 
   const defs = schema.definitions;
 
@@ -41,7 +121,6 @@ for (const currentVersionVal of fs
     if (key.endsWith('JSON')) {
       renameMap[key] = key.slice(0, -4);
     } else if (key.startsWith('Branded<')) {
-      // Extract the brand name: Branded<string,"LocalDate"> -> LocalDate
       const match = key.match(/Branded<[^,]+,"([^"]+)">/);
       if (match) {
         renameMap[key] = match[1];
@@ -50,17 +129,8 @@ for (const currentVersionVal of fs
   }
 
   // Step 2: Identify Branded wrapper definitions to drop.
-  // These are "FooJSON" definitions whose only content is a $ref to a Branded<...> key.
-  // After renaming, both map to the same name, so we collapse them:
-  //   LocalDateJSON -> { $ref: Branded<string,"LocalDate">, format: "date" }
-  //   Branded<string,"LocalDate"> -> { type: "string" }
-  // becomes just:
-  //   LocalDate -> { type: "string", format: "date" }
-  //
-  // Any extra keys on the wrapper (e.g. from @format JSDoc) are collected and merged
-  // into the target definition after the main loop.
   const brandedWrappers = new Set();
-  const brandedWrapperExtras = {}; // newTargetKey -> extra props to merge
+  const brandedWrapperExtras = {};
 
   for (const [key, def] of Object.entries(defs)) {
     if (!key.endsWith('JSON')) continue;
@@ -77,7 +147,6 @@ for (const currentVersionVal of fs
   }
 
   function renameRef(ref) {
-    // Handles both encoded (Branded%3Cstring%2C%22Foo%22%3E) and unencoded refs
     const key = decodeURIComponent(ref.replace('#/definitions/', ''));
     const newKey = renameMap[key] ?? key;
     return `#/definitions/${newKey}`;
@@ -104,9 +173,7 @@ for (const currentVersionVal of fs
   const newDefs = {};
 
   for (const [key, def] of Object.entries(defs)) {
-    // Drop branded wrapper stubs (FooJSON that just re-ref Branded<...>)
     if (brandedWrappers.has(key)) continue;
-    // Branded<...> definitions become the canonical entry under their brand name
     if (key.startsWith('Branded<')) {
       const newKey = renameMap[key];
       if (newKey) {
@@ -119,7 +186,6 @@ for (const currentVersionVal of fs
     newDefs[newKey] = transformNode(def);
   }
 
-  // Merge any extras from branded wrappers (e.g. @format annotations) into their target defs
   for (const [targetKey, extras] of Object.entries(brandedWrapperExtras)) {
     if (newDefs[targetKey]) {
       Object.assign(newDefs[targetKey], extras);
@@ -127,13 +193,8 @@ for (const currentVersionVal of fs
   }
 
   const { definitions: _dropped, ...rest } = schema;
-  const newSchema = {
+  return {
     ...transformNode(rest),
     definitions: newDefs,
   };
-
-  // ---- Write ----
-  fs.mkdirSync(require('path').dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, JSON.stringify(newSchema, null, 2));
-  console.log(`Wrote schema to ${outputPath}`);
 }

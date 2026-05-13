@@ -12,6 +12,9 @@ export interface SessionBlueprintJSON {
   notes: string;
 }
 
+/**
+ * @discriminator type
+ */
 export type ExerciseBlueprintJSON =
   | WeightedExerciseBlueprintJSON
   | CardioExerciseBlueprintJSON;
@@ -33,6 +36,9 @@ export type DistanceJSON = {
   unit: DistanceUnitJSON;
 };
 
+/**
+ * @discriminator type
+ */
 export type CardioTargetJSON = TimeCardioTargetJSON | DistanceCardioTargetJSON;
 
 export interface CardioExerciseSetBlueprintJSON {
@@ -55,7 +61,13 @@ export interface CardioExerciseBlueprintJSON {
 export interface WeightedExerciseBlueprintJSON {
   type: 'WeightedExerciseBlueprint';
   name: string;
+  /**
+   * @asType integer
+   */
   sets: number;
+  /**
+   * @asType integer
+   */
   repsPerSet: number;
   weightIncreaseOnSuccess: BigNumberJSON;
   restBetweenSets: RestJSON;

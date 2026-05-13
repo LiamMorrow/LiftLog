@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "value": {
+      "$ref": "./BigNumber.json"
+    },
+    "unit": {
+      "$ref": "./DistanceUnit.json"
+    }
+  },
+  "required": [
+    "value",
+    "unit"
+  ]
+}

@@ -5,7 +5,7 @@ import {
 } from './WorkoutWorker.types';
 
 declare class WorkoutWorkerModule extends NativeModule<WorkoutWorkerModuleEvents> {
-  broadcast(bytes: SerializedWorkoutEventPayload['bytes']): void;
+  broadcast(string: SerializedWorkoutEventPayload['jsonString']): void;
 }
 
 // This call loads the native module object from the JSI.

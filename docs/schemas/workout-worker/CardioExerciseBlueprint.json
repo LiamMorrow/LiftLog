@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "CardioExerciseBlueprint"
+    },
+    "name": {
+      "type": "string"
+    },
+    "sets": {
+      "type": "array",
+      "items": {
+        "$ref": "./CardioExerciseSetBlueprint.json"
+      }
+    },
+    "notes": {
+      "type": "string"
+    },
+    "link": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "name",
+    "sets",
+    "notes",
+    "link"
+  ]
+}

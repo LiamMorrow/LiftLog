@@ -1,10 +1,11 @@
 package expo.modules.workoutworker
 
-import LiftLog.Ui.Models.WorkoutMessage.WorkoutMessageOuterClass
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.net.toUri
+import com.limajuice.liftlog.WorkoutMessage
+import expo.modules.workoutworker.utils.Json
 
 object WorkoutConstants {
     const val BUNDLE_EXTRA_MESSAGE_KEY = "expo.modules.workoutworker.MESSAGE"
@@ -12,7 +13,7 @@ object WorkoutConstants {
     const val SESSION_PAGE_URI = "liftlog://session"
 
     fun Context.getLaunchAppAtWorkoutPagePendingIntent(
-        message: WorkoutMessageOuterClass.WorkoutMessage? = null
+        message: WorkoutMessage? = null
     ): PendingIntent {
 
         val intent = Intent(Intent.ACTION_MAIN).apply {
@@ -28,7 +29,7 @@ object WorkoutConstants {
             if (message != null) {
                 putExtra(
                     WorkoutConstants.BUNDLE_EXTRA_MESSAGE_KEY,
-                    message.toByteArray()
+                    Json.encodeToString<WorkoutMessage>(message)
                 )
             } else {
                 data = WorkoutConstants.SESSION_PAGE_URI.toUri()

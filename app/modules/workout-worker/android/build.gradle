@@ -1,8 +1,19 @@
+import net.pwall.json.kotlin.codegen.gradle.JSONSchemaCodegenPlugin
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-plugins {
-  id "com.google.protobuf" version "0.9.6"
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'net.pwall.json:json-kotlin-gradle:0.121'
+    }
 }
 
+
+repositories {
+    mavenCentral()
+}
 apply plugin: 'com.android.library'
 
 group = 'expo.modules.workoutworker'
@@ -11,6 +22,7 @@ version = '0.7.6'
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
 apply plugin: 'org.jetbrains.kotlin.android'
+apply plugin: JSONSchemaCodegenPlugin
 applyKotlinExpoModulesCorePlugin()
 useCoreDependencies()
 useExpoPublishing()
@@ -37,25 +49,20 @@ if (useManagedAndroidSdkVersions) {
   }
 }
 
-dependencies {
-  // You need to depend on the lite runtime library, not protobuf-java
-  implementation 'com.google.protobuf:protobuf-javalite:4.33.2'
+
+jsonSchemaCodegen {
+    inputFile = file('src/main/resources/schema')
+    configFile = file('src/main/resources/schema-codegen-config.json')
+    packageName = 'com.limajuice.liftlog'
+    outputDir = file('./build/generated-sources/kotlin')
 }
 
-protobuf {
-  protoc {
-    artifact = 'com.google.protobuf:protoc:4.33.2'
-  }
-  generateProtoTasks {
-    all().configureEach { task ->
-      task.builtins {
-        java {
-          option "lite"
-        }
-      }
+tasks.withType(KotlinCompile).configureEach {
+    kotlinOptions {
+        freeCompilerArgs += ["-opt-in=kotlin.time.ExperimentalTime"]
     }
-  }
 }
+
 
 android {
   namespace "expo.modules.workoutworker"
@@ -66,4 +73,14 @@ android {
   lintOptions {
     abortOnError false
   }
+
+  sourceSets {
+    main.kotlin.srcDirs += 'build/generated-sources/kotlin'
+  }
+}
+
+dependencies {
+    implementation "com.squareup.moshi:moshi:1.15.2"
+    implementation "com.squareup.moshi:moshi-adapters:1.15.2"
+    implementation "com.squareup.moshi:moshi-kotlin:1.15.2"
 }

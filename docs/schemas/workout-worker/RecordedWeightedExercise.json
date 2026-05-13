@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "RecordedWeightedExercise"
+    },
+    "blueprint": {
+      "$ref": "./WeightedExerciseBlueprint.json"
+    },
+    "potentialSets": {
+      "type": "array",
+      "items": {
+        "$ref": "./PotentialSet.json"
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "blueprint",
+    "potentialSets"
+  ]
+}

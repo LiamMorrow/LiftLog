@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "workoutPersistentNotificationRestBreakMessage": {
+      "type": "string"
+    },
+    "workoutPersistentNotificationStartSoonMessage": {
+      "type": "string"
+    },
+    "workoutPersistentNotificationStartNowMessage": {
+      "type": "string"
+    },
+    "workoutPersistentNotificationMinRestOverMessage": {
+      "type": "string"
+    },
+    "workoutPersistentNotificationMaxRestOverMessage": {
+      "type": "string"
+    },
+    "workoutPersistentNotificationCurrentExerciseMessage": {
+      "type": "string"
+    },
+    "workoutPersistentNotificationFinishedMessage": {
+      "type": "string"
+    },
+    "workoutPersistentNotificationInProgressMessage": {
+      "type": "string"
+    },
+    "workoutPersistentNotificationFinishWorkoutAction": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "workoutPersistentNotificationRestBreakMessage",
+    "workoutPersistentNotificationStartSoonMessage",
+    "workoutPersistentNotificationStartNowMessage",
+    "workoutPersistentNotificationMinRestOverMessage",
+    "workoutPersistentNotificationMaxRestOverMessage",
+    "workoutPersistentNotificationCurrentExerciseMessage",
+    "workoutPersistentNotificationFinishedMessage",
+    "workoutPersistentNotificationInProgressMessage",
+    "workoutPersistentNotificationFinishWorkoutAction"
+  ]
+}

@@ -578,7 +578,7 @@ export const persistCurrentSession = createAction<SessionTarget>(
   'persistCurrentSession',
 );
 
-export const broadcastWorkoutEvent = createAction<WorkoutMessage>(
+export const broadcastWorkoutEvent = createAction<WorkoutMessage['payload']>(
   'broadcastWorkoutEvent',
 );
 

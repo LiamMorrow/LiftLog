@@ -46,7 +46,14 @@
       ]
     },
     "ExerciseBlueprint": {
-      "anyOf": [
+      "type": "object",
+      "discriminator": {
+        "propertyName": "type"
+      },
+      "required": [
+        "type"
+      ],
+      "oneOf": [
         {
           "$ref": "#/definitions/WeightedExerciseBlueprint"
         },
@@ -66,10 +73,10 @@
           "type": "string"
         },
         "sets": {
-          "type": "number"
+          "type": "integer"
         },
         "repsPerSet": {
-          "type": "number"
+          "type": "integer"
         },
         "weightIncreaseOnSuccess": {
           "$ref": "#/definitions/BigNumber"
@@ -104,7 +111,7 @@
       "examples": [
         "1.23"
       ],
-      "format": "number"
+      "format": "decimal"
     },
     "Rest": {
       "type": "object",
@@ -196,7 +203,14 @@
       ]
     },
     "CardioTarget": {
-      "anyOf": [
+      "type": "object",
+      "discriminator": {
+        "propertyName": "type"
+      },
+      "required": [
+        "type"
+      ],
+      "oneOf": [
         {
           "$ref": "#/definitions/TimeCardioTarget"
         },
@@ -295,7 +309,14 @@
       ]
     },
     "RecordedExercise": {
-      "anyOf": [
+      "type": "object",
+      "discriminator": {
+        "propertyName": "type"
+      },
+      "required": [
+        "type"
+      ],
+      "oneOf": [
         {
           "$ref": "#/definitions/RecordedCardioExercise"
         },
@@ -355,7 +376,7 @@
           "$ref": "#/definitions/Weight"
         },
         "steps": {
-          "type": "number"
+          "type": "integer"
         }
       },
       "required": [
@@ -433,7 +454,7 @@
       "type": "object",
       "properties": {
         "repsCompleted": {
-          "type": "number"
+          "type": "integer"
         },
         "completionDateTime": {
           "$ref": "#/definitions/OffsetDateTime"
