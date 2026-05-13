@@ -117,6 +117,7 @@ module.exports = defineConfig([
     '**/expo-env.d.ts',
     '**/dist',
     '**/node_modules',
-    'types/dom.slim.d.ts',
+    'src/types/dom.slim.d.ts',
+    'scripts',
   ]),
 ]);

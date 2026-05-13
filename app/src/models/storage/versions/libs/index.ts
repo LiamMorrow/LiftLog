@@ -11,6 +11,9 @@ import BigNumber from 'bignumber.js';
 
 export type Branded<T, TBrand extends string> = T & { _BRAND: TBrand };
 
+/**
+ * @format date
+ */
 export type LocalDateJSON = Branded<string, 'LocalDate'>; // ISO formatted JS Joda LocalDate
 
 export function fromLocalDateJSON(json: LocalDateJSON): LocalDate {
@@ -21,6 +24,9 @@ export function toLocalDateJSON(value: LocalDate): LocalDateJSON {
   return value.format(DateTimeFormatter.ISO_LOCAL_DATE) as LocalDateJSON;
 }
 
+/**
+ * @format date-time
+ */
 export type OffsetDateTimeJSON = Branded<string, 'OffsetDateTime'>; // ISO formatted JS Joda OffsetDateTime
 export function fromOffsetDateTimeJSON(
   json: OffsetDateTimeJSON,
@@ -36,6 +42,9 @@ export function toOffsetDateTimeJSON(
   ) as OffsetDateTimeJSON;
 }
 
+/**
+ * @format duration
+ */
 export type DurationJSON = Branded<string, 'Duration'>; // ISO formatted JS Joda Duration
 export function fromDurationJSON(json: DurationJSON): Duration {
   return Duration.parse(json);
@@ -45,6 +54,10 @@ export function toDurationJSON(value: Duration): DurationJSON {
   return value.toJSON() as DurationJSON;
 }
 
+/**
+ * @format number
+ * @example "1.23"
+ */
 export type BigNumberJSON = Branded<string, 'BigNumber'>; // BigNumberJs decimal string format
 
 export function fromBigNumberJSON(json: BigNumberJSON): BigNumber {
