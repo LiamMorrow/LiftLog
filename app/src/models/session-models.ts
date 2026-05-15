@@ -355,15 +355,20 @@ export class Session {
     }
 
     let result: RecordedExercise | undefined = undefined;
-    let maxEpochSecond = Number.MIN_VALUE;
+    let maxEpochMilli = Number.MIN_VALUE;
 
     for (const recordedExercise of recordedExercises) {
       if (!recordedExercise.isComplete) {
         const latestTime = recordedExercise.latestTime;
-        const epochSecond = latestTime?.toEpochSecond() ?? Number.MIN_VALUE;
+        const epochMilli =
+          latestTime?.toInstant().toEpochMilli() ?? Number.MIN_VALUE;
 
-        if (epochSecond > maxEpochSecond || !result) {
-          maxEpochSecond = epochSecond;
+        if (
+          epochMilli > maxEpochMilli ||
+          (latestTime && epochMilli === maxEpochMilli) ||
+          !result
+        ) {
+          maxEpochMilli = epochMilli;
           result = recordedExercise;
         }
       }

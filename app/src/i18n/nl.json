@@ -216,6 +216,7 @@
     "rest.notifications.title": "Rust notificaties",
     "rest.short.label": "Kort",
     "rest.singular.label": "Rust <em>{time}</em>",
+    "rest.timer.stop.action": "Timer stoppen",
     "settings.app_configuration.subtitle": "Pas thema en overige instellingen aan",
     "settings.app_configuration.title": "App configuratie",
     "settings.app_info.subtitle": "Toon app informatie",

@@ -233,6 +233,7 @@
   "rest.rest.label": "Odmor",
   "rest.short.label": "Kratki odmor",
   "rest.singular.label": "Odmor <em>{time}</em>",
+  "rest.timer.stop.action": "Zaustavi tajmer",
   "settings.app_configuration.subtitle": "Podesite temu i ostala podešavanja",
   "settings.app_configuration.title": "Podešavanja aplikacije",
   "settings.app_info.subtitle": "Prikaži informacije o aplikaciji",

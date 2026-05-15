@@ -66,27 +66,56 @@ export function getCardioTimerInfo(
   };
 }
 
+export function getRestTimerExercise(
+  session: Session,
+  lastSetTime: OffsetDateTime | undefined,
+): RecordedWeightedExercise | undefined {
+  const weightedExercises = session.recordedExercises
+    .map((exercise, index) => ({ exercise, index }))
+    .filter(
+      (
+        entry,
+      ): entry is { exercise: RecordedWeightedExercise; index: number } =>
+        entry.exercise instanceof RecordedWeightedExercise &&
+        !!entry.exercise.latestTime,
+    );
+
+  const matchingLastSetTime = lastSetTime
+    ? weightedExercises.filter((entry) =>
+        entry.exercise.latestTime?.toInstant().equals(lastSetTime.toInstant()),
+      )
+    : [];
+
+  return (matchingLastSetTime.length ? matchingLastSetTime : weightedExercises)
+    .sort((a, b) => {
+      const timeDiff =
+        a.exercise.latestTime!.toInstant().toEpochMilli() -
+        b.exercise.latestTime!.toInstant().toEpochMilli();
+      return timeDiff === 0 ? a.index - b.index : timeDiff;
+    })
+    .at(-1)?.exercise;
+}
+
 export function getTimerInfo(
   session: Session,
   lastSetTime: OffsetDateTime | undefined,
 ): RestTimerInfo | undefined {
-  const lastExercise = session.lastExercise;
+  const restTimerExercise = getRestTimerExercise(session, lastSetTime);
   const nextExercise = session.nextExercise;
   if (
     !lastSetTime ||
-    !lastExercise ||
+    !restTimerExercise ||
     !nextExercise ||
-    !(nextExercise instanceof RecordedWeightedExercise) ||
-    !(lastExercise instanceof RecordedWeightedExercise)
+    !(nextExercise instanceof RecordedWeightedExercise)
   ) {
     return undefined;
   }
 
-  const repsPerSet = lastExercise.blueprint.repsPerSet;
+  const repsPerSet = restTimerExercise.blueprint.repsPerSet;
   const { minRest, maxRest, failureRest } =
-    lastExercise.blueprint.restBetweenSets;
+    restTimerExercise.blueprint.restBetweenSets;
 
-  const rest = match(lastExercise.lastRecordedSet)
+  const rest = match(restTimerExercise.lastRecordedSet)
     .with({ set: { repsCompleted: P.when((x) => x >= repsPerSet) } }, () => ({
       partialRest: minRest,
       fullRest: maxRest,

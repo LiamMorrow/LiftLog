@@ -38,6 +38,7 @@ interface CurrentSessionState {
   feedSession: SessionPOJO | undefined;
   sharedSession: SessionPOJO | undefined;
   workoutSessionLastSetTime: OffsetDateTime | undefined;
+  workoutSessionRestTimerStoppedAt: OffsetDateTime | undefined;
   currentPlanDiff: PlanDiff | undefined;
 }
 
@@ -56,6 +57,7 @@ const initialState: CurrentSessionState = {
   feedSession: undefined,
   sharedSession: undefined,
   workoutSessionLastSetTime: undefined,
+  workoutSessionRestTimerStoppedAt: undefined,
   currentPlanDiff: undefined,
 };
 
@@ -90,6 +92,36 @@ function targetedSessionAction<T>(
       );
     }
   };
+}
+
+function isSameInstant(
+  a: OffsetDateTime | undefined,
+  b: OffsetDateTime | undefined,
+) {
+  return !!a && !!b && a.toInstant().equals(b.toInstant());
+}
+
+function updateWorkoutSessionLastSetTime(
+  state: SafeDraft<CurrentSessionState>,
+) {
+  const latestTime = Session.fromPOJO(state.workoutSession)?.lastExercise
+    ?.latestTime;
+  if (!latestTime) {
+    state.workoutSessionLastSetTime = undefined;
+    state.workoutSessionRestTimerStoppedAt = undefined;
+    return;
+  }
+
+  if (
+    state.workoutSessionRestTimerStoppedAt &&
+    !isSameInstant(latestTime, state.workoutSessionRestTimerStoppedAt)
+  ) {
+    state.workoutSessionRestTimerStoppedAt = undefined;
+  }
+
+  state.workoutSessionLastSetTime = state.workoutSessionRestTimerStoppedAt
+    ? undefined
+    : latestTime;
 }
 
 const currentSessionSlice = createSlice({
@@ -190,10 +222,7 @@ const currentSessionSlice = createSlice({
         );
         weightedRecorded.potentialSets[action.setIndex].set = repCount;
         if (target === 'workoutSession') {
-          state.workoutSessionLastSetTime =
-            repCount?.completionDateTime === undefined
-              ? Session.fromPOJO(session).lastExercise?.latestTime
-              : action.time;
+          updateWorkoutSessionLastSetTime(state);
         }
       },
     ),
@@ -333,10 +362,7 @@ const currentSessionSlice = createSlice({
               };
 
         if (target === 'workoutSession') {
-          state.workoutSessionLastSetTime =
-            action.reps === undefined
-              ? Session.fromPOJO(session).lastExercise?.latestTime
-              : action.time;
+          updateWorkoutSessionLastSetTime(state);
         }
       },
     ),
@@ -385,8 +411,7 @@ const currentSessionSlice = createSlice({
       state[action.payload.target] =
         action.payload.session?.toPOJO() as unknown as WritableDraft<SessionPOJO>;
       if (action.payload.target === 'workoutSession') {
-        state.workoutSessionLastSetTime =
-          action.payload.session?.lastExercise?.latestTime;
+        updateWorkoutSessionLastSetTime(toSafeDraft(state));
       }
     },
 
@@ -409,7 +434,29 @@ const currentSessionSlice = createSlice({
       state,
       action: PayloadAction<OffsetDateTime | undefined>,
     ) {
+      state.workoutSessionRestTimerStoppedAt = undefined;
       state.workoutSessionLastSetTime = action.payload;
+    },
+
+    setWorkoutSessionRestTimerStoppedAt(
+      state,
+      action: PayloadAction<OffsetDateTime | undefined>,
+    ) {
+      state.workoutSessionRestTimerStoppedAt = action.payload;
+      if (state.workoutSession) {
+        updateWorkoutSessionLastSetTime(toSafeDraft(state));
+      } else {
+        state.workoutSessionLastSetTime = undefined;
+      }
+    },
+
+    stopRestTimer(state, action: PayloadAction<OffsetDateTime | undefined>) {
+      const safeState = toSafeDraft(state);
+      state.workoutSessionRestTimerStoppedAt =
+        action.payload ??
+        Session.fromPOJO(safeState.workoutSession)?.lastExercise?.latestTime ??
+        state.workoutSessionLastSetTime;
+      state.workoutSessionLastSetTime = undefined;
     },
 
     updateDurationForCardioExercise: targetedSessionAction(
@@ -605,6 +652,8 @@ export const {
   setCurrentPlanDiff,
   updateBodyweight,
   setWorkoutSessionLastSetTime,
+  setWorkoutSessionRestTimerStoppedAt,
+  stopRestTimer,
   updateDurationForCardioExercise,
   updateDistanceForCardioExercise,
   updateCurrentBlockStartTimeForCardioExercise,

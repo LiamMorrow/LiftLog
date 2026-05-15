@@ -217,6 +217,7 @@
   "rest.notifications.title": "Сповіщення про відпочинок",
   "rest.short.label": "Короткий",
   "rest.singular.label": "Відпочинок <em>{time}</em>",
+  "rest.timer.stop.action": "Зупинити таймер",
   "settings.app_configuration.subtitle": "Налаштувати тему та інші різні параметри",
   "settings.app_configuration.title": "Конфігурація застосунку",
   "settings.app_info.subtitle": "Показати інформацію про застосунок",

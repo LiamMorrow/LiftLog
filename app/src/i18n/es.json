@@ -216,6 +216,7 @@
   "rest.notifications.title": "Notificaciones de descanso",
   "rest.short.label": "Corto",
   "rest.singular.label": "Descanse <em>{time}</em>",
+  "rest.timer.stop.action": "Detener temporizador",
   "settings.app_configuration.subtitle": "Ajustar tema y otros ajustes varios",
   "settings.app_configuration.title": "Configuración de la aplicación",
   "settings.app_info.subtitle": "Mostrar información de la aplicación",

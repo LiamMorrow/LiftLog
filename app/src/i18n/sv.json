@@ -290,6 +290,7 @@
   "rest.rest.label": "Vila",
   "rest.short.label": "Kort",
   "rest.singular.label": "Vila <em>{time}</em>",
+  "rest.timer.stop.action": "Stoppa timer",
   "settings.app_configuration.subtitle": "Ändra tema och övriga inställningar",
   "settings.app_configuration.title": "Appinställningar",
   "settings.app_info.subtitle": "Visa appinfo",

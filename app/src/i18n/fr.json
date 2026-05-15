@@ -200,6 +200,7 @@
   "rest.notifications.title": "Notifications de repos",
   "rest.short.label": "Court",
   "rest.singular.label": "Repos <em>{time}</em>",
+  "rest.timer.stop.action": "Arrêter le minuteur",
   "settings.app_configuration.subtitle": "Ajustez le thème et d'autres paramètres divers",
   "settings.app_configuration.title": "Configuration de l'application",
   "settings.app_info.subtitle": "Afficher les informations de l'application",
