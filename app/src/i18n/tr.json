@@ -61,5 +61,6 @@
     "exercise.no_exercises_found.message": "Egzersiz bulunamadı.",
     "exercise.previous_sessions_for.title": "{exercise} için önceki çalışmalar",
     "exercise.remove.confirm.body": "Egzersiz bu çalışma planından çıkarılacak, diğer çalışma planları etkilenmeyecek.",
-    "exercise.remove.confirm.title": "Egzersizi sil?"
+    "exercise.remove.confirm.title": "Egzersizi sil?",
+    "rest.timer.stop.action": "Zamanlayıcıyı durdur"
 }

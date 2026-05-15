@@ -220,6 +220,7 @@
   "rest.notifications.title": "Уведомления об отдыхе",
   "rest.short.label": "Короткий",
   "rest.singular.label": "Отдых <em>{time}</em>",
+  "rest.timer.stop.action": "Остановить таймер",
   "settings.app_configuration.subtitle": "Настройка темы и других параметров",
   "settings.app_configuration.title": "Настройки приложения",
   "settings.app_info.subtitle": "Информация о приложении",

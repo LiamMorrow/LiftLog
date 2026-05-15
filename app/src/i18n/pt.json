@@ -309,6 +309,7 @@
   "rest.rest.label": "Descanso",
   "rest.short.label": "Curto",
   "rest.singular.label": "Descanso <em>{time}</em>",
+  "rest.timer.stop.action": "Parar temporizador",
   "settings.app_configuration.subtitle": "Ajuste o tema e outras configurações diversas",
   "settings.app_configuration.title": "Configurações do app",
   "settings.app_info.subtitle": "Exibir informações do aplicativo",

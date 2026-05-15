@@ -93,5 +93,6 @@
   "feed.feed.title": "Hírcsatorna",
   "feed.shared_session.save_to_plan.button": "Mentés az edzéstervbe",
   "feed.shared_session.start_workout.button": "Edzés megkezdése",
-  "stats.bodyweight_change.label": "Testsúly"
+  "stats.bodyweight_change.label": "Testsúly",
+  "rest.timer.stop.action": "Időzítő leállítása"
 }

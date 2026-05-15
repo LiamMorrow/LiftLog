@@ -7,6 +7,9 @@ import { Animated, Easing, View, ViewStyle } from 'react-native';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import Holdable from '@/components/presentation/foundation/holdable';
+import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import { Tooltip } from 'react-native-paper';
+import { useTranslate } from '@tolgee/react';
 
 interface RestTimerProps {
   rest: Rest;
@@ -14,6 +17,8 @@ interface RestTimerProps {
   failed: boolean;
   style?: ViewStyle;
   resetTimer: () => void;
+  stopTimer: () => void;
+  allowStopTimer?: boolean;
 }
 
 export default function RestTimer({
@@ -22,8 +27,11 @@ export default function RestTimer({
   failed,
   style,
   resetTimer,
+  stopTimer,
+  allowStopTimer = true,
 }: RestTimerProps) {
   const { colors } = useAppTheme();
+  const { t } = useTranslate();
   const isSameMinMaxRest = rest.minRest.equals(rest.maxRest);
   const [jiggled, setJiggled] = useState([] as string[]);
 
@@ -36,15 +44,14 @@ export default function RestTimer({
     const diffMs = Duration.between(startTime, now);
     const timeSinceStart = formatTimeSpan(diffMs);
     const firstProgressBarProgress = failed
-      ? Math.min(diffMs.toMillis() / rest.failureRest.toMillis(), 1)
-      : Math.min(diffMs.toMillis() / rest.minRest.toMillis(), 1);
+      ? clampProgress(diffMs.toMillis() / rest.failureRest.toMillis())
+      : clampProgress(diffMs.toMillis() / rest.minRest.toMillis());
     const secondProgressBarProgress =
       failed || isSameMinMaxRest
         ? -1
-        : Math.min(
+        : clampProgress(
             (diffMs.toMillis() - rest.minRest.toMillis()) /
               (rest.maxRest.toMillis() - rest.minRest.toMillis()),
-            1,
           );
     const [textColor, backgroundColor]: [ColorChoice, ColorChoice] =
       firstProgressBarProgress < 1
@@ -125,6 +132,7 @@ export default function RestTimer({
 
   const pillHeight = spacing[14];
   const pillWidth = pillHeight * 2.2;
+  const stopButtonSize = spacing[10];
   const radius = (pillHeight - 6) / 2;
   const straightLength = pillWidth - pillHeight;
   const pillPerimeter = 2 * straightLength + 2 * Math.PI * radius;
@@ -144,74 +152,109 @@ export default function RestTimer({
     outputRange: [`${-amplitude}rad`, `${amplitude}rad`],
     extrapolate: 'clamp',
   });
+  const showStopButton =
+    allowStopTimer && timerState.firstProgressBarProgress >= 1;
+  const showSecondProgressBar =
+    !failed && !isSameMinMaxRest && timerState.secondProgressBarProgress > 0;
 
   return (
-    <Holdable
-      onLongPress={() => {
-        resetTimer();
-        triggerJiggle('reset');
-      }}
+    <View
+      style={[
+        {
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: spacing[2],
+        },
+        style,
+      ]}
     >
-      <Animated.View
-        testID="rest-timer"
-        style={[
-          {
-            width: pillWidth,
-            height: pillHeight,
-            pointerEvents: 'none',
-            overflow: 'hidden',
-            borderRadius: pillHeight,
-            backgroundColor: colors[timerState.backgroundColor],
-            alignItems: 'center',
-            justifyContent: 'center',
-          },
-          style,
-          { transform: [{ rotateZ }] },
-        ]}
+      {allowStopTimer ? (
+        showStopButton ? (
+          <Tooltip title={t('rest.timer.stop.action')}>
+            <IconButton
+              testID="rest-timer-stop-button"
+              icon="stop"
+              accessibilityLabel={t('rest.timer.stop.action')}
+              iconColor={colors.onPrimary}
+              containerColor={colors.primary}
+              mode="contained"
+              size={20}
+              style={{
+                width: stopButtonSize,
+                height: stopButtonSize,
+                margin: 0,
+                borderRadius: stopButtonSize / 2,
+              }}
+              onPress={stopTimer}
+            />
+          </Tooltip>
+        ) : (
+          <View style={{ width: stopButtonSize, height: stopButtonSize }} />
+        )
+      ) : null}
+      <Holdable
+        onLongPress={() => {
+          resetTimer();
+          triggerJiggle('reset');
+        }}
       >
-        <View
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+        <Animated.View
+          testID="rest-timer"
+          style={[
+            {
+              width: pillWidth,
+              height: pillHeight,
+              pointerEvents: 'none',
+              overflow: 'hidden',
+              borderRadius: pillHeight,
+              backgroundColor: colors[timerState.backgroundColor],
+              alignItems: 'center',
+              justifyContent: 'center',
+            },
+            { transform: [{ rotateZ }] },
+          ]}
         >
-          <Svg width={pillWidth} height={pillHeight}>
-            <PillProgressBar
-              color={colors.primary}
-              progress={timerState.firstProgressBarProgress}
-              pillWidth={pillWidth}
-              pillHeight={pillHeight}
-              pillPerimeter={pillPerimeter}
-            />
-            <PillProgressBar
-              color={colors.orange}
-              progress={timerState.secondProgressBarProgress}
-              pillWidth={pillWidth}
-              pillHeight={pillHeight}
-              pillPerimeter={pillPerimeter}
-              visible={
-                !failed &&
-                !isSameMinMaxRest &&
-                timerState.secondProgressBarProgress > 0
-              }
-            />
-          </Svg>
-        </View>
-        <SurfaceText
-          style={{ fontVariant: ['tabular-nums'] }}
-          font="text-2xl"
-          weight="bold"
-          color={timerState.textColor}
-        >
-          {timerState.timeSinceStart}
-        </SurfaceText>
-      </Animated.View>
-    </Holdable>
+          <View
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Svg width={pillWidth} height={pillHeight}>
+              <PillProgressBar
+                color={colors.primary}
+                progress={timerState.firstProgressBarProgress}
+                pillWidth={pillWidth}
+                pillHeight={pillHeight}
+                pillPerimeter={pillPerimeter}
+              />
+              <PillProgressBar
+                color={colors.orange}
+                progress={timerState.secondProgressBarProgress}
+                pillWidth={pillWidth}
+                pillHeight={pillHeight}
+                pillPerimeter={pillPerimeter}
+                visible={showSecondProgressBar}
+              />
+            </Svg>
+          </View>
+          <SurfaceText
+            style={{ fontVariant: ['tabular-nums'] }}
+            font="text-2xl"
+            weight="bold"
+            color={timerState.textColor}
+          >
+            {timerState.timeSinceStart}
+          </SurfaceText>
+        </Animated.View>
+      </Holdable>
+    </View>
   );
 }
 
@@ -220,6 +263,10 @@ function formatTimeSpan(ms: Duration): string {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function clampProgress(value: number): number {
+  return Math.min(Math.max(value, 0), 1);
 }
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);

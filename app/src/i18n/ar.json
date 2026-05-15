@@ -255,6 +255,7 @@
   "rest.rest.label": "قصير",
   "rest.short.label": "قصير",
   "rest.singular.label": "راحة <em>{time}</em>",
+  "rest.timer.stop.action": "إيقاف المؤقت",
   "settings.app_configuration.subtitle": "ضبط المظهر وإعدادات أخرى متنوعة",
   "settings.app_configuration.title": "إعدادات التطبيق",
   "settings.app_info.subtitle": "عرض معلومات التطبيق",

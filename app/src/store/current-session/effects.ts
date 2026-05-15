@@ -17,6 +17,8 @@ import {
   setCurrentSession,
   setCurrentSessionFromBlueprint,
   setIsHydrated,
+  setWorkoutSessionRestTimerStoppedAt,
+  stopRestTimer,
 } from '@/store/current-session';
 import { AddEffectFn } from '@/store/store';
 import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
@@ -30,11 +32,14 @@ import { addUnpublishedSessionId } from '@/store/feed';
 import { setStatsIsDirty } from '@/store/stats';
 import {
   getCardioTimerInfo,
+  getRestTimerExercise,
   getTimerInfo,
 } from '@/store/current-session/helpers';
 import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
+import { OffsetDateTime } from '@js-joda/core';
 
 const storageKey = 'CurrentSessionStateV1';
+const restTimerStoppedAtStorageKey = `${storageKey}-RestTimerStoppedAt`;
 export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
   addEffect(
     initializeCurrentSessionStateSlice,
@@ -72,6 +77,14 @@ export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
             currentSessionStateDao,
           );
           if (currentSessionState.workoutSession) {
+            const restoredRestTimerStoppedAt =
+              getState().currentSession.workoutSessionRestTimerStoppedAt ??
+              parseStoredOffsetDateTime(
+                await keyValueStore.getItem(restTimerStoppedAtStorageKey),
+              );
+            dispatch(
+              setWorkoutSessionRestTimerStoppedAt(restoredRestTimerStoppedAt),
+            );
             dispatch(
               setCurrentSession({
                 target: 'workoutSession',
@@ -144,12 +157,22 @@ export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
               stateAfterReduce.currentSession.workoutSession,
             ),
           });
+          const restTimerStoppedAt =
+            stateAfterReduce.currentSession.workoutSessionRestTimerStoppedAt;
           const bytes =
             LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2.encode(
               currentSessionStateDao,
             ).finish();
           await keyValueStore.setItem(`${storageKey}-Version`, '2');
           await keyValueStore.setItem(storageKey, bytes);
+          if (restTimerStoppedAt) {
+            await keyValueStore.setItem(
+              restTimerStoppedAtStorageKey,
+              restTimerStoppedAt.toString(),
+            );
+          } else {
+            await keyValueStore.removeItem(restTimerStoppedAtStorageKey);
+          }
         } catch (e) {
           logger.error('Failed to persist current session state', e);
         }
@@ -249,26 +272,37 @@ export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
     },
   );
 
+  addEffect(stopRestTimer, async (_, { extra: { notificationService } }) => {
+    await notificationService.clearSetTimerNotification();
+  });
+
   addEffect(
     notifySetTimer,
     async (_, { extra: { notificationService }, getState }) => {
       await notificationService.clearSetTimerNotification();
       const {
         settings: { restNotifications },
-        currentSession: { workoutSession: sessionPOJO },
+        currentSession: {
+          workoutSession: sessionPOJO,
+          workoutSessionLastSetTime,
+        },
       } = getState();
       if (!restNotifications) {
         return;
       }
       const session = Session.fromPOJO(sessionPOJO);
-      const lastExercise = session?.lastExercise;
+      const restTimerExercise = session
+        ? getRestTimerExercise(session, workoutSessionLastSetTime)
+        : undefined;
       if (
         session?.nextExercise &&
-        lastExercise &&
-        lastExercise.latestTime &&
-        lastExercise instanceof RecordedWeightedExercise
+        restTimerExercise &&
+        restTimerExercise.latestTime &&
+        restTimerExercise instanceof RecordedWeightedExercise
       ) {
-        await notificationService.scheduleNextSetNotification(lastExercise);
+        await notificationService.scheduleNextSetNotification(
+          restTimerExercise,
+        );
       }
     },
   );
@@ -315,4 +349,15 @@ export function fromCurrentSessionDao(
         ProtobufToJsonV1Migrator.migrateSession(dao.historySession),
       ),
   };
+}
+
+function parseStoredOffsetDateTime(value: string | undefined) {
+  if (!value) {
+    return undefined;
+  }
+  try {
+    return OffsetDateTime.parse(value);
+  } catch {
+    return undefined;
+  }
 }

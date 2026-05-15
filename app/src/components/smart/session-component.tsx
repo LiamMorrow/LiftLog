@@ -9,6 +9,7 @@ import {
   setCompletionTimeForCardioExercise,
   setExerciseReps,
   setWorkoutSessionLastSetTime,
+  stopRestTimer,
   updateBodyweight,
   updateCurrentBlockStartTimeForCardioExercise,
   updateDistanceForCardioExercise,
@@ -53,6 +54,7 @@ import { DelayRender } from '../presentation/foundation/delay-render';
 import { Loader } from '../presentation/foundation/loader';
 import WeightFormat from '../presentation/foundation/weight-format';
 import { formatDuration } from '@/utils/format-date';
+import { getRestTimerExercise } from '@/store/current-session/helpers';
 
 export default function SessionComponent(props: {
   target: SessionTarget;
@@ -385,10 +387,10 @@ export default function SessionComponent(props: {
     </Card>
   ) : null;
 
-  const lastExercise = session.lastExercise;
+  const restTimerExercise = getRestTimerExercise(session, lastSetTime);
   const lastRecordedSet =
-    lastExercise instanceof RecordedWeightedExercise
-      ? lastExercise?.lastRecordedSet
+    restTimerExercise instanceof RecordedWeightedExercise
+      ? restTimerExercise?.lastRecordedSet
       : undefined;
   const nextExercise = session.nextExercise;
   // We only want to show the rest timer - which is primarily for weights
@@ -397,38 +399,33 @@ export default function SessionComponent(props: {
     props.target === 'workoutSession' &&
     nextExercise &&
     nextExercise instanceof RecordedWeightedExercise &&
-    lastExercise &&
-    lastExercise instanceof RecordedWeightedExercise &&
+    restTimerExercise &&
     lastSetTime;
   const lastSetFailed =
     lastRecordedSet?.set &&
-    lastExercise &&
-    lastExercise instanceof RecordedWeightedExercise &&
-    lastRecordedSet.set.repsCompleted < lastExercise.blueprint.repsPerSet;
+    restTimerExercise &&
+    lastRecordedSet.set.repsCompleted < restTimerExercise.blueprint.repsPerSet;
   const restTimer = showRestTimer ? (
-    <View style={{ flex: 1 }}>
-      <RestTimer
-        rest={lastExercise.blueprint.restBetweenSets}
-        startTime={lastSetTime}
-        failed={!!lastSetFailed}
-        resetTimer={resetTimer}
-      />
-    </View>
+    <RestTimer
+      rest={restTimerExercise.blueprint.restBetweenSets}
+      startTime={lastSetTime}
+      failed={!!lastSetFailed}
+      resetTimer={resetTimer}
+      stopTimer={() => storeDispatch(stopRestTimer())}
+    />
   ) : undefined;
   const saveButton = props.saveAndClose && (
-    <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
-      <FAB
-        onPress={props.saveAndClose}
-        variant="surface"
-        icon={'inventory'}
-        testID="save-session-button"
-        label={
-          props.target === 'workoutSession'
-            ? t('generic.finish.button')
-            : t('generic.save.button')
-        }
-      ></FAB>
-    </View>
+    <FAB
+      onPress={props.saveAndClose}
+      variant="surface"
+      icon={'inventory'}
+      testID="save-session-button"
+      label={
+        props.target === 'workoutSession'
+          ? t('generic.finish.button')
+          : t('generic.save.button')
+      }
+    ></FAB>
   );
 
   const floatingBottomContainer = isReadonly ? null : (
@@ -438,10 +435,12 @@ export default function SessionComponent(props: {
           style={{
             flexDirection: 'row',
             alignItems: 'center',
+            gap: spacing[4],
           }}
         >
-          <View style={{ flex: 1 }}></View>
-          {restTimer}
+          <View style={{ flex: 1, alignItems: 'center', minWidth: 0 }}>
+            {restTimer}
+          </View>
           {saveButton}
         </View>
       }

@@ -199,6 +199,7 @@
   "rest.notifications.title": "Notifche recupero",
   "rest.short.label": "Corto",
   "rest.singular.label": "Recupero <em>{time}</em>",
+  "rest.timer.stop.action": "Ferma timer",
   "settings.app_configuration.subtitle": "Regola tema e altre impostazioni varie",
   "settings.app_configuration.title": "Configurazione app",
   "settings.app_info.subtitle": "Mostra le informazioni dell'app",

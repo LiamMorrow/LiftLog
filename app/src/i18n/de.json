@@ -249,6 +249,7 @@
   "rest.rest.label": "Pause",
   "rest.short.label": "Kurz",
   "rest.singular.label": "<em>{time}</em> Pause",
+  "rest.timer.stop.action": "Timer stoppen",
   "settings.app_configuration.subtitle": "Thema und sonstige Einstellungen anpassen",
   "settings.app_configuration.title": "App konfigurieren",
   "settings.app_info.subtitle": "Zeige App-Informationen an",

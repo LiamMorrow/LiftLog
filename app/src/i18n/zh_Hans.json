@@ -312,6 +312,7 @@
     "rest.rest.label": "休息",
     "rest.short.label": "短",
     "rest.singular.label": "休息 <em>{time}</em>",
+    "rest.timer.stop.action": "停止计时器",
     "settings.app_configuration.subtitle": "调整主题及其他设置",
     "settings.app_configuration.title": "应用设置",
     "settings.app_info.subtitle": "显示应用信息",
