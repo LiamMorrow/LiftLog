@@ -61,11 +61,11 @@ export default function History() {
   const openProgress = (session: Session) => {
     dispatch(setCurrentSession({ target: 'historySession', session }));
     push({
-      pathname: '/history/progress',
+      pathname: '/(tabs)/history/progress',
       params: {
         sessionId: session.id,
       },
-    });
+    } as never);
   };
   const onSelectSession = (session: Session) => {
     dispatch(setCurrentSession({ target: 'historySession', session }));

@@ -34,12 +34,12 @@ export default function Index() {
       dispatch(setCurrentSession({ target: 'historySession', session }));
       dispatch(finishCurrentWorkout('workoutSession'));
       replace({
-        pathname: '/history/progress',
+        pathname: '/(tabs)/history/progress',
         params: {
           sessionId: session.id,
           source: 'finish',
         },
-      });
+      } as never);
       return;
     }
     dismissTo('/');
