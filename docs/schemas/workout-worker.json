@@ -1,0 +1,641 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "WorkoutMessage": {
+      "type": "object",
+      "properties": {
+        "translations": {
+          "$ref": "#/definitions/Translations"
+        },
+        "appConfiguration": {
+          "$ref": "#/definitions/AppConfiguration"
+        },
+        "payload": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/WorkoutStartedEvent"
+            },
+            {
+              "$ref": "#/definitions/WorkoutUpdatedEvent"
+            },
+            {
+              "$ref": "#/definitions/WorkoutEndedEvent"
+            },
+            {
+              "$ref": "#/definitions/FinishWorkoutCommand"
+            }
+          ]
+        }
+      },
+      "required": [
+        "translations",
+        "appConfiguration",
+        "payload"
+      ]
+    },
+    "Translations": {
+      "type": "object",
+      "properties": {
+        "workoutPersistentNotificationRestBreakMessage": {
+          "type": "string"
+        },
+        "workoutPersistentNotificationStartSoonMessage": {
+          "type": "string"
+        },
+        "workoutPersistentNotificationStartNowMessage": {
+          "type": "string"
+        },
+        "workoutPersistentNotificationMinRestOverMessage": {
+          "type": "string"
+        },
+        "workoutPersistentNotificationMaxRestOverMessage": {
+          "type": "string"
+        },
+        "workoutPersistentNotificationCurrentExerciseMessage": {
+          "type": "string"
+        },
+        "workoutPersistentNotificationFinishedMessage": {
+          "type": "string"
+        },
+        "workoutPersistentNotificationInProgressMessage": {
+          "type": "string"
+        },
+        "workoutPersistentNotificationFinishWorkoutAction": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "workoutPersistentNotificationRestBreakMessage",
+        "workoutPersistentNotificationStartSoonMessage",
+        "workoutPersistentNotificationStartNowMessage",
+        "workoutPersistentNotificationMinRestOverMessage",
+        "workoutPersistentNotificationMaxRestOverMessage",
+        "workoutPersistentNotificationCurrentExerciseMessage",
+        "workoutPersistentNotificationFinishedMessage",
+        "workoutPersistentNotificationInProgressMessage",
+        "workoutPersistentNotificationFinishWorkoutAction"
+      ]
+    },
+    "AppConfiguration": {
+      "type": "object",
+      "properties": {
+        "notificationsEnabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "notificationsEnabled"
+      ]
+    },
+    "WorkoutStartedEvent": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "WorkoutStartedEvent"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "WorkoutUpdatedEvent": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "WorkoutUpdatedEvent"
+        },
+        "workout": {
+          "$ref": "#/definitions/Session"
+        },
+        "restTimerInfo": {
+          "$ref": "#/definitions/RestTimerInfo"
+        },
+        "cardioTimerInfo": {
+          "$ref": "#/definitions/CardioTimerInfo"
+        },
+        "currentExerciseDetails": {
+          "$ref": "#/definitions/CurrentExerciseDetails"
+        },
+        "totalWeightLifted": {
+          "$ref": "#/definitions/Weight"
+        },
+        "workoutDuration": {
+          "$ref": "#/definitions/Duration"
+        }
+      },
+      "required": [
+        "type",
+        "workout",
+        "totalWeightLifted",
+        "workoutDuration"
+      ]
+    },
+    "Session": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "blueprint": {
+          "$ref": "#/definitions/SessionBlueprint"
+        },
+        "recordedExercises": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RecordedExercise"
+          }
+        },
+        "date": {
+          "$ref": "#/definitions/LocalDate"
+        },
+        "bodyweight": {
+          "$ref": "#/definitions/Weight"
+        }
+      },
+      "required": [
+        "id",
+        "blueprint",
+        "recordedExercises",
+        "date"
+      ]
+    },
+    "SessionBlueprint": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "exercises": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExerciseBlueprint"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "exercises",
+        "notes"
+      ]
+    },
+    "ExerciseBlueprint": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/WeightedExerciseBlueprint"
+        },
+        {
+          "$ref": "#/definitions/CardioExerciseBlueprint"
+        }
+      ]
+    },
+    "WeightedExerciseBlueprint": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "WeightedExerciseBlueprint"
+        },
+        "name": {
+          "type": "string"
+        },
+        "sets": {
+          "type": "number"
+        },
+        "repsPerSet": {
+          "type": "number"
+        },
+        "weightIncreaseOnSuccess": {
+          "$ref": "#/definitions/BigNumber"
+        },
+        "restBetweenSets": {
+          "$ref": "#/definitions/Rest"
+        },
+        "supersetWithNext": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "link": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "name",
+        "sets",
+        "repsPerSet",
+        "weightIncreaseOnSuccess",
+        "restBetweenSets",
+        "supersetWithNext",
+        "notes",
+        "link"
+      ]
+    },
+    "BigNumber": {
+      "type": "string",
+      "examples": [
+        "1.23"
+      ],
+      "format": "number"
+    },
+    "Rest": {
+      "type": "object",
+      "properties": {
+        "minRest": {
+          "$ref": "#/definitions/Duration"
+        },
+        "maxRest": {
+          "$ref": "#/definitions/Duration"
+        },
+        "failureRest": {
+          "$ref": "#/definitions/Duration"
+        }
+      },
+      "required": [
+        "minRest",
+        "maxRest",
+        "failureRest"
+      ]
+    },
+    "Duration": {
+      "type": "string",
+      "format": "duration"
+    },
+    "CardioExerciseBlueprint": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "CardioExerciseBlueprint"
+        },
+        "name": {
+          "type": "string"
+        },
+        "sets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CardioExerciseSetBlueprint"
+          }
+        },
+        "notes": {
+          "type": "string"
+        },
+        "link": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "name",
+        "sets",
+        "notes",
+        "link"
+      ]
+    },
+    "CardioExerciseSetBlueprint": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "$ref": "#/definitions/CardioTarget"
+        },
+        "trackDuration": {
+          "type": "boolean"
+        },
+        "trackDistance": {
+          "type": "boolean"
+        },
+        "trackResistance": {
+          "type": "boolean"
+        },
+        "trackIncline": {
+          "type": "boolean"
+        },
+        "trackWeight": {
+          "type": "boolean"
+        },
+        "trackSteps": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "target",
+        "trackDuration",
+        "trackDistance",
+        "trackResistance",
+        "trackIncline",
+        "trackWeight",
+        "trackSteps"
+      ]
+    },
+    "CardioTarget": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/TimeCardioTarget"
+        },
+        {
+          "$ref": "#/definitions/DistanceCardioTarget"
+        }
+      ]
+    },
+    "TimeCardioTarget": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "time"
+        },
+        "value": {
+          "$ref": "#/definitions/Duration"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "DistanceCardioTarget": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "distance"
+        },
+        "value": {
+          "$ref": "#/definitions/Distance"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "Distance": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "$ref": "#/definitions/BigNumber"
+        },
+        "unit": {
+          "$ref": "#/definitions/DistanceUnit"
+        }
+      },
+      "required": [
+        "value",
+        "unit"
+      ]
+    },
+    "DistanceUnit": {
+      "type": "string",
+      "enum": [
+        "metre",
+        "yard",
+        "mile",
+        "kilometre"
+      ]
+    },
+    "RecordedExercise": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/RecordedCardioExercise"
+        },
+        {
+          "$ref": "#/definitions/RecordedWeightedExercise"
+        }
+      ]
+    },
+    "RecordedCardioExercise": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "RecordedCardioExercise"
+        },
+        "blueprint": {
+          "$ref": "#/definitions/CardioExerciseBlueprint"
+        },
+        "sets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RecordedCardioExerciseSet"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "blueprint",
+        "sets"
+      ]
+    },
+    "RecordedCardioExerciseSet": {
+      "type": "object",
+      "properties": {
+        "blueprint": {
+          "$ref": "#/definitions/CardioExerciseSetBlueprint"
+        },
+        "completionDateTime": {
+          "$ref": "#/definitions/OffsetDateTime"
+        },
+        "duration": {
+          "$ref": "#/definitions/Duration"
+        },
+        "distance": {
+          "$ref": "#/definitions/Distance"
+        },
+        "resistance": {
+          "$ref": "#/definitions/BigNumber"
+        },
+        "incline": {
+          "$ref": "#/definitions/BigNumber"
+        },
+        "weight": {
+          "$ref": "#/definitions/Weight"
+        },
+        "steps": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "blueprint"
+      ]
+    },
+    "OffsetDateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "Weight": {
+      "type": "object",
+      "properties": {
+        "unit": {
+          "$ref": "#/definitions/WeightUnit"
+        },
+        "value": {
+          "$ref": "#/definitions/BigNumber"
+        }
+      },
+      "required": [
+        "unit",
+        "value"
+      ]
+    },
+    "WeightUnit": {
+      "type": "string",
+      "enum": [
+        "kilograms",
+        "pounds",
+        "nil"
+      ]
+    },
+    "RecordedWeightedExercise": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "RecordedWeightedExercise"
+        },
+        "blueprint": {
+          "$ref": "#/definitions/WeightedExerciseBlueprint"
+        },
+        "potentialSets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PotentialSet"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "blueprint",
+        "potentialSets"
+      ]
+    },
+    "PotentialSet": {
+      "type": "object",
+      "properties": {
+        "set": {
+          "$ref": "#/definitions/RecordedSet"
+        },
+        "weight": {
+          "$ref": "#/definitions/Weight"
+        }
+      },
+      "required": [
+        "weight"
+      ]
+    },
+    "RecordedSet": {
+      "type": "object",
+      "properties": {
+        "repsCompleted": {
+          "type": "number"
+        },
+        "completionDateTime": {
+          "$ref": "#/definitions/OffsetDateTime"
+        }
+      },
+      "required": [
+        "repsCompleted",
+        "completionDateTime"
+      ]
+    },
+    "LocalDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "RestTimerInfo": {
+      "type": "object",
+      "properties": {
+        "startedAt": {
+          "$ref": "#/definitions/Instant"
+        },
+        "partiallyEndAt": {
+          "$ref": "#/definitions/Instant"
+        },
+        "endAt": {
+          "$ref": "#/definitions/Instant"
+        }
+      },
+      "required": [
+        "startedAt",
+        "partiallyEndAt",
+        "endAt"
+      ]
+    },
+    "Instant": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "CardioTimerInfo": {
+      "type": "object",
+      "properties": {
+        "currentDuration": {
+          "$ref": "#/definitions/Duration"
+        },
+        "currentBlockStartTime": {
+          "$ref": "#/definitions/Instant"
+        },
+        "exerciseIndex": {
+          "type": "number"
+        },
+        "setIndex": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "currentDuration",
+        "exerciseIndex",
+        "setIndex"
+      ]
+    },
+    "CurrentExerciseDetails": {
+      "type": "object",
+      "properties": {
+        "exercise": {
+          "$ref": "#/definitions/RecordedExercise"
+        },
+        "setIndex": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "exercise",
+        "setIndex"
+      ]
+    },
+    "WorkoutEndedEvent": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "WorkoutEndedEvent"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "FinishWorkoutCommand": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "FinishWorkoutCommand"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    }
+  }
+}
