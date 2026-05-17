@@ -1,4 +1,3 @@
-import { SessionPOJO } from '@/models/session-models';
 import { TemporalComparer } from '@/models/comparers';
 import { Session } from '@/models/session-models';
 import Enumerable from 'linq';
@@ -8,7 +7,7 @@ import { getSessionReferenceTime } from '@/store/stored-sessions';
 export class ProgressRepository {
   constructor(private getState: () => RootState) {}
 
-  private getSessionMap(): Record<string, SessionPOJO> {
+  private getSessionMap(): Record<string, Session> {
     if (!this.getState().storedSessions.isHydrated) {
       throw new Error('Tried to get stored session state before hydration');
     }
@@ -19,7 +18,7 @@ export class ProgressRepository {
     const sessions = this.getSessionMap();
 
     return Enumerable.from(sessions)
-      .select((x) => Session.fromPOJO(x.value))
+      .select((x) => x.value)
       .orderByDescending((x) => getSessionReferenceTime(x), TemporalComparer);
   }
 }

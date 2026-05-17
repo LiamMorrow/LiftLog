@@ -30,9 +30,7 @@ export class SessionService {
     latestExercises: Record<string, RecordedExercise | undefined>, // KeyedExerciseBlueprint -> Exercise
   ): AsyncIterableIterator<Session> {
     const currentState = this.getState();
-    const currentSession = Session.fromPOJO(
-      currentState.currentSession.workoutSession,
-    );
+    const currentSession = currentState.currentSession.workoutSession;
 
     if (!sessionBlueprints.length) {
       return;
@@ -126,30 +124,27 @@ export class SessionService {
       const potentialSets: PotentialSet[] = match(weightedLastExercise)
         .returnType<PotentialSet[]>()
         .with(undefined, () =>
-          Array.from({ length: e.sets }, () =>
-            PotentialSet.fromPOJO({
-              weight:
+          Array.from(
+            { length: e.sets },
+            () =>
+              new PotentialSet(
+                undefined,
                 weightedLastExercise?.potentialSets[0]?.weight ??
-                new Weight(0, $this.getDefaultWeightUnit()),
-              set: undefined,
-            }),
+                  new Weight(0, $this.getDefaultWeightUnit()),
+              ),
           ),
         )
         .with({ isSuccessForProgressiveOverload: true }, (x) =>
-          x.potentialSets.map((x) =>
-            PotentialSet.fromPOJO({
-              weight: x.weight.plus(e.weightIncreaseOnSuccess),
-              set: undefined,
-            }),
+          x.potentialSets.map(
+            (x) =>
+              new PotentialSet(
+                undefined,
+                x.weight.plus(e.weightIncreaseOnSuccess),
+              ),
           ),
         )
         .otherwise((x) =>
-          x.potentialSets.map((x) =>
-            PotentialSet.fromPOJO({
-              weight: x.weight,
-              set: undefined,
-            }),
-          ),
+          x.potentialSets.map((x) => new PotentialSet(undefined, x.weight)),
         );
 
       return new RecordedWeightedExercise(e, potentialSets, undefined);
@@ -159,6 +154,7 @@ export class SessionService {
       sessionBlueprint,
       sessionBlueprint.exercises.map(getNextExercise),
       LocalDate.now(),
+      undefined,
       undefined,
     );
   }

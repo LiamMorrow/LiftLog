@@ -6,7 +6,7 @@ import {
   SessionBlueprintPOJO,
 } from '@/models/blueprint-models';
 import { RemoteData } from '@/models/remote';
-import { EmptySession, Session, SessionPOJO } from '@/models/session-models';
+import { EmptySession, Session } from '@/models/session-models';
 import { SafeDraft } from '@/utils/store-helpers';
 
 import { LocalDate } from '@js-joda/core';
@@ -21,7 +21,7 @@ import Enumerable from 'linq';
 interface ProgramState {
   readonly isHydrated: boolean;
   readonly activePlanId: string;
-  readonly upcomingSessions: RemoteData<readonly SessionPOJO[]>;
+  readonly upcomingSessions: RemoteData<readonly Session[]>;
   readonly savedPrograms: {
     readonly [programId: string]: ProgramBlueprintPOJO;
   };
@@ -46,9 +46,7 @@ const programSlice = createSlice({
       state,
       action: PayloadAction<RemoteData<readonly Session[]>>,
     ) {
-      state.upcomingSessions = action.payload.map((x) =>
-        x.map((y) => y.toPOJO()),
-      );
+      state.upcomingSessions = action.payload;
     },
 
     setProgramSessions(

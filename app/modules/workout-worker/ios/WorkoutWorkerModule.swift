@@ -8,7 +8,7 @@ public class WorkoutWorkerModule: Module {
     Events("on")
 
 
-    Function("broadcast") { (bytes :Data) in
+    Function("broadcast") { (jsonString: String) in
 
     }
   }

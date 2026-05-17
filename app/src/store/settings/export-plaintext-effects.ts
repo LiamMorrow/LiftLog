@@ -57,7 +57,7 @@ async function exportToJson(
 ): Promise<Uint8Array> {
   const exportedSets = sessions
     .select((x) => ({
-      ...x.toPOJO(),
+      ...x,
       blueprint: { ...x.blueprint.toPOJO(), exercises: undefined },
     }))
     .toArray();

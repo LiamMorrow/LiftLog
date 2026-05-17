@@ -49,11 +49,11 @@ const sessionFromDao = (
 ): Session => Session.fromJSON(ProtobufToJsonV1Migrator.migrateSession(dao));
 
 describe('conversions', () => {
-  it.each`
+  describe.each`
     name                  | protoType                                           | initialValueGenerator        | convertToDao      | convertFromDao             | assertEquals
     ${'Duration'}         | ${google.protobuf.Duration}                         | ${DurationGenerator}         | ${toDurationDao}  | ${fromDurationDao}         | ${(a: Duration, b: Duration) => expect(a.equals(b)).toBeTruthy()}
     ${'SessionBlueprint'} | ${Models.SessionBlueprintDao.SessionBlueprintDaoV2} | ${SessionBlueprintGenerator} | ${modelToDao}     | ${sessionBlueprintFromDao} | ${toPOJOEquals}
-    ${'Session'}          | ${Models.SessionHistoryDao.SessionDaoV2}            | ${SessionGenerator}          | ${modelToDao}     | ${sessionFromDao}          | ${toPOJOEquals}
+    ${'Session'}          | ${Models.SessionHistoryDao.SessionDaoV2}            | ${SessionGenerator}          | ${modelToDao}     | ${sessionFromDao}          | ${toJSONEquals}
     ${'FeedIdentity'}     | ${Models.FeedIdentityDaoV1}                         | ${FeedIdentityGenerator}     | ${modelToDao}     | ${FeedIdentity.fromDao}    | ${toPOJOEquals}
     ${'FeedUser'}         | ${Models.FeedUserDaoV1}                             | ${FeedUserGenerator}         | ${modelToDao}     | ${FeedUser.fromDao}        | ${toPOJOEquals}
     ${'SessionFeedItem'}  | ${Models.FeedItemDaoV1}                             | ${SessionFeedItemGenerator}  | ${modelToDao}     | ${SessionFeedItem.fromDao} | ${toPOJOEquals}
@@ -67,21 +67,23 @@ describe('conversions', () => {
       convertFromDao,
       assertEquals,
     }) => {
-      fc.assert(
-        fc.property(
-          initialValueGenerator as fc.Arbitrary<unknown>,
-          (initialValue) => {
-            const converted = convertToDao(
-              initialValue as fc.Arbitrary<unknown>,
-            );
-            const encoded = protoType.encode(converted).finish();
-            const decoded = protoType.decode(encoded);
-            const convertedBack = convertFromDao(decoded);
+      it('with protobuf', () => {
+        fc.assert(
+          fc.property(
+            initialValueGenerator as fc.Arbitrary<unknown>,
+            (initialValue) => {
+              const converted = convertToDao(
+                initialValue as fc.Arbitrary<unknown>,
+              );
+              const encoded = protoType.encode(converted).finish();
+              const decoded = protoType.decode(encoded);
+              const convertedBack = convertFromDao(decoded);
 
-            assertEquals(initialValue, convertedBack);
-          },
-        ),
-      );
+              assertEquals(initialValue, convertedBack);
+            },
+          ),
+        );
+      });
     },
   );
 
@@ -112,9 +114,15 @@ describe('conversions', () => {
 interface ToPOJO {
   toPOJO(): unknown;
 }
+interface ToJSON {
+  toJSON(): unknown;
+}
 
 function toPOJOEquals(a: ToPOJO, b: ToPOJO) {
   expect(b.toPOJO()).toEqual(a.toPOJO());
+}
+function toJSONEquals(a: ToJSON, b: ToJSON) {
+  expect(b.toJSON()).toEqual(a.toJSON());
 }
 
 function fromSessionHistoryDao(

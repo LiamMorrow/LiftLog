@@ -4,16 +4,98 @@ import {
   RecordedWeightedExercise,
   RecordedSet,
   PotentialSet,
+  RecordedCardioExercise,
 } from '@/models/session-models';
-import { LocalDate, OffsetDateTime } from '@js-joda/core';
+import { Duration, LocalDate, OffsetDateTime, ZoneOffset } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { v4 as uuid } from 'uuid';
 import {
   WeightedExerciseBlueprint,
   Rest,
   SessionBlueprint,
+  CardioExerciseBlueprint,
+  CardioExerciseSetBlueprint,
 } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
+
+let _tick = OffsetDateTime.parse('2025-04-05T10:00:00Z');
+function tick(): OffsetDateTime {
+  _tick = _tick.plusSeconds(1);
+  return _tick;
+}
+function tickAt(h: number, m: number, s: number = 0): OffsetDateTime {
+  return OffsetDateTime.of(2025, 4, 5, h, m, s, 0, ZoneOffset.UTC);
+}
+
+function makeWeightedBlueprint(name = 'Squat', supersetWithNext = false) {
+  return new WeightedExerciseBlueprint(
+    name,
+    3,
+    10,
+    new BigNumber('2.5'),
+    Rest.medium,
+    supersetWithNext,
+    '',
+    '',
+  );
+}
+
+function makeCardioSetBlueprint(
+  overrides: Partial<{
+    trackDuration: boolean;
+    trackDistance: boolean;
+    trackSteps: boolean;
+  }> = {},
+) {
+  return new CardioExerciseSetBlueprint(
+    { type: 'distance', value: { unit: 'kilometre', value: BigNumber(1000) } },
+    overrides.trackDuration ?? true,
+    overrides.trackDistance ?? false,
+    overrides.trackSteps ?? false,
+    false, // trackResistance
+    false, // trackIncline
+    false, // trackWeight
+  );
+}
+
+function makeCardioBlueprint(sets = 1) {
+  return new CardioExerciseBlueprint(
+    'Row',
+    Array.from({ length: sets }, () =>
+      makeCardioSetBlueprint({ trackDuration: true }),
+    ),
+    '',
+    '',
+  );
+}
+
+function makeSession(
+  exercises: (WeightedExerciseBlueprint | CardioExerciseBlueprint)[],
+  date = LocalDate.of(2025, 4, 5),
+): Session {
+  const recorded = exercises.map((bp) => {
+    if (bp instanceof WeightedExerciseBlueprint) {
+      return RecordedWeightedExercise.empty(bp, 'kilograms');
+    }
+    return RecordedCardioExercise.empty(bp);
+  });
+  return new Session(
+    uuid(),
+    new SessionBlueprint('Test', exercises, ''),
+    recorded,
+    date,
+    undefined,
+    undefined,
+  );
+}
+
+function filledPotentialSet(
+  reps: number,
+  time: OffsetDateTime,
+  weight = new Weight(100, 'kilograms'),
+) {
+  return new PotentialSet(new RecordedSet(reps, time), weight);
+}
 
 // Helper functions to match the C# test structure
 function createExerciseBlueprint(
@@ -51,9 +133,7 @@ function createSession(
         const set = shouldFillSet
           ? new RecordedSet(
               exerciseBlueprint.repsPerSet,
-              OffsetDateTime.now().plusSeconds(
-                exerciseIndex * 60 + setIndex * 10,
-              ),
+              tick().plusSeconds(exerciseIndex * 60 + setIndex * 10),
             )
           : undefined;
 
@@ -74,35 +154,8 @@ function createSession(
     recordedExercises,
     LocalDate.now(),
     undefined, // bodyweight
+    undefined,
   );
-}
-
-function cycleExerciseReps(
-  session: Session,
-  exerciseIndex: number,
-  setIndex: number,
-): Session {
-  const recordedExercises = [...session.recordedExercises];
-  const targetExercise = recordedExercises[
-    exerciseIndex
-  ] as RecordedWeightedExercise;
-  const potentialSets = [...targetExercise.potentialSets];
-
-  // Complete the set
-  potentialSets[setIndex] = potentialSets[setIndex].with({
-    set: new RecordedSet(
-      targetExercise.blueprint.repsPerSet,
-      OffsetDateTime.now(),
-    ),
-  });
-
-  recordedExercises[exerciseIndex] = targetExercise.with({
-    potentialSets: potentialSets.map((ps) => ps.toPOJO()),
-  });
-
-  return session.with({
-    recordedExercises,
-  });
 }
 
 describe('Session supersets', () => {
@@ -133,7 +186,7 @@ describe('Session supersets', () => {
 
     describe('and the last completed set was exercise 0 (not a superset)', () => {
       beforeEach(() => {
-        session = cycleExerciseReps(session, 0, 0);
+        session = session.withCycledExerciseReps(0, 0, tick());
       });
 
       it('should have the next set be the first exercise', () => {
@@ -147,7 +200,7 @@ describe('Session supersets', () => {
 
     describe('and the last completed set was exercise 1 (a superset with exercise 2)', () => {
       beforeEach(() => {
-        session = cycleExerciseReps(session, 1, 0);
+        session = session.withCycledExerciseReps(1, 0, tick());
       });
 
       it('should have the next set be 2', () => {
@@ -161,7 +214,7 @@ describe('Session supersets', () => {
 
     describe('and the last completed set was exercise 2 (a superset with the previous exercise (1))', () => {
       beforeEach(() => {
-        session = cycleExerciseReps(session, 2, 0);
+        session = session.withCycledExerciseReps(2, 0, tick());
       });
 
       it('should have the next set be 1', () => {
@@ -175,7 +228,7 @@ describe('Session supersets', () => {
 
     describe('and the last completed set was exercise 3 (a superset with 4 and 5)', () => {
       beforeEach(() => {
-        session = cycleExerciseReps(session, 3, 0);
+        session = session.withCycledExerciseReps(3, 0, tick());
       });
 
       it('should have the next set be 4', () => {
@@ -189,7 +242,7 @@ describe('Session supersets', () => {
 
     describe('and the last completed set was exercise 4 (a superset with 3 and 5)', () => {
       beforeEach(() => {
-        session = cycleExerciseReps(session, 4, 0);
+        session = session.withCycledExerciseReps(4, 0, tick());
       });
 
       it('should have the next set be 5', () => {
@@ -203,7 +256,7 @@ describe('Session supersets', () => {
 
     describe('and the last completed set was exercise 5 (a superset with 3 and 4)', () => {
       beforeEach(() => {
-        session = cycleExerciseReps(session, 5, 0);
+        session = session.withCycledExerciseReps(5, 0, tick());
       });
 
       it('should cycle back to exercise 3', () => {
@@ -238,7 +291,7 @@ describe('Session supersets', () => {
 
     describe('and the last completed set was exercise 0 (a superset with exercise 1)', () => {
       beforeEach(() => {
-        session = cycleExerciseReps(session, 0, 0);
+        session = session.withCycledExerciseReps(0, 0, tick());
       });
 
       it('should have the next set be 1', () => {
@@ -252,7 +305,7 @@ describe('Session supersets', () => {
 
     describe('and the last completed set was exercise 1 (supersetting with 0)', () => {
       beforeEach(() => {
-        session = cycleExerciseReps(session, 1, 0);
+        session = session.withCycledExerciseReps(1, 0, tick());
       });
 
       it('should have the next set be 0', () => {
@@ -287,7 +340,7 @@ describe('Session supersets', () => {
 
     describe('and the last completed set was exercise 0 (not a superset)', () => {
       beforeEach(() => {
-        session = cycleExerciseReps(session, 0, 0);
+        session = session.withCycledExerciseReps(0, 0, tick());
       });
 
       it('should have the next set be itself (0)', () => {
@@ -301,7 +354,7 @@ describe('Session supersets', () => {
 
     describe('and the last completed set was exercise 1 (not a superset)', () => {
       beforeEach(() => {
-        session = cycleExerciseReps(session, 1, 0);
+        session = session.withCycledExerciseReps(1, 0, tick());
       });
 
       it('should have the next set be itself (1)', () => {
@@ -315,7 +368,7 @@ describe('Session supersets', () => {
 
     describe('and the last completed set was exercise 2 (a superset with next, but it is the last - so noop)', () => {
       beforeEach(() => {
-        session = cycleExerciseReps(session, 2, 0);
+        session = session.withCycledExerciseReps(2, 0, tick());
       });
 
       it('should have the next set be itself (2)', () => {
@@ -344,5 +397,656 @@ describe('Session supersets', () => {
       const nextExercise = session.nextExercise;
       expect(nextExercise).toBeUndefined();
     });
+  });
+});
+
+describe('RecordedWeightedExercise.withWeight', () => {
+  let exercise: RecordedWeightedExercise;
+  const light = new Weight(60, 'kilograms');
+  const heavy = new Weight(120, 'kilograms');
+
+  beforeEach(() => {
+    const t = tick();
+    exercise = new RecordedWeightedExercise(
+      makeWeightedBlueprint(),
+      [
+        filledPotentialSet(10, t), // set 0 – completed
+        new PotentialSet(undefined, light), // set 1 – uncompleted
+        new PotentialSet(undefined, light), // set 2 – uncompleted
+      ],
+      undefined,
+    );
+  });
+
+  it('thisSet only changes the targeted set', () => {
+    const result = exercise.withWeight(1, heavy, 'thisSet');
+    expect(result.potentialSets[0].weight).toEqual(
+      exercise.potentialSets[0].weight,
+    );
+    expect(result.potentialSets[1].weight).toEqual(heavy);
+    expect(result.potentialSets[2].weight).toEqual(light);
+  });
+
+  it('uncompletedSets leaves completed sets alone', () => {
+    const originalCompletedWeight = exercise.potentialSets[0].weight;
+    const result = exercise.withWeight(1, heavy, 'uncompletedSets');
+    expect(result.potentialSets[0].weight).toEqual(originalCompletedWeight);
+    expect(result.potentialSets[1].weight).toEqual(heavy);
+    expect(result.potentialSets[2].weight).toEqual(heavy);
+  });
+
+  it('allSets updates every set including completed ones', () => {
+    const result = exercise.withWeight(0, heavy, 'allSets');
+    expect(result.potentialSets.every((s) => s.weight.equals(heavy))).toBe(
+      true,
+    );
+  });
+});
+
+// ─── withNothingCompleted ─────────────────────────────────────────────────────
+
+describe('RecordedWeightedExercise.withNothingCompleted', () => {
+  it('clears all recorded sets and notes', () => {
+    const bp = makeWeightedBlueprint();
+    const t = tick();
+    const exercise = new RecordedWeightedExercise(
+      bp,
+      [filledPotentialSet(10, t), filledPotentialSet(10, t.plusSeconds(30))],
+      'some note',
+    );
+
+    const result = exercise.withNothingCompleted();
+
+    expect(result.potentialSets.every((s) => s.set === undefined)).toBe(true);
+    expect(result.notes).toBeUndefined();
+  });
+
+  it('preserves weights after clearing', () => {
+    const bp = makeWeightedBlueprint();
+    const t = tick();
+    const weight = new Weight(80, 'kilograms');
+    const exercise = new RecordedWeightedExercise(
+      bp,
+      [new PotentialSet(new RecordedSet(10, t), weight)],
+      undefined,
+    );
+
+    const result = exercise.withNothingCompleted();
+    expect(result.potentialSets[0].weight).toEqual(weight);
+  });
+});
+
+describe('RecordedCardioExercise.withNothingCompleted', () => {
+  it('clears completionDateTime and notes', () => {
+    const bp = makeCardioBlueprint(2);
+    const exercise = RecordedCardioExercise.empty(bp);
+    const withData = exercise.withSet(0, (s) =>
+      s.with({ completionDateTime: tick(), duration: Duration.ofMinutes(10) }),
+    );
+    const result = withData.withNothingCompleted();
+
+    expect(result.sets.every((s) => s.completionDateTime === undefined)).toBe(
+      true,
+    );
+    expect(result.notes).toBeUndefined();
+  });
+});
+
+// ─── withUpdatedDate ──────────────────────────────────────────────────────────
+
+describe('Session.withUpdatedDate', () => {
+  it('moves all set completion datetimes when all sets share the same date (absolute mode)', () => {
+    const bp = makeWeightedBlueprint();
+    const sessionDate = LocalDate.of(2025, 4, 5);
+    const t1 = tickAt(10, 0);
+    const t2 = tickAt(10, 5);
+
+    const exercise = new RecordedWeightedExercise(
+      bp,
+      [
+        filledPotentialSet(10, t1),
+        filledPotentialSet(10, t2),
+        new PotentialSet(undefined, new Weight(100, 'kilograms')),
+      ],
+      undefined,
+    );
+
+    const session = new Session(
+      uuid(),
+      new SessionBlueprint('Test', [bp], ''),
+      [exercise],
+      sessionDate,
+      undefined,
+      undefined,
+    );
+
+    const newDate = LocalDate.of(2025, 4, 10);
+    const updated = session.withUpdatedDate(newDate);
+    const updatedExercise = updated
+      .recordedExercises[0] as RecordedWeightedExercise;
+
+    // All completed sets should land on the new date
+    const completedSets = updatedExercise.potentialSets.filter((s) => s.set);
+    expect(
+      completedSets.every((s) =>
+        s.set!.completionDateTime.toLocalDate().equals(newDate),
+      ),
+    ).toBe(true);
+
+    // Times of day preserved
+    expect(
+      updatedExercise.potentialSets[0].set!.completionDateTime.toLocalTime(),
+    ).toEqual(t1.toLocalTime());
+    expect(
+      updatedExercise.potentialSets[1].set!.completionDateTime.toLocalTime(),
+    ).toEqual(t2.toLocalTime());
+  });
+
+  it('maintains relative day offsets when sets cross midnight', () => {
+    const bp = makeWeightedBlueprint();
+    const sessionDate = LocalDate.of(2025, 4, 5);
+
+    // One set before midnight, one after → two different dates
+    const beforeMidnight = OffsetDateTime.of(
+      2025,
+      4,
+      5,
+      23,
+      55,
+      0,
+      0,
+      ZoneOffset.UTC,
+    );
+    const afterMidnight = OffsetDateTime.of(
+      2025,
+      4,
+      6,
+      0,
+      5,
+      0,
+      0,
+      ZoneOffset.UTC,
+    );
+
+    const exercise = new RecordedWeightedExercise(
+      bp,
+      [
+        filledPotentialSet(10, beforeMidnight),
+        filledPotentialSet(10, afterMidnight),
+        new PotentialSet(undefined, new Weight(100, 'kilograms')),
+      ],
+      undefined,
+    );
+
+    const session = new Session(
+      uuid(),
+      new SessionBlueprint('Test', [bp], ''),
+      [exercise],
+      sessionDate,
+      undefined,
+      undefined,
+    );
+
+    const newDate = LocalDate.of(2025, 4, 12);
+    const updated = session.withUpdatedDate(newDate);
+    const sets = (updated.recordedExercises[0] as RecordedWeightedExercise)
+      .potentialSets;
+
+    const d0 = sets[0].set!.completionDateTime.toLocalDate();
+    const d1 = sets[1].set!.completionDateTime.toLocalDate();
+
+    expect(d0.equals(newDate)).toBe(true);
+    expect(d1.equals(newDate.plusDays(1))).toBe(true);
+  });
+
+  it('updates the session date itself', () => {
+    const session = makeSession([makeWeightedBlueprint()]);
+    const newDate = LocalDate.of(2025, 6, 1);
+    expect(session.withUpdatedDate(newDate).date.equals(newDate)).toBe(true);
+  });
+
+  it('is a no-op on sets without completionDateTime', () => {
+    const session = makeSession([makeWeightedBlueprint()]);
+    const newDate = LocalDate.of(2025, 6, 1);
+    const updated = session.withUpdatedDate(newDate);
+    const sets = (updated.recordedExercises[0] as RecordedWeightedExercise)
+      .potentialSets;
+    expect(sets.every((s) => s.set === undefined)).toBe(true);
+  });
+});
+
+// ─── withCycledExerciseReps ───────────────────────────────────────────────────
+
+describe('Session.withCycledExerciseReps', () => {
+  function sessionWithOneExercise() {
+    const bp = makeWeightedBlueprint();
+    return makeSession([bp]);
+  }
+
+  it('first cycle sets reps to blueprint repsPerSet', () => {
+    const session = sessionWithOneExercise();
+    const t = tick();
+    const updated = session.withCycledExerciseReps(0, 0, t);
+    const set = (updated.recordedExercises[0] as RecordedWeightedExercise)
+      .potentialSets[0].set;
+    expect(set).toBeDefined();
+    expect(set!.repsCompleted).toBe(10); // repsPerSet from makeWeightedBlueprint
+  });
+
+  it('second cycle decrements reps by 1', () => {
+    const session = sessionWithOneExercise();
+    const t = tick();
+    const after1 = session.withCycledExerciseReps(0, 0, t);
+    const after2 = after1.withCycledExerciseReps(0, 0, tick());
+    const set = (after2.recordedExercises[0] as RecordedWeightedExercise)
+      .potentialSets[0].set;
+    expect(set!.repsCompleted).toBe(9);
+  });
+
+  it('cycling at 0 reps clears the set', () => {
+    const bp = makeWeightedBlueprint();
+    const t = tick();
+    const exercise = new RecordedWeightedExercise(
+      bp,
+      [
+        new PotentialSet(new RecordedSet(0, t), new Weight(100, 'kilograms')),
+        new PotentialSet(undefined, new Weight(100, 'kilograms')),
+        new PotentialSet(undefined, new Weight(100, 'kilograms')),
+      ],
+      undefined,
+    );
+    const session = new Session(
+      uuid(),
+      new SessionBlueprint('Test', [bp], ''),
+      [exercise],
+      LocalDate.of(2025, 4, 5),
+      undefined,
+      undefined,
+    );
+
+    const updated = session.withCycledExerciseReps(0, 0, tick());
+    const set = (updated.recordedExercises[0] as RecordedWeightedExercise)
+      .potentialSets[0].set;
+    expect(set).toBeUndefined();
+  });
+
+  it('sets session date to the time date if session not yet started', () => {
+    const session = sessionWithOneExercise();
+    const futureTime = OffsetDateTime.of(
+      2025,
+      6,
+      15,
+      12,
+      0,
+      0,
+      0,
+      ZoneOffset.UTC,
+    );
+    const updated = session.withCycledExerciseReps(0, 0, futureTime);
+    expect(updated.date.equals(LocalDate.of(2025, 6, 15))).toBe(true);
+  });
+
+  it('does not change session date if already started', () => {
+    const session = sessionWithOneExercise();
+    const t1 = OffsetDateTime.of(2025, 4, 5, 10, 0, 0, 0, ZoneOffset.UTC);
+    const t2 = OffsetDateTime.of(2025, 6, 15, 12, 0, 0, 0, ZoneOffset.UTC);
+    const after1 = session.withCycledExerciseReps(0, 0, t1);
+    const after2 = after1.withCycledExerciseReps(0, 1, t2);
+    expect(after2.date.equals(LocalDate.of(2025, 4, 5))).toBe(true);
+  });
+
+  it('is a no-op on a cardio exercise index', () => {
+    const cardioBp = makeCardioBlueprint();
+    const session = makeSession([cardioBp]);
+    const updated = session.withCycledExerciseReps(0, 0, tick());
+    // Should return same session unchanged
+    expect(updated.recordedExercises[0]).toBe(session.recordedExercises[0]);
+  });
+});
+
+// ─── RecordedCardioExercise.withSet / withAllSets ────────────────────────────
+
+describe('RecordedCardioExercise.withSet', () => {
+  it('updates only the targeted set', () => {
+    const bp = makeCardioBlueprint(3);
+    const exercise = RecordedCardioExercise.empty(bp);
+    const dur = Duration.ofMinutes(5);
+    const result = exercise.withSet(1, (s) => s.with({ duration: dur }));
+
+    expect(result.sets[0].duration).toBeUndefined();
+    expect(result.sets[1].duration).toEqual(dur);
+    expect(result.sets[2].duration).toBeUndefined();
+  });
+});
+
+describe('RecordedCardioExercise.withAllSets', () => {
+  it('applies reducer to every set', () => {
+    const bp = makeCardioBlueprint(3);
+    const exercise = RecordedCardioExercise.empty(bp);
+    const dur = Duration.ofMinutes(3);
+    const result = exercise.withAllSets((s) => s.with({ duration: dur }));
+
+    expect(result.sets.every((s) => s.duration?.equals(dur))).toBe(true);
+  });
+});
+// ─── withAddedExercise ────────────────────────────────────────────────────────
+
+describe('Session.withAddedExercise', () => {
+  it('appends the exercise to both recordedExercises and blueprint', () => {
+    const session = makeSession([makeWeightedBlueprint('Squat')]);
+    const newBp = makeWeightedBlueprint('Bench');
+    const updated = session.withAddedExercise(newBp, false);
+
+    expect(updated.recordedExercises).toHaveLength(2);
+    expect(updated.blueprint.exercises).toHaveLength(2);
+    expect(updated.recordedExercises[1].blueprint.name).toBe('Bench');
+  });
+
+  it('uses kilograms when useImperialUnits is false', () => {
+    const session = makeSession([]);
+    const updated = session.withAddedExercise(makeWeightedBlueprint(), false);
+    const sets = (updated.recordedExercises[0] as RecordedWeightedExercise)
+      .potentialSets;
+    expect(sets.every((s) => s.weight.unit === 'kilograms')).toBe(true);
+  });
+
+  it('uses pounds when useImperialUnits is true', () => {
+    const session = makeSession([]);
+    const updated = session.withAddedExercise(makeWeightedBlueprint(), true);
+    const sets = (updated.recordedExercises[0] as RecordedWeightedExercise)
+      .potentialSets;
+    expect(sets.every((s) => s.weight.unit === 'pounds')).toBe(true);
+  });
+
+  it('does not mutate the original session', () => {
+    const session = makeSession([makeWeightedBlueprint()]);
+    session.withAddedExercise(makeWeightedBlueprint('Bench'), false);
+    expect(session.recordedExercises).toHaveLength(1);
+  });
+});
+
+// ─── withEditedExercise ───────────────────────────────────────────────────────
+
+describe('Session.withEditedExercise', () => {
+  describe('type change: weighted → cardio', () => {
+    it('replaces the recorded exercise with an empty cardio exercise', () => {
+      const weightedBp = makeWeightedBlueprint();
+      const session = makeSession([weightedBp]);
+      const cardioBp = makeCardioBlueprint(2);
+
+      const updated = session.withEditedExercise(0, cardioBp, false);
+
+      expect(updated.recordedExercises[0].type).toBe('RecordedCardioExercise');
+      expect(updated.recordedExercises[0].blueprint.name).toBe('Row');
+    });
+
+    it('uses kilograms on type change when useImperialUnits is false', () => {
+      const session = makeSession([makeCardioBlueprint()]);
+      const weightedBp = makeWeightedBlueprint();
+      const updated = session.withEditedExercise(0, weightedBp, false);
+      const sets = (updated.recordedExercises[0] as RecordedWeightedExercise)
+        .potentialSets;
+      expect(sets.every((s) => s.weight.unit === 'kilograms')).toBe(true);
+    });
+
+    it('uses pounds on type change when useImperialUnits is true', () => {
+      const session = makeSession([makeCardioBlueprint()]);
+      const weightedBp = makeWeightedBlueprint();
+      const updated = session.withEditedExercise(0, weightedBp, true);
+      const sets = (updated.recordedExercises[0] as RecordedWeightedExercise)
+        .potentialSets;
+      expect(sets.every((s) => s.weight.unit === 'pounds')).toBe(true);
+    });
+
+    it('discards existing weighted set data on type change', () => {
+      const bp = makeWeightedBlueprint();
+      const t = tick();
+      const exercise = new RecordedWeightedExercise(
+        bp,
+        [
+          filledPotentialSet(10, t),
+          filledPotentialSet(8, t.plusSeconds(30)),
+          new PotentialSet(undefined, new Weight(100, 'kilograms')),
+        ],
+        undefined,
+      );
+      const session = new Session(
+        uuid(),
+        new SessionBlueprint('Test', [bp], ''),
+        [exercise],
+        LocalDate.of(2025, 4, 5),
+        undefined,
+        undefined,
+      );
+
+      const updated = session.withEditedExercise(
+        0,
+        makeCardioBlueprint(),
+        false,
+      );
+      const cardio = updated.recordedExercises[0] as RecordedCardioExercise;
+      expect(cardio.sets.every((s) => s.completionDateTime === undefined)).toBe(
+        true,
+      );
+    });
+  });
+
+  describe('same type: weighted → weighted', () => {
+    it('updates the blueprint without touching existing set data', () => {
+      const bp = makeWeightedBlueprint('Squat');
+      const t = tick();
+      const exercise = new RecordedWeightedExercise(
+        bp,
+        [
+          filledPotentialSet(10, t),
+          filledPotentialSet(9, t.plusSeconds(60)),
+          new PotentialSet(undefined, new Weight(100, 'kilograms')),
+        ],
+        undefined,
+      );
+      const session = new Session(
+        uuid(),
+        new SessionBlueprint('Test', [bp], ''),
+        [exercise],
+        LocalDate.of(2025, 4, 5),
+        undefined,
+        undefined,
+      );
+
+      const editedBp = makeWeightedBlueprint('Squat (edited)'); // same set count (3)
+      const updated = session.withEditedExercise(0, editedBp, false);
+      const updatedExercise = updated
+        .recordedExercises[0] as RecordedWeightedExercise;
+
+      expect(updatedExercise.blueprint.name).toBe('Squat (edited)');
+      expect(updatedExercise.potentialSets[0].set?.repsCompleted).toBe(10);
+      expect(updatedExercise.potentialSets[1].set?.repsCompleted).toBe(9);
+    });
+
+    it('truncates potentialSets when set count decreases', () => {
+      const bp = makeWeightedBlueprint('Squat'); // 3 sets
+      const t = tick();
+      const exercise = new RecordedWeightedExercise(
+        bp,
+        [
+          filledPotentialSet(10, t),
+          filledPotentialSet(9, t.plusSeconds(60)),
+          filledPotentialSet(8, t.plusSeconds(120)),
+        ],
+        undefined,
+      );
+      const session = new Session(
+        uuid(),
+        new SessionBlueprint('Test', [bp], ''),
+        [exercise],
+        LocalDate.of(2025, 4, 5),
+        undefined,
+        undefined,
+      );
+
+      const fewerSetsBp = new WeightedExerciseBlueprint(
+        'Squat',
+        2,
+        10,
+        new BigNumber('2.5'),
+        Rest.medium,
+        false,
+        '',
+        '',
+      );
+      const updated = session.withEditedExercise(0, fewerSetsBp, false);
+      expect(
+        (updated.recordedExercises[0] as RecordedWeightedExercise)
+          .potentialSets,
+      ).toHaveLength(2);
+    });
+
+    it('fills new slots with maxWeight when set count increases', () => {
+      const bp = new WeightedExerciseBlueprint(
+        'Squat',
+        2,
+        10,
+        new BigNumber('2.5'),
+        Rest.medium,
+        false,
+        '',
+        '',
+      );
+      const heavyWeight = new Weight(140, 'kilograms');
+      const exercise = new RecordedWeightedExercise(
+        bp,
+        [
+          new PotentialSet(undefined, heavyWeight),
+          new PotentialSet(undefined, new Weight(100, 'kilograms')),
+        ],
+        undefined,
+      );
+      const session = new Session(
+        uuid(),
+        new SessionBlueprint('Test', [bp], ''),
+        [exercise],
+        LocalDate.of(2025, 4, 5),
+        undefined,
+        undefined,
+      );
+
+      const moreSets = new WeightedExerciseBlueprint(
+        'Squat',
+        4,
+        10,
+        new BigNumber('2.5'),
+        Rest.medium,
+        false,
+        '',
+        '',
+      );
+      const updated = session.withEditedExercise(0, moreSets, false);
+      const sets = (updated.recordedExercises[0] as RecordedWeightedExercise)
+        .potentialSets;
+
+      expect(sets).toHaveLength(4);
+      // New slots should be seeded with maxWeight
+      expect(sets[2].weight).toEqual(heavyWeight);
+      expect(sets[3].weight).toEqual(heavyWeight);
+      // New slots should be uncompleted
+      expect(sets[2].set).toBeUndefined();
+      expect(sets[3].set).toBeUndefined();
+    });
+  });
+
+  describe('same type: cardio → cardio', () => {
+    it('remaps existing set data to the new blueprint by index', () => {
+      const bp = makeCardioBlueprint(2);
+      const dur = Duration.ofMinutes(15);
+      const exercise = RecordedCardioExercise.empty(bp).withSet(0, (s) =>
+        s.with({ duration: dur, completionDateTime: tick() }),
+      );
+
+      const session = new Session(
+        uuid(),
+        new SessionBlueprint('Test', [bp], ''),
+        [exercise],
+        LocalDate.of(2025, 4, 5),
+        undefined,
+        undefined,
+      );
+
+      const newBp = makeCardioBlueprint(2);
+      const updated = session.withEditedExercise(0, newBp, false);
+      const cardio = updated.recordedExercises[0] as RecordedCardioExercise;
+
+      // Existing duration should survive the blueprint swap
+      expect(cardio.sets[0].duration?.equals(dur)).toBe(true);
+    });
+
+    it('new sets beyond the previous count start empty', () => {
+      const bp = makeCardioBlueprint(1);
+      const exercise = RecordedCardioExercise.empty(bp).withSet(0, (s) =>
+        s.with({
+          duration: Duration.ofMinutes(10),
+          completionDateTime: tick(),
+        }),
+      );
+
+      const session = new Session(
+        uuid(),
+        new SessionBlueprint('Test', [bp], ''),
+        [exercise],
+        LocalDate.of(2025, 4, 5),
+        undefined,
+        undefined,
+      );
+
+      const expandedBp = makeCardioBlueprint(3);
+      const updated = session.withEditedExercise(0, expandedBp, false);
+      const cardio = updated.recordedExercises[0] as RecordedCardioExercise;
+
+      expect(cardio.sets).toHaveLength(3);
+      expect(cardio.sets[1].duration).toBeUndefined();
+      expect(cardio.sets[2].duration).toBeUndefined();
+    });
+
+    it('uses the new set blueprint even when carrying forward existing data', () => {
+      const bp = makeCardioBlueprint(1);
+      const exercise = RecordedCardioExercise.empty(bp).withSet(0, (s) =>
+        s.with({ duration: Duration.ofMinutes(5), completionDateTime: tick() }),
+      );
+
+      const session = new Session(
+        uuid(),
+        new SessionBlueprint('Test', [bp], ''),
+        [exercise],
+        LocalDate.of(2025, 4, 5),
+        undefined,
+        undefined,
+      );
+
+      const newSetBp = makeCardioSetBlueprint({
+        trackDuration: true,
+        trackDistance: true,
+      });
+      const newCardioBp = new CardioExerciseBlueprint(
+        'Row',
+        [newSetBp],
+        '',
+        '',
+      );
+      const updated = session.withEditedExercise(0, newCardioBp, false);
+      const cardio = updated.recordedExercises[0] as RecordedCardioExercise;
+
+      // Blueprint on the set should reflect the new definition, not the old one
+      expect(cardio.sets[0].blueprint.trackDistance).toBe(true);
+    });
+  });
+
+  it('only modifies the targeted exercise index, leaving others untouched', () => {
+    const bp0 = makeWeightedBlueprint('Squat');
+    const bp1 = makeWeightedBlueprint('Bench');
+    const session = makeSession([bp0, bp1]);
+
+    const editedBp = makeWeightedBlueprint('Deadlift');
+    const updated = session.withEditedExercise(0, editedBp, false);
+
+    expect(updated.recordedExercises[1].blueprint.name).toBe('Bench');
   });
 });

@@ -5,7 +5,7 @@ import {
   RecordedWeightedExercise,
 } from '@/models/session-models';
 import { ReactNode, useState } from 'react';
-import { View } from 'react-native';
+import { Linking, View } from 'react-native';
 import { Menu, Tooltip } from 'react-native-paper';
 import { useTranslate } from '@tolgee/react';
 import PreviousExerciseViewer from '@/components/presentation/workout/weighted/previous-exercise-viewer';
@@ -15,8 +15,8 @@ import RecordedExerciseNotesEditor from '@/components/presentation/workout/recor
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import { useRouter } from 'expo-router';
 
-interface ExerciseSectionProps {
-  recordedExercise: RecordedExercise;
+interface ExerciseSectionProps<T extends RecordedExercise> {
+  recordedExercise: T;
   previousRecordedExercises: RecordedExercise[];
   toStartNext: boolean;
   isReadonly: boolean;
@@ -24,14 +24,18 @@ interface ExerciseSectionProps {
 
   children: ReactNode;
 
-  updateNotesForExercise: (notes: string) => void;
-  onOpenLink: () => void;
+  updateExercise: (value: T) => void;
   onEditExercise: () => void;
   onRemoveExercise: () => void;
 }
 
-export default function ExerciseSection(props: ExerciseSectionProps) {
-  const { updateNotesForExercise, onRemoveExercise } = props;
+export default function ExerciseSection<T extends RecordedExercise>(
+  props: ExerciseSectionProps<T>,
+) {
+  const { updateExercise, onRemoveExercise } = props;
+  const openUrl = (url: string) => {
+    void Linking.canOpenURL(url).then(() => Linking.openURL(url));
+  };
   const { t } = useTranslate();
   const { push } = useRouter();
   const { recordedExercise } = props;
@@ -127,7 +131,7 @@ export default function ExerciseSection(props: ExerciseSectionProps) {
         {!!props.recordedExercise.blueprint.link && (
           <Menu.Item
             onPress={() => {
-              props.onOpenLink();
+              openUrl(props.recordedExercise.blueprint.link);
               setMenuVisible(false);
             }}
             leadingIcon={'openInBrowser'}
@@ -175,7 +179,9 @@ export default function ExerciseSection(props: ExerciseSectionProps) {
         onDismiss={() => setNotesDialogOpen(false)}
         open={notesDialogOpen}
         notes={recordedExercise.notes}
-        onUpdateNotes={updateNotesForExercise}
+        onUpdateNotes={(notes) =>
+          updateExercise(recordedExercise.with({ notes }) as T)
+        }
       />
       <ConfirmationDialog
         headline={t('exercise.remove.confirm.title')}

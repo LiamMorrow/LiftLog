@@ -1,21 +1,16 @@
 import { LiftLog } from '@/gen/proto';
 import {
   WeightedExerciseBlueprint,
-  WeightedExerciseBlueprintPOJO,
   SessionBlueprint,
-  SessionBlueprintPOJO,
-  CardioExerciseBlueprintPOJO,
   CardioExerciseBlueprint,
   ExerciseBlueprint,
   Distance,
   CardioExerciseSetBlueprint,
-  CardioExerciseSetBlueprintPOJO,
   fromDistanceJSON,
   toDistanceJSON,
 } from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
 import { toWeightUnitDao, Weight, WeightUnit } from '@/models/weight';
-import { DeepOmit } from '@/utils/deep-omit';
 import { indexed } from '@/utils/enumerable';
 import { uuid } from '@/utils/uuid';
 import { Duration, LocalDate, OffsetDateTime } from '@js-joda/core';
@@ -49,35 +44,17 @@ import {
   toOffsetDateTimeJSON,
 } from './storage/versions/latest';
 
-export interface SessionPOJO {
-  type: 'Session';
-  id: string;
-  blueprint: SessionBlueprintPOJO;
-  recordedExercises: RecordedExercisePOJO[];
-  date: LocalDate;
-  bodyweight: Weight | undefined;
-}
+export type WeightAppliesTo = 'thisSet' | 'uncompletedSets' | 'allSets';
 
 export class Session {
-  readonly id: string;
-  readonly blueprint: SessionBlueprint;
-  readonly recordedExercises: RecordedExercise[];
-  readonly date: LocalDate;
-  readonly bodyweight: Weight | undefined;
-
   constructor(
-    id: string,
-    blueprint: SessionBlueprint,
-    recordedExercises: RecordedExercise[],
-    date: LocalDate,
-    bodyweight: Weight | undefined,
-  ) {
-    this.id = id!;
-    this.blueprint = blueprint!;
-    this.recordedExercises = recordedExercises!;
-    this.date = date!;
-    this.bodyweight = bodyweight!;
-  }
+    readonly id: string,
+    readonly blueprint: SessionBlueprint,
+    readonly recordedExercises: RecordedExercise[],
+    readonly date: LocalDate,
+    readonly bodyweight: Weight | undefined,
+    readonly restTimerStartTime: OffsetDateTime | undefined,
+  ) {}
   get duration(): Duration | undefined {
     return this.lastExercise?.latestTime && this.firstExercise?.earliestTime
       ? Duration.between(
@@ -87,26 +64,6 @@ export class Session {
       : undefined;
   }
 
-  static fromPOJO(pojo: Omit<SessionPOJO, 'type'>): Session;
-  static fromPOJO(pojo: undefined): undefined;
-  static fromPOJO(
-    pojo: Omit<SessionPOJO, 'type'> | undefined,
-  ): Session | undefined;
-  static fromPOJO(
-    pojo: Omit<SessionPOJO, 'type'> | undefined,
-  ): Session | undefined {
-    return (
-      pojo &&
-      new Session(
-        pojo.id,
-        SessionBlueprint.fromPOJO(pojo.blueprint),
-        pojo.recordedExercises.map(fromRecordedExercisePOJO),
-        pojo.date,
-        pojo.bodyweight,
-      )
-    );
-  }
-
   static fromJSON(json: SessionJSON): Session {
     return new Session(
       json.id,
@@ -114,6 +71,7 @@ export class Session {
       json.recordedExercises.map(fromRecordedExerciseJSON),
       fromLocalDateJSON(json.date),
       json.bodyweight ? Weight.fromJSON(json.bodyweight) : undefined,
+      undefined,
     );
   }
 
@@ -146,6 +104,7 @@ export class Session {
       blueprint.exercises.map(getNextExercise),
       LocalDate.now(),
       undefined,
+      undefined,
     );
   }
 
@@ -155,16 +114,14 @@ export class Session {
         re instanceof RecordedWeightedExercise
           ? re.with({
               potentialSets: re.potentialSets.map((ps) =>
-                ps
-                  .with({
-                    weight: ps.weight.with({
-                      unit:
-                        ps.weight.unit === 'nil'
-                          ? fallbackWeightUnit
-                          : ps.weight.unit,
-                    }),
-                  })
-                  .toPOJO(),
+                ps.with({
+                  weight: ps.weight.with({
+                    unit:
+                      ps.weight.unit === 'nil'
+                        ? fallbackWeightUnit
+                        : ps.weight.unit,
+                  }),
+                }),
               ),
             })
           : re,
@@ -191,14 +148,181 @@ export class Session {
 
   with(other: Partial<Session>) {
     return new Session(
-      'id' in other ? other.id! : this.id,
-      'blueprint' in other ? other.blueprint! : this.blueprint,
+      'id' in other ? (other.id ?? this.id) : this.id,
+      'blueprint' in other
+        ? (other.blueprint ?? this.blueprint)
+        : this.blueprint,
       'recordedExercises' in other
-        ? other.recordedExercises!
+        ? (other.recordedExercises ?? this.recordedExercises)
         : this.recordedExercises,
-      'date' in other ? other.date! : this.date,
-      'bodyweight' in other ? other.bodyweight! : this.bodyweight,
+      'date' in other ? (other.date ?? this.date) : this.date,
+      'bodyweight' in other ? other.bodyweight : this.bodyweight,
+      'restTimerStartTime' in other
+        ? other.restTimerStartTime
+        : this.restTimerStartTime,
     );
+  }
+
+  withEditedExercise(
+    exerciseIndex: number,
+    newBlueprint: ExerciseBlueprint,
+    useImperialUnits: boolean,
+  ): Session {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    let session: Session = this;
+    const existingExercise = session.recordedExercises[exerciseIndex];
+
+    session = session.with({
+      blueprint: session.blueprint.with({
+        exercises: session.blueprint.exercises.with(
+          exerciseIndex,
+          newBlueprint,
+        ),
+      }),
+    });
+    if (existingExercise.blueprint.type !== newBlueprint.type) {
+      session = session.withExercise(
+        exerciseIndex,
+        createEmptyRecordedExercise(
+          newBlueprint,
+          useImperialUnits ? 'pounds' : 'kilograms',
+        ),
+      );
+    } else {
+      const weightedExistingExercise =
+        session.recordedExercises[exerciseIndex].type ===
+        'RecordedWeightedExercise'
+          ? session.recordedExercises[exerciseIndex]
+          : undefined;
+      if (weightedExistingExercise) {
+        session = session.withExercise(
+          exerciseIndex,
+          weightedExistingExercise.with({
+            blueprint: newBlueprint as WeightedExerciseBlueprint,
+            potentialSets: Enumerable.range(
+              0,
+              (newBlueprint as WeightedExerciseBlueprint).sets,
+            )
+              .select(
+                (index) =>
+                  weightedExistingExercise.potentialSets[index] ?? {
+                    weight: weightedExistingExercise.maxWeight,
+                    set: undefined,
+                  },
+              )
+              .toArray(),
+          }),
+        );
+      }
+
+      const cardioExistingExercise =
+        session.recordedExercises[exerciseIndex].type ===
+        'RecordedCardioExercise'
+          ? session.recordedExercises[exerciseIndex]
+          : undefined;
+
+      if (cardioExistingExercise) {
+        session = session.withExercise(
+          exerciseIndex,
+          cardioExistingExercise.with({
+            blueprint: newBlueprint as CardioExerciseBlueprint,
+            sets: (newBlueprint as CardioExerciseBlueprint).sets.map((set, i) =>
+              RecordedCardioExerciseSet.empty(set).with({
+                // Basically allows us to use values from set, even if there are more sets now and it would be undefined
+                ...cardioExistingExercise.sets[i],
+                blueprint: set,
+              }),
+            ),
+          }),
+        );
+      }
+    }
+    return session;
+  }
+
+  withAddedExercise(
+    exercise: ExerciseBlueprint,
+    useImperialUnits: boolean,
+  ): Session {
+    return this.with({
+      blueprint: this.blueprint.with({
+        exercises: this.blueprint.exercises.concat(exercise),
+      }),
+      recordedExercises: this.recordedExercises.concat(
+        createEmptyRecordedExercise(
+          exercise,
+          useImperialUnits ? 'pounds' : 'kilograms',
+        ),
+      ),
+    });
+  }
+
+  withUpdatedDate(date: LocalDate): Session {
+    const originalDate = this.date;
+    const newDate = date;
+
+    // Gather all unique, non-null completion dates from all sets
+    const allCompletionDates = this.recordedExercises
+      .flatMap((re) =>
+        re.type === 'RecordedWeightedExercise'
+          ? re.potentialSets.map((ps) =>
+              ps.set?.completionDateTime?.toLocalDate(),
+            )
+          : re.sets.map((s) => s.completionDateTime?.toLocalDate()),
+      )
+      .filter((d): d is LocalDate => d !== undefined);
+
+    // If all sets have the same completion date, use absolute date
+    const useAbsoluteDate =
+      allCompletionDates.length > 0 &&
+      new Set(allCompletionDates.map((d) => d.toString())).size === 1;
+
+    function getAdjustedDate(setDate: LocalDate): LocalDate {
+      if (useAbsoluteDate) {
+        return newDate;
+      }
+      // Maintain relative offset if sets cross midnight
+      const dayOffset = setDate.toEpochDay() - originalDate.toEpochDay();
+      return newDate.plusDays(dayOffset);
+    }
+
+    // Update all sets' completionDateTime
+    const newExercises = this.recordedExercises.map((re) => {
+      if (re.type === 'RecordedWeightedExercise') {
+        return re.withAllSets((ps) => {
+          if (ps.set && ps.set.completionDateTime) {
+            const setDate = ps.set.completionDateTime.toLocalDate();
+            return ps.with({
+              set: ps.set.with({
+                completionDateTime: ps.set.completionDateTime
+                  .toLocalTime()
+                  .atDate(getAdjustedDate(setDate))
+                  .atOffset(ps.set.completionDateTime.offset()),
+              }),
+            });
+          }
+          return ps;
+        });
+      } else {
+        return re.withAllSets((set) => {
+          if (set && set.completionDateTime) {
+            const setDate = set.completionDateTime.toLocalDate();
+            return set.with({
+              completionDateTime: set.completionDateTime
+                .toLocalTime()
+                .atDate(getAdjustedDate(setDate))
+                .atOffset(set.completionDateTime.offset()),
+            });
+          }
+          return set;
+        });
+      }
+    });
+
+    return this.with({
+      recordedExercises: newExercises,
+      date,
+    });
   }
 
   withNothingCompleted(): Session {
@@ -209,16 +333,50 @@ export class Session {
     });
   }
 
-  toPOJO(): SessionPOJO {
-    return {
-      type: 'Session',
-      blueprint: this.blueprint.toPOJO(),
-      bodyweight: this.bodyweight,
-      date: this.date,
-      id: this.id,
-      recordedExercises: this.recordedExercises.map((x) => x.toPOJO()),
-    };
+  // TODO we should update the rest timer time when we call this
+  withCycledExerciseReps(
+    exerciseIndex: number,
+    setIndex: number,
+    time: OffsetDateTime,
+  ): Session {
+    const weightedRecorded = this.recordedExercises[exerciseIndex];
+    if (weightedRecorded.type !== 'RecordedWeightedExercise') {
+      return this;
+    }
+    let newDate = this.date;
+    if (!this.isStarted) {
+      newDate = time.toLocalDate();
+    }
+    return this.with({
+      date: newDate,
+      recordedExercises: this.recordedExercises.with(
+        exerciseIndex,
+        weightedRecorded.withCycledRepCount(setIndex, time),
+      ),
+    });
   }
+
+  withExercise(exerciseIndex: number, exercise: RecordedExercise): Session {
+    return this.with({
+      recordedExercises: this.recordedExercises.with(exerciseIndex, exercise),
+      blueprint: this.blueprint.with({
+        exercises: this.blueprint.exercises.with(
+          exerciseIndex,
+          exercise.blueprint,
+        ),
+      }),
+    });
+  }
+
+  withRemovedExercise(exerciseIndex: number): Session {
+    return this.with({
+      recordedExercises: this.recordedExercises.toSpliced(exerciseIndex, 1),
+      blueprint: this.blueprint.with({
+        exercises: this.blueprint.exercises.toSpliced(exerciseIndex, 1),
+      }),
+    });
+  }
+
   toJSON(): SessionJSON {
     return {
       blueprint: this.blueprint.toJSON(),
@@ -371,6 +529,38 @@ export class Session {
     return result;
   }
 
+  get restTimerEndTime(): OffsetDateTime | undefined {
+    if (!this.restTimerStartTime) {
+      return undefined;
+    }
+    const exercise = this.lastExercise;
+    if (
+      this.nextExercise &&
+      exercise &&
+      exercise.latestTime &&
+      exercise instanceof RecordedWeightedExercise
+    ) {
+      const repsPerSet = exercise.blueprint.repsPerSet;
+      const { minRest, failureRest } = exercise.blueprint.restBetweenSets;
+
+      const rest = match(exercise.lastRecordedSet)
+        .with(
+          { set: { repsCompleted: P.when((x) => x >= repsPerSet) } },
+          () => minRest,
+        )
+        .with(
+          { set: { repsCompleted: P.when((x) => x < repsPerSet) } },
+          () => failureRest,
+        )
+        .otherwise(() => Duration.ZERO);
+
+      if (rest.equals(Duration.ZERO)) {
+        return undefined;
+      }
+      return this.restTimerStartTime.plus(rest);
+    }
+  }
+
   get lastExercise(): RecordedExercise | undefined {
     return Enumerable.from(this.recordedExercises)
       .where((x) => x.isStarted)
@@ -402,35 +592,10 @@ export type RecordedExercise =
   | RecordedCardioExercise
   | RecordedWeightedExercise;
 
-export type RecordedExercisePOJO =
-  | RecordedCardioExercisePOJO
-  | RecordedWeightedExercisePOJO;
-
-export function fromRecordedExercisePOJO(
-  pojo: RecordedExercisePOJO | RecordedExercise,
-): RecordedExercise {
-  return match(pojo)
-    .with(
-      P.union(
-        { type: 'RecordedCardioExercise' },
-        P.instanceOf(RecordedCardioExercise),
-      ),
-      RecordedCardioExercise.fromPOJO,
-    )
-    .with(
-      P.union(
-        { type: 'RecordedWeightedExercise' },
-        P.instanceOf(RecordedWeightedExercise),
-      ),
-      RecordedWeightedExercise.fromPOJO,
-    )
-    .exhaustive();
-}
-
 export function fromRecordedExerciseJSON(
-  pojo: RecordedExerciseJSON,
+  json: RecordedExerciseJSON,
 ): RecordedExercise {
-  return match(pojo)
+  return match(json)
     .with({ type: 'RecordedCardioExercise' }, RecordedCardioExercise.fromJSON)
     .with(
       { type: 'RecordedWeightedExercise' },
@@ -451,20 +616,6 @@ export function createEmptyRecordedExercise(
       RecordedCardioExercise.empty(b),
     )
     .exhaustive();
-}
-
-export interface RecordedCardioExerciseSetPOJO {
-  readonly type: 'RecordedCardioExerciseSet';
-  readonly blueprint: CardioExerciseSetBlueprintPOJO;
-  readonly completionDateTime: OffsetDateTime | undefined;
-  readonly duration: Duration | undefined;
-  readonly distance: Distance | undefined;
-  readonly resistance: BigNumber | undefined;
-  readonly incline: BigNumber | undefined;
-  readonly weight: Weight | undefined;
-  readonly steps: number | undefined;
-
-  readonly currentBlockStartTime: OffsetDateTime | undefined;
 }
 
 export class RecordedCardioExerciseSet {
@@ -498,23 +649,6 @@ export class RecordedCardioExerciseSet {
     );
   }
 
-  static fromPOJO(
-    pojo:
-      | Omit<RecordedCardioExerciseSetPOJO, 'type'>
-      | RecordedCardioExerciseSet,
-  ): RecordedCardioExerciseSet {
-    return new RecordedCardioExerciseSet(
-      CardioExerciseSetBlueprint.fromPOJO(pojo.blueprint),
-      pojo.completionDateTime,
-      pojo.duration,
-      pojo.distance,
-      pojo.resistance,
-      pojo.incline,
-      pojo.weight,
-      pojo.steps,
-      pojo.currentBlockStartTime,
-    );
-  }
   static fromJSON(
     json: RecordedCardioExerciseSetJSON,
   ): RecordedCardioExerciseSet {
@@ -551,20 +685,6 @@ export class RecordedCardioExerciseSet {
     );
   }
 
-  toPOJO(): RecordedCardioExerciseSetPOJO {
-    return {
-      type: 'RecordedCardioExerciseSet',
-      blueprint: this.blueprint.toPOJO(),
-      completionDateTime: this.completionDateTime,
-      duration: this.duration,
-      distance: this.distance,
-      resistance: this.resistance,
-      incline: this.incline,
-      weight: this.weight,
-      steps: this.steps,
-      currentBlockStartTime: this.currentBlockStartTime,
-    };
-  }
   toJSON(): RecordedCardioExerciseSetJSON {
     return {
       blueprint: this.blueprint.toJSON(),
@@ -601,18 +721,39 @@ export class RecordedCardioExerciseSet {
 
   with(other: Partial<RecordedCardioExerciseSet>): RecordedCardioExerciseSet {
     return new RecordedCardioExerciseSet(
-      other.blueprint ?? this.blueprint,
-      other.completionDateTime ?? this.completionDateTime,
-      other.duration ?? this.duration,
-      other.distance ?? this.distance,
-      other.resistance ?? this.resistance,
-      other.incline ?? this.incline,
-      other.weight ?? this.weight,
-      other.steps ?? this.steps,
-      other.currentBlockStartTime ?? this.currentBlockStartTime,
+      'blueprint' in other
+        ? (other.blueprint ?? this.blueprint)
+        : this.blueprint,
+      'completionDateTime' in other
+        ? other.completionDateTime
+        : this.completionDateTime,
+      'duration' in other ? other.duration : this.duration,
+      'distance' in other ? other.distance : this.distance,
+      'resistance' in other ? other.resistance : this.resistance,
+      'incline' in other ? other.incline : this.incline,
+      'weight' in other ? other.weight : this.weight,
+      'steps' in other ? other.steps : this.steps,
+      'currentBlockStartTime' in other
+        ? other.currentBlockStartTime
+        : this.currentBlockStartTime,
     );
   }
 
+  withCompletionTimeIfCompleted(
+    time: OffsetDateTime,
+  ): RecordedCardioExerciseSet {
+    const hasData = !!(
+      this.distance ||
+      (this.duration && !this.duration.isZero()) ||
+      this.incline ||
+      this.resistance
+    );
+    const newCompletionDateTime = hasData
+      ? (this.completionDateTime ?? time)
+      : undefined;
+
+    return this.with({ completionDateTime: newCompletionDateTime });
+  }
   equals(other: RecordedCardioExerciseSet): unknown {
     return (
       ((this.completionDateTime &&
@@ -637,14 +778,8 @@ export class RecordedCardioExerciseSet {
     );
   }
 }
-
-export interface RecordedCardioExercisePOJO {
-  type: 'RecordedCardioExercise';
-  blueprint: CardioExerciseBlueprintPOJO;
-  sets: RecordedCardioExerciseSetPOJO[];
-  notes: string | undefined;
-}
 export class RecordedCardioExercise {
+  readonly type = 'RecordedCardioExercise';
   constructor(
     readonly blueprint: CardioExerciseBlueprint,
     readonly sets: RecordedCardioExerciseSet[],
@@ -655,20 +790,11 @@ export class RecordedCardioExercise {
     }
   }
 
-  static fromPOJO(
-    pojo: Omit<RecordedCardioExercisePOJO, 'type'> | RecordedCardioExercise,
-  ): RecordedCardioExercise {
+  static fromJSON(json: RecordedCardioExerciseJSON): RecordedCardioExercise {
     return new RecordedCardioExercise(
-      CardioExerciseBlueprint.fromPOJO(pojo.blueprint),
-      pojo.sets.map((x) => RecordedCardioExerciseSet.fromPOJO(x)),
-      pojo.notes,
-    );
-  }
-  static fromJSON(pojo: RecordedCardioExerciseJSON): RecordedCardioExercise {
-    return new RecordedCardioExercise(
-      CardioExerciseBlueprint.fromJSON(pojo.blueprint),
-      pojo.sets.map((x) => RecordedCardioExerciseSet.fromJSON(x)),
-      pojo.notes,
+      CardioExerciseBlueprint.fromJSON(json.blueprint),
+      json.sets.map((x) => RecordedCardioExerciseSet.fromJSON(x)),
+      json.notes,
     );
   }
 
@@ -722,6 +848,22 @@ export class RecordedCardioExercise {
     });
   }
 
+  withSet(
+    setIndex: number,
+    reducer: (s: RecordedCardioExerciseSet) => RecordedCardioExerciseSet,
+  ) {
+    return this.with({
+      sets: this.sets.with(setIndex, reducer(this.sets[setIndex])),
+    });
+  }
+  withAllSets(
+    reducer: (s: RecordedCardioExerciseSet) => RecordedCardioExerciseSet,
+  ) {
+    return this.with({
+      sets: this.sets.map(reducer),
+    });
+  }
+
   equals(other: RecordedExercise | undefined): boolean {
     if (!other) {
       return false;
@@ -739,26 +881,12 @@ export class RecordedCardioExercise {
     );
   }
 
-  with(
-    other:
-      | Partial<RecordedCardioExercisePOJO>
-      | Partial<RecordedCardioExercise>,
-  ): RecordedCardioExercise {
+  with(other: Partial<RecordedCardioExercise>): RecordedCardioExercise {
     return new RecordedCardioExercise(
-      CardioExerciseBlueprint.fromPOJO(other.blueprint ?? this.blueprint),
-      other.sets?.map((x) => RecordedCardioExerciseSet.fromPOJO(x)) ??
-        this.sets,
+      other.blueprint ?? this.blueprint,
+      other.sets ?? this.sets,
       other.notes ?? this.notes,
     );
-  }
-
-  toPOJO(): RecordedCardioExercisePOJO {
-    return {
-      type: 'RecordedCardioExercise',
-      blueprint: this.blueprint.toPOJO(),
-      sets: this.sets.map((x) => x.toPOJO()),
-      notes: this.notes,
-    };
   }
 
   toJSON(): RecordedCardioExerciseJSON {
@@ -780,48 +908,15 @@ export class RecordedCardioExercise {
   }
 }
 
-export interface RecordedWeightedExercisePOJO {
-  type: 'RecordedWeightedExercise';
-  blueprint: WeightedExerciseBlueprintPOJO;
-  potentialSets: PotentialSetPOJO[];
-  notes: string | undefined;
-}
-
 export class RecordedWeightedExercise {
-  readonly blueprint: WeightedExerciseBlueprint;
-  readonly potentialSets: readonly PotentialSet[];
-  readonly notes: string | undefined;
+  readonly type = 'RecordedWeightedExercise';
 
-  /**
-   * @deprecated please use full constructor. Here only for serialization
-   */
-  constructor();
   constructor(
-    blueprint: WeightedExerciseBlueprint,
-    potentialSets: readonly PotentialSet[],
-    notes: string | undefined,
-  );
-  constructor(
-    blueprint?: WeightedExerciseBlueprint,
-    potentialSets?: readonly PotentialSet[],
-    notes?: string,
-  ) {
-    this.blueprint = blueprint!;
-    this.potentialSets = potentialSets!;
-    this.notes = notes!;
-  }
+    readonly blueprint: WeightedExerciseBlueprint,
+    readonly potentialSets: readonly PotentialSet[],
+    readonly notes: string | undefined,
+  ) {}
 
-  static fromPOJO(
-    fromPOJO:
-      | Omit<RecordedWeightedExercisePOJO, 'type'>
-      | RecordedWeightedExercise,
-  ): RecordedWeightedExercise {
-    return new RecordedWeightedExercise(
-      WeightedExerciseBlueprint.fromPOJO(fromPOJO.blueprint),
-      fromPOJO.potentialSets.map((x) => PotentialSet.fromPOJO(x)),
-      fromPOJO.notes,
-    );
-  }
   static fromJSON(
     json: RecordedWeightedExerciseJSON,
   ): RecordedWeightedExercise {
@@ -839,12 +934,7 @@ export class RecordedWeightedExercise {
     return new RecordedWeightedExercise(
       b,
       Enumerable.range(0, b.sets)
-        .select(() =>
-          PotentialSet.fromPOJO({
-            weight: new Weight(0, unit),
-            set: undefined,
-          }),
-        )
+        .select(() => new PotentialSet(undefined, new Weight(0, unit)))
         .toArray(),
       undefined,
     );
@@ -872,13 +962,13 @@ export class RecordedWeightedExercise {
     );
   }
 
-  with(other: Partial<RecordedWeightedExercisePOJO>) {
+  with(other: Partial<RecordedWeightedExercise>) {
     return new RecordedWeightedExercise(
       'blueprint' in other
-        ? WeightedExerciseBlueprint.fromPOJO(other.blueprint!)
+        ? (other.blueprint ?? this.blueprint)
         : this.blueprint,
       'potentialSets' in other
-        ? other.potentialSets!.map((x) => PotentialSet.fromPOJO(x))
+        ? (other.potentialSets ?? this.potentialSets)
         : this.potentialSets,
       'notes' in other ? other.notes : this.notes,
     );
@@ -888,18 +978,68 @@ export class RecordedWeightedExercise {
     return this.with({
       notes: undefined,
       potentialSets: this.potentialSets.map((ps) =>
-        ps.with({ set: undefined }).toPOJO(),
+        ps.with({ set: undefined }),
       ),
     });
   }
 
-  toPOJO(): RecordedWeightedExercisePOJO {
-    return {
-      type: 'RecordedWeightedExercise',
-      blueprint: this.blueprint.toPOJO(),
-      potentialSets: this.potentialSets.map((x) => x.toPOJO()),
-      notes: this.notes,
-    };
+  withCycledRepCount(
+    setIndex: number,
+    time: OffsetDateTime,
+  ): RecordedWeightedExercise {
+    return this.withSet(setIndex, (s) =>
+      s.with({
+        set: match(s.set)
+          .returnType<RecordedSet | undefined>()
+          .with(
+            undefined,
+            () => new RecordedSet(this.blueprint.repsPerSet, time),
+          )
+          .with({ repsCompleted: 0 }, () => undefined)
+          .otherwise((x) =>
+            x.with({
+              repsCompleted: x.repsCompleted - 1,
+            }),
+          ),
+      }),
+    );
+  }
+
+  withRepCount(
+    setIndex: number,
+    reps: number | undefined,
+    time: OffsetDateTime,
+  ): RecordedWeightedExercise {
+    return this.withSet(setIndex, (s) =>
+      s.with({
+        set: reps === undefined ? undefined : new RecordedSet(reps, time),
+      }),
+    );
+  }
+
+  withSet(setIndex: number, reducer: (s: PotentialSet) => PotentialSet) {
+    return this.with({
+      potentialSets: this.potentialSets.with(
+        setIndex,
+        reducer(this.potentialSets[setIndex]),
+      ),
+    });
+  }
+
+  withAllSets(reducer: (s: PotentialSet) => PotentialSet) {
+    return this.with({
+      potentialSets: this.potentialSets.map(reducer),
+    });
+  }
+
+  withWeight(setIndex: number, weight: Weight, applyTo: WeightAppliesTo) {
+    return match(applyTo)
+      .with('thisSet', () => this.withSet(setIndex, (s) => s.with({ weight })))
+      .with('uncompletedSets', () =>
+        this.withAllSets((s) => s.with({ weight: s.set ? s.weight : weight })),
+      )
+      .with('allSets', () => this.withAllSets((s) => s.with({ weight })))
+      .exhaustive();
   }
 
   toJSON(): RecordedWeightedExerciseJSON {
@@ -989,34 +1129,16 @@ export class RecordedWeightedExercise {
   }
 }
 
-export interface RecordedSetPOJO {
-  type: 'RecordedSet';
-  repsCompleted: number;
-  completionDateTime: OffsetDateTime;
-}
-
 export class RecordedSet {
-  readonly repsCompleted: number;
-  readonly completionDateTime: OffsetDateTime;
+  constructor(
+    readonly repsCompleted: number,
+    readonly completionDateTime: OffsetDateTime,
+  ) {}
 
-  /**
-   * @deprecated please use full constructor. Here only for serialization
-   */
-  constructor();
-  constructor(repsCompleted: number, completionDateTime: OffsetDateTime);
-  constructor(repsCompleted?: number, completionDateTime?: OffsetDateTime) {
-    this.repsCompleted = repsCompleted!;
-    this.completionDateTime = completionDateTime!;
-  }
-
-  static fromPOJO(pojo: DeepOmit<RecordedSetPOJO, 'type'>): RecordedSet {
-    return new RecordedSet(pojo.repsCompleted, pojo.completionDateTime);
-  }
-
-  static fromJSON(pojo: RecordedSetJSON): RecordedSet {
+  static fromJSON(json: RecordedSetJSON): RecordedSet {
     return new RecordedSet(
-      pojo.repsCompleted,
-      fromOffsetDateTimeJSON(pojo.completionDateTime),
+      json.repsCompleted,
+      fromOffsetDateTimeJSON(json.completionDateTime),
     );
   }
 
@@ -1042,14 +1164,6 @@ export class RecordedSet {
     );
   }
 
-  toPOJO(): RecordedSetPOJO {
-    return {
-      type: 'RecordedSet',
-      repsCompleted: this.repsCompleted,
-      completionDateTime: this.completionDateTime,
-    };
-  }
-
   toJSON(): RecordedSetJSON {
     return {
       repsCompleted: this.repsCompleted,
@@ -1069,12 +1183,6 @@ export class RecordedSet {
   }
 }
 
-export interface PotentialSetPOJO {
-  type: 'PotentialSet';
-  set: RecordedSetPOJO | undefined;
-  weight: Weight;
-}
-
 export class PotentialSet {
   readonly set: RecordedSet | undefined;
   readonly weight: Weight;
@@ -1084,18 +1192,10 @@ export class PotentialSet {
     this.weight = weight;
   }
 
-  static fromPOJO(
-    pojo: DeepOmit<PotentialSetPOJO, 'type'> | PotentialSet,
-  ): PotentialSet {
+  static fromJSON(json: PotentialSetJSON): PotentialSet {
     return new PotentialSet(
-      pojo.set ? RecordedSet.fromPOJO(pojo.set) : undefined,
-      pojo.weight,
-    );
-  }
-  static fromJSON(pojo: PotentialSetJSON): PotentialSet {
-    return new PotentialSet(
-      pojo.set ? RecordedSet.fromJSON(pojo.set) : undefined,
-      Weight.fromJSON(pojo.weight),
+      json.set ? RecordedSet.fromJSON(json.set) : undefined,
+      Weight.fromJSON(json.weight),
     );
   }
 
@@ -1119,13 +1219,6 @@ export class PotentialSet {
     );
   }
 
-  toPOJO(): PotentialSetPOJO {
-    return {
-      type: 'PotentialSet',
-      set: this.set?.toPOJO(),
-      weight: this.weight,
-    };
-  }
   toJSON(): PotentialSetJSON {
     return {
       set: this.set?.toJSON(),
@@ -1151,13 +1244,10 @@ function weightEqual(a: Weight | undefined, b: Weight | undefined) {
 
 export const EmptySession: Session = new Session(
   '00000000-0000-0000-0000-000000000000',
-  SessionBlueprint.fromPOJO({
-    name: '',
-    exercises: [],
-    notes: '',
-  }),
+  new SessionBlueprint('', [], ''),
   [],
   LocalDate.MIN,
+  undefined,
   undefined,
 );
 
@@ -1172,12 +1262,11 @@ function distanceEqual(a: Distance | undefined, b: Distance | undefined) {
 }
 
 export function toSessionHistoryDao(
-  model: Record<string, SessionPOJO>,
+  model: Record<string, Session>,
 ): LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2 {
   return new LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2({
     completedSessions: Enumerable.from(model)
-      .select((x) => Session.fromPOJO(x.value))
-      .select((x) => x.toDao())
+      .select((x) => x.value.toDao())
       .toArray(),
   });
 }

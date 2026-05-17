@@ -25,9 +25,6 @@ export default function AppConfiguration() {
     selectCurrentSession,
     'workoutSession',
   );
-  const lastSetTime = useAppSelector(
-    (x) => x.currentSession.workoutSessionLastSetTime,
-  );
   const dispatch = useDispatch();
 
   return (
@@ -50,7 +47,7 @@ export default function AppConfiguration() {
                 broadcastWorkoutEvent({
                   type: 'WorkoutUpdatedEvent',
                   workout: currentWorkout.toJSON(),
-                  restTimerInfo: getTimerInfo(currentWorkout, lastSetTime),
+                  restTimerInfo: getTimerInfo(currentWorkout),
                   cardioTimerInfo: getCardioTimerInfo(currentWorkout),
                   currentExerciseDetails:
                     getCurrentExerciseDetails(currentWorkout),

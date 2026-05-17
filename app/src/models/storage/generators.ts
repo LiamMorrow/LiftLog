@@ -7,11 +7,11 @@ import {
   SessionBlueprint,
   ProgramBlueprint,
   CardioExerciseBlueprintPOJO,
-  CardioExerciseSetBlueprintPOJO,
   CardioTarget,
   CardioExerciseBlueprint,
   Distance,
   DistanceUnits,
+  CardioExerciseSetBlueprint,
 } from '@/models/blueprint-models';
 import { RsaPublicKey, AesKey, RsaKeyPair } from '@/models/encryption-models';
 import {
@@ -30,17 +30,12 @@ import {
 } from '@/models/feed-models';
 import { Weight, WeightUnit } from '@/models/weight';
 import {
-  SessionPOJO,
-  RecordedWeightedExercisePOJO,
-  RecordedSetPOJO,
-  PotentialSetPOJO,
   Session,
   RecordedWeightedExercise,
   RecordedSet,
   PotentialSet,
-  RecordedCardioExercisePOJO,
-  RecordedCardioExerciseSetPOJO,
   RecordedCardioExercise,
+  RecordedCardioExerciseSet,
 } from '@/models/session-models';
 import {
   Duration,
@@ -126,9 +121,8 @@ const CardioTargetGenerator = fc.record<CardioTarget>({
   value: fc.constant(Duration.ofMillis(1203)),
 });
 
-const CardioExerciseSetBlueprintGenerator =
-  fc.record<CardioExerciseSetBlueprintPOJO>({
-    type: fc.constant('CardioExerciseSetBlueprint'),
+const CardioExerciseSetBlueprintGenerator = fc
+  .record({
     target: CardioTargetGenerator,
     trackDuration: fc.boolean(),
     trackDistance: fc.boolean(),
@@ -136,13 +130,28 @@ const CardioExerciseSetBlueprintGenerator =
     trackIncline: fc.boolean(),
     trackWeight: fc.boolean(),
     trackSteps: fc.boolean(),
-  });
+  })
+  .map(
+    (x) =>
+      new CardioExerciseSetBlueprint(
+        x.target,
+        x.trackDuration,
+        x.trackDistance,
+        x.trackResistance,
+        x.trackIncline,
+        x.trackWeight,
+        x.trackSteps,
+      ),
+  );
 
 export const CardioExerciseBlueprintGenerator = fc
   .record<CardioExerciseBlueprintPOJO>({
     type: fc.constant('CardioExerciseBlueprint'),
     name: fc.string(),
-    sets: fc.array(CardioExerciseSetBlueprintGenerator, { minLength: 1 }),
+    sets: fc.array(
+      CardioExerciseSetBlueprintGenerator.map((x) => x.toPOJO()),
+      { minLength: 1 },
+    ),
     notes: fc.string(),
     link: fc.webUrl(),
   })
@@ -177,25 +186,20 @@ export const ProgramBlueprintGenerator = fc
   .map(ProgramBlueprint.fromPOJO);
 
 export const RecordedSetGenerator = fc
-  .record<RecordedSetPOJO>({
-    type: fc.constant('RecordedSet'),
+  .record({
     repsCompleted: fc.integer({ min: 0, max: 100 }),
     completionDateTime: OffsetDateTimeGenerator,
   })
-  .map(RecordedSet.fromPOJO);
+  .map((x) => new RecordedSet(x.repsCompleted, x.completionDateTime));
 
 export const PotentialSetGenerator = fc
-  .record<PotentialSetPOJO>({
-    type: fc.constant('PotentialSet'),
-    set: fc.option(
-      RecordedSetGenerator.map((x) => x.toPOJO()),
-      {
-        nil: undefined,
-      },
-    ),
+  .record({
+    set: fc.option(RecordedSetGenerator, {
+      nil: undefined,
+    }),
     weight: WeightGenerator,
   })
-  .map(PotentialSet.fromPOJO);
+  .map((x) => new PotentialSet(x.set, x.weight));
 
 const DistanceUnitGenerator = fc.oneof(...DistanceUnits.map(fc.constant));
 
@@ -204,48 +208,60 @@ const DistanceGenerator = fc.record<Distance>({
   value: BigNumberGenerator,
 });
 
-const RecordedCardioSetGenerator = fc.record<RecordedCardioExerciseSetPOJO>({
-  type: fc.constant('RecordedCardioExerciseSet'),
-  blueprint: CardioExerciseSetBlueprintGenerator,
-  incline: optional(BigNumberGenerator),
-  duration: optional(DurationGenerator),
-  distance: optional(DistanceGenerator),
-  resistance: optional(BigNumberGenerator),
-  completionDateTime: optional(OffsetDateTimeGenerator),
-  weight: optional(WeightGenerator),
-  steps: optional(fc.integer()),
-  currentBlockStartTime: fc.constant(undefined),
-});
+const RecordedCardioSetGenerator = fc
+  .record({
+    blueprint: CardioExerciseSetBlueprintGenerator,
+    incline: optional(BigNumberGenerator),
+    duration: optional(DurationGenerator),
+    distance: optional(DistanceGenerator),
+    resistance: optional(BigNumberGenerator),
+    completionDateTime: optional(OffsetDateTimeGenerator),
+    weight: optional(WeightGenerator),
+    steps: optional(fc.integer()),
+    currentBlockStartTime: fc.constant(undefined),
+  })
+  .map(
+    (x) =>
+      new RecordedCardioExerciseSet(
+        x.blueprint,
+        x.completionDateTime,
+        x.duration,
+        x.distance,
+        x.resistance,
+        x.incline,
+        x.weight,
+        x.steps,
+        x.currentBlockStartTime,
+      ),
+  );
 
 export const RecordedCardioExerciseGenerator = fc
-  .record<RecordedCardioExercisePOJO>({
-    type: fc.constant('RecordedCardioExercise'),
-    blueprint: CardioExerciseBlueprintGenerator.map((x) => x.toPOJO()),
+  .record({
+    blueprint: CardioExerciseBlueprintGenerator,
     notes: optional(fc.string()),
     sets: fc.array(RecordedCardioSetGenerator, { minLength: 1 }),
   })
-  .map(RecordedCardioExercise.fromPOJO);
+  .map((x) => new RecordedCardioExercise(x.blueprint, x.sets, x.notes));
 
 export const RecordedWeightedExerciseGenerator = fc
-  .record<RecordedWeightedExercisePOJO>({
-    type: fc.constant('RecordedWeightedExercise'),
-    blueprint: WeightedExerciseBlueprintGenerator.map((x) => x.toPOJO()),
-    potentialSets: fc.array(
-      PotentialSetGenerator.map((x) => x.toPOJO()),
-      { maxLength: 10 },
-    ),
+  .record({
+    blueprint: WeightedExerciseBlueprintGenerator,
+    potentialSets: fc.array(PotentialSetGenerator, { maxLength: 10 }),
     notes: optional(fc.string()),
   })
-  .map(RecordedWeightedExercise.fromPOJO);
+  .map(
+    (x) => new RecordedWeightedExercise(x.blueprint, x.potentialSets, x.notes),
+  );
 
 export const SessionGenerator = fc
   .tuple(
-    fc.record<Omit<SessionPOJO, 'recordedExercises'>>({
+    fc.record({
       type: fc.constant('Session'),
       id: fc.uuid(),
-      blueprint: SessionBlueprintGenerator.map((x) => x.toPOJO()),
+      blueprint: SessionBlueprintGenerator,
       date: LocalDateGenerator,
       bodyweight: fc.option(WeightGenerator, { nil: undefined }),
+      restTimerStartTime: fc.constant(undefined),
     }),
     fc.array(
       fc.oneof(
@@ -255,15 +271,18 @@ export const SessionGenerator = fc
       { maxLength: 10 },
     ),
   )
-  .map(([session, exercises]) =>
-    Session.fromPOJO({
-      ...session,
-      recordedExercises: exercises.map((x) => x.toPOJO()),
-      blueprint: {
-        ...session.blueprint,
-        exercises: exercises.map((x) => x.toPOJO().blueprint),
-      },
-    }),
+  .map(
+    ([session, exercises]) =>
+      new Session(
+        session.id,
+        session.blueprint.with({
+          exercises: exercises.map((x) => x.blueprint),
+        }),
+        exercises,
+        session.date,
+        session.bodyweight,
+        session.restTimerStartTime,
+      ),
   );
 
 export const RsaPublicKeyGenerator = fc.record<RsaPublicKey>({
@@ -388,7 +407,7 @@ export const SessionFeedItemGenerator = fc
     eventId: fc.uuid(),
     timestamp: InstantGenerator,
     expiry: InstantGenerator,
-    session: SessionGenerator.map((x) => x.toPOJO()),
+    session: SessionGenerator,
   })
   .map(
     (pojo) =>
@@ -397,7 +416,7 @@ export const SessionFeedItemGenerator = fc
         pojo.eventId,
         pojo.timestamp,
         pojo.expiry,
-        Session.fromPOJO(pojo.session),
+        pojo.session,
       ),
   );
 

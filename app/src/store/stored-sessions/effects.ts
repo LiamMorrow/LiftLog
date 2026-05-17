@@ -55,7 +55,7 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
         ).reduce(
           toRecord(
             (x) => x.id,
-            (row) => Session.fromJSON(row.payload).toPOJO(),
+            (row) => Session.fromJSON(row.payload),
           ),
           {},
         );
@@ -162,25 +162,21 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
           re instanceof RecordedWeightedExercise
             ? re.with({
                 potentialSets: re.potentialSets.map((ps) =>
-                  ps
-                    .with({
-                      weight: ps.weight.with({
-                        unit:
-                          ps.weight.unit === 'nil'
-                            ? (findUnit(re.blueprint.name) ?? 'nil')
-                            : ps.weight.unit,
-                      }),
-                    })
-                    .toPOJO(),
+                  ps.with({
+                    weight: ps.weight.with({
+                      unit:
+                        ps.weight.unit === 'nil'
+                          ? (findUnit(re.blueprint.name) ?? 'nil')
+                          : ps.weight.unit,
+                    }),
+                  }),
                 ),
               })
             : re,
         ),
       });
     const newSessions = sessions.map(applyWeightToSession);
-    const currentSession = Session.fromPOJO(
-      stateAfterReduce.currentSession.workoutSession,
-    );
+    const currentSession = stateAfterReduce.currentSession.workoutSession;
     if (currentSession) {
       dispatch(
         setCurrentSession({

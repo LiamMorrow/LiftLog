@@ -284,7 +284,7 @@ export default function Index() {
           return (
             <ListUpcomingWorkouts
               selectSession={setSelectedSession}
-              upcoming={upcoming.map((x) => Session.fromPOJO(x))}
+              upcoming={upcoming}
             />
           );
         }}

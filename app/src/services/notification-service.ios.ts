@@ -1,6 +1,5 @@
-import { RecordedWeightedExercise } from '@/models/session-models';
 import { RootState } from '@/store';
-import { Duration } from '@js-joda/core';
+import { convert, OffsetDateTime } from '@js-joda/core';
 import { Dispatch } from '@reduxjs/toolkit';
 import {
   cancelScheduledNotificationAsync,
@@ -10,7 +9,6 @@ import {
   setNotificationHandler,
   dismissNotificationAsync,
 } from 'expo-notifications';
-import { match, P } from 'ts-pattern';
 
 setNotificationHandler({
   handleNotification: async () => ({
@@ -28,28 +26,11 @@ export class NotificationService {
     readonly dispatch: Dispatch,
   ) {}
 
-  async scheduleNextSetNotification(exercise: RecordedWeightedExercise) {
+  async scheduleNextSetNotification(time: OffsetDateTime) {
     await this.clearSetTimerNotification();
 
     await requestPermissionsAsync();
 
-    const repsPerSet = exercise.blueprint.repsPerSet;
-    const { minRest, failureRest } = exercise.blueprint.restBetweenSets;
-
-    const rest = match(exercise.lastRecordedSet)
-      .with(
-        { set: { repsCompleted: P.when((x) => x >= repsPerSet) } },
-        () => minRest,
-      )
-      .with(
-        { set: { repsCompleted: P.when((x) => x < repsPerSet) } },
-        () => failureRest,
-      )
-      .otherwise(() => Duration.ZERO);
-
-    if (rest.equals(Duration.ZERO)) {
-      return;
-    }
     await scheduleNotificationAsync({
       content: {
         title: 'Rest Over',
@@ -58,7 +39,7 @@ export class NotificationService {
       },
       trigger: {
         type: SchedulableTriggerInputTypes.DATE,
-        date: new Date(Date.now() + rest.toMillis()),
+        date: convert(time.toInstant()).toDate(),
       },
       identifier: nextSetNotificationIdentifier,
     });

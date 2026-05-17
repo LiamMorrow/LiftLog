@@ -1,10 +1,11 @@
 import SessionComponent from '@/components/smart/session-component';
 import SessionMoreMenuComponent from '@/components/smart/session-more-menu-component';
 import { spacing } from '@/hooks/useAppTheme';
-import { useAppSelector, RootState } from '@/store';
+import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import {
   finishCurrentWorkout,
-  setActiveSessionDate,
+  selectCurrentSession,
+  setCurrentSession,
 } from '@/store/current-session';
 import { LocalDate } from '@js-joda/core';
 import { useRouter, Stack } from 'expo-router';
@@ -15,9 +16,7 @@ import { useDispatch } from 'react-redux';
 
 export default function HistoryEditPage() {
   const dispatch = useDispatch();
-  const session = useAppSelector(
-    (state: RootState) => state.currentSession.historySession,
-  );
+  const session = useAppSelectorWithArg(selectCurrentSession, 'historySession');
   const { dismissTo } = useRouter();
 
   const save = () => {
@@ -58,14 +57,16 @@ export default function HistoryEditPage() {
           locale="default"
           inputMode="start"
           onChange={(e) => {
-            if (e)
+            if (e && session)
               dispatch(
-                setActiveSessionDate({
+                setCurrentSession({
                   target: 'historySession',
-                  payload: LocalDate.of(
-                    e.getFullYear(),
-                    e.getMonth() + 1,
-                    e.getDate(),
+                  session: session.withUpdatedDate(
+                    LocalDate.of(
+                      e.getFullYear(),
+                      e.getMonth() + 1,
+                      e.getDate(),
+                    ),
                   ),
                 }),
               );

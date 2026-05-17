@@ -14,7 +14,7 @@ import {
   toUuidDao,
 } from './storage/conversions.to-dao';
 import { fromTimestampDao, fromUuidDao } from './storage/conversions.from-dao';
-import { Session, SessionPOJO } from './session-models';
+import { Session } from './session-models';
 import { ProtobufToJsonV1Migrator } from './storage/versions/v1/protobuf-migrator';
 
 export interface FeedUserPOJO {
@@ -187,14 +187,14 @@ export abstract class FeedItem {
           x.eventId,
           x.timestamp,
           x.expiry,
-          Session.fromPOJO((x as SessionFeedItemPOJO).session),
+          (x as SessionFeedItemPOJO).session,
         );
     }
   }
 }
 
 export interface SessionFeedItemPOJO extends FeedItemPOJO {
-  session: SessionPOJO;
+  session: Session;
 }
 
 export class SessionFeedItem extends FeedItem {
@@ -216,7 +216,7 @@ export class SessionFeedItem extends FeedItem {
       type: 'SessionFeedItem',
       eventId: this.eventId,
       expiry: this.expiry,
-      session: this.session.toPOJO(),
+      session: this.session,
       timestamp: this.timestamp,
       userId: this.userId,
     };
@@ -489,7 +489,7 @@ export abstract class SharedItem {
       );
     }
     if (pojo.type === 'SHARED_Session') {
-      return new SharedSession(Session.fromPOJO(pojo.session));
+      return new SharedSession(pojo.session);
     }
     assertUnreachable(pojo);
   }
@@ -570,7 +570,7 @@ export class SharedProgramBlueprint extends SharedItem {
 
 export interface SharedSessionPOJO {
   type: 'SHARED_Session';
-  session: SessionPOJO;
+  session: Session;
 }
 export class SharedSession extends SharedItem {
   readonly session: Session;
@@ -583,7 +583,7 @@ export class SharedSession extends SharedItem {
   toPOJO(): SharedSessionPOJO {
     return {
       type: 'SHARED_Session',
-      session: this.session.toPOJO(),
+      session: this.session,
     };
   }
 

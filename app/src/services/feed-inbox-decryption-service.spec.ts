@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { FeedInboxDecryptionService } from './feed-inbox-decryption-service';
-import { EncryptionService } from './encryption-service';
+import { TestEncryptionService } from './encryption-service.test';
 import { type FeedApiService } from './feed-api';
 import { FeedUser, FeedIdentity } from '@/models/feed-models';
 import {
@@ -17,18 +17,17 @@ interface UserAndPrivateKey {
   identity: FeedIdentity;
   privateKey: RsaPrivateKey;
 }
-
 describe('FeedInboxDecryptionService', () => {
   describe('Malicious message protection', () => {
     let sut: FeedInboxDecryptionService;
-    let encryptionService: EncryptionService;
+    let encryptionService: TestEncryptionService;
     let feedApiService: FeedApiService;
     let maliciousUser: UserAndPrivateKey;
     let victimUser: UserAndPrivateKey;
     let thirdPartyUser: UserAndPrivateKey;
 
     beforeEach(async () => {
-      encryptionService = new EncryptionService();
+      encryptionService = new TestEncryptionService();
       feedApiService = {
         getUserAsync: vi.fn(),
       } as Partial<FeedApiService> as FeedApiService;
@@ -146,7 +145,7 @@ describe('FeedInboxDecryptionService', () => {
 });
 
 async function createFeedUser(
-  encryptionService: EncryptionService,
+  encryptionService: TestEncryptionService,
 ): Promise<UserAndPrivateKey> {
   const rsaKeyPair = await encryptionService.generateRsaKeys();
   const aesKey = await encryptionService.generateAesKey();

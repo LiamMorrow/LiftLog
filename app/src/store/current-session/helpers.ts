@@ -1,7 +1,5 @@
-import { WeightedExerciseBlueprintPOJO } from '@/models/blueprint-models';
 import {
   RecordedCardioExercise,
-  RecordedSetPOJO,
   RecordedWeightedExercise,
   Session,
 } from '@/models/session-models';
@@ -14,27 +12,8 @@ import {
   CurrentExerciseDetails,
   RestTimerInfo,
 } from '@/models/workout-worker-messages';
-import { Duration, OffsetDateTime } from '@js-joda/core';
+import { Duration } from '@js-joda/core';
 import { match, P } from 'ts-pattern';
-
-export function getCycledRepCount(
-  recordedSet: RecordedSetPOJO | undefined,
-  exerciseBlueprint: WeightedExerciseBlueprintPOJO,
-  time: OffsetDateTime,
-): RecordedSetPOJO | undefined {
-  return match(recordedSet)
-    .returnType<RecordedSetPOJO | undefined>()
-    .with(undefined, () => ({
-      type: 'RecordedSet',
-      completionDateTime: time,
-      repsCompleted: exerciseBlueprint.repsPerSet,
-    }))
-    .with({ repsCompleted: 0 }, () => undefined)
-    .otherwise((x) => ({
-      ...x,
-      repsCompleted: x.repsCompleted - 1,
-    }));
-}
 
 export function getCardioTimerInfo(
   session: Session,
@@ -85,14 +64,11 @@ export function getCurrentExerciseDetails(
     : undefined;
 }
 
-export function getTimerInfo(
-  session: Session,
-  lastSetTime: OffsetDateTime | undefined,
-): RestTimerInfo | undefined {
+export function getTimerInfo(session: Session): RestTimerInfo | undefined {
   const lastExercise = session.lastExercise;
   const nextExercise = session.nextExercise;
   if (
-    !lastSetTime ||
+    !session.restTimerStartTime ||
     !lastExercise ||
     !nextExercise ||
     !(nextExercise instanceof RecordedWeightedExercise) ||
@@ -123,10 +99,12 @@ export function getTimerInfo(
     return;
   }
   return {
-    startedAt: toInstantJson(lastSetTime.toInstant()),
+    startedAt: toInstantJson(session.restTimerStartTime.toInstant()),
     partiallyEndAt: toInstantJson(
-      lastSetTime.plus(rest.partialRest).toInstant(),
+      session.restTimerStartTime.plus(rest.partialRest).toInstant(),
     ),
-    endAt: toInstantJson(lastSetTime.plus(rest.fullRest).toInstant()),
+    endAt: toInstantJson(
+      session.restTimerStartTime.plus(rest.fullRest).toInstant(),
+    ),
   };
 }

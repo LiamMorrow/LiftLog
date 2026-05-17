@@ -1,28 +1,11 @@
 import {
-  addExercise,
-  cycleExerciseReps,
-  editExercise,
-  notifySetTimer,
-  removeExercise,
   selectCurrentSession,
   SessionTarget,
-  setCompletionTimeForCardioExercise,
-  setExerciseReps,
-  setWorkoutSessionLastSetTime,
-  updateBodyweight,
-  updateCurrentBlockStartTimeForCardioExercise,
-  updateDistanceForCardioExercise,
-  updateDurationForCardioExercise,
-  updateInclineForCardioExercise,
-  updateNotesForExercise,
-  updateResistanceForCardioExercise,
-  updateStepsForCardioExercise,
-  updateWeightForCardioExercise,
-  updateWeightForSet,
+  setCurrentSession,
 } from '@/store/current-session';
 import { Card, FAB, Icon, Text } from 'react-native-paper';
 import { useDispatch, useStore } from 'react-redux';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import { useAppTheme, spacing, font } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
@@ -31,6 +14,7 @@ import {
   RecordedCardioExercise,
   RecordedExercise,
   RecordedWeightedExercise,
+  Session,
 } from '@/models/session-models';
 import WeightedExercise from '@/components/presentation/workout/weighted/weighted-exercise';
 import WeightDisplay from '@/components/presentation/foundation/editors/weight-display';
@@ -43,7 +27,6 @@ import FullScreenDialog from '@/components/presentation/foundation/full-screen-d
 import { ExerciseEditor } from '@/components/presentation/workout-editor/exercise-editor';
 import { LocalTime, OffsetDateTime, ZoneId } from '@js-joda/core';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { UnknownAction } from '@reduxjs/toolkit';
 import { selectRecentlyCompletedExercises } from '@/store/stored-sessions';
 import FloatingBottomContainer from '@/components/presentation/foundation/floating-bottom-container';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
@@ -63,23 +46,33 @@ export default function SessionComponent(props: {
   const { colors } = useAppTheme();
   const useImperialUnits = useAppSelector((x) => x.settings.useImperialUnits);
   const { t } = useTranslate();
-  const lastSetTime = useAppSelector(
-    (s) => s.currentSession.workoutSessionLastSetTime,
-  );
+  const { getState } = useStore();
   const session = useAppSelectorWithArg(selectCurrentSession, props.target);
-  const store = useStore();
-  const storeDispatch = useDispatch();
-  const dispatch = <T,>(
-    reducer: (a: { payload: T; target: SessionTarget }) => UnknownAction,
-    payload: T,
-  ) => storeDispatch(reducer({ payload, target: props.target }));
+  const dispatch = useDispatch();
   const recentlyCompletedExercises = useAppSelectorWithArg(
     selectRecentlyCompletedExercises,
     10,
   );
-  const resetTimer = () => {
-    storeDispatch(setWorkoutSessionLastSetTime(OffsetDateTime.now()));
-    storeDispatch(notifySetTimer());
+  const resetTimer = (time: OffsetDateTime | undefined) => {
+    updateSession((s) => s.with({ restTimerStartTime: time }));
+  };
+  const withLatestSession = (callback: (session: Session) => void) => {
+    // Ensure we always have the latest session, allows us to call callbacks consecutively
+    const latestSession = selectCurrentSession(getState(), props.target);
+    if (!latestSession) {
+      return;
+    }
+    callback(latestSession);
+  };
+  const updateSession = (reducer: (session: Session) => Session) => {
+    withLatestSession((latestSession) => {
+      dispatch(
+        setCurrentSession({
+          session: reducer(latestSession),
+          target: props.target,
+        }),
+      );
+    });
   };
 
   const isReadonly =
@@ -92,24 +85,22 @@ export default function SessionComponent(props: {
     ExerciseBlueprint | undefined
   >(undefined);
   const [exerciseEditorOpen, setExerciseEditorOpen] = useState(false);
-  const openUrl = (url: string) => {
-    void Linking.canOpenURL(url).then(() => Linking.openURL(url));
-  };
 
   const handleEditExercise = () => {
     if (editingExerciseBlueprint !== undefined) {
       if (exerciseToEditIndex !== undefined) {
-        dispatch(editExercise, {
-          exerciseIndex: exerciseToEditIndex,
-          newBlueprint: editingExerciseBlueprint,
-          useImperialUnits,
-        });
+        updateSession((s) =>
+          s.withEditedExercise(
+            exerciseToEditIndex,
+            editingExerciseBlueprint,
+            useImperialUnits,
+          ),
+        );
         setExerciseToEditIndex(undefined);
       } else {
-        dispatch(addExercise, {
-          blueprint: editingExerciseBlueprint,
-          useImperialUnits,
-        });
+        updateSession((s) =>
+          s.withAddedExercise(editingExerciseBlueprint, useImperialUnits),
+        );
       }
       setExerciseEditorOpen(false);
     }
@@ -142,39 +133,6 @@ export default function SessionComponent(props: {
     </Card>
   ) : null;
 
-  const updateCompletionTimeAndClearTimer = <T,>(
-    exerciseIndex: number,
-    cb: (newValue: T, setIndex: number) => void,
-  ) => {
-    return (newValue: T, setIndex: number) => {
-      cb(newValue, setIndex);
-      const exercise = selectCurrentSession(store.getState(), props.target)
-        ?.recordedExercises[exerciseIndex];
-      if (!(exercise instanceof RecordedCardioExercise)) {
-        return;
-      }
-      const set = exercise.sets[setIndex];
-      if (!set) {
-        return;
-      }
-      const hasData = !!(
-        set.distance ||
-        (set.duration && !set.duration.isZero()) ||
-        set.incline ||
-        set.resistance
-      );
-      const newCompletionDateTime = hasData
-        ? (set.completionDateTime ?? OffsetDateTime.now())
-        : undefined;
-
-      dispatch(setCompletionTimeForCardioExercise, {
-        exerciseIndex,
-        setIndex,
-        time: newCompletionDateTime,
-      });
-    };
-  };
-
   const emptyInfo =
     session.recordedExercises.length === 0 ? (
       <EmptyInfo style={{ marginVertical: spacing[8] }}>
@@ -189,51 +147,22 @@ export default function SessionComponent(props: {
     return match(item)
       .with(P.instanceOf(RecordedWeightedExercise), (item) => (
         <WeightedExercise
+          timeProvider={() =>
+            props.target === 'workoutSession'
+              ? OffsetDateTime.now()
+              : (session.lastExercise?.latestTime ??
+                session.date
+                  .atTime(LocalTime.now())
+                  .atZone(ZoneId.systemDefault())
+                  .toOffsetDateTime())
+          }
+          resetSetTimer={() =>
+            withLatestSession((s) => resetTimer(s.lastExercise?.latestTime))
+          }
           recordedExercise={item}
           toStartNext={session.nextExercise === item}
-          updateRepCountForSet={(setIndex, reps) => {
-            dispatch(setExerciseReps, {
-              exerciseIndex: index,
-              reps,
-              setIndex,
-              time:
-                props.target === 'workoutSession'
-                  ? OffsetDateTime.now()
-                  : (session.lastExercise?.latestTime ??
-                    session.date
-                      .atTime(LocalTime.now())
-                      .atZone(ZoneId.systemDefault())
-                      .toOffsetDateTime()),
-            });
-            if (props.target === 'workoutSession')
-              storeDispatch(notifySetTimer());
-          }}
-          cycleRepCountForSet={(setIndex) => {
-            dispatch(cycleExerciseReps, {
-              exerciseIndex: index,
-              setIndex,
-              time:
-                props.target === 'workoutSession'
-                  ? OffsetDateTime.now()
-                  : (session.lastExercise?.latestTime ??
-                    session.date
-                      .atTime(LocalTime.now())
-                      .atZone(ZoneId.systemDefault())
-                      .toOffsetDateTime()),
-            });
-            if (props.target === 'workoutSession')
-              storeDispatch(notifySetTimer());
-          }}
-          updateWeightForSet={(setIndex, weight, applyTo) =>
-            dispatch(updateWeightForSet, {
-              exerciseIndex: index,
-              weight,
-              setIndex,
-              applyTo,
-            })
-          }
-          updateNotesForExercise={(notes) =>
-            dispatch(updateNotesForExercise, { notes, exerciseIndex: index })
+          updateExercise={(ex) =>
+            updateSession((s) => s.withExercise(index, ex))
           }
           onEditExercise={() => {
             setEditingExerciseBlueprint(item.blueprint);
@@ -241,13 +170,8 @@ export default function SessionComponent(props: {
             setExerciseEditorOpen(true);
           }}
           onRemoveExercise={() =>
-            dispatch(removeExercise, {
-              exerciseIndex: index,
-            })
+            updateSession((s) => s.withRemovedExercise(index))
           }
-          onOpenLink={() => {
-            openUrl(item.blueprint.link);
-          }}
           isReadonly={isReadonly}
           showPreviousButton={props.target === 'workoutSession'}
           previousRecordedExercises={
@@ -260,84 +184,18 @@ export default function SessionComponent(props: {
       .with(P.instanceOf(RecordedCardioExercise), (item) => (
         <CardioExercise
           recordedExercise={item}
+          updateExercise={(ex) =>
+            updateSession((s) => s.withExercise(index, ex))
+          }
           toStartNext={session.nextExercise === item}
-          updateDistance={updateCompletionTimeAndClearTimer(
-            index,
-            (distance, setIndex) =>
-              dispatch(updateDistanceForCardioExercise, {
-                distance,
-                setIndex,
-                exerciseIndex: index,
-              }),
-          )}
-          setCurrentBlockStartTime={(time, setIndex) =>
-            dispatch(updateCurrentBlockStartTimeForCardioExercise, {
-              time,
-              setIndex,
-              exerciseIndex: index,
-            })
-          }
-          updateDuration={updateCompletionTimeAndClearTimer(
-            index,
-            (duration, setIndex) =>
-              dispatch(updateDurationForCardioExercise, {
-                duration,
-                setIndex,
-                exerciseIndex: index,
-              }),
-          )}
-          updateIncline={updateCompletionTimeAndClearTimer(
-            index,
-            (incline, setIndex) =>
-              dispatch(updateInclineForCardioExercise, {
-                incline,
-                setIndex,
-                exerciseIndex: index,
-              }),
-          )}
-          updateResistance={updateCompletionTimeAndClearTimer(
-            index,
-            (resistance, setIndex) =>
-              dispatch(updateResistanceForCardioExercise, {
-                resistance,
-                setIndex,
-                exerciseIndex: index,
-              }),
-          )}
-          updateWeight={updateCompletionTimeAndClearTimer(
-            index,
-            (weight, setIndex) =>
-              dispatch(updateWeightForCardioExercise, {
-                weight,
-                setIndex,
-                exerciseIndex: index,
-              }),
-          )}
-          updateSteps={updateCompletionTimeAndClearTimer(
-            index,
-            (steps, setIndex) =>
-              dispatch(updateStepsForCardioExercise, {
-                steps,
-                setIndex,
-                exerciseIndex: index,
-              }),
-          )}
-          updateNotesForExercise={(notes) =>
-            dispatch(updateNotesForExercise, { notes, exerciseIndex: index })
-          }
           onEditExercise={() => {
             setEditingExerciseBlueprint(item.blueprint);
             setExerciseToEditIndex(index);
             setExerciseEditorOpen(true);
           }}
           onRemoveExercise={() =>
-            dispatch(removeExercise, {
-              exerciseIndex: index,
-            })
+            updateSession((s) => s.withRemovedExercise(index))
           }
-          onOpenLink={() => {
-            openUrl(item.blueprint.link);
-          }}
           isReadonly={isReadonly}
           showPreviousButton={props.target === 'workoutSession'}
           previousRecordedExercises={
@@ -376,7 +234,7 @@ export default function SessionComponent(props: {
           allowNull={true}
           weight={session.bodyweight}
           updateWeight={(bodyweight) =>
-            dispatch(updateBodyweight, { bodyweight })
+            updateSession((s) => s.with({ bodyweight }))
           }
           increment={new BigNumber('0.1')}
           label={t('exercise.bodyweight.label')}
@@ -399,7 +257,7 @@ export default function SessionComponent(props: {
     nextExercise instanceof RecordedWeightedExercise &&
     lastExercise &&
     lastExercise instanceof RecordedWeightedExercise &&
-    lastSetTime;
+    session.restTimerStartTime;
   const lastSetFailed =
     lastRecordedSet?.set &&
     lastExercise &&
@@ -409,9 +267,9 @@ export default function SessionComponent(props: {
     <View style={{ flex: 1 }}>
       <RestTimer
         rest={lastExercise.blueprint.restBetweenSets}
-        startTime={lastSetTime}
+        startTime={session.restTimerStartTime}
         failed={!!lastSetFailed}
-        resetTimer={resetTimer}
+        resetTimer={() => resetTimer(OffsetDateTime.now())}
       />
     </View>
   ) : undefined;

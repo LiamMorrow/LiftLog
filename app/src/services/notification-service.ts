@@ -1,5 +1,5 @@
-import { RecordedWeightedExercise } from '@/models/session-models';
 import { RootState } from '@/store';
+import { OffsetDateTime } from '@js-joda/core';
 import { Dispatch } from '@reduxjs/toolkit';
 import {
   AndroidImportance,
@@ -49,7 +49,7 @@ export class NotificationService {
     readonly dispatch: Dispatch,
   ) {}
 
-  async scheduleNextSetNotification(exercise: RecordedWeightedExercise) {}
+  async scheduleNextSetNotification(time: OffsetDateTime) {}
 
   async clearSetTimerNotification() {}
 }

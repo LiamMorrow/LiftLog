@@ -100,15 +100,18 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
   };
 
   const handleTypeChange = (type: string) => {
-    let newExercise = exercise;
+    let newExercise: CardioExerciseBlueprint | WeightedExerciseBlueprint =
+      exercise;
     if (type === 'weighted') {
       newExercise = WeightedExerciseBlueprint.empty().with({
         ...exercise,
+        type: 'WeightedExerciseBlueprint',
         sets: undefined!, // Will not overwrite empty
       });
     } else {
       newExercise = CardioExerciseBlueprint.empty().with({
         ...exercise,
+        type: 'CardioExerciseBlueprint',
         sets: undefined!, // Will not overwrite empty
       });
     }

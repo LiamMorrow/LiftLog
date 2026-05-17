@@ -36,7 +36,6 @@ import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 import { CardioStepsTracker } from '@/components/presentation/workout/cardio/cardio-steps-tracker';
 
 type CardioExerciseSetCallback<T> = (value: T) => void;
-type CardioExerciseCallback<T> = (value: T, setIndex: number) => void;
 
 interface CardioExerciseProps {
   recordedExercise: RecordedCardioExercise;
@@ -45,27 +44,28 @@ interface CardioExerciseProps {
   isReadonly: boolean;
   showPreviousButton: boolean;
 
-  setCurrentBlockStartTime: CardioExerciseCallback<OffsetDateTime | undefined>;
-  updateDuration: CardioExerciseCallback<Duration | undefined>;
-  updateDistance: CardioExerciseCallback<Distance | undefined>;
-  updateIncline: CardioExerciseCallback<BigNumber | undefined>;
-  updateWeight: CardioExerciseCallback<Weight | undefined>;
-  updateSteps: CardioExerciseCallback<number | undefined>;
-  updateResistance: CardioExerciseCallback<BigNumber | undefined>;
-  updateNotesForExercise: (notes: string) => void;
-  onOpenLink: () => void;
+  updateExercise: (ex: RecordedCardioExercise) => void;
   onEditExercise: () => void;
   onRemoveExercise: () => void;
 }
 
 export function CardioExercise(props: CardioExerciseProps) {
   const setCallback =
-    <T,>(
-      cb: CardioExerciseCallback<T>,
+    <
+      K extends keyof RecordedCardioExerciseSet,
+      T extends RecordedCardioExerciseSet[K],
+    >(
+      key: K,
       setIndex: number,
     ): CardioExerciseSetCallback<T> =>
     (val) =>
-      cb(val, setIndex);
+      props.updateExercise(
+        props.recordedExercise.withSet(setIndex, (s) =>
+          s
+            .with({ [key]: val })
+            .withCompletionTimeIfCompleted(OffsetDateTime.now()),
+        ),
+      );
   return (
     <ExerciseSection
       recordedExercise={props.recordedExercise}
@@ -73,8 +73,7 @@ export function CardioExercise(props: CardioExerciseProps) {
       toStartNext={props.toStartNext}
       isReadonly={props.isReadonly}
       showPreviousButton={props.showPreviousButton}
-      updateNotesForExercise={props.updateNotesForExercise}
-      onOpenLink={props.onOpenLink}
+      updateExercise={props.updateExercise}
       onEditExercise={props.onEditExercise}
       onRemoveExercise={props.onRemoveExercise}
     >
@@ -89,15 +88,15 @@ export function CardioExercise(props: CardioExerciseProps) {
                 true)
             }
             setCurrentBlockStartTime={setCallback(
-              props.setCurrentBlockStartTime,
+              'currentBlockStartTime',
               setIndex,
             )}
-            updateDuration={setCallback(props.updateDuration, setIndex)}
-            updateDistance={setCallback(props.updateDistance, setIndex)}
-            updateWeight={setCallback(props.updateWeight, setIndex)}
-            updateSteps={setCallback(props.updateSteps, setIndex)}
-            updateIncline={setCallback(props.updateIncline, setIndex)}
-            updateResistance={setCallback(props.updateResistance, setIndex)}
+            updateDuration={setCallback('duration', setIndex)}
+            updateDistance={setCallback('distance', setIndex)}
+            updateWeight={setCallback('weight', setIndex)}
+            updateSteps={setCallback('steps', setIndex)}
+            updateIncline={setCallback('incline', setIndex)}
+            updateResistance={setCallback('resistance', setIndex)}
           />
         ))}
       </View>

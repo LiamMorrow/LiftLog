@@ -440,6 +440,7 @@ export interface CardioExerciseBlueprintPOJO {
   link: string;
 }
 export class CardioExerciseBlueprint {
+  readonly type = 'CardioExerciseBlueprint';
   constructor(
     readonly name: string,
     readonly sets: CardioExerciseSetBlueprint[],
@@ -569,6 +570,8 @@ export class WeightedExerciseBlueprint {
   readonly supersetWithNext: boolean;
   readonly notes: string;
   readonly link: string;
+
+  readonly type = 'WeightedExerciseBlueprint';
 
   constructor(
     name: string,

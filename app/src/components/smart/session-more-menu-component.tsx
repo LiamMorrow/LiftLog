@@ -1,5 +1,4 @@
 import {
-  addExercise,
   selectCurrentSession,
   SessionTarget,
   setCurrentSession,
@@ -12,7 +11,6 @@ import { EmptyExerciseBlueprint } from '@/models/blueprint-models';
 import FullScreenDialog from '@/components/presentation/foundation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/workout-editor/exercise-editor';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { UnknownAction } from '@reduxjs/toolkit';
 import { Appbar, Menu, TextInput } from 'react-native-paper';
 import { View } from 'react-native';
 import { spacing } from '@/hooks/useAppTheme';
@@ -23,11 +21,7 @@ export default function SessionMoreMenuComponent(props: {
   const { t } = useTranslate();
   const useImperialUnits = useAppSelector((x) => x.settings.useImperialUnits);
   const session = useAppSelectorWithArg(selectCurrentSession, props.target);
-  const storeDispatch = useDispatch();
-  const dispatch = <T,>(
-    reducer: (a: { payload: T; target: SessionTarget }) => UnknownAction,
-    payload: T,
-  ) => storeDispatch(reducer({ payload, target: props.target }));
+  const dispatch = useDispatch();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const isReadonly = props.target === 'feedSession';
@@ -39,12 +33,17 @@ export default function SessionMoreMenuComponent(props: {
 
   const handleAddExercise = () => {
     if (editingExerciseBlueprint !== undefined) {
-      dispatch(addExercise, {
-        blueprint: editingExerciseBlueprint,
-        useImperialUnits,
-      });
-      setExerciseEditorOpen(false);
+      dispatch(
+        setCurrentSession({
+          session: session?.withAddedExercise(
+            editingExerciseBlueprint,
+            useImperialUnits,
+          ),
+          target: props.target,
+        }),
+      );
     }
+    setExerciseEditorOpen(false);
   };
 
   if (!session || isReadonly) {

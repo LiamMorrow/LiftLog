@@ -3,9 +3,8 @@ import { spacing } from '@/hooks/useAppTheme';
 import { RecordedWeightedExercise } from '@/models/session-models';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { WeightAppliesTo } from '@/store/current-session';
 import ExerciseSection from '@/components/presentation/workout/exercise-section';
-import { Weight } from '@/models/weight';
+import { OffsetDateTime } from '@js-joda/core';
 
 interface WeightedExerciseProps {
   recordedExercise: RecordedWeightedExercise;
@@ -14,26 +13,15 @@ interface WeightedExerciseProps {
   isReadonly: boolean;
   showPreviousButton: boolean;
 
-  cycleRepCountForSet: (setIndex: number) => void;
-  updateRepCountForSet: (setIndex: number, reps: number | undefined) => void;
-  updateWeightForSet: (
-    setIndex: number,
-    weight: Weight,
-    applyTo: WeightAppliesTo,
-  ) => void;
-  updateNotesForExercise: (notes: string) => void;
-  onOpenLink: () => void;
+  timeProvider: () => OffsetDateTime;
+  updateExercise: (ex: RecordedWeightedExercise) => void;
+  resetSetTimer: () => void;
   onEditExercise: () => void;
   onRemoveExercise: () => void;
 }
 
 export default function WeightedExercise(props: WeightedExerciseProps) {
-  const {
-    updateRepCountForSet,
-    cycleRepCountForSet,
-    updateNotesForExercise,
-    updateWeightForSet,
-  } = props;
+  const { updateExercise, timeProvider, resetSetTimer } = props;
   const { recordedExercise } = props;
   useState(false);
 
@@ -48,8 +36,7 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
       toStartNext={props.toStartNext}
       isReadonly={props.isReadonly}
       showPreviousButton={props.showPreviousButton}
-      updateNotesForExercise={updateNotesForExercise}
-      onOpenLink={props.onOpenLink}
+      updateExercise={props.updateExercise}
       onEditExercise={props.onEditExercise}
       onRemoveExercise={props.onRemoveExercise}
     >
@@ -59,10 +46,28 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             isReadonly={props.isReadonly}
             key={index}
             maxReps={recordedExercise.blueprint.repsPerSet}
-            onTap={() => cycleRepCountForSet(index)}
-            onUpdateReps={(reps) => updateRepCountForSet(index, reps)}
+            onTap={() => {
+              const previousSet = recordedExercise.potentialSets[index].set;
+              const newExercise = recordedExercise.withCycledRepCount(
+                index,
+                timeProvider(),
+              );
+              const newSet = newExercise.potentialSets[index].set;
+              updateExercise(newExercise);
+              // We only want to reset the timer when switching between unfilled and filled
+              // Otherwise, keep the same time
+              if (!previousSet || !newSet) {
+                resetSetTimer();
+              }
+            }}
+            onUpdateReps={(reps) => {
+              updateExercise(
+                recordedExercise.withRepCount(index, reps, timeProvider()),
+              );
+              resetSetTimer();
+            }}
             onUpdateWeight={(w, applyTo) =>
-              updateWeightForSet(index, w, applyTo)
+              updateExercise(recordedExercise.withWeight(index, w, applyTo))
             }
             set={set}
             showWeight={true}

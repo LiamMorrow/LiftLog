@@ -1,4 +1,4 @@
-import { PotentialSet } from '@/models/session-models';
+import { PotentialSet, WeightAppliesTo } from '@/models/session-models';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import { Text as PaperText, Chip } from 'react-native-paper';
@@ -7,7 +7,6 @@ import WeightFormat from '@/components/presentation/foundation/weight-format';
 import WeightDialog from '@/components/presentation/foundation/editors/weight-dialog';
 import { useAppTheme, spacing, font, rounding } from '@/hooks/useAppTheme';
 import FocusRing from '@/components/presentation/foundation/focus-ring';
-import { WeightAppliesTo } from '@/store/current-session';
 import { T } from '@tolgee/react';
 import Holdable from '@/components/presentation/foundation/holdable';
 import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';

@@ -1,17 +1,9 @@
-import {
-  fromRecordedExercisePOJO,
-  RecordedExercise,
-  RecordedExercisePOJO,
-  Session,
-  SessionPOJO,
-} from '@/models/session-models';
+import { RecordedExercise, Session } from '@/models/session-models';
 import {
   NormalizedName,
   NormalizedNameKey,
   ExerciseBlueprint,
   KeyedExerciseBlueprint,
-  fromExerciseBlueprintPOJO,
-  ExerciseBlueprintPOJO,
 } from '@/models/blueprint-models';
 import { LocalDate, OffsetDateTime, YearMonth, ZoneId } from '@js-joda/core';
 import {
@@ -33,8 +25,8 @@ export interface WeightMigrateableExercise {
 
 interface StoredSessionState {
   isHydrated: boolean;
-  sessions: Record<string, SessionPOJO>;
-  latestExercises: Record<string, RecordedExercisePOJO | undefined>; // KeyedExerciseBlueprint -> RecordedExercise
+  sessions: Record<string, Session>;
+  latestExercises: Record<string, RecordedExercise | undefined>; // KeyedExerciseBlueprint -> RecordedExercise
   savedExercises: Record<string, ExerciseDescriptor>;
   filteredExerciseIds: string[];
   exercisesRequiringWeightMigration: WeightMigrateableExercise[];
@@ -56,26 +48,24 @@ const storedSessionsSlice = createSlice({
     setIsHydrated(state, action: PayloadAction<boolean>) {
       state.isHydrated = action.payload;
     },
-    setStoredSessions(
-      state,
-      action: PayloadAction<Record<string, SessionPOJO>>,
-    ) {
-      state.sessions = action.payload;
+    setStoredSessions(state, action: PayloadAction<Record<string, Session>>) {
+      state.sessions = action.payload as Record<string, WritableDraft<Session>>;
       state.latestExercises = {};
-      Object.values(action.payload).forEach((sessionPOJO) => {
-        updateLatestExercises(state, Session.fromPOJO(sessionPOJO));
+      Object.values(action.payload).forEach((session) => {
+        updateLatestExercises(state, session);
       });
     },
 
     upsertStoredSessions(state, action: PayloadAction<Session[]>) {
       action.payload.forEach((session) => {
-        state.sessions[session.id] = session.toPOJO();
+        state.sessions[session.id] = session as WritableDraft<Session>;
         updateLatestExercises(state, session);
       });
     },
 
     addStoredSession(state, action: PayloadAction<Session>) {
-      state.sessions[action.payload.id] = action.payload.toPOJO();
+      state.sessions[action.payload.id] =
+        action.payload as WritableDraft<Session>;
       updateLatestExercises(state, action.payload);
     },
 
@@ -89,7 +79,7 @@ const storedSessionsSlice = createSlice({
       const affectedKeys = new Set(
         deletedSession.recordedExercises.map((e) =>
           KeyedExerciseBlueprint.fromExerciseBlueprint(
-            fromExerciseBlueprintPOJO(e.blueprint as ExerciseBlueprintPOJO),
+            e.blueprint as ExerciseBlueprint,
           ).toString(),
         ),
       );
@@ -99,11 +89,8 @@ const storedSessionsSlice = createSlice({
         delete state.latestExercises[key];
       });
 
-      Object.values(state.sessions).forEach((sessionPOJO) => {
-        updateLatestExercises(
-          state,
-          Session.fromPOJO(sessionPOJO as SessionPOJO),
-        );
+      Object.values(state.sessions).forEach((session) => {
+        updateLatestExercises(state, session as Session);
       });
     },
     updateExercise(
@@ -148,17 +135,17 @@ const storedSessionsSlice = createSlice({
         Object.fromEntries(
           Object.entries(exercises).map(([key, exercise]) => [
             key,
-            exercise ? fromRecordedExercisePOJO(exercise) : undefined,
+            exercise ? exercise : undefined,
           ]),
         ),
     ),
     selectSessions: createSelector(
       [(state: StoredSessionState) => state.sessions],
-      (sessions) => Object.values(sessions).map((x) => Session.fromPOJO(x)),
+      (sessions) => Object.values(sessions),
     ),
     selectSession: createSelector(
       [(state: StoredSessionState) => state.sessions, (_, id: string) => id],
-      (sessions, id) => Session.fromPOJO(sessions[id]),
+      (sessions, id) => sessions[id],
     ),
     selectCompletedDistinctSessionNames: createSelector(
       [
@@ -198,11 +185,11 @@ function updateLatestExercises(
     const latestExercise = state.latestExercises[key];
     if (
       !latestExercise ||
-      fromRecordedExercisePOJO(
-        latestExercise as RecordedExercisePOJO,
-      ).latestTime?.isBefore(exercise.latestTime ?? OffsetDateTime.MIN)
+      latestExercise.latestTime?.isBefore(
+        exercise.latestTime ?? OffsetDateTime.MIN,
+      )
     ) {
-      state.latestExercises[key] = exercise.toPOJO();
+      state.latestExercises[key] = exercise as WritableDraft<RecordedExercise>;
     }
   });
 }

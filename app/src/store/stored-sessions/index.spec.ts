@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { LocalDate, OffsetDateTime, ZoneOffset, YearMonth } from '@js-joda/core';
+import {
+  LocalDate,
+  OffsetDateTime,
+  ZoneOffset,
+  YearMonth,
+} from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { v4 as uuid } from 'uuid';
 import { selectSessionsInMonth } from '@/store/stored-sessions';
@@ -49,7 +54,14 @@ function createSessionWithCompletionTime(
     undefined,
   );
 
-  return new Session(uuid(), blueprint, [recordedExercise], sessionDate, undefined);
+  return new Session(
+    uuid(),
+    blueprint,
+    [recordedExercise],
+    sessionDate,
+    undefined,
+    undefined,
+  );
 }
 
 describe('stored sessions sorting', () => {
@@ -69,8 +81,8 @@ describe('stored sessions sorting', () => {
     const state = {
       storedSessions: {
         sessions: {
-          [earlier.id]: earlier.toPOJO(),
-          [later.id]: later.toPOJO(),
+          [earlier.id]: earlier,
+          [later.id]: later,
         },
       },
     };
