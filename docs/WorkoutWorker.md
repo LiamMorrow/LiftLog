@@ -4,7 +4,7 @@ When a workout is in progress, there are certain responsibilities that sit outsi
 
 - Persistent notifications
 - Timers that must continue while the app is backgrounded
-- Integration with platform-specific system UI (e.g. Dynamic Island–style affordances on iOS, foreground notifications on Android)
+- Integration with platform-specific system UI (e.g. foreground notifications on Android)
 
 These responsibilities are **inherently platform-dependent**, both in _how_ they are executed and _what_ they integrate with.
 
@@ -79,13 +79,8 @@ When the app broadcasts an event:
 
 ### External representation (cross-platform)
 
-For cross-platform communication (JS ↔ native, and parity with iOS), workout messages are serialized using **protobuf**.
-
-Protobuf is used strictly as a **wire format**:
-
-- Defines the cross-language contract
-- Enables versioning and forwards compatibility
-- Allows binary transport where appropriate
+For cross-platform communication (JS ↔ native, and parity with iOS), workout messages are serialized using **json** via the json schema we generate.
+JSON schemas are generated from our types via (in ./app dir) `npm run json-schema`. This will generate schemas in the docs directory.
 
 ---
 
@@ -93,16 +88,15 @@ Protobuf is used strictly as a **wire format**:
 
 A dedicated translation layer is responsible for converting between:
 
-- Protobuf `WorkoutMessage` messages
+- Json Schema `WorkoutMessage` messages
 - Internal domain `WorkoutMessage` objects (events and commands)
 
 This translation layer:
 
 - Lives on the JS side of the bridge
 - Encapsulates versioning, defaults, and backward compatibility
-- Is the only place where protobuf schema knowledge exists in application code
 
-The native bridge receives protobuf bytes directly and uses generated protobuf classes for parsing. The React Native module is responsible only for transport and service lifecycle.
+The native bridge receives a json string directly and uses generated classes for parsing. The React Native module is responsible only for transport and service lifecycle.
 
 ---
 
@@ -111,7 +105,7 @@ The native bridge receives protobuf bytes directly and uses generated protobuf c
 ### App → Worker (Events)
 
 1. The main app broadcasts a `WorkoutMessage` (event)
-2. The message is serialized using protobuf
+2. The message is serialized using json
 3. The broadcast immediately echoes the event back to all JS listeners
 4. The native bridge forwards the message to the platform worker
 5. The message is dispatched through the worker's in-process message channel
@@ -131,16 +125,3 @@ The native bridge receives protobuf bytes directly and uses generated protobuf c
 - `WorkoutStartedEvent` explicitly starts the worker
 - `WorkoutEndedEvent` explicitly stops the worker
 - Messages outside an active workout lifecycle are ignored
-
----
-
-## Non-goals
-
-The `WorkoutWorker` explicitly does **not**:
-
-- Persist workout state
-- Attempt crash recovery
-- Resume workouts after process death
-- Act as a domain state machine
-
-These concerns remain the responsibility of the main application.
