@@ -327,6 +327,15 @@ interface ExerciseWithIndex {
   index: number;
 }
 
+function haveSameRelativeOrder(matched: MatchedExercise[]): boolean {
+  const oldOrder = [...matched]
+    .sort((a, b) => a.oldIndex - b.oldIndex)
+    .map((item) => item.newIndex);
+  const newOrder = [...oldOrder].sort((a, b) => a - b);
+
+  return oldOrder.every((value, index) => value === newOrder[index]);
+}
+
 /**
  * Match exercises by name. For duplicate names, fall back to position matching.
  */
@@ -777,17 +786,23 @@ export function diffSessionBlueprints(
     }),
   );
 
-  // Reordered exercises (matched but at different indices)
-  const reorderedExercises: ExerciseReorderedChange[] = matched
-    .filter(({ oldIndex, newIndex }) => oldIndex !== newIndex)
-    .map(({ oldExercise, oldIndex, newIndex }) => ({
-      id: generateChangeId(),
-      kind: 'exercise',
-      type: 'reordered',
-      exerciseName: oldExercise.name,
-      oldIndex,
-      newIndex,
-    }));
+  // Reordered exercises should only be reported when the relative order of the
+  // matched exercises actually changes. Pure insertions/removals shift indices,
+  // but they are not user-visible reorders.
+  const reorderedExercises: ExerciseReorderedChange[] = haveSameRelativeOrder(
+    matched,
+  )
+    ? []
+    : matched
+        .filter(({ oldIndex, newIndex }) => oldIndex !== newIndex)
+        .map(({ oldExercise, oldIndex, newIndex }) => ({
+          id: generateChangeId(),
+          kind: 'exercise',
+          type: 'reordered',
+          exerciseName: oldExercise.name,
+          oldIndex,
+          newIndex,
+        }));
 
   // Modified exercises (field-level changes)
   const modifiedExercises: ExerciseModification[] = [];

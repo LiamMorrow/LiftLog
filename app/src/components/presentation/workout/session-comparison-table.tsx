@@ -1,4 +1,5 @@
 import { NormalizedName } from '@/models/blueprint-models';
+import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
 import WeightFormat from '@/components/presentation/foundation/weight-format';
 import { useAppTheme, spacing } from '@/hooks/useAppTheme';
 import { RecordedWeightedExercise, Session } from '@/models/session-models';
@@ -12,11 +13,14 @@ import { Text } from 'react-native-paper';
 
 interface SessionComparisonTableProps {
   mode: 'compact' | 'full';
+  onPress?: (() => void) | undefined;
   previousSession?: Session | undefined;
   session: Session;
 }
 
-export function SessionComparisonTable(props: SessionComparisonTableProps) {
+export default function SessionComparisonTable(
+  props: SessionComparisonTableProps,
+) {
   const { colors } = useAppTheme();
   const { t } = useTranslate();
   const weightedExerciseComparisons = getWeightedExerciseComparisons(
@@ -38,18 +42,6 @@ export function SessionComparisonTable(props: SessionComparisonTableProps) {
   );
   const content = (
     <View>
-      {props.mode === 'compact' ? (
-        <Text
-          variant="titleMedium"
-          style={{
-            paddingHorizontal: spacing[2],
-            paddingTop: spacing[2],
-            paddingBottom: spacing[1],
-          }}
-        >
-          {t('workout.summary.title')}
-        </Text>
-      ) : null}
       {props.mode === 'full' ? (
         <View
           style={{
@@ -358,7 +350,13 @@ export function SessionComparisonTable(props: SessionComparisonTableProps) {
     </View>
   );
 
-  return content;
+  return props.onPress ? (
+    <TouchableRipple borderless onPress={props.onPress}>
+      {content}
+    </TouchableRipple>
+  ) : (
+    content
+  );
 }
 
 function getWeightedExerciseComparisons(
