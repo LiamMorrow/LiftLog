@@ -86,9 +86,7 @@ export default function Settings() {
       <List.Section title={t('settings.support.title')}>
         <List.Item
           onPress={() =>
-            openUrl(
-              'https://github.com/LiamMorrow/LiftLog/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md',
-            )
+            openUrl('https://github.com/LiamMorrow/LiftLog/discussions')
           }
           title={t('settings.feature_request.title')}
           description={t('settings.feature_request.subtitle')}
@@ -103,11 +101,7 @@ export default function Settings() {
         ></List.Item>
 
         <List.Item
-          onPress={() =>
-            openUrl(
-              'https://github.com/LiamMorrow/LiftLog/issues/new?assignees=&labels=translation&projects=&template=translation-suggestion.md',
-            )
-          }
+          onPress={() => openUrl('https://translate.liftlog.online')}
           title={t('settings.translation.title')}
           description={t('settings.translation.subtitle')}
           left={(props) => <List.Icon icon={'translate'} {...props} />}

@@ -1,17 +1,11 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: ''
+title: ""
 labels: enhancement
-assignees: ''
-
+assignees: ""
 ---
 
-**Is your feature request related to a problem? Please describe.**
+# Note
 
-
-**Describe the solution you'd like**
-
-
-**Additional context**
-
+Please look at discussions and create feature requests there. Going forward, issues will be reserved for bugs and feature requests which are on the roadmap / actively being worked on / approved for work.
