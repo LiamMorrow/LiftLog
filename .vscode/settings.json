@@ -6,7 +6,14 @@
     "react-native/Libraries/TurboModule/TurboModuleRegistry",
     "react-native-reanimated/lib/typescript/Animated",
     "react-native/types_generated/index",
-    "^@material-symbols-react-native/outlined-400$"
+    "^@material-symbols-react-native/outlined-400$",
+    "react-native-paper-dates",
+    "assert",
+    "fast-match",
+    "inspector",
+    "node:inspector",
+    "node:sqlite",
+    "node"
   ],
   "search.exclude": {
     "app/gen/*": true,

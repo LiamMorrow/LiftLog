@@ -13,7 +13,7 @@ import { NormalizedName } from '@/models/blueprint-models';
 interface StatsState {
   isDirty: boolean;
   overallViewSessionName: string | undefined;
-  overallViewTime: LocalDateRange;
+  overallViewTime: LocalDateRange | 'all-time';
   overallView: RemoteData<GranularStatisticView>;
   pinnedExerciseStatistics: PinnedExerciseStatistic[];
 }
@@ -104,7 +104,10 @@ const statsSlice = createSlice({
     setStatsIsDirty(state, action: PayloadAction<boolean>) {
       state.isDirty = action.payload;
     },
-    setOverallViewTime(state, action: PayloadAction<LocalDateRange>) {
+    setOverallViewTime(
+      state,
+      action: PayloadAction<LocalDateRange | 'all-time'>,
+    ) {
       state.overallViewTime = action.payload;
     },
     setOverallViewSession(state, action: PayloadAction<string | undefined>) {

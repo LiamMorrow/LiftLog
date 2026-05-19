@@ -30,6 +30,7 @@ interface StoredSessionState {
   savedExercises: Record<string, ExerciseDescriptor>;
   filteredExerciseIds: string[];
   exercisesRequiringWeightMigration: WeightMigrateableExercise[];
+  earliestSession: Session | undefined;
 }
 
 const initialState: StoredSessionState = {
@@ -39,6 +40,7 @@ const initialState: StoredSessionState = {
   savedExercises: {},
   filteredExerciseIds: [],
   exercisesRequiringWeightMigration: [],
+  earliestSession: undefined,
 };
 
 const storedSessionsSlice = createSlice({
@@ -52,21 +54,21 @@ const storedSessionsSlice = createSlice({
       state.sessions = action.payload as Record<string, WritableDraft<Session>>;
       state.latestExercises = {};
       Object.values(action.payload).forEach((session) => {
-        updateLatestExercises(state, session);
+        updateDerivatives(state, session);
       });
     },
 
     upsertStoredSessions(state, action: PayloadAction<Session[]>) {
       action.payload.forEach((session) => {
         state.sessions[session.id] = session as WritableDraft<Session>;
-        updateLatestExercises(state, session);
+        updateDerivatives(state, session);
       });
     },
 
     addStoredSession(state, action: PayloadAction<Session>) {
       state.sessions[action.payload.id] =
         action.payload as WritableDraft<Session>;
-      updateLatestExercises(state, action.payload);
+      updateDerivatives(state, action.payload);
     },
 
     deleteStoredSession(state, action: PayloadAction<string>) {
@@ -90,7 +92,7 @@ const storedSessionsSlice = createSlice({
       });
 
       Object.values(state.sessions).forEach((session) => {
-        updateLatestExercises(state, session as Session);
+        updateDerivatives(state, session as Session);
       });
     },
     updateExercise(
@@ -174,10 +176,16 @@ const storedSessionsSlice = createSlice({
   },
 });
 
-function updateLatestExercises(
+function updateDerivatives(
   state: WritableDraft<StoredSessionState>,
   session: Session,
 ) {
+  if (
+    !state.earliestSession ||
+    state.earliestSession.date.isAfter(session.date)
+  ) {
+    state.earliestSession = session as WritableDraft<Session>;
+  }
   session.recordedExercises.forEach((exercise) => {
     const key = KeyedExerciseBlueprint.fromExerciseBlueprint(
       exercise.blueprint,
