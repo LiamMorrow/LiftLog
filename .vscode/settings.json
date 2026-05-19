@@ -12,5 +12,6 @@
     "app/gen/*": true,
     "app/modules/workout-worker/android/src/main/proto/**": true,
     "backend/RevenueCat/**": true
-  }
+  },
+  "js/ts.preferences.autoImportFileExcludePatterns": ["assert", "fast-match"]
 }

@@ -1,11 +1,4 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  Session,
-  RecordedWeightedExercise,
-  RecordedSet,
-  PotentialSet,
-  RecordedCardioExercise,
-} from '@/models/session-models';
 import { Duration, LocalDate, OffsetDateTime, ZoneOffset } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { v4 as uuid } from 'uuid';
@@ -17,6 +10,13 @@ import {
   CardioExerciseSetBlueprint,
 } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
+import { Session } from '@/models/session-models/session';
+import { RecordedCardioExercise } from '@/models/session-models/recorded-cardio-exercise';
+import {
+  PotentialSet,
+  RecordedSet,
+  RecordedWeightedExercise,
+} from '@/models/session-models/recorded-weighted-exercise';
 
 let _tick = OffsetDateTime.parse('2025-04-05T10:00:00Z');
 function tick(): OffsetDateTime {

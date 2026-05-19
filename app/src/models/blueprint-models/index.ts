@@ -7,7 +7,7 @@ import {
   toDateOnlyDao,
   toDecimalDao,
   toDurationDao,
-} from './storage/conversions.to-dao';
+} from '../storage/conversions.to-dao';
 
 import {
   CardioExerciseBlueprintJSON,
@@ -25,7 +25,7 @@ import {
   toBigNumberJSON,
   toDurationJSON,
   toLocalDateJSON,
-} from './storage/versions/latest';
+} from '../storage/versions/latest';
 
 export interface ProgramBlueprintPOJO {
   type: 'ProgramBlueprint';
