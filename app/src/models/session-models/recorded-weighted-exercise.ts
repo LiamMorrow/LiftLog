@@ -26,7 +26,7 @@ export class RecordedWeightedExercise {
 
   constructor(
     readonly blueprint: WeightedExerciseBlueprint,
-    readonly potentialSets: readonly PotentialSet[],
+    readonly potentialSets: PotentialSet[],
     readonly notes: string | undefined,
   ) {}
 
@@ -297,13 +297,10 @@ export class RecordedSet {
 }
 
 export class PotentialSet {
-  readonly set: RecordedSet | undefined;
-  readonly weight: Weight;
-
-  constructor(set: RecordedSet | undefined, weight: Weight) {
-    this.set = set;
-    this.weight = weight;
-  }
+  constructor(
+    readonly set: RecordedSet | undefined,
+    readonly weight: Weight,
+  ) {}
 
   static fromJSON(json: PotentialSetJSON): PotentialSet {
     return new PotentialSet(

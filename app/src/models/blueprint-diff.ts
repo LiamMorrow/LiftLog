@@ -8,7 +8,6 @@ import {
   ExerciseBlueprint,
   Rest,
   SessionBlueprint,
-  SessionBlueprintPOJO,
   WeightedExerciseBlueprint,
 } from './blueprint-models';
 import { TranslationKey } from '@tolgee/react';
@@ -274,8 +273,8 @@ export const EmptySessionBlueprintDiff: SessionBlueprintDiff = {
   removedExercises: [],
   reorderedExercises: [],
   sessionChanges: [],
-  originalSession: EmptySession.blueprint.toPOJO(),
-  newSession: EmptySession.blueprint.toPOJO(),
+  originalSession: EmptySession.blueprint,
+  newSession: EmptySession.blueprint,
 };
 
 /**
@@ -303,8 +302,8 @@ export interface SessionBlueprintDiff {
   /** Flat list of all changes for easy iteration */
   allChanges: DiffChange[];
 
-  originalSession: SessionBlueprintPOJO;
-  newSession: SessionBlueprintPOJO;
+  originalSession: SessionBlueprint;
+  newSession: SessionBlueprint;
 }
 
 // ============================================================================
@@ -331,8 +330,8 @@ interface ExerciseWithIndex {
  * Match exercises by name. For duplicate names, fall back to position matching.
  */
 function matchExercisesByName(
-  oldExercises: ExerciseBlueprint[],
-  newExercises: ExerciseBlueprint[],
+  oldExercises: readonly ExerciseBlueprint[],
+  newExercises: readonly ExerciseBlueprint[],
 ): {
   matched: MatchedExercise[];
   added: ExerciseWithIndex[];
@@ -818,8 +817,8 @@ export function diffSessionBlueprints(
     reorderedExercises,
     modifiedExercises,
     allChanges,
-    originalSession: original.toPOJO(),
-    newSession: modified.toPOJO(),
+    originalSession: original,
+    newSession: modified,
   };
 }
 
@@ -981,7 +980,7 @@ export function applySessionBlueprintDiff(
               target: c.newValue,
             });
           }
-          return exercise.with({ sets: newSets.map((s) => s.toPOJO()) });
+          return exercise.with({ sets: newSets });
         })
         .with({ kind: 'exerciseTracking' }, (c) => {
           if (!(exercise instanceof CardioExerciseBlueprint)) return exercise;
@@ -991,7 +990,7 @@ export function applySessionBlueprintDiff(
               [c.field]: c.newValue,
             });
           }
-          return exercise.with({ sets: newSets.map((s) => s.toPOJO()) });
+          return exercise.with({ sets: newSets });
         })
         .with({ kind: 'cardioSet', type: 'added' }, (c) => {
           if (!(exercise instanceof CardioExerciseBlueprint)) return exercise;
@@ -999,7 +998,7 @@ export function applySessionBlueprintDiff(
           // Insert at the specified index, clamping to valid range
           const insertIdx = Math.min(c.setIndex, newSets.length);
           newSets.splice(insertIdx, 0, c.set);
-          return exercise.with({ sets: newSets.map((s) => s.toPOJO()) });
+          return exercise.with({ sets: newSets });
         })
         .with({ kind: 'cardioSet', type: 'removed' }, (c) => {
           if (!(exercise instanceof CardioExerciseBlueprint)) return exercise;
@@ -1008,7 +1007,7 @@ export function applySessionBlueprintDiff(
           if (newSets.length > 1 && c.setIndex < newSets.length) {
             newSets.splice(c.setIndex, 1);
           }
-          return exercise.with({ sets: newSets.map((s) => s.toPOJO()) });
+          return exercise.with({ sets: newSets });
         })
         .with({ kind: 'cardioSetModified' }, (c) => {
           if (!(exercise instanceof CardioExerciseBlueprint)) return exercise;
@@ -1016,7 +1015,7 @@ export function applySessionBlueprintDiff(
           if (c.setIndex < newSets.length) {
             newSets[c.setIndex] = c.newSet;
           }
-          return exercise.with({ sets: newSets.map((s) => s.toPOJO()) });
+          return exercise.with({ sets: newSets });
         })
         .with({ kind: 'exerciseType' }, (c) => c.newExercise)
         .exhaustive();

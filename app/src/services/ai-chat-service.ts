@@ -1,9 +1,11 @@
 import { AiChatResponse, AiWorkoutPlan } from '@/models/ai-models';
 import {
+  CardioExerciseBlueprint,
+  CardioExerciseSetBlueprint,
   CardioTarget,
   ExerciseBlueprint,
-  ExerciseBlueprintPOJO,
   SessionBlueprint,
+  WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
 import { Duration } from '@js-joda/core';
 import { HubConnection, HubConnectionState } from '@microsoft/signalr';
@@ -149,22 +151,18 @@ export function toAiWorkoutPlan(
   return {
     name: aiPlan.name,
     description: aiPlan.description,
-    sessions: aiPlan.sessions.map((s) =>
-      SessionBlueprint.fromPOJO({
-        name: s.name,
-        notes: s.notes,
-        exercises: s.exercises.map(parseAiExercise),
-      }),
+    sessions: aiPlan.sessions.map(
+      (s) =>
+        new SessionBlueprint(s.name, s.exercises.map(parseAiExercise), s.notes),
     ),
   };
 }
 
 function parseAiExercise(
   ex: JsonResponse<ExerciseBlueprint>,
-): ExerciseBlueprintPOJO {
+): ExerciseBlueprint {
   if ('repsPerSet' in ex) {
-    return {
-      type: 'WeightedExerciseBlueprint',
+    return WeightedExerciseBlueprint.empty().with({
       name: ex.name,
       link: ex.link,
       notes: ex.notes,
@@ -177,33 +175,33 @@ function parseAiExercise(
         maxRest: parseDuration(ex.restBetweenSets.maxRest),
         failureRest: parseDuration(ex.restBetweenSets.failureRest),
       },
-    };
+    });
   }
 
-  return {
-    type: 'CardioExerciseBlueprint',
+  return CardioExerciseBlueprint.empty().with({
     name: ex.name,
     link: ex.link,
     notes: ex.notes,
-    sets: ex.sets.map((set) => ({
-      type: 'CardioExerciseSetBlueprint' as const,
-      target: match(set.target)
-        .returnType<CardioTarget>()
-        .with({ type: 'distance' }, (t) => ({
-          type: 'distance' as const,
-          value: { value: BigNumber(t.value.value), unit: t.value.unit },
-        }))
-        .with({ type: 'time' }, (t) => ({
-          type: 'time' as const,
-          value: parseDuration(t.value),
-        }))
-        .exhaustive(),
-      trackDistance: set.trackDistance,
-      trackIncline: set.trackIncline,
-      trackResistance: set.trackResistance,
-      trackDuration: set.trackDuration,
-      trackWeight: set.trackWeight,
-      trackSteps: set.trackSteps,
-    })),
-  };
+    sets: ex.sets.map((set) =>
+      CardioExerciseSetBlueprint.empty().with({
+        target: match(set.target)
+          .returnType<CardioTarget>()
+          .with({ type: 'distance' }, (t) => ({
+            type: 'distance' as const,
+            value: { value: BigNumber(t.value.value), unit: t.value.unit },
+          }))
+          .with({ type: 'time' }, (t) => ({
+            type: 'time' as const,
+            value: parseDuration(t.value),
+          }))
+          .exhaustive(),
+        trackDistance: set.trackDistance,
+        trackIncline: set.trackIncline,
+        trackResistance: set.trackResistance,
+        trackDuration: set.trackDuration,
+        trackWeight: set.trackWeight,
+        trackSteps: set.trackSteps,
+      }),
+    ),
+  });
 }

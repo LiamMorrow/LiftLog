@@ -1,5 +1,4 @@
 import { LiftLog } from '@/gen/proto';
-import { DeepOmit } from '@/utils/deep-omit';
 import { Duration, LocalDate } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { match, P } from 'ts-pattern';
@@ -30,23 +29,16 @@ import {
 export interface ProgramBlueprintPOJO {
   type: 'ProgramBlueprint';
   readonly name: string;
-  readonly sessions: SessionBlueprintPOJO[];
+  readonly sessions: SessionBlueprint[];
   lastEdited: LocalDate;
 }
 
 export class ProgramBlueprint {
-  readonly name: string;
-  readonly sessions: SessionBlueprint[];
-  lastEdited: LocalDate;
   constructor(
-    name: string,
-    sessions: SessionBlueprint[],
-    lastEdited: LocalDate,
-  ) {
-    this.name = name;
-    this.sessions = sessions;
-    this.lastEdited = lastEdited;
-  }
+    readonly name: string,
+    readonly sessions: SessionBlueprint[],
+    readonly lastEdited: LocalDate,
+  ) {}
 
   static fromJSON(json: ProgramBlueprintJSON): ProgramBlueprint {
     return new ProgramBlueprint(
@@ -57,11 +49,7 @@ export class ProgramBlueprint {
   }
 
   static fromPOJO(pojo: Omit<ProgramBlueprintPOJO, 'type'>): ProgramBlueprint {
-    return new ProgramBlueprint(
-      pojo.name,
-      pojo.sessions.map(SessionBlueprint.fromPOJO),
-      pojo.lastEdited,
-    );
+    return new ProgramBlueprint(pojo.name, pojo.sessions, pojo.lastEdited);
   }
 
   equals(other: ProgramBlueprint | undefined) {
@@ -86,7 +74,7 @@ export class ProgramBlueprint {
     return {
       type: 'ProgramBlueprint',
       name: this.name,
-      sessions: this.sessions.map((session) => session.toPOJO()),
+      sessions: this.sessions,
       lastEdited: this.lastEdited,
     };
   }
@@ -107,34 +95,21 @@ export class ProgramBlueprint {
     });
   }
 
-  with(other: Partial<ProgramBlueprintPOJO>): ProgramBlueprint {
+  with(other: Partial<ProgramBlueprint>): ProgramBlueprint {
     return new ProgramBlueprint(
       other.name ?? this.name,
-      other.sessions
-        ? other.sessions.map(SessionBlueprint.fromPOJO)
-        : this.sessions,
+      other.sessions ?? this.sessions,
       other.lastEdited ?? this.lastEdited,
     );
   }
 }
 
-export interface SessionBlueprintPOJO {
-  type: 'SessionBlueprint';
-  name: string;
-  exercises: ExerciseBlueprintPOJO[];
-  notes: string;
-}
-
 export class SessionBlueprint {
-  readonly name: string;
-  readonly exercises: ExerciseBlueprint[];
-  readonly notes: string;
-
-  constructor(name: string, exercises: ExerciseBlueprint[], notes: string) {
-    this.name = name!;
-    this.exercises = exercises!;
-    this.notes = notes!;
-  }
+  constructor(
+    readonly name: string,
+    readonly exercises: ExerciseBlueprint[],
+    readonly notes: string,
+  ) {}
 
   static fromJSON(json: SessionBlueprintJSON): SessionBlueprint {
     return new SessionBlueprint(
@@ -144,15 +119,7 @@ export class SessionBlueprint {
     );
   }
 
-  static fromPOJO(pojo: Omit<SessionBlueprintPOJO, 'type'>): SessionBlueprint {
-    return new SessionBlueprint(
-      pojo.name,
-      pojo.exercises.map(fromExerciseBlueprintPOJO),
-      pojo.notes,
-    );
-  }
-
-  equals(other: SessionBlueprint | SessionBlueprintPOJO | undefined) {
+  equals(other: SessionBlueprint | undefined) {
     if (!other) {
       return false;
     }
@@ -168,15 +135,6 @@ export class SessionBlueprint {
         exercise.equals(other.exercises[index]),
       )
     );
-  }
-
-  toPOJO(): SessionBlueprintPOJO {
-    return {
-      type: 'SessionBlueprint',
-      name: this.name,
-      exercises: this.exercises.map((exercise) => exercise.toPOJO()),
-      notes: this.notes,
-    };
   }
 
   toJSON(): SessionBlueprintJSON {
@@ -195,14 +153,10 @@ export class SessionBlueprint {
     });
   }
 
-  with(
-    other: Partial<SessionBlueprintPOJO | SessionBlueprint>,
-  ): SessionBlueprint {
+  with(other: Partial<SessionBlueprint>): SessionBlueprint {
     return new SessionBlueprint(
       other.name ?? this.name,
-      other.exercises
-        ? other.exercises.map(fromExerciseBlueprintPOJO)
-        : this.exercises,
+      other.exercises ?? this.exercises,
       other.notes ?? this.notes,
     );
   }
@@ -212,10 +166,6 @@ export type ExerciseBlueprint =
   | WeightedExerciseBlueprint
   | CardioExerciseBlueprint;
 
-export type ExerciseBlueprintPOJO =
-  | WeightedExerciseBlueprintPOJO
-  | CardioExerciseBlueprintPOJO;
-
 export function fromExerciseBlueprintJSON(
   json: ExerciseBlueprintJSON,
 ): ExerciseBlueprint {
@@ -224,27 +174,6 @@ export function fromExerciseBlueprintJSON(
     .with(
       { type: 'WeightedExerciseBlueprint' },
       WeightedExerciseBlueprint.fromJSON,
-    )
-    .exhaustive();
-}
-
-export function fromExerciseBlueprintPOJO(
-  pojo: ExerciseBlueprintPOJO | ExerciseBlueprint,
-): ExerciseBlueprint {
-  return match(pojo)
-    .with(
-      P.union(
-        { type: 'CardioExerciseBlueprint' },
-        P.instanceOf(CardioExerciseBlueprint),
-      ),
-      CardioExerciseBlueprint.fromPOJO,
-    )
-    .with(
-      P.union(
-        { type: 'WeightedExerciseBlueprint' },
-        P.instanceOf(WeightedExerciseBlueprint),
-      ),
-      WeightedExerciseBlueprint.fromPOJO,
     )
     .exhaustive();
 }
@@ -279,18 +208,6 @@ export function matchCardioTarget<T>(
     .with({ type: 'time' }, matcher.time)
     .with({ type: 'distance' }, matcher.distance)
     .exhaustive();
-}
-
-export interface CardioExerciseSetBlueprintPOJO {
-  type: 'CardioExerciseSetBlueprint';
-
-  readonly target: CardioTarget;
-  readonly trackDuration: boolean;
-  readonly trackDistance: boolean;
-  readonly trackResistance: boolean;
-  readonly trackIncline: boolean;
-  readonly trackWeight: boolean;
-  readonly trackSteps: boolean;
 }
 
 export class CardioExerciseSetBlueprint {
@@ -332,33 +249,6 @@ export class CardioExerciseSetBlueprint {
     );
   }
 
-  static fromPOJO(
-    pojo: DeepOmit<CardioExerciseSetBlueprintPOJO, 'type'> &
-      Pick<CardioExerciseSetBlueprintPOJO, 'target'>,
-  ): CardioExerciseSetBlueprint {
-    return new CardioExerciseSetBlueprint(
-      pojo.target,
-      pojo.trackDuration,
-      pojo.trackDistance,
-      pojo.trackResistance,
-      pojo.trackIncline,
-      pojo.trackWeight,
-      pojo.trackSteps,
-    );
-  }
-
-  toPOJO(): CardioExerciseSetBlueprintPOJO {
-    return {
-      type: 'CardioExerciseSetBlueprint',
-      target: this.target,
-      trackDistance: this.trackDistance,
-      trackDuration: this.trackDuration,
-      trackIncline: this.trackIncline,
-      trackResistance: this.trackResistance,
-      trackWeight: this.trackWeight,
-      trackSteps: this.trackSteps,
-    };
-  }
   toJSON(): CardioExerciseSetBlueprintJSON {
     return {
       target: toCardioTargetJSON(this.target),
@@ -397,12 +287,7 @@ export class CardioExerciseSetBlueprint {
     });
   }
 
-  equals(
-    other:
-      | CardioExerciseSetBlueprint
-      | CardioExerciseSetBlueprintPOJO
-      | undefined,
-  ): boolean {
+  equals(other: CardioExerciseSetBlueprint | undefined): boolean {
     if (!other) {
       return false;
     }
@@ -415,11 +300,7 @@ export class CardioExerciseSetBlueprint {
     );
   }
 
-  with(
-    other:
-      | Partial<CardioExerciseSetBlueprint>
-      | Partial<CardioExerciseSetBlueprintPOJO>,
-  ): CardioExerciseSetBlueprint {
+  with(other: Partial<CardioExerciseSetBlueprint>): CardioExerciseSetBlueprint {
     return new CardioExerciseSetBlueprint(
       other.target ?? this.target,
       other.trackDuration ?? this.trackDuration,
@@ -432,13 +313,6 @@ export class CardioExerciseSetBlueprint {
   }
 }
 
-export interface CardioExerciseBlueprintPOJO {
-  type: 'CardioExerciseBlueprint';
-  name: string;
-  sets: CardioExerciseSetBlueprintPOJO[];
-  notes: string;
-  link: string;
-}
 export class CardioExerciseBlueprint {
   readonly type = 'CardioExerciseBlueprint';
   constructor(
@@ -469,28 +343,14 @@ export class CardioExerciseBlueprint {
       json.link,
     );
   }
-  static fromPOJO(
-    pojo: CardioExerciseBlueprintPOJO | CardioExerciseBlueprint,
-  ): CardioExerciseBlueprint {
-    return new CardioExerciseBlueprint(
-      pojo.name,
-      pojo.sets.map((x) => CardioExerciseSetBlueprint.fromPOJO(x)),
-      pojo.notes,
-      pojo.link,
-    );
-  }
-
-  equals(other: ExerciseBlueprint | ExerciseBlueprintPOJO | undefined) {
+  equals(other: ExerciseBlueprint | undefined) {
     if (!other) {
       return false;
     }
     if (other === this) {
       return true;
     }
-    if (
-      other instanceof WeightedExerciseBlueprint ||
-      ('type' in other && other.type === 'WeightedExerciseBlueprint')
-    ) {
+    if ('type' in other && other.type !== this.type) {
       return false;
     }
     return (
@@ -500,16 +360,6 @@ export class CardioExerciseBlueprint {
       this.notes === other.notes &&
       this.link === other.link
     );
-  }
-
-  toPOJO(): CardioExerciseBlueprintPOJO {
-    return {
-      type: 'CardioExerciseBlueprint',
-      name: this.name,
-      sets: this.sets.map((x) => x.toPOJO()),
-      notes: this.notes,
-      link: this.link,
-    };
   }
 
   toJSON(): CardioExerciseBlueprintJSON {
@@ -538,60 +388,28 @@ export class CardioExerciseBlueprint {
     });
   }
 
-  with(other: Partial<CardioExerciseBlueprintPOJO>): CardioExerciseBlueprint {
+  with(other: Partial<CardioExerciseBlueprint>): CardioExerciseBlueprint {
     return new CardioExerciseBlueprint(
       other.name ?? this.name,
-      other.sets?.map((x) => CardioExerciseSetBlueprint.fromPOJO(x)) ??
-        this.sets,
+      other.sets ?? this.sets,
       other.notes ?? this.notes,
       other.link ?? this.link,
     );
   }
 }
-
-export interface WeightedExerciseBlueprintPOJO {
-  type: 'WeightedExerciseBlueprint';
-  name: string;
-  sets: number;
-  repsPerSet: number;
-  weightIncreaseOnSuccess: BigNumber;
-  restBetweenSets: Rest;
-  supersetWithNext: boolean;
-  notes: string;
-  link: string;
-}
-
 export class WeightedExerciseBlueprint {
-  readonly name: string;
-  readonly sets: number;
-  readonly repsPerSet: number;
-  readonly weightIncreaseOnSuccess: BigNumber;
-  readonly restBetweenSets: Rest;
-  readonly supersetWithNext: boolean;
-  readonly notes: string;
-  readonly link: string;
-
   readonly type = 'WeightedExerciseBlueprint';
 
   constructor(
-    name: string,
-    sets: number,
-    repsPerSet: number,
-    weightIncreaseOnSuccess: BigNumber,
-    restBetweenSets: Rest,
-    supersetWithNext: boolean,
-    notes: string,
-    link: string,
-  ) {
-    this.name = name;
-    this.sets = sets;
-    this.repsPerSet = repsPerSet;
-    this.weightIncreaseOnSuccess = weightIncreaseOnSuccess;
-    this.restBetweenSets = restBetweenSets;
-    this.supersetWithNext = supersetWithNext;
-    this.notes = notes;
-    this.link = link;
-  }
+    readonly name: string,
+    readonly sets: number,
+    readonly repsPerSet: number,
+    readonly weightIncreaseOnSuccess: BigNumber,
+    readonly restBetweenSets: Rest,
+    readonly supersetWithNext: boolean,
+    readonly notes: string,
+    readonly link: string,
+  ) {}
 
   static empty() {
     return new WeightedExerciseBlueprint(
@@ -621,32 +439,14 @@ export class WeightedExerciseBlueprint {
     );
   }
 
-  static fromPOJO(
-    pojo: DeepOmit<WeightedExerciseBlueprintPOJO, 'type'>,
-  ): WeightedExerciseBlueprint {
-    return new WeightedExerciseBlueprint(
-      pojo.name,
-      pojo.sets,
-      pojo.repsPerSet,
-      pojo.weightIncreaseOnSuccess,
-      pojo.restBetweenSets,
-      pojo.supersetWithNext,
-      pojo.notes,
-      pojo.link,
-    );
-  }
-
-  equals(other: ExerciseBlueprint | ExerciseBlueprintPOJO | undefined) {
+  equals(other: ExerciseBlueprint | undefined) {
     if (!other) {
       return false;
     }
     if (other === this) {
       return true;
     }
-    if (
-      other instanceof CardioExerciseBlueprint ||
-      ('type' in other && other.type === 'CardioExerciseBlueprint')
-    ) {
+    if ('type' in other && other.type !== this.type) {
       return false;
     }
 
@@ -664,20 +464,6 @@ export class WeightedExerciseBlueprint {
       this.notes === other.notes &&
       this.link === other.link
     );
-  }
-
-  toPOJO(): WeightedExerciseBlueprintPOJO {
-    return {
-      type: 'WeightedExerciseBlueprint',
-      name: this.name,
-      sets: this.sets,
-      repsPerSet: this.repsPerSet,
-      weightIncreaseOnSuccess: this.weightIncreaseOnSuccess,
-      restBetweenSets: this.restBetweenSets,
-      supersetWithNext: this.supersetWithNext,
-      notes: this.notes,
-      link: this.link,
-    };
   }
 
   toJSON(): WeightedExerciseBlueprintJSON {
@@ -708,9 +494,7 @@ export class WeightedExerciseBlueprint {
     });
   }
 
-  with(
-    other: Partial<WeightedExerciseBlueprintPOJO>,
-  ): WeightedExerciseBlueprint {
+  with(other: Partial<WeightedExerciseBlueprint>): WeightedExerciseBlueprint {
     return new WeightedExerciseBlueprint(
       other.name ?? this.name,
       other.sets ?? this.sets,
@@ -726,8 +510,8 @@ export class WeightedExerciseBlueprint {
 
 export class KeyedExerciseBlueprint {
   private constructor(
-    public name: string,
-    private differentiator: string,
+    readonly name: string,
+    private readonly differentiator: string,
   ) {}
 
   static fromExerciseBlueprint(e: ExerciseBlueprint): KeyedExerciseBlueprint {
@@ -754,7 +538,7 @@ export class KeyedExerciseBlueprint {
 export type NormalizedNameKey = string;
 
 export class NormalizedName {
-  constructor(public name: string) {}
+  constructor(readonly name: string) {}
   static fromExerciseBlueprint(e: ExerciseBlueprint): NormalizedName {
     return new NormalizedName(e.name);
   }

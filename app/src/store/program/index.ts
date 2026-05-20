@@ -3,12 +3,9 @@ import {
   ProgramBlueprint,
   ProgramBlueprintPOJO,
   SessionBlueprint,
-  SessionBlueprintPOJO,
 } from '@/models/blueprint-models';
 import { RemoteData } from '@/models/remote';
 import { EmptySession, Session } from '@/models/session-models';
-import { SafeDraft } from '@/utils/store-helpers';
-
 import { LocalDate } from '@js-joda/core';
 import {
   createAction,
@@ -59,7 +56,7 @@ const programSlice = createSlice({
       if (state.savedPrograms[action.payload.programId]) {
         state.savedPrograms[action.payload.programId] = {
           ...state.savedPrograms[action.payload.programId],
-          sessions: action.payload.sessionBlueprints.map((x) => x.toPOJO()),
+          sessions: action.payload.sessionBlueprints,
         };
       }
     },
@@ -70,19 +67,17 @@ const programSlice = createSlice({
           applySessionBlueprintDiff(
             EmptySession.blueprint,
             action.payload.diff,
-          ).toPOJO(),
+          ),
         );
       } else if (action.payload.type === 'diff') {
         state.savedPrograms[state.activePlanId].sessions[
           action.payload.sessionIndex
         ] = applySessionBlueprintDiff(
-          SessionBlueprint.fromPOJO(
-            state.savedPrograms[state.activePlanId].sessions[
-              action.payload.sessionIndex
-            ] as SafeDraft<SessionBlueprintPOJO>,
-          ),
+          state.savedPrograms[state.activePlanId].sessions[
+            action.payload.sessionIndex
+          ] as SessionBlueprint,
           action.payload.diff,
-        ).toPOJO();
+        );
       }
     },
 
@@ -101,7 +96,7 @@ const programSlice = createSlice({
         action.payload.sessionIndex < program.sessions.length
       ) {
         program.sessions[action.payload.sessionIndex] =
-          action.payload.sessionBlueprint.toPOJO();
+          action.payload.sessionBlueprint;
       }
     },
 
@@ -114,7 +109,7 @@ const programSlice = createSlice({
     ) {
       const program = state.savedPrograms[action.payload.programId];
       if (program) {
-        program.sessions.push(action.payload.sessionBlueprint.toPOJO());
+        program.sessions.push(action.payload.sessionBlueprint);
       }
     },
 
@@ -165,7 +160,7 @@ const programSlice = createSlice({
       const program = state.savedPrograms[action.payload.programId];
       if (program) {
         const index = program.sessions.findIndex((s) =>
-          action.payload.sessionBlueprint.equals(s as SessionBlueprintPOJO),
+          action.payload.sessionBlueprint.equals(s as SessionBlueprint),
         );
         if (index > 0) {
           const sessions = [...program.sessions];
@@ -188,7 +183,7 @@ const programSlice = createSlice({
       const program = state.savedPrograms[action.payload.programId];
       if (program) {
         const index = program.sessions.findIndex((s) =>
-          action.payload.sessionBlueprint.equals(s as SessionBlueprintPOJO),
+          action.payload.sessionBlueprint.equals(s as SessionBlueprint),
         );
         if (index >= 0 && index < program.sessions.length - 1) {
           const sessions = [...program.sessions];
@@ -215,9 +210,7 @@ const programSlice = createSlice({
       const program = state.savedPrograms[action.payload.programId];
       if (program) {
         const index = program.sessions.findIndex((session) =>
-          action.payload.sessionBlueprint.equals(
-            session as SessionBlueprintPOJO,
-          ),
+          action.payload.sessionBlueprint.equals(session as SessionBlueprint),
         );
         if (index >= 0) {
           program.sessions.splice(index, 1);

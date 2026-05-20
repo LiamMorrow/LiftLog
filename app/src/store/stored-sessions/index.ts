@@ -51,7 +51,7 @@ const storedSessionsSlice = createSlice({
       state.isHydrated = action.payload;
     },
     setStoredSessions(state, action: PayloadAction<Record<string, Session>>) {
-      state.sessions = action.payload as Record<string, WritableDraft<Session>>;
+      state.sessions = action.payload;
       state.latestExercises = {};
       Object.values(action.payload).forEach((session) => {
         updateDerivatives(state, session);

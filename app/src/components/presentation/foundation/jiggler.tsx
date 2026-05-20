@@ -77,7 +77,7 @@ export function Jiggler({
     };
 
     animate();
-  }, [jiggling, rotation]);
+  }, [jiggling, rotation, jiggleSpeed]);
 
   const rotateZ = rotation.interpolate({
     inputRange: [-amplitude, amplitude],

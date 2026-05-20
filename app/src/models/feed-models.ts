@@ -1,10 +1,5 @@
 import { Instant } from '@js-joda/core';
-import {
-  ProgramBlueprint,
-  ProgramBlueprintPOJO,
-  SessionBlueprint,
-  SessionBlueprintPOJO,
-} from './blueprint-models';
+import { ProgramBlueprint, SessionBlueprint } from './blueprint-models';
 import { RsaPublicKey, AesKey, RsaKeyPair } from '@/models/encryption-models';
 import { assertUnreachable } from '@/utils/assert-unreachable';
 import { LiftLog } from '@/gen/proto';
@@ -23,7 +18,7 @@ export interface FeedUserPOJO {
   publicKey: RsaPublicKey;
   name: string | undefined;
   nickname: string | undefined;
-  currentPlan: SessionBlueprintPOJO[];
+  currentPlan: SessionBlueprint[];
   profilePicture: Uint8Array | undefined;
   aesKey: AesKey | undefined;
   followSecret: string | undefined;
@@ -47,7 +42,7 @@ export class FeedUser {
       pojo.publicKey,
       pojo.name,
       pojo.nickname,
-      pojo.currentPlan.map(SessionBlueprint.fromPOJO),
+      pojo.currentPlan,
       pojo.profilePicture,
       pojo.aesKey,
       pojo.followSecret,
@@ -61,7 +56,7 @@ export class FeedUser {
       publicKey: this.publicKey,
       name: this.name,
       nickname: this.nickname,
-      currentPlan: this.currentPlan.map((session) => session.toPOJO()),
+      currentPlan: this.currentPlan,
       profilePicture: this.profilePicture,
       aesKey: this.aesKey,
       followSecret: this.followSecret,
@@ -100,9 +95,7 @@ export class FeedUser {
       other.publicKey ?? this.publicKey,
       other.name ?? this.name,
       other.nickname ?? this.nickname,
-      other.currentPlan
-        ? other.currentPlan.map(SessionBlueprint.fromPOJO)
-        : this.currentPlan,
+      other.currentPlan ? other.currentPlan : this.currentPlan,
       other.profilePicture ?? this.profilePicture,
       other.aesKey ?? this.aesKey,
       other.followSecret ?? this.followSecret,
@@ -484,9 +477,7 @@ export abstract class SharedItem {
 
   static fromPOJO(pojo: SharedItemPOJO): SharedItem {
     if (pojo.type === 'SHARED_ProgramBlueprint') {
-      return new SharedProgramBlueprint(
-        ProgramBlueprint.fromPOJO(pojo.programBlueprint),
-      );
+      return new SharedProgramBlueprint(pojo.programBlueprint);
     }
     if (pojo.type === 'SHARED_Session') {
       return new SharedSession(pojo.session);
@@ -534,7 +525,7 @@ export abstract class SharedItem {
 
 export interface SharedProgramBlueprintPOJO {
   type: 'SHARED_ProgramBlueprint';
-  programBlueprint: ProgramBlueprintPOJO;
+  programBlueprint: ProgramBlueprint;
 }
 export class SharedProgramBlueprint extends SharedItem {
   readonly programBlueprint: ProgramBlueprint;
@@ -547,7 +538,7 @@ export class SharedProgramBlueprint extends SharedItem {
   toPOJO(): SharedProgramBlueprintPOJO {
     return {
       type: 'SHARED_ProgramBlueprint',
-      programBlueprint: this.programBlueprint.toPOJO(),
+      programBlueprint: this.programBlueprint,
     };
   }
 

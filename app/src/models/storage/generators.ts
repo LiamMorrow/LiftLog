@@ -1,12 +1,9 @@
 import {
   ProgramBlueprintPOJO,
-  SessionBlueprintPOJO,
-  WeightedExerciseBlueprintPOJO,
   Rest,
   WeightedExerciseBlueprint,
   SessionBlueprint,
   ProgramBlueprint,
-  CardioExerciseBlueprintPOJO,
   CardioTarget,
   CardioExerciseBlueprint,
   Distance,
@@ -103,7 +100,7 @@ export const RestGenerator = fc.constantFrom(
 );
 
 export const WeightedExerciseBlueprintGenerator = fc
-  .record<WeightedExerciseBlueprintPOJO>({
+  .record({
     type: fc.constant('WeightedExerciseBlueprint'),
     name: fc.string(),
     sets: fc.integer({ min: 1, max: 10 }),
@@ -114,7 +111,7 @@ export const WeightedExerciseBlueprintGenerator = fc
     notes: fc.string(),
     link: fc.webUrl(),
   })
-  .map(WeightedExerciseBlueprint.fromPOJO);
+  .map((x) => WeightedExerciseBlueprint.empty().with(x));
 
 const CardioTargetGenerator = fc.record<CardioTarget>({
   type: fc.constant('time'),
@@ -145,42 +142,33 @@ const CardioExerciseSetBlueprintGenerator = fc
   );
 
 export const CardioExerciseBlueprintGenerator = fc
-  .record<CardioExerciseBlueprintPOJO>({
-    type: fc.constant('CardioExerciseBlueprint'),
+  .record({
     name: fc.string(),
-    sets: fc.array(
-      CardioExerciseSetBlueprintGenerator.map((x) => x.toPOJO()),
-      { minLength: 1 },
-    ),
+    sets: fc.array(CardioExerciseSetBlueprintGenerator, { minLength: 1 }),
     notes: fc.string(),
     link: fc.webUrl(),
   })
-  .map(CardioExerciseBlueprint.fromPOJO);
+  .map((x) => CardioExerciseBlueprint.empty().with(x));
 
 export const SessionBlueprintGenerator = fc
-  .record<SessionBlueprintPOJO>({
-    type: fc.constant('SessionBlueprint'),
+  .record({
     name: fc.string(),
-    exercises: fc
-      .array(
-        fc.oneof(
-          WeightedExerciseBlueprintGenerator,
-          CardioExerciseBlueprintGenerator,
-        ),
-        { maxLength: 10 },
-      )
-      .map((x) => x.map((y) => y.toPOJO())),
+    exercises: fc.array(
+      fc.oneof(
+        WeightedExerciseBlueprintGenerator,
+        CardioExerciseBlueprintGenerator,
+      ),
+      { maxLength: 10 },
+    ),
     notes: fc.string(),
   })
-  .map(SessionBlueprint.fromPOJO);
+  .map((x) => new SessionBlueprint(x.name, x.exercises, x.notes));
 
 export const ProgramBlueprintGenerator = fc
   .record<ProgramBlueprintPOJO>({
     type: fc.constant('ProgramBlueprint'),
     name: fc.string(),
-    sessions: fc
-      .array(SessionBlueprintGenerator, { maxLength: 5 })
-      .map((x) => x.map((y) => y.toPOJO())),
+    sessions: fc.array(SessionBlueprintGenerator, { maxLength: 5 }),
     lastEdited: LocalDateGenerator,
   })
   .map(ProgramBlueprint.fromPOJO);
@@ -322,12 +310,9 @@ export const FeedUserGenerator = fc
     publicKey: RsaPublicKeyGenerator,
     name: fc.option(fc.string(), { nil: undefined }),
     nickname: fc.option(fc.string(), { nil: undefined }),
-    currentPlan: fc.array(
-      SessionBlueprintGenerator.map((x) => x.toPOJO()),
-      {
-        maxLength: 5,
-      },
-    ),
+    currentPlan: fc.array(SessionBlueprintGenerator, {
+      maxLength: 5,
+    }),
     profilePicture: fc.option(
       fc
         .array(fc.integer({ min: 0, max: 255 }), { maxLength: 1024 })

@@ -9,7 +9,6 @@ import {
   PlanDiff,
   SessionBlueprintDiff,
 } from '@/models/blueprint-diff';
-import { SessionBlueprint } from '@/models/blueprint-models';
 import { EmptySession } from '@/models/session-models';
 import { useAppSelector } from '@/store';
 import { setCurrentPlanDiff } from '@/store/current-session';
@@ -32,8 +31,8 @@ function createUpdateExistingWorkoutDiff(
   currentPlanDiff: PlanDiff,
 ): SessionBlueprintDiff {
   return diffSessionBlueprints(
-    SessionBlueprint.fromPOJO(currentPlanDiff.diff.originalSession),
-    SessionBlueprint.fromPOJO(currentPlanDiff.diff.newSession),
+    currentPlanDiff.diff.originalSession,
+    currentPlanDiff.diff.newSession,
   );
 }
 
@@ -46,9 +45,9 @@ function createAddNewWorkoutDiff(
   currentPlanDiff: PlanDiff,
   newWorkoutName: string,
 ): SessionBlueprintDiff {
-  const newSessionWithName = SessionBlueprint.fromPOJO(
-    currentPlanDiff.diff.newSession,
-  ).with({ name: newWorkoutName });
+  const newSessionWithName = currentPlanDiff.diff.newSession.with({
+    name: newWorkoutName,
+  });
 
   return {
     // Diff against empty session so everything shows as "added"

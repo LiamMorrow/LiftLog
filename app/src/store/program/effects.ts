@@ -24,6 +24,7 @@ import {
 import { LocalDate } from '@js-joda/core';
 import { toRecord } from '@/utils/reduce';
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
+import { TaskAbortError } from '@reduxjs/toolkit';
 
 const builtInProgramsStorageKey = 'hasSavedDefaultPlans2';
 export function applyProgramEffects(addEffect: AddEffectFn) {
@@ -183,6 +184,9 @@ async function persistPrograms(
       throwIfCancelled();
     });
   } catch (e) {
+    if (e instanceof TaskAbortError) {
+      return;
+    }
     logger.error('Failed to persist program state', e);
   }
 }

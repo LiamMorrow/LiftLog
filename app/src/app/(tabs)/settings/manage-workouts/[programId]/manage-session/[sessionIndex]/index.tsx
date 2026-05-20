@@ -104,7 +104,7 @@ function SessionEditor({
   const beginAddExercise = () => {
     dispatch(
       addExercise(
-        WeightedExerciseBlueprint.fromPOJO({
+        WeightedExerciseBlueprint.empty().with({
           name: `Exercise ${session.exercises.length + 1}`,
           repsPerSet: 10,
           sets: 3,

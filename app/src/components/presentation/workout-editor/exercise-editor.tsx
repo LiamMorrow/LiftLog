@@ -10,7 +10,6 @@ import SelectButton from '@/components/presentation/foundation/select-button';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import {
   CardioExerciseBlueprint,
-  CardioExerciseBlueprintPOJO,
   CardioExerciseSetBlueprint,
   CardioTarget,
   DistanceCardioTarget,
@@ -19,7 +18,6 @@ import {
   matchCardioTarget,
   TimeCardioTarget,
   WeightedExerciseBlueprint,
-  WeightedExerciseBlueprintPOJO,
 } from '@/models/blueprint-models';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
 import {
@@ -92,7 +90,7 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
   ) => {
     const update = exercise.with(
       ex as unknown as Partial<
-        WeightedExerciseBlueprintPOJO & CardioExerciseBlueprintPOJO
+        WeightedExerciseBlueprint & CardioExerciseBlueprint
       >,
     );
     setExercise(update);

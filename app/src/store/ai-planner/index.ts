@@ -24,8 +24,11 @@ const aiPlannerSlice = createSlice({
     setIsHydrated(state, action: PayloadAction<boolean>) {
       state.isHydrated = action.payload;
     },
-    addMessage(state, action: PayloadAction<ChatMessage>) {
-      state.plannerChat.unshift(action.payload);
+    addMessage(state, action: PayloadAction<ChatMessage>): AppState {
+      return {
+        ...state,
+        plannerChat: [action.payload, ...(state.plannerChat as ChatMessage[])],
+      };
     },
     updateMessage(state, action: PayloadAction<ChatMessage>) {
       const messageIndex = state.plannerChat.findIndex(

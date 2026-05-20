@@ -58,7 +58,7 @@ async function exportToJson(
   const exportedSets = sessions
     .select((x) => ({
       ...x,
-      blueprint: { ...x.blueprint.toPOJO(), exercises: undefined },
+      blueprint: { ...x.blueprint, exercises: undefined },
     }))
     .toArray();
   return new TextEncoder().encode(JSON.stringify(exportedSets));
