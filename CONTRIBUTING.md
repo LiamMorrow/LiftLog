@@ -38,7 +38,9 @@ Thank you for your interest in contributing to LiftLog! We welcome all contribut
 
 ## Reporting Issues
 
-If you find a bug or have a feature request, please [open an issue](https://github.com/LiamMorrow/LiftLog/issues) and provide as much detail as possible.
+If you find a bug, please [open an issue](https://github.com/LiamMorrow/LiftLog/issues) and provide as much detail as possible.
+If you have a feature request, please search through [discussions](https://github.com/LiamMorrow/LiftLog/discussions) to see if it has been suggested, and if not submit a new discussion.
+Feature requests will go through a vetting/planning phase in discussions before being turned into issues to signal it is planned or ready to be picked up.
 
 ## License
 
