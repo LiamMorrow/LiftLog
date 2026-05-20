@@ -12,12 +12,14 @@ import Holdable from '@/components/presentation/foundation/holdable';
 import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
 import { Weight } from '@/models/weight';
 import PotentialSetAdditionalActionsDialog from '@/components/presentation/workout/weighted/potential-sets-addition-actions-dialog';
+import Icon from '@/components/presentation/foundation/gesture-wrappers/icon';
 
 interface PotentialSetCounterProps {
   set: PotentialSet;
   showWeight: boolean;
   weightIncrement: BigNumber;
   maxReps: number;
+  previousRepCount: number | undefined;
   toStartNext: boolean;
   isReadonly: boolean;
 
@@ -31,6 +33,8 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
   const [isWeightDialogOpen, setIsWeightDialogOpen] = useState(false);
   const [isRepsDialogOpen, setIsRepsDialogOpen] = useState(false);
   const repCountValue = props.set?.set?.repsCompleted;
+  const placeholderRepCount = props.previousRepCount;
+
   useEffect(() => {
     if (!isRepsDialogOpen) {
       Keyboard.dismiss();
@@ -80,27 +84,52 @@ export default function PotentialSetCounter(props: PotentialSetCounterProps) {
               disabled={props.isReadonly}
               testID="repcount"
             >
-              <Text
-                style={{
-                  color:
-                    repCountValue !== undefined
-                      ? colors.onPrimary
-                      : colors.onSecondaryContainer,
-                  ...font['text-xl'],
-                }}
-              >
-                <Text style={{ fontWeight: 'bold' }}>
-                  {repCountValue ?? '-'}
-                </Text>
+              <View style={{ alignItems: 'center' }}>
                 <Text
                   style={{
-                    ...font['text-sm'],
-                    verticalAlign: 'top',
+                    color:
+                      repCountValue !== undefined
+                        ? colors.onPrimary
+                        : colors.onSecondaryContainer,
+                    ...font['text-xl'],
                   }}
                 >
-                  /{props.maxReps}
+                  <Text style={{ fontWeight: 'bold' }}>
+                    {repCountValue ?? '-'}
+                  </Text>
+                  <Text
+                    style={{
+                      ...font['text-sm'],
+                      verticalAlign: 'top',
+                    }}
+                  >
+                    /{props.maxReps}
+                  </Text>
                 </Text>
-              </Text>
+                {repCountValue === undefined &&
+                  placeholderRepCount !== undefined && (
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: spacing[0.5],
+                      }}
+                    >
+                      <Icon
+                        source={'history'}
+                        size={12}
+                        color={colors.onSecondaryContainer + '99'}
+                      />
+                      <Text
+                        style={{
+                          color: colors.onSecondaryContainer + '99',
+                        }}
+                      >
+                        {placeholderRepCount}
+                      </Text>
+                    </View>
+                  )}
+              </View>
             </TouchableRipple>
           </View>
           <View

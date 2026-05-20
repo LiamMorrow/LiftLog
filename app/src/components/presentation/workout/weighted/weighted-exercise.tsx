@@ -60,6 +60,10 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
                 resetSetTimer();
               }
             }}
+            previousRepCount={
+              props.previousRecordedExercises.at(0)?.potentialSets[index]?.set
+                ?.repsCompleted
+            }
             onUpdateReps={(reps) => {
               updateExercise(
                 recordedExercise.withRepCount(index, reps, timeProvider()),
