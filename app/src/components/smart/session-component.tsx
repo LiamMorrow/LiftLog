@@ -3,7 +3,7 @@ import {
   SessionTarget,
   setCurrentSession,
 } from '@/store/current-session';
-import { Card, FAB, Icon, Text } from 'react-native-paper';
+import { Card, Icon, Text } from 'react-native-paper';
 import { useDispatch, useStore } from 'react-redux';
 import { View } from 'react-native';
 import EmptyInfo from '@/components/presentation/foundation/empty-info';
@@ -273,34 +273,16 @@ export default function SessionComponent(props: {
       />
     </View>
   ) : undefined;
-  const saveButton = props.saveAndClose && (
-    <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
-      <FAB
-        onPress={props.saveAndClose}
-        variant="surface"
-        icon={'inventory'}
-        testID="save-session-button"
-        label={
-          props.target === 'workoutSession'
-            ? t('generic.finish.button')
-            : t('generic.save.button')
-        }
-      ></FAB>
-    </View>
-  );
 
   const floatingBottomContainer = isReadonly ? null : (
     <FloatingBottomContainer
       additionalContent={
         <View
           style={{
-            flexDirection: 'row',
             alignItems: 'center',
           }}
         >
-          <View style={{ flex: 1 }}></View>
           {restTimer}
-          {saveButton}
         </View>
       }
     />

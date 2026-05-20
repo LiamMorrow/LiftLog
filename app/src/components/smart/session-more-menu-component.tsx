@@ -1,19 +1,22 @@
 import {
+  finishCurrentWorkout,
   selectCurrentSession,
   SessionTarget,
   setCurrentSession,
 } from '@/store/current-session';
 import { useDispatch } from 'react-redux';
 import { useTranslate } from '@tolgee/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ExerciseBlueprint } from '@/models/blueprint-models';
 import { EmptyExerciseBlueprint } from '@/models/blueprint-models';
 import FullScreenDialog from '@/components/presentation/foundation/full-screen-dialog';
 import { ExerciseEditor } from '@/components/presentation/workout-editor/exercise-editor';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import { Appbar, Menu, TextInput } from 'react-native-paper';
+import { Appbar, Menu, TextInput, Tooltip } from 'react-native-paper';
 import { View } from 'react-native';
 import { spacing } from '@/hooks/useAppTheme';
+import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
+import { Jiggler } from '@/components/presentation/foundation/jiggler';
 
 export default function SessionMoreMenuComponent(props: {
   target: SessionTarget;
@@ -30,6 +33,17 @@ export default function SessionMoreMenuComponent(props: {
   >(undefined);
   const [exerciseEditorOpen, setExerciseEditorOpen] = useState(false);
   const [workoutEditorOpen, setWorkoutEditorOpen] = useState(false);
+  const [jiggleFinishButton, setJiggleFinishButton] = useState(false);
+  const isComplete = session?.isComplete;
+
+  useEffect(() => {
+    const shouldJiggle = isComplete === true;
+    setJiggleFinishButton(shouldJiggle);
+    if (shouldJiggle) {
+      const timeout = setTimeout(() => setJiggleFinishButton(false), 2000);
+      return () => clearTimeout(timeout);
+    }
+  }, [isComplete]);
 
   const handleAddExercise = () => {
     if (editingExerciseBlueprint !== undefined) {
@@ -52,6 +66,14 @@ export default function SessionMoreMenuComponent(props: {
 
   return (
     <>
+      <Jiggler jiggling={jiggleFinishButton} jiggleSpeed={140}>
+        <Tooltip title={t('workout.finish.action.tooltip')}>
+          <IconButton
+            icon={'assignmentTurnedIn'}
+            onPress={() => dispatch(finishCurrentWorkout(props.target))}
+          />
+        </Tooltip>
+      </Jiggler>
       <Menu
         anchorPosition="bottom"
         onDismiss={() => setMenuOpen(false)}

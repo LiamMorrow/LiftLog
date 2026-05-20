@@ -3,10 +3,11 @@ import { ColorChoice, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Rest } from '@/models/blueprint-models';
 import { Duration, OffsetDateTime } from '@js-joda/core';
 import Svg, { Path } from 'react-native-svg';
-import { Animated, Easing, View, ViewStyle } from 'react-native';
+import { Animated, View, ViewStyle } from 'react-native';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import Holdable from '@/components/presentation/foundation/holdable';
+import { Jiggler } from '@/components/presentation/foundation/jiggler';
 
 interface RestTimerProps {
   rest: Rest;
@@ -62,65 +63,17 @@ export default function RestTimer({
   }, [startTime, rest, failed, isSameMinMaxRest]);
 
   const [timerState, setTimerState] = useState(getTimerState());
-
-  const amplitude = 0.1;
-  const rotation = useRef(new Animated.Value(0)).current;
+  const [jiggling, setJiggling] = useState(false);
 
   const triggerJiggle = useCallback(
     (milestone: string) => {
       if (jiggled.includes(milestone)) return;
       impactAsync(ImpactFeedbackStyle.Heavy).catch(console.log);
-
-      const d = 80;
-      rotation.setValue(0);
-      Animated.sequence([
-        Animated.timing(rotation, {
-          toValue: amplitude,
-          duration: d,
-          useNativeDriver: true,
-          easing: Easing.inOut(Easing.ease),
-        }),
-        Animated.timing(rotation, {
-          toValue: -amplitude,
-          duration: d,
-          useNativeDriver: true,
-          easing: Easing.inOut(Easing.ease),
-        }),
-        Animated.timing(rotation, {
-          toValue: amplitude,
-          duration: d,
-          useNativeDriver: true,
-          easing: Easing.inOut(Easing.ease),
-        }),
-        Animated.timing(rotation, {
-          toValue: -amplitude,
-          duration: d,
-          useNativeDriver: true,
-          easing: Easing.inOut(Easing.ease),
-        }),
-        Animated.timing(rotation, {
-          toValue: amplitude,
-          duration: d,
-          useNativeDriver: true,
-          easing: Easing.inOut(Easing.ease),
-        }),
-        Animated.timing(rotation, {
-          toValue: -amplitude,
-          duration: d,
-          useNativeDriver: true,
-          easing: Easing.inOut(Easing.ease),
-        }),
-        Animated.timing(rotation, {
-          toValue: 0,
-          duration: d,
-          useNativeDriver: true,
-          easing: Easing.inOut(Easing.ease),
-        }),
-      ]).start();
-
+      setJiggling(true);
+      setTimeout(() => setJiggling(false), 10);
       setJiggled((j) => [...j, milestone]);
     },
-    [rotation, jiggled],
+    [jiggled],
   );
 
   const pillHeight = spacing[14];
@@ -139,12 +92,6 @@ export default function RestTimer({
     return () => clearInterval(timer);
   }, [getTimerState, triggerJiggle]);
 
-  const rotateZ = rotation.interpolate({
-    inputRange: [-amplitude, amplitude],
-    outputRange: [`${-amplitude}rad`, `${amplitude}rad`],
-    extrapolate: 'clamp',
-  });
-
   return (
     <Holdable
       onLongPress={() => {
@@ -152,8 +99,9 @@ export default function RestTimer({
         triggerJiggle('reset');
       }}
     >
-      <Animated.View
+      <Jiggler
         testID="rest-timer"
+        jiggling={jiggling}
         style={[
           {
             width: pillWidth,
@@ -166,7 +114,6 @@ export default function RestTimer({
             justifyContent: 'center',
           },
           style,
-          { transform: [{ rotateZ }] },
         ]}
       >
         <View
@@ -210,7 +157,7 @@ export default function RestTimer({
         >
           {timerState.timeSinceStart}
         </SurfaceText>
-      </Animated.View>
+      </Jiggler>
     </Holdable>
   );
 }

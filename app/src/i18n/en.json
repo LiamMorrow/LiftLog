@@ -452,5 +452,6 @@
   "workout_persistent_notification.finished.message": "Workout finished!\nYou lifted $WEIGHT$ in $TIME$",
   "workout_persistent_notification.finish_workout.action": "Finish workout",
   "workout_persistent_notification.min_rest_over.message": "Min rest over!",
-  "workout_persistent_notification.max_rest_over.message": "Max rest over!"
+  "workout_persistent_notification.max_rest_over.message": "Max rest over!",
+  "workout.finish.action.tooltip": "Finish workout"
 }
