@@ -40,6 +40,7 @@ export default function FocusRing({
     inputRange: [0, 0.25, 1],
     outputRange: [0, 8, 3],
   });
+  const opacity = growAnim;
 
   return (
     <View style={style}>
@@ -51,6 +52,7 @@ export default function FocusRing({
           bottom: pos,
           left: pos,
           right: pos,
+          opacity: opacity,
           borderRadius: radius ?? spacing[14],
           borderWidth: isSelected ? borderWidth : 0,
         }}

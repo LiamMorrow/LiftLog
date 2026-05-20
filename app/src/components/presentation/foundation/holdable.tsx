@@ -33,7 +33,7 @@ export default function Holdable({
     Animated.timing(holdingScale, {
       toValue: 1.1,
       duration,
-      easing: Easing.bezier(0.05, 0.84, 0, 1.22),
+      easing: Easing.bezier(0.21, 0.95, 0.67, 0.28),
       useNativeDriver: true,
     }).start();
     triggerSlowRiseHaptic();
