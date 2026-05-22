@@ -65,4 +65,5 @@
 *.razor linguist-language=C#
 
 backend/RevenueCat/** linguist-generated
-app/src/gen/* linguist-generated
+app/src/gen/proto.js linguist-generated
+app/src/gen/proto.d.ts linguist-generated
