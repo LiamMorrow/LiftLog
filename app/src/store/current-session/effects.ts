@@ -14,7 +14,7 @@ import {
   setCurrentSessionFromBlueprint,
   setIsHydrated,
 } from '@/store/current-session';
-import { AddEffectFn } from '@/store/store';
+import { AddEffectFn, RootState } from '@/store/store';
 import { fetchUpcomingSessions, selectActiveProgram } from '@/store/program';
 import {
   addStoredSession,
@@ -32,6 +32,8 @@ import {
 import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
 import { toDurationJSON } from '@/models/storage/versions/latest';
 import { Duration, OffsetDateTime } from '@js-joda/core';
+import { Dispatch } from '@reduxjs/toolkit';
+import { KeyValueStore } from '@/services/key-value-store';
 
 const storageKey = 'CurrentSessionStateV1';
 export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
@@ -42,54 +44,13 @@ export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
         throw new Error('Settings must be hydrated before stored sessions');
       }
       try {
-        const sw = performance.now();
         const currentSessionVersion =
           (await keyValueStore.getItem(`${storageKey}-Version`)) ?? '2';
 
-        let currentSessionStateDao:
-          | LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2
-          | undefined;
         switch (currentSessionVersion) {
           case '2':
-            const bytes =
-              (await keyValueStore.getItemBytes(storageKey)) ??
-              Uint8Array.from([]);
-            currentSessionStateDao =
-              LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2.decode(
-                bytes,
-              );
+            await handleV2ProtoStorage(dispatch, keyValueStore, getState);
             break;
-          default:
-            currentSessionStateDao = undefined;
-        }
-        const deserializationTime = performance.now() - sw;
-        logger.info(
-          `Deserialized current session state in ${deserializationTime.toFixed(2)}ms`,
-        );
-        if (currentSessionStateDao) {
-          const currentSessionState = fromCurrentSessionDao(
-            currentSessionStateDao,
-          );
-          if (currentSessionState.workoutSession) {
-            dispatch(
-              setCurrentSession({
-                target: 'workoutSession',
-                session: currentSessionState.workoutSession.withNoNilWeights(
-                  selectPreferredWeightUnit(getState()),
-                ),
-              }),
-            );
-          }
-          if (currentSessionState.historySession) {
-            dispatch(
-              setCurrentSession({
-                target: 'historySession',
-                session: currentSessionState.historySession.withNoNilWeights(
-                  selectPreferredWeightUnit(getState()),
-                ),
-              }),
-            );
-          }
         }
 
         dispatch(setIsHydrated(true));
@@ -305,4 +266,41 @@ export function fromCurrentSessionDao(
         ProtobufToJsonV1Migrator.migrateSession(dao.historySession),
       ),
   };
+}
+
+async function handleV2ProtoStorage(
+  dispatch: Dispatch,
+  keyValueStore: KeyValueStore,
+  getState: () => RootState,
+) {
+  const bytes =
+    (await keyValueStore.getItemBytes(storageKey)) ?? Uint8Array.from([]);
+  const currentSessionStateDao =
+    LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2.decode(
+      bytes,
+    );
+
+  if (currentSessionStateDao) {
+    const currentSessionState = fromCurrentSessionDao(currentSessionStateDao);
+    if (currentSessionState.workoutSession) {
+      dispatch(
+        setCurrentSession({
+          target: 'workoutSession',
+          session: currentSessionState.workoutSession.withNoNilWeights(
+            selectPreferredWeightUnit(getState()),
+          ),
+        }),
+      );
+    }
+    if (currentSessionState.historySession) {
+      dispatch(
+        setCurrentSession({
+          target: 'historySession',
+          session: currentSessionState.historySession.withNoNilWeights(
+            selectPreferredWeightUnit(getState()),
+          ),
+        }),
+      );
+    }
+  }
 }
