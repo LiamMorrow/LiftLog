@@ -3,10 +3,10 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "create-release": "./create-release.ts patch"
+    "create-release": "./create-release.ts patch",
+    "collect-screenshots": "./collect-screenshots.ts"
   },
   "devDependencies": {
-    "@types/bun": "latest",
     "@types/node": "^24.2.1",
     "zx": "8.8.5"
   },

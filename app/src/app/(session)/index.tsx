@@ -275,6 +275,7 @@ export default function Index() {
       <Stack.Screen
         options={{
           title: 'LiftLog',
+          headerBackVisible: false,
         }}
       />
       <MigrateToWeightUnitsWizard />

@@ -73,8 +73,12 @@ export function ProgressiveOverloadValuesEditor(props: Props) {
           <IncreaseLowestSetValues value={x} onChange={props.onChange} />
         ))
         .exhaustive()}
-      <Divider />
-      <ProgressiveOverloadExample value={props.value} />
+      {props.value.type !== 'NoProgressiveOverload' && (
+        <>
+          <Divider />
+          <ProgressiveOverloadExample value={props.value} />
+        </>
+      )}
     </View>
   );
 }

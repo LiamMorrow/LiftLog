@@ -89,6 +89,7 @@ export default function AiPlanner() {
       <Stack.Screen
         options={{
           scrollEdgeEffects: { top: 'hidden' },
+          headerBlurEffect: 'systemMaterial',
           title: t('ai.planner.title'),
           headerRight: () => (
             <Tooltip title={t('ai.restart_chat.button')}>

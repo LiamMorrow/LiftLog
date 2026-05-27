@@ -1,11 +1,25 @@
-#!bun run
-import { $, sleep } from "bun";
+#!/usr/bin/env -S node --experimental-strip-types
+import { $, sleep, argv } from "zx";
+
+const screenshotId = argv._[0] as string | undefined;
+const platform = argv.platform as string | undefined;
+const dryRun = argv["dry-run"] as boolean | undefined;
 
 async function collectIosScreenshot(fileName: string, simulatorId: string) {
+  if (dryRun) {
+    console.log(
+      `[dry-run] xcrun simctl io ${simulatorId} screenshot ${fileName}`,
+    );
+    return;
+  }
   await $`xcrun simctl io ${simulatorId} screenshot ${fileName}`;
 }
 
 async function collectAndroidScreenshot(fileName: string) {
+  if (dryRun) {
+    console.log(`[dry-run] adb exec-out screencap -p > ${fileName}`);
+    return;
+  }
   await $`adb exec-out screencap -p > ${fileName}`;
 }
 
@@ -18,25 +32,33 @@ function getFileName(coords: string, device: string) {
 }
 
 function getScreenshotUrl(coords: string) {
-  return `liftlog://app.liftlog.online/screenshot-collection?type=${coords}`;
+  return `liftlog://screenshot-collection\?type=${coords}`;
 }
 
 async function goToScreenshotUrlIos(coords: string, simulatorId: string) {
   await $`xcrun simctl openurl ${simulatorId} ${getScreenshotUrl(coords)}`;
 }
 
-async function goToScreenshotUrlAndroid(coords: string, emulator: string) {
+async function goToScreenshotUrlAndroid(coords: string) {
   await $`adb shell am start -a android.intent.action.VIEW -d ${getScreenshotUrl(
-    coords
+    coords,
   )}`;
 }
 
 async function startSimulator(device: string) {
-  const boot = (await $`xcrun simctl boot ${device}`).stderr.toString();
-  if (boot.includes("Unable to boot device in current state: Booted")) {
-    return;
+  const result = await $`xcrun simctl boot ${device}`.nothrow();
+  if (result.exitCode === 0) {
+    await sleep(5000);
   }
-  await sleep(5000);
+  await $`open -a Simulator`;
+}
+
+async function isEmulatorRunning(): Promise<boolean> {
+  const devices = await $`adb devices`.text();
+  return devices
+    .split("\n")
+    .slice(1)
+    .some((line) => line.includes("emulator") && line.includes("device"));
 }
 
 function startEmulator(device: string) {
@@ -44,62 +66,75 @@ function startEmulator(device: string) {
 }
 
 async function getIosSimulatorId(device: string) {
-  const deviceStr =
-    await $`xcrun simctl list devices | grep "${device}" | head -n 1`.text();
-  return deviceStr.split("(")[1].split(")")[0];
+  const json = await $`xcrun simctl list devices --json`.text();
+  const data = JSON.parse(json);
+  for (const devices of Object.values(data.devices) as any[]) {
+    const found = (devices as any[]).find((d: any) => d.name === device);
+    if (found) return found.udid as string;
+  }
+  throw new Error(`Simulator not found: ${device}`);
 }
 
-function getAndroidEmulatorIpAndPort(device: string) {
-  return $`adb devices | grep "${device}" | awk '{print $1}'`.text();
-}
-const screenshotCoords = [
-  //
+const allScreenshotCoords = [
   "workoutpage",
   "exerciseeditor",
-  "ai",
+  "ai-planner",
   "home",
   "stats",
+  "exercise-stats",
   "history",
-  "ai-session",
-];
-const iosDevices = [
-  //
-  "iPhone SE 2nd generation",
-  "iPhone 14 Plus",
-  "iPad Pro 13-inch",
-  "iPhone 15 Pro Max",
 ];
 
-const androidDevices = [
-  //
-  "Pixel_5_API_34",
+const screenshotCoords = screenshotId ? [screenshotId] : allScreenshotCoords;
+
+const allIosDevices = [
+  "iPad Pro 13-inch (M5)",
+  "iPhone 17 Pro Max",
+  "iPhone 17",
+  "iPhone 16e",
 ];
 
-await $`dotnet clean ../LiftLog.Maui -f net10.0-android`;
-for (const device of androidDevices) {
-  await $`mkdir -p ${getDeviceFolder(device)}`;
-  const emulator = startEmulator(device).text();
-  await $`echo Press enter when emulator loaded`;
-  await $`read`;
-  // await $`dotnet build ../LiftLog.Maui -t:Run -c Debug -f net10.0-android -p:TargetFramework=net10.0-android -p:BuildFor=android -p:Device=${device}`;
-  await sleep(5000);
+const allAndroidDevices = ["Pixel_9"];
 
-  for (const coords of screenshotCoords) {
-    goToScreenshotUrlAndroid(coords, await getAndroidEmulatorIpAndPort(device));
-    await sleep(2000);
-    collectAndroidScreenshot(getFileName(coords, device));
-  }
-}
+const iosDevices =
+  platform === "android"
+    ? []
+    : platform === "ios"
+      ? [allIosDevices[0]!]
+      : allIosDevices;
+const androidDevices = platform === "ios" ? [] : [allAndroidDevices[0]!];
 
 for (const device of iosDevices) {
-  await $`mkdir -p ${getDeviceFolder(device)}`;
-  await startSimulator(device);
-  const simulatorId = await getIosSimulatorId(device);
-  // $`dotnet build ../LiftLog.Maui -t:Run -f net10.0-ios -p:RuntimeIdentifiers=iossimulator-x64 -c Debug -p:ExtraDefineConstants=DEBUG_IOSSIM -p:_DeviceName=:v2:udid=${simulatorId}`.text();
-  // await sleep(25000);
+  if (dryRun) {
+    console.log(`[dry-run] Would start simulator: ${device}`);
+  } else {
+    await $`mkdir -p ${getDeviceFolder(device)}`;
+    await startSimulator(device);
+  }
+  const simulatorId = dryRun ? device : await getIosSimulatorId(device);
   for (const coords of screenshotCoords) {
     goToScreenshotUrlIos(coords, simulatorId);
     await sleep(10000);
     collectIosScreenshot(getFileName(coords, device), simulatorId);
+  }
+}
+
+for (const device of androidDevices) {
+  if (dryRun) {
+    console.log(`[dry-run] Would start emulator: ${device}`);
+  } else {
+    await $`mkdir -p ${getDeviceFolder(device)}`;
+    if (!(await isEmulatorRunning())) {
+      startEmulator(device);
+      await $`echo Press enter when emulator loaded`;
+      await $`read`;
+      await sleep(5000);
+    }
+  }
+
+  for (const coords of screenshotCoords) {
+    goToScreenshotUrlAndroid(coords);
+    await sleep(10000);
+    collectAndroidScreenshot(getFileName(coords, device));
   }
 }

@@ -50,6 +50,9 @@ const aiPlannerSlice = createSlice({
     restartChat(state) {
       state.plannerChat = [];
     },
+    setChat(state, action: PayloadAction<ChatMessage[]>) {
+      state.plannerChat = action.payload;
+    },
   },
   selectors: {
     selectIsLoadingAiPlannerMessage: (s) =>
@@ -61,7 +64,7 @@ export const initializeAiPlannerStateSlice = createAction(
   'initializeAiPlannerStateSlice',
 );
 
-export const { setIsHydrated, addMessage, restartChat, updateMessage } =
+export const { setIsHydrated, addMessage, restartChat, updateMessage, setChat } =
   aiPlannerSlice.actions;
 
 export const { selectIsLoadingAiPlannerMessage } = aiPlannerSlice.selectors;

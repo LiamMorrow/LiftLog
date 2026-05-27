@@ -398,6 +398,10 @@ export class Session {
     });
   }
 
+  withName(name: string): Session {
+    return this.with({ blueprint: this.blueprint.with({ name }) });
+  }
+
   get totalWeightLifted(): Weight {
     return this.recordedExercises.reduce(
       (b, ex) =>

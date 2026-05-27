@@ -18,15 +18,7 @@ import { StatusBar } from 'expo-status-bar';
 
 install();
 
-LogBox.ignoreLogs([
-  /.*is not a valid icon name.*/,
-  /Open debugger to view warnings./,
-  /.*useInsertionEffect.*/,
-  /.*Failed to fetch inbox.*/,
-  /.*Failed to create user*/,
-  /.*Failed to update profile*/,
-  /.*NO_APPLICABLE_SUB_RESPONSE_CODE.*/, // Revenuecat on emulator without billing
-]);
+LogBox.ignoreAllLogs();
 
 if (Platform.OS !== 'web') {
   I18nManager.swapLeftAndRightInRTL?.(true);
