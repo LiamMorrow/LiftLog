@@ -271,6 +271,14 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
     },
   );
   addEffect(
+    setShowPostWorkoutSummary,
+    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+      if (stateAfterReduce.settings.isHydrated) {
+        await preferenceService.setShowPostWorkoutSummary(action.payload);
+      }
+    },
+  );
+  addEffect(
     setRemoteBackupSettings,
     async (action, { stateAfterReduce, extra: { preferenceService } }) => {
       if (stateAfterReduce.settings.isHydrated) {
