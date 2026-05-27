@@ -279,6 +279,8 @@ PODS:
   - libwebp/sharpyuv (1.5.0)
   - libwebp/webp (1.5.0):
     - libwebp/sharpyuv
+  - NativeLib (1.0.0):
+    - ExpoModulesCore
   - NitroModules (0.35.2):
     - hermes-engine
     - RCTRequired
@@ -302,12 +304,37 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - OpenSSL-Universal (3.3.3001)
+  - OpenSSL-Universal (3.6.2000)
   - PurchasesHybridCommon (17.6.0):
     - RevenueCat (= 5.38.2)
   - PurchasesHybridCommonUI (17.6.0):
     - PurchasesHybridCommon (= 17.6.0)
     - RevenueCatUI (= 5.38.2)
+  - QuickCrypto (1.1.5):
+    - hermes-engine
+    - NitroModules
+    - OpenSSL-Universal (~> 3.6.2000)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-callinvoker
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - RCTDeprecation (0.83.6)
   - RCTRequired (0.83.6)
   - RCTSwiftUI (0.83.6)
@@ -1770,6 +1797,28 @@ PODS:
     - ReactNativeDependencies
     - SwiftUIIntrospect (~> 1.0)
     - Yoga
+  - react-native-quick-base64 (3.0.0):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - react-native-safe-area-context (5.6.2):
     - hermes-engine
     - RCTRequired
@@ -2271,9 +2320,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ReactNativeWebcrypto (1.0.0):
-    - ExpoModulesCore
-    - OpenSSL-Universal (~> 3.3.3001)
   - RevenueCat (5.38.2)
   - RevenueCatUI (5.38.2):
     - RevenueCat (= 5.38.2)
@@ -2640,7 +2686,9 @@ DEPENDENCIES:
   - EXUpdatesInterface (from `../node_modules/expo-updates-interface/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
+  - NativeLib (from `../modules/native-lib/ios`)
   - NitroModules (from `../node_modules/react-native-nitro-modules`)
+  - QuickCrypto (from `../node_modules/react-native-quick-crypto`)
   - RCTDeprecation (from `../node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)
   - RCTRequired (from `../node_modules/react-native/Libraries/Required`)
   - RCTSwiftUI (from `../node_modules/react-native/ReactApple/RCTSwiftUI`)
@@ -2680,6 +2728,7 @@ DEPENDENCIES:
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - react-native-keyboard-controller (from `../node_modules/react-native-keyboard-controller`)
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
+  - react-native-quick-base64 (from `../node_modules/react-native-quick-base64`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - "react-native-skia (from `../node_modules/@shopify/react-native-skia`)"
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -2717,7 +2766,6 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeDependencies (from `../node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec`)
   - "ReactNativeHealthkit (from `../node_modules/@kingstinct/react-native-healthkit`)"
-  - ReactNativeWebcrypto (from `../modules/native-crypto/ios`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNPaywalls (from `../node_modules/react-native-purchases-ui`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
@@ -2817,8 +2865,12 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-v0.14.1
+  NativeLib:
+    :path: "../modules/native-lib/ios"
   NitroModules:
     :path: "../node_modules/react-native-nitro-modules"
+  QuickCrypto:
+    :path: "../node_modules/react-native-quick-crypto"
   RCTDeprecation:
     :path: "../node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation"
   RCTRequired:
@@ -2895,6 +2947,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-keyboard-controller"
   react-native-pager-view:
     :path: "../node_modules/react-native-pager-view"
+  react-native-quick-base64:
+    :path: "../node_modules/react-native-quick-base64"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-skia:
@@ -2969,8 +3023,6 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec"
   ReactNativeHealthkit:
     :path: "../node_modules/@kingstinct/react-native-healthkit"
-  ReactNativeWebcrypto:
-    :path: "../modules/native-crypto/ios"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
   RNPaywalls:
@@ -3032,10 +3084,12 @@ SPEC CHECKSUMS:
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
+  NativeLib: c08c29705b15f9268234f9e5188c2fcc7e9b05df
   NitroModules: 76063cb7bc1a21cf46d11b25abfcf1759bf0be47
-  OpenSSL-Universal: 6082b0bf950e5636fe0d78def171184e2b3899c2
+  OpenSSL-Universal: ecee7b138fa75a74ecf00d7ffd248fb584739b9e
   PurchasesHybridCommon: 3e27aec7bccba3d3d34cd66a7033ba9b268caa5e
   PurchasesHybridCommonUI: 0d6940f80d2bcbce81a2904a8328e1b38dcda94e
+  QuickCrypto: 367b7951ce48d15f5f1e4b5230dd9078547d80d8
   RCTDeprecation: 9502b5eb8e3c9eb75ff5a333b2c591bab9d91e28
   RCTRequired: 0268a5d86aef1defea2e04289d74fdf3570197c1
   RCTSwiftUI: cff211c5e4d94e491dda240d663b8effd25296d7
@@ -3074,6 +3128,7 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: 203b41906d627dac7d697bccba6137b630951fae
   react-native-keyboard-controller: c872321fc580f8d815e9e2ad5558b24c26c18b4f
   react-native-pager-view: adc7d78123fb395e03a70d19e8d75805b49838b5
+  react-native-quick-base64: c08d84d73f4922ac4e073d54c6956edaf5a5025f
   react-native-safe-area-context: 37e680fc4cace3c0030ee46e8987d24f5d3bdab2
   react-native-skia: b1ba694c208db8a184ea55fe086a76b4ef0b2493
   React-NativeModulesApple: 9068613f7650828eed29ead6fc0d0a1620117e6a
@@ -3111,7 +3166,6 @@ SPEC CHECKSUMS:
   ReactCommon: ba28cd4e7d9e24014d2772a80e32da020c732b00
   ReactNativeDependencies: f53f5577dd2b70013da86de17e8ab08eccf95e72
   ReactNativeHealthkit: b06f23893b9ccc7de3a12e74bc2509f9fd902542
-  ReactNativeWebcrypto: 49e45b3309acef2ede76b1a3624c70c1e518951e
   RevenueCat: f6b7c7e55f548a2bf304a3abbed0cc2447364427
   RevenueCatUI: 19681d899df72efe37f073ad1cd55e84877673da
   RNGestureHandler: 5494787ce29288a8941fa825663f2b1fa0a5aaf1

@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["LiftLogHapticsModule", "ReactNativeFileSystemModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.nativelib.LiftLogHapticsModule"]
+  }
+}

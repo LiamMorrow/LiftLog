@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name           = 'ReactNativeWebcrypto'
+  s.name           = 'NativeLib'
   s.version        = '1.0.0'
   s.summary        = 'A sample project summary'
   s.description    = 'A sample project description'
@@ -17,7 +17,6 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
-  s.dependency 'OpenSSL-Universal', '~> 3.3.3001'
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {

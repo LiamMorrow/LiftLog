@@ -10,6 +10,9 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import * as Sentry from '@sentry/react-native';
 import ServicesProvider from '@/components/smart/services-provider';
 import { PreventNavigateProvider } from '@/hooks/usePreventNavigate';
+import { install } from 'react-native-quick-crypto';
+
+install();
 
 LogBox.ignoreLogs([
   /.*is not a valid icon name.*/,

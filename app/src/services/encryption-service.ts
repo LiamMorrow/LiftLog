@@ -7,24 +7,25 @@ import {
   RsaPrivateKey,
   RsaPublicKey,
 } from '@/models/encryption-models';
-import {
-  decryptAesCbc,
-  encryptAesCbc,
-  generateAesIv,
-  generateAesKey,
-  generateRsaKeyPair,
-  rsaDecrypt,
-  rsaEncrypt,
-  rsaSign,
-  rsaVerify,
-} from '~/modules/native-crypto';
-import { sha256Hash } from '~/modules/native-crypto/src/ReactNativeWebcryptoModule';
+import crypto from 'crypto';
+import type { webcrypto } from 'crypto';
 
+// SHA-256 hash length in bytes
+const HashLengthBytes = 32;
 const SignatureLengthBytes = 256;
 
 export class EncryptionService {
   async generateAesKey(): Promise<AesKey> {
-    return { value: generateAesKey(128) };
+    const params: webcrypto.AesKeyGenParams = {
+      name: 'AES-CBC',
+      length: 128,
+    };
+    const key = await crypto.subtle.generateKey(params, true, [
+      'encrypt',
+      'decrypt',
+    ]);
+
+    return { value: new Uint8Array(await crypto.subtle.exportKey('raw', key)) };
   }
 
   async decryptAesCbcAndVerifyRsa256PssAsync(
@@ -32,24 +33,45 @@ export class EncryptionService {
     key: AesKey,
     publicKey: RsaPublicKey,
   ): Promise<Uint8Array> {
+    const params: webcrypto.AesCbcParams = {
+      name: 'AES-CBC',
+      iv: data.iv.value,
+    };
+    const cryptoKey = await crypto.subtle.importKey(
+      'raw',
+      key.value,
+      params,
+      false,
+      ['decrypt'],
+    );
     const decrypted = new Uint8Array(
-      await decryptAesCbc({
-        iv: data.iv.value,
-        key: key.value,
-        payload: data.encryptedPayload,
-      }),
+      await crypto.subtle.decrypt(params, cryptoKey, data.encryptedPayload),
     );
 
     const signature = decrypted.slice(decrypted.length - SignatureLengthBytes);
     const payload = decrypted.slice(0, decrypted.length - SignatureLengthBytes);
 
-    const payloadHash = await sha256Hash(payload);
+    const payloadHash = await crypto.subtle.digest('SHA-256', payload);
 
-    const verified = await rsaVerify({
-      payload: payloadHash,
+    const rsaParams: webcrypto.RsaHashedImportParams & webcrypto.RsaPssParams =
+      {
+        name: 'RSA-PSS',
+        hash: 'SHA-256',
+        saltLength: HashLengthBytes,
+      };
+    const rsaKey = await crypto.subtle.importKey(
+      'spki',
+      publicKey.spkiPublicKeyBytes,
+      rsaParams,
+      false,
+      ['verify'],
+    );
+    const verified = await crypto.subtle.verify(
+      rsaParams,
+      rsaKey,
       signature,
-      spkiPublicKeyDer: publicKey.spkiPublicKeyBytes,
-    });
+      payloadHash,
+    );
 
     if (!verified) {
       throw new Error('Signature verification failed');
@@ -64,22 +86,40 @@ export class EncryptionService {
     privateKey: RsaPrivateKey,
     aesIv?: AesIV | null,
   ): Promise<AesEncryptedAndRsaSignedData> {
-    const iv = aesIv?.value ?? generateAesIv();
+    const iv = aesIv?.value ?? crypto.getRandomValues(new Uint8Array(16));
+    const params: webcrypto.AesCbcParams = {
+      name: 'AES-CBC',
+      iv,
+    };
+    const cryptoKey = await crypto.subtle.importKey(
+      'raw',
+      key.value,
+      params,
+      false,
+      ['encrypt'],
+    );
 
-    const dataHash = await sha256Hash(data);
+    const rsaParams: webcrypto.RsaHashedImportParams & webcrypto.RsaPssParams =
+      {
+        name: 'RSA-PSS',
+        hash: 'SHA-256',
+        saltLength: HashLengthBytes,
+      };
+    const rsaKey = await crypto.subtle.importKey(
+      'pkcs8',
+      privateKey.pkcs8PrivateKeyBytes,
+      rsaParams,
+      false,
+      ['sign'],
+    );
 
-    const signature = await rsaSign({
-      payload: dataHash,
-      pkcs8PrivateKeyDer: privateKey.pkcs8PrivateKeyBytes,
-    });
+    const sha256Hash = await crypto.subtle.digest('SHA-256', data);
+
+    const signature = await crypto.subtle.sign(rsaParams, rsaKey, sha256Hash);
 
     const payload = new Uint8Array([...data, ...new Uint8Array(signature)]);
 
-    const encrypted = await encryptAesCbc({
-      payload,
-      key: key.value,
-      iv,
-    });
+    const encrypted = await crypto.subtle.encrypt(params, cryptoKey, payload);
 
     return {
       encryptedPayload: new Uint8Array(encrypted),
@@ -87,12 +127,33 @@ export class EncryptionService {
     };
   }
 
+  async sha256(data: Uint8Array): Promise<Uint8Array> {
+    return new Uint8Array(await crypto.subtle.digest('SHA-256', data));
+  }
+
   async generateRsaKeys(): Promise<RsaKeyPair> {
-    const keyPair = await generateRsaKeyPair(2048);
+    const keyPair = await crypto.subtle.generateKey(
+      {
+        name: 'RSA-OAEP',
+        modulusLength: 2048,
+        publicExponent: new Uint8Array([1, 0, 1]),
+        hash: 'SHA-256',
+      } satisfies webcrypto.RsaHashedKeyGenParams &
+        webcrypto.RsaOaepParams &
+        webcrypto.RsaKeyGenParams,
+      true,
+      ['encrypt', 'decrypt'],
+    );
+
+    const privateKey = await crypto.subtle.exportKey(
+      'pkcs8',
+      keyPair.privateKey,
+    );
+    const publicKey = await crypto.subtle.exportKey('spki', keyPair.publicKey);
 
     return {
-      privateKey: { pkcs8PrivateKeyBytes: keyPair.pkcs8PrivateKeyDer },
-      publicKey: { spkiPublicKeyBytes: keyPair.spkiPublicKeyDer },
+      privateKey: { pkcs8PrivateKeyBytes: new Uint8Array(privateKey) },
+      publicKey: { spkiPublicKeyBytes: new Uint8Array(publicKey) },
     };
   }
 
@@ -100,6 +161,16 @@ export class EncryptionService {
     data: Uint8Array,
     publicKey: RsaPublicKey,
   ): Promise<RsaEncryptedData> {
+    const key = await crypto.subtle.importKey(
+      'spki',
+      publicKey.spkiPublicKeyBytes,
+      {
+        name: 'RSA-OAEP',
+        hash: 'SHA-256',
+      } satisfies webcrypto.RsaHashedImportParams & webcrypto.RsaOaepParams,
+      true,
+      ['encrypt'],
+    );
     const chunkedData: Uint8Array[] = [];
     // RSA can only encrypt 122 bytes at a time
     for (let i = 0; i < data.length; i += 122) {
@@ -108,33 +179,49 @@ export class EncryptionService {
     return {
       dataChunks: await Promise.all(
         chunkedData.map(async (chunk) => {
-          return await rsaEncrypt({
-            payload: chunk,
-            spkiPublicKeyDer: publicKey.spkiPublicKeyBytes,
-          });
+          return new Uint8Array(
+            await crypto.subtle.encrypt(
+              {
+                name: 'RSA-OAEP',
+              },
+              key,
+              chunk,
+            ),
+          );
         }),
       ),
     };
-  }
-
-  async sha256(data: Uint8Array<ArrayBufferLike>): Promise<Uint8Array> {
-    return await sha256Hash(data);
   }
 
   async decryptRsaOaepSha256Async(
     data: RsaEncryptedData,
     privateKey: RsaPrivateKey,
   ): Promise<Uint8Array> {
+    const key = await crypto.subtle.importKey(
+      'pkcs8',
+      privateKey.pkcs8PrivateKeyBytes,
+      {
+        name: 'RSA-OAEP',
+        hash: 'SHA-256',
+      } satisfies webcrypto.RsaHashedImportParams & webcrypto.RsaOaepParams,
+      true,
+      ['decrypt'],
+    );
     const chunkedData: Uint8Array[] = [];
     for (let i = 0; i < data.dataChunks.length; i++) {
       chunkedData.push(data.dataChunks[i]);
     }
     const decryptedChunks = await Promise.all(
       chunkedData.map(async (chunk) => {
-        return await rsaDecrypt({
-          payload: chunk,
-          pkcs8PrivateKeyDer: privateKey.pkcs8PrivateKeyBytes,
-        });
+        return new Uint8Array(
+          await crypto.subtle.decrypt(
+            {
+              name: 'RSA-OAEP',
+            },
+            key,
+            chunk,
+          ),
+        );
       }),
     );
     return new Uint8Array(
@@ -149,12 +236,26 @@ export class EncryptionService {
     data: Uint8Array,
     privateKey: RsaPrivateKey,
   ): Promise<Uint8Array> {
-    const hash = await sha256Hash(data);
+    const key = await crypto.subtle.importKey(
+      'pkcs8',
+      privateKey.pkcs8PrivateKeyBytes,
+      {
+        name: 'RSA-PSS',
+        hash: 'SHA-256',
+      } satisfies webcrypto.RsaHashedImportParams,
+      true,
+      ['sign'],
+    );
     return new Uint8Array(
-      await rsaSign({
-        payload: hash,
-        pkcs8PrivateKeyDer: privateKey.pkcs8PrivateKeyBytes,
-      }),
+      await crypto.subtle.sign(
+        {
+          name: 'RSA-PSS',
+          hash: 'SHA-256',
+          saltLength: HashLengthBytes,
+        },
+        key,
+        data,
+      ),
     );
   }
 
@@ -163,11 +264,25 @@ export class EncryptionService {
     signature: Uint8Array,
     publicKey: RsaPublicKey,
   ): Promise<boolean> {
-    const hash = await sha256Hash(data);
-    return await rsaVerify({
-      payload: hash,
+    const key = await crypto.subtle.importKey(
+      'spki',
+      publicKey.spkiPublicKeyBytes,
+      {
+        name: 'RSA-PSS',
+        hash: 'SHA-256',
+      } satisfies webcrypto.RsaHashedImportParams,
+      true,
+      ['verify'],
+    );
+    return crypto.subtle.verify(
+      {
+        name: 'RSA-PSS',
+        hash: 'SHA-256',
+        saltLength: HashLengthBytes,
+      },
+      key,
       signature,
-      spkiPublicKeyDer: publicKey.spkiPublicKeyBytes,
-    });
+      data,
+    );
   }
 }

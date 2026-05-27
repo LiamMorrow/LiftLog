@@ -1,7 +1,7 @@
 import { uuid } from '@/utils/uuid';
 import { File, Paths } from 'expo-file-system';
 import { Platform } from 'react-native';
-import { getLibraryDirectory } from '~/modules/native-crypto';
+import { getLibraryDirectory } from '~/modules/native-lib';
 
 export class KeyValueStore {
   async getItem(key: string): Promise<string | undefined> {

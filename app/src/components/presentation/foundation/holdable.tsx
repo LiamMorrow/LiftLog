@@ -2,7 +2,7 @@ import {
   cancelHaptic,
   triggerClickHaptic,
   triggerSlowRiseHaptic,
-} from '~/modules/native-crypto/src/ReactNativeHapticsModule';
+} from '~/modules/native-lib/src/ReactNativeHapticsModule';
 import { ReactNode, useRef } from 'react';
 import { Animated, Easing, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';

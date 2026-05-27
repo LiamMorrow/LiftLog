@@ -1,4 +1,4 @@
-package expo.modules.webcrypto
+package expo.modules.nativelib
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition

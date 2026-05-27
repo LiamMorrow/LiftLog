@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 
-group = 'expo.modules.webcrypto'
+group = 'expo.modules.nativelib'
 version = '0.1.0'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -32,7 +32,7 @@ if (useManagedAndroidSdkVersions) {
 }
 
 android {
-  namespace "expo.modules.webcrypto"
+  namespace "expo.modules.nativelib"
   defaultConfig {
     versionCode 1
     versionName "0.1.0"
