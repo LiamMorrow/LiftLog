@@ -144,6 +144,10 @@ function WorkoutEditor(props: {
   const workout = useAppSelectorWithArg(selectCurrentSession, props.target);
   const dispatch = useDispatch();
   const [editorWorkout, setEditorWorkout] = useState(workout);
+  // When the store updates we need to replace our one
+  useEffect(() => {
+    setEditorWorkout(workout);
+  }, [workout]);
 
   const handleSaveWorkout = () => {
     dispatch(setCurrentSession({ session: editorWorkout, target }));
