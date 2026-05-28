@@ -52,7 +52,7 @@ describe('conversions', () => {
   describe.each`
     name                  | protoType                                           | initialValueGenerator        | convertToDao      | convertFromDao             | assertEquals
     ${'Duration'}         | ${google.protobuf.Duration}                         | ${DurationGenerator}         | ${toDurationDao}  | ${fromDurationDao}         | ${(a: Duration, b: Duration) => expect(a.equals(b)).toBeTruthy()}
-    ${'SessionBlueprint'} | ${Models.SessionBlueprintDao.SessionBlueprintDaoV2} | ${SessionBlueprintGenerator} | ${modelToDao}     | ${sessionBlueprintFromDao} | ${toPOJOEquals}
+    ${'SessionBlueprint'} | ${Models.SessionBlueprintDao.SessionBlueprintDaoV2} | ${SessionBlueprintGenerator} | ${modelToDao}     | ${sessionBlueprintFromDao} | ${toJSONEquals}
     ${'Session'}          | ${Models.SessionHistoryDao.SessionDaoV2}            | ${SessionGenerator}          | ${modelToDao}     | ${sessionFromDao}          | ${toJSONEquals}
     ${'FeedIdentity'}     | ${Models.FeedIdentityDaoV1}                         | ${FeedIdentityGenerator}     | ${modelToDao}     | ${FeedIdentity.fromDao}    | ${toPOJOEquals}
     ${'FeedUser'}         | ${Models.FeedUserDaoV1}                             | ${FeedUserGenerator}         | ${modelToDao}     | ${FeedUser.fromDao}        | ${toPOJOEquals}
