@@ -1,5 +1,4 @@
 import {
-  finishCurrentWorkout,
   selectCurrentSession,
   SessionTarget,
   setCurrentSession,
@@ -20,8 +19,10 @@ import { Jiggler } from '@/components/presentation/foundation/jiggler';
 
 export default function SessionMoreMenuComponent(props: {
   target: SessionTarget;
+  save: () => void;
 }) {
   const { t } = useTranslate();
+  const { save } = props;
   const useImperialUnits = useAppSelector((x) => x.settings.useImperialUnits);
   const session = useAppSelectorWithArg(selectCurrentSession, props.target);
   const dispatch = useDispatch();
@@ -68,10 +69,7 @@ export default function SessionMoreMenuComponent(props: {
     <>
       <Jiggler jiggling={jiggleFinishButton} jiggleSpeed={140}>
         <Tooltip title={t('workout.finish.action.tooltip')}>
-          <IconButton
-            icon={'assignmentTurnedIn'}
-            onPress={() => dispatch(finishCurrentWorkout(props.target))}
-          />
+          <IconButton icon={'assignmentTurnedIn'} onPress={save} />
         </Tooltip>
       </Jiggler>
       <Menu

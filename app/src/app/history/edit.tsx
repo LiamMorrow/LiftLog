@@ -42,7 +42,7 @@ export default function HistoryEditPage() {
         options={{
           title: session?.blueprint.name ?? 'Workout',
           headerRight: () => (
-            <SessionMoreMenuComponent target="historySession" />
+            <SessionMoreMenuComponent target="historySession" save={save} />
           ),
         }}
       />
@@ -77,7 +77,6 @@ export default function HistoryEditPage() {
       <SessionComponent
         target="historySession"
         showBodyweight={showBodyweight}
-        saveAndClose={save}
       />
     </>
   );

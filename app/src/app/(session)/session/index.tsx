@@ -1,5 +1,4 @@
 import ConfirmationDialog from '@/components/presentation/foundation/confirmation-dialog';
-import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import SessionComponent from '@/components/smart/session-component';
 import SessionMoreMenuComponent from '@/components/smart/session-more-menu-component';
 import { useAppSelector, useAppSelectorWithArg } from '@/store';
@@ -65,7 +64,7 @@ export default function Index() {
         options={{
           title: session?.blueprint.name ?? 'Workout',
           headerRight: () => (
-            <SessionMoreMenuComponent target="workoutSession" />
+            <SessionMoreMenuComponent target="workoutSession" save={save} />
           ),
         }}
       />
@@ -80,15 +79,12 @@ export default function Index() {
             `/session/post-workout?sessionId=${encodeURIComponent(session.id)}&source=live`,
           );
         }}
-        saveAndClose={() => save()}
       />
       <ConfirmationDialog
         okText={t('generic.finish.button')}
         onOk={() => save(true)}
         onCancel={() => setConfirmOpen(false)}
-        textContent={
-          <LimitedHtml value={t('workout.finish.incomplete.body')} />
-        }
+        textContent={t('workout.finish.incomplete.body')}
         headline={t('workout.finish.confirm.title')}
         open={confirmOpen}
       />

@@ -39,7 +39,6 @@ export default function SessionComponent(props: {
   target: SessionTarget;
   showBodyweight: boolean;
   openPostWorkoutSummary?: () => void;
-  saveAndClose?: () => void;
 }) {
   const { colors } = useAppTheme();
   const useImperialUnits = useAppSelector((x) => x.settings.useImperialUnits);
