@@ -53,17 +53,13 @@ export default function BackupAndRestorePage() {
           title={t('backup.automatic_remote.title')}
           description={t('backup.automatic_remote.subtitle')}
           left={(props) => <List.Icon icon={'cloudUpload'} {...props} />}
-          onPress={() =>
-            push('/(tabs)/settings/backup-and-restore/remote-backup')
-          }
+          onPress={() => push('/settings/backup-and-restore/remote-backup')}
         />
         <List.Item
           title={t('backup.plaintext_export.title')}
           description={t('backup.plaintext_export.subtitle')}
           left={(props) => <List.Icon icon={'description'} {...props} />}
-          onPress={() =>
-            push('/(tabs)/settings/backup-and-restore/plain-text-export')
-          }
+          onPress={() => push('/settings/backup-and-restore/plain-text-export')}
         />
         <HealthExportSwitch />
         <ListSwitch

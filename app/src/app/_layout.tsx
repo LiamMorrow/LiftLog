@@ -1,6 +1,5 @@
-import { Stack } from 'expo-router';
 import { AppThemeProvider } from '@/hooks/useAppTheme';
-import { I18nManager, LogBox, Platform, useColorScheme } from 'react-native';
+import { I18nManager, LogBox, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppStateProvider } from '@/components/smart/app-state-provider';
 import SnackbarProvider from '@/components/smart/snackbar-provider';
@@ -11,6 +10,12 @@ import * as Sentry from '@sentry/react-native';
 import ServicesProvider from '@/components/smart/services-provider';
 import { PreventNavigateProvider } from '@/hooks/usePreventNavigate';
 import { install } from 'react-native-quick-crypto';
+import { useAppTheme } from '@/hooks/useAppTheme';
+import { useAppSelector } from '@/store';
+import { selectFollowRequestCount } from '@/store/feed';
+import { useTranslate } from '@tolgee/react';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { StatusBar } from 'expo-status-bar';
 
 install();
 
@@ -29,8 +34,6 @@ if (Platform.OS !== 'web') {
 }
 
 export default Sentry.wrap(function RootLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <GestureHandlerRootView>
       <PreventNavigateProvider>
@@ -40,18 +43,8 @@ export default Sentry.wrap(function RootLayout() {
               <AppThemeProvider>
                 <AppStateProvider>
                   <SnackbarProvider>
-                    <Stack
-                      screenOptions={{
-                        headerShown: false,
-                        statusBarStyle:
-                          Platform.OS === 'android'
-                            ? colorScheme === 'dark'
-                              ? 'light'
-                              : 'dark'
-                            : undefined,
-                        gestureEnabled: false,
-                      }}
-                    />
+                    {Platform.OS === 'android' && <StatusBar style="auto" />}
+                    <Layout />
                   </SnackbarProvider>
                 </AppStateProvider>
               </AppThemeProvider>
@@ -62,3 +55,57 @@ export default Sentry.wrap(function RootLayout() {
     </GestureHandlerRootView>
   );
 });
+
+function Layout() {
+  const { t } = useTranslate();
+  const { colors } = useAppTheme();
+  const followRequestCount = useAppSelector(selectFollowRequestCount);
+  const showFeed = useAppSelector((x) => x.settings.showFeed);
+  return (
+    <NativeTabs
+      indicatorColor={colors.secondaryContainer}
+      rippleColor={colors.primary}
+      backgroundColor={colors.surfaceContainer}
+      labelVisibilityMode="labeled"
+      iconColor={colors.onSurfaceVariant}
+    >
+      <NativeTabs.Trigger name="(session)">
+        <NativeTabs.Trigger.Label>
+          {t('workout.workout.label')}
+        </NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="dumbbell" md="fitness_center" />
+      </NativeTabs.Trigger>
+      (
+      <NativeTabs.Trigger name="feed" hidden={!showFeed}>
+        <NativeTabs.Trigger.Icon sf="bubble.left.and.bubble.right" md="forum" />
+        <NativeTabs.Trigger.Label>
+          {t('feed.feed.title')}
+        </NativeTabs.Trigger.Label>
+        {followRequestCount && (
+          <NativeTabs.Trigger.Badge>
+            {followRequestCount.toString()}
+          </NativeTabs.Trigger.Badge>
+        )}
+      </NativeTabs.Trigger>
+      )
+      <NativeTabs.Trigger name="stats">
+        <NativeTabs.Trigger.Icon sf="chart.bar" md="bar_chart" />
+        <NativeTabs.Trigger.Label>
+          {t('stats.stats.title')}
+        </NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="history">
+        <NativeTabs.Trigger.Icon sf="calendar" md="calendar_month" />
+        <NativeTabs.Trigger.Label>
+          {t('generic.history.title')}
+        </NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <NativeTabs.Trigger.Icon sf="gear" md="settings" />
+        <NativeTabs.Trigger.Label>
+          {t('settings.settings.title')}
+        </NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}

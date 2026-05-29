@@ -53,7 +53,7 @@ export default function PostWorkoutPage() {
     <FloatingBottomContainer
       fab={
         <FAB
-          onPress={() => dismissTo('/(tabs)/(session)')}
+          onPress={() => dismissTo('/(session)')}
           icon={'check'}
           label={t('generic.finish.button')}
         />

@@ -32,7 +32,7 @@ export default function ProgramList() {
         ),
       }),
     );
-    push(`/(tabs)/settings/manage-workouts/${programId}/`);
+    push(`/settings/manage-workouts/${programId}/`);
   };
   const floatingBottomContainer = (
     <FloatingBottomContainer

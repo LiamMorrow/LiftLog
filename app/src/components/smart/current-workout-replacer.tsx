@@ -39,7 +39,7 @@ export function CurrentWorkoutReplacer({
           session,
         }),
       );
-      push('/(tabs)/(session)/session', { withAnchor: true });
+      push('/(session)/session', { withAnchor: true });
     },
     500,
     { leading: true, trailing: false },

@@ -70,7 +70,6 @@
     "react-dom": "19.2.0",
     "react-native": "0.83.6",
     "react-native-csv": "^0.2.0",
-    "react-native-edge-to-edge": "^1.7.0",
     "react-native-gesture-handler": "~2.30.0",
     "react-native-gifted-charts": "^1.4.74",
     "react-native-health-connect": "^3.5.0",

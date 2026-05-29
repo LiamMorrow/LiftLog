@@ -250,7 +250,7 @@ function PlanMessage({
         ),
       }),
     );
-    push(`/(tabs)/settings/program-list?focusprogramId=${programId}`);
+    push(`/settings/program-list?focusprogramId=${programId}`);
   };
   return (
     <View style={{ gap: spacing[2] }}>

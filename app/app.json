@@ -42,15 +42,6 @@
         }
       ],
       "expo-localization",
-      [
-        "react-native-edge-to-edge",
-        {
-          "android": {
-            "parentTheme": "Default",
-            "enforceNavigationBarContrast": false
-          }
-        }
-      ],
       "@sentry/react-native",
       "expo-sharing",
       "./plugins/override-health-connect-min-version.js",
@@ -86,10 +77,7 @@
               "host": "app.liftlog.online"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
       "adaptiveIcon": {
@@ -100,9 +88,7 @@
     },
     "ios": {
       "bundleIdentifier": "com.limajuice.liftlog",
-      "associatedDomains": [
-        "applinks:app.liftlog.online"
-      ],
+      "associatedDomains": ["applinks:app.liftlog.online"],
       "supportsTablet": true,
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": true,

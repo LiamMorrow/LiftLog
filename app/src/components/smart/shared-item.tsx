@@ -56,7 +56,7 @@ function SharedProgramBlueprintContent({
         programBlueprint: program,
       }),
     );
-    push(`/(tabs)/settings/program-list?focusprogramId=${programId}`, {
+    push(`/settings/program-list?focusprogramId=${programId}`, {
       withAnchor: true,
     });
     dispatch(

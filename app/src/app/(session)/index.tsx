@@ -167,7 +167,7 @@ function ListUpcomingWorkouts({
           const handleEditPress = () => {
             dispatch(setEditingSession(session.blueprint));
             push(
-              `/(tabs)/settings/manage-workouts/${planId}/manage-session/${sessionPlanIndex}`,
+              `/settings/manage-workouts/${planId}/manage-session/${sessionPlanIndex}`,
               { withAnchor: true },
             );
           };

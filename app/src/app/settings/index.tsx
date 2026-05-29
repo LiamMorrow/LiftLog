@@ -31,41 +31,41 @@ export default function Settings() {
       <Stack.Screen options={{ title: t('settings.settings.title') }} />
       <List.Section title={t('settings.configuration.title')}>
         <List.Item
-          onPress={() => push('/(tabs)/settings/program-list')}
+          onPress={() => push('/settings/program-list')}
           title={t('plan.manage.title')}
           description={t('plan.manage.subtitle')}
           left={(props) => <List.Icon icon={'assignment'} {...props} />}
         ></List.Item>
         <List.Item
-          onPress={() => push('/(tabs)/settings/manage-exercises')}
+          onPress={() => push('/settings/manage-exercises')}
           title={t('exercise.manage.button')}
           description={t('exercise.manage.subtitle')}
           left={(props) => <List.Icon icon={'directionsRun'} {...props} />}
         ></List.Item>
         <List.Item
           testID="appConfiguration"
-          onPress={() => push('/(tabs)/settings/app-configuration')}
+          onPress={() => push('/settings/app-configuration')}
           title={t('settings.app_configuration.title')}
           description={t('settings.app_configuration.subtitle')}
           left={(props) => <List.Icon icon={'settings'} {...props} />}
         ></List.Item>
         <List.Item
           testID="localization"
-          onPress={() => push('/(tabs)/settings/localization')}
+          onPress={() => push('/settings/localization')}
           title={t('settings.localisation.title')}
           description={t('settings.localisation.subtitle')}
           left={(props) => <List.Icon icon={'language'} {...props} />}
         ></List.Item>
 
         <List.Item
-          onPress={() => push('/(tabs)/settings/notifications')}
+          onPress={() => push('/settings/notifications')}
           title={t('settings.notifications.title')}
           description={t('settings.notifications.subtitle')}
           left={(props) => <List.Icon icon={'notifications'} {...props} />}
         ></List.Item>
 
         <List.Item
-          onPress={() => push('/(tabs)/settings/backup-and-restore')}
+          onPress={() => push('/settings/backup-and-restore')}
           title={t('backup.export_backup_restore.title')}
           description={t('backup.export_backup_restore.subtitle')}
           left={(props) => (
@@ -76,7 +76,7 @@ export default function Settings() {
 
       <List.Section title={t('settings.pro_features.title')}>
         <List.Item
-          onPress={() => push('/(tabs)/settings/ai/planner')}
+          onPress={() => push('/settings/ai/planner')}
           title={t('ai.planner.title')}
           description={t('ai.planner.subtitle')}
           left={(props) => <List.Icon icon={'bolt'} {...props} />}
