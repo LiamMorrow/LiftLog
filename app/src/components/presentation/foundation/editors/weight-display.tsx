@@ -41,11 +41,13 @@ export default function WeightDisplay(props: WeightDisplayProps) {
       {props.isReadonly ? null : (
         <WeightDialog
           open={dialogOpen}
-          weight={props.weight}
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+          weight={props.weight!}
           increment={props.increment}
           allowNegative={props.allowNegative}
           label={props.label ?? t('weight.weight.label')}
-          allowNull={props.allowNull}
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+          allowNull={props.allowNull as false}
           updateWeight={props.updateWeight}
           onClose={() => setDialogOpen(false)}
         />
