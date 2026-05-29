@@ -73,7 +73,7 @@ export default function HistoryCalendarCard({
 
   const navButtons = (
     <ForceLTRRow>
-      <View style={{ flex: 1, marginVertical: spacing[2] }}>
+      <View style={{ flex: 1 }}>
         <IconButton
           testID="calendar-nav-previous-month"
           icon="chevronLeft"
@@ -83,7 +83,6 @@ export default function HistoryCalendarCard({
       <View
         style={{
           flex: 5,
-          marginVertical: spacing[2],
           justifyContent: 'center',
           alignItems: 'center',
         }}
@@ -98,7 +97,7 @@ export default function HistoryCalendarCard({
           })}
         </SurfaceText>
       </View>
-      <View style={{ flex: 1, marginVertical: spacing[2] }}>
+      <View style={{ flex: 1 }}>
         <IconButton
           testID="calendar-nav-next-month"
           icon="chevronRight"
@@ -174,7 +173,7 @@ export default function HistoryCalendarCard({
         <HistoryCalendarDay
           key={date.toString() + dateEnterDelay}
           sessions={sessionsByDate.get(date.toString())}
-          // eslint-disable-next-line react-compiler/react-compiler
+          // eslint-disable-next-line react-compiler/react-compiler, react-hooks/immutability
           delayEntranceAnimMs={(dateEnterDelay += 5)}
           day={date}
           onPress={() => handleDayPress(date)}

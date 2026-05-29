@@ -27,7 +27,7 @@ export default function LabelledFormRow(props: {
           labelPadding,
         ]}
       >
-        <Icon source={props.icon as string} size={20} color={colors.primary} />
+        <Icon source={props.icon} size={20} color={colors.primary} />
         <SurfaceText font="text-xl">{props.label}</SurfaceText>
       </View>
       <View>{props.children}</View>

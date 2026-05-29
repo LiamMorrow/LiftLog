@@ -2,11 +2,8 @@ import { FeedApiService } from './feed-api';
 import { EncryptionService } from './encryption-service';
 import { FeedIdentity, FeedUser, FollowRequest } from '@/models/feed-models';
 import { RsaPublicKey } from '@/models/encryption-models';
-import {
-  PutInboxMessageRequest,
-  PutUserFollowSecretRequest,
-  DeleteUserFollowSecretRequest,
-} from '@/models/feed-api-models';
+
+
 import { LiftLog } from '@/gen/proto';
 import { FeedInboxDecryptionService } from './feed-inbox-decryption-service';
 import { uuid } from '@/utils/uuid';
@@ -51,7 +48,7 @@ export class FeedFollowService {
     const response = await this.feedApiService.putInboxMessageAsync({
       toUserId: toFollow.id,
       encryptedMessage: encryptedMessage.dataChunks,
-    } as PutInboxMessageRequest);
+    });
 
     return response;
   }
@@ -67,7 +64,7 @@ export class FeedFollowService {
         userId: identity.id,
         password: identity.password,
         followSecret: followSecret,
-      } as PutUserFollowSecretRequest);
+      });
 
     if (!putFollowSecretResponse.isSuccess()) {
       return ApiResult.fromFailure(putFollowSecretResponse);
@@ -104,7 +101,7 @@ export class FeedFollowService {
     const putResponse = await this.feedApiService.putInboxMessageAsync({
       toUserId: request.userId,
       encryptedMessage: encryptedMessage.dataChunks,
-    } as PutInboxMessageRequest);
+    });
 
     if (!putResponse.isSuccess()) {
       return ApiResult.fromFailure(putResponse);
@@ -147,7 +144,7 @@ export class FeedFollowService {
       const putResponse = await this.feedApiService.putInboxMessageAsync({
         toUserId: request.userId,
         encryptedMessage: encryptedMessage.dataChunks,
-      } as PutInboxMessageRequest);
+      });
 
       return putResponse;
     } catch (error) {
@@ -168,7 +165,7 @@ export class FeedFollowService {
       userId: identity.id,
       password: identity.password,
       followSecret: followSecret,
-    } as DeleteUserFollowSecretRequest);
+    });
 
     return putResponse;
   }

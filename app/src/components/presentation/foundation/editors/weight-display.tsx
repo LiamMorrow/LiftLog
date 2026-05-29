@@ -41,12 +41,12 @@ export default function WeightDisplay(props: WeightDisplayProps) {
       {props.isReadonly ? null : (
         <WeightDialog
           open={dialogOpen}
-          weight={props.weight as Weight}
+          weight={props.weight}
           increment={props.increment}
           allowNegative={props.allowNegative}
           label={props.label ?? t('weight.weight.label')}
-          allowNull={props.allowNull as false}
-          updateWeight={props.updateWeight as (weight: Weight) => void}
+          allowNull={props.allowNull}
+          updateWeight={props.updateWeight}
           onClose={() => setDialogOpen(false)}
         />
       )}

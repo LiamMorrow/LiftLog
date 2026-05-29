@@ -14,12 +14,14 @@ import { List, Menu } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import { LegendList } from '@legendapp/list';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function FeedFollowing() {
   const following = useAppSelector(selectFeedFollowing);
   const { handleScroll } = useScroll();
   const fetchingFeedItems = useAppSelector((x) => x.feed.isFetching);
   const dispatch = useDispatch();
+  const insets = useSafeAreaInsets();
   return (
     <LegendList
       style={{ flex: 1 }}
@@ -38,6 +40,9 @@ export function FeedFollowing() {
       renderItem={({ item }) => (
         <FeedFollowingItem user={item.user} userId={item.userId} />
       )}
+      contentContainerStyle={{
+        paddingBottom: insets.bottom,
+      }}
     />
   );
 }

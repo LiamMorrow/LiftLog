@@ -73,11 +73,20 @@ function Layout() {
         <NativeTabs.Trigger.Label>
           {t('workout.workout.label')}
         </NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf="dumbbell" md="fitness_center" />
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'dumbbell', selected: 'dumbbell.fill' }}
+          md={{ default: 'fitness_center', selected: 'fitness_center' }}
+        />
       </NativeTabs.Trigger>
       (
       <NativeTabs.Trigger name="feed" hidden={!showFeed}>
-        <NativeTabs.Trigger.Icon sf="bubble.left.and.bubble.right" md="forum" />
+        <NativeTabs.Trigger.Icon
+          sf={{
+            default: 'bubble.left.and.bubble.right',
+            selected: 'bubble.left.and.bubble.right.fill',
+          }}
+          md={{ default: 'forum', selected: 'forum' }}
+        />
         <NativeTabs.Trigger.Label>
           {t('feed.feed.title')}
         </NativeTabs.Trigger.Label>
@@ -89,19 +98,28 @@ function Layout() {
       </NativeTabs.Trigger>
       )
       <NativeTabs.Trigger name="stats">
-        <NativeTabs.Trigger.Icon sf="chart.bar" md="bar_chart" />
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'chart.bar', selected: 'chart.bar.fill' }}
+          md={{ default: 'bar_chart', selected: 'bar_chart' }}
+        />
         <NativeTabs.Trigger.Label>
           {t('stats.stats.title')}
         </NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="history">
-        <NativeTabs.Trigger.Icon sf="calendar" md="calendar_month" />
+        <NativeTabs.Trigger.Icon
+          sf="calendar"
+          md={{ default: 'calendar_month', selected: 'calendar_month' }}
+        />
         <NativeTabs.Trigger.Label>
           {t('generic.history.title')}
         </NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
-        <NativeTabs.Trigger.Icon sf="gear" md="settings" />
+        <NativeTabs.Trigger.Icon
+          sf="gear"
+          md={{ default: 'settings', selected: 'settings' }}
+        />
         <NativeTabs.Trigger.Label>
           {t('settings.settings.title')}
         </NativeTabs.Trigger.Label>

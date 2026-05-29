@@ -26,7 +26,6 @@ import { LiftLog } from '@/gen/proto';
 import { FeedIdentity, FeedUser } from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
 import { RsaPublicKey } from '@/models/encryption-models';
-import { PutInboxMessageRequest } from '@/models/feed-api-models';
 import { toUuidDao } from '@/models/storage/conversions.to-dao';
 import { FeedInboxDecryptionService } from '@/services/feed-inbox-decryption-service';
 import { ApiErrorType } from '@/services/api-error';
@@ -187,7 +186,7 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
       await feedApiService.putInboxMessageAsync({
         toUserId: feedUser.id,
         encryptedMessage: encryptedInboxMessage.dataChunks,
-      } as PutInboxMessageRequest);
+      });
     },
   );
 

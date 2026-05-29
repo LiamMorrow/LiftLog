@@ -10,8 +10,7 @@ import {
   DarkTheme,
   ThemeProvider as NavigationThemeProvider,
   DefaultTheme,
-  Theme,
-} from '@react-navigation/native';
+} from 'expo-router';
 import { MsIconSrc } from '@/components/presentation/foundation/ms-icon-source';
 import {
   argbFromHex,
@@ -205,7 +204,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   };
 
   const baseNavigationThem = isDark ? DarkTheme : DefaultTheme;
-  const navigationTheme: Theme = {
+  const navigationTheme = {
     ...baseNavigationThem,
     colors: {
       background: paperTheme.colors.background,

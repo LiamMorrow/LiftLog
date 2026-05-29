@@ -1,6 +1,6 @@
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
-import { HeaderHeightContext } from '@react-navigation/elements';
+import { HeaderHeightContext } from 'expo-router/react-navigation';
 import { useContext, useState } from 'react';
 import { View, StyleProp, ViewStyle, Platform } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -50,6 +50,7 @@ export default function FullHeightScrollView({
         </ScrollView>
       ) : (
         <KeyboardAwareScrollView
+          // @ts-expect-error -- Scrollview keeps flitting between compat and not
           ScrollViewComponent={ScrollView}
           onScroll={handleScroll}
           style={[scrollStyle]}

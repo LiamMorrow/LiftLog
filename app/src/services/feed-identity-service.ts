@@ -1,7 +1,6 @@
 import { FeedApiService } from './feed-api';
 import { EncryptionService } from './encryption-service';
 import { AesKey, RsaKeyPair } from '@/models/encryption-models';
-import { DeleteUserRequest } from '@/models/feed-api-models';
 import { FeedIdentity, toCurrentPlanDao } from '@/models/feed-models';
 import { SessionBlueprint } from '@/models/blueprint-models';
 import { LiftLog } from '@/gen/proto';
@@ -134,7 +133,7 @@ export class FeedIdentityService {
     const response = await this.feedApiService.deleteUserAsync({
       id: identity.id,
       password: identity.password,
-    } as DeleteUserRequest);
+    });
 
     return response;
   }

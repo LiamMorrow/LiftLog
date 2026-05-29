@@ -6,7 +6,6 @@ import {
   createSlice,
   PayloadAction,
 } from '@reduxjs/toolkit';
-import { WritableDraft } from 'immer';
 import { PlanDiff } from '@/models/blueprint-diff';
 import { WorkoutMessage } from '@/models/workout-worker-messages';
 
@@ -58,7 +57,7 @@ const currentSessionSlice = createSlice({
       }>,
     ) => {
       state[action.payload.target] = action.payload
-        .session as unknown as WritableDraft<Session>;
+        .session;
     },
   },
   selectors: {

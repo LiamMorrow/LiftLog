@@ -93,7 +93,7 @@ export function RestEditorDialog(props: RestEditorDialogProps) {
                 <SegmentedButtons
                   style={{ width: '100%' }}
                   value={buttonValue}
-                  onValueChange={(s) => handleValueChange(s as ButtonValues)}
+                  onValueChange={(s) => handleValueChange(s)}
                   buttons={[
                     {
                       value: 'short',

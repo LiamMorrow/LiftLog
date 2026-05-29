@@ -60,14 +60,14 @@ const storedSessionsSlice = createSlice({
 
     upsertStoredSessions(state, action: PayloadAction<Session[]>) {
       action.payload.forEach((session) => {
-        state.sessions[session.id] = session as WritableDraft<Session>;
+        state.sessions[session.id] = session;
         updateDerivatives(state, session);
       });
     },
 
     addStoredSession(state, action: PayloadAction<Session>) {
       state.sessions[action.payload.id] =
-        action.payload as WritableDraft<Session>;
+        action.payload;
       updateDerivatives(state, action.payload);
     },
 
@@ -184,7 +184,7 @@ function updateDerivatives(
     !state.earliestSession ||
     state.earliestSession.date.isAfter(session.date)
   ) {
-    state.earliestSession = session as WritableDraft<Session>;
+    state.earliestSession = session;
   }
   session.recordedExercises.forEach((exercise) => {
     const key = KeyedExerciseBlueprint.fromExerciseBlueprint(
@@ -197,7 +197,7 @@ function updateDerivatives(
         exercise.latestTime ?? OffsetDateTime.MIN,
       )
     ) {
-      state.latestExercises[key] = exercise as WritableDraft<RecordedExercise>;
+      state.latestExercises[key] = exercise;
     }
   });
 }

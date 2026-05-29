@@ -10,7 +10,9 @@ import { useAppSelector } from '@/store';
 import { selectFollowRequestCount } from '@/store/feed';
 import { useTranslate } from '@tolgee/react';
 import { Stack } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { HeaderHeightContext } from 'expo-router/react-navigation';
+import { useContext, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import { Tabs, TabScreen, TabsProvider } from 'react-native-paper-tabs';
 
 export default function FeedIndexPage() {
@@ -33,13 +35,20 @@ export default function FeedIndexPage() {
     setScrolled(!!tabScrolls[activeTabIndex]);
   }, [tabScrolls, activeTabIndex, setScrolled]);
 
+  const headerHeight = useContext(HeaderHeightContext); // Intentionally don't use useHeaderHeight as it might not be in a stack
+  const topInsetHeight = Platform.select({ ios: headerHeight }) ?? 0;
   return (
     <>
       <Stack.Screen options={{ title: t('feed.feed.title') }} />
       <TabsProvider onChangeIndex={setActiveTabIndex}>
         <Tabs
-          tabHeaderStyle={{ backgroundColor: headerColor }}
-          style={{ backgroundColor: 'transparent' }}
+          tabHeaderStyle={{
+            backgroundColor: headerColor,
+            paddingTop: topInsetHeight,
+          }}
+          style={{
+            backgroundColor: 'transparent',
+          }}
         >
           <TabScreen label={t('feed.feed.title')}>
             <ScrollProvider

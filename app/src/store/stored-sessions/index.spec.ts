@@ -88,7 +88,7 @@ describe('stored sessions sorting', () => {
     };
 
     const ordered = selectSessionsInMonth(
-      state as never,
+      state,
       YearMonth.of(2026, 4),
     );
 

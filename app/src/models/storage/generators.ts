@@ -25,7 +25,7 @@ import {
   RemovedSessionFeedItemPOJO,
   RemovedSessionFeedItem,
 } from '@/models/feed-models';
-import { Weight, WeightUnit } from '@/models/weight';
+import { Weight } from '@/models/weight';
 import {
   Session,
   RecordedWeightedExercise,
@@ -54,7 +54,7 @@ export const BigNumberGenerator = fc
 
 export const WeightUnitGenerator = fc
   .boolean()
-  .map((x) => (x ? ('kilograms' as WeightUnit) : 'pounds'));
+  .map((x) => (x ? ('kilograms') : 'pounds'));
 
 export const WeightGenerator = fc
   .tuple(WeightUnitGenerator, BigNumberGenerator)

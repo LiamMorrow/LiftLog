@@ -32,12 +32,14 @@ import Button from '@/components/presentation/foundation/gesture-wrappers/button
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import { LegendList } from '@legendapp/list';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Feed() {
   const feedItems = useAppSelector(selectFeedSessionItems);
   const { handleScroll } = useScroll();
   const fetchingFeedItems = useAppSelector((x) => x.feed.isFetching);
   const dispatch = useDispatch();
+  const insets = useSafeAreaInsets();
   return (
     <LegendList
       testID="feed-list"
@@ -61,6 +63,7 @@ export default function Feed() {
       )}
       contentContainerStyle={{
         padding: spacing.pageHorizontalMargin,
+        paddingBottom: insets.bottom,
       }}
     />
   );

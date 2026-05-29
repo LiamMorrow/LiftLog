@@ -22,6 +22,7 @@ import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import { match, P } from 'ts-pattern';
 import { LegendList } from '@legendapp/list';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type FeedFollowItem = FollowRequest | FeedUser;
 
@@ -34,6 +35,7 @@ export function FeedFollowers() {
   const { handleScroll } = useScroll();
   const fetchingFeedItems = useAppSelector((x) => x.feed.isFetching);
   const dispatch = useDispatch();
+  const insets = useSafeAreaInsets();
   return (
     <LegendList
       style={{ flex: 1 }}
@@ -54,6 +56,9 @@ export function FeedFollowers() {
           .otherwise((req) => req.id)
       }
       renderItem={({ item }) => <FeedFollowItem item={item} />}
+      contentContainerStyle={{
+        paddingBottom: insets.bottom,
+      }}
     />
   );
 }

@@ -10,7 +10,6 @@ import {
   selectFeedFollowers,
 } from '@/store/feed';
 import { FollowRequest } from '@/models/feed-models';
-import { GetInboxMessagesRequest } from '@/models/feed-api-models';
 import { fromUuidDao } from '@/models/storage/conversions.from-dao';
 import { AesKey } from '@/models/encryption-models';
 
@@ -37,7 +36,7 @@ export function addInboxEffects(addEffect: AddEffectFn) {
       const inboxItemsResponse = await feedApiService.getInboxMessagesAsync({
         userId: identity.id,
         password: identity.password,
-      } as GetInboxMessagesRequest);
+      });
 
       if (!inboxItemsResponse.isSuccess()) {
         dispatch(

@@ -62,6 +62,8 @@ module.exports = defineConfig([
       'react-compiler/react-compiler': 'error',
       'unused-imports/no-unused-imports': 'error',
       'no-redeclare': 'off',
+      'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/refs': 'off',
       '@typescript-eslint/no-redeclare': 'off',
       '@typescript-eslint/unbound-method': 'off',
       '@typescript-eslint/require-await': 'off',

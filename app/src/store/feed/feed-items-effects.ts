@@ -19,14 +19,9 @@ import {
 } from '@/models/feed-models';
 import { Session } from '@/models/session-models';
 import {
-  GetEventsRequest,
-  GetUsersRequest,
-  GetUserEventRequest,
-  PutUserEventRequest,
   GetUserResponse,
   UserEventResponse,
 } from '@/models/feed-api-models';
-import { AesEncryptedAndRsaSignedData } from '@/models/encryption-models';
 import { toUuidDao } from '@/models/storage/conversions.to-dao';
 import { fromUuidDao } from '@/models/storage/conversions.from-dao';
 import { EncryptionService } from '@/services/encryption-service';
@@ -83,7 +78,7 @@ export function addFeedItemEffects(addEffect: AddEffectFn) {
                 since:
                   userIdToLatestEvent.get(userId)?.toString() ||
                   MIN_TIMESTAMP.toString(),
-              }) as GetUserEventRequest,
+              }),
           );
 
         if (followedUsersWithFollowSecret.length === 0) {
@@ -94,10 +89,10 @@ export function addFeedItemEffects(addEffect: AddEffectFn) {
         const [feedResponse, usersResponse] = await Promise.all([
           feedApiService.getUserEventsAsync({
             users: followedUsersWithFollowSecret,
-          } as GetEventsRequest),
+          }),
           feedApiService.getUsersAsync({
             ids: followedUsersWithFollowSecret.map((x) => x.userId),
-          } as GetUsersRequest),
+          }),
         ]);
 
         if (!feedResponse.isSuccess()) {
@@ -301,7 +296,7 @@ async function publishSessionAsync(
     expiry: Instant.now()
       .plusSeconds(90 * 24 * 60 * 60)
       .toString(), // 90 days
-  } as PutUserEventRequest);
+  });
 }
 
 async function removePublishedSessionAsync(
@@ -335,7 +330,7 @@ async function removePublishedSessionAsync(
     expiry: Instant.now()
       .plusSeconds(90 * 24 * 60 * 60)
       .toString(), // 90 days
-  } as PutUserEventRequest);
+  });
 }
 
 async function getDecryptedUserAsync(
@@ -355,7 +350,7 @@ async function getDecryptedUserAsync(
           {
             encryptedPayload: response.encryptedName,
             iv: { value: response.encryptionIV },
-          } as AesEncryptedAndRsaSignedData,
+          },
           originalUser.aesKey!,
           originalUser.publicKey,
         );
@@ -372,7 +367,7 @@ async function getDecryptedUserAsync(
           {
             encryptedPayload: response.encryptedCurrentPlan,
             iv: { value: response.encryptionIV },
-          } as AesEncryptedAndRsaSignedData,
+          },
           originalUser.aesKey!,
           originalUser.publicKey,
         );
@@ -396,7 +391,7 @@ async function getDecryptedUserAsync(
           {
             encryptedPayload: response.encryptedProfilePicture,
             iv: { value: response.encryptionIV },
-          } as AesEncryptedAndRsaSignedData,
+          },
           originalUser.aesKey!,
           originalUser.publicKey,
         );
@@ -435,7 +430,7 @@ async function toFeedItemAsync(
         {
           encryptedPayload: userEvent.encryptedEventPayload,
           iv: { value: userEvent.encryptedEventIV },
-        } as AesEncryptedAndRsaSignedData,
+        },
         user.aesKey,
         user.publicKey,
       );

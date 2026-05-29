@@ -41,7 +41,7 @@ export class KeyValueStore {
       if (finalFile.exists) {
         finalFile.delete();
       }
-      tempFile.move(finalFile);
+      await tempFile.move(finalFile, { overwrite: true });
       return;
     }
     const stream = tempFile.writableStream();
@@ -54,7 +54,7 @@ export class KeyValueStore {
     if (finalFile.exists) {
       finalFile.delete();
     }
-    tempFile.move(finalFile);
+    await tempFile.move(finalFile, { overwrite: true });
   }
 
   getItemSync(key: string): string | undefined {

@@ -8,11 +8,6 @@
       "bundler": "metro",
       "output": "single"
     },
-    "splash": {
-      "backgroundColor": "#fcfdf6",
-      "image": "./assets/splash.png",
-      "resizeMode": "contain"
-    },
     "icon": "./assets/icon.png",
     "backgroundColor": "#fcfdf6",
     "primaryColor": "#046F03",
@@ -51,7 +46,16 @@
           "icon": "./assets/notification.png"
         }
       ],
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#fcfdf6",
+          "image": "./assets/splash.png",
+          "resizeMode": "contain"
+        }
+      ],
+      "expo-status-bar"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -114,7 +118,6 @@
       "appleTeamId": "",
       "version": "$(APP_DISPLAY_VERSION)",
       "buildNumber": "$(APP_VERSION)"
-    },
-    "jsEngine": "hermes"
+    }
   }
 }

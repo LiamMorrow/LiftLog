@@ -73,7 +73,7 @@ describe('conversions', () => {
             initialValueGenerator as fc.Arbitrary<unknown>,
             (initialValue) => {
               const converted = convertToDao(
-                initialValue as fc.Arbitrary<unknown>,
+                initialValue,
               );
               const encoded = protoType.encode(converted).finish();
               const decoded = protoType.decode(encoded);
