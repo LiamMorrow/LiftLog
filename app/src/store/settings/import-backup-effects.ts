@@ -20,6 +20,13 @@ import { sleep } from '@/utils/sleep';
 import { Session } from '@/models/session-models';
 import { ProgramBlueprint, SessionBlueprint } from '@/models/blueprint-models';
 import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
+import {
+  FeedIdentity,
+  FollowerFeedUser,
+  FollowRequestInboxMessage,
+  fromFeedUserJSON,
+  SessionUserEvent,
+} from '@/models/feed-models';
 
 export function addImportBackupEffects(addEffect: AddEffectFn) {
   addEffect(
@@ -103,8 +110,34 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
         }),
       );
       dispatch(checkIfWeightMigrationRequired());
-      if (dao.feedState) {
-        dispatch(beginFeedImport(dao.feedState));
+      if (dao.feedState?.identity) {
+        dispatch(
+          beginFeedImport({
+            identity: FeedIdentity.fromJSON(
+              ProtobufToJsonV1Migrator.migrateFeedIdentity(
+                dao.feedState.identity,
+              ),
+            ),
+            feedItems: (dao.feedState.feedItems ?? []).map((x) =>
+              SessionUserEvent.fromJSON(
+                ProtobufToJsonV1Migrator.migrateSessionUserEvent(x),
+              ),
+            ),
+            followed: (dao.feedState.followedUsers ?? []).map((x) =>
+              fromFeedUserJSON(ProtobufToJsonV1Migrator.migrateFollowedUser(x)),
+            ),
+            followers: (dao.feedState.followers ?? []).map((x) =>
+              FollowerFeedUser.fromJSON(
+                ProtobufToJsonV1Migrator.migrateFollowerUser(x),
+              ),
+            ),
+            followRequests: (dao.feedState.followRequests ?? []).map((x) =>
+              FollowRequestInboxMessage.fromJSON(
+                ProtobufToJsonV1Migrator.migrateFollowRequest(x),
+              ),
+            ),
+          }),
+        );
       }
     },
   );

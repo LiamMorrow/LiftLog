@@ -9,9 +9,10 @@ import {
   revokeFollowSecretAndRemoveFollower,
   selectFeedFollowers,
 } from '@/store/feed';
-import { FollowRequest } from '@/models/feed-models';
-import { fromUuidDao } from '@/models/storage/conversions.from-dao';
-import { AesKey } from '@/models/encryption-models';
+import {
+  FollowRequestInboxMessage,
+  FollowResponseInboxMessage,
+} from '@/models/feed-models';
 
 export function addInboxEffects(addEffect: AddEffectFn) {
   addEffect(
@@ -61,13 +62,9 @@ export function addInboxEffects(addEffect: AddEffectFn) {
       ).filter((x) => x !== null);
 
       // Process follow requests
-      const newFollowRequests = inboxItems
-        .filter((x) => x.messagePayload === 'followRequest')
-        .map((x) => {
-          const userId = fromUuidDao(x.fromUserId);
-          const name = x.followRequest?.name?.value;
-          return new FollowRequest(userId, name ?? undefined);
-        });
+      const newFollowRequests = inboxItems.filter(
+        (x): x is FollowRequestInboxMessage => x.type === 'FollowRequest',
+      );
 
       if (newFollowRequests.length > 0) {
         const currentFollowRequests = selectFeedFollowRequests(getState());
@@ -81,7 +78,7 @@ export function addInboxEffects(addEffect: AddEffectFn) {
         const currentFollowers = selectFeedFollowers(getState());
         for (const newRequest of updatedFollowRequests) {
           const existingFollower = currentFollowers.find(
-            (follower) => follower.id === newRequest.userId,
+            (follower) => follower.id === newRequest.senderUserId,
           );
           if (existingFollower) {
             dispatch(
@@ -95,30 +92,16 @@ export function addInboxEffects(addEffect: AddEffectFn) {
       }
 
       // Process follow responses
-      const newFollowResponses = inboxItems
-        .filter((x) => x.messagePayload === 'followResponse')
-        .map((x) => {
-          const userId = fromUuidDao(x.fromUserId);
-          const isAccepted = !!x.followResponse?.accepted;
-
-          return {
-            userId,
-            accepted: isAccepted,
-            aesKey: isAccepted
-              ? ({ value: x.followResponse?.accepted?.aesKey } as AesKey)
-              : null,
-            followSecret: isAccepted
-              ? x.followResponse?.accepted?.followSecret
-              : null,
-          };
-        });
+      const newFollowResponses = inboxItems.filter(
+        (x): x is FollowResponseInboxMessage => x.type === 'FollowResponse',
+      );
 
       dispatch(processFollowResponses({ responses: newFollowResponses }));
 
       // Process unfollow notifications
       const followersWhoStoppedFollowing = inboxItems
-        .filter((x) => x.messagePayload === 'unfollowNotification')
-        .map((x) => fromUuidDao(x.fromUserId));
+        .filter((x) => x.type === 'UnfollowNotification')
+        .map((x) => x.senderUserId);
 
       // Remove unfollowed users from followers
       followersWhoStoppedFollowing.forEach((userId) => {

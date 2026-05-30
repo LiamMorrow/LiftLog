@@ -10,6 +10,11 @@ import { KeyValueStore } from './key-value-store';
 import { PreferenceService } from './preference-service';
 import {
   updateExercisesToLatestVersion,
+  updateFeedFollowedUsersToLatestVersion,
+  updateFeedFollowerUsersToLatestVersion,
+  updateFeedFollowRequestsToLatestVersion,
+  updateFeedIdentityToLatestVersion,
+  updateFeedItemsToLatestVersion,
   updateProgramsToLatestVersion,
   updateSessionsToLatestVersion,
 } from './data-migrations/update-to-latest';
@@ -25,6 +30,10 @@ import {
   importExercisesFromWorkouts,
   importExercisesFromWorkoutsDataMigration,
 } from '@/services/data-migrations/import-exercises-from-workouts';
+import {
+  importFeed,
+  importFeedDataMigration,
+} from '@/services/data-migrations/import-feed';
 
 export class DatabaseMigrationService {
   // DO NOT Add a dependency to getState here, it gets messy quick
@@ -53,11 +62,19 @@ export class DatabaseMigrationService {
     if (!dataMigrationsRun.includes(importExercisesFromWorkoutsDataMigration)) {
       await importExercisesFromWorkouts(this.db);
     }
+    if (!dataMigrationsRun.includes(importFeedDataMigration)) {
+      await importFeed(this.db, this.keyValueStore);
+    }
 
     // We always want to update all entities to the latest version
     await updateSessionsToLatestVersion(this.db);
     await updateProgramsToLatestVersion(this.db);
     await updateExercisesToLatestVersion(this.db);
+    await updateFeedIdentityToLatestVersion(this.db);
+    await updateFeedFollowedUsersToLatestVersion(this.db);
+    await updateFeedItemsToLatestVersion(this.db);
+    await updateFeedFollowerUsersToLatestVersion(this.db);
+    await updateFeedFollowRequestsToLatestVersion(this.db);
 
     console.info('Migrated DB in ' + (performance.now() - now) + 'ms');
   }

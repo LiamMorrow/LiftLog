@@ -3,7 +3,7 @@ import EmptyInfo from '@/components/presentation/foundation/empty-info';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
-import { FeedUser, FollowRequest } from '@/models/feed-models';
+import { FeedUser, FollowRequestInboxMessage } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
 import {
   acceptFollowRequest,
@@ -24,7 +24,7 @@ import { match, P } from 'ts-pattern';
 import { LegendList } from '@legendapp/list';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-type FeedFollowItem = FollowRequest | FeedUser;
+type FeedFollowItem = FollowRequestInboxMessage | FeedUser;
 
 export function FeedFollowers() {
   const followRequests = useAppSelector(
@@ -52,7 +52,10 @@ export function FeedFollowers() {
       data={items}
       keyExtractor={(x) =>
         match(x)
-          .with(P.instanceOf(FollowRequest), (req) => `request-${req.userId}`)
+          .with(
+            P.instanceOf(FollowRequestInboxMessage),
+            (req) => `request-${req.senderUserId}`,
+          )
           .otherwise((req) => req.id)
       }
       renderItem={({ item }) => <FeedFollowItem item={item} />}
@@ -64,14 +67,14 @@ export function FeedFollowers() {
 }
 
 function FeedFollowItem(props: { item: FeedFollowItem }) {
-  if (props.item instanceof FollowRequest) {
+  if (props.item instanceof FollowRequestInboxMessage) {
     return <FeedFollowRequest request={props.item} />;
   }
 
   return <FeedFollowersItem user={props.item} userId={props.item.id} />;
 }
 
-function FeedFollowRequest(props: { request: FollowRequest }) {
+function FeedFollowRequest(props: { request: FollowRequestInboxMessage }) {
   const { t } = useTranslate();
   const { colors } = useAppTheme();
   const dispatch = useDispatch();
@@ -96,11 +99,11 @@ function FeedFollowRequest(props: { request: FollowRequest }) {
 
   return (
     <List.Item
-      title={props.request.name}
+      title={props.request.payload.name}
       description={
         <LimitedHtml
           value={t('feed.user_wants_to_follow_you.message', {
-            user: props.request.name ?? 'Anonymous user',
+            user: props.request.payload.name ?? 'Anonymous user',
           })}
         />
       }

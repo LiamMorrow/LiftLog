@@ -1,15 +1,13 @@
 import { AesKey } from '@/models/encryption-models';
 import {
   FeedIdentity,
-  FeedIdentityPOJO,
-  FeedItem,
-  FeedItemPOJO,
   FeedUser,
-  FeedUserPOJO,
-  FollowRequest,
-  FollowRequestPOJO,
+  FollowerFeedUser,
+  FollowRequestInboxMessage,
+  FollowResponseInboxMessage,
+  PendingFeedUser,
+  SessionUserEvent,
   SharedItem,
-  SharedItemPOJO,
 } from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
 import { ApiError } from '@/services/api-error';
@@ -22,19 +20,18 @@ import {
 
 export type FeedState = {
   isHydrated: boolean;
-  identity: RemoteData<FeedIdentityPOJO>;
-  feed: FeedItemPOJO[];
-  followedUsers: Record<string, FeedUserPOJO>;
-  sharedFeedUser: RemoteData<FeedUserPOJO>;
-  followRequests: FollowRequestPOJO[];
-  followers: Record<string, FeedUserPOJO>;
+  identity: RemoteData<FeedIdentity>;
+  feed: SessionUserEvent[];
+  followedUsers: Record<string, FeedUser>;
+  sharedFeedUser: RemoteData<PendingFeedUser>;
+  followRequests: FollowRequestInboxMessage[];
+  followers: Record<string, FollowerFeedUser>;
   /**
    * Keep a list of secrets which we need to tell the server to revoke.
    * Allows us to remove a follower from our list even if revoking the secret fails due to network issues
    */
   revokedFollowSecrets: string[];
-  unpublishedSessionIds: string[];
-  sharedItem: RemoteData<SharedItemPOJO>;
+  sharedItem: RemoteData<SharedItem>;
   isFetching: boolean;
 };
 
@@ -48,7 +45,6 @@ const initialState: FeedState = {
   revokedFollowSecrets: [],
   followRequests: [],
   followers: {},
-  unpublishedSessionIds: [],
   sharedItem: RemoteData.notAsked(),
 };
 
@@ -59,74 +55,64 @@ const feedSlice = createSlice({
     patchFeedState(state, action: PayloadAction<Partial<FeedState>>) {
       Object.assign(state, action.payload);
     },
+    clearFeedState() {
+      return { ...initialState, isHydrated: true };
+    },
     setIsHydrated(state, action: PayloadAction<boolean>) {
       state.isHydrated = action.payload;
     },
     setIdentity(state, action: PayloadAction<RemoteData<FeedIdentity>>) {
-      state.identity = action.payload?.map((x) => x.toPOJO());
+      state.identity = action.payload;
     },
-    setFeed(state, action: PayloadAction<FeedItem[]>) {
-      state.feed = action.payload.map((x) => x.toPOJO());
+    setFeed(state, action: PayloadAction<SessionUserEvent[]>) {
+      state.feed = action.payload;
     },
-    setFollowedUsers(state, action: PayloadAction<Record<string, FeedUser>>) {
-      state.followedUsers = Object.fromEntries(
-        Object.entries(action.payload).map((x) => [x[0], x[1].toPOJO()]),
-      );
+    removeFollowedUser(state, action: PayloadAction<string>) {
+      delete state.followedUsers[action.payload];
     },
-    removeFollowedUser(state, action: PayloadAction<FeedUser>) {
-      delete state.followedUsers[action.payload.id];
+    setSharedFeedUser(
+      state,
+      action: PayloadAction<RemoteData<PendingFeedUser>>,
+    ) {
+      state.sharedFeedUser = action.payload;
     },
-    setSharedFeedUser(state, action: PayloadAction<RemoteData<FeedUser>>) {
-      state.sharedFeedUser = action.payload.map((x) => x.toPOJO());
-    },
-    setFollowRequests(state, action: PayloadAction<FollowRequest[]>) {
-      state.followRequests = action.payload.map((x) => x.toPOJO());
-    },
-    setFollowers(state, action: PayloadAction<Record<string, FeedUser>>) {
-      state.followers = Object.fromEntries(
-        Object.entries(action.payload).map((x) => [x[0], x[1].toPOJO()]),
-      );
-    },
-    setUnpublishedSessionIds(state, action: PayloadAction<string[]>) {
-      state.unpublishedSessionIds = action.payload;
-    },
-    addUnpublishedSessionId(state, action: PayloadAction<string>) {
-      if (!state.unpublishedSessionIds.includes(action.payload)) {
-        state.unpublishedSessionIds.push(action.payload);
-      }
+    setFollowRequests(
+      state,
+      action: PayloadAction<FollowRequestInboxMessage[]>,
+    ) {
+      state.followRequests = action.payload;
     },
     setSharedItem(state, action: PayloadAction<RemoteData<SharedItem>>) {
-      state.sharedItem = action.payload.map((x) => x.toPOJO());
+      state.sharedItem = action.payload;
     },
     setIsFetching(state, action: PayloadAction<boolean>) {
       state.isFetching = action.payload;
     },
-    addFollower(state, action: PayloadAction<FeedUser>) {
-      state.followers[action.payload.id] = action.payload.toPOJO();
+    addFollower(state, action: PayloadAction<FollowerFeedUser>) {
+      state.followers[action.payload.id] = action.payload;
     },
     removeFollower(state, action: PayloadAction<string>) {
       delete state.followers[action.payload];
     },
-    removeFollowRequest(state, action: PayloadAction<FollowRequest>) {
+    removeFollowRequest(
+      state,
+      action: PayloadAction<FollowRequestInboxMessage>,
+    ) {
       state.followRequests = state.followRequests.filter(
-        (req) => req.userId !== action.payload.userId,
-      );
-    },
-    replaceFeedFollowedUsers(state, action: PayloadAction<FeedUser[]>) {
-      state.followedUsers = Object.fromEntries(
-        action.payload.map((user) => [user.id, user.toPOJO()]),
+        (req) => req.senderUserId !== action.payload.senderUserId,
       );
     },
     putFollowedUser(state, action: PayloadAction<FeedUser>) {
-      state.followedUsers[action.payload.id] = action.payload.toPOJO();
+      state.followedUsers[action.payload.id] = action.payload;
     },
-    replaceFeedItems(state, action: PayloadAction<FeedItem[]>) {
-      state.feed = action.payload.map((item) => item.toPOJO());
+    upsertFeedItems(state, action: PayloadAction<SessionUserEvent[]>) {
+      const ids = action.payload.map((x) => x.id);
+      state.feed = state.feed
+        .filter((x) => !ids.includes(x.id))
+        .concat(action.payload);
     },
-    removeUnpublishedSessionId(state, action: PayloadAction<string>) {
-      state.unpublishedSessionIds = state.unpublishedSessionIds.filter(
-        (id) => id !== action.payload,
-      );
+    removeFeedItems(state, action: PayloadAction<string[]>) {
+      state.feed = state.feed.filter((x) => !action.payload.includes(x.id));
     },
     addRevokableFollowSecret(state, actions: PayloadAction<string>) {
       state.revokedFollowSecrets.push(actions.payload);
@@ -138,69 +124,49 @@ const feedSlice = createSlice({
     },
   },
   selectors: {
-    selectSharedFeedUser: createSelector(
-      (state: FeedState) => state.sharedFeedUser,
-      (sharedUser) => sharedUser.map(FeedUser.fromPOJO),
-    ),
-    selectSharedItem: createSelector(
-      (state: FeedState) => state.sharedItem,
-      (sharedItem) => sharedItem.map(SharedItem.fromPOJO),
-    ),
+    selectSharedFeedUser: (state: FeedState) => state.sharedFeedUser,
+    selectSharedItem: (state: FeedState) => state.sharedItem,
     selectFollowRequestCount: createSelector(
       (state: FeedState) => state.followRequests,
       (x) => x.length,
     ),
-    selectFeedFollowRequests: createSelector(
-      (state: FeedState) => state.followRequests,
-      (x) => x.map(FollowRequest.fromPOJO),
-    ),
+    selectFeedFollowRequests: (state: FeedState) => state.followRequests,
     selectFeedFollowers: createSelector(
       (state: FeedState) => state.followers,
-      (x) => Object.values(x).map((user) => FeedUser.fromPOJO(user)),
+      (x) => Object.values(x),
     ),
     selectFeedFollowing: createSelector(
       (state: FeedState) => state.followedUsers,
       (x) =>
         Object.entries(x).map(([userId, user]) => ({
           userId,
-          user: FeedUser.fromPOJO(user),
+          user: user,
         })),
     ),
-    selectFeedSessionItems: createSelector(
-      (state: FeedState) => state.feed,
-      (x) =>
-        x.filter((y) => y.type === 'SessionFeedItem').map(FeedItem.fromPOJO),
-    ),
-    selectFeedIdentityRemote: createSelector(
-      (state: FeedState) => state.identity,
-      (x) => x.map(FeedIdentity.fromPOJO),
-    ),
+    selectFeedSessionItems: (state: FeedState) => state.feed,
+    selectFeedIdentityRemote: (state: FeedState) => state.identity,
   },
 });
 
 export const {
+  clearFeedState,
   patchFeedState,
   setIsHydrated,
   setIdentity,
   setFeed,
-  setFollowedUsers,
   setSharedFeedUser,
   setFollowRequests,
-  setFollowers,
-  setUnpublishedSessionIds,
   setSharedItem,
-  addUnpublishedSessionId,
   setIsFetching,
   addFollower,
   removeFollower,
   removeFollowRequest,
-  replaceFeedFollowedUsers,
+  upsertFeedItems,
   putFollowedUser,
-  replaceFeedItems,
-  removeUnpublishedSessionId,
   removeFollowedUser,
   addRevokableFollowSecret,
   removeRevokableFollowSecret,
+  removeFeedItems,
 } = feedSlice.actions;
 
 export const {
@@ -257,24 +223,26 @@ export const fetchAndSetSharedFeedUser = createAction<
 export const requestFollowUser = createAction<FeedAction>('requestFollowUser');
 
 export const processFollowResponses = createAction<{
-  responses: {
-    userId: string;
-    accepted: boolean;
-    aesKey: AesKey | null;
-    followSecret: string | null | undefined;
-  }[];
+  responses: FollowResponseInboxMessage[];
 }>('processFollowResponses');
 
 export const unfollowFeedUser = createAction<{ feedUser: FeedUser }>(
   'unfollowFeedUser',
 );
 
+export const addUnpublishedSessionId = createAction<string>(
+  'addUnpublishedSessionId',
+);
+export const removeUnpublishedSessionId = createAction<string>(
+  'removeUnpublishedSessionId',
+);
+
 export const acceptFollowRequest = createAction<
-  { request: FollowRequest } & FeedAction
+  { request: FollowRequestInboxMessage } & FeedAction
 >('acceptFollowRequest');
 
 export const denyFollowRequest = createAction<
-  { request: FollowRequest } & FeedAction
+  { request: FollowRequestInboxMessage } & FeedAction
 >('denyFollowRequest');
 
 export const revokeFollowSecretAndRemoveFollower = createAction<
@@ -290,7 +258,7 @@ export const publishUnpublishedSessions = createAction(
 );
 
 export const resetFeedAccount = createAction<
-  FeedAction & { newIdentity?: FeedIdentity }
+  FeedAction & { newIdentity?: FeedIdentity; createNewIdentity?: false }
 >('resetFeedAccount');
 
 export const updateFeedIdentity = createAction<

@@ -1,14 +1,25 @@
 import { FeedApiService } from './feed-api';
-import { EncryptionService } from './encryption-service';
-import { FeedIdentity, FeedUser, FollowRequest } from '@/models/feed-models';
+import { EncryptionService, toJsonBytes } from './encryption-service';
+import {
+  FeedIdentity,
+  FeedUser,
+  FollowedFeedUser,
+  FollowRequestInboxMessage,
+  PendingFeedUser,
+} from '@/models/feed-models';
 import { RsaPublicKey } from '@/models/encryption-models';
-
-
-import { LiftLog } from '@/gen/proto';
 import { FeedInboxDecryptionService } from './feed-inbox-decryption-service';
 import { uuid } from '@/utils/uuid';
-import { toStringValue, toUuidDao } from '@/models/storage/conversions.to-dao';
 import { ApiResult } from '@/services/api-error';
+import {
+  InboxMessageJSON,
+  JsonString,
+  toAesKeyJSON,
+  toBase64Uint8ArrayJSON,
+  toJsonString,
+} from '@/models/storage/versions/latest';
+
+export type JsonStringPayload<K> = K extends JsonString<infer U> ? U : never;
 
 export class FeedFollowService {
   constructor(
@@ -16,46 +27,74 @@ export class FeedFollowService {
     private encryptionService: EncryptionService,
   ) {}
 
-  async requestToFollowAUserAsync(
+  private async sendMessage<T extends InboxMessageJSON['type']>(
+    type: T,
     identity: FeedIdentity,
-    toFollow: FeedUser,
-  ): Promise<ApiResult<void>> {
-    const inboxMessage = LiftLog.Ui.Models.InboxMessageDao.create({
-      fromUserId: toUuidDao(identity.id),
-      followRequest: {
-        name: toStringValue(identity.name),
-      },
-    });
+    recipientUser: FeedUser,
+    message: Extract<InboxMessageJSON, { type: T }>['payloadJson'],
+  ) {
+    const unsignedInboxMessage: Omit<InboxMessageJSON, 'signature'> = {
+      type,
+      payloadJson: message,
+      senderUserId: identity.id,
+    };
 
     const signaturePayload = FeedInboxDecryptionService.getSignaturePayload(
-      inboxMessage,
-      toFollow.id,
+      unsignedInboxMessage,
+      recipientUser.id,
     );
     const signature = await this.encryptionService.signRsaPssSha256Async(
       signaturePayload,
       identity.rsaKeyPair.privateKey,
     );
-    inboxMessage.signature = signature;
-
-    const messageBytes =
-      LiftLog.Ui.Models.InboxMessageDao.encode(inboxMessage).finish();
+    const inboxMessage = {
+      ...unsignedInboxMessage,
+      signature: toBase64Uint8ArrayJSON(signature),
+    };
+    const messageBytes = toJsonBytes(inboxMessage);
     const encryptedMessage =
       await this.encryptionService.encryptRsaOaepSha256Async(
         messageBytes,
-        toFollow.publicKey,
+        recipientUser.publicKey,
       );
 
     const response = await this.feedApiService.putInboxMessageAsync({
-      toUserId: toFollow.id,
+      toUserId: recipientUser.id,
       encryptedMessage: encryptedMessage.dataChunks,
     });
 
     return response;
   }
 
+  async requestToFollowAUserAsync(
+    identity: FeedIdentity,
+    toFollow: FeedUser,
+  ): Promise<ApiResult<void>> {
+    return this.sendMessage(
+      'FollowRequest',
+      identity,
+      toFollow,
+      toJsonString({
+        name: identity.name,
+      }),
+    );
+  }
+
+  async unfollowUserAsync(
+    identity: FeedIdentity,
+    userToUnfollow: FollowedFeedUser,
+  ): Promise<ApiResult<void>> {
+    return this.sendMessage(
+      'UnfollowNotification',
+      identity,
+      userToUnfollow,
+      toJsonString({ followSecret: userToUnfollow.followSecret }),
+    );
+  }
+
   async acceptFollowRequestAsync(
     identity: FeedIdentity,
-    request: FollowRequest,
+    request: FollowRequestInboxMessage,
     userPublicKey: RsaPublicKey,
   ): Promise<ApiResult<string>> {
     const followSecret = uuid();
@@ -70,39 +109,18 @@ export class FeedFollowService {
       return ApiResult.fromFailure(putFollowSecretResponse);
     }
 
-    const inboxMessage = LiftLog.Ui.Models.InboxMessageDao.create({
-      fromUserId: toUuidDao(identity.id),
-      followResponse: {
-        accepted: {
-          aesKey: identity.aesKey.value,
+    const putResponse = await this.sendMessage(
+      'FollowResponse',
+      identity,
+      new PendingFeedUser(request.senderUserId, userPublicKey, undefined),
+      toJsonString({
+        response: {
+          type: 'AcceptedFollowResponse',
+          aesKey: toAesKeyJSON(identity.aesKey),
           followSecret: followSecret,
         },
-      },
-    });
-
-    const signaturePayload = FeedInboxDecryptionService.getSignaturePayload(
-      inboxMessage,
-      request.userId,
+      }),
     );
-    const signature = await this.encryptionService.signRsaPssSha256Async(
-      signaturePayload,
-      identity.rsaKeyPair.privateKey,
-    );
-    inboxMessage.signature = signature;
-
-    const messageBytes =
-      LiftLog.Ui.Models.InboxMessageDao.encode(inboxMessage).finish();
-    const encryptedMessage =
-      await this.encryptionService.encryptRsaOaepSha256Async(
-        messageBytes,
-        userPublicKey,
-      );
-
-    const putResponse = await this.feedApiService.putInboxMessageAsync({
-      toUserId: request.userId,
-      encryptedMessage: encryptedMessage.dataChunks,
-    });
-
     if (!putResponse.isSuccess()) {
       return ApiResult.fromFailure(putResponse);
     }
@@ -112,39 +130,20 @@ export class FeedFollowService {
 
   async denyFollowRequestAsync(
     identity: FeedIdentity,
-    request: FollowRequest,
+    request: FollowRequestInboxMessage,
     userPublicKey: RsaPublicKey,
   ): Promise<ApiResult<void>> {
-    const inboxMessage = LiftLog.Ui.Models.InboxMessageDao.create({
-      fromUserId: toUuidDao(identity.id),
-      followResponse: {
-        rejected: {},
-      },
-    });
-
-    const signaturePayload = FeedInboxDecryptionService.getSignaturePayload(
-      inboxMessage,
-      request.userId,
-    );
-    const signature = await this.encryptionService.signRsaPssSha256Async(
-      signaturePayload,
-      identity.rsaKeyPair.privateKey,
-    );
-    inboxMessage.signature = signature;
-
     try {
-      const messageBytes =
-        LiftLog.Ui.Models.InboxMessageDao.encode(inboxMessage).finish();
-      const encryptedMessage =
-        await this.encryptionService.encryptRsaOaepSha256Async(
-          messageBytes,
-          userPublicKey,
-        );
-
-      const putResponse = await this.feedApiService.putInboxMessageAsync({
-        toUserId: request.userId,
-        encryptedMessage: encryptedMessage.dataChunks,
-      });
+      const putResponse = await this.sendMessage(
+        'FollowResponse',
+        identity,
+        new PendingFeedUser(request.senderUserId, userPublicKey, undefined),
+        toJsonString({
+          response: {
+            type: 'RejectedFollowResponse',
+          },
+        }),
+      );
 
       return putResponse;
     } catch (error) {

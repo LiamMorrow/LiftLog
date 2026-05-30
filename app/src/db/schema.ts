@@ -1,10 +1,17 @@
 import {
   ExerciseDescriptorJSON,
+  FeedIdentityJSON,
+  FollowedFeedUserJSON,
+  FollowerFeedUserJSON,
+  FollowRequestInboxMessageJSON,
+  PendingFeedUserJSON,
   ProgramBlueprintJSON,
   SessionJSON,
+  SessionUserEventJSON,
 } from '@/models/storage/versions/latest';
 import { sql } from 'drizzle-orm';
 import {
+  check,
   integer,
   sqliteTable,
   text,
@@ -40,6 +47,62 @@ export const programsSchema = sqliteTable(
       .on(table.active)
       .where(sql`${table.active} = 1`),
   ],
+);
+
+export const feedIdentitySchema = sqliteTable(
+  'feed_identity',
+  {
+    id: integer().primaryKey(),
+    modelVersion: integer().notNull(),
+    payload: text('payload', { mode: 'json' })
+      .$type<FeedIdentityJSON>()
+      .notNull(),
+  },
+  () => [check('single_feed_identity', sql`id = 0`)],
+);
+
+export const feedFollowedUsersSchema = sqliteTable('feed_followed_user', {
+  id: text().primaryKey(),
+  modelVersion: integer().notNull(),
+  payload: text('payload', { mode: 'json' })
+    .$type<FollowedFeedUserJSON | PendingFeedUserJSON>()
+    .notNull(),
+});
+export const feedItemsSchema = sqliteTable('feed_items', {
+  id: text().primaryKey(),
+  modelVersion: integer().notNull(),
+  payload: text('payload', { mode: 'json' })
+    .$type<SessionUserEventJSON>()
+    .notNull(),
+});
+
+export const feedFollowerUsersSchema = sqliteTable('feed_follower_user', {
+  id: text().primaryKey(),
+  modelVersion: integer().notNull(),
+  payload: text('payload', { mode: 'json' })
+    .$type<FollowerFeedUserJSON>()
+    .notNull(),
+});
+
+export const feedFollowRequestsSchema = sqliteTable('feed_follow_request', {
+  id: text().primaryKey(),
+  modelVersion: integer().notNull(),
+  payload: text('payload', { mode: 'json' })
+    .$type<FollowRequestInboxMessageJSON>()
+    .notNull(),
+});
+
+export const feedRevokedFollowSecretsSchema = sqliteTable(
+  'feed_revoked_follow_secrets',
+  {
+    secret: text().primaryKey(),
+  },
+);
+export const feedUnpublishedSessionsSchema = sqliteTable(
+  'feed_unpublished_sessions',
+  {
+    sessionId: text().primaryKey(),
+  },
 );
 
 // Just a table we can use to keep track of which data migrations have been run

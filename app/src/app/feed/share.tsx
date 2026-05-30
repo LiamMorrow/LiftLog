@@ -71,7 +71,7 @@ export default function FeedSharePage() {
                 <SurfaceText style={{ textAlign: 'center' }}>
                   <LimitedHtml
                     value={t('feed.user_wants_to_share_profile.message', {
-                      user: sharedProfile.displayName || 'Anonymous user',
+                      user: sharedProfile.name || 'Anonymous user',
                     })}
                   />
                 </SurfaceText>

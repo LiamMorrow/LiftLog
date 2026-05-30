@@ -91,9 +91,6 @@ export class FeedApiService {
         encryptedCurrentPlan: base64Response.encryptedCurrentPlan
           ? base64ToUint8Array(base64Response.encryptedCurrentPlan)
           : undefined,
-        encryptedProfilePicture: base64Response.encryptedProfilePicture
-          ? base64ToUint8Array(base64Response.encryptedProfilePicture)
-          : undefined,
         encryptedName: base64Response.encryptedName
           ? base64ToUint8Array(base64Response.encryptedName)
           : undefined,
@@ -150,9 +147,6 @@ export class FeedApiService {
               lookup: user.lookup,
               encryptedCurrentPlan: user.encryptedCurrentPlan
                 ? base64ToUint8Array(user.encryptedCurrentPlan)
-                : undefined,
-              encryptedProfilePicture: user.encryptedProfilePicture
-                ? base64ToUint8Array(user.encryptedProfilePicture)
                 : undefined,
               encryptedName: user.encryptedName
                 ? base64ToUint8Array(user.encryptedName)

@@ -16,6 +16,7 @@ import Long from 'long';
 import { UuidConversionError } from './uuid-conversion-error';
 import {
   Duration,
+  Instant,
   LocalDate,
   LocalTime,
   OffsetDateTime,
@@ -23,8 +24,11 @@ import {
 } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import {
+  toBase64Uint8ArrayJSON,
   toBigNumberJSON,
   toDurationJSON,
+  toInstantJson,
+  toJsonString,
   toLocalDateJSON,
   toOffsetDateTimeJSON,
 } from '../libs';
@@ -39,6 +43,15 @@ import {
   SessionJSON,
 } from './session';
 import { WeightJSON, WeightUnitJSON } from './weight';
+import {
+  FeedIdentityJSON,
+  FollowedFeedUserJSON,
+  FollowerFeedUserJSON,
+  FollowRequestInboxMessageJSON,
+  FollowRequestJSON,
+  PendingFeedUserJSON,
+  SessionUserEventJSON,
+} from './feed';
 
 export class ProtobufToJsonV1Migrator {
   static migrateProgramBlueprint(
@@ -57,6 +70,146 @@ export class ProtobufToJsonV1Migrator {
     value: LiftLog.Ui.Models.SessionBlueprintDao.ISessionBlueprintDaoV2,
   ): SessionBlueprintJSON {
     return fromSessionBlueprintDao(value);
+  }
+
+  static migrateFeedIdentity(
+    dao: LiftLog.Ui.Models.IFeedIdentityDaoV1,
+  ): FeedIdentityJSON {
+    return {
+      id: fromUuidDao(dao.id),
+      lookup: dao.lookup?.value ?? '',
+      aesKey: { value: toBase64Uint8ArrayJSON(Uint8Array.from(dao.aesKey!)) },
+      rsaKeyPair: {
+        publicKey: {
+          spkiPublicKeyBytes: toBase64Uint8ArrayJSON(
+            Uint8Array.from(dao.publicKey!),
+          ),
+        },
+        privateKey: {
+          pkcs8PrivateKeyBytes: toBase64Uint8ArrayJSON(
+            Uint8Array.from(dao.privateKey!),
+          ),
+        },
+      },
+      password: dao.password!,
+      name: dao.name?.value ?? undefined,
+      publishBodyweight: dao.publishBodyweight ?? false,
+      publishPlan: dao.publishPlan ?? false,
+      publishWorkouts: dao.publishWorkouts ?? false,
+    };
+  }
+
+  static migrateFollowedUser(
+    dao: LiftLog.Ui.Models.IFeedUserDaoV1,
+  ): FollowedFeedUserJSON | PendingFeedUserJSON {
+    const publicKey = {
+      spkiPublicKeyBytes: toBase64Uint8ArrayJSON(
+        Uint8Array.from(dao.publicKey!),
+      ),
+    };
+    if (!dao.aesKey || !dao.followSecret) {
+      return {
+        type: 'PendingFeedUser',
+        id: fromUuidDao(dao.id),
+        name: dao.name?.value ?? undefined,
+        publicKey,
+      };
+    }
+    return {
+      type: 'FollowedFeedUser',
+      id: fromUuidDao(dao.id),
+      aesKey: { value: toBase64Uint8ArrayJSON(Uint8Array.from(dao.aesKey)) },
+      publicKey,
+      currentPlan: {
+        name: '',
+        sessions: [],
+        lastEdited: toLocalDateJSON(LocalDate.now()),
+      },
+      name: dao.name?.value ?? undefined,
+      followSecret: dao.followSecret?.value ?? '',
+    };
+  }
+
+  static migrateUuid(dao: LiftLog.Ui.Models.IUuidDao | null | undefined) {
+    if (!dao?.value) {
+      throw new Error('UUID dao cannot be null');
+    }
+    const v = dao.value;
+    // This is wild. We used Guid.toByteArray in c# originally. You'd think this would just keep the same order as when the bytes are printed as hex as a string, but no. From the docs:
+    // Note that the order of bytes in the returned byte array is different from the string representation of a Guid value.
+    // The order of the beginning four-byte group and the next two two-byte groups is reversed, whereas the order of the last two-byte group and the closing six-byte group is the same.
+    //    Guid: 35918bc9-196d-40ea-9779-889d79b753f0
+    //    C9 8B 91 35 6D 19 EA 40 97 79 88 9D 79 B7 53 F0
+    //    Guid: 35918bc9-196d-40ea-9779-889d79b753f0 (Same as First Guid: True)
+    // source: https://learn.microsoft.com/en-us/dotnet/api/system.guid.tobytearray?view=net-9.0
+    // prettier-ignore
+    const reorderedForGuid = [
+    v[3], v[2], v[1], v[0],
+    v[5], v[4],
+    v[7], v[6],
+    v[8],v[9],v[10],v[11],v[12],v[13],v[14],v[15]
+  ];
+    try {
+      return uuidStringify(Uint8Array.from(reorderedForGuid));
+    } catch (e) {
+      throw new Error('dao.value', { cause: e });
+    }
+  }
+
+  static migrateFollowerUser(
+    dao: LiftLog.Ui.Models.IFeedUserDaoV1,
+  ): FollowerFeedUserJSON {
+    return {
+      id: fromUuidDao(dao.id),
+      publicKey: {
+        spkiPublicKeyBytes: toBase64Uint8ArrayJSON(
+          Uint8Array.from(dao.publicKey!),
+        ),
+      },
+      name: dao.name?.value ?? undefined,
+      followSecret: dao.followSecret?.value ?? '',
+      type: 'FollowerFeedUser',
+    };
+  }
+  static migratePendingFeedUser(
+    dao: LiftLog.Ui.Models.IFeedUserDaoV1,
+  ): PendingFeedUserJSON {
+    return {
+      id: fromUuidDao(dao.id),
+      publicKey: {
+        spkiPublicKeyBytes: toBase64Uint8ArrayJSON(
+          Uint8Array.from(dao.publicKey!),
+        ),
+      },
+      name: dao.name?.value ?? undefined,
+      type: 'PendingFeedUser',
+    };
+  }
+
+  static migrateFollowRequest(
+    dao: LiftLog.Ui.Models.IInboxMessageDao,
+  ): FollowRequestInboxMessageJSON {
+    return {
+      type: 'FollowRequest',
+      payloadJson: toJsonString<FollowRequestJSON>({
+        name: dao.followRequest?.name?.value ?? undefined,
+      }),
+      senderUserId: fromUuidDao(dao.fromUserId),
+      signature: toBase64Uint8ArrayJSON(new Uint8Array(0)),
+    };
+  }
+
+  static migrateSessionUserEvent(
+    dao: LiftLog.Ui.Models.IFeedItemDaoV1,
+  ): SessionUserEventJSON {
+    return {
+      type: 'SessionUserEvent',
+      eventId: fromUuidDao(dao.eventId),
+      expiry: toInstantJson(fromTimestampDao(dao.expiry)),
+      timestamp: toInstantJson(fromTimestampDao(dao.timestamp)),
+      session: ProtobufToJsonV1Migrator.migrateSession(dao.session!),
+      userId: fromUuidDao(dao.userId),
+    };
   }
 }
 
@@ -487,4 +640,15 @@ function fromWeightDao(value: LiftLog.Ui.Models.IWeight): WeightJSON {
     value: toBigNumberJSON(fromDecimalDao(value.value!)),
     unit: fromWeightUnitDao(value.unit),
   };
+}
+
+function fromTimestampDao(
+  dao: google.protobuf.ITimestamp | null | undefined,
+): Instant {
+  // TODO - we just drop the nanos for now
+  const sec = dao?.seconds;
+  if (typeof sec === 'number') {
+    return Instant.ofEpochSecond(sec);
+  }
+  return Instant.ofEpochSecond(dao!.seconds!.toNumber());
 }

@@ -1,4 +1,11 @@
 import { LiftLog } from '@/gen/proto';
+import {
+  FeedIdentity,
+  FeedUser,
+  FollowerFeedUser,
+  FollowRequestInboxMessage,
+  SessionUserEvent,
+} from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
 import { WeightUnit } from '@/models/weight';
 import { DayOfWeek, Instant } from '@js-joda/core';
@@ -149,12 +156,19 @@ export const initializeSettingsStateSlice = createAction(
 );
 export type PlaintextExportFormat = 'CSV' | 'JSON';
 
+export interface FeedImport {
+  identity: FeedIdentity;
+  feedItems: SessionUserEvent[];
+  followers: FollowerFeedUser[];
+  followed: FeedUser[];
+  followRequests: FollowRequestInboxMessage[];
+}
+
 export const importData = createAction('importData');
 export const importDataDao = createAction<{
   dao: LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2;
 }>('importDataDao');
-export const beginFeedImport =
-  createAction<LiftLog.Ui.Models.IFeedStateDaoV1>('beginFeedImport');
+export const beginFeedImport = createAction<FeedImport>('beginFeedImport');
 export const exportData = createAction<{ includeFeed: boolean }>('exportData');
 
 export const exportPlainText = createAction<{ format: PlaintextExportFormat }>(

@@ -1,13 +1,25 @@
 import {
   ExerciseDescriptorJSON,
+  FeedIdentityJSON,
+  FollowedFeedUserJSON,
+  FollowerFeedUserJSON,
+  FollowRequestInboxMessageJSON,
   LatestVersion,
+  PendingFeedUserJSON,
   ProgramBlueprintJSON,
   SessionJSON,
+  SessionUserEventJSON,
 } from './latest';
 import {
   AnyVersionExerciseDescriptorJSON,
+  AnyVersionFeedIdentityJSON,
+  AnyVersionFollowedFeedUserJSON,
+  AnyVersionFollowerFeedUserJSON,
+  AnyVersionFollowRequestInboxMessageJSON,
+  AnyVersionPendingFeedUserJSON,
   AnyVersionProgramBlueprintJSON,
   AnyVersionSessionJSON,
+  AnyVersionSessionUserEventJSON,
 } from './any';
 
 export class MigratorVAnyToLatest {
@@ -43,6 +55,73 @@ export class MigratorVAnyToLatest {
     modelVersion: number,
     value: AnyVersionExerciseDescriptorJSON,
   ): ExerciseDescriptorJSON {
+    if (modelVersion === LatestVersion) {
+      return value;
+    }
+    if (modelVersion < 1) {
+      throw new Error(`Unknown model version ${modelVersion}`);
+    }
+    // The idea is when we have more, we can run the specific migrations from say V1 -> V2 incrementing the model version recursively, but let's see
+    throw new Error(`Unknown model version ${modelVersion}`);
+  }
+
+  static migrateFeedIdentity(
+    modelVersion: number,
+    value: AnyVersionFeedIdentityJSON,
+  ): FeedIdentityJSON {
+    if (modelVersion === LatestVersion) {
+      return value;
+    }
+    if (modelVersion < 1) {
+      throw new Error(`Unknown model version ${modelVersion}`);
+    }
+    // The idea is when we have more, we can run the specific migrations from say V1 -> V2 incrementing the model version recursively, but let's see
+    throw new Error(`Unknown model version ${modelVersion}`);
+  }
+  static migrateFeedFollowRequest(
+    modelVersion: number,
+    value: AnyVersionFollowRequestInboxMessageJSON,
+  ): FollowRequestInboxMessageJSON {
+    if (modelVersion === LatestVersion) {
+      return value;
+    }
+    if (modelVersion < 1) {
+      throw new Error(`Unknown model version ${modelVersion}`);
+    }
+    // The idea is when we have more, we can run the specific migrations from say V1 -> V2 incrementing the model version recursively, but let's see
+    throw new Error(`Unknown model version ${modelVersion}`);
+  }
+  static migrateFollowerFeedUser(
+    modelVersion: number,
+    value: AnyVersionFollowerFeedUserJSON,
+  ): FollowerFeedUserJSON {
+    if (modelVersion === LatestVersion) {
+      return value;
+    }
+    if (modelVersion < 1) {
+      throw new Error(`Unknown model version ${modelVersion}`);
+    }
+    // The idea is when we have more, we can run the specific migrations from say V1 -> V2 incrementing the model version recursively, but let's see
+    throw new Error(`Unknown model version ${modelVersion}`);
+  }
+  static migrateFollowedFeedUser(
+    modelVersion: number,
+    value: AnyVersionFollowedFeedUserJSON | AnyVersionPendingFeedUserJSON,
+  ): FollowedFeedUserJSON | PendingFeedUserJSON {
+    if (modelVersion === LatestVersion) {
+      return value;
+    }
+    if (modelVersion < 1) {
+      throw new Error(`Unknown model version ${modelVersion}`);
+    }
+    // The idea is when we have more, we can run the specific migrations from say V1 -> V2 incrementing the model version recursively, but let's see
+    throw new Error(`Unknown model version ${modelVersion}`);
+  }
+
+  static migrateFeedSessionUserEvent(
+    modelVersion: number,
+    value: AnyVersionSessionUserEventJSON,
+  ): SessionUserEventJSON {
     if (modelVersion === LatestVersion) {
       return value;
     }

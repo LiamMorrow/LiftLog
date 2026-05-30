@@ -95,3 +95,165 @@ export function fromBigNumberJSON(json: BigNumberJSON): BigNumber {
 export function toBigNumberJSON(value: BigNumber): BigNumberJSON {
   return value.toJSON() as BigNumberJSON;
 }
+
+export type JsonString<T> = Branded<string, 'Json'> & { _TMarker: T };
+
+export function toJsonString<T>(value: T): JsonString<T> {
+  return JSON.stringify(value) as JsonString<T>;
+}
+export function fromJsonString<T>(json: JsonString<T>): T {
+  return JSON.parse(json) as T;
+}
+
+export type Base64Uint8ArrayJSON = Branded<string, 'Base64Uint8Array'>;
+
+export function fromBase64Uint8ArrayJSON(
+  json: Base64Uint8ArrayJSON,
+): Uint8Array {
+  return Uint8Array.from(atob(json), (c) => c.charCodeAt(0));
+}
+
+export function toBase64Uint8ArrayJSON(
+  value: Uint8Array,
+): Base64Uint8ArrayJSON {
+  return btoa(
+    Array.from(value, (b) => String.fromCharCode(b)).join(''),
+  ) as Base64Uint8ArrayJSON;
+}
+
+export interface RsaPublicKeyJSON {
+  spkiPublicKeyBytes: Base64Uint8ArrayJSON;
+}
+
+export interface AesKeyJSON {
+  value: Base64Uint8ArrayJSON;
+}
+
+export interface RsaPrivateKeyJSON {
+  pkcs8PrivateKeyBytes: Base64Uint8ArrayJSON;
+}
+
+export interface AesEncryptedAndRsaSignedDataJSON {
+  encryptedPayload: Base64Uint8ArrayJSON;
+  iv: AesIVJSON;
+}
+
+export interface RsaEncryptedDataJSON {
+  dataChunks: Base64Uint8ArrayJSON[];
+}
+
+export interface RsaKeyPairJSON {
+  publicKey: RsaPublicKeyJSON;
+  privateKey: RsaPrivateKeyJSON;
+}
+
+export interface AesIVJSON {
+  value: Base64Uint8ArrayJSON;
+}
+
+export interface RsaPublicKey {
+  spkiPublicKeyBytes: Uint8Array;
+}
+
+export interface AesKey {
+  value: Uint8Array;
+}
+
+export interface RsaPrivateKey {
+  pkcs8PrivateKeyBytes: Uint8Array;
+}
+
+export interface AesEncryptedAndRsaSignedData {
+  encryptedPayload: Uint8Array;
+  iv: AesIV;
+}
+
+export interface RsaEncryptedData {
+  dataChunks: Uint8Array[];
+}
+
+export interface RsaKeyPair {
+  publicKey: RsaPublicKey;
+  privateKey: RsaPrivateKey;
+}
+
+export interface AesIV {
+  value: Uint8Array;
+}
+
+export function fromRsaPublicKeyJSON(json: RsaPublicKeyJSON): RsaPublicKey {
+  return {
+    spkiPublicKeyBytes: fromBase64Uint8ArrayJSON(json.spkiPublicKeyBytes),
+  };
+}
+export function toRsaPublicKeyJSON(value: RsaPublicKey): RsaPublicKeyJSON {
+  return {
+    spkiPublicKeyBytes: toBase64Uint8ArrayJSON(value.spkiPublicKeyBytes),
+  };
+}
+
+export function fromAesKeyJSON(json: AesKeyJSON): AesKey {
+  return { value: fromBase64Uint8ArrayJSON(json.value) };
+}
+export function toAesKeyJSON(value: AesKey): AesKeyJSON {
+  return { value: toBase64Uint8ArrayJSON(value.value) };
+}
+
+export function fromRsaPrivateKeyJSON(json: RsaPrivateKeyJSON): RsaPrivateKey {
+  return {
+    pkcs8PrivateKeyBytes: fromBase64Uint8ArrayJSON(json.pkcs8PrivateKeyBytes),
+  };
+}
+export function toRsaPrivateKeyJSON(value: RsaPrivateKey): RsaPrivateKeyJSON {
+  return {
+    pkcs8PrivateKeyBytes: toBase64Uint8ArrayJSON(value.pkcs8PrivateKeyBytes),
+  };
+}
+
+export function fromAesIVJSON(json: AesIVJSON): AesIV {
+  return { value: fromBase64Uint8ArrayJSON(json.value) };
+}
+export function toAesIVJSON(value: AesIV): AesIVJSON {
+  return { value: toBase64Uint8ArrayJSON(value.value) };
+}
+
+export function fromAesEncryptedAndRsaSignedDataJSON(
+  json: AesEncryptedAndRsaSignedDataJSON,
+): AesEncryptedAndRsaSignedData {
+  return {
+    encryptedPayload: fromBase64Uint8ArrayJSON(json.encryptedPayload),
+    iv: fromAesIVJSON(json.iv),
+  };
+}
+export function toAesEncryptedAndRsaSignedDataJSON(
+  value: AesEncryptedAndRsaSignedData,
+): AesEncryptedAndRsaSignedDataJSON {
+  return {
+    encryptedPayload: toBase64Uint8ArrayJSON(value.encryptedPayload),
+    iv: toAesIVJSON(value.iv),
+  };
+}
+
+export function fromRsaEncryptedDataJSON(
+  json: RsaEncryptedDataJSON,
+): RsaEncryptedData {
+  return { dataChunks: json.dataChunks.map(fromBase64Uint8ArrayJSON) };
+}
+export function toRsaEncryptedDataJSON(
+  value: RsaEncryptedData,
+): RsaEncryptedDataJSON {
+  return { dataChunks: value.dataChunks.map(toBase64Uint8ArrayJSON) };
+}
+
+export function fromRsaKeyPairJSON(json: RsaKeyPairJSON): RsaKeyPair {
+  return {
+    publicKey: fromRsaPublicKeyJSON(json.publicKey),
+    privateKey: fromRsaPrivateKeyJSON(json.privateKey),
+  };
+}
+export function toRsaKeyPairJSON(value: RsaKeyPair): RsaKeyPairJSON {
+  return {
+    publicKey: toRsaPublicKeyJSON(value.publicKey),
+    privateKey: toRsaPrivateKeyJSON(value.privateKey),
+  };
+}

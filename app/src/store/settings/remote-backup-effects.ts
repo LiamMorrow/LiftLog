@@ -14,7 +14,6 @@ import { toUrlSafeHexString } from '@/utils/to-url-safe-hex-string';
 import { Instant } from '@js-joda/core';
 import 'compression-streams-polyfill';
 import { TaskAbortError } from '@reduxjs/toolkit';
-import { toFeedStateDao } from '../feed';
 
 // Helper function to yield control back to the event loop
 const yieldToEventLoop = () =>
@@ -62,7 +61,7 @@ export function addRemoteBackupEffects(addEffect: AddEffectFn) {
       cancelActiveListeners();
       const start = performance.now();
       settings ??= getState().settings.remoteBackupSettings;
-      const { endpoint, apiKey, includeFeedAccount } = settings;
+      const { endpoint, apiKey } = settings;
 
       if (!endpoint?.trim()) {
         return;
@@ -99,9 +98,6 @@ export function addRemoteBackupEffects(addEffect: AddEffectFn) {
 
         throwIfCancelled();
         const activeProgramId = getState().program.activePlanId;
-        const feedStateDao = includeFeedAccount
-          ? toFeedStateDao(getState().feed)
-          : null;
 
         throwIfCancelled();
         const dao = new LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2({
@@ -109,7 +105,6 @@ export function addRemoteBackupEffects(addEffect: AddEffectFn) {
           activeProgramId: new google.protobuf.StringValue({
             value: activeProgramId,
           }),
-          feedState: feedStateDao,
           savedPrograms: savedProgramsDao,
         });
 

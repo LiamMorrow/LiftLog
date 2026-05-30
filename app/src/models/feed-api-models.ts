@@ -26,7 +26,6 @@ export type PutUserDataRequest = {
   id: string;
   password: string;
   encryptedCurrentPlan: Uint8Array | undefined;
-  encryptedProfilePicture: Uint8Array | undefined;
   encryptedName: Uint8Array | undefined;
   encryptionIV: Uint8Array;
   rsaPublicKey: Uint8Array;
@@ -36,7 +35,6 @@ export type GetUserResponse = {
   id: string;
   lookup: string;
   encryptedCurrentPlan: Uint8Array | undefined;
-  encryptedProfilePicture: Uint8Array | undefined;
   encryptedName: Uint8Array | undefined;
   encryptionIV: Uint8Array;
   rsaPublicKey: Uint8Array;

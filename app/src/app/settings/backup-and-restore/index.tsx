@@ -2,14 +2,22 @@ import ConfirmationDialog from '@/components/presentation/foundation/confirmatio
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import ListSwitch from '@/components/presentation/foundation/list-switch';
-import { LiftLog } from '@/gen/proto';
 import { useActionEffect } from '@/hooks/useActionEffect';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useAppSelector } from '@/store';
-import { fromFeedStateDao, patchFeedState } from '@/store/feed';
+import {
+  addFollower,
+  clearFeedState,
+  putFollowedUser,
+  resetFeedAccount,
+  setFollowRequests,
+  setIdentity,
+  upsertFeedItems,
+} from '@/store/feed';
 import {
   beginFeedImport,
   exportData,
+  FeedImport,
   importData,
   setBackupReminder,
 } from '@/store/settings';
@@ -20,6 +28,7 @@ import { useState } from 'react';
 import { List } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { HealthExportSwitch } from '@/components/smart/health-export-switch';
+import { RemoteData } from '@/models/remote';
 
 export default function BackupAndRestorePage() {
   const { t } = useTranslate();
@@ -90,15 +99,25 @@ function ImportFeedDialog({ open, setOpen }: DialogProps) {
   const { t } = useTranslate();
   const { colors } = useAppTheme();
   const dispatch = useDispatch();
-  const [importedFeedState, setImportedFeedState] =
-    useState<LiftLog.Ui.Models.IFeedStateDaoV1>();
+  const [importedFeedState, setImportedFeedState] = useState<FeedImport>();
 
   const importFeedData = () => {
     if (!importedFeedState) {
       setOpen(false);
       return;
     }
-    dispatch(patchFeedState(fromFeedStateDao(importedFeedState)));
+    dispatch(
+      resetFeedAccount({
+        fromUserAction: true,
+        createNewIdentity: false,
+      }),
+    );
+    dispatch(clearFeedState());
+    dispatch(setIdentity(RemoteData.success(importedFeedState.identity)));
+    dispatch(upsertFeedItems(importedFeedState.feedItems));
+    dispatch(setFollowRequests(importedFeedState.followRequests));
+    importedFeedState.followed.forEach((x) => dispatch(putFollowedUser(x)));
+    importedFeedState.followers.forEach((x) => dispatch(addFollower(x)));
     setOpen(false);
   };
   useActionEffect(beginFeedImport, (action) => {

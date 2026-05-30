@@ -50,6 +50,7 @@ export function createStore(db: ExpoSQLiteDatabase) {
     listenerApi: {
       extra: Services;
       signal: AbortSignal;
+      onFail: (cb: () => void) => void;
       cancelActiveListeners: () => void;
       throwIfCancelled: () => void;
       dispatch: AppDispatch;
@@ -80,6 +81,7 @@ export function createStore(db: ExpoSQLiteDatabase) {
         !actionPredicate ||
         [actionPredicate].flat().some((x) => x.type === action.type),
       effect: async (action, listenerApi) => {
+        const failureHandlers: (() => void)[] = [];
         const originalState = listenerApi.getOriginalState() as RootState;
         const stateAfterReduce = listenerApi.getState() as RootState;
         const services = listenerApi.extra(store);
@@ -89,12 +91,23 @@ export function createStore(db: ExpoSQLiteDatabase) {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
             dispatch: listenerApi.dispatch as any,
             getState: listenerApi.getState as () => RootState,
+            onFail: (cb) => failureHandlers.push(cb),
             originalState,
             stateAfterReduce,
             extra: services,
           });
         } catch (e) {
           services.logger.error(`Error during effect [${action.type}]:`, e);
+          for (const handler of failureHandlers) {
+            try {
+              handler();
+            } catch (err) {
+              services.logger.error(
+                `Error during failure handler for effect [${action.type}]:`,
+                err,
+              );
+            }
+          }
           return;
         }
       },

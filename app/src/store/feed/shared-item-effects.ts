@@ -1,8 +1,9 @@
-import { LiftLog } from '@/gen/proto';
 import { AesKey } from '@/models/encryption-models';
-import { SharedItem } from '@/models/feed-models';
+import { fromSharedItemJSON } from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
+import { SharedItemJSON } from '@/models/storage/versions/latest';
 import { ApiErrorType } from '@/services/api-error';
+import { fromJsonBytes, toJsonBytes } from '@/services/encryption-service';
 import {
   encryptAndShare,
   feedApiError,
@@ -46,9 +47,8 @@ export function addSharedItemEffects(addEffect: AddEffectFn) {
       }
 
       const aesKey = await encryptionService.generateAesKey();
-      const payload = action.payload.item.toDao();
-      const payloadBytes =
-        LiftLog.Ui.Models.SharedItemPayload.encode(payload).finish();
+      const payload = action.payload.item.toJSON();
+      const payloadBytes = toJsonBytes(payload);
 
       const encrypted =
         await encryptionService.signRsa256PssAndEncryptAesCbcAsync(
@@ -87,7 +87,19 @@ export function addSharedItemEffects(addEffect: AddEffectFn) {
 
   addEffect(
     fetchSharedItem,
-    async (a, { dispatch, extra: { feedApiService, encryptionService } }) => {
+    async (
+      a,
+      { dispatch, extra: { feedApiService, encryptionService }, onFail },
+    ) => {
+      onFail(() => {
+        dispatch(
+          setSharedItem(
+            RemoteData.error(
+              'Could not read shared item. Please update LiftLog.',
+            ),
+          ),
+        );
+      });
       dispatch(setSharedItem(RemoteData.loading()));
       const shared = await feedApiService.getSharedItemAsync(a.payload.id);
       if (!shared.isSuccess()) {
@@ -103,20 +115,8 @@ export function addSharedItemEffects(addEffect: AddEffectFn) {
           aesKey,
           rsaPublicKey,
         );
-      const sharedItemDao =
-        LiftLog.Ui.Models.SharedItemPayload.decode(decryptedBytes);
-      const sharedItem = SharedItem.fromDao(sharedItemDao);
-
-      if (!sharedItem) {
-        dispatch(
-          setSharedItem(
-            RemoteData.error(
-              'Could not read shared item. Please update LiftLog.',
-            ),
-          ),
-        );
-        return;
-      }
+      const sharedItemDao = fromJsonBytes<SharedItemJSON>(decryptedBytes);
+      const sharedItem = fromSharedItemJSON(sharedItemDao);
 
       dispatch(setSharedItem(RemoteData.success(sharedItem)));
     },

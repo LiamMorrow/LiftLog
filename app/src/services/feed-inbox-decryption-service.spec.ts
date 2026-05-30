@@ -162,11 +162,10 @@ async function createFeedUser(
   const identity = new FeedIdentity(
     feedUser.id,
     feedUser.id,
-    feedUser.aesKey!,
+    feedUser.aesKey,
     { publicKey: feedUser.publicKey, privateKey: rsaKeyPair.privateKey },
     'password',
     feedUser.name,
-    undefined, // profilePicture
     true, // publishBodyweight
     true, // publishPlan
     true, // publishWorkouts
@@ -186,7 +185,6 @@ function toGetUserResponse(
     id: userAndPrivateKey.user.id,
     lookup: userAndPrivateKey.user.id,
     encryptedCurrentPlan: undefined,
-    encryptedProfilePicture: undefined,
     encryptedName: undefined,
     encryptionIV: new Uint8Array(16),
     rsaPublicKey: userAndPrivateKey.user.publicKey.spkiPublicKeyBytes,

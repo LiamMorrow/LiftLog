@@ -1,283 +1,342 @@
-import { Instant } from '@js-joda/core';
-import { ProgramBlueprint, SessionBlueprint } from './blueprint-models';
-import { RsaPublicKey, AesKey, RsaKeyPair } from '@/models/encryption-models';
-import { assertUnreachable } from '@/utils/assert-unreachable';
-import { LiftLog } from '@/gen/proto';
+import { Session } from '@/models/session-models/session';
+import { match } from 'ts-pattern';
 import {
-  toStringValue,
-  toTimestampDao,
-  toUuidDao,
-} from './storage/conversions.to-dao';
-import { fromTimestampDao, fromUuidDao } from './storage/conversions.from-dao';
-import { Session } from './session-models';
-import { ProtobufToJsonV1Migrator } from './storage/versions/v1/protobuf-migrator';
+  PendingFeedUserJSON,
+  FollowedFeedUserJSON,
+  FeedUserJSON,
+  FeedUserEventJSON,
+  SessionUserEventJSON,
+  RemovedSessionUserEventJSON,
+  FeedIdentityJSON,
+  InboxMessageJSON,
+  FollowRequestJSON,
+  FollowResponseJSON,
+  UnfollowNotificationJSON,
+  SharedItemJSON,
+  SharedProgramBlueprintJSON,
+  SharedSessionJSON,
+  RsaKeyPair,
+  AesKey,
+  fromAesKeyJSON,
+  fromRsaKeyPairJSON,
+  toAesKeyJSON,
+  toRsaKeyPairJSON,
+  RsaPublicKey,
+  fromRsaPublicKeyJSON,
+  toRsaPublicKeyJSON,
+  fromJsonString,
+  AcceptedFollowResponseJSON,
+  RejectedFollowResponseJSON,
+  FollowRequestInboxMessageJSON,
+  FollowResponseInboxMessageJSON,
+  UnfollowNotificationInboxMessageJSON,
+  toBase64Uint8ArrayJSON,
+  fromBase64Uint8ArrayJSON,
+  toJsonString,
+  fromInstantJson,
+  toInstantJson,
+  FollowerFeedUserJSON,
+} from '@/models/storage/versions/latest';
+import { ProgramBlueprint } from '@/models/blueprint-models';
+import { Instant } from '@js-joda/core';
+import { equal } from '@/models/session-models/helpers';
 
-export interface FeedUserPOJO {
-  type: 'FeedUser';
-  id: string;
-  publicKey: RsaPublicKey;
-  name: string | undefined;
-  nickname: string | undefined;
-  currentPlan: SessionBlueprint[];
-  profilePicture: Uint8Array | undefined;
-  aesKey: AesKey | undefined;
-  followSecret: string | undefined;
-}
+// ---------------------------------------------------------------------------
+// FeedUser
+// ---------------------------------------------------------------------------
 
-export class FeedUser {
+export class FollowerFeedUser {
+  readonly type = 'PendingFeedUser' as const;
+
   constructor(
     readonly id: string,
     readonly publicKey: RsaPublicKey,
     readonly name: string | undefined,
-    readonly nickname: string | undefined,
-    readonly currentPlan: SessionBlueprint[],
-    readonly profilePicture: Uint8Array | undefined,
-    readonly aesKey: AesKey | undefined,
-    readonly followSecret: string | undefined,
+    readonly followSecret: string,
   ) {}
 
-  static fromPOJO(pojo: Omit<FeedUserPOJO, 'type'>): FeedUser {
-    return new FeedUser(
-      pojo.id,
-      pojo.publicKey,
-      pojo.name,
-      pojo.nickname,
-      pojo.currentPlan,
-      pojo.profilePicture,
-      pojo.aesKey,
-      pojo.followSecret,
+  static fromJSON(json: FollowerFeedUserJSON): FollowerFeedUser {
+    return new FollowerFeedUser(
+      json.id,
+      fromRsaPublicKeyJSON(json.publicKey),
+      json.name,
+      json.followSecret,
     );
   }
 
-  toPOJO(): FeedUserPOJO {
+  toJSON(): FollowerFeedUserJSON {
     return {
-      type: 'FeedUser',
+      type: 'FollowerFeedUser',
       id: this.id,
-      publicKey: this.publicKey,
+      publicKey: toRsaPublicKeyJSON(this.publicKey),
       name: this.name,
-      nickname: this.nickname,
-      currentPlan: this.currentPlan,
-      profilePicture: this.profilePicture,
-      aesKey: this.aesKey,
       followSecret: this.followSecret,
     };
   }
 
-  toDao(): LiftLog.Ui.Models.FeedUserDaoV1 {
-    return new LiftLog.Ui.Models.FeedUserDaoV1({
-      id: toUuidDao(this.id),
-      name: toStringValue(this.name),
-      nickname: toStringValue(this.nickname),
-      aesKey: this.aesKey?.value ?? null,
-      publicKey: this.publicKey.spkiPublicKeyBytes,
-      currentPlan: this.currentPlan ? toCurrentPlanDao(this.currentPlan) : null,
-      profilePicture: this.profilePicture ?? null,
-      followSecret: toStringValue(this.followSecret),
-    });
-  }
-
-  static fromDao(dao: LiftLog.Ui.Models.IFeedUserDaoV1): FeedUser {
-    return new FeedUser(
-      fromUuidDao(dao.id),
-      { spkiPublicKeyBytes: Uint8Array.from(dao.publicKey!) },
-      dao.name?.value ?? undefined,
-      dao.nickname?.value ?? undefined,
-      dao.currentPlan ? fromCurrentPlanDao(dao.currentPlan) : [],
-      (dao.profilePicture && Uint8Array.from(dao.profilePicture)) ?? undefined,
-      dao.aesKey?.length ? { value: Uint8Array.from(dao.aesKey) } : undefined,
-      dao.followSecret?.value ?? undefined,
+  equals(other: FollowerFeedUser | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    if (other.type !== this.type) return false;
+    return (
+      this.id === other.id &&
+      this.name === other.name &&
+      this.followSecret === other.followSecret
     );
   }
 
-  with(other: Partial<FeedUserPOJO>): FeedUser {
-    return new FeedUser(
+  with(other: Partial<FollowerFeedUser>): FollowerFeedUser {
+    return new FollowerFeedUser(
       other.id ?? this.id,
       other.publicKey ?? this.publicKey,
-      other.name ?? this.name,
-      other.nickname ?? this.nickname,
-      other.currentPlan ? other.currentPlan : this.currentPlan,
-      other.profilePicture ?? this.profilePicture,
+      'name' in other ? other.name : this.name,
+      other.followSecret ?? this.followSecret,
+    );
+  }
+}
+export class PendingFeedUser {
+  readonly type = 'PendingFeedUser' as const;
+
+  constructor(
+    readonly id: string,
+    readonly publicKey: RsaPublicKey,
+    readonly name: string | undefined,
+  ) {}
+
+  static fromJSON(json: PendingFeedUserJSON): PendingFeedUser {
+    return new PendingFeedUser(
+      json.id,
+      fromRsaPublicKeyJSON(json.publicKey),
+      json.name,
+    );
+  }
+
+  toJSON(): PendingFeedUserJSON {
+    return {
+      type: 'PendingFeedUser',
+      id: this.id,
+      publicKey: toRsaPublicKeyJSON(this.publicKey),
+      name: this.name,
+    };
+  }
+
+  equals(other: FeedUser | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    if (other.type !== this.type) return false;
+    return this.id === other.id && this.name === other.name;
+  }
+
+  with(other: Partial<PendingFeedUser>): PendingFeedUser {
+    return new PendingFeedUser(
+      other.id ?? this.id,
+      other.publicKey ?? this.publicKey,
+      'name' in other ? other.name : this.name,
+    );
+  }
+}
+
+export class FollowedFeedUser {
+  readonly type = 'FollowedFeedUser' as const;
+
+  constructor(
+    readonly id: string,
+    readonly publicKey: RsaPublicKey,
+    readonly name: string | undefined,
+    readonly currentPlan: ProgramBlueprint | undefined,
+    readonly aesKey: AesKey,
+    readonly followSecret: string,
+  ) {}
+
+  static fromJSON(json: FollowedFeedUserJSON): FollowedFeedUser {
+    return new FollowedFeedUser(
+      json.id,
+      fromRsaPublicKeyJSON(json.publicKey),
+      json.name,
+      json.currentPlan && ProgramBlueprint.fromJSON(json.currentPlan),
+      fromAesKeyJSON(json.aesKey),
+      json.followSecret,
+    );
+  }
+
+  toJSON(): FollowedFeedUserJSON {
+    return {
+      type: 'FollowedFeedUser',
+      id: this.id,
+      publicKey: toRsaPublicKeyJSON(this.publicKey),
+      name: this.name,
+      currentPlan: this.currentPlan?.toJSON(),
+      aesKey: toAesKeyJSON(this.aesKey),
+      followSecret: this.followSecret,
+    };
+  }
+
+  equals(other: FeedUser | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    if (other.type !== this.type) return false;
+    return (
+      this.id === other.id &&
+      this.name === other.name &&
+      this.followSecret === other.followSecret &&
+      equal(this.currentPlan, other.currentPlan)
+    );
+  }
+
+  with(other: Partial<FollowedFeedUser>): FollowedFeedUser {
+    return new FollowedFeedUser(
+      other.id ?? this.id,
+      other.publicKey ?? this.publicKey,
+      'name' in other ? other.name : this.name,
+      other.currentPlan ?? this.currentPlan,
       other.aesKey ?? this.aesKey,
       other.followSecret ?? this.followSecret,
     );
   }
-
-  get displayName(): string {
-    return this.nickname ?? this.name ?? 'Anonymous User';
-  }
-
-  static fromShared(
-    id: string,
-    publicKey: RsaPublicKey,
-    name: string | undefined,
-  ): FeedUser {
-    return new FeedUser(
-      id,
-      publicKey,
-      name,
-      undefined,
-      [],
-      undefined,
-      undefined,
-      undefined,
-    );
-  }
 }
 
-export interface FeedItemPOJO {
-  type: 'SessionFeedItem' | 'REMOVED_SessionFeedItem';
-  userId: string;
-  eventId: string;
-  timestamp: Instant;
-  expiry: Instant;
+export type FeedUser = PendingFeedUser | FollowedFeedUser | FollowerFeedUser;
+
+export function fromFeedUserJSON(json: FeedUserJSON): FeedUser {
+  return match(json)
+    .with({ type: 'PendingFeedUser' }, PendingFeedUser.fromJSON)
+    .with({ type: 'FollowedFeedUser' }, FollowedFeedUser.fromJSON)
+    .with({ type: 'FollowerFeedUser' }, FollowerFeedUser.fromJSON)
+    .exhaustive();
 }
 
-export abstract class FeedItem {
-  readonly userId: string;
-  readonly eventId: string;
-  readonly timestamp: Instant;
-  readonly expiry: Instant;
+// ---------------------------------------------------------------------------
+// UserEvent
+// ---------------------------------------------------------------------------
+
+export class SessionUserEvent {
+  readonly type = 'SessionUserEvent' as const;
 
   constructor(
-    userId: string,
-    eventId: string,
-    timestamp: Instant,
-    expiry: Instant,
-  ) {
-    this.userId = userId;
-    this.eventId = eventId;
-    this.timestamp = timestamp;
-    this.expiry = expiry;
+    readonly userId: string,
+    readonly eventId: string,
+    readonly timestamp: Instant,
+    readonly expiry: Instant,
+    readonly session: Session,
+  ) {}
+
+  get id() {
+    return this.userId + this.eventId;
   }
 
-  abstract toPOJO(): FeedItemPOJO;
-
-  abstract toDao(): LiftLog.Ui.Models.FeedItemDaoV1;
-
-  static fromDao(dao: LiftLog.Ui.Models.IFeedItemDaoV1): FeedItem {
-    return new SessionFeedItem(
-      fromUuidDao(dao.userId),
-      fromUuidDao(dao.eventId),
-      fromTimestampDao(dao.timestamp),
-      fromTimestampDao(dao.expiry),
-      Session.fromJSON(ProtobufToJsonV1Migrator.migrateSession(dao.session!)),
+  static fromJSON(json: SessionUserEventJSON): SessionUserEvent {
+    return new SessionUserEvent(
+      json.userId,
+      json.eventId,
+      fromInstantJson(json.timestamp),
+      fromInstantJson(json.expiry),
+      Session.fromJSON(json.session),
     );
   }
 
-  static fromPOJO(x: FeedItemPOJO): FeedItem {
-    switch (x.type) {
-      case 'REMOVED_SessionFeedItem':
-        return new RemovedSessionFeedItem(
-          x.userId,
-          x.eventId,
-          x.timestamp,
-          x.expiry,
-          (x as RemovedSessionFeedItemPOJO).sessionId,
-        );
-      case 'SessionFeedItem':
-        return new SessionFeedItem(
-          x.userId,
-          x.eventId,
-          x.timestamp,
-          x.expiry,
-          (x as SessionFeedItemPOJO).session,
-        );
-    }
-  }
-}
-
-export interface SessionFeedItemPOJO extends FeedItemPOJO {
-  session: Session;
-}
-
-export class SessionFeedItem extends FeedItem {
-  readonly session: Session;
-
-  constructor(
-    userId: string,
-    eventId: string,
-    timestamp: Instant,
-    expiry: Instant,
-    session: Session,
-  ) {
-    super(userId, eventId, timestamp, expiry);
-    this.session = session;
-  }
-
-  toPOJO(): SessionFeedItemPOJO {
+  toJSON(): SessionUserEventJSON {
     return {
-      type: 'SessionFeedItem',
-      eventId: this.eventId,
-      expiry: this.expiry,
-      session: this.session,
-      timestamp: this.timestamp,
+      type: 'SessionUserEvent',
       userId: this.userId,
+      eventId: this.eventId,
+      timestamp: toInstantJson(this.timestamp),
+      expiry: toInstantJson(this.expiry),
+      session: this.session.toJSON(),
     };
   }
 
-  toDao(): LiftLog.Ui.Models.FeedItemDaoV1 {
-    return new LiftLog.Ui.Models.FeedItemDaoV1({
-      eventId: toUuidDao(this.eventId),
-      expiry: toTimestampDao(this.expiry),
-      timestamp: toTimestampDao(this.timestamp),
-      userId: toUuidDao(this.userId),
-      session: this.session.toDao(),
-    });
+  equals(other: FeedUserEvent | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    if (other.type !== this.type) return false;
+    return (
+      this.userId === other.userId &&
+      this.eventId === other.eventId &&
+      this.session.equals(other.session)
+    );
+  }
+
+  with(other: Partial<SessionUserEvent>): SessionUserEvent {
+    return new SessionUserEvent(
+      other.userId ?? this.userId,
+      other.eventId ?? this.eventId,
+      other.timestamp ?? this.timestamp,
+      other.expiry ?? this.expiry,
+      other.session ?? this.session,
+    );
   }
 }
 
-export interface RemovedSessionFeedItemPOJO extends FeedItemPOJO {
-  sessionId: string;
-}
-
-export class RemovedSessionFeedItem extends FeedItem {
-  readonly sessionId: string;
+export class RemovedSessionUserEvent {
+  readonly type = 'RemovedSessionUserEvent' as const;
 
   constructor(
-    userId: string,
-    eventId: string,
-    timestamp: Instant,
-    expiry: Instant,
-    sessionId: string,
-  ) {
-    super(userId, eventId, timestamp, expiry);
-    this.sessionId = sessionId;
+    readonly userId: string,
+    readonly eventId: string,
+    readonly timestamp: Instant,
+    readonly expiry: Instant,
+    readonly sessionId: string,
+  ) {}
+
+  get id() {
+    return this.userId + this.eventId;
   }
 
-  toPOJO(): RemovedSessionFeedItemPOJO {
+  static fromJSON(json: RemovedSessionUserEventJSON): RemovedSessionUserEvent {
+    return new RemovedSessionUserEvent(
+      json.userId,
+      json.eventId,
+      fromInstantJson(json.timestamp),
+      fromInstantJson(json.expiry),
+      json.sessionId,
+    );
+  }
+
+  toJSON(): RemovedSessionUserEventJSON {
     return {
-      type: 'REMOVED_SessionFeedItem',
+      type: 'RemovedSessionUserEvent',
+      userId: this.userId,
       eventId: this.eventId,
-      expiry: this.expiry,
+      timestamp: toInstantJson(this.timestamp),
+      expiry: toInstantJson(this.expiry),
       sessionId: this.sessionId,
-      timestamp: this.timestamp,
-      userId: this.userId,
     };
   }
 
-  toDao(): LiftLog.Ui.Models.FeedItemDaoV1 {
-    return new LiftLog.Ui.Models.FeedItemDaoV1({
-      eventId: toUuidDao(this.eventId),
-      expiry: toTimestampDao(this.expiry),
-      timestamp: toTimestampDao(this.timestamp),
-      userId: toUuidDao(this.userId),
-    });
+  equals(other: FeedUserEvent | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    if (other.type !== this.type) return false;
+    return (
+      this.userId === other.userId &&
+      this.eventId === other.eventId &&
+      this.sessionId === other.sessionId
+    );
+  }
+
+  with(other: Partial<RemovedSessionUserEvent>): RemovedSessionUserEvent {
+    return new RemovedSessionUserEvent(
+      other.userId ?? this.userId,
+      other.eventId ?? this.eventId,
+      other.timestamp ?? this.timestamp,
+      other.expiry ?? this.expiry,
+      other.sessionId ?? this.sessionId,
+    );
   }
 }
 
-export interface FeedIdentityPOJO {
-  type: 'FeedIdentity';
-  id: string;
-  lookup: string;
-  aesKey: AesKey;
-  rsaKeyPair: RsaKeyPair;
-  password: string;
-  name: string | undefined;
-  profilePicture: Uint8Array | undefined;
-  publishBodyweight: boolean;
-  publishPlan: boolean;
-  publishWorkouts: boolean;
+export type FeedUserEvent = SessionUserEvent | RemovedSessionUserEvent;
+
+export function fromFeedUserEventJSON(json: FeedUserEventJSON): FeedUserEvent {
+  return match(json)
+    .with({ type: 'SessionUserEvent' }, SessionUserEvent.fromJSON)
+    .with({ type: 'RemovedSessionUserEvent' }, RemovedSessionUserEvent.fromJSON)
+    .exhaustive();
 }
+
+// ---------------------------------------------------------------------------
+// FeedIdentity
+// ---------------------------------------------------------------------------
 
 export class FeedIdentity {
   constructor(
@@ -287,86 +346,61 @@ export class FeedIdentity {
     readonly rsaKeyPair: RsaKeyPair,
     readonly password: string,
     readonly name: string | undefined,
-    readonly profilePicture: Uint8Array | undefined,
     readonly publishBodyweight: boolean,
     readonly publishPlan: boolean,
     readonly publishWorkouts: boolean,
   ) {}
 
-  static fromPOJO(pojo: Omit<FeedIdentityPOJO, 'type'>): FeedIdentity {
+  static fromJSON(json: FeedIdentityJSON): FeedIdentity {
     return new FeedIdentity(
-      pojo.id,
-      pojo.lookup,
-      pojo.aesKey,
-      pojo.rsaKeyPair,
-      pojo.password,
-      pojo.name,
-      pojo.profilePicture,
-      pojo.publishBodyweight,
-      pojo.publishPlan,
-      pojo.publishWorkouts,
+      json.id,
+      json.lookup,
+      fromAesKeyJSON(json.aesKey),
+      fromRsaKeyPairJSON(json.rsaKeyPair),
+      json.password,
+      json.name,
+      json.publishBodyweight,
+      json.publishPlan,
+      json.publishWorkouts,
     );
   }
 
-  toPOJO(): FeedIdentityPOJO {
+  toJSON(): FeedIdentityJSON {
     return {
-      type: 'FeedIdentity',
       id: this.id,
       lookup: this.lookup,
-      aesKey: this.aesKey,
-      rsaKeyPair: this.rsaKeyPair,
+      aesKey: toAesKeyJSON(this.aesKey),
+      rsaKeyPair: toRsaKeyPairJSON(this.rsaKeyPair),
       password: this.password,
       name: this.name,
-      profilePicture: this.profilePicture,
       publishBodyweight: this.publishBodyweight,
       publishPlan: this.publishPlan,
       publishWorkouts: this.publishWorkouts,
     };
   }
 
-  toDao(): LiftLog.Ui.Models.FeedIdentityDaoV1 {
-    return new LiftLog.Ui.Models.FeedIdentityDaoV1({
-      id: toUuidDao(this.id),
-      lookup: { value: this.lookup },
-      aesKey: this.aesKey.value,
-      publicKey: this.rsaKeyPair.publicKey.spkiPublicKeyBytes,
-      privateKey: this.rsaKeyPair.privateKey.pkcs8PrivateKeyBytes,
-      password: this.password,
-      name: toStringValue(this.name),
-      profilePicture: this.profilePicture ?? null,
-      publishBodyweight: this.publishBodyweight,
-      publishPlan: this.publishPlan,
-      publishWorkouts: this.publishWorkouts,
-    });
-  }
-
-  static fromDao(dao: LiftLog.Ui.Models.IFeedIdentityDaoV1): FeedIdentity {
-    return new FeedIdentity(
-      fromUuidDao(dao.id),
-      dao.lookup?.value ?? '',
-      { value: Uint8Array.from(dao.aesKey!) },
-      {
-        publicKey: { spkiPublicKeyBytes: Uint8Array.from(dao.publicKey!) },
-        privateKey: { pkcs8PrivateKeyBytes: Uint8Array.from(dao.privateKey!) },
-      },
-      dao.password!,
-      dao.name?.value ?? undefined,
-      (dao.profilePicture && Uint8Array.from(dao.profilePicture)) ?? undefined,
-      dao.publishBodyweight ?? false,
-      dao.publishPlan ?? false,
-      dao.publishWorkouts ?? false,
+  equals(other: FeedIdentity | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    return (
+      this.id === other.id &&
+      this.lookup === other.lookup &&
+      this.password === other.password &&
+      this.name === other.name &&
+      this.publishBodyweight === other.publishBodyweight &&
+      this.publishPlan === other.publishPlan &&
+      this.publishWorkouts === other.publishWorkouts
     );
   }
 
-  with(other: Partial<FeedIdentityPOJO>): FeedIdentity {
+  with(other: Partial<FeedIdentity>): FeedIdentity {
     return new FeedIdentity(
       other.id ?? this.id,
       other.lookup ?? this.lookup,
       other.aesKey ?? this.aesKey,
       other.rsaKeyPair ?? this.rsaKeyPair,
       other.password ?? this.password,
-      other.name ?? this.name,
-      other.profilePicture ?? this.profilePicture,
+      'name' in other ? other.name : this.name,
       other.publishBodyweight ?? this.publishBodyweight,
       other.publishPlan ?? this.publishPlan,
       other.publishWorkouts ?? this.publishWorkouts,
@@ -374,241 +408,393 @@ export class FeedIdentity {
   }
 }
 
-export interface FollowRequestPOJO {
-  type: 'FollowRequest';
-  userId: string;
-  name: string | undefined;
-}
+// ---------------------------------------------------------------------------
+// SharedItem
+// ---------------------------------------------------------------------------
 
-export class FollowRequest {
-  constructor(
-    readonly userId: string,
-    readonly name: string | undefined,
-  ) {
-    this.userId = userId!;
-    this.name = name!;
+export class SharedProgramBlueprint {
+  readonly type = 'SharedProgramBlueprint' as const;
+
+  constructor(readonly programBlueprint: ProgramBlueprint) {}
+
+  static fromJSON(json: SharedProgramBlueprintJSON): SharedProgramBlueprint {
+    return new SharedProgramBlueprint(
+      ProgramBlueprint.fromJSON(json.programBlueprint),
+    );
   }
 
-  static fromPOJO(pojo: Omit<FollowRequestPOJO, 'type'>): FollowRequest {
-    return new FollowRequest(pojo.userId, pojo.name);
-  }
-
-  toPOJO(): FollowRequestPOJO {
+  toJSON(): SharedProgramBlueprintJSON {
     return {
-      type: 'FollowRequest',
-      userId: this.userId,
-      name: this.name,
+      type: 'SharedProgramBlueprint',
+      programBlueprint: this.programBlueprint.toJSON(),
     };
   }
 
-  toDao(): LiftLog.Ui.Models.InboxMessageDao {
-    return new LiftLog.Ui.Models.InboxMessageDao({
-      fromUserId: toUuidDao(this.userId),
-      followRequest: {
-        name: toStringValue(this.name),
-      },
-    });
+  equals(other: SharedItem | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    if (other.type !== this.type) return false;
+    return this.programBlueprint.equals(other.programBlueprint);
   }
 
-  static fromDao(value: LiftLog.Ui.Models.IInboxMessageDao): FollowRequest {
-    return FollowRequest.fromPOJO({
-      name: value.followRequest?.name?.value ?? '',
-      userId: fromUuidDao(value.fromUserId),
-    });
-  }
-
-  with(other: Partial<FollowRequestPOJO>): FollowRequest {
-    return new FollowRequest(
-      other.userId ?? this.userId,
-      other.name ?? this.name,
+  with(other: Partial<SharedProgramBlueprint>): SharedProgramBlueprint {
+    return new SharedProgramBlueprint(
+      other.programBlueprint ?? this.programBlueprint,
     );
   }
 }
 
-export interface FollowResponsePOJO {
-  type: 'FollowResponse';
-  userId: string;
-  accepted: boolean;
-  aesKey: AesKey | undefined;
-  followSecret: string | undefined;
+export class SharedSession {
+  readonly type = 'SharedSession' as const;
+
+  constructor(readonly session: Session) {}
+
+  static fromJSON(json: SharedSessionJSON): SharedSession {
+    return new SharedSession(Session.fromJSON(json.session));
+  }
+
+  toJSON(): SharedSessionJSON {
+    return {
+      type: 'SharedSession',
+      session: this.session.toJSON(),
+    };
+  }
+
+  equals(other: SharedItem | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    if (other.type !== this.type) return false;
+    return this.session.equals(other.session);
+  }
+
+  with(other: Partial<SharedSession>): SharedSession {
+    return new SharedSession(other.session ?? this.session);
+  }
 }
 
-export class FollowResponse {
+export type SharedItem = SharedProgramBlueprint | SharedSession;
+
+export function fromSharedItemJSON(json: SharedItemJSON): SharedItem {
+  return match(json)
+    .with({ type: 'SharedProgramBlueprint' }, SharedProgramBlueprint.fromJSON)
+    .with({ type: 'SharedSession' }, SharedSession.fromJSON)
+    .exhaustive();
+}
+// ---------------------------------------------------------------------------
+// InboxMessage payloads
+// ---------------------------------------------------------------------------
+
+export class FollowRequest {
+  readonly type = 'FollowRequest' as const;
+
+  constructor(readonly name: string | undefined) {}
+
+  static fromJSON(json: FollowRequestJSON): FollowRequest {
+    return new FollowRequest(json.name);
+  }
+
+  toJSON(): FollowRequestJSON {
+    return { name: this.name };
+  }
+
+  equals(other: InboxMessagePayload | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    if (other.type !== this.type) return false;
+    return this.name === other.name;
+  }
+
+  with(other: Partial<FollowRequest>): FollowRequest {
+    return new FollowRequest('name' in other ? other.name : this.name);
+  }
+}
+
+export class AcceptedFollowResponse {
+  readonly type = 'AcceptedFollowResponse' as const;
+
   constructor(
-    readonly userId: string,
-    readonly accepted: boolean,
-    readonly aesKey: AesKey | undefined,
-    readonly followSecret: string | undefined,
+    readonly aesKey: AesKey,
+    readonly followSecret: string,
   ) {}
 
-  static fromPOJO(pojo: Omit<FollowResponsePOJO, 'type'>): FollowResponse {
-    return new FollowResponse(
-      pojo.userId,
-      pojo.accepted,
-      pojo.aesKey,
-      pojo.followSecret,
+  static fromJSON(json: AcceptedFollowResponseJSON): AcceptedFollowResponse {
+    return new AcceptedFollowResponse(
+      fromAesKeyJSON(json.aesKey),
+      json.followSecret,
     );
   }
 
-  toPOJO(): FollowResponsePOJO {
+  toJSON(): AcceptedFollowResponseJSON {
     return {
-      type: 'FollowResponse',
-      userId: this.userId,
-      accepted: this.accepted,
-      aesKey: this.aesKey,
+      type: 'AcceptedFollowResponse',
+      aesKey: toAesKeyJSON(this.aesKey),
       followSecret: this.followSecret,
     };
   }
 
-  with(other: Partial<FollowResponsePOJO>): FollowResponse {
-    return new FollowResponse(
-      other.userId ?? this.userId,
-      other.accepted ?? this.accepted,
+  equals(other: FollowResponsePayload | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    if (other.type !== this.type) return false;
+    return this.followSecret === other.followSecret;
+  }
+
+  with(other: Partial<AcceptedFollowResponse>): AcceptedFollowResponse {
+    return new AcceptedFollowResponse(
       other.aesKey ?? this.aesKey,
       other.followSecret ?? this.followSecret,
     );
   }
 }
 
-export type SharedItemPOJO = SharedProgramBlueprintPOJO | SharedSessionPOJO;
+export class RejectedFollowResponse {
+  readonly type = 'RejectedFollowResponse' as const;
 
-export abstract class SharedItem {
-  abstract toPOJO(): SharedItemPOJO;
-
-  static fromPOJO(pojo: SharedItemPOJO): SharedItem {
-    if (pojo.type === 'SHARED_ProgramBlueprint') {
-      return new SharedProgramBlueprint(pojo.programBlueprint);
-    }
-    if (pojo.type === 'SHARED_Session') {
-      return new SharedSession(pojo.session);
-    }
-    assertUnreachable(pojo);
+  static fromJSON(_json: RejectedFollowResponseJSON): RejectedFollowResponse {
+    return new RejectedFollowResponse();
   }
 
-  abstract toDao(): LiftLog.Ui.Models.SharedItemPayload;
+  toJSON(): RejectedFollowResponseJSON {
+    return { type: 'RejectedFollowResponse' };
+  }
 
-  static fromDao(dao: LiftLog.Ui.Models.SharedItemPayload): SharedItem | null {
-    switch (dao.payload) {
-      case 'sharedProgramBlueprint': {
-        const programBlueprintDao =
-          dao.sharedProgramBlueprint?.programBlueprint;
-        if (!programBlueprintDao) {
-          return null;
-        }
-        return new SharedProgramBlueprint(
-          ProgramBlueprint.fromJSON(
-            ProtobufToJsonV1Migrator.migrateProgramBlueprint(
-              programBlueprintDao,
-            ),
-          ),
-        );
-      }
-      case 'sharedSession': {
-        const sessionDao = dao.sharedSession?.session;
-        if (!sessionDao) {
-          return null;
-        }
-        return new SharedSession(
-          Session.fromJSON(ProtobufToJsonV1Migrator.migrateSession(sessionDao)),
-        );
-      }
-      case undefined:
-        return null;
-      default: {
-        // We don't want it throwing for older clients
-        expectNever(dao.payload);
-        return null;
-      }
-    }
+  equals(other: FollowResponsePayload | undefined): boolean {
+    if (!other) return false;
+    return other.type === this.type;
+  }
+
+  with(_other: Partial<RejectedFollowResponse>): RejectedFollowResponse {
+    return this;
   }
 }
 
-export interface SharedProgramBlueprintPOJO {
-  type: 'SHARED_ProgramBlueprint';
-  programBlueprint: ProgramBlueprint;
+export type FollowResponsePayload =
+  | AcceptedFollowResponse
+  | RejectedFollowResponse;
+
+function fromFollowResponsePayloadJSON(
+  json: AcceptedFollowResponseJSON | RejectedFollowResponseJSON,
+): FollowResponsePayload {
+  return match(json)
+    .with({ type: 'AcceptedFollowResponse' }, AcceptedFollowResponse.fromJSON)
+    .with({ type: 'RejectedFollowResponse' }, RejectedFollowResponse.fromJSON)
+    .exhaustive();
 }
-export class SharedProgramBlueprint extends SharedItem {
-  readonly programBlueprint: ProgramBlueprint;
 
-  constructor(programBlueprint: ProgramBlueprint) {
-    super();
-    this.programBlueprint = programBlueprint!;
+export class FollowResponse {
+  readonly type = 'FollowResponse' as const;
+
+  constructor(readonly response: FollowResponsePayload) {}
+
+  static fromJSON(json: FollowResponseJSON): FollowResponse {
+    return new FollowResponse(fromFollowResponsePayloadJSON(json.response));
   }
 
-  toPOJO(): SharedProgramBlueprintPOJO {
-    return {
-      type: 'SHARED_ProgramBlueprint',
-      programBlueprint: this.programBlueprint,
-    };
+  toJSON(): FollowResponseJSON {
+    return { response: this.response.toJSON() };
   }
 
-  with(
-    other: Partial<{ programBlueprint: ProgramBlueprint }>,
-  ): SharedProgramBlueprint {
-    return new SharedProgramBlueprint(
-      other.programBlueprint ?? this.programBlueprint,
+  equals(other: InboxMessagePayload | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    if (other.type !== this.type) return false;
+    return this.response.equals(other.response);
+  }
+
+  with(other: Partial<FollowResponse>): FollowResponse {
+    return new FollowResponse(other.response ?? this.response);
+  }
+}
+
+export class UnfollowNotification {
+  readonly type = 'UnfollowNotification' as const;
+
+  constructor(readonly followSecret: string) {}
+
+  static fromJSON(json: UnfollowNotificationJSON): UnfollowNotification {
+    return new UnfollowNotification(json.followSecret);
+  }
+
+  toJSON(): UnfollowNotificationJSON {
+    return { followSecret: this.followSecret };
+  }
+
+  equals(other: InboxMessagePayload | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    if (other.type !== this.type) return false;
+    return this.followSecret === other.followSecret;
+  }
+
+  with(other: Partial<UnfollowNotification>): UnfollowNotification {
+    return new UnfollowNotification(other.followSecret ?? this.followSecret);
+  }
+}
+
+export type InboxMessagePayload =
+  | FollowRequest
+  | FollowResponse
+  | UnfollowNotification;
+
+// ---------------------------------------------------------------------------
+// InboxMessage
+// ---------------------------------------------------------------------------
+
+export class FollowRequestInboxMessage {
+  readonly type = 'FollowRequest' as const;
+
+  constructor(
+    readonly senderUserId: string,
+    readonly signature: Uint8Array,
+    readonly payload: FollowRequest,
+  ) {}
+
+  static fromJSON(
+    json: FollowRequestInboxMessageJSON,
+  ): FollowRequestInboxMessage {
+    return new FollowRequestInboxMessage(
+      json.senderUserId,
+      fromBase64Uint8ArrayJSON(json.signature),
+      FollowRequest.fromJSON(fromJsonString(json.payloadJson)),
     );
   }
 
-  toDao(): LiftLog.Ui.Models.SharedItemPayload {
-    return new LiftLog.Ui.Models.SharedItemPayload({
-      sharedProgramBlueprint: {
-        programBlueprint: this.programBlueprint.toDao(),
-      },
-    });
-  }
-}
-
-export interface SharedSessionPOJO {
-  type: 'SHARED_Session';
-  session: Session;
-}
-export class SharedSession extends SharedItem {
-  readonly session: Session;
-
-  constructor(session: Session) {
-    super();
-    this.session = session!;
-  }
-
-  toPOJO(): SharedSessionPOJO {
+  toJSON(): FollowRequestInboxMessageJSON {
     return {
-      type: 'SHARED_Session',
-      session: this.session,
+      type: 'FollowRequest',
+      senderUserId: this.senderUserId,
+      signature: toBase64Uint8ArrayJSON(this.signature),
+      payloadJson: toJsonString(this.payload.toJSON()),
     };
   }
 
-  with(other: Partial<{ session: Session }>): SharedSession {
-    return new SharedSession(other.session ?? this.session);
+  equals(other: InboxMessage | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    if (other.type !== this.type) return false;
+    return (
+      this.senderUserId === other.senderUserId &&
+      this.payload.equals(other.payload)
+    );
   }
 
-  toDao(): LiftLog.Ui.Models.SharedItemPayload {
-    return new LiftLog.Ui.Models.SharedItemPayload({
-      sharedSession: {
-        session: this.session.toDao(),
-      },
-    });
+  with(other: Partial<FollowRequestInboxMessage>): FollowRequestInboxMessage {
+    return new FollowRequestInboxMessage(
+      other.senderUserId ?? this.senderUserId,
+      other.signature ?? this.signature,
+      other.payload ?? this.payload,
+    );
   }
 }
 
-export function toCurrentPlanDao(
-  sessions: SessionBlueprint[],
-): LiftLog.Ui.Models.CurrentPlanDaoV1 {
-  return new LiftLog.Ui.Models.CurrentPlanDaoV1({
-    sessions: sessions.map((x) => x.toDao()),
-  });
+export class FollowResponseInboxMessage {
+  readonly type = 'FollowResponse' as const;
+
+  constructor(
+    readonly senderUserId: string,
+    readonly signature: Uint8Array,
+    readonly payload: FollowResponse,
+  ) {}
+
+  static fromJSON(
+    json: FollowResponseInboxMessageJSON,
+  ): FollowResponseInboxMessage {
+    return new FollowResponseInboxMessage(
+      json.senderUserId,
+      fromBase64Uint8ArrayJSON(json.signature),
+      FollowResponse.fromJSON(fromJsonString(json.payloadJson)),
+    );
+  }
+
+  toJSON(): FollowResponseInboxMessageJSON {
+    return {
+      type: 'FollowResponse',
+      senderUserId: this.senderUserId,
+      signature: toBase64Uint8ArrayJSON(this.signature),
+      payloadJson: toJsonString(this.payload.toJSON()),
+    };
+  }
+
+  equals(other: InboxMessage | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    if (other.type !== this.type) return false;
+    return (
+      this.senderUserId === other.senderUserId &&
+      this.payload.equals(other.payload)
+    );
+  }
+
+  with(other: Partial<FollowResponseInboxMessage>): FollowResponseInboxMessage {
+    return new FollowResponseInboxMessage(
+      other.senderUserId ?? this.senderUserId,
+      other.signature ?? this.signature,
+      other.payload ?? this.payload,
+    );
+  }
 }
 
-export function fromCurrentPlanDao(
-  dao: LiftLog.Ui.Models.ICurrentPlanDaoV1,
-): SessionBlueprint[] {
-  return dao.sessions!.map((x) =>
-    SessionBlueprint.fromJSON(
-      ProtobufToJsonV1Migrator.migrateSessionBlueprint(x),
-    ),
-  );
+export class UnfollowNotificationInboxMessage {
+  readonly type = 'UnfollowNotification' as const;
+
+  constructor(
+    readonly senderUserId: string,
+    readonly signature: Uint8Array,
+    readonly payload: UnfollowNotification,
+  ) {}
+
+  static fromJSON(
+    json: UnfollowNotificationInboxMessageJSON,
+  ): UnfollowNotificationInboxMessage {
+    return new UnfollowNotificationInboxMessage(
+      json.senderUserId,
+      fromBase64Uint8ArrayJSON(json.signature),
+      UnfollowNotification.fromJSON(fromJsonString(json.payloadJson)),
+    );
+  }
+
+  toJSON(): UnfollowNotificationInboxMessageJSON {
+    return {
+      type: 'UnfollowNotification',
+      senderUserId: this.senderUserId,
+      signature: toBase64Uint8ArrayJSON(this.signature),
+      payloadJson: toJsonString(this.payload.toJSON()),
+    };
+  }
+
+  equals(other: InboxMessage | undefined): boolean {
+    if (!other) return false;
+    if (other === this) return true;
+    if (other.type !== this.type) return false;
+    return (
+      this.senderUserId === other.senderUserId &&
+      this.payload.equals(other.payload)
+    );
+  }
+
+  with(
+    other: Partial<UnfollowNotificationInboxMessage>,
+  ): UnfollowNotificationInboxMessage {
+    return new UnfollowNotificationInboxMessage(
+      other.senderUserId ?? this.senderUserId,
+      other.signature ?? this.signature,
+      other.payload ?? this.payload,
+    );
+  }
 }
 
-function expectNever(never: never) {
-  // Do nothing, this is a compile time check
+export type InboxMessage =
+  | FollowRequestInboxMessage
+  | FollowResponseInboxMessage
+  | UnfollowNotificationInboxMessage;
+
+export function fromInboxMessageJSON(json: InboxMessageJSON): InboxMessage {
+  return match(json)
+    .with({ type: 'FollowRequest' }, FollowRequestInboxMessage.fromJSON)
+    .with({ type: 'FollowResponse' }, FollowResponseInboxMessage.fromJSON)
+    .with(
+      { type: 'UnfollowNotification' },
+      UnfollowNotificationInboxMessage.fromJSON,
+    )
+    .exhaustive();
 }

@@ -1,18 +1,30 @@
-import { AddEffectFn } from '@/store/store';
+import { AddEffectFn, RootState } from '@/store/store';
 import {
+  addFollower,
+  addRevokableFollowSecret,
+  addUnpublishedSessionId,
+  clearFeedState,
   createFeedIdentity,
   feedApiError,
   fetchInboxItems,
   initializeFeedStateSlice,
   patchFeedState,
+  putFollowedUser,
+  removeFeedItems,
+  removeFollowedUser,
+  removeFollower,
+  removeFollowRequest,
+  removeRevokableFollowSecret,
+  removeUnpublishedSessionId,
   resetFeedAccount,
   revokeFollowSecrets,
   selectFeedIdentityRemote,
+  setFollowRequests,
   setIdentity,
   setIsHydrated,
   updateFeedIdentity,
+  upsertFeedItems,
 } from '@/store/feed';
-import { LiftLog } from '@/gen/proto';
 import { RemoteData } from '@/models/remote';
 import { addSharedItemEffects } from '@/store/feed/shared-item-effects';
 import { showSnackbar } from '@/store/app';
@@ -22,9 +34,30 @@ import { addFollowingEffects } from '@/store/feed/following-effects';
 import { selectActiveProgram } from '@/store/program';
 import { ApiErrorType, ApiResult } from '@/services/api-error';
 import { Platform } from 'react-native';
-import { fromFeedStateDao, toFeedStateDao } from './conversions';
+import {
+  feedFollowedUsersSchema,
+  feedFollowerUsersSchema,
+  feedFollowRequestsSchema,
+  feedIdentitySchema,
+  feedItemsSchema,
+  feedRevokedFollowSecretsSchema,
+  feedUnpublishedSessionsSchema,
+} from '@/db/schema';
+import { LatestVersion } from '@/models/storage/versions/latest';
+import { eq, inArray } from 'drizzle-orm';
+import { upsert } from '@/db/helpers';
+import {
+  FeedIdentity,
+  FollowerFeedUser,
+  FollowRequestInboxMessage,
+  fromFeedUserJSON,
+  SessionUserEvent,
+} from '@/models/feed-models';
+import { Dispatch } from '@reduxjs/toolkit';
+import { EncryptionService } from '@/services/encryption-service';
+import { Logger } from '@/services/logger';
+import { toRecord } from '@/utils/reduce';
 
-const StorageKey = 'FeedState';
 export function applyFeedEffects(addEffect: AddEffectFn) {
   addEffect(
     initializeFeedStateSlice,
@@ -34,33 +67,48 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
         cancelActiveListeners,
         getState,
         dispatch,
-        extra: { keyValueStore, logger, encryptionService },
+        extra: { db, logger, encryptionService },
       },
     ) => {
       cancelActiveListeners();
       const sw = performance.now();
       try {
-        const state = await keyValueStore.getItemBytes(StorageKey);
-        let hasIdentity = false;
-        if (state) {
-          const version = await keyValueStore.getItem(`${StorageKey}Version`);
-          if (!version || version === '1') {
-            try {
-              const feedStateDao =
-                LiftLog.Ui.Models.FeedStateDaoV1.decode(state);
-              const feedState = fromFeedStateDao(feedStateDao);
-
-              if (feedState.identity.isSuccess()) {
-                hasIdentity = true;
-              }
-
-              dispatch(patchFeedState(feedState));
-            } catch (e) {
-              logger.error('Could not decode feed state', e);
-            }
-          }
-        }
-        if (!hasIdentity) {
+        const identity = (await db.select().from(feedIdentitySchema)).at(0);
+        dispatch(
+          patchFeedState({
+            identity: identity
+              ? RemoteData.success(FeedIdentity.fromJSON(identity.payload))
+              : RemoteData.notAsked(),
+            feed: (await db.select().from(feedItemsSchema)).map((x) =>
+              SessionUserEvent.fromJSON(x.payload),
+            ),
+            followRequests: (
+              await db.select().from(feedFollowRequestsSchema)
+            ).map((x) => FollowRequestInboxMessage.fromJSON(x.payload)),
+            followedUsers: (await db.select().from(feedFollowedUsersSchema))
+              .map((x) => fromFeedUserJSON(x.payload))
+              .reduce(
+                toRecord(
+                  (x) => x.id,
+                  (x) => x,
+                ),
+                {},
+              ),
+            revokedFollowSecrets: (
+              await db.select().from(feedRevokedFollowSecretsSchema)
+            ).map((x) => x.secret),
+            followers: (await db.select().from(feedFollowerUsersSchema))
+              .map((x) => FollowerFeedUser.fromJSON(x.payload))
+              .reduce(
+                toRecord(
+                  (x) => x.id,
+                  (x) => x,
+                ),
+                {},
+              ),
+          }),
+        );
+        if (!identity) {
           dispatch(
             createFeedIdentity({
               name: undefined,
@@ -71,32 +119,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
             }),
           );
         } else {
-          if (Platform.OS === 'ios') {
-            try {
-              await selectFeedIdentityRemote(getState())
-                .map((identity) =>
-                  encryptionService.encryptRsaOaepSha256Async(
-                    new Uint8Array([1, 2, 3]),
-                    identity.rsaKeyPair.publicKey,
-                  ),
-                )
-                .unwrapOr(Promise.resolve());
-            } catch (error) {
-              logger.warn(
-                'Failed to encrypt with RSA public key, generating a new one',
-                { error },
-              );
-              const newKeyPair = await encryptionService.generateRsaKeys();
-              dispatch(
-                updateFeedIdentity({
-                  updates: {
-                    rsaKeyPair: newKeyPair,
-                  },
-                  fromUserAction: false,
-                }),
-              );
-            }
-          }
+          await fixIosBadRSAKey(getState, dispatch, encryptionService, logger);
         }
 
         dispatch(setIsHydrated(true));
@@ -112,6 +135,109 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
       }
     },
   );
+  addEffect(setIdentity, async (action, { extra: { db } }) => {
+    if (!action.payload.isSuccess()) {
+      return;
+    }
+    await upsert(db, feedIdentitySchema, [
+      {
+        id: 0,
+        modelVersion: LatestVersion,
+        payload: action.payload.data.toJSON(),
+      },
+    ]);
+  });
+
+  addEffect(removeFollowedUser, async (action, { extra: { db } }) => {
+    await db
+      .delete(feedFollowedUsersSchema)
+      .where(eq(feedFollowedUsersSchema.id, action.payload));
+  });
+
+  addEffect(setFollowRequests, async (action, { extra: { db } }) => {
+    await db.transaction(async (tx) => {
+      await tx.delete(feedFollowRequestsSchema);
+      await upsert(
+        tx,
+        feedFollowRequestsSchema,
+        action.payload.map((req) => ({
+          id: req.senderUserId,
+          modelVersion: LatestVersion,
+          payload: req.toJSON(),
+        })),
+      );
+    });
+  });
+  addEffect(addFollower, async (action, { extra: { db } }) => {
+    await upsert(db, feedFollowerUsersSchema, [
+      {
+        id: action.payload.id,
+        modelVersion: LatestVersion,
+        payload: action.payload.toJSON(),
+      },
+    ]);
+  });
+  addEffect(removeFollower, async (action, { extra: { db } }) => {
+    await db
+      .delete(feedFollowerUsersSchema)
+      .where(eq(feedFollowerUsersSchema.id, action.payload));
+  });
+  addEffect(removeFollowRequest, async (action, { extra: { db } }) => {
+    await db
+      .delete(feedFollowRequestsSchema)
+      .where(eq(feedFollowRequestsSchema.id, action.payload.senderUserId));
+  });
+  addEffect(putFollowedUser, async (action, { extra: { db } }) => {
+    await upsert(db, feedFollowedUsersSchema, [
+      {
+        id: action.payload.id,
+        modelVersion: LatestVersion,
+        payload: action.payload.toJSON(),
+      },
+    ]);
+  });
+  addEffect(upsertFeedItems, async (action, { extra: { db } }) => {
+    await upsert(
+      db,
+      feedItemsSchema,
+      action.payload.map((x) => ({
+        id: x.id,
+        modelVersion: LatestVersion,
+        payload: x.toJSON(),
+      })),
+    );
+  });
+  addEffect(removeFeedItems, async (action, { extra: { db } }) => {
+    if (!action.payload.length) {
+      return;
+    }
+    await db
+      .delete(feedItemsSchema)
+      .where(inArray(feedItemsSchema.id, action.payload));
+  });
+  addEffect(addRevokableFollowSecret, async (action, { extra: { db } }) => {
+    await db
+      .insert(feedRevokedFollowSecretsSchema)
+      .values([{ secret: action.payload }])
+      .onConflictDoNothing();
+  });
+  addEffect(removeRevokableFollowSecret, async (action, { extra: { db } }) => {
+    await db
+      .delete(feedRevokedFollowSecretsSchema)
+      .where(eq(feedRevokedFollowSecretsSchema.secret, action.payload));
+  });
+
+  addEffect(addUnpublishedSessionId, async (action, { extra: { db } }) => {
+    await db
+      .insert(feedUnpublishedSessionsSchema)
+      .values([{ sessionId: action.payload }])
+      .onConflictDoNothing();
+  });
+  addEffect(removeUnpublishedSessionId, async (action, { extra: { db } }) => {
+    await db
+      .delete(feedUnpublishedSessionsSchema)
+      .where(eq(feedUnpublishedSessionsSchema.sessionId, action.payload));
+  });
 
   addEffect(feedApiError, async (action, { dispatch, extra: { logger } }) => {
     if (action.payload.action.payload.fromUserAction) {
@@ -132,32 +258,6 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
   });
 
   addEffect(
-    undefined,
-    async (
-      _,
-      {
-        cancelActiveListeners,
-        stateAfterReduce,
-        originalState,
-        extra: { keyValueStore },
-      },
-    ) => {
-      cancelActiveListeners();
-      if (
-        stateAfterReduce.feed === originalState.feed ||
-        !stateAfterReduce.feed.isHydrated
-      ) {
-        return;
-      }
-      const dao = toFeedStateDao(stateAfterReduce.feed);
-      const bytes = LiftLog.Ui.Models.FeedStateDaoV1.encode(dao).finish();
-
-      await keyValueStore.setItem(StorageKey, bytes);
-      await keyValueStore.setItem(`${StorageKey}Version`, '1');
-    },
-  );
-
-  addEffect(
     createFeedIdentity,
     async (
       action,
@@ -176,11 +276,10 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
       dispatch(setIdentity(RemoteData.loading()));
       const identityResult = await feedIdentityService.createFeedIdentityAsync(
         payload.name,
-        undefined,
         payload.publishBodyweight,
         payload.publishPlan,
         payload.publishWorkouts,
-        [],
+        undefined,
       );
       if (!identityResult.isSuccess()) {
         dispatch(
@@ -218,20 +317,10 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
         );
         return;
       }
-      dispatch(
-        patchFeedState({
-          isHydrated: true,
-          identity: RemoteData.notAsked(),
-          isFetching: false,
-          feed: [],
-          followedUsers: {},
-          sharedFeedUser: RemoteData.notAsked(),
-          followRequests: [],
-          followers: {},
-          unpublishedSessionIds: [],
-          sharedItem: RemoteData.notAsked(),
-        }),
-      );
+      dispatch(clearFeedState());
+      if (action.payload.createNewIdentity === false) {
+        return;
+      }
       dispatch(
         createFeedIdentity({
           fromUserAction: true,
@@ -280,13 +369,12 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
         identity.aesKey,
         identity.rsaKeyPair,
         identity.name,
-        identity.profilePicture,
         identity.publishBodyweight,
         identity.publishPlan,
         identity.publishWorkouts,
         stateAfterReduce.program.isHydrated
-          ? selectActiveProgram(stateAfterReduce).sessions
-          : [],
+          ? selectActiveProgram(stateAfterReduce)
+          : undefined,
       );
       if (signal.aborted) {
         return;
@@ -320,4 +408,40 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
   addFeedItemEffects(addEffect);
   addInboxEffects(addEffect);
   addFollowingEffects(addEffect);
+}
+
+// There was a period of time where we generated bad keys on IOS
+// We can remove this code after December 2026
+async function fixIosBadRSAKey(
+  getState: () => RootState,
+  dispatch: Dispatch,
+  encryptionService: EncryptionService,
+  logger: Logger,
+) {
+  if (Platform.OS === 'ios') {
+    try {
+      await selectFeedIdentityRemote(getState())
+        .map((identity) =>
+          encryptionService.encryptRsaOaepSha256Async(
+            new Uint8Array([1, 2, 3]),
+            identity.rsaKeyPair.publicKey,
+          ),
+        )
+        .unwrapOr(Promise.resolve());
+    } catch (error) {
+      logger.warn(
+        'Failed to encrypt with RSA public key, generating a new one',
+        { error },
+      );
+      const newKeyPair = await encryptionService.generateRsaKeys();
+      dispatch(
+        updateFeedIdentity({
+          updates: {
+            rsaKeyPair: newKeyPair,
+          },
+          fromUserAction: false,
+        }),
+      );
+    }
+  }
 }

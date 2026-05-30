@@ -12,7 +12,7 @@ import SplitCardControl from '@/components/presentation/foundation/split-card-co
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useScroll } from '@/hooks/useScrollListener';
-import { FeedIdentity, FeedItem, SessionFeedItem } from '@/models/feed-models';
+import { FeedIdentity, SessionUserEvent } from '@/models/feed-models';
 import { useAppSelector } from '@/store';
 import { shareString } from '@/store/app';
 import {
@@ -259,10 +259,10 @@ function FeedProfileEditor({
   );
 }
 
-function FeedItemRenderer(props: { feedItem: FeedItem }) {
+function FeedItemRenderer(props: { feedItem: SessionUserEvent }) {
   const users = useAppSelector(selectFeedFollowing);
-  switch (true) {
-    case props.feedItem instanceof SessionFeedItem:
+  switch (props.feedItem.type) {
+    case 'SessionUserEvent':
       return (
         <Card mode="contained">
           <Card.Content>
@@ -283,7 +283,7 @@ function FeedItemRenderer(props: { feedItem: FeedItem }) {
                   <SurfaceText>
                     <SurfaceText weight={'bold'}>
                       {users.find((x) => x.userId === props.feedItem.userId)
-                        ?.user.displayName ?? 'Anonymous user'}
+                        ?.user.name ?? 'Anonymous user'}
                     </SurfaceText>{' '}
                     completed a workout
                   </SurfaceText>

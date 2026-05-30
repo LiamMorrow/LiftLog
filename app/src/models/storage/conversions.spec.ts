@@ -1,33 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import {
-  toDurationDao,
-  toTimestampDao,
-} from '@/models/storage/conversions.to-dao';
-import {
-  fromDurationDao,
-  fromTimestampDao,
-} from '@/models/storage/conversions.from-dao';
+
 import fc from 'fast-check';
-import { Duration, Instant } from '@js-joda/core';
 import {
-  DurationGenerator,
-  FeedIdentityGenerator,
-  FeedUserGenerator,
-  InstantGenerator,
   SessionBlueprintGenerator,
-  SessionFeedItemGenerator,
   SessionGenerator,
 } from '@/models/storage/generators';
-import { google, LiftLog } from '@/gen/proto';
+import { LiftLog } from '@/gen/proto';
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { gunzipSync } from 'zlib';
 import { Weight } from '@/models/weight';
 import { SessionBlueprint } from '../blueprint-models';
 import { Session } from '../session-models';
-import { FeedIdentity, FeedUser, SessionFeedItem } from '../feed-models';
 import { ProtobufToJsonV1Migrator } from './versions/v1/protobuf-migrator';
 
 const Models = LiftLog.Ui.Models;
@@ -50,14 +36,9 @@ const sessionFromDao = (
 
 describe('conversions', () => {
   describe.each`
-    name                  | protoType                                           | initialValueGenerator        | convertToDao      | convertFromDao             | assertEquals
-    ${'Duration'}         | ${google.protobuf.Duration}                         | ${DurationGenerator}         | ${toDurationDao}  | ${fromDurationDao}         | ${(a: Duration, b: Duration) => expect(a.equals(b)).toBeTruthy()}
-    ${'SessionBlueprint'} | ${Models.SessionBlueprintDao.SessionBlueprintDaoV2} | ${SessionBlueprintGenerator} | ${modelToDao}     | ${sessionBlueprintFromDao} | ${toJSONEquals}
-    ${'Session'}          | ${Models.SessionHistoryDao.SessionDaoV2}            | ${SessionGenerator}          | ${modelToDao}     | ${sessionFromDao}          | ${toJSONEquals}
-    ${'FeedIdentity'}     | ${Models.FeedIdentityDaoV1}                         | ${FeedIdentityGenerator}     | ${modelToDao}     | ${FeedIdentity.fromDao}    | ${toPOJOEquals}
-    ${'FeedUser'}         | ${Models.FeedUserDaoV1}                             | ${FeedUserGenerator}         | ${modelToDao}     | ${FeedUser.fromDao}        | ${toPOJOEquals}
-    ${'SessionFeedItem'}  | ${Models.FeedItemDaoV1}                             | ${SessionFeedItemGenerator}  | ${modelToDao}     | ${SessionFeedItem.fromDao} | ${toPOJOEquals}
-    ${'Timestamp'}        | ${google.protobuf.Timestamp}                        | ${InstantGenerator}          | ${toTimestampDao} | ${fromTimestampDao}        | ${(a: Instant, b: Instant) => a.equals(b)}
+    name                  | protoType                                           | initialValueGenerator        | convertToDao  | convertFromDao             | assertEquals
+    ${'SessionBlueprint'} | ${Models.SessionBlueprintDao.SessionBlueprintDaoV2} | ${SessionBlueprintGenerator} | ${modelToDao} | ${sessionBlueprintFromDao} | ${toJSONEquals}
+    ${'Session'}          | ${Models.SessionHistoryDao.SessionDaoV2}            | ${SessionGenerator}          | ${modelToDao} | ${sessionFromDao}          | ${toJSONEquals}
   `(
     'should convert back and forth between $name surviving an encoding',
     ({
@@ -72,9 +53,7 @@ describe('conversions', () => {
           fc.property(
             initialValueGenerator as fc.Arbitrary<unknown>,
             (initialValue) => {
-              const converted = convertToDao(
-                initialValue,
-              );
+              const converted = convertToDao(initialValue);
               const encoded = protoType.encode(converted).finish();
               const decoded = protoType.decode(encoded);
               const convertedBack = convertFromDao(decoded);
@@ -111,16 +90,10 @@ describe('conversions', () => {
   });
 });
 
-interface ToPOJO {
-  toPOJO(): unknown;
-}
 interface ToJSON {
   toJSON(): unknown;
 }
 
-function toPOJOEquals(a: ToPOJO, b: ToPOJO) {
-  expect(b.toPOJO()).toEqual(a.toPOJO());
-}
 function toJSONEquals(a: ToJSON, b: ToJSON) {
   expect(b.toJSON()).toEqual(a.toJSON());
 }

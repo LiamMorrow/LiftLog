@@ -1,34 +1,39 @@
-import { Instant, OffsetDateTime, ZoneId } from '@js-joda/core';
+import { Instant, ZoneId } from '@js-joda/core';
 import {
   publishUnpublishedSessions,
-  replaceFeedItems,
   removeUnpublishedSessionId,
-  replaceFeedFollowedUsers,
   feedApiError,
   fetchFeedItems,
   setIsFetching,
+  putFollowedUser,
+  removeFeedItems,
+  upsertFeedItems,
 } from '@/store/feed';
 import { AddEffectFn } from '@/store/store';
-import { LiftLog } from '@/gen/proto';
 import {
   FeedIdentity,
   FeedUser,
-  FeedItem,
-  SessionFeedItem,
-  RemovedSessionFeedItem,
+  FollowedFeedUser,
+  FeedUserEvent as FeedUserEvent,
+  fromFeedUserEventJSON,
+  RemovedSessionUserEvent,
+  SessionUserEvent,
 } from '@/models/feed-models';
 import { Session } from '@/models/session-models';
+import { GetUserResponse, UserEventResponse } from '@/models/feed-api-models';
 import {
-  GetUserResponse,
-  UserEventResponse,
-} from '@/models/feed-api-models';
-import { toUuidDao } from '@/models/storage/conversions.to-dao';
-import { fromUuidDao } from '@/models/storage/conversions.from-dao';
-import { EncryptionService } from '@/services/encryption-service';
+  EncryptionService,
+  fromJsonBytes,
+  toJsonBytes,
+} from '@/services/encryption-service';
 import { FeedApiService } from '@/services/feed-api';
 import { selectSession } from '@/store/stored-sessions';
-import { SessionBlueprint } from '@/models/blueprint-models';
-import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
+import { ProgramBlueprint } from '@/models/blueprint-models';
+import {
+  FeedUserEventJSON,
+  ProgramBlueprintJSON,
+} from '@/models/storage/versions/latest';
+import { feedUnpublishedSessionsSchema } from '@/db/schema';
 
 const MIN_TIMESTAMP = Instant.parse('2000-01-01T00:00:00Z');
 
@@ -47,41 +52,35 @@ export function addFeedItemEffects(addEffect: AddEffectFn) {
 
       try {
         dispatch(setIsFetching(true));
-        const originalFollowedUsers = Object.fromEntries(
-          Object.entries(state.feed.followedUsers).map(([key, value]) => [
-            key,
-            FeedUser.fromPOJO(value),
-          ]),
-        );
+        const originalFollowedUsers = state.feed.followedUsers;
 
         // Get latest event timestamp for each user
-        const userIdToLatestEvent = state.feed.feed
-          .map(FeedItem.fromPOJO)
-          .reduce((acc, item) => {
-            const current = acc.get(item.userId);
-            if (!current || item.timestamp.isAfter(current)) {
-              acc.set(item.userId, item.timestamp);
-            }
-            return acc;
-          }, new Map<string, Instant>());
+        const userIdToLatestEvent = state.feed.feed.reduce((acc, item) => {
+          const current = acc.get(item.userId);
+          if (!current || item.timestamp.isAfter(current)) {
+            acc.set(item.userId, item.timestamp);
+          }
+          return acc;
+        }, new Map<string, Instant>());
 
         // Get followed users with follow secrets
         const followedUsersWithFollowSecret = Object.entries(
           originalFollowedUsers,
         )
-          .filter(([_, user]) => user.followSecret !== undefined)
-          .map(
-            ([userId, user]) =>
-              ({
-                userId: userId,
-                followSecret: user.followSecret!,
-                since:
-                  userIdToLatestEvent.get(userId)?.toString() ||
-                  MIN_TIMESTAMP.toString(),
-              }),
-          );
+          .filter(
+            (x): x is [string, FollowedFeedUser] =>
+              x[1].type === 'FollowedFeedUser',
+          )
+          .map(([userId, user]) => ({
+            userId: userId,
+            followSecret: user.followSecret,
+            since:
+              userIdToLatestEvent.get(userId)?.toString() ||
+              MIN_TIMESTAMP.toString(),
+          }));
 
         if (followedUsersWithFollowSecret.length === 0) {
+          dispatch(removeFeedItems(getState().feed.feed.map((x) => x.id)));
           return;
         }
 
@@ -128,7 +127,7 @@ export function addFeedItemEffects(addEffect: AddEffectFn) {
           await Promise.all(
             Object.entries(users).map(async ([userId, userResponse]) => {
               const originalUser = originalFollowedUsers[userId];
-              if (!originalUser?.aesKey) {
+              if (originalUser.type === 'PendingFeedUser') {
                 return originalUser;
               }
 
@@ -143,12 +142,16 @@ export function addFeedItemEffects(addEffect: AddEffectFn) {
           .filter((user) => user !== null && user !== undefined)
           .concat(
             Object.values(originalFollowedUsers).filter(
-              (user) => !user.followSecret,
+              (user) => user.type === 'PendingFeedUser',
             ),
           )
-          .filter((user) => !invalidFollowSecrets.has(user.followSecret || ''));
+          .filter(
+            (user) =>
+              user.type === 'PendingFeedUser' ||
+              !invalidFollowSecrets.has(user.followSecret || ''),
+          );
 
-        dispatch(replaceFeedFollowedUsers(newUsers));
+        newUsers.forEach((user) => dispatch(putFollowedUser(user)));
 
         // Decrypt and process feed events
         const feedItems = (
@@ -163,16 +166,13 @@ export function addFeedItemEffects(addEffect: AddEffectFn) {
           )
         ).filter((item) => item !== null);
 
-        // Filter and sort feed items
         const now = Instant.now();
-        const existingFeedItems = state.feed.feed.map(FeedItem.fromPOJO);
+        const existingFeedItems = state.feed.feed as FeedUserEvent[];
         const allFeedItems = existingFeedItems.concat(feedItems);
 
-        const updatedFeed = [
+        // Dedup by (userId, eventId), keeping latest timestamp
+        const deduped = [
           ...allFeedItems
-            .filter((item) => item.expiry.isAfter(now))
-            .filter((item) => newUsers.some((user) => user.id === item.userId))
-            // Group by (userId, eventId) and take the latest
             .reduce((acc, item) => {
               const key = `${item.userId}-${item.eventId}`;
               const existing = acc.get(key);
@@ -180,34 +180,44 @@ export function addFeedItemEffects(addEffect: AddEffectFn) {
                 acc.set(key, item);
               }
               return acc;
-            }, new Map<string, FeedItem>())
+            }, new Map<string, FeedUserEvent>())
             .values(),
-        ]
-          .sort((a, b) => {
-            // Sort by session date for SessionFeedItems, otherwise by timestamp
-            const aTime =
-              a instanceof SessionFeedItem
-                ? a.session.date
-                    .atStartOfDay()
-                    .atZone(ZoneId.systemDefault())
-                    .toInstant()
-                : a.timestamp;
-            const bTime =
-              b instanceof SessionFeedItem
-                ? b.session.date
-                    .atStartOfDay()
-                    .atZone(ZoneId.systemDefault())
-                    .toInstant()
-                : b.timestamp;
+        ];
 
-            const result = bTime.compareTo(aTime);
-            if (result !== 0) return result;
+        const validItems = deduped.filter(
+          (item) =>
+            item.expiry.isAfter(now) &&
+            newUsers.some((user) => user.id === item.userId) &&
+            item.type !== 'RemovedSessionUserEvent',
+        );
 
-            return b.timestamp.compareTo(a.timestamp);
-          })
-          .filter((item) => !(item instanceof RemovedSessionFeedItem)); // Filter out removed sessions
+        const removedIds = deduped
+          .filter((item) => !validItems.some((v) => v.id === item.id))
+          .map((item) => item.id);
 
-        dispatch(replaceFeedItems(updatedFeed));
+        const sorted = validItems.sort((a, b) => {
+          const aTime =
+            a.type === 'SessionUserEvent'
+              ? a.session.date
+                  .atStartOfDay()
+                  .atZone(ZoneId.systemDefault())
+                  .toInstant()
+              : a.timestamp;
+          const bTime =
+            b.type === 'SessionUserEvent'
+              ? b.session.date
+                  .atStartOfDay()
+                  .atZone(ZoneId.systemDefault())
+                  .toInstant()
+              : b.timestamp;
+
+          const result = bTime.compareTo(aTime);
+          if (result !== 0) return result;
+          return b.timestamp.compareTo(a.timestamp);
+        });
+
+        if (removedIds.length) dispatch(removeFeedItems(removedIds));
+        dispatch(upsertFeedItems(sorted as SessionUserEvent[]));
       } finally {
         dispatch(setIsFetching(false));
       }
@@ -217,8 +227,8 @@ export function addFeedItemEffects(addEffect: AddEffectFn) {
   addEffect(
     publishUnpublishedSessions,
     async (
-      action,
-      { dispatch, getState, extra: { feedApiService, encryptionService } },
+      _,
+      { dispatch, getState, extra: { db, feedApiService, encryptionService } },
     ) => {
       const state = getState();
       const identityRemote = state.feed.identity;
@@ -227,14 +237,16 @@ export function addFeedItemEffects(addEffect: AddEffectFn) {
         return;
       }
 
-      const identity = FeedIdentity.fromPOJO(identityRemote.data);
+      const identity = identityRemote.data;
       if (!identity.publishWorkouts) {
         return;
       }
 
-      const unpublishedSessionIds = [...state.feed.unpublishedSessionIds];
+      const unpublishedSessionIds = await db
+        .select()
+        .from(feedUnpublishedSessionsSchema);
 
-      for (const sessionId of unpublishedSessionIds) {
+      for (const { sessionId } of unpublishedSessionIds) {
         const session = selectSession(getState(), sessionId);
 
         let result;
@@ -262,23 +274,13 @@ export function addFeedItemEffects(addEffect: AddEffectFn) {
   );
 }
 
-async function publishSessionAsync(
+async function publishEvent(
   identity: FeedIdentity,
-  session: Session,
+  event: FeedUserEvent,
   encryptionService: EncryptionService,
   feedApiService: FeedApiService,
 ) {
-  const sessionPayload = LiftLog.Ui.Models.UserEventPayload.create({
-    sessionPayload: {
-      session: (identity.publishBodyweight
-        ? session
-        : session.with({ bodyweight: undefined })
-      ).toDao(),
-    },
-  });
-
-  const payloadBytes =
-    LiftLog.Ui.Models.UserEventPayload.encode(sessionPayload).finish();
+  const payloadBytes = toJsonBytes(event.toJSON());
 
   const encryptedData =
     await encryptionService.signRsa256PssAndEncryptAesCbcAsync(
@@ -290,13 +292,30 @@ async function publishSessionAsync(
   return await feedApiService.putUserEventAsync({
     userId: identity.id,
     password: identity.password,
-    eventId: session.id,
+    eventId: event.eventId,
     encryptedEventPayload: encryptedData.encryptedPayload,
     encryptedEventIV: encryptedData.iv.value,
-    expiry: Instant.now()
-      .plusSeconds(90 * 24 * 60 * 60)
-      .toString(), // 90 days
+    expiry: event.expiry.toString(),
   });
+}
+async function publishSessionAsync(
+  identity: FeedIdentity,
+  session: Session,
+  encryptionService: EncryptionService,
+  feedApiService: FeedApiService,
+) {
+  return publishEvent(
+    identity,
+    new SessionUserEvent(
+      identity.id,
+      session.id,
+      Instant.now(),
+      Instant.now().plusSeconds(90 * 24 * 60 * 60),
+      session,
+    ),
+    encryptionService,
+    feedApiService,
+  );
 }
 
 async function removePublishedSessionAsync(
@@ -305,43 +324,28 @@ async function removePublishedSessionAsync(
   encryptionService: EncryptionService,
   feedApiService: FeedApiService,
 ) {
-  const sessionPayload = LiftLog.Ui.Models.UserEventPayload.create({
-    removedSessionPayload: {
-      sessionId: toUuidDao(sessionId),
-    },
-  });
-
-  const payloadBytes =
-    LiftLog.Ui.Models.UserEventPayload.encode(sessionPayload).finish();
-
-  const encryptedData =
-    await encryptionService.signRsa256PssAndEncryptAesCbcAsync(
-      payloadBytes,
-      identity.aesKey,
-      identity.rsaKeyPair.privateKey,
-    );
-
-  return await feedApiService.putUserEventAsync({
-    userId: identity.id,
-    password: identity.password,
-    eventId: sessionId,
-    encryptedEventPayload: encryptedData.encryptedPayload,
-    encryptedEventIV: encryptedData.iv.value,
-    expiry: Instant.now()
-      .plusSeconds(90 * 24 * 60 * 60)
-      .toString(), // 90 days
-  });
+  return publishEvent(
+    identity,
+    new RemovedSessionUserEvent(
+      identity.id,
+      sessionId,
+      Instant.now(),
+      Instant.now().plusSeconds(90 * 24 * 60 * 60), // 90 days
+      sessionId,
+    ),
+    encryptionService,
+    feedApiService,
+  );
 }
 
 async function getDecryptedUserAsync(
-  originalUser: FeedUser,
+  originalUser: FollowedFeedUser,
   response: GetUserResponse,
   encryptionService: EncryptionService,
 ): Promise<FeedUser | null> {
   try {
     let name: string | undefined;
-    let currentPlan: SessionBlueprint[] = [];
-    let profilePicture: Uint8Array | undefined;
+    let currentPlan: ProgramBlueprint | undefined;
 
     // Decrypt name if present
     if (response.encryptedName && response.encryptedName.length > 0) {
@@ -351,7 +355,7 @@ async function getDecryptedUserAsync(
             encryptedPayload: response.encryptedName,
             iv: { value: response.encryptionIV },
           },
-          originalUser.aesKey!,
+          originalUser.aesKey,
           originalUser.publicKey,
         );
       name = new TextDecoder().decode(decryptedNameBytes);
@@ -368,42 +372,20 @@ async function getDecryptedUserAsync(
             encryptedPayload: response.encryptedCurrentPlan,
             iv: { value: response.encryptionIV },
           },
-          originalUser.aesKey!,
+          originalUser.aesKey,
           originalUser.publicKey,
         );
 
-      const currentPlanDao =
-        LiftLog.Ui.Models.CurrentPlanDaoV1.decode(decryptedPlanBytes);
-      currentPlan = currentPlanDao.sessions.map((s) =>
-        SessionBlueprint.fromJSON(
-          ProtobufToJsonV1Migrator.migrateSessionBlueprint(s),
-        ),
-      );
+      const currentPlanJson =
+        fromJsonBytes<ProgramBlueprintJSON>(decryptedPlanBytes);
+      currentPlan = ProgramBlueprint.fromJSON(currentPlanJson);
     }
 
-    // Decrypt profile picture if present
-    if (
-      response.encryptedProfilePicture &&
-      response.encryptedProfilePicture.length > 0
-    ) {
-      profilePicture =
-        await encryptionService.decryptAesCbcAndVerifyRsa256PssAsync(
-          {
-            encryptedPayload: response.encryptedProfilePicture,
-            iv: { value: response.encryptionIV },
-          },
-          originalUser.aesKey!,
-          originalUser.publicKey,
-        );
-    }
-
-    return new FeedUser(
+    return new FollowedFeedUser(
       originalUser.id,
       originalUser.publicKey,
       name,
-      originalUser.nickname,
       currentPlan,
-      profilePicture,
       originalUser.aesKey,
       originalUser.followSecret,
     );
@@ -418,9 +400,9 @@ async function toFeedItemAsync(
   userEvent: UserEventResponse,
   users: FeedUser[],
   encryptionService: EncryptionService,
-): Promise<FeedItem | null> {
+): Promise<FeedUserEvent | null> {
   const user = users.find((u) => u.id === userEvent.userId);
-  if (!user || !user.aesKey) {
+  if (!user || user.type === 'PendingFeedUser') {
     return null;
   }
 
@@ -435,37 +417,9 @@ async function toFeedItemAsync(
         user.publicKey,
       );
 
-    const payload = LiftLog.Ui.Models.UserEventPayload.decode(decryptedPayload);
+    const payload = fromJsonBytes<FeedUserEventJSON>(decryptedPayload);
 
-    const timestamp = OffsetDateTime.parse(userEvent.timestamp).toInstant();
-    const expiry = OffsetDateTime.parse(userEvent.expiry).toInstant();
-
-    switch (payload.eventPayload) {
-      case 'sessionPayload':
-        return new SessionFeedItem(
-          userEvent.userId,
-          userEvent.eventId,
-          timestamp,
-          expiry,
-          Session.fromJSON(
-            ProtobufToJsonV1Migrator.migrateSession(
-              payload.sessionPayload!.session!,
-            ),
-          ),
-        );
-
-      case 'removedSessionPayload':
-        return new RemovedSessionFeedItem(
-          userEvent.userId,
-          userEvent.eventId,
-          timestamp,
-          expiry,
-          fromUuidDao(payload.removedSessionPayload!.sessionId),
-        );
-
-      default:
-        return null;
-    }
+    return fromFeedUserEventJSON(payload);
   } catch (error) {
     console.error('Failed to decrypt feed item. Skipping.', error);
     return null;

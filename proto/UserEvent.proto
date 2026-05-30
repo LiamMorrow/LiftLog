@@ -7,10 +7,10 @@ import "proto/SessionHistoryDao/SessionHistoryDaoV2.proto";
 import "proto/Utils.proto";
 
 message UserEventPayload {
-  // Note that messages shouldn;t just be raw data, but should be a wrapper around the data
+  // Note that messages shouldn't just be raw data, but should be a wrapper around the data
   // so we can add additional fields in the future if needed
   oneof event_payload {
-    SessionUserEvent        session_payload         = 1;
+    SessionUserEvent session_payload = 1;
     RemovedSessionUserEvent removed_session_payload = 2;
   }
 }
@@ -26,8 +26,8 @@ message RemovedSessionUserEvent {
 message InboxMessageDao {
   LiftLog.Ui.Models.UuidDao from_user_id = 1;
   oneof message_payload {
-    FollowRequestDao     follow_request        = 2;
-    FollowResponseDao    follow_response       = 3;
+    FollowRequestDao follow_request = 2;
+    FollowResponseDao follow_response = 3;
     UnFollowNotification unfollow_notification = 4;
   }
   // The signature of the [message +from_user_id+ the to_user_id], signed with the private key of the from_user_id
@@ -36,8 +36,6 @@ message InboxMessageDao {
 
 message FollowRequestDao {
   optional google.protobuf.StringValue name = 1;
-  reserved 2; // profile picture
-  reserved 3; // public key
 }
 
 // Encrypted with the public key of the user who sent the follow request

@@ -54,7 +54,7 @@ export const BigNumberGenerator = fc
 
 export const WeightUnitGenerator = fc
   .boolean()
-  .map((x) => (x ? ('kilograms') : 'pounds'));
+  .map((x) => (x ? 'kilograms' : 'pounds'));
 
 export const WeightGenerator = fc
   .tuple(WeightUnitGenerator, BigNumberGenerator)
@@ -309,7 +309,6 @@ export const FeedUserGenerator = fc
     id: fc.uuid(),
     publicKey: RsaPublicKeyGenerator,
     name: fc.option(fc.string(), { nil: undefined }),
-    nickname: fc.option(fc.string(), { nil: undefined }),
     currentPlan: fc.array(SessionBlueprintGenerator, {
       maxLength: 5,
     }),
@@ -333,12 +332,6 @@ export const FeedIdentityGenerator = fc
     rsaKeyPair: RsaKeyPairGenerator,
     password: fc.string(),
     name: fc.option(fc.string(), { nil: undefined }),
-    profilePicture: fc.option(
-      fc
-        .array(fc.integer({ min: 0, max: 255 }), { maxLength: 1024 })
-        .map((arr) => Uint8Array.from(arr)),
-      { nil: undefined },
-    ),
     publishBodyweight: fc.boolean(),
     publishPlan: fc.boolean(),
     publishWorkouts: fc.boolean(),
@@ -352,7 +345,6 @@ export const FeedIdentityGenerator = fc
         pojo.rsaKeyPair,
         pojo.password,
         pojo.name,
-        pojo.profilePicture,
         pojo.publishBodyweight,
         pojo.publishPlan,
         pojo.publishWorkouts,

@@ -13,7 +13,6 @@ import {
   addFollower,
   removeFollower,
   removeFollowRequest,
-  replaceFeedFollowedUsers,
   fetchFeedItems,
   removeFollowedUser,
   selectFeedFollowers,
@@ -22,12 +21,14 @@ import {
   selectFeedIdentityRemote,
   removeRevokableFollowSecret,
 } from '@/store/feed';
-import { LiftLog } from '@/gen/proto';
-import { FeedIdentity, FeedUser } from '@/models/feed-models';
+import {
+  AcceptedFollowResponse,
+  FollowedFeedUser,
+  FollowerFeedUser,
+  PendingFeedUser,
+} from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
 import { RsaPublicKey } from '@/models/encryption-models';
-import { toUuidDao } from '@/models/storage/conversions.to-dao';
-import { FeedInboxDecryptionService } from '@/services/feed-inbox-decryption-service';
 import { ApiErrorType } from '@/services/api-error';
 
 export function addFollowingEffects(addEffect: AddEffectFn) {
@@ -41,7 +42,7 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
       );
 
       if (result.isSuccess()) {
-        const sharedUser = FeedUser.fromShared(
+        const sharedUser = new PendingFeedUser(
           result.data.id,
           { spkiPublicKeyBytes: result.data.rsaPublicKey },
           action.payload.name,
@@ -71,8 +72,8 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
         return;
       }
 
-      const identity = FeedIdentity.fromPOJO(identityRemote.data);
-      const sharedFeedUser = FeedUser.fromPOJO(sharedFeedUserRemote.data);
+      const identity = identityRemote.data;
+      const sharedFeedUser = sharedFeedUserRemote.data;
       const result = await feedFollowService.requestToFollowAUserAsync(
         identity,
         sharedFeedUser,
@@ -95,44 +96,38 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
 
   addEffect(processFollowResponses, async (action, { dispatch, getState }) => {
     const state = getState();
-    const currentFollowedUsers = Object.values(state.feed.followedUsers).map(
-      FeedUser.fromPOJO,
-    );
+    const currentFollowedUsers = state.feed.followedUsers;
 
-    const acceptedResponses = action.payload.responses
-      .filter((x) => x.accepted)
-      .reduce(
-        (acc, response) => {
-          acc[response.userId] = response;
-          return acc;
-        },
-        {} as Record<string, (typeof action.payload.responses)[0]>,
-      );
-
-    const rejectedUserIds = new Set(
-      action.payload.responses.filter((x) => !x.accepted).map((x) => x.userId),
-    );
-
-    const usersAfterResponses = currentFollowedUsers
-      .map((user) => {
-        const acceptedResponse = acceptedResponses[user.id];
-        if (acceptedResponse) {
-          return new FeedUser(
-            user.id,
-            user.publicKey,
-            user.name ?? undefined,
-            user.nickname,
-            user.currentPlan,
-            user.profilePicture,
-            acceptedResponse.aesKey || user.aesKey,
-            acceptedResponse.followSecret ?? undefined,
-          );
+    action.payload.responses
+      .filter((x) => x.payload.response.type === 'AcceptedFollowResponse')
+      .forEach((response) => {
+        const acceptResponse = response.payload
+          .response as AcceptedFollowResponse;
+        const existingUser = currentFollowedUsers[response.senderUserId];
+        if (!existingUser) {
+          return;
         }
-        return user;
-      })
-      .filter((user) => !rejectedUserIds.has(user.id));
 
-    dispatch(replaceFeedFollowedUsers(usersAfterResponses));
+        dispatch(
+          putFollowedUser(
+            new FollowedFeedUser(
+              response.senderUserId,
+              existingUser.publicKey,
+              existingUser.name ?? undefined,
+              undefined,
+              acceptResponse.aesKey,
+              acceptResponse.followSecret,
+            ),
+          ),
+        );
+      });
+
+    new Set(
+      action.payload.responses
+        .filter((x) => x.payload.response.type === 'RejectedFollowResponse')
+        .map((x) => x.senderUserId),
+    ).forEach((id) => dispatch(removeFollowedUser(id)));
+
     dispatch(fetchFeedItems({ fromUserAction: false }));
   });
 
@@ -140,7 +135,7 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
     unfollowFeedUser,
     async (
       action,
-      { getState, dispatch, extra: { encryptionService, feedApiService } },
+      { getState, dispatch, extra: { encryptionService, feedFollowService } },
     ) => {
       const state = getState();
       const identityRemote = state.feed.identity;
@@ -149,44 +144,15 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
         return;
       }
 
-      const identity = FeedIdentity.fromPOJO(identityRemote.data);
+      const identity = identityRemote.data;
       const feedUser = action.payload.feedUser;
 
-      dispatch(removeFollowedUser(feedUser));
+      dispatch(removeFollowedUser(feedUser.id));
 
-      if (!feedUser.followSecret) {
+      if (feedUser.type === 'PendingFeedUser') {
         return;
       }
-
-      const inboxMessage = LiftLog.Ui.Models.InboxMessageDao.create({
-        fromUserId: toUuidDao(identity.id),
-        unfollowNotification: {
-          followSecret: feedUser.followSecret,
-        },
-      });
-
-      const signaturePayload = FeedInboxDecryptionService.getSignaturePayload(
-        inboxMessage,
-        feedUser.id,
-      );
-      const signature = await encryptionService.signRsaPssSha256Async(
-        signaturePayload,
-        identity.rsaKeyPair.privateKey,
-      );
-      inboxMessage.signature = signature;
-
-      const messageBytes =
-        LiftLog.Ui.Models.InboxMessageDao.encode(inboxMessage).finish();
-      const encryptedInboxMessage =
-        await encryptionService.encryptRsaOaepSha256Async(
-          messageBytes,
-          feedUser.publicKey,
-        );
-
-      await feedApiService.putInboxMessageAsync({
-        toUserId: feedUser.id,
-        encryptedMessage: encryptedInboxMessage.dataChunks,
-      });
+      await feedFollowService.unfollowUserAsync(identity, feedUser);
     },
   );
 
@@ -203,11 +169,11 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
         return;
       }
 
-      const identity = FeedIdentity.fromPOJO(identityRemote.data);
+      const identity = identityRemote.data;
       const request = action.payload.request;
 
       // Check if there's an existing follower and revoke their secret
-      const existingFollower = state.feed.followers[request.userId];
+      const existingFollower = state.feed.followers[request.senderUserId];
       if (existingFollower && existingFollower.followSecret) {
         await feedFollowService.revokeFollowSecretAsync(
           identity,
@@ -216,7 +182,9 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
       }
 
       // Fetch user details
-      const userResponse = await feedApiService.getUserAsync(request.userId);
+      const userResponse = await feedApiService.getUserAsync(
+        request.senderUserId,
+      );
       if (!userResponse.isSuccess()) {
         dispatch(
           feedApiError({
@@ -251,15 +219,11 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
       }
 
       // Add as follower
-      const newFollower = new FeedUser(
-        request.userId,
+      const newFollower = new FollowerFeedUser(
+        request.senderUserId,
         publicKey,
-        request.name,
-        undefined, // nickname
-        [], // currentPlan
-        undefined, // profilePicture
-        undefined, // aesKey
-        followSecretResponse.data, // followSecret
+        request.payload.name,
+        followSecretResponse.data,
       );
 
       dispatch(addFollower(newFollower));
@@ -280,10 +244,12 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
         return;
       }
 
-      const identity = FeedIdentity.fromPOJO(identityRemote.data);
+      const identity = identityRemote.data;
       const request = action.payload.request;
 
-      const userResponse = await feedApiService.getUserAsync(request.userId);
+      const userResponse = await feedApiService.getUserAsync(
+        request.senderUserId,
+      );
       if (!userResponse.isSuccess()) {
         console.error(
           'Failed to deny follow request with error:',

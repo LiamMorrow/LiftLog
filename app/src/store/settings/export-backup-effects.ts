@@ -4,7 +4,6 @@ import { selectAllPrograms } from '@/store/program';
 import { exportData } from '@/store/settings';
 import { streamToUint8Array } from '@/utils/stream';
 import 'compression-streams-polyfill';
-import { toFeedStateDao } from '../feed';
 import { DateTimeFormatter, LocalDateTime } from '@js-joda/core';
 
 export function addExportBackupEffects(addEffect: AddEffectFn) {
@@ -20,14 +19,12 @@ export function addExportBackupEffects(addEffect: AddEffectFn) {
         savedPrograms.map(({ id, program }) => [id, program.toDao()]),
       );
       const activeProgramId = getState().program.activePlanId;
-      const feedStateDao = includeFeed ? toFeedStateDao(getState().feed) : null;
 
       const dao = new LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2({
         sessions: sessions.map((x) => x.toDao()),
         activeProgramId: new google.protobuf.StringValue({
           value: activeProgramId,
         }),
-        feedState: feedStateDao,
         savedPrograms: savedProgramsDao,
       });
       const daoBytes =

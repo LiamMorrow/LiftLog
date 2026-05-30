@@ -1,9 +1,8 @@
 import { FeedApiService } from './feed-api';
-import { EncryptionService } from './encryption-service';
+import { EncryptionService, toJsonBytes } from './encryption-service';
 import { AesKey, RsaKeyPair } from '@/models/encryption-models';
-import { FeedIdentity, toCurrentPlanDao } from '@/models/feed-models';
-import { SessionBlueprint } from '@/models/blueprint-models';
-import { LiftLog } from '@/gen/proto';
+import { FeedIdentity } from '@/models/feed-models';
+import { ProgramBlueprint } from '@/models/blueprint-models';
 import { ApiResult } from '@/services/api-error';
 
 export class FeedIdentityService {
@@ -14,11 +13,10 @@ export class FeedIdentityService {
 
   async createFeedIdentityAsync(
     name: string | undefined,
-    profilePicture: Uint8Array | undefined,
     publishBodyweight: boolean,
     publishPlan: boolean,
     publishWorkouts: boolean,
-    currentPlan: SessionBlueprint[],
+    currentPlan: ProgramBlueprint | undefined,
   ): Promise<ApiResult<FeedIdentity>> {
     const response = await this.feedApiService.createUserAsync();
     if (!response.isSuccess()) {
@@ -33,7 +31,6 @@ export class FeedIdentityService {
       aesKey,
       rsaKeyPair,
       name,
-      profilePicture,
       publishBodyweight,
       publishPlan,
       publishWorkouts,
@@ -48,11 +45,10 @@ export class FeedIdentityService {
     aesKey: AesKey,
     rsaKeyPair: RsaKeyPair,
     name: string | undefined,
-    profilePicture: Uint8Array | undefined,
     publishBodyweight: boolean,
     publishPlan: boolean,
     publishWorkouts: boolean,
-    currentPlan: SessionBlueprint[],
+    currentPlan: ProgramBlueprint | undefined,
   ): Promise<ApiResult<FeedIdentity>> {
     const privateKey = rsaKeyPair.privateKey;
     const { iv } =
@@ -73,36 +69,23 @@ export class FeedIdentityService {
         ).encryptedPayload
       : undefined;
 
-    const encryptedProfilePicture = profilePicture
-      ? (
-          await this.encryptionService.signRsa256PssAndEncryptAesCbcAsync(
-            profilePicture,
-            aesKey,
-            privateKey,
-            iv,
-          )
-        ).encryptedPayload
-      : undefined;
-    const currentPlanDao = toCurrentPlanDao(currentPlan);
-    const currentPlanBytes =
-      LiftLog.Ui.Models.CurrentPlanDaoV1.encode(currentPlanDao).finish();
-    const encryptedCurrentPlan = publishPlan
-      ? (
-          await this.encryptionService.signRsa256PssAndEncryptAesCbcAsync(
-            currentPlanBytes,
-            aesKey,
-            privateKey,
-            iv,
-          )
-        ).encryptedPayload
-      : undefined;
+    const encryptedCurrentPlan =
+      publishPlan && currentPlan
+        ? (
+            await this.encryptionService.signRsa256PssAndEncryptAesCbcAsync(
+              toJsonBytes(currentPlan.toJSON()),
+              aesKey,
+              privateKey,
+              iv,
+            )
+          ).encryptedPayload
+        : undefined;
 
     const result = await this.feedApiService.putUserDataAsync({
       id,
       password,
       encryptedCurrentPlan,
       encryptedName,
-      encryptedProfilePicture,
       encryptionIV: iv.value,
       rsaPublicKey: rsaKeyPair.publicKey.spkiPublicKeyBytes,
     });
@@ -119,7 +102,6 @@ export class FeedIdentityService {
         rsaKeyPair,
         password,
         name,
-        profilePicture,
         publishBodyweight,
         publishPlan,
         publishWorkouts,

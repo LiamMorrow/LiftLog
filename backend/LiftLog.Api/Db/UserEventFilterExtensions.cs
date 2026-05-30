@@ -29,13 +29,13 @@ public static class UserEventFilterExtensions
                 if (i == 0)
                 {
                     queryStringBuilder.Append(
-                        $"SELECT {{{dataIndex}}}::UUID AS {columnNames.UserId}, {{{dataIndex + 1}}} AS {columnNames.Since} "
+                        $"SELECT {{{dataIndex}}}::UUID AS {columnNames.UserId}, {{{dataIndex + 1}}}::TIMESTAMPTZ AS {columnNames.Since} "
                     );
                 }
                 else
                 {
                     queryStringBuilder.Append(
-                        $"UNION SELECT {{{dataIndex}}}::UUID, {{{dataIndex + 1}}} "
+                        $"UNION SELECT {{{dataIndex}}}::UUID, {{{dataIndex + 1}}}::TIMESTAMPTZ "
                     );
                 }
 
@@ -52,7 +52,7 @@ public static class UserEventFilterExtensions
 #pragma warning disable EF1002 // Risk of vulnerability to SQL injection.
             return dbSet
                 .FromSqlRaw(
-                    $"SELECT NULL AS {columnNames.UserId}, NULL AS {columnNames.Since} WHERE FALSE"
+                    $"SELECT NULL::UUID AS {columnNames.UserId}, NULL::TIMESTAMPTZ AS {columnNames.Since} WHERE FALSE"
                 )
                 .AsNoTracking();
 #pragma warning restore EF1002 // Risk of vulnerability to SQL injection.

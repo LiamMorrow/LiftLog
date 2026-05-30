@@ -58,7 +58,9 @@ function FeedFollowingItem(props: { user: FeedUser; userId: string }) {
     <List.Item
       title={props.user.name || 'Anonymous user'}
       description={
-        props.user.aesKey ? undefined : t('generic.awaiting_response.label')
+        props.user.type === 'FollowedFeedUser'
+          ? undefined
+          : t('generic.awaiting_response.label')
       }
       right={() => (
         <Menu
