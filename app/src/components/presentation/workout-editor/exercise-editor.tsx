@@ -1,7 +1,5 @@
-import AppBottomSheet from '@/components/presentation/foundation/app-bottom-sheet';
 import DurationEditor from '@/components/presentation/foundation/editors/duration-editor';
 import EditableIncrementer from '@/components/presentation/foundation/editors/editable-incrementer';
-import ExerciseFilterer from '@/components/presentation/workout-editor/exercise-filterer';
 import FixedIncrementer from '@/components/presentation/foundation/editors/fixed-incrementer';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import Form from '@/components/presentation/foundation/form';
@@ -19,27 +17,17 @@ import {
   TimeCardioTarget,
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
-import { useAppSelector, useAppSelectorWithArg } from '@/store';
-import {
-  selectExerciseById,
-  selectExerciseIds,
-  updateExercise,
-} from '@/store/stored-sessions';
+import { useAppSelector } from '@/store';
+
 import { assertUnreachable } from '@/utils/assert-unreachable';
-import BottomSheet, {
-  useBottomSheetScrollableCreator,
-} from '@gorhom/bottom-sheet';
 import { Duration } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Keyboard, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { View } from 'react-native';
 import { Divider, List, SegmentedButtons, TextInput } from 'react-native-paper';
 import { match, P } from 'ts-pattern';
-import { LegendList } from '@legendapp/list';
 import { ExerciseDescriptor } from '@/models/exercise-models';
-import { useDispatch } from 'react-redux';
-import { uuid } from '@/utils/uuid';
 import { FormRow } from '@/components/presentation/foundation/form-row';
 import {
   SegmentedList,
@@ -48,6 +36,7 @@ import {
 import { SegmentedListSwitch } from '@/components/presentation/foundation/segmented-list-switch';
 import RestFormat from '@/components/presentation/foundation/rest-format';
 import { KeysOfType } from '@/utils/types';
+import { ExerciseSearcher } from '@/components/presentation/workout-editor/exercise-searcher';
 
 interface ExerciseEditorProps {
   exercise: ExerciseBlueprint;
@@ -58,25 +47,9 @@ const distanceUnitOptions = DistanceUnits.map((value) => ({
   label: value + 's',
 }));
 export function ExerciseEditor(props: ExerciseEditorProps) {
-  const exerciseIds = useAppSelector(selectExerciseIds);
-  const bottomSheetRef = useRef<BottomSheet>(null);
-  const BottomSheetScrollView = useBottomSheetScrollableCreator();
   const selectExerciseFromSearch = (ex: ExerciseDescriptor) => {
     updateExercise({ name: ex.name });
-    setFilteredExerciseIds(exerciseIds);
-    setSuggestedNewExercise('NONE');
-    bottomSheetRef.current?.close();
   };
-
-  const [bottomSheetShown, setBottomSheetShown] = useState(false);
-  const [filteredExerciseIds, setFilteredExerciseIds] = useState(exerciseIds);
-  const [suggestedNewExercise, setSuggestedNewExercise] = useState<
-    ExerciseDescriptor | 'NONE'
-  >('NONE');
-  const exerciseListItems = useMemo(
-    () => ['filter', suggestedNewExercise, ...filteredExerciseIds] as const,
-    [filteredExerciseIds, suggestedNewExercise],
-  );
   const { exercise: propsExercise, updateExercise: updatePropsExercise } =
     props;
   const [exercise, setExercise] = useState(propsExercise);
@@ -130,17 +103,10 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
     <View style={{ paddingVertical: spacing.pageHorizontalMargin }}>
       <Form>
         <FormRow>
-          <Button
-            icon={'contentPasteSearch'}
-            mode="contained"
-            onPress={() => {
-              setBottomSheetShown(true);
-              Keyboard.dismiss();
-              bottomSheetRef.current?.expand();
-            }}
-          >
-            {exercise.name}
-          </Button>
+          <ExerciseSearcher
+            currentExercise={exercise}
+            onSelectExercise={selectExerciseFromSearch}
+          />
         </FormRow>
         <FormRow>
           <SegmentedButtons
@@ -168,84 +134,6 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
         </FormRow>
         {exerciseEditor}
       </Form>
-      <AppBottomSheet
-        index={-1}
-        sheetRef={bottomSheetRef}
-        enablePanDownToClose
-        enableDynamicSizing={false}
-      >
-        {bottomSheetShown && (
-          <LegendList
-            data={exerciseListItems}
-            renderScrollComponent={BottomSheetScrollView}
-            getItemType={(_, index) =>
-              index === 0 ? 'filters' : index === 1 ? 'suggest' : 'exercise'
-            }
-            keyExtractor={(item, index) =>
-              index === 0
-                ? 'filters'
-                : index === 1
-                  ? 'suggest'
-                  : (item as string)
-            }
-            renderItem={(i) => {
-              if (i.index === 0) {
-                return (
-                  <ExerciseFilterer
-                    onSuggestedNewExercise={setSuggestedNewExercise}
-                    onFilteredExerciseIdsChange={setFilteredExerciseIds}
-                  />
-                );
-              }
-              if (i.index === 1) {
-                return i.item !== 'NONE' ? (
-                  <SuggestedExerciseSearchListItem
-                    exercise={i.item as ExerciseDescriptor}
-                    onPress={selectExerciseFromSearch}
-                  />
-                ) : undefined;
-              }
-              return (
-                <ExerciseIdSearchListItem
-                  exerciseId={i.item as string}
-                  onPress={selectExerciseFromSearch}
-                />
-              );
-            }}
-          />
-        )}
-      </AppBottomSheet>
-    </View>
-  );
-}
-
-function ExerciseIdSearchListItem(props: {
-  exerciseId: string;
-  onPress: (exercise: ExerciseDescriptor) => void;
-}) {
-  const exercise = useAppSelectorWithArg(selectExerciseById, props.exerciseId);
-  return (
-    <List.Item title={exercise.name} onPress={() => props.onPress(exercise)} />
-  );
-}
-
-function SuggestedExerciseSearchListItem(props: {
-  exercise: ExerciseDescriptor;
-  onPress: (exercise: ExerciseDescriptor) => void;
-}) {
-  const dispatch = useDispatch();
-  return (
-    <View style={{ padding: spacing.pageHorizontalMargin }}>
-      <Button
-        icon={'plus'}
-        mode="outlined"
-        onPress={() => {
-          dispatch(updateExercise({ id: uuid(), exercise: props.exercise }));
-          props.onPress(props.exercise);
-        }}
-      >
-        Add {props.exercise.name}
-      </Button>
     </View>
   );
 }

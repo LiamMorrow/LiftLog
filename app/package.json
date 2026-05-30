@@ -24,7 +24,7 @@
     "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
     "@expo/metro-runtime": "~56.0.13",
     "@expo/ui": "~56.0.14",
-    "@gorhom/bottom-sheet": "^5.2.8",
+    "@gorhom/bottom-sheet": "^5.2.14",
     "@js-joda/core": "^5.6.4",
     "@kingstinct/react-native-healthkit": "^14.0.1",
     "@legendapp/list": "^2.0.19",
