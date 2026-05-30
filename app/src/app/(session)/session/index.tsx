@@ -63,11 +63,9 @@ export default function Index() {
       <Stack.Screen
         options={{
           title: session?.blueprint.name ?? 'Workout',
-          headerRight: () => (
-            <SessionMoreMenuComponent target="workoutSession" save={save} />
-          ),
         }}
       />
+      <SessionMoreMenuComponent target="workoutSession" save={save} />
       <SessionComponent
         target="workoutSession"
         showBodyweight={showBodyweight}

@@ -20,7 +20,7 @@ import WeightedExercise from '@/components/presentation/workout/weighted/weighte
 import WeightDisplay from '@/components/presentation/foundation/editors/weight-display';
 import BigNumber from 'bignumber.js';
 import RestTimer from '@/components/presentation/workout/rest-timer';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import { ExerciseBlueprint } from '@/models/blueprint-models';
 import FullScreenDialog from '@/components/presentation/foundation/full-screen-dialog';
@@ -38,6 +38,7 @@ import { formatDuration } from '@/utils/format-date';
 export default function SessionComponent(props: {
   target: SessionTarget;
   showBodyweight: boolean;
+  header?: ReactNode;
   openPostWorkoutSummary?: () => void;
 }) {
   const { colors } = useAppTheme();
@@ -337,6 +338,7 @@ export default function SessionComponent(props: {
 
   return (
     <FullHeightScrollView floatingChildren={floatingBottomContainer}>
+      {props.header}
       {notesComponent}
       {emptyInfo}
       <ItemList items={session.recordedExercises} renderItem={renderItem} />

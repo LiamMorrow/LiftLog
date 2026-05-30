@@ -41,42 +41,37 @@ export default function HistoryEditPage() {
       <Stack.Screen
         options={{
           title: session?.blueprint.name ?? 'Workout',
-          headerRight: () => (
-            <SessionMoreMenuComponent target="historySession" save={save} />
-          ),
         }}
       />
-      <View
-        style={{
-          paddingHorizontal: spacing.pageHorizontalMargin,
-          flexDirection: 'row',
-        }}
-      >
-        <DatePickerInput
-          testID="session-date-input"
-          locale="default"
-          inputMode="start"
-          onChange={(e) => {
-            if (e && session)
-              dispatch(
-                setCurrentSession({
-                  target: 'historySession',
-                  session: session.withUpdatedDate(
-                    LocalDate.of(
-                      e.getFullYear(),
-                      e.getMonth() + 1,
-                      e.getDate(),
-                    ),
-                  ),
-                }),
-              );
-          }}
-          value={jsDate}
-        />
-      </View>
+      <SessionMoreMenuComponent target="historySession" save={save} />
       <SessionComponent
         target="historySession"
         showBodyweight={showBodyweight}
+        header={
+          <View style={{ paddingHorizontal: spacing.pageHorizontalMargin }}>
+            <DatePickerInput
+              testID="session-date-input"
+              locale="default"
+              inputMode="start"
+              onChange={(e) => {
+                if (e && session)
+                  dispatch(
+                    setCurrentSession({
+                      target: 'historySession',
+                      session: session.withUpdatedDate(
+                        LocalDate.of(
+                          e.getFullYear(),
+                          e.getMonth() + 1,
+                          e.getDate(),
+                        ),
+                      ),
+                    }),
+                  );
+              }}
+              value={jsDate}
+            />
+          </View>
+        }
       />
     </>
   );
