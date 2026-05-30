@@ -16,7 +16,6 @@ import { sessionEditorReducer } from './session-editor';
 import { statsReducer } from '@/store/stats';
 import { resolveServices, Services } from '@/services';
 import { aiPlannerReducer } from '@/store/ai-planner';
-import * as Sentry from '@sentry/react-native';
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 
 export function createStore(db: ExpoSQLiteDatabase) {
@@ -95,11 +94,7 @@ export function createStore(db: ExpoSQLiteDatabase) {
             extra: services,
           });
         } catch (e) {
-          services.logger.warn(`Error during effect [${action.type}]:`, e);
-          Sentry.withScope(function (scope) {
-            scope.setFingerprint(['{{ default }}', action.type]);
-            Sentry.captureException(e);
-          });
+          services.logger.error(`Error during effect [${action.type}]:`, e);
           return;
         }
       },

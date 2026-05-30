@@ -2506,30 +2506,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNSentry (7.11.0):
-    - hermes-engine
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-Core-prebuilt
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-hermes
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - ReactNativeDependencies
-    - Sentry/HybridSDK (= 8.58.0)
-    - Yoga
   - RNSVG (15.15.4):
     - hermes-engine
     - RCTRequired
@@ -2668,7 +2644,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Sentry/HybridSDK (8.58.0)
   - SwiftUIIntrospect (1.3.0)
   - WorkoutWorker (1.0.0):
     - ExpoModulesCore
@@ -2799,7 +2774,6 @@ DEPENDENCIES:
   - RNPurchases (from `../node_modules/react-native-purchases`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
-  - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - RNWorklets (from `../node_modules/react-native-worklets`)
@@ -2813,7 +2787,6 @@ SPEC REPOS:
     - PurchasesHybridCommonUI
     - RevenueCat
     - RevenueCatUI
-    - Sentry
     - SwiftUIIntrospect
 
 EXTERNAL SOURCES:
@@ -3064,8 +3037,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
-  RNSentry:
-    :path: "../node_modules/@sentry/react-native"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   RNVectorIcons:
@@ -3206,11 +3177,9 @@ SPEC CHECKSUMS:
   RNPurchases: 814d23250d91856382f2d1d7c5e255b3d6b4b8ef
   RNReanimated: f735b1747a7a93bda7ca102c6d37a3cf54b6d5e8
   RNScreens: f94000b3cb1eb14cbb8d08dd6074fdd6ccf0e6b0
-  RNSentry: c2b739c5dbdd77f439fbd197d1d45724b22a0437
   RNSVG: 04044c3abcf177fd674a1a3d13097efa1adebcbe
   RNVectorIcons: 97f26211c07d69e45b189f9dd0dbbe5e2d2b0b92
   RNWorklets: 4931990f73bc8f347586918b2e13f11dfadf3b75
-  Sentry: d587a8fe91ca13503ecd69a1905f3e8a0fcf61be
   SwiftUIIntrospect: fee9aa07293ee280373a591e1824e8ddc869ba5d
   WorkoutWorker: 33e381c550369eb8a34bea18e5f3a553d7552f94
   Yoga: 77dfa8673de2874e1855002ae59c68b8be9b007b

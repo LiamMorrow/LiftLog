@@ -9,7 +9,6 @@ import { supportedLanguages } from '@/services/tolgee';
 import { useAppSelector } from '@/store';
 import {
   setColorSchemeSeed,
-  setCrashReportsEnabled,
   setFirstDayOfWeek,
   setPreferredLanguage,
   setRestNotifications,
@@ -128,18 +127,6 @@ export function WelcomeWizard() {
         >
           {t('onboarding.open_source.button')}
         </Button>
-        <Text variant="titleMedium" style={styles.sectionTitle}>
-          {t('onboarding.crash_reports.title')}
-        </Text>
-        <Text variant="bodyMedium" style={styles.sectionDescription}>
-          {t('onboarding.crash_reports.explanation')}
-        </Text>
-        <ListSwitch
-          headline={t('onboarding.send_crash_reports.label')}
-          supportingText={t('onboarding.send_crash_reports.subtitle')}
-          value={settings.crashReportsEnabled}
-          onValueChange={(value) => dispatch(setCrashReportsEnabled(value))}
-        />
         <Button onPress={() => openUrl('https://liftlog.online/privacy.html')}>
           {t('onboarding.privacy_policy.button')}
         </Button>

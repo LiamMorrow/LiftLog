@@ -11,9 +11,6 @@ jobs:
   build:
     runs-on: macos-15
 
-    env:
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN_REACT }}
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v6

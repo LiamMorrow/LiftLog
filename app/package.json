@@ -33,7 +33,6 @@
     "@pchmn/expo-material3-theme": "^1.4.0",
     "@react-native-vector-icons/material-design-icons": "^13.1.2",
     "@reduxjs/toolkit": "^2.11.2",
-    "@sentry/react-native": "~7.11.0",
     "@shopify/react-native-skia": "2.6.2",
     "@testing-library/react": "^16.3.2",
     "@tolgee/react": "^7.1.0",

@@ -35,14 +35,14 @@
         <data android:scheme="liftlog"/>
         <data android:scheme="exp+liftlog"/>
       </intent-filter>
-      <intent-filter>
-        <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE"/>
-      </intent-filter>
       <intent-filter android:autoVerify="true" data-generated="true">
         <action android:name="android.intent.action.VIEW"/>
         <data android:scheme="https" android:host="app.liftlog.online"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE"/>
       </intent-filter>
     </activity>
     <activity-alias android:name="ViewPermissionUsageActivity" android:exported="true" android:targetActivity=".MainActivity" android:permission="android.permission.START_VIEW_PERMISSION_USAGE">

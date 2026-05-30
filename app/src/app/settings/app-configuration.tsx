@@ -5,7 +5,6 @@ import ThemeChooser from '@/components/presentation/foundation/editors/theme-cho
 import { RootState, useAppSelector } from '@/store';
 import {
   setColorSchemeSeed,
-  setCrashReportsEnabled,
   setKeepScreenAwakeDuringWorkout,
   setNotesExpandedByDefault,
   setShowBodyweight,
@@ -74,12 +73,6 @@ export default function AppConfiguration() {
           supportingText={<T keyName="settings.show_tips.subtitle" />}
           value={settings.showTips}
           onValueChange={(value) => dispatch(setShowTips(value))}
-        />
-        <ListSwitch
-          headline={t('onboarding.send_crash_reports.label')}
-          supportingText={t('onboarding.send_crash_reports.subtitle')}
-          value={settings.crashReportsEnabled}
-          onValueChange={(value) => dispatch(setCrashReportsEnabled(value))}
         />
 
         <ThemeChooser

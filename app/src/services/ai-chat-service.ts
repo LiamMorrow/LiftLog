@@ -15,7 +15,6 @@ import BigNumber from 'bignumber.js';
 import { parseDuration } from '@/utils/format-date';
 import { HubConnectionFactory } from '@/services/hub-connection-factory';
 import { RootState } from '@/store';
-import * as Sentry from '@sentry/react-native';
 import Purchases from 'react-native-purchases';
 
 export class AiChatService {
@@ -34,9 +33,8 @@ export class AiChatService {
       return;
     }
     const subject = await this.setupResponseListening(proToken);
-    this.connection
+    void this.connection
       ?.invoke('Introduce', Intl.DateTimeFormat().resolvedOptions().locale)
-      .catch(Sentry.captureException)
       .finally(() => subject.end());
     yield* subject;
     this.connection?.off('ReceiveMessage');
@@ -51,9 +49,8 @@ export class AiChatService {
       return;
     }
     const subject = await this.setupResponseListening(proToken);
-    this.connection
+    void this.connection
       ?.invoke('SendMessage', message)
-      .catch(Sentry.captureException)
       .finally(() => subject.end());
     yield* subject;
     this.connection?.off('ReceiveMessage');
@@ -85,7 +82,6 @@ export class AiChatService {
         this.connection = undefined;
         if (e) {
           console.error(e);
-          Sentry.captureException(e);
         }
       });
 
@@ -93,8 +89,7 @@ export class AiChatService {
         this.connection = undefined;
         if (e) {
           console.error(e);
-          Sentry.captureException(e);
-          await Purchases.syncPurchases().catch(Sentry.captureException);
+          await Purchases.syncPurchases().catch(console.error);
         }
       });
     }

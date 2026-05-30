@@ -12,8 +12,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN_REACT}}
 
     steps:
       - uses: actions/checkout@v6

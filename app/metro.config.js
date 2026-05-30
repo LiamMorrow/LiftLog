@@ -1,11 +1,9 @@
 const {
   wrapWithReanimatedMetroConfig,
 } = require('react-native-reanimated/metro-config');
-const { getSentryExpoConfig } = require('@sentry/react-native/metro');
+const { getDefaultConfig } = require('expo/metro-config');
 
-const config = getSentryExpoConfig(__dirname, {
-  annotateReactComponents: true,
-});
+const config = getDefaultConfig(__dirname);
 
 config.resolver.sourceExts.push('sql');
 

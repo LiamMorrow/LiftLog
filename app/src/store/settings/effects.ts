@@ -29,19 +29,17 @@ import { addImportBackupEffects } from '@/store/settings/import-backup-effects';
 import { addRemoteBackupEffects } from '@/store/settings/remote-backup-effects';
 import Purchases from 'react-native-purchases';
 import { I18nManager, Platform } from 'react-native';
-import { captureException } from '@sentry/react-native';
 import { detectLanguageFromDateLocale } from '@/utils/language-detector';
 import { supportedLanguages } from '@/services/tolgee';
 import { initializeStoredSessionsStateSlice } from '@/store/stored-sessions';
 import { initializeCurrentSessionStateSlice } from '@/store/current-session';
-import * as Sentry from '@sentry/react-native';
 
 export function applySettingsEffects(addEffect: AddEffectFn) {
   addEffect(
     initializeSettingsStateSlice,
     async (
       _,
-      { cancelActiveListeners, dispatch, extra: { preferenceService } },
+      { cancelActiveListeners, dispatch, extra: { preferenceService, logger } },
     ) => {
       const start = performance.now();
       cancelActiveListeners();
@@ -134,9 +132,7 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
           dispatch(setProToken(customerInfo.originalAppUserId));
           await preferenceService.setProToken(customerInfo.originalAppUserId);
         } catch (err) {
-          captureException(
-            new Error('Failed to sync customer', { cause: err }),
-          );
+          logger.error('Failed to migrate user', err);
         }
       }
       dispatch(setIsHydrated(true));
@@ -223,19 +219,6 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
     async (action, { stateAfterReduce, extra: { preferenceService } }) => {
       if (stateAfterReduce.settings.isHydrated) {
         await preferenceService.setCrashReportsEnabled(action.payload);
-      }
-      if (action.payload) {
-        Sentry.init({
-          dsn: 'https://86576716425e1558b5e8622ba65d4544@o4505937515249664.ingest.us.sentry.io/4509717493383168',
-          // Adds more context data to events (IP address, cookies, user, etc.)
-          // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
-          sendDefaultPii: false,
-          // uncomment the line below to enable Spotlight (https://spotlightjs.com)
-          // spotlight: __DEV__,
-          attachViewHierarchy: true,
-        });
-      } else {
-        await Sentry.close();
       }
     },
   );

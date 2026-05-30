@@ -28,16 +28,7 @@
           "background": false
         }
       ],
-      [
-        "@sentry/react-native/expo",
-        {
-          "url": "https://sentry.io/",
-          "project": "app",
-          "organization": "liftlog"
-        }
-      ],
       "expo-localization",
-      "@sentry/react-native",
       "expo-sharing",
       "./plugins/override-health-connect-min-version.js",
       [

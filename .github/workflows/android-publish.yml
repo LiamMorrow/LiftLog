@@ -23,7 +23,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN_REACT}}
       EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY: ${{secrets.EXPO_REVENUECAT_GOOGLE_API_KEY}}
 
     steps:

@@ -6,7 +6,6 @@ import SnackbarProvider from '@/components/smart/snackbar-provider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import '@/utils/date-locale';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
-import * as Sentry from '@sentry/react-native';
 import ServicesProvider from '@/components/smart/services-provider';
 import { PreventNavigateProvider } from '@/hooks/usePreventNavigate';
 import { install } from 'react-native-quick-crypto';
@@ -33,7 +32,7 @@ if (Platform.OS !== 'web') {
   I18nManager.swapLeftAndRightInRTL?.(true);
 }
 
-export default Sentry.wrap(function RootLayout() {
+export default function RootLayout() {
   return (
     <GestureHandlerRootView>
       <PreventNavigateProvider>
@@ -54,7 +53,7 @@ export default Sentry.wrap(function RootLayout() {
       </PreventNavigateProvider>
     </GestureHandlerRootView>
   );
-});
+}
 
 function Layout() {
   const { t } = useTranslate();

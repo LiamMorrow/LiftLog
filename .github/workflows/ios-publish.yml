@@ -27,7 +27,6 @@ jobs:
       APPSTORE_CONNECT_API_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}
 
       # App config
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN_REACT }}
       EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY: ${{ secrets.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY }}
 
     steps:
