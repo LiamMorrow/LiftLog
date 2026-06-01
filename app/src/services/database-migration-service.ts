@@ -1,13 +1,7 @@
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { migrate } from 'drizzle-orm/expo-sqlite/migrator';
 import migrations from '@/drizzle/migrations';
-import { dataMigrationsSchema } from '@/db/schema';
-import {
-  importSessions,
-  importSessionsDataMigration,
-} from './data-migrations/import-sessions';
-import { KeyValueStore } from './key-value-store';
-import { PreferenceService } from './preference-service';
+
 import {
   updateExercisesToLatestVersion,
   updateFeedFollowedUsersToLatestVersion,
@@ -18,53 +12,20 @@ import {
   updateProgramsToLatestVersion,
   updateSessionsToLatestVersion,
 } from './data-migrations/update-to-latest';
-import {
-  importPrograms,
-  importProgramsDataMigration,
-} from './data-migrations/import-programs';
-import {
-  importExercises,
-  importExercisesDataMigration,
-} from './data-migrations/import-exercises';
-import {
-  importExercisesFromWorkouts,
-  importExercisesFromWorkoutsDataMigration,
-} from '@/services/data-migrations/import-exercises-from-workouts';
-import {
-  importFeed,
-  importFeedDataMigration,
-} from '@/services/data-migrations/import-feed';
+import { DatabaseImporter } from '@/services/database-import-service';
 
 export class DatabaseMigrationService {
   // DO NOT Add a dependency to getState here, it gets messy quick
   constructor(
     private readonly db: ExpoSQLiteDatabase,
-    private readonly keyValueStore: KeyValueStore,
-    private readonly preferenceService: PreferenceService,
+    private readonly importService: DatabaseImporter,
   ) {}
 
   async migrate(): Promise<void> {
     const now = performance.now();
     await migrate(this.db, migrations);
-    const dataMigrationsRun = (
-      await this.db.select().from(dataMigrationsSchema)
-    ).map((x) => x.id);
 
-    if (!dataMigrationsRun.includes(importSessionsDataMigration)) {
-      await importSessions(this.db, this.keyValueStore, this.preferenceService);
-    }
-    if (!dataMigrationsRun.includes(importProgramsDataMigration)) {
-      await importPrograms(this.db, this.keyValueStore);
-    }
-    if (!dataMigrationsRun.includes(importExercisesDataMigration)) {
-      await importExercises(this.db, this.keyValueStore);
-    }
-    if (!dataMigrationsRun.includes(importExercisesFromWorkoutsDataMigration)) {
-      await importExercisesFromWorkouts(this.db);
-    }
-    if (!dataMigrationsRun.includes(importFeedDataMigration)) {
-      await importFeed(this.db, this.keyValueStore);
-    }
+    await this.importService.importOldData();
 
     // We always want to update all entities to the latest version
     await updateSessionsToLatestVersion(this.db);

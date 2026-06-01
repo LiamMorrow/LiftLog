@@ -15,11 +15,12 @@ import { applyAiPlannerEffects } from '@/store/ai-planner/effects';
 import { clearAllListeners } from '@reduxjs/toolkit';
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { useIsFocused } from 'expo-router';
+import { SQLiteDatabase } from 'expo-sqlite';
 
 export { RootState, AppDispatch };
 
-export function resolveStore(db: ExpoSQLiteDatabase) {
-  const { store, addEffect } = createStore(db);
+export function resolveStore(db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
+  const { store, addEffect } = createStore(db, expoDb);
   store.dispatch(clearAllListeners());
   applyProgramEffects(addEffect);
   applyCurrentSessionEffects(addEffect);

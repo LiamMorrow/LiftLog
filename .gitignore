@@ -20,6 +20,8 @@ service-account.json
 # Mono auto generated files
 mono_crash.*
 
+scratch
+
 
 # Build results
 build/

@@ -97,6 +97,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
+    "@libsql/client": "^0.17.3",
     "@react-native-community/cli": "^20.1.2",
     "@types/react": "~19.2.10",
     "@typescript/native-preview": "^7.0.0-dev.20251121.1",

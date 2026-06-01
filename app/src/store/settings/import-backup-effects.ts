@@ -2,23 +2,22 @@ import { LiftLog } from '@/gen/proto';
 import { Logger } from '@/services/logger';
 import { showSnackbar } from '@/store/app';
 import { AddEffectFn } from '@/store/store';
+import { upsertSavedPlans } from '@/store/program';
 import {
-  createSavedPlan,
-  setActivePlan,
-  setProgramSessions,
-  upsertSavedPlans,
-} from '@/store/program';
-import { beginFeedImport, importData, importDataDao } from '@/store/settings';
+  beginFeedImport,
+  importBackupData,
+  importData,
+  importDataProto,
+  importDataSql,
+} from '@/store/settings';
 import {
   checkIfWeightMigrationRequired,
   upsertStoredSessions,
 } from '@/store/stored-sessions';
 import { streamToUint8Array } from '@/utils/stream';
-import { uuid } from '@/utils/uuid';
-import { LocalDate } from '@js-joda/core';
 import { sleep } from '@/utils/sleep';
 import { Session } from '@/models/session-models';
-import { ProgramBlueprint, SessionBlueprint } from '@/models/blueprint-models';
+import { ProgramBlueprint } from '@/models/blueprint-models';
 import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
 import {
   FeedIdentity,
@@ -27,6 +26,20 @@ import {
   fromFeedUserJSON,
   SessionUserEvent,
 } from '@/models/feed-models';
+import { deserializeDatabaseAsync } from 'expo-sqlite';
+import { drizzle } from 'drizzle-orm/expo-sqlite';
+import { DatabaseMigrationService } from '@/services/database-migration-service';
+import { FeedBackupData } from '@/models/backup';
+import {
+  feedFollowedUsersSchema,
+  feedFollowerUsersSchema,
+  feedFollowRequestsSchema,
+  feedIdentitySchema,
+  feedItemsSchema,
+  programsSchema,
+  sessionsSchema,
+} from '@/db/schema';
+import { toRecord } from '@/utils/reduce';
 
 export function addImportBackupEffects(addEffect: AddEffectFn) {
   addEffect(
@@ -44,103 +57,150 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
       await sleep(200);
       const gunzipped = await unGzipIfZipped(file.bytes, logger);
       const parsedProto = tryParseProto(gunzipped, logger);
-      if (!parsedProto) {
-        // We've dropped support for v1 for now. If people complain - we can bring it back
-        // This is also a point we could try to import a csv, it's requested fairly often
+      if (parsedProto) {
+        dispatch(importDataProto({ dao: parsedProto }));
+        return;
+      } else {
+        logger.warn('Failed to deserialize data into proto, trying sqlite', {});
+      }
+      try {
+        const db = await deserializeDatabaseAsync(gunzipped);
+        dispatch(importDataSql({ db }));
+      } catch (err) {
+        logger.warn('Failed to deserialize sql', { err });
         dispatch(
           showSnackbar({
             text: 'Could not import data: Unexpected format.',
           }),
         );
-        return;
       }
-      dispatch(importDataDao({ dao: parsedProto }));
     },
   );
 
   addEffect(
-    importDataDao,
-    async ({ payload: { dao } }, { dispatch, extra: { tolgee } }) => {
-      const sessions = dao.sessions.map((s) =>
-        Session.fromJSON(ProtobufToJsonV1Migrator.migrateSession(s)),
-      );
-      dispatch(upsertStoredSessions(sessions));
-      const programs = Object.fromEntries(
-        Object.entries(dao.savedPrograms).map(
-          ([id, program]) =>
-            [
-              id,
-              ProgramBlueprint.fromJSON(
-                ProtobufToJsonV1Migrator.migrateProgramBlueprint(program),
-              ),
-            ] as const,
-        ),
-      );
-      dispatch(upsertSavedPlans(programs));
-      // Will be null when an old export which did not have an active program is imported
-      // In this case, it will have an unnamed program, which will be set as the active program
-      if (!dao.activeProgramId?.value) {
-        const newId = uuid();
-        dispatch(
-          createSavedPlan({
-            name: 'My Program',
-            programId: newId,
-            time: LocalDate.now(),
-          }),
-        );
-        dispatch(
-          setProgramSessions({
-            programId: newId,
-            sessionBlueprints: dao.program.map((s) =>
-              SessionBlueprint.fromJSON(
-                ProtobufToJsonV1Migrator.migrateSessionBlueprint(s),
-              ),
-            ),
-          }),
-        );
-        dispatch(setActivePlan({ activePlanId: newId }));
-      } else {
-        if (dao.activeProgramId.value in programs) {
-          dispatch(setActivePlan({ activePlanId: dao.activeProgramId.value }));
-        }
-      }
+    importBackupData,
+    async ({ payload: dao }, { dispatch, extra: { tolgee } }) => {
+      dispatch(upsertStoredSessions(dao.workouts));
+      dispatch(upsertSavedPlans(dao.programs));
       dispatch(
         showSnackbar({
           text: tolgee.t('Restore complete!'),
         }),
       );
       dispatch(checkIfWeightMigrationRequired());
-      if (dao.feedState?.identity) {
-        dispatch(
-          beginFeedImport({
-            identity: FeedIdentity.fromJSON(
-              ProtobufToJsonV1Migrator.migrateFeedIdentity(
-                dao.feedState.identity,
-              ),
-            ),
-            feedItems: (dao.feedState.feedItems ?? []).map((x) =>
-              SessionUserEvent.fromJSON(
-                ProtobufToJsonV1Migrator.migrateSessionUserEvent(x),
-              ),
-            ),
-            followed: (dao.feedState.followedUsers ?? []).map((x) =>
-              fromFeedUserJSON(ProtobufToJsonV1Migrator.migrateFollowedUser(x)),
-            ),
-            followers: (dao.feedState.followers ?? []).map((x) =>
-              FollowerFeedUser.fromJSON(
-                ProtobufToJsonV1Migrator.migrateFollowerUser(x),
-              ),
-            ),
-            followRequests: (dao.feedState.followRequests ?? []).map((x) =>
-              FollowRequestInboxMessage.fromJSON(
-                ProtobufToJsonV1Migrator.migrateFollowRequest(x),
-              ),
-            ),
-          }),
-        );
+      if (dao.feed) {
+        dispatch(beginFeedImport(dao.feed));
       }
     },
   );
+
+  addEffect(importDataSql, async (action, { dispatch }) => {
+    try {
+      const {
+        payload: { db: backupDb },
+      } = action;
+      const drizzleBackupDb = drizzle(backupDb);
+      const migrator = new DatabaseMigrationService(drizzleBackupDb, {
+        importOldData: async () => {},
+      });
+
+      await migrator.migrate();
+      const workouts = (
+        await drizzleBackupDb.select().from(sessionsSchema)
+      ).map((x) => Session.fromJSON(x.payload));
+      const programs = (
+        await drizzleBackupDb.select().from(programsSchema)
+      ).reduce(
+        toRecord(
+          (x) => x.id,
+          (x) => ProgramBlueprint.fromJSON(x.payload),
+        ),
+        {},
+      );
+      const feedIdentityDb = (
+        await drizzleBackupDb.select().from(feedIdentitySchema)
+      ).at(0);
+
+      let feed: FeedBackupData | undefined;
+      if (feedIdentityDb) {
+        feed = {
+          identity: FeedIdentity.fromJSON(feedIdentityDb.payload),
+          feedItems: (await drizzleBackupDb.select().from(feedItemsSchema)).map(
+            (x) => SessionUserEvent.fromJSON(x.payload),
+          ),
+          followRequests: (
+            await drizzleBackupDb.select().from(feedFollowRequestsSchema)
+          ).map((x) => FollowRequestInboxMessage.fromJSON(x.payload)),
+          followed: (
+            await drizzleBackupDb.select().from(feedFollowedUsersSchema)
+          ).map((x) => fromFeedUserJSON(x.payload)),
+          followers: (
+            await drizzleBackupDb.select().from(feedFollowerUsersSchema)
+          ).map((x) => FollowerFeedUser.fromJSON(x.payload)),
+        };
+      }
+
+      dispatch(
+        importBackupData({
+          programs,
+          workouts,
+          feed,
+        }),
+      );
+    } finally {
+      await action.payload.db.closeAsync();
+    }
+  });
+
+  addEffect(importDataProto, async ({ payload: { dao } }, { dispatch }) => {
+    const workouts = dao.sessions.map((s) =>
+      Session.fromJSON(ProtobufToJsonV1Migrator.migrateSession(s)),
+    );
+    const programs = Object.fromEntries(
+      Object.entries(dao.savedPrograms).map(
+        ([id, program]) =>
+          [
+            id,
+            ProgramBlueprint.fromJSON(
+              ProtobufToJsonV1Migrator.migrateProgramBlueprint(program),
+            ),
+          ] as const,
+      ),
+    );
+    let feed: FeedBackupData | undefined;
+    if (dao.feedState?.identity) {
+      feed = {
+        identity: FeedIdentity.fromJSON(
+          ProtobufToJsonV1Migrator.migrateFeedIdentity(dao.feedState.identity),
+        ),
+        feedItems: (dao.feedState.feedItems ?? []).map((x) =>
+          SessionUserEvent.fromJSON(
+            ProtobufToJsonV1Migrator.migrateSessionUserEvent(x),
+          ),
+        ),
+        followed: (dao.feedState.followedUsers ?? []).map((x) =>
+          fromFeedUserJSON(ProtobufToJsonV1Migrator.migrateFollowedUser(x)),
+        ),
+        followers: (dao.feedState.followers ?? []).map((x) =>
+          FollowerFeedUser.fromJSON(
+            ProtobufToJsonV1Migrator.migrateFollowerUser(x),
+          ),
+        ),
+        followRequests: (dao.feedState.followRequests ?? []).map((x) =>
+          FollowRequestInboxMessage.fromJSON(
+            ProtobufToJsonV1Migrator.migrateFollowRequest(x),
+          ),
+        ),
+      };
+    }
+    dispatch(
+      importBackupData({
+        workouts,
+        programs,
+        feed,
+      }),
+    );
+  });
 }
 
 function tryParseProto(

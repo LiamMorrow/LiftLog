@@ -17,10 +17,11 @@ import { statsReducer } from '@/store/stats';
 import { resolveServices, Services } from '@/services';
 import { aiPlannerReducer } from '@/store/ai-planner';
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
+import { SQLiteDatabase } from 'expo-sqlite';
 
-export function createStore(db: ExpoSQLiteDatabase) {
+export function createStore(db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
   const listenerMiddleware = createListenerMiddleware({
-    extra: (s: AppStore) => resolveServices(s, db),
+    extra: (s: AppStore) => resolveServices(s, db, expoDb),
   });
 
   const store = configureStore({

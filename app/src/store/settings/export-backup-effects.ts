@@ -1,40 +1,38 @@
-import { google, LiftLog } from '@/gen/proto';
 import { AddEffectFn } from '@/store/store';
-import { selectAllPrograms } from '@/store/program';
 import { exportData } from '@/store/settings';
 import { streamToUint8Array } from '@/utils/stream';
 import 'compression-streams-polyfill';
 import { DateTimeFormatter, LocalDateTime } from '@js-joda/core';
+import { backupDatabaseAsync, openDatabaseAsync } from 'expo-sqlite';
 
 export function addExportBackupEffects(addEffect: AddEffectFn) {
   addEffect(
     exportData,
     async (
       { payload: { includeFeed } },
-      { getState, extra: { progressRepository, fileExportService } },
+      { extra: { fileExportService, expoDb } },
     ) => {
-      const sessions = progressRepository.getOrderedSessions().toArray();
-      const savedPrograms = selectAllPrograms(getState());
-      const savedProgramsDao = Object.fromEntries(
-        savedPrograms.map(({ id, program }) => [id, program.toDao()]),
-      );
-      const activeProgramId = getState().program.activePlanId;
-
-      const dao = new LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2({
-        sessions: sessions.map((x) => x.toDao()),
-        activeProgramId: new google.protobuf.StringValue({
-          value: activeProgramId,
-        }),
-        savedPrograms: savedProgramsDao,
+      const backupDatabase = await openDatabaseAsync(':memory:');
+      await backupDatabaseAsync({
+        sourceDatabase: expoDb,
+        destDatabase: backupDatabase,
       });
-      const daoBytes =
-        LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2.encode(
-          dao,
-        ).finish();
+      if (!includeFeed) {
+        await backupDatabase.execAsync(`
+          DELETE FROM feed_items;
+          DELETE FROM feed_identity;
+          DELETE FROM feed_followed_user;
+          DELETE FROM feed_follower_user;
+          DELETE FROM feed_follow_request;
+          DELETE FROM feed_revoked_follow_secrets;
+          DELETE FROM feed_unpublished_sessions;
+          `);
+      }
+      const bytes = await backupDatabase.serializeAsync();
       const stream = new CompressionStream('gzip');
       const writer = stream.writable.getWriter();
       // Don't await this until we start reading
-      const writePromise = writer.write(daoBytes);
+      const writePromise = writer.write(bytes);
       const readable = stream.readable;
       const gzippedPromise = streamToUint8Array(readable);
 
@@ -48,7 +46,7 @@ export function addExportBackupEffects(addEffect: AddEffectFn) {
         .replaceAll('-', '');
 
       await fileExportService.exportBytes(
-        `export.liftlogbackup.${now}.gz`,
+        `export.liftlogbackup.${now}.sqlite.gz`,
         await gzippedPromise,
         'application/octet-stream',
       );
