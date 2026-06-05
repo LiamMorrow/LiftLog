@@ -66,8 +66,7 @@ const storedSessionsSlice = createSlice({
     },
 
     addStoredSession(state, action: PayloadAction<Session>) {
-      state.sessions[action.payload.id] =
-        action.payload;
+      state.sessions[action.payload.id] = action.payload;
       updateDerivatives(state, action.payload);
     },
 
@@ -332,11 +331,9 @@ export const selectPreviousComparableSession = createSelector(
         TemporalComparer,
       );
 
-    return (
-      previousSessions.firstOrDefault(
-        (storedSession) =>
-          storedSession.blueprint.name === session.blueprint.name,
-      ) ?? previousSessions.firstOrDefault(undefined)
+    return previousSessions.firstOrDefault(
+      (storedSession) =>
+        storedSession.blueprint.name === session.blueprint.name,
     );
   },
 );
