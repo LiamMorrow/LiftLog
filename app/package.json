@@ -114,11 +114,11 @@
     "jsdom": "^28.1.0",
     "patch-package": "^8.0.0",
     "prettier": "^3.8.1",
-    "protobufjs-cli": "^1.1.3",
+    "protobufjs-cli": "^1.3.2",
     "ts-json-schema-generator": "^2.9.0",
     "typescript": "~6.0.3",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.8"
   },
   "private": true
 }
