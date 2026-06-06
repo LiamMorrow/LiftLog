@@ -8,15 +8,17 @@ import {
   RsaKeyPairJSON,
   RsaPublicKeyJSON,
 } from '../libs';
-
+import { version } from './version';
 export interface PendingFeedUserJSON {
   type: 'PendingFeedUser';
+  version?: typeof version;
   id: string;
   publicKey: RsaPublicKeyJSON;
   name: string | undefined;
 }
 export interface FollowerFeedUserJSON {
   type: 'FollowerFeedUser';
+  version?: typeof version;
   id: string;
   publicKey: RsaPublicKeyJSON;
   name: string | undefined;
@@ -25,6 +27,7 @@ export interface FollowerFeedUserJSON {
 
 export interface FollowedFeedUserJSON {
   type: 'FollowedFeedUser';
+  version?: typeof version;
   id: string;
   publicKey: RsaPublicKeyJSON;
   name: string | undefined;
@@ -39,6 +42,7 @@ export type FeedUserJSON =
   | FollowerFeedUserJSON;
 
 export interface UserEventBaseJSON {
+  version?: typeof version;
   userId: string;
   eventId: string;
   timestamp: InstantJSON;
@@ -60,6 +64,7 @@ export interface RemovedSessionUserEventJSON extends UserEventBaseJSON {
 }
 
 export interface FeedIdentityJSON {
+  version?: typeof version;
   id: string;
   lookup: string;
   aesKey: AesKeyJSON;
@@ -72,6 +77,7 @@ export interface FeedIdentityJSON {
 }
 
 export interface InboxMessageBaseJSON<TType extends string, T> {
+  version?: typeof version;
   senderUserId: string;
   type: TType;
   // This is stringified json to ensure the signature can be verified consistently
@@ -127,11 +133,13 @@ export interface UnfollowNotificationJSON {
 export type SharedItemJSON = SharedProgramBlueprintJSON | SharedSessionJSON;
 
 export interface SharedProgramBlueprintJSON {
+  version?: typeof version;
   type: 'SharedProgramBlueprint';
   programBlueprint: ProgramBlueprintJSON;
 }
 
 export interface SharedSessionJSON {
+  version?: typeof version;
   type: 'SharedSession';
   session: SessionJSON;
 }

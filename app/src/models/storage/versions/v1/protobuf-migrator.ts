@@ -42,7 +42,7 @@ import {
   RecordedWeightedExerciseJSON,
   SessionJSON,
 } from './session';
-import { WeightJSON, WeightUnitJSON } from './weight';
+import { WeightJSON, WeightUnitJSON } from '../libs/weight';
 import {
   FeedIdentityJSON,
   FollowedFeedUserJSON,

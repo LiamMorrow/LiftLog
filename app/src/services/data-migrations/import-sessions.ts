@@ -33,7 +33,6 @@ export async function importSessions(
   const completedSessionsList: (typeof sessionsSchema.$inferInsert)[] =
     storedData?.completedSessions.map((x) => {
       const session = MigratorVAnyToLatest.migrateSession(
-        1,
         ProtobufToJsonV1Migrator.migrateSession(x),
       );
       return {

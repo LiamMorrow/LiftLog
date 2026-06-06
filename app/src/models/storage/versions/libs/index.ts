@@ -257,3 +257,5 @@ export function toRsaKeyPairJSON(value: RsaKeyPair): RsaKeyPairJSON {
     privateKey: toRsaPrivateKeyJSON(value.privateKey),
   };
 }
+
+export * from './weight';

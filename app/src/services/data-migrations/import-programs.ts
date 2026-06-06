@@ -28,7 +28,6 @@ export async function importPrograms(
       ({
         id,
         payload: MigratorVAnyToLatest.migrateProgram(
-          1,
           ProtobufToJsonV1Migrator.migrateProgramBlueprint(pojo),
         ),
         modelVersion: LatestVersion,

@@ -1,4 +1,7 @@
+import { version } from './version';
+
 export interface ExerciseDescriptorJSON {
+  version?: typeof version;
   name: string;
   force: string | null;
   level: string;

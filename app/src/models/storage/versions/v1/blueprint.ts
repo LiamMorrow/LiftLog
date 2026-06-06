@@ -1,12 +1,15 @@
+import { version } from './version';
 import type { LocalDateJSON, DurationJSON, BigNumberJSON } from '../libs';
 
 export interface ProgramBlueprintJSON {
+  version?: typeof version;
   name: string;
   sessions: SessionBlueprintJSON[];
   lastEdited: LocalDateJSON;
 }
 
 export interface SessionBlueprintJSON {
+  version?: typeof version;
   name: string;
   exercises: ExerciseBlueprintJSON[];
   notes: string;
@@ -77,6 +80,7 @@ export interface WeightedExerciseBlueprintJSON {
 }
 
 export interface RestJSON {
+  version?: typeof version;
   minRest: DurationJSON;
   maxRest: DurationJSON;
   failureRest: DurationJSON;

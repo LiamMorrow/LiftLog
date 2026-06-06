@@ -20,15 +20,12 @@ export const importExercisesFromWorkoutsDataMigration =
 export async function importExercisesFromWorkouts(db: ExpoSQLiteDatabase) {
   await db.transaction(async (tx) => {
     const workouts = (await tx.select().from(sessionsSchema)).map((row) =>
-      MigratorVAnyToLatest.migrateSession(row.modelVersion, row.payload),
+      MigratorVAnyToLatest.migrateSession(row.payload),
     );
     const existingExerciseNames = new Set(
       (await tx.select().from(exercisesSchema))
         .map((row) =>
-          MigratorVAnyToLatest.migrateExerciseDescriptor(
-            row.modelVersion,
-            row.payload,
-          ),
+          MigratorVAnyToLatest.migrateExerciseDescriptor(row.payload),
         )
         .map((x) => new NormalizedName(x.name).toString()),
     );

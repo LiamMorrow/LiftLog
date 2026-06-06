@@ -21,7 +21,7 @@ export async function importExercises(
     ([id, pojo]) =>
       ({
         id,
-        payload: MigratorVAnyToLatest.migrateExerciseDescriptor(1, pojo),
+        payload: MigratorVAnyToLatest.migrateExerciseDescriptor(pojo),
         modelVersion: LatestVersion,
       }) satisfies typeof exercisesSchema.$inferInsert,
   );

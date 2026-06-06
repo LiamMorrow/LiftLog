@@ -1,4 +1,4 @@
-import { BigNumberJSON } from '../libs';
+import { BigNumberJSON } from '.';
 
 export type WeightUnitJSON = 'kilograms' | 'pounds' | 'nil';
 
