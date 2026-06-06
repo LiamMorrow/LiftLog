@@ -20,12 +20,13 @@ type EffectEntry = {
 };
 
 export function createAddEffectTestBed(options?: {
-  initialState?: Partial<RootState>;
+  initialState?: DeepPartial<RootState>;
   services?: DeepPartial<Services>;
 }) {
   const effects: EffectEntry[] = [];
   const dispatchedActions: UnknownAction[] = [];
-  let state: Partial<RootState> = options?.initialState ?? {};
+  let state: DeepPartial<RootState> = options?.initialState ?? {};
+  let stateBeforeReduce: DeepPartial<RootState> = options?.initialState ?? {};
   const logs: { level: string; args: unknown[] }[] = [];
   const mockServices: Services = {
     logger: {
@@ -72,7 +73,7 @@ export function createAddEffectTestBed(options?: {
         dispatchedActions.push(a);
       },
       getState: () => state as RootState,
-      originalState: state as RootState,
+      stateBeforeReduce,
       stateAfterReduce: state as RootState,
       extra: mockServices,
       signal: new AbortController().signal,
@@ -111,9 +112,11 @@ export function createAddEffectTestBed(options?: {
       return action! as ReturnType<typeof act>;
     },
     mockServices,
-    /** Update state between dispatches if needed */
-    setState: (s: Partial<RootState>) => {
+    setState: (s: DeepPartial<RootState>) => {
       state = { ...state, ...s };
+    },
+    setStateBeforeReduce: (s: DeepPartial<RootState>) => {
+      stateBeforeReduce = { ...stateBeforeReduce, ...s };
     },
   };
 }

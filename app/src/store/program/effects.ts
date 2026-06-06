@@ -91,7 +91,7 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
     async (
       _,
       {
-        originalState,
+        stateBeforeReduce,
         stateAfterReduce,
         extra: { db, logger },
         throwIfCancelled,
@@ -103,9 +103,9 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
       const shouldPersist =
         stateAfterReduce.program.isHydrated &&
         (stateAfterReduce.program.activePlanId !==
-          originalState.program.activePlanId ||
+          stateBeforeReduce.program.activePlanId ||
           stateAfterReduce.program.savedPrograms !==
-            originalState.program.savedPrograms);
+            stateBeforeReduce.program.savedPrograms);
       if (shouldPersist) {
         await persistPrograms(stateAfterReduce, db, logger, throwIfCancelled);
         const end = performance.now();

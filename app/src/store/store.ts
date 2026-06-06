@@ -57,7 +57,7 @@ export function createStore(db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
       dispatch: AppDispatch;
       getState: () => RootState;
       stateAfterReduce: RootState;
-      originalState: RootState;
+      stateBeforeReduce: RootState;
     },
   ) => void | Promise<void>;
 
@@ -83,7 +83,7 @@ export function createStore(db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
         [actionPredicate].flat().some((x) => x.type === action.type),
       effect: async (action, listenerApi) => {
         const failureHandlers: (() => void)[] = [];
-        const originalState = listenerApi.getOriginalState() as RootState;
+        const stateBeforeReduce = listenerApi.getOriginalState() as RootState;
         const stateAfterReduce = listenerApi.getState() as RootState;
         const services = listenerApi.extra(store);
         try {
@@ -93,7 +93,7 @@ export function createStore(db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
             dispatch: listenerApi.dispatch as any,
             getState: listenerApi.getState as () => RootState,
             onFail: (cb) => failureHandlers.push(cb),
-            originalState,
+            stateBeforeReduce,
             stateAfterReduce,
             extra: services,
           });
