@@ -1,7 +1,3 @@
-import { LiftLog } from '@/gen/proto';
-
-import Enumerable from 'linq';
-
 import { EmptySession, Session } from '@/models/session-models/session';
 import {
   PotentialSet,
@@ -30,13 +26,3 @@ export {
   fromRecordedExerciseJSON,
   WeightAppliesTo,
 };
-
-export function toSessionHistoryDao(
-  model: Record<string, Session>,
-): LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2 {
-  return new LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2({
-    completedSessions: Enumerable.from(model)
-      .select((x) => x.value.toDao())
-      .toArray(),
-  });
-}
