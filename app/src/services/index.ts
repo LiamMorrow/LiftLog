@@ -76,6 +76,7 @@ function resolveServicesInternal(
   const healthExportService: HES = new HealthExportService();
   const databaseMigrationService = new DatabaseMigrationService(
     db,
+    logger,
     new DatabaseImportService(db, keyValueStore, preferenceService),
   );
 

@@ -1,12 +1,6 @@
-import { LiftLog } from '@/gen/proto';
 import { Duration, LocalDate } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { match, P } from 'ts-pattern';
-import {
-  toDateOnlyDao,
-  toDecimalDao,
-  toDurationDao,
-} from '../storage/conversions.to-dao';
 
 import {
   CardioExerciseBlueprintJSON,
@@ -87,14 +81,6 @@ export class ProgramBlueprint {
     };
   }
 
-  toDao(): LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1 {
-    return new LiftLog.Ui.Models.ProgramBlueprintDao.ProgramBlueprintDaoV1({
-      name: this.name,
-      sessions: this.sessions.map((x) => x.toDao()),
-      lastEdited: toDateOnlyDao(this.lastEdited),
-    });
-  }
-
   with(other: Partial<ProgramBlueprint>): ProgramBlueprint {
     return new ProgramBlueprint(
       other.name ?? this.name,
@@ -143,14 +129,6 @@ export class SessionBlueprint {
       exercises: this.exercises.map((exercise) => exercise.toJSON()),
       notes: this.notes,
     };
-  }
-
-  toDao(): LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2 {
-    return new LiftLog.Ui.Models.SessionBlueprintDao.SessionBlueprintDaoV2({
-      name: this.name,
-      exerciseBlueprints: this.exercises.map((x) => x.toDao()),
-      notes: this.notes,
-    });
   }
 
   with(other: Partial<SessionBlueprint>): SessionBlueprint {
@@ -261,32 +239,6 @@ export class CardioExerciseSetBlueprint {
     };
   }
 
-  toDao(): LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao {
-    return new LiftLog.Ui.Models.SessionBlueprintDao.CardioExerciseSetBlueprintDao(
-      {
-        cardioTarget: this.toCardioTargetDao(this.target),
-        trackDuration: this.trackDuration,
-        trackDistance: this.trackDistance,
-        trackResistance: this.trackResistance,
-        trackIncline: this.trackIncline,
-        trackWeight: this.trackWeight,
-        trackSteps: this.trackSteps,
-      },
-    );
-  }
-
-  private toCardioTargetDao(
-    target: CardioTarget,
-  ): LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget {
-    return new LiftLog.Ui.Models.SessionBlueprintDao.CardioTarget({
-      type: target.type,
-      distanceValue:
-        target.type === 'distance' ? toDecimalDao(target.value.value) : null,
-      distanceUnit: target.type === 'distance' ? target.value.unit : null,
-      timeValue: target.type === 'time' ? toDurationDao(target.value) : null,
-    });
-  }
-
   equals(other: CardioExerciseSetBlueprint | undefined): boolean {
     if (!other) {
       return false;
@@ -370,22 +322,6 @@ export class CardioExerciseBlueprint {
       notes: this.notes,
       link: this.link,
     };
-  }
-
-  toDao(): LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2 {
-    const sets = this.sets.map((x) => x.toDao());
-    return new LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2({
-      name: this.name,
-      notes: this.notes,
-      link: this.link,
-      type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO,
-      cardioSets: sets,
-      deprecatedCardioTarget: null,
-      deprecatedTrackDuration: null,
-      deprecatedTrackDistance: null,
-      deprecatedTrackResistance: null,
-      deprecatedTrackIncline: null,
-    });
   }
 
   with(other: Partial<CardioExerciseBlueprint>): CardioExerciseBlueprint {
@@ -478,20 +414,6 @@ export class WeightedExerciseBlueprint {
       notes: this.notes,
       link: this.link,
     };
-  }
-
-  toDao(): LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2 {
-    return new LiftLog.Ui.Models.SessionBlueprintDao.ExerciseBlueprintDaoV2({
-      name: this.name,
-      notes: this.notes,
-      link: this.link,
-      type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.WEIGHTED,
-      sets: this.sets,
-      repsPerSet: this.repsPerSet,
-      weightIncreaseOnSuccess: toDecimalDao(this.weightIncreaseOnSuccess),
-      restBetweenSets: Rest.toDao(this.restBetweenSets),
-      supersetWithNext: this.supersetWithNext,
-    });
   }
 
   with(other: Partial<WeightedExerciseBlueprint>): WeightedExerciseBlueprint {
@@ -607,14 +529,6 @@ export const Rest = {
       maxRest: toDurationJSON(value.maxRest),
       failureRest: toDurationJSON(value.failureRest),
     };
-  },
-
-  toDao(model: Rest): LiftLog.Ui.Models.SessionBlueprintDao.RestDaoV2 {
-    return new LiftLog.Ui.Models.SessionBlueprintDao.RestDaoV2({
-      minRest: toDurationDao(model.minRest),
-      maxRest: toDurationDao(model.maxRest),
-      failureRest: toDurationDao(model.failureRest),
-    });
   },
 } as const;
 export const EmptyExerciseBlueprint = new WeightedExerciseBlueprint(

@@ -13,11 +13,13 @@ import {
   updateSessionsToLatestVersion,
 } from './data-migrations/update-to-latest';
 import { DatabaseImporter } from '@/services/database-import-service';
+import { Logger } from '@/services/logger';
 
 export class DatabaseMigrationService {
   // DO NOT Add a dependency to getState here, it gets messy quick
   constructor(
     private readonly db: ExpoSQLiteDatabase,
+    private readonly logger: Logger,
     private readonly importService: DatabaseImporter,
   ) {}
 
@@ -37,6 +39,6 @@ export class DatabaseMigrationService {
     await updateFeedFollowerUsersToLatestVersion(this.db);
     await updateFeedFollowRequestsToLatestVersion(this.db);
 
-    console.info('Migrated DB in ' + (performance.now() - now) + 'ms');
+    this.logger.info('Migrated DB in ' + (performance.now() - now) + 'ms');
   }
 }

@@ -1,6 +1,5 @@
 import { LiftLog } from '@/gen/proto';
 import { BackupData, FeedBackupData } from '@/models/backup';
-
 import { RemoteData } from '@/models/remote';
 import { WeightUnit } from '@/models/weight';
 import { DayOfWeek, Instant } from '@js-joda/core';

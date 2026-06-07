@@ -235,7 +235,11 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
     denyFollowRequest,
     async (
       action,
-      { dispatch, getState, extra: { feedApiService, feedFollowService } },
+      {
+        dispatch,
+        getState,
+        extra: { feedApiService, feedFollowService, logger },
+      },
     ) => {
       const state = getState();
       const identityRemote = state.feed.identity;
@@ -251,10 +255,9 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
         request.senderUserId,
       );
       if (!userResponse.isSuccess()) {
-        console.error(
-          'Failed to deny follow request with error:',
-          userResponse.error,
-          'Removing request anyway.',
+        logger.error(
+          'Failed to deny follow request with error. Removing request anyway.',
+          { error: userResponse.error },
         );
         dispatch(removeFollowRequest(request));
         return;
@@ -270,10 +273,9 @@ export function addFollowingEffects(addEffect: AddEffectFn) {
       );
 
       if (!result.isSuccess() && result.error?.type !== ApiErrorType.NotFound) {
-        console.error(
-          'Failed to deny follow request with error:',
-          result.error,
-          'Removing request anyway.',
+        logger.error(
+          'Failed to deny follow request with error. Removing request anyway.',
+          { error: result.error },
         );
       }
 

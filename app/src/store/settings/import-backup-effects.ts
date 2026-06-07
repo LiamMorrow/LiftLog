@@ -94,13 +94,13 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
     },
   );
 
-  addEffect(importDataSql, async (action, { dispatch }) => {
+  addEffect(importDataSql, async (action, { dispatch, extra: { logger } }) => {
     try {
       const {
         payload: { db: backupDb },
       } = action;
       const drizzleBackupDb = drizzle(backupDb);
-      const migrator = new DatabaseMigrationService(drizzleBackupDb, {
+      const migrator = new DatabaseMigrationService(drizzleBackupDb, logger, {
         importOldData: async () => {},
       });
 

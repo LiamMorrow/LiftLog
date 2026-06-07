@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
@@ -15,37 +14,33 @@ import { Weight } from '@/models/weight';
 import { SessionBlueprint } from '../blueprint-models';
 import { Session } from '../session-models';
 import { ProtobufToJsonV1Migrator } from './versions/v1/protobuf-migrator';
+import {
+  fromJsonString,
+  SessionBlueprintJSON,
+  SessionJSON,
+  toJsonString,
+} from '@/models/storage/versions/latest';
 
 const Models = LiftLog.Ui.Models;
 
-interface ToDao {
-  toDao(): unknown;
-}
+const modelToJSON = (x: ToJSON) => x.toJSON();
 
-const modelToDao = (x: ToDao) => x.toDao();
-
-const sessionBlueprintFromDao = (
-  dao: LiftLog.Ui.Models.SessionBlueprintDao.ISessionBlueprintDaoV2,
-): SessionBlueprint =>
-  SessionBlueprint.fromJSON(
-    ProtobufToJsonV1Migrator.migrateSessionBlueprint(dao),
-  );
-const sessionFromDao = (
-  dao: LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2,
-): Session => Session.fromJSON(ProtobufToJsonV1Migrator.migrateSession(dao));
+const sessionBlueprintFromJSON = (
+  dao: SessionBlueprintJSON,
+): SessionBlueprint => SessionBlueprint.fromJSON(dao);
+const sessionFromJSON = (dao: SessionJSON): Session => Session.fromJSON(dao);
 
 describe('conversions', () => {
   describe.each`
-    name                  | protoType                                           | initialValueGenerator        | convertToDao  | convertFromDao             | assertEquals
-    ${'SessionBlueprint'} | ${Models.SessionBlueprintDao.SessionBlueprintDaoV2} | ${SessionBlueprintGenerator} | ${modelToDao} | ${sessionBlueprintFromDao} | ${toJSONEquals}
-    ${'Session'}          | ${Models.SessionHistoryDao.SessionDaoV2}            | ${SessionGenerator}          | ${modelToDao} | ${sessionFromDao}          | ${toJSONEquals}
+    name                  | initialValueGenerator        | convertToJSON  | convertFromJSON             | assertEquals
+    ${'SessionBlueprint'} | ${SessionBlueprintGenerator} | ${modelToJSON} | ${sessionBlueprintFromJSON} | ${toJSONEquals}
+    ${'Session'}          | ${SessionGenerator}          | ${modelToJSON} | ${sessionFromJSON}          | ${toJSONEquals}
   `(
     'should convert back and forth between $name surviving an encoding',
     ({
       initialValueGenerator,
-      protoType,
-      convertToDao,
-      convertFromDao,
+      convertToJSON,
+      convertFromJSON,
       assertEquals,
     }) => {
       it('with protobuf', () => {
@@ -53,10 +48,9 @@ describe('conversions', () => {
           fc.property(
             initialValueGenerator as fc.Arbitrary<unknown>,
             (initialValue) => {
-              const converted = convertToDao(initialValue);
-              const encoded = protoType.encode(converted).finish();
-              const decoded = protoType.decode(encoded);
-              const convertedBack = convertFromDao(decoded);
+              const converted = convertToJSON(initialValue);
+              const encoded = toJsonString(converted);
+              const convertedBack = convertFromJSON(fromJsonString(encoded));
 
               assertEquals(initialValue, convertedBack);
             },

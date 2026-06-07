@@ -139,7 +139,7 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
       dispatch(initializeStoredSessionsStateSlice());
       dispatch(initializeCurrentSessionStateSlice());
       const end = performance.now();
-      console.log(
+      logger.log(
         `initializeSettingsStateSlice effect took ${(end - start).toFixed(2)}ms`,
       );
     },
