@@ -63,11 +63,11 @@ jobs:
       - name: Build Android AAB
         run: ./gradlew bundleRelease
           -PANDROID_UPLOAD_STORE_FILE=liftlog.keystore
-          "-PANDROID_UPLOAD_STORE_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}"
+          '-PANDROID_UPLOAD_STORE_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}'
           -PANDROID_UPLOAD_KEY_ALIAS=liftlog
-          "-PANDROID_UPLOAD_KEY_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}"
-          "-PDISPLAY_VERSION=${{ inputs.version_code }}"
-          "-PBUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}"
+          '-PANDROID_UPLOAD_KEY_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}'
+          '-PDISPLAY_VERSION=${{ inputs.version_code }}'
+          '-PBUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}'
         working-directory: ./app/android
 
       - name: Create release notes directory
@@ -95,11 +95,11 @@ jobs:
       - name: Build Android APK
         run: ./gradlew assembleRelease
           -PANDROID_UPLOAD_STORE_FILE=liftlog.keystore
-          "-PANDROID_UPLOAD_STORE_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}"
+          '-PANDROID_UPLOAD_STORE_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}'
           -PANDROID_UPLOAD_KEY_ALIAS=liftlog
-          "-PANDROID_UPLOAD_KEY_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}"
-          "-PDISPLAY_VERSION=${{ inputs.version_code }}"
-          "-PBUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}"
+          '-PANDROID_UPLOAD_KEY_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}'
+          '-PDISPLAY_VERSION=${{ inputs.version_code }}'
+          '-PBUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}'
         working-directory: ./app/android
 
       - name: Upload APK to release
