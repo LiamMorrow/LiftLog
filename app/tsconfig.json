@@ -12,8 +12,8 @@
       "@/*": ["./src/*"],
       "~/modules/*": ["./modules/*"]
     },
-    "types": ["vitest"],
     "noUncheckedIndexedAccess": true,
+    "types": ["vitest", "node"],
     "exactOptionalPropertyTypes": false
   },
   "include": [

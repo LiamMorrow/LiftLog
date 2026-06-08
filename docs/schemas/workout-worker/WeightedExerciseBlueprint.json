@@ -15,8 +15,8 @@
     "repsPerSet": {
       "type": "integer"
     },
-    "weightIncreaseOnSuccess": {
-      "$ref": "./BigNumber.json"
+    "progressiveOverload": {
+      "$ref": "./ProgressiveOverload.json"
     },
     "restBetweenSets": {
       "$ref": "./Rest.json"
@@ -36,7 +36,7 @@
     "name",
     "sets",
     "repsPerSet",
-    "weightIncreaseOnSuccess",
+    "progressiveOverload",
     "restBetweenSets",
     "supersetWithNext",
     "notes",

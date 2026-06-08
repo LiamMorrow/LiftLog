@@ -37,6 +37,10 @@ import { SegmentedListSwitch } from '@/components/presentation/foundation/segmen
 import RestFormat from '@/components/presentation/foundation/rest-format';
 import { KeysOfType } from '@/utils/types';
 import { ExerciseSearcher } from '@/components/presentation/workout-editor/exercise-searcher';
+import {
+  ProgressiveOverloadSelect,
+  ProgressiveOverloadValuesEditor,
+} from '@/components/presentation/workout-editor/progressive-overload';
 
 interface ExerciseEditorProps {
   exercise: ExerciseBlueprint;
@@ -459,9 +463,6 @@ function WeightedExerciseEditor({
   const setReps = (value: number) =>
     updateExercise({ repsPerSet: Math.max(value, 1) });
 
-  const setExerciseWeightIncrease = (weightIncreaseOnSuccess: BigNumber) =>
-    updateExercise({ weightIncreaseOnSuccess });
-
   return (
     <View style={{ gap: spacing[2] }}>
       <View
@@ -493,15 +494,6 @@ function WeightedExerciseEditor({
 
       <SharedFieldsEditor exercise={exercise} updateExercise={updateExercise} />
 
-      <FormRow>
-        <EditableIncrementer
-          label={t('exercise.progressive_overload.label')}
-          testID="exercise-auto-increase"
-          value={exercise.weightIncreaseOnSuccess}
-          onChange={setExerciseWeightIncrease}
-        />
-      </FormRow>
-
       <RestEditorDialog
         onRestUpdated={(restBetweenSets) => updateExercise({ restBetweenSets })}
         rest={exercise.restBetweenSets}
@@ -510,38 +502,61 @@ function WeightedExerciseEditor({
       />
       <FormRow>
         <SegmentedList
-          items={[
-            <SegmentListFormElement
-              label={t('rest.rest.label')}
-              icon={'airlineSeatReclineExtraFill'}
-              right={
-                <RestFormat
-                  style={{ color: colors.onSurface }}
-                  rest={exercise.restBetweenSets}
-                />
-              }
-            />,
+          items={
+            [
+              <SegmentListFormElement
+                label={t('exercise.progressive_overload.label')}
+                icon={'trendingUp'}
+                right={
+                  <ProgressiveOverloadSelect
+                    value={exercise.progressiveOverload}
+                    onChange={(progressiveOverload) =>
+                      updateExercise({ progressiveOverload })
+                    }
+                  />
+                }
+                line2={
+                  <ProgressiveOverloadValuesEditor
+                    value={exercise.progressiveOverload}
+                    onChange={(progressiveOverload) =>
+                      updateExercise({ progressiveOverload })
+                    }
+                  />
+                }
+              />,
+              <SegmentListFormElement
+                label={t('rest.rest.label')}
+                icon={'airlineSeatReclineExtraFill'}
+                right={
+                  <RestFormat
+                    style={{ color: colors.onSurface }}
+                    rest={exercise.restBetweenSets}
+                  />
+                }
+              />,
 
-            <SegmentedListSwitch
-              label={t('workout.superset_next_exercise.button')}
-              icon={'link'}
-              value={exercise.supersetWithNext}
-              testID="exercise-superset"
-              onValueChange={(supersetWithNext) =>
-                updateExercise({ supersetWithNext })
-              }
-            />,
-          ]}
+              <SegmentedListSwitch
+                label={t('workout.superset_next_exercise.button')}
+                icon={'link'}
+                value={exercise.supersetWithNext}
+                testID="exercise-superset"
+                onValueChange={(supersetWithNext) =>
+                  updateExercise({ supersetWithNext })
+                }
+              />,
+            ] as const
+          }
           renderItem={(i) => i}
           onItemPress={(_, i) => {
             match(i)
-              .with(0, () => setRestDialogOpen(true))
-              .with(1, () =>
+              .with(0, () => {})
+              .with(1, () => setRestDialogOpen(true))
+              .with(2, () =>
                 updateExercise({
                   supersetWithNext: !exercise.supersetWithNext,
                 }),
               )
-              .run();
+              .exhaustive();
           }}
         />
       </FormRow>

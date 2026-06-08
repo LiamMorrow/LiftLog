@@ -1,4 +1,3 @@
-import BigNumber from 'bignumber.js';
 import { match } from 'ts-pattern';
 import {
   CardioExerciseBlueprint,
@@ -6,6 +5,7 @@ import {
   CardioTarget,
   cardioTargetEquals,
   ExerciseBlueprint,
+  ProgressiveOverload,
   Rest,
   SessionBlueprint,
   WeightedExerciseBlueprint,
@@ -110,12 +110,12 @@ interface ExerciseRepsChange extends BaseChange {
 }
 
 interface ExerciseWeightIncreaseChange extends BaseChange {
-  kind: 'exerciseWeightIncrease';
+  kind: 'progressiveOverload';
   type: 'modified';
   exerciseName: string;
   exerciseIndex: number;
-  oldValue: BigNumber;
-  newValue: BigNumber;
+  oldValue: ProgressiveOverload;
+  newValue: ProgressiveOverload;
 }
 
 /** Grouped rest settings change */
@@ -448,15 +448,15 @@ function diffWeightedExercises(
     });
   }
 
-  if (!oldEx.weightIncreaseOnSuccess.eq(newEx.weightIncreaseOnSuccess)) {
+  if (!oldEx.progressiveOverload.equals(newEx.progressiveOverload)) {
     changes.push({
       id: generateChangeId(),
-      kind: 'exerciseWeightIncrease',
+      kind: 'progressiveOverload',
       type: 'modified',
       exerciseName,
       exerciseIndex,
-      oldValue: oldEx.weightIncreaseOnSuccess,
-      newValue: newEx.weightIncreaseOnSuccess,
+      oldValue: oldEx.progressiveOverload,
+      newValue: newEx.progressiveOverload,
     });
   }
 
@@ -951,9 +951,9 @@ export function applySessionBlueprintDiff(
             ? exercise.with({ repsPerSet: c.newValue })
             : exercise,
         )
-        .with({ kind: 'exerciseWeightIncrease' }, (c) =>
+        .with({ kind: 'progressiveOverload' }, (c) =>
           exercise instanceof WeightedExerciseBlueprint
-            ? exercise.with({ weightIncreaseOnSuccess: c.newValue })
+            ? exercise.with({ progressiveOverload: c.newValue })
             : exercise,
         )
         .with({ kind: 'exerciseRest' }, (c) =>
@@ -1137,11 +1137,11 @@ export function getChangeDescription(change: DiffChange): TranslatableString {
       key: 'plan.diff.generic_two_value_change.body',
       params: { oldValue: c.oldValue, newValue: c.newValue },
     }))
-    .with({ kind: 'exerciseWeightIncrease' }, (c) => ({
+    .with({ kind: 'progressiveOverload' }, (c) => ({
       key: 'plan.diff.generic_two_value_change.body',
       params: {
-        oldValue: c.oldValue.toString(),
-        newValue: c.newValue.toString(),
+        oldValue: c.oldValue.weightIncrement.toString(),
+        newValue: c.newValue.weightIncrement.toString(),
       },
     }))
     .with({ kind: 'exerciseRest' }, () => ({
@@ -1228,7 +1228,7 @@ export function getChangeLabelKey(change: DiffChange): TranslatableString {
     .with({ kind: 'exerciseReps' }, () => ({
       key: 'plan.diff.reps.label',
     }))
-    .with({ kind: 'exerciseWeightIncrease' }, () => ({
+    .with({ kind: 'progressiveOverload' }, () => ({
       key: 'plan.diff.progressive_overload.label',
     }))
     .with({ kind: 'exerciseRest' }, () => ({

@@ -4,14 +4,10 @@ import {
   PendingFeedUserJSON,
   FollowedFeedUserJSON,
   FeedUserJSON,
-  FeedUserEventJSON,
   SessionUserEventJSON,
-  RemovedSessionUserEventJSON,
   FeedIdentityJSON,
   InboxMessageJSON,
   FollowRequestJSON,
-  FollowResponseJSON,
-  UnfollowNotificationJSON,
   SharedItemJSON,
   SharedProgramBlueprintJSON,
   SharedSessionJSON,
@@ -25,17 +21,21 @@ import {
   fromRsaPublicKeyJSON,
   toRsaPublicKeyJSON,
   fromJsonString,
-  AcceptedFollowResponseJSON,
-  RejectedFollowResponseJSON,
   FollowRequestInboxMessageJSON,
-  FollowResponseInboxMessageJSON,
-  UnfollowNotificationInboxMessageJSON,
   toBase64Uint8ArrayJSON,
   fromBase64Uint8ArrayJSON,
   toJsonString,
   fromInstantJson,
   toInstantJson,
   FollowerFeedUserJSON,
+  UserEventJSON,
+  RemovedSessionUserEventJSON,
+  AcceptedFollowResponseJSON,
+  RejectedFollowResponseJSON,
+  FollowResponseJSON,
+  UnfollowNotificationJSON,
+  FollowResponseInboxMessageJSON,
+  UnfollowNotificationInboxMessageJSON,
 } from '@/models/storage/versions/latest';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { Instant } from '@js-joda/core';
@@ -161,6 +161,7 @@ export class FollowedFeedUser {
 
   toJSON(): FollowedFeedUserJSON {
     return {
+      version: 2,
       type: 'FollowedFeedUser',
       id: this.id,
       publicKey: toRsaPublicKeyJSON(this.publicKey),
@@ -236,6 +237,7 @@ export class SessionUserEvent {
 
   toJSON(): SessionUserEventJSON {
     return {
+      version: 2,
       type: 'SessionUserEvent',
       userId: this.userId,
       eventId: this.eventId,
@@ -327,7 +329,7 @@ export class RemovedSessionUserEvent {
 
 export type FeedUserEvent = SessionUserEvent | RemovedSessionUserEvent;
 
-export function fromFeedUserEventJSON(json: FeedUserEventJSON): FeedUserEvent {
+export function fromFeedUserEventJSON(json: UserEventJSON): FeedUserEvent {
   return match(json)
     .with({ type: 'SessionUserEvent' }, SessionUserEvent.fromJSON)
     .with({ type: 'RemovedSessionUserEvent' }, RemovedSessionUserEvent.fromJSON)
@@ -425,6 +427,7 @@ export class SharedProgramBlueprint {
 
   toJSON(): SharedProgramBlueprintJSON {
     return {
+      version: 2,
       type: 'SharedProgramBlueprint',
       programBlueprint: this.programBlueprint.toJSON(),
     };
@@ -455,6 +458,7 @@ export class SharedSession {
 
   toJSON(): SharedSessionJSON {
     return {
+      version: 2,
       type: 'SharedSession',
       session: this.session.toJSON(),
     };

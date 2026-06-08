@@ -7,6 +7,7 @@ import {
 } from '@/models/session-models';
 import { Weight } from '@/models/weight';
 import {
+  NoProgressiveOverload,
   SessionBlueprint,
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
@@ -19,7 +20,6 @@ import {
 } from '@js-joda/core';
 import { LocalDateRange } from '@/models/time-models';
 import { calculateStats } from '@/store/stats/calculate-stats';
-import BigNumber from 'bignumber.js';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -38,7 +38,7 @@ function makeBlueprint(
     name,
     sets,
     reps,
-    BigNumber(0),
+    new NoProgressiveOverload(),
     {
       maxRest: Duration.ofSeconds(0),
       minRest: Duration.ofSeconds(90),

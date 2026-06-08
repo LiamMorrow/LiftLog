@@ -1,14 +1,17 @@
 import { Duration, LocalDate } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 import { match, P } from 'ts-pattern';
-
 import {
   CardioExerciseBlueprintJSON,
   CardioExerciseSetBlueprintJSON,
   CardioTargetJSON,
   DistanceJSON,
   ExerciseBlueprintJSON,
+  IncreaseAllEvenlyProgressiveOverloadJSON,
+  IncreaseLowestSetProgressiveOverloadJSON,
+  NoProgressiveOverloadJSON,
   ProgramBlueprintJSON,
+  ProgressiveOverloadJSON,
   RestJSON,
   SessionBlueprintJSON,
   WeightedExerciseBlueprintJSON,
@@ -19,6 +22,8 @@ import {
   toDurationJSON,
   toLocalDateJSON,
 } from '../storage/versions/latest';
+import { RecordedWeightedExercise } from '@/models/session-models';
+import { assertUnreachable } from '@/utils/assert-unreachable';
 
 export interface ProgramBlueprintPOJO {
   type: 'ProgramBlueprint';
@@ -75,6 +80,7 @@ export class ProgramBlueprint {
 
   toJSON(): ProgramBlueprintJSON {
     return {
+      version: 2,
       name: this.name,
       sessions: this.sessions.map((session) => session.toJSON()),
       lastEdited: toLocalDateJSON(this.lastEdited),
@@ -125,6 +131,7 @@ export class SessionBlueprint {
 
   toJSON(): SessionBlueprintJSON {
     return {
+      version: 2,
       name: this.name,
       exercises: this.exercises.map((exercise) => exercise.toJSON()),
       notes: this.notes,
@@ -333,6 +340,222 @@ export class CardioExerciseBlueprint {
     );
   }
 }
+
+export class NoProgressiveOverload {
+  readonly type = 'NoProgressiveOverload';
+
+  toJSON(): NoProgressiveOverloadJSON {
+    return { type: 'NoProgressiveOverload' };
+  }
+
+  static fromJSON(_json: NoProgressiveOverloadJSON): NoProgressiveOverload {
+    return new NoProgressiveOverload();
+  }
+
+  toType(type: ProgressiveOverload['type']) {
+    return match(type)
+      .with('NoProgressiveOverload', () => this)
+      .with(
+        'IncreaseAllEvenlyProgressiveOverload',
+        () => new IncreaseAllEvenlyProgressiveOverload(BigNumber('2.5')),
+      )
+      .with(
+        'IncreaseLowestSetProgressiveOverload',
+        () => new IncreaseLowestSetProgressiveOverload(BigNumber('2.5'), 'all'),
+      )
+      .exhaustive();
+  }
+
+  equals(other: ProgressiveOverload): boolean {
+    return this.type === other.type;
+  }
+
+  applyProgressiveOverload(
+    exercise: RecordedWeightedExercise,
+  ): RecordedWeightedExercise {
+    return exercise;
+  }
+
+  get weightIncrement(): BigNumber {
+    return new BigNumber(2.5);
+  }
+}
+
+export class IncreaseAllEvenlyProgressiveOverload {
+  readonly type = 'IncreaseAllEvenlyProgressiveOverload';
+  constructor(readonly amount: BigNumber) {}
+
+  toJSON(): IncreaseAllEvenlyProgressiveOverloadJSON {
+    return {
+      type: 'IncreaseAllEvenlyProgressiveOverload',
+      amount: toBigNumberJSON(this.amount),
+    };
+  }
+  static fromJSON(
+    json: IncreaseAllEvenlyProgressiveOverloadJSON,
+  ): IncreaseAllEvenlyProgressiveOverload {
+    return new IncreaseAllEvenlyProgressiveOverload(
+      fromBigNumberJSON(json.amount),
+    );
+  }
+  toType(type: ProgressiveOverload['type']) {
+    return match(type)
+      .with('NoProgressiveOverload', () => new NoProgressiveOverload())
+      .with('IncreaseAllEvenlyProgressiveOverload', () => this)
+      .with(
+        'IncreaseLowestSetProgressiveOverload',
+        () => new IncreaseLowestSetProgressiveOverload(this.amount, 'all'),
+      )
+      .exhaustive();
+  }
+
+  with(other: Partial<IncreaseAllEvenlyProgressiveOverload>) {
+    return new IncreaseAllEvenlyProgressiveOverload(
+      other.amount ?? this.amount,
+    );
+  }
+
+  equals(other: ProgressiveOverload): boolean {
+    return this.type === other.type && this.amount.isEqualTo(other.amount);
+  }
+  applyProgressiveOverload(
+    exercise: RecordedWeightedExercise,
+  ): RecordedWeightedExercise {
+    return exercise.withAllSets((s) =>
+      s.with({ weight: s.weight.plus(this.amount) }),
+    );
+  }
+  get weightIncrement(): BigNumber {
+    return this.amount.isZero() ? new BigNumber(2.5) : this.amount;
+  }
+}
+
+export type IncreaseStrategy = 'first' | 'middle' | 'last' | 'all';
+
+export class IncreaseLowestSetProgressiveOverload {
+  readonly type = 'IncreaseLowestSetProgressiveOverload';
+  constructor(
+    readonly amount: BigNumber,
+    readonly increaseStrategy: IncreaseStrategy,
+  ) {}
+
+  toJSON(): IncreaseLowestSetProgressiveOverloadJSON {
+    return {
+      type: 'IncreaseLowestSetProgressiveOverload',
+      amount: toBigNumberJSON(this.amount),
+      increaseStrategy: this.increaseStrategy,
+    };
+  }
+  static fromJSON(
+    json: IncreaseLowestSetProgressiveOverloadJSON,
+  ): IncreaseLowestSetProgressiveOverload {
+    return new IncreaseLowestSetProgressiveOverload(
+      fromBigNumberJSON(json.amount),
+      json.increaseStrategy,
+    );
+  }
+
+  with(other: Partial<IncreaseLowestSetProgressiveOverload>) {
+    return new IncreaseLowestSetProgressiveOverload(
+      other.amount ?? this.amount,
+      other.increaseStrategy ?? this.increaseStrategy,
+    );
+  }
+
+  toType(type: ProgressiveOverload['type']) {
+    return match(type)
+      .with('NoProgressiveOverload', () => new NoProgressiveOverload())
+      .with(
+        'IncreaseAllEvenlyProgressiveOverload',
+        () => new IncreaseAllEvenlyProgressiveOverload(this.amount),
+      )
+      .with('IncreaseLowestSetProgressiveOverload', () => this)
+      .exhaustive();
+  }
+
+  equals(other: ProgressiveOverload): boolean {
+    return this.type === other.type && this.amount.isEqualTo(other.amount);
+  }
+
+  applyProgressiveOverload(
+    exercise: RecordedWeightedExercise,
+  ): RecordedWeightedExercise {
+    const lowestSet = [...exercise.potentialSets].sort((a, b) =>
+      a.weight.isGreaterThan(b.weight) ? 1 : -1,
+    )[0];
+    if (!lowestSet) {
+      return exercise;
+    }
+    if (this.increaseStrategy === 'all') {
+      // find all sets which have the same weight as lowest set and increase their weight by amount
+      return exercise.potentialSets.reduce(
+        (ex, set, index) =>
+          set.weight.equals(lowestSet.weight)
+            ? ex.withSet(index, (s) =>
+                s.with({ weight: s.weight.plus(this.amount) }),
+              )
+            : ex,
+        exercise,
+      );
+    } else if (this.increaseStrategy === 'middle') {
+      const matchingIndices = exercise.potentialSets
+        .map((set, index) => ({ set, index }))
+        .filter(({ set }) => set.weight.equals(lowestSet.weight))
+        .map(({ index }) => index);
+      const middleOfAll = (exercise.potentialSets.length - 1) / 2;
+      const middleIndex =
+        matchingIndices.reduce((closest, index) =>
+          Math.abs(index - middleOfAll) < Math.abs(closest - middleOfAll)
+            ? index
+            : closest,
+        ) ?? 0;
+      return exercise.withSet(middleIndex, (s) =>
+        s.with({ weight: s.weight.plus(this.amount) }),
+      );
+    } else if (this.increaseStrategy === 'first') {
+      const index = exercise.potentialSets.findIndex((a, b) =>
+        a.weight.equals(lowestSet.weight),
+      );
+      return exercise.withSet(index, (s) =>
+        s.with({ weight: s.weight.plus(this.amount) }),
+      );
+    } else if (this.increaseStrategy === 'last') {
+      const index = exercise.potentialSets.findLastIndex((a, b) =>
+        a.weight.equals(lowestSet.weight),
+      );
+      return exercise.withSet(index, (s) =>
+        s.with({ weight: s.weight.plus(this.amount) }),
+      );
+    }
+    assertUnreachable(this.increaseStrategy);
+  }
+
+  get weightIncrement(): BigNumber {
+    return this.amount.isZero() ? new BigNumber(2.5) : this.amount;
+  }
+}
+
+export type ProgressiveOverload =
+  | NoProgressiveOverload
+  | IncreaseAllEvenlyProgressiveOverload
+  | IncreaseLowestSetProgressiveOverload;
+
+function fromProgressiveOverloadJSON(
+  json: ProgressiveOverloadJSON,
+): ProgressiveOverload {
+  return match(json)
+    .with({ type: 'NoProgressiveOverload' }, NoProgressiveOverload.fromJSON)
+    .with(
+      { type: 'IncreaseAllEvenlyProgressiveOverload' },
+      IncreaseAllEvenlyProgressiveOverload.fromJSON,
+    )
+    .with(
+      { type: 'IncreaseLowestSetProgressiveOverload' },
+      IncreaseLowestSetProgressiveOverload.fromJSON,
+    )
+    .exhaustive();
+}
+
 export class WeightedExerciseBlueprint {
   readonly type = 'WeightedExerciseBlueprint';
 
@@ -340,7 +563,7 @@ export class WeightedExerciseBlueprint {
     readonly name: string,
     readonly sets: number,
     readonly repsPerSet: number,
-    readonly weightIncreaseOnSuccess: BigNumber,
+    readonly progressiveOverload: ProgressiveOverload,
     readonly restBetweenSets: Rest,
     readonly supersetWithNext: boolean,
     readonly notes: string,
@@ -352,7 +575,7 @@ export class WeightedExerciseBlueprint {
       '',
       3,
       10,
-      BigNumber(0),
+      new NoProgressiveOverload(),
       Rest.medium,
       false,
       '',
@@ -367,7 +590,7 @@ export class WeightedExerciseBlueprint {
       json.name,
       json.sets,
       json.repsPerSet,
-      fromBigNumberJSON(json.weightIncreaseOnSuccess),
+      fromProgressiveOverloadJSON(json.progressiveOverload),
       Rest.fromJSON(json.restBetweenSets),
       json.supersetWithNext,
       json.notes,
@@ -390,7 +613,7 @@ export class WeightedExerciseBlueprint {
       this.name === other.name &&
       this.sets === other.sets &&
       this.repsPerSet === other.repsPerSet &&
-      this.weightIncreaseOnSuccess.isEqualTo(other.weightIncreaseOnSuccess) &&
+      this.progressiveOverload.equals(other.progressiveOverload) &&
       this.restBetweenSets.minRest.equals(other.restBetweenSets.minRest) &&
       this.restBetweenSets.maxRest.equals(other.restBetweenSets.maxRest) &&
       this.restBetweenSets.failureRest.equals(
@@ -408,7 +631,7 @@ export class WeightedExerciseBlueprint {
       name: this.name,
       sets: this.sets,
       repsPerSet: this.repsPerSet,
-      weightIncreaseOnSuccess: toBigNumberJSON(this.weightIncreaseOnSuccess),
+      progressiveOverload: this.progressiveOverload.toJSON(),
       restBetweenSets: Rest.toJSON(this.restBetweenSets),
       supersetWithNext: this.supersetWithNext,
       notes: this.notes,
@@ -421,7 +644,7 @@ export class WeightedExerciseBlueprint {
       other.name ?? this.name,
       other.sets ?? this.sets,
       other.repsPerSet ?? this.repsPerSet,
-      other.weightIncreaseOnSuccess ?? this.weightIncreaseOnSuccess,
+      other.progressiveOverload ?? this.progressiveOverload,
       other.restBetweenSets ?? this.restBetweenSets,
       other.supersetWithNext ?? this.supersetWithNext,
       other.notes ?? this.notes,
@@ -535,7 +758,7 @@ export const EmptyExerciseBlueprint = new WeightedExerciseBlueprint(
   '',
   3,
   10,
-  BigNumber(0),
+  new NoProgressiveOverload(),
   Rest.medium,
   false,
   '',

@@ -20,13 +20,11 @@ import {
 
 export const sessionsSchema = sqliteTable('session', {
   id: text().primaryKey(),
-  modelVersion: integer().notNull(),
   payload: text('payload', { mode: 'json' }).$type<SessionJSON>().notNull(),
 });
 
 export const exercisesSchema = sqliteTable('exercise', {
   id: text().primaryKey(),
-  modelVersion: integer().notNull(),
   payload: text('payload', { mode: 'json' })
     .$type<ExerciseDescriptorJSON>()
     .notNull(),
@@ -36,7 +34,6 @@ export const programsSchema = sqliteTable(
   'program',
   {
     id: text().primaryKey(),
-    modelVersion: integer().notNull(),
     active: integer({ mode: 'boolean' }).notNull(),
     payload: text('payload', { mode: 'json' })
       .$type<ProgramBlueprintJSON>()
@@ -53,7 +50,6 @@ export const feedIdentitySchema = sqliteTable(
   'feed_identity',
   {
     id: integer().primaryKey(),
-    modelVersion: integer().notNull(),
     payload: text('payload', { mode: 'json' })
       .$type<FeedIdentityJSON>()
       .notNull(),
@@ -63,14 +59,18 @@ export const feedIdentitySchema = sqliteTable(
 
 export const feedFollowedUsersSchema = sqliteTable('feed_followed_user', {
   id: text().primaryKey(),
-  modelVersion: integer().notNull(),
   payload: text('payload', { mode: 'json' })
-    .$type<FollowedFeedUserJSON | PendingFeedUserJSON>()
+    .$type<FollowedFeedUserJSON>()
+    .notNull(),
+});
+export const feedPendingUsersSchema = sqliteTable('feed_pending_user', {
+  id: text().primaryKey(),
+  payload: text('payload', { mode: 'json' })
+    .$type<PendingFeedUserJSON>()
     .notNull(),
 });
 export const feedItemsSchema = sqliteTable('feed_items', {
   id: text().primaryKey(),
-  modelVersion: integer().notNull(),
   payload: text('payload', { mode: 'json' })
     .$type<SessionUserEventJSON>()
     .notNull(),
@@ -78,7 +78,6 @@ export const feedItemsSchema = sqliteTable('feed_items', {
 
 export const feedFollowerUsersSchema = sqliteTable('feed_follower_user', {
   id: text().primaryKey(),
-  modelVersion: integer().notNull(),
   payload: text('payload', { mode: 'json' })
     .$type<FollowerFeedUserJSON>()
     .notNull(),
@@ -86,7 +85,6 @@ export const feedFollowerUsersSchema = sqliteTable('feed_follower_user', {
 
 export const feedFollowRequestsSchema = sqliteTable('feed_follow_request', {
   id: text().primaryKey(),
-  modelVersion: integer().notNull(),
   payload: text('payload', { mode: 'json' })
     .$type<FollowRequestInboxMessageJSON>()
     .notNull(),

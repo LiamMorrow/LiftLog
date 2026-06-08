@@ -40,8 +40,8 @@ import { Duration, OffsetDateTime } from '@js-joda/core';
 import { Dispatch } from '@reduxjs/toolkit';
 import { KeyValueStore } from '@/services/key-value-store';
 import { AnyVersionSessionJSON } from '@/models/storage/versions/any';
-import { MigratorVAnyToLatest } from '@/models/storage/versions/migrator';
 import { copyLogs, showSnackbar } from '@/store/app';
+import { sessionMigrations } from '@/models/storage/versions/migrations/session';
 
 const storageKey = 'CurrentSessionStateV1';
 export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
@@ -265,12 +265,16 @@ function fromCurrentSessionDao(
     workoutSession:
       dao.workoutSession &&
       Session.fromJSON(
-        ProtobufToJsonV1Migrator.migrateSession(dao.workoutSession),
+        sessionMigrations.migrate(
+          ProtobufToJsonV1Migrator.migrateSession(dao.workoutSession),
+        ),
       ),
     historySession:
       dao.historySession &&
       Session.fromJSON(
-        ProtobufToJsonV1Migrator.migrateSession(dao.historySession),
+        sessionMigrations.migrate(
+          ProtobufToJsonV1Migrator.migrateSession(dao.historySession),
+        ),
       ),
   };
 }
@@ -327,9 +331,7 @@ async function handleV3JsonStorage(
   dispatch(
     setCurrentSession({
       target: 'workoutSession',
-      session: Session.fromJSON(
-        MigratorVAnyToLatest.migrateSession(currentSessionState),
-      ),
+      session: Session.fromJSON(sessionMigrations.migrate(currentSessionState)),
     }),
   );
 }

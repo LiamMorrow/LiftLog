@@ -115,6 +115,7 @@ import { msSteps } from '@material-symbols-react-native/outlined-400/msSteps';
 import { msElevation } from '@material-symbols-react-native/outlined-400/msElevation';
 import { msAssignmentTurnedIn } from '@material-symbols-react-native/outlined-400/msAssignmentTurnedIn';
 import { msTerminal } from '@material-symbols-react-native/outlined-400/msTerminal';
+import { msTrendingUp } from '@material-symbols-react-native/outlined-400/msTrendingUp';
 
 // Importing these icons using the below methods causes android app to crash
 // import { msAdd, msArrowDownward } from '@material-symbols-react-native/outlined-400';
@@ -143,6 +144,7 @@ const MaterialSymbols = {
   history: msHistory,
   info: msInfo,
   minus: msRemove,
+  trendingUp: msTrendingUp,
   moreHoriz: msMoreHoriz,
   playArrow: msPlayArrow,
   moreVert: msMoreVert,

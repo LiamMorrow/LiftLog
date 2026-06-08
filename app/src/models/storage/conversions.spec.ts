@@ -16,6 +16,7 @@ import { ProgramBlueprint, SessionBlueprint } from '../blueprint-models';
 import { Session } from '../session-models';
 import { ProtobufToJsonV1Migrator } from './versions/v1/protobuf-migrator';
 import { fromJsonString, toJsonString } from '@/models/storage/versions/latest';
+import { sessionMigrations } from '@/models/storage/versions/migrations/session';
 
 describe('conversions', () => {
   describe.each`
@@ -88,6 +89,8 @@ function fromSessionHistoryDao(
   sessionHistoryModel: LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2,
 ): Session[] {
   return sessionHistoryModel.completedSessions.map((item) =>
-    Session.fromJSON(ProtobufToJsonV1Migrator.migrateSession(item)),
+    Session.fromJSON(
+      sessionMigrations.migrate(ProtobufToJsonV1Migrator.migrateSession(item)),
+    ),
   );
 }

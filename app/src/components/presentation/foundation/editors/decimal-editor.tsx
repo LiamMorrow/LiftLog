@@ -10,6 +10,7 @@ import BigNumber from 'bignumber.js';
 interface DecimalEditorProps {
   value: BigNumber;
   onChange: (val: BigNumber) => void;
+  label?: string;
   style?: TextStyle;
   testID?: string;
 }
@@ -45,6 +46,7 @@ export function DecimalEditor(props: DecimalEditorProps) {
       testID={props.testID}
       value={text}
       inputMode={'decimal'}
+      label={props.label}
       keyboardType={'decimal-pad'}
       onChangeText={handleTextChange}
       submitBehavior="blurAndSubmit"

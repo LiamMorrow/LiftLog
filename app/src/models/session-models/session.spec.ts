@@ -7,6 +7,7 @@ import {
   Rest,
   SessionBlueprint,
   CardioExerciseBlueprint,
+  IncreaseAllEvenlyProgressiveOverload,
 } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
 import { Session } from '@/models/session-models/session';
@@ -642,7 +643,7 @@ describe('Session.withEditedExercise', () => {
         'Squat',
         2,
         10,
-        new BigNumber('2.5'),
+        new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
         Rest.medium,
         false,
         '',
@@ -660,7 +661,7 @@ describe('Session.withEditedExercise', () => {
         'Squat',
         2,
         10,
-        new BigNumber('2.5'),
+        new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
         Rest.medium,
         false,
         '',
@@ -688,7 +689,7 @@ describe('Session.withEditedExercise', () => {
         'Squat',
         4,
         10,
-        new BigNumber('2.5'),
+        new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
         Rest.medium,
         false,
         '',

@@ -134,25 +134,26 @@ export class SessionService {
             () =>
               new PotentialSet(
                 undefined,
-                weightedLastExercise?.potentialSets[0]?.weight ??
-                  new Weight(0, $this.getDefaultWeightUnit()),
-              ),
-          ),
-        )
-        .with({ isSuccessForProgressiveOverload: true }, (x) =>
-          x.potentialSets.map(
-            (x) =>
-              new PotentialSet(
-                undefined,
-                x.weight.plus(e.weightIncreaseOnSuccess),
+                new Weight(0, $this.getDefaultWeightUnit()),
               ),
           ),
         )
         .otherwise((x) =>
           x.potentialSets.map((x) => new PotentialSet(undefined, x.weight)),
         );
+      let newExercise = new RecordedWeightedExercise(
+        e,
+        potentialSets,
+        undefined,
+      );
+      if (weightedLastExercise?.isSuccessForProgressiveOverload) {
+        newExercise =
+          newExercise.blueprint.progressiveOverload.applyProgressiveOverload(
+            newExercise,
+          );
+      }
 
-      return new RecordedWeightedExercise(e, potentialSets, undefined);
+      return newExercise;
     }
     return new Session(
       uuid(),

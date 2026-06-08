@@ -35,7 +35,7 @@ public class PutUserDataRequestValidator : AbstractValidator<PutUserDataRequest>
         RuleFor(x => x.Id).NotEmpty();
         RuleFor(x => x.Password).NotEmpty();
         RuleFor(x => x.EncryptedCurrentPlan!.Length)
-            .InclusiveBetween(0, 2 * KB)
+            .InclusiveBetween(0, 15 * KB)
             .When(x => x.EncryptedCurrentPlan != null);
         RuleFor(x => x.EncryptedProfilePicture!.Length)
             .InclusiveBetween(0, 2000 * KB)
@@ -56,7 +56,7 @@ public class PutUserEventRequestValidator : AbstractValidator<PutUserEventReques
         RuleFor(x => x.UserId).NotEmpty();
         RuleFor(x => x.EncryptedEventPayload).NotEmpty();
         RuleFor(x => x.EncryptedEventPayload.Length)
-            .InclusiveBetween(0, 5 * KB)
+            .InclusiveBetween(0, 15 * KB)
             .When(x => x.EncryptedEventPayload != null);
         RuleFor(x => x.Expiry).NotEmpty();
         RuleFor(x => x.EncryptedEventIV).NotEmpty();

@@ -29,6 +29,20 @@
       "when": 1780222083349,
       "tag": "0003_hot_brother_voodoo",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1780957615030,
+      "tag": "0004_abnormal_satana",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1781512672435,
+      "tag": "0005_worried_silvermane",
+      "breakpoints": true
     }
   ]
 }

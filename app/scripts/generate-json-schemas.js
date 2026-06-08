@@ -5,33 +5,14 @@ const fs = require('fs');
 const { join } = require('node:path');
 
 const modelsDir = join(__dirname, '../src/models');
-const storageVersionsDir = join(modelsDir, 'storage/versions');
 const docsSchemasPath = join(__dirname, '../../docs/schemas/');
 // Create schemas for storage
-for (const currentVersionVal of fs
-  .readdirSync(storageVersionsDir)
-  .filter((f) => /^v\d+/.test(f))) {
-  const outputPath = join(docsSchemasPath, currentVersionVal, 'schema.json');
-
-  createSchema(
-    join(storageVersionsDir, currentVersionVal, 'index.ts'),
-    outputPath,
-  );
-}
 
 // Create schema for workout-worker — one file per definition
 createSplitSchemas(
   join(modelsDir, 'workout-worker-messages.ts'),
   join(docsSchemasPath, 'workout-worker'),
 );
-
-function createSchema(inputFile, outputPath) {
-  const schema = buildSchema(inputFile);
-
-  fs.mkdirSync(require('path').dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, JSON.stringify(schema, null, 2));
-  console.log(`Wrote schema to ${outputPath}`);
-}
 
 /**
  * Write one JSON Schema file per top-level definition.
@@ -106,6 +87,7 @@ function buildSchema(inputFile) {
     type: '*',
     additionalProperties: true,
     discriminatorType: 'open-api',
+    skipTypeCheck: true,
   };
 
   const schema = tsj.createGenerator(config).createSchema(config.type);

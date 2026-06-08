@@ -21,7 +21,7 @@ export function distanceEqual(
     .with([undefined, undefined], () => true)
     .with(
       [P.nonNullable, P.nonNullable],
-      ([a, b]) => a.unit === b.unit && b.value.isEqualTo(b.value),
+      ([a, b]) => a.unit === b.unit && a.value.isEqualTo(b.value),
     )
     .otherwise(() => false);
 }

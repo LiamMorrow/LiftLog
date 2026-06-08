@@ -228,7 +228,7 @@ export class RecordedWeightedExercise {
   }
 
   /// <summary>
-  /// An exercise is considered a success if ALL sets are successful, with ANY of the sets >= the top level weight
+  /// An exercise is considered a success if ALL sets are successful
   /// </summary>
   get isSuccessForProgressiveOverload(): boolean {
     return this.potentialSets.every(

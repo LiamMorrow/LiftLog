@@ -21,7 +21,6 @@ import { RecordedWeightedExercise, Session } from '@/models/session-models';
 import { setCurrentSession } from '@/store/current-session';
 import { exercisesSchema, sessionsSchema } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
-import { LatestVersion } from '@/models/storage/versions/latest';
 import { toRecord } from '@/utils/reduce';
 import {
   ExerciseDescriptor,
@@ -246,14 +245,12 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
           .insert(sessionsSchema)
           .values({
             id: action.payload.id,
-            modelVersion: LatestVersion,
             payload,
           })
           .onConflictDoUpdate({
             target: sessionsSchema.id,
             set: {
               payload: sql.raw(`excluded.${sessionsSchema.payload.name}`),
-              modelVersion: LatestVersion,
             },
           });
       });
@@ -267,7 +264,6 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
       await logger.time('upsertStoredSessions', async () => {
         const toUpsert = action.payload.map((x) => ({
           id: x.id,
-          modelVersion: LatestVersion,
           payload: x.toJSON(),
         }));
         await db
@@ -277,7 +273,6 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
             target: sessionsSchema.id,
             set: {
               payload: sql.raw(`excluded.${sessionsSchema.payload.name}`),
-              modelVersion: LatestVersion,
             },
           });
       });
@@ -295,14 +290,12 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
       .insert(exercisesSchema)
       .values({
         id: action.payload.id,
-        modelVersion: LatestVersion,
         payload: toExerciseDescriptorJSON(action.payload.exercise),
       })
       .onConflictDoUpdate({
         target: exercisesSchema.id,
         set: {
           payload: sql.raw(`excluded.${exercisesSchema.payload.name}`),
-          modelVersion: LatestVersion,
         },
       });
   });
@@ -318,7 +311,6 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
         await tx.insert(exercisesSchema).values(
           Object.entries(action.payload).map(([id, exercise]) => ({
             id,
-            modelVersion: LatestVersion,
             payload: toExerciseDescriptorJSON(exercise),
           })),
         );

@@ -9,7 +9,7 @@ import {
 /**
  * @discriminator type
  */
-type WorkoutMessagePayload =
+export type WorkoutMessagePayload =
   | WorkoutStartedEvent
   | WorkoutUpdatedEvent
   | WorkoutEndedEvent
@@ -21,11 +21,11 @@ export type WorkoutMessage = {
   payload: WorkoutMessagePayload;
 };
 
-interface WorkoutStartedEvent {
+export interface WorkoutStartedEvent {
   type: 'WorkoutStartedEvent';
 }
 
-interface WorkoutUpdatedEvent {
+export interface WorkoutUpdatedEvent {
   type: 'WorkoutUpdatedEvent';
   workout: SessionJSON;
   restTimerInfo: RestTimerInfo | undefined;
@@ -63,11 +63,11 @@ export interface RestTimerInfo {
   endAt: InstantJSON;
 }
 
-interface WorkoutEndedEvent {
+export interface WorkoutEndedEvent {
   type: 'WorkoutEndedEvent';
 }
 
-interface FinishWorkoutCommand {
+export interface FinishWorkoutCommand {
   type: 'FinishWorkoutCommand';
 }
 

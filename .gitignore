@@ -20,7 +20,6 @@ service-account.json
 # Mono auto generated files
 mono_crash.*
 
-scratch
 
 
 # Build results
@@ -389,3 +388,5 @@ backend/LiftLog.Api/appsettings.Development.json
 LiftLog.Web/wwwroot/crypto-utils.js
 LiftLog.Ui/wwwroot/app-utils.js
 tests/LiftLog.Tests.Api/appsettings.Development.json
+
+temp/

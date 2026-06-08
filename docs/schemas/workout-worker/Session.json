@@ -2,6 +2,10 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
+    "version": {
+      "type": "number",
+      "const": 2
+    },
     "id": {
       "type": "string"
     },
@@ -22,6 +26,7 @@
     }
   },
   "required": [
+    "version",
     "id",
     "blueprint",
     "recordedExercises",

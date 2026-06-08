@@ -16,7 +16,6 @@ import Icon from '@/components/presentation/foundation/gesture-wrappers/icon';
 
 interface PotentialSetCounterProps {
   set: PotentialSet;
-  showWeight: boolean;
   weightIncrement: BigNumber;
   maxReps: number;
   previousRepCount: number | undefined;

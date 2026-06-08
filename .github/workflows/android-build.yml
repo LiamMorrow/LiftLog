@@ -30,6 +30,9 @@ jobs:
       - name: Install
         run: npm ci
         working-directory: ./app
+      - name: Prebuild
+        run: npm run prebuild
+        working-directory: ./app
 
       - name: Build Android
         run: ./gradlew build
