@@ -119,6 +119,7 @@ module.exports = defineConfig([
     '**/expo-env.d.ts',
     '**/dist',
     '**/node_modules',
+    'src/drizzle/migrations.js',
     'src/types/dom.slim.d.ts',
     'scripts',
   ]),

@@ -17,7 +17,7 @@ namespace LiftLog.Api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "10.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -134,7 +134,7 @@ namespace LiftLog.Api.Migrations
 
                     b.Property<byte[]>("EncryptedEvent")
                         .IsRequired()
-                        .HasMaxLength(5120)
+                        .HasMaxLength(15360)
                         .HasColumnType("bytea")
                         .HasColumnName("encrypted_event");
 
@@ -213,7 +213,7 @@ namespace LiftLog.Api.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<byte[][]>("EncryptedMessage")
+                    b.PrimitiveCollection<byte[][]>("EncryptedMessage")
                         .IsRequired()
                         .HasColumnType("bytea[]")
                         .HasColumnName("encrypted_message");

@@ -1,12 +1,9 @@
-import { AiChatResponse, AiWorkoutPlan } from '@/models/ai-models';
 import {
-  CardioExerciseBlueprint,
-  CardioExerciseSetBlueprint,
-  CardioTarget,
-  ExerciseBlueprint,
-  SessionBlueprint,
-  WeightedExerciseBlueprint,
-} from '@/models/blueprint-models';
+  AiChatResponse,
+  AiExerciseBlueprint,
+  AiWorkoutPlan,
+} from '@/models/ai-models';
+
 import { Duration } from '@js-joda/core';
 import { HubConnection, HubConnectionState } from '@microsoft/signalr';
 import { AsyncIterableSubject } from 'data-async-iterators';
@@ -115,7 +112,7 @@ export class AiChatService {
               )
               .with({ type: 'chatPlan' }, ({ plan }) => ({
                 type: 'chatPlan',
-                plan: toAiWorkoutPlan(plan),
+                plan: parseJson(plan),
               }))
               .exhaustive(),
           );
@@ -140,63 +137,28 @@ type JsonResponse<T> = T extends string | number | boolean | null
           ? { [K in keyof T]: JsonResponse<T[K]> }
           : never;
 
-function toAiWorkoutPlan(
-  aiPlan: JsonResponse<AiWorkoutPlan>,
-): AiWorkoutPlan {
+function parseJson(aiPlan: JsonResponse<AiWorkoutPlan>): AiWorkoutPlan {
   return {
-    name: aiPlan.name,
     description: aiPlan.description,
-    sessions: aiPlan.sessions.map(
-      (s) =>
-        new SessionBlueprint(s.name, s.exercises.map(parseAiExercise), s.notes),
-    ),
+    name: aiPlan.name,
+    sessions: aiPlan.sessions.map((s) => ({
+      name: s.name,
+      exercises: s.exercises.map(parseAiExercise),
+      notes: s.notes,
+    })),
   };
 }
 
 function parseAiExercise(
-  ex: JsonResponse<ExerciseBlueprint>,
-): ExerciseBlueprint {
-  if ('repsPerSet' in ex) {
-    return WeightedExerciseBlueprint.empty().with({
-      name: ex.name,
-      link: ex.link,
-      notes: ex.notes,
-      repsPerSet: ex.repsPerSet,
-      sets: ex.sets,
-      supersetWithNext: ex.supersetWithNext,
-      weightIncreaseOnSuccess: new BigNumber(ex.weightIncreaseOnSuccess),
-      restBetweenSets: {
-        minRest: parseDuration(ex.restBetweenSets.minRest),
-        maxRest: parseDuration(ex.restBetweenSets.maxRest),
-        failureRest: parseDuration(ex.restBetweenSets.failureRest),
-      },
-    });
-  }
-
-  return CardioExerciseBlueprint.empty().with({
-    name: ex.name,
-    link: ex.link,
-    notes: ex.notes,
-    sets: ex.sets.map((set) =>
-      CardioExerciseSetBlueprint.empty().with({
-        target: match(set.target)
-          .returnType<CardioTarget>()
-          .with({ type: 'distance' }, (t) => ({
-            type: 'distance' as const,
-            value: { value: BigNumber(t.value.value), unit: t.value.unit },
-          }))
-          .with({ type: 'time' }, (t) => ({
-            type: 'time' as const,
-            value: parseDuration(t.value),
-          }))
-          .exhaustive(),
-        trackDistance: set.trackDistance,
-        trackIncline: set.trackIncline,
-        trackResistance: set.trackResistance,
-        trackDuration: set.trackDuration,
-        trackWeight: set.trackWeight,
-        trackSteps: set.trackSteps,
-      }),
-    ),
-  });
+  ex: JsonResponse<AiExerciseBlueprint>,
+): AiExerciseBlueprint {
+  return {
+    ...ex,
+    weightIncreaseOnSuccess: BigNumber(ex.weightIncreaseOnSuccess),
+    restBetweenSets: {
+      minRest: parseDuration(ex.restBetweenSets.minRest),
+      maxRest: parseDuration(ex.restBetweenSets.maxRest),
+      failureRest: parseDuration(ex.restBetweenSets.failureRest),
+    },
+  };
 }

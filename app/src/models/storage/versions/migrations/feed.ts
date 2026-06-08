@@ -38,6 +38,11 @@ export const pendingFeedUserMigrations =
 
 export const sessionUserEventMigrations =
   createMigrations<SessionUserEventJSON>()
+    .add((x) => ({
+      ...x,
+      version: 2,
+      session: sessionMigrations.migrateUntil(x.session, 2),
+    }))
     .build();
 
 export const removedSessionUserEventMigrations =
@@ -68,13 +73,33 @@ export const userEventMigrations = {
 
 export const sharedProgramBlueprintMigrations =
   createMigrations<SharedProgramBlueprintJSON>()
+    .add((x) => ({
+      ...x,
+      version: 2,
+      programBlueprint: programBlueprintMigrations.migrateUntil(
+        x.programBlueprint,
+        2,
+      ),
+    }))
     .build();
 
 export const sharedSessionMigrations = createMigrations<SharedSessionJSON>()
+  .add((x) => ({
+    ...x,
+    version: 2,
+    session: sessionMigrations.migrateUntil(x.session, 2),
+  }))
   .build();
 
 export const followedFeedUserMigrations =
   createMigrations<FollowedFeedUserJSON>()
+    .add((x) => ({
+      ...x,
+      version: 2,
+      currentPlan:
+        x.currentPlan &&
+        programBlueprintMigrations.migrateUntil(x.currentPlan, 2),
+    }))
     .build();
 
 export const unfollowNotificationMigrations =

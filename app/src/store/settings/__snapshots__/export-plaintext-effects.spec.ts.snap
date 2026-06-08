@@ -33,6 +33,10 @@ exports[`export-plaintext-effects > addExportPlaintextEffects — JSON > JSON ou
           "link": "",
           "name": "Bench Press",
           "notes": "",
+          "progressiveOverload": {
+            "amount": "2.5",
+            "type": "IncreaseAllEvenlyProgressiveOverload",
+          },
           "repsPerSet": 10,
           "restBetweenSets": {
             "failureRest": "PT5M",
@@ -42,7 +46,6 @@ exports[`export-plaintext-effects > addExportPlaintextEffects — JSON > JSON ou
           "sets": 3,
           "supersetWithNext": false,
           "type": "WeightedExerciseBlueprint",
-          "weightIncreaseOnSuccess": "2.5",
         },
         "potentialSets": [
           {
@@ -93,6 +96,10 @@ exports[`export-plaintext-effects > addExportPlaintextEffects — JSON > JSON ou
           "link": "",
           "name": "Squat",
           "notes": "",
+          "progressiveOverload": {
+            "amount": "2.5",
+            "type": "IncreaseAllEvenlyProgressiveOverload",
+          },
           "repsPerSet": 10,
           "restBetweenSets": {
             "failureRest": "PT5M",
@@ -102,7 +109,6 @@ exports[`export-plaintext-effects > addExportPlaintextEffects — JSON > JSON ou
           "sets": 3,
           "supersetWithNext": false,
           "type": "WeightedExerciseBlueprint",
-          "weightIncreaseOnSuccess": "2.5",
         },
         "potentialSets": [
           {

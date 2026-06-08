@@ -8,31 +8,38 @@ import { StyleSheet, View, ViewStyle } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Card, Text } from 'react-native-paper';
 import { match } from 'ts-pattern';
-
-export function SegmentedList<T>(props: {
-  renderItem: (item: T, index: number) => ReactNode;
-  onItemPress?: (item: T, index: number) => void;
-  itemKey?: (item: T, index: number) => string;
-  items: T[];
+type TupleKeysNum<T extends readonly unknown[]> = Exclude<
+  Partial<T>['length'],
+  T['length']
+>;
+export function SegmentedList<TItems extends readonly unknown[]>(props: {
+  renderItem: (item: TItems[number], index: TupleKeysNum<TItems>) => ReactNode;
+  onItemPress?: (item: TItems[number], index: TupleKeysNum<TItems>) => void;
+  itemKey?: (item: TItems[number], index: TupleKeysNum<TItems>) => string;
+  items: TItems;
   scrollable?: boolean;
   isInBottomSheet?: boolean;
   renderScrollComponent?: ScrollView;
   style?: ViewStyle;
 }) {
   const BottomSheetScrollable = useBottomSheetScrollableCreator();
-  const itemKey = props.itemKey ?? ((_, index) => index.toString());
+  const itemKey = props.itemKey ?? ((_, index) => String(index));
   const onItemPress = props.onItemPress;
   if (!props.scrollable) {
     return (
       <View style={[{ gap: spacing[0.5] }, props.style]}>
         {props.items.map((item, index) => (
           <SegmentedListItem
-            key={itemKey(item, index)}
+            key={itemKey(item, index as TupleKeysNum<TItems>)}
             isFirst={index === 0}
             isLast={index === props.items.length - 1}
-            onPress={onItemPress ? () => onItemPress(item, index) : undefined}
+            onPress={
+              onItemPress
+                ? () => onItemPress(item, index as TupleKeysNum<TItems>)
+                : undefined
+            }
           >
-            {props.renderItem(item, index)}
+            {props.renderItem(item, index as TupleKeysNum<TItems>)}
           </SegmentedListItem>
         ))}
       </View>
@@ -48,15 +55,19 @@ export function SegmentedList<T>(props: {
       renderScrollComponent={
         props.isInBottomSheet ? BottomSheetScrollable : undefined!
       }
-      keyExtractor={itemKey}
+      keyExtractor={(i, index) => itemKey(i, index as TupleKeysNum<TItems>)}
       renderItem={({ item, index }) => (
         <SegmentedListItem
-          key={itemKey(item, index)}
+          key={itemKey(item, index as TupleKeysNum<TItems>)}
           isFirst={index === 0}
           isLast={index === props.items.length - 1}
-          onPress={onItemPress ? () => onItemPress(item, index) : undefined}
+          onPress={
+            onItemPress
+              ? () => onItemPress(item, index as TupleKeysNum<TItems>)
+              : undefined
+          }
         >
-          {props.renderItem(item, index)}
+          {props.renderItem(item, index as TupleKeysNum<TItems>)}
         </SegmentedListItem>
       )}
     />
@@ -66,27 +77,35 @@ export function SegmentedList<T>(props: {
 export function SegmentListFormElement(props: {
   label: string;
   icon: AppIconSource;
+  line2?: ReactNode | string;
   right?: ReactNode | string;
 }) {
   return (
-    <View
-      style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-      }}
-    >
+    <View>
       <View
-        style={{ flexDirection: 'row', gap: spacing[2], alignItems: 'center' }}
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
       >
-        <Icon size={20} source={props.icon} />
-        <Text variant="labelLarge">{props.label}</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            gap: spacing[2],
+            alignItems: 'center',
+          }}
+        >
+          <Icon size={20} source={props.icon} />
+          <Text variant="labelLarge">{props.label}</Text>
+        </View>
+        {typeof props.right === 'string' ? (
+          <Text variant="labelLarge">{props.right}</Text>
+        ) : (
+          props.right
+        )}
       </View>
-      {typeof props.right === 'string' ? (
-        <Text variant="labelLarge">{props.right}</Text>
-      ) : (
-        props.right
-      )}
+      {props.line2}
     </View>
   );
 }

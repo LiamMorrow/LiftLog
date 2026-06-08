@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "IncreaseAllEvenlyProgressiveOverload"
+    },
+    "amount": {
+      "$ref": "./BigNumber.json"
+    }
+  },
+  "required": [
+    "type",
+    "amount"
+  ]
+}

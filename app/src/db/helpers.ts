@@ -1,4 +1,3 @@
-import { LatestVersion } from '@/models/storage/versions/latest';
 import { Column, sql } from 'drizzle-orm';
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { AnySQLiteTable, IndexColumn } from 'drizzle-orm/sqlite-core';
@@ -6,7 +5,6 @@ import { AnySQLiteTable, IndexColumn } from 'drizzle-orm/sqlite-core';
 type JsonTableValue<T, K> = {
   id: K;
   payload: T;
-  modelVersion: number;
 };
 
 export async function upsert<T, K>(
@@ -27,7 +25,6 @@ export async function upsert<T, K>(
       target: schema.id,
       set: {
         payload: sql.raw(`excluded.${schema.payload.name}`),
-        modelVersion: LatestVersion,
       },
     });
 }

@@ -99,6 +99,7 @@
     "@types/node": "^24.3.3",
     "@types/react": "~19.2.10",
     "@typescript/native-preview": "^7.0.0-dev.20251121.1",
+    "ajv": "^8.20.0",
     "babel-plugin-inline-import": "^3.0.0",
     "drizzle-kit": "^0.31.10",
     "eslint": "^9.39.2",

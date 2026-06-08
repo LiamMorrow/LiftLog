@@ -7,6 +7,7 @@ import {
   SessionBlueprint,
   CardioExerciseBlueprint,
   CardioExerciseSetBlueprint,
+  IncreaseAllEvenlyProgressiveOverload,
 } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
 import { Session } from '@/models/session-models/session';
@@ -34,7 +35,7 @@ export function makeWeightedBlueprint(
     name,
     3,
     10,
-    new BigNumber('2.5'),
+    new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
     Rest.medium,
     supersetWithNext,
     '',
@@ -108,7 +109,7 @@ export function createExerciseBlueprint(
     `Ex${index}`,
     3, // sets
     10, // repsPerSet
-    new BigNumber('2.5'), // weightIncreaseOnSuccess
+    new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
     Rest.medium,
     supersetWithNext,
     '', // notes

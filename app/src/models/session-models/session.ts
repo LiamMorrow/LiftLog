@@ -5,7 +5,6 @@ import {
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
-
 import {
   SessionJSON,
   fromLocalDateJSON,
@@ -55,7 +54,11 @@ export class Session {
   static fromJSON(json: SessionJSON): Session {
     return new Session(
       json.id,
-      SessionBlueprint.fromJSON(json.blueprint),
+      SessionBlueprint.fromJSON({
+        ...json.blueprint,
+        version: 2,
+        exercises: json.recordedExercises.map((x) => x.blueprint),
+      }),
       json.recordedExercises.map(fromRecordedExerciseJSON),
       fromLocalDateJSON(json.date),
       json.bodyweight ? Weight.fromJSON(json.bodyweight) : undefined,
@@ -374,6 +377,7 @@ export class Session {
 
   toJSON(): SessionJSON {
     return {
+      version: 2,
       blueprint: this.blueprint.toJSON(),
       bodyweight: this.bodyweight?.toJSON(),
       date: toLocalDateJSON(this.date),

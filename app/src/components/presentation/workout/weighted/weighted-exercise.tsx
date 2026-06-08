@@ -74,11 +74,12 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
               updateExercise(recordedExercise.withWeight(index, w, applyTo))
             }
             set={set}
-            showWeight={true}
             toStartNext={
               props.toStartNext && setToStartNext === index && !props.isReadonly
             }
-            weightIncrement={recordedExercise.blueprint.weightIncreaseOnSuccess}
+            weightIncrement={
+              recordedExercise.blueprint.progressiveOverload.weightIncrement
+            }
           />
         ))}
       </View>

@@ -5,10 +5,10 @@ import {
   ZoneOffset,
   YearMonth,
 } from '@js-joda/core';
-import BigNumber from 'bignumber.js';
 import { v4 as uuid } from 'uuid';
 import { selectSessionsInMonth } from '@/store/stored-sessions';
 import {
+  NoProgressiveOverload,
   Rest,
   SessionBlueprint,
   WeightedExerciseBlueprint,
@@ -33,7 +33,7 @@ function createSessionWithCompletionTime(
         `${name} Exercise`,
         1,
         5,
-        new BigNumber(0),
+        new NoProgressiveOverload(),
         Rest.medium,
         false,
         '',
@@ -87,10 +87,7 @@ describe('stored sessions sorting', () => {
       },
     };
 
-    const ordered = selectSessionsInMonth(
-      state,
-      YearMonth.of(2026, 4),
-    );
+    const ordered = selectSessionsInMonth(state, YearMonth.of(2026, 4));
 
     expect(ordered.map((session) => session.blueprint.name)).toEqual([
       'Evening',

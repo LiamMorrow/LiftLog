@@ -1,4 +1,3 @@
-import BigNumber from 'bignumber.js';
 import { match } from 'ts-pattern';
 import {
   CardioExerciseBlueprint,
@@ -6,13 +5,16 @@ import {
   CardioTarget,
   cardioTargetEquals,
   ExerciseBlueprint,
+  IncreaseStrategy,
+  ProgressiveOverload,
   Rest,
   SessionBlueprint,
   WeightedExerciseBlueprint,
 } from './blueprint-models';
-import { TranslationKey } from '@tolgee/react';
+import { TranslationKey, UseTranslateResult } from '@tolgee/react';
 import { uuid } from '@/utils/uuid';
 import { EmptySession } from '@/models/session-models';
+import { localeFormatBigNumber } from '@/utils/locale-bignumber';
 
 // ============================================================================
 // Change Types
@@ -110,12 +112,12 @@ interface ExerciseRepsChange extends BaseChange {
 }
 
 interface ExerciseWeightIncreaseChange extends BaseChange {
-  kind: 'exerciseWeightIncrease';
+  kind: 'progressiveOverload';
   type: 'modified';
   exerciseName: string;
   exerciseIndex: number;
-  oldValue: BigNumber;
-  newValue: BigNumber;
+  oldValue: ProgressiveOverload;
+  newValue: ProgressiveOverload;
 }
 
 /** Grouped rest settings change */
@@ -448,15 +450,15 @@ function diffWeightedExercises(
     });
   }
 
-  if (!oldEx.weightIncreaseOnSuccess.eq(newEx.weightIncreaseOnSuccess)) {
+  if (!oldEx.progressiveOverload.equals(newEx.progressiveOverload)) {
     changes.push({
       id: generateChangeId(),
-      kind: 'exerciseWeightIncrease',
+      kind: 'progressiveOverload',
       type: 'modified',
       exerciseName,
       exerciseIndex,
-      oldValue: oldEx.weightIncreaseOnSuccess,
-      newValue: newEx.weightIncreaseOnSuccess,
+      oldValue: oldEx.progressiveOverload,
+      newValue: newEx.progressiveOverload,
     });
   }
 
@@ -951,9 +953,9 @@ export function applySessionBlueprintDiff(
             ? exercise.with({ repsPerSet: c.newValue })
             : exercise,
         )
-        .with({ kind: 'exerciseWeightIncrease' }, (c) =>
+        .with({ kind: 'progressiveOverload' }, (c) =>
           exercise instanceof WeightedExerciseBlueprint
-            ? exercise.with({ weightIncreaseOnSuccess: c.newValue })
+            ? exercise.with({ progressiveOverload: c.newValue })
             : exercise,
         )
         .with({ kind: 'exerciseRest' }, (c) =>
@@ -1095,80 +1097,76 @@ export interface TranslatableString {
   params?: Record<string, string | number>;
 }
 
-/**
- * Get the translation key and parameters for describing a change.
- * Use with t(result.key, result.params) in your component.
- */
-export function getChangeDescription(change: DiffChange): TranslatableString {
+export function getChangeDescription(
+  t: UseTranslateResult['t'],
+  change: DiffChange,
+): string {
   return match(change)
-    .returnType<TranslatableString>()
-    .with({ kind: 'sessionName' }, (c) => ({
-      key: 'plan.diff.generic_two_value_change.body',
-      params: { oldValue: c.oldValue, newValue: c.newValue },
-    }))
-    .with({ kind: 'sessionNotes' }, () => ({
-      key: 'plan.diff.generic_updated.body',
-    }))
-    .with({ kind: 'exercise', type: 'added' }, (c) => ({
-      key: 'plan.diff.exercise_added.body',
-      params: { name: c.exercise.name },
-    }))
-    .with({ kind: 'exercise', type: 'removed' }, (c) => ({
-      key: 'plan.diff.exercise_removed.body',
-      params: { name: c.exercise.name },
-    }))
-    .with({ kind: 'exercise', type: 'reordered' }, (c) => ({
-      key: 'plan.diff.exercise_reordered.body',
-      params: {
+    .returnType<string>()
+    .with({ kind: 'sessionName' }, (c) =>
+      t('plan.diff.generic_two_value_change.body', {
+        oldValue: c.oldValue,
+        newValue: c.newValue,
+      }),
+    )
+    .with({ kind: 'sessionNotes' }, () => t('plan.diff.generic_updated.body'))
+    .with({ kind: 'exercise', type: 'added' }, (c) =>
+      t('plan.diff.exercise_added.body', { name: c.exercise.name }),
+    )
+    .with({ kind: 'exercise', type: 'removed' }, (c) =>
+      t('plan.diff.exercise_removed.body', { name: c.exercise.name }),
+    )
+    .with({ kind: 'exercise', type: 'reordered' }, (c) =>
+      t('plan.diff.exercise_reordered.body', {
         name: c.exerciseName,
         oldPosition: c.oldIndex + 1,
         newPosition: c.newIndex + 1,
-      },
-    }))
-    .with({ kind: 'exerciseName' }, (c) => ({
-      key: 'plan.diff.generic_two_value_change.body',
-      params: { oldValue: c.oldValue, newValue: c.newValue },
-    }))
-    .with({ kind: 'exerciseSets' }, (c) => ({
-      key: 'plan.diff.generic_two_value_change.body',
-      params: { oldValue: c.oldValue, newValue: c.newValue },
-    }))
-    .with({ kind: 'exerciseReps' }, (c) => ({
-      key: 'plan.diff.generic_two_value_change.body',
-      params: { oldValue: c.oldValue, newValue: c.newValue },
-    }))
-    .with({ kind: 'exerciseWeightIncrease' }, (c) => ({
-      key: 'plan.diff.generic_two_value_change.body',
-      params: {
-        oldValue: c.oldValue.toString(),
-        newValue: c.newValue.toString(),
-      },
-    }))
-    .with({ kind: 'exerciseRest' }, () => ({
-      key: 'plan.diff.generic_updated.body',
-    }))
-    .with({ kind: 'exerciseSuperset' }, (c) => ({
-      key: c.newValue
-        ? 'plan.diff.generic_enabled.body'
-        : 'plan.diff.generic_disabled.body',
-    }))
-    .with({ kind: 'exerciseNotes' }, () => ({
-      key: 'plan.diff.generic_updated.body',
-    }))
-    .with({ kind: 'exerciseLink' }, () => ({
-      key: 'plan.diff.generic_updated.body',
-    }))
-    .with({ kind: 'exerciseTarget' }, () => ({
-      key: 'plan.diff.generic_updated.body',
-    }))
-    .with({ kind: 'exerciseTracking' }, (c) => ({
-      key: c.newValue
-        ? 'plan.diff.generic_enabled.body'
-        : 'plan.diff.generic_disabled.body',
-    }))
-    .with({ kind: 'exerciseType' }, (c) => ({
-      key: 'plan.diff.generic_two_value_change.body',
-      params: {
+      }),
+    )
+    .with({ kind: 'exerciseName' }, (c) =>
+      t('plan.diff.generic_two_value_change.body', {
+        oldValue: c.oldValue,
+        newValue: c.newValue,
+      }),
+    )
+    .with({ kind: 'exerciseSets' }, (c) =>
+      t('plan.diff.generic_two_value_change.body', {
+        oldValue: c.oldValue,
+        newValue: c.newValue,
+      }),
+    )
+    .with({ kind: 'exerciseReps' }, (c) =>
+      t('plan.diff.generic_two_value_change.body', {
+        oldValue: c.oldValue,
+        newValue: c.newValue,
+      }),
+    )
+    .with({ kind: 'progressiveOverload' }, (c) =>
+      t('plan.diff.generic_two_value_change.body', {
+        oldValue: stringifyProgressiveOverload(t, c.oldValue),
+        newValue: stringifyProgressiveOverload(t, c.newValue),
+      }),
+    )
+    .with({ kind: 'exerciseRest' }, () => t('plan.diff.generic_updated.body'))
+    .with({ kind: 'exerciseSuperset' }, (c) =>
+      t(
+        c.newValue
+          ? 'plan.diff.generic_enabled.body'
+          : 'plan.diff.generic_disabled.body',
+      ),
+    )
+    .with({ kind: 'exerciseNotes' }, () => t('plan.diff.generic_updated.body'))
+    .with({ kind: 'exerciseLink' }, () => t('plan.diff.generic_updated.body'))
+    .with({ kind: 'exerciseTarget' }, () => t('plan.diff.generic_updated.body'))
+    .with({ kind: 'exerciseTracking' }, (c) =>
+      t(
+        c.newValue
+          ? 'plan.diff.generic_enabled.body'
+          : 'plan.diff.generic_disabled.body',
+      ),
+    )
+    .with({ kind: 'exerciseType' }, (c) =>
+      t('plan.diff.generic_two_value_change.body', {
         oldValue:
           c.oldExercise instanceof WeightedExerciseBlueprint
             ? 'weighted'
@@ -1177,20 +1175,17 @@ export function getChangeDescription(change: DiffChange): TranslatableString {
           c.newExercise instanceof WeightedExerciseBlueprint
             ? 'weighted'
             : 'cardio',
-      },
-    }))
-    .with({ kind: 'cardioSet', type: 'added' }, (c) => ({
-      key: 'plan.diff.cardio_set_added.body',
-      params: { setNumber: c.setIndex + 1 },
-    }))
-    .with({ kind: 'cardioSet', type: 'removed' }, (c) => ({
-      key: 'plan.diff.cardio_set_removed.body',
-      params: { setNumber: c.setIndex + 1 },
-    }))
-    .with({ kind: 'cardioSetModified' }, (c) => ({
-      key: 'plan.diff.cardio_set_modified.body',
-      params: { setNumber: c.setIndex + 1 },
-    }))
+      }),
+    )
+    .with({ kind: 'cardioSet', type: 'added' }, (c) =>
+      t('plan.diff.cardio_set_added.body', { setNumber: c.setIndex + 1 }),
+    )
+    .with({ kind: 'cardioSet', type: 'removed' }, (c) =>
+      t('plan.diff.cardio_set_removed.body', { setNumber: c.setIndex + 1 }),
+    )
+    .with({ kind: 'cardioSetModified' }, (c) =>
+      t('plan.diff.cardio_set_modified.body', { setNumber: c.setIndex + 1 }),
+    )
     .exhaustive();
 }
 
@@ -1228,7 +1223,7 @@ export function getChangeLabelKey(change: DiffChange): TranslatableString {
     .with({ kind: 'exerciseReps' }, () => ({
       key: 'plan.diff.reps.label',
     }))
-    .with({ kind: 'exerciseWeightIncrease' }, () => ({
+    .with({ kind: 'progressiveOverload' }, () => ({
       key: 'plan.diff.progressive_overload.label',
     }))
     .with({ kind: 'exerciseRest' }, () => ({
@@ -1264,5 +1259,56 @@ export function getChangeLabelKey(change: DiffChange): TranslatableString {
       key: 'plan.diff.cardio_set_modified.label',
       params: { setNumber: c.setIndex + 1 },
     }))
+    .exhaustive();
+}
+
+function stringifyProgressiveOverload(
+  t: UseTranslateResult['t'],
+  progressiveOverload: ProgressiveOverload,
+): string {
+  return match(progressiveOverload)
+    .returnType<string>()
+    .with({ type: 'NoProgressiveOverload' }, () =>
+      t('exercise.progressive_overload.no.label'),
+    )
+    .with({ type: 'IncreaseAllEvenlyProgressiveOverload' }, (x) =>
+      t('plan.diff.progressive_overload_increase_all_evenly.label', {
+        amount: localeFormatBigNumber(x.amount),
+      }),
+    )
+    .with({ type: 'IncreaseLowestSetProgressiveOverload' }, (x) =>
+      t('plan.diff.progressive_overload_increase_lowest_set.label', {
+        amount: localeFormatBigNumber(x.amount),
+        strategy: stringifyIncreaseStrategy(t, x.increaseStrategy),
+      }),
+    )
+    .exhaustive();
+}
+
+function stringifyIncreaseStrategy(
+  t: UseTranslateResult['t'],
+  strategy: IncreaseStrategy,
+) {
+  return match(strategy)
+    .with('all', () =>
+      t(
+        'exercise.progressive_overload.increase_lowest_set.increase_strategy.all.label',
+      ),
+    )
+    .with('first', () =>
+      t(
+        'exercise.progressive_overload.increase_lowest_set.increase_strategy.first.label',
+      ),
+    )
+    .with('middle', () =>
+      t(
+        'exercise.progressive_overload.increase_lowest_set.increase_strategy.middle.label',
+      ),
+    )
+    .with('last', () =>
+      t(
+        'exercise.progressive_overload.increase_lowest_set.increase_strategy.last.label',
+      ),
+    )
     .exhaustive();
 }

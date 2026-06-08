@@ -181,7 +181,7 @@ function DiffChangeRow({
   const { t } = useTranslate();
   const theme = useAppTheme();
 
-  const description = getChangeDescription(change);
+  const description = getChangeDescription(t, change);
   const label = getChangeLabelKey(change);
 
   const variantColor = match(variant)
@@ -195,7 +195,7 @@ function DiffChangeRow({
       onPress={onToggle}
       title={t(label.key, label.params)}
       titleStyle={variantColor ? { color: variantColor } : undefined}
-      description={t(description.key, description.params)}
+      description={description}
       left={() => (
         <Checkbox
           disabled={disabled}

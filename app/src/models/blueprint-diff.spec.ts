@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import {
   CardioExerciseBlueprint,
   CardioExerciseSetBlueprint,
+  IncreaseAllEvenlyProgressiveOverload,
   Rest,
   SessionBlueprint,
   WeightedExerciseBlueprint,
@@ -13,6 +14,7 @@ import {
   diffSessionBlueprints,
   getChangeDescription,
 } from './blueprint-diff';
+import { UseTranslateResult } from '@tolgee/react';
 
 describe('diffSessionBlueprints', () => {
   const createWeightedExercise = (
@@ -24,7 +26,7 @@ describe('diffSessionBlueprints', () => {
       name,
       sets,
       reps,
-      BigNumber(2.5),
+      new IncreaseAllEvenlyProgressiveOverload(new BigNumber('2.5')),
       Rest.medium,
       false,
       '',
@@ -256,7 +258,7 @@ describe('diffSessionBlueprints', () => {
             'Squat',
             3,
             10,
-            BigNumber(2.5),
+            new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
             Rest.short,
             false,
             '',
@@ -272,7 +274,7 @@ describe('diffSessionBlueprints', () => {
             'Squat',
             3,
             10,
-            BigNumber(2.5),
+            new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
             Rest.long,
             false,
             '',
@@ -569,7 +571,7 @@ describe('applySessionBlueprintDiff', () => {
       name,
       sets,
       reps,
-      BigNumber(2.5),
+      new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
       Rest.medium,
       false,
       '',
@@ -760,7 +762,7 @@ describe('getChangeDescription', () => {
       name,
       3,
       10,
-      BigNumber(2.5),
+      new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
       Rest.medium,
       false,
       '',
@@ -772,7 +774,15 @@ describe('getChangeDescription', () => {
     const modified = new SessionBlueprint('Workout B', [], '');
 
     const diff = diffSessionBlueprints(original, modified);
-    const translatable = getChangeDescription(diff.sessionChanges[0]!);
+    const t: UseTranslateResult['t'] = (key, params?) =>
+      ({ key, params }) as unknown as string;
+    const translatable = getChangeDescription(
+      t,
+      diff.sessionChanges[0]!,
+    ) as unknown as {
+      key: string;
+      params: unknown;
+    };
 
     expect(translatable.key).toBe('plan.diff.generic_two_value_change.body');
     expect(translatable.params).toEqual({
@@ -790,7 +800,15 @@ describe('getChangeDescription', () => {
     );
 
     const diff = diffSessionBlueprints(original, modified);
-    const translatable = getChangeDescription(diff.addedExercises[0]!);
+    const t: UseTranslateResult['t'] = (key, params?) =>
+      ({ key, params }) as unknown as string;
+    const translatable = getChangeDescription(
+      t,
+      diff.addedExercises[0]!,
+    ) as unknown as {
+      key: string;
+      params: unknown;
+    };
 
     expect(translatable.key).toBe('plan.diff.exercise_added.body');
     expect(translatable.params).toEqual({ name: 'Squat' });
@@ -809,7 +827,7 @@ describe('getChangeDescription', () => {
           'Squat',
           5,
           10,
-          BigNumber(2.5),
+          new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
           Rest.medium,
           false,
           '',
@@ -823,7 +841,13 @@ describe('getChangeDescription', () => {
     const setsChange = diff.modifiedExercises[0]!.changes.find(
       (c) => c.kind === 'exerciseSets',
     );
-    const translatable = getChangeDescription(setsChange!);
+
+    const t: UseTranslateResult['t'] = (key, params?) =>
+      ({ key, params }) as unknown as string;
+    const translatable = getChangeDescription(t, setsChange!) as unknown as {
+      key: string;
+      params: unknown;
+    };
 
     expect(translatable.key).toBe('plan.diff.generic_two_value_change.body');
     expect(translatable.params).toEqual({

@@ -13,11 +13,13 @@ export interface ExerciseDescriptor {
 export function fromExerciseDescriptorJSON(
   json: ExerciseDescriptorJSON,
 ): ExerciseDescriptor {
-  return json;
+  return { ...json };
 }
 
 export function toExerciseDescriptorJSON(
   value: ExerciseDescriptor,
 ): ExerciseDescriptorJSON {
-  return value;
+  return {
+    ...value,
+  };
 }

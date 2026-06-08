@@ -29,10 +29,12 @@ import { uuid } from '@/utils/uuid';
 import { useScroll } from '@/hooks/useScrollListener';
 import SessionSummary from '@/components/presentation/summary/session-summary';
 import SessionSummaryTitle from '@/components/presentation/summary/session-summary-title';
-import { AiChatMessageResponse, AiChatPlanResponse } from '@/models/ai-models';
+import {
+  AiChatMessageResponse,
+  AiChatPlanResponse,
+  AiWorkoutPlan,
+} from '@/models/ai-models';
 import { savePlan } from '@/store/program';
-import { ProgramBlueprint } from '@/models/blueprint-models';
-import { LocalDate } from '@js-joda/core';
 import { match } from 'ts-pattern';
 import LimitedHtml from '@/components/presentation/foundation/limited-html';
 import { useMountEffect } from '@/hooks/useMountEffect';
@@ -47,6 +49,13 @@ import { Session } from '@/models/session-models';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 import { Loader } from '@/components/presentation/foundation/loader';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  IncreaseAllEvenlyProgressiveOverload,
+  ProgramBlueprint,
+  SessionBlueprint,
+  WeightedExerciseBlueprint,
+} from '@/models/blueprint-models';
+import { LocalDate } from '@js-joda/core';
 
 export default function AiPlanner() {
   const { t } = useTranslate();
@@ -245,16 +254,13 @@ function PlanMessage({
   const dispatch = useDispatch();
   const { push } = useRouter();
   const preferredWeightUnit = usePreferredWeightUnit();
+  const blueprint = mapAiPlanToProgramBlueprint(message.plan);
   const saveAiPlan = (m: AiChatPlanResponse) => {
     const programId = uuid();
     dispatch(
       savePlan({
         programId,
-        programBlueprint: new ProgramBlueprint(
-          m.plan.name,
-          m.plan.sessions,
-          LocalDate.now(),
-        ),
+        programBlueprint: blueprint,
       }),
     );
     push(`/settings/program-list?focusprogramId=${programId}`);
@@ -271,7 +277,7 @@ function PlanMessage({
       <SurfaceText color={isUser ? 'onPrimary' : 'onSurface'}>
         {message.plan.description}
       </SurfaceText>
-      {message.plan.sessions.map((s, i) => (
+      {blueprint.sessions.map((s, i) => (
         <Fragment key={i}>
           <SessionSummaryTitle
             session={Session.getEmptySession(s, preferredWeightUnit)}
@@ -383,4 +389,33 @@ async function presentPaywall(): Promise<boolean> {
     default:
       return false;
   }
+}
+
+function mapAiPlanToProgramBlueprint(plan: AiWorkoutPlan): ProgramBlueprint {
+  return new ProgramBlueprint(
+    plan.name,
+    plan.sessions.map(
+      (s) =>
+        new SessionBlueprint(
+          s.name,
+          s.exercises.map(
+            (ex) =>
+              new WeightedExerciseBlueprint(
+                ex.name,
+                ex.sets,
+                ex.repsPerSet,
+                new IncreaseAllEvenlyProgressiveOverload(
+                  ex.weightIncreaseOnSuccess,
+                ),
+                ex.restBetweenSets,
+                ex.supersetWithNext,
+                ex.notes,
+                ex.link,
+              ),
+          ),
+          s.notes,
+        ),
+    ),
+    LocalDate.now(),
+  );
 }

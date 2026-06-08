@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "discriminator": {
+    "propertyName": "type"
+  },
+  "required": [
+    "type"
+  ],
+  "oneOf": [
+    {
+      "$ref": "./NoProgressiveOverload.json"
+    },
+    {
+      "$ref": "./IncreaseAllEvenlyProgressiveOverload.json"
+    },
+    {
+      "$ref": "./IncreaseLowestSetProgressiveOverload.json"
+    }
+  ]
+}

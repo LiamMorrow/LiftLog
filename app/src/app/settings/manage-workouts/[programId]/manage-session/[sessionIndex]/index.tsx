@@ -14,6 +14,7 @@ import {
   Rest,
   SessionBlueprint,
   ExerciseBlueprint,
+  IncreaseLowestSetProgressiveOverload,
 } from '@/models/blueprint-models';
 import { RootState, useAppSelector } from '@/store';
 import { setProgramSession } from '@/store/program';
@@ -108,7 +109,10 @@ function SessionEditor({
           name: `Exercise ${session.exercises.length + 1}`,
           repsPerSet: 10,
           sets: 3,
-          weightIncreaseOnSuccess: BigNumber('2.5'),
+          progressiveOverload: new IncreaseLowestSetProgressiveOverload(
+            BigNumber('2.5'),
+            'all',
+          ),
           link: '',
           notes: '',
           restBetweenSets: Rest.medium,
