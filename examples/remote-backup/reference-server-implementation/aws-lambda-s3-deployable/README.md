@@ -22,53 +22,57 @@ The below guide is for Apple Mac users (and possibly Linux users). The command l
 
 You will need your own [AWS account](https://aws.amazon.com/free/).
 
-* From the IAM service, Create an IAM User Group called `liftlog-deploy` - do not attach any permissions to it yet.
-* Edit it and go to the `Permissions` tab, click `Add Permissions` -> `Attach Policies` and then add the following managed policies:
+- From the IAM service, Create an IAM User Group called `liftlog-deploy` - do not attach any permissions to it yet.
+- Edit it and go to the `Permissions` tab, click `Add Permissions` -> `Attach Policies` and then add the following managed policies:
+
 ```
 AmazonAPIGatewayAdministrator
 AmazonS3FullAccess
 AWSLambda_FullAccess
 IAMFullAccess
 ```
-* Create a user `liftlog-deploy` and add it to the `liftlog-deploy` group.
-* Select the user and then go to `Security credentials` and generate an access key. Choose `other` when AWS wants your use case. Feel free to use one of the alternate methods if you prefer, but explaining the set up for those is out of scope for this document.
-* Tag it `liftlog-deploy` to make it easier to identify later.
-* Copy the access key and secret key to a safe place. You will not be able to see the secret key again. Store it in your .aws/config file locally:
+
+- Create a user `liftlog-deploy` and add it to the `liftlog-deploy` group.
+- Select the user and then go to `Security credentials` and generate an access key. Choose `other` when AWS wants your use case. Feel free to use one of the alternate methods if you prefer, but explaining the set up for those is out of scope for this document.
+- Tag it `liftlog-deploy` to make it easier to identify later.
+- Copy the access key and secret key to a safe place. You will not be able to see the secret key again. Store it in your .aws/config file locally:
 
 ```bash
 [profile liftlog-aws-profile]
 aws_access_key_id = <access key>
 aws_secret_access_key = <secret key>
-``` 
-* If you do not have this file already; you should create it. It lives in your user folder. On Windows, this is usually C:\Users\<username>\.aws\config. On Linux, it is ~/.aws/config.
-* Make a note of the profile name, you will need it later. It is fine to leave it as `liftlog-aws-profile` if you want.
-* In AWS, go to the S3 service and create a bucket accepting all the defaults. The name must be globally unique but it can be anything you want, e.g. `YOURNAME-liftlog-state-bucket`.
-* Make a note of this bucket name for later, this is your terraform 'state bucket'.
+```
+
+- If you do not have this file already; you should create it. It lives in your user folder. On Windows, this is usually C:\Users\<username>\.aws\config. On Linux, it is ~/.aws/config.
+- Make a note of the profile name, you will need it later. It is fine to leave it as `liftlog-aws-profile` if you want.
+- In AWS, go to the S3 service and create a bucket accepting all the defaults. The name must be globally unique but it can be anything you want, e.g. `YOURNAME-liftlog-state-bucket`.
+- Make a note of this bucket name for later, this is your terraform 'state bucket'.
 
 Recap:
 
-* You have set up a user with permissions to deploy this application to AWS
-* You have created an S3 bucket to store the state of the terraform deployment, allowing you to remove or upgrade it later.
-  
+- You have set up a user with permissions to deploy this application to AWS
+- You have created an S3 bucket to store the state of the terraform deployment, allowing you to remove or upgrade it later.
+
 ## Building the app prerequisites
 
 These programs make it easy to install the exact version of node and terraform that you need to be compatible with this project.
 
-* Install [nvm](https://github.com/nvm-sh/nvm)
-* Install [tfenv](https://github.com/tfutils/tfenv)
+- Install [nvm](https://github.com/nvm-sh/nvm)
+- Install [tfenv](https://github.com/tfutils/tfenv)
 
 ## Build the node app
 
-* Change directory into `LiftLog/examples/remote-backup/reference-server-implementation/aws-lambda-s3-deployable/src`
-* Install the correct version of node and then build the app: 
-  
+- Change directory into `LiftLog/examples/remote-backup/reference-server-implementation/aws-lambda-s3-deployable/src`
+- Install the correct version of node and then build the app:
+
 ```bash
 nvm install
 nvm use
 npm install
 npm run package
 ```
-* There will now be a file called `lambda.zip` in the `LiftLog/examples/remote-backup/reference-server-implementation/aws-lambda-s3-deployable/terraform` folder. This is the file that will be uploaded to AWS to run the backup server.
+
+- There will now be a file called `lambda.zip` in the `LiftLog/examples/remote-backup/reference-server-implementation/aws-lambda-s3-deployable/terraform` folder. This is the file that will be uploaded to AWS to run the backup server.
 
 ## Configure terraform
 
@@ -76,15 +80,15 @@ Before you use terraform to deploy the infrastructure, you need add some setting
 
 In `backend.tfvars`, configure:
 
-* 'region'
+- 'region'
 
 This must be the AWS region where you want to deploy this. You just need to choose one close to you. The default is `eu-west-1` which is Ireland. Choose an alternative region from the 'Region Code' column in [this list](https://www.aws-services.info/regions.html). Typical regions for the US might be 'us-east-1' or 'us-west-1'.
 
-* 'bucket'
+- 'bucket'
 
 This is the name of the state bucket you created earlier. This bucket keeps track of all the resources we are deploying, making it easier to remove them later or upgrade things if a new version is released.
 
-* 'profile'
+- 'profile'
 
 This must match the name of the AWS profile you created in the `.aws/config file`. The default is `liftlog-aws-profile` and you probably won't need to change it.
 
@@ -97,12 +101,12 @@ There is also an optional `delete_after_days` variable. Uncomment this to set an
 
 ## Run terraform to deploy the node app
 
-* Change directory into `LiftLog/examples/remote-backup/reference-server-implementation/aws-lambda-s3-deployable/terraform`
-* Run `tfenv install`
-* Run `tfenv use`
-* Run `terraform init -backend-config=backend.tfvars`
-* Run `terraform apply`
-* The URL of the lambda and the API key will have been written to `output.txt` in the root of the project.
+- Change directory into `LiftLog/examples/remote-backup/reference-server-implementation/aws-lambda-s3-deployable/terraform`
+- Run `tfenv install`
+- Run `tfenv use`
+- Run `terraform init -backend-config=backend.tfvars`
+- Run `terraform apply`
+- The URL of the lambda and the API key will have been written to `output.txt` in the root of the project.
 
 ## Configuring LiftLog to use the remote backup
 
@@ -110,16 +114,11 @@ Save the file `output.txt` somewhere safe. Open it and note the url and api key.
 
 To access your backup, log into the AWS Console, navigate to S3, find your bucket and your files will be organised into folders by date.
 
-## Deleting this 
+## Deleting this
 
-* Run `terraform destroy` when you are done with the deployment
-* **Please note, the bucket has a lifecycle rule on it in `s3.tf` to prevent deletion. This is there as a safeguard to prevent you losing your backups. If you want to delete the bucket, you will need to remove this rule.**
+- Run `terraform destroy` when you are done with the deployment
+- **Please note, the bucket has a lifecycle rule on it in `s3.tf` to prevent deletion. This is there as a safeguard to prevent you losing your backups. If you want to delete the bucket, you will need to remove this rule.**
 
 ## Technical notes
 
-If you want to verify the backup without restoring it, you can use the protoc command line tool to decode the protobuf files. This is not a requirement for the backup to work, but it can be useful for debugging. You can install it with `brew install protobuf` on macOS or `sudo apt-get install protobuf-compiler` on Ubuntu.
-
-```bash
-# from the root of this repo - change the filename accordingly:
-gunzip -c ~/Downloads/export.liftlogbackup.gz | protoc --decode=LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2 --proto_path=proto ExportedDataDao/ExportedDataDaoV2.proto
-```
+If you want to verify the backup without restoring it, you can unzip the file with `gunzip`. The resulting file will be a sqlite database which you can explore with your favorite sqlite database viewer.

@@ -13,10 +13,7 @@
     "dev": "expo start --dev-client",
     "lint": "eslint .",
     "postinstall": "npm run patch-package",
-    "protojs": "pbjs -p ../ -t static-module $(find ../proto -name '*.proto') -o ./src/gen/proto.js -w es6 --es6 --force-long",
-    "protots": "pbts -o ./src/gen/proto.d.ts ./src/gen/proto.js",
     "json-schema": "node ./scripts/generate-json-schemas.js",
-    "proto": "npm run protojs && npm run protots",
     "test": "vitest",
     "typecheck": "tsgo --noEmit"
   },
@@ -114,7 +111,6 @@
     "jsdom": "^28.1.0",
     "patch-package": "^8.0.0",
     "prettier": "^3.8.1",
-    "protobufjs-cli": "^1.3.2",
     "ts-json-schema-generator": "^2.9.0",
     "typescript": "~6.0.3",
     "vite-tsconfig-paths": "^6.1.1",

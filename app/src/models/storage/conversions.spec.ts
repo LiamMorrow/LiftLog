@@ -1,56 +1,42 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import fc from 'fast-check';
 import {
+  ProgramBlueprintGenerator,
   SessionBlueprintGenerator,
   SessionGenerator,
+  WeightGenerator,
 } from '@/models/storage/generators';
 import { LiftLog } from '@/gen/proto';
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { gunzipSync } from 'zlib';
 import { Weight } from '@/models/weight';
-import { SessionBlueprint } from '../blueprint-models';
+import { ProgramBlueprint, SessionBlueprint } from '../blueprint-models';
 import { Session } from '../session-models';
 import { ProtobufToJsonV1Migrator } from './versions/v1/protobuf-migrator';
-import {
-  fromJsonString,
-  SessionBlueprintJSON,
-  SessionJSON,
-  toJsonString,
-} from '@/models/storage/versions/latest';
-
-const Models = LiftLog.Ui.Models;
-
-const modelToJSON = (x: ToJSON) => x.toJSON();
-
-const sessionBlueprintFromJSON = (
-  dao: SessionBlueprintJSON,
-): SessionBlueprint => SessionBlueprint.fromJSON(dao);
-const sessionFromJSON = (dao: SessionJSON): Session => Session.fromJSON(dao);
+import { fromJsonString, toJsonString } from '@/models/storage/versions/latest';
 
 describe('conversions', () => {
   describe.each`
-    name                  | initialValueGenerator        | convertToJSON  | convertFromJSON             | assertEquals
-    ${'SessionBlueprint'} | ${SessionBlueprintGenerator} | ${modelToJSON} | ${sessionBlueprintFromJSON} | ${toJSONEquals}
-    ${'Session'}          | ${SessionGenerator}          | ${modelToJSON} | ${sessionFromJSON}          | ${toJSONEquals}
+    type                | initialValueGenerator        | assertEquals
+    ${SessionBlueprint} | ${SessionBlueprintGenerator} | ${toJSONEquals}
+    ${Session}          | ${SessionGenerator}          | ${toJSONEquals}
+    ${ProgramBlueprint} | ${ProgramBlueprintGenerator} | ${toJSONEquals}
+    ${Weight}           | ${WeightGenerator}           | ${toJSONEquals}
   `(
-    'should convert back and forth between $name surviving an encoding',
-    ({
-      initialValueGenerator,
-      convertToJSON,
-      convertFromJSON,
-      assertEquals,
-    }) => {
-      it('with protobuf', () => {
+    'should convert back and forth between $type.name surviving an encoding',
+    ({ initialValueGenerator, type, assertEquals }) => {
+      it('with json', () => {
         fc.assert(
           fc.property(
             initialValueGenerator as fc.Arbitrary<unknown>,
             (initialValue) => {
-              const converted = convertToJSON(initialValue);
+              const converted = (initialValue as ToJSON).toJSON();
               const encoded = toJsonString(converted);
-              const convertedBack = convertFromJSON(fromJsonString(encoded));
+              const convertedBack = (type as FromJSON).fromJSON(
+                fromJsonString(encoded),
+              );
 
               assertEquals(initialValue, convertedBack);
             },
@@ -66,7 +52,9 @@ describe('conversions', () => {
     );
     const decompressed = gunzipSync(compressedData);
     const decoded =
-      Models.SessionHistoryDao.SessionHistoryDaoV2.decode(decompressed);
+      LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2.decode(
+        decompressed,
+      );
     const sessions = fromSessionHistoryDao(decoded);
     const totalWeightLifted = sessions
       .values()
@@ -86,6 +74,10 @@ describe('conversions', () => {
 
 interface ToJSON {
   toJSON(): unknown;
+}
+
+interface FromJSON {
+  fromJSON(t: unknown): unknown;
 }
 
 function toJSONEquals(a: ToJSON, b: ToJSON) {
