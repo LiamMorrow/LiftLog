@@ -240,14 +240,13 @@ export const {
 
 export const {
   selectSessions,
-  selectCompletedDistinctSessionNames,
   selectSession,
   selectExercises,
   selectLatestExercises,
   selectExerciseById,
 } = storedSessionsSlice.selectors;
 
-export const selectLatestOrderedRecordedExercises = createSelector(
+const selectLatestOrderedRecordedExercises = createSelector(
   [
     storedSessionsSlice.selectors.selectSessions,
     (_, maxRecordsPerExercise: number) => maxRecordsPerExercise,
@@ -279,36 +278,6 @@ export const selectRecentlyCompletedExercises = createSelector(
       recentlyCompletedExercises[
         NormalizedName.fromExerciseBlueprint(blueprint).toString()
       ] ?? [],
-);
-
-export const selectPreviousSessionOfSameType = createSelector(
-  [selectSessions, (_, session: Session | undefined) => session],
-  (sessions, session) => {
-    if (!session) {
-      return undefined;
-    }
-
-    return Enumerable.from(sessions)
-      .where((storedSession) => storedSession.id !== session.id)
-      .where(
-        (storedSession) =>
-          storedSession.blueprint.name === session.blueprint.name,
-      )
-      .orderByDescending(
-        (storedSession) => storedSession.date,
-        TemporalComparer,
-      )
-      .thenByDescending(
-        (storedSession) =>
-          storedSession.lastExercise?.latestTime ??
-          storedSession.date
-            .atStartOfDay()
-            .atZone(ZoneId.systemDefault())
-            .toOffsetDateTime(),
-        TemporalComparer,
-      )
-      .firstOrDefault(undefined);
-  },
 );
 
 export const selectPreviousComparableSession = createSelector(

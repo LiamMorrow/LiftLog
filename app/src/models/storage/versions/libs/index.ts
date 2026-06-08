@@ -10,7 +10,7 @@ import {
 } from '@js-joda/core';
 import BigNumber from 'bignumber.js';
 
-export type Branded<T, TBrand extends string> = T & { _BRAND: TBrand };
+type Branded<T, TBrand extends string> = T & { _BRAND: TBrand };
 
 /**
  * @format date

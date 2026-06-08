@@ -77,33 +77,3 @@ export const verticalBarChartProps = (
     },
   };
 };
-
-export const horizontalBarChartProps = (
-  colors: AppThemeColors,
-  width: number,
-): BarChartPropsType => {
-  return {
-    barBorderRadius: 2,
-    xAxisColor: 'transparent',
-    yAxisColor: 'transparent',
-    xAxisIndicesColor: colors.onSurface,
-    horizontal: true,
-    yAxisIndicesColor: colors.onSurface,
-    hideYAxisText: false,
-    rulesColor: colors.outlineVariant,
-    rulesType: 'solid',
-    hideRules: false,
-    width: width - 70,
-    xAxisLabelTextStyle: {
-      color: colors.onSurface,
-    },
-    referenceLine1Config: {
-      width: width - 30,
-      color: colors.tertiary,
-      labelTextStyle: { color: colors.onSurface },
-    },
-    yAxisTextStyle: {
-      color: colors.onSurface,
-    },
-  };
-};

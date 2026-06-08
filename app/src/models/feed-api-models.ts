@@ -49,7 +49,7 @@ export type PutUserEventRequest = {
   expiry: string; // DateTimeOffset is represented as ISO string in TypeScript
 };
 
-export type GetUserEventRequest = {
+type GetUserEventRequest = {
   userId: string;
   followSecret: string;
   since: string; // DateTimeOffset is represented as ISO string in TypeScript

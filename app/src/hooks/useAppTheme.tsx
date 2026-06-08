@@ -237,14 +237,6 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   );
 };
 
-export function argbToHexRGBA(argb: number): string {
-  const a = (argb >> 24) & 0xff;
-  const r = (argb >> 16) & 0xff;
-  const g = (argb >> 8) & 0xff;
-  const b = argb & 0xff;
-  return `rgba(${r},${g},${b},${(a / 255).toFixed(3)})`;
-}
-
 function colorPair<T extends string>(
   name: T,
   hex: string,

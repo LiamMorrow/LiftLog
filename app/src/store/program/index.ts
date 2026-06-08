@@ -294,7 +294,6 @@ export const {
   setUpcomingSessions,
   applyDiffToPlan,
   addProgramSession,
-  createSavedPlan,
   deleteSavedPlan,
   moveSessionBlueprintDownInProgram,
   moveSessionBlueprintUpInProgram,

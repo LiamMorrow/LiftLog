@@ -41,7 +41,7 @@ export type FeedUserJSON =
   | PendingFeedUserJSON
   | FollowerFeedUserJSON;
 
-export interface UserEventBaseJSON {
+interface UserEventBaseJSON {
   version?: typeof version;
   userId: string;
   eventId: string;
@@ -76,7 +76,7 @@ export interface FeedIdentityJSON {
   publishWorkouts: boolean;
 }
 
-export interface InboxMessageBaseJSON<TType extends string, T> {
+interface InboxMessageBaseJSON<TType extends string, T> {
   version?: typeof version;
   senderUserId: string;
   type: TType;

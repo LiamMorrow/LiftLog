@@ -250,7 +250,7 @@ export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
   );
 }
 
-export function fromCurrentSessionDao(
+function fromCurrentSessionDao(
   dao: LiftLog.Ui.Models.CurrentSessionStateDao.ICurrentSessionStateDaoV2,
 ) {
   return {

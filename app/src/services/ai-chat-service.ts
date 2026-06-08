@@ -128,7 +128,7 @@ export class AiChatService {
   }
 }
 
-export type JsonResponse<T> = T extends string | number | boolean | null
+type JsonResponse<T> = T extends string | number | boolean | null
   ? T
   : T extends Duration
     ? string
@@ -140,7 +140,7 @@ export type JsonResponse<T> = T extends string | number | boolean | null
           ? { [K in keyof T]: JsonResponse<T[K]> }
           : never;
 
-export function toAiWorkoutPlan(
+function toAiWorkoutPlan(
   aiPlan: JsonResponse<AiWorkoutPlan>,
 ): AiWorkoutPlan {
   return {

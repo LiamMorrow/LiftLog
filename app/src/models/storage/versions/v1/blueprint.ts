@@ -24,12 +24,12 @@ export type ExerciseBlueprintJSON =
 
 export type DistanceUnitJSON = 'metre' | 'yard' | 'mile' | 'kilometre';
 
-export type TimeCardioTargetJSON = {
+type TimeCardioTargetJSON = {
   type: 'time';
   value: DurationJSON;
 };
 
-export type DistanceCardioTargetJSON = {
+type DistanceCardioTargetJSON = {
   type: 'distance';
   value: DistanceJSON;
 };

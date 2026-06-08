@@ -8,7 +8,7 @@ import { SQLiteDatabase } from 'expo-sqlite';
 
 export type ColorSchemeSeed = 'default' | `#${string}`;
 
-export type LastBackup = {
+type LastBackup = {
   lastSuccessfulRemoteBackupHash: string;
   lastBackupTime: Instant;
   settings: RemoteBackupSettings;

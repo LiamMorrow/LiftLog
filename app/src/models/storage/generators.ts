@@ -10,7 +10,6 @@ import {
   DistanceUnits,
   CardioExerciseSetBlueprint,
 } from '@/models/blueprint-models';
-
 import { Weight } from '@/models/weight';
 import {
   Session,
@@ -34,11 +33,11 @@ function optional<T>(gen: fc.Arbitrary<T>): fc.Arbitrary<T | undefined> {
   return fc.option(gen, { nil: undefined });
 }
 
-export const BigNumberGenerator = fc
+const BigNumberGenerator = fc
   .tuple(fc.integer(), fc.nat({ max: 1_000_000_000 }))
   .map(([whole, fractional]) => new BigNumber(`${whole}.${fractional}`));
 
-export const WeightUnitGenerator = fc
+const WeightUnitGenerator = fc
   .boolean()
   .map((x) => (x ? 'kilograms' : 'pounds'));
 
@@ -46,7 +45,7 @@ export const WeightGenerator = fc
   .tuple(WeightUnitGenerator, BigNumberGenerator)
   .map(([unit, value]) => new Weight(value, unit));
 
-export const LocalDateGenerator = fc
+const LocalDateGenerator = fc
   .tuple(
     fc.integer({ min: 1900, max: 2100 }),
     fc.integer({ min: 1, max: 12 }),
@@ -54,11 +53,11 @@ export const LocalDateGenerator = fc
   )
   .map(([year, month, day]) => LocalDate.of(year, month, day));
 
-export const DurationGenerator = fc
+const DurationGenerator = fc
   .tuple(fc.integer({ min: 0 }), fc.integer({ min: 0 }))
   .map(([second, nano]) => Duration.ofSeconds(second).plusNanos(nano));
 
-export const LocalTimeGenerator = fc
+const LocalTimeGenerator = fc
   .tuple(
     fc.integer({ min: 0, max: 23 }),
     fc.integer({ min: 0, max: 59 }),
@@ -66,26 +65,19 @@ export const LocalTimeGenerator = fc
   )
   .map(([hour, minute, second]) => LocalTime.of(hour, minute, second));
 
-export const ZoneOffsetGenerator = fc.oneof(
+const ZoneOffsetGenerator = fc.oneof(
   fc.constant(ZoneOffset.UTC),
   fc.constant(ZoneOffset.ofHours(10)),
   fc.constant(ZoneOffset.ofHours(-6)),
 );
 
-export const OffsetDateTimeGenerator = fc
+const OffsetDateTimeGenerator = fc
   .tuple(LocalDateGenerator, LocalTimeGenerator, ZoneOffsetGenerator)
   .map(([date, time, zone]) => OffsetDateTime.of(date.atTime(time), zone));
-export const InstantGenerator = OffsetDateTimeGenerator.map((dt) =>
-  dt.toInstant(),
-);
 
-export const RestGenerator = fc.constantFrom(
-  Rest.short,
-  Rest.medium,
-  Rest.long,
-);
+const RestGenerator = fc.constantFrom(Rest.short, Rest.medium, Rest.long);
 
-export const WeightedExerciseBlueprintGenerator = fc
+const WeightedExerciseBlueprintGenerator = fc
   .record({
     type: fc.constant('WeightedExerciseBlueprint'),
     name: fc.string(),
@@ -127,7 +119,7 @@ const CardioExerciseSetBlueprintGenerator = fc
       ),
   );
 
-export const CardioExerciseBlueprintGenerator = fc
+const CardioExerciseBlueprintGenerator = fc
   .record({
     name: fc.string(),
     sets: fc.array(CardioExerciseSetBlueprintGenerator, { minLength: 1 }),
@@ -159,14 +151,14 @@ export const ProgramBlueprintGenerator = fc
   })
   .map(ProgramBlueprint.fromPOJO);
 
-export const RecordedSetGenerator = fc
+const RecordedSetGenerator = fc
   .record({
     repsCompleted: fc.integer({ min: 0, max: 100 }),
     completionDateTime: OffsetDateTimeGenerator,
   })
   .map((x) => new RecordedSet(x.repsCompleted, x.completionDateTime));
 
-export const PotentialSetGenerator = fc
+const PotentialSetGenerator = fc
   .record({
     set: fc.option(RecordedSetGenerator, {
       nil: undefined,
@@ -209,7 +201,7 @@ const RecordedCardioSetGenerator = fc
       ),
   );
 
-export const RecordedCardioExerciseGenerator = fc
+const RecordedCardioExerciseGenerator = fc
   .record({
     blueprint: CardioExerciseBlueprintGenerator,
     notes: optional(fc.string()),
@@ -217,7 +209,7 @@ export const RecordedCardioExerciseGenerator = fc
   })
   .map((x) => new RecordedCardioExercise(x.blueprint, x.sets, x.notes));
 
-export const RecordedWeightedExerciseGenerator = fc
+const RecordedWeightedExerciseGenerator = fc
   .record({
     blueprint: WeightedExerciseBlueprintGenerator,
     potentialSets: fc.array(PotentialSetGenerator, { maxLength: 10 }),

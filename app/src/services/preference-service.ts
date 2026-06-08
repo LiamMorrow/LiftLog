@@ -3,12 +3,6 @@ import { ColorSchemeSeed } from '@/store/settings';
 import { DayOfWeek, Instant } from '@js-joda/core';
 import { match, P } from 'ts-pattern';
 
-export enum AppRatingResult {
-  NotRated = 'NotRated',
-  Rated = 'Rated',
-  Declined = 'Declined',
-}
-
 export interface RemoteBackupSettings {
   endpoint: string;
   apiKey: string;

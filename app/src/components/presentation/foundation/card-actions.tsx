@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-export type Props = React.ComponentPropsWithRef<typeof View> & {
+type Props = React.ComponentPropsWithRef<typeof View> & {
   /**
    * Items inside the `CardActions`.
    */

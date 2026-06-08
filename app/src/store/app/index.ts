@@ -10,7 +10,7 @@ const initialState: AppState = {
   currentSnackbar: undefined,
 };
 
-export type AppState = {
+type AppState = {
   isHydrated: boolean;
   currentSnackbar: SnackbarDescriptor | undefined;
 };

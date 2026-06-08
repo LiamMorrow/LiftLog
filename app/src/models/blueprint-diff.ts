@@ -18,12 +18,12 @@ import { EmptySession } from '@/models/session-models';
 // Change Types
 // ============================================================================
 
-export type ChangeType = 'added' | 'removed' | 'modified' | 'reordered';
+type ChangeType = 'added' | 'removed' | 'modified' | 'reordered';
 
 /**
  * Base interface for all changes. Each change has a unique ID for selection.
  */
-export interface BaseChange {
+interface BaseChange {
   id: string;
   type: ChangeType;
 }
@@ -32,41 +32,41 @@ export interface BaseChange {
 // Session-Level Changes
 // ============================================================================
 
-export interface SessionNameChange extends BaseChange {
+interface SessionNameChange extends BaseChange {
   kind: 'sessionName';
   type: 'modified';
   oldValue: string;
   newValue: string;
 }
 
-export interface SessionNotesChange extends BaseChange {
+interface SessionNotesChange extends BaseChange {
   kind: 'sessionNotes';
   type: 'modified';
   oldValue: string;
   newValue: string;
 }
 
-export type SessionChange = SessionNameChange | SessionNotesChange;
+type SessionChange = SessionNameChange | SessionNotesChange;
 
 // ============================================================================
 // Exercise-Level Changes
 // ============================================================================
 
-export interface ExerciseAddedChange extends BaseChange {
+interface ExerciseAddedChange extends BaseChange {
   kind: 'exercise';
   type: 'added';
   exercise: ExerciseBlueprint;
   newIndex: number;
 }
 
-export interface ExerciseRemovedChange extends BaseChange {
+interface ExerciseRemovedChange extends BaseChange {
   kind: 'exercise';
   type: 'removed';
   exercise: ExerciseBlueprint;
   oldIndex: number;
 }
 
-export interface ExerciseReorderedChange extends BaseChange {
+interface ExerciseReorderedChange extends BaseChange {
   kind: 'exercise';
   type: 'reordered';
   exerciseName: string;
@@ -74,7 +74,7 @@ export interface ExerciseReorderedChange extends BaseChange {
   newIndex: number;
 }
 
-export type ExerciseStructureChange =
+type ExerciseStructureChange =
   | ExerciseAddedChange
   | ExerciseRemovedChange
   | ExerciseReorderedChange;
@@ -83,7 +83,7 @@ export type ExerciseStructureChange =
 // Exercise Field Changes (for modified exercises)
 // ============================================================================
 
-export interface ExerciseNameChange extends BaseChange {
+interface ExerciseNameChange extends BaseChange {
   kind: 'exerciseName';
   type: 'modified';
   exerciseIndex: number;
@@ -91,7 +91,7 @@ export interface ExerciseNameChange extends BaseChange {
   newValue: string;
 }
 
-export interface ExerciseSetsChange extends BaseChange {
+interface ExerciseSetsChange extends BaseChange {
   kind: 'exerciseSets';
   type: 'modified';
   exerciseName: string;
@@ -100,7 +100,7 @@ export interface ExerciseSetsChange extends BaseChange {
   newValue: number;
 }
 
-export interface ExerciseRepsChange extends BaseChange {
+interface ExerciseRepsChange extends BaseChange {
   kind: 'exerciseReps';
   type: 'modified';
   exerciseName: string;
@@ -109,7 +109,7 @@ export interface ExerciseRepsChange extends BaseChange {
   newValue: number;
 }
 
-export interface ExerciseWeightIncreaseChange extends BaseChange {
+interface ExerciseWeightIncreaseChange extends BaseChange {
   kind: 'exerciseWeightIncrease';
   type: 'modified';
   exerciseName: string;
@@ -119,7 +119,7 @@ export interface ExerciseWeightIncreaseChange extends BaseChange {
 }
 
 /** Grouped rest settings change */
-export interface ExerciseRestChange extends BaseChange {
+interface ExerciseRestChange extends BaseChange {
   kind: 'exerciseRest';
   type: 'modified';
   exerciseName: string;
@@ -128,7 +128,7 @@ export interface ExerciseRestChange extends BaseChange {
   newValue: Rest;
 }
 
-export interface ExerciseSupersetChange extends BaseChange {
+interface ExerciseSupersetChange extends BaseChange {
   kind: 'exerciseSuperset';
   type: 'modified';
   exerciseName: string;
@@ -137,7 +137,7 @@ export interface ExerciseSupersetChange extends BaseChange {
   newValue: boolean;
 }
 
-export interface ExerciseNotesChange extends BaseChange {
+interface ExerciseNotesChange extends BaseChange {
   kind: 'exerciseNotes';
   type: 'modified';
   exerciseName: string;
@@ -146,7 +146,7 @@ export interface ExerciseNotesChange extends BaseChange {
   newValue: string;
 }
 
-export interface ExerciseLinkChange extends BaseChange {
+interface ExerciseLinkChange extends BaseChange {
   kind: 'exerciseLink';
   type: 'modified';
   exerciseName: string;
@@ -156,7 +156,7 @@ export interface ExerciseLinkChange extends BaseChange {
 }
 
 // Cardio-specific changes
-export interface ExerciseTargetChange extends BaseChange {
+interface ExerciseTargetChange extends BaseChange {
   kind: 'exerciseTarget';
   type: 'modified';
   exerciseName: string;
@@ -166,7 +166,7 @@ export interface ExerciseTargetChange extends BaseChange {
   newValue: CardioTarget;
 }
 
-export interface ExerciseTrackingChange extends BaseChange {
+interface ExerciseTrackingChange extends BaseChange {
   kind: 'exerciseTracking';
   type: 'modified';
   exerciseName: string;
@@ -178,7 +178,7 @@ export interface ExerciseTrackingChange extends BaseChange {
 }
 
 /** A cardio set was added */
-export interface CardioSetAddedChange extends BaseChange {
+interface CardioSetAddedChange extends BaseChange {
   kind: 'cardioSet';
   type: 'added';
   exerciseName: string;
@@ -188,7 +188,7 @@ export interface CardioSetAddedChange extends BaseChange {
 }
 
 /** A cardio set was removed */
-export interface CardioSetRemovedChange extends BaseChange {
+interface CardioSetRemovedChange extends BaseChange {
   kind: 'cardioSet';
   type: 'removed';
   exerciseName: string;
@@ -198,7 +198,7 @@ export interface CardioSetRemovedChange extends BaseChange {
 }
 
 /** A cardio set was modified */
-export interface CardioSetModifiedChange extends BaseChange {
+interface CardioSetModifiedChange extends BaseChange {
   kind: 'cardioSetModified';
   type: 'modified';
   exerciseName: string;
@@ -208,13 +208,13 @@ export interface CardioSetModifiedChange extends BaseChange {
   newSet: CardioExerciseSetBlueprint;
 }
 
-export type CardioSetChange =
+type CardioSetChange =
   | CardioSetAddedChange
   | CardioSetRemovedChange
   | CardioSetModifiedChange;
 
 /** Exercise type changed (weighted <-> cardio) */
-export interface ExerciseTypeChange extends BaseChange {
+interface ExerciseTypeChange extends BaseChange {
   kind: 'exerciseType';
   type: 'modified';
   exerciseIndex: number;
@@ -222,7 +222,7 @@ export interface ExerciseTypeChange extends BaseChange {
   newExercise: ExerciseBlueprint;
 }
 
-export type ExerciseFieldChange =
+type ExerciseFieldChange =
   | ExerciseNameChange
   | ExerciseSetsChange
   | ExerciseRepsChange

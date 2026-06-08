@@ -51,7 +51,7 @@ export function PreventNavigateProvider({
   );
 }
 
-export function usePreventNavigateContext() {
+function usePreventNavigateContext() {
   const ctx = useContext(PreventNavigateContext);
   if (!ctx)
     throw new Error(

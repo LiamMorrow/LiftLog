@@ -24,7 +24,7 @@ export const detectLanguageOrPreferred = (
   return lang;
 };
 
-export const createLanguageDetector = (
+const createLanguageDetector = (
   preferenceService: PreferenceService,
 ): LanguageDetectorMiddleware => ({
   getLanguage: (props) => {

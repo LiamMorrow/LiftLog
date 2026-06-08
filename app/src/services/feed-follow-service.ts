@@ -10,16 +10,13 @@ import {
 import { RsaPublicKey } from '@/models/encryption-models';
 import { FeedInboxDecryptionService } from './feed-inbox-decryption-service';
 import { uuid } from '@/utils/uuid';
-import { ApiResult } from '@/services/api-error';
+import { ApiErrorType, ApiResult } from '@/services/api-error';
 import {
   InboxMessageJSON,
-  JsonString,
   toAesKeyJSON,
   toBase64Uint8ArrayJSON,
   toJsonString,
 } from '@/models/storage/versions/latest';
-
-export type JsonStringPayload<K> = K extends JsonString<infer U> ? U : never;
 
 export class FeedFollowService {
   constructor(
@@ -149,7 +146,7 @@ export class FeedFollowService {
     } catch (error) {
       console.error('Failed to encrypt inbox message', error);
       return ApiResult.fromError({
-        type: 4, // ApiErrorType.EncryptionError
+        type: ApiErrorType.EncryptionError,
         message: 'Failed to encrypt inbox message',
         exception: error,
       });

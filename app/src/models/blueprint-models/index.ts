@@ -144,7 +144,7 @@ export type ExerciseBlueprint =
   | WeightedExerciseBlueprint
   | CardioExerciseBlueprint;
 
-export function fromExerciseBlueprintJSON(
+function fromExerciseBlueprintJSON(
   json: ExerciseBlueprintJSON,
 ): ExerciseBlueprint {
   return match(json)
