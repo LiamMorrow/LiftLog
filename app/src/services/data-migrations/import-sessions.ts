@@ -1,11 +1,11 @@
 import { LiftLog } from '@/gen/proto';
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { KeyValueStore } from '../key-value-store';
-import { MigratorVAnyToLatest } from '@/models/storage/versions/migrator';
 import { dataMigrationsSchema, sessionsSchema } from '@/db/schema';
-import { LatestVersion, WeightJSON } from '@/models/storage/versions/latest';
+import { WeightJSON } from '@/models/storage/versions/latest';
 import { PreferenceService } from '../preference-service';
 import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
+import { sessionMigrations } from '@/models/storage/versions/migrations/session';
 
 export const importSessionsDataMigration = 'IMPORT_SESSIONS';
 
@@ -32,7 +32,7 @@ export async function importSessions(
       : undefined;
   const completedSessionsList: (typeof sessionsSchema.$inferInsert)[] =
     storedData?.completedSessions.map((x) => {
-      const session = MigratorVAnyToLatest.migrateSession(
+      const session = sessionMigrations.migrate(
         ProtobufToJsonV1Migrator.migrateSession(x),
       );
       return {
@@ -40,7 +40,6 @@ export async function importSessions(
           ...session,
           bodyweight: coalesceWeightUnit(session.bodyweight),
         },
-        modelVersion: LatestVersion,
         id: session.id,
       } satisfies typeof sessionsSchema.$inferInsert;
     }) ?? [];

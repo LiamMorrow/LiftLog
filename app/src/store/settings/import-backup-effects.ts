@@ -36,10 +36,22 @@ import {
   feedFollowRequestsSchema,
   feedIdentitySchema,
   feedItemsSchema,
+  feedPendingUsersSchema,
   programsSchema,
   sessionsSchema,
 } from '@/db/schema';
 import { toRecord } from '@/utils/reduce';
+import {
+  followRequestInboxMessageMigrations,
+  feedIdentityMigrations,
+  sessionUserEventMigrations,
+  followedFeedUserMigrations,
+  followerFeedUserMigrations,
+  programBlueprintMigrations,
+  sessionMigrations,
+  pendingFeedUserMigrations,
+} from '@/models/storage/versions/migrations';
+import { FeedUserJSON } from '@/models/storage/versions/latest';
 
 export function addImportBackupEffects(addEffect: AddEffectFn) {
   addEffect(
@@ -132,8 +144,12 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
             await drizzleBackupDb.select().from(feedFollowRequestsSchema)
           ).map((x) => FollowRequestInboxMessage.fromJSON(x.payload)),
           followed: (
-            await drizzleBackupDb.select().from(feedFollowedUsersSchema)
-          ).map((x) => fromFeedUserJSON(x.payload)),
+            (await drizzleBackupDb.select().from(feedFollowedUsersSchema)) as {
+              payload: FeedUserJSON;
+            }[]
+          )
+            .concat(await drizzleBackupDb.select().from(feedPendingUsersSchema))
+            .map((x) => fromFeedUserJSON(x.payload)),
           followers: (
             await drizzleBackupDb.select().from(feedFollowerUsersSchema)
           ).map((x) => FollowerFeedUser.fromJSON(x.payload)),
@@ -154,7 +170,9 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
 
   addEffect(importDataProto, async ({ payload: { dao } }, { dispatch }) => {
     const workouts = dao.sessions.map((s) =>
-      Session.fromJSON(ProtobufToJsonV1Migrator.migrateSession(s)),
+      Session.fromJSON(
+        sessionMigrations.migrate(ProtobufToJsonV1Migrator.migrateSession(s)),
+      ),
     );
     const programs = Object.fromEntries(
       Object.entries(dao.savedPrograms).map(
@@ -162,7 +180,9 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
           [
             id,
             ProgramBlueprint.fromJSON(
-              ProtobufToJsonV1Migrator.migrateProgramBlueprint(program),
+              programBlueprintMigrations.migrate(
+                ProtobufToJsonV1Migrator.migrateProgramBlueprint(program),
+              ),
             ),
           ] as const,
       ),
@@ -171,24 +191,39 @@ export function addImportBackupEffects(addEffect: AddEffectFn) {
     if (dao.feedState?.identity) {
       feed = {
         identity: FeedIdentity.fromJSON(
-          ProtobufToJsonV1Migrator.migrateFeedIdentity(dao.feedState.identity),
+          feedIdentityMigrations.migrate(
+            ProtobufToJsonV1Migrator.migrateFeedIdentity(
+              dao.feedState.identity,
+            ),
+          ),
         ),
         feedItems: (dao.feedState.feedItems ?? []).map((x) =>
           SessionUserEvent.fromJSON(
-            ProtobufToJsonV1Migrator.migrateSessionUserEvent(x),
+            sessionUserEventMigrations.migrate(
+              ProtobufToJsonV1Migrator.migrateSessionUserEvent(x),
+            ),
           ),
         ),
-        followed: (dao.feedState.followedUsers ?? []).map((x) =>
-          fromFeedUserJSON(ProtobufToJsonV1Migrator.migrateFollowedUser(x)),
-        ),
+        followed: (dao.feedState.followedUsers ?? []).map((x) => {
+          const json = ProtobufToJsonV1Migrator.migrateFollowedUser(x);
+          return fromFeedUserJSON(
+            json.type === 'FollowedFeedUser'
+              ? followedFeedUserMigrations.migrate(json)
+              : pendingFeedUserMigrations.migrate(json),
+          );
+        }),
         followers: (dao.feedState.followers ?? []).map((x) =>
           FollowerFeedUser.fromJSON(
-            ProtobufToJsonV1Migrator.migrateFollowerUser(x),
+            followerFeedUserMigrations.migrate(
+              ProtobufToJsonV1Migrator.migrateFollowerUser(x),
+            ),
           ),
         ),
         followRequests: (dao.feedState.followRequests ?? []).map((x) =>
           FollowRequestInboxMessage.fromJSON(
-            ProtobufToJsonV1Migrator.migrateFollowRequest(x),
+            followRequestInboxMessageMigrations.migrate(
+              ProtobufToJsonV1Migrator.migrateFollowRequest(x),
+            ),
           ),
         ),
       };

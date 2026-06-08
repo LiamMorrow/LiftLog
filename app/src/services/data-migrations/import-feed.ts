@@ -7,13 +7,20 @@ import {
   feedFollowRequestsSchema,
   feedIdentitySchema,
   feedItemsSchema,
+  feedPendingUsersSchema,
   feedRevokedFollowSecretsSchema,
 } from '@/db/schema';
-import { MigratorVAnyToLatest } from '@/models/storage/versions/migrator';
-import { LatestVersion } from '@/models/storage/versions/latest';
 import { LiftLog } from '@/gen/proto';
 import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
 import { SessionUserEvent } from '@/models/feed-models';
+import {
+  followRequestInboxMessageMigrations,
+  feedIdentityMigrations,
+  sessionUserEventMigrations,
+  followedFeedUserMigrations,
+  followerFeedUserMigrations,
+  pendingFeedUserMigrations,
+} from '@/models/storage/versions/migrations';
 
 export const importFeedDataMigration = 'IMPORT_FEED';
 
@@ -29,6 +36,7 @@ export async function importFeed(
   const decoded = LiftLog.Ui.Models.FeedStateDaoV1.decode(feedStateBytes);
   const convertedIdentity = getIdentity(decoded);
   const convertedFollowers = getFollowers(decoded);
+  const convertedPending = getPendingUsers(decoded);
   const convertedFollowedUsers = getFollowedUsers(decoded);
   const convertedFeedItems = getFeedItems(decoded);
   const convertedFollowRequests = getFollowRequests(decoded);
@@ -39,6 +47,9 @@ export async function importFeed(
     }
     if (convertedFollowers.length) {
       await tx.insert(feedFollowerUsersSchema).values(convertedFollowers);
+    }
+    if (convertedPending.length) {
+      await tx.insert(feedPendingUsersSchema).values(convertedPending);
     }
     if (convertedFollowedUsers.length) {
       await tx.insert(feedFollowedUsersSchema).values(convertedFollowedUsers);
@@ -64,10 +75,9 @@ function getIdentity(decoded: LiftLog.Ui.Models.FeedStateDaoV1) {
   return (
     decoded.identity && {
       id: 0,
-      payload: MigratorVAnyToLatest.migrateFeedIdentity(
+      payload: feedIdentityMigrations.migrate(
         ProtobufToJsonV1Migrator.migrateFeedIdentity(decoded.identity),
       ),
-      modelVersion: LatestVersion,
     }
   );
 }
@@ -77,43 +87,57 @@ function getFollowers(
 ): (typeof feedFollowerUsersSchema.$inferInsert)[] {
   return decoded.followers.map((x) => ({
     id: ProtobufToJsonV1Migrator.migrateUuid(x.id),
-    payload: MigratorVAnyToLatest.migrateFollowerFeedUser(
+    payload: followerFeedUserMigrations.migrate(
       ProtobufToJsonV1Migrator.migrateFollowerUser(x),
     ),
-    modelVersion: LatestVersion,
   }));
 }
 
 function getFollowedUsers(decoded: LiftLog.Ui.Models.FeedStateDaoV1) {
-  return decoded.followedUsers.map((x) => ({
-    id: ProtobufToJsonV1Migrator.migrateUuid(x.id),
-    payload: MigratorVAnyToLatest.migrateFollowedFeedUser(
-      ProtobufToJsonV1Migrator.migrateFollowedUser(x),
-    ),
-    modelVersion: LatestVersion,
-  }));
+  return decoded.followedUsers
+    .map((x) => ProtobufToJsonV1Migrator.migrateFollowedUser(x))
+    .map((x) =>
+      x.type === 'FollowedFeedUser'
+        ? {
+            id: x.id,
+            payload: followedFeedUserMigrations.migrate(x),
+          }
+        : undefined,
+    )
+    .filter((x): x is NonNullable<typeof x> => !!x);
+}
+function getPendingUsers(decoded: LiftLog.Ui.Models.FeedStateDaoV1) {
+  return decoded.followedUsers
+    .map((x) => ProtobufToJsonV1Migrator.migrateFollowedUser(x))
+    .map((x) =>
+      x.type === 'PendingFeedUser'
+        ? {
+            id: x.id,
+            payload: pendingFeedUserMigrations.migrate(x),
+          }
+        : undefined,
+    )
+    .filter((x): x is NonNullable<typeof x> => !!x);
 }
 
 function getFollowRequests(decoded: LiftLog.Ui.Models.FeedStateDaoV1) {
   return decoded.followRequests.map((x) => ({
     id: ProtobufToJsonV1Migrator.migrateUuid(x.fromUserId),
-    payload: MigratorVAnyToLatest.migrateFeedFollowRequest(
+    payload: followRequestInboxMessageMigrations.migrate(
       ProtobufToJsonV1Migrator.migrateFollowRequest(x),
     ),
-    modelVersion: LatestVersion,
   }));
 }
 
 function getFeedItems(decoded: LiftLog.Ui.Models.FeedStateDaoV1) {
   return decoded.feedItems.map((x) => {
-    const payload = MigratorVAnyToLatest.migrateFeedSessionUserEvent(
+    const payload = sessionUserEventMigrations.migrate(
       ProtobufToJsonV1Migrator.migrateSessionUserEvent(x),
     );
 
     return {
       id: SessionUserEvent.fromJSON(payload).id,
       payload,
-      modelVersion: LatestVersion,
     };
   });
 }

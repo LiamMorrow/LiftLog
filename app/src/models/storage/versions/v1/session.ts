@@ -1,4 +1,3 @@
-import { version } from './version';
 import type {
   BigNumberJSON,
   DurationJSON,
@@ -15,7 +14,6 @@ import type {
 import type { WeightJSON } from '../libs/weight';
 
 export interface SessionJSON {
-  version?: typeof version;
   id: string;
   blueprint: SessionBlueprintJSON;
   recordedExercises: RecordedExerciseJSON[];

@@ -6,25 +6,36 @@ import {
   feedFollowRequestsSchema,
   feedIdentitySchema,
   feedItemsSchema,
+  feedPendingUsersSchema,
   programsSchema,
   sessionsSchema,
 } from '@/db/schema';
-import { LatestVersion } from '@/models/storage/versions/latest';
-import { eq, lt } from 'drizzle-orm';
-import { MigratorVAnyToLatest } from '@/models/storage/versions/migrator';
+import { eq, sql } from 'drizzle-orm';
+import { sessionMigrations } from '@/models/storage/versions/migrations/session';
+import {
+  exerciseDescriptorMigrations,
+  followRequestInboxMessageMigrations,
+  feedIdentityMigrations,
+  sessionUserEventMigrations,
+  followedFeedUserMigrations,
+  followerFeedUserMigrations,
+  programBlueprintMigrations,
+  pendingFeedUserMigrations,
+} from '@/models/storage/versions/migrations';
 
 export async function updateSessionsToLatestVersion(db: ExpoSQLiteDatabase) {
   await db.transaction(async (tx) => {
     const sessionsRequiringMigration = await tx
       .select()
       .from(sessionsSchema)
-      .where(lt(sessionsSchema.modelVersion, LatestVersion));
+      .where(
+        sql`COALESCE(json_extract(${sessionsSchema.payload}, '$.version'), 1) < ${sessionMigrations.latestVersion}`,
+      );
     for (const session of sessionsRequiringMigration) {
       await tx
         .update(sessionsSchema)
         .set({
-          modelVersion: LatestVersion,
-          payload: MigratorVAnyToLatest.migrateSession(session.payload),
+          payload: sessionMigrations.migrate(session.payload),
         })
         .where(eq(sessionsSchema.id, session.id));
     }
@@ -36,13 +47,14 @@ export async function updateProgramsToLatestVersion(db: ExpoSQLiteDatabase) {
     const programsRequiringMigration = await tx
       .select()
       .from(programsSchema)
-      .where(lt(programsSchema.modelVersion, LatestVersion));
+      .where(
+        sql`COALESCE(json_extract(${programsSchema.payload}, '$.version'), 1) < ${programBlueprintMigrations.latestVersion}`,
+      );
     for (const program of programsRequiringMigration) {
       await tx
         .update(programsSchema)
         .set({
-          modelVersion: LatestVersion,
-          payload: MigratorVAnyToLatest.migrateProgram(program.payload),
+          payload: programBlueprintMigrations.migrate(program.payload),
         })
         .where(eq(programsSchema.id, program.id));
     }
@@ -54,15 +66,14 @@ export async function updateExercisesToLatestVersion(db: ExpoSQLiteDatabase) {
     const programsRequiringMigration = await tx
       .select()
       .from(exercisesSchema)
-      .where(lt(exercisesSchema.modelVersion, LatestVersion));
+      .where(
+        sql`COALESCE(json_extract(${exercisesSchema.payload}, '$.version'), 1) < ${exerciseDescriptorMigrations.latestVersion}`,
+      );
     for (const program of programsRequiringMigration) {
       await tx
         .update(exercisesSchema)
         .set({
-          modelVersion: LatestVersion,
-          payload: MigratorVAnyToLatest.migrateExerciseDescriptor(
-            program.payload,
-          ),
+          payload: exerciseDescriptorMigrations.migrate(program.payload),
         })
         .where(eq(exercisesSchema.id, program.id));
     }
@@ -75,14 +86,15 @@ export async function updateFeedIdentityToLatestVersion(
     const recordsRequiringMigration = await tx
       .select()
       .from(feedIdentitySchema)
-      .where(lt(feedIdentitySchema.modelVersion, LatestVersion));
+      .where(
+        sql`COALESCE(json_extract(${feedIdentitySchema.payload}, '$.version'), 1) < ${feedIdentityMigrations.latestVersion}`,
+      );
 
     for (const record of recordsRequiringMigration) {
       await tx
         .update(feedIdentitySchema)
         .set({
-          modelVersion: LatestVersion,
-          payload: MigratorVAnyToLatest.migrateFeedIdentity(record.payload),
+          payload: feedIdentityMigrations.migrate(record.payload),
         })
         .where(eq(feedIdentitySchema.id, record.id));
     }
@@ -96,14 +108,15 @@ export async function updateFeedFollowedUsersToLatestVersion(
     const recordsRequiringMigration = await tx
       .select()
       .from(feedFollowedUsersSchema)
-      .where(lt(feedFollowedUsersSchema.modelVersion, LatestVersion));
+      .where(
+        sql`COALESCE(json_extract(${feedFollowedUsersSchema.payload}, '$.version'), 1) < ${followedFeedUserMigrations.latestVersion}`,
+      );
 
     for (const record of recordsRequiringMigration) {
       await tx
         .update(feedFollowedUsersSchema)
         .set({
-          modelVersion: LatestVersion,
-          payload: MigratorVAnyToLatest.migrateFollowedFeedUser(record.payload),
+          payload: followedFeedUserMigrations.migrate(record.payload),
         })
         .where(eq(feedFollowedUsersSchema.id, record.id));
     }
@@ -115,16 +128,15 @@ export async function updateFeedItemsToLatestVersion(db: ExpoSQLiteDatabase) {
     const recordsRequiringMigration = await tx
       .select()
       .from(feedItemsSchema)
-      .where(lt(feedItemsSchema.modelVersion, LatestVersion));
+      .where(
+        sql`COALESCE(json_extract(${feedItemsSchema.payload}, '$.version'), 1) < ${sessionUserEventMigrations.latestVersion}`,
+      );
 
     for (const record of recordsRequiringMigration) {
       await tx
         .update(feedItemsSchema)
         .set({
-          modelVersion: LatestVersion,
-          payload: MigratorVAnyToLatest.migrateFeedSessionUserEvent(
-            record.payload,
-          ),
+          payload: sessionUserEventMigrations.migrate(record.payload),
         })
         .where(eq(feedItemsSchema.id, record.id));
     }
@@ -138,16 +150,39 @@ export async function updateFeedFollowerUsersToLatestVersion(
     const recordsRequiringMigration = await tx
       .select()
       .from(feedFollowerUsersSchema)
-      .where(lt(feedFollowerUsersSchema.modelVersion, LatestVersion));
+      .where(
+        sql`COALESCE(json_extract(${feedFollowerUsersSchema.payload}, '$.version'), 1) < ${followerFeedUserMigrations.latestVersion}`,
+      );
 
     for (const record of recordsRequiringMigration) {
       await tx
         .update(feedFollowerUsersSchema)
         .set({
-          modelVersion: LatestVersion,
-          payload: MigratorVAnyToLatest.migrateFollowerFeedUser(record.payload),
+          payload: followerFeedUserMigrations.migrate(record.payload),
         })
         .where(eq(feedFollowerUsersSchema.id, record.id));
+    }
+  });
+}
+
+export async function updateFeedPendingUsersToLatestVersion(
+  db: ExpoSQLiteDatabase,
+) {
+  await db.transaction(async (tx) => {
+    const recordsRequiringMigration = await tx
+      .select()
+      .from(feedPendingUsersSchema)
+      .where(
+        sql`COALESCE(json_extract(${feedPendingUsersSchema.payload}, '$.version'), 1) < ${pendingFeedUserMigrations.latestVersion}`,
+      );
+
+    for (const record of recordsRequiringMigration) {
+      await tx
+        .update(feedPendingUsersSchema)
+        .set({
+          payload: pendingFeedUserMigrations.migrate(record.payload),
+        })
+        .where(eq(feedPendingUsersSchema.id, record.id));
     }
   });
 }
@@ -159,16 +194,15 @@ export async function updateFeedFollowRequestsToLatestVersion(
     const recordsRequiringMigration = await tx
       .select()
       .from(feedFollowRequestsSchema)
-      .where(lt(feedFollowRequestsSchema.modelVersion, LatestVersion));
+      .where(
+        sql`COALESCE(json_extract(${feedFollowRequestsSchema.payload}, '$.version'), 1) < ${followRequestInboxMessageMigrations.latestVersion}`,
+      );
 
     for (const record of recordsRequiringMigration) {
       await tx
         .update(feedFollowRequestsSchema)
         .set({
-          modelVersion: LatestVersion,
-          payload: MigratorVAnyToLatest.migrateFeedFollowRequest(
-            record.payload,
-          ),
+          payload: followRequestInboxMessageMigrations.migrate(record.payload),
         })
         .where(eq(feedFollowRequestsSchema.id, record.id));
     }

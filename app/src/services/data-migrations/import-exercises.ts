@@ -1,9 +1,8 @@
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { KeyValueStore } from '../key-value-store';
 import { dataMigrationsSchema, exercisesSchema } from '@/db/schema';
-import { MigratorVAnyToLatest } from '@/models/storage/versions/migrator';
-import { LatestVersion } from '@/models/storage/versions/latest';
 import { ExerciseDescriptor } from '@/models/exercise-models';
+import { exerciseDescriptorMigrations } from '@/models/storage/versions/migrations';
 
 export const importExercisesDataMigration = 'IMPORT_EXERCISES';
 
@@ -21,8 +20,7 @@ export async function importExercises(
     ([id, pojo]) =>
       ({
         id,
-        payload: MigratorVAnyToLatest.migrateExerciseDescriptor(pojo),
-        modelVersion: LatestVersion,
+        payload: exerciseDescriptorMigrations.migrate(pojo),
       }) satisfies typeof exercisesSchema.$inferInsert,
   );
 

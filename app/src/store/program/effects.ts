@@ -17,10 +17,7 @@ import { AsyncStream } from 'data-async-iterators';
 import { Logger } from '@/services/logger';
 import { selectLatestExercises } from '../stored-sessions';
 import { programsSchema } from '@/db/schema';
-import {
-  LatestVersion,
-  toLocalDateJSON,
-} from '@/models/storage/versions/latest';
+import { toLocalDateJSON } from '@/models/storage/versions/latest';
 import { LocalDate } from '@js-joda/core';
 import { toRecord } from '@/utils/reduce';
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
@@ -175,7 +172,6 @@ async function persistPrograms(
         Object.entries(stateAfterReduce.program.savedPrograms).map(
           ([key, program]) => ({
             id: key,
-            modelVersion: LatestVersion,
             active: key === stateAfterReduce.program.activePlanId,
             payload: ProgramBlueprint.fromPOJO(program).toJSON(),
           }),
@@ -194,9 +190,9 @@ async function persistPrograms(
 function getEmptyInitialProgram(): typeof programsSchema.$inferSelect {
   return {
     id: uuid(),
-    modelVersion: LatestVersion,
     active: true,
     payload: {
+      version: 2,
       lastEdited: toLocalDateJSON(LocalDate.now()),
       name: 'My Plan',
       sessions: [],

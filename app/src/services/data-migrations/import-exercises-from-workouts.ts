@@ -4,15 +4,15 @@ import {
   exercisesSchema,
   sessionsSchema,
 } from '@/db/schema';
-import { MigratorVAnyToLatest } from '@/models/storage/versions/migrator';
 import Enumerable from 'linq';
 import { NormalizedName } from '@/models/blueprint-models';
 import { fromRecordedExerciseJSON } from '@/models/session-models';
-import {
-  ExerciseDescriptorJSON,
-  LatestVersion,
-} from '@/models/storage/versions/latest';
+import { ExerciseDescriptorJSON } from '@/models/storage/versions/v1';
 import { uuid } from '@/utils/uuid';
+import {
+  exerciseDescriptorMigrations,
+  sessionMigrations,
+} from '@/models/storage/versions/migrations';
 
 export const importExercisesFromWorkoutsDataMigration =
   'IMPORT_EXERCISES_FROM_WORKOUTS';
@@ -20,13 +20,11 @@ export const importExercisesFromWorkoutsDataMigration =
 export async function importExercisesFromWorkouts(db: ExpoSQLiteDatabase) {
   await db.transaction(async (tx) => {
     const workouts = (await tx.select().from(sessionsSchema)).map((row) =>
-      MigratorVAnyToLatest.migrateSession(row.payload),
+      sessionMigrations.migrate(row.payload),
     );
     const existingExerciseNames = new Set(
       (await tx.select().from(exercisesSchema))
-        .map((row) =>
-          MigratorVAnyToLatest.migrateExerciseDescriptor(row.payload),
-        )
+        .map((row) => exerciseDescriptorMigrations.migrate(row.payload))
         .map((x) => new NormalizedName(x.name).toString()),
     );
     const uniqueExercisesNotInList = Enumerable.from(workouts)
@@ -60,8 +58,7 @@ export async function importExercisesFromWorkouts(db: ExpoSQLiteDatabase) {
         (payload) =>
           ({
             id: uuid(),
-            modelVersion: LatestVersion,
-            payload,
+            payload: exerciseDescriptorMigrations.migrate(payload),
           }) satisfies typeof exercisesSchema.$inferInsert,
       )
       .toArray();
