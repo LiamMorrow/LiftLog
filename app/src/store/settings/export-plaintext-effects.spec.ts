@@ -8,6 +8,7 @@ import {
   CardioExerciseBlueprint,
   Rest,
   CardioExerciseSetBlueprint,
+  IncreaseAllEvenlyProgressiveOverload,
 } from '@/models/blueprint-models';
 import { Weight } from '@/models/weight';
 import { Session } from '@/models/session-models/session';
@@ -38,7 +39,7 @@ function makeWeightedBlueprint(
     name,
     sets,
     repsPerSet,
-    new BigNumber('2.5'),
+    new IncreaseAllEvenlyProgressiveOverload(BigNumber('2.5')),
     Rest.medium,
     false,
     '',
@@ -354,7 +355,9 @@ describe('export-plaintext-effects', () => {
 
       const [, bytes] = fileExportService.exportBytes.mock.calls[0]!;
       const [session] = fromJsonBytes<SessionJSON[]>(bytes);
-      expect(session!.blueprint.exercises).toBeUndefined();
+      expect(
+        (session!.blueprint as unknown as { exercises: [] }).exercises,
+      ).toBeUndefined();
     });
 
     it('JSON output includes session id and recorded exercises', async () => {

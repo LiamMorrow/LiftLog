@@ -1,23 +1,39 @@
-import {
-  SessionJSON as V1SessionJSON,
-  ProgramBlueprintJSON as V1ProgramBlueprintJSON,
-  ExerciseDescriptorJSON as V1ExerciseDescriptorJSON,
-  FeedIdentityJSON as V1FeedIdentityJSON,
-  FollowRequestInboxMessageJSON as V1FollowRequestInboxMessageJSON,
-  FollowerFeedUserJSON as V1FollowerFeedUserJSON,
-  FollowedFeedUserJSON as V1FollowedFeedUserJSON,
-  PendingFeedUserJSON as V1PendingFeedUserJSON,
-  SessionUserEventJSON as V1SessionUserEventJSON,
-} from '../v1';
-
 // Add each json version here, we use this type to allow us to migrate over time
-export type AnyVersionSessionJSON = V1SessionJSON;
-export type AnyVersionProgramBlueprintJSON = V1ProgramBlueprintJSON;
-export type AnyVersionExerciseDescriptorJSON = V1ExerciseDescriptorJSON;
-export type AnyVersionFeedIdentityJSON = V1FeedIdentityJSON;
+
+import {
+  sessionBlueprintMigrations,
+  sessionMigrations,
+  programBlueprintMigrations,
+  exerciseDescriptorMigrations,
+  feedIdentityMigrations,
+  followRequestInboxMessageMigrations,
+  followerFeedUserMigrations,
+  followedFeedUserMigrations,
+  pendingFeedUserMigrations,
+  sessionUserEventMigrations,
+  inboxMessageMigrations,
+  userEventMigrations,
+} from '@/models/storage/versions/migrations';
+
+export type AnyVersionSessionJSON = typeof sessionMigrations.$anyType;
+export type AnyVersionSessionBlueprintJSON =
+  typeof sessionBlueprintMigrations.$anyType;
+
+export type AnyVersionProgramBlueprintJSON =
+  typeof programBlueprintMigrations.$anyType;
+export type AnyVersionExerciseDescriptorJSON =
+  typeof exerciseDescriptorMigrations.$anyType;
+export type AnyVersionFeedIdentityJSON = typeof feedIdentityMigrations.$anyType;
 export type AnyVersionFollowRequestInboxMessageJSON =
-  V1FollowRequestInboxMessageJSON;
-export type AnyVersionFollowerFeedUserJSON = V1FollowerFeedUserJSON;
-export type AnyVersionFollowedFeedUserJSON = V1FollowedFeedUserJSON;
-export type AnyVersionPendingFeedUserJSON = V1PendingFeedUserJSON;
-export type AnyVersionSessionUserEventJSON = V1SessionUserEventJSON;
+  typeof followRequestInboxMessageMigrations.$anyType;
+export type AnyVersionFollowerFeedUserJSON =
+  typeof followerFeedUserMigrations.$anyType;
+export type AnyVersionFollowedFeedUserJSON =
+  typeof followedFeedUserMigrations.$anyType;
+export type AnyVersionPendingFeedUserJSON =
+  typeof pendingFeedUserMigrations.$anyType;
+export type AnyVersionSessionUserEventJSON =
+  typeof sessionUserEventMigrations.$anyType;
+export type AnyVersionUserEventJSON = typeof userEventMigrations.$anyType;
+
+export type AnyVersionInboxMessageJSON = typeof inboxMessageMigrations.$anyType;
