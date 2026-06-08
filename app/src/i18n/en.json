@@ -297,7 +297,6 @@
   "plan.will_be_updated.message": "The plan will be updated with the current workout's exercises.",
   "rating.enjoying.title": "Enjoying LiftLog?",
   "rating.enjoying_message.body": "If so, would you take a minute to leave a {type} on {store}?",
-  "rest.between.label": "Rest between <em>{minTime}</em> and <em>{maxTime}</em>",
   "rest.failure.label": "Failure Rest",
   "rest.long.label": "Long",
   "rest.max.label": "Max Rest",

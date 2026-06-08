@@ -210,7 +210,6 @@
   "plan.will_be_updated.message": "План будет обновлён с учётом упражнений текущей тренировки.",
   "rating.enjoying.title": "Нравится LiftLog?",
   "rating.enjoying_message.body": "Не могли бы вы оставить {type} на {store}?",
-  "rest.between.label": "Отдых от <em>{minTime}</em> до <em>{maxTime}</em>",
   "rest.failure.label": "Отдых при отказе",
   "rest.long.label": "Длинный",
   "rest.max.label": "Макс. отдых",

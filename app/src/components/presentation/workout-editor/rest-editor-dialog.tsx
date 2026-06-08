@@ -1,6 +1,5 @@
 import DurationEditor from '@/components/presentation/foundation/editors/duration-editor';
-import RestFormat from '@/components/presentation/foundation/rest-format';
-import { useAppTheme, spacing } from '@/hooks/useAppTheme';
+import { spacing } from '@/hooks/useAppTheme';
 import { Rest } from '@/models/blueprint-models';
 import { Duration } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
@@ -21,7 +20,6 @@ interface RestEditorDialogProps {
   setDialogOpen: (open: boolean) => void;
 }
 export function RestEditorDialog(props: RestEditorDialogProps) {
-  const { colors } = useAppTheme();
   const { t } = useTranslate();
 
   const { onRestUpdated, rest } = props;
@@ -44,36 +42,31 @@ export function RestEditorDialog(props: RestEditorDialogProps) {
   const updateRest = (type: keyof Rest) => (duration: Duration) =>
     onRestUpdated({ ...rest, [type]: duration });
 
-  const customView =
-    buttonValue === 'custom' ? (
-      <View
-        style={{
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: spacing[2],
-        }}
-      >
-        <DurationEditor
-          label={t('rest.min.label')}
-          duration={rest.minRest}
-          onDurationUpdated={updateRest('minRest')}
-        />
-        <DurationEditor
-          label={t('rest.max.label')}
-          duration={rest.maxRest}
-          onDurationUpdated={updateRest('maxRest')}
-        />
-        <DurationEditor
-          label={t('rest.failure.label')}
-          duration={rest.failureRest}
-          onDurationUpdated={updateRest('failureRest')}
-        />
-      </View>
-    ) : (
-      <View style={{ marginTop: spacing[4] }}>
-        <RestFormat style={{ color: colors.onSurface }} rest={rest} />
-      </View>
-    );
+  const customView = (
+    <View
+      style={{
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: spacing[2],
+      }}
+    >
+      <DurationEditor
+        label={t('rest.min.label')}
+        duration={rest.minRest}
+        onDurationUpdated={updateRest('minRest')}
+      />
+      <DurationEditor
+        label={t('rest.max.label')}
+        duration={rest.maxRest}
+        onDurationUpdated={updateRest('maxRest')}
+      />
+      <DurationEditor
+        label={t('rest.failure.label')}
+        duration={rest.failureRest}
+        onDurationUpdated={updateRest('failureRest')}
+      />
+    </View>
+  );
   return (
     props.dialogOpen && (
       <Portal>

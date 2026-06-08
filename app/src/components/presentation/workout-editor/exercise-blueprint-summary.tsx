@@ -1,7 +1,5 @@
 import ItemTitle from '@/components/presentation/foundation/item-title';
-import RestFormat, {
-  formatTimeSpan,
-} from '@/components/presentation/foundation/rest-format';
+import { formatTimeSpan } from '@/components/presentation/foundation/rest-format';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { spacing } from '@/hooks/useAppTheme';
 import { useState } from 'react';
@@ -142,9 +140,6 @@ function WeightedExerciseBlueprintSummary({
         {pluralize(blueprint.sets, 'set')} of{' '}
         <SurfaceText color="primary">{blueprint.repsPerSet}</SurfaceText>{' '}
         {pluralize(blueprint.repsPerSet, 'rep')}
-      </SurfaceText>
-      <SurfaceText>
-        <RestFormat rest={blueprint.restBetweenSets} />
       </SurfaceText>
     </View>
   );

@@ -1,51 +1,23 @@
 import React from 'react';
-import { StyleProp, TextProps, TextStyle } from 'react-native';
-import { useAppTheme } from '@/hooks/useAppTheme';
-import LimitedHtml from '@/components/presentation/foundation/limited-html';
-import { useTranslate } from '@tolgee/react';
+import { TextProps } from 'react-native';
 import { Rest } from '@/models/blueprint-models';
 import { Duration } from '@js-joda/core';
+import { Text } from 'react-native-paper';
 
 interface RestFormatProps {
   rest: Rest;
-  highlight?: boolean;
 }
 
-export default function RestFormat({
-  rest,
-  highlight = true,
-  ...restProps
-}: RestFormatProps & TextProps) {
-  const { colors } = useAppTheme();
-  const { t } = useTranslate();
-
-  // Determine highlight styles based on the highlight prop
-  const emStyles: StyleProp<TextStyle> = {
-    fontWeight: 'bold',
-    ...(highlight ? { color: colors.primary } : {}),
-  };
-
+export default function RestFormat({ rest }: RestFormatProps & TextProps) {
   return (
-    <>
-      {rest.minRest.compareTo(rest.maxRest) >= 0 ? (
-        <LimitedHtml
-          value={t('rest.singular.label', {
-            time: formatTimeSpan(rest.minRest),
-          })}
-          emStyles={emStyles}
-          {...restProps}
-        />
-      ) : (
-        <LimitedHtml
-          value={t('rest.between.label', {
-            minTime: formatTimeSpan(rest.minRest),
-            maxTime: formatTimeSpan(rest.maxRest),
-          })}
-          emStyles={emStyles}
-          {...restProps}
-        />
-      )}
-    </>
+    <Text>
+      {rest.minRest.compareTo(rest.maxRest) >= 0
+        ? formatTimeSpan(rest.minRest)
+        : `${formatTimeSpan(rest.minRest)} - ${formatTimeSpan(rest.maxRest)}`}
+
+      {rest.failureRest.compareTo(rest.maxRest) >= 0 &&
+        `, ${formatTimeSpan(rest.failureRest)}`}
+    </Text>
   );
 }
 

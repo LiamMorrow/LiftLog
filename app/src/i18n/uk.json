@@ -207,7 +207,6 @@
   "plan.will_be_updated.message": "План буде оновлено відповідно до вправ поточного тренування.",
   "rating.enjoying.title": "Вам подобається LiftLog?",
   "rating.enjoying_message.body": "Якщо так, чи не могли б ви витратити хвилину, щоб залишити {type} на {store}?",
-  "rest.between.label": "Відпочинок між <em>{minTime}</em> та <em>{maxTime}</em>",
   "rest.failure.label": "Відпочинок до відмови",
   "rest.long.label": "Довгий",
   "rest.max.label": "Макс. Відпочинок",

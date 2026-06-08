@@ -296,7 +296,6 @@
   "plan.will_be_updated.message": "현재 운동 목록으로 플랜이 업데이트됩니다.",
   "rating.enjoying.title": "LiftLog가 마음에 드시나요?",
   "rating.enjoying_message.body": "잠시 시간을 내어 {store}에 {type}를 남겨주세요.",
-  "rest.between.label": "휴식 <em>{minTime}</em> - <em>{maxTime}</em>",
   "rest.failure.label": "실패 지점 휴식",
   "rest.long.label": "길게",
   "rest.max.label": "최대 휴식",

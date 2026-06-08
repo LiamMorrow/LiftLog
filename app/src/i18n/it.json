@@ -189,7 +189,6 @@
   "plan.will_be_updated.message": "Il piano di allenamento sarà aggiornata con gli esercizi della sessione corrente.",
   "rating.enjoying.title": "Ti sta piacendo LiftLog?",
   "rating.enjoying_message.body": "Se sì, ci dedicheresti un minuto per lasciare {type} su {store}?",
-  "rest.between.label": "Recupero tra <em>{minTime}</em> e <em>{maxTime}</em>",
   "rest.failure.label": "Recupero a Cedimento",
   "rest.long.label": "Lungo",
   "rest.max.label": "Recupero Massimo",

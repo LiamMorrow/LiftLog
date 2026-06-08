@@ -56,9 +56,7 @@ export default function DurationEditor(props: DurationEditorProps) {
     setSeconds((duration.seconds() % 60).toString());
   }, [duration]);
   useEffect(() => {
-    if (readonly) {
-      resetValues();
-    }
+    resetValues();
   }, [readonly, resetValues]);
 
   return (
