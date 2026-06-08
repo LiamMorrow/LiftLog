@@ -29,11 +29,15 @@ import {
 import { FeedApiService } from '@/services/feed-api';
 import { selectSession } from '@/store/stored-sessions';
 import { ProgramBlueprint } from '@/models/blueprint-models';
-import {
-  FeedUserEventJSON,
-  ProgramBlueprintJSON,
-} from '@/models/storage/versions/latest';
 import { feedUnpublishedSessionsSchema } from '@/db/schema';
+import {
+  AnyVersionProgramBlueprintJSON,
+  AnyVersionUserEventJSON,
+} from '@/models/storage/versions/any';
+import {
+  programBlueprintMigrations,
+  userEventMigrations,
+} from '@/models/storage/versions/migrations';
 
 const MIN_TIMESTAMP = Instant.parse('2000-01-01T00:00:00Z');
 
@@ -380,8 +384,10 @@ async function getDecryptedUserAsync(
         );
 
       const currentPlanJson =
-        fromJsonBytes<ProgramBlueprintJSON>(decryptedPlanBytes);
-      currentPlan = ProgramBlueprint.fromJSON(currentPlanJson);
+        fromJsonBytes<AnyVersionProgramBlueprintJSON>(decryptedPlanBytes);
+      currentPlan = ProgramBlueprint.fromJSON(
+        programBlueprintMigrations.migrate(currentPlanJson),
+      );
     }
 
     return new FollowedFeedUser(
@@ -420,9 +426,9 @@ async function toFeedItemAsync(
         user.publicKey,
       );
 
-    const payload = fromJsonBytes<FeedUserEventJSON>(decryptedPayload);
+    const payload = fromJsonBytes<AnyVersionUserEventJSON>(decryptedPayload);
 
-    return fromFeedUserEventJSON(payload);
+    return fromFeedUserEventJSON(userEventMigrations.migrate(payload));
   } catch (error) {
     console.error('Failed to decrypt feed item. Skipping.', error);
     return null;

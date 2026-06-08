@@ -11,6 +11,8 @@ import {
   fromBase64Uint8ArrayJSON,
   InboxMessageJSON,
 } from '@/models/storage/versions/latest';
+import { AnyVersionInboxMessageJSON } from '@/models/storage/versions/any';
+import { inboxMessageMigrations } from '@/models/storage/versions/migrations';
 
 export class FeedInboxDecryptionService {
   constructor(
@@ -28,7 +30,8 @@ export class FeedInboxDecryptionService {
         identity.rsaKeyPair.privateKey,
       );
 
-      const unverifiedInboxMessage = fromJsonBytes<InboxMessageJSON>(decrypted);
+      const unverifiedInboxMessage =
+        fromJsonBytes<AnyVersionInboxMessageJSON>(decrypted);
 
       // We know the message is delivered TO us (as we decrypted it with our private key)
       // Now we need to verify that the sender is who they say they are by checking with the public key against their user
@@ -49,7 +52,9 @@ export class FeedInboxDecryptionService {
         throw new Error('Failed to verify inbox message signature');
       }
 
-      return fromInboxMessageJSON(unverifiedInboxMessage);
+      return fromInboxMessageJSON(
+        inboxMessageMigrations.migrate(unverifiedInboxMessage),
+      );
     } catch (error) {
       console.error('Failed to decrypt inbox message', error);
       return null;

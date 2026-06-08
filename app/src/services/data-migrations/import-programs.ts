@@ -3,8 +3,7 @@ import { KeyValueStore } from '../key-value-store';
 import { dataMigrationsSchema, programsSchema } from '@/db/schema';
 import { LiftLog } from '@/gen/proto';
 import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
-import { MigratorVAnyToLatest } from '@/models/storage/versions/migrator';
-import { LatestVersion } from '@/models/storage/versions/latest';
+import { programBlueprintMigrations } from '@/models/storage/versions/migrations';
 
 export const importProgramsDataMigration = 'IMPORT_PROGRAMS';
 
@@ -27,10 +26,9 @@ export async function importPrograms(
     ([id, pojo]) =>
       ({
         id,
-        payload: MigratorVAnyToLatest.migrateProgram(
+        payload: programBlueprintMigrations.migrate(
           ProtobufToJsonV1Migrator.migrateProgramBlueprint(pojo),
         ),
-        modelVersion: LatestVersion,
         active: id === decoded.activeProgramId?.value,
       }) satisfies typeof programsSchema.$inferInsert,
   );

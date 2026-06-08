@@ -40,10 +40,10 @@ import {
   feedFollowRequestsSchema,
   feedIdentitySchema,
   feedItemsSchema,
+  feedPendingUsersSchema,
   feedRevokedFollowSecretsSchema,
   feedUnpublishedSessionsSchema,
 } from '@/db/schema';
-import { LatestVersion } from '@/models/storage/versions/latest';
 import { eq, inArray } from 'drizzle-orm';
 import { upsert } from '@/db/helpers';
 import {
@@ -57,6 +57,7 @@ import { Dispatch } from '@reduxjs/toolkit';
 import { EncryptionService } from '@/services/encryption-service';
 import { Logger } from '@/services/logger';
 import { toRecord } from '@/utils/reduce';
+import { FeedUserJSON } from '@/models/storage/versions/latest';
 
 export function applyFeedEffects(addEffect: AddEffectFn) {
   addEffect(
@@ -85,7 +86,12 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
             followRequests: (
               await db.select().from(feedFollowRequestsSchema)
             ).map((x) => FollowRequestInboxMessage.fromJSON(x.payload)),
-            followedUsers: (await db.select().from(feedFollowedUsersSchema))
+            followedUsers: (
+              (await db.select().from(feedFollowedUsersSchema)) as {
+                payload: FeedUserJSON;
+              }[]
+            )
+              .concat(await db.select().from(feedPendingUsersSchema))
               .map((x) => fromFeedUserJSON(x.payload))
               .reduce(
                 toRecord(
@@ -142,7 +148,6 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
     await upsert(db, feedIdentitySchema, [
       {
         id: 0,
-        modelVersion: LatestVersion,
         payload: action.payload.data.toJSON(),
       },
     ]);
@@ -152,6 +157,9 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
     await db
       .delete(feedFollowedUsersSchema)
       .where(eq(feedFollowedUsersSchema.id, action.payload));
+    await db
+      .delete(feedPendingUsersSchema)
+      .where(eq(feedPendingUsersSchema.id, action.payload));
   });
 
   addEffect(setFollowRequests, async (action, { extra: { db } }) => {
@@ -162,7 +170,6 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
         feedFollowRequestsSchema,
         action.payload.map((req) => ({
           id: req.senderUserId,
-          modelVersion: LatestVersion,
           payload: req.toJSON(),
         })),
       );
@@ -172,7 +179,6 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
     await upsert(db, feedFollowerUsersSchema, [
       {
         id: action.payload.id,
-        modelVersion: LatestVersion,
         payload: action.payload.toJSON(),
       },
     ]);
@@ -188,13 +194,29 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
       .where(eq(feedFollowRequestsSchema.id, action.payload.senderUserId));
   });
   addEffect(putFollowedUser, async (action, { extra: { db } }) => {
-    await upsert(db, feedFollowedUsersSchema, [
-      {
-        id: action.payload.id,
-        modelVersion: LatestVersion,
-        payload: action.payload.toJSON(),
-      },
-    ]);
+    await db.transaction(async (tx) => {
+      if (action.payload.type === 'PendingFeedUser') {
+        await upsert(tx, feedPendingUsersSchema, [
+          {
+            id: action.payload.id,
+            payload: action.payload.toJSON(),
+          },
+        ]);
+        await tx
+          .delete(feedFollowedUsersSchema)
+          .where(eq(feedFollowedUsersSchema.id, action.payload.id));
+      } else {
+        await tx
+          .delete(feedPendingUsersSchema)
+          .where(eq(feedFollowedUsersSchema.id, action.payload.id));
+        await upsert(tx, feedFollowedUsersSchema, [
+          {
+            id: action.payload.id,
+            payload: action.payload.toJSON(),
+          },
+        ]);
+      }
+    });
   });
   addEffect(upsertFeedItems, async (action, { extra: { db } }) => {
     await upsert(
@@ -202,7 +224,6 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
       feedItemsSchema,
       action.payload.map((x) => ({
         id: x.id,
-        modelVersion: LatestVersion,
         payload: x.toJSON(),
       })),
     );

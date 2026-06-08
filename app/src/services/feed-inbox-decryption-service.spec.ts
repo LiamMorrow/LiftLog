@@ -160,6 +160,7 @@ async function createFeedUser(
   const userId = crypto.randomUUID();
 
   const feedUser = FollowedFeedUser.fromJSON({
+    version: 2,
     id: userId,
     publicKey: toRsaPublicKeyJSON(rsaKeyPair.publicKey),
     name: 'Some user',

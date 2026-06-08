@@ -110,17 +110,14 @@ export type Base64Uint8ArrayJSON = Branded<string, 'Base64Uint8Array'>;
 export function fromBase64Uint8ArrayJSON(
   json: Base64Uint8ArrayJSON,
 ): Uint8Array {
-  return Uint8Array.from(atob(json), (c) => c.charCodeAt(0));
+  return new Uint8Array(Buffer.from(json, 'base64'));
 }
 
 export function toBase64Uint8ArrayJSON(
   value: Uint8Array,
 ): Base64Uint8ArrayJSON {
-  return btoa(
-    Array.from(value, (b) => String.fromCharCode(b)).join(''),
-  ) as Base64Uint8ArrayJSON;
+  return Buffer.from(value).toString('base64') as Base64Uint8ArrayJSON;
 }
-
 export interface RsaPublicKeyJSON {
   spkiPublicKeyBytes: Base64Uint8ArrayJSON;
 }
