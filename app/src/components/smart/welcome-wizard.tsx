@@ -13,6 +13,7 @@ import {
   setPreferredLanguage,
   setRestNotifications,
   setShowFeed,
+  setTrueBlackDarkTheme,
   setUseImperialUnits,
   setWelcomeWizardCompleted,
 } from '@/store/settings';
@@ -177,6 +178,8 @@ export function WelcomeWizard() {
         <ThemeChooser
           seed={settings.colorSchemeSeed}
           onUpdateTheme={(x) => dispatch(setColorSchemeSeed(x))}
+          setTrueBlack={(b) => dispatch(setTrueBlackDarkTheme(b))}
+          trueBlack={settings.trueBlackDarkTheme}
         />
       </View>
     </View>

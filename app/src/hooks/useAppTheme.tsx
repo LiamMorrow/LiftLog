@@ -161,6 +161,9 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   const colorSchemeSeed = useAppSelector(
     (state) => state.settings.colorSchemeSeed,
   );
+  const trueBlack = useAppSelector(
+    (state) => state.settings.trueBlackDarkTheme,
+  );
 
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -169,6 +172,13 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
     fallbackSourceColor: '0x005500',
     sourceColor: colorSchemeSeed === 'default' ? undefined! : colorSchemeSeed,
   });
+  let newTheme = theme;
+  if (trueBlack) {
+    newTheme = {
+      ...newTheme,
+      dark: { ...theme.dark, background: '#000000', surface: '#000000' },
+    };
+  }
   useEffect(() => {
     if (colorSchemeSeed === 'default') {
       resetTheme();
@@ -178,11 +188,11 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
     // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [colorSchemeSeed]);
-  const schemedTheme = colorScheme === 'dark' ? theme.dark : theme.light;
+  const schemedTheme = colorScheme === 'dark' ? newTheme.dark : newTheme.light;
 
   const paperTheme = isDark
-    ? { ...MD3DarkTheme, colors: theme.dark }
-    : { ...MD3LightTheme, colors: theme.light };
+    ? { ...MD3DarkTheme, colors: newTheme.dark }
+    : { ...MD3LightTheme, colors: newTheme.light };
   const appTheme = {
     colors: {
       ...schemedTheme,

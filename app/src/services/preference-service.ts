@@ -243,6 +243,17 @@ export class PreferenceService {
       toBooleanString(value),
     );
   }
+  async getTrueBlackDarkTheme(): Promise<boolean> {
+    const value = await this.keyValueStore.getItem('trueBlackDarkTheme');
+    return fromBooleanString(value, false);
+  }
+
+  async setTrueBlackDarkTheme(value: boolean): Promise<void> {
+    await this.keyValueStore.setItem(
+      'trueBlackDarkTheme',
+      toBooleanString(value),
+    );
+  }
 
   async setColorSchemeSeed(payload: ColorSchemeSeed): Promise<void> {
     await this.keyValueStore.setItem('colorSchemeSeed', payload);

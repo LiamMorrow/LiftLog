@@ -12,9 +12,12 @@ import { View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { List } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
+import ListSwitch from '@/components/presentation/foundation/list-switch';
 
 interface ThemeChooserProps {
   seed: ColorSchemeSeed;
+  trueBlack: boolean;
+  setTrueBlack: (t: boolean) => void;
   onUpdateTheme: (seed: ColorSchemeSeed) => void;
 }
 
@@ -116,6 +119,11 @@ export default function ThemeChooser(props: ThemeChooserProps) {
           contentContainerStyle={{ gap: spacing[2], padding: spacing[2] }}
         />
       </View>
+      <ListSwitch
+        headline={t('settings.app_configuration.true_black_dark_theme.title')}
+        value={props.trueBlack}
+        onValueChange={props.setTrueBlack}
+      />
     </>
   );
 }

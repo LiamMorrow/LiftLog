@@ -340,6 +340,7 @@
   "settings.translation.title": "Suggest a translation",
   "settings.use_imperial_units.label": "Use imperial units",
   "settings.use_imperial_units.subtitle": "Use pounds in favour of kilograms",
+  "settings.app_configuration.true_black_dark_theme.title": "Use true black for dark theme",
   "stats.average_time_between_sets.label": "Average time between sets",
   "stats.heaviest_lift.label": "Heaviest lift",
   "stats.max_weight_in_workout.label": "Max volume",

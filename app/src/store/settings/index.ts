@@ -31,6 +31,7 @@ interface SettingsState {
   lastBackup: RemoteData<LastBackup, string>;
   backupReminder: boolean;
   colorSchemeSeed: ColorSchemeSeed;
+  trueBlackDarkTheme: boolean;
   preferredLanguage: string | undefined;
   notesExpandedByDefault: boolean;
   keepScreenAwakeDuringWorkout: boolean;
@@ -54,6 +55,7 @@ const initialState: SettingsState = {
   restNotifications: true,
   crashReportsEnabled: true,
   showPostWorkoutSummary: false,
+  trueBlackDarkTheme: false,
   welcomeWizardCompleted: false,
   proToken: undefined,
   remoteBackupSettings: {
@@ -109,6 +111,9 @@ const settingsSlice = createSlice({
     },
     setShowPostWorkoutSummary(state, action: PayloadAction<boolean>) {
       state.showPostWorkoutSummary = action.payload;
+    },
+    setTrueBlackDarkTheme(state, action: PayloadAction<boolean>) {
+      state.trueBlackDarkTheme = action.payload;
     },
     setRemoteBackupSettings(
       state,
@@ -194,6 +199,7 @@ export const {
   setKeepScreenAwakeDuringWorkout,
   setExportToHealthAggregator,
   setShowPostWorkoutSummary,
+  setTrueBlackDarkTheme,
 } = settingsSlice.actions;
 
 export const { selectPreferredWeightUnit } = settingsSlice.selectors;

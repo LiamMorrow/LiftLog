@@ -20,6 +20,7 @@ import {
   setShowPostWorkoutSummary,
   setShowTips,
   setTipToShow,
+  setTrueBlackDarkTheme,
   setUseImperialUnits,
   setWelcomeWizardCompleted,
 } from '@/store/settings';
@@ -64,6 +65,7 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
         keepScreenAwakeDuringWorkout,
         exportToHealthAggregator,
         showPostWorkoutSummary,
+        trueBlackDarkTheme,
       ] = await Promise.all([
         preferenceService.getUseImperialUnits(),
         preferenceService.getShowBodyweight(),
@@ -84,6 +86,7 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
         preferenceService.getKeepScreenAwakeDuringWorkout(),
         preferenceService.getExportToHealthAggregator(),
         preferenceService.getShowPostWorkoutSummary(),
+        preferenceService.getTrueBlackDarkTheme(),
       ]);
       dispatch(setColorSchemeSeed(colorSchemeSeed));
       dispatch(setUseImperialUnits(useImperialUnits));
@@ -114,6 +117,7 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
       dispatch(setKeepScreenAwakeDuringWorkout(keepScreenAwakeDuringWorkout));
       dispatch(setExportToHealthAggregator(exportToHealthAggregator));
       dispatch(setShowPostWorkoutSummary(showPostWorkoutSummary));
+      dispatch(setTrueBlackDarkTheme(trueBlackDarkTheme));
 
       if (Platform.OS === 'ios') {
         Purchases.configure({
@@ -258,6 +262,14 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
     async (action, { stateAfterReduce, extra: { preferenceService } }) => {
       if (stateAfterReduce.settings.isHydrated) {
         await preferenceService.setShowPostWorkoutSummary(action.payload);
+      }
+    },
+  );
+  addEffect(
+    setTrueBlackDarkTheme,
+    async (action, { stateAfterReduce, extra: { preferenceService } }) => {
+      if (stateAfterReduce.settings.isHydrated) {
+        await preferenceService.setTrueBlackDarkTheme(action.payload);
       }
     },
   );
