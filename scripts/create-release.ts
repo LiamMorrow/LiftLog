@@ -26,21 +26,17 @@ import { writeFileSync, readFileSync, unlinkSync } from "fs";
 import Anthropic from "@anthropic-ai/sdk";
 
 function extractNotes(releaseBody: string): string | null {
-  const startMarker = "# Release Summary";
   const endMarker = "## Merge commits since";
 
-  const startIndex = releaseBody.indexOf(startMarker);
-  if (startIndex === -1) {
-    return null;
-  }
+  const startIndex = 0;
 
   const endIndex = releaseBody.indexOf(endMarker);
 
   let notes: string;
   if (endIndex === -1) {
-    notes = releaseBody.slice(startIndex + startMarker.length);
+    notes = releaseBody.slice(startIndex);
   } else {
-    notes = releaseBody.slice(startIndex + startMarker.length, endIndex);
+    notes = releaseBody.slice(startIndex, endIndex);
   }
 
   return notes.trim() || null;
