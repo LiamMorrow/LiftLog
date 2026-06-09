@@ -105,6 +105,7 @@ await $({ stdio: "inherit" })`${editor} ${tmpFile}`;
 // Extract the release notes for store submission
 const editedNotes = readFileSync(tmpFile, "utf-8");
 const rawNotes = extractNotes(editedNotes) || "Bug fixes and improvements";
+console.log("RELEASE NOTES\n\n" + editedNotes);
 
 console.log("Generating app store release notes...");
 const generatedStoreNotes = await generateStoreNotes(rawNotes);
@@ -117,6 +118,7 @@ console.log("Opening store notes for editing...");
 await $({ stdio: "inherit" })`${editor} ${storeNotesFile}`;
 
 const storeNotes = readFileSync(storeNotesFile, "utf-8").trim();
+console.log("Store NOTES\n\n" + storeNotes);
 
 const releaseAnswer = await question(
   `Create release ${version} and trigger publish workflows? [Y/n]`,
