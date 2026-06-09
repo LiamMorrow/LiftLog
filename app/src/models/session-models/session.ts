@@ -192,10 +192,11 @@ export class Session {
             )
               .select(
                 (index) =>
-                  weightedExistingExercise.potentialSets[index] ?? {
-                    weight: weightedExistingExercise.maxWeight,
-                    set: undefined,
-                  },
+                  weightedExistingExercise.potentialSets[index] ??
+                  new PotentialSet(
+                    undefined,
+                    weightedExistingExercise.maxWeight,
+                  ),
               )
               .toArray(),
           }),

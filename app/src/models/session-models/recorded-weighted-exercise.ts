@@ -271,6 +271,7 @@ export class RecordedSet {
 }
 
 export class PotentialSet {
+  readonly type = 'PotentialSet';
   constructor(
     readonly set: RecordedSet | undefined,
     readonly weight: Weight,
