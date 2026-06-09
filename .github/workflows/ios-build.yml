@@ -28,6 +28,9 @@ jobs:
       - name: Install JS dependencies
         working-directory: ./app
         run: npm ci
+      - name: Prebuild
+        run: npm run prebuild
+        working-directory: ./app
 
       - name: Build JS bundle (optional)
         working-directory: ./app
