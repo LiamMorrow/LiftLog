@@ -1,7 +1,5 @@
-import { google, LiftLog } from '@/gen/proto';
 import { RemoteData } from '@/models/remote';
 import { AddEffectFn } from '@/store/store';
-import { selectAllPrograms } from '@/store/program';
 import {
   executeRemoteBackup,
   remoteBackupSucceeded,
@@ -9,40 +7,11 @@ import {
   setRemoteBackupSettings,
 } from '@/store/settings';
 import { showSnackbar } from '@/store/app';
-import { streamToUint8Array } from '@/utils/stream';
 import { toUrlSafeHexString } from '@/utils/to-url-safe-hex-string';
 import { Instant } from '@js-joda/core';
 import 'compression-streams-polyfill';
 import { TaskAbortError } from '@reduxjs/toolkit';
-
-// Helper function to yield control back to the event loop
-const yieldToEventLoop = () =>
-  new Promise((resolve) => setTimeout(resolve, 20));
-
-// Process data in chunks to avoid blocking the main thread
-async function processInChunks<T, R>(
-  items: T[],
-  processor: (item: T) => R,
-  chunkSize: number = 100,
-  throwIfCancelled: () => void,
-): Promise<R[]> {
-  const results: R[] = [];
-
-  for (let i = 0; i < items.length; i += chunkSize) {
-    throwIfCancelled();
-
-    const chunk = items.slice(i, i + chunkSize);
-    const chunkResults = chunk.map(processor);
-    results.push(...chunkResults);
-
-    // Yield control back to the event loop after each chunk
-    if (i + chunkSize < items.length) {
-      await yieldToEventLoop();
-    }
-  }
-
-  return results;
-}
+import { getBackupBytes } from '@/store/settings/util';
 
 export function addRemoteBackupEffects(addEffect: AddEffectFn) {
   addEffect(
@@ -52,7 +21,7 @@ export function addRemoteBackupEffects(addEffect: AddEffectFn) {
       {
         getState,
         dispatch,
-        extra: { progressRepository, logger, encryptionService, tolgee },
+        extra: { logger, encryptionService, tolgee, expoDb },
         signal,
         cancelActiveListeners,
         throwIfCancelled,
@@ -61,7 +30,7 @@ export function addRemoteBackupEffects(addEffect: AddEffectFn) {
       cancelActiveListeners();
       const start = performance.now();
       settings ??= getState().settings.remoteBackupSettings;
-      const { endpoint, apiKey } = settings;
+      const { endpoint, apiKey, includeFeedAccount } = settings;
 
       if (!endpoint?.trim()) {
         return;
@@ -70,68 +39,10 @@ export function addRemoteBackupEffects(addEffect: AddEffectFn) {
       try {
         throwIfCancelled();
 
-        // Generate data export with chunked processing
-        const sessions = progressRepository.getOrderedSessions();
-        throwIfCancelled();
-
-        // Process sessions in chunks to avoid blocking
-        const processedSessions = await processInChunks(
-          sessions.toArray(),
-          (x) => x.toDao(),
-          50,
-          throwIfCancelled,
-        );
-
-        throwIfCancelled();
-        const savedPrograms = selectAllPrograms(getState());
-
-        // Process saved programs in chunks
-        const savedProgramEntries = Object.entries(savedPrograms);
-        const processedPrograms = await processInChunks(
-          savedProgramEntries,
-          ([id, { program }]) => [id, program.toDao()] as const,
-          20, // Process 20 programs at a time
-          throwIfCancelled,
-        );
-
-        const savedProgramsDao = Object.fromEntries(processedPrograms);
-
-        throwIfCancelled();
-        const activeProgramId = getState().program.activePlanId;
-
-        throwIfCancelled();
-        const dao = new LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2({
-          sessions: processedSessions,
-          activeProgramId: new google.protobuf.StringValue({
-            value: activeProgramId,
-          }),
-          savedPrograms: savedProgramsDao,
+        const daoBytes = await getBackupBytes({
+          includeFeed: includeFeedAccount,
+          expoDb,
         });
-
-        // Yield before expensive serialization
-        await yieldToEventLoop();
-        throwIfCancelled();
-
-        // Serialize and compress data
-        const daoBytes =
-          LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2.encode(
-            dao,
-          ).finish();
-
-        throwIfCancelled();
-
-        // Compression with abort signal monitoring
-        const stream = new CompressionStream('gzip');
-        const writer = stream.writable.getWriter();
-
-        // Check abort signal before writing
-        throwIfCancelled();
-        await writer.write(daoBytes);
-        await writer.close();
-
-        throwIfCancelled();
-        const readable = stream.readable;
-        const compressedBytes = await streamToUint8Array(readable);
 
         throwIfCancelled();
 
@@ -176,7 +87,7 @@ export function addRemoteBackupEffects(addEffect: AddEffectFn) {
         const response = await fetch(endpoint, {
           method: 'POST',
           headers,
-          body: compressedBytes,
+          body: daoBytes,
         });
 
         if (!response.ok) {

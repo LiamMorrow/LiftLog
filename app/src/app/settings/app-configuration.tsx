@@ -11,6 +11,7 @@ import {
   setShowFeed,
   setShowPostWorkoutSummary,
   setShowTips,
+  setTrueBlackDarkTheme,
   setWelcomeWizardCompleted,
 } from '@/store/settings';
 import { T, useTranslate } from '@tolgee/react';
@@ -78,6 +79,8 @@ export default function AppConfiguration() {
         <ThemeChooser
           seed={settings.colorSchemeSeed}
           onUpdateTheme={(x) => dispatch(setColorSchemeSeed(x))}
+          trueBlack={settings.trueBlackDarkTheme}
+          setTrueBlack={(b) => dispatch(setTrueBlackDarkTheme(b))}
         />
         <Button
           onPress={() => dispatch(setWelcomeWizardCompleted(false))}

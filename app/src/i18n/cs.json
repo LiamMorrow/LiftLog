@@ -194,7 +194,6 @@
   "plan.will_be_updated.message": "Plán bude aktualizován cviky z probíhajícího tréningu.",
   "rating.enjoying.title": "Líbí se Vám LiftLog?",
   "rating.enjoying_message.body": "Pokud ano, věnovali byste minutku tomu abyste nám dali {type} na {store}?",
-  "rest.between.label": "Odpočívejte mezi <em>{minTime}</em> a <em>{maxTime}</em>",
   "rest.failure.label": "Odpočinek po selhání",
   "rest.long.label": "Dlouhý",
   "rest.max.label": "Maximální odpočinek",

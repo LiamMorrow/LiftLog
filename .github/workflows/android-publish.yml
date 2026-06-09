@@ -1,8 +1,4 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
 name: Release Android
-
 on:
   workflow_dispatch:
     inputs:
@@ -18,17 +14,16 @@ on:
         description: "Commit SHA to checkout (optional, defaults to the branch head)"
         required: false
         type: string
-
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
       EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY: ${{secrets.EXPO_REVENUECAT_GOOGLE_API_KEY}}
-
     steps:
       - uses: actions/checkout@v6
         with:
           ref: ${{ inputs.commit_sha || github.ref }}
+
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
@@ -41,16 +36,23 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "17"
+
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v3.2.2
+
       - name: Install
         run: npm ci
         working-directory: ./app
+      - name: Prebuild
+        run: npm run prebuild
+        working-directory: ./app
+
       - name: Put keystore
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: echo "${ANDROID_KEYSTORE_BASE64}" | base64 -d > liftlog.keystore
         working-directory: ./app/android/app
+
       - uses: mlilback/build-number@v1
         name: Set build number
         id: buildNumber
@@ -58,21 +60,15 @@ jobs:
           base: 100
           run-id: ${{github.run_number}}
 
-      - uses: burrunan/gradle-cache-action@v3
-        name: Build Android AAB
-        with:
-          job-id: android
-          arguments: bundleRelease
-          build-root-directory: ./app/android
-
-          gradle-version: wrapper
-          properties: |
-            ANDROID_UPLOAD_STORE_FILE=liftlog.keystore
-            ANDROID_UPLOAD_STORE_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
-            ANDROID_UPLOAD_KEY_ALIAS=liftlog
-            ANDROID_UPLOAD_KEY_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
-            DISPLAY_VERSION=${{ inputs.version_code }}
-            BUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}
+      - name: Build Android AAB
+        run: ./gradlew bundleRelease
+          -PANDROID_UPLOAD_STORE_FILE=liftlog.keystore
+          '-PANDROID_UPLOAD_STORE_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}'
+          -PANDROID_UPLOAD_KEY_ALIAS=liftlog
+          '-PANDROID_UPLOAD_KEY_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}'
+          '-PDISPLAY_VERSION=${{ inputs.version_code }}'
+          '-PBUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}'
+        working-directory: ./app/android
 
       - name: Create release notes directory
         run: mkdir -p release_notes
@@ -95,22 +91,18 @@ jobs:
           status: completed
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
           whatsNewDirectory: release_notes
-      - uses: burrunan/gradle-cache-action@v3
-        name: Build Android APK
-        with:
-          job-id: android
-          arguments: assembleRelease
-          build-root-directory: ./app/android
 
-          gradle-version: wrapper
-          properties: |
-            ANDROID_UPLOAD_STORE_FILE=liftlog.keystore
-            ANDROID_UPLOAD_STORE_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
-            ANDROID_UPLOAD_KEY_ALIAS=liftlog
-            ANDROID_UPLOAD_KEY_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}
-            DISPLAY_VERSION=${{ inputs.version_code }}
-            BUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}
-      - name: upload binaries to release
+      - name: Build Android APK
+        run: ./gradlew assembleRelease
+          -PANDROID_UPLOAD_STORE_FILE=liftlog.keystore
+          '-PANDROID_UPLOAD_STORE_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}'
+          -PANDROID_UPLOAD_KEY_ALIAS=liftlog
+          '-PANDROID_UPLOAD_KEY_PASSWORD=${{secrets.ANDROID_KEYSTORE_PASS}}'
+          '-PDISPLAY_VERSION=${{ inputs.version_code }}'
+          '-PBUILD_NUMBER=${{ steps.buildNumber.outputs.build-number }}'
+        working-directory: ./app/android
+
+      - name: Upload APK to release
         uses: softprops/action-gh-release@v2
         with:
           files: app/android/app/build/outputs/apk/release/app-release.apk

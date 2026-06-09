@@ -18,7 +18,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   if (!bucketName) {
     return getReturnResult(
       500,
-      "Bucket name not configured in environment variables."
+      "Bucket name not configured in environment variables.",
     );
   }
 
@@ -39,7 +39,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   const contentType = rawContentType.toLowerCase();
 
   // LiftLog uses application/x-www-form-urlencoded as its content-type and API Gateway would normally expect this to be a text payload
-  // However, the payload is a gzipped stream of bytes representing a protobuf object so the configuration for API Gateway in `aws_api_gateway_rest_api` in `api_gateway.tf` is set to expect binary payloads and pass them through as-is
+  // However, the payload is a gzipped stream of bytes representing a sqlite database so the configuration for API Gateway in `aws_api_gateway_rest_api` in `api_gateway.tf` is set to expect binary payloads and pass them through as-is
 
   if (isBase64Encoded) {
     // Preferred path: API Gateway flags binary and delivers base64 text
@@ -56,7 +56,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     }
     bodyBuffer = Buffer.from(event.body, "latin1");
     console.warn(
-      "Received non-base64 payload for binary content-type. Consider ensuring API Gateway binary media types include this content-type so Lambda receives base64 consistently."
+      "Received non-base64 payload for binary content-type. Consider ensuring API Gateway binary media types include this content-type so Lambda receives base64 consistently.",
     );
   } else {
     console.log(`Unsupported content type or encoding: ${contentType}`);
@@ -64,7 +64,13 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   }
 
   // Warn if payload does not look like gzip (magic bytes 1F 8B)
-  if (!(bodyBuffer.length >= 2 && bodyBuffer[0] === 0x1f && bodyBuffer[1] === 0x8b)) {
+  if (
+    !(
+      bodyBuffer.length >= 2 &&
+      bodyBuffer[0] === 0x1f &&
+      bodyBuffer[1] === 0x8b
+    )
+  ) {
     console.warn("Payload does not start with gzip magic bytes. Saved anyway.");
   }
 
@@ -121,7 +127,7 @@ function logEverything(event: APIGatewayProxyEvent) {
   if (event.queryStringParameters) {
     console.log(
       "Query String Parameters:",
-      JSON.stringify(event.queryStringParameters, null, 2)
+      JSON.stringify(event.queryStringParameters, null, 2),
     );
   } else {
     console.log("No Query String Parameters");

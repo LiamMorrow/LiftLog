@@ -42,7 +42,7 @@ import {
   RecordedWeightedExerciseJSON,
   SessionJSON,
 } from './session';
-import { WeightJSON, WeightUnitJSON } from './weight';
+import { WeightJSON, WeightUnitJSON } from '../libs/weight';
 import {
   FeedIdentityJSON,
   FollowedFeedUserJSON,
@@ -471,7 +471,7 @@ function fromSessionDao(
   };
 }
 
-export function fromRecordedExerciseDao(
+function fromRecordedExerciseDao(
   sessionDate: LiftLog.Ui.Models.IDateOnlyDao,
   dao:
     | LiftLog.Ui.Models.SessionHistoryDao.IRecordedExerciseDaoV2
@@ -621,7 +621,7 @@ function getRecordedCardioSetFromDeprecatedFields(
   };
 }
 
-export function fromWeightUnitDao(
+function fromWeightUnitDao(
   daoUnit: LiftLog.Ui.Models.WeightUnit | null | undefined,
 ): WeightUnitJSON {
   return match(daoUnit)

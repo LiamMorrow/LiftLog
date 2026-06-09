@@ -22,6 +22,8 @@ import { HealthExportService } from './health-export-service';
 import { HealthExportService as HES } from './health-export-service-shared';
 import { DatabaseMigrationService } from './database-migration-service';
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
+import { SQLiteDatabase } from 'expo-sqlite';
+import { DatabaseImportService } from '@/services/database-import-service';
 
 export type Services = Awaited<ReturnType<typeof resolveServicesInternal>>;
 
@@ -30,6 +32,7 @@ let resolvedServices: Services | undefined;
 function resolveServicesInternal(
   store: Store<RootState>,
   db: ExpoSQLiteDatabase,
+  expoDb: SQLiteDatabase,
 ) {
   if (!store) {
     throw new Error('Tried to resolve services without store');
@@ -73,8 +76,8 @@ function resolveServicesInternal(
   const healthExportService: HES = new HealthExportService();
   const databaseMigrationService = new DatabaseMigrationService(
     db,
-    keyValueStore,
-    preferenceService,
+    logger,
+    new DatabaseImportService(db, keyValueStore, preferenceService),
   );
 
   return {
@@ -97,12 +100,17 @@ function resolveServicesInternal(
     workoutWorkerService,
     tolgee,
     db,
+    expoDb,
     databaseMigrationService,
   };
 }
 
-function resolveServices(store: Store<RootState>, db: ExpoSQLiteDatabase) {
-  return (resolvedServices ??= resolveServicesInternal(store, db));
+function resolveServices(
+  store: Store<RootState>,
+  db: ExpoSQLiteDatabase,
+  expoDb: SQLiteDatabase,
+) {
+  return (resolvedServices ??= resolveServicesInternal(store, db, expoDb));
 }
 
 export { resolveServices };

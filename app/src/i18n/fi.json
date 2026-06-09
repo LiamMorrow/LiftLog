@@ -227,7 +227,6 @@
   "plan.will_be_updated.message": "Suunnitelma päivitetään nykyisen harjoituksen liikkeillä.",
   "rating.enjoying.title": "Pidätkö LiftLogista?",
   "rating.enjoying_message.body": "Jos pidät, käyttäisitkö hetken antaaksesi {type} palvelussa {store}?",
-  "rest.between.label": "Lepoaika <em>{minTime}</em> … <em>{maxTime}</em>",
   "rest.failure.label": "Lihasuupumuksen (failure) jälkeinen lepo",
   "rest.long.label": "Pitkä",
   "rest.max.label": "Maksimi lepo",

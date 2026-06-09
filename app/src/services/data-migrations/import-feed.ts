@@ -65,7 +65,6 @@ function getIdentity(decoded: LiftLog.Ui.Models.FeedStateDaoV1) {
     decoded.identity && {
       id: 0,
       payload: MigratorVAnyToLatest.migrateFeedIdentity(
-        1,
         ProtobufToJsonV1Migrator.migrateFeedIdentity(decoded.identity),
       ),
       modelVersion: LatestVersion,
@@ -79,7 +78,6 @@ function getFollowers(
   return decoded.followers.map((x) => ({
     id: ProtobufToJsonV1Migrator.migrateUuid(x.id),
     payload: MigratorVAnyToLatest.migrateFollowerFeedUser(
-      1,
       ProtobufToJsonV1Migrator.migrateFollowerUser(x),
     ),
     modelVersion: LatestVersion,
@@ -90,7 +88,6 @@ function getFollowedUsers(decoded: LiftLog.Ui.Models.FeedStateDaoV1) {
   return decoded.followedUsers.map((x) => ({
     id: ProtobufToJsonV1Migrator.migrateUuid(x.id),
     payload: MigratorVAnyToLatest.migrateFollowedFeedUser(
-      1,
       ProtobufToJsonV1Migrator.migrateFollowedUser(x),
     ),
     modelVersion: LatestVersion,
@@ -101,7 +98,6 @@ function getFollowRequests(decoded: LiftLog.Ui.Models.FeedStateDaoV1) {
   return decoded.followRequests.map((x) => ({
     id: ProtobufToJsonV1Migrator.migrateUuid(x.fromUserId),
     payload: MigratorVAnyToLatest.migrateFeedFollowRequest(
-      1,
       ProtobufToJsonV1Migrator.migrateFollowRequest(x),
     ),
     modelVersion: LatestVersion,
@@ -111,7 +107,6 @@ function getFollowRequests(decoded: LiftLog.Ui.Models.FeedStateDaoV1) {
 function getFeedItems(decoded: LiftLog.Ui.Models.FeedStateDaoV1) {
   return decoded.feedItems.map((x) => {
     const payload = MigratorVAnyToLatest.migrateFeedSessionUserEvent(
-      1,
       ProtobufToJsonV1Migrator.migrateSessionUserEvent(x),
     );
 

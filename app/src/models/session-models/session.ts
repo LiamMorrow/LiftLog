@@ -1,4 +1,3 @@
-import { LiftLog } from '@/gen/proto';
 import {
   CardioExerciseBlueprint,
   ExerciseBlueprint,
@@ -6,17 +5,13 @@ import {
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
-import {
-  toDateOnlyDao,
-  toDecimalDao,
-  toUuidDao,
-} from '@/models/storage/conversions.to-dao';
+
 import {
   SessionJSON,
   fromLocalDateJSON,
   toLocalDateJSON,
 } from '@/models/storage/versions/latest';
-import { Weight, WeightUnit, toWeightUnitDao } from '@/models/weight';
+import { Weight, WeightUnit } from '@/models/weight';
 import { indexed } from '@/utils/enumerable';
 import { Duration, LocalDate, OffsetDateTime } from '@js-joda/core';
 import { match } from 'ts-pattern';
@@ -377,22 +372,6 @@ export class Session {
       id: this.id,
       recordedExercises: this.recordedExercises.map((x) => x.toJSON()),
     };
-  }
-
-  toDao(): LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2 {
-    return new LiftLog.Ui.Models.SessionHistoryDao.SessionDaoV2({
-      id: toUuidDao(this.id),
-      sessionName: this.blueprint.name,
-      blueprintNotes: this.blueprint.notes,
-      recordedExercises: this.recordedExercises.map((x) => x.toDao()),
-      date: toDateOnlyDao(this.date),
-      bodyweightValue: this.bodyweight
-        ? toDecimalDao(this.bodyweight.value)
-        : null,
-      bodyweightUnit: this.bodyweight
-        ? toWeightUnitDao(this.bodyweight.unit)
-        : LiftLog.Ui.Models.WeightUnit.NIL,
-    });
   }
 
   static freeformSession(

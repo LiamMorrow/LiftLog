@@ -1,55 +1,25 @@
-import { google, LiftLog } from '@/gen/proto';
 import { AddEffectFn } from '@/store/store';
-import { selectAllPrograms } from '@/store/program';
 import { exportData } from '@/store/settings';
-import { streamToUint8Array } from '@/utils/stream';
 import 'compression-streams-polyfill';
 import { DateTimeFormatter, LocalDateTime } from '@js-joda/core';
+import { getBackupBytes } from '@/store/settings/util';
 
 export function addExportBackupEffects(addEffect: AddEffectFn) {
   addEffect(
     exportData,
     async (
       { payload: { includeFeed } },
-      { getState, extra: { progressRepository, fileExportService } },
+      { extra: { fileExportService, expoDb } },
     ) => {
-      const sessions = progressRepository.getOrderedSessions().toArray();
-      const savedPrograms = selectAllPrograms(getState());
-      const savedProgramsDao = Object.fromEntries(
-        savedPrograms.map(({ id, program }) => [id, program.toDao()]),
-      );
-      const activeProgramId = getState().program.activePlanId;
-
-      const dao = new LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2({
-        sessions: sessions.map((x) => x.toDao()),
-        activeProgramId: new google.protobuf.StringValue({
-          value: activeProgramId,
-        }),
-        savedPrograms: savedProgramsDao,
-      });
-      const daoBytes =
-        LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2.encode(
-          dao,
-        ).finish();
-      const stream = new CompressionStream('gzip');
-      const writer = stream.writable.getWriter();
-      // Don't await this until we start reading
-      const writePromise = writer.write(daoBytes);
-      const readable = stream.readable;
-      const gzippedPromise = streamToUint8Array(readable);
-
-      await writePromise;
-      await writer.close();
       const now = LocalDateTime.now()
         .withNano(0)
         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         .replaceAll(':', '')
         .replaceAll('T', '_')
         .replaceAll('-', '');
-
       await fileExportService.exportBytes(
-        `export.liftlogbackup.${now}.gz`,
-        await gzippedPromise,
+        `export.liftlogbackup.${now}.sqlite.gz`,
+        await getBackupBytes({ includeFeed, expoDb }),
         'application/octet-stream',
       );
     },

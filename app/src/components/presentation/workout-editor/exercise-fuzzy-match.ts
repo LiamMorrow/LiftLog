@@ -1,6 +1,6 @@
 const diacriticRegex = /[\u0300-\u036f]/g;
 
-export function normalizeFuzzyText(value: string) {
+function normalizeFuzzyText(value: string) {
   return value
     .normalize('NFD')
     .replace(diacriticRegex, '')

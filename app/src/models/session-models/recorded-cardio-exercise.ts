@@ -1,4 +1,3 @@
-import { LiftLog } from '@/gen/proto';
 import {
   CardioExerciseBlueprint,
   CardioExerciseSetBlueprint,
@@ -8,12 +7,6 @@ import {
 } from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
 import { RecordedExercise } from '@/models/session-models/recorded-exercise';
-import {
-  toDateTimeDao,
-  toDecimalDao,
-  toDurationDao,
-  toStringValue,
-} from '@/models/storage/conversions.to-dao';
 import {
   RecordedCardioExerciseJSON,
   RecordedCardioExerciseSetJSON,
@@ -113,20 +106,6 @@ export class RecordedCardioExerciseSet {
         this.incline !== undefined ? toBigNumberJSON(this.incline) : undefined,
       weight: this.weight?.toJSON(),
       steps: this.steps,
-    };
-  }
-
-  toDao(): LiftLog.Ui.Models.SessionHistoryDao.IRecordedCardioExerciseSetDao {
-    return {
-      blueprint: this.blueprint.toDao(),
-      completionDateTime: toDateTimeDao(this.completionDateTime),
-      distanceUnit: toStringValue(this.distance?.unit),
-      distanceValue: this.distance ? toDecimalDao(this.distance.value) : null,
-      duration: toDurationDao(this.duration),
-      incline: this.incline ? toDecimalDao(this.incline) : null,
-      resistance: this.resistance ? toDecimalDao(this.resistance) : null,
-      weight: this.weight ? this.weight.toDao() : null,
-      steps: this.steps !== undefined ? { value: this.steps } : null,
     };
   }
 
@@ -307,14 +286,5 @@ export class RecordedCardioExercise {
       sets: this.sets.map((x) => x.toJSON()),
       notes: this.notes,
     };
-  }
-
-  toDao(): LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2 {
-    return new LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2({
-      exerciseBlueprint: this.blueprint.toDao(),
-      notes: toStringValue(this.notes),
-      type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.CARDIO,
-      cardioSets: this.sets.map((x) => x.toDao()),
-    });
   }
 }

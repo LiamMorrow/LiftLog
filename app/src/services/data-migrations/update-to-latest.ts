@@ -24,10 +24,7 @@ export async function updateSessionsToLatestVersion(db: ExpoSQLiteDatabase) {
         .update(sessionsSchema)
         .set({
           modelVersion: LatestVersion,
-          payload: MigratorVAnyToLatest.migrateSession(
-            session.modelVersion,
-            session.payload,
-          ),
+          payload: MigratorVAnyToLatest.migrateSession(session.payload),
         })
         .where(eq(sessionsSchema.id, session.id));
     }
@@ -45,10 +42,7 @@ export async function updateProgramsToLatestVersion(db: ExpoSQLiteDatabase) {
         .update(programsSchema)
         .set({
           modelVersion: LatestVersion,
-          payload: MigratorVAnyToLatest.migrateProgram(
-            program.modelVersion,
-            program.payload,
-          ),
+          payload: MigratorVAnyToLatest.migrateProgram(program.payload),
         })
         .where(eq(programsSchema.id, program.id));
     }
@@ -67,7 +61,6 @@ export async function updateExercisesToLatestVersion(db: ExpoSQLiteDatabase) {
         .set({
           modelVersion: LatestVersion,
           payload: MigratorVAnyToLatest.migrateExerciseDescriptor(
-            program.modelVersion,
             program.payload,
           ),
         })
@@ -89,10 +82,7 @@ export async function updateFeedIdentityToLatestVersion(
         .update(feedIdentitySchema)
         .set({
           modelVersion: LatestVersion,
-          payload: MigratorVAnyToLatest.migrateFeedIdentity(
-            record.modelVersion,
-            record.payload,
-          ),
+          payload: MigratorVAnyToLatest.migrateFeedIdentity(record.payload),
         })
         .where(eq(feedIdentitySchema.id, record.id));
     }
@@ -113,10 +103,7 @@ export async function updateFeedFollowedUsersToLatestVersion(
         .update(feedFollowedUsersSchema)
         .set({
           modelVersion: LatestVersion,
-          payload: MigratorVAnyToLatest.migrateFollowedFeedUser(
-            record.modelVersion,
-            record.payload,
-          ),
+          payload: MigratorVAnyToLatest.migrateFollowedFeedUser(record.payload),
         })
         .where(eq(feedFollowedUsersSchema.id, record.id));
     }
@@ -136,7 +123,6 @@ export async function updateFeedItemsToLatestVersion(db: ExpoSQLiteDatabase) {
         .set({
           modelVersion: LatestVersion,
           payload: MigratorVAnyToLatest.migrateFeedSessionUserEvent(
-            record.modelVersion,
             record.payload,
           ),
         })
@@ -159,10 +145,7 @@ export async function updateFeedFollowerUsersToLatestVersion(
         .update(feedFollowerUsersSchema)
         .set({
           modelVersion: LatestVersion,
-          payload: MigratorVAnyToLatest.migrateFollowerFeedUser(
-            record.modelVersion,
-            record.payload,
-          ),
+          payload: MigratorVAnyToLatest.migrateFollowerFeedUser(record.payload),
         })
         .where(eq(feedFollowerUsersSchema.id, record.id));
     }
@@ -184,7 +167,6 @@ export async function updateFeedFollowRequestsToLatestVersion(
         .set({
           modelVersion: LatestVersion,
           payload: MigratorVAnyToLatest.migrateFeedFollowRequest(
-            record.modelVersion,
             record.payload,
           ),
         })

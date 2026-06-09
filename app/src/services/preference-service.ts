@@ -3,12 +3,6 @@ import { ColorSchemeSeed } from '@/store/settings';
 import { DayOfWeek, Instant } from '@js-joda/core';
 import { match, P } from 'ts-pattern';
 
-export enum AppRatingResult {
-  NotRated = 'NotRated',
-  Rated = 'Rated',
-  Declined = 'Declined',
-}
-
 export interface RemoteBackupSettings {
   endpoint: string;
   apiKey: string;
@@ -246,6 +240,17 @@ export class PreferenceService {
   async setShowPostWorkoutSummary(value: boolean): Promise<void> {
     await this.keyValueStore.setItem(
       'showPostWorkoutSummary',
+      toBooleanString(value),
+    );
+  }
+  async getTrueBlackDarkTheme(): Promise<boolean> {
+    const value = await this.keyValueStore.getItem('trueBlackDarkTheme');
+    return fromBooleanString(value, false);
+  }
+
+  async setTrueBlackDarkTheme(value: boolean): Promise<void> {
+    await this.keyValueStore.setItem(
+      'trueBlackDarkTheme',
       toBooleanString(value),
     );
   }

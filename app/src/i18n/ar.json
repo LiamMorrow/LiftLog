@@ -240,7 +240,6 @@
   "plan.will_be_updated.message": "سيتم تحديث الخطة بتمارين التمرين الحالي.",
   "rating.enjoying.title": "هل تستمتع بـ LiftLog؟",
   "rating.enjoying_message.body": "إذا كان كذلك، هل يمكنك أن تخصص دقيقة لترك {type} على {store}؟",
-  "rest.between.label": "راحة بين <em>{minTime}</em> و<em>{maxTime}</em>",
   "rest.failure.label": "راحة الفشل",
   "rest.long.label": "طويل",
   "rest.max.label": "الحد الأقصى للراحة",

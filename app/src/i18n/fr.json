@@ -190,7 +190,6 @@
   "plan.will_be_updated.message": "Le plan sera mis à jour avec les exercices de la séance actuelle.",
   "rating.enjoying.title": "Vous appréciez LiftLog ?",
   "rating.enjoying_message.body": "Si oui, prendriez-vous une minute pour laisser un {type} sur {store} ?",
-  "rest.between.label": "Repos entre <em>{minTime}</em> et <em>{maxTime}</em>",
   "rest.failure.label": "Repos échec",
   "rest.long.label": "Long",
   "rest.max.label": "Repos max",

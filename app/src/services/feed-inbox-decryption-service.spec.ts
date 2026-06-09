@@ -1,16 +1,22 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { FeedInboxDecryptionService } from './feed-inbox-decryption-service';
-import { EncryptionService } from './encryption-service';
+import { EncryptionService, toJsonBytes } from './encryption-service';
 import { type FeedApiService } from './feed-api';
-import { FeedUser, FeedIdentity } from '@/models/feed-models';
+import { FeedUser, FeedIdentity, FollowedFeedUser } from '@/models/feed-models';
 import {
   GetInboxMessageResponse,
   GetUserResponse,
 } from '@/models/feed-api-models';
-import { LiftLog } from '@/gen/proto';
-import { toUuidDao, toStringValue } from '@/models/storage/conversions.to-dao';
 import { RsaPrivateKey } from '@/models/encryption-models';
 import { ApiResult } from '@/services/api-error';
+import {
+  FollowRequestJSON,
+  InboxMessageJSON,
+  toAesKeyJSON,
+  toBase64Uint8ArrayJSON,
+  toJsonString,
+  toRsaPublicKeyJSON,
+} from '@/models/storage/versions/latest';
 
 interface UserAndPrivateKey {
   user: FeedUser;
@@ -55,12 +61,13 @@ describe('FeedInboxDecryptionService', () => {
     it('should not allow a malicious user to send a follow request to a victim user to try follow the third party user', async () => {
       // Create a malicious message - the fromUserId claims to be from thirdPartyUser
       // but the signature is created by maliciousUser
-      const maliciousMessage = LiftLog.Ui.Models.InboxMessageDao.create({
-        fromUserId: toUuidDao(thirdPartyUser.user.id),
-        followRequest: LiftLog.Ui.Models.FollowRequestDao.create({
-          name: toStringValue(maliciousUser.user.name || 'Malicious User'),
+      const maliciousMessage: Omit<InboxMessageJSON, 'signature'> = {
+        senderUserId: thirdPartyUser.user.id,
+        payloadJson: toJsonString({
+          name: maliciousUser.user.name || 'Malicious User',
         }),
-      });
+        type: 'FollowRequest',
+      };
 
       // Sign with malicious user's private key (this is the attack - wrong signer)
       const signaturePayload = FeedInboxDecryptionService.getSignaturePayload(
@@ -71,11 +78,11 @@ describe('FeedInboxDecryptionService', () => {
         signaturePayload,
         maliciousUser.privateKey,
       );
-      maliciousMessage.signature = signature;
+      (maliciousMessage as InboxMessageJSON).signature =
+        toBase64Uint8ArrayJSON(signature);
 
       // Encrypt for victim user
-      const messageBytes =
-        LiftLog.Ui.Models.InboxMessageDao.encode(maliciousMessage).finish();
+      const messageBytes = toJsonBytes(maliciousMessage);
       const encryptedMaliciousMessage =
         await encryptionService.encryptRsaOaepSha256Async(
           messageBytes,
@@ -98,12 +105,13 @@ describe('FeedInboxDecryptionService', () => {
 
     it('should allow a valid message to be decrypted', async () => {
       // Create a valid message where fromUserId and signature match
-      const validMessage = LiftLog.Ui.Models.InboxMessageDao.create({
-        fromUserId: toUuidDao(thirdPartyUser.user.id),
-        followRequest: LiftLog.Ui.Models.FollowRequestDao.create({
-          name: toStringValue(thirdPartyUser.user.name || 'Third Party User'),
+      const validMessage: Omit<InboxMessageJSON, 'signature'> = {
+        senderUserId: thirdPartyUser.user.id,
+        type: 'FollowRequest',
+        payloadJson: toJsonString({
+          name: thirdPartyUser.user.name || 'Third Party User',
         }),
-      });
+      };
 
       // Sign with the correct user's private key
       const signaturePayload = FeedInboxDecryptionService.getSignaturePayload(
@@ -114,11 +122,11 @@ describe('FeedInboxDecryptionService', () => {
         signaturePayload,
         thirdPartyUser.privateKey,
       );
-      validMessage.signature = signature;
+      (validMessage as InboxMessageJSON).signature =
+        toBase64Uint8ArrayJSON(signature);
 
       // Encrypt for victim user
-      const messageBytes =
-        LiftLog.Ui.Models.InboxMessageDao.encode(validMessage).finish();
+      const messageBytes = toJsonBytes(validMessage);
       const encryptedValidMessage =
         await encryptionService.encryptRsaOaepSha256Async(
           messageBytes,
@@ -137,7 +145,7 @@ describe('FeedInboxDecryptionService', () => {
       );
 
       expect(decryptedValidMessage).not.toBeNull();
-      expect(decryptedValidMessage?.followRequest?.name?.value).toBe(
+      expect((decryptedValidMessage?.payload as FollowRequestJSON)?.name)?.toBe(
         thirdPartyUser.user.name || 'Third Party User',
       );
     });
@@ -151,12 +159,14 @@ async function createFeedUser(
   const aesKey = await encryptionService.generateAesKey();
   const userId = crypto.randomUUID();
 
-  const feedUser = FeedUser.fromShared(
-    userId,
-    rsaKeyPair.publicKey,
-    'Some user',
-  ).with({
-    aesKey: aesKey,
+  const feedUser = FollowedFeedUser.fromJSON({
+    id: userId,
+    publicKey: toRsaPublicKeyJSON(rsaKeyPair.publicKey),
+    name: 'Some user',
+    aesKey: toAesKeyJSON(aesKey),
+    currentPlan: undefined,
+    followSecret: '',
+    type: 'FollowedFeedUser',
   });
 
   const identity = new FeedIdentity(

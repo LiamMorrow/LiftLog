@@ -21,7 +21,7 @@ type ScrollContextValues = {
 };
 
 // Create a context with default value
-export const ScrollContext = createContext<ScrollContextValues>({
+const ScrollContext = createContext<ScrollContextValues>({
   isScrolled: false,
   setScrolled: (_: boolean) => {},
   handleScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => {},

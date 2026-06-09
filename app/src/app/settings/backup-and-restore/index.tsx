@@ -17,7 +17,6 @@ import {
 import {
   beginFeedImport,
   exportData,
-  FeedImport,
   importData,
   setBackupReminder,
 } from '@/store/settings';
@@ -29,6 +28,7 @@ import { List } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { HealthExportSwitch } from '@/components/smart/health-export-switch';
 import { RemoteData } from '@/models/remote';
+import { FeedBackupData } from '@/models/backup';
 
 export default function BackupAndRestorePage() {
   const { t } = useTranslate();
@@ -99,7 +99,7 @@ function ImportFeedDialog({ open, setOpen }: DialogProps) {
   const { t } = useTranslate();
   const { colors } = useAppTheme();
   const dispatch = useDispatch();
-  const [importedFeedState, setImportedFeedState] = useState<FeedImport>();
+  const [importedFeedState, setImportedFeedState] = useState<FeedBackupData>();
 
   const importFeedData = () => {
     if (!importedFeedState) {

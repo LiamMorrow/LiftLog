@@ -31,6 +31,7 @@
       "expo-localization",
       "expo-sharing",
       "./plugins/override-health-connect-min-version.js",
+      "./plugins/android-signing.js",
       [
         "expo-notifications",
         {
@@ -54,6 +55,8 @@
     },
     "scheme": "liftlog",
     "android": {
+      "versionCode": "project.hasProperty('BUILD_NUMBER') ? project.property('BUILD_NUMBER').toInteger() : 1",
+      "version": "${project.hasProperty('DISPLAY_VERSION') ? project.property('DISPLAY_VERSION') : \"1.0.0\"}",
       "package": "com.limajuice.liftlog",
       "softwareKeyboardLayoutMode": "pan",
       "permissions": [
@@ -92,18 +95,22 @@
           "ar",
           "cs",
           "de",
+          "en",
           "es",
           "fi",
           "fr",
+          "hu",
           "it",
+          "ko",
           "nl",
+          "pl",
           "pt",
           "ru",
           "sr",
           "sv",
+          "tr",
           "uk",
-          "hu",
-          "pl"
+          "zh_Hans"
         ]
       },
       "appleTeamId": "",

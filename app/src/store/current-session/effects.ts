@@ -30,10 +30,17 @@ import {
   getTimerInfo,
 } from '@/store/current-session/helpers';
 import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
-import { toDurationJSON } from '@/models/storage/versions/latest';
+import {
+  fromJsonString,
+  JsonString,
+  toDurationJSON,
+  toJsonString,
+} from '@/models/storage/versions/latest';
 import { Duration, OffsetDateTime } from '@js-joda/core';
 import { Dispatch } from '@reduxjs/toolkit';
 import { KeyValueStore } from '@/services/key-value-store';
+import { AnyVersionSessionJSON } from '@/models/storage/versions/any';
+import { MigratorVAnyToLatest } from '@/models/storage/versions/migrator';
 
 const storageKey = 'CurrentSessionStateV1';
 export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
@@ -51,6 +58,9 @@ export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
           case '2':
             await handleV2ProtoStorage(dispatch, keyValueStore, getState);
             break;
+          case '3':
+            await handleV3JsonStorage(dispatch, keyValueStore);
+            break;
         }
 
         dispatch(setIsHydrated(true));
@@ -66,7 +76,7 @@ export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
     async (
       _,
       {
-        originalState,
+        stateBeforeReduce,
         stateAfterReduce,
         dispatch,
         extra: { keyValueStore, logger },
@@ -74,15 +84,15 @@ export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
     ) => {
       const shouldPersistChanges =
         stateAfterReduce.currentSession.isHydrated &&
-        stateAfterReduce.currentSession !== originalState.currentSession;
+        stateAfterReduce.currentSession !== stateBeforeReduce.currentSession;
 
       const currentWorkoutSessionChanged =
-        originalState.currentSession.workoutSession !==
+        stateBeforeReduce.currentSession.workoutSession !==
         stateAfterReduce.currentSession.workoutSession;
       if (currentWorkoutSessionChanged) {
         dispatch(
           currentWorkoutSessionUpdated({
-            before: originalState.currentSession.workoutSession,
+            before: stateBeforeReduce.currentSession.workoutSession,
             after: stateAfterReduce.currentSession.workoutSession,
           }),
         );
@@ -90,16 +100,17 @@ export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
 
       if (shouldPersistChanges) {
         try {
-          const currentSessionStateDao = toCurrentSessionDao({
-            historySession: stateAfterReduce.currentSession.historySession,
-            workoutSession: stateAfterReduce.currentSession.workoutSession,
-          });
-          const bytes =
-            LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2.encode(
-              currentSessionStateDao,
-            ).finish();
-          await keyValueStore.setItem(`${storageKey}-Version`, '2');
-          await keyValueStore.setItem(storageKey, bytes);
+          await keyValueStore.setItem(`${storageKey}-Version`, '3');
+          if (stateAfterReduce.currentSession.workoutSession) {
+            await keyValueStore.setItem(
+              storageKey,
+              toJsonString(
+                stateAfterReduce.currentSession.workoutSession.toJSON(),
+              ),
+            );
+          } else {
+            await keyValueStore.removeItem(storageKey);
+          }
         } catch (e) {
           logger.error('Failed to persist current session state', e);
         }
@@ -239,19 +250,7 @@ export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
   );
 }
 
-function toCurrentSessionDao(model: {
-  workoutSession: Session | undefined;
-  historySession: Session | undefined;
-}): LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2 {
-  return new LiftLog.Ui.Models.CurrentSessionStateDao.CurrentSessionStateDaoV2({
-    historySession:
-      (model.historySession && model.historySession.toDao()) ?? null,
-    workoutSession:
-      (model.workoutSession && model.workoutSession.toDao()) ?? null,
-  });
-}
-
-export function fromCurrentSessionDao(
+function fromCurrentSessionDao(
   dao: LiftLog.Ui.Models.CurrentSessionStateDao.ICurrentSessionStateDaoV2,
 ) {
   return {
@@ -303,4 +302,26 @@ async function handleV2ProtoStorage(
       );
     }
   }
+}
+
+async function handleV3JsonStorage(
+  dispatch: Dispatch,
+  keyValueStore: KeyValueStore,
+) {
+  const bytes = (await keyValueStore.getItem(storageKey)) ?? 'null';
+  const currentSessionState = fromJsonString(
+    bytes as JsonString<AnyVersionSessionJSON | null>,
+  );
+  if (!currentSessionState) {
+    return;
+  }
+
+  dispatch(
+    setCurrentSession({
+      target: 'workoutSession',
+      session: Session.fromJSON(
+        MigratorVAnyToLatest.migrateSession(currentSessionState),
+      ),
+    }),
+  );
 }

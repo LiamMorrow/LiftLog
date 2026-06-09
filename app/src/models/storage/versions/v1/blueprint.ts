@@ -1,12 +1,15 @@
+import { version } from './version';
 import type { LocalDateJSON, DurationJSON, BigNumberJSON } from '../libs';
 
 export interface ProgramBlueprintJSON {
+  version?: typeof version;
   name: string;
   sessions: SessionBlueprintJSON[];
   lastEdited: LocalDateJSON;
 }
 
 export interface SessionBlueprintJSON {
+  version?: typeof version;
   name: string;
   exercises: ExerciseBlueprintJSON[];
   notes: string;
@@ -21,12 +24,12 @@ export type ExerciseBlueprintJSON =
 
 export type DistanceUnitJSON = 'metre' | 'yard' | 'mile' | 'kilometre';
 
-export type TimeCardioTargetJSON = {
+type TimeCardioTargetJSON = {
   type: 'time';
   value: DurationJSON;
 };
 
-export type DistanceCardioTargetJSON = {
+type DistanceCardioTargetJSON = {
   type: 'distance';
   value: DistanceJSON;
 };
@@ -77,6 +80,7 @@ export interface WeightedExerciseBlueprintJSON {
 }
 
 export interface RestJSON {
+  version?: typeof version;
   minRest: DurationJSON;
   maxRest: DurationJSON;
   failureRest: DurationJSON;

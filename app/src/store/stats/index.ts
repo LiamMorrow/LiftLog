@@ -15,7 +15,6 @@ interface StatsState {
   overallViewSessionName: string | undefined;
   overallViewTime: LocalDateRange | 'all-time';
   overallView: RemoteData<GranularStatisticView>;
-  pinnedExerciseStatistics: PinnedExerciseStatistic[];
 }
 
 export interface TimeTrackedStatistic<T> {
@@ -24,7 +23,7 @@ export interface TimeTrackedStatistic<T> {
 }
 
 // We use this to ensure that when showing multiple series with disparate data, we can ensure that the x axis points are properly aligned
-export interface OptionalTimeTrackedStatistic<T> {
+interface OptionalTimeTrackedStatistic<T> {
   dateTime: OffsetDateTime;
   value: T | undefined;
 }
@@ -45,10 +44,6 @@ export interface WeightedExerciseStatistics {
   max1RMPerSessionStatistics: WeightedStatisticOverTime;
   totalVolumeStatistics: WeightedStatisticOverTime;
   repsStatistics: RepsBreakdownStatistics;
-}
-
-export interface PinnedExerciseStatistic {
-  exerciseName: string;
 }
 
 export interface WeightedStatisticOverTime {
@@ -88,7 +83,6 @@ const initialState: StatsState = {
   overallViewSessionName: undefined,
   overallViewTime: { from: today.minusDays(90), to: today },
   overallView: RemoteData.notAsked(),
-  pinnedExerciseStatistics: [],
 };
 
 const statsSlice = createSlice({
@@ -113,30 +107,16 @@ const statsSlice = createSlice({
     setOverallViewSession(state, action: PayloadAction<string | undefined>) {
       state.overallViewSessionName = action.payload;
     },
-    setPinnedExerciseStats(
-      state,
-      action: PayloadAction<PinnedExerciseStatistic[]>,
-    ) {
-      state.pinnedExerciseStatistics = action.payload;
-    },
   },
   selectors: {
     selectOverallView: (state: StatsState) => state.overallView,
-    selectPinnedExerciseStats: (state: StatsState) =>
-      state.pinnedExerciseStatistics,
   },
 });
 
-export const {
-  setOverallStats,
-  setStatsIsDirty,
-  setOverallViewTime,
-  setOverallViewSession,
-  setPinnedExerciseStats,
-} = statsSlice.actions;
+export const { setOverallStats, setStatsIsDirty, setOverallViewTime } =
+  statsSlice.actions;
 
-export const { selectOverallView, selectPinnedExerciseStats } =
-  statsSlice.selectors;
+export const { selectOverallView } = statsSlice.selectors;
 export const selectExerciseView = createSelector(
   selectOverallView,
   (_, exercise: string) => exercise,

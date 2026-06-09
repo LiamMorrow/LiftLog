@@ -10,21 +10,6 @@ import {
   DistanceUnits,
   CardioExerciseSetBlueprint,
 } from '@/models/blueprint-models';
-import { RsaPublicKey, AesKey, RsaKeyPair } from '@/models/encryption-models';
-import {
-  FeedUserPOJO,
-  FeedUser,
-  FeedIdentityPOJO,
-  FeedIdentity,
-  FollowRequestPOJO,
-  FollowRequest,
-  FollowResponsePOJO,
-  FollowResponse,
-  SessionFeedItemPOJO,
-  SessionFeedItem,
-  RemovedSessionFeedItemPOJO,
-  RemovedSessionFeedItem,
-} from '@/models/feed-models';
 import { Weight } from '@/models/weight';
 import {
   Session,
@@ -48,11 +33,11 @@ function optional<T>(gen: fc.Arbitrary<T>): fc.Arbitrary<T | undefined> {
   return fc.option(gen, { nil: undefined });
 }
 
-export const BigNumberGenerator = fc
+const BigNumberGenerator = fc
   .tuple(fc.integer(), fc.nat({ max: 1_000_000_000 }))
   .map(([whole, fractional]) => new BigNumber(`${whole}.${fractional}`));
 
-export const WeightUnitGenerator = fc
+const WeightUnitGenerator = fc
   .boolean()
   .map((x) => (x ? 'kilograms' : 'pounds'));
 
@@ -60,7 +45,7 @@ export const WeightGenerator = fc
   .tuple(WeightUnitGenerator, BigNumberGenerator)
   .map(([unit, value]) => new Weight(value, unit));
 
-export const LocalDateGenerator = fc
+const LocalDateGenerator = fc
   .tuple(
     fc.integer({ min: 1900, max: 2100 }),
     fc.integer({ min: 1, max: 12 }),
@@ -68,11 +53,11 @@ export const LocalDateGenerator = fc
   )
   .map(([year, month, day]) => LocalDate.of(year, month, day));
 
-export const DurationGenerator = fc
+const DurationGenerator = fc
   .tuple(fc.integer({ min: 0 }), fc.integer({ min: 0 }))
   .map(([second, nano]) => Duration.ofSeconds(second).plusNanos(nano));
 
-export const LocalTimeGenerator = fc
+const LocalTimeGenerator = fc
   .tuple(
     fc.integer({ min: 0, max: 23 }),
     fc.integer({ min: 0, max: 59 }),
@@ -80,26 +65,19 @@ export const LocalTimeGenerator = fc
   )
   .map(([hour, minute, second]) => LocalTime.of(hour, minute, second));
 
-export const ZoneOffsetGenerator = fc.oneof(
+const ZoneOffsetGenerator = fc.oneof(
   fc.constant(ZoneOffset.UTC),
   fc.constant(ZoneOffset.ofHours(10)),
   fc.constant(ZoneOffset.ofHours(-6)),
 );
 
-export const OffsetDateTimeGenerator = fc
+const OffsetDateTimeGenerator = fc
   .tuple(LocalDateGenerator, LocalTimeGenerator, ZoneOffsetGenerator)
   .map(([date, time, zone]) => OffsetDateTime.of(date.atTime(time), zone));
-export const InstantGenerator = OffsetDateTimeGenerator.map((dt) =>
-  dt.toInstant(),
-);
 
-export const RestGenerator = fc.constantFrom(
-  Rest.short,
-  Rest.medium,
-  Rest.long,
-);
+const RestGenerator = fc.constantFrom(Rest.short, Rest.medium, Rest.long);
 
-export const WeightedExerciseBlueprintGenerator = fc
+const WeightedExerciseBlueprintGenerator = fc
   .record({
     type: fc.constant('WeightedExerciseBlueprint'),
     name: fc.string(),
@@ -141,7 +119,7 @@ const CardioExerciseSetBlueprintGenerator = fc
       ),
   );
 
-export const CardioExerciseBlueprintGenerator = fc
+const CardioExerciseBlueprintGenerator = fc
   .record({
     name: fc.string(),
     sets: fc.array(CardioExerciseSetBlueprintGenerator, { minLength: 1 }),
@@ -173,14 +151,14 @@ export const ProgramBlueprintGenerator = fc
   })
   .map(ProgramBlueprint.fromPOJO);
 
-export const RecordedSetGenerator = fc
+const RecordedSetGenerator = fc
   .record({
     repsCompleted: fc.integer({ min: 0, max: 100 }),
     completionDateTime: OffsetDateTimeGenerator,
   })
   .map((x) => new RecordedSet(x.repsCompleted, x.completionDateTime));
 
-export const PotentialSetGenerator = fc
+const PotentialSetGenerator = fc
   .record({
     set: fc.option(RecordedSetGenerator, {
       nil: undefined,
@@ -223,7 +201,7 @@ const RecordedCardioSetGenerator = fc
       ),
   );
 
-export const RecordedCardioExerciseGenerator = fc
+const RecordedCardioExerciseGenerator = fc
   .record({
     blueprint: CardioExerciseBlueprintGenerator,
     notes: optional(fc.string()),
@@ -231,7 +209,7 @@ export const RecordedCardioExerciseGenerator = fc
   })
   .map((x) => new RecordedCardioExercise(x.blueprint, x.sets, x.notes));
 
-export const RecordedWeightedExerciseGenerator = fc
+const RecordedWeightedExerciseGenerator = fc
   .record({
     blueprint: WeightedExerciseBlueprintGenerator,
     potentialSets: fc.array(PotentialSetGenerator, { maxLength: 10 }),
@@ -272,157 +250,3 @@ export const SessionGenerator = fc
         session.restTimerStartTime,
       ),
   );
-
-export const RsaPublicKeyGenerator = fc.record<RsaPublicKey>({
-  spkiPublicKeyBytes: fc
-    .array(fc.integer({ min: 0, max: 255 }), {
-      minLength: 256,
-      maxLength: 256,
-    })
-    .map((arr) => Uint8Array.from(arr)),
-});
-
-export const AesKeyGenerator = fc.record<AesKey>({
-  value: fc
-    .array(fc.integer({ min: 0, max: 255 }), {
-      minLength: 32,
-      maxLength: 32,
-    })
-    .map((arr) => Uint8Array.from(arr)),
-});
-
-export const RsaKeyPairGenerator = fc.record<RsaKeyPair>({
-  publicKey: RsaPublicKeyGenerator,
-  privateKey: fc.record({
-    pkcs8PrivateKeyBytes: fc
-      .array(fc.integer({ min: 0, max: 255 }), {
-        minLength: 2048,
-        maxLength: 2048,
-      })
-      .map((arr) => Uint8Array.from(arr)),
-  }),
-});
-
-export const FeedUserGenerator = fc
-  .record<FeedUserPOJO>({
-    type: fc.constant('FeedUser'),
-    id: fc.uuid(),
-    publicKey: RsaPublicKeyGenerator,
-    name: fc.option(fc.string(), { nil: undefined }),
-    currentPlan: fc.array(SessionBlueprintGenerator, {
-      maxLength: 5,
-    }),
-    profilePicture: fc.option(
-      fc
-        .array(fc.integer({ min: 0, max: 255 }), { maxLength: 1024 })
-        .map((arr) => Uint8Array.from(arr)),
-      { nil: undefined },
-    ),
-    aesKey: fc.option(AesKeyGenerator, { nil: undefined }),
-    followSecret: fc.option(fc.string(), { nil: undefined }),
-  })
-  .map(FeedUser.fromPOJO);
-
-export const FeedIdentityGenerator = fc
-  .record<FeedIdentityPOJO>({
-    type: fc.constant('FeedIdentity'),
-    id: fc.uuid(),
-    lookup: fc.string(),
-    aesKey: AesKeyGenerator,
-    rsaKeyPair: RsaKeyPairGenerator,
-    password: fc.string(),
-    name: fc.option(fc.string(), { nil: undefined }),
-    publishBodyweight: fc.boolean(),
-    publishPlan: fc.boolean(),
-    publishWorkouts: fc.boolean(),
-  })
-  .map(
-    (pojo) =>
-      new FeedIdentity(
-        pojo.id,
-        pojo.lookup,
-        pojo.aesKey,
-        pojo.rsaKeyPair,
-        pojo.password,
-        pojo.name,
-        pojo.publishBodyweight,
-        pojo.publishPlan,
-        pojo.publishWorkouts,
-      ),
-  );
-
-export const FollowRequestGenerator = fc
-  .record<FollowRequestPOJO>({
-    type: fc.constant('FollowRequest'),
-    userId: fc.uuid(),
-    name: fc.option(fc.string(), { nil: undefined }),
-  })
-  .map((pojo) => new FollowRequest(pojo.userId, pojo.name));
-
-export const FollowResponseGenerator = fc
-  .record<FollowResponsePOJO>({
-    type: fc.constant('FollowResponse'),
-    userId: fc.uuid(),
-    accepted: fc.boolean(),
-    aesKey: fc.option(AesKeyGenerator, { nil: undefined }),
-    followSecret: fc.option(fc.string(), { nil: undefined }),
-  })
-  .map(
-    (pojo) =>
-      new FollowResponse(
-        pojo.userId,
-        pojo.accepted,
-        pojo.aesKey,
-        pojo.followSecret,
-      ),
-  );
-
-export const SessionFeedItemGenerator = fc
-  .record<SessionFeedItemPOJO>({
-    type: fc.constant('SessionFeedItem'),
-    userId: fc.uuid(),
-    eventId: fc.uuid(),
-    timestamp: InstantGenerator,
-    expiry: InstantGenerator,
-    session: SessionGenerator,
-  })
-  .map(
-    (pojo) =>
-      new SessionFeedItem(
-        pojo.userId,
-        pojo.eventId,
-        pojo.timestamp,
-        pojo.expiry,
-        pojo.session,
-      ),
-  );
-
-export const RemovedSessionFeedItemGenerator = fc
-  .record<RemovedSessionFeedItemPOJO>({
-    type: fc.constant('REMOVED_SessionFeedItem'),
-    userId: fc.uuid(),
-    eventId: fc.uuid(),
-    timestamp: InstantGenerator,
-    expiry: InstantGenerator,
-    sessionId: fc.uuid(),
-  })
-  .map(
-    (pojo) =>
-      new RemovedSessionFeedItem(
-        pojo.userId,
-        pojo.eventId,
-        pojo.timestamp,
-        pojo.expiry,
-        pojo.sessionId,
-      ),
-  );
-
-export const SharedProgramBlueprintGenerator = fc.record({
-  program: ProgramBlueprintGenerator.map((x) => x.toPOJO()),
-  sharedWith: fc.array(
-    FeedUserGenerator.map((x) => x.toPOJO()),
-    {
-      maxLength: 10,
-    },
-  ),
-});

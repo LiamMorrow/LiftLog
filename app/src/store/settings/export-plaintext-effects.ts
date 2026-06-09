@@ -17,7 +17,7 @@ export function addExportPlaintextEffects(addEffect: AddEffectFn) {
     exportPlainText,
     async (
       { payload: { format } },
-      { getState, extra: { progressRepository, fileExportService } },
+      { extra: { progressRepository, fileExportService } },
     ) => {
       const sessions = progressRepository.getOrderedSessions();
       const now = LocalDateTime.now()

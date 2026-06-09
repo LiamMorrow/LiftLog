@@ -275,7 +275,6 @@
   "plan.will_be_updated.message": "Planen kommer att uppdateras med nuvarande träningspassets övningar.",
   "rating.enjoying.title": "Gillar du LiftLog?",
   "rating.enjoying_message.body": "Om ja, vill du lämna en {type} på {store}?",
-  "rest.between.label": "Vila mellan<em>{minTime}</em> och <em>{maxTime}</em>",
   "rest.failure.label": "Failure-vila",
   "rest.long.label": "Lång",
   "rest.max.label": "Max vila",

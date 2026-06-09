@@ -32,4 +32,3 @@ export const cancelHaptic = () => {
   module.cancelHaptic();
 };
 
-export default module;

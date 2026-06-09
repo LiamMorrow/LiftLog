@@ -1,13 +1,7 @@
-import { LiftLog } from '@/gen/proto';
 import { WeightedExerciseBlueprint } from '@/models/blueprint-models';
 import { TemporalComparer } from '@/models/comparers';
 import { RecordedExercise } from '@/models/session-models/recorded-exercise';
-import {
-  toDateOnlyDao,
-  toDecimalDao,
-  toStringValue,
-  toTimeOnlyDao,
-} from '@/models/storage/conversions.to-dao';
+
 import {
   PotentialSetJSON,
   RecordedSetJSON,
@@ -15,7 +9,7 @@ import {
   fromOffsetDateTimeJSON,
   toOffsetDateTimeJSON,
 } from '@/models/storage/versions/latest';
-import { Weight, WeightUnit, toWeightUnitDao } from '@/models/weight';
+import { Weight, WeightUnit } from '@/models/weight';
 import { Duration, OffsetDateTime } from '@js-joda/core';
 import Enumerable from 'linq';
 import { match } from 'ts-pattern';
@@ -164,15 +158,6 @@ export class RecordedWeightedExercise {
     };
   }
 
-  toDao(): LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2 {
-    return new LiftLog.Ui.Models.SessionHistoryDao.RecordedExerciseDaoV2({
-      exerciseBlueprint: this.blueprint.toDao(),
-      notes: toStringValue(this.notes),
-      type: LiftLog.Ui.Models.SessionBlueprintDao.ExerciseType.WEIGHTED,
-      potentialSets: this.potentialSets.map((x) => x.toDao()),
-    });
-  }
-
   get maxWeight(): Weight {
     return (
       this.potentialSets.reduce(
@@ -283,17 +268,6 @@ export class RecordedSet {
       completionDateTime: toOffsetDateTimeJSON(this.completionDateTime),
     };
   }
-
-  toDao(): LiftLog.Ui.Models.SessionHistoryDao.RecordedSetDaoV2 {
-    return new LiftLog.Ui.Models.SessionHistoryDao.RecordedSetDaoV2({
-      repsCompleted: this.repsCompleted,
-      completionDate: toDateOnlyDao(this.completionDateTime.toLocalDate()),
-      completionTime: toTimeOnlyDao(this.completionDateTime.toLocalTime()),
-      completionOffset: {
-        totalSeconds: this.completionDateTime.offset().totalSeconds(),
-      },
-    });
-  }
 }
 
 export class PotentialSet {
@@ -334,13 +308,5 @@ export class PotentialSet {
       set: this.set?.toJSON(),
       weight: this.weight.toJSON(),
     };
-  }
-
-  toDao(): LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2 {
-    return new LiftLog.Ui.Models.SessionHistoryDao.PotentialSetDaoV2({
-      recordedSet: this.set?.toDao() ?? null,
-      weightValue: toDecimalDao(this.weight.value),
-      weightUnit: toWeightUnitDao(this.weight.unit),
-    });
   }
 }

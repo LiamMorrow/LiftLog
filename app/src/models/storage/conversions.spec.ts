@@ -1,62 +1,42 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import fc from 'fast-check';
 import {
+  ProgramBlueprintGenerator,
   SessionBlueprintGenerator,
   SessionGenerator,
+  WeightGenerator,
 } from '@/models/storage/generators';
 import { LiftLog } from '@/gen/proto';
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { gunzipSync } from 'zlib';
 import { Weight } from '@/models/weight';
-import { SessionBlueprint } from '../blueprint-models';
+import { ProgramBlueprint, SessionBlueprint } from '../blueprint-models';
 import { Session } from '../session-models';
 import { ProtobufToJsonV1Migrator } from './versions/v1/protobuf-migrator';
-
-const Models = LiftLog.Ui.Models;
-
-interface ToDao {
-  toDao(): unknown;
-}
-
-const modelToDao = (x: ToDao) => x.toDao();
-
-const sessionBlueprintFromDao = (
-  dao: LiftLog.Ui.Models.SessionBlueprintDao.ISessionBlueprintDaoV2,
-): SessionBlueprint =>
-  SessionBlueprint.fromJSON(
-    ProtobufToJsonV1Migrator.migrateSessionBlueprint(dao),
-  );
-const sessionFromDao = (
-  dao: LiftLog.Ui.Models.SessionHistoryDao.ISessionDaoV2,
-): Session => Session.fromJSON(ProtobufToJsonV1Migrator.migrateSession(dao));
+import { fromJsonString, toJsonString } from '@/models/storage/versions/latest';
 
 describe('conversions', () => {
   describe.each`
-    name                  | protoType                                           | initialValueGenerator        | convertToDao  | convertFromDao             | assertEquals
-    ${'SessionBlueprint'} | ${Models.SessionBlueprintDao.SessionBlueprintDaoV2} | ${SessionBlueprintGenerator} | ${modelToDao} | ${sessionBlueprintFromDao} | ${toJSONEquals}
-    ${'Session'}          | ${Models.SessionHistoryDao.SessionDaoV2}            | ${SessionGenerator}          | ${modelToDao} | ${sessionFromDao}          | ${toJSONEquals}
+    type                | initialValueGenerator        | assertEquals
+    ${SessionBlueprint} | ${SessionBlueprintGenerator} | ${toJSONEquals}
+    ${Session}          | ${SessionGenerator}          | ${toJSONEquals}
+    ${ProgramBlueprint} | ${ProgramBlueprintGenerator} | ${toJSONEquals}
+    ${Weight}           | ${WeightGenerator}           | ${toJSONEquals}
   `(
-    'should convert back and forth between $name surviving an encoding',
-    ({
-      initialValueGenerator,
-      protoType,
-      convertToDao,
-      convertFromDao,
-      assertEquals,
-    }) => {
-      it('with protobuf', () => {
+    'should convert back and forth between $type.name surviving an encoding',
+    ({ initialValueGenerator, type, assertEquals }) => {
+      it('with json', () => {
         fc.assert(
           fc.property(
             initialValueGenerator as fc.Arbitrary<unknown>,
             (initialValue) => {
-              const converted = convertToDao(initialValue);
-              const encoded = protoType.encode(converted).finish();
-              const decoded = protoType.decode(encoded);
-              const convertedBack = convertFromDao(decoded);
+              const converted = (initialValue as ToJSON).toJSON();
+              const encoded = toJsonString(converted);
+              const convertedBack = (type as FromJSON).fromJSON(
+                fromJsonString(encoded),
+              );
 
               assertEquals(initialValue, convertedBack);
             },
@@ -72,7 +52,9 @@ describe('conversions', () => {
     );
     const decompressed = gunzipSync(compressedData);
     const decoded =
-      Models.SessionHistoryDao.SessionHistoryDaoV2.decode(decompressed);
+      LiftLog.Ui.Models.SessionHistoryDao.SessionHistoryDaoV2.decode(
+        decompressed,
+      );
     const sessions = fromSessionHistoryDao(decoded);
     const totalWeightLifted = sessions
       .values()
@@ -92,6 +74,10 @@ describe('conversions', () => {
 
 interface ToJSON {
   toJSON(): unknown;
+}
+
+interface FromJSON {
+  fromJSON(t: unknown): unknown;
 }
 
 function toJSONEquals(a: ToJSON, b: ToJSON) {

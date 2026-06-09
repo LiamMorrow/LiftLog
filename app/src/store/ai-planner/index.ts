@@ -12,7 +12,7 @@ export type ChatMessage = AiChatResponse & {
   isLoading?: boolean;
 };
 
-export type AppState = {
+type AppState = {
   isHydrated: boolean;
   plannerChat: ChatMessage[];
 };
@@ -61,13 +61,8 @@ export const initializeAiPlannerStateSlice = createAction(
   'initializeAiPlannerStateSlice',
 );
 
-export const {
-  setIsHydrated,
-  addMessage,
-  restartChat,
-  removeMessage,
-  updateMessage,
-} = aiPlannerSlice.actions;
+export const { setIsHydrated, addMessage, restartChat, updateMessage } =
+  aiPlannerSlice.actions;
 
 export const { selectIsLoadingAiPlannerMessage } = aiPlannerSlice.selectors;
 

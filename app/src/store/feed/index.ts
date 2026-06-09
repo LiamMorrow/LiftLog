@@ -18,7 +18,7 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 
-export type FeedState = {
+type FeedState = {
   isHydrated: boolean;
   identity: RemoteData<FeedIdentity>;
   feed: SessionUserEvent[];
@@ -153,7 +153,6 @@ export const {
   patchFeedState,
   setIsHydrated,
   setIdentity,
-  setFeed,
   setSharedFeedUser,
   setFollowRequests,
   setSharedItem,
@@ -264,7 +263,5 @@ export const resetFeedAccount = createAction<
 export const updateFeedIdentity = createAction<
   { updates: Partial<FeedIdentity> } & FeedAction
 >('updateFeedIdentity');
-
-export * from './conversions';
 
 export default feedSlice.reducer;

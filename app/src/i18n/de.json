@@ -234,7 +234,6 @@
   "plan.will_be_updated.message": "Der Plan wird mit der derzeitigen Übung der Session aktualisiert.",
   "rating.enjoying.title": "Gefällt dir LiftLog?",
   "rating.enjoying_message.body": "Falls ja, möchtest du dir eine Minute Zeit nehmen, um ein(e) {type} im {store} zu hinterlassen?",
-  "rest.between.label": "Pause zwischen <em>{minTime}</em> und <em>{maxTime}</em>",
   "rest.failure.label": "Pause bei Versagen",
   "rest.long.label": "Lang",
   "rest.max.label": "Max. Pause",

@@ -222,7 +222,6 @@
   "plan.will_be_updated.message": "Plan će biti ažuriran sa vežbama iz trenutne sesije.",
   "rating.enjoying.title": "Sviđa vam se LiftLog?",
   "rating.enjoying_message.body": "Ako da, imate li minut da ostavite {type} na {store}?",
-  "rest.between.label": "Odmor između <em>{minTime}</em> i <em>{maxTime}</em>",
   "rest.failure.label": "Neuspešni odmor",
   "rest.long.label": "Dugi odmor",
   "rest.max.label": "Max Odmor",

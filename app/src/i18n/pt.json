@@ -294,7 +294,6 @@
   "plan.will_be_updated.message": "O plano será atualizado com os exercícios do treino atual.",
   "rating.enjoying.title": "Curtindo o LiftLog?",
   "rating.enjoying_message.body": "Se sim, você poderia tirar um minuto para deixar uma {type} na {store}?",
-  "rest.between.label": "Descanso entre <em>{minTime}</em> e <em>{maxTime}</em>",
   "rest.failure.label": "Descanso após falha",
   "rest.long.label": "Longo",
   "rest.max.label": "Descanso máximo",

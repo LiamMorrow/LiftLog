@@ -1,7 +1,5 @@
-import { v4, stringify, parse } from 'uuid';
+import { v4, stringify } from 'uuid';
 
 export const uuid = v4;
 
 export const uuidStringify = stringify;
-
-export const uuidParse = parse;

@@ -6,7 +6,7 @@ const initialState: SessionEditorState = {
   editingExerciseIndex: undefined,
 };
 
-export type SessionEditorState = {
+type SessionEditorState = {
   sessionBlueprint: SessionBlueprint | undefined;
   editingExerciseIndex: number | undefined;
 };

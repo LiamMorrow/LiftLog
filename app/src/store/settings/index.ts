@@ -1,19 +1,14 @@
 import { LiftLog } from '@/gen/proto';
-import {
-  FeedIdentity,
-  FeedUser,
-  FollowerFeedUser,
-  FollowRequestInboxMessage,
-  SessionUserEvent,
-} from '@/models/feed-models';
+import { BackupData, FeedBackupData } from '@/models/backup';
 import { RemoteData } from '@/models/remote';
 import { WeightUnit } from '@/models/weight';
 import { DayOfWeek, Instant } from '@js-joda/core';
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { SQLiteDatabase } from 'expo-sqlite';
 
 export type ColorSchemeSeed = 'default' | `#${string}`;
 
-export type LastBackup = {
+type LastBackup = {
   lastSuccessfulRemoteBackupHash: string;
   lastBackupTime: Instant;
   settings: RemoteBackupSettings;
@@ -36,6 +31,7 @@ interface SettingsState {
   lastBackup: RemoteData<LastBackup, string>;
   backupReminder: boolean;
   colorSchemeSeed: ColorSchemeSeed;
+  trueBlackDarkTheme: boolean;
   preferredLanguage: string | undefined;
   notesExpandedByDefault: boolean;
   keepScreenAwakeDuringWorkout: boolean;
@@ -59,6 +55,7 @@ const initialState: SettingsState = {
   restNotifications: true,
   crashReportsEnabled: true,
   showPostWorkoutSummary: false,
+  trueBlackDarkTheme: false,
   welcomeWizardCompleted: false,
   proToken: undefined,
   remoteBackupSettings: {
@@ -115,6 +112,9 @@ const settingsSlice = createSlice({
     setShowPostWorkoutSummary(state, action: PayloadAction<boolean>) {
       state.showPostWorkoutSummary = action.payload;
     },
+    setTrueBlackDarkTheme(state, action: PayloadAction<boolean>) {
+      state.trueBlackDarkTheme = action.payload;
+    },
     setRemoteBackupSettings(
       state,
       action: PayloadAction<RemoteBackupSettings>,
@@ -156,19 +156,15 @@ export const initializeSettingsStateSlice = createAction(
 );
 export type PlaintextExportFormat = 'CSV' | 'JSON';
 
-export interface FeedImport {
-  identity: FeedIdentity;
-  feedItems: SessionUserEvent[];
-  followers: FollowerFeedUser[];
-  followed: FeedUser[];
-  followRequests: FollowRequestInboxMessage[];
-}
-
 export const importData = createAction('importData');
-export const importDataDao = createAction<{
+export const importDataSql = createAction<{ db: SQLiteDatabase }>(
+  'importDataSql',
+);
+export const importDataProto = createAction<{
   dao: LiftLog.Ui.Models.ExportedDataDao.ExportedDataDaoV2;
-}>('importDataDao');
-export const beginFeedImport = createAction<FeedImport>('beginFeedImport');
+}>('importDataProto');
+export const importBackupData = createAction<BackupData>('importBackupData');
+export const beginFeedImport = createAction<FeedBackupData>('beginFeedImport');
 export const exportData = createAction<{ includeFeed: boolean }>('exportData');
 
 export const exportPlainText = createAction<{ format: PlaintextExportFormat }>(
@@ -203,6 +199,7 @@ export const {
   setKeepScreenAwakeDuringWorkout,
   setExportToHealthAggregator,
   setShowPostWorkoutSummary,
+  setTrueBlackDarkTheme,
 } = settingsSlice.actions;
 
 export const { selectPreferredWeightUnit } = settingsSlice.selectors;

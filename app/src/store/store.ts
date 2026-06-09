@@ -17,10 +17,11 @@ import { statsReducer } from '@/store/stats';
 import { resolveServices, Services } from '@/services';
 import { aiPlannerReducer } from '@/store/ai-planner';
 import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
+import { SQLiteDatabase } from 'expo-sqlite';
 
-export function createStore(db: ExpoSQLiteDatabase) {
+export function createStore(db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
   const listenerMiddleware = createListenerMiddleware({
-    extra: (s: AppStore) => resolveServices(s, db),
+    extra: (s: AppStore) => resolveServices(s, db, expoDb),
   });
 
   const store = configureStore({
@@ -56,7 +57,7 @@ export function createStore(db: ExpoSQLiteDatabase) {
       dispatch: AppDispatch;
       getState: () => RootState;
       stateAfterReduce: RootState;
-      originalState: RootState;
+      stateBeforeReduce: RootState;
     },
   ) => void | Promise<void>;
 
@@ -82,7 +83,7 @@ export function createStore(db: ExpoSQLiteDatabase) {
         [actionPredicate].flat().some((x) => x.type === action.type),
       effect: async (action, listenerApi) => {
         const failureHandlers: (() => void)[] = [];
-        const originalState = listenerApi.getOriginalState() as RootState;
+        const stateBeforeReduce = listenerApi.getOriginalState() as RootState;
         const stateAfterReduce = listenerApi.getState() as RootState;
         const services = listenerApi.extra(store);
         try {
@@ -92,7 +93,7 @@ export function createStore(db: ExpoSQLiteDatabase) {
             dispatch: listenerApi.dispatch as any,
             getState: listenerApi.getState as () => RootState,
             onFail: (cb) => failureHandlers.push(cb),
-            originalState,
+            stateBeforeReduce,
             stateAfterReduce,
             extra: services,
           });
