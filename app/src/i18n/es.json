@@ -206,6 +206,7 @@
   "plan.will_be_updated.message": "El plan se actualizará con los ejercicios de la sesión actual.",
   "rating.enjoying.title": "¿Estás disfrutando LiftLog?",
   "rating.enjoying_message.body": "Si es así ¿te tomarías un minuto para dejar un {type} en {store}?",
+  "rest.between.label": "Descanse entre <em>{minTime}</em> y <em>{maxTime}</em>",
   "rest.failure.label": "Descanso por falla",
   "rest.long.label": "Largo",
   "rest.max.label": "Descanso máximo",

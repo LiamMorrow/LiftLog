@@ -297,6 +297,7 @@
   "plan.will_be_updated.message": "将当前训练更新至训练计划。",
   "rating.enjoying.title": "您是否喜欢 LiftLog？",
   "rating.enjoying_message.body": "可否占用几分钟时间在 {store} 中留下 {type}？",
+  "rest.between.label": "将 <em>{minTime}</em> 至 <em>{maxTime}</em> 进行重置",
   "rest.failure.label": "未完成的休息",
   "rest.long.label": "长",
   "rest.max.label": "最大休息",
