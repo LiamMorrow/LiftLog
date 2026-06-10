@@ -6,6 +6,7 @@ import {
 } from '@/models/blueprint-models';
 import { Weight, WeightUnit } from '@/models/weight';
 import {
+  EmptySession,
   PotentialSet,
   RecordedCardioExercise,
   RecordedCardioExerciseSet,
@@ -32,7 +33,8 @@ export class SessionService {
     const currentState = this.getState();
     const currentSession = currentState.currentSession.workoutSession;
 
-    if (!sessionBlueprints.length) {
+    const firstSessionBlueprint = sessionBlueprints[0];
+    if (!firstSessionBlueprint) {
       return;
     }
     await yieldToEventLoop();
@@ -46,7 +48,7 @@ export class SessionService {
     await yieldToEventLoop();
     if (!latestSession) {
       latestSession = this.createNewSession(
-        sessionBlueprints[0],
+        firstSessionBlueprint,
         latestExercises,
       );
       yield latestSession;
@@ -83,6 +85,9 @@ export class SessionService {
     );
     const nextBlueprint =
       sessionBlueprints[(lastBlueprintIndex + 1) % sessionBlueprints.length];
+    if (!nextBlueprint) {
+      return EmptySession.with({ id: uuid() });
+    }
 
     return this.createNewSession(nextBlueprint, latestRecordedExercises).with({
       bodyweight: previousSession.bodyweight,

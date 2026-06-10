@@ -72,7 +72,7 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
         await keyValueStore.setItem(builtInProgramsStorageKey, 'true');
       }
       if (!activePlanId || !getState().program.savedPrograms[activePlanId]) {
-        activePlanId = Object.keys(getState().program.savedPrograms)[0];
+        activePlanId = Object.keys(getState().program.savedPrograms)[0]!;
       }
 
       dispatch(setActivePlan({ activePlanId }));

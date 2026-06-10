@@ -216,7 +216,7 @@ export class EncryptionService {
     );
     const chunkedData: Uint8Array[] = [];
     for (let i = 0; i < data.dataChunks.length; i++) {
-      chunkedData.push(data.dataChunks[i]);
+      chunkedData.push(data.dataChunks[i]!);
     }
     const decryptedChunks = await Promise.all(
       chunkedData.map(async (chunk) => {

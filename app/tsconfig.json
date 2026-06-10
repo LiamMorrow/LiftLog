@@ -13,6 +13,7 @@
       "~/modules/*": ["./modules/*"]
     },
     "types": ["vitest"],
+    "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": false
   },
   "include": [

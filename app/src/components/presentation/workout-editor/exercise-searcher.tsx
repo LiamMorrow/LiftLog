@@ -117,6 +117,9 @@ function ExerciseIdSearchListItem(props: {
   onPress: (exercise: ExerciseDescriptor) => void;
 }) {
   const exercise = useAppSelectorWithArg(selectExerciseById, props.exerciseId);
+  if (!exercise) {
+    return <List.Item title={'Unknown'} />;
+  }
   return (
     <List.Item title={exercise.name} onPress={() => props.onPress(exercise)} />
   );

@@ -43,7 +43,7 @@ export function getCardioTimerInfo(
     currentBlockStartTime: toInstantJson(
       exerciseWithRunningTimer.sets[
         setIndex
-      ].currentBlockStartTime?.toInstant(),
+      ]?.currentBlockStartTime?.toInstant(),
     ),
     currentDuration: toDurationJSON(
       exerciseWithRunningTimer.duration ?? Duration.ZERO,

@@ -200,7 +200,7 @@ export function calculateStats(
         };
         exerciseStats.repsStatistics.breakdown[
           set.set.repsCompleted
-        ].numberOfSets += 1;
+        ]!.numberOfSets += 1;
       }
 
       // We'll use the last set for this

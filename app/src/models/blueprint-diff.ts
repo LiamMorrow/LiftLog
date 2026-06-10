@@ -368,11 +368,11 @@ function matchExercisesByName(
     // Match exercises with the same name by their relative position
     const matchCount = Math.min(oldIndices.length, newIndices.length);
     for (let i = 0; i < matchCount; i++) {
-      const oldIdx = oldIndices[i];
-      const newIdx = newIndices[i];
+      const oldIdx = oldIndices[i]!;
+      const newIdx = newIndices[i]!;
       matched.push({
-        oldExercise: oldExercises[oldIdx],
-        newExercise: newExercises[newIdx],
+        oldExercise: oldExercises[oldIdx]!,
+        newExercise: newExercises[newIdx]!,
         oldIndex: oldIdx,
         newIndex: newIdx,
       });
@@ -591,8 +591,8 @@ function diffCardioExercises(
   // Compare common sets (by position)
   const minLength = Math.min(oldSets.length, newSets.length);
   for (let i = 0; i < minLength; i++) {
-    const oldSet = oldSets[i];
-    const newSet = newSets[i];
+    const oldSet = oldSets[i]!;
+    const newSet = newSets[i]!;
 
     // Check if the set has any differences
     if (!oldSet.equals(newSet)) {
@@ -632,7 +632,7 @@ function diffCardioExercises(
       exerciseName,
       exerciseIndex,
       setIndex: i,
-      set: newSets[i],
+      set: newSets[i]!,
     });
   }
 
@@ -645,7 +645,7 @@ function diffCardioExercises(
       exerciseName,
       exerciseIndex,
       setIndex: i,
-      set: oldSets[i],
+      set: oldSets[i]!,
     });
   }
 
@@ -934,7 +934,7 @@ export function applySessionBlueprintDiff(
 
     if (originalIdx === -1) continue;
 
-    let exercise = exercises[originalIdx];
+    let exercise = exercises[originalIdx]!;
 
     for (const change of mod.changes) {
       exercise = match(change)
@@ -976,7 +976,7 @@ export function applySessionBlueprintDiff(
           if (!(exercise instanceof CardioExerciseBlueprint)) return exercise;
           const newSets = [...exercise.sets];
           if (c.setIndex < newSets.length) {
-            newSets[c.setIndex] = newSets[c.setIndex].with({
+            newSets[c.setIndex] = newSets[c.setIndex]!.with({
               target: c.newValue,
             });
           }
@@ -986,7 +986,7 @@ export function applySessionBlueprintDiff(
           if (!(exercise instanceof CardioExerciseBlueprint)) return exercise;
           const newSets = [...exercise.sets];
           if (c.setIndex < newSets.length) {
-            newSets[c.setIndex] = newSets[c.setIndex].with({
+            newSets[c.setIndex] = newSets[c.setIndex]!.with({
               [c.field]: c.newValue,
             });
           }
@@ -1065,7 +1065,7 @@ export function applySessionBlueprintDiff(
       if (currentIdx !== undefined && currentIdx !== reorder.newIndex) {
         const [exercise] = finalExercises.splice(currentIdx, 1);
         const targetIdx = Math.min(reorder.newIndex, finalExercises.length);
-        finalExercises.splice(targetIdx, 0, exercise);
+        finalExercises.splice(targetIdx, 0, exercise!);
 
         // Update the map
         finalExercises.forEach((ex, idx) => {

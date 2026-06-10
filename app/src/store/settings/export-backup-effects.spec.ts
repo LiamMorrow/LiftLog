@@ -34,7 +34,7 @@ describe('addExportBackupEffects', () => {
 
     expect(fileExportService.exportBytes).toHaveBeenCalledOnce();
     const [fileName, , contentType] =
-      fileExportService.exportBytes.mock.calls[0];
+      fileExportService.exportBytes.mock.calls[0]!;
     expect(fileName).toMatch(
       /^export\.liftlogbackup\.\d{8}_\d{6}\.sqlite\.gz$/,
     );
@@ -50,7 +50,7 @@ describe('addExportBackupEffects', () => {
 
     await testBed.dispatchHandled(exportData({ includeFeed: true }));
 
-    const [, bytes] = fileExportService.exportBytes.mock.calls[0];
+    const [, bytes] = fileExportService.exportBytes.mock.calls[0]!;
     expect(bytes).toBeInstanceOf(Uint8Array);
     expect(bytes.length).toBeGreaterThan(0);
   });

@@ -144,7 +144,10 @@ export class RecordedCardioExerciseSet {
 
     return this.with({ completionDateTime: newCompletionDateTime });
   }
-  equals(other: RecordedCardioExerciseSet): unknown {
+  equals(other: RecordedCardioExerciseSet | undefined): unknown {
+    if (!other) {
+      return false;
+    }
     return (
       ((this.completionDateTime &&
         other.completionDateTime &&
@@ -242,8 +245,12 @@ export class RecordedCardioExercise {
     setIndex: number,
     reducer: (s: RecordedCardioExerciseSet) => RecordedCardioExerciseSet,
   ) {
+    const existingSet = this.sets[setIndex];
+    if (!existingSet) {
+      throw new Error('Index out of bounds');
+    }
     return this.with({
-      sets: this.sets.with(setIndex, reducer(this.sets[setIndex])),
+      sets: this.sets.with(setIndex, reducer(existingSet)),
     });
   }
   withAllSets(

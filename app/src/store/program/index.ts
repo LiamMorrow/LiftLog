@@ -55,7 +55,7 @@ const programSlice = createSlice({
     ) {
       if (state.savedPrograms[action.payload.programId]) {
         state.savedPrograms[action.payload.programId] = {
-          ...state.savedPrograms[action.payload.programId],
+          ...state.savedPrograms[action.payload.programId]!,
           sessions: action.payload.sessionBlueprints,
         };
       }
@@ -63,17 +63,17 @@ const programSlice = createSlice({
 
     applyDiffToPlan(state, action: PayloadAction<PlanDiff>) {
       if (action.payload.type === 'add') {
-        state.savedPrograms[state.activePlanId].sessions.push(
+        state.savedPrograms[state.activePlanId]!.sessions.push(
           applySessionBlueprintDiff(
             EmptySession.blueprint,
             action.payload.diff,
           ),
         );
       } else if (action.payload.type === 'diff') {
-        state.savedPrograms[state.activePlanId].sessions[
+        state.savedPrograms[state.activePlanId]!.sessions[
           action.payload.sessionIndex
         ] = applySessionBlueprintDiff(
-          state.savedPrograms[state.activePlanId].sessions[
+          state.savedPrograms[state.activePlanId]!.sessions[
             action.payload.sessionIndex
           ] as SessionBlueprint,
           action.payload.diff,
@@ -165,8 +165,8 @@ const programSlice = createSlice({
         if (index > 0) {
           const sessions = [...program.sessions];
           [sessions[index - 1], sessions[index]] = [
-            sessions[index],
-            sessions[index - 1],
+            sessions[index]!,
+            sessions[index - 1]!,
           ];
           program.sessions = sessions;
         }
@@ -188,8 +188,8 @@ const programSlice = createSlice({
         if (index >= 0 && index < program.sessions.length - 1) {
           const sessions = [...program.sessions];
           [sessions[index], sessions[index + 1]] = [
-            sessions[index + 1],
-            sessions[index],
+            sessions[index + 1]!,
+            sessions[index]!,
           ];
           program.sessions = sessions;
         }
@@ -247,7 +247,7 @@ const programSlice = createSlice({
   },
   selectors: {
     selectActiveProgram: createSelector(
-      (state: ProgramState) => state.savedPrograms[state.activePlanId],
+      (state: ProgramState) => state.savedPrograms[state.activePlanId]!,
       ProgramBlueprint.fromPOJO,
     ),
 
@@ -264,7 +264,7 @@ const programSlice = createSlice({
     ),
     selectProgram: createSelector(
       [(state: ProgramState) => state.savedPrograms, (_, id: string) => id],
-      (programs, id) => ProgramBlueprint.fromPOJO(programs[id]),
+      (programs, id) => ProgramBlueprint.fromPOJO(programs[id]!),
     ),
     /**
      * Finds a unique name for a new workout in the current active plan.

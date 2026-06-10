@@ -10,6 +10,7 @@ import {
   toOffsetDateTimeJSON,
 } from '@/models/storage/versions/latest';
 import { Weight, WeightUnit } from '@/models/weight';
+import { IndexOutOfBoundsError } from '@/utils/index-out-of-bounds';
 import { Duration, OffsetDateTime } from '@js-joda/core';
 import Enumerable from 'linq';
 import { match } from 'ts-pattern';
@@ -47,6 +48,14 @@ export class RecordedWeightedExercise {
     );
   }
 
+  getSet(index: number): PotentialSet {
+    const set = this.potentialSets[index];
+    if (!set) {
+      throw new IndexOutOfBoundsError(index, this.potentialSets);
+    }
+    return set;
+  }
+
   equals(other: RecordedExercise | undefined) {
     if (!other) {
       return false;
@@ -64,7 +73,7 @@ export class RecordedWeightedExercise {
       this.potentialSets.length === other.potentialSets.length &&
       this.potentialSets.every((set, index) => {
         const otherSet = other.potentialSets[index];
-        return otherSet.equals(set);
+        return set.equals(otherSet);
       })
     );
   }
@@ -125,11 +134,12 @@ export class RecordedWeightedExercise {
   }
 
   withSet(setIndex: number, reducer: (s: PotentialSet) => PotentialSet) {
+    const existingSet = this.potentialSets[setIndex];
+    if (!existingSet) {
+      throw new IndexOutOfBoundsError(setIndex, this.potentialSets);
+    }
     return this.with({
-      potentialSets: this.potentialSets.with(
-        setIndex,
-        reducer(this.potentialSets[setIndex]),
-      ),
+      potentialSets: this.potentialSets.with(setIndex, reducer(existingSet)),
     });
   }
 

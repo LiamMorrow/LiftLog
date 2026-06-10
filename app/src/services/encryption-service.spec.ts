@@ -337,7 +337,7 @@ describe('EncryptionService', () => {
         data,
         rsaKeyPair.privateKey,
       );
-      signature[0] ^= 0xff; // flip bits in first byte
+      signature[0]! ^= 0xff; // flip bits in first byte
       const valid = await svc.verifyRsaPssSha256Async(
         data,
         signature,

@@ -187,7 +187,8 @@ function CardioExerciseEditor({
               updateExercise({
                 sets: [
                   ...exercise.sets,
-                  exercise.sets[exercise.sets.length - 1],
+                  exercise.sets[exercise.sets.length - 1] ??
+                    CardioExerciseSetBlueprint.empty(),
                 ],
               })
             }

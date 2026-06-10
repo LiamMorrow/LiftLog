@@ -28,9 +28,9 @@ describe('RecordedCardioExercise.withSet', () => {
     const dur = Duration.ofMinutes(5);
     const result = exercise.withSet(1, (s) => s.with({ duration: dur }));
 
-    expect(result.sets[0].duration).toBeUndefined();
-    expect(result.sets[1].duration).toEqual(dur);
-    expect(result.sets[2].duration).toBeUndefined();
+    expect(result.sets[0]!.duration).toBeUndefined();
+    expect(result.sets[1]!.duration).toEqual(dur);
+    expect(result.sets[2]!.duration).toBeUndefined();
   });
 });
 

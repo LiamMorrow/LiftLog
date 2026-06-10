@@ -31,19 +31,19 @@ describe('RecordedWeightedExercise.withWeight', () => {
 
   it('thisSet only changes the targeted set', () => {
     const result = exercise.withWeight(1, heavy, 'thisSet');
-    expect(result.potentialSets[0].weight).toEqual(
-      exercise.potentialSets[0].weight,
+    expect(result.potentialSets[0]!.weight).toEqual(
+      exercise.potentialSets[0]!.weight,
     );
-    expect(result.potentialSets[1].weight).toEqual(heavy);
-    expect(result.potentialSets[2].weight).toEqual(light);
+    expect(result.potentialSets[1]!.weight).toEqual(heavy);
+    expect(result.potentialSets[2]!.weight).toEqual(light);
   });
 
   it('uncompletedSets leaves completed sets alone', () => {
-    const originalCompletedWeight = exercise.potentialSets[0].weight;
+    const originalCompletedWeight = exercise.potentialSets[0]!.weight;
     const result = exercise.withWeight(1, heavy, 'uncompletedSets');
-    expect(result.potentialSets[0].weight).toEqual(originalCompletedWeight);
-    expect(result.potentialSets[1].weight).toEqual(heavy);
-    expect(result.potentialSets[2].weight).toEqual(heavy);
+    expect(result.potentialSets[0]!.weight).toEqual(originalCompletedWeight);
+    expect(result.potentialSets[1]!.weight).toEqual(heavy);
+    expect(result.potentialSets[2]!.weight).toEqual(heavy);
   });
 
   it('allSets updates every set including completed ones', () => {
@@ -83,6 +83,6 @@ describe('RecordedWeightedExercise.withNothingCompleted', () => {
     );
 
     const result = exercise.withNothingCompleted();
-    expect(result.potentialSets[0].weight).toEqual(weight);
+    expect(result.potentialSets[0]!.weight).toEqual(weight);
   });
 });

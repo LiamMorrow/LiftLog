@@ -39,6 +39,9 @@ export default function CopyExerciseDialog({
   const handleCopy = () => {
     if (selectedSessionIndex !== undefined) {
       const targetSession = program.sessions[selectedSessionIndex];
+      if (!targetSession) {
+        return;
+      }
 
       // Create a new session blueprint with the added exercise
       const newExercises = [...targetSession.exercises, exerciseBlueprint];

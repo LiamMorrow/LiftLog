@@ -127,6 +127,9 @@ export function addFeedItemEffects(addEffect: AddEffectFn) {
           await Promise.all(
             Object.entries(users).map(async ([userId, userResponse]) => {
               const originalUser = originalFollowedUsers[userId];
+              if (!originalUser) {
+                return undefined;
+              }
               if (originalUser.type === 'PendingFeedUser') {
                 return originalUser;
               }

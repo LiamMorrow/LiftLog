@@ -64,7 +64,7 @@ describe('diffSessionBlueprints', () => {
 
       expect(diff.hasChanges).toBe(true);
       expect(diff.sessionChanges).toHaveLength(1);
-      expect(diff.sessionChanges[0]).toMatchObject({
+      expect(diff.sessionChanges[0]!).toMatchObject({
         kind: 'sessionName',
         type: 'modified',
         oldValue: 'Workout A',
@@ -80,7 +80,7 @@ describe('diffSessionBlueprints', () => {
 
       expect(diff.hasChanges).toBe(true);
       expect(diff.sessionChanges).toHaveLength(1);
-      expect(diff.sessionChanges[0]).toMatchObject({
+      expect(diff.sessionChanges[0]!).toMatchObject({
         kind: 'sessionNotes',
         oldValue: 'Old notes',
         newValue: 'New notes',
@@ -119,12 +119,12 @@ describe('diffSessionBlueprints', () => {
 
       expect(diff.hasChanges).toBe(true);
       expect(diff.addedExercises).toHaveLength(1);
-      expect(diff.addedExercises[0]).toMatchObject({
+      expect(diff.addedExercises[0]!).toMatchObject({
         kind: 'exercise',
         type: 'added',
         newIndex: 1,
       });
-      expect(diff.addedExercises[0].exercise.name).toBe('Bench Press');
+      expect(diff.addedExercises[0]!.exercise.name).toBe('Bench Press');
     });
 
     it('should detect removed exercise', () => {
@@ -146,12 +146,12 @@ describe('diffSessionBlueprints', () => {
 
       expect(diff.hasChanges).toBe(true);
       expect(diff.removedExercises).toHaveLength(1);
-      expect(diff.removedExercises[0]).toMatchObject({
+      expect(diff.removedExercises[0]!).toMatchObject({
         kind: 'exercise',
         type: 'removed',
         oldIndex: 1,
       });
-      expect(diff.removedExercises[0].exercise.name).toBe('Bench Press');
+      expect(diff.removedExercises[0]!.exercise.name).toBe('Bench Press');
     });
   });
 
@@ -218,9 +218,9 @@ describe('diffSessionBlueprints', () => {
 
       expect(diff.hasChanges).toBe(true);
       expect(diff.modifiedExercises).toHaveLength(1);
-      expect(diff.modifiedExercises[0].exerciseName).toBe('Squat');
-      expect(diff.modifiedExercises[0].changes).toHaveLength(1);
-      expect(diff.modifiedExercises[0].changes[0]).toMatchObject({
+      expect(diff.modifiedExercises[0]!.exerciseName).toBe('Squat');
+      expect(diff.modifiedExercises[0]!.changes).toHaveLength(1);
+      expect(diff.modifiedExercises[0]!.changes[0]).toMatchObject({
         kind: 'exerciseSets',
         oldValue: 3,
         newValue: 5,
@@ -241,7 +241,7 @@ describe('diffSessionBlueprints', () => {
 
       const diff = diffSessionBlueprints(original, modified);
 
-      expect(diff.modifiedExercises[0].changes[0]).toMatchObject({
+      expect(diff.modifiedExercises[0]!.changes[0]).toMatchObject({
         kind: 'exerciseReps',
         oldValue: 10,
         newValue: 8,
@@ -285,8 +285,8 @@ describe('diffSessionBlueprints', () => {
       const diff = diffSessionBlueprints(original, modified);
 
       expect(diff.modifiedExercises).toHaveLength(1);
-      expect(diff.modifiedExercises[0].changes).toHaveLength(1);
-      expect(diff.modifiedExercises[0].changes[0]).toMatchObject({
+      expect(diff.modifiedExercises[0]!.changes).toHaveLength(1);
+      expect(diff.modifiedExercises[0]!.changes[0]).toMatchObject({
         kind: 'exerciseRest',
         oldValue: Rest.short,
         newValue: Rest.long,
@@ -307,8 +307,8 @@ describe('diffSessionBlueprints', () => {
 
       const diff = diffSessionBlueprints(original, modified);
 
-      expect(diff.modifiedExercises[0].changes).toHaveLength(2);
-      const kinds = diff.modifiedExercises[0].changes.map((c) => c.kind);
+      expect(diff.modifiedExercises[0]!.changes).toHaveLength(2);
+      const kinds = diff.modifiedExercises[0]!.changes.map((c) => c.kind);
       expect(kinds).toContain('exerciseSets');
       expect(kinds).toContain('exerciseReps');
     });
@@ -329,7 +329,7 @@ describe('diffSessionBlueprints', () => {
 
       const diff = diffSessionBlueprints(original, modified);
 
-      expect(diff.modifiedExercises[0].changes[0]).toMatchObject({
+      expect(diff.modifiedExercises[0]!.changes[0]).toMatchObject({
         kind: 'exerciseType',
         type: 'modified',
       });
@@ -403,7 +403,7 @@ describe('diffSessionBlueprints', () => {
 
       expect(diff.hasChanges).toBe(true);
       expect(diff.modifiedExercises).toHaveLength(1);
-      const addedSetChange = diff.modifiedExercises[0].changes.find(
+      const addedSetChange = diff.modifiedExercises[0]!.changes.find(
         (c) => c.kind === 'cardioSet' && c.type === 'added',
       );
       expect(addedSetChange).toMatchObject({
@@ -432,7 +432,7 @@ describe('diffSessionBlueprints', () => {
 
       const diff = diffSessionBlueprints(original, modified);
 
-      const removedSetChange = diff.modifiedExercises[0].changes.find(
+      const removedSetChange = diff.modifiedExercises[0]!.changes.find(
         (c) => c.kind === 'cardioSet' && c.type === 'removed',
       );
       expect(removedSetChange).toMatchObject({
@@ -457,7 +457,7 @@ describe('diffSessionBlueprints', () => {
       const diff = diffSessionBlueprints(original, modified);
 
       expect(diff.hasChanges).toBe(true);
-      const targetChange = diff.modifiedExercises[0].changes.find(
+      const targetChange = diff.modifiedExercises[0]!.changes.find(
         (c) => c.kind === 'exerciseTarget',
       );
       expect(targetChange).toMatchObject({
@@ -489,7 +489,7 @@ describe('diffSessionBlueprints', () => {
       const diff = diffSessionBlueprints(original, modified);
 
       expect(diff.hasChanges).toBe(true);
-      const trackingChange = diff.modifiedExercises[0].changes.find(
+      const trackingChange = diff.modifiedExercises[0]!.changes.find(
         (c) => c.kind === 'exerciseTracking',
       );
       expect(trackingChange).toMatchObject({
@@ -526,7 +526,7 @@ describe('diffSessionBlueprints', () => {
       const diff = diffSessionBlueprints(original, modified);
 
       expect(diff.hasChanges).toBe(true);
-      const targetChanges = diff.modifiedExercises[0].changes.filter(
+      const targetChanges = diff.modifiedExercises[0]!.changes.filter(
         (c) => c.kind === 'exerciseTarget',
       );
       expect(targetChanges).toHaveLength(2);
@@ -604,7 +604,7 @@ describe('applySessionBlueprintDiff', () => {
     const result = applySessionBlueprintDiff(original, diff);
 
     expect(result.exercises).toHaveLength(2);
-    expect(result.exercises[1].name).toBe('Bench Press');
+    expect(result.exercises[1]!.name).toBe('Bench Press');
   });
 
   it('should apply selected exercise removal', () => {
@@ -624,7 +624,7 @@ describe('applySessionBlueprintDiff', () => {
     const result = applySessionBlueprintDiff(original, diff);
 
     expect(result.exercises).toHaveLength(1);
-    expect(result.exercises[0].name).toBe('Squat');
+    expect(result.exercises[0]!.name).toBe('Squat');
   });
 
   it('should apply selected field change', () => {
@@ -643,7 +643,7 @@ describe('applySessionBlueprintDiff', () => {
 
     const result = applySessionBlueprintDiff(original, diff);
 
-    const exercise = result.exercises[0] as WeightedExerciseBlueprint;
+    const exercise = result.exercises[0]! as WeightedExerciseBlueprint;
     expect(exercise.sets).toBe(5);
   });
 
@@ -663,7 +663,7 @@ describe('applySessionBlueprintDiff', () => {
 
     const result = applySessionBlueprintDiff(original, diff);
 
-    const exercise = result.exercises[0] as WeightedExerciseBlueprint;
+    const exercise = result.exercises[0]! as WeightedExerciseBlueprint;
     expect(exercise.sets).toBe(5);
     expect(exercise.repsPerSet).toBe(8);
   });
@@ -708,7 +708,7 @@ describe('applySessionBlueprintDiff', () => {
     const diff = diffSessionBlueprints(original, modified);
     const result = applySessionBlueprintDiff(original, diff);
 
-    const exercise = result.exercises[0] as CardioExerciseBlueprint;
+    const exercise = result.exercises[0]! as CardioExerciseBlueprint;
     expect(exercise.sets).toHaveLength(2);
   });
 
@@ -727,8 +727,8 @@ describe('applySessionBlueprintDiff', () => {
     const diff = diffSessionBlueprints(original, modified);
     const result = applySessionBlueprintDiff(original, diff);
 
-    const exercise = result.exercises[0] as CardioExerciseBlueprint;
-    expect(exercise.sets[0].target).toMatchObject({
+    const exercise = result.exercises[0]! as CardioExerciseBlueprint;
+    expect(exercise.sets[0]!.target).toMatchObject({
       type: 'time',
       value: Duration.ofMinutes(45),
     });
@@ -749,8 +749,8 @@ describe('applySessionBlueprintDiff', () => {
     const diff = diffSessionBlueprints(original, modified);
     const result = applySessionBlueprintDiff(original, diff);
 
-    const exercise = result.exercises[0] as CardioExerciseBlueprint;
-    expect(exercise.sets[0].trackDistance).toBe(true);
+    const exercise = result.exercises[0]! as CardioExerciseBlueprint;
+    expect(exercise.sets[0]!.trackDistance).toBe(true);
   });
 });
 
@@ -772,7 +772,7 @@ describe('getChangeDescription', () => {
     const modified = new SessionBlueprint('Workout B', [], '');
 
     const diff = diffSessionBlueprints(original, modified);
-    const translatable = getChangeDescription(diff.sessionChanges[0]);
+    const translatable = getChangeDescription(diff.sessionChanges[0]!);
 
     expect(translatable.key).toBe('plan.diff.generic_two_value_change.body');
     expect(translatable.params).toEqual({
@@ -790,7 +790,7 @@ describe('getChangeDescription', () => {
     );
 
     const diff = diffSessionBlueprints(original, modified);
-    const translatable = getChangeDescription(diff.addedExercises[0]);
+    const translatable = getChangeDescription(diff.addedExercises[0]!);
 
     expect(translatable.key).toBe('plan.diff.exercise_added.body');
     expect(translatable.params).toEqual({ name: 'Squat' });
@@ -820,7 +820,7 @@ describe('getChangeDescription', () => {
     );
 
     const diff = diffSessionBlueprints(original, modified);
-    const setsChange = diff.modifiedExercises[0].changes.find(
+    const setsChange = diff.modifiedExercises[0]!.changes.find(
       (c) => c.kind === 'exerciseSets',
     );
     const translatable = getChangeDescription(setsChange!);

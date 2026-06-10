@@ -47,12 +47,12 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             key={index}
             maxReps={recordedExercise.blueprint.repsPerSet}
             onTap={() => {
-              const previousSet = recordedExercise.potentialSets[index].set;
+              const previousSet = set.set;
               const newExercise = recordedExercise.withCycledRepCount(
                 index,
                 timeProvider(),
               );
-              const newSet = newExercise.potentialSets[index].set;
+              const newSet = newExercise.getSet(index).set;
               updateExercise(newExercise);
               // We only want to reset the timer when switching between unfilled and filled
               // Otherwise, keep the same time

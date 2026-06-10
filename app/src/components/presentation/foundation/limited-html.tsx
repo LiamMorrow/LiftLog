@@ -43,7 +43,7 @@ export default function LimitedHtml({
         for (let i = 0; i < parts.length; i++) {
           segments.push({
             isHighlighted: !closed,
-            text: parts[i],
+            text: parts[i]!,
             insertBreakBefore: i > 0, // First part doesn't need a break before it
           });
         }
@@ -58,7 +58,7 @@ export default function LimitedHtml({
         for (let i = 0; i < parts.length; i++) {
           segments.push({
             isHighlighted: !closed,
-            text: parts[i],
+            text: parts[i]!,
             insertBreakBefore: i > 0, // First part doesn't need a break before it
           });
         }

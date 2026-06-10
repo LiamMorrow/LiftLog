@@ -66,8 +66,8 @@ const sessionEditorSlice = createSlice({
             ...state.sessionBlueprint.exercises,
           ] as ExerciseBlueprint[];
           [exercises[index - 1], exercises[index]] = [
-            exercises[index],
-            exercises[index - 1],
+            exercises[index]!,
+            exercises[index - 1]!,
           ];
           state.sessionBlueprint = state.sessionBlueprint.with({
             exercises,
@@ -85,8 +85,8 @@ const sessionEditorSlice = createSlice({
             ...state.sessionBlueprint.exercises,
           ] as ExerciseBlueprint[];
           [exercises[index], exercises[index + 1]] = [
-            exercises[index + 1],
-            exercises[index],
+            exercises[index + 1]!,
+            exercises[index]!,
           ];
           state.sessionBlueprint = state.sessionBlueprint.with({ exercises });
         }

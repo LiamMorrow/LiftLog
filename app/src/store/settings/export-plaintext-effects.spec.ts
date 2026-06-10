@@ -122,7 +122,7 @@ describe('export-plaintext-effects', () => {
 
       expect(fileExportService.exportBytes).toHaveBeenCalledOnce();
       const [fileName, , contentType] =
-        fileExportService.exportBytes.mock.calls[0];
+        fileExportService.exportBytes.mock.calls[0]!;
       expect(fileName).toMatch(/^liftlog-export\.\d{8}_\d{6}\.csv$/);
       expect(contentType).toBe('text/csv');
     });
@@ -144,7 +144,7 @@ describe('export-plaintext-effects', () => {
 
       await testBed.dispatchHandled(exportPlainText({ format: 'CSV' }));
 
-      const [, bytes] = fileExportService.exportBytes.mock.calls[0];
+      const [, bytes] = fileExportService.exportBytes.mock.calls[0]!;
       const csv = new TextDecoder().decode(bytes);
       const lines = csv.trim().split('\n');
       // 1 header + 6 data rows
@@ -167,7 +167,7 @@ describe('export-plaintext-effects', () => {
 
       await testBed.dispatchHandled(exportPlainText({ format: 'CSV' }));
 
-      const [, bytes] = fileExportService.exportBytes.mock.calls[0];
+      const [, bytes] = fileExportService.exportBytes.mock.calls[0]!;
       const csv = new TextDecoder().decode(bytes);
       expect(csv).toContain('Deadlift');
       expect(csv).toContain('180');
@@ -188,7 +188,7 @@ describe('export-plaintext-effects', () => {
 
       await testBed.dispatchHandled(exportPlainText({ format: 'CSV' }));
 
-      const [, bytes] = fileExportService.exportBytes.mock.calls[0];
+      const [, bytes] = fileExportService.exportBytes.mock.calls[0]!;
       const csv = new TextDecoder().decode(bytes);
       const lines = csv.trim().split('\n').filter(Boolean);
       // no data rows for cardio, and no header
@@ -218,7 +218,7 @@ describe('export-plaintext-effects', () => {
 
       await testBed.dispatchHandled(exportPlainText({ format: 'CSV' }));
 
-      const [, bytes] = fileExportService.exportBytes.mock.calls[0];
+      const [, bytes] = fileExportService.exportBytes.mock.calls[0]!;
       const csv = new TextDecoder().decode(bytes);
       const lines = csv.trim().split('\n').filter(Boolean);
       // header + 1 completed set
@@ -243,7 +243,7 @@ describe('export-plaintext-effects', () => {
 
       await testBed.dispatchHandled(exportPlainText({ format: 'CSV' }));
 
-      const [, bytes] = fileExportService.exportBytes.mock.calls[0];
+      const [, bytes] = fileExportService.exportBytes.mock.calls[0]!;
       const csv = new TextDecoder().decode(bytes);
       expect(csv).toContain('slow eccentric');
     });
@@ -264,7 +264,7 @@ describe('export-plaintext-effects', () => {
 
       await testBed.dispatchHandled(exportPlainText({ format: 'CSV' }));
 
-      const [, bytes] = fileExportService.exportBytes.mock.calls[0];
+      const [, bytes] = fileExportService.exportBytes.mock.calls[0]!;
       const csv = new TextDecoder().decode(bytes);
       const lines = csv.trim().split('\n').filter(Boolean);
       // header + 4 data rows (2 sets × 2 sessions)
@@ -291,7 +291,7 @@ describe('export-plaintext-effects', () => {
 
       expect(fileExportService.exportBytes).toHaveBeenCalledOnce();
       const [fileName, , contentType] =
-        fileExportService.exportBytes.mock.calls[0];
+        fileExportService.exportBytes.mock.calls[0]!;
       expect(fileName).toMatch(/^liftlog-export\.\d{8}_\d{6}\.json$/);
       expect(contentType).toBe('application/json');
     });
@@ -310,7 +310,7 @@ describe('export-plaintext-effects', () => {
 
       await testBed.dispatchHandled(exportPlainText({ format: 'JSON' }));
 
-      const [, bytes] = fileExportService.exportBytes.mock.calls[0];
+      const [, bytes] = fileExportService.exportBytes.mock.calls[0]!;
       const text = new TextDecoder().decode(bytes);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       expect(() => JSON.parse(text)).not.toThrow();
@@ -332,7 +332,7 @@ describe('export-plaintext-effects', () => {
 
       await testBed.dispatchHandled(exportPlainText({ format: 'JSON' }));
 
-      const [, bytes] = fileExportService.exportBytes.mock.calls[0];
+      const [, bytes] = fileExportService.exportBytes.mock.calls[0]!;
       const parsed = fromJsonBytes<SessionJSON[]>(bytes);
       expect(parsed).toHaveLength(2);
       expect(parsed).toMatchSnapshot();
@@ -352,9 +352,9 @@ describe('export-plaintext-effects', () => {
 
       await testBed.dispatchHandled(exportPlainText({ format: 'JSON' }));
 
-      const [, bytes] = fileExportService.exportBytes.mock.calls[0];
+      const [, bytes] = fileExportService.exportBytes.mock.calls[0]!;
       const [session] = fromJsonBytes<SessionJSON[]>(bytes);
-      expect(session.blueprint.exercises).toBeUndefined();
+      expect(session!.blueprint.exercises).toBeUndefined();
     });
 
     it('JSON output includes session id and recorded exercises', async () => {
@@ -372,10 +372,10 @@ describe('export-plaintext-effects', () => {
 
       await testBed.dispatchHandled(exportPlainText({ format: 'JSON' }));
 
-      const [, bytes] = fileExportService.exportBytes.mock.calls[0];
+      const [, bytes] = fileExportService.exportBytes.mock.calls[0]!;
       const [exported] = fromJsonBytes<SessionJSON[]>(bytes);
-      expect(exported.id).toBe(session.id);
-      expect(exported.recordedExercises).toHaveLength(1);
+      expect(exported!.id).toBe(session.id);
+      expect(exported!.recordedExercises).toHaveLength(1);
     });
   });
 

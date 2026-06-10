@@ -51,7 +51,7 @@ describe('Session supersets', () => {
       const nextExercise = session.nextExercise;
       expect(nextExercise).not.toBeNull();
       expect(nextExercise?.blueprint.name).toBe(
-        session.recordedExercises[0].blueprint.name,
+        session.recordedExercises[0]!.blueprint.name,
       );
     });
 
@@ -64,7 +64,7 @@ describe('Session supersets', () => {
         const nextExercise = session.nextExercise;
         expect(nextExercise).not.toBeNull();
         expect(nextExercise?.blueprint.name).toBe(
-          session.recordedExercises[0].blueprint.name,
+          session.recordedExercises[0]!.blueprint.name,
         );
       });
     });
@@ -78,7 +78,7 @@ describe('Session supersets', () => {
         const nextExercise = session.nextExercise;
         expect(nextExercise).not.toBeNull();
         expect(nextExercise?.blueprint.name).toBe(
-          session.recordedExercises[2].blueprint.name,
+          session.recordedExercises[2]!.blueprint.name,
         );
       });
     });
@@ -92,7 +92,7 @@ describe('Session supersets', () => {
         const nextExercise = session.nextExercise;
         expect(nextExercise).not.toBeNull();
         expect(nextExercise?.blueprint.name).toBe(
-          session.recordedExercises[1].blueprint.name,
+          session.recordedExercises[1]!.blueprint.name,
         );
       });
     });
@@ -106,7 +106,7 @@ describe('Session supersets', () => {
         const nextExercise = session.nextExercise;
         expect(nextExercise).not.toBeNull();
         expect(nextExercise?.blueprint.name).toBe(
-          session.recordedExercises[4].blueprint.name,
+          session.recordedExercises[4]!.blueprint.name,
         );
       });
     });
@@ -120,7 +120,7 @@ describe('Session supersets', () => {
         const nextExercise = session.nextExercise;
         expect(nextExercise).not.toBeNull();
         expect(nextExercise?.blueprint.name).toBe(
-          session.recordedExercises[5].blueprint.name,
+          session.recordedExercises[5]!.blueprint.name,
         );
       });
     });
@@ -134,7 +134,7 @@ describe('Session supersets', () => {
         const nextExercise = session.nextExercise;
         expect(nextExercise).not.toBeNull();
         expect(nextExercise?.blueprint.name).toBe(
-          session.recordedExercises[3].blueprint.name,
+          session.recordedExercises[3]!.blueprint.name,
         );
       });
     });
@@ -156,7 +156,7 @@ describe('Session supersets', () => {
       const nextExercise = session.nextExercise;
       expect(nextExercise).not.toBeNull();
       expect(nextExercise?.blueprint.name).toBe(
-        session.recordedExercises[0].blueprint.name,
+        session.recordedExercises[0]!.blueprint.name,
       );
     });
 
@@ -169,7 +169,7 @@ describe('Session supersets', () => {
         const nextExercise = session.nextExercise;
         expect(nextExercise).not.toBeNull();
         expect(nextExercise?.blueprint.name).toBe(
-          session.recordedExercises[1].blueprint.name,
+          session.recordedExercises[1]!.blueprint.name,
         );
       });
     });
@@ -183,7 +183,7 @@ describe('Session supersets', () => {
         const nextExercise = session.nextExercise;
         expect(nextExercise).not.toBeNull();
         expect(nextExercise?.blueprint.name).toBe(
-          session.recordedExercises[0].blueprint.name,
+          session.recordedExercises[0]!.blueprint.name,
         );
       });
     });
@@ -205,7 +205,7 @@ describe('Session supersets', () => {
       const nextExercise = session.nextExercise;
       expect(nextExercise).not.toBeNull();
       expect(nextExercise?.blueprint.name).toBe(
-        session.recordedExercises[0].blueprint.name,
+        session.recordedExercises[0]!.blueprint.name,
       );
     });
 
@@ -218,7 +218,7 @@ describe('Session supersets', () => {
         const nextExercise = session.nextExercise;
         expect(nextExercise).not.toBeNull();
         expect(nextExercise?.blueprint.name).toBe(
-          session.recordedExercises[0].blueprint.name,
+          session.recordedExercises[0]!.blueprint.name,
         );
       });
     });
@@ -232,7 +232,7 @@ describe('Session supersets', () => {
         const nextExercise = session.nextExercise;
         expect(nextExercise).not.toBeNull();
         expect(nextExercise?.blueprint.name).toBe(
-          session.recordedExercises[1].blueprint.name,
+          session.recordedExercises[1]!.blueprint.name,
         );
       });
     });
@@ -246,7 +246,7 @@ describe('Session supersets', () => {
         const nextExercise = session.nextExercise;
         expect(nextExercise).not.toBeNull();
         expect(nextExercise?.blueprint.name).toBe(
-          session.recordedExercises[2].blueprint.name,
+          session.recordedExercises[2]!.blueprint.name,
         );
       });
     });
@@ -302,7 +302,7 @@ describe('Session.withUpdatedDate', () => {
     const newDate = LocalDate.of(2025, 4, 10);
     const updated = session.withUpdatedDate(newDate);
     const updatedExercise = updated
-      .recordedExercises[0] as RecordedWeightedExercise;
+      .recordedExercises[0]! as RecordedWeightedExercise;
 
     // All completed sets should land on the new date
     const completedSets = updatedExercise.potentialSets.filter((s) => s.set);
@@ -314,10 +314,10 @@ describe('Session.withUpdatedDate', () => {
 
     // Times of day preserved
     expect(
-      updatedExercise.potentialSets[0].set!.completionDateTime.toLocalTime(),
+      updatedExercise.potentialSets[0]!.set!.completionDateTime.toLocalTime(),
     ).toEqual(t1.toLocalTime());
     expect(
-      updatedExercise.potentialSets[1].set!.completionDateTime.toLocalTime(),
+      updatedExercise.potentialSets[1]!.set!.completionDateTime.toLocalTime(),
     ).toEqual(t2.toLocalTime());
   });
 
@@ -368,11 +368,11 @@ describe('Session.withUpdatedDate', () => {
 
     const newDate = LocalDate.of(2025, 4, 12);
     const updated = session.withUpdatedDate(newDate);
-    const sets = (updated.recordedExercises[0] as RecordedWeightedExercise)
+    const sets = (updated.recordedExercises[0]! as RecordedWeightedExercise)
       .potentialSets;
 
-    const d0 = sets[0].set!.completionDateTime.toLocalDate();
-    const d1 = sets[1].set!.completionDateTime.toLocalDate();
+    const d0 = sets[0]!.set!.completionDateTime.toLocalDate();
+    const d1 = sets[1]!.set!.completionDateTime.toLocalDate();
 
     expect(d0.equals(newDate)).toBe(true);
     expect(d1.equals(newDate.plusDays(1))).toBe(true);
@@ -388,7 +388,7 @@ describe('Session.withUpdatedDate', () => {
     const session = makeSession([makeWeightedBlueprint()]);
     const newDate = LocalDate.of(2025, 6, 1);
     const updated = session.withUpdatedDate(newDate);
-    const sets = (updated.recordedExercises[0] as RecordedWeightedExercise)
+    const sets = (updated.recordedExercises[0]! as RecordedWeightedExercise)
       .potentialSets;
     expect(sets.every((s) => s.set === undefined)).toBe(true);
   });
@@ -406,8 +406,8 @@ describe('Session.withCycledExerciseReps', () => {
     const session = sessionWithOneExercise();
     const t = tick();
     const updated = session.withCycledExerciseReps(0, 0, t);
-    const set = (updated.recordedExercises[0] as RecordedWeightedExercise)
-      .potentialSets[0].set;
+    const set = (updated.recordedExercises[0]! as RecordedWeightedExercise)
+      .potentialSets[0]!.set;
     expect(set).toBeDefined();
     expect(set!.repsCompleted).toBe(10); // repsPerSet from makeWeightedBlueprint
   });
@@ -417,8 +417,8 @@ describe('Session.withCycledExerciseReps', () => {
     const t = tick();
     const after1 = session.withCycledExerciseReps(0, 0, t);
     const after2 = after1.withCycledExerciseReps(0, 0, tick());
-    const set = (after2.recordedExercises[0] as RecordedWeightedExercise)
-      .potentialSets[0].set;
+    const set = (after2.recordedExercises[0]! as RecordedWeightedExercise)
+      .potentialSets[0]!.set;
     expect(set!.repsCompleted).toBe(9);
   });
 
@@ -444,8 +444,8 @@ describe('Session.withCycledExerciseReps', () => {
     );
 
     const updated = session.withCycledExerciseReps(0, 0, tick());
-    const set = (updated.recordedExercises[0] as RecordedWeightedExercise)
-      .potentialSets[0].set;
+    const set = (updated.recordedExercises[0]! as RecordedWeightedExercise)
+      .potentialSets[0]!.set;
     expect(set).toBeUndefined();
   });
 
@@ -479,7 +479,7 @@ describe('Session.withCycledExerciseReps', () => {
     const session = makeSession([cardioBp]);
     const updated = session.withCycledExerciseReps(0, 0, tick());
     // Should return same session unchanged
-    expect(updated.recordedExercises[0]).toBe(session.recordedExercises[0]);
+    expect(updated.recordedExercises[0]!).toBe(session.recordedExercises[0]!);
   });
 });
 
@@ -493,13 +493,13 @@ describe('Session.withAddedExercise', () => {
 
     expect(updated.recordedExercises).toHaveLength(2);
     expect(updated.blueprint.exercises).toHaveLength(2);
-    expect(updated.recordedExercises[1].blueprint.name).toBe('Bench');
+    expect(updated.recordedExercises[1]!.blueprint.name).toBe('Bench');
   });
 
   it('uses kilograms when useImperialUnits is false', () => {
     const session = makeSession([]);
     const updated = session.withAddedExercise(makeWeightedBlueprint(), false);
-    const sets = (updated.recordedExercises[0] as RecordedWeightedExercise)
+    const sets = (updated.recordedExercises[0]! as RecordedWeightedExercise)
       .potentialSets;
     expect(sets.every((s) => s.weight.unit === 'kilograms')).toBe(true);
   });
@@ -507,7 +507,7 @@ describe('Session.withAddedExercise', () => {
   it('uses pounds when useImperialUnits is true', () => {
     const session = makeSession([]);
     const updated = session.withAddedExercise(makeWeightedBlueprint(), true);
-    const sets = (updated.recordedExercises[0] as RecordedWeightedExercise)
+    const sets = (updated.recordedExercises[0]! as RecordedWeightedExercise)
       .potentialSets;
     expect(sets.every((s) => s.weight.unit === 'pounds')).toBe(true);
   });
@@ -530,15 +530,15 @@ describe('Session.withEditedExercise', () => {
 
       const updated = session.withEditedExercise(0, cardioBp, false);
 
-      expect(updated.recordedExercises[0].type).toBe('RecordedCardioExercise');
-      expect(updated.recordedExercises[0].blueprint.name).toBe('Row');
+      expect(updated.recordedExercises[0]!.type).toBe('RecordedCardioExercise');
+      expect(updated.recordedExercises[0]!.blueprint.name).toBe('Row');
     });
 
     it('uses kilograms on type change when useImperialUnits is false', () => {
       const session = makeSession([makeCardioBlueprint()]);
       const weightedBp = makeWeightedBlueprint();
       const updated = session.withEditedExercise(0, weightedBp, false);
-      const sets = (updated.recordedExercises[0] as RecordedWeightedExercise)
+      const sets = (updated.recordedExercises[0]! as RecordedWeightedExercise)
         .potentialSets;
       expect(sets.every((s) => s.weight.unit === 'kilograms')).toBe(true);
     });
@@ -547,7 +547,7 @@ describe('Session.withEditedExercise', () => {
       const session = makeSession([makeCardioBlueprint()]);
       const weightedBp = makeWeightedBlueprint();
       const updated = session.withEditedExercise(0, weightedBp, true);
-      const sets = (updated.recordedExercises[0] as RecordedWeightedExercise)
+      const sets = (updated.recordedExercises[0]! as RecordedWeightedExercise)
         .potentialSets;
       expect(sets.every((s) => s.weight.unit === 'pounds')).toBe(true);
     });
@@ -578,7 +578,7 @@ describe('Session.withEditedExercise', () => {
         makeCardioBlueprint(),
         false,
       );
-      const cardio = updated.recordedExercises[0] as RecordedCardioExercise;
+      const cardio = updated.recordedExercises[0]! as RecordedCardioExercise;
       expect(cardio.sets.every((s) => s.completionDateTime === undefined)).toBe(
         true,
       );
@@ -610,11 +610,11 @@ describe('Session.withEditedExercise', () => {
       const editedBp = makeWeightedBlueprint('Squat (edited)'); // same set count (3)
       const updated = session.withEditedExercise(0, editedBp, false);
       const updatedExercise = updated
-        .recordedExercises[0] as RecordedWeightedExercise;
+        .recordedExercises[0]! as RecordedWeightedExercise;
 
       expect(updatedExercise.blueprint.name).toBe('Squat (edited)');
-      expect(updatedExercise.potentialSets[0].set?.repsCompleted).toBe(10);
-      expect(updatedExercise.potentialSets[1].set?.repsCompleted).toBe(9);
+      expect(updatedExercise.potentialSets[0]!.set?.repsCompleted).toBe(10);
+      expect(updatedExercise.potentialSets[1]!.set?.repsCompleted).toBe(9);
     });
 
     it('truncates potentialSets when set count decreases', () => {
@@ -650,7 +650,7 @@ describe('Session.withEditedExercise', () => {
       );
       const updated = session.withEditedExercise(0, fewerSetsBp, false);
       expect(
-        (updated.recordedExercises[0] as RecordedWeightedExercise)
+        (updated.recordedExercises[0]! as RecordedWeightedExercise)
           .potentialSets,
       ).toHaveLength(2);
     });
@@ -695,16 +695,16 @@ describe('Session.withEditedExercise', () => {
         '',
       );
       const updated = session.withEditedExercise(0, moreSets, false);
-      const sets = (updated.recordedExercises[0] as RecordedWeightedExercise)
+      const sets = (updated.recordedExercises[0]! as RecordedWeightedExercise)
         .potentialSets;
 
       expect(sets).toHaveLength(4);
       // New slots should be seeded with maxWeight
-      expect(sets[2].weight).toEqual(heavyWeight);
-      expect(sets[3].weight).toEqual(heavyWeight);
+      expect(sets[2]!.weight).toEqual(heavyWeight);
+      expect(sets[3]!.weight).toEqual(heavyWeight);
       // New slots should be uncompleted
-      expect(sets[2].set).toBeUndefined();
-      expect(sets[3].set).toBeUndefined();
+      expect(sets[2]!.set).toBeUndefined();
+      expect(sets[3]!.set).toBeUndefined();
     });
   });
 
@@ -727,10 +727,10 @@ describe('Session.withEditedExercise', () => {
 
       const newBp = makeCardioBlueprint(2);
       const updated = session.withEditedExercise(0, newBp, false);
-      const cardio = updated.recordedExercises[0] as RecordedCardioExercise;
+      const cardio = updated.recordedExercises[0]! as RecordedCardioExercise;
 
       // Existing duration should survive the blueprint swap
-      expect(cardio.sets[0].duration?.equals(dur)).toBe(true);
+      expect(cardio.sets[0]!.duration?.equals(dur)).toBe(true);
     });
 
     it('new sets beyond the previous count start empty', () => {
@@ -753,11 +753,11 @@ describe('Session.withEditedExercise', () => {
 
       const expandedBp = makeCardioBlueprint(3);
       const updated = session.withEditedExercise(0, expandedBp, false);
-      const cardio = updated.recordedExercises[0] as RecordedCardioExercise;
+      const cardio = updated.recordedExercises[0]! as RecordedCardioExercise;
 
       expect(cardio.sets).toHaveLength(3);
-      expect(cardio.sets[1].duration).toBeUndefined();
-      expect(cardio.sets[2].duration).toBeUndefined();
+      expect(cardio.sets[1]!.duration).toBeUndefined();
+      expect(cardio.sets[2]!.duration).toBeUndefined();
     });
 
     it('uses the new set blueprint even when carrying forward existing data', () => {
@@ -786,10 +786,10 @@ describe('Session.withEditedExercise', () => {
         '',
       );
       const updated = session.withEditedExercise(0, newCardioBp, false);
-      const cardio = updated.recordedExercises[0] as RecordedCardioExercise;
+      const cardio = updated.recordedExercises[0]! as RecordedCardioExercise;
 
       // Blueprint on the set should reflect the new definition, not the old one
-      expect(cardio.sets[0].blueprint.trackDistance).toBe(true);
+      expect(cardio.sets[0]!.blueprint.trackDistance).toBe(true);
     });
   });
 
@@ -801,6 +801,6 @@ describe('Session.withEditedExercise', () => {
     const editedBp = makeWeightedBlueprint('Deadlift');
     const updated = session.withEditedExercise(0, editedBp, false);
 
-    expect(updated.recordedExercises[1].blueprint.name).toBe('Bench');
+    expect(updated.recordedExercises[1]!.blueprint.name).toBe('Bench');
   });
 });

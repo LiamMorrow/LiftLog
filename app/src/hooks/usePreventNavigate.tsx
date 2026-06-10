@@ -35,8 +35,8 @@ export function PreventNavigateProvider({
   const getActive = useCallback((): Entry | null => {
     // Last entry in stack where prevent is true = deepest active consumer
     for (let i = stackRef.current.length - 1; i >= 0; i--) {
-      if (stackRef.current[i].entry.prevent) {
-        return stackRef.current[i].entry;
+      if (stackRef.current[i]!.entry.prevent) {
+        return stackRef.current[i]!.entry;
       }
     }
     return null;

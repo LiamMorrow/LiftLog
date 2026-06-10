@@ -32,6 +32,7 @@ import {
   PotentialSet,
   RecordedWeightedExercise,
 } from '@/models/session-models/recorded-weighted-exercise';
+import { IndexOutOfBoundsError } from '@/utils/index-out-of-bounds';
 
 export class Session {
   constructor(
@@ -158,6 +159,9 @@ export class Session {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let session: Session = this;
     const existingExercise = session.recordedExercises[exerciseIndex];
+    if (!existingExercise) {
+      throw new IndexOutOfBoundsError(exerciseIndex, session.recordedExercises);
+    }
 
     session = session.with({
       blueprint: session.blueprint.with({
@@ -177,7 +181,7 @@ export class Session {
       );
     } else {
       const weightedExistingExercise =
-        session.recordedExercises[exerciseIndex].type ===
+        session.recordedExercises[exerciseIndex]!.type ===
         'RecordedWeightedExercise'
           ? session.recordedExercises[exerciseIndex]
           : undefined;
@@ -192,7 +196,7 @@ export class Session {
             )
               .select(
                 (index) =>
-                  weightedExistingExercise.potentialSets[index] ??
+                  weightedExistingExercise.potentialSets.at(index) ??
                   new PotentialSet(
                     undefined,
                     weightedExistingExercise.maxWeight,
@@ -204,7 +208,7 @@ export class Session {
       }
 
       const cardioExistingExercise =
-        session.recordedExercises[exerciseIndex].type ===
+        session.recordedExercises[exerciseIndex]!.type ===
         'RecordedCardioExercise'
           ? session.recordedExercises[exerciseIndex]
           : undefined;
@@ -328,6 +332,9 @@ export class Session {
     time: OffsetDateTime,
   ): Session {
     const weightedRecorded = this.recordedExercises[exerciseIndex];
+    if (!weightedRecorded) {
+      throw new IndexOutOfBoundsError(exerciseIndex, this.recordedExercises);
+    }
     if (weightedRecorded.type !== 'RecordedWeightedExercise') {
       return this;
     }
@@ -462,7 +469,7 @@ export class Session {
         recordedExercises[indexToJumpBackTo] instanceof
           RecordedWeightedExercise &&
         (
-          recordedExercises[indexToJumpBackTo]
+          recordedExercises[indexToJumpBackTo]!
             .blueprint as WeightedExerciseBlueprint
         ).supersetWithNext
       ) {
@@ -474,7 +481,7 @@ export class Session {
       // Now jump to the first exercise which has remaining sets in the chain
       while (
         indexToJumpBackTo < recordedExercises.length &&
-        recordedExercises[indexToJumpBackTo].isComplete
+        recordedExercises[indexToJumpBackTo]!.isComplete
       ) {
         indexToJumpBackTo++;
       }

@@ -269,7 +269,7 @@ describe('calculateStats', () => {
 
       expect(result.weightedExerciseStats).toHaveLength(1);
       expect(
-        result.weightedExerciseStats[0].maxLiftedPerSessionStatistics
+        result.weightedExerciseStats[0]!.maxLiftedPerSessionStatistics
           .statistics,
       ).toHaveLength(2);
     });
@@ -282,7 +282,7 @@ describe('calculateStats', () => {
       const s2 = makeSession(LocalDate.of(2024, 1, 10), 'Squat', 100, 8, 3);
 
       const result = calculateStats([s1, s2], 'kilograms', makeRange(from, to));
-      const squat = result.weightedExerciseStats[0];
+      const squat = result.weightedExerciseStats[0]!;
 
       expect(squat.setsPerWeek).toBeCloseTo(3, 5);
     });
@@ -298,7 +298,7 @@ describe('calculateStats', () => {
         'kilograms',
         makeRange(date, date.plusDays(14)),
       );
-      const squat = result.weightedExerciseStats[0];
+      const squat = result.weightedExerciseStats[0]!;
 
       expect(
         squat.maxLiftedPerSessionStatistics.maxValue.value.toNumber(),
@@ -318,10 +318,10 @@ describe('calculateStats', () => {
         'kilograms',
         makeRange(date, date),
       );
-      const dl = result.weightedExerciseStats[0];
+      const dl = result.weightedExerciseStats[0]!;
 
       expect(
-        dl.totalVolumeStatistics.statistics[0].value.value.toNumber(),
+        dl.totalVolumeStatistics.statistics[0]!.value.value.toNumber(),
       ).toBe(1500);
     });
   });

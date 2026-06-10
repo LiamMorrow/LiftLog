@@ -14,6 +14,9 @@ export class FilePickerService {
       return undefined;
     }
     const pickedItem = picked.assets[0];
+    if (!pickedItem) {
+      return undefined;
+    }
     const fileBytes = new File(pickedItem.uri).bytes();
     return { name: pickedItem.name, bytes: await fileBytes };
   }

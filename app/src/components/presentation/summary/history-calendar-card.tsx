@@ -187,8 +187,8 @@ export default function HistoryCalendarCard({
     .flat()
     .reduce(
       (acc, cur) => {
-        if (acc[acc.length - 1].length === 7) acc.push([]);
-        acc[acc.length - 1].push(cur);
+        if (acc[acc.length - 1]!.length === 7) acc.push([]);
+        acc[acc.length - 1]!.push(cur);
         return acc;
       },
       [[]] as ReactNode[][],
