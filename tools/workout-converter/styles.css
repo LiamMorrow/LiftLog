@@ -1,0 +1,146 @@
+:root {
+  --bg-1: #f7f6ef;
+  --bg-2: #e7e4d5;
+  --ink: #1d1f1a;
+  --muted: #4d5245;
+  --panel: rgba(255, 255, 255, 0.72);
+  --stroke: rgba(50, 58, 44, 0.2);
+  --accent: #2f6a48;
+  --accent-2: #8f3e20;
+  --warn: #8f3e20;
+  --ok: #2f6a48;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  font: 16px/1.45 "Avenir Next", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at 20% 10%, #f3efd7 0%, transparent 36%),
+    radial-gradient(circle at 90% 90%, #dddec7 0%, transparent 34%),
+    linear-gradient(145deg, var(--bg-1), var(--bg-2));
+}
+
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+.hero {
+  margin-bottom: 1rem;
+}
+
+.hero h1 {
+  margin: 0 0 0.5rem;
+  font: 700 2rem/1.1 "Avenir Next Condensed", "Avenir Next", sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.hero p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--stroke);
+  backdrop-filter: blur(3px);
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 10px 35px rgba(30, 39, 28, 0.08);
+}
+
+.panel h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.button {
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(120deg, var(--accent), #1e4a33);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+}
+
+.button.secondary {
+  background: #ece8db;
+  color: #243026;
+  border: 1px solid var(--stroke);
+}
+
+.button:hover {
+  filter: brightness(1.04);
+}
+
+textarea {
+  width: 100%;
+  min-height: 420px;
+  border: 1px solid var(--stroke);
+  border-radius: 10px;
+  padding: 0.8rem;
+  resize: vertical;
+  font: 13px/1.4 "SF Mono", Menlo, Monaco, monospace;
+  background: #fffef9;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+code {
+  font-size: 0.87em;
+}
+
+.status {
+  margin-top: 0.65rem;
+  color: var(--ok);
+  min-height: 1.4rem;
+}
+
+.status.error {
+  color: var(--warn);
+}
+
+.warnings {
+  margin: 0.4rem 0 0;
+  padding-left: 1rem;
+  color: var(--warn);
+  font-size: 0.9rem;
+}
+
+#fileInput {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  textarea {
+    min-height: 300px;
+  }
+}

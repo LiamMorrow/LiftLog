@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LiftLog Workout Converter</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="panel hero">
+        <h1>LiftLog Workout Converter</h1>
+        <p>
+          Paste or upload workout JSON from AI tools or other apps, then export it
+          as LiftLog plan import JSON.
+        </p>
+      </section>
+
+      <section class="grid">
+        <article class="panel">
+          <h2>Source JSON</h2>
+          <div class="actions">
+            <label class="button secondary" for="fileInput">Upload JSON</label>
+            <input id="fileInput" type="file" accept="application/json,.json" />
+            <button id="convertButton" class="button">Convert</button>
+            <button id="clearButton" class="button secondary">Clear</button>
+          </div>
+          <textarea
+            id="sourceJson"
+            spellcheck="false"
+            placeholder="Paste source JSON here..."
+          ></textarea>
+          <p class="hint">
+            Supported input variations include keys like
+            <code>program_name</code>, <code>days</code>, <code>workouts</code>,
+            <code>sessions</code>, <code>reps</code>, and <code>duration</code>.
+          </p>
+        </article>
+
+        <article class="panel">
+          <h2>LiftLog Import JSON</h2>
+          <div class="actions">
+            <button id="copyButton" class="button secondary">Copy</button>
+            <button id="downloadButton" class="button">Download</button>
+          </div>
+          <textarea id="outputJson" spellcheck="false" readonly></textarea>
+          <div id="status" class="status" aria-live="polite"></div>
+          <ul id="warnings" class="warnings"></ul>
+        </article>
+      </section>
+    </main>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
