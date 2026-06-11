@@ -17,7 +17,7 @@ body:
     validations:
       required: true
   - type: textarea
-    id: description
+    id: logs
     attributes:
       label: Logs
       description: Your log files if applicable. You can copy these from the settings page.
