@@ -3,12 +3,13 @@ import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import ProgramListItem from '@/components/smart/program-list-item';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { useAppSelector } from '@/store';
-import { savePlan, selectAllPrograms } from '@/store/program';
+import { importPlanFromFile, savePlan, selectAllPrograms } from '@/store/program';
 import { uuid } from '@/utils/uuid';
 import { LocalDate } from '@js-joda/core';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { FAB, List } from 'react-native-paper';
+import { View } from 'react-native';
 
 import { useDispatch } from 'react-redux';
 
@@ -34,16 +35,30 @@ export default function ProgramList() {
     );
     push(`/settings/manage-workouts/${programId}/`);
   };
+
+  const importProgram = () => {
+    dispatch(importPlanFromFile());
+  };
+
   const floatingBottomContainer = (
     <FloatingBottomContainer
       fab={
-        <FAB
-          variant="surface"
-          size="small"
-          icon={'add'}
-          label={t('plan.add.button')}
-          onPress={addProgram}
-        />
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <FAB
+            variant="surface"
+            size="small"
+            icon={'upload'}
+            label={t('plan.import.button')}
+            onPress={importProgram}
+          />
+          <FAB
+            variant="surface"
+            size="small"
+            icon={'add'}
+            label={t('plan.add.button')}
+            onPress={addProgram}
+          />
+        </View>
       }
     />
   );

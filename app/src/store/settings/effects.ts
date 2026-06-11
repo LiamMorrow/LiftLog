@@ -119,17 +119,27 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
       dispatch(setShowPostWorkoutSummary(showPostWorkoutSummary));
       dispatch(setTrueBlackDarkTheme(trueBlackDarkTheme));
 
-      if (Platform.OS === 'ios') {
-        Purchases.configure({
-          apiKey: process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY!,
-        });
-      } else if (Platform.OS === 'android') {
-        Purchases.configure({
-          apiKey: process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY!,
-        });
+      let purchasesConfigured = false;
+      const revenueCatApiKey = getRevenueCatApiKey();
+
+      if (revenueCatApiKey) {
+        try {
+          Purchases.configure({
+            apiKey: revenueCatApiKey,
+          });
+          purchasesConfigured = true;
+        } catch (error) {
+          logger.error('Failed to configure RevenueCat', error);
+        }
+      } else if (Platform.OS !== 'web') {
+        logger.warn(
+          `RevenueCat API key missing for ${Platform.OS}; purchases disabled for this session`,
+          {},
+        );
       }
+
       // migrate pro token to a revenuecat
-      if (proToken && !proToken.startsWith('$RCAnonymousID')) {
+      if (purchasesConfigured && proToken && !proToken.startsWith('$RCAnonymousID')) {
         try {
           const customerInfo = await Purchases.getCustomerInfo();
           await Purchases.syncPurchases();
@@ -350,4 +360,16 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
   addExportBackupEffects(addEffect);
   addImportBackupEffects(addEffect);
   addRemoteBackupEffects(addEffect);
+}
+
+function getRevenueCatApiKey(): string | undefined {
+  const apiKey =
+    Platform.OS === 'ios'
+      ? process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY
+      : Platform.OS === 'android'
+        ? process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY
+        : undefined;
+
+  const trimmedApiKey = apiKey?.trim();
+  return trimmedApiKey ? trimmedApiKey : undefined;
 }
