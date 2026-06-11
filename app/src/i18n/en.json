@@ -313,6 +313,8 @@
   "settings.app_info.title": "App info",
   "settings.bug_report.subtitle": "Let us know when you encounter a bug",
   "settings.bug_report.title": "Bug report",
+  "settings.copy_logs.subtitle": "Copy your logs for a bug report",
+  "settings.copy_logs.title": "Copy logs",
   "settings.configuration.title": "Configuration",
   "settings.feature_request.subtitle": "Suggest a new feature that you think LiftLog should have!",
   "settings.feature_request.title": "Feature request",

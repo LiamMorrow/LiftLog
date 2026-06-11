@@ -41,6 +41,7 @@ import { Dispatch } from '@reduxjs/toolkit';
 import { KeyValueStore } from '@/services/key-value-store';
 import { AnyVersionSessionJSON } from '@/models/storage/versions/any';
 import { MigratorVAnyToLatest } from '@/models/storage/versions/migrator';
+import { copyLogs, showSnackbar } from '@/store/app';
 
 const storageKey = 'CurrentSessionStateV1';
 export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
@@ -66,7 +67,14 @@ export function applyCurrentSessionEffects(addEffect: AddEffectFn) {
         dispatch(setIsHydrated(true));
       } catch (e) {
         logger.error('Failed to initialize current session state', e);
-        throw e;
+        dispatch(setIsHydrated(true));
+        dispatch(
+          showSnackbar({
+            text: 'Failed to load current session. Please submit a bug report with your logs in settings!',
+            action: 'Copy logs',
+            dispatchAction: copyLogs(),
+          }),
+        );
       }
     },
   );

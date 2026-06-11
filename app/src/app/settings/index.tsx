@@ -1,5 +1,4 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
-
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { T, useTranslate } from '@tolgee/react';
 import { Link, Stack, useRouter } from 'expo-router';
@@ -8,15 +7,21 @@ import { Linking, Platform } from 'react-native';
 import { Text, Dialog, Icon, List, Portal } from 'react-native-paper';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
 import * as Application from 'expo-application';
+import { useDispatch } from 'react-redux';
+import { copyLogs } from '@/store/app';
 
 export default function Settings() {
   const { t } = useTranslate();
   const { colors } = useAppTheme();
   const { push } = useRouter();
   const [appInfoOpen, setAppInfoOpen] = useState(false);
+  const dispatch = useDispatch();
 
   const openUrl = (url: string) => {
     void Linking.canOpenURL(url).then(() => Linking.openURL(url));
+  };
+  const doCopyLogs = () => {
+    dispatch(copyLogs());
   };
 
   const appVersion =
@@ -98,6 +103,13 @@ export default function Settings() {
           title={t('settings.bug_report.title')}
           description={t('settings.bug_report.subtitle')}
           left={(props) => <List.Icon icon={'bugReport'} {...props} />}
+        ></List.Item>
+
+        <List.Item
+          onPress={doCopyLogs}
+          title={t('settings.copy_logs.title')}
+          description={t('settings.copy_logs.subtitle')}
+          left={(props) => <List.Icon icon={'terminal'} {...props} />}
         ></List.Item>
 
         <List.Item

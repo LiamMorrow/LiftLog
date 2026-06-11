@@ -1,4 +1,5 @@
 import {
+  copyLogs,
   initializeAppStateSlice,
   setCurrentSnackbar,
   setIsHydrated,
@@ -11,6 +12,7 @@ import { initializeSettingsStateSlice } from '../settings';
 import { initializeProgramStateSlice } from '../program';
 import { initializeFeedStateSlice } from '../feed';
 import { initializeAiPlannerStateSlice } from '../ai-planner';
+import { setStringAsync } from 'expo-clipboard';
 
 export function applyAppEffects(addEffect: AddEffectFn) {
   addEffect(
@@ -40,5 +42,10 @@ export function applyAppEffects(addEffect: AddEffectFn) {
 
   addEffect(shareString, async (action, { extra: { stringSharer } }) => {
     await stringSharer.share(action.payload.value, action.payload.title);
+  });
+
+  addEffect(copyLogs, async (_, { extra: { logger } }) => {
+    const logs = logger.getLogsAsString();
+    await setStringAsync(logs);
   });
 }

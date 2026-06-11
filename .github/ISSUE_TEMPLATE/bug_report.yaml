@@ -16,6 +16,14 @@ body:
       placeholder: Tell us what you see!
     validations:
       required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Logs
+      description: Your log files if applicable. You can copy these from the settings page.
+      placeholder: Tell us what you see!
+    validations:
+      required: false
 
   - type: textarea
     id: reproduction

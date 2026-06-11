@@ -37,6 +37,7 @@ export const initializeAppStateSlice = createAction('initializeAppStateSlice');
 export const shareString = createAction<{ title: string; value: string }>(
   'shareString',
 );
+export const copyLogs = createAction('copyLogs');
 
 export type SnackbarDescriptor =
   | {

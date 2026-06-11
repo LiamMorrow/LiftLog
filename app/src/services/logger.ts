@@ -1,21 +1,69 @@
 export class Logger {
+  private readonly maxLogs = 100;
+  private logs: {
+    level: string;
+    message: string;
+    options?: unknown;
+    timestamp: Date;
+  }[] = [];
+
+  private store(level: string, message: string, options?: unknown): void {
+    this.logs.push({ level, message, options, timestamp: new Date() });
+    if (this.logs.length > this.maxLogs) {
+      this.logs.shift();
+    }
+  }
+
+  getLogsAsString(): string {
+    return this.logs
+      .map((entry) => {
+        try {
+          return JSON.stringify(entry);
+        } catch {
+          try {
+            return JSON.stringify({
+              level: entry.level,
+              message: entry.message,
+              timestamp: entry.timestamp,
+            });
+          } catch {
+            return `{"level":"${entry.level}","message":"[unserializable]","timestamp":"${entry.timestamp.toISOString()}"}`;
+          }
+        }
+      })
+      .join('\n');
+  }
+
+  getLogs() {
+    return [...this.logs];
+  }
+
+  clearLogs(): void {
+    this.logs = [];
+  }
+
   log(message: string): void {
+    this.store('log', message);
     console.log(message);
   }
 
   info(message: string): void {
+    this.store('info', message);
     console.info(message);
   }
 
   warn(message: string, options: unknown): void {
+    this.store('warn', message, options);
     console.warn(message, options);
   }
 
   error(message: string, options: unknown): void {
+    this.store('error', message, options);
     console.error(message, options);
   }
 
   debug(message: string, o: unknown): void {
+    this.store('debug', message, o);
     console.debug(message, o);
   }
 
