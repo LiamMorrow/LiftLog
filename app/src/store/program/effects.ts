@@ -2,10 +2,14 @@ import { BuiltInPrograms } from '@/models/built-in-programs';
 import { RemoteData } from '@/models/remote';
 import { ProgramBlueprint } from '@/models/blueprint-models';
 import { AddEffectFn, RootState } from '@/store/store';
+import { showSnackbar } from '@/store/app';
 import {
   fetchUpcomingSessions,
+  importPlanFromFile,
+  importPlanFromJson,
   initializeProgramStateSlice,
   savePlan,
+  savePlanAndSetActive,
   selectActiveProgram,
   setActivePlan,
   setIsHydrated,
@@ -19,6 +23,7 @@ import { selectLatestExercises } from '../stored-sessions';
 import { programsSchema } from '@/db/schema';
 import {
   LatestVersion,
+  ProgramBlueprintJSON,
   toLocalDateJSON,
 } from '@/models/storage/versions/latest';
 import { LocalDate } from '@js-joda/core';
@@ -157,9 +162,142 @@ export function applyProgramEffects(addEffect: AddEffectFn) {
       );
     },
   );
+
+  addEffect(
+    importPlanFromFile,
+    async (_, { dispatch, extra: { filePickerService, tolgee, logger } }) => {
+      const file = await filePickerService.pickFile();
+      if (!file) {
+        return;
+      }
+
+      try {
+        const text = new TextDecoder().decode(file.bytes);
+        dispatch(importPlanFromJson({ json: JSON.parse(text) }));
+      } catch (error) {
+        logger.warn('Failed to parse imported workout plan file', { error });
+        dispatch(
+          showSnackbar({ text: tolgee.t('plan.import.invalid_file.message') }),
+        );
+      }
+    },
+  );
+
+  addEffect(
+    importPlanFromJson,
+    async (
+      { payload: { json } },
+      { dispatch, getState, extra: { tolgee, logger } },
+    ) => {
+      try {
+        const importedPlan = parseImportedPlanJson(json);
+        const trimmedName = importedPlan.name.trim();
+        if (!trimmedName) {
+          throw new InvalidPlanImportError('Plan name is empty after trimming');
+        }
+
+        const existingPlanNames = Object.values(getState().program.savedPrograms)
+          .map((program) => program.name)
+          .filter((name) => !!name.trim());
+        const uniqueName = getUniqueImportedPlanName(
+          existingPlanNames,
+          trimmedName,
+        );
+
+        let programId = uuid();
+        while (programId in getState().program.savedPrograms) {
+          programId = uuid();
+        }
+        dispatch(
+          savePlanAndSetActive({
+            programId,
+            programBlueprint: importedPlan.with({ name: uniqueName }),
+          }),
+        );
+        dispatch(showSnackbar({ text: tolgee.t('plan.import.success.message') }));
+      } catch (error) {
+        if (error instanceof UnsupportedPlanImportFormatError) {
+          dispatch(
+            showSnackbar({
+              text: tolgee.t('plan.import.unsupported_format.message'),
+            }),
+          );
+          return;
+        }
+        if (error instanceof InvalidPlanImportError) {
+          dispatch(
+            showSnackbar({ text: tolgee.t('plan.import.invalid_file.message') }),
+          );
+          return;
+        }
+        logger.error('Unexpected failure while importing workout plan', error);
+        dispatch(showSnackbar({ text: tolgee.t('plan.import.failed.message') }));
+      }
+    },
+  );
 }
 // Helper function to yield control back to the event loop
 const yieldToEventLoop = () => new Promise((resolve) => setTimeout(resolve, 5));
+
+class UnsupportedPlanImportFormatError extends Error {}
+class InvalidPlanImportError extends Error {}
+
+function parseImportedPlanJson(json: unknown): ProgramBlueprint {
+  if (!json || typeof json !== 'object') {
+    throw new InvalidPlanImportError('JSON root is not an object');
+  }
+
+  const parsed = json as Record<string, unknown>;
+  if ('type' in parsed || 'formatVersion' in parsed || 'program' in parsed) {
+    if (
+      parsed.type !== 'LiftLogPlanExport' ||
+      parsed.formatVersion !== 1 ||
+      !parsed.program
+    ) {
+      throw new UnsupportedPlanImportFormatError(
+        'Unsupported LiftLogPlanExport wrapper format',
+      );
+    }
+    return tryParseProgramBlueprintJson(parsed.program as ProgramBlueprintJSON);
+  }
+
+  return tryParseProgramBlueprintJson(json as ProgramBlueprintJSON);
+}
+
+function tryParseProgramBlueprintJson(
+  json: ProgramBlueprintJSON,
+): ProgramBlueprint {
+  try {
+    return ProgramBlueprint.fromJSON(json);
+  } catch {
+    throw new InvalidPlanImportError('Invalid ProgramBlueprintJSON payload');
+  }
+}
+
+function getUniqueImportedPlanName(
+  existingNames: readonly string[],
+  importedName: string,
+): string {
+  const normalizedExistingNames = new Set(
+    existingNames.map((name) => name.trim().toLocaleLowerCase()),
+  );
+  if (!normalizedExistingNames.has(importedName.toLocaleLowerCase())) {
+    return importedName;
+  }
+
+  const firstImportedName = `${importedName} (Imported)`;
+  if (!normalizedExistingNames.has(firstImportedName.toLocaleLowerCase())) {
+    return firstImportedName;
+  }
+
+  let suffix = 2;
+  while (normalizedExistingNames.has(
+    `${importedName} (Imported ${suffix})`.toLocaleLowerCase(),
+  )) {
+    suffix += 1;
+  }
+  return `${importedName} (Imported ${suffix})`;
+}
 
 async function persistPrograms(
   stateAfterReduce: RootState,

@@ -244,6 +244,18 @@ const programSlice = createSlice({
       state.savedPrograms[action.payload.programId] =
         action.payload.programBlueprint.toPOJO();
     },
+
+    savePlanAndSetActive(
+      state,
+      action: PayloadAction<{
+        programId: string;
+        programBlueprint: ProgramBlueprint;
+      }>,
+    ) {
+      state.savedPrograms[action.payload.programId] =
+        action.payload.programBlueprint.toPOJO();
+      state.activePlanId = action.payload.programId;
+    },
   },
   selectors: {
     selectActiveProgram: createSelector(
@@ -299,6 +311,7 @@ export const {
   moveSessionBlueprintUpInProgram,
   removeSessionFromProgram,
   savePlan,
+  savePlanAndSetActive,
   setActivePlan,
   setProgramSession,
   setProgramSessions,
@@ -317,6 +330,10 @@ export const {
 export const fetchUpcomingSessions = createAction('fetchUpcomingSessions');
 export const initializeProgramStateSlice = createAction(
   'initializeProgramStateSlice',
+);
+export const importPlanFromFile = createAction('importPlanFromFile');
+export const importPlanFromJson = createAction<{ json: unknown }>(
+  'importPlanFromJson',
 );
 
 export default programSlice.reducer;
