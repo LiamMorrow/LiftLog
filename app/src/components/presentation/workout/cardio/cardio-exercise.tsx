@@ -44,7 +44,9 @@ interface CardioExerciseProps {
   isReadonly: boolean;
   showPreviousButton: boolean;
 
-  updateExercise: (ex: RecordedCardioExercise) => void;
+  updateExercise: (
+    cb: (ex: RecordedCardioExercise) => RecordedCardioExercise,
+  ) => void;
   onEditExercise: () => void;
   onRemoveExercise: () => void;
 }
@@ -59,8 +61,8 @@ export function CardioExercise(props: CardioExerciseProps) {
       setIndex: number,
     ): CardioExerciseSetCallback<T> =>
     (val) =>
-      props.updateExercise(
-        props.recordedExercise.withSet(setIndex, (s) =>
+      props.updateExercise((ex) =>
+        ex.withSet(setIndex, (s) =>
           s
             .with({ [key]: val })
             .withCompletionTimeIfCompleted(OffsetDateTime.now()),
@@ -73,7 +75,7 @@ export function CardioExercise(props: CardioExerciseProps) {
       toStartNext={props.toStartNext}
       isReadonly={props.isReadonly}
       showPreviousButton={props.showPreviousButton}
-      updateExercise={props.updateExercise}
+      updateExercise={(x) => props.updateExercise(() => x)}
       onEditExercise={props.onEditExercise}
       onRemoveExercise={props.onRemoveExercise}
     >

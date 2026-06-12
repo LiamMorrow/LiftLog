@@ -183,7 +183,12 @@ export default function SessionComponent(props: {
         <CardioExercise
           recordedExercise={item}
           updateExercise={(ex) =>
-            updateSession((s) => s.withExercise(index, ex))
+            updateSession((s) =>
+              s.withExercise(
+                index,
+                ex(s.recordedExercises[index] as RecordedCardioExercise),
+              ),
+            )
           }
           toStartNext={session.nextExercise === item}
           onEditExercise={() => {
