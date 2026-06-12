@@ -7,18 +7,47 @@ export class Logger {
     timestamp: Date;
   }[] = [];
 
+  private serializeValue(value: unknown): unknown {
+    if (value instanceof Error) {
+      return {
+        ...value,
+        name: value.name,
+        message: value.message,
+        stack: value.stack,
+      };
+    }
+    return value;
+  }
+
   private store(level: string, message: string, options?: unknown): void {
-    this.logs.push({ level, message, options, timestamp: new Date() });
+    this.logs.push({
+      level,
+      message,
+      options: this.serializeValue(options),
+      timestamp: new Date(),
+    });
     if (this.logs.length > this.maxLogs) {
       this.logs.shift();
     }
   }
 
   getLogsAsString(): string {
+    const replacer = (_key: string, value: unknown): unknown => {
+      if (value instanceof Error) {
+        return {
+          ...value,
+          name: value.name,
+          message: value.message,
+          stack: value.stack,
+        };
+      }
+      return value;
+    };
+
     return this.logs
       .map((entry) => {
         try {
-          return JSON.stringify(entry);
+          return JSON.stringify(entry, replacer);
         } catch {
           try {
             return JSON.stringify({
