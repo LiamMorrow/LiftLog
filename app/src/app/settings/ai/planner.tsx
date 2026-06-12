@@ -3,7 +3,7 @@ import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 
 import { T, useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
-import { I18nManager, Platform, View } from 'react-native';
+import { I18nManager, Platform, ScrollView, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useDispatch } from 'react-redux';
@@ -46,6 +46,7 @@ import { setProToken } from '@/store/settings';
 import { Session } from '@/models/session-models';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 import { Loader } from '@/components/presentation/foundation/loader';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function AiPlanner() {
   const { t } = useTranslate();
@@ -53,6 +54,8 @@ export default function AiPlanner() {
   const messages = useAppSelector((x) => x.aiPlanner.plannerChat);
   const { handleScroll } = useScroll(true);
   const isLoadingResponse = useAppSelector(selectIsLoadingAiPlannerMessage);
+  const insets = useSafeAreaInsets();
+  const bottomInsetHeight = Platform.select({ ios: insets.bottom }) ?? 0;
   useMountEffect(() => {
     dispatch(initChat());
   });
@@ -76,7 +79,7 @@ export default function AiPlanner() {
   return (
     <KeyboardAvoidingView
       behavior={'translate-with-padding'}
-      style={{ flex: 1 }}
+      style={{ flex: 1, insetBlockEnd: bottomInsetHeight }}
     >
       <Stack.Screen
         options={{
@@ -88,8 +91,12 @@ export default function AiPlanner() {
           ),
         }}
       />
+      {/* Hack as the native tabs add inset to the first scrollview on the page */}
+      <ScrollView style={{ height: 0 }} />
       <View style={{ flex: 1 }}>
         <FlatList
+          contentInsetAdjustmentBehavior="never"
+          automaticallyAdjustContentInsets={false}
           onScroll={handleScroll}
           data={messages}
           inverted
