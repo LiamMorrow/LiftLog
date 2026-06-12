@@ -68,11 +68,18 @@ These programs make it easy to install the exact version of node and terraform t
 ```bash
 nvm install
 nvm use
-npm install
+npm ci
+npm test
+npm run typecheck
 npm run package
 ```
 
-- There will now be a file called `lambda.zip` in the `LiftLog/examples/remote-backup/reference-server-implementation/aws-lambda-s3-deployable/terraform` folder. This is the file that will be uploaded to AWS to run the backup server.
+- The tests exercise the Lambda request and S3 upload behavior locally without
+  writing to AWS.
+- There will now be a deterministic `lambda.zip` file in the
+  `LiftLog/examples/remote-backup/reference-server-implementation/aws-lambda-s3-deployable/terraform`
+  folder. This is the file that will be uploaded to AWS to run the backup
+  server.
 
 ## Configure terraform
 
@@ -105,14 +112,20 @@ There is also an optional `delete_after_days` variable. Uncomment this to set an
 - Run `tfenv install`
 - Run `tfenv use`
 - Run `terraform init -backend-config=backend.tfvars`
-- Run `terraform apply`
+- Run `terraform fmt -check -recursive`
+- Run `terraform validate`
+- Run `terraform plan` and review every proposed change before continuing
+- Back up both the Terraform state object and the existing backup bucket before
+  applying an upgrade to an existing deployment
+- Run `terraform apply` only after reviewing the plan and confirming that the
+  backups are readable
 - The URL of the lambda and the API key will have been written to `output.txt` in the root of the project.
 
 ## Configuring LiftLog to use the remote backup
 
 Save the file `output.txt` somewhere safe. Open it and note the url and api key. Add these to the remote backup configuration in LiftLog and when you click 'Test', it should work.
 
-To access your backup, log into the AWS Console, navigate to S3, find your bucket and your files will be organised into folders by date.
+To access your backup, log into the AWS Console, navigate to S3, find your bucket and your files will be organised into folders by date. Object versioning is enabled so accidental overwrites and deletes can be recovered from S3.
 
 ## Deleting this
 

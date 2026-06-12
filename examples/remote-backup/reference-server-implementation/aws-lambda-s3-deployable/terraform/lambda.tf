@@ -17,9 +17,16 @@ resource "aws_iam_role" "lambda_exec_role" {
 }
 
 # Attach policy to allow Lambda to log to CloudWatch
-resource "aws_iam_policy_attachment" "lambda_exec_policy" {
-  name       = "lambda-basic-execution"
-  roles      = [aws_iam_role.lambda_exec_role.name]
+removed {
+  from = aws_iam_policy_attachment.lambda_exec_policy
+
+  lifecycle {
+    destroy = false
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_exec_policy" {
+  role       = aws_iam_role.lambda_exec_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
@@ -27,7 +34,7 @@ resource "aws_iam_policy_attachment" "lambda_exec_policy" {
 resource "aws_lambda_function" "liftlog_lambda" {
   function_name = "liftlog-lambda"
   role          = aws_iam_role.lambda_exec_role.arn
-  runtime       = "nodejs20.x"
+  runtime       = "nodejs24.x"
   handler       = "index.handler"
   filename      = "${path.module}/lambda.zip" # Zip your Node.js app
 

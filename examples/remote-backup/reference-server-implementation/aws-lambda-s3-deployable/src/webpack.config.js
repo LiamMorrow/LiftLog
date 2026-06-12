@@ -18,7 +18,9 @@ module.exports = {
     extensions: ['.ts', '.js'],  // Resolve both .ts and .js files
   },
   output: {
+    clean: true,
     filename: 'index.js',
+    chunkFilename: '[id].index.js',
     path: path.resolve(__dirname, 'dist'),
     libraryTarget: 'commonjs2',  // Required for Lambda compatibility
   },

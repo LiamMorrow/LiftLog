@@ -22,3 +22,11 @@ resource "aws_s3_bucket" "backup_bucket" {
     }
   }
 }
+
+resource "aws_s3_bucket_versioning" "backup_bucket" {
+  bucket = aws_s3_bucket.backup_bucket.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
