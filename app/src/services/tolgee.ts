@@ -21,7 +21,7 @@ import sr from '../i18n/sr.json';
 import sv from '../i18n/sv.json';
 import tr from '../i18n/tr.json';
 import uk from '../i18n/uk.json';
-import zh_Hans from '../i18n/zh_Hans.json';
+import zh_Hans from '../i18n/zh-hans.json';
 
 import { FormatSimple, Tolgee } from '@tolgee/react';
 import { PreferenceService } from '@/services/preference-service';
@@ -45,7 +45,7 @@ export const supportedLanguages = [
   { translationJson: cs, code: 'cs', label: 'Čeština' },
   { translationJson: ko, code: 'ko', label: '한국어' },
   { translationJson: tr, code: 'tr', label: 'Türkçe' },
-  { translationJson: zh_Hans, code: 'zh_Hans', label: '中文（简体）' },
+  { translationJson: zh_Hans, code: 'zh-hans', label: '中文（简体）' },
 ];
 
 export const getTolgee = (preferenceService: PreferenceService) =>

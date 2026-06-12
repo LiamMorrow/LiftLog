@@ -285,6 +285,11 @@ export class PreferenceService {
   }
 
   getPreferredLanguage() {
+    const lang = this.keyValueStore.getItemSync('preferredLanguage');
+    if (lang === 'zh_Hans') {
+      void this.keyValueStore.setItem('preferredLanguage', 'zh-hans');
+      return 'zh-hans';
+    }
     return this.keyValueStore.getItemSync('preferredLanguage');
   }
 
