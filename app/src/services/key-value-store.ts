@@ -1,17 +1,11 @@
 import { uuid } from '@/utils/uuid';
 import { File, Paths } from 'expo-file-system';
-import { Platform } from 'react-native';
-import { getLibraryDirectory } from '~/modules/native-lib';
 
 export class KeyValueStore {
   async getItem(key: string): Promise<string | undefined> {
     const file = getFile(key);
     if (file.exists) {
       return file.text();
-    }
-    const oldFile = getOldDirFile(key);
-    if (oldFile?.exists) {
-      return oldFile.text();
     }
     return undefined;
   }
@@ -20,10 +14,6 @@ export class KeyValueStore {
     const file = getFile(key);
     if (file.exists) {
       return this.readBytes(file);
-    }
-    const oldFile = getOldDirFile(key);
-    if (oldFile?.exists) {
-      return this.readBytes(oldFile);
     }
     return undefined;
   }
@@ -62,10 +52,6 @@ export class KeyValueStore {
     if (file.exists) {
       return file.textSync();
     }
-    const oldFile = getOldDirFile(key);
-    if (oldFile?.exists) {
-      return oldFile.textSync();
-    }
     return undefined;
   }
 
@@ -86,17 +72,6 @@ export class KeyValueStore {
       offset += bytes.length;
     }
     return readBytes;
-  }
-}
-
-function getOldDirFile(key: string): File | undefined {
-  // For iOS, the Library/Application Support directory (equivalent to .NET MAUI's FileSystem.AppDataDirectory)
-  // We want to only read from this, and store in the appropriate documents dir
-  if (Platform.OS === 'ios' || Platform.OS === 'macos') {
-    const libraryDir = getLibraryDirectory();
-    return new File(Paths.join(libraryDir, key));
-  } else {
-    return undefined;
   }
 }
 
