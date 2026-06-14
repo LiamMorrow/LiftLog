@@ -68,11 +68,18 @@ These programs make it easy to install the exact version of node and terraform t
 ```bash
 nvm install
 nvm use
-npm install
+npm ci
+npm test
+npm run typecheck
 npm run package
 ```
 
-- There will now be a file called `lambda.zip` in the `LiftLog/examples/remote-backup/reference-server-implementation/aws-lambda-s3-deployable/terraform` folder. This is the file that will be uploaded to AWS to run the backup server.
+- The tests exercise the Lambda request and S3 upload behavior locally without
+  writing to AWS.
+- There will now be a deterministic `lambda.zip` file in the
+  `LiftLog/examples/remote-backup/reference-server-implementation/aws-lambda-s3-deployable/terraform`
+  folder. This is the file that will be uploaded to AWS to run the backup
+  server.
 
 ## Configure terraform
 
@@ -97,7 +104,7 @@ In `terraform.tfvars` you must also configure:
 - `region` and `profile` to match the above values but there is an additional setting.
 - `liftlog_backup_bucket_name` - this is the actual bucket where your backups will go. This needs to be a globally unique name so call it what you want, perhaps `YOURNAME-liftlog-backups`. Terraform will create this bucket for you in the next steps.
 
-There is also an optional `delete_after_days` variable. Uncomment this to set an expiry on your backups in days. **This will delete any backups older than that figure so if you do not log in for that period, all your backups will be expired.** I personally set it to be 365 days, if I don't go to the gym for that long, I probably won't be going back!
+There is also an optional `delete_after_days` variable. Uncomment this to set an expiry on your backups in days. **With versioning enabled, S3 will expire the current backup after that many days and then remove the noncurrent version after the same period again, so the object can remain recoverable and billable for longer than the raw number suggests.** I personally set it to be 365 days, if I don't go to the gym for that long, I probably won't be going back!
 
 ## Run terraform to deploy the node app
 
@@ -105,14 +112,20 @@ There is also an optional `delete_after_days` variable. Uncomment this to set an
 - Run `tfenv install`
 - Run `tfenv use`
 - Run `terraform init -backend-config=backend.tfvars`
-- Run `terraform apply`
+- Run `terraform fmt -check -recursive`
+- Run `terraform validate`
+- Run `terraform plan` and review every proposed change before continuing
+- Back up both the Terraform state object and the existing backup bucket before
+  applying an upgrade to an existing deployment
+- Run `terraform apply` only after reviewing the plan and confirming that the
+  backups are readable
 - The URL of the lambda and the API key will have been written to `output.txt` in the root of the project.
 
 ## Configuring LiftLog to use the remote backup
 
 Save the file `output.txt` somewhere safe. Open it and note the url and api key. Add these to the remote backup configuration in LiftLog and when you click 'Test', it should work.
 
-To access your backup, log into the AWS Console, navigate to S3, find your bucket and your files will be organised into folders by date.
+To access your backup, log into the AWS Console, navigate to S3, find your bucket and your files will be organised into folders by date. Object versioning is enabled so accidental overwrites and deletes can be recovered from S3.
 
 ## Deleting this
 
