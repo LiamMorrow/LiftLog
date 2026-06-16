@@ -9,7 +9,6 @@ import {
 } from '@/store/current-session';
 import { LocalDate } from '@js-joda/core';
 import { useRouter, Stack } from 'expo-router';
-import { useEffect } from 'react';
 import { View } from 'react-native';
 import { DatePickerInput } from 'react-native-paper-dates';
 import { useDispatch } from 'react-redux';
@@ -21,12 +20,8 @@ export default function HistoryEditPage() {
 
   const save = () => {
     dispatch(finishCurrentWorkout('historySession'));
+    dismissTo('/history');
   };
-  useEffect(() => {
-    if (!session) {
-      dismissTo('/history');
-    }
-  }, [session, dismissTo]);
   const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
   const jsDate =
     session &&
