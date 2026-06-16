@@ -208,11 +208,18 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
     },
   );
 
+  addEffect(deleteStoredSession, async (action, { extra: { logger, db } }) => {
+    await logger.time('deleteStoredSession', async () => {
+      await db
+        .delete(sessionsSchema)
+        .where(eq(sessionsSchema.id, action.payload));
+    });
+  });
   addEffect(
     deleteStoredSession,
     async (
       action,
-      { stateAfterReduce, extra: { healthExportService, logger, db } },
+      { stateAfterReduce, extra: { healthExportService, logger } },
     ) => {
       const workoutId = action.payload;
       if (
@@ -226,11 +233,6 @@ export function applyStoredSessionsEffects(addEffect: AddEffectFn) {
       } catch (e) {
         logger.error('Failed to delete workout from HealthConnect', e);
       }
-      await logger.time('deleteStoredSession', async () => {
-        await db
-          .delete(sessionsSchema)
-          .where(eq(sessionsSchema.id, action.payload));
-      });
     },
   );
 
