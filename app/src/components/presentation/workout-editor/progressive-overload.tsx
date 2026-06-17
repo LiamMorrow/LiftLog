@@ -63,7 +63,7 @@ export function ProgressiveOverloadSelect(props: Props) {
 
 export function ProgressiveOverloadValuesEditor(props: Props) {
   return (
-    <View style={{ gap: spacing[2], paddingTop: spacing[2] }}>
+    <View>
       {match(props.value)
         .with({ type: 'NoProgressiveOverload' }, () => undefined)
         .with({ type: 'IncreaseAllEvenlyProgressiveOverload' }, (x) => (
@@ -84,11 +84,13 @@ function IncreaseAllEvenlyValues(
 ) {
   const { t } = useTranslate();
   return (
-    <View>
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <Text>
+        {t('exercise.progressive_overload.increase_all_evenly.amount.label')}
+      </Text>
       <DecimalEditor
-        label={t(
-          'exercise.progressive_overload.increase_all_evenly.amount.label',
-        )}
+        underlineColor="transparent"
+        style={{ flex: 1, textAlign: 'right' }}
         value={props.value.amount}
         onChange={(amount) => props.onChange(props.value.with({ amount }))}
       />
@@ -127,17 +129,20 @@ function IncreaseLowestSetValues(
     },
   ];
   return (
-    <View style={{ gap: spacing[2] }}>
-      <DecimalEditor
-        label={t(
-          'exercise.progressive_overload.increase_lowest_set.amount.label',
-        )}
-        value={props.value.amount}
-        onChange={(amount) => props.onChange(props.value.with({ amount }))}
-      />
+    <View style={{ gap: spacing[1] }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Text>
+          {t('exercise.progressive_overload.increase_lowest_set.amount.label')}
+        </Text>
+        <DecimalEditor
+          underlineColor="transparent"
+          style={{ flex: 1, textAlign: 'right' }}
+          value={props.value.amount}
+          onChange={(amount) => props.onChange(props.value.with({ amount }))}
+        />
+      </View>
       <View
         style={{
-          paddingLeft: spacing[1],
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',

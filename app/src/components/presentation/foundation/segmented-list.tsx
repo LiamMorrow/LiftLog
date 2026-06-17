@@ -1,6 +1,7 @@
 import Icon from '@/components/presentation/foundation/gesture-wrappers/icon';
+import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
-import { rounding, spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { rounding, spacing } from '@/hooks/useAppTheme';
 import { useBottomSheetScrollableCreator } from '@gorhom/bottom-sheet';
 import { LegendList } from '@legendapp/list';
 import { ReactNode } from 'react';
@@ -14,7 +15,6 @@ type TupleKeysNum<T extends readonly unknown[]> = Exclude<
 >;
 export function SegmentedList<TItems extends readonly unknown[]>(props: {
   renderItem: (item: TItems[number], index: TupleKeysNum<TItems>) => ReactNode;
-  onItemPress?: (item: TItems[number], index: TupleKeysNum<TItems>) => void;
   itemKey?: (item: TItems[number], index: TupleKeysNum<TItems>) => string;
   items: TItems;
   scrollable?: boolean;
@@ -24,7 +24,6 @@ export function SegmentedList<TItems extends readonly unknown[]>(props: {
 }) {
   const BottomSheetScrollable = useBottomSheetScrollableCreator();
   const itemKey = props.itemKey ?? ((_, index) => String(index));
-  const onItemPress = props.onItemPress;
   if (!props.scrollable) {
     return (
       <View style={[{ gap: spacing[0.5] }, props.style]}>
@@ -33,11 +32,6 @@ export function SegmentedList<TItems extends readonly unknown[]>(props: {
             key={itemKey(item, index as TupleKeysNum<TItems>)}
             isFirst={index === 0}
             isLast={index === props.items.length - 1}
-            onPress={
-              onItemPress
-                ? () => onItemPress(item, index as TupleKeysNum<TItems>)
-                : undefined
-            }
           >
             {props.renderItem(item, index as TupleKeysNum<TItems>)}
           </SegmentedListItem>
@@ -61,11 +55,6 @@ export function SegmentedList<TItems extends readonly unknown[]>(props: {
           key={itemKey(item, index as TupleKeysNum<TItems>)}
           isFirst={index === 0}
           isLast={index === props.items.length - 1}
-          onPress={
-            onItemPress
-              ? () => onItemPress(item, index as TupleKeysNum<TItems>)
-              : undefined
-          }
         >
           {props.renderItem(item, index as TupleKeysNum<TItems>)}
         </SegmentedListItem>
@@ -77,36 +66,40 @@ export function SegmentedList<TItems extends readonly unknown[]>(props: {
 export function SegmentListFormElement(props: {
   label: string;
   icon: AppIconSource;
+  onPress?: () => void;
   line2?: ReactNode | string;
   right?: ReactNode | string;
 }) {
+  const Wrapper = props.onPress ? TouchableRipple : View;
   return (
-    <View>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
+    <Wrapper onPress={props.onPress}>
+      <View style={{ padding: spacing[4] }}>
         <View
           style={{
             flexDirection: 'row',
-            gap: spacing[2],
+            justifyContent: 'space-between',
             alignItems: 'center',
           }}
         >
-          <Icon size={20} source={props.icon} />
-          <Text variant="labelLarge">{props.label}</Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              gap: spacing[2],
+              alignItems: 'center',
+            }}
+          >
+            <Icon size={20} source={props.icon} />
+            <Text variant="labelLarge">{props.label}</Text>
+          </View>
+          {typeof props.right === 'string' ? (
+            <Text variant="labelLarge">{props.right}</Text>
+          ) : (
+            props.right
+          )}
         </View>
-        {typeof props.right === 'string' ? (
-          <Text variant="labelLarge">{props.right}</Text>
-        ) : (
-          props.right
-        )}
+        {props.line2}
       </View>
-      {props.line2}
-    </View>
+    </Wrapper>
   );
 }
 
@@ -114,9 +107,7 @@ function SegmentedListItem(props: {
   isFirst: boolean;
   isLast: boolean;
   children: ReactNode;
-  onPress: undefined | (() => void);
 }) {
-  const { colors } = useAppTheme();
   const style = match(props)
     .with(
       {
@@ -130,13 +121,8 @@ function SegmentedListItem(props: {
     .with({ isFirst: false, isLast: false }, () => styles.middleItem)
     .exhaustive();
   return (
-    <Card
-      mode="elevated"
-      elevation={0}
-      style={[{ backgroundColor: colors.surfaceContainerHigh }, style]}
-      onPress={props.onPress}
-    >
-      <Card.Content>{props.children}</Card.Content>
+    <Card mode="contained" style={[style, { padding: 0, overflow: 'hidden' }]}>
+      {props.children}
     </Card>
   );
 }

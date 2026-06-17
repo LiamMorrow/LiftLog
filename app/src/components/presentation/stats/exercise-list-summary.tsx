@@ -48,9 +48,11 @@ export function ExerciseListSummary(props: { stats: GranularStatisticView }) {
     >
       <SegmentedList
         items={topWeightedExercises}
-        onItemPress={onItemPress}
         renderItem={(item) => (
-          <WeightedExerciseStatSummary exerciseStats={item} />
+          <WeightedExerciseStatSummary
+            onPress={onItemPress}
+            exerciseStats={item}
+          />
         )}
       />
       <AppBottomSheet

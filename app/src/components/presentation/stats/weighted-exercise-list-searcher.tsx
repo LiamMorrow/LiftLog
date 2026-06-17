@@ -51,9 +51,11 @@ export function WeightedExerciseListSearcher({
       <SegmentedList
         scrollable
         items={filteredExercises}
-        onItemPress={onItemPress}
         renderItem={(item) => (
-          <WeightedExerciseStatSummary exerciseStats={item} />
+          <WeightedExerciseStatSummary
+            onPress={onItemPress}
+            exerciseStats={item}
+          />
         )}
       />
     </View>

@@ -221,68 +221,49 @@ function CardioSetEditor(props: {
         onValueChange={(target) => updateSet(set.with({ target }))}
       />
       <SegmentedList
-        renderItem={(i) => i[0]}
-        onItemPress={([_, toggle]) => toggle()}
+        renderItem={(i) => i}
         items={
           [
-            [
-              <SegmentedListSwitch
-                value={set.trackDuration || set.target.type === 'time'}
-                testID="track-time-switch"
-                icon={'timer'}
-                onValueChange={toggleSetItem('trackDuration')}
-                label={t('exercise.track_time.label')}
-                disabled={set.target.type === 'time'}
-              />,
-              toggleSetItem('trackDuration'),
-            ],
-            [
-              <SegmentedListSwitch
-                value={set.trackDistance || set.target.type === 'distance'}
-                icon={'trailLength'}
-                testID="track-distance-switch"
-                onValueChange={toggleSetItem('trackDistance')}
-                label={t('exercise.track_distance.label')}
-                disabled={set.target.type === 'distance'}
-              />,
-              toggleSetItem('trackDistance'),
-            ],
-            [
-              <SegmentedListSwitch
-                icon={'speed'}
-                value={set.trackResistance}
-                onValueChange={toggleSetItem('trackResistance')}
-                label={t('exercise.track_resistance.label')}
-              />,
-              toggleSetItem('trackResistance'),
-            ],
-            [
-              <SegmentedListSwitch
-                value={set.trackIncline}
-                icon={'elevation'}
-                onValueChange={toggleSetItem('trackIncline')}
-                label={t('exercise.track_incline.label')}
-              />,
-              toggleSetItem('trackIncline'),
-            ],
-            [
-              <SegmentedListSwitch
-                value={set.trackWeight}
-                icon={'weight'}
-                onValueChange={toggleSetItem('trackWeight')}
-                label={t('exercise.track_weight.label')}
-              />,
-              toggleSetItem('trackWeight'),
-            ],
-            [
-              <SegmentedListSwitch
-                value={set.trackSteps}
-                icon={'steps'}
-                onValueChange={toggleSetItem('trackSteps')}
-                label={t('exercise.track_steps.label')}
-              />,
-              toggleSetItem('trackSteps'),
-            ],
+            <SegmentedListSwitch
+              value={set.trackDuration || set.target.type === 'time'}
+              testID="track-time-switch"
+              icon={'timer'}
+              onValueChange={toggleSetItem('trackDuration')}
+              label={t('exercise.track_time.label')}
+              disabled={set.target.type === 'time'}
+            />,
+            <SegmentedListSwitch
+              value={set.trackDistance || set.target.type === 'distance'}
+              icon={'trailLength'}
+              testID="track-distance-switch"
+              onValueChange={toggleSetItem('trackDistance')}
+              label={t('exercise.track_distance.label')}
+              disabled={set.target.type === 'distance'}
+            />,
+            <SegmentedListSwitch
+              icon={'speed'}
+              value={set.trackResistance}
+              onValueChange={toggleSetItem('trackResistance')}
+              label={t('exercise.track_resistance.label')}
+            />,
+            <SegmentedListSwitch
+              value={set.trackIncline}
+              icon={'elevation'}
+              onValueChange={toggleSetItem('trackIncline')}
+              label={t('exercise.track_incline.label')}
+            />,
+            <SegmentedListSwitch
+              value={set.trackWeight}
+              icon={'weight'}
+              onValueChange={toggleSetItem('trackWeight')}
+              label={t('exercise.track_weight.label')}
+            />,
+            <SegmentedListSwitch
+              value={set.trackSteps}
+              icon={'steps'}
+              onValueChange={toggleSetItem('trackSteps')}
+              label={t('exercise.track_steps.label')}
+            />,
           ] as const
         }
       />
@@ -527,6 +508,7 @@ function WeightedExerciseEditor({
               <SegmentListFormElement
                 label={t('rest.rest.label')}
                 icon={'airlineSeatReclineExtraFill'}
+                onPress={() => setRestDialogOpen(true)}
                 right={
                   <RestFormat
                     style={{ color: colors.onSurface }}
@@ -547,17 +529,6 @@ function WeightedExerciseEditor({
             ] as const
           }
           renderItem={(i) => i}
-          onItemPress={(_, i) => {
-            match(i)
-              .with(0, () => {})
-              .with(1, () => setRestDialogOpen(true))
-              .with(2, () =>
-                updateExercise({
-                  supersetWithNext: !exercise.supersetWithNext,
-                }),
-              )
-              .exhaustive();
-          }}
         />
       </FormRow>
     </View>

@@ -4,7 +4,7 @@ import {
 } from '@/utils/locale-bignumber';
 import React, { useState, useEffect } from 'react';
 import { TextStyle } from 'react-native';
-import { TextInput } from 'react-native-paper';
+import { TextInput, TextInputProps } from 'react-native-paper';
 import BigNumber from 'bignumber.js';
 
 interface DecimalEditorProps {
@@ -15,8 +15,11 @@ interface DecimalEditorProps {
   testID?: string;
 }
 
-export function DecimalEditor(props: DecimalEditorProps) {
-  const { value, onChange } = props;
+export function DecimalEditor(
+  props: DecimalEditorProps &
+    Partial<Omit<TextInputProps, keyof DecimalEditorProps>>,
+) {
+  const { value, onChange, testID, label, style, ...rest } = props;
   const [text, setText] = useState(localeFormatBigNumber(props.value) || '-');
   const [editorValue, setEditorValue] = useState(value);
 
@@ -43,22 +46,23 @@ export function DecimalEditor(props: DecimalEditorProps) {
   }, [value, editorValue]);
   return (
     <TextInput
-      testID={props.testID}
+      testID={testID}
       value={text}
       inputMode={'decimal'}
-      label={props.label}
+      label={label}
       keyboardType={'decimal-pad'}
       onChangeText={handleTextChange}
       submitBehavior="blurAndSubmit"
       returnKeyType="done"
       selectTextOnFocus
-      style={[props.style]}
+      style={[style]}
       onBlur={() => {
         if (text === '') {
           setText('0');
         }
         onChange(editorValue);
       }}
+      {...rest}
     />
   );
 }

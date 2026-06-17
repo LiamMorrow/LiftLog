@@ -16,6 +16,7 @@ export function SegmentedListSwitch(props: ListSwitchProps) {
     <SegmentListFormElement
       label={props.label}
       icon={props.icon}
+      onPress={() => props.onValueChange(!props.value)}
       right={
         <Switch
           value={props.value}
