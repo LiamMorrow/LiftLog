@@ -13,6 +13,7 @@ import {
   sessionUserEventMigrations,
   inboxMessageMigrations,
   userEventMigrations,
+  sharedItemMigrations,
 } from '@/models/storage/versions/migrations';
 
 export type AnyVersionSessionJSON = typeof sessionMigrations.$anyType;
@@ -37,3 +38,5 @@ export type AnyVersionSessionUserEventJSON =
 export type AnyVersionUserEventJSON = typeof userEventMigrations.$anyType;
 
 export type AnyVersionInboxMessageJSON = typeof inboxMessageMigrations.$anyType;
+
+export type AnyVersionSharedItemJSON = typeof sharedItemMigrations.$anyType;

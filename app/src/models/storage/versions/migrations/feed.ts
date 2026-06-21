@@ -143,6 +143,9 @@ export const inboxMessageMigrations = {
 };
 
 export const sharedItemMigrations = {
+  $anyType: undefined! as
+    | typeof sharedSessionMigrations.$anyType
+    | typeof sharedProgramBlueprintMigrations.$anyType,
   $finalType: undefined! as
     | typeof sharedSessionMigrations.$finalType
     | typeof sharedProgramBlueprintMigrations.$finalType,

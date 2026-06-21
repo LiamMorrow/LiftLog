@@ -1,7 +1,8 @@
 import { AesKey } from '@/models/encryption-models';
 import { fromSharedItemJSON } from '@/models/feed-models';
 import { RemoteData } from '@/models/remote';
-import { SharedItemJSON } from '@/models/storage/versions/latest';
+import { AnyVersionSharedItemJSON } from '@/models/storage/versions/any';
+import { sharedItemMigrations } from '@/models/storage/versions/migrations';
 import { ApiErrorType } from '@/services/api-error';
 import { fromJsonBytes, toJsonBytes } from '@/services/encryption-service';
 import {
@@ -115,8 +116,11 @@ export function addSharedItemEffects(addEffect: AddEffectFn) {
           aesKey,
           rsaPublicKey,
         );
-      const sharedItemDao = fromJsonBytes<SharedItemJSON>(decryptedBytes);
-      const sharedItem = fromSharedItemJSON(sharedItemDao);
+      const sharedItemDao =
+        fromJsonBytes<AnyVersionSharedItemJSON>(decryptedBytes);
+      const sharedItem = fromSharedItemJSON(
+        sharedItemMigrations.migrate(sharedItemDao),
+      );
 
       dispatch(setSharedItem(RemoteData.success(sharedItem)));
     },
