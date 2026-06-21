@@ -1,12 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { Logger } from './logger';
 
 describe('Logger', () => {
   let logger: Logger;
 
-  beforeEach(() => {
+  afterEach(async () => {
+    await logger?.writeQueue;
+    await logger.clearLogs();
+  });
+
+  beforeEach(async () => {
     logger = new Logger();
   });
 
@@ -50,10 +55,10 @@ describe('Logger', () => {
   });
 
   describe('clearLogs', () => {
-    it('empties the log store', () => {
+    it('empties the log store', async () => {
       logger.log('a');
       logger.log('b');
-      logger.clearLogs();
+      await logger.clearLogs();
       expect(logger.getLogs()).toHaveLength(0);
     });
   });
@@ -73,17 +78,17 @@ describe('Logger', () => {
       expect(options.stack).toContain('something went wrong');
     });
 
-    it('serializes Error options in getLogsAsString', () => {
+    it('serializes Error options in getLogsAsString', async () => {
       logger.error('oops', new Error('something went wrong'));
-      const output = JSON.parse(logger.getLogsAsString());
+      const output = JSON.parse(await logger.getLogsAsString());
       expect(output.options.message).toBe('something went wrong');
       expect(output.options.name).toBe('Error');
       expect(output.options.stack).toBeTruthy();
     });
 
-    it('serializes nested errors in getLogsAsString', () => {
+    it('serializes nested errors in getLogsAsString', async () => {
       logger.error('oops', { cause: new Error('root cause') });
-      const output = JSON.parse(logger.getLogsAsString());
+      const output = JSON.parse(await logger.getLogsAsString());
       expect(output.options.cause.message).toBe('root cause');
     });
 
@@ -111,10 +116,10 @@ describe('Logger', () => {
   });
 
   describe('getLogsAsString', () => {
-    it('returns one JSON line per entry', () => {
+    it('returns one JSON line per entry', async () => {
       logger.log('first');
       logger.log('second');
-      const lines = logger.getLogsAsString().split('\n');
+      const lines = (await logger.getLogsAsString()).split('\n');
       expect(lines).toHaveLength(2);
       expect(JSON.parse(lines[0]!)).toMatchObject({
         level: 'log',
@@ -126,8 +131,8 @@ describe('Logger', () => {
       });
     });
 
-    it('returns empty string when no logs', () => {
-      expect(logger.getLogsAsString()).toBe('');
+    it('returns empty string when no logs', async () => {
+      expect(await logger.getLogsAsString()).toBe('');
     });
   });
 

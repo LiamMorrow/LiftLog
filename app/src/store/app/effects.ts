@@ -45,7 +45,7 @@ export function applyAppEffects(addEffect: AddEffectFn) {
   });
 
   addEffect(copyLogs, async (_, { extra: { logger } }) => {
-    const logs = logger.getLogsAsString();
+    const logs = await logger.getLogsAsString();
     await setStringAsync(logs);
   });
 }
