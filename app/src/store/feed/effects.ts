@@ -208,7 +208,7 @@ export function applyFeedEffects(addEffect: AddEffectFn) {
       } else {
         await tx
           .delete(feedPendingUsersSchema)
-          .where(eq(feedFollowedUsersSchema.id, action.payload.id));
+          .where(eq(feedPendingUsersSchema.id, action.payload.id));
         await upsert(tx, feedFollowedUsersSchema, [
           {
             id: action.payload.id,
