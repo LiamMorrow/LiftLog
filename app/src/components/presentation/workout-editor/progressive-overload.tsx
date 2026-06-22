@@ -63,7 +63,7 @@ export function ProgressiveOverloadSelect(props: Props) {
 
 export function ProgressiveOverloadValuesEditor(props: Props) {
   return (
-    <View>
+    <View style={{ gap: spacing[2] }}>
       {match(props.value)
         .with({ type: 'NoProgressiveOverload' }, () => undefined)
         .with({ type: 'IncreaseAllEvenlyProgressiveOverload' }, (x) => (
@@ -192,6 +192,9 @@ function ProgressiveOverloadExample(props: { value: ProgressiveOverload }) {
   const appliedProgressiveOverload3 = props.value.applyProgressiveOverload(
     appliedProgressiveOverload2,
   );
+  if (props.value.type === 'NoProgressiveOverload') {
+    return undefined;
+  }
   return (
     <>
       <Button onPress={() => setExampleOpen(true)}>

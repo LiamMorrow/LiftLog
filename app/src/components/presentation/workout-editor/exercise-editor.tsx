@@ -483,51 +483,49 @@ function WeightedExerciseEditor({
       />
       <FormRow>
         <SegmentedList
-          items={
-            [
-              <SegmentListFormElement
-                label={t('exercise.progressive_overload.label')}
-                icon={'trendingUp'}
-                right={
-                  <ProgressiveOverloadSelect
-                    value={exercise.progressiveOverload}
-                    onChange={(progressiveOverload) =>
-                      updateExercise({ progressiveOverload })
-                    }
-                  />
-                }
-                line2={
-                  <ProgressiveOverloadValuesEditor
-                    value={exercise.progressiveOverload}
-                    onChange={(progressiveOverload) =>
-                      updateExercise({ progressiveOverload })
-                    }
-                  />
-                }
-              />,
-              <SegmentListFormElement
-                label={t('rest.rest.label')}
-                icon={'airlineSeatReclineExtraFill'}
-                onPress={() => setRestDialogOpen(true)}
-                right={
-                  <RestFormat
-                    style={{ color: colors.onSurface }}
-                    rest={exercise.restBetweenSets}
-                  />
-                }
-              />,
+          items={[
+            <SegmentListFormElement
+              label={t('rest.rest.label')}
+              icon={'airlineSeatReclineExtraFill'}
+              onPress={() => setRestDialogOpen(true)}
+              right={
+                <RestFormat
+                  style={{ color: colors.onSurface }}
+                  rest={exercise.restBetweenSets}
+                />
+              }
+            />,
 
-              <SegmentedListSwitch
-                label={t('workout.superset_next_exercise.button')}
-                icon={'link'}
-                value={exercise.supersetWithNext}
-                testID="exercise-superset"
-                onValueChange={(supersetWithNext) =>
-                  updateExercise({ supersetWithNext })
-                }
-              />,
-            ] as const
-          }
+            <SegmentedListSwitch
+              label={t('workout.superset_next_exercise.button')}
+              icon={'link'}
+              value={exercise.supersetWithNext}
+              testID="exercise-superset"
+              onValueChange={(supersetWithNext) =>
+                updateExercise({ supersetWithNext })
+              }
+            />,
+            <SegmentListFormElement
+              label={t('exercise.progressive_overload.label')}
+              icon={'trendingUp'}
+              right={
+                <ProgressiveOverloadSelect
+                  value={exercise.progressiveOverload}
+                  onChange={(progressiveOverload) =>
+                    updateExercise({ progressiveOverload })
+                  }
+                />
+              }
+              line2={
+                <ProgressiveOverloadValuesEditor
+                  value={exercise.progressiveOverload}
+                  onChange={(progressiveOverload) =>
+                    updateExercise({ progressiveOverload })
+                  }
+                />
+              }
+            />,
+          ]}
           renderItem={(i) => i}
         />
       </FormRow>
