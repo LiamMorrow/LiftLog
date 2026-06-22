@@ -114,7 +114,10 @@ function Layout() {
           {t('generic.history.title')}
         </NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="settings">
+      <NativeTabs.Trigger
+        name="settings"
+        disableAutomaticContentInsets={Platform.OS === 'ios'}
+      >
         <NativeTabs.Trigger.Icon
           sf="gear"
           md={{ default: 'settings', selected: 'settings' }}

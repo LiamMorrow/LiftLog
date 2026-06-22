@@ -3,7 +3,7 @@ import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 
 import { T, useTranslate } from '@tolgee/react';
 import { Stack, useRouter } from 'expo-router';
-import { I18nManager, Platform, ScrollView, View } from 'react-native';
+import { I18nManager, Platform, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useDispatch } from 'react-redux';
@@ -92,6 +92,7 @@ export default function AiPlanner() {
     >
       <Stack.Screen
         options={{
+          scrollEdgeEffects: { top: 'hidden' },
           title: t('ai.planner.title'),
           headerRight: () => (
             <Tooltip title={t('ai.restart_chat.button')}>
@@ -100,12 +101,8 @@ export default function AiPlanner() {
           ),
         }}
       />
-      {/* Hack as the native tabs add inset to the first scrollview on the page */}
-      <ScrollView style={{ height: 0 }} />
       <View style={{ flex: 1 }}>
         <FlatList
-          contentInsetAdjustmentBehavior="never"
-          automaticallyAdjustContentInsets={false}
           onScroll={handleScroll}
           data={messages}
           inverted
