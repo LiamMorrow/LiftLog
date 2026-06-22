@@ -48,6 +48,7 @@ export function ExerciseSearcher({
     setSuggestedNewExercise('NONE');
     onSelectExercise(exercise);
     setOpen(false);
+    bottomSheetRef.current?.close();
   };
   return (
     <>
