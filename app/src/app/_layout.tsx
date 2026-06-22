@@ -63,7 +63,7 @@ function Layout() {
   return (
     <NativeTabs
       indicatorColor={colors.secondaryContainer}
-      rippleColor={colors.primary}
+      rippleColor={colors.onSecondaryContainer + '1A'}
       backgroundColor={colors.surfaceContainer}
       labelVisibilityMode="labeled"
       iconColor={colors.onSurfaceVariant}
