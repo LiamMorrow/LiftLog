@@ -71,7 +71,7 @@ export default function ThemeChooser(props: ThemeChooserProps) {
 
   const colorSeeds = [
     '#550000',
-    '#0x005500',
+    '#005500',
     '#000055',
     '#AA00AA',
     '#00AAAA',
