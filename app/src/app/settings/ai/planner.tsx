@@ -9,12 +9,7 @@ import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useDispatch } from 'react-redux';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import Button from '@/components/presentation/foundation/gesture-wrappers/button';
-import {
-  Appbar,
-  TextInput,
-  ActivityIndicator,
-  Tooltip,
-} from 'react-native-paper';
+import { Appbar, TextInput, Tooltip } from 'react-native-paper';
 import { Fragment, useEffect, useState } from 'react';
 import { useAppSelector } from '@/store';
 import {
@@ -56,6 +51,7 @@ import {
   WeightedExerciseBlueprint,
 } from '@/models/blueprint-models';
 import { LocalDate } from '@js-joda/core';
+import { IndeterminateProgress } from '@/components/presentation/foundation/indeterminate-progress';
 
 export default function AiPlanner() {
   const { t } = useTranslate();
@@ -313,20 +309,13 @@ function ProPrompt() {
     };
     run().catch(console.error);
   };
-  if (Platform.OS === 'web') {
-    return (
-      <SurfaceText>
-        Unfortunately the AI planner is not available on the web version. Please
-        download LiftLog for iOS or Android.
-      </SurfaceText>
-    );
-  }
   return (
     <View style={{ gap: spacing[2] }}>
       <SurfaceText>{t('ai.upgrade_to_pro.button')}</SurfaceText>
       <SurfaceText>
-        <LimitedHtml value={t('ai.upgrade_to_pro.explanation')} /> <ProPrice />
+        <LimitedHtml value={t('ai.upgrade_to_pro.explanation')} />
       </SurfaceText>
+      <ProPrice />
       <Button
         style={{ alignSelf: 'flex-end' }}
         mode="contained"
@@ -350,9 +339,9 @@ function ProPrice() {
   }, []);
   if (!product) {
     return (
-      <SurfaceText>
-        <ActivityIndicator />
-      </SurfaceText>
+      <View style={{ alignItems: 'center' }}>
+        <IndeterminateProgress />
+      </View>
     );
   }
 
