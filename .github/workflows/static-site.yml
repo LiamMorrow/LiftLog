@@ -21,12 +21,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Install
-        run: npm ci
-        working-directory: ./site
-      - name: Build
-        run: npm run build
-        working-directory: ./site
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4

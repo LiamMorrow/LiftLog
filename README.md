@@ -1,10 +1,9 @@
 # LiftLog
 
 <p align="center">
-  <img src="./assets/play_store_feature_graphic.png" alt="LiftLog Play Store Graphic"><br/>
-  <img width="250" src="./assets/AppScreens-LiftLog-1719652395579 2/android/Android Phones - 169/01.png" alt="App Screenshot 1">
-  <img width="250" src="./assets/AppScreens-LiftLog-1719652395579 2/android/Android Phones - 169/02.png" alt="App Screenshot 2">
-  <img width="250" src="./assets/AppScreens-LiftLog-1719652395579 2/android/Android Phones - 169/03.png" alt="App Screenshot 3">
+  <img width="250" src="./assets/AppScreens-LiftLog-1782275372989.render/android/English (en-US)/Android Phones  169/01.png" alt="App Screenshot 1">
+  <img width="250" src="./assets/AppScreens-LiftLog-1782275372989.render/android/English (en-US)/Android Phones  169/02.png" alt="App Screenshot 2">
+  <img width="250" src="./assets/AppScreens-LiftLog-1782275372989.render/android/English (en-US)/Android Phones  169/03.png" alt="App Screenshot 3">
 </p>
 
 <p align="center">
