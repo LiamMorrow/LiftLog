@@ -10,14 +10,22 @@ import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 
 export const openDatabaseSync: typeof expoOpenDatabaseSync = () => {
-  return withSerialize(
-    createClient({ url: ':memory:' }),
-  ) as unknown as ReturnType<typeof expoOpenDatabaseSync>;
+  const tmpPath = join(tmpdir(), `liftlog-test-${randomUUID()}.db`);
+  const client = withSerialize(createClient({ url: `file:${tmpPath}` }));
+  (client as unknown as { closeAsync: () => Promise<void> }).closeAsync = async () => {
+    client.close();
+    try { unlinkSync(tmpPath); } catch {}
+  };
+  return client as unknown as ReturnType<typeof expoOpenDatabaseSync>;
 };
 export const openDatabaseAsync: typeof expoOpenDatabaseAsync = async () => {
-  return withSerialize(
-    createClient({ url: ':memory:' }),
-  ) as unknown as ReturnType<typeof expoOpenDatabaseAsync>;
+  const tmpPath = join(tmpdir(), `liftlog-test-${randomUUID()}.db`);
+  const client = withSerialize(createClient({ url: `file:${tmpPath}` }));
+  (client as unknown as { closeAsync: () => Promise<void> }).closeAsync = async () => {
+    client.close();
+    try { unlinkSync(tmpPath); } catch {}
+  };
+  return client as unknown as ReturnType<typeof expoOpenDatabaseAsync>;
 };
 export const backupDatabaseAsync: typeof expoBackupDatabaseAsync = async (
   opts,

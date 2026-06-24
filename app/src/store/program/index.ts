@@ -6,7 +6,6 @@ import {
 } from '@/models/blueprint-models';
 import { RemoteData } from '@/models/remote';
 import { EmptySession, Session } from '@/models/session-models';
-import { LocalDate } from '@js-joda/core';
 import {
   createAction,
   createSelector,
@@ -216,22 +215,6 @@ const programSlice = createSlice({
           program.sessions.splice(index, 1);
         }
       }
-    },
-
-    createSavedPlan(
-      state,
-      action: PayloadAction<{
-        programId: string;
-        name: string;
-        time: LocalDate;
-      }>,
-    ) {
-      state.savedPrograms[action.payload.programId] = {
-        type: 'ProgramBlueprint',
-        name: action.payload.name,
-        sessions: [],
-        lastEdited: action.payload.time,
-      };
     },
 
     savePlan(
