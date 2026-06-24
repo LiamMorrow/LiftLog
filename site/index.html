@@ -698,6 +698,36 @@
         }
       }
 
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --base: #121612;
+          --surface: #1a1f1a;
+          --surface2: #222822;
+          --border: rgba(255, 255, 255, 0.08);
+          --border-strong: rgba(255, 255, 255, 0.14);
+          --text: #e8ede8;
+          --text-muted: #9aad9a;
+          --text-faint: #5a6e5a;
+          --accent: #4caf4c;
+          --accent-mid: #6bc46b;
+          --accent-light: #88d488;
+          --accent-dim: rgba(76, 175, 76, 0.1);
+        }
+
+        nav {
+          background: rgba(18, 22, 18, 0.9);
+        }
+
+        .oss-badge {
+          background: rgba(26, 31, 26, 0.7);
+        }
+
+        .plate-ring:nth-child(1) { border-color: rgba(76, 175, 76, 0.05); }
+        .plate-ring:nth-child(2) { border-color: rgba(76, 175, 76, 0.07); }
+        .plate-ring:nth-child(3) { border-color: rgba(76, 175, 76, 0.1); }
+        .plate-ring:nth-child(4) { border-color: rgba(76, 175, 76, 0.14); }
+      }
+
       @media (prefers-reduced-motion: reduce) {
         * {
           transition: none !important;
