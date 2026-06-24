@@ -4,7 +4,7 @@ import { KeyValueStore } from '../key-value-store';
 import { dataMigrationsSchema, sessionsSchema } from '@/db/schema';
 import { WeightJSON } from '@/models/storage/versions/latest';
 import { PreferenceService } from '../preference-service';
-import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
+import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/initial/protobuf-migrator';
 import { sessionMigrations } from '@/models/storage/versions/migrations/session';
 
 export const importSessionsDataMigration = 'IMPORT_SESSIONS';

@@ -18,7 +18,7 @@ import { streamToUint8Array } from '@/utils/stream';
 import { sleep } from '@/utils/sleep';
 import { Session } from '@/models/session-models';
 import { ProgramBlueprint } from '@/models/blueprint-models';
-import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
+import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/initial/protobuf-migrator';
 import {
   FeedIdentity,
   FollowerFeedUser,

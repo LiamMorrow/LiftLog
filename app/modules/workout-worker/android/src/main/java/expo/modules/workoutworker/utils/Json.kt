@@ -75,11 +75,6 @@ object Json {
                 .withSubtype(RecordedWeightedExercise::class.java, "RecordedWeightedExercise")
         )
         .add(
-            PolymorphicJsonAdapterFactory.of(ExerciseBlueprint::class.java, "type")
-                .withSubtype(WeightedExerciseBlueprint::class.java, "WeightedExerciseBlueprint")
-                .withSubtype(CardioExerciseBlueprint::class.java, "CardioExerciseBlueprint")
-        )
-        .add(
             PolymorphicJsonAdapterFactory.of(CardioTarget::class.java, "type")
                 .withSubtype(DistanceCardioTarget::class.java, "distance")
                 .withSubtype(TimeCardioTarget::class.java, "time")

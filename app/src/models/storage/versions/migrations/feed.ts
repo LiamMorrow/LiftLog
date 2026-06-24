@@ -17,24 +17,25 @@ import {
   SharedSessionJSON,
   UnfollowNotificationInboxMessageJSON,
   UnfollowNotificationJSON,
-} from '@/models/storage/versions/v1';
+} from '@/models/storage/versions/initial';
+import type * as Latest from '@/models/storage/versions/latest/feed';
 import { match } from 'ts-pattern';
 
 export const feedIdentityMigrations =
-  createMigrations<FeedIdentityJSON>().build();
+  createMigrations<FeedIdentityJSON>().build<Latest.FeedIdentityJSON>();
 
 export const followRequestInboxMessageMigrations =
-  createMigrations<FollowRequestInboxMessageJSON>().build();
+  createMigrations<FollowRequestInboxMessageJSON>().build<Latest.FollowRequestInboxMessageJSON>();
 export const followResponseInboxMessageMigrations =
-  createMigrations<FollowResponseInboxMessageJSON>().build();
+  createMigrations<FollowResponseInboxMessageJSON>().build<Latest.FollowResponseInboxMessageJSON>();
 export const unfollowNotificationInboxMessageMigrations =
-  createMigrations<UnfollowNotificationInboxMessageJSON>().build();
+  createMigrations<UnfollowNotificationInboxMessageJSON>().build<Latest.UnfollowNotificationInboxMessageJSON>();
 
 export const followerFeedUserMigrations =
-  createMigrations<FollowerFeedUserJSON>().build();
+  createMigrations<FollowerFeedUserJSON>().build<Latest.FollowerFeedUserJSON>();
 
 export const pendingFeedUserMigrations =
-  createMigrations<PendingFeedUserJSON>().build();
+  createMigrations<PendingFeedUserJSON>().build<Latest.PendingFeedUserJSON>();
 
 export const sessionUserEventMigrations =
   createMigrations<SessionUserEventJSON>()
@@ -43,10 +44,10 @@ export const sessionUserEventMigrations =
       version: 2,
       session: sessionMigrations.migrateUntil(x.session, 2),
     }))
-    .build();
+    .build<Latest.SessionUserEventJSON>();
 
 export const removedSessionUserEventMigrations =
-  createMigrations<RemovedSessionUserEventJSON>().build();
+  createMigrations<RemovedSessionUserEventJSON>().build<Latest.RemovedSessionUserEventJSON>();
 
 export const userEventMigrations = {
   $anyType: undefined! as
@@ -81,7 +82,7 @@ export const sharedProgramBlueprintMigrations =
         2,
       ),
     }))
-    .build();
+    .build<Latest.SharedProgramBlueprintJSON>();
 
 export const sharedSessionMigrations = createMigrations<SharedSessionJSON>()
   .add((x) => ({
@@ -89,7 +90,7 @@ export const sharedSessionMigrations = createMigrations<SharedSessionJSON>()
     version: 2,
     session: sessionMigrations.migrateUntil(x.session, 2),
   }))
-  .build();
+  .build<Latest.SharedSessionJSON>();
 
 export const followedFeedUserMigrations =
   createMigrations<FollowedFeedUserJSON>()
@@ -100,18 +101,18 @@ export const followedFeedUserMigrations =
         x.currentPlan &&
         programBlueprintMigrations.migrateUntil(x.currentPlan, 2),
     }))
-    .build();
+    .build<Latest.FollowedFeedUserJSON>();
 
 export const unfollowNotificationMigrations =
-  createMigrations<UnfollowNotificationJSON>().build();
+  createMigrations<UnfollowNotificationJSON>().build<Latest.UnfollowNotificationJSON>();
 
 export const acceptedFollowResponseMigrations =
-  createMigrations<AcceptedFollowResponseJSON>().build();
+  createMigrations<AcceptedFollowResponseJSON>().build<Latest.AcceptedFollowResponseJSON>();
 export const rejectedFollowResponseMigrations =
-  createMigrations<RejectedFollowResponseJSON>().build();
+  createMigrations<RejectedFollowResponseJSON>().build<Latest.RejectedFollowResponseJSON>();
 
 export const followResponseMigrations =
-  createMigrations<FollowResponseJSON>().build();
+  createMigrations<FollowResponseJSON>().build<Latest.FollowResponseJSON>();
 
 export const inboxMessageMigrations = {
   $anyType: undefined! as

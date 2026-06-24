@@ -15,9 +15,6 @@
     "repsPerSet": {
       "type": "integer"
     },
-    "progressiveOverload": {
-      "$ref": "./ProgressiveOverload.json"
-    },
     "restBetweenSets": {
       "$ref": "./Rest.json"
     },
@@ -29,6 +26,9 @@
     },
     "link": {
       "type": "string"
+    },
+    "progressiveOverload": {
+      "$ref": "./ProgressiveOverload.json"
     }
   },
   "required": [
@@ -36,10 +36,10 @@
     "name",
     "sets",
     "repsPerSet",
-    "progressiveOverload",
     "restBetweenSets",
     "supersetWithNext",
     "notes",
-    "link"
+    "link",
+    "progressiveOverload"
   ]
 }

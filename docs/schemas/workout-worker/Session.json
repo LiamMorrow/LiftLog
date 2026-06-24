@@ -10,7 +10,19 @@
       "type": "string"
     },
     "blueprint": {
-      "$ref": "./SessionBlueprint.json"
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "notes"
+      ]
     },
     "recordedExercises": {
       "type": "array",

@@ -11,7 +11,7 @@ import {
   feedRevokedFollowSecretsSchema,
 } from '@/db/schema';
 import { LiftLog } from '@/gen/proto';
-import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
+import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/initial/protobuf-migrator';
 import { SessionUserEvent } from '@/models/feed-models';
 import {
   followRequestInboxMessageMigrations,

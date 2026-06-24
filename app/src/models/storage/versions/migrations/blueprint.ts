@@ -1,12 +1,16 @@
 import {
+  ProgramBlueprintJSON as InitialProgramBlueprintJSON,
+  SessionBlueprintJSON as InitialSessionBlueprintJSON,
+} from '@/models/storage/versions/initial';
+import {
   ProgramBlueprintJSON,
   SessionBlueprintJSON,
-} from '@/models/storage/versions/v1';
+} from '@/models/storage/versions/latest/blueprint';
 import { createMigrations } from './migrator';
 import { addProgressiveOverloadToExercise } from '@/models/storage/versions/migrations/steps/add-progressive-overload';
 
 export const sessionBlueprintMigrations =
-  createMigrations<SessionBlueprintJSON>()
+  createMigrations<InitialSessionBlueprintJSON>()
     .add((value) => ({
       version: 2 as const,
       exercises: value.exercises.map((x) =>
@@ -17,10 +21,10 @@ export const sessionBlueprintMigrations =
       name: value.name,
       notes: value.notes,
     }))
-    .build();
+    .build<SessionBlueprintJSON>();
 
 export const programBlueprintMigrations =
-  createMigrations<ProgramBlueprintJSON>()
+  createMigrations<InitialProgramBlueprintJSON>()
     .add((value) => ({
       version: 2,
       lastEdited: value.lastEdited,
@@ -29,4 +33,4 @@ export const programBlueprintMigrations =
         sessionBlueprintMigrations.migrateUntil(session, 2),
       ),
     }))
-    .build();
+    .build<ProgramBlueprintJSON>();

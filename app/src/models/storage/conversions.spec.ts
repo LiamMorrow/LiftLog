@@ -14,7 +14,7 @@ import { gunzipSync } from 'zlib';
 import { Weight } from '@/models/weight';
 import { ProgramBlueprint, SessionBlueprint } from '../blueprint-models';
 import { Session } from '../session-models';
-import { ProtobufToJsonV1Migrator } from './versions/v1/protobuf-migrator';
+import { ProtobufToJsonV1Migrator } from './versions/initial/protobuf-migrator';
 import { fromJsonString, toJsonString } from '@/models/storage/versions/latest';
 import { sessionMigrations } from '@/models/storage/versions/migrations/session';
 

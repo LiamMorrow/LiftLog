@@ -7,7 +7,7 @@ import {
 import Enumerable from 'linq';
 import { NormalizedName } from '@/models/blueprint-models';
 import { fromRecordedExerciseJSON } from '@/models/session-models';
-import { ExerciseDescriptorJSON } from '@/models/storage/versions/v1';
+import { ExerciseDescriptorJSON } from '@/models/storage/versions/initial';
 import { uuid } from '@/utils/uuid';
 import {
   exerciseDescriptorMigrations,

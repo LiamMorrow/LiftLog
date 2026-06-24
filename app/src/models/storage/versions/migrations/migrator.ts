@@ -33,6 +33,19 @@ export type Migration<TInput = unknown, TOutput = unknown> = {
 type AnyMigration = Migration<any, any>;
 
 /**
+ * `true` when `A` is assignable to `B`, else `false`. Wrapped in tuples to
+ * avoid distributing over unions.
+ */
+type Assignable<A, B> = [A] extends [B] ? true : false;
+
+/**
+ * `true` only when `A` and `B` are mutually assignable. Used by {@link MigrationsBuilder.build}
+ * to assert that a chain's accumulated output matches the hand-declared latest type.
+ */
+type MutuallyAssignable<A, B> =
+  Assignable<A, B> extends true ? Assignable<B, A> : false;
+
+/**
  * Fluent builder returned by {@link createMigrations} and each subsequent `.add()` call.
  *
  * Each call to `.add()` appends one migration step and returns a new builder whose
@@ -78,9 +91,24 @@ type MigrationsBuilder<
   /**
    * Finalises the builder and returns a {@link Migrator} over the accumulated migrations.
    *
-   * @returns A {@link Migrator} whose `$type` reflects the final output shape
+   * Optionally pass the hand-declared latest type as `TFinal` to *pin* the chain: the
+   * call fails to compile unless the accumulated output is mutually assignable to `TFinal`.
+   * This is how `latest/` becomes the source of truth — when you change the declared type,
+   * the chain stops compiling until a new `.add(...)` produces the matching shape.
+   * Omitting `TFinal` defaults to the inferred output (back-compatible no-op assertion).
+   *
+   * @typeParam TFinal - The hand-declared latest type to assert the chain produces
+   * @returns A {@link Migrator} whose `$finalType` is `TFinal`
    */
-  build(): Migrator<TPrevOutput, TAccumulated>;
+  build<TFinal = TPrevOutput>(
+    ...check: MutuallyAssignable<TPrevOutput, NoInfer<TFinal>> extends true
+      ? []
+      : [
+          error: 'Final migration output does not match the declared latest type',
+          expected: TFinal,
+          received: TPrevOutput,
+        ]
+  ): Migrator<TFinal, TAccumulated>;
 };
 
 /**
@@ -96,7 +124,7 @@ class MigrationBuilderImpl<
   constructor(private previousValues: AnyMigration[]) {}
 
   add<TNext>(
-    up: (state: TPrevOutput) => TNext,
+    up: (state: TPrevOutput) => TNext & { version: TAccumulated['length'] },
   ): MigrationsBuilder<
     TNext,
     readonly [...TAccumulated, Migration<TPrevOutput, TNext>]
@@ -117,16 +145,25 @@ class MigrationBuilderImpl<
     ]);
   }
 
-  build(): Migrator<TPrevOutput, TAccumulated> {
-    return new MigratorImpl<TPrevOutput, TAccumulated>(
+  build<TFinal = TPrevOutput>(
+    ...check: MutuallyAssignable<TPrevOutput, NoInfer<TFinal>> extends true
+      ? []
+      : [
+          error: 'Final migration output does not match the declared latest type',
+          expected: TFinal,
+          received: TPrevOutput,
+        ]
+  ): Migrator<TFinal, TAccumulated> {
+    void check;
+    return new MigratorImpl(
       this.previousValues as any,
-    );
+    ) as unknown as Migrator<TFinal, TAccumulated>;
   }
 }
 
 class MigratorImpl<
   TFinal,
-  TMigrations extends readonly [...AnyMigration[], Migration<any, TFinal>],
+  TMigrations extends readonly [...AnyMigration[], AnyMigration],
 > implements Migrator<TFinal, TMigrations> {
   $finalType: TFinal = undefined!;
   $anyType: TMigrations[number]['$type'] = undefined!;
@@ -184,7 +221,7 @@ class MigratorImpl<
  */
 interface Migrator<
   TFinal,
-  TMigrations extends readonly [...AnyMigration[], Migration<any, TFinal>],
+  TMigrations extends readonly [...AnyMigration[], AnyMigration],
 > {
   /**
    * Phantom field — never set at runtime.

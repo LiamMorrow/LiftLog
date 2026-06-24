@@ -1,5 +1,6 @@
 import { createMigrations } from '@/models/storage/versions/migrations/migrator';
-import { ExerciseDescriptorJSON } from '@/models/storage/versions/v1';
+import { ExerciseDescriptorJSON as InitialExerciseDescriptorJSON } from '@/models/storage/versions/initial';
+import { ExerciseDescriptorJSON } from '@/models/storage/versions/latest/exercise-descriptor';
 
 export const exerciseDescriptorMigrations =
-  createMigrations<ExerciseDescriptorJSON>().build();
+  createMigrations<InitialExerciseDescriptorJSON>().build<ExerciseDescriptorJSON>();

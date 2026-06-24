@@ -521,7 +521,10 @@ describe('WorkoutMessage JSON schema validation', () => {
 
     describe('RecordedWeightedExercise', () => {
       it('rejects an exercise missing its blueprint name', () => {
-        const json = makeWeightedExercise().toJSON() as Record<string, unknown>;
+        const json = makeWeightedExercise().toJSON() as unknown as Record<
+          string,
+          unknown
+        >;
         const blueprint = { ...(json.blueprint as Record<string, unknown>) };
         delete blueprint.name;
         expect(

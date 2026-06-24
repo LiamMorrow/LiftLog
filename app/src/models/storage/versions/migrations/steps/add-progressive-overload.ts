@@ -1,6 +1,8 @@
-import { WeightedExerciseBlueprintJSON } from '@/models/storage/versions/v1';
+import {
+  WeightedExerciseBlueprintJSON,
+  ProgressiveOverloadJSON,
+} from '@/models/storage/versions/initial';
 import { fromBigNumberJSON } from '@/models/storage/versions/libs';
-import { ProgressiveOverloadJSON } from '@/models/storage/versions/v2';
 import { omit } from '@/utils/omit';
 
 export function addProgressiveOverloadToExercise(

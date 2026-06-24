@@ -2,7 +2,7 @@ import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { KeyValueStore } from '../key-value-store';
 import { dataMigrationsSchema, programsSchema } from '@/db/schema';
 import { LiftLog } from '@/gen/proto';
-import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
+import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/initial/protobuf-migrator';
 import { programBlueprintMigrations } from '@/models/storage/versions/migrations';
 
 export const importProgramsDataMigration = 'IMPORT_PROGRAMS';

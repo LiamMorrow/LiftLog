@@ -29,7 +29,7 @@ import {
   getCurrentExerciseDetails,
   getTimerInfo,
 } from '@/store/current-session/helpers';
-import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/v1/protobuf-migrator';
+import { ProtobufToJsonV1Migrator } from '@/models/storage/versions/initial/protobuf-migrator';
 import {
   fromJsonString,
   JsonString,

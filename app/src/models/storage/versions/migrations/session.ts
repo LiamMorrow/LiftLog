@@ -1,9 +1,10 @@
 import { createMigrations } from '@/models/storage/versions/migrations/migrator';
 import { addProgressiveOverloadToExercise } from '@/models/storage/versions/migrations/steps/add-progressive-overload';
-import { SessionJSON } from '@/models/storage/versions/v1';
+import { SessionJSON as InitialSessionJSON } from '@/models/storage/versions/initial';
+import { SessionJSON } from '@/models/storage/versions/latest/session';
 import { omit } from '@/utils/omit';
 
-export const sessionMigrations = createMigrations<SessionJSON>()
+export const sessionMigrations = createMigrations<InitialSessionJSON>()
   .add((session) => ({
     ...session,
     version: 2,
@@ -17,4 +18,4 @@ export const sessionMigrations = createMigrations<SessionJSON>()
           },
     ),
   }))
-  .build();
+  .build<SessionJSON>();

@@ -121,6 +121,7 @@ Contributions, issues, and feature requests are welcome! See [CONTRIBUTING.md](.
 - [Remote Backup](./docs/RemoteBackup.md) - Documents how to connect LiftLog to a remote backup server.
 - [Plaintext Export](./docs/PlaintextExport.md) - Documents how to export your data as plaintext.
 - [Workout Worker](./docs/WorkoutWorker.md) - Documents the WorkoutWorker, an event based bridge between native and JS which powers the Android persistent notifications.
+- [Storage Migrations](./docs/Migrations.md) - Documents how on-device data is versioned and migrated, and what to do when changing a stored model.
 
 ## 💬 Support & Community
 
