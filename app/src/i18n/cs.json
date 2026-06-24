@@ -22,7 +22,7 @@
   "backup.reminders.subtitle": "Pravidelně navrhovat zálohy v případě, že jste dlouho žádnou zálohu neprovedli",
   "backup.reminders.title": "Připomínky zálohování",
   "backup.remote.explanation": "Toto je pokročilá funkce, která umožní LiftLogu ukládat zálohy na vzdáleném serveru.<br>Pro instrukce o tom, jak nastavit vzdálený server si prosím přečtěte dokumentaci.",
-  "backup.restore_data.subtitle": "Importujte data ze souboru pro obnovení;",
+  "backup.restore_data.subtitle": "Importujte data ze souboru pro obnovení",
   "backup.restore_data.title": "Obnovit data",
   "backup.sent_successfully.message": "Záloha úspěšně odeslána",
   "date.edited_on.label": "Upraveno: {date}",
