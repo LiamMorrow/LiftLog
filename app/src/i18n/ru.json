@@ -448,21 +448,5 @@
   "workout_persistent_notification.finish_workout.action": "Завершить тренировку",
   "workout_persistent_notification.min_rest_over.message": "Минимальное время отдыха прошло!",
   "workout_persistent_notification.max_rest_over.message": "Максимальное время отдыха прошло!",
-  "workout.finish.action.tooltip": "Завершить тренировку",
-  "exercise.progressive_overload.increase_lowest_set.increase_strategy.first.label": "",
-  "exercise.progressive_overload.example.label": "",
-  "exercise.progressive_overload.increase_all_evenly.label": "",
-  "exercise.progressive_overload.increase_lowest_set.increase_strategy.all.label": "",
-  "plan.diff.progressive_overload_increase_lowest_set.label": "",
-  "exercise.progressive_overload.increase_all_evenly.amount.label": "",
-  "settings.copy_logs.subtitle": "",
-  "exercise.progressive_overload.increase_lowest_set.label": "",
-  "exercise.progressive_overload.increase_lowest_set.increase_strategy.label": "",
-  "settings.app_configuration.true_black_dark_theme.title": "",
-  "exercise.progressive_overload.increase_lowest_set.increase_strategy.middle.label": "",
-  "plan.diff.progressive_overload_increase_all_evenly.label": "",
-  "exercise.progressive_overload.no.label": "",
-  "settings.copy_logs.title": "",
-  "exercise.progressive_overload.increase_lowest_set.increase_strategy.last.label": "",
-  "exercise.progressive_overload.increase_lowest_set.amount.label": ""
+  "workout.finish.action.tooltip": "Завершить тренировку"
 }
