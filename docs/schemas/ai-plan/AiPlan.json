@@ -1,0 +1,398 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "number",
+      "const": 2
+    },
+    "name": {
+      "type": "string",
+      "description": "A short name for the plan."
+    },
+    "description": {
+      "type": "string",
+      "description": "A description of the plan, with recommendations for the user's skill level and goals."
+    },
+    "blueprint": {
+      "$ref": "#/definitions/ProgramBlueprint"
+    }
+  },
+  "required": [
+    "version",
+    "name",
+    "description",
+    "blueprint"
+  ],
+  "definitions": {
+    "ProgramBlueprint": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "number",
+          "const": 2
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the workout program; typically matches the plan name."
+        },
+        "sessions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SessionBlueprint"
+          }
+        },
+        "lastEdited": {
+          "$ref": "#/definitions/LocalDate"
+        }
+      },
+      "required": [
+        "version",
+        "name",
+        "sessions",
+        "lastEdited"
+      ]
+    },
+    "SessionBlueprint": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "number",
+          "const": 2
+        },
+        "name": {
+          "type": "string"
+        },
+        "exercises": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExerciseBlueprint"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "version",
+        "name",
+        "exercises",
+        "notes"
+      ]
+    },
+    "ExerciseBlueprint": {
+      "type": "object",
+      "discriminator": {
+        "propertyName": "type"
+      },
+      "required": [
+        "type"
+      ],
+      "oneOf": [
+        {
+          "$ref": "#/definitions/WeightedExerciseBlueprint"
+        },
+        {
+          "$ref": "#/definitions/CardioExerciseBlueprint"
+        }
+      ]
+    },
+    "WeightedExerciseBlueprint": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "WeightedExerciseBlueprint"
+        },
+        "name": {
+          "type": "string"
+        },
+        "sets": {
+          "type": "integer"
+        },
+        "repsPerSet": {
+          "type": "integer"
+        },
+        "restBetweenSets": {
+          "$ref": "#/definitions/Rest"
+        },
+        "supersetWithNext": {
+          "type": "boolean",
+          "description": "When true, this exercise is performed back-to-back with the following one (a superset), with no rest in between."
+        },
+        "notes": {
+          "type": "string"
+        },
+        "link": {
+          "type": "string",
+          "description": "A url to some explanation of how to do this. We should not fill this unless the user has explicitly given us a link to fill"
+        },
+        "progressiveOverload": {
+          "$ref": "#/definitions/ProgressiveOverload"
+        }
+      },
+      "required": [
+        "type",
+        "name",
+        "sets",
+        "repsPerSet",
+        "restBetweenSets",
+        "supersetWithNext",
+        "notes",
+        "link",
+        "progressiveOverload"
+      ]
+    },
+    "Rest": {
+      "type": "object",
+      "properties": {
+        "minRest": {
+          "$ref": "#/definitions/Duration"
+        },
+        "maxRest": {
+          "$ref": "#/definitions/Duration"
+        },
+        "failureRest": {
+          "$ref": "#/definitions/Duration",
+          "description": "Rest taken after a set where the user failed to hit their target reps."
+        }
+      },
+      "required": [
+        "minRest",
+        "maxRest",
+        "failureRest"
+      ]
+    },
+    "Duration": {
+      "type": "string",
+      "format": "duration"
+    },
+    "ProgressiveOverload": {
+      "type": "object",
+      "discriminator": {
+        "propertyName": "type"
+      },
+      "required": [
+        "type"
+      ],
+      "oneOf": [
+        {
+          "$ref": "#/definitions/NoProgressiveOverload"
+        },
+        {
+          "$ref": "#/definitions/IncreaseAllEvenlyProgressiveOverload"
+        },
+        {
+          "$ref": "#/definitions/IncreaseLowestSetProgressiveOverload"
+        }
+      ]
+    },
+    "NoProgressiveOverload": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "NoProgressiveOverload"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "description": "Used when the user does not want progressive overload at all. Potentially with bodyweight exercises."
+    },
+    "IncreaseAllEvenlyProgressiveOverload": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "IncreaseAllEvenlyProgressiveOverload"
+        },
+        "amount": {
+          "$ref": "#/definitions/BigNumber"
+        }
+      },
+      "required": [
+        "type",
+        "amount"
+      ],
+      "description": "The standard \"increase every set across the board\" progressive overload. Usually 2.5kg, or 5lb."
+    },
+    "BigNumber": {
+      "type": "string",
+      "examples": [
+        "1.23"
+      ],
+      "format": "decimal"
+    },
+    "IncreaseLowestSetProgressiveOverload": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "IncreaseLowestSetProgressiveOverload"
+        },
+        "amount": {
+          "$ref": "#/definitions/BigNumber"
+        },
+        "increaseStrategy": {
+          "type": "string",
+          "enum": [
+            "first",
+            "middle",
+            "last",
+            "all"
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "amount",
+        "increaseStrategy"
+      ],
+      "description": "A more complex progressive overload which allows the user to increase only a single set, or all sets which have the lowest weight.\n\nA user might want to increase the middle weight for exercises where going up across the board would be too much e.g. lateral raises, or other shoulder exercises"
+    },
+    "CardioExerciseBlueprint": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "CardioExerciseBlueprint"
+        },
+        "name": {
+          "type": "string"
+        },
+        "sets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CardioExerciseSetBlueprint"
+          }
+        },
+        "notes": {
+          "type": "string"
+        },
+        "link": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "name",
+        "sets",
+        "notes",
+        "link"
+      ]
+    },
+    "CardioExerciseSetBlueprint": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "$ref": "#/definitions/CardioTarget"
+        },
+        "trackDuration": {
+          "type": "boolean"
+        },
+        "trackDistance": {
+          "type": "boolean"
+        },
+        "trackResistance": {
+          "type": "boolean"
+        },
+        "trackIncline": {
+          "type": "boolean"
+        },
+        "trackWeight": {
+          "type": "boolean"
+        },
+        "trackSteps": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "target",
+        "trackDuration",
+        "trackDistance",
+        "trackResistance",
+        "trackIncline",
+        "trackWeight",
+        "trackSteps"
+      ]
+    },
+    "CardioTarget": {
+      "type": "object",
+      "discriminator": {
+        "propertyName": "type"
+      },
+      "required": [
+        "type"
+      ],
+      "oneOf": [
+        {
+          "$ref": "#/definitions/TimeCardioTarget"
+        },
+        {
+          "$ref": "#/definitions/DistanceCardioTarget"
+        }
+      ]
+    },
+    "TimeCardioTarget": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "time"
+        },
+        "value": {
+          "$ref": "#/definitions/Duration"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "DistanceCardioTarget": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "distance"
+        },
+        "value": {
+          "$ref": "#/definitions/Distance"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "Distance": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "$ref": "#/definitions/BigNumber"
+        },
+        "unit": {
+          "$ref": "#/definitions/DistanceUnit"
+        }
+      },
+      "required": [
+        "value",
+        "unit"
+      ]
+    },
+    "DistanceUnit": {
+      "type": "string",
+      "enum": [
+        "metre",
+        "yard",
+        "mile",
+        "kilometre"
+      ]
+    },
+    "LocalDate": {
+      "type": "string",
+      "format": "date"
+    }
+  }
+}

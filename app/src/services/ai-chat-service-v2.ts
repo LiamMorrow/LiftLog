@@ -1,28 +1,31 @@
 import {
-  AiChatResponse,
-  AiExerciseBlueprint,
-  AiWorkoutPlan,
+  AiChatResponseV2,
+  AiChatResponseV2Json,
+  aiPlanFromJSON,
 } from '@/models/ai-models';
+import { aiPlanMigrations } from '@/models/storage/versions/migrations';
 
-import { Duration } from '@js-joda/core';
 import { HubConnection, HubConnectionState } from '@microsoft/signalr';
 import { AsyncIterableSubject } from 'data-async-iterators';
 import { match, P } from 'ts-pattern';
-import BigNumber from 'bignumber.js';
-import { parseDuration } from '@/utils/format-date';
 import { HubConnectionFactory } from '@/services/hub-connection-factory';
 import { RootState } from '@/store';
 import Purchases from 'react-native-purchases';
+import { selectPreferredWeightUnit } from '@/store/settings';
 
-export class AiChatService {
+/**
+ * AI chat service connecting to the `/ai-chat-v2` hub.
+ */
+export class AiChatServiceV2 {
   private connection: HubConnection | undefined;
   constructor(
     private hubConnectionFactory: HubConnectionFactory,
     private getState: () => RootState,
   ) {}
 
-  async *introduce(): AsyncIterableIterator<AiChatResponse> {
+  async *introduce(): AsyncIterableIterator<AiChatResponseV2> {
     const proToken = this.getState().settings.proToken;
+    const preferredWeightUnit = selectPreferredWeightUnit(this.getState());
     if (!proToken) {
       yield {
         type: 'purchasePro',
@@ -31,13 +34,18 @@ export class AiChatService {
     }
     const subject = await this.setupResponseListening(proToken);
     void this.connection
-      ?.invoke('Introduce', Intl.DateTimeFormat().resolvedOptions().locale)
+      ?.invoke(
+        'Introduce',
+        Intl.DateTimeFormat().resolvedOptions().locale,
+        aiPlanMigrations.latestVersion,
+        preferredWeightUnit,
+      )
       .finally(() => subject.end());
     yield* subject;
     this.connection?.off('ReceiveMessage');
   }
 
-  async *sendMessage(message: string): AsyncIterableIterator<AiChatResponse> {
+  async *sendMessage(message: string): AsyncIterableIterator<AiChatResponseV2> {
     const proToken = this.getState().settings.proToken;
     if (!proToken) {
       yield {
@@ -47,7 +55,7 @@ export class AiChatService {
     }
     const subject = await this.setupResponseListening(proToken);
     void this.connection
-      ?.invoke('SendMessage', message)
+      ?.invoke('SendMessage', message, aiPlanMigrations.latestVersion)
       .finally(() => subject.end());
     yield* subject;
     this.connection?.off('ReceiveMessage');
@@ -71,9 +79,12 @@ export class AiChatService {
   }
 
   private async setupResponseListening(proToken: string) {
-    const subject = new AsyncIterableSubject<AiChatResponse>();
+    const subject = new AsyncIterableSubject<AiChatResponseV2>();
     if (!this.connection) {
-      this.connection = this.hubConnectionFactory.create(proToken);
+      this.connection = this.hubConnectionFactory.create(
+        proToken,
+        '/ai-chat-v2',
+      );
 
       this.connection.onclose((e) => {
         this.connection = undefined;
@@ -99,66 +110,32 @@ export class AiChatService {
       subject.end();
       return subject;
     }
-    this.connection.on(
-      'ReceiveMessage',
-      async (m: JsonResponse<AiChatResponse>) => {
-        try {
-          subject.pushValue(
-            match(m)
-              .returnType<AiChatResponse>()
-              .with(
-                { type: P.union('messageResponse', 'purchasePro') },
-                (chatMessage) => chatMessage,
-              )
-              .with({ type: 'chatPlan' }, ({ plan }) => ({
-                type: 'chatPlan',
-                plan: parseJson(plan),
-              }))
-              .exhaustive(),
-          );
-        } catch (e) {
-          console.warn('Failed to parse ai response', e);
-        }
-      },
-    );
+    this.connection.on('ReceiveMessage', async (m: AiChatResponseV2Json) => {
+      try {
+        console.log('M', m);
+        subject.pushValue(
+          match(m)
+            .returnType<AiChatResponseV2>()
+            .with(
+              {
+                type: P.union(
+                  'messageResponse',
+                  'purchasePro',
+                  'updateRequired',
+                ),
+              },
+              (chatMessage) => chatMessage,
+            )
+            .with({ type: 'chatPlan' }, (plan) => ({
+              type: 'chatPlan' as const,
+              plan: aiPlanFromJSON(plan),
+            }))
+            .exhaustive(),
+        );
+      } catch (e) {
+        console.warn('Failed to parse ai response', e);
+      }
+    });
     return subject;
   }
-}
-
-type JsonResponse<T> = T extends string | number | boolean | null
-  ? T
-  : T extends Duration
-    ? string
-    : T extends BigNumber
-      ? number
-      : T extends (infer U)[]
-        ? JsonResponse<U>[]
-        : T extends object
-          ? { [K in keyof T]: JsonResponse<T[K]> }
-          : never;
-
-function parseJson(aiPlan: JsonResponse<AiWorkoutPlan>): AiWorkoutPlan {
-  return {
-    description: aiPlan.description,
-    name: aiPlan.name,
-    sessions: aiPlan.sessions.map((s) => ({
-      name: s.name,
-      exercises: s.exercises.map(parseAiExercise),
-      notes: s.notes,
-    })),
-  };
-}
-
-function parseAiExercise(
-  ex: JsonResponse<AiExerciseBlueprint>,
-): AiExerciseBlueprint {
-  return {
-    ...ex,
-    weightIncreaseOnSuccess: BigNumber(ex.weightIncreaseOnSuccess),
-    restBetweenSets: {
-      minRest: parseDuration(ex.restBetweenSets.minRest),
-      maxRest: parseDuration(ex.restBetweenSets.maxRest),
-      failureRest: parseDuration(ex.restBetweenSets.failureRest),
-    },
-  };
 }

@@ -62,6 +62,7 @@ builder.Services.AddHostedService<CleanupExpiredDataHostedService>();
 
 builder.Services.AddScoped<PurchaseVerificationService>();
 builder.Services.AddAnthropicWorkoutPlanner();
+builder.Services.AddAnthropicWorkoutPlannerV2();
 builder.Services.AddWebAuthPurchaseVerification();
 builder.Services.AddRevenueCatPurchaseVerification();
 
@@ -91,6 +92,7 @@ app.MapControllers();
 
 // Map SignalR Hubs
 app.MapHub<AiWorkoutChatHub>("/ai-chat");
+app.MapHub<AiWorkoutChatHubV2>("/ai-chat-v2");
 
 app.MapMethods(
     "/health",

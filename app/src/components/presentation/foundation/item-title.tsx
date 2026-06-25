@@ -1,13 +1,19 @@
 import { Text, TextStyle } from 'react-native';
-import { useAppTheme, font } from '@/hooks/useAppTheme';
+import { useAppTheme, font, ColorChoice } from '@/hooks/useAppTheme';
 
 interface ItemTitleProps {
   title: string;
   style?: TextStyle;
   testID?: string;
+  color?: ColorChoice;
 }
 
-export default function ItemTitle({ title, style, testID }: ItemTitleProps) {
+export default function ItemTitle({
+  title,
+  style,
+  testID,
+  color = 'onSurface',
+}: ItemTitleProps) {
   const { colors } = useAppTheme();
 
   return (
@@ -19,7 +25,7 @@ export default function ItemTitle({ title, style, testID }: ItemTitleProps) {
           flexShrink: 1,
           minWidth: 0,
           textAlign: 'left',
-          color: colors.onSurface,
+          color: colors[color],
         },
         style,
       ]}

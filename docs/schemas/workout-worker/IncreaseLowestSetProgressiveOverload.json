@@ -23,5 +23,6 @@
     "type",
     "amount",
     "increaseStrategy"
-  ]
+  ],
+  "description": "A more complex progressive overload which allows the user to increase only a single set, or all sets which have the lowest weight.\n\nA user might want to increase the middle weight for exercises where going up across the board would be too much e.g. lateral raises, or other shoulder exercises"
 }

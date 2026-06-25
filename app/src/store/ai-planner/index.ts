@@ -1,4 +1,7 @@
-import { AiChatResponse } from '@/models/ai-models';
+import {
+  AiChatResponseV2,
+  AiChatSharedProgramMessage,
+} from '@/models/ai-models';
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 const initialState: AppState = {
@@ -6,7 +9,7 @@ const initialState: AppState = {
   plannerChat: [],
 };
 
-export type ChatMessage = AiChatResponse & {
+export type ChatMessage = (AiChatResponseV2 | AiChatSharedProgramMessage) & {
   id: string;
   from: 'User' | 'Agent';
   isLoading?: boolean;

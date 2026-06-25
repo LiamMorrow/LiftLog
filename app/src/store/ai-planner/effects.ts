@@ -1,4 +1,7 @@
-import { AiChatResponse } from '@/models/ai-models';
+import {
+  AiChatResponseV2,
+  describeSharedProgramForAi,
+} from '@/models/ai-models';
 import {
   addMessage,
   ChatMessage,
@@ -24,7 +27,18 @@ export function applyAiPlannerEffects(addEffect: AddEffectFn) {
       { payload: message },
       { getState, dispatch, extra: { aiChatService } },
     ) => {
-      if (message.from === 'Agent' || message.type !== 'messageResponse') {
+      if (message.from === 'Agent') {
+        return;
+      }
+      let wireMessage: string;
+      if (message.type === 'messageResponse') {
+        wireMessage = message.message;
+      } else if (message.type === 'sharedProgram') {
+        wireMessage = describeSharedProgramForAi(
+          message.programName,
+          message.blueprint,
+        );
+      } else {
         return;
       }
       const originalMessage: ChatMessage = {
@@ -35,9 +49,9 @@ export function applyAiPlannerEffects(addEffect: AddEffectFn) {
         isLoading: true,
       };
       dispatch(addMessage(originalMessage));
-      let latestMessage: AiChatResponse | undefined = undefined;
+      let latestMessage: AiChatResponseV2 | undefined = undefined;
       for await (const chatResponse of aiChatService.sendMessage(
-        message.message,
+        wireMessage,
       )) {
         latestMessage = chatResponse;
         dispatch(
@@ -81,7 +95,7 @@ export function applyAiPlannerEffects(addEffect: AddEffectFn) {
       isLoading: true,
     };
     dispatch(addMessage(originalMessage));
-    let latestMessage: AiChatResponse | undefined = undefined;
+    let latestMessage: AiChatResponseV2 | undefined = undefined;
     for await (const chatResponse of aiChatService.introduce()) {
       latestMessage = chatResponse;
       dispatch(

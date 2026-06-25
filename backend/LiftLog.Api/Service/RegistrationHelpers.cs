@@ -41,6 +41,28 @@ public static class RegistrationHelpers
         return source;
     }
 
+    /// <summary>
+    /// Registers the AI Workout Planner that talks to the Anthropic SDK directly
+    /// (for fine-grained streaming) and drives tool use from the generated AiPlan
+    /// schema.
+    /// </summary>
+    public static IServiceCollection AddAnthropicWorkoutPlannerV2(this IServiceCollection source)
+    {
+        source.AddSingleton<AnthropicClient>(services =>
+        {
+            var configuration = services.GetRequiredService<IConfiguration>();
+            var apiKey =
+                configuration.GetValue<string?>("AnthropicApiKey")
+                ?? throw new Exception("AnthropicApiKey configuration is not set.");
+            return new AnthropicClient { ApiKey = apiKey };
+        });
+
+        source.AddSingleton<IAnthropicMessageStreamer, AnthropicMessageStreamer>();
+        source.AddSingleton<AiPlanToolProvider>();
+        source.AddSingleton<IAiChatDirectoryV2, AiChatDirectoryV2>();
+        return source;
+    }
+
     public static IServiceCollection AddRevenueCatPurchaseVerification(
         this IServiceCollection source
     )

@@ -46,6 +46,16 @@ type MutuallyAssignable<A, B> =
   Assignable<A, B> extends true ? Assignable<B, A> : false;
 
 /**
+ * The latest version number a migration tuple produces — its highest 1-based
+ * index. Index 0 is the phantom `v0 -> v1` identity step, so the latest version
+ * is `length - 1`, computed here by dropping the leading element.
+ */
+type LatestVersion<TMigrations extends readonly unknown[]> =
+  TMigrations extends readonly [unknown, ...infer TRest]
+    ? TRest['length']
+    : never;
+
+/**
  * Fluent builder returned by {@link createMigrations} and each subsequent `.add()` call.
  *
  * Each call to `.add()` appends one migration step and returns a new builder whose
@@ -167,10 +177,11 @@ class MigratorImpl<
 > implements Migrator<TFinal, TMigrations> {
   $finalType: TFinal = undefined!;
   $anyType: TMigrations[number]['$type'] = undefined!;
-  readonly latestVersion: number;
+  readonly latestVersion: LatestVersion<TMigrations>;
 
   constructor(private migrations: TMigrations) {
-    this.latestVersion = this.migrations.length;
+    this.latestVersion = this.migrations
+      .length as LatestVersion<TMigrations>;
   }
   migrate(value: TMigrations[number]['$type']): TFinal {
     return this.migrateUntil(value, this.migrations.length as any);
@@ -234,7 +245,7 @@ interface Migrator<
   $finalType: TFinal;
   $anyType: TMigrations[number]['$type'];
 
-  latestVersion: TMigrations['length'];
+  latestVersion: LatestVersion<TMigrations>;
 
   /**
    * Migrates `value` through every step, returning the final output type.

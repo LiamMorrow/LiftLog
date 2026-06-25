@@ -27,7 +27,7 @@ import { Redirect, useLocalSearchParams } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { setChat, ChatMessage } from '@/store/ai-planner';
-import { AiWorkoutPlan } from '@/models/ai-models';
+import { AiPlan } from '@/models/ai-models';
 import { setStatsIsDirty, fetchOverallStats } from '@/store/stats';
 import { setSavedPlans } from '@/store/program';
 import { ProgramBlueprint } from '@/models/blueprint-models';
@@ -122,16 +122,17 @@ function PrepareAiPlannerPage() {
       maxRest: Duration.ofSeconds(180),
       failureRest: Duration.ofSeconds(300),
     };
-    const ex = (name: string, sets: number, repsPerSet: number) => ({
-      name,
-      sets,
-      repsPerSet,
-      weightIncreaseOnSuccess: BigNumber(2.5),
-      restBetweenSets: rest,
-      supersetWithNext: false,
-      notes: '',
-      link: '',
-    });
+    const ex = (name: string, sets: number, repsPerSet: number) =>
+      new WeightedExerciseBlueprint(
+        name,
+        sets,
+        repsPerSet,
+        new IncreaseAllEvenlyProgressiveOverload(BigNumber(2.5)),
+        rest,
+        false,
+        '',
+        '',
+      );
     dispatch(
       setChat([
         {
@@ -142,27 +143,31 @@ function PrepareAiPlannerPage() {
             name: 'Upper/Lower Power & Hypertrophy',
             description:
               'A 2-day upper/lower split combining power and hypertrophy training for balanced strength and muscle development.',
-            sessions: [
-              {
-                name: 'Upper Power',
-                notes: '',
-                exercises: [
-                  ex('Bench Press', 4, 5),
-                  ex('Barbell Row', 4, 5),
-                  ex('Overhead Press', 3, 5),
-                ],
-              },
-              {
-                name: 'Lower Power',
-                notes: '',
-                exercises: [
-                  ex('Squat', 4, 5),
-                  ex('Romanian Deadlift', 3, 8),
-                  ex('Leg Press', 3, 8),
-                ],
-              },
-            ],
-          } satisfies AiWorkoutPlan,
+            blueprint: new ProgramBlueprint(
+              'Upper/Lower Power & Hypertrophy',
+              [
+                new SessionBlueprint(
+                  'Upper Power',
+                  [
+                    ex('Bench Press', 4, 5),
+                    ex('Barbell Row', 4, 5),
+                    ex('Overhead Press', 3, 5),
+                  ],
+                  '',
+                ),
+                new SessionBlueprint(
+                  'Lower Power',
+                  [
+                    ex('Squat', 4, 5),
+                    ex('Romanian Deadlift', 3, 8),
+                    ex('Leg Press', 3, 8),
+                  ],
+                  '',
+                ),
+              ],
+              LocalDate.now(),
+            ),
+          } satisfies AiPlan,
         } satisfies ChatMessage,
         {
           id: 'user-1',

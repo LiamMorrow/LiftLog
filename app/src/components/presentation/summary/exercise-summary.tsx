@@ -2,7 +2,7 @@ import { formatCardioTarget } from '@/components/presentation/workout-editor/exe
 import { formatTimeSpan } from '@/components/presentation/foundation/rest-format';
 import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import WeightFormat from '@/components/presentation/foundation/weight-format';
-import { spacing, useAppTheme } from '@/hooks/useAppTheme';
+import { ColorChoice, spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { Weight } from '@/models/weight';
 import {
@@ -23,6 +23,7 @@ interface ExerciseSummaryProps {
   showDate: boolean;
   showWeight: boolean;
   isFilled: boolean;
+  color?: ColorChoice;
 }
 
 function Chip(props: { children: ReactNode }) {
@@ -152,6 +153,7 @@ export default function ExerciseSummary({
   showDate,
   showWeight,
   isFilled,
+  color = 'onSurface',
 }: ExerciseSummaryProps) {
   const formatDate = useFormatDate();
   return (
@@ -165,12 +167,12 @@ export default function ExerciseSummary({
       }}
     >
       {showName ? (
-        <SurfaceText style={{ maxWidth: '50%' }}>
+        <SurfaceText color={color} style={{ maxWidth: '50%' }}>
           {exercise.blueprint.name}
         </SurfaceText>
       ) : undefined}
       {showDate ? (
-        <SurfaceText>
+        <SurfaceText color={color}>
           {exercise.latestTime &&
             formatDate(exercise.latestTime.toLocalDate(), {
               year: 'numeric',

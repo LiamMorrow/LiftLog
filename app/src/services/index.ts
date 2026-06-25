@@ -1,4 +1,4 @@
-import { AiChatService } from '@/services/ai-chat-service';
+import { AiChatServiceV2 } from '@/services/ai-chat-service-v2';
 import { EncryptionService } from '@/services/encryption-service';
 import { FeedApiService } from '@/services/feed-api';
 import { FeedFollowService } from '@/services/feed-follow-service';
@@ -63,7 +63,7 @@ function resolveServicesInternal(
   const fileExportService = new FileExportService();
   const filePickerService = new FilePickerService();
   const preferenceService = new PreferenceService(keyValueStore);
-  const aiChatService = new AiChatService(
+  const aiChatService = new AiChatServiceV2(
     new HubConnectionFactory(),
     store.getState,
   );

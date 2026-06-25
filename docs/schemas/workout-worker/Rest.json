@@ -9,7 +9,8 @@
       "$ref": "./Duration.json"
     },
     "failureRest": {
-      "$ref": "./Duration.json"
+      "$ref": "./Duration.json",
+      "description": "Rest taken after a set where the user failed to hit their target reps."
     }
   },
   "required": [

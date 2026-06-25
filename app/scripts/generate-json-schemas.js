@@ -2,7 +2,7 @@
 
 const tsj = require('ts-json-schema-generator');
 const fs = require('fs');
-const { join } = require('node:path');
+const { join, dirname } = require('node:path');
 
 const modelsDir = join(__dirname, '../src/models');
 const docsSchemasPath = join(__dirname, '../../docs/schemas/');
@@ -13,6 +13,41 @@ createSplitSchemas(
   join(modelsDir, 'workout-worker-messages.ts'),
   join(docsSchemasPath, 'workout-worker'),
 );
+
+// Create schema for the AI plan generator — a single self-contained file
+// rooted at AiPlan, with referenced types under `definitions`.
+createSingleSchema(
+  join(modelsDir, 'storage/versions/latest/ai-plan.ts'),
+  join(docsSchemasPath, 'ai-plan/AiPlan.json'),
+  'AiPlan',
+);
+
+/**
+ * Write a single self-contained JSON Schema file rooted at `rootType`.
+ * The root definition's body becomes the top-level schema; every other
+ * definition is kept under `definitions` with internal `#/definitions/...`
+ * refs preserved (as produced by `buildSchema`).
+ */
+function createSingleSchema(inputFile, outputPath, rootType) {
+  const schema = buildSchema(inputFile);
+  const { definitions } = schema;
+
+  if (!definitions || !definitions[rootType]) {
+    console.warn(`No definition "${rootType}" found in schema for ${inputFile}`);
+    return;
+  }
+
+  const { [rootType]: root, ...restDefs } = definitions;
+  const fileSchema = {
+    $schema: schema.$schema,
+    ...root,
+    definitions: restDefs,
+  };
+
+  fs.mkdirSync(dirname(outputPath), { recursive: true });
+  fs.writeFileSync(outputPath, JSON.stringify(fileSchema, null, 2));
+  console.log(`Wrote schema to ${outputPath}`);
+}
 
 /**
  * Write one JSON Schema file per top-level definition.

@@ -13,5 +13,6 @@
   "required": [
     "type",
     "amount"
-  ]
+  ],
+  "description": "The standard \"increase every set across the board\" progressive overload. Usually 2.5kg, or 5lb."
 }

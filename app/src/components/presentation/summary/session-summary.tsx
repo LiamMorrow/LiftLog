@@ -1,5 +1,5 @@
 import ExerciseSummary from '@/components/presentation/summary/exercise-summary';
-import { spacing } from '@/hooks/useAppTheme';
+import { ColorChoice, spacing } from '@/hooks/useAppTheme';
 import { Session } from '@/models/session-models';
 import { View } from 'react-native';
 
@@ -7,11 +7,13 @@ interface SessionSummaryProps {
   session: Session;
   isFilled?: boolean;
   showWeight?: boolean;
+  color?: ColorChoice;
 }
 export default function SessionSummary({
   session,
   isFilled,
   showWeight,
+  color = 'onSurface',
 }: SessionSummaryProps) {
   return (
     <View style={{ gap: spacing[2], flex: 1 }} testID="session-summary">
@@ -25,6 +27,7 @@ export default function SessionSummary({
             showName={true}
             showWeight={!!showWeight}
             showDate={false}
+            color={color}
           />
         ))}
     </View>

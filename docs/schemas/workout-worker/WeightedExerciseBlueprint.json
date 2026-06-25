@@ -19,13 +19,15 @@
       "$ref": "./Rest.json"
     },
     "supersetWithNext": {
-      "type": "boolean"
+      "type": "boolean",
+      "description": "When true, this exercise is performed back-to-back with the following one (a superset), with no rest in between."
     },
     "notes": {
       "type": "string"
     },
     "link": {
-      "type": "string"
+      "type": "string",
+      "description": "A url to some explanation of how to do this. We should not fill this unless the user has explicitly given us a link to fill"
     },
     "progressiveOverload": {
       "$ref": "./ProgressiveOverload.json"

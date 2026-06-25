@@ -9,5 +9,6 @@
   },
   "required": [
     "type"
-  ]
+  ],
+  "description": "Used when the user does not want progressive overload at all. Potentially with bodyweight exercises."
 }
