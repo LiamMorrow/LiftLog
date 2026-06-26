@@ -1,9 +1,9 @@
 # LiftLog
 
 <p align="center">
-  <img width="250" src="./assets/AppScreens-LiftLog-1782275372989.render/android/English (en-US)/Android Phones  169/01.png" alt="App Screenshot 1">
-  <img width="250" src="./assets/AppScreens-LiftLog-1782275372989.render/android/English (en-US)/Android Phones  169/02.png" alt="App Screenshot 2">
-  <img width="250" src="./assets/AppScreens-LiftLog-1782275372989.render/android/English (en-US)/Android Phones  169/03.png" alt="App Screenshot 3">
+  <img width="250" src="./assets/AppScreens-LiftLog-1782275372989.render/apple/English (en-US)/iPhones  6.9/01.png" alt="App home page screenshot">
+  <img width="250" src="./assets/AppScreens-LiftLog-1782275372989.render/apple/English (en-US)/iPhones  6.9/02.png" alt="Workout page screenshot">
+  <img width="250" src="./assets/AppScreens-LiftLog-1782275372989.render/apple/English (en-US)/iPhones  6.9/03.png" alt="Stats page screenshot">
 </p>
 
 <p align="center">
