@@ -112,7 +112,6 @@ export class AiChatServiceV2 {
     }
     this.connection.on('ReceiveMessage', async (m: AiChatResponseV2Json) => {
       try {
-        console.log('M', m);
         subject.pushValue(
           match(m)
             .returnType<AiChatResponseV2>()
