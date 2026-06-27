@@ -55,6 +55,18 @@ jobs:
       - name: Install JS dependencies
         working-directory: ./app
         run: npm ci
+      - name: Generate Expo types
+        run: npx expo customize tsconfig.json
+        working-directory: ./app
+      - name: Typecheck
+        run: npm run typecheck
+        working-directory: ./app
+      - name: Lint
+        run: npm run lint
+        working-directory: ./app
+      - name: Test
+        run: npm test
+        working-directory: ./app
       - name: Prebuild
         run: npm run prebuild
         working-directory: ./app

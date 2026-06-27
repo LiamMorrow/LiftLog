@@ -1,7 +1,6 @@
 name: Build Android
 on:
   push:
-    branches-ignore: [main]
     paths:
       - app/**
       - .github/**
