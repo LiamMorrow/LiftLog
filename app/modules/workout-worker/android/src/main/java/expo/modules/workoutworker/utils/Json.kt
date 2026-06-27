@@ -3,7 +3,6 @@ package expo.modules.workoutworker.utils
 import com.limajuice.liftlog.CardioExerciseBlueprint
 import com.limajuice.liftlog.CardioTarget
 import com.limajuice.liftlog.DistanceCardioTarget
-import com.limajuice.liftlog.ExerciseBlueprint
 import com.limajuice.liftlog.FinishWorkoutCommand
 import com.limajuice.liftlog.IncreaseAllEvenlyProgressiveOverload
 import com.limajuice.liftlog.IncreaseLowestSetProgressiveOverload
