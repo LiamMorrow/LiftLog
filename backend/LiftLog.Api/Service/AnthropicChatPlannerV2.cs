@@ -31,6 +31,9 @@ public partial class AnthropicChatPlannerV2(
         When you have gathered enough information to create a workout plan, use the create_workout_plan tool to generate and return the plan.
         It is okay to ask for clarification or more info, but when you are ready to make a plan, respond with the create_workout_plan tool.
         The user will typically ask you to introduce yourself, you may do so.
+
+        If a user shares their plan with you to iterate on, it is EXTREMELY important that you use the exact same naming as them (casing, and pluralization included)
+        when generating a new plan off of it. LiftLog matches history via string matching on exercise name.
         """;
 
     private const int MaxOutputTokens = 16_000;
