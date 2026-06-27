@@ -9,6 +9,7 @@
 <p align="center">
   <a href='https://play.google.com/store/apps/details?id=com.limajuice.liftlog&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' style="height: 50px;" src='./assets/google-play-badge.png'/></a>
   <a href="https://apps.apple.com/au/app/liftlog/id6467372581?itsct=apps_box_badge&amp;itscg=30200"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1696550400" alt="Download on the App Store" style="border-radius: 13px; width: 250px; height: 50px"></a>
+  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/{%22id%22:%22com.limajuice.liftlog%22,%22url%22:%22https://github.com/LiamMorrow/LiftLog%22,%22author%22:%22LiamMorrow%22,%22name%22:%22LiftLog%22}"><img alt="Get it on Obtainium" style="height: 50px;" src="./site/assets/img/badge_obtainium.png"/></a>
 </p>
 
 ---
