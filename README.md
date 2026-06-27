@@ -29,8 +29,6 @@
 - 🧠 AI planner tailors gym plans to your goals and body
 - ⚡ Fast, modern UI with Expo Router and Redux Toolkit
 
-📍 **[View the Roadmap](./ROADMAP.md)** to see what's planned!
-
 ---
 
 ## 🌍 Translations
