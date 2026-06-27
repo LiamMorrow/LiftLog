@@ -32,6 +32,7 @@
       "expo-sharing",
       "./plugins/override-health-connect-min-version.js",
       "./plugins/android-signing.js",
+      "./plugins/android-gradle-properties.js",
       [
         "expo-notifications",
         {
