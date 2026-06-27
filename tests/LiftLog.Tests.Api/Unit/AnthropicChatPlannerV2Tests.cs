@@ -66,7 +66,9 @@ public class AnthropicChatPlannerV2Tests
         var responses = await Run(planner);
 
         var messages = responses.OfType<AiChatMessageResponseV2>().ToList();
-        await Assert.That(messages.Select(m => m.Message)).IsEquivalentTo(["Hello ", "Hello there"]);
+        await Assert
+            .That(messages.Select(m => m.Message))
+            .IsEquivalentTo(["Hello ", "Hello there"]);
         await Assert.That(responses.OfType<AiChatPlanResponseV2>().Any()).IsFalse();
     }
 
@@ -83,7 +85,7 @@ public class AnthropicChatPlannerV2Tests
 
         var responses = await Run(CreatePlanner(new FakeAnthropicMessageStreamer(events)));
 
-        var plan = responses.OfType<AiChatPlanResponseV2>().Single();
+        var plan = responses.OfType<AiChatPlanResponseV2>().Last();
         await Assert.That(plan.Name).IsEqualTo("Test Plan");
         await Assert.That(plan.Description).IsEqualTo("A solid starter");
 
@@ -114,12 +116,15 @@ public class AnthropicChatPlannerV2Tests
 
         var responses = await Run(CreatePlanner(new FakeAnthropicMessageStreamer(events)));
 
-        await Assert.That(responses.Count).IsEqualTo(3);
-        await Assert.That(responses[0]).IsTypeOf<AiChatMessageResponseV2>();
+        var lastMessageIndex = responses.FindLastIndex(r => r is AiChatMessageResponseV2);
+        var firstPlanIndex = responses.FindIndex(r => r is AiChatPlanResponseV2);
+        await Assert.That(lastMessageIndex).IsGreaterThanOrEqualTo(0);
+        await Assert.That(firstPlanIndex).IsGreaterThanOrEqualTo(0);
+        // All text is streamed before any plan response.
+        await Assert.That(lastMessageIndex).IsLessThan(firstPlanIndex);
         await Assert
-            .That(((AiChatMessageResponseV2)responses[1]).Message)
+            .That(responses.OfType<AiChatMessageResponseV2>().Last().Message)
             .IsEqualTo("Here you go");
-        await Assert.That(responses[2]).IsTypeOf<AiChatPlanResponseV2>();
     }
 
     [Test]

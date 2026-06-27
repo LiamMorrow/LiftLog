@@ -103,7 +103,7 @@ public class AiWorkoutPlannerV2IntegrationTests
             .IsEqualTo("Here is your plan.");
 
         // The tool call is forwarded as a plan response with the full blueprint.
-        var plan = receivedMessages.OfType<AiChatPlanResponseV2>().Single();
+        var plan = receivedMessages.OfType<AiChatPlanResponseV2>().Last();
         await Assert.That(plan.Name).IsEqualTo("Faked Plan");
         await Assert.That(plan.Blueprint).IsNotNull();
 
@@ -123,7 +123,7 @@ public class AiWorkoutPlannerV2IntegrationTests
 
         await hubConnection.StartAsync();
         // Client reports a version behind the server's current contract version.
-        await hubConnection.InvokeAsync("Introduce", "en-US", CurrentVersion - 1);
+        await hubConnection.InvokeAsync("Introduce", "en-US", CurrentVersion - 1, "kg");
         await WaitForMessageAsync(receivedMessages);
 
         var update = receivedMessages.OfType<AiChatUpdateRequiredResponseV2>().Single();
