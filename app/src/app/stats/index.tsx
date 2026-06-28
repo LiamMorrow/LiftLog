@@ -1,12 +1,14 @@
 import FullHeightScrollView from '@/components/layout/full-height-scroll-view';
 import Icon from '@/components/presentation/foundation/gesture-wrappers/icon';
 import { Remote } from '@/components/presentation/foundation/remote';
+import { SurfaceText } from '@/components/presentation/foundation/surface-text';
 import { ExerciseListSummary } from '@/components/presentation/stats/exercise-list-summary';
 import SingleValueStatisticCard from '@/components/presentation/stats/single-value-statistic-card';
 import { SingleValueStatisticsGrid } from '@/components/presentation/stats/single-value-statistics-grid';
 import { TimePeriodSelector } from '@/components/presentation/stats/time-period-selector';
 import { TitledSection } from '@/components/presentation/stats/titled-section';
-import { spacing } from '@/hooks/useAppTheme';
+import { WeightLineChart } from '@/components/presentation/stats/weight-line-chart';
+import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { Weight } from '@/models/weight';
 import { useAppSelector } from '@/store';
 import {
@@ -18,7 +20,9 @@ import {
 import { formatDuration } from '@/utils/format-date';
 import { useTranslate } from '@tolgee/react';
 import { Stack, useFocusEffect } from 'expo-router';
+import { useState } from 'react';
 import { View, Text } from 'react-native';
+import { Card } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { match } from 'ts-pattern';
 
@@ -62,6 +66,11 @@ function LoadedStats({ stats }: { stats: GranularStatisticView }) {
 
 function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
   const { t } = useTranslate();
+  const { colors } = useAppTheme();
+  const showBodyweight = useAppSelector((x) => x.settings.showBodyweight);
+  const [showBodyweightGraph, setShowBodyweightGraph] = useState(false);
+  const canShowBodyweightGraph =
+    showBodyweight && stats.bodyweightStats.statistics.length > 0;
   return (
     <TitledSection title={t('stats.overview.title')}>
       <SingleValueStatisticsGrid>
@@ -89,6 +98,11 @@ function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
           title={t('stats.bodyweight_change.label')}
           icon={'monitorWeight'}
           value={<BodyweightStatValue stats={stats} />}
+          onPress={
+            canShowBodyweightGraph
+              ? () => setShowBodyweightGraph((x) => !x)
+              : undefined
+          }
         />
         <SingleValueStatisticCard
           title={t('stats.heaviest_lift.label')}
@@ -102,6 +116,22 @@ function OverallStatsGrid({ stats }: { stats: GranularStatisticView }) {
           }
         />
       </SingleValueStatisticsGrid>
+      {showBodyweightGraph && canShowBodyweightGraph && (
+        <Card
+          mode="contained"
+          style={{
+            backgroundColor: colors.surfaceContainer,
+            marginTop: spacing[2],
+          }}
+        >
+          <Card.Content style={{ paddingVertical: spacing[4], gap: spacing[2] }}>
+            <SurfaceText font="text-lg" style={{ textAlign: 'center' }}>
+              {t('exercise.bodyweight.label')}
+            </SurfaceText>
+            <WeightLineChart statistics={stats.bodyweightStats} />
+          </Card.Content>
+        </Card>
+      )}
     </TitledSection>
   );
 }
