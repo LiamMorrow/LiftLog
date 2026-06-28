@@ -23,7 +23,7 @@ import { assertUnreachable } from '@/utils/assert-unreachable';
 import { Duration } from '@js-joda/core';
 import { T, useTranslate } from '@tolgee/react';
 import BigNumber from 'bignumber.js';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { Divider, List, SegmentedButtons, TextInput } from 'react-native-paper';
 import { match, P } from 'ts-pattern';
@@ -57,41 +57,48 @@ export function ExerciseEditor(props: ExerciseEditorProps) {
   const { exercise: propsExercise, updateExercise: updatePropsExercise } =
     props;
   const [exercise, setExercise] = useState(propsExercise);
+  const exerciseRef = useRef(exercise);
+  exerciseRef.current = exercise;
 
   // Bit of a hack to let us update exercise immediately without going through the whole props loop
   useEffect(() => {
     setExercise(propsExercise);
   }, [propsExercise]);
+  const commit = (next: CardioExerciseBlueprint | WeightedExerciseBlueprint) => {
+    exerciseRef.current = next;
+    setExercise(next);
+    updatePropsExercise(next);
+  };
   const updateExercise = (
     ex: Partial<WeightedExerciseBlueprint | CardioExerciseBlueprint>,
   ) => {
-    const update = exercise.with(
-      ex as unknown as Partial<
-        WeightedExerciseBlueprint & CardioExerciseBlueprint
-      >,
+    commit(
+      exerciseRef.current.with(
+        ex as unknown as Partial<
+          WeightedExerciseBlueprint & CardioExerciseBlueprint
+        >,
+      ),
     );
-    setExercise(update);
-    updatePropsExercise(update);
   };
 
   const handleTypeChange = (type: string) => {
+    const current = exerciseRef.current;
     let newExercise: CardioExerciseBlueprint | WeightedExerciseBlueprint =
-      exercise;
+      current;
     if (type === 'weighted') {
       newExercise = WeightedExerciseBlueprint.empty().with({
-        ...exercise,
+        ...current,
         type: 'WeightedExerciseBlueprint',
         sets: undefined!, // Will not overwrite empty
       });
     } else {
       newExercise = CardioExerciseBlueprint.empty().with({
-        ...exercise,
+        ...current,
         type: 'CardioExerciseBlueprint',
         sets: undefined!, // Will not overwrite empty
       });
     }
-    setExercise(newExercise);
-    updatePropsExercise(newExercise);
+    commit(newExercise);
   };
 
   const exerciseEditor = match(exercise)

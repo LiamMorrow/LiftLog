@@ -159,8 +159,13 @@ export default function SessionComponent(props: {
           }
           recordedExercise={item}
           toStartNext={session.nextExercise === item}
-          updateExercise={(ex) =>
-            updateSession((s) => s.withExercise(index, ex))
+          updateExercise={(update) =>
+            updateSession((s) =>
+              s.withExercise(
+                index,
+                update(s.recordedExercises[index] as RecordedWeightedExercise),
+              ),
+            )
           }
           onEditExercise={() => {
             setEditingExerciseBlueprint(item.blueprint);

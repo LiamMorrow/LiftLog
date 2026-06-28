@@ -14,6 +14,7 @@ import ExerciseNotesDisplay from '@/components/presentation/workout/exercise-not
 import RecordedExerciseNotesEditor from '@/components/presentation/workout/recorded-exercise-notes-editor';
 import IconButton from '@/components/presentation/foundation/gesture-wrappers/icon-button';
 import { useRouter } from 'expo-router';
+import { Updater } from '@/utils/types';
 
 interface ExerciseSectionProps<T extends RecordedExercise> {
   recordedExercise: T;
@@ -24,7 +25,7 @@ interface ExerciseSectionProps<T extends RecordedExercise> {
 
   children: ReactNode;
 
-  updateExercise: (value: T) => void;
+  updateExercise: (update: Updater<T>) => void;
   onEditExercise: () => void;
   onRemoveExercise: () => void;
 }
@@ -180,7 +181,7 @@ export default function ExerciseSection<T extends RecordedExercise>(
         open={notesDialogOpen}
         notes={recordedExercise.notes}
         onUpdateNotes={(notes) =>
-          updateExercise(recordedExercise.with({ notes }) as T)
+          updateExercise((ex) => ex.with({ notes }) as T)
         }
       />
       <ConfirmationDialog

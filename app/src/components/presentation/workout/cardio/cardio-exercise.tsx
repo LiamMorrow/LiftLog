@@ -34,6 +34,7 @@ import { Weight } from '@/models/weight';
 import { CardioWeightTracker } from '@/components/presentation/workout/cardio/cardio-weight-tracker';
 import { usePreferredWeightUnit } from '@/hooks/usePreferredWeightUnit';
 import { CardioStepsTracker } from '@/components/presentation/workout/cardio/cardio-steps-tracker';
+import { Updater } from '@/utils/types';
 
 type CardioExerciseSetCallback<T> = (value: T) => void;
 
@@ -44,9 +45,7 @@ interface CardioExerciseProps {
   isReadonly: boolean;
   showPreviousButton: boolean;
 
-  updateExercise: (
-    cb: (ex: RecordedCardioExercise) => RecordedCardioExercise,
-  ) => void;
+  updateExercise: (update: Updater<RecordedCardioExercise>) => void;
   onEditExercise: () => void;
   onRemoveExercise: () => void;
 }
@@ -75,7 +74,7 @@ export function CardioExercise(props: CardioExerciseProps) {
       toStartNext={props.toStartNext}
       isReadonly={props.isReadonly}
       showPreviousButton={props.showPreviousButton}
-      updateExercise={(x) => props.updateExercise(() => x)}
+      updateExercise={props.updateExercise}
       onEditExercise={props.onEditExercise}
       onRemoveExercise={props.onRemoveExercise}
     >

@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import ExerciseSection from '@/components/presentation/workout/exercise-section';
 import { OffsetDateTime } from '@js-joda/core';
+import { Callback, Updater } from '@/utils/types';
 
 interface WeightedExerciseProps {
   recordedExercise: RecordedWeightedExercise;
@@ -14,8 +15,8 @@ interface WeightedExerciseProps {
   showPreviousButton: boolean;
 
   timeProvider: () => OffsetDateTime;
-  updateExercise: (ex: RecordedWeightedExercise) => void;
-  resetSetTimer: () => void;
+  updateExercise: (update: Updater<RecordedWeightedExercise>) => void;
+  resetSetTimer: Callback;
   onEditExercise: () => void;
   onRemoveExercise: () => void;
 }
@@ -48,12 +49,12 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
             maxReps={recordedExercise.blueprint.repsPerSet}
             onTap={() => {
               const previousSet = set.set;
-              const newExercise = recordedExercise.withCycledRepCount(
-                index,
-                timeProvider(),
+              const newSet = recordedExercise
+                .withCycledRepCount(index, timeProvider())
+                .getSet(index).set;
+              updateExercise((ex) =>
+                ex.withCycledRepCount(index, timeProvider()),
               );
-              const newSet = newExercise.getSet(index).set;
-              updateExercise(newExercise);
               // We only want to reset the timer when switching between unfilled and filled
               // Otherwise, keep the same time
               if (!previousSet || !newSet) {
@@ -65,13 +66,13 @@ export default function WeightedExercise(props: WeightedExerciseProps) {
                 ?.repsCompleted
             }
             onUpdateReps={(reps) => {
-              updateExercise(
-                recordedExercise.withRepCount(index, reps, timeProvider()),
+              updateExercise((ex) =>
+                ex.withRepCount(index, reps, timeProvider()),
               );
               resetSetTimer();
             }}
             onUpdateWeight={(w, applyTo) =>
-              updateExercise(recordedExercise.withWeight(index, w, applyTo))
+              updateExercise((ex) => ex.withWeight(index, w, applyTo))
             }
             set={set}
             toStartNext={
