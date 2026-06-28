@@ -1,7 +1,12 @@
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import { useTranslate } from '@tolgee/react';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { NativeScrollEvent, NativeSyntheticEvent, View } from 'react-native';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Platform,
+  View,
+} from 'react-native';
 import { AnimatedFAB, Icon, List, TextInput } from 'react-native-paper';
 import TouchableRipple from '@/components/presentation/foundation/gesture-wrappers/touchable-ripple';
 import { AccordionItem } from '@/components/presentation/foundation/accordion-item';
@@ -23,6 +28,8 @@ import ExerciseMuscleSelector from '@/components/presentation/workout-editor/exe
 import ExerciseFilterer from '@/components/presentation/workout-editor/exercise-filterer';
 import { LegendList } from '@legendapp/list';
 import { ExerciseDescriptor } from '@/models/exercise-models';
+import { HeaderHeightContext } from 'expo-router/react-navigation';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function ExerciseListItem({
   exerciseId,
@@ -129,6 +136,10 @@ export default function ExerciseManager() {
   useMountEffect(() => {
     setFilteredExerciseIds(Object.keys(exercises));
   });
+  const insets = useSafeAreaInsets();
+  const headerHeight = useContext(HeaderHeightContext); // Intentionally don't use useHeaderHeight as it might not be in a stack
+  const topInsetHeight = Platform.select({ ios: headerHeight }) ?? 0;
+  const bottomInsetHeight = Platform.select({ ios: insets.bottom }) ?? 0;
 
   const addExercise = () => {
     const newId = uuid();
@@ -188,6 +199,10 @@ export default function ExerciseManager() {
     <View style={{ flex: 1 }}>
       <LegendList
         onScroll={onScroll}
+        contentContainerStyle={{
+          insetBlockStart: topInsetHeight,
+          insetBlockEnd: bottomInsetHeight,
+        }}
         style={{ flex: 1 }}
         data={flatListItems}
         getItemType={(_, index) => (index === 0 ? 'filters' : 'exercise')}
@@ -212,7 +227,7 @@ export default function ExerciseManager() {
       />
       <AnimatedFAB
         style={{
-          bottom: spacing.pageHorizontalMargin,
+          bottom: spacing.pageHorizontalMargin + bottomInsetHeight,
           right: spacing.pageHorizontalMargin,
         }}
         extended={fabExtended}
