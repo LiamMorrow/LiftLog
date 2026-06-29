@@ -63,6 +63,7 @@ export function ExerciseSearcher({ currentExercise, onSelectExercise }: Exercise
               if (i.index === 0) {
                 return (
                   <ExerciseFilterer
+                    exerciseName={currentExercise.name}
                     onSuggestedNewExercise={setSuggestedNewExercise}
                     onFilteredExerciseIdsChange={setFilteredExerciseIds}
                   />

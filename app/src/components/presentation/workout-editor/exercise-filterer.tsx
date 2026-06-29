@@ -8,13 +8,14 @@ import { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
 export default function ExerciseFilterer(props: {
+  exerciseName: string
   onFilteredExerciseIdsChange: (ids: string[]) => void;
   onSuggestedNewExercise: (exerciseDescriptor: ExerciseDescriptor | 'NONE') => void;
 }) {
   const exercises = useAppSelector(selectExercises);
   const { onFilteredExerciseIdsChange, onSuggestedNewExercise } = props;
   const [muscleFilters, setMuscleFilters] = useState([] as string[]);
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState(props.exerciseName);
 
   const search = useDebouncedCallback(() => {
     const trimmed = searchText.trim();

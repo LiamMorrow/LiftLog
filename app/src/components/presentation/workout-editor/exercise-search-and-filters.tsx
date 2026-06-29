@@ -27,6 +27,7 @@ export default function ExerciseSearchAndFilters({
       <Searchbar
         placeholder={t('generic.search.button')}
         value={searchText}
+        defaultValue={searchText}
         onChangeText={setSearchText}
         autoCapitalize={'words'}
         autoCorrect={false}

@@ -190,6 +190,7 @@ export default function ExerciseManager() {
           if (index === 0) {
             return (
               <ExerciseFilterer
+                exerciseName=""
                 onFilteredExerciseIdsChange={setFilteredExerciseIds}
                 onSuggestedNewExercise={() => {}}
               />
