@@ -1,4 +1,4 @@
-// eslint-disable-next-line no-restricted-imports
+// oxlint-disable-next-line no-restricted-imports
 import { useSelector as untypedUseSelector } from 'react-redux';
 
 import { type RootState, createStore } from '@/store/store';

@@ -1,7 +1,7 @@
-/* eslint-disable no-restricted-imports */
 import { GesturePressableProps } from '@/components/presentation/foundation/gesture-wrappers/pressable-props';
 import { isNotNullOrUndefined } from '@/utils/null';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+// oxlint-disable-next-line no-restricted-imports
 import { TouchableRippleProps, TouchableRipple as NativeTouchableRipple } from 'react-native-paper';
 
 export default function TouchableRipple({

@@ -88,7 +88,7 @@ export class SessionService {
       RecordedExercise | undefined
     >,
   ): Session {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    // oxlint-disable-next-line typescript/no-this-alias
     const $this = this;
     function getNextExercise(e: ExerciseBlueprint): RecordedExercise {
       const lastExercise = latestRecordedExercises[KeyedExerciseBlueprint.fromExerciseBlueprint(e).toString()];

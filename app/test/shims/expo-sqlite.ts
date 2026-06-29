@@ -66,7 +66,7 @@ export const backupDatabaseAsync: typeof expoBackupDatabaseAsync = async (opts) 
           if (v === null) return 'NULL';
           if (typeof v === 'number' || typeof v === 'bigint') return String(v);
           if (v instanceof Uint8Array) return `X'${Buffer.from(v).toString('hex')}'`;
-          // eslint-disable-next-line @typescript-eslint/no-base-to-string
+          // oxlint-disable-next-line typescript/no-base-to-string
           return `'${String(v).replace(/'/g, "''")}'`;
         })
         .join(', ');

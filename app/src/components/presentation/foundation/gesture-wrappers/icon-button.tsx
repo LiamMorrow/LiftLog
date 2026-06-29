@@ -1,9 +1,9 @@
-/* eslint-disable no-restricted-imports */
 import { GesturePressableProps } from '@/components/presentation/foundation/gesture-wrappers/pressable-props';
 import { AppIconSource } from '@/components/presentation/foundation/ms-icon-source';
 import { isNotNullOrUndefined } from '@/utils/null';
 import { I18nManager } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+// oxlint-disable-next-line no-restricted-imports
 import { IconButton as NativeIconButton, IconButtonProps } from 'react-native-paper';
 
 type ICProps = {

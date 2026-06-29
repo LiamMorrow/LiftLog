@@ -165,8 +165,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({ children }) 
     } else {
       updateTheme(colorSchemeSeed);
     }
-    // eslint-disable-next-line react-compiler/react-compiler
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [colorSchemeSeed]);
   const schemedTheme = colorScheme === 'dark' ? newTheme.dark : newTheme.light;
 

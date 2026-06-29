@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Extracts numeric indices from a tuple type's keys.
  *

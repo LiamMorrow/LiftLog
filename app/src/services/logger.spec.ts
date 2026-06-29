@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* oxlint-disable @typescript-oxlint/no-unsafe-member-access */
+/* oxlint-disable @typescript-oxlint/no-unsafe-assignment */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { Logger } from './logger';
 

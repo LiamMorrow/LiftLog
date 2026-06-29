@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// oxlint-disable typescript/no-unsafe-assignment typescript/no-unsafe-member-access
 // test-utils/createAddEffectTestBed.ts
 
 import { expect, onTestFailed, vi } from 'vitest';

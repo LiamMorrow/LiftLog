@@ -81,7 +81,7 @@ export function createStore(db: ExpoSQLiteDatabase, expoDb: SQLiteDatabase) {
         try {
           await effect(action, {
             ...listenerApi,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+            // oxlint-disable-next-line typescript/no-unsafe-assignment
             dispatch: listenerApi.dispatch as any,
             getState: listenerApi.getState as () => RootState,
             onFail: (cb) => failureHandlers.push(cb),

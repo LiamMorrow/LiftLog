@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-
 import fc from 'fast-check';
 import {
   ProgramBlueprintGenerator,
@@ -35,6 +33,7 @@ describe('conversions', () => {
             const encoded = toJsonString(converted);
             const convertedBack = (type as FromJSON).fromJSON(fromJsonString(encoded));
 
+            // oxlint-disable-next-line typescript/no-unsafe-call
             assertEquals(initialValue, convertedBack);
           }),
         );

@@ -42,7 +42,7 @@ vi.mock('expo-file-system', () => {
 
     async move(target: File, _options?: { overwrite?: boolean }): Promise<void> {
       const content = fileStore.get(this.path) ?? '';
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+      // oxlint-disable-next-line typescript/no-unsafe-argument typescript/no-unsafe-member-access
       fileStore.set((target as any).path, content);
       fileStore.delete(this.path);
     }

@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* oxlint-disable @typescript-oxlint/no-unsafe-assignment */
+/* oxlint-disable @typescript-oxlint/no-unsafe-argument */
 import Ajv from 'ajv';
 import { readdirSync, readFileSync } from 'fs';
 import path from 'path';

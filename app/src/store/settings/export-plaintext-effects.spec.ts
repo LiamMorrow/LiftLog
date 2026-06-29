@@ -281,7 +281,7 @@ describe('export-plaintext-effects', () => {
 
       const [, bytes] = fileExportService.exportBytes.mock.calls[0]!;
       const text = new TextDecoder().decode(bytes);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      // oxlint-disable-next-line typescript/no-unsafe-return
       expect(() => JSON.parse(text)).not.toThrow();
     });
 
