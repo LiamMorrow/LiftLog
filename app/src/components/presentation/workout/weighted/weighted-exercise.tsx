@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import ExerciseSection from '@/components/presentation/workout/exercise-section';
 import { OffsetDateTime } from '@js-joda/core';
-import { Callback, Updater } from '@/utils/types';
+import { Updater } from '@/utils/types';
 
 interface WeightedExerciseProps {
   recordedExercise: RecordedWeightedExercise;
@@ -16,7 +16,7 @@ interface WeightedExerciseProps {
 
   timeProvider: () => OffsetDateTime;
   updateExercise: (update: Updater<RecordedWeightedExercise>) => void;
-  resetSetTimer: Callback;
+  resetSetTimer: () => void;
   onEditExercise: () => void;
   onRemoveExercise: () => void;
 }
